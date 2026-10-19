@@ -9,7 +9,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { builtBooth, connect, trimPos, type Booth } from '../src/screens/lab/dj/model/djModel.ts';
 import { freshEvent, micGainPos, recGainPos, withEv, withMic, withRec } from '../src/screens/lab/dj/model/djEvent.ts';
-import { DEBRIEF_PARTS, FAULTS, FAULT_IDS, allFixed, compatible, debriefOptions, plant, scenarioFor, type FaultId } from '../src/screens/lab/dj/model/djCapstone.ts';
+import { DEBRIEF_PARTS, FAULTS, FAULT_IDS, allFixed, compatible, debriefOptions, hintsFor, plant, scenarioFor, type FaultId } from '../src/screens/lab/dj/model/djCapstone.ts';
 import { renderEvent } from '../src/screens/lab/dj/engine/djEventRender.ts';
 import { load } from '../src/screens/lab/dj/model/djDeck.ts';
 
@@ -31,6 +31,8 @@ const REPAIR: Record<FaultId, (b: Booth) => Booth> = {
   REC_NO_MIC: (b) => withMic(b, { toRec: true }),
   REC_CLIP: (b) => withRec(b, { gain: recGainPos(0) }),
   MEDIA_FAIL: (b) => withEv(load(b, 0, 'B', 'glassHarbour'), (e) => ({ ...e, mediaFail: false })),
+  MIC_DOWN: (b) => withMic(b, { level: 0.75 }),
+  PA_INPUT_MIC: (b) => withEv(b, (e) => ({ ...e, paRMic: false })),
 };
 
 describe('the fault bank', () => {
@@ -55,6 +57,14 @@ describe('the fault bank', () => {
     assert.ok(r(FAULTS.REC_CLIP.inject(event())).ext.clipped.rec > 0, 'the recorder clips');
     assert.equal(r(FAULTS.REC_CLIP.inject(event())).clipped.master, 0, 'the room does not');
     assert.equal(FAULTS.MEDIA_FAIL.inject(event()).decks.B.track, null, 'deck B has no file');
+    // the two faults added 2026-10-18 (audio review #30)
+    const sayB = (b: Booth) => withMic(b, { says: [{ at: 0.1 }] });
+    const down = r(sayB(FAULTS.MIC_DOWN.inject(event())));
+    assert.ok(Math.max(...down.ext.raw.mic) > -40, 'MIC meter live (before LEVEL)');
+    assert.ok(down.ext.micIn.crowd < -50 && down.ext.micIn.rec < -50, 'no feed carries the voice');
+    const paR = r(FAULTS.PA_INPUT_MIC.inject(event()));
+    assert.ok((paR.ext.clipped.paR ?? 0) > 0, 'PA R overloads');
+    assert.equal(paR.clipped.master, 0, 'the MASTER is clean');
   });
   it('every fault speaks in plain words: symptom, cause, evidence, repair, prevention', () => {
     for (const f of FAULT_IDS) for (const k of ['symptom', 'cause', 'evidence', 'repair', 'prevention'] as const) assert.ok(FAULTS[f][k].length > 20, `${f}.${k}`);
@@ -91,6 +101,30 @@ describe('combining faults', () => {
     let two = 0;
     for (let seed = 1; seed <= 1000; seed++) if (scenarioFor(seed).faults.length === 2) two++;
     assert.ok(two > 350 && two < 650, `${two}`);
+  });
+});
+
+describe('hints never print the answers (second reviews 2026-10-18)', () => {
+  it('no hint is a debrief answer, and every fault has its own probe and pointer', () => {
+    for (const f of FAULT_IDS) {
+      const h = hintsFor(f);
+      assert.equal(h.length, 3);
+      for (const p of DEBRIEF_PARTS) for (const x of h) assert.notEqual(x, FAULTS[f][p], `${f} hint gives the ${p}`);
+      assert.ok(FAULTS[f].probe.length > 20 && FAULTS[f].where.length > 15, f);
+    }
+  });
+  it('wrong options come from the fault’s OWN plausible list, each with a reason', () => {
+    for (const f of FAULT_IDS)
+      for (const p of DEBRIEF_PARTS) {
+        assert.ok(FAULTS[f].wrong[p].length >= 2, `${f}.${p}`);
+        const q = debriefOptions(f, p, 3);
+        assert.equal(q.why.length, q.options.length);
+        q.options.forEach((o, i) => {
+          if (i === q.correct || /^Lift the mains earth/.test(o)) return;
+          assert.ok(FAULTS[f].wrong[p].some((w) => w.t === o), `${f}.${p}: ${o} is not one of its own wrong options`);
+          assert.ok(q.why[i].length > 15);
+        });
+      }
   });
 });
 

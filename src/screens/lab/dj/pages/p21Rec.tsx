@@ -11,13 +11,20 @@
  * The fault: the recorder clips while the room sounds clean (its own input
  * gain is far up — the MASTER is not the fix). Service rules vary: the lab
  * names no service.
+ *
+ * Second reviews 2026-10-18: the take lane uses the shared waveform renderer
+ * with a dBFS scale and the capture target; the split lead's 3.5 mm plug is
+ * drawn seated in LINE IN; the screen opens on TAP; REC GAIN is locked on
+ * LOOPBACK; the playback goal latches once the take has played past its
+ * first voice mark; and CHECK YOURSELF is evidence: a BOOTH OUT take with a
+ * booth move in it, played back.
  */
 import { useCallback, useRef, useState } from 'react';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { StyleSheet, View } from 'react-native';
 import { Group } from '@shopify/react-native-skia';
 import { colors } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
-import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene, type Callout } from '../art/Scene';
 import { MixerRear } from '../art/RearPanels';
@@ -26,7 +33,7 @@ import { Laptop, LAPTOP_W } from '../art/gear';
 import { MIXER_REAR, MIXER_REAR_JACKS, type Box } from '../geometry/boothGeometry';
 import { MIXER_REAR_EXTRA } from '../geometry/eventGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, EvidenceCheck, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey, type Transport } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -41,20 +48,22 @@ import { isEventRender } from '../engine/djEventRender';
 
 const TERMS = [
   { term: 'Record tap', def: 'Where the recorder takes its feed from. A REC OUT is usually a fixed-level copy of the mix, so your MASTER moves never ride the take; a booth or master output follows its knob. Mixers differ.' },
-  { term: 'Capture level', def: 'The recorder’s own input gain. Set it on the loudest part with headroom: peaks around −12 to −3 dBFS on the RECORDER’s meter. A clip there is in the file forever.' },
+  { term: 'Capture level', def: 'The recorder’s own input gain. Set it on the loudest part with headroom: peaks around −12 to −3 dBFS on the RECORDER’s meter is a good starting point. A clip there is in the file forever.' },
   { term: 'Loopback', def: 'Software that records what the computer itself is playing. It never hears the mixer, the players or the mic — only the computer’s own output.' },
   { term: 'Monitoring loop', def: 'When an app sends what it records back out to something that feeds it again: an echo that can build into a howl. Monitor the recording in headphones, never back into the mix.' },
 ] as const;
 
 export const GOALS_REC = ['Tap REC OUT, then move MASTER: the take stays', 'Capture level: peaks −12 … −3 dBFS, no clip', 'The mic in the take', 'Play back a take with music and voice', 'Stop the recorder clipping', 'Pass the check'] as const;
 
-const LOOK = 'You are looking at the back of the mixer (REC OUT at its lower left, BOOTH OUT, MASTER) and a handheld recorder with its input meters, joined by a split lead into its LINE IN — and below, the take itself, drawn from what the recorder captured.';
+const LOOK = 'You are looking at the back of the mixer and a handheld recorder, joined by a split lead (two RCA plugs into one small stereo plug), and the take below.';
 
 /* ── the stage (mm) ───────────────────────────────────────────────────── */
 
 const REC_AT = { x: 334, y: -14 };
 const LAP_AT = { x: 316, y: -60 };
-const frameFor = (tap: RecTap): Box => (tap === 'LOOPBACK' ? { x: -10, y: -70, w: 670, h: 380 } : { x: -10, y: -30, w: 430, h: 200 });
+const frameFor = (tap: RecTap): Box => (tap === 'LOOPBACK' ? { x: -10, y: -70, w: 670, h: 380 } : { x: -14, y: -26, w: 432, h: 184 });
+/** The gear's share of the glass; the take lane takes the rest. */
+const GEAR_SHARE = 0.56;
 
 function GearView({ booth, live, elapsed, clip }: { booth: Booth; live: boolean; elapsed: string; clip: boolean }) {
   const ev = evOf(booth);
@@ -111,12 +120,23 @@ function RecTray({ tr, lead, onPlay, onStop, playing }: { tr: Transport; lead: (
         <LabChip label={m.toRec ? 'MIC → REC ON' : 'MIC → REC OFF'} selected={m.toRec} onPress={() => updateBooth((x) => withMic(x, { toRec: !evOf(x).mic.toRec }))} compact />
         {tr.soundDeclined ? <LabChip label="TURN SOUND ON" selected={false} onPress={tr.soundOn} compact /> : null}
       </Row>
+      <Row head={`BOOTH LEVEL ${Math.round(b.mixer.booth * 100)}% (what BOOTH OUT follows)`}>
+        <LabChip label="BOOTH −" selected={false} onPress={() => updateBooth((x) => ({ ...x, mixer: { ...x.mixer, booth: Math.max(0, Math.round((x.mixer.booth - 0.1) * 20) / 20) } }))} compact />
+        <LabChip label="BOOTH +" selected={false} onPress={() => updateBooth((x) => ({ ...x, mixer: { ...x.mixer, booth: Math.min(1, Math.round((x.mixer.booth + 0.1) * 20) / 20) } }))} compact />
+      </Row>
       <EventListen />
     </View>
   );
 }
 
 /* ── the page ────────────────────────────────────────────────────────── */
+
+/** Booth seconds into a take of its first voice mark. */
+function firstVoiceSec(t: { seconds: number; cols: { voice: Uint8Array } }): number {
+  const n = t.cols.voice.length;
+  const i = t.cols.voice.findIndex((v) => v === 1);
+  return i < 0 ? Infinity : (i / n) * t.seconds;
+}
 
 const fmtT = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
@@ -133,6 +153,16 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
   const take = useTake();
   const player = useTakePlayer(audio.stop);
   const [check, setCheck] = useState(false);
+  // the take plays with the booth stopped: re-read its progress as it
+  // crosses each half second (the playhead's own value, no polling)
+  const [, setTick] = useState(0);
+  const bump = (v: number) => setTick(v);
+  useAnimatedReaction(
+    () => Math.floor(player.pos.value * 2),
+    (now, prev) => {
+      if (now !== prev) runOnJS(bump)(now);
+    },
+  );
   const [faultFixed, setFaultFixed] = useState(false);
   const ev = evOf(booth);
   const rec = ev.rec;
@@ -145,6 +175,22 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
     const d = Math.abs(20 * Math.log10(levelKnobGain(booth.mixer.master) / Math.max(1e-6, levelKnobGain(masterAtArm.current))));
     if (d >= 3) moved.current = true;
   } else masterAtArm.current = null;
+  // the check: a BOOTH OUT take with a booth move of 3 dB or more in it
+  const boothAtArm = useRef<number | null>(null);
+  const boothTake = useRef<'none' | 'recording' | 'moved' | 'done'>('none');
+  if (armed && rec.tap === 'BOOTH') {
+    if (boothAtArm.current == null) {
+      boothAtArm.current = booth.mixer.booth;
+      boothTake.current = 'recording';
+    }
+    const d = Math.abs(20 * Math.log10(levelKnobGain(booth.mixer.booth) / Math.max(1e-6, levelKnobGain(boothAtArm.current))));
+    if (d >= 3) boothTake.current = 'moved';
+  } else {
+    if (boothTake.current === 'moved' && !armed) boothTake.current = 'done';
+    else if (boothTake.current === 'recording' && !armed) boothTake.current = 'none';
+    if (armed) boothTake.current = 'none';
+    boothAtArm.current = null;
+  }
   const recPk = Math.max(extPeak(last, 'recL') ?? -120, extPeak(last, 'recR') ?? -120);
   const recClip = !!last && last.ext.clipped.rec > 0;
   const mPk = Math.max(peakDb(last, 'masterL') ?? -120, peakDb(last, 'masterR') ?? -120);
@@ -153,7 +199,7 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
     rec.tap === 'REC_OUT' && moved.current,
     armed && playing && recPk >= -12 && recPk <= -3 && !recClip,
     armed && voiceIn(last, 'rec'),
-    player.finished && !!take && take.hasVoice && take.peakDb > -30,
+    (player.finished || player.playing) && !!take && take.hasVoice && take.peakDb > -30 && player.pos.value >= firstVoiceSec(take) + 2,
     faultFixed,
     check,
   ];
@@ -171,11 +217,10 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
           { id: 'ro', text: 'REC OUT (NOT USED)', at: { x: (E['rec.L'].x + E['rec.R'].x) / 2, y: E['rec.L'].y + 6 }, dx: 0, dy: 26, tone: 'plain' },
         ]
       : [
-          { id: 'ro', text: rec.tap === 'REC_OUT' ? 'REC OUT → RECORDER' : 'REC OUT', at: { x: (E['rec.L'].x + E['rec.R'].x) / 2, y: E['rec.L'].y + 6 }, dx: -10, dy: 30, tone: rec.tap === 'REC_OUT' ? 'green' : 'plain' },
+          { id: 'ro', text: rec.tap === 'REC_OUT' ? 'REC OUT → RECORDER' : 'REC OUT', at: { x: (E['rec.L'].x + E['rec.R'].x) / 2, y: E['rec.L'].y - 6 }, dx: 30, dy: -16, tone: rec.tap === 'REC_OUT' ? 'green' : 'plain' },
           { id: 'bo', text: rec.tap === 'BOOTH' ? 'BOOTH OUT → RECORDER' : 'BOOTH OUT', at: { x: J['booth.L'].x, y: J['booth.L'].y - 12 }, dx: 0, dy: -22, tone: rec.tap === 'BOOTH' ? 'amber' : 'plain' },
           { id: 'mo', text: 'MASTER → THE ROOM', at: { x: (J['master.L'].x + J['master.R'].x) / 2, y: J['master.L'].y - 12 }, dx: 0, dy: -22, tone: 'plain' },
           { id: 'rc', text: `RECORDER · INPUT ${recGainDb(rec.gain) >= 0 ? '+' : '−'}${Math.abs(recGainDb(rec.gain)).toFixed(0)} dB`, at: { x: REC_AT.x + REC_W / 2, y: REC_AT.y + REC_H }, dx: 0, dy: 16, tone: recClip ? 'red' : 'amber' },
-          { id: 'li', text: 'LINE IN', at: { x: REC_AT.x + REC.lineIn.x - 2, y: REC_AT.y + REC.lineIn.y }, dx: -16, dy: 16, tone: 'plain' },
         ];
 
   return (
@@ -187,12 +232,13 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
             h={h}
             frame={frameFor(rec.tap)}
             motion={motion}
-            fit={{ x: 0, y: 0, w, h: h * 0.64 }}
+            fit={{ x: 0, y: 0, w, h: h * GEAR_SHARE }}
             aspect={false}
+            focus={rec.tap === 'LOOPBACK' ? undefined : { x: REC_AT.x - 40, y: REC_AT.y + 40, w: 120, h: 80 }}
             a11y={`${LOOK} Tap: ${rec.tap === 'NONE' ? 'nothing plugged in' : REC_TAPS[rec.tap as Exclude<RecTap, 'NONE'>].label}. ${take ? `The take is ${take.seconds.toFixed(1)} seconds${take.hasVoice ? ', with the voice in it' : ', with no voice in it'}.` : 'No take yet.'}`}
-            obstacles={[{ x: 0, y: 0, w: MIXER_REAR.w, h: MIXER_REAR.h }, ...(rec.tap === 'LOOPBACK' ? [] : [{ x: REC_AT.x, y: REC_AT.y, w: REC_W, h: REC_H }])]}
+            obstacles={[{ x: 0, y: 0, w: MIXER_REAR.w, h: MIXER_REAR.h }, ...(rec.tap === 'LOOPBACK' ? [] : [{ x: REC_AT.x - 12, y: REC_AT.y, w: REC_W + 18, h: REC_H }, { x: E['rec.L'].x - 8, y: E['rec.L'].y, w: REC_AT.x - E['rec.L'].x, h: 136 + 14 - E['rec.L'].y }])]}
             callouts={callouts}
-            screenOverlay={(sw, sh, _x, kz) => <TakeLane b={{ x: 14, y: sh * 0.64 + 26 * Math.sqrt(Math.max(1, kz)), w: sw - 28, h: sh * 0.36 - 40 * Math.sqrt(Math.max(1, kz)) }} take={take} pos={player.pos} k={Math.sqrt(Math.max(1, kz))} recording={armed} />}
+            screenOverlay={(sw, sh, _x, kz) => <TakeLane b={{ x: 12, y: sh * GEAR_SHARE + 2, w: sw - 24, h: sh * (1 - GEAR_SHARE) - 10 * Math.sqrt(Math.max(1, kz)) }} take={take} pos={player.pos} k={Math.sqrt(Math.max(1, kz))} recording={armed} />}
           >
             <GearView booth={booth} live={live} elapsed={elapsed} clip={recClip} />
           </Scene>
@@ -206,7 +252,7 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
             value: rec.gain,
             level: true,
             home: 0.5,
-            locked: rec.tap === 'NONE' ? 'Pick a TAP first — the recorder has nothing in its input.' : undefined,
+            locked: rec.tap === 'NONE' ? 'Pick a TAP first — the recorder has nothing in its input.' : rec.tap === 'LOOPBACK' ? 'Loopback records the computer’s own output — there is no recorder input here.' : undefined,
             onChange: (v) => updateBooth((b) => withRec(b, { gain: v })),
             format: (v) => `RECORDER INPUT ${recGainDb(v) >= 0 ? '+' : '−'}${Math.abs(recGainDb(v)).toFixed(1)} dB`,
             formatShort: (v) => `${recGainDb(v) >= 0 ? '+' : '−'}${Math.abs(recGainDb(v)).toFixed(0)}`,
@@ -244,7 +290,7 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
           { kind: 'group', id: 'rec', label: 'REC', valueLabel: armed ? '● REC' : player.playing ? '▶ TAKE' : take ? 'TAKE' : 'READY', render: () => <RecTray tr={tr} lead={audio.leadSec} onPlay={() => { const t = getTake(); if (t) player.play(t); }} onStop={player.stop} playing={player.playing} /> },
           stopKey(tr),
         ],
-        initialParam: 'recGain',
+        initialParam: 'tap',
       }}
     >
       <Step n={1}>
@@ -258,6 +304,7 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={3}>
         <P>Set REC GAIN so the RECORDER’s peaks sit between −12 and −3 dBFS. Switch MIC → REC on and TALK while you record, then STOP and PLAY THE TAKE: the green marks under the waveform are where the mic is in the file. Listen as RECORDER to hear its input live.</P>
+        <Note>On the recorder itself: its LINE input (not MIC), and AUTO LEVEL or its limiter OFF — or it pumps the mix up and down. If you stream from an app, monitor it in headphones, never back into the mix (Terms: Monitoring loop).</Note>
         <Note>Streaming and recording rules depend on the service and on the music: some services will not let you record or stream certain tracks, or need permission. Check the rules of the one you use before the event.</Note>
       </Step>
       <Step n={4}>
@@ -265,14 +312,12 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
         <GoalChips goals={goals.slice(0, 4)} latched={latched.slice(0, 4)} />
       </Step>
       <Step n={5}>
-        <UnderstandingCheck
-          eyebrow="CHECK YOURSELF"
-          question="You stream from a laptop. You hear yourself twice, a fraction of a second apart, and it keeps getting louder. The app is set to monitor its input, and the laptop’s output feeds a channel on the mixer that is up. What do you change?"
-          options={['Turn the app’s input monitoring off (or take that channel down) — the recording is being fed back into the mix', 'Turn the recorder’s input gain up', 'Switch the mic to the booth', 'Lower the crossfader curve']}
-          correct={0}
-          explain="That is a monitoring loop: the app sends what it records back out, the mixer plays it again, and the app records it again — a delayed echo that can grow into a howl. Monitor the stream in headphones, never back into the mix."
-          wrong={[undefined, 'More gain feeds the loop more.', 'The loop runs through the computer and the mixer, not the booth monitors.', 'The crossfader curve does not change a loop through the computer.']}
-          onCorrect={() => setCheck(true)}
+        <EvidenceCheck
+          task="record about 10 s from BOOTH OUT, move the BOOTH level by 3 dB or more while it records, then STOP and play the take back — and find the jump in it."
+          met={boothTake.current === 'done' && (player.playing || player.finished)}
+          progress={boothTake.current === 'recording' ? 'Recording from BOOTH OUT — now move the BOOTH (MASTER is not it).' : boothTake.current === 'moved' ? 'The booth move is in the take — STOP, then PLAY THE TAKE.' : null}
+          explain="BOOTH OUT follows the BOOTH knob, so every booth move is in the file — the jump is there in the waveform. REC OUT is taken before the knobs: that is why it is the tap for a recording."
+          onMet={() => setCheck(true)}
         />
         <FaultCard
           title="THE RECORDER CLIPS, THE ROOM IS FINE"

@@ -655,6 +655,21 @@ needs: nothing
 ### 2026-10-18 23:17 · ccode · 716ae462
 changed: DJ lab screens 13-14: second-round review fixes
 affects other side: nothing (DJ lab client screens 13-18 only)
+### 2026-10-18 23:30 · ccode · 75df28f2
+changed: DJ lab: registry lines for 13, 14, 17, 18; SOURCES renumbered (F40-F60, U13-U19) and MODEL.md Stage 2b sections renumbered 13-21 and brought up to date; stale 13-18 header comments
+affects other side: nothing (client only, branch dj-lab-c, unpublished)
+needs: nothing
+
+
+### 2026-10-18 23:30 · ccode · 12d911a4
+changed: DJ lab 19-24: second-review fixes to the screens and their drawings
+affects other side: nothing (client only, branch dj-lab-c, unpublished)
+needs: nothing
+
+
+### 2026-10-18 23:23 · ccode · 1ae1c96b
+changed: DJ lab 19-24: setup readiness gates goals, key-locked pre-match, failed transitions stay failed, capstone fault bank with probes and plausible debriefs
+affects other side: nothing (client only, branch dj-lab-c, unpublished)
 needs: nothing
 
 

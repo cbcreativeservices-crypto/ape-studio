@@ -74,7 +74,7 @@ export function SceneFontsProvider({ s, textScale = 1, children }: { s: number; 
 /** Will `sizeMm` text render at or above the floor in this scene? */
 export function useTextFits(sizeMm: number): boolean {
   const { s } = useContext(SceneFontsContext);
-  return sizeMm * s >= MIN_TEXT_PT;
+  return sizeMm * s >= MIN_TEXT_PT - 1e-3;
 }
 
 /** The mm size that renders `pt` points on the glass, growing with the
@@ -106,7 +106,9 @@ export function SceneText({ x, y, size, text, color, face = 'mono', align = 'lef
 }) {
   const f = useContext(SceneFontsContext);
   const font = face === 'mono' ? f.mono : f.label;
-  if (!font || size * f.s < minPt) return null;
+  // the floor is compared with a rounding tolerance ONCE, here (visual review
+  // 2026-10-18 #29): a size authored at exactly 9 pt never needs a minPt below 9
+  if (!font || size * f.s < minPt - 1e-3) return null;
   const k = size / 10;
   let dx = 0;
   if (align !== 'left') {

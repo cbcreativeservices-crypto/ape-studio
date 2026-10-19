@@ -13,14 +13,15 @@
  * is set by the START (pressed by ear, or armed for the next bar line). A
  * 3.5 mm TRS-MIDI lead must be the type the device uses (A here); two USB
  * devices cannot talk without a host. On INTERNAL it runs its own tempo and
- * drifts. The fault: the wrong TRS-MIDI type — the plug fits, no clock.
+ * drifts — and ITS BAR 1 shows the drift (engine/djDrumMachine.dmDrift), so
+ * CHECK YOURSELF is evidence: start it on the one on INT and watch it drift.
+ * The fault: the wrong TRS-MIDI type — the plug fits, no clock.
  */
 import { useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Group, RoundedRect } from '@shopify/react-native-skia';
 import { colors } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
-import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene, type Callout } from '../art/Scene';
 import { MixerRear } from '../art/RearPanels';
@@ -28,16 +29,17 @@ import { ClockTicks, clockPath, DM_D, DM_REAR, DM_REAR_H, DM_W, DrumMachineRear,
 import { DinPlugFace, IsolatorBarrel } from '../art/eventParts';
 import { CableRun, CableFlag } from '../art/cables';
 import { Cable, UsbC } from '../art/parts';
+import { Path } from '@shopify/react-native-skia';
 import { MIXER_REAR, MIXER_REAR_JACKS, type Box } from '../geometry/boothGeometry';
 import { MIXER_REAR_EXTRA } from '../geometry/eventGeometry';
 import { DjRack } from '../DjRack';
-import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { Do, EvidenceCheck, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey, tempoKey, type Transport } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
 import { BUILT_PLUGS, connect, type Booth } from '../model/djModel';
 import { CLOCK_CABLES, clockArrives, counterBpm, dmBpm, evOf, withDm, type ClockCable } from '../model/djEvent';
-import { dmBeatLine, dmPhase, dmRunning, leaderBeatLine, nextLeaderBar } from '../engine/djDrumMachine';
+import { dmBeatLine, dmDrift, dmPhase, dmRunning, leaderBeatLine, nextDeckABar, nextLeaderBar } from '../engine/djDrumMachine';
 import { EventListen, Row, TrayNote, useEventKit, withFreshEvent } from './eventShared';
 import { PEAK_RED } from './shared';
 
@@ -48,15 +50,15 @@ const TERMS = [
   { term: 'TRS-MIDI', def: 'MIDI on a 3.5 mm jack. There are two wirings (type A and type B): a lead of the wrong type fits but delivers nothing. Check which your device uses.' },
 ] as const;
 
-export const GOALS_HYBRID = ['Clock in: the drum machine follows deck A', 'Its bar 1 on deck A’s one', 'Its audio in the room', 'Move deck A’s tempo: it follows', 'Fix the ignored clock', 'Pass the check'] as const;
+export const GOALS_HYBRID = ['Clock in: the drum machine follows deck A', 'Its bar 1 on deck A’s one', 'Its audio in the room', 'Move deck A’s tempo: it follows', 'On your own: armed start, still on the one', 'Fix the ignored clock', 'Pass the check'] as const;
 
-const LOOK = 'You are looking at the back of the mixer (its MIDI OUT and CLOCK switch at the lower left, CH 2’s LINE inputs above), the drum machine’s back panel, and its top: the display, the CLOCK-IN light, and the sixteen step lights that run with its own beat.';
+const LOOK = 'You are looking at the back of the mixer (MIDI OUT and its CLOCK switch lower left), the drum machine’s back panel, and its top with the step lights.';
 
 /* ── the stage (mm) ───────────────────────────────────────────────────── */
 
-const FRAME: Box = { x: -44, y: -24, w: 356, h: 400 };
+const FRAME: Box = { x: -46, y: -24, w: 360, h: 440 };
 const DMR = { x: -30, y: 152 };
-const DMT = { x: -30, y: 214 };
+const DMT = { x: -30, y: 232 };
 const E = MIXER_REAR_EXTRA;
 const J = MIXER_REAR_JACKS;
 const dmJack = (k: keyof typeof DM_REAR) => ({ x: DMR.x + DM_REAR[k].x, y: DMR.y + DM_REAR[k].y });
@@ -90,8 +92,8 @@ function Stage({ booth, now }: { booth: Booth; now: number }) {
       {/* audio: the drum machine's OUT L / R into CH 2 LINE (TS jack → RCA) */}
       {dm.audio ? (
         <Group>
+          <CableRun r={{ id: 'dmR', kind: 'trs', farKind: 'rca', colour: '#e2463a', pts: [[out('outR').x, out('outR').y], [out('outR').x, 124], [J['ch2.line.R'].x, 124], [J['ch2.line.R'].x, J['ch2.line.R'].y]], plugged: true, live: running, label: 'DM R', dashed: true }} labelAt={[212, 124]} />
           <CableRun r={{ id: 'dmL', kind: 'trs', farKind: 'rca', colour: '#e9e9ec', pts: [[out('outL').x, out('outL').y], [out('outL').x, 118], [33, 118], [33, J['ch2.line.L'].y], [J['ch2.line.L'].x, J['ch2.line.L'].y]], plugged: true, live: running, label: 'DM L' }} labelAt={[150, 118]} />
-          <CableRun r={{ id: 'dmR', kind: 'trs', farKind: 'rca', colour: '#e2463a', pts: [[out('outR').x, out('outR').y], [out('outR').x, 124], [J['ch2.line.R'].x, 124], [J['ch2.line.R'].x, J['ch2.line.R'].y]], plugged: true, live: running, label: 'DM R', dashed: true }} labelAt={[200, 124]} />
           <CableRun r={{ id: 'bL', kind: 'rca', colour: '#e9e9ec', pts: [[-40, 18], [-14, 18], [-6, 40]], plugged: false, live: false, label: 'B L' }} labelAt={[-28, 18]} />
           <CableRun r={{ id: 'bR', kind: 'rca', colour: '#e2463a', pts: [[-40, 84], [-16, 84], [-8, 104]], plugged: false, live: false, label: 'B R', dashed: true }} labelAt={[-28, 84]} />
         </Group>
@@ -104,6 +106,9 @@ function Stage({ booth, now }: { booth: Booth; now: number }) {
       {/* the clock lead: carries timing, never sound */}
       {route && path ? (
         <Group>
+          {/* a dark keyline: where the clock lead crosses the audio leads it
+              reads as passing OVER them, with a 3 mm gap (review #19) */}
+          <Path path={path} style="stroke" strokeWidth={10.4} color="#0b0b0d" strokeCap="round" strokeJoin="round" />
           <Cable pts={route} style={{ colour: dm.cable === 'USB' ? '#5c6068' : '#3b3450', width: dm.cable === 'USB' ? 3.6 : 4.4, pattern: 'plain' }} />
           {dm.cable === 'USB' ? (
             <Group>
@@ -117,7 +122,7 @@ function Stage({ booth, now }: { booth: Booth; now: number }) {
             </Group>
           )}
           {arrives && dm.sync === 'EXT' ? <ClockTicks path={path} beatClock={beatClock} spacing={14} /> : null}
-          <CableFlag x={(route[1][0] + route[2][0]) / 2} y={route[1][1]} text={dm.cable === 'USB' ? 'USB' : `${dm.cable === 'DIN' ? 'MIDI' : `TRS-MIDI ${dm.cable === 'TRS_A' ? 'A' : 'B'}`} · ${dm.clockSrc === 'OFF' ? 'CLOCK OFF' : `CLOCK CH ${dm.clockSrc}`}`} live={false} edge="#7a6aa8" />
+          <CableFlag x={route[3][0]} y={(route[2][1] + route[3][1]) / 2} text={dm.cable === 'USB' ? 'USB' : `${dm.cable === 'DIN' ? 'MIDI' : `TRS-MIDI ${dm.cable === 'TRS_A' ? 'A' : 'B'}`} · ${dm.clockSrc === 'OFF' ? 'CLOCK OFF' : `CLOCK CH ${dm.clockSrc}`}`} live={false} edge="#7a6aa8" />
         </Group>
       ) : null}
     </Group>
@@ -132,7 +137,7 @@ function ClockTray() {
   const set = (patch: Parameters<typeof withDm>[1]) => updateBooth((x) => withDm(x, patch));
   return (
     <View style={styles.tray}>
-      <Row head="THE MIXER’S CLOCK SWITCH (which beat counter sends clock)">
+      <Row head="THE MIXER’S CLOCK SWITCH (which channel’s tempo it sends)">
         {(['OFF', 1, 2] as const).map((c) => (
           <LabChip key={String(c)} label={c === 'OFF' ? 'OFF' : `CH ${c}`} selected={dm.clockSrc === c} onPress={() => set({ clockSrc: c })} compact />
         ))}
@@ -159,7 +164,7 @@ function ClockTray() {
 function StartTray({ tr, onStart }: { tr: Transport; onStart: (msg: string | null) => void }) {
   const b = getBooth();
   const dm = evOf(b).dm;
-  const leaderOk = dm.sync === 'EXT' && clockArrives(b) && b.decks.A.playing;
+  const leaderOk = (dm.sync === 'EXT' && clockArrives(b) && b.decks.A.playing) || (dm.sync === 'INT' && b.decks.A.playing);
   return (
     <View style={styles.tray}>
       <Row head="DECK A (THE LEADER)">
@@ -177,17 +182,18 @@ function StartTray({ tr, onStart }: { tr: Transport; onStart: (msg: string | nul
           compact
         />
         <LabChip
-          label={leaderOk ? '⏱ START ON THE NEXT BAR' : 'ARMED START (needs EXT + clock + deck A)'}
+          label={leaderOk ? '⏱ START ON THE NEXT BAR' : 'ARMED START (needs deck A playing)'}
           selected={false}
           onPress={() => {
             const g = getBooth();
-            const at = nextLeaderBar(g, boothNow());
+            const int = evOf(g).dm.sync === 'INT';
+            const at = int ? nextDeckABar(g, boothNow()) : nextLeaderBar(g, boothNow());
             if (!leaderOk || at == null) {
-              onStart('An armed start waits for the leader’s next bar line — it needs EXT, a clock arriving and deck A playing.');
+              onStart(int ? 'An armed start waits for deck A’s next bar line — play deck A first.' : 'An armed start waits for the leader’s next bar line — it needs EXT, a clock arriving and deck A playing.');
               return;
             }
             updateBooth((x) => withDm(x, { startedAt: at }));
-            onStart('armed');
+            onStart(int ? 'armedInt' : 'armed');
           }}
           compact
         />
@@ -250,6 +256,15 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
   const leader = counterBpm(booth, 1);
   const bpm = dmBpm(booth);
   const phase = dmPhase(booth);
+  // drift on INTERNAL, read now (the page re-renders with every chunk)
+  const drift = dm.sync === 'INT' && running ? dmDrift(booth, boothNow()) : null;
+  const intArmed = useRef(false);
+  const driftSeen = useRef(false);
+  if (startMsg === 'armedInt' && dm.sync === 'INT') intArmed.current = true;
+  if (dm.sync !== 'INT' || dm.startedAt == null) intArmed.current = false;
+  if (intArmed.current && drift && Math.abs(drift.barBeats) >= 0.25) driftSeen.current = true;
+  const extArmed = useRef(false);
+  const ownPitch = useRef<number | null>(null);
   const pitchAtStart = useRef<number | null>(null);
   if (running && dm.sync === 'EXT' && arrives) {
     if (pitchAtStart.current == null) pitchAtStart.current = booth.decks.A.pitch;
@@ -257,10 +272,20 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
   const following = running && dm.sync === 'EXT' && arrives && dm.clockSrc === 1 && booth.decks.A.playing;
   const onTheOne = following && !!phase && Math.abs(phase.barBeats) <= 0.125;
   const ch2Live = !!last && last.rmsDb.ch2 > -50 && booth.ch[2].fader > 0.3 && dm.audio && running;
-  const hits = [following, onTheOne, ch2Live, following && pitchAtStart.current != null && Math.abs(booth.decks.A.pitch - pitchAtStart.current) >= 1, faultFixed, check];
+  if (startMsg === 'armed' && following) {
+    if (!extArmed.current) ownPitch.current = booth.decks.A.pitch;
+    extArmed.current = true;
+  }
+  if (!following) {
+    extArmed.current = false;
+    ownPitch.current = null;
+  }
+  const ownDone = extArmed.current && onTheOne && ownPitch.current != null && Math.abs(booth.decks.A.pitch - ownPitch.current) >= 1;
+  const hits = [following, onTheOne, ch2Live, following && pitchAtStart.current != null && Math.abs(booth.decks.A.pitch - pitchAtStart.current) >= 1, ownDone, faultFixed, check || driftSeen.current];
   const goals = GOALS_HYBRID.map((label, i) => ({ label, hit: hits[i] }));
   const latched = useVisitGoals(ctx, goals, 'HYBRID');
-  const phaseText = !phase ? (dm.sync === 'INT' && running ? 'OWN TEMPO' : '—') : Math.abs(phase.barBeats) <= 0.125 ? 'ON THE ONE' : `${phase.barBeats > 0 ? '+' : '−'}${Math.abs(phase.barBeats).toFixed(2)} BEATS`;
+  const shown = phase ?? drift;
+  const phaseText = !shown ? (dm.sync === 'INT' && running ? 'OWN TEMPO' : '—') : Math.abs(shown.barBeats) <= 0.125 ? 'ON THE ONE' : `${shown.barBeats > 0 ? '+' : '−'}${Math.abs(shown.barBeats).toFixed(2)} BEATS`;
   const startNote =
     startMsg === 'started'
       ? phase
@@ -272,28 +297,30 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
           : 'Waiting for a clock it can read.'
       : startMsg === 'armed'
         ? 'Armed: it starts on deck A’s next bar line, exactly on the one.'
-        : startMsg;
+        : startMsg === 'armedInt'
+          ? 'Armed on INTERNAL: it starts exactly on deck A’s next bar line — then runs on its own tempo. Watch ITS BAR 1.'
+          : startMsg;
 
   const DT = (x: number, y: number) => ({ x: DMT.x + x, y: DMT.y + y });
   const callouts: Callout[] = [
     { id: 'c2', text: dm.audio ? 'CH 2 LINE ← DRUM MACHINE' : 'CH 2 LINE ← DECK B', at: { x: J['ch2.line.L'].x, y: J['ch2.line.L'].y - 8 }, dx: 10, dy: -18, tone: dm.audio ? 'green' : 'plain' },
     { id: 'ou', text: 'OUT L · R (AUDIO)', at: { x: (dmJack('outL').x + dmJack('outR').x) / 2, y: dmJack('outL').y + 8 }, dx: 0, dy: 22, tone: dm.audio ? 'blue' : 'plain' },
-    { id: 'ds', text: dm.sync === 'EXT' ? (arrives ? 'FOLLOWING THE CLOCK' : 'EXT · NO CLOCK') : 'INTERNAL TEMPO', at: DT(78, 60), dx: 0, dy: 14, tone: dm.sync === 'EXT' && !arrives ? 'red' : 'amber' },
-    { id: 'st', text: 'STEP LIGHTS = ITS BEAT', at: DT(170, 129), dx: 0, dy: 22, tone: 'plain' },
+    { id: 'ds', text: dm.sync === 'EXT' ? (arrives ? 'FOLLOWING THE CLOCK' : 'EXT · NO CLOCK') : 'INTERNAL TEMPO', at: DT(60, 18), dx: 0, dy: -14, tone: dm.sync === 'EXT' && !arrives ? 'red' : 'amber' },
+    { id: 'st', text: 'STEP LIGHTS = ITS BEAT', at: DT(240, 128), dx: 0, dy: -24, tone: 'plain' },
   ];
 
   return (
     <DjRack
       spec={{
         render: (w, h) => (
-          <Scene w={w} h={h} frame={FRAME} motion={motion} a11y={`${LOOK} The drum machine is ${running ? `running at ${bpm?.toFixed(1)} BPM` : 'stopped'}, ${dm.sync === 'EXT' ? (arrives ? 'following the clock' : 'waiting for a clock') : 'on its own tempo'}; its audio is ${dm.audio ? 'in CH 2' : 'not connected'}.`} obstacles={[{ x: 0, y: 0, w: MIXER_REAR.w, h: MIXER_REAR.h }, { x: FRAME.x, y: MIXER_REAR.h, w: FRAME.w, h: DMR.y - MIXER_REAR.h } /* the leads' band: their own flags label it */, { x: DMR.x, y: DMR.y, w: DM_W, h: DM_REAR_H }, { x: DMT.x, y: DMT.y, w: DM_W, h: DM_D }]} callouts={callouts}>
+          <Scene w={w} h={h} frame={FRAME} motion={motion} focus={{ x: 40, y: 110, w: 160, h: 140 }} a11y={`${LOOK} The drum machine is ${running ? `running at ${bpm?.toFixed(1)} BPM` : 'stopped'}, ${dm.sync === 'EXT' ? (arrives ? 'following the clock' : 'waiting for a clock') : 'on its own tempo'}; its audio is ${dm.audio ? 'in CH 2' : 'not connected'}.`} obstacles={[{ x: 0, y: 0, w: MIXER_REAR.w, h: MIXER_REAR.h }, { x: FRAME.x, y: MIXER_REAR.h, w: FRAME.w, h: DMR.y - MIXER_REAR.h } /* the leads' band: their own flags label it */, { x: DMR.x, y: DMR.y, w: DM_W, h: DM_REAR_H }, { x: DMT.x + 16, y: DMT.y + 18, w: 124, h: 48 }, { x: DMT.x + 150, y: DMT.y + 24, w: 170, h: 38 }, { x: DMT.x + 16, y: DMT.y + 72, w: 170, h: 38 }, { x: DMT.x + 14, y: DMT.y + 124, w: 306, h: 40 }]} soft={[{ x: DMT.x, y: DMT.y, w: DM_W, h: DM_D }]} callouts={callouts}>
             <Stage booth={booth} now={now} />
           </Scene>
         ),
         bezel: [
           { k: 'DECK A', v: leader == null ? '—' : leader.toFixed(1), sub: 'BPM', tint: colors.amber },
           { k: 'MACHINE', v: bpm == null ? (dm.sync === 'EXT' ? 'NO CLOCK' : '—') : bpm.toFixed(1), sub: bpm == null ? undefined : dm.sync === 'EXT' ? 'BPM · EXT' : 'BPM · INT', tint: dm.sync === 'EXT' && !arrives ? PEAK_RED : colors.amber },
-          { k: 'ITS BAR 1', v: phaseText, tint: onTheOne ? colors.green : colors.amber },
+          { k: 'ITS BAR 1', v: phaseText, sub: drift ? 'DRIFT · INT' : undefined, tint: onTheOne || (drift && Math.abs(drift.barBeats) <= 0.125) ? colors.green : colors.amber },
           { k: 'IN THE ROOM', v: ch2Live ? 'AUDIBLE' : dm.audio ? (booth.ch[2].fader > 0.3 ? 'SILENT' : 'CH 2 DOWN') : 'NOT PATCHED', tint: ch2Live ? colors.green : colors.textSub },
         ],
         params: [
@@ -312,27 +339,39 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open CLOCK: set the mixer’s CLOCK switch to CH 1, lead 5-PIN MIDI, and the drum machine to EXTERNAL. Play deck A (START): DRUM MACHINE reads deck A’s tempo, and the step lights run.</Do>
+        <Do>Open CLOCK: set the mixer’s CLOCK switch to CH 1, lead 5-PIN MIDI, and the drum machine to EXTERNAL. Play deck A (START): MACHINE reads deck A’s tempo, and the step lights run.</Do>
         <P>It follows — but the crowd hears nothing: the clock lead carries no sound. Open AUDIO, give CH 2’s LINE inputs to the drum machine, and bring CH 2 up.</P>
         {startNote ? <Note tone="try">{startNote}</Note> : null}
       </Step>
       <Step n={3}>
         <P>Clock sets the tempo, not the bar. Press PLAY NOW off the beat and read ITS BAR 1: in tempo, out of phase. STOP, and use START ON THE NEXT BAR. Then ride TEMPO A: the drum machine follows, tick for tick.</P>
-        <Note>Real setups differ: which device leads, whether start and stop are sent, how many ticks a beat an analogue sync uses, and whether sync runs over MIDI, USB through a computer, or a network. Check both manuals.</Note>
+        <Note>Real setups differ: which device leads, whether start and stop are sent, how many ticks a beat an analogue sync uses, and whether sync runs over MIDI, USB through a computer, or a network. Check both manuals. A clock from a mixer’s beat counter is only as good as its BPM reading: if the counter reads half or double time (Screen 11), the follower does too.</Note>
       </Step>
       <Step n={4}>
         <Do>Get the drum machine following deck A, with its bar 1 on the one, its audio in the room, and still following when deck A’s tempo moves.</Do>
         <GoalChips goals={goals.slice(0, 4)} latched={latched.slice(0, 4)} />
       </Step>
       <Step n={5}>
-        <UnderstandingCheck
-          eyebrow="CHECK YOURSELF"
-          question="The drum machine is on its own INTERNAL tempo at 122.0 BPM; deck A plays at 122.6. You start them together, exactly on the one. What happens over the next minute?"
-          options={['They drift apart — about half a beat after a minute', 'Nothing: 0.6 BPM is too small to matter', 'The drum machine speeds up to match', 'They stay together, but the drum machine sounds out of tune']}
-          correct={0}
-          explain="0.6 BPM apart is 0.6 beats a minute: a flam within seconds, half a beat off within a minute. On its own clock nothing makes it follow — EXTERNAL clock from the leader does."
-          wrong={[undefined, 'Small tempo differences add up beat by beat; drift is exactly that.', 'On INTERNAL it listens to nothing; only an external clock moves its tempo.', 'A drum machine’s tempo does not change its pitch; drift is a timing problem.']}
-          onCorrect={() => setCheck(true)}
+        <EvidenceCheck
+          eyebrow="ON YOUR OWN"
+          task="with the clock in and the drum machine on EXT, start it with START ON THE NEXT BAR, then move deck A’s tempo by 1 % or more — ITS BAR 1 must stay ON THE ONE."
+          met={ownDone}
+          explain="The armed start puts its bar 1 on deck A’s one, and the clock keeps it there tick for tick, however the leader’s tempo moves."
+        />
+        <EvidenceCheck
+          task="set the drum machine to INTERNAL with its own tempo at least 0.5 BPM away from deck A’s, start it with START ON THE NEXT BAR, and watch ITS BAR 1 until it has drifted a quarter of a beat."
+          start={() => {
+            void audio.requestSound();
+            updateBooth((b, t) => {
+              const x = withDm(b, { sync: 'INT', startedAt: null, intBpm: Math.round(((counterBpm(b, 1) ?? 122) - 0.8) * 10) / 10 });
+              return { ...x, decks: { ...x.decks, A: { ...x.decks.A, playing: true, at: t } } };
+            });
+            setStartMsg(null);
+          }}
+          met={driftSeen.current}
+          progress={drift ? `ITS BAR 1: ${phaseText}` : null}
+          explain="On its own clock nothing makes it follow: 0.6 BPM apart is 0.6 beats a minute — a flam within seconds, half a beat off within a minute. EXTERNAL clock from the leader is the cure."
+          onMet={() => setCheck(true)}
         />
         <FaultCard
           title="THE DRUM MACHINE IGNORES THE CLOCK"

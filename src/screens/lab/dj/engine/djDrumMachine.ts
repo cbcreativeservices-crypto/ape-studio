@@ -228,3 +228,39 @@ export function leaderBeatLine(b: Booth, t: number): { t0: number; beat0: number
   if (c == null || bpm == null) return null;
   return { t0: t, beat0: c, bpm };
 }
+
+/* ── drift on INTERNAL (second learning review 2026-10-18, 22 #1) ──────── */
+
+/** Deck A's TRUE beat at booth time t (playing, no loop), or null. */
+function deckABeat(b: Booth, t: number): number | null {
+  const d = b.decks.A;
+  if (!d.track || !d.playing) return null;
+  return beatAt(trueGrid(d.track), d.posSec + Math.max(0, t - d.at) * rateOf(d.pitch));
+}
+
+/**
+ * A running INTERNAL drum machine's phase against deck A at booth time t:
+ * how far (beats, −2 … +2) its bar 1 sits from deck A's nearest bar line
+ * now. Nothing makes it follow, so a tempo difference DRIFTS: 0.6 BPM apart
+ * is 0.6 beats a minute. null when it is not on INT, not running, or deck A
+ * is not playing.
+ */
+export function dmDrift(b: Booth, t: number): { barBeats: number } | null {
+  const dm = b.ev?.dm;
+  if (!dm || dm.sync !== 'INT' || dm.startedAt == null || t < dm.startedAt) return null;
+  const a = deckABeat(b, t);
+  if (a == null) return null;
+  const own = ((t - dm.startedAt) * dm.intBpm) / 60;
+  const x = a - own;
+  return { barBeats: ((((x + 2) % 4) + 4) % 4) - 2 };
+}
+
+/** The booth time of deck A's next bar line after t — an ARMED start that
+ *  works on INT too (the lab presses START exactly on the one for you). */
+export function nextDeckABar(b: Booth, t: number): number | null {
+  const d = b.decks.A;
+  const a = deckABeat(b, t);
+  if (a == null || !d.track) return null;
+  const next = Math.ceil((a + 1e-6) / 4) * 4;
+  return d.at + (timeOfBeat(trueGrid(d.track), next) - d.posSec) / rateOf(d.pitch);
+}

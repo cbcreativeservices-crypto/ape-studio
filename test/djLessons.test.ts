@@ -217,7 +217,7 @@ describe('the what’s-left screen names each screen’s unmet goals (learning X
       const s = readFileSync(join(dir, f), 'utf8');
       const short = s.match(/: PageDef = \{[^}]*short: '([A-Z]+)'/)?.[1];
       assert.ok(short, `${f} has a short name`);
-      assert.match(s, new RegExp(`useVisitGoals\\(ctx, goals, '${short}'\\)`), `${f} reports its goals as ${short}`);
+      assert.match(s, new RegExp(`useVisitGoals\\(ctx, goals, '${short}'(, ready)?\\)`), `${f} reports its goals as ${short}`);
       assert.match(s, /export const GOALS_[A-Z]+ = \[/, `${f} declares its goal labels`);
       shorts.push(short!);
     }

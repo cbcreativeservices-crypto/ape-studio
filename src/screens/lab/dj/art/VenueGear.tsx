@@ -22,11 +22,12 @@ import { memo, useMemo } from 'react';
 import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Rect, RoundedRect, Skia, SweepGradient, vec } from '@shopify/react-native-skia';
 import { INK } from './ink';
 import { Knob, Led, Rocker, XlrSocket } from './parts';
-import { SceneText } from './sceneText';
+import { SceneText, useLabelMm } from './sceneText';
 import { xoverResp } from '../engine/djEventRender';
 import { XOVER_HZ } from '../model/djEvent';
 
-const LEG = 4;
+/** Legends read from the 2x full-screen step (visual review #22). */
+const LEG = 4.2;
 
 /* ── the stage box ────────────────────────────────────────────────────── */
 
@@ -40,6 +41,9 @@ export const SB_IN = [
 ] as const;
 
 export const StageBox = memo(function StageBox({ x, y, hot = [] }: { x: number; y: number; hot?: readonly number[] }) {
+  // the scribble strips are written in marker at 9 pt, so they read on the
+  // glass (the lesson is the inputs LABELLED DJ L and DJ R — review #15)
+  const marker = useLabelMm(9);
   return (
     <Group transform={[{ translateX: x }, { translateY: y }]}>
       {/* the snake leaving its side */}
@@ -60,8 +64,10 @@ export const StageBox = memo(function StageBox({ x, y, hot = [] }: { x: number; 
         <Group key={j.n}>
           <XlrSocket cx={j.x} cy={j.y} d={22} male={false} />
           {/* the scribble strip */}
-          <RoundedRect x={j.x - 19} y={j.y + 18} width={38} height={14} r={2} color={hot.includes(j.n) ? '#efe6c8' : '#d9d4c2'} />
-          <SceneText x={j.x} y={j.y + 28.5} size={LEG + 2} text={j.label} color="#1a1a1a" face="label" align="center" />
+          <RoundedRect x={j.x - 21} y={j.y + 17} width={42} height={Math.max(15, marker * 1.35)} r={2} color={hot.includes(j.n) ? '#f4ecd0' : '#cfc9b6'} />
+          <Group transform={[{ translateX: j.x }, { translateY: j.y + 17 + Math.max(15, marker * 1.35) / 2 + marker * 0.36 }, { rotate: -0.04 }]}>
+            <SceneText x={0} y={0} size={marker} text={j.label} color={hot.includes(j.n) ? '#16306e' : '#5b5f6a'} face="label" align="center" />
+          </Group>
           <SceneText x={j.x} y={j.y - 18} size={LEG + 1} text={String(j.n)} color={INK.print} face="label" align="center" />
         </Group>
       ))}
@@ -187,13 +193,22 @@ export const PowerAmp = memo(function PowerAmp({ x, y, s = 1, on, signal }: { x:
 
 export { xoverResp };
 
+/**
+ * Second visual review 2026-10-18 (#17): each curve is named at its end
+ * (TOPS, SUB, SUM), the y axis is marked at 0, -6, -12, -18 dB with its
+ * floor, the curves LEAVE through the floor (a 24 dB/oct slope keeps
+ * falling; they are clipped by the plot, never clamped into a flat line),
+ * the x axis is marked at 20, 50, 100, 200, 500 Hz and 2 kHz, and the -6 dB
+ * point where an LR4 sub and tops meet is marked with a dot.
+ */
 export function XoverPlot({ b, xover, subs, k = 1 }: { b: { x: number; y: number; w: number; h: number }; xover: boolean; subs: boolean; k?: number }) {
   const f0 = 20;
   const f1 = 2000;
   const lo = -24;
   const hi = 9;
   const fx = (f: number) => b.x + (Math.log(f / f0) / Math.log(f1 / f0)) * b.w;
-  const dy = (d: number) => b.y + ((hi - Math.max(lo, Math.min(hi, d))) / (hi - lo)) * b.h;
+  // unclamped: a curve below the floor runs on out of the (clipped) plot
+  const dy = (d: number) => b.y + ((hi - Math.max(lo - 60, Math.min(hi, d))) / (hi - lo)) * b.h;
   const paths = useMemo(() => {
     const t = Skia.PathBuilder.Make();
     const s = Skia.PathBuilder.Make();
@@ -216,25 +231,49 @@ export function XoverPlot({ b, xover, subs, k = 1 }: { b: { x: number; y: number
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [b.x, b.y, b.w, b.h, xover, subs]);
   const fs = 9 * k;
+  const rTop = xoverResp(f1 * 0.92, xover, subs);
+  // where each curve's name sits: TOPS and SUM at the right end, SUB where
+  // it is still inside the plot on the left
+  const subLabelF = 34;
+  const subAt = xoverResp(subLabelF, xover, subs).sub;
+  const axisX = b.x - 3;
   return (
     <Group>
-      <RoundedRect x={b.x - 4} y={b.y - 4} width={b.w + 8} height={b.h + 8} r={6} color="rgba(8,8,10,0.82)" />
+      <RoundedRect x={b.x - 30 * k} y={b.y - 4} width={b.w + 34 * k} height={b.h + 8 + fs + 6} r={6} color="rgba(8,8,10,0.82)" />
       {[50, 100, 200, 500, 1000].map((f) => (
         <Line key={f} p1={vec(fx(f), b.y)} p2={vec(fx(f), b.y + b.h)} color={f === XOVER_HZ ? 'rgba(255,198,77,0.45)' : 'rgba(255,255,255,0.08)'} strokeWidth={1} />
       ))}
-      {[0, -6, -12, -18].map((d) => (
-        <Line key={d} p1={vec(b.x, dy(d))} p2={vec(b.x + b.w, dy(d))} color={d === 0 ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.07)'} strokeWidth={1}>
-          {d === 0 ? <DashPathEffect intervals={[4, 3]} /> : null}
-        </Line>
+      {[6, 0, -6, -12, -18].map((d) => (
+        <Group key={d}>
+          <Line p1={vec(b.x, dy(d))} p2={vec(b.x + b.w, dy(d))} color={d === 0 ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.07)'} strokeWidth={1}>
+            {d === 0 ? <DashPathEffect intervals={[4, 3]} /> : null}
+          </Line>
+          <SceneText x={axisX} y={dy(d) + fs * 0.36} size={fs} text={d > 0 ? `+${d}` : d === 0 ? '0 dB' : `−${-d}`} color={INK.printDim} face="label" align="right" />
+        </Group>
       ))}
-      {subs ? <Path path={paths.s} style="stroke" strokeWidth={2 * k} color="#c9a2ff" /> : null}
-      <Path path={paths.t} style="stroke" strokeWidth={2 * k} color={INK.blue} />
-      <Path path={paths.u} style="stroke" strokeWidth={2.6 * k} color={INK.white} />
-      <SceneText x={b.x + 2} y={b.y + fs} size={fs} text="+6" color={INK.printDim} face="label" minPt={8.9} />
-      <SceneText x={b.x + 2} y={dy(0) - 2} size={fs} text="0 dB" color={INK.printDim} face="label" minPt={8.9} />
-      <SceneText x={fx(XOVER_HZ)} y={b.y + b.h + fs + 2} size={fs} text="100 Hz" color={INK.amber} face="label" align="center" minPt={8.9} />
-      <SceneText x={b.x} y={b.y + b.h + fs + 2} size={fs} text="20" color={INK.printDim} face="label" minPt={8.9} />
-      <SceneText x={b.x + b.w} y={b.y + b.h + fs + 2} size={fs} text="2k Hz" color={INK.printDim} face="label" align="right" minPt={8.9} />
+      {/* the plot's floor: below it the slopes simply run on */}
+      <Line p1={vec(b.x, b.y + b.h)} p2={vec(b.x + b.w, b.y + b.h)} color="rgba(255,255,255,0.18)" strokeWidth={1} />
+      <SceneText x={axisX} y={b.y + b.h + fs * 0.36} size={fs} text={`−${-lo}`} color={INK.printDim} face="label" align="right" />
+      <Group clip={Skia.XYWHRect(b.x, b.y - 2, b.w, b.h + 2)}>
+        {subs ? <Path path={paths.s} style="stroke" strokeWidth={2 * k} color="#c9a2ff" /> : null}
+        <Path path={paths.t} style="stroke" strokeWidth={2 * k} color={INK.blue} />
+        <Path path={paths.u} style="stroke" strokeWidth={2.6 * k} color={INK.white} />
+      </Group>
+      {xover && subs ? (
+        <Group>
+          <Circle cx={fx(XOVER_HZ)} cy={dy(-6)} r={3.4 * k} color="#050506" />
+          <Circle cx={fx(XOVER_HZ)} cy={dy(-6)} r={2.4 * k} color={INK.amber} />
+          <SceneText x={fx(XOVER_HZ) + 5 * k} y={dy(-6) + fs + 2 * k} size={fs} text="−6 dB EACH" color={INK.amber} face="label" />
+        </Group>
+      ) : null}
+      {/* the curves' names, at their ends */}
+      <SceneText x={b.x + b.w - 2} y={dy(rTop.sum) - 4 * k} size={fs} text="SUM" color={INK.white} face="label" align="right" />
+      <SceneText x={b.x + b.w - 2} y={Math.min(b.y + b.h - 3, dy(rTop.tops) + fs + 3 * k)} size={fs} text="TOPS" color={INK.blue} face="label" align="right" />
+      {subs ? <SceneText x={fx(subLabelF)} y={Math.min(b.y + b.h - 3, dy(subAt) + fs + 3 * k)} size={fs} text="SUB" color="#c9a2ff" face="label" /> : null}
+      {[20, 50, 100, 200, 500].map((f) => (
+        <SceneText key={f} x={fx(f)} y={b.y + b.h + fs + 3} size={fs} text={f === 20 ? '20' : `${f}`} color={f === XOVER_HZ ? INK.amber : INK.printDim} face="label" align={f === 20 ? 'left' : 'center'} />
+      ))}
+      <SceneText x={b.x + b.w} y={b.y + b.h + fs + 3} size={fs} text="2k Hz" color={INK.printDim} face="label" align="right" />
     </Group>
   );
 }

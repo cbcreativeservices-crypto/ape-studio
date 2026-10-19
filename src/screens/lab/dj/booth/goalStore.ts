@@ -23,14 +23,62 @@ export function reportGoals(page: string, labels: readonly string[], latched: re
 }
 
 /** The what's-left line for a screen: its unmet goals from the last visit,
- *  or all of them when it has not been opened this session. */
+ *  or all of them when it has not been opened this session — the first
+ *  three, then "+ n more" (second learning review 2026-10-18 W9: a fresh
+ *  learner's list was a wall of 21 rows of 6–8 goals). */
+export const LEFT_SHOWN = 3;
 export function leftLine(page: string, allLabels: readonly string[]): string {
   const left = reported.get(page) ?? allLabels;
   if (!left.length) return 'Every goal is met — open it once more to count it.';
-  return `Left: ${left.join(' · ')}`;
+  const more = left.length - LEFT_SHOWN;
+  return `Left: ${left.slice(0, LEFT_SHOWN).join(' · ')}${more > 0 ? ` · + ${more} more` : ''}`;
 }
 
 /** Forget every report (tests; a fresh session). */
 export function clearGoalReports(): void {
   reported.clear();
+}
+
+/* ── is a screen's setup still waiting? ──────────────────────────────────
+ * A screen's FIRST render still sees the booth the previous screen left
+ * (booth/setup.useScreenSetup applies its setup in a layout effect, after
+ * that render). A goal judged on that render can be met by a leftover — the
+ * capstone's "Power up safely" ticked itself on arrival from a fully powered
+ * screen (learning review 2026-10-18, 24 #1, BLOCKER). So a screen's setup
+ * is PENDING from its first render until its layout effect has applied it,
+ * and bits.useVisitGoals latches nothing while any setup is pending — on
+ * every screen, whether or not the screen passes `ready` itself. A mark
+ * that never commits (a discarded render) lapses after PENDING_LAPSE_MS. */
+export const PENDING_LAPSE_MS = 1500;
+const pending = new Map<object, number>();
+
+/** Is some screen's setup not yet applied? (`now` for tests.) */
+export function setupPending(now: number = Date.now()): boolean {
+  let any = false;
+  for (const [k, at] of pending) {
+    if (now - at > PENDING_LAPSE_MS) pending.delete(k);
+    else any = true;
+  }
+  return any;
+}
+
+export function markSetupPending(key: object, at: number = Date.now()): void {
+  if (!pending.has(key)) pending.set(key, at);
+}
+export function clearSetupPending(key: object): void {
+  pending.delete(key);
+}
+
+/**
+ * One render's latch step (pure; bits.useVisitGoals): every goal hit NOW
+ * latches — unless the screen is not `ready` (its setup not yet applied),
+ * when nothing new latches. Latched goals never unlatch (credit is kept).
+ */
+export function latchGoals(prev: readonly boolean[], hits: readonly boolean[], ready: boolean): boolean[] {
+  const out = hits.map((_, i) => prev[i] ?? false);
+  if (!ready) return out;
+  hits.forEach((h, i) => {
+    if (h) out[i] = true;
+  });
+  return out;
 }

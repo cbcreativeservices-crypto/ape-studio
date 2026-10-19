@@ -55,12 +55,12 @@ export const voiceIn = (r: EventRender | null, feed: 'master' | 'booth' | 'rec' 
 
 /** Make the announcement: it starts sounding at the next render (so it is
  *  heard from its first syllable). Old ones are forgotten. */
-export function announce(leadSec: number): void {
+export function announce(leadSec: number, db = 0): void {
   const at = boothNow() + leadSec;
   updateBooth((b) => {
     const ev = evOf(b);
     const keep = ev.mic.says.filter((s) => s.at + voiceSeconds() > at - 0.5);
-    return { ...b, ev: { ...ev, mic: { ...ev.mic, says: [...keep, { at }] } } };
+    return { ...b, ev: { ...ev, mic: { ...ev.mic, says: [...keep, db ? { at, db } : { at }] } } };
   });
 }
 
@@ -81,11 +81,19 @@ export function dbCell(k: string, db: number | null, unit = 'dBFS'): BezelItem {
   return { k, v: db.toFixed(1), vA11y: `${db.toFixed(1)} ${unit}`, sub: unit, tint: unit === 'dBFS' ? levelColorForDb(db, -40, 0) : colors.amber };
 }
 
-/** VOICE IN: which feeds carry the mic (✓ or —), from the last render. */
+/** VOICE IN: which feeds carry the mic, in words (learning review
+ *  2026-10-18, 19 #4: the cell is the fault's evidence, so no abbreviations),
+ *  and the ones that do not on the sub line. */
 export function voiceCell(r: EventRender | null): BezelItem {
   if (!hadSpeech(r)) return { k: 'VOICE IN', v: 'NOT SPEAKING', tint: colors.textSub };
-  const f = (x: 'crowd' | 'booth' | 'rec', w: string) => `${w}${voiceIn(r, x) ? '✓' : '—'}`;
-  return { k: 'VOICE IN', v: [f('crowd', 'CRD'), f('booth', 'BTH'), f('rec', 'REC')].join(' '), vA11y: `voice in the crowd ${voiceIn(r, 'crowd') ? 'yes' : 'no'}, the booth ${voiceIn(r, 'booth') ? 'yes' : 'no'}, the recording ${voiceIn(r, 'rec') ? 'yes' : 'no'}`, tint: colors.green };
+  const feeds = [
+    { id: 'crowd' as const, w: 'CROWD' },
+    { id: 'booth' as const, w: 'BOOTH' },
+    { id: 'rec' as const, w: 'REC' },
+  ];
+  const yes = feeds.filter((f) => voiceIn(r, f.id)).map((f) => f.w);
+  const no = feeds.filter((f) => !voiceIn(r, f.id)).map((f) => f.w);
+  return { k: 'VOICE IN', v: yes.join(' + ') || 'NONE', sub: no.length ? `NOT IN: ${no.join(' · ')}` : 'EVERY FEED', vA11y: `voice in ${yes.length ? yes.join(', ').toLowerCase() : 'no feed'}; not in ${no.length ? no.join(', ').toLowerCase() : 'none'}`, tint: yes.length ? colors.green : colors.amber };
 }
 
 /* ── LISTEN, with the recorder ────────────────────────────────────────── */

@@ -77,7 +77,7 @@ describe('DJ Systems Lab — wiring', () => {
     for (const f of FILES.filter((x) => /pages\/p\d\d/.test(x))) {
       const s = read(f);
       assert.match(s, /rack: true/, `${f} is not a rack page`);
-      assert.match(s, /UnderstandingCheck|EvidenceCheck/, `${f} has no check-yourself question`);
+      assert.match(s, /UnderstandingCheck|EvidenceCheck/, `${f} has no check-yourself question (a question, or an evidence task judged by the booth)`);
       assert.match(s, /FaultCard/, `${f} has no troubleshooting fault`);
     }
   });

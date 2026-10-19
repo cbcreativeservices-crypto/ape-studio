@@ -2,12 +2,16 @@
  * djRoom — THE ROOM the event screens (19–24) share: a plan of a small club,
  * the speakers in it, and how loud each one is anywhere on the plan. Pure
  * TypeScript, no React Native; pinned by test/djEvent.test.ts. Documented in
- * docs/labs/dj/MODEL.md §12 (Stage 2b); sources in SOURCES.md (F25–F31).
+ * docs/labs/dj/MODEL.md §15 (Stage 2b); sources in SOURCES.md (F40–F46, F55, F57).
  *
  * THE PLAN (metres, seen from above): x runs across the room (0 = the
- * middle; +x is the DJ's LEFT hand as they face the crowd, so PA L sits at
- * +x), y runs from the back wall (0) into the room. The DJ stands behind the
- * booth table, facing the crowd (+y).
+ * middle; +x is the DJ's LEFT hand as they face the crowd), y runs from the
+ * back wall (0) into the room. The DJ stands behind the booth table, facing
+ * the crowd (+y). PA L stands at HOUSE LEFT — the audience's left, so −x,
+ * the DJ's RIGHT (second audio review 2026-10-18 #2): in live sound "left"
+ * is named from the audience, so the room hears the stereo image the right
+ * way round. Which side is LEFT is the venue's call; many club systems run
+ * mono. (The booth MONITORS are the DJ's own: monitor L on the DJ's left.)
  *
  *   back wall  y = 0
  *   DJ         (0, 0.8)            table y 1.1 … 1.8, x ±1.1
@@ -26,7 +30,11 @@
  *   Distance: inverse square (−6 dB per doubling), from 1 m, in plan (the
  *   stand height and the room's reflections are not modelled). Several
  *   sources add as POWER (uncorrelated), which is the honest average for
- *   program music in a room.
+ *   program music in a room. Bass from several subs adds COHERENTLY (in
+ *   step +6 dB, out of step a deep null): the levels use the average, and
+ *   the bass map draws the coherent sum at 60 Hz (`subsCoherentAt`) so the
+ *   loud and quiet stripes of spaced subs show (audio review #12, visual
+ *   review #16).
  *
  * LEVELS are a stated MODEL, never a measurement: each top makes
  * TOP_DBA_1M at 1 m on its axis when it is fed REF_FEED_DBFS average; the
@@ -70,24 +78,24 @@ export const PLACEMENTS: Record<Placement, { label: string; tops: { L: Speaker; 
     label: 'FRONT CORNERS',
     blurb: 'On stands at the front corners of the stage, just in front of the booth line, each aimed in at the middle of the floor.',
     tops: {
-      L: { id: 'topL', at: { x: 4.6, y: 2.6 }, aim: { x: 0, y: 7 }, kind: 'top', coverageDeg: TOP_COVERAGE_DEG },
-      R: { id: 'topR', at: { x: -4.6, y: 2.6 }, aim: { x: 0, y: 7 }, kind: 'top', coverageDeg: TOP_COVERAGE_DEG },
+      L: { id: 'topL', at: { x: -4.6, y: 2.6 }, aim: { x: 0, y: 7 }, kind: 'top', coverageDeg: TOP_COVERAGE_DEG },
+      R: { id: 'topR', at: { x: 4.6, y: 2.6 }, aim: { x: 0, y: 7 }, kind: 'top', coverageDeg: TOP_COVERAGE_DEG },
     },
   },
   STRAIGHT: {
     label: 'CORNERS, STRAIGHT',
     blurb: 'The same stands, but aimed straight down the room instead of in toward the floor.',
     tops: {
-      L: { id: 'topL', at: { x: 4.6, y: 2.6 }, aim: { x: 4.6, y: 9 }, kind: 'top', coverageDeg: TOP_COVERAGE_DEG },
-      R: { id: 'topR', at: { x: -4.6, y: 2.6 }, aim: { x: -4.6, y: 9 }, kind: 'top', coverageDeg: TOP_COVERAGE_DEG },
+      L: { id: 'topL', at: { x: -4.6, y: 2.6 }, aim: { x: -4.6, y: 9 }, kind: 'top', coverageDeg: TOP_COVERAGE_DEG },
+      R: { id: 'topR', at: { x: 4.6, y: 2.6 }, aim: { x: 4.6, y: 9 }, kind: 'top', coverageDeg: TOP_COVERAGE_DEG },
     },
   },
   BEHIND: {
     label: 'BEHIND THE DJ',
     blurb: 'Against the back wall either side of the DJ, aimed out over the booth at the floor.',
     tops: {
-      L: { id: 'topL', at: { x: 0.9, y: 0.3 }, aim: { x: 0.9, y: 7 }, kind: 'top', coverageDeg: TOP_COVERAGE_DEG },
-      R: { id: 'topR', at: { x: -0.9, y: 0.3 }, aim: { x: -0.9, y: 7 }, kind: 'top', coverageDeg: TOP_COVERAGE_DEG },
+      L: { id: 'topL', at: { x: -0.9, y: 0.3 }, aim: { x: -0.9, y: 7 }, kind: 'top', coverageDeg: TOP_COVERAGE_DEG },
+      R: { id: 'topR', at: { x: 0.9, y: 0.3 }, aim: { x: 0.9, y: 7 }, kind: 'top', coverageDeg: TOP_COVERAGE_DEG },
     },
   },
 };
@@ -96,8 +104,8 @@ export const SUB_PLACES: Record<SubPlace, { label: string; subs: Speaker[] }> = 
   TOPS: {
     label: 'UNDER THE TOPS',
     subs: [
-      { id: 'subL', at: { x: 4.6, y: 2.45 }, aim: { x: 4.6, y: 9 }, kind: 'sub', coverageDeg: 360 },
-      { id: 'subR', at: { x: -4.6, y: 2.45 }, aim: { x: -4.6, y: 9 }, kind: 'sub', coverageDeg: 360 },
+      { id: 'subL', at: { x: -4.6, y: 2.45 }, aim: { x: -4.6, y: 9 }, kind: 'sub', coverageDeg: 360 },
+      { id: 'subR', at: { x: 4.6, y: 2.45 }, aim: { x: 4.6, y: 9 }, kind: 'sub', coverageDeg: 360 },
     ],
   },
   BOOTH: {
@@ -179,6 +187,27 @@ export function monitorsDbaAt(p: V2, boothDbfs: number): number {
  *  bass map. */
 export function subsRelAt(p: V2, place: SubPlace): number {
   return powerSum(SUB_PLACES[place].subs.map((s) => relLevelDb(s, p)));
+}
+
+/** The speed of sound (m/s) and the bass map's frequency (Hz). */
+export const SOUND_MS = 343;
+export const BASS_MAP_HZ = 60;
+
+/** The subs' COHERENT sum at `p` (dB re one sub at 1 m on axis), at `hz`:
+ *  each sub's pressure with its distance's phase, added as waves — in step
+ *  they build (+6 dB for two), out of step they cancel (a deep null). Same mono feed, same polarity, no delay. */
+export function subsCoherentAt(p: V2, place: SubPlace, hz: number = BASS_MAP_HZ): number {
+  const k = (2 * Math.PI * hz) / SOUND_MS;
+  let re = 0;
+  let im = 0;
+  for (const s of SUB_PLACES[place].subs) {
+    const r = Math.max(0.5, len(sub(p, s.at)));
+    const a = Math.pow(10, relLevelDb(s, p) / 20);
+    re += a * Math.cos(-k * r);
+    im += a * Math.sin(-k * r);
+  }
+  const m = Math.hypot(re, im);
+  return 20 * Math.log10(Math.max(m, 1e-4));
 }
 
 /** A coverage grid over the whole plan (for the heat map): rows × cols of

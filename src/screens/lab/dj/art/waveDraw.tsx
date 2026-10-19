@@ -11,7 +11,8 @@
  *              lines 2 pt amber, each over a 1 pt dark keyline, so a line
  *              reads across a loud wave as well as a quiet one.
  */
-import { Group, LinearGradient, Path, vec, type SkPath } from '@shopify/react-native-skia';
+import { useMemo } from 'react';
+import { Group, LinearGradient, Path, Skia, vec, type SkPath } from '@shopify/react-native-skia';
 import type { TrackId } from '../engine/djMusic';
 import type { Grid } from '../model/djTime';
 import { gridPath, waveLayers, WAVE_COLOURS, WAVE_LOW, WAVE_POSITIONS } from './waves';
@@ -46,6 +47,40 @@ export function WaveBand({ peak, rms, colour, gain = 1, opacity = 1 }: { peak: S
     <Group transform={[{ scaleY: gain }]} opacity={opacity}>
       <Path path={peak} color={colour} opacity={0.55} />
       <Path path={rms} color={colour} />
+    </Group>
+  );
+}
+
+/**
+ * The same layers from CAPTURED samples (ADDITIVE, visual review 2026-10-18
+ * #18: the take lane uses this renderer): per column its min / max (the
+ * peak envelope, 55 %) and its RMS (the solid core), in the house loudness
+ * ramp, drawn TRUE to scale (±1 = full scale) in the box (x, y, w, h).
+ */
+export function ColumnWave({ x, y, w, h, lo, hi, rms }: { x: number; y: number; w: number; h: number; lo: Float32Array; hi: Float32Array; rms?: Float32Array }) {
+  const paths = useMemo(() => {
+    const n = lo.length;
+    const mid = y + h / 2;
+    const half = h / 2;
+    const pk = Skia.PathBuilder.Make();
+    const core = Skia.PathBuilder.Make();
+    const cw = w / n;
+    for (let c = 0; c < n; c++) {
+      const top = mid - Math.min(1, hi[c]) * half;
+      const bot = mid - Math.max(-1, lo[c]) * half;
+      if (bot - top > 0.2) pk.addRect(Skia.XYWHRect(x + c * cw, top, Math.max(0.6, cw), bot - top));
+      const r = rms ? Math.min(1, rms[c] * 1.41) : 0;
+      if (r > 0.002) core.addRect(Skia.XYWHRect(x + c * cw, mid - r * half, Math.max(0.6, cw), 2 * r * half));
+    }
+    return { pk: pk.detach(), core: core.detach() };
+  }, [x, y, w, h, lo, hi, rms]);
+  const grad = <LinearGradient start={vec(0, y)} end={vec(0, y + h)} colors={WAVE_COLOURS} positions={WAVE_POSITIONS} />;
+  return (
+    <Group>
+      <Path path={paths.pk} opacity={0.55}>
+        {grad}
+      </Path>
+      <Path path={paths.core}>{grad}</Path>
     </Group>
   );
 }

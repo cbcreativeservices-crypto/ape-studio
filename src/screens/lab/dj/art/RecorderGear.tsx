@@ -18,8 +18,8 @@ import { BlurMask, Circle, Group, Line, LinearGradient, Path, RadialGradient, Re
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import { INK } from './ink';
 import { LedColumn, Led } from './parts';
-import { WAVE_COLOURS, WAVE_POSITIONS } from './waves';
-import { SceneText } from './sceneText';
+import { ColumnWave } from './waveDraw';
+import { SceneText, useLabelMm } from './sceneText';
 import { useExtTapDb } from './eventMotion';
 import type { TakeView } from '../booth/takeStore';
 
@@ -60,6 +60,7 @@ export const Recorder = memo(function Recorder({ x, y, armed, clip, gain, elapse
         <Line key={i} p1={vec(REC_W - 2, REC.wheel.y - 11 + i * 2.75)} p2={vec(REC_W + 3.4, REC.wheel.y - 11 + i * 2.75)} color="rgba(0,0,0,0.5)" strokeWidth={0.5} />
       ))}
       <RoundedRect x={-4} y={REC.lineIn.y - 5} width={6} height={10} r={1.6} color="#16171a" />
+      <LineInLegend />
       {/* body */}
       <RoundedRect x={3} y={6} width={REC_W} height={REC_H} r={10} color="rgba(0,0,0,0.65)">
         <BlurMask blur={6} style="normal" />
@@ -115,6 +116,16 @@ export const Recorder = memo(function Recorder({ x, y, armed, clip, gain, elapse
   );
 });
 
+/** The LINE IN legend printed up the recorder's left side, at 9 pt. */
+function LineInLegend() {
+  const lm = useLabelMm(9);
+  return (
+    <Group transform={[{ translateX: -5 }, { translateY: REC.lineIn.y - 9 }, { rotate: -Math.PI / 2 }]}>
+      <SceneText x={0} y={0} size={lm} text="LINE IN" color={INK.print} face="label" />
+    </Group>
+  );
+}
+
 /** The split lead's two RCA legs (fixed at the mixer's REC OUT or BOOTH
  *  OUT) into one moulded Y, then one cable to the 3.5 mm plug. */
 export function SplitLead({ from, y0, to, live, trs }: { from: [{ x: number; y: number }, { x: number; y: number }]; y0: number; to: { x: number; y: number }; live: boolean; trs: boolean }) {
@@ -166,53 +177,83 @@ export function SplitLead({ from, y0, to, live, trs }: { from: [{ x: number; y: 
       <RoundedRect x={yX.x - 9} y={y0 - 4} width={16} height={13} r={4}>
         <LinearGradient start={vec(0, y0 - 4)} end={vec(0, y0 + 9)} colors={['#3a3c42', '#0b0b0d']} />
       </RoundedRect>
-      {/* the 3.5 mm plug at the recorder's side */}
-      <RoundedRect x={to.x - 14} y={to.y - 3.5} width={10} height={7} r={2} color="#141518" />
-      <Rect x={to.x - 4} y={to.y - 1.75} width={6} height={3.5}>
+      {/* the 3.5 mm TRS plug, seated in the recorder's LINE IN: the boot,
+          its strain relief, the metal shell, and the two insulating rings of
+          the tip and ring contacts showing at the socket (review #18) */}
+      <RoundedRect x={to.x - 28} y={to.y - 3} width={8} height={6} r={2.4} color="#141518" />
+      <RoundedRect x={to.x - 22} y={to.y - 5} width={16} height={10} r={3}>
+        <LinearGradient start={vec(0, to.y - 5)} end={vec(0, to.y + 5)} colors={['#3a3c42', '#0b0b0d']} />
+      </RoundedRect>
+      <Rect x={to.x - 7} y={to.y - 3} width={5} height={6}>
+        <LinearGradient start={vec(0, to.y - 3)} end={vec(0, to.y + 3)} colors={['#eef1f4', '#8a9099', '#4a4f57']} />
+      </Rect>
+      <Rect x={to.x - 2} y={to.y - 1.75} width={1.2} height={3.5} color="#0b0b0d" />
+      <Rect x={to.x - 0.8} y={to.y - 1.75} width={1.4} height={3.5}>
         <LinearGradient start={vec(0, to.y - 2)} end={vec(0, to.y + 2)} colors={['#eef1f4', '#8a9099']} />
       </Rect>
+      <Rect x={to.x + 0.6} y={to.y - 1.75} width={0.9} height={3.5} color="#0b0b0d" />
     </Group>
   );
 }
 
-/** The take lane: the captured waveform, the voice, the playhead. */
+/** dBFS marks on the take lane's edge, and the capture target. */
+const LANE_MARKS = [
+  { db: 0, t: '0' },
+  { db: -6, t: '−6' },
+  { db: -12, t: '−12' },
+  { db: -24, t: '−24' },
+] as const;
+export const TAKE_TARGET = { lo: -12, hi: -3 } as const;
+const amp = (db: number) => Math.pow(10, db / 20);
+
+/**
+ * The take lane (second visual review 2026-10-18, #18): the captured
+ * waveform drawn TRUE to scale by the shared renderer (waveDraw.ColumnWave:
+ * peak envelope over an RMS core, in the loudness ramp), a dBFS scale on its
+ * left edge (0, -6, -12, -24), the capture target (-12 ... -3 dBFS peaks)
+ * shaded, the voice marks under it and the playhead — so a quiet take reads
+ * as too quiet, not just small.
+ */
 export function TakeLane({ b, take, pos, k = 1, recording }: { b: { x: number; y: number; w: number; h: number }; take: TakeView | null; pos: SharedValue<number>; k?: number; recording: boolean }) {
-  const paths = useMemo(() => {
-    if (!take || take.seconds < 0.05) return null;
-    const n = take.cols.lo.length;
-    const used = n;
-    const wave = Skia.PathBuilder.Make();
-    const voice = Skia.PathBuilder.Make();
-    const mid = b.y + b.h / 2;
-    const half = b.h / 2 - 3;
-    for (let c = 0; c < used; c++) {
-      const x = b.x + (c / n) * b.w;
-      const top = mid - Math.min(1, take.cols.hi[c]) * half;
-      const bot = mid - Math.max(-1, take.cols.lo[c]) * half;
-      wave.addRect(Skia.XYWHRect(x, top, Math.max(0.8, b.w / n), Math.max(0.6, bot - top)));
-      if (take.cols.voice[c]) voice.addRect(Skia.XYWHRect(x, b.y + b.h - 4, Math.max(0.8, b.w / n), 4));
-    }
-    return { wave: wave.detach(), voice: voice.detach() };
-  }, [take, b.x, b.y, b.w, b.h]);
-  const head = useDerivedValue(() => (take && take.seconds > 0 ? b.x + Math.min(1, pos.value / take.seconds) * b.w : b.x));
-  const p1 = useDerivedValue(() => vec(head.value, b.y));
-  const p2 = useDerivedValue(() => vec(head.value, b.y + b.h));
   const fs = 9 * k;
+  const scaleW = 26 * k;
+  const titleH = fs + 8 * k;
+  const lane = { x: b.x + scaleW, y: b.y + titleH, w: b.w - scaleW, h: b.h - titleH - 6 * k };
+  const mid = lane.y + lane.h / 2;
+  const half = lane.h / 2;
+  const yOf = (a: number) => mid - a * half;
+  const voice = useMemo(() => {
+    if (!take || take.seconds < 0.05) return null;
+    const n = take.cols.voice.length;
+    const p = Skia.PathBuilder.Make();
+    for (let c = 0; c < n; c++) if (take.cols.voice[c]) p.addRect(Skia.XYWHRect(lane.x + (c / n) * lane.w, lane.y + lane.h + 1, Math.max(0.8, lane.w / n), 4 * k));
+    return p.detach();
+  }, [take, lane.x, lane.y, lane.w, lane.h, k]);
+  const head = useDerivedValue(() => (take && take.seconds > 0 ? lane.x + Math.min(1, pos.value / take.seconds) * lane.w : lane.x));
+  const p1 = useDerivedValue(() => vec(head.value, lane.y));
+  const p2 = useDerivedValue(() => vec(head.value, lane.y + lane.h));
+  const tLo = amp(TAKE_TARGET.lo);
+  const tHi = amp(TAKE_TARGET.hi);
   return (
     <Group>
-      <RoundedRect x={b.x - 4} y={b.y - fs - 8} width={b.w + 8} height={b.h + fs + 12} r={6} color="rgba(8,8,10,0.85)" />
-      <Line p1={vec(b.x, b.y + b.h / 2)} p2={vec(b.x + b.w, b.y + b.h / 2)} color="rgba(255,255,255,0.12)" strokeWidth={1} />
-      {paths ? (
-        <Group>
-          <Path path={paths.wave}>
-            <LinearGradient start={vec(0, b.y + 3)} end={vec(0, b.y + b.h - 3)} colors={WAVE_COLOURS} positions={WAVE_POSITIONS} />
-          </Path>
-          <Path path={paths.voice} color={INK.green} />
+      <RoundedRect x={b.x - 4} y={b.y - 2} width={b.w + 8} height={b.h + 6 * k} r={6} color="rgba(8,8,10,0.85)" />
+      {/* the capture target, both halves */}
+      <Rect x={lane.x} y={yOf(tHi)} width={lane.w} height={(tHi - tLo) * half} color="rgba(91,255,133,0.10)" />
+      <Rect x={lane.x} y={yOf(-tLo)} width={lane.w} height={(tHi - tLo) * half} color="rgba(91,255,133,0.10)" />
+      {LANE_MARKS.map((m) => (
+        <Group key={m.db}>
+          <Line p1={vec(lane.x, yOf(amp(m.db)))} p2={vec(lane.x + lane.w, yOf(amp(m.db)))} color={m.db === 0 ? 'rgba(255,90,72,0.35)' : 'rgba(255,255,255,0.08)'} strokeWidth={1} />
+          <Line p1={vec(lane.x, yOf(-amp(m.db)))} p2={vec(lane.x + lane.w, yOf(-amp(m.db)))} color={m.db === 0 ? 'rgba(255,90,72,0.35)' : 'rgba(255,255,255,0.08)'} strokeWidth={1} />
+          <SceneText x={lane.x - 3 * k} y={yOf(amp(m.db)) + fs * 0.36} size={fs} text={m.t} color={m.db === 0 ? INK.peak : INK.printDim} face="label" align="right" />
         </Group>
-      ) : null}
+      ))}
+      <Line p1={vec(lane.x, mid)} p2={vec(lane.x + lane.w, mid)} color="rgba(255,255,255,0.12)" strokeWidth={1} />
+      {take && take.seconds >= 0.05 ? <ColumnWave x={lane.x} y={lane.y} w={lane.w} h={lane.h} lo={take.cols.lo} hi={take.cols.hi} rms={take.cols.rms} /> : null}
+      {voice ? <Path path={voice} color={INK.green} /> : null}
       <Line p1={p1} p2={p2} color={INK.white} strokeWidth={1.6} />
-      <SceneText x={b.x} y={b.y - 4} size={fs} text={take ? `TAKE · ${take.seconds.toFixed(1)} s${recording ? ' · RECORDING' : ''}${take.clipped > 0 ? ' · CLIPPED' : ''}` : 'NO TAKE YET'} color={take && take.clipped > 0 ? INK.peak : recording ? INK.red : INK.print} face="label" minPt={8.9} />
-      <SceneText x={b.x + b.w} y={b.y - 4} size={fs} text={take?.hasVoice ? 'VOICE IN THE TAKE' : 'NO VOICE IN THE TAKE'} color={take?.hasVoice ? INK.green : INK.printDim} face="label" align="right" minPt={8.9} />
+      <SceneText x={b.x} y={b.y + fs + 1} size={fs} text={take ? `TAKE · ${take.seconds.toFixed(1)} s${recording ? ' · RECORDING' : ''}${take.clipped > 0 ? ' · CLIPPED' : ''}` : 'NO TAKE YET'} color={take && take.clipped > 0 ? INK.peak : recording ? INK.red : INK.print} face="label" />
+      <SceneText x={b.x + b.w} y={b.y + fs + 1} size={fs} text={take?.hasVoice ? 'VOICE IN THE TAKE' : 'NO VOICE IN THE TAKE'} color={take?.hasVoice ? INK.green : INK.printDim} face="label" align="right" />
+      <SceneText x={lane.x + lane.w - 2} y={yOf(tHi) + fs + 1} size={fs} text="TARGET PEAKS" color="rgba(125,255,159,0.8)" face="label" align="right" />
     </Group>
   );
 }

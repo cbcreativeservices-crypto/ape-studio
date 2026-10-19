@@ -75,8 +75,9 @@ export type TakeView = {
   /** The captured stereo audio (for playback). */
   l: Float32Array;
   r: Float32Array;
-  /** Min / max per column (the waveform) and the voice per column. */
-  cols: { lo: Float32Array; hi: Float32Array; voice: Uint8Array };
+  /** Min / max per column (the waveform), its RMS (ADDITIVE: the shared
+   *  renderer's core) and the voice per column. */
+  cols: { lo: Float32Array; hi: Float32Array; voice: Uint8Array; rms?: Float32Array };
   /** Peak (dBFS) of the take. */
   peakDb: number;
   /** The mic is in the take somewhere. */
@@ -93,6 +94,7 @@ function viewOf(t: Take | null): TakeView | null {
   const lo = new Float32Array(COLS);
   const hi = new Float32Array(COLS);
   const voice = new Uint8Array(COLS);
+  const rms = new Float32Array(COLS);
   let pk = 0;
   let clip = 0;
   const per = Math.max(1, Math.floor(n / COLS));
@@ -100,12 +102,14 @@ function viewOf(t: Take | null): TakeView | null {
     let a = 0;
     let b = 0;
     let m = 0;
+    let sq = 0;
     const s0 = c * per;
     const s1 = Math.min(n, s0 + per);
     for (let i = s0; i < s1; i++) {
       const x = (t.l[i] + t.r[i]) / 2;
       if (x < a) a = x;
       if (x > b) b = x;
+      sq += x * x;
       const ab = Math.max(Math.abs(t.l[i]), Math.abs(t.r[i]));
       if (ab > pk) pk = ab;
       if (ab >= 0.9999) clip++;
@@ -114,6 +118,7 @@ function viewOf(t: Take | null): TakeView | null {
     }
     lo[c] = a;
     hi[c] = b;
+    rms[c] = s1 > s0 ? Math.sqrt(sq / (s1 - s0)) : 0;
     voice[c] = m > 0.0032 ? 1 : 0; // the mic's own part above −50 dBFS
   }
   return {
@@ -122,7 +127,7 @@ function viewOf(t: Take | null): TakeView | null {
     seconds: n / SR,
     l: t.l.subarray(0, n),
     r: t.r.subarray(0, n),
-    cols: { lo, hi, voice },
+    cols: { lo, hi, voice, rms },
     peakDb: pk > 0 ? 20 * Math.log10(pk) : -Infinity,
     hasVoice: voice.some((x) => x === 1),
     clipped: clip,
