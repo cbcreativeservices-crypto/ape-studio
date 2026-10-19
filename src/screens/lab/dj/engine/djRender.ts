@@ -51,6 +51,9 @@ import {
   type SpeakerId,
 } from '../model/djModel.ts';
 import { rateOf } from '../model/djTime.ts';
+// Stage 2 (Screens 13–18): effects, key lock, stems, laptop USB, vinyl setup,
+// DVS — one hook at fixed points; null (and the Stage 1 path) when unused.
+import { s2CarryAt, stage2Of, type S2Carry, type S2Report } from './djStage2.ts';
 
 export const METER_BLOCK_S = 0.01;
 const BLOCK = Math.round(METER_BLOCK_S * SR);
@@ -86,6 +89,8 @@ export type BoothRender = {
   limiterDb: number;
   /** The state at the end of this render, for the next contiguous chunk. */
   carry: RenderCarry;
+  /** Stage 2's readings for this chunk (null when the booth used none). */
+  s2?: S2Report | null;
 };
 
 /** One meter's ballistic state: displayed level, hold level, blocks held. */
@@ -98,6 +103,8 @@ export type RenderCarry = {
   /** The signal path's filter memories — null when only the meters carry. */
   dsp: StreamDsp | null;
   meters: Record<Tap, MeterState>;
+  /** Stage 2's state (the effect's tail, the turntable's acoustic loop). */
+  s2?: S2Carry | null;
 };
 
 /* ── deck sources ─────────────────────────────────────────────────────── */
@@ -223,7 +230,9 @@ export function carryAt(r: BoothRender | null, t: number): RenderCarry | null {
   if (k < 0 || k >= r.meter.ch1.length) return null;
   const meters = {} as Record<Tap, MeterState>;
   for (const tap of TAPS) meters[tap] = { m: r.meter[tap][k], h: r.hold[tap][k], age: 0 };
-  return { t1: t, dsp: null, meters };
+  // an effect keeps ringing from exactly this moment (replayed from the chunk's own input)
+  const s2 = r.carry.s2 ? s2CarryAt(r.s2 ?? undefined, r.carry.s2, Math.round((t - r.t0) * SR)) : null;
+  return { t1: t, dsp: null, meters, s2 };
 }
 
 function blockPeaks(x: Float32Array, y: Float32Array | null, n: number): Float32Array {
@@ -295,10 +304,13 @@ export function renderBooth(b: Booth, t0: number, seconds: number, from?: Render
   const n = Math.max(1, Math.round(seconds * SR));
   const joined = !!from && Math.abs(from.t1 - t0) <= JOIN_TOL_S;
   const dspAll: StreamDsp = joined && from!.dsp ? cloneDsp(from!.dsp) : freshDsp();
+  const s2 = stage2Of(b, t0, n, from?.s2, joined);
   // Sources: the two players (+ any sampler pads on their software) and the turntable.
+  const dA = { ...b.decks.A, playing: b.decks.A.playing && deviceLive(b, 'playerA') };
+  const dB = { ...b.decks.B, playing: b.decks.B.playing && deviceLive(b, 'playerB') };
   const src: Record<'A' | 'B' | 'TT', StereoBuf> = {
-    A: deckSignal('A', { ...b.decks.A, playing: b.decks.A.playing && deviceLive(b, 'playerA') }, n),
-    B: deckSignal('B', { ...b.decks.B, playing: b.decks.B.playing && deviceLive(b, 'playerB') }, n),
+    A: s2?.deck('A', dA, n) ?? deckSignal('A', dA, n),
+    B: s2?.deck('B', dB, n) ?? deckSignal('B', dB, n),
     TT: turntableSignal(b, n, dspAll.tt),
   };
   const host = b.sampler.on;
@@ -312,6 +324,7 @@ export function renderBooth(b: Booth, t0: number, seconds: number, from?: Render
       }
     }
   }
+  s2?.sources(src);
 
   const clipped: Record<Stage, number> = { phono1: 0, phono2: 0, ch1: 0, ch2: 0, bus: 0, master: 0, booth: 0, phones: 0 };
   const busL = new Float32Array(n);
@@ -329,8 +342,9 @@ export function renderBooth(b: Booth, t0: number, seconds: number, from?: Render
     const r = new Float32Array(n);
     if (route.L) l.set(src[route.L.source][route.L.side === 'L' ? 'l' : 'r']);
     if (route.R) r.set(src[route.R.source][route.R.side === 'L' ? 'l' : 'r']);
+    const s2In = s2 ? s2.channelInput(ch, l, r, src) : false;
     const dsp = dspAll.ch[ch];
-    if (route.jackClass === 'phono') {
+    if (route.jackClass === 'phono' && !s2In) {
       // The PHONO stage: +36 dB with the RIAA playback curve, then its own clip.
       const g = dbToLin(PHONO_GAIN_DB);
       for (let i = 0; i < n; i++) {
@@ -365,6 +379,18 @@ export function renderBooth(b: Booth, t0: number, seconds: number, from?: Render
         cueR[i] += r[i];
       }
     }
+    if (s2) {
+      // after the fader: a channel insert effect and the FX send (Stage 2)
+      const p = s2.channelPost(ch, l, r, faderGain(c.fader));
+      const xg = xfGainFor(c.xf, b.mixer.xf, b.mixer.xfCurve);
+      if (xg > 0) {
+        for (let i = 0; i < n; i++) {
+          busL[i] += p.l[i] * xg;
+          busR[i] += p.r[i] * xg;
+        }
+      }
+      continue;
+    }
     const g = faderGain(c.fader) * xfGainFor(c.xf, b.mixer.xf, b.mixer.xfCurve);
     if (g > 0) {
       for (let i = 0; i < n; i++) {
@@ -373,6 +399,7 @@ export function renderBooth(b: Booth, t0: number, seconds: number, from?: Render
       }
     }
   }
+  s2?.bus(busL, busR);
 
   // The MIX BUS: its own full scale, its own clip.
   peaks.bus = blockPeaks(busL, busR, n);
@@ -456,7 +483,7 @@ export function renderBooth(b: Booth, t0: number, seconds: number, from?: Render
     fl = pL;
     fr = pR;
   }
-  const lg = dbToLin(listenDb(b.listen));
+  const lg = dbToLin(listenDb(b.listen) + (s2 ? s2.safetyDb() : 0));
   const playL = new Float32Array(n);
   const playR = new Float32Array(n);
   for (let i = 0; i < n; i++) {
@@ -476,8 +503,9 @@ export function renderBooth(b: Booth, t0: number, seconds: number, from?: Render
     raw[tap] = bl.raw;
     ends[tap] = bl.end;
   }
-  const carry: RenderCarry = { t1: t0 + n / SR, dsp: dspAll, meters: ends };
-  return { t0, seconds: n / SR, playback: { l: playL, r: playR }, meter, hold, raw, clipped, busOver, rmsDb: rms as Record<Tap, number>, limiterDb, carry };
+  const s2out = s2 ? s2.end() : null;
+  const carry: RenderCarry = { t1: t0 + n / SR, dsp: dspAll, meters: ends, s2: s2out?.carry ?? null };
+  return { t0, seconds: n / SR, playback: { l: playL, r: playR }, meter, hold, raw, clipped, busOver, rmsDb: rms as Record<Tap, number>, limiterDb, carry, s2: s2out?.report ?? null };
 }
 
 /** The channel a tap belongs to, for the drawing. */

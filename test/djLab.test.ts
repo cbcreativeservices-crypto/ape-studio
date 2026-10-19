@@ -71,7 +71,9 @@ describe('DJ Systems Lab — wiring', () => {
     const list = idx.match(/DJ_PAGES[^=]*=\s*\[([^\]]+)\]/);
     assert.ok(list);
     const ids = list![1].split(',').map((s) => s.trim()).filter(Boolean);
-    assert.deepEqual(ids, ['P01', 'P02', 'P03', 'P04', 'P05', 'P06', 'P07', 'P08', 'P09', 'P10', 'P11', 'P12']);
+    // Stage 2 appends its screens in order (the count grows to the owner's 24)
+    assert.ok(ids.length >= 12);
+    assert.deepEqual(ids, ids.map((_, i) => `P${String(i + 1).padStart(2, '0')}`));
     for (const f of FILES.filter((x) => /pages\/p\d\d/.test(x))) {
       const s = read(f);
       assert.match(s, /rack: true/, `${f} is not a rack page`);

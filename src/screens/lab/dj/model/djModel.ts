@@ -232,7 +232,20 @@ export type DeckState = {
   gridShiftBeats: number;
   /** The learner's BPM fix: ×2 / ×½ on a mis-analysed tempo. */
   bpmFix: 1 | 2 | 0.5;
+  /* ── Stage 2, all optional (absent = Stage 1 behaviour) ── */
+  /** KEY LOCK: the tempo moves, the pitch stays (a real time-stretch). */
+  keyLock?: boolean;
+  /** KEY SHIFT in semitones (pitch only). */
+  keyShift?: number;
+  /** The tempo fader's range, ± % (default PITCH_RANGE_PCT). */
+  tempoRange?: number;
+  /** Per-stem levels (0 … 1). Present = the deck plays from its stems. */
+  stems?: StemGains;
+  /** Where the stems come from: the track's own parts, or a SIMULATED
+   *  separation of the mix (leakage and artifacts, labelled as such). */
+  stemSource?: 'ORIGINAL' | 'SEPARATED';
 };
+export type StemGains = { drums: number; bass: number; chords: number; lead: number };
 
 export type ChannelState = {
   input: InputSel;
@@ -276,6 +289,15 @@ export type Booth = {
   perspective: Perspective;
   listen: number;
   sampler: SamplerState;
+  /* ── Stage 2, all optional (absent = Stage 1 behaviour) ── */
+  /** The mixer's effects unit (Screen 13, model/djEffects). */
+  fx?: import('./djEffects.ts').FxState;
+  /** A laptop running DJ software over the mixer's USB (Screens 16, 18). */
+  laptop?: import('./djLaptop.ts').LaptopState;
+  /** The turntable's setup (Screen 17, model/djVinyl). */
+  vinyl?: import('./djVinyl.ts').VinylState;
+  /** A digital vinyl system on the turntable (Screen 18, model/djDvs). */
+  dvs?: import('./djDvs.ts').DvsState;
 };
 
 export const freshDeck = (track: TrackId | null = null): DeckState => ({
