@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-18 23:52 · ccode · 44bb766f
+changed: Merge dj-lab-c: second-round fixes for screens 19-24 and lab-wide items
+affects other side: nothing (client only; the DJ lab's credential requirement is ON HOLD by the owner until the lab ships)
+needs: nothing
+
+
 ### 2026-10-18 23:44 · ccode · 50c30832
 changed: DJ lab screen 17: room view footer band, real isolation pucks, STAGES label
 affects other side: nothing (DJ lab client screen 17 only)

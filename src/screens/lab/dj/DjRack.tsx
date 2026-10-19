@@ -111,7 +111,7 @@ function FullHost({ w, h, render }: { w: number; h: number; render: (w: number, 
   panRef.current = pan;
   const limits = useRef<PanLimits | null>(null);
   const start = useRef({ x: 0, y: 0 });
-  const raf = useRef<number | null>(null);
+  const tick = useRef<ReturnType<typeof setTimeout> | null>(null);
   const alive = useRef(true);
   const pending = useRef<{ x: number; y: number } | null>(null);
   const responder = useMemo(
@@ -126,20 +126,21 @@ function FullHost({ w, h, render }: { w: number; h: number; render: (w: number, 
           const x = start.current.x + g.dx;
           const y = start.current.y + g.dy;
           pending.current = L ? { x: Math.max(L.minX, Math.min(L.maxX, x)), y: Math.max(L.minY, Math.min(L.maxY, y)) } : { x, y };
-          if (raf.current == null) {
-            raf.current = requestAnimationFrame(() => {
-              raf.current = null;
+          if (tick.current == null) {
+            tick.current = setTimeout(() => {
+              tick.current = null;
               if (alive.current && pending.current) setPan(pending.current);
-            });
+            }, 16);
           }
         },
       }),
     [],
   );
-  // one queued frame per drag value (a throttle, not a loop)
+  // one queued ~frame per drag value (a throttle, not a loop), cleared on unmount
   useEffect(
     () => () => {
       alive.current = false;
+      if (tick.current != null) clearTimeout(tick.current);
     },
     [],
   );
