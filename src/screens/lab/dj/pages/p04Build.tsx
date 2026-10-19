@@ -161,12 +161,15 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
   const [powerTask, setPowerTask] = useState(false);
   const onPick = (p: PlugId) => {
     setSelPlug(p);
+    // a new pick: the last patch is no longer "just" patched
+    if (p !== justPatched) setJustPatched(null);
     setPowerTask(PLUGS[p].kind === 'iec');
     if (!viewChosen.current) setView('CABLE');
   };
   const onPower = (e: PowerEvent) => {
     setPowerTask(true);
     setView('BOOTH');
+    setJustPatched(null);
     setLastPower(e);
     const b = getBooth();
     if (e.thump) setFlash({ keys: SPEAKERS.filter((sp) => deviceLive(b, sp) && speakerCabled(b, sp)), word: 'THUMP' });
@@ -262,6 +265,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
             onPress: () => {
               tr.stopAll();
               setBooth(unbuilt(getBooth()));
+              setJustPatched(null);
               seq.current = { thumpOn: false, wasAllOn: false, thumpOff: false, offOk: false };
               setLastPower(null);
             },
@@ -312,6 +316,8 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
           start={() => {
             void audio.requestSound();
             if (!viewChosen.current) setView('BOOTH');
+            setJustPatched(null);
+            setPowerTask(false);
             updateBooth((b, t) => {
               let x: Booth = { ...b };
               const plugs = { ...x.plugs };

@@ -495,6 +495,13 @@ export const MAP_PATCH = MAP;
 
 /** The patch band's top edge (patch mm): right under the room's floor strip. */
 export const PATCH_TOP = ROOM_FLOOR + 10 - PATCH_DY;
+/** The patch band's printed title (art/SystemMap draws it at the band's top
+ *  left, 9.5 pt): the words keep off it too. */
+export const PATCH_TITLE = 'WHAT YOU PLUG · 1:1 (FULL SIZE) · SEEN FROM BEHIND';
+export function patchTitleBox4(s: number, k: number, measure: (t: string, k: number) => number): Box {
+  const note = (9.5 * k) / Math.max(1e-6, s);
+  return { x: -2, y: PATCH_TOP + 2, w: (measure(PATCH_TITLE, k) * 0.95 + 4 * k) / Math.max(1e-6, s), h: note * 1.25 + 3 };
+}
 /** The patch band as the words may use it (patch mm). */
 export const PATCH_BAND: Box = { x: 0, y: PATCH_TOP + 2, w: 1040, h: 828 - PATCH_TOP };
 
@@ -824,7 +831,7 @@ export function patchLabels4(plugsAt: Partial<Record<PlugId, JackId | null>>, sh
       plugs.push({ x: b.x, y: b.y, r: PLUG_R[farKindOf(p)] + 1 });
     }
   }
-  const bodies: Box[] = [...MAP_BODIES, MAP.front];
+  const bodies: Box[] = [...MAP_BODIES, MAP.front, patchTitleBox4(s, k, measure)];
   const cables = cableObstacles4(plugsAt);
   const runOf = (p: PlugId): P2[] => cables.find((c) => c.id === p)!.pts as P2[];
   let band = PATCH_BAND;

@@ -446,7 +446,7 @@ describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed
           const placed = D.patchLabels4(st, shown, () => false, s, k, tw, { focus, view: box });
           const at = `${name}, ${sel}, ${view}`;
           for (const p of placed) {
-            for (const b of [...MAP_BODIES, MAP.front]) if (ov(p, b) > 0.5) bad.push(`${at}: ${p.id} on the gear at (${b.x}, ${b.y})`);
+            for (const b of [...MAP_BODIES, MAP.front, D.patchTitleBox4(s, k, tw)]) if (ov(p, b) > 0.5) bad.push(`${at}: ${p.id} on the gear (or the band's title) at (${b.x}, ${b.y})`);
             for (const q of placed) if (q !== p && ov(p, q) > 0) bad.push(`${at}: ${p.id} on ${q.id}`);
             // the finding: no flag (and no name) on a cable or a crossing
             for (const c of cables) {
