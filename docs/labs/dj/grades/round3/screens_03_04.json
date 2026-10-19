@@ -1,0 +1,95 @@
+[
+ {
+  "screen": 3,
+  "title": "Connections and signal types",
+  "scores": {
+   "1": 8,
+   "2": 8,
+   "3": 8,
+   "4": 7,
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": 7,
+   "10": 8,
+   "11": 8,
+   "12": 7,
+   "13": 7,
+   "14": 7,
+   "15": 8,
+   "16": 7,
+   "17": 8,
+   "18": 8,
+   "19": 8,
+   "20": 6
+  },
+  "areas": {
+   "A": 7.75,
+   "B": null,
+   "C": 7.67,
+   "D": 7.2,
+   "E": 8.0,
+   "F": 7.0
+  },
+  "overall": 7.55,
+  "capped": false,
+  "letter": "B",
+  "evidence": {
+   "20": "Live at 390 (TURNTABLE, deck A parked in LINE): the RCA jacks are still about 12 px and the mixer's printed CH1 / PHONO / LINE / BOOTH legends cannot be read; only the callouts carry them. The turntable is now 450 mm wide and runs past both edges, so its printed 'TURNTABLE (REAR)' name is off the glass and the deck is unnamed at phone size. FULL SCREEN 3x reads well when opened untouched, but the shared DJ full-screen host lands on a black or half-blank window if the learner taps the drawing at 1x before picking a zoom step (reproduced on screens 4 and 6; same host)."
+  },
+  "worst3": [
+   "Phone readability: at 390 the jacks are about 12 px, the printed panel legends are unreadable, and the true-width turntable has no visible name (its printed name runs off the frame). FULL SCREEN 3x is good only if the drawing is not touched at 1x first (shared host bug: the zoomed window lands off-screen)",
+   "Deck A's parked leads are still short stubs that fade to nothing: the white stub drops straight behind the red plug and the red stub sticks out sideways across the green selector ring instead of hanging, so at 3x they read as two stubs, not two cables",
+   "The turntable's own loose plugs at the top carry dark blurred shadow blobs at 3x that read as smudges, and a lead that has just been pulled still swings as a rigid stick about its socket (SwingingLead unchanged)"
+  ],
+  "screenshot": "final3/03r3_tt_true_width_deckA_parked_390.jpg"
+ },
+ {
+  "screen": 4,
+  "title": "Build your first DJ system",
+  "scores": {
+   "1": 7,
+   "2": 7,
+   "3": 8,
+   "4": 7,
+   "5": null,
+   "6": null,
+   "7": null,
+   "8": null,
+   "9": 6,
+   "10": 8,
+   "11": 7,
+   "12": 7,
+   "13": 8,
+   "14": 7,
+   "15": 7,
+   "16": 7,
+   "17": 7,
+   "18": 7,
+   "19": 8,
+   "20": 5
+  },
+  "areas": {
+   "A": 7.25,
+   "B": null,
+   "C": 7.0,
+   "D": 7.2,
+   "E": 7.0,
+   "F": 6.5
+  },
+  "overall": 7.07,
+  "capped": false,
+  "letter": "B",
+  "evidence": {
+   "9": "Unchanged: the only motion is the glow pulse along live cables, LED changes, the HOT-PATCH / THUMP flash and the CABLE view's camera move. Nothing physical moves (a lead that is moved does not swing or drop), so the motion is decorative.",
+   "20": "FULL SCREEN 1x now fills the screen and pans, but in portrait no step ever shows the whole booth: both PA speakers and the outer speaker plates are cut off, and flags and the band title are cut mid-word at the edges ('WR B', 'ONES', 'R', 'P', '- SEEN FROM BEHIND'); at the left limit DECK B and HEADPHONES stack into one phrase. Worse, live: after a tap or a drag on the drawing at 1x (which the new 1x pan invites), picking 2x or 3x shows a black or half-blank screen (wired 3x was almost entirely black after a tap at the lower left; after a 1x drag, 2x and 3x showed only a strip at the right). A drag inside the strip cannot bring the rest back; only 1x or closing recovers. Reproduced twice here and once on screen 6. Opened untouched, 1x, 2x and 3x are fine."
+  },
+  "worst3": [
+   "FULL SCREEN breaks on a common path: tap or drag the drawing at 1x (the new draggable 1x invites it), then pick 2x or 3x, and the zoomed window lands off-screen (black or half-blank). The anchor code is older than round 3 (DjRack FullHost: the host re-reads anchorMirror as null on every step while the rack scrolls to the touch), but round 3's 1x pan makes it far more likely on this screen",
+   "FULL SCREEN 1x fill crops the map in portrait: the PA speakers and the outer plates are never all on screen, and flags and the band title are cut mid-word at the edges; DECK B and HEADPHONES stack into one phrase at the left limit",
+   "Motion is still decorative only. Small leftovers: an unlabelled I-shaped tick links the rear panel to the front-edge bar at 2x and 3x, and labels move between states and zooms (PA L sits above its speaker in the HOT-PATCH flash and below it otherwise; the BTH L and BTH R flags swap places between 2x and 3x)"
+  ],
+  "screenshot": "final3/04r3_fault_390.jpg"
+ }
+]
