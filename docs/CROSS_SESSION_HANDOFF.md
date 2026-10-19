@@ -634,6 +634,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-18 18:07 · ccode · ea675ab0
+changed: DJ Systems Lab: final 390 px screenshots after fix round 2
+affects other side: nothing (client-only DJ Systems Lab fix round 2 on the unpublished branch dj-lab; additive PagedLab/RackUnit props no other lab sets; no DB, no OTA)
+needs: nothing
+
+
+### 2026-10-18 18:07 · ccode · 94c71f36
+changed: DJ Systems Lab Stage 1 screens: fix round 2 (audio + learning reviews)
+affects other side: nothing (client-only DJ Systems Lab fix round 2 on the unpublished branch dj-lab; additive PagedLab/RackUnit props no other lab sets; no DB, no OTA)
+needs: nothing
+
+
+### 2026-10-18 18:06 · ccode · 5ea25e9c
+changed: DJ Systems Lab shared: HOT-PATCH tray warning, quiet map flags, what's-left goals
+affects other side: nothing (client-only DJ Systems Lab fix round 2 on the unpublished branch dj-lab; additive PagedLab/RackUnit props no other lab sets; no DB, no OTA)
+needs: nothing
+
+
+### 2026-10-18 18:06 · ccode · b79239ae
+changed: Lab kit (additive): per-page what's-left lines, isPageDone, locked options keys
+affects other side: nothing (client-only DJ Systems Lab fix round 2 on the unpublished branch dj-lab; additive PagedLab/RackUnit props no other lab sets; no DB, no OTA)
+needs: nothing
+
+
 ### 2026-10-18 17:15 · ccode · 4714da74
 changed: DJ Systems Lab: the three expert reviews of Stage 1 (2026-10-18)
 affects other side: nothing (review documents only, branch dj-lab; no DB, no OTA)
