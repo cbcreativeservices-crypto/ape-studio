@@ -39,8 +39,8 @@ import { deviceLive, phonesPlugged, PLUGS } from '../model/djModel';
 import type { BoothRender } from '../engine/djRender';
 import { MIXER_REAR, PLAYER_REAR } from '../geometry/boothGeometry';
 import { PLATE_H, PLATE_W } from '../geometry/gearGeometry';
-import { FLAG_TEXT, MAP, MAP_PLUGS, TIED, farKindOf, phonesJackPt, type SpeakerKey } from '../geometry/mapGeometry';
-import { PATCH_DY, PHONES_BREAK, ROOM4, ROOM_F, ROOM_FLOOR, lane4, patchLabels4, roomPhonesBox, roomSpeakerBox4, roomTableTop, run4, speakerLit, type P2, type Placed } from '../geometry/dressGeometry';
+import { FLAG_TEXT, MAP, MAP_PLUGS, TIED, farKindOf, type SpeakerKey } from '../geometry/mapGeometry';
+import { FRONT4, PATCH_DY, ROOM_TITLE, PHONES_BREAK, ROOM4, ROOM_F, ROOM_FLOOR, drawnRun4, lane4, patchLabels4, phonesJack4, roomPhonesBox, roomSpeakerBox4, roomTableTop, speakerLit, type P2, type Placed } from '../geometry/dressGeometry';
 import type { Box } from '../geometry/boothGeometry';
 import { INK } from './ink';
 import { CableFlag, CableRun, LaneTies, type Run } from './cables';
@@ -161,7 +161,7 @@ function Room({ booth, last, thump }: { booth: Booth; last: BoothRender | null; 
           </Group>
         );
       })}
-      <SceneText x={520} y={4 + note * 0.95} size={note} text="THE ROOM · 1:5 · DISTANCES SHORTENED" color={INK.amber} face="label" align="center" />
+      <SceneText x={520} y={4 + note * 0.95} size={note} text={ROOM_TITLE} color={INK.amber} face="label" align="center" />
     </Group>
   );
 }
@@ -169,19 +169,54 @@ function Room({ booth, last, thump }: { booth: Booth; last: BoothRender | null; 
 /* ── the patch band (1:1) ─────────────────────────────────────────────── */
 
 /** The mixer's front edge, at full size, with its headphone jack. It is the
- *  SAME mixer seen from its front, and the words say so ("MIXER'S FRONT
- *  EDGE", placed by placeLabels clear of every cable). */
+ *  SAME mixer seen from its front, and the drawing and the words say so
+ *  (round 3, grades screen 4): its left end sits on the same line as the
+ *  rear panel's left edge, a fine line ties the two views together, and it
+ *  is cut off with a break line where the hanging plugs are ("MIXER'S FRONT
+ *  EDGE", placed by placeLabels clear of every cable, always on the glass). */
 function MixerFront() {
-  const F0 = MAP.front;
-  const j = phonesJackPt;
+  const F0 = FRONT4;
+  const j = phonesJack4;
+  const body = useMemo(() => {
+    // the bar, its right end broken off (a drafting break: the edge goes on)
+    const p = Skia.PathBuilder.Make();
+    const r = 4;
+    const x1 = F0.x + F0.w;
+    p.moveTo(F0.x + r, F0.y);
+    p.lineTo(x1, F0.y);
+    p.lineTo(x1 - 4, F0.y + F0.h * 0.35);
+    p.lineTo(x1 + 1, F0.y + F0.h * 0.65);
+    p.lineTo(x1 - 3, F0.y + F0.h);
+    p.lineTo(F0.x + r, F0.y + F0.h);
+    p.quadTo(F0.x, F0.y + F0.h, F0.x, F0.y + F0.h - r);
+    p.lineTo(F0.x, F0.y + r);
+    p.quadTo(F0.x, F0.y, F0.x + r, F0.y);
+    p.close();
+    return p.detach();
+  }, [F0.x, F0.y, F0.w, F0.h]);
+  const breakEdge = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    const x1 = F0.x + F0.w;
+    p.moveTo(x1, F0.y);
+    p.lineTo(x1 - 4, F0.y + F0.h * 0.35);
+    p.lineTo(x1 + 1, F0.y + F0.h * 0.65);
+    p.lineTo(x1 - 3, F0.y + F0.h);
+    return p.detach();
+  }, [F0.x, F0.y, F0.w, F0.h]);
+  const rearBottom = MAP.mixer.y + MIXER_REAR.h;
   return (
     <Group>
-      <RoundedRect x={F0.x + 2} y={F0.y + 3} width={F0.w} height={F0.h} r={4} color="rgba(0,0,0,0.6)">
+      {/* one object, two views: the rear panel's left edge carried down to the front edge's */}
+      <Line p1={vec(F0.x, rearBottom + 2)} p2={vec(F0.x, F0.y - 2)} color="rgba(201,205,211,0.55)" strokeWidth={0.9} />
+      <Line p1={vec(F0.x - 3, rearBottom + 2)} p2={vec(F0.x + 3, rearBottom + 2)} color="rgba(201,205,211,0.55)" strokeWidth={0.9} />
+      <Line p1={vec(F0.x - 3, F0.y - 2)} p2={vec(F0.x + 3, F0.y - 2)} color="rgba(201,205,211,0.55)" strokeWidth={0.9} />
+      <Path path={body} color="rgba(0,0,0,0.6)" transform={[{ translateX: 2 }, { translateY: 3 }]}>
         <BlurMask blur={3} style="normal" />
-      </RoundedRect>
-      <RoundedRect x={F0.x} y={F0.y} width={F0.w} height={F0.h} r={4}>
+      </Path>
+      <Path path={body}>
         <LinearGradient start={vec(0, F0.y)} end={vec(0, F0.y + F0.h)} colors={['#3a3d44', '#1a1b1f', '#0b0c0e']} positions={[0, 0.35, 1]} />
-      </RoundedRect>
+      </Path>
+      <Path path={breakEdge} style="stroke" strokeWidth={0.9} color="#8d929a" strokeJoin="round" />
       <Oval x={j.x - 6} y={j.y - 5} width={12} height={10}>
         <LinearGradient start={vec(j.x - 6, j.y - 5)} end={vec(j.x + 6, j.y + 5)} colors={[INK.metalHi, INK.metalMid, INK.metalLo]} />
       </Oval>
@@ -237,8 +272,10 @@ export const SystemMap = memo(function SystemMap({ booth, last, flow, thump = []
   const { s, textScale } = useContext(SceneFontsContext);
   const plugsKey = MAP_PLUGS.map((p) => booth.plugs[p] ?? '-').join('|');
   const geo = useMemo(() => {
+    // every run as drawn: a plugged one dressed, a loose one hanging straight
+    // down from its socket (round 3)
     const dense: Partial<Record<PlugId, P2[]>> = {};
-    for (const p of MAP_PLUGS) if (booth.plugs[p] != null || PLUGS[p].kind === 'phones') dense[p] = booth.plugs[p] != null ? run4(p, booth.plugs) : lane4(p, null);
+    for (const p of MAP_PLUGS) dense[p] = drawnRun4(p, booth.plugs);
     return dense;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plugsKey]);
@@ -249,7 +286,7 @@ export const SystemMap = memo(function SystemMap({ booth, last, flow, thump = []
       kind: PLUGS[p].kind,
       colour: PLUG_COLOUR(p),
       pts: lane4(p, booth.plugs[p] ?? null),
-      dense: plugged ? geo[p] : undefined,
+      dense: geo[p],
       plugged,
       live: liveOf(booth, last, p),
       label: FLAG_TEXT[p] ?? PLUGS[p].short,
@@ -340,7 +377,8 @@ export const SystemMap = memo(function SystemMap({ booth, last, flow, thump = []
               <CableRun r={r} flow={flow} />
             </Group>
           ))}
-        <CableBreak />
+        {/* the break mark shows only with its words ("TO THE HEADPHONES") */}
+        {placed.some((p) => p.id === 'hp') ? <CableBreak /> : null}
         {ties.map((t, i) => (t ? (
           <Group key={t.key} opacity={tieAlpha(TIED[i][0], TIED[i][1])}>
             <LaneTies x0={t.x0} x1={t.x1} y0={t.y0} y1={t.y1} sag={t.sag} />

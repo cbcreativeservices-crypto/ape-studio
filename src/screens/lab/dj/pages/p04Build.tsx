@@ -12,10 +12,10 @@ import { LabChip } from '../../LabShell';
 import { StageInFullScreen } from '../../rack/stageAspect';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
-import { Scene } from '../art/Scene';
+import { Scene, textWidthPt } from '../art/Scene';
 import { MAP_FRAME, SystemMap, patchBox, roomSpeakerBox } from '../art/SystemMap';
 import { MAP_BODIES, type SpeakerKey } from '../geometry/mapGeometry';
-import { ROOM_FLOOR, followBox4, roomPhonesBox, speakerLit } from '../geometry/dressGeometry';
+import { ROOM_FLOOR, followBox4, roomPhonesBox, roomTitleBox4, speakerLit } from '../geometry/dressGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { boothKey, stopKey } from '../dock';
@@ -56,8 +56,11 @@ const VIEWS: readonly { id: View4; label: string }[] = [
  *  further while no power task is on. The CABLE view frames the focus cable
  *  close up. FULL SCREEN keeps the full detail: the whole map, every cable at
  *  full strength, every flag that finds clean air (CABLE opens its zoom on
- *  that cable). The room's names are callouts kept in the room band; the
- *  patch band's words are placed by the map itself (placeLabels). */
+ *  that cable). The room's names are callouts kept in the room band (and off
+ *  its printed title); the patch band's words are placed by the map itself
+ *  (placeLabels). Round 3: FULL SCREEN at 1× FILLS the screen (the map
+ *  covers it, opening on the focus, and drags sideways); at that size every
+ *  one of the sixteen runs carries its flag. */
 function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatched, audioOk, powerOk, view, powerTask }: {
   w: number;
   h: number;
@@ -92,6 +95,8 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
   };
   // the room's names stay in the room band: the patch band is one obstacle
   const hard = [...(['paR', 'boothR', 'boothL', 'paL'] as const).map((k) => roomSpeakerBox(k)), roomPhonesBox, { x: -8, y: ROOM_FLOOR + 20, w: 1056, h: 900 }];
+  // …and the room's printed title: a THUMP or HOT-PATCH flash never covers it (round 3)
+  const titleAt = useMemo(() => (s: number, k: number) => [roomTitleBox4(s, k, textWidthPt)], []);
   const keys = flash?.keys ?? [];
   return (
     <Scene
@@ -102,6 +107,8 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
       motion={motion}
       a11y={`${cable ? `Close up on the ${PLUGS[sel].short} cable, from behind the booth.` : LOOK} ${audioOk} of 9 audio cables and ${powerOk} of 7 devices powered.${flash ? ` A speaker just flagged a ${flash.word.toLowerCase()}.` : ''}`}
       obstacles={cable ? [] : hard}
+      obstaclesAt={cable ? undefined : titleAt}
+      fill
       focus={view === 'CABLE' ? patchBox(follow) : patchBox(MAP_BODIES[1])}
       callouts={
         cable

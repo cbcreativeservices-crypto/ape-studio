@@ -21,8 +21,8 @@
  *    at full size; each speaker's signal light comes from ITS OWN feed.
  */
 import { MIXER_REAR, MIXER_REAR_JACKS, PLAYER_REAR, PLAYER_REAR_JACKS, type Box, type Pt } from './boothGeometry.ts';
-import { MONITOR_H, MONITOR_W, SPEAKER_H, SPEAKER_W } from './gearGeometry.ts';
-import { FLAG, FLAG_TEXT, LANE, MAP, MAP_BODIES, MAP_PLUGS, TIED, plateBox, FLOOR_Y, PLUG_R, farKindOf, fixedEnd, fixedKindOf, jackPt, phonesJackPt, routeOf, type SpeakerKey } from './mapGeometry.ts';
+import { MONITOR_H, MONITOR_W, PLATE_H, SPEAKER_H, SPEAKER_W } from './gearGeometry.ts';
+import { FLAG, FLAG_TEXT, LANE, MAP, MAP_BODIES, MAP_PLUGS, TIED, plateBox, FLOOR_Y, PLUG_R, farKindOf, fixedEnd, fixedKindOf, jackPt, routeOf, type SpeakerKey } from './mapGeometry.ts';
 import { PLUGS, deviceLive, speakerFeed, type Booth, type JackId, type PlugId } from '../model/djModel.ts';
 import type { BoothRender } from '../engine/djRender.ts';
 
@@ -146,6 +146,14 @@ export function polylinesMeet(a: readonly P2[], b: readonly P2[], gap: number): 
  *  leads. */
 export const TT_REAR = { w: 300, h: 90 } as const;
 export const TT_REAR_JACKS = { outL: { x: 84, y: 46 }, outR: { x: 108, y: 46 }, gnd: { x: 56, y: 46 }, preamp: { x: 176, y: 40 }, ac: { x: 230, y: 36 } } as const;
+/** Round 3 (grades screen 3, #2): on Screen 3 the turntable's rear is drawn
+ *  at its TRUE width — a DJ turntable's plinth is about 450 mm across, half
+ *  as wide again as the 300 mm connector plate. The plate's sockets keep
+ *  their places on the glass (the panel grows 75 mm each side of them), so
+ *  the plinth runs past both edges of the picture while the 320 mm player
+ *  fits inside it: the turntable reads as the bigger object it is. */
+export const TT3_REAR_W = 450;
+export const TT3_INSET = (TT3_REAR_W - TT_REAR.w) / 2;
 
 export const S3 = {
   /** The source's rear (player at x 0, turntable at x 10). */
@@ -164,7 +172,7 @@ export const S3 = {
 
 export type Source3 = 'A' | 'TT';
 export const mixJack3 = (j: keyof typeof MIXER_REAR_JACKS): Pt => ({ x: S3.mix.x + MIXER_REAR_JACKS[j].x, y: S3.mix.y + MIXER_REAR_JACKS[j].y });
-export const srcBox3 = (src: Source3): Box => (src === 'A' ? { x: 0, y: S3.srcY, w: PLAYER_REAR.w, h: PLAYER_REAR.h } : { x: S3.ttX, y: S3.srcY, w: TT_REAR.w, h: TT_REAR.h });
+export const srcBox3 = (src: Source3): Box => (src === 'A' ? { x: 0, y: S3.srcY, w: PLAYER_REAR.w, h: PLAYER_REAR.h } : { x: S3.ttX - TT3_INSET, y: S3.srcY, w: TT3_REAR_W, h: TT_REAR.h });
 export const srcJack3 = (src: Source3, side: 'L' | 'R'): Pt => {
   const k = side === 'L' ? 'outL' : 'outR';
   return src === 'A' ? { x: PLAYER_REAR_JACKS[k].x, y: S3.srcY + PLAYER_REAR_JACKS[k].y } : { x: S3.ttX + TT_REAR_JACKS[k].x, y: S3.srcY + TT_REAR_JACKS[k].y };
@@ -256,6 +264,8 @@ export function parked3(active: Source3, activeTo: { L: JackId | null; R: JackId
   const taken = new Set<string>([...(aL ? [aL] : []), ...(aR ? [aR] : []), ...parkedAt.map((p) => p.jack)]);
   const empty = sockets3(active).filter((q) => q.id.startsWith('ch') || q.id.startsWith('booth') ? !taken.has(q.id) : false);
   const out: Parked3[] = [];
+  const legends = legends3();
+  const rings = (['line', 'phono'] as const).map(pairBox3);
   for (const p of parkedAt) {
     const at = mixJack3(p.jack as keyof typeof MIXER_REAR_JACKS);
     const others = parkedAt.filter((q) => q !== p).map((q) => mixJack3(q.jack as keyof typeof MIXER_REAR_JACKS));
@@ -269,6 +279,9 @@ export function parked3(active: Source3, activeTo: { L: JackId | null; R: JackId
       const dy = Math.sin(a);
       const stub: P2[] = [[at.x, at.y], [at.x + dx * len, at.y + dy * len]];
       let clear = Infinity;
+      // round 3 (grades screen 3): how much of the lead runs ALONG a pair's
+      // selector ring (crossing it square is fine — lying on it is glare)
+      let onRing = 0;
       for (let t = 6; t <= len; t += 1) {
         const x = at.x + dx * t;
         const y = at.y + dy * t;
@@ -276,15 +289,55 @@ export function parked3(active: Source3, activeTo: { L: JackId | null; R: JackId
         for (const q of plugs) clear = Math.min(clear, Math.hypot(q.x - x, q.y - y) - PLUG_R.rca - 1.6);
         for (const q of others) clear = Math.min(clear, Math.hypot(q.x - x, q.y - y) - PLUG_R.rca - 1.6);
         for (const q of empty) clear = Math.min(clear, Math.hypot(q.x - x, q.y - y) - 4.5 - 1.6);
+        // the panel's printed legends (LINE, PHONO, GND, L / R): never covered
+        for (const g of legends) clear = Math.min(clear, boxDist(g, x, y) - 1.6 - 1.2);
+        for (const g of rings) if (ringEdgeDist(g, x, y) < 2.2) onRing += 1;
       }
       // another parked lead's stub: never cross it
       for (const o of out) for (let t = 0; t <= len; t += 1) clear = Math.min(clear, distToPolyline(o.stub, at.x + dx * t, at.y + dy * t) - 3.2);
-      const score = Math.min(clear, 4) * 10 - Math.abs(deg - 90) * 0.05 + len * 0.2;
+      const score = Math.min(clear, 4) * 10 - Math.abs(deg - 90) * 0.05 + len * 0.2 - Math.max(0, onRing - 5) * 1.5;
       if (!best || score > best.score) best = { score, stub };
     }
     out.push({ side: p.side, jack: p.jack, at, stub: best!.stub });
   }
   return out;
+}
+
+/** The outline round a CH 1 input pair (the selector's green ring, or the
+ *  dimmed pair's shade), as Screen 3 draws it. */
+export function pairBox3(k: 'line' | 'phono'): Box {
+  const j = mixJack3(`ch1.${k}.L`);
+  return { x: j.x - 9, y: j.y - 9, w: 18, h: 42 };
+}
+
+/** The mixer rear's printed legends round the jacks a parked lead could
+ *  leave from (art/RearPanels.MixerRear prints them; 3.4 mm type). */
+export function legends3(): Box[] {
+  const J = MIXER_REAR_JACKS;
+  const at = (x: number, y: number, n: number): Box => ({ x: S3.mix.x + x - (n * 2.1) / 2, y: S3.mix.y + y - 3.1, w: n * 2.1, h: 3.8 });
+  return [
+    at(J['ch1.line.R'].x, J['ch1.line.R'].y + 13, 4),
+    at(J['ch1.phono.R'].x, J['ch1.phono.R'].y + 13, 5),
+    at(J['ch2.line.R'].x, J['ch2.line.R'].y + 13, 4),
+    at(J['ch2.phono.R'].x, J['ch2.phono.R'].y + 13, 5),
+    at(J.gnd.x, J.gnd.y + 13, 3),
+    at(J['booth.L'].x + 11, J['booth.L'].y + 1.4, 1),
+    at(J['booth.R'].x + 11, J['booth.R'].y + 1.4, 1),
+    // the dim L / R beside each channel's PHONO column
+    ...(['ch1', 'ch2'] as const).flatMap((c) => [at(J[`${c}.phono.L`].x - 12, J[`${c}.phono.L`].y + 1.4, 1), at(J[`${c}.phono.R`].x - 12, J[`${c}.phono.R`].y + 1.4, 1)]),
+  ];
+}
+
+/** Signed distance from a point to a box (negative inside). */
+function boxDist(b: Box, x: number, y: number): number {
+  const dx = Math.max(b.x - x, 0, x - (b.x + b.w));
+  const dy = Math.max(b.y - y, 0, y - (b.y + b.h));
+  if (dx === 0 && dy === 0) return -Math.min(x - b.x, b.x + b.w - x, y - b.y, b.y + b.h - y);
+  return Math.hypot(dx, dy);
+}
+/** Distance from a point to a box's outline. */
+function ringEdgeDist(b: Box, x: number, y: number): number {
+  return Math.abs(boxDist(b, x, y));
 }
 
 /* ── Screen 4: the room band and the patch band ───────────────────────── */
@@ -356,6 +409,94 @@ export const speakerOn = (b: Booth, k: SpeakerKey): boolean => deviceLive(b, k);
 export const PHONES_BREAK: Pt = { x: 334, y: 704 };
 
 /**
+ * The mixer's FRONT EDGE on the patch band (round 3, grades screen 4). The
+ * loose ends now hang straight down from the mixer's outputs and inlet, so
+ * the front edge moved out from under them: it sits under the mixer's LEFT
+ * end, its left edge on the same line as the rear panel's left edge (one
+ * object, two views — art/SystemMap draws the line that ties them), and it is
+ * cut off with a break line at its right end, where the hanging plugs are.
+ * The headphone jack keeps its place 26 mm in from the end.
+ */
+export const FRONT4: Box = { x: MAP.mixer.x, y: 676, w: 106, h: 18 };
+export const phonesJack4: Pt = { x: FRONT4.x + 26, y: FRONT4.y + 9 };
+/** Any jack on Screen 4's patch band (the headphone jack is on FRONT4). */
+export const jackPt4 = (j: JackId): Pt => (j === 'mix.phones' ? phonesJack4 : jackPt(j));
+
+/* ── loose ends hang (round 3, grades screen 4 #4) ─────────────────────── */
+
+/** A loose plug as drawn (art/parts.LoosePlug): its length from the boot
+ *  (where the cable enters) to the tips of its pins, and half its width. */
+export const LOOSE_PLUG: Record<'rca' | 'xlr' | 'trs' | 'mains', { len: number; half: number }> = {
+  rca: { len: 28, half: 4.2 },
+  xlr: { len: 52, half: 9.5 },
+  trs: { len: 57, half: 5 },
+  mains: { len: 53, half: 12 },
+};
+const looseKind = (p: PlugId): keyof typeof LOOSE_PLUG => {
+  const k = farKindOf(p);
+  return k === 'iec' ? 'mains' : (k as keyof typeof LOOSE_PLUG);
+};
+
+/** How far each loose cable bows sideways as it hangs (mm, + = right): a
+ *  cable's slight natural set, away from its neighbour so a pair never
+ *  closes up. */
+const BOW: Partial<Record<PlugId, number>> = {
+  'A.rcaL': -1.6, 'A.rcaR': 1.6, 'B.rcaL': -1.6, 'B.rcaR': 1.6,
+  'mst.xlrR': -1.8, 'mst.xlrL': 1.8, 'bth.trsR': 1.4, 'bth.trsL': -1.2,
+};
+
+/**
+ * Where a loose end hangs to: the boot of its plug (patch mm). Every loose end
+ * HANGS — straight down from the socket under its plug's weight, the plug
+ * pins-down — to just below the panel (or speaker plate) it hangs from, so
+ * no hanging plug lies on a rear panel; each in its own lane under its own
+ * socket. The headphone cable hangs from its break mark.
+ */
+function hangEnd4(p: PlugId, a: Pt): number {
+  if (PLUGS[p].kind === 'phones') return a.y + 10;
+  if (p.startsWith('ac.pa') || p.startsWith('ac.booth')) return MAP.plate.paR.y + PLATE_H + 0.5; // just under the plate (its plug clears the rear panels below)
+  const body = MAP_BODIES.slice(0, 3).find((b) => a.x >= b.x && a.x <= b.x + b.w && a.y >= b.y && a.y <= b.y + b.h);
+  return (body ? body.y + body.h : a.y + 40) + 2;
+}
+
+/** BOOTH L's cable drapes round the BOOTH R plug under it (the two jacks share
+ *  a column): it eases left off the column, then hangs straight. */
+const DRAPE_BTH_L = { dx: -20, over: 42 };
+
+/**
+ * A loose end as drawn (patch mm, dense): from its socket (or the headphone
+ * cable's break mark) down to its plug's boot. It ends exactly vertical, so
+ * its plug hangs pins-down.
+ */
+export function hang4(p: PlugId): P2[] {
+  const a = PLUGS[p].kind === 'phones' ? PHONES_BREAK : fixedEnd(p)!;
+  const y1 = hangEnd4(p, a);
+  const L = y1 - a.y;
+  const bow = BOW[p] ?? 1.2;
+  const out: P2[] = [];
+  const n = Math.max(4, Math.ceil(L / 3));
+  for (let i = 0; i <= n; i++) {
+    const t = i / n;
+    const y = a.y + L * t;
+    let x = a.x + (bow * (1 - Math.cos(2 * Math.PI * t))) / 2;
+    if (p === 'bth.trsL') {
+      const u = Math.max(0, Math.min(1, (y - a.y) / DRAPE_BTH_L.over));
+      x += DRAPE_BTH_L.dx * u * u * (3 - 2 * u);
+    }
+    out.push([x, y]);
+  }
+  return out;
+}
+
+/** The hanging plug's body (patch mm): from its boot down to its pins. */
+export function loosePlugBox4(p: PlugId): Box {
+  const h = hang4(p);
+  const [x, y] = h[h.length - 1];
+  const k = LOOSE_PLUG[looseKind(p)];
+  return { x: x - k.half, y, w: k.half * 2, h: k.len };
+}
+
+/**
  * Screen 4's lanes, RE-SPACED (round 2, grades screen 4: "nine leads and
  * seven cords run within a few px of each other"). Runs that share a stretch
  * now keep at least 11 mm apart (the two halves of an RCA twin lead keep
@@ -384,15 +525,15 @@ export const MIXER_CORD_X = MAP.mixer.x + MIXER_REAR.w + 8;
  *  own routes on the re-spaced lanes; the headphone cable starts at its break
  *  mark; the mixer's cord leaves off the panel's edge. */
 export function lane4(p: PlugId, to: JackId | null): P2[] {
+  // a loose end hangs straight down (round 3): its drawn run IS its lane
+  if (!to) return hang4(p);
   if (PLUGS[p].kind === 'phones') {
     const a = PHONES_BREAK;
-    if (!to) return [[a.x, a.y], [a.x + 22, a.y], [a.x + 46, a.y - 6]];
-    const b = to === 'mix.phones' ? phonesJackPt : null;
+    const b = to === 'mix.phones' ? phonesJack4 : null;
     if (!b) return routeOf(p, to);
     return [[a.x, a.y], [b.x, a.y], [b.x, b.y]];
   }
   const r = routeOf(p, to);
-  if (!to) return r;
   const lane = LANE4[p];
   if (p === 'ac.mixer' && lane != null && to.startsWith('strip.')) {
     const a = r[0];
@@ -432,8 +573,8 @@ function horizontalSpans(pts: readonly P2[]): { x0: number; x1: number; y: numbe
  *  jack (a group's shared sag needs its partners' spans). */
 export function run4(p: PlugId, plugs: Partial<Record<PlugId, JackId | null>>): P2[] {
   const to = plugs[p] ?? null;
+  if (!to) return hang4(p);
   const l = lane4(p, to);
-  if (!to) return dressPoints(l, undefined, { corner: 10 });
   const g = HANG_GROUPS.find((x) => x.plugs.includes(p));
   let shared: Profile | null = null;
   if (g) {
@@ -455,31 +596,14 @@ export function run4(p: PlugId, plugs: Partial<Record<PlugId, JackId | null>>): 
   return dressPoints(l, (a, b) => (shared && a[1] < FLOOR_LANE && Math.abs(b[0] - a[0]) >= MIN_HANG ? shared : null), { corner: 14 });
 }
 
-/** How deep a loose end dips below its chord as drawn (art/cables default). */
-export const LOOSE_SAG = 16;
-
 /**
  * The run EXACTLY as Screen 4 draws it (patch mm): a plugged cable's dressed
- * run; a loose one's lane with its last stretch sagging to where the plug
- * lies (the quadratic art/parts.sagPath strokes, sampled). The words and the
- * test keep off THIS.
+ * run; a loose one HANGING straight down from its socket (hang4 — round 3:
+ * it used to splay out at about 45°). The words and the test keep off THIS.
  */
 export function drawnRun4(p: PlugId, plugs: Partial<Record<PlugId, JackId | null>>): P2[] {
   if (plugs[p]) return run4(p, plugs);
-  const l = lane4(p, null);
-  if (l.length < 2) return l;
-  const pre = l.slice(0, -1);
-  const a = pre[pre.length - 1];
-  const b = l[l.length - 1];
-  const mx = (a[0] + b[0]) / 2;
-  const my = Math.max(a[1], b[1]) + LOOSE_SAG;
-  const out: P2[] = pre.map((q) => [q[0], q[1]]);
-  for (let j = 1; j <= 12; j++) {
-    const t = j / 12;
-    const u = 1 - t;
-    out.push([u * u * a[0] + 2 * u * t * mx + t * t * b[0], u * u * a[1] + 2 * u * t * my + t * t * b[1]]);
-  }
-  return out;
+  return hang4(p);
 }
 
 /** Half a cable's drawn width on Screen 4 (mm): art/cables WIDTH, a mains
@@ -501,6 +625,16 @@ export const PATCH_TITLE = 'WHAT YOU PLUG · 1:1 (FULL SIZE) · SEEN FROM BEHIND
 export function patchTitleBox4(s: number, k: number, measure: (t: string, k: number) => number): Box {
   const note = (9.5 * k) / Math.max(1e-6, s);
   return { x: -2, y: PATCH_TOP + 2, w: (measure(PATCH_TITLE, k) * 0.95 + 4 * k) / Math.max(1e-6, s), h: note * 1.25 + 3 };
+}
+/** The room band's printed title (art/SystemMap draws it centred at the
+ *  band's top, 9.5 pt). Round 3 (grades screen 4): the room's callouts — the
+ *  red THUMP / HOT-PATCH flash among them — keep off it (map mm). */
+export const ROOM_TITLE = 'THE ROOM · 1:5 · DISTANCES SHORTENED';
+export function roomTitleBox4(s: number, k: number, measure: (t: string, k: number) => number): Box {
+  const ss = Math.max(1e-6, s);
+  const note = (9.5 * k) / ss;
+  const w = (measure(ROOM_TITLE, k) * 0.95 + 6 * k) / ss;
+  return { x: 520 - w / 2, y: 2, w, h: note * 1.25 + 4 / ss };
 }
 /** The patch band as the words may use it (patch mm). */
 export const PATCH_BAND: Box = { x: 0, y: PATCH_TOP + 2, w: 1040, h: 828 - PATCH_TOP };
@@ -527,6 +661,12 @@ export function followBox4(p: PlugId, plugs: Partial<Record<PlugId, JackId | nul
     y1 = Math.max(y1, y);
   };
   for (const q of pts) add(q[0], q[1]);
+  // a loose end: its hanging plug too
+  if (!plugs[p]) {
+    const pb = loosePlugBox4(p);
+    add(pb.x, pb.y);
+    add(pb.x + pb.w, pb.y + pb.h);
+  }
   const pad = 30;
   x0 -= pad;
   y0 -= pad;
@@ -561,7 +701,7 @@ export function followBox4(p: PlugId, plugs: Partial<Record<PlugId, JackId | nul
 
 export type LabelItem =
   | { kind: 'flag'; id: PlugId; text: string; live: boolean; edge: string; along: readonly P2[]; prefer: P2; loose?: Box; optional?: boolean }
-  | { kind: 'name'; id: string; text: string; box: Box; optional?: boolean };
+  | { kind: 'name'; id: string; text: string; box: Box; optional?: boolean; alts?: readonly string[] };
 export type Placed = { id: string; kind: 'flag' | 'name'; text: string; x: number; y: number; w: number; h: number; live?: boolean; edge?: string; leader?: { x0: number; y0: number; x1: number; y1: number } };
 /** A cable as the words see it: its drawn polyline and half its width. */
 export type CableObstacle = { id: string; pts: readonly P2[]; half: number };
@@ -708,7 +848,10 @@ export function placeLabels(items: readonly LabelItem[], bodies: readonly Box[],
   const cost = (r: Box, bound: number) => {
     let c = 0;
     if (r.x < band.x || r.y < band.y || r.x + r.w > band.x + band.w || r.y + r.h > band.y + band.h) c += 5000;
-    for (const b of bodies) {
+    for (const b0 of bodies) {
+      // the gear keeps a little air round it too (round 3: a flag sat right
+      // against the mixer's front edge at 3x)
+      const b = { x: b0.x - air, y: b0.y - air, w: b0.w + air * 2, h: b0.h + air * 2 };
       const o = overlap(r, b);
       if (o > 0.5) c += 2500 + (o / (r.w * r.h)) * 4000; // never on the gear
     }
@@ -738,66 +881,90 @@ export function placeLabels(items: readonly LabelItem[], bodies: readonly Box[],
   for (const it of items) {
     const isFlag = it.kind === 'flag';
     const fs = ((isFlag ? 9.5 : 10) * k) / s;
-    const w = isFlag ? (textWidthPt(it.text, k) * 0.92 + 8 * k) / s : (textWidthPt(it.text, k) + 8 * k) / s;
     const h = isFlag ? fs * 1.32 : fs * 1.45;
     type Cand = { x: number; y: number; ax: number; ay: number; pref: number };
-    const cands: Cand[] = [];
-    if (it.kind === 'flag' && !it.loose) {
-      // beside its own cable: above / below a level stretch, left / right of
-      // a climbing one, at growing distances (the leader grows with it)
-      const half = cables.find((c) => c.id === it.id)?.half ?? 2;
-      for (const st of stations(it.along, 36, 14)) {
-        const level = Math.abs(st.tx) >= Math.abs(st.ty);
-        const pref = Math.hypot(st.x - it.prefer[0], st.y - it.prefer[1]) * s * 0.35;
-        for (const dPt of [4, 9, 16, 28, 44, 64, 90]) {
-          const d = half + air + dPt / s;
-          for (const f of [0, -0.25, 0.25, -0.5, 0.5]) {
-            const pf = pref + Math.abs(f) * 8;
-            // across the cable first (above / below a level stretch, beside a
-            // climbing one), then along it
-            const x = st.x - w / 2 + f * w;
-            const y = st.y - h / 2 + f * h;
-            cands.push({ x, y: st.y - d - h, ax: st.x, ay: st.y, pref: pf + (level ? 0 : 12) });
-            cands.push({ x, y: st.y + d, ax: st.x, ay: st.y, pref: pf + (level ? 1 : 13) });
-            cands.push({ x: st.x - d - w, y, ax: st.x, ay: st.y, pref: pf + (level ? 12 : 0) });
-            cands.push({ x: st.x + d, y, ax: st.x, ay: st.y, pref: pf + (level ? 13 : 1) });
+    type Best = { c: number; place: number; x: number; y: number; w: number; ax: number; ay: number; lx: number; ly: number; text: string };
+    const search = (text: string): Best | null => {
+      const w = isFlag ? (textWidthPt(text, k) * 0.92 + 8 * k) / s : (textWidthPt(text, k) + 8 * k) / s;
+      const cands: Cand[] = [];
+      if (it.kind === 'flag' && !it.loose) {
+        // beside its own cable: above / below a level stretch, left / right of
+        // a climbing one, at growing distances (the leader grows with it)
+        const half = cables.find((c) => c.id === it.id)?.half ?? 2;
+        for (const st of stations(it.along, 36, 14)) {
+          const level = Math.abs(st.tx) >= Math.abs(st.ty);
+          const pref = Math.hypot(st.x - it.prefer[0], st.y - it.prefer[1]) * s * 0.35;
+          for (const dPt of [4, 9, 16, 28, 44, 64, 90]) {
+            const d = half + air + dPt / s;
+            for (const f of [0, -0.25, 0.25, -0.5, 0.5]) {
+              const pf = pref + Math.abs(f) * 8;
+              // across the cable first (above / below a level stretch, beside a
+              // climbing one), then along it
+              const x = st.x - w / 2 + f * w;
+              const y = st.y - h / 2 + f * h;
+              cands.push({ x, y: st.y - d - h, ax: st.x, ay: st.y, pref: pf + (level ? 0 : 12) });
+              cands.push({ x, y: st.y + d, ax: st.x, ay: st.y, pref: pf + (level ? 1 : 13) });
+              cands.push({ x: st.x - d - w, y, ax: st.x, ay: st.y, pref: pf + (level ? 12 : 0) });
+              cands.push({ x: st.x + d, y, ax: st.x, ay: st.y, pref: pf + (level ? 13 : 1) });
+            }
+          }
+        }
+      } else {
+        // a name beside its device, or a LOOSE cable's flag beside its plug
+        const b = it.kind === 'flag' ? it.loose! : it.box;
+        for (const d of [2, 8, 16, 28, 44, 64, 92, 124, 160, 200].map((v) => v / s)) {
+          for (const f of [0.5, 0.15, 0.85, 0.3, 0.7, 0, 1]) {
+            for (const g of [0, -0.4, 0.4]) {
+              const pg = Math.abs(g) * 6;
+              const cx = b.x + b.w * f;
+              cands.push({ x: cx - w / 2 + g * w, y: b.y - d - h, ax: cx, ay: b.y, pref: pg });
+              cands.push({ x: cx - w / 2 + g * w, y: b.y + b.h + d, ax: cx, ay: b.y + b.h, pref: pg });
+              const cy = b.y + b.h * f;
+              cands.push({ x: b.x - d - w, y: cy - h / 2 + g * h, ax: b.x, ay: cy, pref: pg });
+              cands.push({ x: b.x + b.w + d, y: cy - h / 2 + g * h, ax: b.x + b.w, ay: cy, pref: pg });
+            }
           }
         }
       }
-    } else {
-      // a name beside its device, or a LOOSE cable's flag beside its plug
-      const b = it.kind === 'flag' ? it.loose! : it.box;
-      for (const d of [2, 8, 16, 28, 44, 64, 92, 124, 160, 200].map((v) => v / s)) {
-        for (const f of [0.5, 0.15, 0.85, 0.3, 0.7, 0, 1]) {
-          for (const g of [0, -0.4, 0.4]) {
-            const pg = Math.abs(g) * 6;
-            const cx = b.x + b.w * f;
-            cands.push({ x: cx - w / 2 + g * w, y: b.y - d - h, ax: cx, ay: b.y, pref: pg });
-            cands.push({ x: cx - w / 2 + g * w, y: b.y + b.h + d, ax: cx, ay: b.y + b.h, pref: pg });
-            const cy = b.y + b.h * f;
-            cands.push({ x: b.x - d - w, y: cy - h / 2 + g * h, ax: b.x, ay: cy, pref: pg });
-            cands.push({ x: b.x + b.w + d, y: cy - h / 2 + g * h, ax: b.x + b.w, ay: cy, pref: pg });
-          }
-        }
+      let best: Best | null = null;
+      for (const cd of cands) {
+        const r = { x: cd.x, y: cd.y, w, h };
+        const place = cost(r, best ? best.c : Infinity);
+        if (best && place > best.c) continue;
+        const lx = Math.max(r.x, Math.min(r.x + r.w, cd.ax));
+        const ly = Math.max(r.y, Math.min(r.y + r.h, cd.ay));
+        const c = place + cd.pref + legCost(cd.ax, cd.ay, lx, ly, isFlag ? it.id : null);
+        if (!best || c < best.c) best = { c, place, x: cd.x, y: cd.y, w, ax: cd.ax, ay: cd.ay, lx, ly, text };
       }
-    }
-    let best: { c: number; place: number; x: number; y: number; ax: number; ay: number; lx: number; ly: number } | null = null;
-    for (const cd of cands) {
-      const r = { x: cd.x, y: cd.y, w, h };
-      const place = cost(r, best ? best.c : Infinity);
-      if (best && place > best.c) continue;
-      const lx = Math.max(r.x, Math.min(r.x + r.w, cd.ax));
-      const ly = Math.max(r.y, Math.min(r.y + r.h, cd.ay));
-      const c = place + cd.pref + legCost(cd.ax, cd.ay, lx, ly, isFlag ? it.id : null);
-      if (!best || c < best.c) best = { c, place, x: cd.x, y: cd.y, ax: cd.ax, ay: cd.ay, lx, ly };
+      return best;
+    };
+    // a name may say it shorter where the full words find no clean air (round
+    // 3: a required name is never dropped; "MIXER’S FRONT EDGE" becomes
+    // "MIXER FRONT" on a phone rather than vanish)
+    // (the shorter words win too where the full ones would sit far off on a
+    // long leader: each step shorter costs about 40 pt of leader)
+    const texts = it.kind === 'name' ? [it.text, ...(it.alts ?? [])] : [it.text];
+    let best: Best | null = null;
+    let bestScore = Infinity;
+    for (let i = 0; i < texts.length; i++) {
+      const b = search(texts[i]);
+      if (!b) continue;
+      const score = b.c + i * 32 + (b.place < 2500 ? 0 : 1e6);
+      if (score < bestScore) {
+        best = b;
+        bestScore = score;
+      }
     }
     if (!best) continue;
     if (it.optional && best.place >= 2500) continue;
-    const r = { x: best.x, y: best.y, w, h };
+    // an optional flag far from its cable waits for a closer zoom (a long
+    // leader reads as belonging to something else)
+    if (it.optional && isFlag && Math.hypot(best.lx - best.ax, best.ly - best.ay) * s > (it.loose ? 120 : 99)) continue;
+    const r = { x: best.x, y: best.y, w: best.w, h };
     const long = Math.hypot(best.lx - best.ax, best.ly - best.ay) * s > (isFlag ? 1 : 6);
     const leader = long ? { x0: best.ax, y0: best.ay, x1: best.lx, y1: best.ly } : undefined;
     if (leader) legs.push([leader.x0, leader.y0, leader.x1, leader.y1]);
-    out.push({ id: it.id, kind: it.kind, text: it.text, ...r, leader, live: it.kind === 'flag' ? it.live : undefined, edge: it.kind === 'flag' ? it.edge : undefined });
+    out.push({ id: it.id, kind: it.kind, text: best.text, ...r, leader, live: it.kind === 'flag' ? it.live : undefined, edge: it.kind === 'flag' ? it.edge : undefined });
   }
   return out;
 }
@@ -827,11 +994,12 @@ export function patchLabels4(plugsAt: Partial<Record<PlugId, JackId | null>>, sh
     if (a && PLUGS[p].kind !== 'phones') plugs.push({ x: a.x, y: a.y, r: PLUG_R[fixedKindOf(p)] + 1 });
     const to = plugsAt[p];
     if (to) {
-      const b = jackPt(to);
+      const b = jackPt4(to);
       plugs.push({ x: b.x, y: b.y, r: PLUG_R[farKindOf(p)] + 1 });
     }
   }
-  const bodies: Box[] = [...MAP_BODIES, MAP.front, patchTitleBox4(s, k, measure)];
+  // the gear, the band's title, and every loose plug hanging below its socket
+  const bodies: Box[] = [...MAP_BODIES, FRONT4, patchTitleBox4(s, k, measure), ...MAP_PLUGS.filter((p) => !plugsAt[p]).map(loosePlugBox4)];
   const cables = cableObstacles4(plugsAt);
   const runOf = (p: PlugId): P2[] => cables.find((c) => c.id === p)!.pts as P2[];
   let band = PATCH_BAND;
@@ -863,22 +1031,26 @@ export function patchLabels4(plugsAt: Partial<Record<PlugId, JackId | null>>, sh
     const plugged = plugsAt[p] != null;
     const seen = opt.view ? along.filter((q) => q[0] >= band.x && q[0] <= band.x + band.w && q[1] >= band.y && q[1] <= band.y + band.h) : along;
     if (seen.length === 0) return null;
-    const a1 = along[along.length - 1];
     const pref = (plugged ? FLAG[p] : null) ?? seen[Math.floor(seen.length / 2)];
-    // a loose end's flag goes beside its plug (with a leader), off the gear
-    const loose = plugged ? undefined : { x: a1[0] - 8, y: a1[1] - 8, w: 16, h: 16 };
+    // a loose end's flag goes beside its hanging plug (with a leader), off the gear
+    const loose = plugged ? undefined : loosePlugBox4(p);
     return { kind: 'flag', id: p, text: merged.get(p) ?? FLAG_TEXT[p] ?? PLUGS[p].short, live: live(p), edge: edgeOf(p), along: opt.view ? seen : along, prefer: pref as P2, loose, optional: !focus.has(p) };
   };
   const near = s >= 0.6;
   const powerFocus = [...focus].some((p) => PLUGS[p].kind === 'iec');
+  // round 3 (grades screen 4): the MIXER is named on the whole-booth glass
+  // ALWAYS (a just-patched flag moves; the name never goes), and so is the
+  // mixer's front edge (shorter on a phone). The
+  // headphone cable's break mark shows only with its words (SystemMap).
+  const dev = !!opt.view;
   const names: (LabelItem & { kind: 'name' })[] = [
+    { kind: 'name', id: 'mx', text: 'MIXER', box: MAP_BODIES[1], optional: dev },
     { kind: 'name', id: 'db', text: 'DECK B', box: MAP_BODIES[0], optional: true },
-    { kind: 'name', id: 'mx', text: 'MIXER', box: MAP_BODIES[1], optional: true },
     { kind: 'name', id: 'da', text: 'DECK A', box: MAP_BODIES[2], optional: true },
     // the front edge is the SAME mixer, seen from the front: said so
-    { kind: 'name', id: 'mf', text: 'MIXER’S FRONT EDGE', box: MAP.front, optional: !!opt.view || !near },
+    { kind: 'name', id: 'mf', text: 'MIXER’S FRONT EDGE', alts: ['MIXER FRONT', 'FRONT EDGE'], box: FRONT4 },
     { kind: 'name', id: 'st', text: 'POWER STRIP', box: MAP_BODIES[3], optional: !!opt.view || !(near || powerFocus) },
-    { kind: 'name', id: 'hp', text: 'TO THE HEADPHONES', box: { x: PHONES_BREAK.x - 6, y: PHONES_BREAK.y - 7, w: 12, h: 14 }, optional: !!opt.view || !near },
+    { kind: 'name', id: 'hp', text: 'TO THE HEADPHONES', alts: ['TO HEADPHONES', 'HEADPHONES'], box: { x: PHONES_BREAK.x - 6, y: PHONES_BREAK.y - 7, w: 12, h: 14 }, optional: true },
     // close up (the CABLE view) the room's speaker names are off the glass:
     // each input plate says whose it is
     ...(opt.view
@@ -888,14 +1060,17 @@ export function patchLabels4(plugsAt: Partial<Record<PlugId, JackId | null>>, sh
   const shownFlags = shown.filter((p) => !dropped.has(p));
   const required = shownFlags.filter((p) => focus.has(p));
   const extra = shownFlags.filter((p) => !focus.has(p)).sort((a, b) => (PLUGS[a].kind === 'iec' ? 1 : 0) - (PLUGS[b].kind === 'iec' ? 1 : 0));
+  const isPower = (p: PlugId) => PLUGS[p].kind === 'iec';
   const items: LabelItem[] = [
-    // the cable you are working on first: it gets the clean air beside it;
-    // then the devices' names (a name that finds no clean air waits for a
-    // closer zoom rather than sit on gear or a cable)
-    ...(required.map(flagItem).filter(Boolean) as LabelItem[]),
+    // the required names first (round 3: the MIXER's name never gives way to
+    // a flag — the flag moves instead), then the cable you are working on,
+    // beside its cable; then the words that show only where they find clean
+    // air: the audio flags (the lesson), the other names, the power flags
     ...names.filter((n) => !n.optional),
+    ...(required.map(flagItem).filter(Boolean) as LabelItem[]),
+    ...(extra.filter((p) => !isPower(p)).map(flagItem).filter(Boolean) as LabelItem[]),
     ...names.filter((n) => n.optional),
-    ...(extra.map(flagItem).filter(Boolean) as LabelItem[]),
+    ...(extra.filter(isPower).map(flagItem).filter(Boolean) as LabelItem[]),
   ];
   return placeLabels(items, bodies, plugs, cables, s, k, measure, band);
 }

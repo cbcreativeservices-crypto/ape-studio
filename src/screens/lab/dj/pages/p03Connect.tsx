@@ -22,7 +22,7 @@ import { CableRun, type Run } from '../art/cables';
 import { Halo, PlugFace } from '../art/parts';
 import { INK } from '../art/ink';
 import { MIXER_REAR, PLAYER_REAR_JACKS, type Box, type Pt } from '../geometry/boothGeometry';
-import { GND_LUG, S3, groundLane3, groundRun3, lane3, mixJack3, parked3, run3, srcBox3, srcJack3, ttGnd3, type Parked3, type Source3 } from '../geometry/dressGeometry';
+import { GND_LUG, S3, TT3_INSET, TT3_REAR_W, groundLane3, groundRun3, lane3, mixJack3, pairBox3, parked3, run3, srcBox3, srcJack3, ttGnd3, type Parked3, type Source3 } from '../geometry/dressGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey } from '../dock';
@@ -59,11 +59,13 @@ function runFor(b: Booth, src: Source, side: 'L' | 'R', live: boolean): Run {
 /** The OTHER source's lead, still in its jack after a SOURCE switch (round
  *  2, grades screen 3: the bezel said "CH1 L GETS DECK A L" while the drawing
  *  showed the jack empty). Its plug stays in the jack; its lead leaves the
- *  plug and fades out, because its source is off this picture. Drawn a step
- *  back from the shown source's leads (geometry: dressGeometry.parked3). */
+ *  plug and fades out, because its source is off this picture. Round 3: it is
+ *  drawn as a SOLID cable for most of its length (a faint stub read as
+ *  glare), in front of the selector's ring, and it keeps off the panel's
+ *  printed legends (geometry: dressGeometry.parked3). */
 function ParkedLead({ p }: { p: Parked3 }) {
   const colour = p.side === 'L' ? INK.rcaWhite : INK.rcaRed;
-  const jacket = p.side === 'L' ? ['rgb(141,144,151)', 'rgba(141,144,151,0)'] : ['rgb(122,32,24)', 'rgba(122,32,24,0)'];
+  const jacket = p.side === 'L' ? ['rgb(141,144,151)', 'rgb(141,144,151)', 'rgba(141,144,151,0)'] : ['rgb(122,32,24)', 'rgb(122,32,24)', 'rgba(122,32,24,0)'];
   const [a, b] = p.stub;
   const path = useMemo(() => {
     const pb = Skia.PathBuilder.Make();
@@ -72,12 +74,12 @@ function ParkedLead({ p }: { p: Parked3 }) {
     return pb.detach();
   }, [a, b]);
   return (
-    <Group opacity={0.62}>
-      <Path path={path} style="stroke" strokeWidth={3.6} strokeCap="round">
-        <LinearGradient start={vec(a[0], a[1])} end={vec(b[0], b[1])} colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0)']} />
+    <Group opacity={0.9}>
+      <Path path={path} style="stroke" strokeWidth={3.8} strokeCap="butt">
+        <LinearGradient start={vec(a[0], a[1])} end={vec(b[0], b[1])} colors={['rgba(0,0,0,0.75)', 'rgba(0,0,0,0.75)', 'rgba(0,0,0,0)']} positions={[0, 0.6, 1]} />
       </Path>
-      <Path path={path} style="stroke" strokeWidth={3.2} strokeCap="round">
-        <LinearGradient start={vec(a[0], a[1])} end={vec(b[0], b[1])} colors={jacket} />
+      <Path path={path} style="stroke" strokeWidth={3.2} strokeCap="butt">
+        <LinearGradient start={vec(a[0], a[1])} end={vec(b[0], b[1])} colors={jacket} positions={[0, 0.6, 1]} />
       </Path>
       <PlugFace cx={a[0]} cy={a[1]} kind="rca" colour={colour} dir={Math.atan2(b[1] - a[1], b[0] - a[0])} />
     </Group>
@@ -285,7 +287,7 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
   };
   // the input selector, shown on the rear panel: the pair it listens to is
   // outlined green, the other pair is dimmed (learning review p03 #2)
-  const pairBox = (k: 'line' | 'phono'): Box => ({ x: mixJack(`ch1.${k}.L`).x - 9, y: mixJack(`ch1.${k}.L`).y - 9, w: 18, h: 42 });
+  const pairBox = pairBox3;
   const selPair: 'line' | 'phono' | null = booth.ch[1].input === 'LINE' ? 'line' : booth.ch[1].input === 'PHONO' ? 'phono' : null;
   const peak = last ? Math.max(...Array.from(last.raw.ch1)) : null;
   const sideWord = (s: typeof route.L) => (s ? `${s.source === 'TT' ? 'TT' : 'DECK ' + s.source} ${s.side}` : '—');
@@ -325,20 +327,22 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
           ...(src === 'TT' ? [{ id: 'gw', text: 'GROUND WIRE', at: { x: groundLane3()[0][0], y: S3.lane.gnd - 14 }, dx: -20, dy: -6, tone: 'plain' as const }] : []),
         ]}
       >
-        {src === 'A' ? <PlayerRear x={0} y={S3.srcY} on label="DECK A (REAR)" /> : <TurntableRear x={S3.ttX} y={S3.srcY} on preamp={booth.ttPreamp} />}
+        {/* the turntable's rear at its true 450 mm: it runs past both edges of the picture (round 3) */}
+        {src === 'A' ? <PlayerRear x={0} y={S3.srcY} on label="DECK A (REAR)" /> : <TurntableRear x={S3.ttX - TT3_INSET} y={S3.srcY} on preamp={booth.ttPreamp} w={TT3_REAR_W} inset={TT3_INSET} />}
         <MixerRear x={S3.mix.x} y={S3.mix.y} on />
         {src === 'TT' ? <GroundWire /> : null}
         {(['line', 'phono'] as const).map((k) => {
           const pb = pairBox(k);
           return selPair === k ? null : <RoundedRect key={k} x={pb.x} y={pb.y} width={pb.w} height={pb.h} r={4} color="rgba(6,6,8,0.55)" />;
         })}
-        {parked.map((q) => (
-          <ParkedLead key={`${q.side}${q.jack}`} p={q} />
-        ))}
         {runs.map((r) => (
           <SwingingLead key={r.id} r={r} pivot={srcJack3(src, r.label as 'L' | 'R')} swing={audio.flowMotion} />
         ))}
         {selPair ? <Halo b={pairBox(selPair)} tone="green" /> : null}
+        {/* the other source's leads lie in FRONT of the selector's ring (round 3) */}
+        {parked.map((q) => (
+          <ParkedLead key={`${q.side}${q.jack}`} p={q} />
+        ))}
         {box ? <Halo b={box} /> : null}
       </Scene>
     ),

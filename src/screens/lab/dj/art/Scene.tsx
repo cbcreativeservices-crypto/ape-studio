@@ -23,7 +23,7 @@ import { useContext, useEffect, useMemo, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Canvas, Circle, Group, Line, LinearGradient, Rect, Skia, vec } from '@shopify/react-native-skia';
 import { colors, fonts } from '../../../../theme/tokens';
-import { StageAspectReport, useStageTextScale } from '../../rack/stageAspect';
+import { StageAspectReport, StageInFullScreen, useStageTextScale } from '../../rack/stageAspect';
 import { fitView, type Box, type Pt } from '../geometry/boothGeometry';
 import { MotionContext, type BoothMotion } from './motion';
 import { SceneFontsProvider } from './sceneText';
@@ -48,7 +48,7 @@ export type Xf = { s: number; ox: number; oy: number };
 const TONE = { amber: colors.amber, plain: colors.textPrimary, blue: '#8fbcff', red: '#ff8a7e', green: '#7dff9f' } as const;
 const EDGE = { amber: 'rgba(255,198,77,0.75)', plain: 'rgba(255,255,255,0.55)', blue: 'rgba(143,188,255,0.75)', red: 'rgba(255,138,126,0.8)', green: 'rgba(125,255,159,0.75)' } as const;
 
-export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, screenOverlay, a11y, children, pad = 6, fit, aspect, labelsOutsideFit = false, focus, printed }: {
+export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, screenOverlay, a11y, children, pad = 6, fit, aspect, labelsOutsideFit = false, focus, printed, fill = false, obstaclesAt }: {
   w: number;
   h: number;
   frame: Box;
@@ -82,6 +82,15 @@ export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, scr
    *  close look never hides a legend under a callout while the 1× view keeps
    *  its room. */
   printed?: readonly (Box & { size: number })[];
+  /** ADDITIVE (round 3, grades screen 4): in FULL SCREEN the frame FILLS the
+   *  glass at 1× (it covers it, opening on `focus`, and the learner drags
+   *  along it) instead of sitting in a band of empty black; the zoom steps
+   *  grow from there. On the glass, nothing changes. */
+  fill?: boolean;
+  /** ADDITIVE (round 3): obstacles whose size in mm depends on the scale —
+   *  words drawn in the picture at a fixed type size (a band's printed
+   *  title): `s` pt per mm, `k` the words' growth. */
+  obstaclesAt?: (s: number, k: number) => readonly Box[];
 }) {
   // The drawing grows by the full-screen zoom; its words grow too (D35),
   // but by the square root, so a closer look shows more drawing, not just
@@ -90,7 +99,17 @@ export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, scr
   // In the DJ rack's full screen the gear zooms by `dz.z` inside a window
   // whose plots stay pinned (art/djZoom); the words grow by its square root.
   const dz = useContext(DjZoomContext);
-  const zoomed = dz.z > 1;
+  const inFull = useContext(StageInFullScreen);
+  // FULL SCREEN with `fill`: 1× covers the glass (an extra zoom of cover ÷ fit)
+  const fillZ = useMemo(() => {
+    if (!fill || !inFull) return 1;
+    const f = fit ?? { x: 0, y: 0, w, h };
+    const v = fitView(frame, f.w, f.h, pad);
+    const cover = Math.max((f.w - pad * 2) / frame.w, (f.h - pad * 2) / frame.h);
+    return Math.max(1, cover / Math.max(1e-6, v.s));
+  }, [fill, inFull, fit, w, h, frame, pad]);
+  const zEff = dz.z * fillZ;
+  const zoomed = zEff > 1.001;
   const k = Math.sqrt(Math.max(1, kz * dz.z));
   const report = useContext(StageAspectReport);
   const shape = aspect === false ? null : aspect ?? (fit ? null : frame.w / frame.h);
@@ -106,11 +125,11 @@ export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, scr
     const v = fitView(frame, f.w, f.h, pad);
     const base = { s: v.s, ox: v.ox + f.x, oy: v.oy + f.y };
     if (!zoomed) return base;
-    const zx = zoomedXf(base, f, frame, { x: fx, y: fy }, dz.z, dz.pan);
+    const zx = zoomedXf(base, f, frame, { x: fx, y: fy }, zEff, dz.pan);
     if (dz.limits) dz.limits.current = zx.limits;
     return zx.xf;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [frame, w, h, pad, fit?.x, fit?.y, fit?.w, fit?.h, zoomed, dz.z, dz.pan.x, dz.pan.y, fx, fy]);
+  }, [frame, w, h, pad, fit?.x, fit?.y, fit?.w, fit?.h, zoomed, zEff, dz.pan.x, dz.pan.y, fx, fy]);
   // zoomed, only the labels of parts inside the gear's region are placed
   const shown = useMemo(() => {
     if (!zoomed) return callouts;
@@ -125,11 +144,12 @@ export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, scr
   const boxes = useMemo(
     () => {
       const legible = printed ? printed.filter((p) => p.size * s >= 9 - 1e-3) : [];
-      const hard = legible.length ? [...(obstacles ?? []), ...legible] : obstacles ?? [];
+      const scaled = obstaclesAt ? obstaclesAt(s, k) : [];
+      const hard = legible.length || scaled.length ? [...(obstacles ?? []), ...legible, ...scaled] : obstacles ?? [];
       return layoutCallouts(shown, xf, w, h, k, hard, soft ?? [], labelsOutsideFit ? undefined : fit);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [shown, ox, oy, s, w, h, k, obstacles, soft, fit?.x, fit?.y, fit?.w, fit?.h, labelsOutsideFit, printed],
+    [shown, ox, oy, s, w, h, k, obstacles, soft, fit?.x, fit?.y, fit?.w, fit?.h, labelsOutsideFit, printed, obstaclesAt],
   );
   const fs = 10 * k;
   return (

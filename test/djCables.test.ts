@@ -15,6 +15,13 @@
  *    their cable with a short leader); re-spaced lanes; the mixer's cord off
  *    the panel's edge; the CABLE view; Screen 3's other-source plugs stay in
  *    their jacks across a SOURCE switch.
+ *  - Round 3 (grades round2/screens_03_04): loose ends HANG within 10° of
+ *    vertical, every hanging plug in its own lane, off every panel (the
+ *    MASTER XLRs never cross or lie on the mixer); the MIXER and its front
+ *    edge are always named, and the headphone break mark shows only with its
+ *    words; FULL SCREEN 1× fills the screen and flags all sixteen runs; the
+ *    room's flash keeps off its title; Screen 3's turntable at its true width
+ *    and its parked leads off the printed legends.
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
@@ -184,6 +191,8 @@ describe('DJ Systems Lab — waveform layers', () => {
 /* ── overnight fix 2026-10-19: Screens 3 and 4 (grades screens_01_08) ── */
 
 const RCA_HALF = 1.6; // half an RCA lead's width (mm)
+/** FULL SCREEN 1× on a 390-wide phone: the map covers the 374 × 590 pt body. */
+const FILL_S = 578 / D.BUILD_FRAME.h;
 const lowest = (pts: readonly [number, number][], x0: number, x1: number) => Math.max(...pts.filter((p) => p[0] > Math.min(x0, x1) + 2 && p[0] < Math.max(x0, x1) - 2).map((p) => p[1]));
 
 describe('DJ Systems Lab — Screen 3’s leads (dressed, laned, clear of every plug)', () => {
@@ -309,10 +318,11 @@ describe('DJ Systems Lab — Screen 3’s leads (dressed, laned, clear of every 
 describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed lights)', () => {
   const dressedClear = (st: State) => {
     const bad: string[] = [];
-    const plugs = plugsIn(st);
+    // the plugs as Screen 4 draws them (the headphone jack on its front edge)
+    const plugs = plugsIn(st).map((q) => (q.owner === 'phones' && st.phones === 'mix.phones' && q.x === jackPt('mix.phones').x ? { ...q, ...D.jackPt4('mix.phones') } : q));
     for (const p of MAP_PLUGS) {
       if (PLUGS[p].kind === 'phones') continue; // its own lane (below)
-      const run = st[p] ? D.run4(p, st) : routeOf(p, null);
+      const run = D.drawnRun4(p, st);
       for (const q of plugs) {
         if (q.owner === p) continue;
         const d = D.distToPolyline(run, q.x, q.y);
@@ -369,7 +379,7 @@ describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed
   it('the headphone cable runs from its break mark to the PHONES jack, clear of every plug', () => {
     const r = D.run4('phones', WIRED);
     assert.deepEqual(r[0], [D.PHONES_BREAK.x, D.PHONES_BREAK.y]);
-    const j = jackPt('mix.phones');
+    const j = D.jackPt4('mix.phones');
     assert.deepEqual(r[r.length - 1], [j.x, j.y]);
     for (const q of plugsIn(WIRED)) if (q.owner !== 'phones') assert.ok(D.distToPolyline(r, q.x, q.y) >= q.r, `clear of ${q.owner}`);
   });
@@ -383,7 +393,8 @@ describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed
     assert.ok(Math.abs(bm.y + bm.h - D.roomTableTop) < 1e-9, 'the booth monitor stands on the table');
     assert.equal(D.BUILD_FRAME.h, 840 + D.PATCH_DY);
     const sm = read('src/screens/lab/dj/art/SystemMap.tsx');
-    assert.match(sm, /THE ROOM · 1:5/);
+    assert.match(D.ROOM_TITLE, /THE ROOM · 1:5/);
+    assert.match(sm, /text=\{ROOM_TITLE\}/);
     assert.match(sm, /WHAT YOU PLUG · 1:1/);
     assert.doesNotMatch(sm, /DashPathEffect/, 'no dashed leaders from the plates up to the room');
   });
@@ -436,17 +447,22 @@ describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed
         // what Screen 4 asks for: the cable being patched and any in the wrong place
         const focus = [...new Set([sel, ...wrong])];
         const fb = D.followBox4(sel, st, 345 / 318);
+        // round 3: FULL SCREEN 1× FILLS a 390-wide phone (the map covers the
+        // 374 × 590 pt body: 0.63 pt per mm); 0.37 is a body the map fits
         const cases: [string, number, number, readonly PlugId[], typeof fb | undefined][] = [
           ['phone', 0.327, 1, focus, undefined],
           ['cable view', 345 / fb.w, 1, focus, fb],
-          ['full 1×', 0.37, 1, MAP_PLUGS, undefined],
+          ['full 1× (fit)', 0.37, 1, MAP_PLUGS, undefined],
+          ['full 1× (fill)', FILL_S, 1.02, MAP_PLUGS, undefined],
           ['full 3×', 1.08, Math.sqrt(3), MAP_PLUGS, undefined],
+          ['full 3× (fill)', FILL_S * 3, Math.sqrt(3), MAP_PLUGS, undefined],
         ];
         for (const [view, s, k, shown, box] of cases) {
           const placed = D.patchLabels4(st, shown, () => false, s, k, tw, { focus, view: box });
           const at = `${name}, ${sel}, ${view}`;
+          const hanging = MAP_PLUGS.filter((q) => !st[q]).map(D.loosePlugBox4);
           for (const p of placed) {
-            for (const b of [...MAP_BODIES, MAP.front, D.patchTitleBox4(s, k, tw)]) if (ov(p, b) > 0.5) bad.push(`${at}: ${p.id} on the gear (or the band's title) at (${b.x}, ${b.y})`);
+            for (const b of [...MAP_BODIES, D.FRONT4, D.patchTitleBox4(s, k, tw), ...hanging]) if (ov(p, b) > 0.5) bad.push(`${at}: ${p.id} on the gear, a hanging plug or the band's title at (${b.x.toFixed(0)}, ${b.y.toFixed(0)})`);
             for (const q of placed) if (q !== p && ov(p, q) > 0) bad.push(`${at}: ${p.id} on ${q.id}`);
             // the finding: no flag (and no name) on a cable or a crossing
             for (const c of cables) {
@@ -462,8 +478,12 @@ describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed
           }
           // the cable you are working on always carries its flag (in the CABLE view: the one it follows)
           for (const f of box ? [sel] : focus) if (!placed.some((q) => q.id === f || (q.text.endsWith('L·R') && q.text.startsWith(f[0])))) bad.push(`${at}: ${f} has no flag`);
-          // at 3× there is room for every audio flag of the wired booth
-          if (view === 'full 3×' && name === 'wired') for (const p of MAP_PLUGS) if (PLUGS[p].kind !== 'iec' && !placed.some((q) => q.id === p)) bad.push(`${at}: ${p} has no flag`);
+          // (round 3: the real 3× now grows from the FILLED 1×, about 1.9 pt per
+          // mm on a phone, where every flag of every state shows — below)
+          // round 3: FULL SCREEN 1× (and every zoom from it) flags ALL sixteen runs
+          if (view.includes('fill')) for (const p of MAP_PLUGS) if (!placed.some((q) => q.id === p)) bad.push(`${at}: ${p} has no flag`);
+          // round 3: the MIXER and its front edge are named on every whole-booth view
+          if (!box) for (const id of ['mx', 'mf']) if (!placed.some((q) => q.id === id)) bad.push(`${at}: no ${id === 'mx' ? 'MIXER' : 'FRONT EDGE'} name`);
         }
       }
     }
@@ -529,5 +549,186 @@ describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed
     assert.ok(sm.indexOf('.filter((r) => r.quiet)') < sm.indexOf('.filter((r) => !r.quiet)'), 'power is drawn first, underneath');
     assert.match(read('src/screens/lab/dj/pages/p04Build.tsx'), /speakerLit\(booth, last, 'paL'\)/);
     assert.match(read('src/screens/lab/dj/art/cables.tsx'), /r\.live && !r\.quiet/, 'a quiet cord never glows');
+  });
+});
+
+/* ── round 3 (grades round2/screens_03_04): gravity, labels, full screen ── */
+
+describe('DJ Systems Lab — round 3: Screen 4’s loose ends hang, its words stay, full screen fills', () => {
+  const ov = (a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }, gap = 0) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) + gap - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) + gap - Math.max(a.y, b.y));
+  const deg = (dx: number, dy: number) => (Math.atan2(Math.abs(dx), dy) * 180) / Math.PI;
+
+  it('every loose end hangs: its plug within 10° of vertical, the cable never rising, straight down from its socket', () => {
+    const bad: string[] = [];
+    for (const p of MAP_PLUGS) {
+      const h = D.drawnRun4(p, UNWIRED);
+      const a = h[0];
+      const b = h[h.length - 1];
+      // the plug hangs the way the last 12 mm of its cable runs
+      let i = h.length - 2;
+      while (i > 0 && Math.hypot(b[0] - h[i][0], b[1] - h[i][1]) < 12) i--;
+      const plugDeg = deg(b[0] - h[i][0], b[1] - h[i][1]);
+      if (plugDeg > 10) bad.push(`${p}: its plug hangs ${plugDeg.toFixed(1)}° off vertical`);
+      for (let j = 1; j < h.length; j++) if (h[j][1] < h[j - 1][1] - 1e-9) bad.push(`${p}: the loose cable rises`);
+      // the whole drop: straight down (BOOTH L eases round the BOOTH R plug under its socket)
+      const chord = deg(b[0] - a[0], b[1] - a[1]);
+      if (chord > (p === 'bth.trsL' ? 18 : 10)) bad.push(`${p}: the drop runs ${chord.toFixed(1)}° off vertical`);
+      if (b[1] - a[1] < 8) bad.push(`${p}: hardly hangs`);
+    }
+    assert.deepEqual(bad, []);
+    // the finding's shape (about 45°) is gone from the drawing: SystemMap strokes the hanging run
+    const sm = read('src/screens/lab/dj/art/SystemMap.tsx');
+    assert.match(sm, /dense\[p\] = drawnRun4\(p, booth\.plugs\)/);
+    assert.match(sm, /dense: geo\[p\]/);
+  });
+
+  it('every hanging plug has its own lane: no two touch, none lies on a rear panel, a plate, the front edge or the strip', () => {
+    const boxes = MAP_PLUGS.map((p) => ({ p, b: D.loosePlugBox4(p) }));
+    const bad: string[] = [];
+    for (let i = 0; i < boxes.length; i++) {
+      for (let j = i + 1; j < boxes.length; j++) if (ov(boxes[i].b, boxes[j].b, 2) > 0) bad.push(`${boxes[i].p} and ${boxes[j].p}'s plugs touch`);
+      for (const body of [...MAP_BODIES, D.FRONT4]) if (ov(boxes[i].b, body) > 0) bad.push(`${boxes[i].p}'s plug lies on the gear at (${body.x}, ${body.y})`);
+    }
+    assert.deepEqual(bad, []);
+  });
+
+  it('the finding: the MASTER L and R XLRs never cross or overlap each other, and hang clear of the mixer’s rear panel', () => {
+    const L = D.loosePlugBox4('mst.xlrL');
+    const R = D.loosePlugBox4('mst.xlrR');
+    const mixer = MAP_BODIES[1];
+    assert.equal(ov(L, R, 4), 0, 'a clear gap between the two plugs');
+    assert.equal(ov(L, mixer), 0);
+    assert.equal(ov(R, mixer), 0);
+    // each hangs in the lane under ITS OWN socket (R's socket is the left one, seen from behind)
+    const sL = fixedEnd('mst.xlrL')!;
+    const sR = fixedEnd('mst.xlrR')!;
+    assert.ok(Math.abs(L.x + L.w / 2 - sL.x) < 1 && Math.abs(R.x + R.w / 2 - sR.x) < 1);
+    assert.ok(R.x + R.w < L.x, 'no X: R stays left of L all the way down');
+    const a = D.hang4('mst.xlrR');
+    const b = D.hang4('mst.xlrL');
+    for (let t = 0; t <= 1.0001; t += 0.05) {
+      const pa = a[Math.round(t * (a.length - 1))];
+      const pb = b[Math.round(t * (b.length - 1))];
+      assert.ok(pb[0] - pa[0] > 20, 'the two cables keep apart');
+    }
+  });
+
+  it('the two key words are always on the glass, or their mark is hidden', () => {
+    const tw = (t: string, k = 1) => {
+      let em = 0;
+      for (const c of t) em += 'MW'.includes(c) ? 0.74 : " .,:;·'’|!I1()".includes(c) ? 0.3 : 0.55;
+      return em * 10 * k + t.length * 0.6 * k;
+    };
+    const FAULT: State = { ...UNWIRED, 'A.rcaL': 'ch1.line.L', 'A.rcaR': 'ch1.line.R', 'B.rcaL': 'ch2.line.L', 'B.rcaR': 'ch2.line.R', 'bth.trsR': 'boothR.in', phones: 'mix.phones', 'mst.xlrR': 'paR.in', 'mst.xlrL': 'boothL.in', 'ac.paL': 'strip.1', 'ac.boothL': 'strip.2', 'ac.playerA': 'strip.3', 'ac.mixer': 'strip.4', 'ac.playerB': 'strip.5', 'ac.boothR': 'strip.6', 'ac.paR': 'strip.7' };
+    const bad: string[] = [];
+    for (const [name, st] of [['wired', WIRED], ['fault', FAULT], ['unwired', UNWIRED]] as const) {
+      // the phone's whole-booth glass with each cable picked (or just patched, as BTH L was)
+      for (const sel of MAP_PLUGS) {
+        const placed = D.patchLabels4(st, [sel], () => false, 0.327, 1, tw, { focus: [sel] });
+        const mf = placed.find((q) => q.id === 'mf');
+        if (!mf) bad.push(`${name}, ${sel}: the front edge is unnamed`);
+        else if (!/FRONT/.test(mf.text)) bad.push(`${name}, ${sel}: the front edge is called ${mf.text}`);
+        if (!placed.some((q) => q.id === 'mx')) bad.push(`${name}, ${sel}: the MIXER name vanished`);
+      }
+    }
+    assert.deepEqual(bad, []);
+    // the break mark is drawn only with its words
+    const sm = read('src/screens/lab/dj/art/SystemMap.tsx');
+    assert.match(sm, /placed\.some\(\(p\) => p\.id === 'hp'\) \? <CableBreak \/> : null/);
+    const dg = read('src/screens/lab/dj/geometry/dressGeometry.ts');
+    assert.match(dg, /id: 'mf', text: 'MIXER’S FRONT EDGE', alts: \['MIXER FRONT', 'FRONT EDGE'\], box: FRONT4 \}/, 'the front edge is never optional');
+    assert.match(dg, /id: 'mx', text: 'MIXER', box: MAP_BODIES\[1\], optional: dev \}/, 'the MIXER is named on every whole-booth view');
+  });
+
+  it('one object, two views: the front edge lines up under the mixer, cut off where the plugs hang', () => {
+    const mixer = MAP_BODIES[1];
+    assert.equal(D.FRONT4.x, mixer.x, 'its left end on the rear panel’s left edge');
+    assert.ok(D.FRONT4.y > mixer.y + mixer.h && D.FRONT4.x + D.FRONT4.w <= mixer.x + mixer.w);
+    const j = D.jackPt4('mix.phones');
+    assert.ok(j.x > D.FRONT4.x && j.x < D.FRONT4.x + D.FRONT4.w && j.y > D.FRONT4.y && j.y < D.FRONT4.y + D.FRONT4.h, 'the headphone jack is on it');
+    const sm = read('src/screens/lab/dj/art/SystemMap.tsx');
+    assert.match(sm, /one object, two views: the rear panel's left edge carried down/);
+    assert.match(sm, /<Path path=\{breakEdge\}/);
+  });
+
+  it('the HOT-PATCH / THUMP flash keeps off the room’s printed title', () => {
+    const tw = (t: string, k = 1) => t.length * 6 * k;
+    for (const s of [0.327, 0.63, 1.9]) {
+      const b = D.roomTitleBox4(s, 1, tw);
+      assert.ok(Math.abs(b.x + b.w / 2 - 520) < 1e-9, 'centred where the title is drawn');
+      assert.ok(b.w * s >= tw(D.ROOM_TITLE, 1) * 0.95, 'as wide as the printed words');
+      assert.ok(b.y <= 4 && b.y + b.h >= 4 + (9.5 / s) * 0.95, 'down to the words’ baseline');
+    }
+    const p04 = read('src/screens/lab/dj/pages/p04Build.tsx');
+    assert.match(p04, /obstaclesAt=\{cable \? undefined : titleAt\}/);
+    assert.match(p04, /roomTitleBox4\(s, k, textWidthPt\)/);
+    assert.match(read('src/screens/lab/dj/art/Scene.tsx'), /const scaled = obstaclesAt \? obstaclesAt\(s, k\) : \[\];/);
+  });
+
+  it('FULL SCREEN 1× fills the screen (the map covers it and drags), inside the DJ lab only', () => {
+    // a 390-wide phone's body: the map at 1× is about twice the fitted size
+    const fitS = Math.min((374 - 12) / D.BUILD_FRAME.w, (590 - 12) / D.BUILD_FRAME.h);
+    assert.ok(FILL_S / fitS > 1.7, `fill ${FILL_S.toFixed(2)} vs fit ${fitS.toFixed(2)} pt per mm`);
+    const p04 = read('src/screens/lab/dj/pages/p04Build.tsx');
+    assert.match(p04, /obstaclesAt=\{cable \? undefined : titleAt\}\r?\n\s+fill/);
+    const sc = read('src/screens/lab/dj/art/Scene.tsx');
+    assert.match(sc, /if \(!fill \|\| !inFull\) return 1;/);
+    assert.match(sc, /const zEff = dz\.z \* fillZ;/);
+    const rack = read('src/screens/lab/dj/DjRack.tsx');
+    assert.match(rack, /Math\.abs\(g\.dx\) \+ Math\.abs\(g\.dy\) > 6 && canPan\(\)/);
+    assert.match(rack, /<DjZoomContext\.Provider value=\{ctx\}>\{render\(w, h\)\}<\/DjZoomContext\.Provider>/);
+  });
+});
+
+describe('DJ Systems Lab — round 3: Screen 3’s turntable and parked leads', () => {
+  it('the turntable’s rear is drawn at its true ~450 mm, wider than the 320 mm player, its sockets where they were', () => {
+    assert.equal(D.TT3_REAR_W, 450);
+    const tt = D.srcBox3('TT');
+    const pl = D.srcBox3('A');
+    assert.equal(tt.w, 450);
+    assert.ok(tt.w > pl.w * 1.3);
+    // the sockets keep their places (the plate sits in the middle of the plinth)
+    assert.equal(D.srcJack3('TT', 'L').x, D.S3.ttX + D.TT_REAR_JACKS.outL.x);
+    assert.equal(tt.x + D.TT3_INSET, D.S3.ttX);
+    const p03 = read('src/screens/lab/dj/pages/p03Connect.tsx');
+    assert.match(p03, /<TurntableRear x=\{S3\.ttX - TT3_INSET\} y=\{S3\.srcY\} on preamp=\{booth\.ttPreamp\} w=\{TT3_REAR_W\} inset=\{TT3_INSET\} \/>/);
+    // the other screens' turntable plate is unchanged (w and inset are optional)
+    assert.match(read('src/screens/lab/dj/art/RearPanels.tsx'), /<Panel w=\{w \?\? TT_REAR\.w\}/);
+  });
+
+  it('a parked lead never covers a printed legend and never lies along a selector ring', () => {
+    const J = ['ch1.line.L', 'ch1.line.R', 'ch1.phono.L', 'ch1.phono.R', null] as const;
+    const legends = D.legends3();
+    const rings = [D.pairBox3('line'), D.pairBox3('phono')];
+    const edge = (b: { x: number; y: number; w: number; h: number }, x: number, y: number) => {
+      const inside = x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h;
+      const dx = Math.max(b.x - x, 0, x - (b.x + b.w));
+      const dy = Math.max(b.y - y, 0, y - (b.y + b.h));
+      return inside ? Math.min(x - b.x, b.x + b.w - x, y - b.y, b.y + b.h - y) : Math.hypot(dx, dy);
+    };
+    const bad: string[] = [];
+    for (const src of ['A', 'TT'] as const) {
+      for (const aL of J) for (const aR of J) for (const oL of J) for (const oR of J) {
+        const used = [aL, aR, oL, oR].filter(Boolean);
+        if (new Set(used).size !== used.length) continue;
+        for (const q of D.parked3(src, { L: aL, R: aR }, { L: oL, R: oR })) {
+          const [a, b] = q.stub;
+          const L = Math.hypot(b[0] - a[0], b[1] - a[1]);
+          let along = 0;
+          for (let t = 6; t <= L; t += 1) {
+            const x = a[0] + ((b[0] - a[0]) * t) / L;
+            const y = a[1] + ((b[1] - a[1]) * t) / L;
+            for (const g of legends) if (x > g.x - 1.6 && x < g.x + g.w + 1.6 && y > g.y - 1.6 && y < g.y + g.h + 1.6) bad.push(`${src} kept ${q.jack}: its lead covers a printed legend at (${g.x.toFixed(0)}, ${g.y.toFixed(0)})`);
+            if (rings.some((g) => edge(g, x, y) < 2.2)) along += 1;
+          }
+          if (along > 6) bad.push(`${src} kept ${q.jack}: its lead runs ${along} mm along a selector ring`);
+        }
+      }
+    }
+    assert.deepEqual([...new Set(bad)], []);
+    // drawn as a solid lead, in front of the ring
+    const p03 = read('src/screens/lab/dj/pages/p03Connect.tsx');
+    assert.ok(p03.indexOf('<Halo b={pairBox(selPair)} tone="green" />') < p03.indexOf('<ParkedLead key='), 'the lead lies in front of the ring');
+    assert.match(p03, /<Group opacity=\{0\.9\}>/);
   });
 });

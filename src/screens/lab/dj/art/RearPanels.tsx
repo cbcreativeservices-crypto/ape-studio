@@ -153,29 +153,35 @@ function MixerRearExtrasDraw({ clock }: { clock: MixerRearExtras['clock'] }) {
   );
 }
 
-export const TurntableRear = memo(function TurntableRear({ x, y, on, preamp }: { x: number; y: number; on: boolean; preamp: 'PHONO' | 'LINE' }) {
+/** ADDITIVE (round 3, grades screen 3): `w` draws the panel at another
+ *  width (Screen 3: the plinth's true 450 mm) with the connector plate's
+ *  sockets `inset` mm in from its left end. Omitted = the 300 mm plate
+ *  exactly as before. */
+export const TurntableRear = memo(function TurntableRear({ x, y, on, preamp, w, inset = 0 }: { x: number; y: number; on: boolean; preamp: 'PHONO' | 'LINE'; w?: number; inset?: number }) {
   const J = TT_REAR_JACKS;
   return (
     <Group transform={[{ translateX: x }, { translateY: y }]}>
-      <Panel w={TT_REAR.w} h={TT_REAR.h} vents={{ x0: 12, x1: 60 }} />
-      <SceneText x={10} y={15} size={6} text="TURNTABLE (REAR)" color={INK.amber} face="label" />
-      <Bracket x0={J.outL.x - 7} x1={J.outR.x + 7} y={30} t="OUT" />
-      <RcaSocket cx={J.outL.x} cy={J.outL.y} d={12} ring={INK.rcaWhite} />
-      <RcaSocket cx={J.outR.x} cy={J.outR.y} d={12} ring={INK.rcaRed} />
-      <Leg x={J.outL.x} y={J.outL.y + 13} t="L" />
-      <Leg x={J.outR.x} y={J.outR.y + 13} t="R" />
-      <Leg x={J.gnd.x} y={J.gnd.y - 9} t="GND" />
-      <GndPost cx={J.gnd.x} cy={J.gnd.y} d={10} />
-      {/* the built-in preamp switch: PHONO (raw cartridge) / LINE */}
-      <Leg x={J.preamp.x} y={J.preamp.y - 4} t="PHONO · LINE" size={LEG_S} />
-      <RoundedRect x={J.preamp.x - 10} y={J.preamp.y} width={20} height={14} r={2} color="#050506" />
-      <RoundedRect x={J.preamp.x - 9 + (preamp === 'LINE' ? 9 : 0)} y={J.preamp.y + 1.5} width={9} height={11} r={1.5}>
-        <LinearGradient start={vec(0, J.preamp.y)} end={vec(0, J.preamp.y + 14)} colors={['#b9bec6', '#5c626b']} />
-      </RoundedRect>
-      <Leg x={J.ac.x} y={J.ac.y - 6} t="AC IN" />
-      <IecInlet x={J.ac.x - 12} y={J.ac.y} s={1} />
-      <Leg x={J.ac.x + 36.5} y={J.ac.y - 9} t="POWER" size={LEG_S} />
-      <Rocker x={J.ac.x + 30} y={J.ac.y - 4} s={1} on={on} />
+      <Panel w={w ?? TT_REAR.w} h={TT_REAR.h} vents={{ x0: 12 + inset, x1: 60 + inset }} />
+      <Group transform={[{ translateX: inset }]}>
+        <SceneText x={10} y={15} size={6} text="TURNTABLE (REAR)" color={INK.amber} face="label" />
+        <Bracket x0={J.outL.x - 7} x1={J.outR.x + 7} y={30} t="OUT" />
+        <RcaSocket cx={J.outL.x} cy={J.outL.y} d={12} ring={INK.rcaWhite} />
+        <RcaSocket cx={J.outR.x} cy={J.outR.y} d={12} ring={INK.rcaRed} />
+        <Leg x={J.outL.x} y={J.outL.y + 13} t="L" />
+        <Leg x={J.outR.x} y={J.outR.y + 13} t="R" />
+        <Leg x={J.gnd.x} y={J.gnd.y - 9} t="GND" />
+        <GndPost cx={J.gnd.x} cy={J.gnd.y} d={10} />
+        {/* the built-in preamp switch: PHONO (raw cartridge) / LINE */}
+        <Leg x={J.preamp.x} y={J.preamp.y - 4} t="PHONO · LINE" size={LEG_S} />
+        <RoundedRect x={J.preamp.x - 10} y={J.preamp.y} width={20} height={14} r={2} color="#050506" />
+        <RoundedRect x={J.preamp.x - 9 + (preamp === 'LINE' ? 9 : 0)} y={J.preamp.y + 1.5} width={9} height={11} r={1.5}>
+          <LinearGradient start={vec(0, J.preamp.y)} end={vec(0, J.preamp.y + 14)} colors={['#b9bec6', '#5c626b']} />
+        </RoundedRect>
+        <Leg x={J.ac.x} y={J.ac.y - 6} t="AC IN" />
+        <IecInlet x={J.ac.x - 12} y={J.ac.y} s={1} />
+        <Leg x={J.ac.x + 36.5} y={J.ac.y - 9} t="POWER" size={LEG_S} />
+        <Rocker x={J.ac.x + 30} y={J.ac.y - 4} s={1} on={on} />
+      </Group>
     </Group>
   );
 });

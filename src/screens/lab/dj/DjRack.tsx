@@ -25,6 +25,11 @@
  *     lesson's focus part; a drag moves the gear under the pinned plots.
  * Only the visible window is drawn, never the 3× box (the CanvasKit surface
  * the review saw run out on the web).
+ *
+ * Round 3 (grades screen 4): a Scene with `fill` covers the body at 1× (no
+ * empty band above and below a wide drawing) and reports how far it can be
+ * dragged; the host then lets the learner drag it at 1× too. A scene without
+ * `fill` reports nothing at 1×, so its 1× is exactly as before.
  */
 import { useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { PanResponder, StyleSheet, View, useWindowDimensions } from 'react-native';
@@ -114,10 +119,18 @@ function FullHost({ w, h, render }: { w: number; h: number; render: (w: number, 
   const tick = useRef<ReturnType<typeof setTimeout> | null>(null);
   const alive = useRef(true);
   const pending = useRef<{ x: number; y: number } | null>(null);
+  // at 1× a drag pans only a drawing that fills (and overflows) the body
+  const zoomedRef = useRef(zoomed);
+  zoomedRef.current = zoomed;
+  const canPan = () => {
+    if (zoomedRef.current) return true;
+    const L = limits.current;
+    return !!L && (L.maxX - L.minX > 1 || L.maxY - L.minY > 1);
+  };
   const responder = useMemo(
     () =>
       PanResponder.create({
-        onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) + Math.abs(g.dy) > 6,
+        onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) + Math.abs(g.dy) > 6 && canPan(),
         onPanResponderGrant: () => {
           start.current = panRef.current;
         },
@@ -157,7 +170,9 @@ function FullHost({ w, h, render }: { w: number; h: number; render: (w: number, 
             </StageTextScale.Provider>
           </View>
         ) : (
-          render(w, h)
+          <View style={{ width: w, height: h }} {...responder.panHandlers}>
+            <DjZoomContext.Provider value={ctx}>{render(w, h)}</DjZoomContext.Provider>
+          </View>
         )}
       </View>
     </StageAspectReport.Provider>
