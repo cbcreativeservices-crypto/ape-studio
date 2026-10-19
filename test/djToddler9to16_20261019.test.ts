@@ -18,8 +18,8 @@ import { join } from 'node:path';
 import { builtBooth } from '../src/screens/lab/dj/model/djModel.ts';
 import { load, loopExit, loopIn, setGrid } from '../src/screens/lab/dj/model/djDeck.ts';
 import { filterOf, FILTER_DEAD_ZONE } from '../src/screens/lab/dj/engine/djDsp.ts';
-import { halfBpmFaultFixed, loopRealBeats } from '../src/screens/lab/dj/pages/p11GridFault.ts';
-import { freshCleanRun, stepCleanRun } from '../src/screens/lab/dj/pages/p16CleanRun.ts';
+import { halfBpmFaultFixed, loopRealBeats } from '../src/screens/lab/dj/pages/gridFault.ts';
+import { freshCleanRun, stepCleanRun } from '../src/screens/lab/dj/pages/laptopCleanRun.ts';
 
 const PAGES = join(import.meta.dirname, '..', 'src', 'screens', 'lab', 'dj', 'pages');
 const src = (f: string) => readFileSync(join(PAGES, f), 'utf8');
@@ -112,5 +112,25 @@ describe('Screen 9 — resonance locks whenever the audio’s filter is off', ()
     const s = src('p09Eq.tsx');
     assert.match(s, /filterOf\(booth\.ch\[ch\]\.filter\)\.kind !== 'off'/);
     assert.doesNotMatch(s, /filter === 0 && booth\.ch\[2\]\.filter === 0/);
+  });
+});
+
+describe('Screens 9–16 — nothing ticks from the previous screen’s booth or a stale render', () => {
+  const PAGES9 = ['p09Eq.tsx', 'p11Grid.tsx', 'p13Effects.tsx', 'p14Key.tsx', 'p15Stems.tsx', 'p16Laptop.tsx'];
+  it('every render-time goal flag waits for the screen’s own setup (ready)', () => {
+    for (const f of PAGES9) {
+      const s = src(f);
+      assert.match(s, /const \{ ready \} = useScreenSetup\(/, f);
+      assert.match(s, /useVisitGoals\(ctx, goals, '[A-Z]+', ready\)/, f);
+      const flags = s.split('\n').filter((l) => /^ {2}if \(.*\) (hand|story|hit|h)\.current\.[a-zA-Z]+ = true;/.test(l));
+      assert.ok(flags.length > 0, f);
+      for (const l of flags) assert.match(l, /^ {2}if \(ready && /, `${f}: ${l.trim().slice(0, 60)}`);
+    }
+  });
+  it('Screen 13’s echo out and Screen 16’s check read a render made after the move', () => {
+    assert.match(src('p13Effects.tsx'), /renderedSince\(last, downAt\.current\)/);
+    const s16 = src('p16Laptop.tsx');
+    assert.match(s16, /renderedSince\(last, checkAt\.current\)/);
+    assert.match(s16, /checkAt\.current = boothNow\(\)/);
   });
 });

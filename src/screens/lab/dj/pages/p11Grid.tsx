@@ -28,7 +28,7 @@ import { analysedGrid, gridCorrect, loopIn, setGrid, sync, trueBeat } from '../m
 import { beatAt, phaseOffset, playedBpm } from '../model/djTime';
 import { deckPos, type DeckState, type GridMode } from '../model/djModel';
 import { useBoothKit } from './shared';
-import { halfBpmFaultFixed, loopRealBeats } from './p11GridFault';
+import { halfBpmFaultFixed, loopRealBeats } from './gridFault';
 
 const TERMS = [
   { term: 'Beatgrid', def: 'The software’s map of the beats, made when it analyses a track ahead of time: a thin line on every kick and a bold bar line on the “one” — where a crash, a chord change or a new part lands, and straight after a drum fill. It is an interpretation, and you can edit it.' },
@@ -93,7 +93,7 @@ const SCEN_OF = (bpm: number): { id: GridMode; label: string; blurb: string }[] 
 
 function PageGrid({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit();
-  useScreenSetup((b) => {
+  const { ready } = useScreenSetup((b) => {
     // Night Ferry on both decks (A at bar 17, B at bar 41): its kicks stand
     // clear of the rest, so lines against kicks can be SEEN (audio review #5)
     let x = cueAtBar(b, 'A', 'nightFerry', 17);
@@ -122,7 +122,7 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
   const gB = analysedGrid(B);
   const bpmA = A.track ? playedBpm(TRACKS[A.track].bpm, A.pitch) : 0;
   const bpmB = B.track ? playedBpm(TRACKS[B.track].bpm, B.pitch) : 0;
-  if (B.gridMode === 'LATE_HALF' && gridCorrect(B)) story.current.fixed = true;
+  if (ready && B.gridMode === 'LATE_HALF' && gridCorrect(B)) story.current.fixed = true;
   const pressSync = () => {
     const b0 = getBooth();
     if (!b0.decks.A.playing || !b0.decks.B.playing) {
@@ -176,7 +176,7 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
   };
   const hits = [story.current.wrongSync, story.current.fixed, story.current.lockSync, story.current.qOn && story.current.qOff, faultFixed, check];
   const goals = GOALS_GRID.map((label, i) => ({ label, hit: hits[i] }));
-  const latched = useVisitGoals(ctx, goals, 'GRID');
+  const latched = useVisitGoals(ctx, goals, 'GRID', ready);
   const loopReal = loopRealBeats(B);
   const lanesH = (h: number, k = 1) => Math.round(Math.min(180 * k, h * 0.58));
   // about two bars across each lane, so every beat line and every kick reads

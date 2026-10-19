@@ -18,7 +18,8 @@ import { AudioSetupPanel, LaptopRig, RIG, RIG_BODIES, RIG_FRAME, RIG_POINTS } fr
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { boothKey, stopKey } from '../dock';
-import { getBooth, updateBooth } from '../booth/boothStore';
+import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
+import { renderedSince } from './s1Guards';
 import { cueAtBar, preMatched, useScreenSetup } from '../booth/setup';
 import { TRIM_UNITY, trimPos, type Booth, type ChannelId, type DeckId } from '../model/djModel';
 import { BUFFERS, RATES, WORKLOADS, bufferMs, devicesSeen, dropoutsPerMin, freshLaptop, loadOf, outputLatencyMs, stableBuffer, type LaptopState, type UsbPair, type Workload } from '../model/djLaptop';
@@ -26,7 +27,7 @@ import { STRIP_X } from '../geometry/boothGeometry';
 import { useBoothKit } from './shared';
 import { Choices, EvidenceCheck, TrayNote, s2Of, s2styles } from './s2kit';
 import { SkipOptional } from './skipOptional';
-import { freshCleanRun, stepCleanRun, type CleanRun } from './p16CleanRun';
+import { freshCleanRun, stepCleanRun, type CleanRun } from './laptopCleanRun';
 
 const TERMS = [
   { term: 'Audio interface', def: 'The part that turns the software’s numbers into analog sound (and back). Here it is built into the mixer; it can be a separate box, or part of a controller.' },
@@ -103,7 +104,7 @@ function RigTray() {
 
 function PageLaptop({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit({ lockPhase: true });
-  useScreenSetup((b) => {
+  const { ready } = useScreenSetup((b) => {
     let x = cueAtBar(b, 'A', 'nightFerry', 17);
     x = preMatched(cueAtBar(x, 'B', 'glassHarbour', 17));
     return {
@@ -124,7 +125,7 @@ function PageLaptop({ ctx }: { ctx: PageCtx }) {
   // the dropouts the render put in the sound: the lamp flashes at each, the count runs
   const dropTimes = useSharedValue<number[]>([]);
   const settingKey = `${l.buffer}:${l.rate}:${l.workload}:${l.device}:${l.usbMixer}`;
-  // the run is measured in booth time (p16CleanRun): a re-render replaces the
+  // the run is measured in booth time (laptopCleanRun): a re-render replaces the
   // rest of the chunk before it, so mashing a chip never adds seconds
   const run = useRef<CleanRun>(freshCleanRun());
   const seen = useRef<unknown>(null);
@@ -139,20 +140,23 @@ function PageLaptop({ ctx }: { ctx: PageCtx }) {
     bump((n) => n + 1);
   }, [last, settingKey, dropTimes, A.playing, B.playing, l.device, l.usbMixer]);
   const h = useRef({ device: false, two: false, heavy: false, ctrl: false, hi: false, check: false });
+  // booth time SET IT UP was pressed: the check reads only renders made after
+  // it (a chunk from before showed the music reaching channel 1)
+  const checkAt = useRef<number | null>(null);
   const clean20 = run.current.clean >= 20;
-  if ((A.playing || B.playing) && l.device === 'MIXER USB' && last && last.rmsDb.ch1 > -50) h.current.device = true;
-  if (clean20 && both && l.workload === 'TWO DECKS' && l.buffer === stableBuffer('TWO DECKS', l.rate) && l.rate === 48000) h.current.two = true;
-  if (clean20 && both && l.workload === 'STEMS LIVE' && l.buffer === stableBuffer('STEMS LIVE', l.rate)) h.current.heavy = true;
-  if (!l.usbCtrl && (A.playing || B.playing) && l.device === 'MIXER USB' && last && last.rmsDb.ch1 > -50) h.current.ctrl = true;
-  if (clean20 && (A.playing || B.playing) && l.rate === 96000 && l.buffer === stableBuffer(l.workload, 96000)) h.current.hi = true;
+  if (ready && (A.playing || B.playing) && l.device === 'MIXER USB' && last && last.rmsDb.ch1 > -50) h.current.device = true;
+  if (ready && clean20 && both && l.workload === 'TWO DECKS' && l.buffer === stableBuffer('TWO DECKS', l.rate) && l.rate === 48000) h.current.two = true;
+  if (ready && clean20 && both && l.workload === 'STEMS LIVE' && l.buffer === stableBuffer('STEMS LIVE', l.rate)) h.current.heavy = true;
+  if (ready && !l.usbCtrl && (A.playing || B.playing) && l.device === 'MIXER USB' && last && last.rmsDb.ch1 > -50) h.current.ctrl = true;
+  if (ready && clean20 && (A.playing || B.playing) && l.rate === 96000 && l.buffer === stableBuffer(l.workload, 96000)) h.current.hi = true;
   // CHECK YOURSELF, from evidence: from a silent room with the mixer's USB
   // out, the music reaches channel 1 over the mixer's interface
-  if (check && l.usbMixer && l.device === 'MIXER USB' && (A.playing || B.playing) && booth.ch[1].fader > 0.3 && last && last.rmsDb.ch1 > -50) h.current.check = true;
+  if (ready && check && l.usbMixer && l.device === 'MIXER USB' && (A.playing || B.playing) && booth.ch[1].fader > 0.3 && last && renderedSince(last, checkAt.current) && last.rmsDb.ch1 > -50) h.current.check = true;
   // clean, but not the smallest buffer that manages (learning review 2, p16 #2)
   const biggerThanNeeded = clean20 && (A.playing || B.playing) && l.device === 'MIXER USB' && l.buffer > stableBuffer(l.workload, l.rate);
   const hits = [h.current.device, h.current.two, h.current.heavy, h.current.ctrl, h.current.hi, faultFixed, h.current.check];
   const goals = GOALS_LAPTOP.map((label, i) => ({ label, hit: hits[i] }));
-  const latched = useVisitGoals(ctx, goals, 'LAPTOP');
+  const latched = useVisitGoals(ctx, goals, 'LAPTOP', ready);
   const audioLive = (A.playing || B.playing) && l.device === 'MIXER USB' && l.usbMixer;
   const panelH = (H: number, k: number) => Math.round(Math.min(112 * Math.sqrt(k), H * 0.4));
   const mix = (x: number, y: number) => ({ x: RIG.mixer.x + x, y: RIG.mixer.y + y });
@@ -233,6 +237,7 @@ function PageLaptop({ ctx }: { ctx: PageCtx }) {
           onSetup={() => {
             void audio.requestSound();
             h.current.check = false;
+            checkAt.current = boothNow();
             setCheck(true);
             updateBooth((b, t) => ({
               ...b,

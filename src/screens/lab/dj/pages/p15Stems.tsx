@@ -79,7 +79,7 @@ function StemTray({ sel, onSel }: { sel: DeckId; onSel: (d: DeckId) => void }) {
 
 function PageStems({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit({ lockPhase: true });
-  useScreenSetup((b) => {
+  const { ready } = useScreenSetup((b) => {
     let x = cueAtBar(b, 'A', 'nightFerry', 41);
     x = preMatched(cueAtBar(x, 'B', 'glassHarbour', 41));
     const flat = { hi: 0.5, mid: 0.5, lo: 0.5 };
@@ -132,19 +132,19 @@ function PageStems({ ctx }: { ctx: PageCtx }) {
   const ghostSel = s2?.ghostDb[sel] ?? (sepMuted ? melodyGhostDb(gainsOf(booth, sel), booth.decks[sel].posSec, 48000 * 2) : undefined);
   const playing = booth.decks[sel].playing;
   const g = gainsOf(booth, sel);
-  if (playing && g.lead === 0 && src === 'ORIGINAL') h.current.mute = true;
-  if (playing && g.lead === 0 && src === 'SEPARATED' && ghostSel != null && ghostSel > -40) h.current.ghost = true;
+  if (ready && playing && g.lead === 0 && src === 'ORIGINAL') h.current.mute = true;
+  if (ready && playing && g.lead === 0 && src === 'SEPARATED' && ghostSel != null && ghostSel > -40) h.current.ghost = true;
   // the swap takes the BASS with the drums, so two bass lines never stack
   // (audio review 2 #1)
-  if (A.playing && B.playing && gA.drums === 0 && gA.bass === 0 && gB.drums > 0 && gB.bass > 0 && booth.ch[1].fader >= 0.5 && booth.ch[2].fader >= 0.5) h.current.swap = true;
-  if (A.playing && gA.drums > 0 && gA.bass > 0 && gA.chords === 0 && gA.lead === 0 && booth.ch[1].fader >= 0.5) h.current.bed = true;
+  if (ready && A.playing && B.playing && gA.drums === 0 && gA.bass === 0 && gB.drums > 0 && gB.bass > 0 && booth.ch[1].fader >= 0.5 && booth.ch[2].fader >= 0.5) h.current.swap = true;
+  if (ready && A.playing && gA.drums > 0 && gA.bass > 0 && gA.chords === 0 && gA.lead === 0 && booth.ch[1].fader >= 0.5) h.current.bed = true;
   // CHECK YOURSELF, from evidence: deck B's muted melody on SEPARATED leaves
   // a ghost (read MELODY LEFT); then find the SOURCE where it is truly gone
-  if (check && B.playing && (B.stemFrom ?? 'ORIGINAL') === 'SEPARATED' && gB.lead === 0) h.current.sepSeen = true;
-  if (check && h.current.sepSeen && B.playing && (B.stemFrom ?? 'ORIGINAL') === 'ORIGINAL' && gB.lead === 0) h.current.check = true;
+  if (ready && check && B.playing && (B.stemFrom ?? 'ORIGINAL') === 'SEPARATED' && gB.lead === 0) h.current.sepSeen = true;
+  if (ready && check && h.current.sepSeen && B.playing && (B.stemFrom ?? 'ORIGINAL') === 'ORIGINAL' && gB.lead === 0) h.current.check = true;
   const hits = [h.current.mute, h.current.ghost, h.current.swap, h.current.bed, faultFixed, h.current.check];
   const goals = GOALS_STEMS.map((label, i) => ({ label, hit: hits[i] }));
-  const latched = useVisitGoals(ctx, goals, 'STEMS');
+  const latched = useVisitGoals(ctx, goals, 'STEMS', ready);
   // all four parts at full level add up to the track; a muted melody is gone
   // from the original stems and leaves a ghost in the separated ones
   const leftWord = g.lead > 0 ? '= TRACK' : src === 'ORIGINAL' ? 'NONE' : ghostSel != null ? `${ghostSel.toFixed(0)} dB` : '…';

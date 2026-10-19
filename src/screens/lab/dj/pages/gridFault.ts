@@ -1,5 +1,5 @@
 /**
- * p11GridFault — Screen 11's LOOPS TWICE AS LONG fault, the pure half (tests
+ * gridFault — Screen 11's LOOPS TWICE AS LONG fault, the pure half (tests
  * reach it). The fault is fixed when deck B's half-BPM grid has been doubled
  * back to the true one AND the loop running NOW is 4 real beats — read from
  * the live deck, never from a flag latched earlier on the screen.

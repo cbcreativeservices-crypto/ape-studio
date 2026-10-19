@@ -23,7 +23,8 @@ const FX_FULL_ASPECT = 0.84;
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { ChipRow, boothKey, channelFaderKey, pct, stopKey } from '../dock';
-import { getBooth, updateBooth } from '../booth/boothStore';
+import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
+import { renderedSince } from './s1Guards';
 import { cueAtBar, preMatched, useScreenSetup } from '../booth/setup';
 import { TRIM_UNITY, trimPos, type Booth } from '../model/djModel';
 import { FX_TIMES, FX_TYPES, dryWet, fbGain, freshFx, fxBpm, fxTempoDeck, fxTimeSec, fxTimeWord, type FxRoute, type FxState, type FxType } from '../model/djEffects';
@@ -140,7 +141,7 @@ function FxTray() {
 
 function PageEffects({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit({ lockPhase: true });
-  useScreenSetup((b) => {
+  const { ready } = useScreenSetup((b) => {
     let x = cueAtBar(b, 'A', 'nightFerry', 17);
     x = preMatched(cueAtBar(x, 'B', 'glassHarbour', 17));
     const flat = { hi: 0.5, mid: 0.5, lo: 0.5 };
@@ -157,6 +158,10 @@ function PageEffects({ ctx }: { ctx: PageCtx }) {
   const [fault1, setFault1] = useState(false);
   const [fault2, setFault2] = useState(false);
   const hit = useRef({ beat: false, out: false, armed: false, both: false, master: false, bOnly: false, check: false });
+  // booth time FADER 1 reached the bottom (null while it is up): an echo out
+  // is judged on a render made AFTER the pull, never on the one from just
+  // before it, when the music itself still fed the echo (toddler pass 10-19)
+  const downAt = useRef<number | null>(null);
   const fx = booth.fx ?? freshFx();
   const last = audio.last;
   const s2 = s2Of(last);
@@ -176,19 +181,21 @@ function PageEffects({ ctx }: { ctx: PageCtx }) {
   const f2 = booth.ch[2].fader;
   const loop = (s2?.loopGain ?? 0) > 0;
   // the practice, from the booth's own state and the render's readings
-  if (fx.on && fx.type === 'ECHO' && FX_TIMES.ECHO[fx.time] === 1 && fx.feedback >= 0.3 && ((fx.route === 'CH1' && A.playing && f1 > 0.3) || fx.route === 'MASTER') && outMax > -40) hit.current.beat = true;
-  if (fx.on && fx.type === 'ECHO' && fx.route === 'CH1' && A.playing && f1 >= 0.5) hit.current.armed = true;
-  if (hit.current.armed && fx.type === 'ECHO' && fx.route === 'CH1' && A.playing && f1 <= 0.02 && outMax > -45) hit.current.out = true;
-  if (fx.on && fx.type === 'REVERB' && fx.route === 'SEND' && fx.returnTo === 'BUS' && fx.send[1] > 0 && fx.send[2] > 0 && fx.wet > 0.2 && A.playing && B.playing && f1 >= 0.4 && f2 >= 0.4) hit.current.both = true;
-  if (fx.on && (fx.type === 'FILTER' || fx.type === 'FLANGER') && fx.route === 'MASTER' && (A.playing || B.playing) && outMax > -40) hit.current.master = true;
-  if (fx.on && fx.route === 'CH2' && A.playing && B.playing && f1 >= 0.5 && f2 >= 0.5) hit.current.bOnly = true;
+  if (ready && fx.on && fx.type === 'ECHO' && FX_TIMES.ECHO[fx.time] === 1 && fx.feedback >= 0.3 && ((fx.route === 'CH1' && A.playing && f1 > 0.3) || fx.route === 'MASTER') && outMax > -40) hit.current.beat = true;
+  if (ready && fx.on && fx.type === 'ECHO' && fx.route === 'CH1' && A.playing && f1 >= 0.5) hit.current.armed = true;
+  if (f1 > 0.02) downAt.current = null;
+  else if (downAt.current == null) downAt.current = boothNow();
+  if (ready && hit.current.armed && fx.type === 'ECHO' && fx.route === 'CH1' && A.playing && f1 <= 0.02 && renderedSince(last, downAt.current) && outMax > -45) hit.current.out = true;
+  if (ready && fx.on && fx.type === 'REVERB' && fx.route === 'SEND' && fx.returnTo === 'BUS' && fx.send[1] > 0 && fx.send[2] > 0 && fx.wet > 0.2 && A.playing && B.playing && f1 >= 0.4 && f2 >= 0.4) hit.current.both = true;
+  if (ready && fx.on && (fx.type === 'FILTER' || fx.type === 'FLANGER') && fx.route === 'MASTER' && (A.playing || B.playing) && outMax > -40) hit.current.master = true;
+  if (ready && fx.on && fx.route === 'CH2' && A.playing && B.playing && f1 >= 0.5 && f2 >= 0.5) hit.current.bOnly = true;
   // CHECK YOURSELF, from evidence: a reverb on the MASTER wets both decks;
   // make deck B dry while deck A keeps it — with the effect still on
   const aWetBDry = fx.route === 'CH1' || (fx.route === 'SEND' && fx.send[1] > 0 && fx.send[2] === 0 && fx.returnTo === 'BUS' && fx.wet > 0.2);
-  if (check && fx.on && fx.type === 'REVERB' && aWetBDry && A.playing && B.playing && f1 >= 0.4 && f2 >= 0.4) hit.current.check = true;
+  if (ready && check && fx.on && fx.type === 'REVERB' && aWetBDry && A.playing && B.playing && f1 >= 0.4 && f2 >= 0.4) hit.current.check = true;
   const hits = [hit.current.beat, hit.current.out, hit.current.both, hit.current.master, hit.current.bOnly, fault1, fault2, hit.current.check];
   const goals = GOALS_FX.map((label, i) => ({ label, hit: hits[i] }));
-  const latched = useVisitGoals(ctx, goals, 'EFFECTS');
+  const latched = useVisitGoals(ctx, goals, 'EFFECTS', ready);
   const bpm = fxBpm(booth, fx);
   const timeVal = fx.time / (FX_TIMES[fx.type].length - 1);
   const busPk = last ? Math.max(...Array.from(last.raw.bus)) : null;

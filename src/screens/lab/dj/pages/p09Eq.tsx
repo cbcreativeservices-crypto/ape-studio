@@ -44,7 +44,7 @@ const chOf = (f: Focus): ChannelId => (f === 'res' ? 1 : f === 'lo1' || f === 'f
 
 function PageEq({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit({ lockPhase: true });
-  useScreenSetup((b) => {
+  const { ready } = useScreenSetup((b) => {
     let x = cueAtBar(b, 'A', 'nightFerry', 17);
     x = preMatched(cueAtBar(x, 'B', 'glassHarbour', 17));
     const flat = { hi: 0.5, mid: 0.5, lo: 0.5 };
@@ -59,15 +59,15 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
   const both = booth.decks.A.playing && booth.decks.B.playing;
   const lo1 = booth.ch[1].eq.lo;
   const lo2 = booth.ch[2].eq.lo;
-  if (both && lo1 >= 0.45 && lo2 <= 0.1) hand.current.start = true;
-  if (hand.current.start && both && lo1 <= 0.1 && lo2 >= 0.45) hand.current.done = true;
+  if (ready && both && lo1 >= 0.45 && lo2 <= 0.1) hand.current.start = true;
+  if (ready && hand.current.start && both && lo1 <= 0.1 && lo2 >= 0.45) hand.current.done = true;
   const anyPlay = booth.decks.A.playing || booth.decks.B.playing;
-  if (anyPlay && booth.mixer.resonance >= 0.6 && (Math.abs(booth.ch[1].filter) > 0.2 || Math.abs(booth.ch[2].filter) > 0.2)) hand.current.res = true;
+  if (ready && anyPlay && booth.mixer.resonance >= 0.6 && (Math.abs(booth.ch[1].filter) > 0.2 || Math.abs(booth.ch[2].filter) > 0.2)) hand.current.res = true;
   // the independent challenge (learning p09 #6): far away = CH1 low-pass past 60 %
-  if (booth.decks.A.playing && booth.ch[1].filter < -0.6) hand.current.far = true;
+  if (ready && booth.decks.A.playing && booth.ch[1].filter < -0.6) hand.current.far = true;
   const hits = [booth.decks.B.playing && lo2 <= 0.04, hand.current.done, hand.current.res, hand.current.far, faultFixed, check];
   const goals = GOALS_EQ.map((label, i) => ({ label, hit: hits[i] }));
-  const latched = useVisitGoals(ctx, goals, 'EQ');
+  const latched = useVisitGoals(ctx, goals, 'EQ', ready);
   const plotCh = chOf(focus);
   const c = booth.ch[plotCh];
   // OFF as the audio hears it (djDsp.filterOf's dead zone), not "exactly 0":

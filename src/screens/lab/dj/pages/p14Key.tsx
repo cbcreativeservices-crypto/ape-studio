@@ -68,7 +68,7 @@ function KeyTray() {
 
 function PageKey({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit({ lockPhase: true });
-  useScreenSetup((b) => {
+  const { ready } = useScreenSetup((b) => {
     let x = cueAtBar(b, 'A', 'nightFerry', 17);
     x = cueAtBar(x, 'B', 'glassHarbour', 17);
     const flat = { hi: 0.5, mid: 0.5, lo: 0.5 };
@@ -88,20 +88,20 @@ function PageKey({ ctx }: { ctx: PageCtx }) {
   const matched = Math.abs(bpmOf(booth, 'A') - bpmOf(booth, 'B')) < 0.06;
   const rel = keyRelation(A, B);
   const range = B.tempoRange ?? 8;
-  if (both && matched && !B.keyLock && rel === 'OUT OF TUNE') h.current.flat = true;
-  if (both && matched && B.keyLock && rel !== 'OUT OF TUNE') h.current.lock = true;
-  if (B.playing && B.keyLock && B.pitch <= -12) h.current.stretch = true;
-  if (B.playing && (B.keyShift ?? 0) !== 0) h.current.shift = true;
-  if (B.playing && B.keyLock && Math.abs(B.pitch - 4) <= 0.3 && Math.abs(B.keyShift ?? 0) < 0.01) h.current.own = true;
+  if (ready && both && matched && !B.keyLock && rel === 'OUT OF TUNE') h.current.flat = true;
+  if (ready && both && matched && B.keyLock && rel !== 'OUT OF TUNE') h.current.lock = true;
+  if (ready && B.playing && B.keyLock && B.pitch <= -12) h.current.stretch = true;
+  if (ready && B.playing && (B.keyShift ?? 0) !== 0) h.current.shift = true;
+  if (ready && B.playing && B.keyLock && Math.abs(B.pitch - 4) <= 0.3 && Math.abs(B.keyShift ?? 0) < 0.01) h.current.own = true;
   const plan = speedPlan(B);
   const stretchPct = (plan.stretch - 1) * 100;
   const audible = Math.abs(plan.stretch - 1) > STRETCH_AUDIBLE;
   // CHECK YOURSELF, from evidence: 12 % slower with key lock on — the
   // STRETCH readout warns AUDIBLE
-  if (check && B.playing && B.keyLock && B.pitch <= -11.5 && audible) h.current.check = true;
+  if (ready && check && B.playing && B.keyLock && B.pitch <= -11.5 && audible) h.current.check = true;
   const hits = [h.current.flat, h.current.lock, h.current.stretch, h.current.shift, h.current.own, faultFixed, h.current.check];
   const goals = GOALS_KEY.map((label, i) => ({ label, hit: hits[i] }));
-  const latched = useVisitGoals(ctx, goals, 'KEY');
+  const latched = useVisitGoals(ctx, goals, 'KEY', ready);
   const tempoKey = {
     kind: 'fader' as const,
     id: 'tempoB',

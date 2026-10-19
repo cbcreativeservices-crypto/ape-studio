@@ -1,5 +1,5 @@
 /**
- * p16CleanRun — Screen 16's DROPOUTS count and "n s CLEAN" run, the pure
+ * laptopCleanRun — Screen 16's DROPOUTS count and "n s CLEAN" run, the pure
  * half (tests reach it). Both are measured in BOOTH TIME, chunk by chunk as
  * each rendered chunk starts sounding.
  *
