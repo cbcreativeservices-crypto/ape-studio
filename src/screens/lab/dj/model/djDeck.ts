@@ -205,10 +205,13 @@ export function stopAll(b: Booth, t: number): Booth {
   const a = anchorAt(b, t);
   const decks = { ...a.decks };
   for (const id of DECK_IDS) decks[id] = { ...decks[id], playing: false };
-  return { ...a, decks };
+  // the turntable too (Stage 2: it plays on its own on Screens 17 and 18)
+  return { ...a, decks, tt: { ...a.tt, playing: false } };
 }
 
-export const anyPlaying = (b: Booth): boolean => DECK_IDS.some((id) => b.decks[id].playing && !!b.decks[id].track);
+/** Something is playing — a deck, or the turntable (Stage 2: the turntable
+ *  alone now runs the booth clock and the sound, so its screens have meters). */
+export const anyPlaying = (b: Booth): boolean => DECK_IDS.some((id) => b.decks[id].playing && !!b.decks[id].track) || (b.tt.playing && !!b.tt.track);
 
 /** Position of a deck now, in TRUE beats (what the ear counts). */
 export function trueBeat(b: Booth, id: DeckId, t: number): number | null {

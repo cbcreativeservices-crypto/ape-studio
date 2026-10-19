@@ -275,11 +275,32 @@ function Leg({ x, y, t, align = 'center', dim = false, size = LEG }: { x: number
   return <SceneText x={x} y={y} size={size} text={t} color={dim ? INK.printDim : INK.print} face="label" align={align} />;
 }
 
+/** Stage 2 (Screen 14, additive — drawn only on a deck that carries the
+ *  setting): KEY LOCK (lit when on) and KEY − / KEY + in the clear space left
+ *  of the tempo-range key, outside the jog's well. */
+export const KEY_LOCK_KEYS = { lock: { x: 232, y: 352, w: 38, h: 10 }, minus: { x: 232, y: 372, w: 17, h: 9 }, plus: { x: 253, y: 372, w: 17, h: 9 } } as const;
+function KeyLockKeys({ d }: { d: DeckState }) {
+  const K = KEY_LOCK_KEYS;
+  const sh = d.keyShift ?? 0;
+  return (
+    <Group>
+      <Key x={K.lock.x} y={K.lock.y} w={K.lock.w} h={K.lock.h} lit={!!d.keyLock} colour={INK.blue} />
+      <Leg x={K.lock.x + K.lock.w / 2} y={K.lock.y + K.lock.h / 2 + 3.4 * 0.36} t="KEY LOCK" size={3.4} />
+      <Key x={K.minus.x} y={K.minus.y} w={K.minus.w} h={K.minus.h} lit={sh < 0} colour={INK.amber} />
+      <Key x={K.plus.x} y={K.plus.y} w={K.plus.w} h={K.plus.h} lit={sh > 0} colour={INK.amber} />
+      <Leg x={K.minus.x + K.minus.w / 2} y={K.minus.y + K.minus.h / 2 + 3.4 * 0.36} t="KEY −" size={3.4} />
+      <Leg x={K.plus.x + K.plus.w / 2} y={K.plus.y + K.plus.h / 2 + 3.4 * 0.36} t="KEY +" size={3.4} />
+    </Group>
+  );
+}
+
 export const PlayerTop = memo(function PlayerTop({ x, y, deck, d, highlight = [], quantizeLit, syncLit, padFlash }: { x: number; y: number; deck: DeckId; d: DeckState; highlight?: readonly PlayerPart[]; quantizeLit?: boolean; syncLit?: boolean; padFlash?: boolean }) {
   const P = PLAYER;
   const W = PLAYER_W;
   const D = PLAYER_D;
-  const tempoValue = 1 - (d.pitch + PITCH_RANGE_PCT) / (2 * PITCH_RANGE_PCT);
+  // Stage 2 (additive): a deck may carry its own tempo range (±16 % on Screen 14)
+  const range = d.tempoRange ?? PITCH_RANGE_PCT;
+  const tempoValue = 1 - (d.pitch + range) / (2 * range);
   const loopWords = ['IN', 'OUT', 'EXIT', '4 BEAT'];
   return (
     <Group transform={[{ translateX: x }, { translateY: y }]}>
@@ -342,7 +363,8 @@ export const PlayerTop = memo(function PlayerTop({ x, y, deck, d, highlight = []
       <Leg x={P.tempo.x - 12} y={P.tempo.top + 2} t="−" align="right" dim />
       <Leg x={P.tempo.x - 12} y={P.tempo.top + P.tempo.len + 2} t="+" align="right" dim />
       <Key x={P.tempoRange.x} y={P.tempoRange.y} w={P.tempoRange.w} h={P.tempoRange.h} />
-      <Leg x={P.tempoRange.x + P.tempoRange.w / 2} y={P.tempoRange.y + P.tempoRange.h / 2 + LEG * 0.36} t={`±${PITCH_RANGE_PCT}%`} />
+      <Leg x={P.tempoRange.x + P.tempoRange.w / 2} y={P.tempoRange.y + P.tempoRange.h / 2 + LEG * 0.36} t={`±${range}%`} />
+      {d.keyLock !== undefined ? <KeyLockKeys d={d} /> : null}
       <SceneText x={P.browse.x} y={P.back.y + P.back.h + 16} size={12} text={deck} color={INK.amber} face="label" align="center" />
       {highlight.map((p) => (
         <Halo key={p} b={playerPartBox(p)} round={p === 'jog' || p === 'cue' || p === 'play' || p === 'browse'} />

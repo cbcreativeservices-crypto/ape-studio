@@ -243,7 +243,7 @@ export type DeckState = {
   stems?: StemGains;
   /** Where the stems come from: the track's own parts, or a SIMULATED
    *  separation of the mix (leakage and artifacts, labelled as such). */
-  stemSource?: 'ORIGINAL' | 'SEPARATED';
+  stemFrom?: 'ORIGINAL' | 'SEPARATED';
 };
 export type StemGains = { drums: number; bass: number; chords: number; lead: number };
 

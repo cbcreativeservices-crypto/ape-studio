@@ -266,8 +266,8 @@ export function stage2Of(b: Booth, t0: number, n: number, from: S2Carry | null |
     if (!d.playing) return z(n);
     const plan = speedPlan(d);
     const id = d.track!;
-    const read = (start: number, len: number): StereoBuf => (d.stems ? stemWindow(id, start, len, d.stems, d.stemSource ?? 'ORIGINAL') : trackWindow(id, start, len).mix);
-    if (d.stems && (d.stemSource ?? 'ORIGINAL') === 'SEPARATED' && d.stems.lead === 0) report.ghostDb[slot] = melodyGhostDb(d.stems, d.posSec, Math.round(n * plan.rate));
+    const read = (start: number, len: number): StereoBuf => (d.stems ? stemWindow(id, start, len, d.stems, d.stemFrom ?? 'ORIGINAL') : trackWindow(id, start, len).mix);
+    if (d.stems && (d.stemFrom ?? 'ORIGINAL') === 'SEPARATED' && d.stems.lead === 0) report.ghostDb[slot] = melodyGhostDb(d.stems, d.posSec, Math.round(n * plan.rate));
     return speedChain(read, d.posSec, plan, n);
   };
 
@@ -414,7 +414,9 @@ export function controlScope(b: Booth, t0: number): { l: number[]; r: number[] }
   const r: number[] = [];
   const N = Math.round(0.048 * SR);
   const hv = b.vinyl && !b.vinyl.gnd ? (HUM_V / CART_V) * 0.5 * 2.2 : 0;
-  for (let i = 0; i < N; i += 3) {
+  // a fractional stride, so the points fall all round the ring (not on the
+  // same 16 phases of a 1 kHz tone at 48 kHz)
+  for (let i = 0; i < N; i += 3.137) {
     const t = t0 + i / SR;
     const pos = tt.playing ? tt.posSec + (t - tt.at) * rate : tt.posSec;
     const ph = 2 * Math.PI * CONTROL_HZ * pos;

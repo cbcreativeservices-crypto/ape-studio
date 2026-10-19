@@ -101,7 +101,7 @@ export function turntablePartBox(p: TurntablePart): { x: number; y: number; w: n
 /** Every control's box — the labels' obstacles. */
 export const TT_PARTS: readonly TurntablePart[] = ['tonearm', 'headshell', 'counterweight', 'startStop', 'speed', 'pitch'];
 
-export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highlight = [], showRecord = true, powered = true }: { x: number; y: number; d: DeckState; playing: boolean; highlight?: readonly TurntablePart[]; showRecord?: boolean; powered?: boolean }) {
+export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highlight = [], showRecord = true, powered = true, slipmat = true, record = 'music' }: { x: number; y: number; d: DeckState; playing: boolean; highlight?: readonly TurntablePart[]; showRecord?: boolean; powered?: boolean; /** Stage 2 (additive): the felt slipmat under the record. */ slipmat?: boolean; /** Stage 2 (additive): a DVS CONTROL record (white vinyl, black label) instead of music. */ record?: 'music' | 'control' }) {
   const P = TT.platter;
   const R = P.d / 2;
   const rr = TT.record.d / 2;
@@ -250,8 +250,20 @@ export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highl
       <Circle cx={P.cx} cy={P.cy} r={R - 9} color="#1a1b1e" />
       {/* slipmat + record, turning together */}
       <Group origin={vec(P.cx, P.cy)} transform={spin}>
-        <Circle cx={P.cx} cy={P.cy} r={rr + 1.5} color={INK.slipmat} />
-        {showRecord ? (
+        {slipmat ? <Circle cx={P.cx} cy={P.cy} r={rr + 1.5} color={INK.slipmat} /> : null}
+        {showRecord && record === 'control' ? (
+          <Group>
+            <Circle cx={P.cx} cy={P.cy} r={rr}>
+              <RadialGradient c={vec(P.cx, P.cy)} r={rr} colors={['#c9ccd2', '#e4e6ea', '#b9bdc6']} positions={[0.35, 0.8, 1]} />
+            </Circle>
+            <Path path={grooves} style="stroke" strokeWidth={0.35} color="rgba(0,0,0,0.10)" />
+            <Circle cx={P.cx} cy={P.cy} r={rr - 2} style="stroke" strokeWidth={1.2} color="rgba(0,0,0,0.25)" />
+            <Circle cx={P.cx} cy={P.cy} r={TT.record.label / 2} color="#121316" />
+            <Circle cx={P.cx} cy={P.cy} r={TT.record.label / 2 - 5} style="stroke" strokeWidth={1.4} color="#d9dbe0" opacity={0.8} />
+            <Path path={labelPrint} style="stroke" strokeWidth={3.2} color="#d9dbe0" opacity={0.7} strokeCap="round" />
+            <Circle cx={P.cx} cy={P.cy} r={9} color="#2a2c31" />
+          </Group>
+        ) : showRecord ? (
           <Group>
             <Circle cx={P.cx} cy={P.cy} r={rr}>
               <RadialGradient c={vec(P.cx, P.cy)} r={rr} colors={['#0a0a0c', '#121216', '#0a0a0c']} positions={[0.35, 0.8, 1]} />
