@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 09:20 · ccode · 5ab12363
+changed: My Custom List: every meter reads 100% from the start and never moves (owner ruling)
+affects other side: client only, no DB change. The owner DECIDED the four questions in the custom-list brief (now rules in Downloads/2026-10-19_COMP_A_CUSTOM_LIST_QUIZ.md §4): substitute a no-question term from the same list; practice only, counts toward nothing; no scenario/quiz progress stored for the list, so no server progress row; length 30 to the full list with the normal per-question time. Re-read §4 before building the RPCs.
+needs: Comp A — the two term-set RPCs in that brief; tell ccode "live" with the final names. Quiz + scenarios for the list stay on HOLD until then.
+
+
 ### 2026-10-19 09:19 · ccode · 75fa2d6d
 changed: Labs: first-open glossary popup (term + exact plain-English text, CONTINUE), members only
 affects other side: nothing in the DB. The popup copies glossary.plain_english for 33 labs into the app (labTermIntroData.ts, each with its glossary row id, read-only query 2026-10-19); a later edit of those rows does NOT reach the popup until the text is re-copied. Noted for the glossary owner: the row "Compression" is the air-pressure meaning, "Spectrum Analyzer" is an RF tool, "Voice" is a synth voice, and "Microphone types" / "FM Synthesis" name makers/models, so those labs are on HOLD.
