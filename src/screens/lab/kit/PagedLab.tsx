@@ -59,6 +59,10 @@ export type PageCtx = {
   /** Jump to another page by index (clamped, scrolls to top, persisted).
    *  Optional so any hand-built ctx from before it existed still type-checks. */
   goTo?: (index: number) => void;
+  /** ADDITIVE (2026-10-18, DJ Systems Lab): whether page `index` counts as
+   *  done — the same test the what's-left screen uses (done here, or its
+   *  credit banked). Lets a closing page tick only what was really done. */
+  isPageDone?: (index: number) => boolean;
 };
 
 export type PageDef = {
@@ -109,7 +113,7 @@ import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type La
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 
-export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, accuracyDetail }: {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail }: {
   labId: string;
   title: string;
   subtitle: string;
@@ -137,6 +141,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
    *  still moves on — it just does not count that page — so the end screen
    *  says plainly why it is still listed. Omitted = no line (as before). */
   handsOnDetail?: string;
+  /** ADDITIVE (2026-10-18, DJ Systems Lab, learning review X5): the what's-
+   *  left line for page `index` when it is not done — e.g. its unmet goals by
+   *  name. A string replaces `handsOnDetail` for that page; undefined keeps it. */
+  pageDetail?: (index: number) => string | undefined;
   /** ADDITIVE (2026-10-18, DJ Systems Lab): the lab's own calibration caveat,
    *  shown emphasised at the top of the ⚖️ note (AccuracyNote `detail`) on
    *  every page. Omitted = the standard note, exactly as before. */
@@ -426,16 +434,21 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   // See awaitingRestore: nothing of a page is mounted until its place is known.
   const holdPageBody = awaitingRestore && progress == null && !navigatedRef.current;
   const isDone = !!progress?.completed.includes(page);
-  const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo };
 
   // What's-left inputs: a page counts when it is done in this shell's own
   // progress OR its credit unit is banked (so START OVER, which clears only
   // the page marks, never makes banked credit read as missing).
+  // A lab's own per-page line (pageDetail) wins over the shared hands-on line.
+  const pageDetailOf = (i: number): { detail: string } | null => {
+    const d = pageDetail?.(i);
+    return d ? { detail: d } : null;
+  };
   const endUnits: LabEndUnit[] = pagesWithCheck.map((p, i) =>
     check && i === pages.length
       ? { id: String(i), label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' }
       : { id: String(i), label: p.title, ...(handsOnDetail && p.manualDone ? { detail: handsOnDetail } : null) },
   );
+  const endRows: LabEndUnit[] = endUnits.map((u, i) => (check && i === pages.length ? u : { ...u, ...pageDetailOf(i) }));
   const endCleared = new Set<string>();
   pagesWithCheck.forEach((_, i) => {
     const banked = check && i === pages.length
@@ -443,6 +456,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
       : (!!creditLabKey && bankedPages.has(`p${i + 1}`)) || (!!pageCreditKeys[i] && bankedPageKeys.has(pageCreditKeys[i]));
     if (banked || progress?.completed.includes(i)) endCleared.add(String(i));
   });
+  const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo, isPageDone: (i: number) => endCleared.has(String(i)) };
   // A lab that banks certificate credit — `p<n>` units OR one key per page
   // (Mixing, owner ruling 2026-10-14 #17) — reads CREDITED, like every other
   // credit lab; only a device-progress lab reads DONE.
@@ -491,7 +505,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
         {ending ? (
           <LabEndScreen
             labTitle={title}
-            units={endUnits}
+            units={endRows}
             cleared={endCleared}
             unreadable={unreadable}
             mode={creditMode}

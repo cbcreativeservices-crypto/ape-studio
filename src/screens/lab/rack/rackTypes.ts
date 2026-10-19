@@ -172,7 +172,9 @@ export type DockParam =
       nudges?: LaneNudge[];
       /** The control exists but is LOCKED in this state (e.g. a FIXED EQ's
        *  camera cannot pan): the key shows LOCKED, dimmed, and never binds the
-       *  lane; tapping it prints this reason under the keys. */
+       *  lane; tapping it prints this reason under the keys. A locked fader
+       *  WITH a `chooser` still opens its chooser on a tap (2026-10-18), so
+       *  the learner can pick an option that is not locked. */
       locked?: string;
       /** Bind the lane to this fader the moment it APPEARS in the dock (opt-in,
        *  slider pass 2026-10-14). For a fader that a flip-through key reveals
@@ -205,6 +207,10 @@ export type DockParam =
       helpKey?: string;
       /** As for a toggle: not shown in FULL SCREEN, where it changes nothing. */
       hideInFull?: boolean;
+      /** ADDITIVE (2026-10-18, DJ Systems Lab): the chooser exists but changes
+       *  nothing in this state — the key shows LOCKED, dimmed, does not open,
+       *  and a tap prints this reason under the keys (as a locked fader). */
+      locked?: string;
     }
   | {
       kind: 'group';
