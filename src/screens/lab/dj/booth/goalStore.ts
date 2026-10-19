@@ -12,6 +12,26 @@
 
 const reported = new Map<string, readonly string[]>();
 
+/**
+ * A visit's chips when the screen opens: EMPTY, whether or not the screen is
+ * already done (owner 2026-10-19: "on a redo, start the goal chips empty as
+ * a fresh practice run, and never touch earned credit"). They used to open
+ * all ticked on a done screen, so a redo had nothing to practise.
+ */
+export function visitStart(count: number): boolean[] {
+  return Array.from({ length: Math.max(0, count) }, () => false);
+}
+
+/**
+ * Should meeting every goal mark the screen done? Only when it is not done
+ * yet. A redo that meets them again changes nothing, and nothing here (or
+ * anywhere in the lab) ever UNMARKS a screen: a fresh practice run with
+ * empty chips is never read as "not done" (earned credit is kept).
+ */
+export function markOnMet(allMet: boolean, isDone: boolean): boolean {
+  return allMet && !isDone;
+}
+
 /** The labels whose goals are not latched, in the screen's order. */
 export function unmetGoals(labels: readonly string[], latched: readonly boolean[]): string[] {
   return labels.filter((_, i) => !latched[i]);

@@ -22,7 +22,7 @@ import { boothKey, stopKey } from '../dock';
 import { PatchTray, PowerTray, type PowerEvent } from '../trays';
 import { getBooth, setBooth, updateBooth } from '../booth/boothStore';
 import { useScreenSetup } from '../booth/setup';
-import { AUDIO_PLUGS, POWERED, POWER_PLUGS, PLUGS, SPEAKERS, connect, deviceLive, plugCorrect, speakerCabled, systemBuilt, type Booth, type PlugId, type SpeakerId } from '../model/djModel';
+import { AUDIO_PLUGS, POWERED, POWER_PLUGS, PLUGS, SPEAKERS, connect, deviceLive, plugCorrect, speakerCabled, type Booth, type PlugId, type SpeakerId } from '../model/djModel';
 import type { BoothRender } from '../engine/djRender';
 import type { BoothMotion } from '../art/motion';
 import { soundCell, useBoothKit } from './shared';
@@ -139,12 +139,14 @@ function unbuilt(b: Booth): Booth {
 
 function PageBuild({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit();
-  // Not done yet: start UNWIRED, always. Other screens wire the booth for the
-  // learner (Screen 1 on the way in), so a built booth here was usually not
-  // the learner's work — and it ticked the three wiring goals on arrival
-  // (toddler test 2026-10-19). Once done, a redo keeps the learner's system
-  // (UNWIRE starts again).
-  useScreenSetup((b) => (ctx.isDone && systemBuilt(b) ? b : { ...unbuilt(b), perspective: 'CROWD' }), false);
+  // Start UNWIRED, always. Other screens wire the booth for the learner
+  // (Screen 1 on the way in), so a built booth here was usually not the
+  // learner's work — and it ticked the three wiring goals on arrival
+  // (toddler test 2026-10-19). A REDO too (owner 2026-10-19: "on a redo,
+  // start the goal chips empty as a fresh practice run"): a redo used to
+  // keep the built system, so its three wiring chips ticked again on
+  // arrival instead of being re-earned. The screen's done mark is kept.
+  useScreenSetup((b) => ({ ...unbuilt(b), perspective: 'CROWD' }), false);
   const [lastPower, setLastPower] = useState<PowerEvent | null>(null);
   // the power story since the last time everything was off
   const seq = useRef<{ thumpOn: boolean; wasAllOn: boolean; thumpOff: boolean; offOk: boolean }>({ thumpOn: false, wasAllOn: false, thumpOff: false, offOk: false });

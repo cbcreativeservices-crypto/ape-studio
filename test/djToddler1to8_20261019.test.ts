@@ -6,8 +6,9 @@
  *    from another screen never ticks them (p01, p03, p05, p08);
  *  - Screen 1 RESET returns to the screen's own start (channel fader up),
  *    not a fresh booth with every fader down (PLAY A was silent);
- *  - Screen 4 starts unwired until it is done (an auto-wired booth ticked
- *    three wiring goals on arrival); UNWIRE clears the thump note;
+ *  - Screen 4 starts unwired (an auto-wired booth ticked three wiring goals
+ *    on arrival) — a redo too, since 2026-10-19 (a redo is a fresh practice
+ *    run); UNWIRE clears the thump note;
  *  - Screen 5 judges a LOAD on the booth BEFORE it (a load stops the deck);
  *  - Screens 6 and 7: a fault's "fixed" reads only a render made after START
  *    THE FAULT (a chunk from before read Fixed at once);
@@ -93,9 +94,10 @@ describe('Screen 1 RESET and Screen 4 entry', () => {
     assert.match(s, /setBooth\(welcomeBooth\(freshBooth\(\), 'nightFerry'\)\)/);
     assert.match(s, /fader: 0\.8, xf: 'THRU'/);
   });
-  it('Screen 4 starts unwired until it is done, and UNWIRE clears the thump note', () => {
+  it('Screen 4 starts unwired (a redo too: a fresh practice run), and UNWIRE clears the thump note', () => {
     const s = page('p04Build.tsx');
-    assert.match(s, /useScreenSetup\(\(b\) => \(ctx\.isDone && systemBuilt\(b\) \? b : \{ \.\.\.unbuilt\(b\), perspective: 'CROWD' \}\), false\)/);
+    assert.match(s, /useScreenSetup\(\(b\) => \(\{ \.\.\.unbuilt\(b\), perspective: 'CROWD' \}\), false\)/);
+    assert.doesNotMatch(s, /ctx\.isDone && systemBuilt/, 'a redo no longer keeps the built booth (its wiring chips would tick on arrival)');
     assert.match(s, /setLastPower\(null\);\s*\/\/[^\n]*\n\s*setMiss\(null\);/);
   });
   it('Screen 3: the PLAY key names a running turntable whichever SOURCE is shown', () => {

@@ -17,7 +17,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { useMarkWhen } from '../tuning/components/primitives';
 import type { PageCtx } from '../kit/PagedLab';
-import { faultStep, latchGoals, reportGoals, setupPending } from './booth/goalStore';
+import { faultStep, latchGoals, markOnMet, reportGoals, setupPending, visitStart } from './booth/goalStore';
 
 export const STEP_TITLES = ['UNDERSTAND', 'EXPLORE', 'LISTEN & OBSERVE', 'PRACTICE', 'CHECK YOURSELF'] as const;
 
@@ -72,15 +72,22 @@ export type Goal = { label: string; hit: boolean };
  *  what's-left screen (booth/goalStore). `ready` (ADDITIVE, learning review
  *  2026-10-18 24 #1): pass useScreenSetup's flag — nothing latches before
  *  the screen's own setup is applied. Every screen is guarded anyway: no
- *  goal latches while any screen's setup is still pending. */
+ *  goal latches while any screen's setup is still pending.
+ *
+ *  A REDO IS A FRESH PRACTICE RUN (owner 2026-10-19: "on a redo, start the
+ *  goal chips empty as a fresh practice run, and never touch earned
+ *  credit"). Every visit opens with its chips EMPTY — a screen that is
+ *  already done too — and each ticks again as it is re-earned in this
+ *  visit. The screen's done mark is never removed or re-judged: this hook
+ *  only ever MARKS (markOnMet), and the what's-left screen lists no goals
+ *  under a done screen (kit/PagedLab). */
 export function useVisitGoals(ctx: PageCtx, goals: Goal[], page?: string, ready = true): boolean[] {
-  const seen = useRef<boolean[]>(goals.map(() => ctx.isDone));
-  if (ctx.isDone && !seen.current.every(Boolean)) seen.current = goals.map(() => true);
+  const seen = useRef<boolean[]>(visitStart(goals.length));
   seen.current = latchGoals(seen.current, goals.map((g) => g.hit), ready && !setupPending());
   if (page) reportGoals(page, goals.map((g) => g.label), seen.current);
   const all = seen.current.every(Boolean);
   useMarkWhen(all, () => {
-    if (!ctx.isDone) ctx.markDone();
+    if (markOnMet(true, ctx.isDone)) ctx.markDone();
   });
   return [...seen.current];
 }

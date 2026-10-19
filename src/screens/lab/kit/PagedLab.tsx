@@ -143,7 +143,8 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   handsOnDetail?: string;
   /** ADDITIVE (2026-10-18, DJ Systems Lab, learning review X5): the what's-
    *  left line for page `index` when it is not done — e.g. its unmet goals by
-   *  name. A string replaces `handsOnDetail` for that page; undefined keeps it. */
+   *  name. A string replaces `handsOnDetail` for that page; undefined keeps it.
+   *  A page that is done (or banked) shows no line at all (2026-10-19). */
   pageDetail?: (index: number) => string | undefined;
   /** ADDITIVE (2026-10-18, DJ Systems Lab): the lab's own calibration caveat,
    *  shown emphasised at the top of the ⚖️ note (AccuracyNote `detail`) on
@@ -456,8 +457,19 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   // What's-left inputs: a page counts when it is done in this shell's own
   // progress OR its credit unit is banked (so START OVER, which clears only
   // the page marks, never makes banked credit read as missing).
+  const endCleared = new Set<string>();
+  pagesWithCheck.forEach((_, i) => {
+    const banked = check && i === pages.length
+      ? bankedCheck.has(UNDERSTANDING_UNIT)
+      : (!!creditLabKey && bankedPages.has(`p${i + 1}`)) || (!!pageCreditKeys[i] && bankedPageKeys.has(pageCreditKeys[i]));
+    if (banked || progress?.completed.includes(i)) endCleared.add(String(i));
+  });
   // A lab's own per-page line (pageDetail) wins over the shared hands-on line.
-  const pageDetailOf = (i: number): { detail: string } | null => {
+  // It is a WHAT'S-LEFT line, so a page that is already done carries none
+  // (owner 2026-10-19: a redo is a fresh practice run, and its empty chips
+  // are never listed as "left" under a page that keeps its mark).
+  const pageDetailOf = (i: number): { detail: string | undefined } | null => {
+    if (pageDetail && endCleared.has(String(i))) return { detail: undefined };
     const d = pageDetail?.(i);
     return d ? { detail: d } : null;
   };
@@ -467,13 +479,6 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
       : { id: String(i), label: p.title, ...(handsOnDetail && p.manualDone ? { detail: handsOnDetail } : null) },
   );
   const endRows: LabEndUnit[] = endUnits.map((u, i) => (check && i === pages.length ? u : { ...u, ...pageDetailOf(i), ...(optionalPage?.(i) ? { optional: true } : null) }));
-  const endCleared = new Set<string>();
-  pagesWithCheck.forEach((_, i) => {
-    const banked = check && i === pages.length
-      ? bankedCheck.has(UNDERSTANDING_UNIT)
-      : (!!creditLabKey && bankedPages.has(`p${i + 1}`)) || (!!pageCreditKeys[i] && bankedPageKeys.has(pageCreditKeys[i]));
-    if (banked || progress?.completed.includes(i)) endCleared.add(String(i));
-  });
   const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo, isPageDone: (i: number) => endCleared.has(String(i)) };
   // A lab that banks certificate credit — `p<n>` units OR one key per page
   // (Mixing, owner ruling 2026-10-14 #17) — reads CREDITED, like every other
