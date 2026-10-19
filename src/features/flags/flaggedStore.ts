@@ -24,6 +24,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSyncExternalStore } from 'react';
 import { createLocalStore, type LocalStore } from '../storage/localStore';
+import { CUSTOM_LIST_ID } from '../commercial/studyGate';
 
 // Storage key for the BOOKMARK list (renamed from "flagged" — user request
 // 2026-07-18); the VALUE is unchanged so existing saved terms carry over.
@@ -33,7 +34,7 @@ export const BOOKMARK_KEY = 'ape:glossaryFavs';
  *  Flashcards into local-only mode (no server topic). Display name is the
  *  user's "Custom List" (user request 2026-07-17); the id/storage stay
  *  'flagged' so terms starred in the Glossary/Flashcards carry over. */
-export const FLAGGED_TOPIC_ID = 'flagged';
+export const FLAGGED_TOPIC_ID = CUSTOM_LIST_ID;
 export const FLAGGED_TOPIC_NAME = 'My Custom List';
 
 export type TermListKind = 'bookmark' | 'heart' | 'starred' | 'known';
@@ -253,6 +254,7 @@ export function useIsBookmarked(ctx: string, id: string): boolean {
  * Custom List appears as a synthetic current-topic on the Dashboard. Default
  * TRUE (owner 2026-10-14: loaded by default, like the two free topics); an
  * explicit OFF is kept. Stored as the words 'true' / 'false' (unchanged on disk). */
+// (2026-10-19: the list is ALWAYS on the Dashboard — the getters below say so.)
 const CUSTOM_ON_DASHBOARD_KEY = 'ape:customOnDashboard';
 
 const customOnDashboard = createLocalStore<boolean>({
@@ -262,17 +264,27 @@ const customOnDashboard = createLocalStore<boolean>({
   serialize: (v) => (v ? 'true' : 'false'),
 });
 
+/**
+ * ⛔ ALWAYS TRUE (owner 2026-10-19): "The MY CUSTOM LIST is always loaded and
+ * available in the study dashboard — in fact it is the only topic that can
+ * never be removed from the study dashboard." A stored OFF from before that
+ * ruling is ignored, never honoured; see features/commercial/studyGate.ts (MY CUSTOM LIST section).
+ * The store itself stays (it is registered with the account wipe).
+ */
 export function getCustomOnDashboard(): boolean {
-  return customOnDashboard.get();
+  return true;
 }
 
+/** Refuses OFF (owner 2026-10-19). ON is still written, so an old stored OFF
+ *  is overwritten the first time anything asks to load the list. */
 export function setCustomOnDashboard(v: boolean): void {
-  void customOnDashboard.set(v);
+  if (!v) return;
+  void customOnDashboard.set(true);
 }
 
-/** Live view of the "show custom list on dashboard" flag (any screen). */
+/** Live view of the "show custom list on dashboard" flag — always true now. */
 export function useCustomOnDashboard(): boolean {
-  return customOnDashboard.use();
+  return true;
 }
 
 /* ---- Account-wipe reset (clearLocalAccountData / user switch) ---- */

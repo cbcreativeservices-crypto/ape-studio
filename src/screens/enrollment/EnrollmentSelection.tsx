@@ -274,36 +274,41 @@ export function EnrollmentSelection({
                   verb already implies — UNLOAD ALL can only mean they are
                   loaded — and every row below still reports its own state, so
                   the head was repeating the list. */}
-              <Pressable
-                style={[s.loadActionBtn, !card.allLoaded && s.loadActionBtnInvite]}
-                onPress={() => onToggleLoad(card)}
-                hitSlop={6}
-                accessibilityRole="button"
-                accessibilityState={{ selected: card.allLoaded }}
-                aria-pressed={card.allLoaded}
-                accessibilityLabel={
-                  isCustom
-                    ? card.allLoaded
-                      ? 'Unload my custom list from the study dashboard'
-                      : 'Load my custom list into the study dashboard'
-                    : card.allLoaded
+              {/* MY CUSTOM LIST is ALWAYS in study (owner 2026-10-19: "the only
+                  topic that can never be removed from the study dashboard") —
+                  no LOAD / UNLOAD, just the fact, in the same slot. */}
+              {isCustom ? (
+                <View style={s.loadActionBtn} accessible accessibilityLabel="My custom list is always in the study dashboard">
+                  <Text style={s.loadText}>ALWAYS IN STUDY</Text>
+                </View>
+              ) : (
+                <Pressable
+                  style={[s.loadActionBtn, !card.allLoaded && s.loadActionBtnInvite]}
+                  onPress={() => onToggleLoad(card)}
+                  hitSlop={6}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: card.allLoaded }}
+                  aria-pressed={card.allLoaded}
+                  accessibilityLabel={
+                    card.allLoaded
                       ? `Unload all ${card.topicCount} topics of ${card.title} from the study deck`
                       : `Load all ${card.topicCount} topics of ${card.title} into the study deck`
-                }
-              >
-                {/* "ALL" stays in the label (owner 2026-09-20): the bare verb
-                    beside a per-topic list read as though it acted on one row.
-                    It acts on every topic in the card.
+                  }
+                >
+                  {/* "ALL" stays in the label (owner 2026-09-20): the bare verb
+                      beside a per-topic list read as though it acted on one row.
+                      It acts on every topic in the card.
 
-                    ⛔ THE FRAME LIGHTS ONLY ON THE INVITATION (owner
-                    2026-09-21). LOAD ALL is the thing to do next, so it takes
-                    the full amber treatment, frame and all. UNLOAD ALL is the
-                    undo of something already done — the text stays amber so it
-                    is plainly the same control, but it wears no frame. */}
-                <Text style={s.loadText} numberOfLines={1}>
-                  {isCustom ? (card.allLoaded ? 'UNLOAD' : 'LOAD') : card.allLoaded ? 'UNLOAD ALL' : 'LOAD ALL'}
-                </Text>
-              </Pressable>
+                      ⛔ THE FRAME LIGHTS ONLY ON THE INVITATION (owner
+                      2026-09-21). LOAD ALL is the thing to do next, so it takes
+                      the full amber treatment, frame and all. UNLOAD ALL is the
+                      undo of something already done — the text stays amber so it
+                      is plainly the same control, but it wears no frame. */}
+                  <Text style={s.loadText} numberOfLines={1}>
+                    {card.allLoaded ? 'UNLOAD ALL' : 'LOAD ALL'}
+                  </Text>
+                </Pressable>
+              )}
             </View>
           </View>
         </View>

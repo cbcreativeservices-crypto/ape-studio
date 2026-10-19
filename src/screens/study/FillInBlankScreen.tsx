@@ -31,6 +31,7 @@ import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
 import { cardColumn } from '../../theme/readingColumn';
 import {
+  fetchGlossaryItemsByIds,
   fetchMethodState,
   fetchTopicItems,
   studyDisplayPct,
@@ -38,6 +39,8 @@ import {
   type ItemStates,
 } from '../../features/study/api';
 import { studyLoadMessage, studyLoadReason } from '../../features/study/sessionRetry';
+import { readTermList } from '../../features/flags/flaggedStore';
+import { isCustomListId } from '../../features/commercial/studyGate';
 import { BLANK, fibSentence } from '../../features/study/sentences';
 import { StudySession } from '../../features/study/sync';
 import { loadLocalMethodStates, mergeItemStates, saveLocalMethodStates } from '../../features/study/localProgress';
@@ -86,6 +89,13 @@ function blankOut(sentence: string, hasBlank: boolean): { pre: string[] } {
 
 export function FillInBlankScreen({ navigation, route }: Props) {
   const { achievementId, topicName } = route.params;
+  /**
+   * MY CUSTOM LIST (owner 2026-10-19): every study method is open on the list,
+   * using its CURRENT terms. Like Flashcards' flagged mode it is local-only —
+   * there is no topic row to credit, so no server method state, no study
+   * session and no device mirror (the server would refuse the 'flagged' id).
+   */
+  const customMode = isCustomListId(achievementId);
 
   // Remember this exact method+topic so the Enrollments "CONTINUE LEARNING"
   // banner can resume here (re-records on every focus = true last-visited).
@@ -136,8 +146,12 @@ export function FillInBlankScreen({ navigation, route }: Props) {
     (async () => {
       try {
         const [fetched, methodState, localStates] = await Promise.all([
-          fetchTopicItems(achievementId, tierForTermsRef.current),
-          fetchMethodState(achievementId, 'fill_in_blank'),
+          // The list AFTER its stored copy is read: a failed read rejects, so
+          // the screen says "could not load" — never an empty deck.
+          customMode
+            ? readTermList('starred').then((ids) => fetchGlossaryItemsByIds([...ids]))
+            : fetchTopicItems(achievementId, tierForTermsRef.current),
+          customMode ? Promise.resolve(null) : fetchMethodState(achievementId, 'fill_in_blank'),
           // Device-mirror resume merge — SIGNED-IN only (same ruling as the
           // flashcards fix 2026-08-17; QA night 2026-08-31 found FIB/Matching
           // never got it, and a single answer then clobbered the mirror).
@@ -146,9 +160,11 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           // empty screen with no cards and no error. Flashcards was fixed on
           // 2026-09-21; these two siblings were missed because the call is
           // split across lines and the sweep grepped for it on one.
-          safeSession(supabase.auth.getSession(), 'fill_in_blank')
-            .then(({ data }) => (isRealAccount(data.session) ? loadLocalMethodStates(achievementId, 'fill_in_blank') : null))
-            .catch(() => null),
+          customMode
+            ? Promise.resolve(null)
+            : safeSession(supabase.auth.getSession(), 'fill_in_blank')
+                .then(({ data }) => (isRealAccount(data.session) ? loadLocalMethodStates(achievementId, 'fill_in_blank') : null))
+                .catch(() => null),
         ]);
         if (!alive) return;
         setItems(shuffle(fetched));
@@ -161,6 +177,12 @@ export function FillInBlankScreen({ navigation, route }: Props) {
         if (alive) setError(studyLoadMessage(studyLoadReason(e)));
       }
     })();
+    // No server study session for the custom list (no topic row to write to).
+    if (customMode) {
+      return () => {
+        alive = false;
+      };
+    }
     const s = new StudySession(achievementId, 'fill_in_blank', () => {});
     s.start();
     session.current = s;
@@ -169,13 +191,14 @@ export function FillInBlankScreen({ navigation, route }: Props) {
       void s.stop();
       session.current = null;
     };
-  }, [achievementId]);
+  }, [achievementId, customMode]);
 
   // Mirror progress to the device so the Dashboard reflects it immediately,
   // even before the server write lands (Booth 2026-07-15).
   useEffect(() => {
+    if (customMode) return; // the custom list: nothing to mirror
     if (Object.keys(states).length) void saveLocalMethodStates(achievementId, 'fill_in_blank', states);
-  }, [states, achievementId]);
+  }, [states, achievementId, customMode]);
 
   // Fresh visit = fresh pace session: the clock (startRef/elapsedRef) is
   // per-instance and starts at 0 on mount, but the brain-output tally and the

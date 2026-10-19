@@ -17,6 +17,7 @@
  * 2026-09-30); the wipe reaches the store without a hand entry.
  */
 import { createLocalStore } from '../storage/localStore';
+import { canRemoveFromDeck, effectiveRemoved } from '../commercial/studyGate';
 
 export type DeckMode = 'alpha' | 'custom';
 export type DeckPrefs = { mode: DeckMode; order: string[]; removed: string[] };
@@ -60,6 +61,9 @@ export function setDeckOrder(order: string[]): void {
  * second tap sees the first.
  */
 export function removeFromDeck(id: string, deckIds?: readonly string[]): void {
+  // ⛔ MY CUSTOM LIST IS NEVER REMOVED (owner 2026-10-19). The sheet shows no ✕
+  // for it; this is the guard behind that, in the one write path.
+  if (!canRemoveFromDeck(id)) return;
   void store.mutate((prefs) => {
     if (prefs.removed.includes(id)) return prefs;
     if (deckIds) {
@@ -82,7 +86,8 @@ export function restoreToDeck(id: string): void {
  * not yet placed fall in alphabetically after the ordered ones.
  */
 export function orderDeckIds(all: { id: string; name: string }[], p: DeckPrefs, firstId?: string): string[] {
-  const removed = new Set(p.removed);
+  // A `removed` entry for the custom list stored before 2026-10-19 is ignored.
+  const removed = new Set(effectiveRemoved(p.removed));
   const kept = all.filter((t) => !removed.has(t.id));
   if (p.mode === 'custom') {
     const idx = new Map(p.order.map((id, i) => [id, i] as const));

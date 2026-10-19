@@ -315,7 +315,10 @@ describe('3. a guest touches only Pro Audio Safety and DAW Fundamentals', () => 
     // Method switch and quiz switch: the gate is the first thing each press does.
     assert.match(d, /onPress=\{\(\) => \{\s*\/\/ Locked\/paid topic \+ non-member → the study-access sheet\s*\/\/ instead of opening the study method\.\s*if \(actMembershipLocked\) \{\s*setUpgradeOpen\(true\);\s*return;\s*\}\s*const routeName = STUDY_ROUTES\[m\.key\];/);
     assert.match(d, /onPress=\{\(\) => \{\s*if \(actMembershipLocked\) \{\s*setUpgradeOpen\(true\);\s*return;\s*\}\s*\/\/ A KNOWN GUEST CANNOT SIT A QUIZ/);
-    assert.match(d, /if \(customListLocked\) \{\s*setUpgradeOpen\(true\);/);
+    // The ★ list's own rack (2026-10-19) goes through the SAME method switch,
+    // whose gate (actMembershipLocked) fails closed for the pseudo-topic; the
+    // term-list popup's STUDY FLASHCARDS keeps its own customListLocked gate.
+    assert.match(d, /if \(customListLocked\) \{\s*\/\/ After the term list has gone \(afterPopupCloses\)\.\s*afterPopupCloses\(\(\) => setUpgradeOpen\(true\)\);/);
     // The only navigations into the study screens are those (plus a dev bypass).
     assert.equal((d.match(/navigation\.navigate\(routeName,/g) ?? []).length, 2);
     assert.equal((d.match(/navigation\.navigate\('Quiz',/g) ?? []).length, 1);

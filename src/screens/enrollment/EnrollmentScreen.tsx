@@ -80,7 +80,7 @@ import {
   useHomeBundles,
   useHomeGs,
 } from '../../features/home/homeCardsStore';
-import { FLAGGED_TOPIC_ID, FLAGGED_TOPIC_NAME, readTermList, setCustomOnDashboard, useCustomOnDashboard, useTermList } from '../../features/flags/flaggedStore';
+import { FLAGGED_TOPIC_ID, FLAGGED_TOPIC_NAME, readTermList, useTermList } from '../../features/flags/flaggedStore';
 import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { fetchGlossaryItemsByIds } from '../../features/study/api';
 import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
@@ -1130,8 +1130,6 @@ export const EnrollmentView = memo(function EnrollmentView({
     }
   };
 
-  // Whether the user's "My Custom List" rides the Dashboard as a current topic.
-  const customOnDash = useCustomOnDashboard();
   /** The ★ list, for the MY CUSTOM LIST selection's count (owner 2026-10-14). */
   const starredTerms = useTermList('starred');
 
@@ -1518,7 +1516,8 @@ export const EnrollmentView = memo(function EnrollmentView({
       slug: null,
       pct: 0,
       topicCount: starredTerms.size,
-      allLoaded: customOnDash,
+      // Always in study (owner 2026-10-19) — never offered as UNLOAD.
+      allLoaded: true,
     };
     if (credentials.length === 0) return [all, ghost, custom];
     // (ghost is otherwise unused — a deck with credentials never shows it)
@@ -1538,7 +1537,7 @@ export const EnrollmentView = memo(function EnrollmentView({
       })),
       custom,
     ];
-  }, [bundles, derivedBundles, enrolled, prog, activeGs, slugByName, starredTerms, customOnDash]);
+  }, [bundles, derivedBundles, enrolled, prog, activeGs, slugByName, starredTerms]);
 
   /**
    * ⛔ CLAMP IN RENDER, NOT IN AN EFFECT. An effect resetting this runs one
@@ -2383,10 +2382,9 @@ export const EnrollmentView = memo(function EnrollmentView({
            * missed.
            */
           onToggleLoad={(card) => {
-            if (card.kind === 'custom') {
-              setCustomOnDashboard(!customOnDash);
-              return;
-            }
+            // MY CUSTOM LIST cannot be unloaded (owner 2026-10-19); its card
+            // shows no LOAD / UNLOAD control, and this refuses it too.
+            if (card.kind === 'custom') return;
             if (card.kind === 'topics') {
               setActiveMany(enrolled.map((e) => e.gs), !card.allLoaded);
               return;
@@ -2397,7 +2395,6 @@ export const EnrollmentView = memo(function EnrollmentView({
             if (card.kind === 'custom') {
               // Studying it puts it on the dashboard (the old bar's study icon
               // only worked once it was ON).
-              if (!customOnDash) setCustomOnDashboard(true);
               goStudy(FLAGGED_TOPIC_ID);
               return;
             }

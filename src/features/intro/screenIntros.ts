@@ -150,7 +150,8 @@ export const SCREEN_INTROS: Record<
       'This is your own study deck, made from any glossary terms you choose.\n\n' +
       'To add a term, tap the deck icon beside it. Tap it again to take it off. This button shows only the terms you’ve added; press and hold it to see and edit the whole list.\n\n' +
       'Your deck works like a topic of its own in the Academy’s study system. You can study it with flashcards, matching, fill-in-the-blank and scenario questions, the same way you study any topic.\n\n' +
-      'To start studying it, open My Enrollments Dashboard from the Home menu and load My Custom List into Study.\n\n' +
+      // 2026-10-19: the list is ALWAYS on the Study dashboard now (no LOAD step).
+      'It is always on your Study dashboard: open Study and turn the topic dial to My Custom List.\n\n' +
       'Use it for terms you find difficult, words from a class or a job, or anything you want to practise.',
     button: 'Got it',
   },

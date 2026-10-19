@@ -53,12 +53,16 @@ test('2. Dashboard: an unreadable ★ Custom List is not "0 TERMS"', () => {
   const src = strip(read(DASH));
   // A successful read also marks the list as READ (owner 2026-10-14: the empty-list message waits for it).
   assert.match(src, /readTermList\('starred'\)\.then\(\s*\(\) => \{\s*if \(alive\) \{\s*setStarredUnreadable\(false\);\s*setStarredRead\(true\);\s*\}\s*\},\s*\(\) => \{\s*if \(alive\) setStarredUnreadable\(true\);/);
-  assert.match(src, /\}, \[customOnDashboard, starred\]\);/, 're-asked when the live list changes');
+  // Always asked now: the list is always on the Dashboard (owner 2026-10-19).
+  assert.match(src, /\}, \[starred\]\);/, 're-asked when the live list changes');
   assert.match(src, /const starredCount = starredUnreadable\s*\?\s*'TERMS COULD NOT BE READ'/);
   // No count printed straight from the placeholder set any more.
   assert.doesNotMatch(src, /`\$\{starred\.size\} TERM\$\{starred\.size === 1 \? '' : 'S'\} · MY CUSTOM LIST`/);
-  assert.match(src, /\$\{starredCount\} · MY CUSTOM LIST/);
-  assert.match(src, /disabled=\{!starredUnreadable && starred\.size === 0\}/, 'STUDY stays live on an unreadable list');
+  // 2026-10-19: the list rides the full rack; each method shows the count line,
+  // and an UNREADABLE list still opens its method (customMethodTap → 'open'),
+  // whose screen says "could not load" with its own Retry.
+  assert.match(src, /subtitle=\{starredCount\}/);
+  assert.match(src, /if \(dispIsCustom && !customMethodOpens\(\)\) return;/, 'methods stay live on an unreadable list');
 });
 
 test('3. Dashboard: one study screen per tap across different switches', () => {

@@ -52,7 +52,7 @@ import { MyTopicsIcon } from '../../components/MyTopicsIcon';
 import { NavIcon } from '../../components/nav/NavIcon';
 import { FundamentalsCreditBanner } from '../../features/lab/FundamentalsCreditBanner';
 import { StudyAccessSheet } from '../../features/commercial/StudyAccessSheet';
-import { TopicDeckSheet } from './TopicDeckSheet';
+import { CustomQuizLengthSheet, TopicDeckSheet } from './TopicDeckSheet';
 import {
   orderDeckIds,
   removeFromDeck,
@@ -62,7 +62,6 @@ import {
   useDeckPrefs,
   type DeckPrefs,
 } from '../../features/dashboard/deckOrderStore';
-import { DeckIcon } from '../../components/DeckIcon';
 import { ElevatedFrame, specksToPaths } from '../../components/ElevatedFrame';
 import { GlassButton } from '../../components/GlassButton';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
@@ -111,9 +110,25 @@ import {
   FLAGGED_TOPIC_ID,
   FLAGGED_TOPIC_NAME,
   readTermList,
-  useCustomOnDashboard,
   useTermList,
 } from '../../features/flags/flaggedStore';
+import {
+  CUSTOM_CHECKING_BODY,
+  CUSTOM_CHECKING_TITLE,
+  CUSTOM_EMPTY_BODY,
+  CUSTOM_EMPTY_TITLE,
+  CUSTOM_QUIZ_MIN_TITLE,
+  CUSTOM_UNREADABLE_BODY,
+  CUSTOM_UNREADABLE_TITLE,
+  customListCountLine,
+  customListHasQuiz,
+  customListMethods,
+  customMethodTap,
+  customQuizMinBody,
+  customQuizTap,
+  drawRandomTerms,
+  effectiveRemoved,
+} from '../../features/commercial/studyGate';
 import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { areOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
@@ -865,9 +880,9 @@ export function DashboardScreen() {
   // not the ⚑ flagged list).
   const starred = useTermList('starred');
 
-  // Whether the user's Custom List shows as a synthetic current-topic here
-  // (toggled from the Enrollment screen). Device-local; default off.
-  const customOnDashboard = useCustomOnDashboard();
+  // ⛔ MY CUSTOM LIST IS ALWAYS ON THE DASHBOARD (owner 2026-10-19): "the only
+  // topic that can never be removed from the study dashboard". It was an
+  // opt-in toggle on Enrollments; there is nothing to toggle any more.
   /**
    * ⛔ THE ★ LIST COULD NOT BE READ ≠ "0 TERMS" (hunt 12, 2026-10-04; catalog
    * K2). `starred` is the empty placeholder before its read lands AND after
@@ -881,7 +896,6 @@ export function DashboardScreen() {
   /** The stored ★ list has been READ (so 0 really means empty, not "not loaded yet"). */
   const [starredRead, setStarredRead] = useState(false);
   useEffect(() => {
-    if (!customOnDashboard) return undefined;
     let alive = true;
     readTermList('starred').then(
       () => {
@@ -897,12 +911,15 @@ export function DashboardScreen() {
     return () => {
       alive = false;
     };
-  }, [customOnDashboard, starred]);
+  }, [starred]);
+  /** The list as a tap sees it: read / unreadable / how many (studyGate). */
+  const customRead = { read: starredRead, unreadable: starredUnreadable, count: starred.size };
+  // Never "0 TERMS" for a list that has not been read yet (house rule).
   const starredCount = starredUnreadable
     ? 'TERMS COULD NOT BE READ'
-    : `${starred.size} TERM${starred.size === 1 ? '' : 'S'}`;
-  const customOnDashboardRef = useRef(customOnDashboard);
-  customOnDashboardRef.current = customOnDashboard;
+    : customListCountLine(customRead);
+  // The custom-list quiz length popup (owner 2026-10-19: 30 … all terms).
+  const [customQuizOpen, setCustomQuizOpen] = useState(false);
   // Topic-deck ordering (owner 2026-08-01): default alphabetical; the Topic-Deck
   // sheet (blue Study icon) lets the user engage a custom order, remove topics,
   // and jump to one.
@@ -924,7 +941,7 @@ export function DashboardScreen() {
   const dashIntroUp = dashIntro.visible && data != null;
   /** Any of this screen's own popups open — read inside load() (stable callback). */
   const popupOpenRef = useRef(false);
-  popupOpenRef.current = termsOpen || trophyOpen || deckOpen || upgradeOpen || dashIntroUp;
+  popupOpenRef.current = termsOpen || trophyOpen || deckOpen || upgradeOpen || customQuizOpen || dashIntroUp;
 
   // Learning intros (user request 2026-07-18): a TOPIC intro before beginning
   // each topic. Auto-shown once each (persisted in one set). `intro` holds the
@@ -1233,14 +1250,10 @@ export function DashboardScreen() {
         if (st !== 'locked') frontierId = t.id;
       });
       const members = [
-        ...(customOnDashboardRef.current ? [{ id: FLAGGED_TOPIC_ID, name: FLAGGED_TOPIC_NAME }] : []),
+        { id: FLAGGED_TOPIC_ID, name: FLAGGED_TOPIC_NAME },
         ...d.topics.map((t) => ({ id: t.id, name: t.name })),
       ];
-      const orderedIds = orderDeckIds(
-        members,
-        deckPrefsRef.current,
-        customOnDashboardRef.current ? FLAGGED_TOPIC_ID : undefined,
-      );
+      const orderedIds = orderDeckIds(members, deckPrefsRef.current, FLAGGED_TOPIC_ID);
       const frontier = frontierId ? Math.max(0, orderedIds.indexOf(frontierId)) : 0;
       const stored = await getLastTopic(d.currentCourse.id);
       const storedIdx =
@@ -1355,15 +1368,16 @@ export function DashboardScreen() {
     return () => loop.stop();
   }, [pulse, motionOk]);
 
-  // Memoized on [data, customOnDashboard, deckPrefs] (launch audit 2026-09-09):
+  // Memoized on [data, deckPrefs] (launch audit 2026-09-09):
   // these arrays + the Map + orderDeckIds() used to rebuild on EVERY render of a
   // long-lived, animation-heavy screen (jog dial, pulse loop, pan responder).
   // Bounded by enrolled-topic count, so it was GC churn rather than a leak — but
   // it ran far more often than the inputs change.
   //
-  // When the user has opted in, a synthetic "My Custom List" topic is appended so
-  // it rides the same current-topic carousel. It carries applicable_methods=[] so
-  // every derived value (overallPct, quizState, rowsForTopic…) computes to 0/empty.
+  // A synthetic "My Custom List" topic ALWAYS rides the same current-topic
+  // carousel (owner 2026-10-19 — it was opt-in). It carries applicable_methods=[]
+  // and no server rows, so every derived value (overallPct, quizState,
+  // rowsForTopic…) computes to 0/empty; its rack is drawn from studyGate.
   // Scroll order (owner 2026-08-01): resolved from the deck prefs — ALPHABETICAL
   // by default (★ Custom List pinned first), or the user's CUSTOM order; removed
   // topics are excluded. data.topics keeps its enrollment order for the progress/
@@ -1376,12 +1390,12 @@ export function DashboardScreen() {
       icon_url: null,
       global_sequence: null,
     };
-    const members: Topic[] = data ? (customOnDashboard ? [customTopic, ...data.topics] : [...data.topics]) : [];
+    const members: Topic[] = data ? [customTopic, ...data.topics] : [];
     const byId = new Map(members.map((t) => [t.id, t] as const));
     const orderedIds = orderDeckIds(
       members.map((t) => ({ id: t.id, name: t.name })),
       deckPrefs,
-      customOnDashboard ? FLAGGED_TOPIC_ID : undefined,
+      FLAGGED_TOPIC_ID,
     );
     let ordered = orderedIds.map((id) => byId.get(id)).filter((t): t is Topic => t != null);
     // NEVER AN EMPTY DECK WHILE THERE ARE TOPICS (deep-clean 2026-09-27). The
@@ -1394,16 +1408,18 @@ export function DashboardScreen() {
       ordered = orderDeckIds(
         members.map((t) => ({ id: t.id, name: t.name })),
         { ...deckPrefs, removed: [] },
-        customOnDashboard ? FLAGGED_TOPIC_ID : undefined,
+        FLAGGED_TOPIC_ID,
       )
         .map((id) => byId.get(id))
         .filter((t): t is Topic => t != null);
     }
+    // Never lists the custom list as REMOVED (it cannot be — studyGate).
+    const removedIds = effectiveRemoved(deckPrefs.removed);
     const removed = members
-      .filter((t) => deckPrefs.removed.includes(t.id))
+      .filter((t) => removedIds.includes(t.id))
       .map((t) => ({ id: t.id, name: t.name }));
     return { topics: ordered, removedMembers: removed };
-  }, [data, customOnDashboard, deckPrefs]);
+  }, [data, deckPrefs]);
   // Clamped DURING render: the bounds effect below runs after the commit, and
   // for that one frame a shrunk deck left `topics[topicIdx]` undefined — which
   // flashed the full error screen (sign-out button included).
@@ -1944,6 +1960,41 @@ export function DashboardScreen() {
   // DISPLAYED topic while this panel renders on the COMMITTED one. See the
   // docblocks in features/commercial/studyGate.ts.
   const customListLocked = customListLockedFn({ resolved: tierKnown, entitlement });
+
+  // ── MY CUSTOM LIST (owner 2026-10-19) — plain computations, not hooks ──
+  // The methods it offers right now (Scenarios joins when the server is ready).
+  const customMethods = customListMethods();
+  /** A method tap on the custom list: true = open it. Empty and not-yet-read
+   *  answer with a centred popup; unreadable OPENS, and the method screen says
+   *  "could not load" with its own Retry (a failed read is never "empty"). */
+  const customMethodOpens = (): boolean => {
+    const t = customMethodTap(customRead);
+    if (t === 'empty') notify(CUSTOM_EMPTY_TITLE, CUSTOM_EMPTY_BODY);
+    else if (t === 'checking') notify(CUSTOM_CHECKING_TITLE, CUSTOM_CHECKING_BODY);
+    return t === 'open';
+  };
+  /** The custom-list quiz tap: 30-term minimum first, then the length popup. */
+  const customQuizPress = () => {
+    const t = customQuizTap(customRead);
+    if (t === 'empty') notify(CUSTOM_EMPTY_TITLE, CUSTOM_EMPTY_BODY);
+    else if (t === 'checking') notify(CUSTOM_CHECKING_TITLE, CUSTOM_CHECKING_BODY);
+    else if (t === 'unreadable') notify(CUSTOM_UNREADABLE_TITLE, CUSTOM_UNREADABLE_BODY);
+    else if (t === 'too_few') notify(CUSTOM_QUIZ_MIN_TITLE, customQuizMinBody(starred.size));
+    else setCustomQuizOpen(true);
+  };
+  /**
+   * BEGIN on the length popup: a uniform random draw of `n` of the list's terms.
+   *
+   * ⏸ HOLD (studyGate.CUSTOM_LIST_SERVER_READY = false): the quiz panel is
+   * not drawn for the custom list, so this is unreachable today. The hand-off to
+   * QuizScreen lands with the server RPC — Downloads/2026-10-19_COMP_A_CUSTOM_LIST_QUIZ.md
+   * §5 — and `start_quiz_attempt` must never be called with the 'flagged' id.
+   */
+  const beginCustomQuiz = (n: number) => {
+    setCustomQuizOpen(false);
+    const ids = drawRandomTerms(starred, n);
+    console.warn('[custom-list quiz] HOLD — server RPC not live; drew', ids.length, 'terms');
+  };
   // The free topics that are actually in THIS deck, with their index, so the
   // study-access sheet can offer a real jump (owner 2026-09-17). Order follows
   // FREE_ENROLL_GS, not deck order, so the offer reads the same every time.
@@ -2065,7 +2116,7 @@ export function DashboardScreen() {
             the first and leave nothing tappable ("couldn't press any
             buttons"). ScreenIntroOverlay learned the same lesson. The
             celebration is not lost — it waits until the learner is here. */}
-        {isFocused && !dashIntroUp && !termsOpen && !trophyOpen && !deckOpen && !upgradeOpen && !jogActive && pendingCelebration ? (
+        {isFocused && !dashIntroUp && !termsOpen && !trophyOpen && !deckOpen && !upgradeOpen && !customQuizOpen && !jogActive && pendingCelebration ? (
           <View style={styles.celebrationSlot}>
             <Celebration
               def={celebration(pendingCelebration.id)}
@@ -2290,53 +2341,21 @@ export function DashboardScreen() {
             2026-07-07 said 6, back when Ear Training was a 5th method.)
             Rack group: tight inter-panel gap like a real 500 lunchbox (#6). */}
         <View style={styles.rackGroup}>
-        {isCustom ? (
-          // Custom List body — no methods, no quiz: a single dark panel that
-          // studies the user's ★ starred terms in local Flashcards mode.
-          <ElevatedFrame depressed={false} contentStyle={styles.methodInner}>
-            <View style={styles.customRow}>
-              <View style={styles.customDeck}>
-                <DeckIcon color={colors.customList} size={40} fill="rgba(63,211,230,0.22)" />
-              </View>
-              <View style={styles.methodLeft}>
-                <Text style={styles.customCount}>
-                  {`${starredCount} · MY CUSTOM LIST`}
-                </Text>
-              </View>
-              <SwitchButton
-                label="Study"
-                variant="primary"
-                width={96}
-                height={RACK_QUIZ_SWITCH_H}
-                // Unreadable is not empty: STUDY stays live, and Flashcards
-                // says "could not load" with its own Retry.
-                disabled={!starredUnreadable && starred.size === 0}
-                onPress={() => {
-                  // Same gate as every other study method. Deliberately still
-                  // PRESSABLE for a non-member rather than disabled: the sheet
-                  // is the sales moment, a dead button is not.
-                  if (customListLocked) {
-                    setUpgradeOpen(true);
-                    return;
-                  }
-                  navigation.navigate('Flashcards', {
-                    achievementId: FLAGGED_TOPIC_ID,
-                    topicName: FLAGGED_TOPIC_NAME,
-                  });
-                }}
-              />
-            </View>
-            {/* EMPTY, AND HOW TO FILL IT (owner 2026-10-14). Only once the stored
-                list has really been read — never over a list still loading. */}
-            {starredRead && !starredUnreadable && starred.size === 0 ? (
-              <Text style={styles.customEmpty}>
-                Your custom list is empty. Add terms with the ★ star in the Glossary, or on any term while you study a
-                topic's Flashcards.
-              </Text>
-            ) : null}
-          </ElevatedFrame>
-        ) : (
-          <>
+        {/* MY CUSTOM LIST (owner 2026-10-19) rides the SAME rack as a topic —
+            every method it has is open from the start (no power sequence: a
+            list the learner keeps editing can never be "finished"), each one
+            works on the list's current terms, and an empty list answers a tap
+            with a centred popup saying how to fill it. Scenarios and the quiz
+            join it once the server can serve a term list (studyGate:
+            CUSTOM_LIST_SERVER_READY — HOLD). */}
+        {/* EMPTY, AND HOW TO FILL IT (owner 2026-10-14). Only once the stored
+            list has really been read — never over a list still loading. */}
+        {isCustom && starredRead && !starredUnreadable && starred.size === 0 ? (
+          <Text style={styles.customEmpty}>
+            Your custom list is empty. Add terms from the Glossary — tap the custom-list icon beside any term, or on a
+            flashcard while you study any of your other topics.
+          </Text>
+        ) : null}
         {/* No account = no server progress: say so up front instead of a
             silent 0% after a fully-worked deck (Bug+Hater night F2-01). Keyed
             on the SESSION (owner 2026-09-05): gone the moment any account —
@@ -2377,8 +2396,8 @@ export function DashboardScreen() {
             </Text>
           </Pressable>
         ) : null}
-        {METHOD_ORDER.map((m, i) => {
-          const isApplicable = applicable.has(m.key);
+        {(isCustom ? METHOD_ORDER.filter((m) => customMethods.includes(m.key)) : METHOD_ORDER).map((m, i) => {
+          const isApplicable = isCustom || applicable.has(m.key);
           const cfgRow = rowFor(m.key);
           // Smooth display progress (Booth: creep, never leap) — partial
           // credit per pass from the server-stored item_states. Gate lines
@@ -2390,13 +2409,16 @@ export function DashboardScreen() {
           const pct = Math.round(rawPct);
           // complete gates on the RAW value (QA night 2026-08-31): rounding
           // made 99.6% wear the ✓ while an item was still unstudied.
-          const complete = isApplicable && rawPct >= 100;
+          // The custom list keeps no server progress, so it is never "complete".
+          const complete = !isCustom && isApplicable && rawPct >= 100;
           // Power gate: flashcards is always live; the 3 homework methods light
           // up only once flashcards has shown every term once (owner 2026-08-11).
           // Staged power: flashcards always; fill-in-blank/matching after
           // flashcards; scenarios only after both of those too (owner 2026-08-13).
-          const powered =
-            m.key === 'flashcards' ? true : m.key === 'scenarios' ? scenariosPowered : homeworkPowered;
+          // MY CUSTOM LIST: every method powered from the start (owner 2026-10-19).
+          const powered = isCustom
+            ? true
+            : m.key === 'flashcards' ? true : m.key === 'scenarios' ? scenariosPowered : homeworkPowered;
           /**
            * ⛔ THE WHOLE PANEL ANSWERS A TAP WHEN IT IS POWERED OFF.
            *
@@ -2473,6 +2495,17 @@ export function DashboardScreen() {
                   <View style={styles.methodLeft}>
                     {/* LED instrument screen under one glass panel (owner
                         2026-08-06): TITLE · % · full-width LED meter. */}
+                    {isCustom ? (
+                      // The list's own count where a topic shows its meter: it
+                      // keeps no server progress, so a 0% would be a fiction.
+                      <GlassScreen
+                        title={m.label}
+                        value={starred.size > 0 || !starredRead || starredUnreadable ? 'OPEN' : 'EMPTY'}
+                        valueColor={colors.customList}
+                        subtitle={starredCount}
+                        subtitleColor={colors.customList}
+                      />
+                    ) : (
                     <GlassScreen
                       title={m.label}
                       // % only ever shows 0–99 (never "100%"): completion swaps
@@ -2486,6 +2519,7 @@ export function DashboardScreen() {
                       complete={complete}
                       off={!powered}
                     />
+                    )}
                   </View>
 
                   {!powered ? (
@@ -2514,8 +2548,8 @@ export function DashboardScreen() {
                       // Review gates on `complete` (the RAW value), like the ✓ and
                       // the 0–99 readout above — the rounded pct made 99.6% read
                       // REVIEW while an item was still unstudied (B-086).
-                      label={actMembershipLocked ? 'Locked' : complete ? 'Review' : pct <= 0 ? 'Start' : 'Continue'}
-                      variant={actMembershipLocked ? 'outline' : complete ? 'success' : pct <= 0 ? 'outline' : 'primary'}
+                      label={actMembershipLocked ? 'Locked' : isCustom ? 'Study' : complete ? 'Review' : pct <= 0 ? 'Start' : 'Continue'}
+                      variant={actMembershipLocked ? 'outline' : isCustom ? 'primary' : complete ? 'success' : pct <= 0 ? 'outline' : 'primary'}
                       width={89}
                       height={RACK_SWITCH_H}
                       onPress={() => {
@@ -2526,6 +2560,9 @@ export function DashboardScreen() {
                           return;
                         }
                         const routeName = STUDY_ROUTES[m.key];
+                        // MY CUSTOM LIST: an empty (or not-yet-read) list
+                        // answers with a centred popup instead of opening.
+                        if (dispIsCustom && !customMethodOpens()) return;
                         if (routeName && claimStudyOpen()) {
                           navigation.navigate(routeName, { achievementId: dispTopic.id, topicName: dispTopic.name });
                         }
@@ -2559,9 +2596,13 @@ export function DashboardScreen() {
           );
         })}
 
+        {/* MY CUSTOM LIST shows its quiz only once the server can draw one from
+            a term list (HOLD — studyGate.CUSTOM_LIST_SERVER_READY). */}
+        {!isCustom || customListHasQuiz() ? (
+          <>
         {/* Section header over the quiz (owner 2026-08-11) — a vented blank
             rack panel; marks the quiz as the proficiency gate for the topic. */}
-        <SectionRackPanel label="Complete This Topic" angles={[-6, 5]} />
+        <SectionRackPanel label={isCustom ? 'Quiz Your List' : 'Complete This Topic'} angles={[-6, 5]} />
 
         {/* Quiz — the 6th slot in the SAME rack (same tight gap, Booth
             2026-07-10 #4). Kept RAISED at all times (Booth 2026-07-11 #4): when
@@ -2585,10 +2626,16 @@ export function DashboardScreen() {
             // leading-empty numerator like "/30" (0 is preserved by ??).
             const score = topicProg?.best_genuine_score ?? '—';
             // Powered on iff not locked (quizState is locked until the homework
-            // methods are complete — see rawQuizState above).
-            const quizPowered = quizState !== 'locked';
-            const qColor =
-              quizState === 'ready' || quizState === 'passed'
+            // methods are complete — see rawQuizState above). The custom list's
+            // quiz is always powered (owner 2026-10-19); its 30-term minimum is
+            // explained on the tap, not by a dark panel.
+            const customQuiz = customQuizTap(customRead);
+            const quizPowered = isCustom || quizState !== 'locked';
+            const qColor = isCustom
+              ? customQuiz === 'choose'
+                ? '#5bff85'
+                : colors.customList
+              : quizState === 'ready' || quizState === 'passed'
                 ? '#5bff85'
                 : quizState === 'partial'
                   ? '#ffc04a'
@@ -2599,14 +2646,20 @@ export function DashboardScreen() {
             // variable-size, so `/30` was a guess presented as a fact. Showing
             // the score alone is less informative and true; the exact figure is
             // one tap away on Results, which does know the size.
-            const qShort =
-              quizState === 'passed' || quizState === 'partial'
+            const qShort = isCustom
+              ? customQuiz === 'choose'
+                ? 'READY'
+                : customQuiz === 'too_few' || customQuiz === 'empty'
+                  ? `${starred.size} / 30`
+                  : '…'
+              : quizState === 'passed' || quizState === 'partial'
                 ? `${score}`
                 : quizState === 'ready'
                   ? 'READY'
                   : 'LOCKED';
-            const qSummary =
-              quizState === 'locked'
+            const qSummary = isCustom
+              ? 'AT LEAST 30 TERMS'
+              : quizState === 'locked'
                 ? 'GATES UNMET'
                 : quizState === 'ready'
                   ? 'ALL GATES MET'
@@ -2634,7 +2687,7 @@ export function DashboardScreen() {
                   <View style={styles.methodLeft}>
                     {/* Same LED-screen-under-glass as the method panels (owner
                         2026-08-06): TITLE · status · gate summary line. */}
-                    <GlassScreen title="TOPIC QUIZ" value={qShort} valueColor={qColor} subtitle={qSummary} subtitleColor={qColor} off={!quizPowered} />
+                    <GlassScreen title={isCustom ? 'LIST QUIZ' : 'TOPIC QUIZ'} value={qShort} valueColor={qColor} subtitle={qSummary} subtitleColor={qColor} off={!quizPowered} />
                   </View>
                   {!quizPowered ? (
                     // Powered off — a DEAD clear cap, no light/colour/nav.
@@ -2673,6 +2726,12 @@ export function DashboardScreen() {
                           );
                           return;
                         }
+                        // MY CUSTOM LIST: the 30-term minimum, then the length
+                        // popup (owner 2026-10-19).
+                        if (dispIsCustom) {
+                          customQuizPress();
+                          return;
+                        }
                         // Not over a study screen another switch just opened.
                         if (!claimStudyOpen()) return;
                         // S3 (copy pass 2): the topic quiz runs the IDENTICAL
@@ -2707,7 +2766,7 @@ export function DashboardScreen() {
           })()}
         </ElevatedFrame>
           </>
-        )}
+        ) : null}
         </View>
 
         {/* The bottom "My Custom List" card was removed (user request
@@ -2896,6 +2955,14 @@ export function DashboardScreen() {
           jogCoach.registerAction(); // taught action: a real turn of the wheel
         }}
         onClose={closeJog}
+      />
+
+      {/* MY CUSTOM LIST quiz length (owner 2026-10-19): 30 … every term. */}
+      <CustomQuizLengthSheet
+        visible={customQuizOpen}
+        count={starred.size}
+        onClose={() => setCustomQuizOpen(false)}
+        onBegin={beginCustomQuiz}
       />
 
       {/* Topic-deck manager (blue Study icon) — reorder / remove / jump / mode. */}
@@ -3376,17 +3443,15 @@ const styles = StyleSheet.create({
   // panel behind its content. overflow:hidden + matching radius is a second clip
   // on top of the parent ElevatedFrame's own rounded-corner clip.
   textureFill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 2, overflow: 'hidden' },
-  // Custom List panel — deck icon · count line · STUDY switch, aligned like a
-  // method row so it seats flush in the rack.
-  customRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 4 },
-  customDeck: { width: 48, alignItems: 'center', justifyContent: 'center' },
-  // Empty custom list: what it is and how to fill it (owner 2026-10-14).
-  customEmpty: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary, marginTop: 10 },
-  customCount: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 13,
-    letterSpacing: 1,
-    color: colors.customList, // the custom list's teal (owner 2026-10-15)
+  // Empty custom list: what it is and how to fill it (owner 2026-10-14), above
+  // its rack (owner 2026-10-19: the list now has the full rack of methods).
+  customEmpty: {
+    fontFamily: fonts.barlowRegular,
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.textSecondary,
+    marginVertical: 8,
+    paddingHorizontal: 10,
   },
   // Rack group — panels nearly touching, like real 500-series slots.
   // Rack CHASSIS (Booth 2026-07-11 #5): the topic card's metallic side rails

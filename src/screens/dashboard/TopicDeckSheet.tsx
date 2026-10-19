@@ -4,17 +4,20 @@
  * the user:
  *   • switch ordering between ALPHABETICAL (default) and CUSTOM;
  *   • in CUSTOM, move a topic toward the far-left (↑) or right (↓) of the deck;
- *   • remove a topic from the deck (and restore it later);
+ *   • remove a topic from the deck (and restore it later) — except MY CUSTOM
+ *     LIST, which can never be removed (owner 2026-10-19): it has no ✕;
  *   • tap a topic to jump straight to it in the Dashboard.
  * Custom is never the default — the user must engage it here.
  */
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { NavIcon } from '../../components/nav/NavIcon';
+import { GlassButton } from '../../components/GlassButton';
 import type { DeckMode } from '../../features/dashboard/deckOrderStore';
 import { popupCard } from '../../theme/readingColumn';
+import { canRemoveFromDeck, quizLengthOptions } from '../../features/commercial/studyGate';
 
 type Item = { id: string; name: string };
 
@@ -118,13 +121,21 @@ export function TopicDeckSheet({
                 {/* The LAST topic cannot be removed (B-041): an empty deck leaves
                     the Dashboard with no topic to show — and no header/deck
                     button to get back here and restore anything. */}
-                <RowBtn
-                  label="✕"
-                  tone="danger"
-                  disabled={active.length <= 1}
-                  onPress={() => onRemove(t.id)}
-                  a11y={`Remove ${t.name} from the deck`}
-                />
+                {/* MY CUSTOM LIST stays (owner 2026-10-19): no ✕ at all — a
+                    quiet word where it would sit, so the row still lines up. */}
+                {canRemoveFromDeck(t.id) ? (
+                  <RowBtn
+                    label="✕"
+                    tone="danger"
+                    disabled={active.length <= 1}
+                    onPress={() => onRemove(t.id)}
+                    a11y={`Remove ${t.name} from the deck`}
+                  />
+                ) : (
+                  <Text style={styles.fixedTag} accessibilityLabel={`${t.name} always stays in the deck`}>
+                    ALWAYS
+                  </Text>
+                )}
               </View>
             ))}
             {active.length === 0 ? <Text style={styles.empty}>No topics in the deck.</Text> : null}
@@ -271,6 +282,133 @@ const styles = StyleSheet.create({
   rowBtnDanger: { color: '#ff6b5e' },
   rowBtnOk: { color: '#37e05f', fontSize: 11.5 },
 
+  fixedTag: { minWidth: 34, fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textMuted, textAlign: 'center' },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.textSub, marginTop: 8 },
   empty: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textMuted, textAlign: 'center', paddingVertical: 16 },
+});
+
+/**
+ * CustomQuizLengthSheet — how long the MY CUSTOM LIST quiz is (owner 2026-10-19:
+ * "allow the quiz to go from a minimum of 30 terms up to their total list of
+ * terms (randomly selected)").
+ *
+ * A centred popup (never a pulldown), styled like the Topic Deck sheet: the
+ * length as a row of chips — 30 · 50 · 100 · ALL, each capped at the list's
+ * count (studyGate.quizLengthOptions) — the quiz rules stated before the
+ * clock starts, as every quiz on this screen does, then BEGIN / NOT NOW.
+ * The terms themselves are drawn by the caller (drawRandomTerms).
+ *
+ * Lives in this file (not its own module) to stay inside the app-start graph
+ * cap (test/perfStartTrim_20261004).
+ *
+ * Opened only for a list of 30 or more; below that the Dashboard answers with
+ * the "needs at least 30 terms" popup instead.
+ */
+export function CustomQuizLengthSheet({
+  visible,
+  count,
+  onClose,
+  onBegin,
+}: {
+  visible: boolean;
+  /** Terms in the list (already read; ≥ 30 when this opens). */
+  count: number;
+  onClose: () => void;
+  /** BEGIN with this many terms (30 … count). */
+  onBegin: (n: number) => void;
+}) {
+  const options = quizLengthOptions(count);
+  const [picked, setPicked] = useState<number>(options[0]?.n ?? 0);
+  // Each opening starts on the shortest quiz; a list edited meanwhile can never
+  // leave a choice above its own count.
+  useEffect(() => {
+    if (visible) setPicked(quizLengthOptions(count)[0]?.n ?? 0);
+  }, [visible, count]);
+  const chosen = options.find((o) => o.n === picked) ?? options[0];
+
+  return (
+    <Modal accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+      <Pressable style={qStyles.backdrop} onPress={onClose} accessible={false}>
+        <Pressable accessible={false} style={qStyles.panel} onPress={() => {}}>
+          <Text style={qStyles.title}>QUIZ YOUR LIST</Text>
+          <Text style={qStyles.note}>
+            {`Your list has ${count} terms. Choose how many to be quizzed on — they are picked at random from your list.`}
+          </Text>
+          <View style={qStyles.chips} accessibilityRole="radiogroup">
+            {options.map((o) => {
+              const on = chosen?.n === o.n;
+              return (
+                <Pressable
+                  key={o.n}
+                  hitSlop={6}
+                  onPress={() => setPicked(o.n)}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: on }}
+                  aria-checked={on}
+                  accessibilityLabel={o.all ? `All ${o.n} terms` : `${o.n} terms`}
+                  style={[qStyles.chip, on && qStyles.chipOn]}
+                >
+                  <Text style={[qStyles.chipText, on && qStyles.chipTextOn]}>{o.all ? `ALL ${o.n}` : `${o.n}`}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+          <Text style={qStyles.rules}>
+            The clock does not pause. Leaving the app twice voids the attempt and locks the quiz for fifteen minutes. Going
+            back wipes your answers — there is no save.
+          </Text>
+          <View style={qStyles.actions}>
+            <View style={qStyles.action}>
+              <GlassButton label="NOT NOW" tint="blue" height={44} fontSize={14} onPress={onClose} />
+            </View>
+            <View style={qStyles.action}>
+              <GlassButton
+                label={chosen ? `BEGIN · ${chosen.n}` : 'BEGIN'}
+                height={44}
+                fontSize={14}
+                disabled={!chosen}
+                onPress={() => {
+                  if (chosen) onBegin(chosen.n);
+                }}
+              />
+            </View>
+          </View>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
+}
+
+const qStyles = StyleSheet.create({
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', paddingHorizontal: 18 },
+  panel: {
+    ...popupCard,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#2b2b30',
+    backgroundColor: '#141416',
+    padding: 16,
+    gap: 12,
+  },
+  title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.6, color: colors.customList },
+  note: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chip: {
+    minWidth: 64,
+    flexGrow: 1,
+    height: 40,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#33333a',
+    backgroundColor: '#1a1a1e',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+  },
+  chipOn: { borderColor: colors.customList, backgroundColor: 'rgba(63,211,230,0.12)' },
+  chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.textSub },
+  chipTextOn: { color: colors.customList },
+  rules: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textMuted },
+  actions: { flexDirection: 'row', gap: 10 },
+  action: { flex: 1 },
 });

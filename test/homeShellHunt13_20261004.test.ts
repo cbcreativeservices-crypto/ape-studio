@@ -55,7 +55,8 @@ test('1b. the intro counts as one of the screen\'s popups', () => {
   const src = strip(read(DASH));
   assert.match(
     src,
-    /popupOpenRef\.current = termsOpen \|\| trophyOpen \|\| deckOpen \|\| upgradeOpen \|\| dashIntroUp;/,
+    // + the custom-list quiz length popup (2026-10-19).
+    /popupOpenRef\.current = termsOpen \|\| trophyOpen \|\| deckOpen \|\| upgradeOpen \|\| customQuizOpen \|\| dashIntroUp;/,
   );
   assert.match(src, /const dashIntroUp = dashIntro\.visible && data != null;/);
 });
@@ -64,7 +65,7 @@ test('1c. the in-screen celebration waits for the intro', () => {
   const src = strip(read(DASH));
   assert.match(
     src,
-    /\{isFocused && !dashIntroUp && !termsOpen && !trophyOpen && !deckOpen && !upgradeOpen && !jogActive && pendingCelebration \?/,
+    /\{isFocused && !dashIntroUp && !termsOpen && !trophyOpen && !deckOpen && !upgradeOpen && !customQuizOpen && !jogActive && pendingCelebration \?/,
   );
 });
 
