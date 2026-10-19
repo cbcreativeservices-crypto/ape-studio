@@ -77,7 +77,11 @@ export function PitchPlot({ b, pitch, range, keyLock, shift, k = 1 }: { b: Box; 
 
 /** One octave, twelve equal columns; markers at each deck's sounding tonic. */
 export function KeyStrip({ b, a, bTonic, aWord, bWord, relation, k = 1 }: { b: Box; a: number | null; bTonic: number | null; aWord: string; bWord: string; relation: string; k?: number }) {
-  const inner = { x: b.x + 8, y: b.y + 42 * k, w: b.w - 16, h: b.h - 58 * k };
+  // rows, top down: title · the decks' key words · the MARKER row (each
+  // deck's letter over its pointer) · the strip — so a marker never prints
+  // on a key word (visual review 2 #7, #26)
+  const markY = b.y + 41 * k;
+  const inner = { x: b.x + 8, y: b.y + 52 * k, w: b.w - 16, h: Math.max(20, b.h - 58 * k) };
   const col = inner.w / 12;
   const xOf = (pc: number) => inner.x + (((pc % 12) + 12) % 12 + 0.5) * col;
   const fs = 9.5 * k;
@@ -104,14 +108,17 @@ export function KeyStrip({ b, a, bTonic, aWord, bWord, relation, k = 1 }: { b: B
       ))}
       {a != null ? (
         <Group>
+          <Line p1={vec(xOf(a), inner.y + 17 * k)} p2={vec(xOf(a), inner.y + inner.h)} color="rgba(0,0,0,0.55)" strokeWidth={3.4} />
+          <Line p1={vec(xOf(a), inner.y + 17 * k)} p2={vec(xOf(a), inner.y + inner.h)} color={INK.white} strokeWidth={1.4} />
           <Path path={tri(xOf(a), inner.y - 2, false)} color={INK.white} />
-          <SceneText x={xOf(a)} y={inner.y - 12 * k} size={fs} text="A" color={INK.white} face="label" align="center" minPt={9.5} />
+          <SceneText x={xOf(a) - (bTonic != null && Math.abs(xOf(a) - xOf(bTonic)) < 14 * k ? 7 * k : 0)} y={markY} size={fs} text="A" color={INK.white} face="label" align="center" minPt={9.5} />
         </Group>
       ) : null}
       {bTonic != null ? (
         <Group>
           <Line p1={vec(xOf(bTonic), inner.y + 17 * k)} p2={vec(xOf(bTonic), inner.y + inner.h)} color={bad ? INK.red : INK.blue} strokeWidth={2.4} />
-          <Path path={tri(xOf(bTonic), inner.y + inner.h + 2, true)} color={bad ? INK.red : INK.blue} />
+          <Path path={tri(xOf(bTonic), inner.y - 2, false)} color={bad ? INK.red : INK.blue} />
+          <SceneText x={xOf(bTonic) + (a != null && Math.abs(xOf(a) - xOf(bTonic)) < 14 * k ? 7 * k : 0)} y={markY} size={fs} text="B" color={bad ? INK.red : INK.blue} face="label" align="center" minPt={9.5} />
         </Group>
       ) : null}
       <SceneText x={b.x + 8} y={b.y + 27 * k} size={fs} text={ascii(`A · ${aWord}`)} color={INK.white} face="label" minPt={9.5} />

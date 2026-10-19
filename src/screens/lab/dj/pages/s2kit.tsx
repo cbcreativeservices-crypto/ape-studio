@@ -8,6 +8,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
+import { Card, Eyebrow } from '../../tuning/components/primitives';
 import type { BoothRender } from '../engine/djRender';
 import type { S2Report } from '../engine/djStage2';
 import { trueGrid } from '../engine/djMusic';
@@ -74,6 +75,29 @@ export function TrayNote({ children, warn = false }: { children: ReactNode; warn
   return <Text style={warn ? styles.warn : styles.note}>{children}</Text>;
 }
 
+/**
+ * CHECK YOURSELF as EVIDENCE (learning review 2: a check reads the booth, not
+ * a multiple choice): the task, a button that sets up its starting state, and
+ * the result the page latches from the booth's own state and the render's
+ * readings. `done` comes from the page; nothing here decides it.
+ */
+export function EvidenceCheck({ task, setupLabel = 'SET IT UP', onSetup, armed, done, hint, explain }: { task: string; setupLabel?: string; onSetup: () => void; armed: boolean; done: boolean; hint?: string; explain: string }) {
+  return (
+    <Card>
+      <Eyebrow>CHECK YOURSELF</Eyebrow>
+      <Text style={styles.q}>{task}</Text>
+      <View style={styles.row}>
+        <LabChip label={armed ? `${setupLabel} AGAIN` : setupLabel} selected={false} onPress={onSetup} />
+      </View>
+      {done ? (
+        <Text style={[styles.explain, { color: colors.green }]}>{`✓ ${explain}`}</Text>
+      ) : armed && hint ? (
+        <Text style={[styles.explain, { color: colors.textSub }]}>{hint}</Text>
+      ) : null}
+    </Card>
+  );
+}
+
 export const s2styles = StyleSheet.create({
   tray: { gap: 10 },
 });
@@ -84,4 +108,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, alignItems: 'center' },
   note: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
   warn: { color: '#ff8a7e', fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
+  q: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 19 },
+  explain: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
 });

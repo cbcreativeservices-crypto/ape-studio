@@ -65,10 +65,12 @@ export const playKey = (booth: Booth, tr: Transport, deck: DeckId): DockParam =>
 
 export const stopKey = (tr: Transport): DockParam => ({ kind: 'action', id: 'stop', label: '■ STOP', onPress: tr.stopAll, tint: colors.red });
 
-export const channelFaderKey = (booth: Booth, ch: ChannelId): DockParam => ({
+/** `label` (ADDITIVE, Stage 2 review 2026-10-18 W4): a shorter key word that
+ *  fits the dock at 390 ("FADER 1"; "CH1 FADER" crops to "CH1 FADE…"). */
+export const channelFaderKey = (booth: Booth, ch: ChannelId, label?: string): DockParam => ({
   kind: 'fader',
   id: `fader${ch}`,
-  label: `CH${ch} FADER`,
+  label: label ?? `CH${ch} FADER`,
   value: booth.ch[ch].fader,
   level: true,
   onChange: (v) => updateBooth((b) => ({ ...b, ch: { ...b.ch, [ch]: { ...b.ch[ch], fader: v } } })),

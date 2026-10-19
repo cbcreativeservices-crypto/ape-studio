@@ -12,31 +12,35 @@ import { View } from 'react-native';
 import { Group } from '@shopify/react-native-skia';
 import { colors } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
-import { UnderstandingCheck } from '../../tuning/components/check';
 import { StageInFullScreen, useStageTextScale } from '../../rack/stageAspect';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene, type Callout } from '../art/Scene';
-import { FX_PANEL, FxPanel, FxRouteMap, FxScope, ROUTE_MAP, fxPartBox, FX_PARTS, type FxPart, type FxSeg } from '../art/fxArt';
+import { FX_PANEL, FX_SPAN_FULL_S, FX_SPAN_GLASS_S, FxPanel, FxRouteMap, FxScope, ROUTE_MAP, fxPartBox, FX_PARTS, type FxPart, type FxSeg } from '../art/fxArt';
+
+/** FULL SCREEN's composition (width ÷ height): the scope (~30 %) over the
+ *  map and the effects panel (312 × 264 mm, ~70 %). */
+const FX_FULL_ASPECT = 0.84;
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { ChipRow, boothKey, channelFaderKey, pct, stopKey } from '../dock';
 import { getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, preMatched, useScreenSetup } from '../booth/setup';
 import { TRIM_UNITY, trimPos, type Booth } from '../model/djModel';
-import { FX_TIMES, FX_TYPES, dryWet, freshFx, fxBpm, fxTempoDeck, fxTimeSec, fxTimeWord, usesFeedback, type FxRoute, type FxState, type FxType } from '../model/djEffects';
+import { FX_TIMES, FX_TYPES, dryWet, fbGain, freshFx, fxBpm, fxTempoDeck, fxTimeSec, fxTimeWord, type FxRoute, type FxState, type FxType } from '../model/djEffects';
+import { fxKnobLock, knobLabel, knobShort, type FxKnob } from './fxKnob';
 import { alignPhase } from '../model/djDeck';
 import { peakShort, useBoothKit } from './shared';
-import { Choices, TrayNote, deckBeatTimes, s2Of, s2styles, useChunkSegs } from './s2kit';
+import { Choices, EvidenceCheck, TrayNote, deckBeatTimes, s2Of, s2styles, useChunkSegs } from './s2kit';
 import type { Box } from '../geometry/boothGeometry';
 
 const TERMS = [
   { term: 'Insert', def: 'The effect sits IN one channel’s path: all of that channel goes through it. On this mixer it is after the fader, so pulling the fader lets an echo ring on.' },
-  { term: 'Send / return', def: 'Each channel’s SEND knob feeds the effect a COPY; the RETURN adds only the effect back. The dry sound never changes — one reverb can serve both decks.' },
+  { term: 'Send / return', def: 'On this mixer, each channel’s SEND knob feeds the effect a COPY; the RETURN adds only the effect back (set an outboard unit to 100 % wet). The dry sound never changes — one reverb can serve both decks. Many mixers have one send with a channel select instead.' },
   { term: 'Dry / wet', def: 'Dry is the sound without the effect, wet is the effect alone. This mixer’s LEVEL knob keeps the dry full up to its centre, then fades it as the wet takes over.' },
   { term: 'Feedback', def: 'How much of an echo’s output goes back in. None: one repeat (a plain delay). More: repeats that keep going and fade more slowly.' },
 ] as const;
 
-export const GOALS_FX = ['Echo on every beat', 'Echo out deck A', 'One reverb on both decks', 'Sweep the whole mix', 'Effect on deck B only', 'Fix the missing echo', 'Stop the return loop', 'Pass the check'] as const;
+export const GOALS_FX = ['Echo on every beat', 'Echo out deck A', 'One reverb on both decks', 'Sweep the whole mix', 'Effect on deck B only', 'Fix the missing echo', 'Stop the return loop', 'Dry deck B, keep A’s reverb'] as const;
 
 const TYPE_BLURB: Record<FxType, string> = {
   ECHO: 'Repeats of the sound, spaced in beats. FEEDBACK sets how many.',
@@ -51,7 +55,7 @@ const ROUTE_BLURB: Record<FxRoute, string> = {
   SEND: 'SEND / RETURN: each channel sends a copy; the RETURN adds the wet only.',
 };
 
-type Knob = 'time' | 'feedback' | 'level';
+type Knob = FxKnob;
 
 /** The stage: the FX scope over the routing map; FULL SCREEN adds the panel. */
 function FxStage({ w, h, booth, motion, segs, focus, flow, loop }: { w: number; h: number; booth: Booth; motion: ReturnType<typeof useBoothKit>['motion']; segs: FxSeg[]; focus: Knob; flow: boolean; loop: boolean }) {
@@ -67,7 +71,8 @@ function FxStage({ w, h, booth, motion, segs, focus, flow, loop }: { w: number; 
     bus: (A.playing && booth.ch[1].fader > 0.02) || (B.playing && booth.ch[2].fader > 0.02),
     fx: fx.on,
   };
-  const scopeH = (H: number, k: number) => Math.round(Math.min(104 * Math.sqrt(k), H * (full ? 0.26 : 0.32)));
+  // two lanes (dry over wet) need the height: about 40 % of the glass
+  const scopeH = (H: number, k: number) => Math.round(Math.min(132 * Math.sqrt(k), H * (full ? 0.3 : 0.4)));
   const frame: Box = full ? { x: -6, y: -6, w: ROUTE_MAP.w + 12, h: ROUTE_MAP.h + 18 + FX_PANEL.h } : { x: -6, y: -6, w: ROUTE_MAP.w + 12, h: ROUTE_MAP.h + 10 };
   const td = booth.decks[fxTempoDeck(fx)];
   const t1 = segs.length ? segs[segs.length - 1].t0 + 9 : 0;
@@ -81,11 +86,13 @@ function FxStage({ w, h, booth, motion, segs, focus, flow, loop }: { w: number; 
       frame={frame}
       motion={motion}
       fit={{ x: 0, y: scopeH(h, kz), w, h: h - scopeH(h, kz) }}
-      aspect={false}
+      // the whole composition's shape in FULL SCREEN (scope over map over
+      // panel), so the zoom row offers FIT and no empty band remains
+      aspect={FX_FULL_ASPECT}
       callouts={callouts}
       obstacles={full ? FX_PARTS.map((p) => ({ ...fxPartBox(p), y: fxPartBox(p).y + ROUTE_MAP.h + 12 })) : []}
       screenOverlay={(W, H, _xf, k) => (
-        <FxScope b={{ x: 6, y: 4, w: W - 12, h: scopeH(H, k) - 8 }} segs={segs} beatTimes={beats} delaySec={fx.type === 'ECHO' ? fxTimeSec(fx, bpm) : null} k={Math.sqrt(k)} title={`FX SCOPE · ${fx.type}${fx.on ? '' : ' (OFF)'}`} />
+        <FxScope b={{ x: 6, y: 4, w: W - 12, h: scopeH(H, k) - 8 }} segs={segs} beatTimes={beats} delaySec={fx.type === 'ECHO' ? fxTimeSec(fx, bpm) : null} k={Math.sqrt(k)} title={`FX SCOPE · ${fx.type}${fx.on ? '' : ' (OFF)'}`} spanSec={full ? FX_SPAN_FULL_S : FX_SPAN_GLASS_S} />
       )}
       a11y={`You are looking at the effect’s scope (the level going into the effect and coming out of it, over the last three seconds) above a map of where the effect sits: ${fx.type} ${fx.on ? 'on' : 'off'}, routed to ${fx.route === 'SEND' ? `the send, returning to ${fx.returnTo === 'BUS' ? 'the mix bus' : 'channel 2'}` : fx.route === 'MASTER' ? 'the master' : `channel ${fx.route === 'CH1' ? 1 : 2}`}.${loop ? ' The return is making a loop.' : ''}`}
     >
@@ -149,7 +156,7 @@ function PageEffects({ ctx }: { ctx: PageCtx }) {
   const [check, setCheck] = useState(false);
   const [fault1, setFault1] = useState(false);
   const [fault2, setFault2] = useState(false);
-  const hit = useRef({ beat: false, out: false, armed: false, both: false, master: false, bOnly: false });
+  const hit = useRef({ beat: false, out: false, armed: false, both: false, master: false, bOnly: false, check: false });
   const fx = booth.fx ?? freshFx();
   const last = audio.last;
   const s2 = s2Of(last);
@@ -175,20 +182,29 @@ function PageEffects({ ctx }: { ctx: PageCtx }) {
   if (fx.on && fx.type === 'REVERB' && fx.route === 'SEND' && fx.returnTo === 'BUS' && fx.send[1] > 0 && fx.send[2] > 0 && fx.wet > 0.2 && A.playing && B.playing && f1 >= 0.4 && f2 >= 0.4) hit.current.both = true;
   if (fx.on && (fx.type === 'FILTER' || fx.type === 'FLANGER') && fx.route === 'MASTER' && (A.playing || B.playing) && outMax > -40) hit.current.master = true;
   if (fx.on && fx.route === 'CH2' && A.playing && B.playing && f1 >= 0.5 && f2 >= 0.5) hit.current.bOnly = true;
-  const hits = [hit.current.beat, hit.current.out, hit.current.both, hit.current.master, hit.current.bOnly, fault1, fault2, check];
+  // CHECK YOURSELF, from evidence: a reverb on the MASTER wets both decks;
+  // make deck B dry while deck A keeps it — with the effect still on
+  const aWetBDry = fx.route === 'CH1' || (fx.route === 'SEND' && fx.send[1] > 0 && fx.send[2] === 0 && fx.returnTo === 'BUS' && fx.wet > 0.2);
+  if (check && fx.on && fx.type === 'REVERB' && aWetBDry && A.playing && B.playing && f1 >= 0.4 && f2 >= 0.4) hit.current.check = true;
+  const hits = [hit.current.beat, hit.current.out, hit.current.both, hit.current.master, hit.current.bOnly, fault1, fault2, hit.current.check];
   const goals = GOALS_FX.map((label, i) => ({ label, hit: hits[i] }));
   const latched = useVisitGoals(ctx, goals, 'EFFECTS');
   const bpm = fxBpm(booth, fx);
   const timeVal = fx.time / (FX_TIMES[fx.type].length - 1);
   const busPk = last ? Math.max(...Array.from(last.raw.bus)) : null;
-  const fbLocked = !usesFeedback(fx.type) ? `FEEDBACK does nothing on ${fx.type} — it shapes ECHO repeats and the FLANGER’s sharpness. ${fx.type === 'REVERB' ? 'A reverb’s tail is set by TIME.' : 'The sweep is set by TIME.'}` : undefined;
+  // a re-entry only ROARS when the delay's own feedback plus the return path
+  // reach a gain of 1 (audio review 2 #26); below that it adds repeats
+  const roar = loop && fbGain(fx) + (s2?.loopGain ?? 0) >= 1;
+  // the dock key names the knob it is showing (learning review 2, p13 #1),
+  // and is LOCKED while the effect is off (D75: a knob on a stopped effect
+  // changes nothing anyone can hear or see)
   const knobKey = {
     kind: 'fader' as const,
     id: 'fxknob',
-    label: 'FX KNOB',
+    label: knobLabel(focus, fx.route),
     value: focus === 'time' ? timeVal : focus === 'feedback' ? fx.feedback : fx.wet,
     home: focus === 'level' ? 0.5 : undefined,
-    locked: focus === 'feedback' ? fbLocked : undefined,
+    locked: fxKnobLock(fx, focus),
     onChange: (v: number) => {
       if (focus === 'time') {
         const i = Math.round(v * (FX_TIMES[fx.type].length - 1));
@@ -202,7 +218,7 @@ function PageEffects({ ctx }: { ctx: PageCtx }) {
       const dw = dryWet(v);
       return fx.route === 'SEND' ? `RETURN ${pct(v)}` : `LEVEL ${pct(v)} · dry ${pct(dw.dry)} wet ${pct(dw.wet)}`;
     },
-    formatShort: (v: number) => (focus === 'time' ? fxTimeWord(fx.type, Math.round(v * (FX_TIMES[fx.type].length - 1))).replace(' BEATS', 'B').replace(' BEAT', 'B') : pct(v)),
+    formatShort: (v: number) => knobShort(focus, fx, v),
     chooser: {
       title: 'FX KNOB — WHICH ONE',
       options: [
@@ -216,7 +232,7 @@ function PageEffects({ ctx }: { ctx: PageCtx }) {
   };
   const ch2Row = () => (
     <ChipRow
-      head={`CH2 FADER (deck B) → ${pct(getBooth().ch[2].fader)}`}
+      head={`FADER 2 (deck B) → ${pct(getBooth().ch[2].fader)}`}
       chips={[0, 0.5, 0.85].map((v) => ({ label: v === 0 ? 'DOWN' : v === 0.5 ? 'HALF' : 'UP', on: Math.abs(getBooth().ch[2].fader - v) < 0.02, onPress: () => updateBooth((x) => ({ ...x, ch: { ...x.ch, 2: { ...x.ch[2], fader: v } } })) }))}
     />
   );
@@ -232,47 +248,65 @@ function PageEffects({ ctx }: { ctx: PageCtx }) {
           peakShort('BUS PEAK', busPk == null ? null : busPk <= -59.9 ? -Infinity : busPk),
         ],
         params: [
-          { kind: 'group', id: 'fx', label: 'FX', valueLabel: `${fx.type.slice(0, 4)} ${fx.on ? 'ON' : 'OFF'}`, valueA11y: `${fx.type} ${fx.on ? 'on' : 'off'}, ${fx.route}`, render: () => <FxTray /> },
+          // the value is the STATE word (ON / OFF) — the one that matters
+          // (visual review 2 #23); the type is on the EFFECT readout
+          { kind: 'group', id: 'fx', label: 'FX', valueLabel: fx.on ? 'ON' : 'OFF', valueA11y: `${fx.type} ${fx.on ? 'on' : 'off'}, ${fx.route}`, render: () => <FxTray /> },
           knobKey,
-          channelFaderKey(booth, 1),
+          channelFaderKey(booth, 1, 'FADER 1'),
           boothKey(booth, tr, ['A', 'B'], ch2Row),
           stopKey(tr),
         ],
-        initialParam: 'fxknob',
+        initialParam: 'fx',
       }}
     >
       <Step n={1}>
-        <Look>You are looking at the FX SCOPE — the level going INTO the effect (white) and coming OUT of it (blue) over the last three seconds — above a map of where the effect sits in the mixer’s signal path. FULL SCREEN adds the mixer’s effects panel.</Look>
+        <Look>You are looking at the FX SCOPE — the dry sound going INTO the effect (a white line) and the effect’s own sound coming OUT of it (the blue band) over the last seconds — above a map of where the effect sits in the mixer’s signal path. FULL SCREEN adds the mixer’s effects panel.</Look>
         <P>An effect’s sound depends on WHERE it sits: on one channel (an insert), on everything the crowd hears (MASTER), or on a send whose return you add back.</P>
-        <P>Its TIME follows the tempo, so a ½-beat echo lands on the off-beats; LEVEL sets the effect against the dry sound.</P>
+        <P>Its TIME follows the tempo — on this mixer, the deck on its channel (deck A on MASTER or SEND); many units read the mixer’s BPM counter or let you TAP the tempo, so check its BPM before you trust an echo. LEVEL sets the effect against the dry sound.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open DECKS and play deck A. Open FX and press FX ON: an ECHO on channel 1. Watch the scope — each repeat is a step of blue, one delay apart.</Do>
-        <P>On FX KNOB, try TIME: ¼, ½, ¾, 1 and 2 beats. At 1 beat the repeats land on the thin beat lines. Then raise FEEDBACK: more repeats, fading more slowly.</P>
+        <Do>Open DECKS and play deck A. Open FX and press FX ON: an ECHO on channel 1. Watch the scope — each repeat is a step of the blue band, one delay apart.</Do>
+        <P>The second key now names its knob. Open it (FX TIME) and try ¼, ½, ¾, 1 and 2 beats: at 1 beat the repeats land on the thin beat lines. Then choose FEEDBACK and raise it: more repeats, fading more slowly.</P>
       </Step>
       <Step n={3}>
         <P>Switch the TYPE to REVERB, FILTER and FLANGER and listen as the CROWD. Then move CH SELECT: on CH1 only deck A is affected; on MASTER both decks are; on SEND each channel’s SEND knob decides, and the dry sound stays exactly as it was.</P>
         <P>This mixer’s cue is taken before the fader and the effect, so your headphones stay dry. Some mixers can put the effect in the cue too; check yours.</P>
-        <Note tone="safety">Effects can push the MIX BUS into the red on their own (long feedback especially). Watch MIX BUS PEAK, and keep FEEDBACK under control on a live system.</Note>
-        <Note>Deck B’s tempo has been matched to deck A for you — Screen 10 shows how — so the echoes sit in time with both.</Note>
+        <Note tone="safety">Effects can push the MIX BUS into the red on their own (long feedback especially). Watch BUS PEAK (the mix bus) on the readout strip, and keep FEEDBACK under control on a live system.</Note>
+        <Note>Deck B’s tempo has been matched to deck A for you, with key lock on — Screens 10 and 14 show how — so the echoes sit in time with both.</Note>
       </Step>
       <Step n={4}>
-        <Do>Put an echo on every beat. Then do an ECHO OUT: deck A playing with the echo on, pull CH1 FADER all the way down — the repeats ring on in time after the music stops. Then put one REVERB on both decks with the SENDs, and sweep the whole mix with a FILTER or FLANGER on the MASTER.</Do>
+        <Do>1. Put an echo on every beat (FX TIME at 1 BEAT, some FEEDBACK).</Do>
+        <GoalChips goals={goals.slice(0, 1)} latched={latched.slice(0, 1)} />
+        <Do>2. An ECHO OUT: deck A playing with the echo on, pull FADER 1 all the way down — the repeats ring on in time after the music stops.</Do>
+        <GoalChips goals={goals.slice(1, 2)} latched={latched.slice(1, 2)} />
+        <Do>3. One REVERB on both decks with the SENDs (both decks up, SEND 1 and SEND 2 on, RETURN TO the mix bus).</Do>
+        <GoalChips goals={goals.slice(2, 3)} latched={latched.slice(2, 3)} />
+        <Do>4. Sweep the whole mix with a FILTER or FLANGER on the MASTER.</Do>
+        <GoalChips goals={goals.slice(3, 4)} latched={latched.slice(3, 4)} />
         <P>An echo out is one way to leave a track; a filter sweep or a plain cut are others. These are starting points to try, not rules.</P>
-        <GoalChips goals={goals.slice(0, 4)} latched={latched.slice(0, 4)} />
         <Note>FX OFF stops feeding the effect, and what it holds rings out (on this mixer — many have a TRAILS switch; some cut the tail).</Note>
       </Step>
       <Step n={5}>
         <Do>On your own: with both decks up, put the effect on deck B only, while deck A carries on dry.</Do>
-        <UnderstandingCheck
-          eyebrow="CHECK YOURSELF"
-          question="You turn a reverb on and the WHOLE mix gets wet, though you only wanted it on deck A. Where is the effect sitting?"
-          options={['On the MASTER — everything the crowd hears goes through it', 'On channel 1 as an insert', 'On channel 2 as an insert', 'On the headphone cue']}
-          correct={0}
-          explain="An effect on the master (mix bus) takes both decks at once. For deck A alone, put it on channel 1 (an insert) — or on a send with only SEND 1 up."
-          wrong={[undefined, 'A channel 1 insert would leave deck B dry.', 'A channel 2 insert would leave deck A dry — the opposite.', 'The cue is what YOU hear; it never makes the crowd’s mix wet.']}
-          onCorrect={() => setCheck(true)}
+        <EvidenceCheck
+          task="A reverb sits on the MASTER, so the whole mix is wet — but only deck A should be. Make deck B dry while deck A keeps its reverb, both decks up, without turning the effect off."
+          onSetup={() => {
+            void audio.requestSound();
+            hit.current.check = false;
+            setCheck(true);
+            updateBooth((b, t) =>
+              alignPhase(
+                { ...b, decks: { A: { ...b.decks.A, playing: true, at: t }, B: { ...b.decks.B, playing: true, at: t } }, ch: { 1: { ...b.ch[1], fader: 0.85 }, 2: { ...b.ch[2], fader: 0.85 } }, fx: { ...freshFx(), on: true, type: 'REVERB', route: 'MASTER', time: 2, wet: 0.5 }, perspective: 'CROWD' },
+                t,
+                'B',
+              ),
+            );
+          }}
+          armed={check}
+          done={latched[7]}
+          hint="Read SITS ON, and look at the map: everything that passes through the effect’s box gets wet."
+          explain="On the MASTER the effect takes both decks at once. As a channel 1 insert (or on a send with only SEND 1 up) it takes deck A alone, and deck B passes by it dry."
         />
         <FaultCard
           title="FX ON, BUT NO ECHO"
@@ -310,7 +344,11 @@ function PageEffects({ ctx }: { ctx: PageCtx }) {
           why="The effect’s return was fed back into channel 2, whose own send fed the effect again — a loop that climbs until something clips at full scale. The lab held it under a safe level and played it quieter; a real one can be loud enough to damage speakers and ears. Return to the bus, or keep a returning channel’s send off."
           onFixed={() => setFault2(true)}
         />
-        {loop ? <Note tone="safety">LOOP — the lab is holding this one quiet. On a real system, pull the RETURN down first, then find the routing.</Note> : null}
+        {roar ? (
+          <Note tone="safety">LOOP, ROARING — the lab is holding this one quiet. On a real system, pull the RETURN down first, then find the routing.</Note>
+        ) : loop ? (
+          <Note>RE-ENTRY — the return comes back into a channel that feeds the effect again: extra repeats. Push the RETURN or SEND 2 further and it runs away into a roar.</Note>
+        ) : null}
         <GoalChips goals={goals.slice(4)} latched={latched.slice(4)} />
       </Step>
     </DjRack>

@@ -16,11 +16,14 @@ import { INK } from './ink';
 import { Key, Knob, SlideSwitch } from './parts';
 import { useMotion } from './motion';
 import { SceneText } from './sceneText';
-import { DNode, DWire, DLegend } from './s2Diagram';
+import { DNode, DWire, DLegend, SIG_COLOUR } from './s2Diagram';
 import { fxTimeSec, fxTimeWord, usesFeedback, type FxState, type FxType } from '../model/djEffects';
 import type { Box } from '../geometry/boothGeometry';
 
 const LEG = 4;
+/** Position legends round the selectors and under the small knobs: authored
+ *  at 3.8 mm so they reach 9 pt from the 2× zoom (visual review 2 #6). */
+const POS_LEG = 3.8;
 export const FX_PANEL = { w: 300, h: 84 } as const;
 /** Control centres on the panel (local mm). */
 export const FXP = {
@@ -79,7 +82,7 @@ export function FxPanel({ x, y, fx, bpm, highlight = [] }: { x: number; y: numbe
       {(['ECHO', 'REVERB', 'FILTER', 'FLANGER'] as FxType[]).map((t) => {
         const a = (-150 + TYPE_POS[t] * 300) * (Math.PI / 180);
         const r = FXP.type.d * 0.82;
-        return <SceneText key={t} x={FXP.type.x + Math.sin(a) * r} y={FXP.type.y - Math.cos(a) * r + 1.5} size={3.2} text={t} color={fx.type === t ? INK.amber : INK.printDim} face="label" align="center" />;
+        return <SceneText key={t} x={FXP.type.x + Math.sin(a) * r} y={FXP.type.y - Math.cos(a) * r + 1.5} size={POS_LEG} text={t} color={fx.type === t ? INK.amber : INK.printDim} face="label" align="center" />;
       })}
       {/* the LCD: type, time and tempo, in lines big enough to read */}
       <RoundedRect x={L.x - 1.5} y={L.y - 1.5} width={L.w + 3} height={L.h + 3} r={4} color="#050506" />
@@ -105,18 +108,22 @@ export function FxPanel({ x, y, fx, bpm, highlight = [] }: { x: number; y: numbe
       </Group>
       <Knob cx={FXP.send1.x} cy={FXP.send1.y} d={FXP.send1.d} value={fx.send[1]} />
       <Knob cx={FXP.send2.x} cy={FXP.send2.y} d={FXP.send2.d} value={fx.send[2]} />
-      <SceneText x={FXP.send1.x} y={FXP.send1.y + 12} size={3.4} text="SEND 1" color={INK.printDim} face="label" align="center" />
-      <SceneText x={FXP.send2.x} y={FXP.send2.y + 12} size={3.4} text="SEND 2" color={INK.printDim} face="label" align="center" />
+      <SceneText x={FXP.send1.x} y={FXP.send1.y + 12} size={POS_LEG} text="SEND 1" color={INK.printDim} face="label" align="center" />
+      <SceneText x={FXP.send2.x} y={FXP.send2.y + 12} size={POS_LEG} text="SEND 2" color={INK.printDim} face="label" align="center" />
       {/* CH SELECT: 1 · 2 · MST · SEND */}
       <Knob cx={FXP.route.x} cy={FXP.route.y} d={FXP.route.d} value={ROUTE_POS[fx.route]} capTone="black" scale={false} />
       {(['CH1', 'CH2', 'MASTER', 'SEND'] as const).map((t) => {
         const a = (-150 + ROUTE_POS[t] * 300) * (Math.PI / 180);
         const r = FXP.route.d * 0.86;
         const word = t === 'MASTER' ? 'MST' : t === 'CH1' ? '1' : t === 'CH2' ? '2' : 'SEND';
-        return <SceneText key={t} x={FXP.route.x + Math.sin(a) * r} y={FXP.route.y - Math.cos(a) * r + 1.4} size={3.2} text={word} color={fx.route === t ? INK.amber : INK.printDim} face="label" align="center" />;
+        return <SceneText key={t} x={FXP.route.x + Math.sin(a) * r} y={FXP.route.y - Math.cos(a) * r + 1.4} size={POS_LEG} text={word} color={fx.route === t ? INK.amber : INK.printDim} face="label" align="center" />;
       })}
       <SlideSwitch x={FXP.ret.x} y={FXP.ret.y} w={FXP.ret.w} h={FXP.ret.h} pos={fx.returnTo === 'BUS' ? 0 : 1} positions={2} />
-      <SceneText x={FXP.ret.x + FXP.ret.w / 2} y={FXP.ret.y + 13} size={3.2} text="RETURN TO BUS · CH2" color={INK.printDim} face="label" align="center" />
+      {/* the 2-position RETURN switch: a title above, a word at each end */}
+      <SceneText x={FXP.ret.x + FXP.ret.w / 2} y={FXP.ret.y - 2.2} size={POS_LEG} text="RETURN" color={INK.print} face="label" align="center" />
+      <SceneText x={FXP.ret.x + 3} y={FXP.ret.y + FXP.ret.h + 5.4} size={POS_LEG} text="BUS" color={fx.returnTo === 'BUS' ? INK.amber : INK.printDim} face="label" align="center" />
+      <SceneText x={FXP.ret.x + FXP.ret.w - 3} y={FXP.ret.y + FXP.ret.h + 5.4} size={POS_LEG} text="CH2" color={fx.returnTo === 'CH2' ? INK.amber : INK.printDim} face="label" align="center" />
+      <SceneText x={FXP.route.x} y={FXP.route.y - FXP.route.d * 1.2} size={LEG} text="CH SELECT" color={INK.print} face="label" align="center" />
       {/* FX ON */}
       <Key x={FXP.on.x} y={FXP.on.y} w={FXP.on.w} h={FXP.on.h} lit={fx.on} colour={INK.red} />
       <SceneText x={FXP.on.x + FXP.on.w / 2} y={FXP.on.y + 11.4} size={LEG} text="ON" color={fx.on ? INK.white : INK.print} face="label" align="center" />
@@ -142,6 +149,9 @@ const N = {
   out: { x: 268, y: 36, w: 34, h: 28 },
   sfx: { x: 112, y: 116, w: 48, h: 24 },
 } as const;
+/** The two SEND taps' own vertical lanes (mm), between the channel and the
+ *  insert columns. */
+export const SEND_LANE = { 1: 103, 2: 110 } as const;
 const mid = (b: Box): [number, number] => [b.x + b.w / 2, b.y + b.h / 2];
 const right = (b: Box): [number, number] => [b.x + b.w, b.y + b.h / 2];
 const left = (b: Box): [number, number] => [b.x, b.y + b.h / 2];
@@ -157,8 +167,16 @@ export function FxRouteMap({ x, y, fx, live, loop, flow }: { x: number; y: numbe
     slot === k ? <DNode b={N[k]} title={fx.type} sub={fx.on ? 'FX ON' : 'FX OFF'} live={fx.on || live.fx} tone={fx.on ? 'amber' : 'plain'} /> : <DNode b={N[k]} title={title} slot />;
   const sendOn = fx.route === 'SEND';
   const toCh2 = sendOn && fx.returnTo === 'CH2';
-  const sx1 = N.ch1.x + N.ch1.w + 5;
-  const sx2 = N.ch2.x + N.ch2.w + 7;
+  // each SEND tap in its OWN lane, 7 mm apart, entering SEND FX at its own
+  // height (visual review 2 #5, D69); a wire that passes OVER another is
+  // keylined at the crossing (a gap, never a false junction); a dot only
+  // where the model really joins
+  const sx1 = SEND_LANE[1];
+  const sx2 = SEND_LANE[2];
+  const e1 = N.sfx.y + 6;
+  const e2 = N.sfx.y + 18;
+  const live1 = sendOn && fx.send[1] > 0 && live.a;
+  const live2 = sendOn && fx.send[2] > 0 && (live.b || (toCh2 && live.fx));
   return (
     <Group transform={[{ translateX: x }, { translateY: y }]}>
       <DNode b={N.deckA} title="DECK A" live={live.a} tone="blue" />
@@ -180,17 +198,26 @@ export function FxRouteMap({ x, y, fx, live, loop, flow }: { x: number; y: numbe
       <DWire pts={[right(N.bus), left(N.mfx)]} kind="audio" live={live.bus} flow={flow} />
       <DWire pts={[right(N.mfx), left(N.out)]} kind="audio" live={live.bus} flow={flow} />
       {/* the SEND taps (after the faders) and the RETURN */}
-      <DWire pts={[[sx1, mid(N.ch1)[1]], [sx1, 46], [104, 46], [104, 124], left(N.sfx)]} kind="audio" live={sendOn && fx.send[1] > 0 && live.a} w={1.1} />
-      <DWire pts={[[sx2, mid(N.ch2)[1]], [sx2, 102], [106, 102], [106, 132], [N.sfx.x, 132]]} kind={toCh2 && fx.send[2] > 0 ? 'loop' : 'audio'} live={sendOn && fx.send[2] > 0 && (live.b || (toCh2 && live.fx))} w={1.1} />
-      <SceneText x={sx1 + 2} y={44} size={8} text="SEND 1" color={INK.printDim} face="label" />
-      <SceneText x={sx2 - 40} y={100} size={8} text="SEND 2" color={INK.printDim} face="label" />
+      <DWire pts={[[sx2, mid(N.ch2)[1]], [sx2, e2], [N.sfx.x, e2]]} kind={toCh2 && fx.send[2] > 0 ? 'loop' : 'audio'} live={live2} w={1.1} flow={flow} />
+      <DWire pts={[[sx1, mid(N.ch1)[1]], [sx1, e1], [N.sfx.x, e1]]} kind="audio" live={live1} w={1.1} flow={flow} over={[[sx1, mid(N.ch2)[1]], [sx2, e1]]} />
+      {/* the taps' junctions: where each copy leaves its channel's wire */}
+      <Circle cx={sx1} cy={mid(N.ch1)[1]} r={1.6} color={SIG_COLOUR.audio} opacity={live1 ? 1 : 0.4} />
+      <Circle cx={sx2} cy={mid(N.ch2)[1]} r={1.6} color={toCh2 && fx.send[2] > 0 ? SIG_COLOUR.loop : SIG_COLOUR.audio} opacity={live2 ? 1 : 0.4} />
+      {/* each tap named beside its own lane: SEND 1 left of its drop, SEND 2
+          right of its drop, in the gap above the send block */}
+      <SceneText x={sx1 - 3} y={52} size={8.8} text="SEND 1" color={live1 ? INK.blue : INK.printDim} face="label" align="right" />
+      <SceneText x={sx2 + 3} y={106} size={8.8} text="SEND 2" color={live2 ? (toCh2 ? INK.red : INK.blue) : INK.printDim} face="label" />
       {toCh2 ? (
-        <DWire pts={[right(N.sfx), [176, 128], [176, 100], [46, 100], [46, 78], left(N.ch2)]} kind={loop ? 'loop' : 'audio'} live={live.fx} />
+        <Group>
+          {/* round UNDER the send block and back up into channel 2's input */}
+          <DWire pts={[right(N.sfx), [176, N.sfx.y + 12], [176, 147], [46, 147], [46, mid(N.ch2)[1]], left(N.ch2)]} kind={loop ? 'loop' : 'audio'} live={live.fx} flow={flow} />
+          <Circle cx={46} cy={mid(N.ch2)[1]} r={1.8} color={loop ? SIG_COLOUR.loop : SIG_COLOUR.audio} />
+        </Group>
       ) : (
-        <DWire pts={[right(N.sfx), [189, 128], [189, N.bus.y + N.bus.h]]} kind="audio" live={sendOn && live.fx} />
+        <DWire pts={[right(N.sfx), [189, N.sfx.y + 12], [189, N.bus.y + N.bus.h]]} kind="audio" live={sendOn && live.fx} flow={flow} />
       )}
-      <SceneText x={toCh2 ? 178 : 192} y={124} size={8} text={toCh2 ? 'RETURN TO CH2' : 'RETURN'} color={toCh2 && loop ? INK.red : INK.printDim} face="label" />
-      <DLegend x={218} y={140} kinds={loop ? ['audio', 'loop'] : ['audio']} size={8} />
+      <SceneText x={toCh2 ? 179 : 192} y={N.sfx.y + 8} size={8.8} text={toCh2 ? 'RETURN TO CH2' : 'RETURN'} color={toCh2 && loop ? INK.red : INK.printDim} face="label" />
+      <DLegend x={218} y={140} kinds={loop ? ["audio", "loop"] : ["audio"]} size={8.8} />
     </Group>
   );
 }
@@ -202,21 +229,37 @@ export const ROUTE_NODES = N;
 
 export type FxSeg = { t0: number; inDb: Float32Array; outDb: Float32Array };
 
-const SPAN_S = 3.2;
+/** The scope's window: 1.6 s on the glass (a ½-beat echo is then ~50 pt
+ *  apart at 390), 3.2 s in FULL SCREEN (visual review 2 #4). */
+export const FX_SPAN_GLASS_S = 1.6;
+export const FX_SPAN_FULL_S = 3.2;
 const TOP_DB = 0;
 const BOT_DB = -48;
 
 /**
- * The level INTO the effect (white) and OUT of it (blue), per 10 ms block,
- * scrolling right to left under the one clock; the deck's beat lines (thin)
- * and, for an echo, a bar the length of one delay so the repeats can be
- * checked against it. Screen points.
+ * Two lanes on one time axis, so the effect's sound can never hide under the
+ * music (visual review 2 #4): the DRY lane — the level going INTO the effect,
+ * a thin white line — and under it the WET lane — the effect's own output, a
+ * filled blue band, so each echo repeat is a visible step even under
+ * continuous music. Per 10 ms block, scrolling right to left under the one
+ * clock; the deck's beat lines run through both lanes, and for an echo a
+ * bracket the length of one delay sits ABOVE the wet trace, with end ticks.
+ * Screen points.
  */
-export function FxScope({ b, segs, beatTimes, delaySec, k = 1, title }: { b: Box; segs: readonly FxSeg[]; beatTimes: readonly number[]; delaySec: number | null; k?: number; title: string }) {
+export function FxScope({ b, segs, beatTimes, delaySec, k = 1, title, spanSec = FX_SPAN_GLASS_S }: { b: Box; segs: readonly FxSeg[]; beatTimes: readonly number[]; delaySec: number | null; k?: number; title: string; spanSec?: number }) {
   const { clock } = useMotion();
-  const inner = { x: b.x + 6, y: b.y + 18 * k, w: b.w - 12, h: b.h - 24 * k };
-  const pps = inner.w / SPAN_S;
-  const yOf = (db: number) => inner.y + ((TOP_DB - Math.max(BOT_DB, Math.min(TOP_DB, db))) / (TOP_DB - BOT_DB)) * inner.h;
+  const fs = 9.5 * k;
+  const inner = { x: b.x + 6, y: b.y + 18 * k, w: b.w - 12, h: b.h - 22 * k };
+  const gap = 3 * k;
+  // the dry lane is the reference (a third); the wet lane gets the room
+  const dry = { y: inner.y, h: Math.round((inner.h - gap) * 0.36) };
+  const wet = { y: dry.y + dry.h + gap, h: inner.h - dry.h - gap };
+  // the wet lane keeps a strip at its top for the ONE DELAY bracket
+  const brH = fs + 9 * k;
+  const wetPlot = { y: wet.y + brH, h: wet.h - brH };
+  const pps = inner.w / spanSec;
+  const yIn = (db: number) => dry.y + 2 + ((TOP_DB - Math.max(BOT_DB, Math.min(TOP_DB, db))) / (TOP_DB - BOT_DB)) * (dry.h - 4);
+  const yOut = (db: number) => wetPlot.y + ((TOP_DB - Math.max(BOT_DB, Math.min(TOP_DB, db))) / (TOP_DB - BOT_DB)) * (wetPlot.h - 1);
   // paths in POINTS from a reference time, so strokes keep their width;
   // the clock only translates them
   const tRef = segs.length ? segs[0].t0 : 0;
@@ -230,16 +273,16 @@ export function FxScope({ b, segs, beatTimes, delaySec, k = 1, title }: { b: Box
       for (let i = 0; i < n; i++) {
         const x = X(s.t0 + i * 0.01);
         if (i === 0) {
-          pin.moveTo(x, yOf(s.inDb[i]));
-          pout.moveTo(x, yOf(s.outDb[i]));
-          fill.moveTo(x, yOf(BOT_DB));
+          pin.moveTo(x, yIn(s.inDb[i]));
+          pout.moveTo(x, yOut(s.outDb[i]));
+          fill.moveTo(x, yOut(BOT_DB));
         } else {
-          pin.lineTo(x, yOf(s.inDb[i]));
-          pout.lineTo(x, yOf(s.outDb[i]));
+          pin.lineTo(x, yIn(s.inDb[i]));
+          pout.lineTo(x, yOut(s.outDb[i]));
         }
-        fill.lineTo(x, yOf(s.outDb[i]));
+        fill.lineTo(x, yOut(s.outDb[i]));
       }
-      if (n) fill.lineTo(X(s.t0 + (n - 1) * 0.01), yOf(BOT_DB));
+      if (n) fill.lineTo(X(s.t0 + (n - 1) * 0.01), yOut(BOT_DB));
       fill.close();
     }
     const beats = Skia.PathBuilder.Make();
@@ -249,46 +292,52 @@ export function FxScope({ b, segs, beatTimes, delaySec, k = 1, title }: { b: Box
     }
     return { pin: pin.detach(), pout: pout.detach(), fill: fill.detach(), beats: beats.detach() };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [segs, beatTimes, inner.y, inner.h, pps, tRef]);
+  }, [segs, beatTimes, inner.y, inner.h, dry.h, wetPlot.y, wetPlot.h, pps, tRef]);
   // time on x: "now" at the right edge
   const right0 = inner.x + inner.w;
   const xf = useDerivedValue(() => [{ translateX: right0 - (clock.value - tRef) * pps }]);
-  const fs = 9.5 * k;
+  const bx0 = delaySec ? right0 - delaySec * pps : right0;
+  const brY = wet.y + fs + 5 * k;
   return (
     <Group>
       <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={8} color="rgba(6,7,9,0.94)" />
       <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={8} style="stroke" strokeWidth={1} color="rgba(255,255,255,0.10)" />
+      {/* the two lanes' wells */}
+      <RoundedRect x={inner.x} y={dry.y} width={inner.w} height={dry.h} r={3} color="#0b0c10" />
+      <RoundedRect x={inner.x} y={wet.y} width={inner.w} height={wet.h} r={3} color="#060a12" />
       {[-12, -24, -36].map((d) => (
-        <Line key={d} p1={vec(inner.x, yOf(d))} p2={vec(inner.x + inner.w, yOf(d))} color="rgba(255,255,255,0.07)" strokeWidth={1} />
+        <Line key={d} p1={vec(inner.x, yOut(d))} p2={vec(inner.x + inner.w, yOut(d))} color="rgba(255,255,255,0.07)" strokeWidth={1} />
       ))}
       <Group clip={Skia.XYWHRect(inner.x, inner.y, inner.w, inner.h)}>
         <Group transform={xf}>
           <Path path={paths.fill}>
-            <LinearGradient start={vec(0, inner.y)} end={vec(0, inner.y + inner.h)} colors={['rgba(111,168,255,0.40)', 'rgba(111,168,255,0.02)']} />
+            <LinearGradient start={vec(0, wetPlot.y)} end={vec(0, wetPlot.y + wetPlot.h)} colors={['rgba(111,168,255,0.62)', 'rgba(111,168,255,0.10)']} />
           </Path>
-          <Path path={paths.pin} style="stroke" strokeWidth={1.2} color="rgba(244,246,248,0.6)" strokeJoin="round" />
           <Path path={paths.pout} style="stroke" strokeWidth={3} color={INK.blue} opacity={0.35} strokeJoin="round">
             <BlurMask blur={2} style="normal" />
           </Path>
-          <Path path={paths.pout} style="stroke" strokeWidth={1.8} color={INK.blue} strokeJoin="round" />
+          <Path path={paths.pout} style="stroke" strokeWidth={1.6} color={INK.blue} strokeJoin="round" />
+          <Path path={paths.pin} style="stroke" strokeWidth={1.2} color="rgba(244,246,248,0.75)" strokeJoin="round" />
           {/* the deck's beats, on top (thin, keylined) */}
           <Path path={paths.beats} style="stroke" strokeWidth={2.4} color="rgba(0,0,0,0.5)" />
           <Path path={paths.beats} style="stroke" strokeWidth={1} color="rgba(255,198,77,0.55)" />
         </Group>
       </Group>
-      <Line p1={vec(inner.x + inner.w, inner.y - 2)} p2={vec(inner.x + inner.w, inner.y + inner.h + 2)} color={INK.amber} strokeWidth={1.4} />
+      <Line p1={vec(right0, inner.y - 2)} p2={vec(right0, inner.y + inner.h + 2)} color={INK.amber} strokeWidth={1.4} />
       <SceneText x={b.x + 8} y={b.y + 13 * k} size={fs} text={title} color={INK.amber} face="label" minPt={9.5} />
-      <Circle cx={b.x + b.w - 136 * k} cy={b.y + 9.5 * k} r={3} color="rgba(244,246,248,0.7)" />
-      <SceneText x={b.x + b.w - 130 * k} y={b.y + 13 * k} size={fs} text="INTO FX" color={INK.print} face="label" minPt={9.5} />
-      <Circle cx={b.x + b.w - 68 * k} cy={b.y + 9.5 * k} r={3} color={INK.blue} />
-      <SceneText x={b.x + b.w - 62 * k} y={b.y + 13 * k} size={fs} text="OUT OF IT" color={INK.blue} face="label" minPt={9.5} />
+      <SceneText x={right0 - 4} y={b.y + 13 * k} size={fs} text="NOW" color={INK.amber} face="label" align="right" minPt={9.5} />
+      {/* lane names, at the left, in the lanes' own colours */}
+      <SceneText x={inner.x + 4} y={dry.y + fs + 1} size={fs} text="INTO FX · DRY" color={INK.print} face="label" minPt={9.5} />
+      <SceneText x={inner.x + 4} y={wet.y + fs + 1} size={fs} text="OUT OF IT · WET" color={INK.blue} face="label" minPt={9.5} />
       {delaySec ? (
+        // ONE DELAY: a bracket above the wet trace, end ticks down
         <Group>
-          <Line p1={vec(inner.x + inner.w - delaySec * pps, inner.y + inner.h - 3)} p2={vec(inner.x + inner.w, inner.y + inner.h - 3)} color={INK.amber} strokeWidth={2} />
-          <SceneText x={inner.x + inner.w - delaySec * pps - 4} y={inner.y + inner.h - 0.5} size={fs} text="ONE DELAY" color={INK.amber} face="label" align="right" minPt={9.5} />
+          <Line p1={vec(bx0, brY)} p2={vec(right0, brY)} color={INK.amber} strokeWidth={1.6} />
+          <Line p1={vec(bx0, brY - 3 * k)} p2={vec(bx0, brY + 3 * k)} color={INK.amber} strokeWidth={1.6} />
+          <Line p1={vec(right0, brY - 3 * k)} p2={vec(right0, brY + 3 * k)} color={INK.amber} strokeWidth={1.6} />
+          <SceneText x={right0 - 4} y={wet.y + fs + 1} size={fs} text="ONE DELAY" color={INK.amber} face="label" align="right" minPt={9.5} />
         </Group>
       ) : null}
-      <SceneText x={inner.x + inner.w - 3} y={inner.y + 10 * k} size={fs} text="NOW" color={INK.amber} face="label" align="right" minPt={9.5} />
     </Group>
   );
 }

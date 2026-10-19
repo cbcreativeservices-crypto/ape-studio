@@ -40,15 +40,47 @@ function arrowHead(pts: readonly [number, number][], s: number): SkPath {
   return p.detach();
 }
 
+/** The map's background, for the keyline gaps where one wire crosses over
+ *  another (charter §2: a crossing never reads as a junction). */
+export const MAP_BG = '#0c0d10';
+
+/** A short keyline along the wire through each crossing point `over` (it
+ *  must lie on the wire): drawn UNDER this wire, it cuts the wire beneath. */
+function crossingGaps(pts: readonly [number, number][], over: readonly [number, number][], half: number): SkPath {
+  const p = Skia.PathBuilder.Make();
+  for (const [cx, cy] of over) {
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, y0] = pts[i - 1];
+      const [x1, y1] = pts[i];
+      const len = Math.hypot(x1 - x0, y1 - y0);
+      if (len < 1e-6) continue;
+      const t = ((cx - x0) * (x1 - x0) + (cy - y0) * (y1 - y0)) / (len * len);
+      const d = Math.abs((cx - x0) * (y1 - y0) - (cy - y0) * (x1 - x0)) / len;
+      if (t < -0.01 || t > 1.01 || d > 0.3) continue;
+      const ux = (x1 - x0) / len;
+      const uy = (y1 - y0) / len;
+      p.moveTo(cx - ux * half, cy - uy * half);
+      p.lineTo(cx + ux * half, cy + uy * half);
+      break;
+    }
+  }
+  return p.detach();
+}
+
 /** One signal's wire (mm). `live` lights it; `flow` (decorative motion,
- *  passed only when allowed) runs a slow dash along a live AUDIO wire — an
- *  overlay of where the signal goes, claiming no speed. */
-export function DWire({ pts, kind, live, arrow = true, w = 1.5, flow = false }: { pts: readonly [number, number][]; kind: SigKind; live: boolean; arrow?: boolean; w?: number; flow?: boolean }) {
+ *  passed only when allowed) runs a slow dash along a live AUDIO, CONTROL or LOOP wire
+ *  — an overlay of where the signal goes, claiming no speed.
+ *  `over` (ADDITIVE, visual review 2 #5): the points where this wire passes
+ *  OVER another — each gets a keyline gap in the wire beneath. */
+export function DWire({ pts, kind, live, arrow = true, w = 1.5, flow = false, over }: { pts: readonly [number, number][]; kind: SigKind; live: boolean; arrow?: boolean; w?: number; flow?: boolean; over?: readonly [number, number][] }) {
   const path = useMemo(() => polyPath(pts), [pts]);
   const head = useMemo(() => (arrow && pts.length >= 2 ? arrowHead(pts, w * 3.6) : null), [arrow, pts, w]);
+  const gaps = useMemo(() => (over && over.length ? crossingGaps(pts, over, 3.2) : null), [pts, over]);
   const c = SIG_COLOUR[kind];
   const dim = live ? 1 : 0.32;
   return (
+    <Group>
+      {gaps ? <Path path={gaps} style="stroke" strokeWidth={w + 2.8} color={MAP_BG} strokeCap="butt" /> : null}
     <Group opacity={dim}>
       {live ? (
         <Path path={path} style="stroke" strokeWidth={w * 3.2} color={c} opacity={0.28} strokeCap="round" strokeJoin="round">
@@ -66,7 +98,8 @@ export function DWire({ pts, kind, live, arrow = true, w = 1.5, flow = false }: 
         </Path>
       )}
       {head ? <Path path={head} color={c} /> : null}
-      {live && flow && kind === 'audio' ? <Flow path={path} w={w} colour={c} /> : null}
+      {live && flow && (kind === 'audio' || kind === 'loop' || kind === 'control') ? <Flow path={path} w={w} colour={kind === 'loop' ? '#ffd0c8' : kind === 'control' ? '#fff0c0' : c} /> : null}
+    </Group>
     </Group>
   );
 }

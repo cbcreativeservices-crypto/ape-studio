@@ -229,10 +229,12 @@ describe('the what’s-left screen names each screen’s unmet goals (learning X
     for (const f of readdirSync(dir).filter((n) => /^p\d\d/.test(n))) {
       const s = readFileSync(join(dir, f), 'utf8');
       const cuts = [...s.matchAll(/<GoalChips goals=\{goals\.slice\((\d+)(?:, (\d+))?\)\}/g)];
-      assert.equal(cuts.length, 2, `${f} has two goal rows`);
+      // two rows (practice, check) — or the practice split into one row per
+      // task (learning review 2, p13 #5) — tiling the goals with no gap
+      assert.ok(cuts.length >= 2, `${f} has at least two goal rows`);
       assert.equal(cuts[0][1], '0', `${f} first row starts at 0`);
-      assert.equal(cuts[0][2], cuts[1][1], `${f}: the second row starts where the first ends`);
-      assert.equal(cuts[1][2], undefined, `${f}: the second row runs to the end`);
+      for (let i = 1; i < cuts.length; i++) assert.equal(cuts[i - 1][2], cuts[i][1], `${f}: row ${i + 1} starts where row ${i} ends`);
+      assert.equal(cuts[cuts.length - 1][2], undefined, `${f}: the last row runs to the end`);
     }
     const shell = readFileSync(join(ROOT, 'src/screens/lab/dj/DJSystemsLabScreen.tsx'), 'utf8');
     assert.match(shell, /pageDetail=\{/);
