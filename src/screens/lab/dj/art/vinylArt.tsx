@@ -534,7 +534,7 @@ export const ROOM_SIDE = {
   tableEnd: 1000,
   tt: { x: 110, w: 453, plinth: 60 },
   near: { x: 640, base: 930 },
-  away: { x: 1260, base: 1250 },
+  away: { x: 1260, base: 1060 },
   mon: { w: 250, h: 380, d: 240 },
   view: { x0: -40, x1: 1560, y0: 760, y1: 1530 },
 } as const;
@@ -543,7 +543,10 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
   const fs = 9.5 * k;
   const R = ROOM_SIDE;
   const head = 30 * k;
-  const s = Math.min((b.w - 12) / (R.view.x1 - R.view.x0), (b.h - head - 6) / (R.view.y1 - R.view.y0));
+  // a footer band of its own for the status words: the scene is clipped
+  // above it, so no gear part can ever draw over a word there
+  const foot = fs + 8;
+  const s = Math.min((b.w - 12) / (R.view.x1 - R.view.x0), (b.h - head - foot - 4) / (R.view.y1 - R.view.y0));
   const ox = b.x + (b.w - (R.view.x1 - R.view.x0) * s) / 2 - R.view.x0 * s;
   const oy = b.y + head + R.view.y1 * s;
   const X = (x: number) => ox + x * s;
@@ -608,7 +611,7 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
   return (
     <Group>
       <Frame b={b} title="THE BOOTH · SIDE VIEW, TO SCALE" k={k} right={`LOOP ×${gain.toFixed(2)} · ${status}`} rightTint={tint} />
-            <Group clip={Skia.XYWHRect(b.x + 2, b.y + head - 4, b.w - 4, b.h - head + 2)}>
+            <Group clip={Skia.XYWHRect(b.x + 2, b.y + head - 4, b.w - 4, b.h - head - foot + 4)}>
         {/* the table: back legs (further, darker), the apron, the top, front legs */}
         {leg(40, true)}
         {leg(R.tableEnd - 20, true)}
@@ -618,11 +621,39 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
         {leg(0, false)}
         {leg(R.tableEnd - 60, false)}
         {/* the turntable in profile: feet, plinth, platter rim (strobe dots), record, arm */}
-        {[R.tt.x + 40, R.tt.x + R.tt.w - 40].map((x) => (
-          <RoundedRect key={x} x={X(x - (v.feet ? 34 : 22))} y={Y(R.tableTop + feetH)} width={(v.feet ? 68 : 44) * s} height={feetH * s} r={feetH * s * 0.45}>
-            <LinearGradient start={vec(0, Y(R.tableTop + feetH))} end={vec(0, Y(R.tableTop))} colors={v.feet ? ['#8a7ab8', '#4a3f6e'] : ['#3a3c42', '#121317']} />
-          </RoundedRect>
-        ))}
+        {[R.tt.x + 40, R.tt.x + R.tt.w - 40].map((x) => {
+          const fw = (v.feet ? 66 : 44) * s;
+          const fx = X(x) - fw / 2;
+          const top = Y(R.tableTop + feetH);
+          const bot = Y(R.tableTop);
+          const fh = bot - top;
+          return (
+            <Group key={x}>
+              {/* the contact shadow on the table top */}
+              <RoundedRect x={fx - 1} y={bot - 1.2} width={fw + 2} height={2.4} r={1.2} color="rgba(0,0,0,0.65)">
+                <BlurMask blur={1.2} style="normal" />
+              </RoundedRect>
+              {v.feet ? (
+                <Group>
+                  {/* an isolation puck: a dark elastomer body, lit down its side,
+                      under a machined metal cap */}
+                  <RoundedRect x={fx} y={top + fh * 0.22} width={fw} height={fh * 0.78} r={Math.min(3, fh * 0.2)}>
+                    <LinearGradient start={vec(fx, 0)} end={vec(fx + fw, 0)} colors={['#3a3c42', '#26272c', '#141518', '#0b0c0e']} positions={[0, 0.35, 0.75, 1]} />
+                  </RoundedRect>
+                  <RoundedRect x={fx + fw * 0.06} y={top} width={fw * 0.88} height={fh * 0.26} r={Math.min(2, fh * 0.1)}>
+                    <LinearGradient start={vec(fx, 0)} end={vec(fx + fw, 0)} colors={['#e1e5ea', '#9aa0a8', '#5c626b']} />
+                  </RoundedRect>
+                  <Line p1={vec(fx + 1, top + fh * 0.62)} p2={vec(fx + fw - 1, top + fh * 0.62)} color="rgba(0,0,0,0.45)" strokeWidth={0.8} />
+                </Group>
+              ) : (
+                // the turntable's own foot: a domed rubber foot
+                <RoundedRect x={fx} y={top} width={fw} height={fh} r={fh * 0.45}>
+                  <LinearGradient start={vec(fx, 0)} end={vec(fx + fw, 0)} colors={['#3a3c42', '#1e1f23', '#0b0c0e']} />
+                </RoundedRect>
+              )}
+            </Group>
+          );
+        })}
         <Solid x={X(R.tt.x)} y={Y(ttTop)} w={R.tt.w * s} h={R.tt.plinth * s} c={['#3e4148', '#24262b', '#121316']} r={3} />
         <Solid x={X(R.tt.x + 24)} y={Y(platterTop)} w={332 * s} h={18 * s} c={METAL} r={1} />
         {Array.from({ length: 22 }, (_, i) => (
@@ -636,7 +667,7 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
         <Solid x={X(R.tt.x + 140)} y={Y(ttTop + 46)} w={34 * s} h={(46 - (recTop - ttTop)) * s} c={['#3a3d44', '#121316']} r={1} />
         {/* the monitor: a pad on the table, or a pole stand of its own */}
         {v.monitorNear ? (
-          <Solid x={X(mon.x - 10)} y={Y(mon.y)} w={(depth + R.mon.w + 20) * s} h={30 * s} c={['#4a3f6e', '#2a2440']} r={2} />
+          <Solid x={X(mon.x - 10)} y={Y(mon.y)} w={(depth + R.mon.w + 20) * s} h={30 * s} c={['#3a3c42', '#1e1f23']} r={2} />
         ) : (
           <Group>
             <Solid x={X(mon.x + depth + 70)} y={Y(mon.y)} w={36 * s} h={(mon.y - R.view.y0 + 40) * s} c={['#4a4e56', '#2a2c31']} r={1} />
@@ -676,13 +707,9 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
       </Group>
       <SceneText x={(X(R.tt.x + 150) + X(mon.x + depth + R.mon.w * 0.6)) / 2} y={Y(R.view.y1 - 40) - 4} size={fs} text="ELECTRICAL (OVERLAY): STYLUS TO MIXER TO MONITOR" color={INK.blue} face="label" align="center" minPt={9.5} />
       <SceneText x={woof.x - Math.max(30, woof.x - X(R.tt.x + R.tt.w * 0.55)) * 0.55} y={Y(recTop + 330)} size={fs} text="AIR" color={INK.amber} face="label" align="center" minPt={9.5} />
-      {howlDb > -60 ? (
-        <Group>
-          <RoundedRect x={b.x + 6} y={b.y + b.h - fs - 7} width={fs * 21} height={fs + 6} r={3} color="rgba(8,8,10,0.88)" />
-          <SceneText x={b.x + 10} y={b.y + b.h - 6} size={fs} text={`80 Hz BUILD-UP ${howlDb.toFixed(0)} dBFS (HELD SAFE)`} color={tint} face="label" minPt={9.5} />
-        </Group>
-      ) : null}
-      {v.feet ? <SceneText x={X(R.tt.x + R.tt.w / 2)} y={Y(R.tableTop - 40) + fs} size={fs} text="ISOLATION FEET" color="#c9b8f0" face="label" align="center" minPt={9.5} /> : null}
+      {/* the footer band: status words only, clear of every gear part */}
+      {howlDb > -60 ? <SceneText x={b.x + 10} y={b.y + b.h - 6} size={fs} text={`80 Hz BUILD-UP ${howlDb.toFixed(0)} dBFS (HELD SAFE)`} color={tint} face="label" minPt={9.5} /> : null}
+      <SceneText x={b.x + b.w - 8} y={b.y + b.h - 6} size={fs} text={v.feet ? 'ISOLATION FEET' : 'ITS OWN FEET'} color={INK.print} face="label" align="right" minPt={9.5} />
     </Group>
   );
 }

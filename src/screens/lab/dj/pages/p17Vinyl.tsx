@@ -230,7 +230,7 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
           { k: 'TRACKING', v: trackWord, tint: trackWord === 'CLEAN' ? colors.green : trackWord === 'ARM UP' ? colors.textSub : '#ff8a7e' },
           view === 'ROOM'
             ? { k: 'LOOP GAIN', v: `×${G.toFixed(2)}`, sub: G >= 1 ? 'HOWL' : G >= 0.6 ? 'BOOMY' : 'OK', tint: G >= 1 ? '#ff5a48' : G >= 0.6 ? colors.amber : colors.green }
-            : { k: 'PHONO STAGES', v: count < 0 ? '—' : String(count), sub: !v.gnd ? 'HUM: NO GND' : count === 1 ? 'RIGHT' : 'WRONG', tint: count === 1 && v.gnd ? colors.green : '#ff8a7e' },
+            : { k: 'STAGES', v: count < 0 ? '—' : String(count), sub: !v.gnd ? 'HUM: NO GND' : count === 1 ? 'RIGHT' : 'WRONG', tint: count === 1 && v.gnd ? colors.green : '#ff8a7e' },
         ],
         params: [
           { kind: 'group', id: 'arm', label: 'ARM', valueLabel: `${dialReads(v).toFixed(1)} g`, valueA11y: `dial ${dialReads(v).toFixed(1)} grams`, render: () => <ArmTray onView={() => setView('ARM')} /> },
