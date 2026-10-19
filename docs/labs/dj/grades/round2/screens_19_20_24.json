@@ -1,0 +1,137 @@
+[
+  {
+    "screen": 19,
+    "title": "Microphones, announcements and talkover",
+    "scores": {
+      "1": 7,
+      "2": 7,
+      "3": 8,
+      "4": 8,
+      "5": null,
+      "6": null,
+      "7": null,
+      "8": null,
+      "9": 7,
+      "10": 8,
+      "11": 8,
+      "12": 7,
+      "13": 8,
+      "14": 7,
+      "15": 7,
+      "16": 7,
+      "17": 7,
+      "18": 7,
+      "19": 8,
+      "20": 7
+    },
+    "areas": {
+      "A": 7.5,
+      "B": null,
+      "C": 7.67,
+      "D": 7.2,
+      "E": 7.0,
+      "F": 7.5
+    },
+    "overall": 7.41,
+    "capped": false,
+    "letter": "B",
+    "evidence": {},
+    "worst3": [
+      "ROOM plan: the speaker symbols are enlarged to 20 pt with the booth monitors uncapped (about 2.2x true, a 27 cm monitor drawn about 60 cm) while the table and decks stay true size, so each monitor reads twice the size of a deck player; screen 20 draws the same monitors capped at 1.6x, so the one booth looks different on the two screens.",
+      "ROOM plan labels: the PA L / PA R plates sit on the dashed -6 dB edge line, the red feedback lines run under the MONITOR R / MONITOR L plates, the MIC label's leader crosses the pickup outline, and the green listening-point ring beside the mic carries no label.",
+      "Wireless view: the receiver is drawn from its REAR (antennas, BAL OUT, switch, DC, a green LED) beside the mixer's FRONT panel, with one antenna leaning and one upright; FULL SCREEN 1x leaves big empty bands above and below the gear (3x is good)."
+    ],
+    "screenshot": "final3/19r2_wired_mic_on_390.jpg"
+  },
+  {
+    "screen": 20,
+    "title": "PA speakers, subs and venue connections",
+    "scores": {
+      "1": 8,
+      "2": 7,
+      "3": 9,
+      "4": 6,
+      "5": null,
+      "6": null,
+      "7": null,
+      "8": null,
+      "9": 7,
+      "10": 8,
+      "11": 8,
+      "12": 7,
+      "13": 7,
+      "14": 6,
+      "15": 7,
+      "16": 7,
+      "17": 7,
+      "18": 7,
+      "19": 8,
+      "20": 7
+    },
+    "areas": {
+      "A": 7.5,
+      "B": null,
+      "C": 7.67,
+      "D": 6.8,
+      "E": 7.0,
+      "F": 7.5
+    },
+    "overall": 7.33,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "4": "Unchanged since round 1 (p20Pa.tsx / VenueGear.tsx untouched; checked live): in SYSTEM the powered top's base sits about 7 pt above the sub's floor line (it stands on nothing), and in HANDOFF with VENUE NOT FED the two XLR leads hang as stiff straight diagonals to plugs in mid-air while the stage box floats with nothing under it.",
+      "14": "HANDOFF (live): the MASTER R leader runs diagonally across the mixer's rear panel and the MASTER L leader crosses the XLR leads. ROOM: the 'PA L · TOP + SUB' / 'PA R · TOP + SUB' plates sit on the dashed -6 dB edge lines. SYSTEM: the purple 'SUB' curve name sits where the TOPS and SUM curves cross."
+    },
+    "worst3": [
+      "SYSTEM and HANDOFF untouched: the powered top floats above the sub's floor line; the handoff XLR leads are stiff diagonals ending in mid-air and the stage box floats.",
+      "Diagonal leaders across the mixer's rear (MASTER R) and over the leads (MASTER L); the ROOM name plates sit on the -6 dB edge lines; 'SUB' sits on the curve crossing.",
+      "ROOM plan at 1x: tops drawn about 2.25x true (90 cm on a 170 cm table) to reach 18 pt; correct and overlap-free at 3x (turntable battle style, players butted to the mixer, monitors clear of the table ends), but the 1x scale exaggeration is visible."
+    ],
+    "screenshot": "final3/19r2_s20_room_390.jpg"
+  },
+  {
+    "screen": 24,
+    "title": "Troubleshooting and the complete system challenge",
+    "scores": {
+      "1": 7,
+      "2": 8,
+      "3": 8,
+      "4": 7,
+      "5": null,
+      "6": null,
+      "7": null,
+      "8": null,
+      "9": 7,
+      "10": 8,
+      "11": 8,
+      "12": 7,
+      "13": 7,
+      "14": 7,
+      "15": 7,
+      "16": 7,
+      "17": 7,
+      "18": 7,
+      "19": 7,
+      "20": 7
+    },
+    "areas": {
+      "A": 7.5,
+      "B": null,
+      "C": 7.67,
+      "D": 7.0,
+      "E": 7.0,
+      "F": 7.0
+    },
+    "overall": 7.31,
+    "capped": false,
+    "letter": "B",
+    "evidence": {},
+    "worst3": [
+      "Dense board at 390 (unchanged): seven cords, two rows of outlet names and 9 pt card sub-lines leave little air; 'WALL SOCKET OTHER CIRCUIT' is squeezed against the right edge beside PA L.",
+      "The MIC tile's lead lies on the table and stops dead inside the tile, while the board's XLR link leaves the tile at mid-height, so the drawn lead and the link do not meet; Deck A's power cord still leaves its card sideways.",
+      "Board scale is schematic: the mic, the players and the speakers are each drawn to their own tile; the mic itself is now right (170 mm, about 40 units, against an about 160 mm rod and an about 180 mm base, checked live at 3x)."
+    ],
+    "screenshot": "final3/24_event_doors_open_390.jpg"
+  }
+]

@@ -634,6 +634,36 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 04:24 · ccode · 3bf467c4
+changed: DJ Systems Lab 3-4 round 2: final3 captures (390 wide, full screen 1x and 3x)
+affects other side: nothing (client only)
+needs: nothing
+
+
+### 2026-10-19 04:21 · ccode · dd6a8ec5
+changed: DJ Systems Lab 4 round 2: words keep off the patch band's printed title; a stale just-patched flag clears on a new pick, a power switch, the fault and UNWIRE
+affects other side: nothing (client only)
+needs: nothing
+
+
+### 2026-10-19 04:16 · ccode · fdedf543
+changed: DJ Systems Lab 3-4 round 2: VIEW switch rides in the PATCH tray (six dock keys cropped at 390); plates named in the CABLE view; Screen 3's kept-plugs callout anchored on the plug
+affects other side: nothing (client only)
+needs: nothing
+
+
+### 2026-10-19 04:07 · ccode · 3b0eec6d
+changed: DJ Systems Lab 3-4 round 2: flags off every cable, CABLE view, focus dimming, re-spaced lanes, mixer cord off the panel edge; Screen 3 keeps the other source's plugs in their jacks
+affects other side: nothing (client only)
+needs: nothing
+
+
+### 2026-10-19 03:36 · ccode · 6a62451f
+changed: DJ Systems Lab: event-board mic at its true 170 mm length; combo jack 24 mm in SOURCES
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-10-19 03:34 · ccode · c37d0275
 changed: DJ Systems Lab 19: true-size mic from the combo jack, meters top-left, panel larger, labels in clear air; room plan with no device overlaps
 affects other side: nothing (client art only: p19Mic, MicGear, PlanView, djRoom placement — ROOM.table now 1.7 m, drawing/labels only; no physics numbers change)
