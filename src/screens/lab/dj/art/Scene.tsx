@@ -27,7 +27,7 @@ import { StageAspectReport, StageInFullScreen, useStageTextScale } from '../../r
 import { fitView, type Box, type Pt } from '../geometry/boothGeometry';
 import { MotionContext, type BoothMotion } from './motion';
 import { SceneFontsProvider } from './sceneText';
-import { DjZoomContext, zoomedXf } from './djZoom';
+import { DjZoomContext, sameFrame, zoomedXf } from './djZoom';
 
 export type Callout = {
   id: string;
@@ -117,16 +117,25 @@ export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, scr
   useEffect(() => {
     if (shapeKey > 0) report?.aspect(shapeKey, 0);
   }, [report, shapeKey]);
+  // A zoom opens on the part the learner last touched or dragged to in THIS
+  // drawing (the DJ host carries it across the step), else on the focus.
   const c0 = callouts[0]?.at;
-  const fx = focus ? focus.x + focus.w / 2 : c0 ? c0.x : frame.x + frame.w / 2;
-  const fy = focus ? focus.y + focus.h / 2 : c0 ? c0.y : frame.y + frame.h / 2;
+  const at = dz.at && sameFrame(dz.at.frame, frame) ? dz.at : null;
+  const fx = at ? at.x : focus ? focus.x + focus.w / 2 : c0 ? c0.x : frame.x + frame.w / 2;
+  const fy = at ? at.y : focus ? focus.y + focus.h / 2 : c0 ? c0.y : frame.y + frame.h / 2;
   const xf = useMemo(() => {
     const f = fit ?? { x: 0, y: 0, w, h };
     const v = fitView(frame, f.w, f.h, pad);
     const base = { s: v.s, ox: v.ox + f.x, oy: v.oy + f.y };
-    if (!zoomed) return base;
+    if (!zoomed) {
+      // unzoomed nothing drags: no stale limits from an earlier zoomed draw
+      if (dz.limits) dz.limits.current = null;
+      if (dz.view) dz.view.current = { xf: base, region: f, frame, pan: { x: 0, y: 0 } };
+      return base;
+    }
     const zx = zoomedXf(base, f, frame, { x: fx, y: fy }, zEff, dz.pan);
     if (dz.limits) dz.limits.current = zx.limits;
+    if (dz.view) dz.view.current = { xf: zx.xf, region: f, frame, pan: { x: dz.pan.x, y: dz.pan.y } };
     return zx.xf;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [frame, w, h, pad, fit?.x, fit?.y, fit?.w, fit?.h, zoomed, zEff, dz.pan.x, dz.pan.y, fx, fy]);

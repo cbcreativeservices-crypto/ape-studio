@@ -12,14 +12,29 @@
  *   - renders the page into that window at the window's size, so its plots
  *     and readouts are laid out — and stay pinned — as on a big glass;
  *   - hands the page's Scene the zoom (`z`) through this context: the Scene
- *     zooms ONLY its gear, opening on its `focus` part (or its first
- *     callout), and the learner drags the gear under the pinned plots.
+ *     zooms ONLY its gear, opening on the part the learner last touched (or
+ *     dragged to), else its `focus` part (or its first callout), and the
+ *     learner drags the gear under the pinned plots.
  *
  * Pure (no React Native) apart from the context, so the geometry is tested.
  */
 import { createContext } from 'react';
 
 export type PanLimits = { minX: number; maxX: number; minY: number; maxY: number };
+
+type Rect = { x: number; y: number; w: number; h: number };
+type P = { x: number; y: number };
+export type Anchor = { fx: number; fy: number };
+
+/** What the Scene last drew, in the host's render coordinates (the window's
+ *  when zoomed): its transform, the region its gear sits in, its frame, and
+ *  the drag that transform includes. The host turns a touch into scene mm
+ *  with it. */
+export type SceneView = { xf: { s: number; ox: number; oy: number }; region: Rect; frame: Rect; pan: P };
+
+/** The part (scene mm) the next zoom step opens on, and the frame it was
+ *  read from (a different drawing on the same page ignores it). */
+export type ZoomAt = P & { frame: Rect };
 
 export type DjZoom = {
   /** The full-screen zoom step (1 on the glass and at 1×). */
@@ -28,9 +43,130 @@ export type DjZoom = {
   pan: { x: number; y: number };
   /** The Scene reports how far the gear can be dragged (it knows its frame). */
   limits?: { current: PanLimits | null };
+  /** The Scene reports what it drew (so the host can read a touch). */
+  view?: { current: SceneView | null };
+  /** The part the learner last touched or dragged to: the zoom opens there. */
+  at?: ZoomAt | null;
 };
 
 export const DjZoomContext = createContext<DjZoom>({ z: 1, pan: { x: 0, y: 0 } });
+
+/* ── one opening's memory across its zoom steps ───────────────────────── */
+
+/**
+ * The rack re-mounts the stage on every zoom step and keeps its touch ANCHOR
+ * (where it scrolls to) for the whole opening; it forgets it only when the
+ * full screen closes. The host must keep the same anchor, or its window
+ * lands where the rack did not scroll (bug 2026-10-19: a tap or a 1× drag,
+ * then 2× or 3×, showed black or a thin strip).
+ *
+ * Telling an opening from a step: a step's new host RENDERS while the old
+ * one is still mounted (React runs the old one's cleanup only after the new
+ * one has rendered — so a "time since the last unmount" test, the 10-18
+ * build, always read a step as an opening and dropped the anchor). An
+ * opening is the first render with NO host alive.
+ */
+export type ZoomCarry = { anchor: Anchor | null; at: ZoomAt | null };
+
+export function createZoomMemory() {
+  let alive = 0;
+  let carry: ZoomCarry = { anchor: null, at: null };
+  return {
+    /** A host's first render: fresh at an opening, carried on a step. */
+    begin(): ZoomCarry {
+      if (alive === 0) carry = { anchor: null, at: null };
+      return carry;
+    },
+    mounted(): void {
+      alive += 1;
+    },
+    unmounted(): void {
+      alive = Math.max(0, alive - 1);
+    },
+    touch(anchor: Anchor, at: ZoomAt | null): void {
+      carry = { anchor, at: at ?? carry.at };
+    },
+    /** A drag ended: the next step opens on what the learner moved to. */
+    dragged(at: ZoomAt | null): void {
+      if (at) carry = { ...carry, at };
+    },
+    get(): ZoomCarry {
+      return carry;
+    },
+  };
+}
+
+/** The scene point (mm) under the stage point `p` (render coordinates), or
+ *  null when `p` is outside the gear's region (on a pinned plot). Clamped to
+ *  the frame, so the opening always stays inside the drawing. */
+export function scenePointAt(p: P, v: SceneView): ZoomAt | null {
+  const r = v.region;
+  if (!(p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h) || !(v.xf.s > 0)) return null;
+  const f = v.frame;
+  const x = Math.max(f.x, Math.min(f.x + f.w, (p.x - v.xf.ox) / v.xf.s));
+  const y = Math.max(f.y, Math.min(f.y + f.h, (p.y - v.xf.oy) / v.xf.s));
+  return { x, y, frame: { ...f } };
+}
+
+/** The scene point at the middle of the region once the drag `pan` (already
+ *  clamped to the limits) is drawn — the Scene's transform moves one point
+ *  per point of drag, so it is the drawn view shifted by the difference. */
+export function regionCentreAt(v: SceneView, pan: P): ZoomAt | null {
+  const xf = { s: v.xf.s, ox: v.xf.ox + (pan.x - v.pan.x), oy: v.xf.oy + (pan.y - v.pan.y) };
+  return scenePointAt({ x: v.region.x + v.region.w / 2, y: v.region.y + v.region.h / 2 }, { ...v, xf });
+}
+
+/* ── the window, checked against where the rack really scrolled ────────── */
+
+/**
+ * The mirror above predicts the rack's scroll; the first step out of 1× can
+ * still differ by a few points (the hint line shrinks, so the body and the
+ * box grow around the moment the rack scrolls, and which size it used
+ * depends on event order), and an opening the host cannot see (a close and a
+ * re-open within the Modal's fade) keeps a stale anchor. So the host also
+ * MEASURES: at 1× the box sits centred in the body's viewport — 8 in from
+ * its left, 3 down from its top (the body is the box + (16, 8), with a 1 pt
+ * border top and bottom) — which gives the viewport's place on the page; once
+ * zoomed, the viewport's place minus the box's place is the real scroll.
+ */
+export type Viewport = { x: number; y: number; w1: number };
+
+/** The viewport's page position from the 1× box's page position. */
+export function viewportFrom1x(box: P, w1: number): Viewport {
+  return { x: box.x - 8, y: box.y - 3, w1 };
+}
+
+/** The window offset that matches the real scroll, from the zoomed box's
+ *  page position — null when the viewport was read at another layout (a
+ *  different width: the phone turned), and null while the box still sits
+ *  at the viewport's corner (the rack has not scrolled yet: a real scroll to
+ *  the very corner is what the prediction already gives). Clamped inside
+ *  the box. */
+export function alignedWindow(vp: Viewport | null, box: P, boxW: number, boxH: number, z: number, win: { w: number; h: number }): P | null {
+  if (!vp || !(vp.w1 > 0) || Math.abs(vp.w1 * z - boxW) > 3) return null;
+  if (Math.abs(vp.x - box.x) < 0.5 && Math.abs(vp.y - box.y) < 0.5) return null;
+  return {
+    x: Math.max(0, Math.min(Math.max(0, boxW - win.w), vp.x - box.x)),
+    y: Math.max(0, Math.min(Math.max(0, boxH - win.h), vp.y - box.y)),
+  };
+}
+
+/** A measured offset kept inside the box as it grows or shrinks. */
+export function keepInBox(at: P, boxW: number, boxH: number, win: { w: number; h: number }): P {
+  return { x: Math.max(0, Math.min(Math.max(0, boxW - win.w), at.x)), y: Math.max(0, Math.min(Math.max(0, boxH - win.h), at.y)) };
+}
+
+/** Same frame (the carried part belongs to this drawing). */
+export function sameFrame(a: Rect, b: Rect): boolean {
+  return Math.abs(a.x - b.x) < 1e-6 && Math.abs(a.y - b.y) < 1e-6 && Math.abs(a.w - b.w) < 1e-6 && Math.abs(a.h - b.h) < 1e-6;
+}
+
+/** A touch at page point `t` on the host's root (page origin `o`, size
+ *  `size`): the anchor fraction the rack reads from the same touch. */
+export function anchorOf(t: P, o: P, size: { w: number; h: number }): Anchor | null {
+  if (!(size.w > 0 && size.h > 0)) return null;
+  return { fx: Math.max(0, Math.min(1, (t.x - o.x) / size.w)), fy: Math.max(0, Math.min(1, (t.y - o.y) / size.h)) };
+}
 
 /** The scroll offset the rack's full screen puts a fraction `f` of the
  *  content at (mirrors rack/stageFitMath.anchorOffset). */
@@ -51,6 +187,25 @@ export function zoomWindow(w: number, h: number, z: number, anchor: { fx: number
   const fx = anchor?.fx ?? 0.5;
   const fy = anchor?.fy ?? 0.5;
   return { x: anchorOffsetDj(w, vw, fx), y: anchorOffsetDj(h, vh, fy), w: vw, h: vh };
+}
+
+/**
+ * The window for one zoom step as the box settles: the rack scrolls ONCE per
+ * step, on the box's first size, and the body can grow afterwards (its hint
+ * line shrinks to one line), which grows the box but not the scroll. So the
+ * window keeps the offset of the step's first size (`first`) — never past
+ * the box's far edge — and takes the new size.
+ */
+export function stepWindow(
+  w: number,
+  h: number,
+  z: number,
+  anchor: Anchor | null,
+  first: { x: number; y: number } | null,
+): { x: number; y: number; w: number; h: number; first: { x: number; y: number } } {
+  const z0 = zoomWindow(w, h, z, anchor);
+  const f = first ?? { x: z0.x, y: z0.y };
+  return { ...z0, x: Math.min(f.x, Math.max(0, w - z0.w)), y: Math.min(f.y, Math.max(0, h - z0.h)), first: f };
 }
 
 /**

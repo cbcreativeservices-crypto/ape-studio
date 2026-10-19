@@ -22,7 +22,19 @@
  *     size of the visible body where the rack's scroll has put it; the page
  *     renders into that window at that size, so its plots and readouts stay
  *     PINNED, and its Scene zooms only the gear (art/djZoom), opening on the
- *     lesson's focus part; a drag moves the gear under the pinned plots.
+ *     part the learner last touched or dragged to (else the lesson's focus
+ *     part); a drag moves the gear under the pinned plots.
+ *
+ * Bug fix 2026-10-19 (grader, screens 4 and 6): a tap or a 1× drag, then 2×
+ * or 3×, showed black or a thin strip. The window must sit exactly where the
+ * rack scrolled, and the rack scrolls to the last touch for the whole
+ * opening; the host dropped that touch on every step (it told an opening
+ * from a step by the time since its last unmount, which a step's new host
+ * reads BEFORE the old one's cleanup runs). art/djZoom createZoomMemory
+ * tells them apart by whether a host is still alive. The host also measures
+ * where the rack really scrolled (art/djZoom alignedWindow) and moves the
+ * window there if the prediction was off (the first step out of 1×, a quick
+ * close and re-open).
  * Only the visible window is drawn, never the 3× box (the CanvasKit surface
  * the review saw run out on the web).
  *
@@ -37,7 +49,20 @@ import { RackUnit } from '../rack/RackUnit';
 import type { BezelItem, DockParam, StageSize } from '../rack/rackTypes';
 import { StageAspectReport, StageGlassWidth, StageInFullScreen, StageTextScale, StageZoom, useStageZoom } from '../rack/stageAspect';
 import { useScrollLock } from '../scrollLock';
-import { DjZoomContext, zoomWindow, type PanLimits } from './art/djZoom';
+import {
+  DjZoomContext,
+  alignedWindow,
+  anchorOf,
+  createZoomMemory,
+  keepInBox,
+  regionCentreAt,
+  scenePointAt,
+  stepWindow,
+  viewportFrom1x,
+  type PanLimits,
+  type SceneView,
+  type Viewport,
+} from './art/djZoom';
 
 export type DjRackSpec = {
   render: (w: number, h: number) => ReactNode;
@@ -60,11 +85,14 @@ export function djGlassHeight(winH: number): number | undefined {
 
 // The rack's own zoom ANCHOR (the last touch in the drawing, as a fraction of
 // it; reset on every opening) decides where its scroll lands. The host keeps
-// the same fraction from the same touches, so its window lands there too. An
-// opening is told from a zoom step by the gap since the host last unmounted
-// (a step re-mounts it in the same commit).
-let anchorMirror: { fx: number; fy: number } | null = null;
-let lastUnmountAt = 0;
+// the same fraction from the same touches, so its window lands there too —
+// and the scene part under the touch, so the next step opens on it. An
+// opening is told from a zoom step by whether another host is still alive
+// when this one first renders (art/djZoom createZoomMemory: a step's new host
+// renders BEFORE the old one's cleanup runs).
+const memory = createZoomMemory();
+// where the full screen's body viewport sits on the page (read at 1×)
+let viewport: Viewport | null = null;
 
 function DjStageHost({ w, h, render }: { w: number; h: number; render: (w: number, h: number) => ReactNode }) {
   const full = useContext(StageInFullScreen);
@@ -77,39 +105,69 @@ function FullHost({ w, h, render }: { w: number; h: number; render: (w: number, 
   const glassW = useContext(StageGlassWidth);
   const lock = useScrollLock();
   const root = useRef<View>(null);
-  const [anchor] = useState(() => {
-    if (Date.now() - lastUnmountAt > 400) anchorMirror = null;
-    return anchorMirror;
-  });
-  useEffect(
-    () => () => {
-      lastUnmountAt = Date.now();
-    },
-    [],
-  );
+  // fixed for this step: where the rack scrolls (anchor) and what opens (at)
+  const [carry] = useState(() => memory.begin());
+  useEffect(() => {
+    memory.mounted();
+    return () => memory.unmounted();
+  }, []);
+  const anchor = carry.anchor;
   const zoomed = zoom > 1.001;
   useEffect(() => {
     if (!zoomed || !lock) return;
     lock(true);
     return () => lock(false);
   }, [zoomed, lock]);
+  // what the page's Scene last drew (render coordinates), for reading a touch
+  const view = useRef<SceneView | null>(null);
+  // The window keeps the offset of its first size on this step (stepWindow),
+  // as the mirror predicts it; once the box is laid out (and on every touch)
+  // the host measures where the rack really scrolled and, if that differs,
+  // moves the window there (art/djZoom alignedWindow).
+  const first = useRef<{ x: number; y: number } | null>(null);
+  const predicted = useMemo(() => {
+    const sw = stepWindow(w, h, zoom, anchor, first.current);
+    first.current = sw.first;
+    return sw;
+  }, [w, h, zoom, anchor]);
+  const [measured, setMeasured] = useState<{ x: number; y: number } | null>(null);
+  const win = useMemo(
+    () => (measured ? { ...predicted, ...keepInBox(measured, w, h, predicted) } : predicted),
+    [predicted, measured, w, h],
+  );
+  const winRef = useRef(win);
+  winRef.current = win;
+  const zoomedRef = useRef(zoomed);
+  zoomedRef.current = zoomed;
+  const geo = useRef({ w, h, zoom });
+  geo.current = { w, h, zoom };
+  // the box's page place: at 1× it gives the viewport's; zoomed, the scroll
+  const realign = (px: number, py: number, mw: number) => {
+    if (!alive.current || !(mw > 0)) return;
+    const g = geo.current;
+    if (!zoomedRef.current) {
+      viewport = viewportFrom1x({ x: px, y: py }, mw);
+      return;
+    }
+    const a = alignedWindow(viewport, { x: px, y: py }, g.w, g.h, g.zoom, winRef.current);
+    if (a && (Math.abs(a.x - winRef.current.x) > 1 || Math.abs(a.y - winRef.current.y) > 1)) setMeasured(a);
+  };
+  const onRootLayout = () => {
+    root.current?.measure((_x, _y, mw, _mh, px, py) => realign(px, py, mw));
+  };
   const noteTouch = (e: { nativeEvent: { pageX: number; pageY: number } }) => {
     const { pageX: tx, pageY: ty } = e.nativeEvent;
     root.current?.measure((_x, _y, mw, mh, px, py) => {
-      if (mw > 0 && mh > 0) anchorMirror = { fx: Math.max(0, Math.min(1, (tx - px) / mw)), fy: Math.max(0, Math.min(1, (ty - py) / mh)) };
+      const a = anchorOf({ x: tx, y: ty }, { x: px, y: py }, { w: mw, h: mh });
+      if (!a) return;
+      const v = view.current;
+      const ox = zoomedRef.current ? winRef.current.x : 0;
+      const oy = zoomedRef.current ? winRef.current.y : 0;
+      memory.touch(a, v ? scenePointAt({ x: tx - px - ox, y: ty - py - oy }, v) : null);
+      if (zoomedRef.current) realign(px, py, mw);
     });
     return false;
   };
-  // The rack scrolls ONCE per zoom step, on the box's first size; the body
-  // can grow afterwards (its hint line shrinks to one line), which grows the
-  // box but not the scroll. So the window keeps the offset of its first
-  // render on this step and takes the new size.
-  const first = useRef<{ x: number; y: number } | null>(null);
-  const win = useMemo(() => {
-    const z0 = zoomWindow(w, h, zoom, anchor);
-    if (!first.current) first.current = { x: z0.x, y: z0.y };
-    return { ...z0, x: Math.min(first.current.x, Math.max(0, w - z0.w)), y: Math.min(first.current.y, Math.max(0, h - z0.h)) };
-  }, [w, h, zoom, anchor]);
   // the learner's drag of the zoomed gear (relative to the opening camera)
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const panRef = useRef(pan);
@@ -120,12 +178,14 @@ function FullHost({ w, h, render }: { w: number; h: number; render: (w: number, 
   const alive = useRef(true);
   const pending = useRef<{ x: number; y: number } | null>(null);
   // at 1× a drag pans only a drawing that fills (and overflows) the body
-  const zoomedRef = useRef(zoomed);
-  zoomedRef.current = zoomed;
   const canPan = () => {
     if (zoomedRef.current) return true;
     const L = limits.current;
     return !!L && (L.maxX - L.minX > 1 || L.maxY - L.minY > 1);
+  };
+  const endDrag = () => {
+    const v = view.current;
+    if (v) memory.dragged(regionCentreAt(v, pending.current ?? panRef.current));
   };
   const responder = useMemo(
     () =>
@@ -133,6 +193,7 @@ function FullHost({ w, h, render }: { w: number; h: number; render: (w: number, 
         onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) + Math.abs(g.dy) > 6 && canPan(),
         onPanResponderGrant: () => {
           start.current = panRef.current;
+          pending.current = null;
         },
         onPanResponderMove: (_e, g) => {
           const L = limits.current;
@@ -146,6 +207,9 @@ function FullHost({ w, h, render }: { w: number; h: number; render: (w: number, 
             }, 16);
           }
         },
+        // the next zoom step opens on what the drag brought to the middle
+        onPanResponderRelease: () => endDrag(),
+        onPanResponderTerminate: () => endDrag(),
       }),
     [],
   );
@@ -157,10 +221,10 @@ function FullHost({ w, h, render }: { w: number; h: number; render: (w: number, 
     },
     [],
   );
-  const ctx = useMemo(() => ({ z: zoomed ? zoom : 1, pan, limits }), [zoomed, zoom, pan]);
+  const ctx = useMemo(() => ({ z: zoomed ? zoom : 1, pan, limits, view, at: carry.at }), [zoomed, zoom, pan, carry]);
   return (
     <StageAspectReport.Provider value={null}>
-      <View ref={root} style={{ width: w, height: h }} onStartShouldSetResponderCapture={noteTouch}>
+      <View ref={root} style={{ width: w, height: h }} onStartShouldSetResponderCapture={noteTouch} onLayout={onRootLayout}>
         {zoomed ? (
           <View style={[styles.window, { left: win.x, top: win.y, width: win.w, height: win.h }]} {...responder.panHandlers}>
             <StageTextScale.Provider value={glassW > 0 ? Math.max(1, win.w / glassW) : 1}>
