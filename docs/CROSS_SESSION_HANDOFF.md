@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-18 23:17 · ccode · b58de832
+changed: DJ lab screens 15-16: second-round review fixes
+affects other side: nothing (DJ lab client screens 13-18 only)
+needs: nothing
+
+
+### 2026-10-18 23:17 · ccode · 716ae462
+changed: DJ lab screens 13-14: second-round review fixes
+affects other side: nothing (DJ lab client screens 13-18 only)
+needs: nothing
+
+
 ### 2026-10-18 21:36 · ccode · 72242637
 changed: Merge dj-lab-b: DJ Systems Lab screens 19-24 into the full 24-screen lab
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

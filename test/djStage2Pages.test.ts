@@ -49,14 +49,15 @@ describe('DJ Systems Lab — Stage 2 screens', () => {
       assert.match(step1, /<Look>\{?`?You are looking at/);
       const terms = s.match(/const TERMS = \[([\s\S]*?)\] as const;/)![1];
       assert.ok((terms.match(/\{ term:/g) ?? []).length <= 4, `${f} has more than four terms`);
-      assert.match(s, /<UnderstandingCheck/);
+      assert.match(s, /<UnderstandingCheck|<EvidenceCheck/);
       assert.match(s, /<FaultCard/);
       assert.match(s, /On your own:/);
       assert.match(s, /rack: true/);
     });
   }
   it('16–18 say they are optional paths', () => {
-    for (const [, f] of STAGE2.slice(3)) assert.match(read(`${PAGES}/${f}`), /An optional screen/);
+    for (const [, f] of STAGE2.slice(3)) assert.match(read(`${PAGES}/${f}`), /<SkipOptional ctx=\{ctx\} here=\{1[678]\} \/>/, f);
+    assert.match(read(`${PAGES}/skipOptional.tsx`), /An optional screen/);
   });
   it('the stems are never called AI output; the separation is labelled SIMULATED', () => {
     const s = read(`${PAGES}/p15Stems.tsx`);

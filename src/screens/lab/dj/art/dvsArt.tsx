@@ -13,7 +13,8 @@
  *             red, a control tone on its way to the speakers.
  */
 import { useMemo } from 'react';
-import { BlurMask, Circle, DashPathEffect, Group, Line, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { RcaSocket, UsbB } from './parts';
 import { INK } from './ink';
 import { SceneText } from './sceneText';
 import { DNode, DWire } from './s2Diagram';
@@ -53,7 +54,133 @@ export function DvsScope({ b, scope, quality, lock, mode, k = 1 }: { b: Box; sco
   );
 }
 
-export function DvsRoute({ b, ttPlaying, toneOnCh1, thru, lock, chInput, musicLive, k = 1 }: { b: Box; ttPlaying: boolean; toneOnCh1: boolean; thru: boolean; lock: DvsLock; chInput: string; musicLive: boolean; k?: number }) {
+/**
+ * The DVS CABLING, face-on at the rear (visual review 2 #12): the turntable's
+ * rear (ground lug, RCA pair), the mixer's rear (GND post, PHONO 1 pair, its
+ * USB-B socket) and the laptop seen from its left side (base, keyboard deck,
+ * lid, its USB-A port). The control tone's RCA leads, the ground lead and the
+ * USB cable each run in their OWN lane, flagged on the run ("CTRL L/R",
+ * "USB"); a loose ground spade hangs off its post. Screen points.
+ */
+export function DvsRig({ b, gnd, ttPlaying, usbLive, k = 1 }: { b: Box; gnd: boolean; ttPlaying: boolean; usbLive: boolean; k?: number }) {
+  const fs = 9.5 * k;
+  const top = b.y + fs + 6;
+  const h = b.h - fs - 10;
+  const ttW = Math.min(50 * k, b.w * 0.24);
+  const mxW = Math.min(58 * k, b.w * 0.28);
+  const lpW = Math.min(46 * k, b.w * 0.22);
+  const gap = (b.w - ttW - mxW - lpW - 8) / 2;
+  const tt = { x: b.x + 4, y: top, w: ttW, h };
+  const mx = { x: tt.x + ttW + gap, y: top, w: mxW, h };
+  const lp = { x: mx.x + mxW + gap, y: top, w: lpW, h };
+  const step = h / 4.6;
+  const row = (i: number) => top + step * (i + 0.65);
+  const d = Math.min(10 * k, step * 0.74);
+  const tx = tt.x + tt.w * 0.68;
+  const mxs = mx.x + mx.w * 0.3;
+  const lug = { x: tx, y: row(0) };
+  const post = { x: mxs, y: row(0) };
+  const L = { y: row(1) };
+  const R = { y: row(2) };
+  const usb = { x: mx.x + mx.w * 0.72, y: row(3) };
+  const port = { x: lp.x + 6 * k, y: row(3) };
+  const plate = (r: Box, title: string) => (
+    <Group>
+      <RoundedRect x={r.x} y={r.y} width={r.w} height={r.h} r={4}>
+        <LinearGradient start={vec(0, r.y)} end={vec(0, r.y + r.h)} colors={['#2a2c31', '#17181c']} />
+      </RoundedRect>
+      <RoundedRect x={r.x + 0.5} y={r.y + 0.5} width={r.w - 1} height={r.h - 1} r={4} style="stroke" strokeWidth={1} color="rgba(255,255,255,0.12)" />
+      <SceneText x={r.x + r.w / 2} y={r.y - 3} size={fs} text={title} color={INK.print} face="label" align="center" minPt={9.5} />
+    </Group>
+  );
+  const plug = (x: number, y: number, ring: string) => (
+    <Group>
+      <Circle cx={x} cy={y} r={d * 0.6}>
+        <RadialGradient c={vec(x - d * 0.15, y - d * 0.2)} r={d * 0.7} colors={['#e1e5ea', '#8a9099', '#3a3e45']} />
+      </Circle>
+      <Circle cx={x} cy={y} r={d * 0.6} style="stroke" strokeWidth={d * 0.16} color={ring} />
+    </Group>
+  );
+  const flag = (x: number, y: number, t: string, c: string) => {
+    const w = t.length * fs * 0.56 + 8;
+    return (
+      <Group>
+        <RoundedRect x={x - w / 2} y={y - fs * 0.75} width={w} height={fs * 1.5} r={3} color="rgba(8,8,10,0.9)" />
+        <RoundedRect x={x - w / 2} y={y - fs * 0.75} width={w} height={fs * 1.5} r={3} style="stroke" strokeWidth={1} color={c} opacity={0.7} />
+        <SceneText x={x} y={y + fs * 0.36} size={fs} text={t} color={c} face="label" align="center" minPt={9.5} />
+      </Group>
+    );
+  };
+  const g1 = (tt.x + tt.w + mx.x) / 2;
+  const g2 = (mx.x + mx.w + lp.x) / 2;
+  const ctrl = ttPlaying ? INK.amber : INK.printDim;
+  return (
+    <Group>
+      <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={8} color="rgba(6,7,9,0.94)" />
+      {plate(tt, 'TURNTABLE')}
+      {plate(mx, 'MIXER REAR')}
+      {/* the laptop, seen from its left side: base, lid, its USB port */}
+      <SceneText x={lp.x + lp.w / 2} y={lp.y - 3} size={fs} text="LAPTOP" color={INK.print} face="label" align="center" minPt={9.5} />
+      <RoundedRect x={lp.x} y={row(3) - 5 * k} width={lp.w} height={10 * k} r={3 * k}>
+        <LinearGradient start={vec(0, row(3) - 5 * k)} end={vec(0, row(3) + 5 * k)} colors={['#5a5e66', '#33363c', '#1e2024']} />
+      </RoundedRect>
+      <Path
+        path={(() => {
+          const p = Skia.PathBuilder.Make();
+          p.moveTo(lp.x + lp.w - 2 * k, row(3) - 5 * k);
+          p.lineTo(lp.x + lp.w * 0.72 + 2 * k, lp.y + 6);
+          p.lineTo(lp.x + lp.w * 0.72 - 5 * k, lp.y + 5);
+          p.lineTo(lp.x + lp.w - 10 * k, row(3) - 5 * k);
+          p.close();
+          return p.detach();
+        })()}
+        color="#2a2c31"
+      />
+      <RoundedRect x={port.x - 2 * k} y={port.y - 2 * k} width={6 * k} height={4 * k} r={1} color="#050506" />
+      {/* the turntable's ground lug and RCA pair */}
+      <Circle cx={lug.x} cy={lug.y} r={d * 0.4}>
+        <RadialGradient c={vec(lug.x - 1, lug.y - 1)} r={d * 0.5} colors={['#e1e5ea', '#6c727b']} />
+      </Circle>
+      <RcaSocket cx={tx} cy={L.y} d={d} ring="#e9ecef" />
+      <RcaSocket cx={tx} cy={R.y} d={d} ring="#d9453a" />
+      <SceneText x={tt.x + 3} y={lug.y + fs * 0.36} size={fs} text="GND" color={INK.printDim} face="label" minPt={9.5} />
+      {/* the mixer's GND post, PHONO 1 pair and USB-B socket */}
+      <Circle cx={post.x} cy={post.y} r={d * 0.46}>
+        <RadialGradient c={vec(post.x - 1.5, post.y - 1.5)} r={d * 0.6} colors={['#f2d27a', '#9a7a2a']} />
+      </Circle>
+      <RcaSocket cx={mxs} cy={L.y} d={d} ring="#e9ecef" />
+      <RcaSocket cx={mxs} cy={R.y} d={d} ring="#d9453a" />
+      <UsbB x={usb.x - 6 * (d / 10)} y={usb.y - 5.5 * (d / 10)} s={d / 10} />
+      <SceneText x={mx.x + mx.w - 3} y={(L.y + R.y) / 2 + fs * 0.36} size={fs} text="PH 1" color={INK.amber} face="label" align="right" minPt={9.5} />
+      <SceneText x={mx.x + 3} y={usb.y + fs * 0.36} size={fs} text="USB" color={INK.print} face="label" minPt={9.5} />
+      {/* the leads, each in its own lane */}
+      {gnd ? (
+        <Line p1={vec(lug.x, lug.y)} p2={vec(post.x, post.y)} color="#8a9099" strokeWidth={1.6 * k} />
+      ) : (
+        <Group>
+          <Path path={(() => { const p = Skia.PathBuilder.Make(); p.moveTo(lug.x, lug.y); p.lineTo(g1 - 4 * k, lug.y); p.lineTo(g1 - 6 * k, lug.y + step * 0.55); return p.detach(); })()} style="stroke" strokeWidth={1.6 * k} color="#8a9099" />
+          <RoundedRect x={g1 - 9 * k} y={lug.y + step * 0.55} width={6 * k} height={4 * k} r={1} color="#c9ced5" />
+          <SceneText x={g1} y={b.y + fs} size={fs} text="LOOSE" color={INK.peak} face="label" align="center" minPt={9.5} />
+        </Group>
+      )}
+      <Line p1={vec(tx, L.y)} p2={vec(mxs, L.y)} color="#c9ccd2" strokeWidth={3 * k} strokeCap="round" />
+      <Line p1={vec(tx, R.y)} p2={vec(mxs, R.y)} color="#c0392b" strokeWidth={3 * k} strokeCap="round" />
+      {ttPlaying ? <Line p1={vec(tx, (L.y + R.y) / 2)} p2={vec(mxs, (L.y + R.y) / 2)} color={INK.amber} strokeWidth={6 * k} opacity={0.18} /> : null}
+      {plug(tx, L.y, '#e9ecef')}
+      {plug(tx, R.y, '#d9453a')}
+      {plug(mxs, L.y, '#e9ecef')}
+      {plug(mxs, R.y, '#d9453a')}
+      <Line p1={vec(usb.x, usb.y)} p2={vec(port.x, port.y)} color="#3a3d43" strokeWidth={3.4 * k} strokeCap="round" />
+      {usbLive ? <Line p1={vec(usb.x, usb.y)} p2={vec(port.x, port.y)} color={INK.blue} strokeWidth={7 * k} opacity={0.22} /> : null}
+      <RoundedRect x={usb.x - 4 * k} y={usb.y - 4 * k} width={8 * k} height={8 * k} r={2} color="#2a2c31" />
+      <RoundedRect x={port.x - 8 * k} y={port.y - 3.5 * k} width={10 * k} height={7 * k} r={2} color="#2a2c31" />
+      {flag(g1, (L.y + R.y) / 2, 'CTRL L/R', ctrl)}
+      {flag(g2, usb.y, 'USB', usbLive ? INK.blue : INK.printDim)}
+    </Group>
+  );
+}
+
+export function DvsRoute({ b, ttPlaying, toneOnCh1, thru, lock, chInput, musicLive, k = 1, flow = false }: { b: Box; ttPlaying: boolean; toneOnCh1: boolean; thru: boolean; lock: DvsLock; chInput: string; musicLive: boolean; k?: number; flow?: boolean }) {
   const fs = 10.6 * k;
   const w = (b.w - 24) / 2;
   const h = 32 * k;
@@ -80,13 +207,13 @@ export function DvsRoute({ b, ttPlaying, toneOnCh1, thru, lock, chInput, musicLi
       <DNode b={sw} title="SOFTWARE" sub={lock === 'IGNORED' ? 'INTERNAL' : lock} live={musicLive || thru} tone={lock === 'LOST' ? 'red' : 'blue'} size={fs} />
       <DNode b={ch} title="CHANNEL 1" sub={`INPUT ${chInput}`} live={musicLive || toneOnCh1} tone={toneOnCh1 ? 'red' : 'blue'} size={fs} />
       <DNode b={cr} title="CROWD" sub={toneOnCh1 ? 'HEARS THE TONE' : 'MASTER'} live={musicLive || toneOnCh1} tone={toneOnCh1 ? 'red' : 'blue'} size={fs} />
-      <DWire pts={[R(tt), L(ph)]} kind="control" live={ctrlLive} />
-      <DWire pts={[B(ph), T(sw)]} kind="control" live={ctrlLive && chInput !== 'x'} />
+      <DWire pts={[R(tt), L(ph)]} kind="control" live={ctrlLive} flow={flow} />
+      <DWire pts={[B(ph), T(sw)]} kind="control" live={ctrlLive && chInput !== 'x'} flow={flow} />
       <SceneText x={sw.x + sw.w / 2 + 6} y={ph.y + ph.h + 10 * k} size={fs} text="USB" color={INK.amber} face="label" minPt={9.5} />
-      <DWire pts={[[sw.x, sw.y + sw.h / 2], [ch.x + ch.w / 2, sw.y + sw.h / 2], T(ch)]} kind={thru ? 'loop' : 'audio'} live={(musicLive || thru) && chInput === 'USB'} />
+      <DWire pts={[[sw.x, sw.y + sw.h / 2], [ch.x + ch.w / 2, sw.y + sw.h / 2], T(ch)]} kind={thru ? 'loop' : 'audio'} live={(musicLive || thru) && chInput === 'USB'} flow={flow} />
       <SceneText x={ch.x + 4} y={sw.y + sw.h / 2 - 4} size={fs} text={thru ? 'USB 1/2 · TONE (THRU)' : 'USB 1/2 · MUSIC'} color={thru ? INK.peak : INK.blue} face="label" minPt={9.5} />
-      {toneOnCh1 && chInput === 'PHONO' ? <DWire pts={[[ph.x, ph.y + ph.h - 4], [tt.x + tt.w - 8, ph.y + ph.h - 4], [tt.x + tt.w - 8, ch.y]]} kind="loop" live /> : null}
-      <DWire pts={[R(ch), L(cr)]} kind={toneOnCh1 ? 'loop' : 'audio'} live={musicLive || toneOnCh1} />
+      {toneOnCh1 && chInput === 'PHONO' ? <DWire pts={[[ph.x, ph.y + ph.h - 4], [tt.x + tt.w - 8, ph.y + ph.h - 4], [tt.x + tt.w - 8, ch.y]]} kind="loop" live flow={flow} /> : null}
+      <DWire pts={[R(ch), L(cr)]} kind={toneOnCh1 ? 'loop' : 'audio'} live={musicLive || toneOnCh1} flow={flow} />
     </Group>
   );
 }

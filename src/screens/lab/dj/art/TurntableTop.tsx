@@ -22,84 +22,16 @@ import { BlurMask, Circle, Group, Line, LinearGradient, Path, RadialGradient, Ro
 import { useDerivedValue } from 'react-native-reanimated';
 import type { DeckState } from '../model/djModel';
 import { trackSeconds } from '../engine/djMusic';
-import { GROOVE, TT, TT_D, TT_W, type Pt } from '../geometry/boothGeometry';
+import { TT, TT_D, TT_W } from '../geometry/boothGeometry';
+import { ARM_AT_REST, ARM_HALOS, AX, COLLAR, L, TUBE, armAngleAt, turntablePartBox, type TurntablePart } from '../geometry/armGeometry';
+
+export * from '../geometry/armGeometry';
 import { INK } from './ink';
 import { Fader, Halo, Key } from './parts';
 import { useDeckPos, useMotion } from './motion';
 import { SceneText } from './sceneText';
 
-export type TurntablePart = 'platter' | 'slipmat' | 'tonearm' | 'headshell' | 'counterweight' | 'startStop' | 'speed' | 'pitch';
-
-const DEG = Math.PI / 180;
 const LEG = 4;
-
-/* ── the arm, in its own frame (pivot at the origin, arm along +y) ───── */
-
-const AX = { x: -Math.sin(TT.arm.offsetDeg * DEG), y: Math.cos(TT.arm.offsetDeg * DEG) };
-const L = TT.arm.effective;
-/** Headshell collar (where the tube ends) and front, local mm. */
-const COLLAR = { x: -30 * AX.x, y: L - 30 * AX.y };
-const TUBE = {
-  p0: { x: 0, y: 6 },
-  p1: { x: -16, y: 78 },
-  p2: { x: COLLAR.x - 58 * AX.x, y: COLLAR.y - 58 * AX.y },
-  p3: COLLAR,
-};
-const cubicAt = (t: number) => {
-  const u = 1 - t;
-  const { p0, p1, p2, p3 } = TUBE;
-  return { x: u * u * u * p0.x + 3 * u * u * t * p1.x + 3 * u * t * t * p2.x + t * t * t * p3.x, y: u * u * u * p0.y + 3 * u * u * t * p1.y + 3 * u * t * t * p2.y + t * t * t * p3.y };
-};
-/** The point of the tube the rest clip holds. */
-const REST_T = 0.6;
-/** A local arm point → plinth mm, with the arm turned `ang`. */
-export function armToWorld(p: Pt, ang: number): Pt {
-  const c = Math.cos(ang);
-  const s = Math.sin(ang);
-  return { x: TT.armPivot.x + p.x * c - p.y * s, y: TT.armPivot.y + p.x * s + p.y * c };
-}
-/** Where the parts of the arm are with it at rest (callouts, halos). */
-export const ARM_AT_REST = {
-  stylus: armToWorld({ x: 0, y: L }, 0),
-  headshell: armToWorld({ x: COLLAR.x + 14 * AX.x, y: COLLAR.y + 14 * AX.y }, 0),
-  tube: armToWorld(cubicAt(0.45), 0),
-  rest: armToWorld(cubicAt(REST_T), 0),
-  counterweight: armToWorld({ x: 0, y: -TT.arm.stub + 12 }, 0),
-};
-
-/** The arm angle that puts the stylus `r` mm from the spindle (closed form
- *  of |pivot + L·u(a) − spindle| = r; a worklet). */
-const ARM_DX = TT.armPivot.x - TT.platter.cx;
-const ARM_DY = TT.armPivot.y - TT.platter.cy;
-const ARM_L = TT.arm.effective;
-function angleForRadius(r: number): number {
-  'worklet';
-  const R = Math.sqrt(ARM_DX * ARM_DX + ARM_DY * ARM_DY);
-  const phi = Math.atan2(ARM_DX, ARM_DY);
-  const K = (r * r - R * R - ARM_L * ARM_L) / (2 * ARM_L);
-  const c = Math.max(-1, Math.min(1, K / R));
-  return Math.acos(c) - phi;
-}
-/** The same, callable from tests and JS. */
-export const armAngleForRadius = (r: number): number => angleForRadius(r);
-
-export function turntablePartBox(p: TurntablePart): { x: number; y: number; w: number; h: number; round?: boolean } {
-  const P = TT.platter;
-  const A = ARM_AT_REST;
-  switch (p) {
-    case 'platter': return { x: P.cx - P.d / 2 - 4, y: P.cy - P.d / 2 - 4, w: P.d + 8, h: P.d + 8, round: true };
-    case 'slipmat': return { x: P.cx - TT.record.d / 2 - 2, y: P.cy - TT.record.d / 2 - 2, w: TT.record.d + 4, h: TT.record.d + 4, round: true };
-    case 'tonearm': return { x: TT.armPivot.x - 30, y: TT.armPivot.y - 30, w: 60, h: L + 30 };
-    case 'headshell': return { x: A.headshell.x - 20, y: A.headshell.y - 24, w: 40, h: 48, round: true };
-    case 'counterweight': return { x: A.counterweight.x - 18, y: A.counterweight.y - 20, w: 36, h: 40, round: true };
-    case 'startStop': return { x: TT.startStop.x - 4, y: TT.startStop.y - 4, w: TT.startStop.w + 8, h: TT.startStop.h + 8 };
-    case 'speed': return { x: TT.speed33.x - 4, y: TT.speed33.y - 4, w: TT.speed45.x + TT.speed45.w - TT.speed33.x + 8, h: TT.speed33.h + 8 };
-    case 'pitch': return { x: TT.pitch.x - 14, y: TT.pitch.top - 12, w: 28, h: TT.pitch.len + 24 };
-  }
-}
-
-/** Every control's box — the labels' obstacles. */
-export const TT_PARTS: readonly TurntablePart[] = ['tonearm', 'headshell', 'counterweight', 'startStop', 'speed', 'pitch'];
 
 export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highlight = [], showRecord = true, powered = true, slipmat = true, record = 'music' }: { x: number; y: number; d: DeckState; playing: boolean; highlight?: readonly TurntablePart[]; showRecord?: boolean; powered?: boolean; /** Stage 2 (additive): the felt slipmat under the record. */ slipmat?: boolean; /** Stage 2 (additive): a DVS CONTROL record (white vinyl, black label) instead of music. */ record?: 'music' | 'control' }) {
   const P = TT.platter;
@@ -124,11 +56,7 @@ export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highl
   // the arm: rest, or riding the groove as the track plays
   const pos = useDeckPos({ ...d, playing: spinning });
   const total = d.track ? trackSeconds(d.track) : 1;
-  const armXf = useDerivedValue(() => {
-    if (!spinning) return [{ rotate: 0 }];
-    const f = Math.max(0, Math.min(1, pos.value / total));
-    return [{ rotate: angleForRadius(GROOVE.leadIn - (GROOVE.leadIn - GROOVE.runOut) * f) }];
-  });
+  const armXf = useDerivedValue(() => [{ rotate: armAngleAt(pos.value, total, spinning) }]);
   const grooves = useMemo(() => {
     const p = Skia.PathBuilder.Make();
     for (let r = TT.record.label / 2 + 6; r < rr - 3; r += 1.6) p.addCircle(P.cx, P.cy, r);
@@ -159,6 +87,30 @@ export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highl
     p.addArc(Skia.XYWHRect(P.cx - 28, P.cy - 28, 56, 56), 100, 45);
     return p.detach();
   }, [P.cx, P.cy]);
+  const sideMarks = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2;
+      p.moveTo(P.cx + Math.cos(a) * 38, P.cy + Math.sin(a) * 38);
+      p.lineTo(P.cx + Math.cos(a) * 46, P.cy + Math.sin(a) * 46);
+    }
+    return p.detach();
+  }, [P.cx, P.cy]);
+  const leadIn = useMemo(() => {
+    // a printed arrow in the lead-in band, along the direction of play
+    const p = Skia.PathBuilder.Make();
+    const r0 = rr - 9;
+    const a0 = -Math.PI * 0.62;
+    const pt = (r: number, a: number) => [P.cx + Math.cos(a) * r, P.cy + Math.sin(a) * r] as const;
+    const [x1, y1] = pt(r0, a0);
+    const [x2, y2] = pt(r0 + 4.5, a0 - 0.1);
+    const [x3, y3] = pt(r0 - 4.5, a0 - 0.1);
+    p.moveTo(x1, y1);
+    p.lineTo(x2, y2);
+    p.lineTo(x3, y3);
+    p.close();
+    return p.detach();
+  }, [P.cx, P.cy, rr]);
   const knurl = useMemo(() => {
     const p = Skia.PathBuilder.Make();
     const pv = TT.armPivot;
@@ -243,8 +195,8 @@ export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highl
       </Group>
       {powered ? (
         // the lamp's warm light falls on the dots nearest it
-        <Circle cx={TT.strobe.cx + 30} cy={TT.strobe.cy - 10} r={60} color="rgba(255,122,74,0.10)">
-          <BlurMask blur={26} style="normal" />
+        <Circle cx={TT.strobe.cx + 10} cy={TT.strobe.cy - 3} r={12} color="rgba(255,122,74,0.12)">
+          <BlurMask blur={5} style="normal" />
         </Circle>
       ) : null}
       <Circle cx={P.cx} cy={P.cy} r={R - 9} color="#1a1b1e" />
@@ -256,11 +208,16 @@ export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highl
             <Circle cx={P.cx} cy={P.cy} r={rr}>
               <RadialGradient c={vec(P.cx, P.cy)} r={rr} colors={['#c9ccd2', '#e4e6ea', '#b9bdc6']} positions={[0.35, 0.8, 1]} />
             </Circle>
-            <Path path={grooves} style="stroke" strokeWidth={0.35} color="rgba(0,0,0,0.10)" />
-            <Circle cx={P.cx} cy={P.cy} r={rr - 2} style="stroke" strokeWidth={1.2} color="rgba(0,0,0,0.25)" />
+            {/* the timecode grooves, dark enough to read at 1× (visual review 2 #12) */}
+            <Path path={grooves} style="stroke" strokeWidth={0.5} color="rgba(0,0,0,0.18)" />
+            <Circle cx={P.cx} cy={P.cy} r={rr - 2} style="stroke" strokeWidth={1.2} color="rgba(0,0,0,0.3)" />
+            {/* the printed lead-in arrow on the vinyl, pointing the way it plays */}
+            <Path path={leadIn} color="rgba(0,0,0,0.55)" />
             <Circle cx={P.cx} cy={P.cy} r={TT.record.label / 2} color="#121316" />
             <Circle cx={P.cx} cy={P.cy} r={TT.record.label / 2 - 5} style="stroke" strokeWidth={1.4} color="#d9dbe0" opacity={0.8} />
             <Path path={labelPrint} style="stroke" strokeWidth={3.2} color="#d9dbe0" opacity={0.7} strokeCap="round" />
+            {/* the label's printed side marks (every 45°) */}
+            <Path path={sideMarks} style="stroke" strokeWidth={1.6} color="#d9dbe0" opacity={0.85} />
             <Circle cx={P.cx} cy={P.cy} r={9} color="#2a2c31" />
           </Group>
         ) : showRecord ? (
@@ -288,9 +245,13 @@ export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highl
           soft conic bands, upper left and lower right */}
       {showRecord ? (
         <Group>
-          <Circle cx={P.cx} cy={P.cy} r={rr - 1}>
-            <SweepGradient c={vec(P.cx, P.cy)} colors={sweep} positions={sweepPos} start={150} end={510} />
-          </Circle>
+          {/* one conic pass, turned by a transform (start/end angles past 360°
+              left a hard seam on the web renderer — visual review 2 #24) */}
+          <Group origin={vec(P.cx, P.cy)} transform={[{ rotate: (150 * Math.PI) / 180 }]}>
+            <Circle cx={P.cx} cy={P.cy} r={rr - 1}>
+              <SweepGradient c={vec(P.cx, P.cy)} colors={sweep} positions={sweepPos} />
+            </Circle>
+          </Group>
           <Circle cx={P.cx} cy={P.cy} r={TT.record.label / 2}>
             <RadialGradient c={vec(P.cx - 18, P.cy - 20)} r={TT.record.label * 0.6} colors={['rgba(255,255,255,0.18)', 'rgba(255,255,255,0)']} />
           </Circle>
@@ -307,8 +268,8 @@ export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highl
       </Circle>
       <Circle cx={TT.strobe.cx} cy={TT.strobe.cy} r={8} color="#08090a" />
       {powered ? (
-        <Circle cx={TT.strobe.cx} cy={TT.strobe.cy} r={9} color="#ff7a4a" opacity={0.5}>
-          <BlurMask blur={5} style="normal" />
+        <Circle cx={TT.strobe.cx} cy={TT.strobe.cy} r={6} color="#ff7a4a" opacity={0.5}>
+          <BlurMask blur={2.5} style="normal" />
         </Circle>
       ) : null}
       <Circle cx={TT.strobe.cx} cy={TT.strobe.cy} r={5} color={powered ? '#ff7a4a' : '#3a2018'} />
@@ -403,10 +364,25 @@ export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highl
       <SceneText x={TT.pitch.x} y={TT.pitch.top - 9} size={LEG} text="PITCH" color={INK.print} face="label" align="center" />
       <SceneText x={TT.pitch.x - 12} y={TT.pitch.top + 2} size={LEG} text="−" color={INK.printDim} face="label" align="right" />
       <SceneText x={TT.pitch.x - 12} y={TT.pitch.top + TT.pitch.len + 2} size={LEG} text="+" color={INK.printDim} face="label" align="right" />
-      {highlight.map((h) => {
-        const b = turntablePartBox(h);
-        return <Halo key={h} b={b} round={b.round} />;
-      })}
+      {highlight
+        .filter((h) => !ARM_HALOS.includes(h))
+        .map((h) => {
+          const b = turntablePartBox(h);
+          return <Halo key={h} b={b} round={b.round} />;
+        })}
+      {/* the arm's own halos ride the arm's transform (the same one the
+          drawing uses), so they stay on the headshell and the counterweight
+          wherever the arm has swung */}
+      <Group transform={[{ translateX: TT.armPivot.x }, { translateY: TT.armPivot.y }]}>
+        <Group transform={armXf}>
+          {highlight
+            .filter((h) => ARM_HALOS.includes(h))
+            .map((h) => {
+              const b = turntablePartBox(h, 0);
+              return <Halo key={h} b={{ x: b.x - TT.armPivot.x, y: b.y - TT.armPivot.y, w: b.w, h: b.h }} round={b.round} />;
+            })}
+        </Group>
+      </Group>
     </Group>
   );
 });

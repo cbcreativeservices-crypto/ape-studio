@@ -23,8 +23,8 @@
  * instructions say "set it equal to the force"; many scratch DJs set zero).
  *
  * GROUND. The turntable's thin ground wire to the mixer's GND post bonds the
- * signal grounds; without it the cartridge picks up a mains BUZZ (50 or
- * 60 Hz and its harmonics, by country — this model: 50 Hz) at about 0.2 mV,
+ * signal grounds; without it the cartridge picks up a mains BUZZ (60 or
+ * 50 Hz and its harmonics, by country — this model: 60 Hz) at about 0.2 mV,
  * which the phono stage then amplifies with the music. It is a SIGNAL
  * ground. The mains plug's protective earth is never removed to cure hum.
  *
@@ -36,7 +36,7 @@
  * (a boom); at 1 or more it builds into a low HOWL — which the lab holds at
  * a safe level and plays quietly.
  */
-import { faderGain, levelKnobGain, type Booth } from './djModel.ts';
+import { channelRoute, faderGain, levelKnobGain, type Booth } from './djModel.ts';
 
 export type VinylState = {
   slipmat: boolean;
@@ -66,7 +66,10 @@ export const RING_FOUND = 0.8;
 /** This lab's teaching cartridge. */
 export const FORCE_RANGE = { min: 3, max: 5, suggest: 4 } as const;
 export const SKATE_SHARE = 0.12;
-export const HUM_HZ = 50;
+/** Mains hum: 60 Hz (the US standard), the same mains as the event screens'
+ *  laptop and PA hum (model/djEvent) — one booth, one mains frequency (audio
+ *  review 2 #4). Many countries run at 50 Hz. */
+export const HUM_HZ = 60;
 /** Hum at the cartridge (V): about 0.2 mV against its 5 mV of music. */
 export const HUM_V = 0.0002;
 export const CART_V = 0.005;
@@ -117,3 +120,22 @@ export function feedbackLoopGain(b: Booth, v: VinylState): number {
 
 /** Zero the dial ring here (the weight does not move). */
 export const zeroDial = (v: VinylState): VinylState => ({ ...v, ringZero: v.weight });
+
+/**
+ * A STYLUS DROP or lift on a LIVE phono channel (audio review 2 #13): the arm
+ * moves onto or off the record while channel 1 is hearing the turntable and
+ * its fader is up — for real a loud thump through the PA, and a dropped
+ * stylus can chip. `live` = channel 1 really hears the turntable (its route).
+ * Pure: the page flags it; the lab plays no thump.
+ */
+export const THUMP_FADER = 0.3;
+export function stylusThumps(armWasUp: boolean, armIsUp: boolean, live: boolean, fader: number): boolean {
+  return armWasUp !== armIsUp && live && fader > THUMP_FADER;
+}
+
+/** The same, read from the booth: moving the arm to `armIsUp` now — does it
+ *  thump the PA? (Channel 1 must really hear the TURNTABLE.) */
+export function armMoveThumps(b: Booth, armIsUp: boolean): boolean {
+  const v = b.vinyl ?? freshVinyl();
+  return stylusThumps(v.armUp, armIsUp, channelRoute(b, 1).L?.source === 'TT', b.ch[1].fader);
+}

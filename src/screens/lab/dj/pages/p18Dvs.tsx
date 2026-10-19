@@ -16,26 +16,27 @@ import { LabChip } from '../../LabShell';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene } from '../art/Scene';
-import { TurntableTop, TT_PARTS, turntablePartBox } from '../art/TurntableTop';
-import { DvsRoute, DvsScope } from '../art/dvsArt';
-import { TT, TT_D, TT_W } from '../geometry/boothGeometry';
+import { TurntableTop, TT_PARTS, armAngleAt, turntablePartBox } from '../art/TurntableTop';
+import { DvsRig, DvsRoute, DvsScope } from '../art/dvsArt';
+import { TT_D, TT_W } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey } from '../dock';
 import { getBooth, updateBooth } from '../booth/boothStore';
 import { useScreenSetup } from '../booth/setup';
 import { TRIM_UNITY, connect, type Booth } from '../model/djModel';
-import { TRACKS, barSec } from '../engine/djMusic';
+import { TRACKS, barSec, trackSeconds } from '../engine/djMusic';
 import { freshLaptop, roundTripMs } from '../model/djLaptop';
 import { setVinyl } from '../model/djVinyl';
 import { DVS_MODES, DVS_MODE_WORDS, REV_SEC, dvsFollow, dvsLock, dvsQuality, freshDvs, toneOnChannel, type DvsMode, type DvsState } from '../model/djDvs';
 import { controlScope } from '../engine/djStage2';
 import { useBoothKit } from './shared';
 import { Choices, TrayNote, s2Of, s2styles } from './s2kit';
+import { SkipOptional } from './skipOptional';
 
 const TERMS = [
   { term: 'Control record', def: 'A record with no music on it — a steady tone the software can read. Its speed and direction tell the software how to play the track.' },
-  { term: 'Calibrate', def: 'Letting the software measure the noise with the needle on the still record, so it can tell the control tone from hum and crackle.' },
+  { term: 'Calibrate', def: 'Letting the software measure the noise — on this system, with the needle on the still record — so it can tell the control tone from hum and crackle.' },
   { term: 'Absolute / relative', def: 'ABSOLUTE: the needle’s place is the track’s place, so a needle drop jumps the music. RELATIVE: only speed and direction follow; the music keeps its own place.' },
   { term: 'Internal', def: 'The software plays on its own and ignores the turntable — the way to keep the music going when the control signal fails.' },
 ] as const;
@@ -96,7 +97,7 @@ function SignalTray({ onCal }: { onCal: (ok: boolean) => void }) {
           }}
         />
       </View>
-      <TrayNote>Calibrate with the needle in the groove and the platter STOPPED: the software measures the noise floor. Do it again after any change to the setup.</TrayNote>
+      <TrayNote>On this system, calibrate with the needle in the groove and the platter STOPPED (it measures the noise floor); some systems calibrate with the record playing. Do it again after any change to the setup.</TrayNote>
     </View>
   );
 }
@@ -112,7 +113,8 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
       tt: { ...x.tt, track: 'nightFerry', posSec: pos, playing: false, pitch: 0 },
       ttPreamp: 'PHONO',
       vinyl: setVinyl(),
-      laptop: freshLaptop(),
+      // DVS players run the smallest buffer that stays clean (audio review 2 #16)
+      laptop: { ...freshLaptop(), buffer: 256 },
       dvs: freshDvs(),
       ch: { 1: { ...x.ch[1], input: 'USB', trim: TRIM_UNITY, fader: 0.85, xf: 'THRU', cue: false }, 2: { ...x.ch[2], fader: 0 } },
       perspective: 'CROWD',
@@ -157,7 +159,13 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
   const scope = s2?.scope ?? controlScope(booth, 0);
   const topH = (H: number, k: number) => Math.round(Math.min(170 * Math.sqrt(k), H * 0.54));
   const frame = { x: -10, y: -10, w: TT_W + 20, h: TT_D + 20 };
-  const rt = roundTripMs(booth.laptop?.buffer ?? 512, booth.laptop?.rate ?? 48000);
+  const rt = roundTripMs(booth.laptop?.buffer ?? 256, booth.laptop?.rate ?? 48000);
+  // the bottom of the glass: the turntable (left) beside the DVS cabling at
+  // the rear (right), so every connection the lesson names is drawn
+  const ttW = (W: number) => Math.round(W * 0.42);
+  // the arm's angle now: the label obstacles ride the arm
+  const spinning = tt.playing && !!tt.track;
+  const armAng = armAngleAt(spinning ? tt.posSec + Math.max(0, motion.clock.value - tt.at) * (1 + tt.pitch / 100) : tt.posSec, tt.track ? trackSeconds(tt.track) : 1, spinning);
   return (
     <DjRack
       spec={{
@@ -167,10 +175,10 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
             h={hh}
             frame={frame}
             motion={motion}
-            fit={{ x: 0, y: topH(hh, 1), w, h: hh - topH(hh, 1) }}
-            aspect={false}
-            obstacles={TT_PARTS.map((p) => turntablePartBox(p))}
-            callouts={[{ id: 'cr', text: 'CONTROL RECORD', at: { x: TT.platter.cx - 110, y: TT.platter.cy - 80 }, dx: -12, dy: -10, tone: 'plain' as const }]}
+            fit={{ x: 0, y: topH(hh, 1), w: ttW(w), h: hh - topH(hh, 1) }}
+            // FULL SCREEN's shape: scope and map over the turntable and the cabling
+            aspect={1.12}
+            obstacles={TT_PARTS.map((p) => turntablePartBox(p, armAng))}
             screenOverlay={(W, H, _xf, k) => {
               const kk = Math.sqrt(k);
               const th = topH(H, k) - 8;
@@ -178,17 +186,18 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
               return (
                 <Group>
                   <DvsScope b={{ x: 6, y: 4, w: sw, h: th }} scope={scope} quality={q} lock={lock} mode={d.mode} k={kk} />
-                  <DvsRoute b={{ x: sw + 12, y: 4, w: W - sw - 18, h: th }} ttPlaying={tt.playing} toneOnCh1={tone} thru={d.mode === 'THRU' && tt.playing} lock={lock} chInput={booth.ch[1].input} musicLive={musicLive} k={kk} />
+                  <DvsRoute b={{ x: sw + 12, y: 4, w: W - sw - 18, h: th }} ttPlaying={tt.playing} toneOnCh1={tone} thru={d.mode === 'THRU' && tt.playing} lock={lock} chInput={booth.ch[1].input} musicLive={musicLive} k={kk} flow={audio.flowMotion} />
+                  <DvsRig b={{ x: ttW(W) + 4, y: topH(H, k) + 2, w: W - ttW(W) - 10, h: H - topH(H, k) - 6 }} gnd={(booth.vinyl ?? setVinyl()).gnd} ttPlaying={tt.playing} usbLive={musicLive || tt.playing} k={kk} />
                 </Group>
               );
             }}
-            a11y={`You are looking at the control signal as the software sees it (quality ${Math.round(q * 100)} percent, ${lock.toLowerCase()}), a map of where each signal goes, and the turntable with its control record. Mode ${DVS_MODE_WORDS[d.mode].toLowerCase()}; channel 1 input ${booth.ch[1].input}.${tone ? ' The control tone is reaching the speakers.' : ''}`}
+            a11y={`You are looking at the control signal as the software sees it (quality ${Math.round(q * 100)} percent, ${lock.toLowerCase()}), a map of where each signal goes, the turntable with its control record, and the cabling at the rear: the turntable's leads and ground to the mixer's PHONO 1 and GND post, and the USB cable to the laptop. Mode ${DVS_MODE_WORDS[d.mode].toLowerCase()}; channel 1 input ${booth.ch[1].input}.${tone ? ' The control tone is reaching the speakers.' : ''}`}
           >
             <TurntableTop x={0} y={0} d={tt} playing={tt.playing} record="control" />
           </Scene>
         ),
         bezel: [
-          { k: 'MODE', v: DVS_MODE_WORDS[d.mode], tint: colors.textPrimary },
+          { k: 'ROUND TRIP', v: `${rt.toFixed(1)} ms`, vA11y: `${rt.toFixed(1)} milliseconds`, sub: `${booth.laptop?.buffer ?? 256} SMP`, tint: '#8fbcff' },
           { k: 'SIGNAL', v: `${Math.round(q * 100)} %`, sub: lock, tint: lock === 'LOCKED' ? colors.green : lock === 'UNSTABLE' ? colors.amber : lock === 'IGNORED' ? colors.textSub : '#ff5a48' },
           { k: 'DECK 1', v: A.playing ? 'PLAYING' : 'STOPPED', sub: `${A.pitch >= 0 ? '+' : '−'}${Math.abs(A.pitch).toFixed(0)} %`, tint: A.playing ? colors.green : colors.textSub },
           { k: 'CROWD', v: tone ? 'TONE!' : musicLive ? 'MUSIC' : 'NOTHING', tint: tone ? '#ff5a48' : musicLive ? colors.green : colors.textSub },
@@ -229,11 +238,11 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
-        <Look>You are looking at the control signal as the software sees it (a ring), a map of where each signal goes, and the turntable with its white control record.</Look>
+        <Look>You are looking at the control signal as the software sees it (a ring), a map of where each signal goes, the turntable with its white control record, and the cables at the rear.</Look>
         <P>A digital vinyl system plays a track from the laptop while you handle a real turntable: the record carries only a control tone, and the software follows its speed, direction and (in ABSOLUTE) its place.</P>
         <P>The control tone goes in through the mixer’s PHONO jacks and over USB; the music comes back over USB to channel 1.</P>
         <Terms items={TERMS} />
-        <Note>{`An optional screen, for a digital vinyl system. On a standalone system you can go straight on to the next screens — nothing here is needed for them.`}</Note>
+        <SkipOptional ctx={ctx} here={18} />
       </Step>
       <Step n={2}>
         <Do>Open PLATTER and start it. The ring appears, sharp and round, and software deck 1 plays. Try the platter’s pitch: the music follows. Stop the platter: the ring collapses to a dot, and the music stops.</Do>
@@ -254,10 +263,10 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
         {calMsg ? <Note tone="try">{calMsg}</Note> : null}
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
-          question={`A scratch on a DVS feels a little "late" next to a normal record. Why?`}
-          options={[`The control signal goes in through one buffer and the music comes back through another — about ${rt.toFixed(0)} ms at this setting`, 'The control record turns slower', 'The mixer adds an echo', 'USB carries audio at half speed']}
+          question={`A scratch on a DVS feels a little "late" next to a normal record. Read ROUND TRIP on the strip (a buffer is the chunk of sound the computer works on at a time — Screen 16): why is it late?`}
+          options={[`The control signal goes in through one buffer and the music comes back through another — ${rt.toFixed(1)} ms here`, 'The control record turns slower', 'The mixer adds an echo', 'USB carries audio at half speed']}
           correct={0}
-          explain="A DVS is a round trip: the tone is read in one buffer at a time, the software plays, and its sound comes back out through another buffer. Smaller buffers shorten it (Screen 16)."
+          explain="A DVS is a round trip: the tone is read in one buffer at a time, the software plays, and its sound comes back out through another buffer — the ROUND TRIP reading. Smaller buffers shorten it (Screen 16); DVS players usually run the smallest buffer that stays free of dropouts."
           wrong={[undefined, 'The control record turns at the platter’s speed, like any record.', 'No effect is involved — the delay is the round trip through the buffers.', 'USB carries audio in real time; the delay is the buffering.']}
           onCorrect={() => setCheck(true)}
         />
@@ -269,7 +278,7 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
             dvsUpdate((x, t) => ({ ...x, tt: { ...x.tt, playing: true, at: t }, dvs: { ...(x.dvs ?? freshDvs()), mode: 'ABS', dirty: false, calibrated: true }, ch: { ...x.ch, 1: { ...x.ch[1], input: 'PHONO', fader: 0.85 } }, perspective: 'CROWD' }));
           }}
           fixed={tt.playing && !tone && booth.ch[1].input === 'USB' && d.mode !== 'THRU'}
-          hints={['Read CROWD HEARS and CH1 INPUT, and look at the map: which signal reaches channel 1?', 'Channel 1 is listening to its PHONO jacks — the control record itself.', 'Set CH1 INPUT to USB (and keep the mode out of THRU).']}
+          hints={['Read CROWD on the strip and CH1 IN in the dock, and look at the map: which signal reaches channel 1?', 'Channel 1 is listening to its PHONO jacks — the control record itself.', 'Set CH1 IN to USB (and keep the mode out of THRU).']}
           why="Channel 1 was listening to the turntable directly, so the control record's tone went to the PA. The software's music arrives on USB. The lab played the tone quietly; on a real system it is a loud, harsh whistle — get it off the speakers first (fader down), then fix the input."
           onFixed={() => setFaultFixed(true)}
         />
