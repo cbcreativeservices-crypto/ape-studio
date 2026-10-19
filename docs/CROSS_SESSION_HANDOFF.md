@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 01:27 · ccode · de1d2f74
+changed: DJ Systems Lab screens 2 and 7: true scale, every cable to a socket, labels off the gear
+affects other side: nothing (client only; DJ lab art, its tests and the final3 screenshots)
+needs: nothing
+
+
 ### 2026-10-19 01:04 · ccode · 58b37bed
 changed: DJ Systems Lab screens 3-4: dressed cable runs, per-feed speaker lights, two-scale map
 affects other side: nothing (client only; DJ lab art and its tests)
