@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 09:59 · ccode · 60570463
+changed: Labs: free labs show the glossary popup to everyone; Calculator lab: none
+affects other side: nothing in the DB (client only, device-local seen flags). The owner decided the Calculator lab gets NO popup, so the "Audio calculations" row proposed in the e8930c4f entry is NO LONGER NEEDED; the other glossary fixes listed there (Compression, Voice, Spectrum Analyzer, Monitoring, FM Synthesis, Microphone types, Pitch Correction) still stand.
+needs: nothing new from A.
+
+
 ### 2026-10-19 09:39 · ccode · e8930c4f
 changed: Labs: glossary popup wired for 29 more labs (owner rulings), seen once per TERM
 affects other side: no DB change; read-only queries only. The popup now copies glossary.plain_english for 62 labs (22 distinct new rows, each md5-checked against the live row 2026-10-19), so an edit to those rows does not reach the popup until it is re-copied. Rows the popup now uses include "Dynamic range compression", "miking", "Mic Technique", "Vocal tuning pass", "Frequency modulation synthesis", "Audio Analyzer", "Downward expansion", "Coverage pattern", "Acoustic Treatment", "Connector".
