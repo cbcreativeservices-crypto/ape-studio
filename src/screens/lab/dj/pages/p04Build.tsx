@@ -11,16 +11,16 @@ import { StageInFullScreen } from '../../rack/stageAspect';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene } from '../art/Scene';
-import { SystemMap, roomSpeakerBox } from '../art/SystemMap';
-import { MAP, MAP_BODIES, MAP_FRAME, type SpeakerKey } from '../geometry/mapGeometry';
-import { PLAYER_REAR, MIXER_REAR } from '../geometry/boothGeometry';
+import { MAP_FRAME, SystemMap, patchBox, roomSpeakerBox } from '../art/SystemMap';
+import { MAP_BODIES, type SpeakerKey } from '../geometry/mapGeometry';
+import { ROOM_FLOOR, roomPhonesBox, speakerLit } from '../geometry/dressGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { boothKey, stopKey } from '../dock';
 import { PatchTray, PowerTray, type PowerEvent } from '../trays';
 import { getBooth, setBooth, updateBooth } from '../booth/boothStore';
 import { useScreenSetup } from '../booth/setup';
-import { AUDIO_PLUGS, POWERED, POWER_PLUGS, SPEAKERS, connect, deviceLive, plugCorrect, speakerCabled, speakerFeed, systemBuilt, type Booth, type PlugId, type SpeakerId } from '../model/djModel';
+import { AUDIO_PLUGS, POWERED, POWER_PLUGS, PLUGS, SPEAKERS, connect, deviceLive, plugCorrect, speakerCabled, systemBuilt, type Booth, type PlugId, type SpeakerId } from '../model/djModel';
 import type { BoothRender } from '../engine/djRender';
 import type { BoothMotion } from '../art/motion';
 import { soundCell, useBoothKit } from './shared';
@@ -38,9 +38,11 @@ export const GOALS_BUILD = ['Both players to the mixer', 'PA and booth monitors'
  *  HOT-PATCH — the speakers that would have banged. */
 type Flash = { keys: readonly SpeakerKey[]; word: 'THUMP' | 'HOT-PATCH' };
 
-/** The map on the glass. On a phone at 1× only the cable being patched, the
- *  one just patched and any cable in the wrong place carry their flag; FULL
- *  SCREEN shows every flag (the 390-pt map was a wall of labels). */
+/** The map on the glass. On a phone at 1× the AUDIO cables that are plugged
+ *  in carry their flags, with the cable being patched, the one just patched
+ *  and any in the wrong place; the mains cords' flags join them in FULL
+ *  SCREEN. The room's names are callouts kept in the room band; the patch
+ *  band's words are placed by the map itself (art/SystemMap placeLabels). */
 function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatched, audioOk, powerOk }: {
   w: number;
   h: number;
@@ -55,13 +57,14 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
   powerOk: number;
 }) {
   const inFull = useContext(StageInFullScreen);
-  const flagFor = (p: PlugId) => inFull || p === sel || p === justPatched || (booth.plugs[p] != null && !plugCorrect(booth, p));
+  const flagFor = (p: PlugId) => inFull || p === sel || p === justPatched || (booth.plugs[p] != null && (!plugCorrect(booth, p) || PLUGS[p].kind !== 'iec'));
   const label = (id: string, text: string, at: { x: number; y: number }, dx: number, dy: number, tone?: 'blue' | 'amber' | 'red' | 'plain') => ({ id, text, at, dx, dy, tone });
   const top = (k: SpeakerKey) => {
     const b = roomSpeakerBox(k);
-    return { x: b.x + b.w / 2, y: b.y + 4 };
+    return { x: b.x + b.w / 2, y: b.y + b.h * 0.3 };
   };
-  const hard = [...MAP_BODIES, ...(['paR', 'boothR', 'boothL', 'paL'] as const).map((k) => roomSpeakerBox(k)), { x: MAP.phones.x, y: MAP.phones.y, w: 70, h: 105 }, { x: MAP.room.table.x, y: 190, w: MAP.room.table.w, h: 140 }];
+  // the room's names stay in the room band: the patch band is one obstacle
+  const hard = [...(['paR', 'boothR', 'boothL', 'paL'] as const).map((k) => roomSpeakerBox(k)), roomPhonesBox, { x: -8, y: ROOM_FLOOR + 20, w: 1056, h: 900 }];
   const keys = flash?.keys ?? [];
   return (
     <Scene
@@ -71,17 +74,13 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
       motion={motion}
       a11y={`${LOOK} ${audioOk} of 9 audio cables and ${powerOk} of 7 devices powered.${flash ? ` A speaker just flagged a ${flash.word.toLowerCase()}.` : ''}`}
       obstacles={hard}
+      focus={patchBox(MAP_BODIES[1])}
       callouts={[
-        label('db', 'DECK B', { x: MAP.B.x + PLAYER_REAR.w / 2, y: MAP.B.y + 4 }, 0, -14, 'plain'),
-        label('mx', 'MIXER', { x: MAP.mixer.x + MIXER_REAR.w / 2, y: MAP.mixer.y + 4 }, 0, -14, 'plain'),
-        label('da', 'DECK A', { x: MAP.A.x + PLAYER_REAR.w / 2, y: MAP.A.y + 4 }, 0, -14, 'plain'),
-        label('hp', 'HEADPHONES', { x: MAP.phones.x + 12, y: MAP.phones.y + 60 }, -20, 0, 'plain'),
         ...keys.map((k) => label(`th${k}`, flash!.word, top(k), 0, -10, 'red')),
-        label('par', 'PA R', top('paR'), 16, 0),
-        label('pal', 'PA L', top('paL'), -16, 0),
-        label('br', 'BOOTH R', top('boothR'), -14, -10),
-        label('bl', 'BOOTH L', top('boothL'), 14, -10),
-        label('st', 'POWER STRIP', { x: MAP.strip.x + 165, y: MAP.strip.y + 60 }, 0, 10),
+        label('par', 'PA R', top('paR'), 18, 0),
+        label('pal', 'PA L', top('paL'), -18, 0),
+        label('br', 'BOOTH R', top('boothR'), -16, -12),
+        label('bl', 'BOOTH L', top('boothL'), 16, -12),
       ]}
     >
       <SystemMap booth={booth} last={last} flow={flowMotion} thump={keys} flagFor={flagFor} />
@@ -89,7 +88,7 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
   );
 }
 
-const LOOK = 'You are looking at the whole booth from BEHIND, the way you reach round to wire it, so it is mirrored: deck B, the mixer and deck A along the table, the PA speakers on their stands at the top corners (PA R on the left), the booth monitors on the table, and below, at full size, each speaker’s input plate, the three rear panels, the headphones and the power strip.';
+const LOOK = 'You are looking at the whole booth from BEHIND, the way you reach round to wire it, so it is mirrored. At the top, the room at 1:5: the PA speakers on their stands at the corners (PA R on the left), the table with deck B, the mixer, deck A, the headphones and the booth monitors. Below, at full size, everything you plug: each speaker’s input plate, the three rear panels, the mixer’s front edge with the headphone cable (it carries on up to the headphones) and the power strip.';
 
 function unbuilt(b: Booth): Booth {
   const plugs = { ...b.plugs };
@@ -156,14 +155,9 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
   const crowdLive = !!last && last.rmsDb.crowd > -80;
   if (crowdLive && !heard) setHeard(true);
   // each PA side on its own: the fault is "half the PA" (learning p04 #3)
-  const paSide = (spk: 'paL' | 'paR') => {
-    const f = speakerFeed(booth, spk);
-    if (!f || !last) return false;
-    const v = f.out === 'MASTER' ? (f.side === 'L' ? last.rmsDb.masterL : last.rmsDb.masterR) : last.rmsDb.booth;
-    return v > -80;
-  };
-  const paL = paSide('paL');
-  const paR = paSide('paR');
+  // the same per-feed test the map's speaker lights use (dressGeometry)
+  const paL = speakerLit(booth, last, 'paL');
+  const paR = speakerLit(booth, last, 'paR');
   const hits = [
     (['A.rcaL', 'A.rcaR', 'B.rcaL', 'B.rcaR'] as const).every((p) => plugCorrect(booth, p)),
     (['mst.xlrL', 'mst.xlrR', 'bth.trsL', 'bth.trsR'] as const).every((p) => plugCorrect(booth, p)),
@@ -223,7 +217,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
         <P>Look at the mixer’s rear: seen from behind, channel 2’s inputs are on the LEFT. That catches people out on real gear too.</P>
       </Step>
       <Step n={3}>
-        <P>Open POWER and DECKS, play a deck and LISTEN as the CROWD. You only hear it once the whole path is complete: player → cable → mixer input → channel → mix → MASTER → PA. While audio flows, its cables glow blue; a powered cord glows amber.</P>
+        <P>Open POWER and DECKS, play a deck and LISTEN as the CROWD. You only hear it once the whole path is complete: player → cable → mixer input → channel → mix → MASTER → PA. While audio flows, its cables glow blue, and each speaker that is getting its own feed glows blue in the room; a mains cord that is live shows a thin amber line.</P>
       </Step>
       <Step n={4}>
         <Do>Wire everything, then power ON in a safe order — players and mixer first, speakers LAST. Hear the crowd, then power OFF with the speakers FIRST.</Do>

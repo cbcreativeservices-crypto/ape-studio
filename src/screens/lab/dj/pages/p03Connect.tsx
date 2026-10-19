@@ -6,9 +6,10 @@
  * mixer, with the source's RCA pair in its own two lanes. The fault: a thin,
  * quiet record (a raw cartridge into a LINE input).
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Line, RoundedRect, vec } from '@shopify/react-native-skia';
+import { Group, LinearGradient, Path, Rect, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { LinearGradient as ExpoGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../../../theme/tokens';
 import { fitValue } from '../../../../theme/legibility';
@@ -16,11 +17,12 @@ import { LabChip } from '../../LabShell';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene } from '../art/Scene';
-import { MixerRear, PlayerRear, TT_REAR_JACKS, TurntableRear } from '../art/RearPanels';
+import { GndPost, MixerRear, PlayerRear, TT_REAR_JACKS, TurntableRear } from '../art/RearPanels';
 import { CableRun, type Run } from '../art/cables';
 import { Halo } from '../art/parts';
 import { INK } from '../art/ink';
-import { MIXER_REAR_JACKS, PLAYER_REAR_JACKS, type Box, type Pt } from '../geometry/boothGeometry';
+import { MIXER_REAR, PLAYER_REAR_JACKS, type Box, type Pt } from '../geometry/boothGeometry';
+import { GND_LUG, S3, groundLane3, groundRun3, lane3, mixJack3, run3, srcBox3, srcJack3, ttGnd3, type Source3 } from '../geometry/dressGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey } from '../dock';
@@ -36,30 +38,92 @@ const TERMS = [
   { term: 'Balanced (mono)', def: 'One channel on three conductors (XLR, or a TRS jack used this way): two signal wires and a shield. The input takes the DIFFERENCE between the two wires, so hum picked up equally on both cancels. A stereo feed needs TWO balanced cables — and a stereo headphone TRS is the same plug shape doing a different job.' },
 ] as const;
 
-/* ── the rear stack geometry (mm) ─────────────────────────────────────── */
+/* ── the rear stack (geometry/dressGeometry: pure, tested) ──────────── */
 
-const SRC_Y = 0;
-const MIX = { x: 25, y: 196 };
-const FRAME: Box = { x: -8, y: -8, w: 336, h: 316 };
-const mixJack = (j: keyof typeof MIXER_REAR_JACKS): Pt => ({ x: MIX.x + MIXER_REAR_JACKS[j].x, y: MIX.y + MIXER_REAR_JACKS[j].y });
+const FRAME = S3.frame;
+const mixJack = mixJack3;
+type Source = Source3;
 
-type Source = 'A' | 'TT';
-const srcJack = (src: Source, side: 'L' | 'R'): Pt =>
-  src === 'A'
-    ? { x: PLAYER_REAR_JACKS[side === 'L' ? 'outL' : 'outR'].x, y: SRC_Y + PLAYER_REAR_JACKS[side === 'L' ? 'outL' : 'outR'].y }
-    : { x: 10 + TT_REAR_JACKS[side === 'L' ? 'outL' : 'outR'].x, y: SRC_Y + TT_REAR_JACKS[side === 'L' ? 'outL' : 'outR'].y };
-
+/** One RCA lead as drawn: its own lane, DRESSED (a real bend radius, a
+ *  catenary sag across the gap); a lead for a BOTTOM-row jack comes down its
+ *  own column beside the stack and hooks in, so it never covers the plug
+ *  above; a loose lead hangs straight down from its socket. */
 function runFor(b: Booth, src: Source, side: 'L' | 'R', live: boolean): Run {
   const plug: PlugId = src === 'A' ? (side === 'L' ? 'A.rcaL' : 'A.rcaR') : side === 'L' ? 'tt.rcaL' : 'tt.rcaR';
-  const a = srcJack(src, side);
   const to = b.plugs[plug];
-  const lane = side === 'L' ? 142 : 156;
+  const into = to && to.startsWith('ch') ? to : null;
   const colour = side === 'L' ? INK.rcaWhite : INK.rcaRed;
-  if (!to || !to.startsWith('ch')) {
-    return { id: plug, kind: 'rca', colour, pts: [[a.x, a.y], [a.x, a.y + 36], [a.x + (side === 'L' ? -12 : 12), a.y + 62]], plugged: false, live: false, label: side, dashed: side === 'R' };
-  }
-  const d = mixJack(to as keyof typeof MIXER_REAR_JACKS);
-  return { id: plug, kind: 'rca', colour, pts: [[a.x, a.y], [a.x, lane], [d.x, lane], [d.x, d.y]], plugged: true, live, label: side, dashed: side === 'R' };
+  return { id: plug, kind: 'rca', colour, pts: lane3(src, side, into), dense: run3(src, side, into), plugged: !!into, live: !!into && live, label: side, dashed: side === 'R', looseSag: 1 };
+}
+
+/** A spade (fork) lug, crimped onto the ground wire, clamped under a GND
+ *  post's thumb nut: its tongue round the stud, the crimp barrel and the
+ *  wire's insulation sleeve toward the wire (`up`: the wire leaves upward). */
+function SpadeLug({ cx, cy, up }: { cx: number; cy: number; up: boolean }) {
+  return (
+    <Group transform={[{ translateX: cx }, { translateY: cy }, { rotate: up ? Math.PI : 0 }]}>
+      <RoundedRect x={-3.9} y={-3.9} width={7.8} height={8.6} r={3.4} color="rgba(0,0,0,0.55)" transform={[{ translateX: 0.6 }, { translateY: 0.9 }]} />
+      <RoundedRect x={-3.6} y={-3.6} width={7.2} height={8.4} r={3.2}>
+        <LinearGradient start={vec(-3.6, -3.6)} end={vec(3.6, 4.8)} colors={['#e9d9a8', '#b49a5c', '#7a6438']} />
+      </RoundedRect>
+      {/* the fork's slot, open away from the wire */}
+      <Rect x={-1.25} y={-3.7} width={2.5} height={3.7} color="#0b0b0d" />
+      <RoundedRect x={-1.7} y={4.2} width={3.4} height={2.2} r={0.6}>
+        <LinearGradient start={vec(-1.7, 0)} end={vec(1.7, 0)} colors={['#7a6438', '#e9d9a8', '#7a6438']} />
+      </RoundedRect>
+      {/* the crimp barrel inside its sleeve */}
+      <RoundedRect x={-2.3} y={6} width={4.6} height={GND_LUG - 5.4} r={1.2}>
+        <LinearGradient start={vec(-2.3, 0)} end={vec(2.3, 0)} colors={['#1d4a26', '#3f8a4c', '#1d4a26']} />
+      </RoundedRect>
+    </Group>
+  );
+}
+
+/** The turntable's ground wire: a thin insulated wire with a spade lug at
+ *  each end, hanging in its own lane from post to post. */
+function GroundWire() {
+  const dense = useMemo(() => groundRun3(), []);
+  const path = useMemo(() => {
+    const pb = Skia.PathBuilder.Make();
+    pb.moveTo(dense[0][0], dense[0][1]);
+    for (let i = 1; i < dense.length; i++) pb.lineTo(dense[i][0], dense[i][1]);
+    return pb.detach();
+  }, [dense]);
+  const m = mixJack('gnd');
+  return (
+    <Group>
+      <Path path={path} style="stroke" strokeWidth={2.2} color="rgba(0,0,0,0.6)" strokeCap="round" strokeJoin="round" transform={[{ translateX: 0.6 }, { translateY: 1 }]} />
+      <Path path={path} style="stroke" strokeWidth={1.9} color="#2d6a38" strokeCap="round" strokeJoin="round" />
+      <Path path={path} style="stroke" strokeWidth={0.45} color="rgba(255,255,255,0.28)" strokeCap="round" transform={[{ translateX: -0.35 }, { translateY: -0.4 }]} />
+      <SpadeLug cx={ttGnd3.x} cy={ttGnd3.y} up={false} />
+      <SpadeLug cx={m.x} cy={m.y} up />
+      {/* the thumb nuts, screwed down onto the lugs */}
+      <GndPost cx={ttGnd3.x} cy={ttGnd3.y} d={7.6} />
+      <GndPost cx={m.x} cy={m.y} d={7.2} />
+    </Group>
+  );
+}
+
+/** A lead just pulled out swings on its socket and settles (a damped
+ *  pendulum: about 1.8 Hz for the drawn drop, half its swing gone in about
+ *  a second). Decorative motion only. */
+function SwingingLead({ r, pivot, swing }: { r: Run; pivot: Pt; swing: boolean }) {
+  const ang = useSharedValue(0);
+  const was = useRef(r.plugged);
+  useEffect(() => {
+    if (was.current && !r.plugged && swing) {
+      ang.value = 0.24 * (r.label === 'L' ? -1 : 1);
+      ang.value = withSpring(0, { mass: 1, stiffness: 128, damping: 1.6 });
+    }
+    was.current = r.plugged;
+  }, [r.plugged, r.label, swing, ang]);
+  const tf = useDerivedValue(() => [{ rotate: ang.value }]);
+  if (r.plugged) return <CableRun r={r} />;
+  return (
+    <Group origin={vec(pivot.x, pivot.y)} transform={tf}>
+      <CableRun r={r} />
+    </Group>
+  );
 }
 
 /* ── what each socket is (the IDENTIFY tray) ──────────────────────────── */
@@ -71,8 +135,8 @@ const SOCKETS: Sock[] = [
   { id: 'digital', label: 'DIGITAL OUT', short: 'DIGITAL', blurb: 'An OUTPUT of DIGITAL audio (stereo in one coax cable, orange ring). It goes to a digital input — never into an analog LINE input.', box: (s) => (s === 'A' ? ring({ x: PLAYER_REAR_JACKS.digital.x, y: PLAYER_REAR_JACKS.digital.y }, 10) : null) },
   { id: 'lan', label: 'LINK (LAN)', short: 'LAN', blurb: 'Network DATA both ways. A linked-player network shares track lists and timing — it carries NO audio to the mixer, so the RCA pair is still needed.', box: (s) => (s === 'A' ? { x: PLAYER_REAR_JACKS.lan.x - 11, y: PLAYER_REAR_JACKS.lan.y - 10, w: 22, h: 20 } : null) },
   { id: 'usb', label: 'USB', short: 'USB', blurb: 'DATA to and from a computer. It can carry control messages (knob and button moves), files and, on some devices, audio — it depends on the device and its software.', box: (s) => (s === 'A' ? { x: PLAYER_REAR_JACKS.usb.x - 9, y: PLAYER_REAR_JACKS.usb.y - 9, w: 18, h: 18 } : null) },
-  { id: 'ac', label: 'AC IN', short: 'AC', blurb: 'MAINS POWER in (the IEC inlet). Not a signal at all — keep power cords apart from audio cables where you can.', box: (s) => (s === 'A' ? { x: PLAYER_REAR_JACKS.ac.x - 15, y: PLAYER_REAR_JACKS.ac.y - 11, w: 30, h: 22 } : { x: 10 + TT_REAR_JACKS.ac.x - 15, y: TT_REAR_JACKS.ac.y - 3, w: 30, h: 22 }) },
-  { id: 'preamp', label: 'PHONO/LINE SWITCH', short: 'SWITCH', blurb: 'On a turntable with its own preamp: PHONO sends the raw cartridge signal (it needs a PHONO input); LINE switches the preamp on (it needs a LINE input). Never both, never neither.', box: (s) => (s === 'TT' ? { x: 10 + TT_REAR_JACKS.preamp.x - 14, y: TT_REAR_JACKS.preamp.y - 4, w: 28, h: 22 } : null) },
+  { id: 'ac', label: 'AC IN', short: 'AC', blurb: 'MAINS POWER in (the IEC inlet). Not a signal at all — keep power cords apart from audio cables where you can.', box: (s) => (s === 'A' ? { x: PLAYER_REAR_JACKS.ac.x - 15, y: PLAYER_REAR_JACKS.ac.y - 11, w: 30, h: 22 } : { x: S3.ttX + TT_REAR_JACKS.ac.x - 15, y: TT_REAR_JACKS.ac.y - 3, w: 30, h: 22 }) },
+  { id: 'preamp', label: 'PHONO/LINE SWITCH', short: 'SWITCH', blurb: 'On a turntable with its own preamp: PHONO sends the raw cartridge signal (it needs a PHONO input); LINE switches the preamp on (it needs a LINE input). Never both, never neither.', box: (s) => (s === 'TT' ? { x: S3.ttX + TT_REAR_JACKS.preamp.x - 14, y: TT_REAR_JACKS.preamp.y - 4, w: 28, h: 22 } : null) },
   { id: 'line', label: 'CH1 LINE IN', short: 'LINE IN', blurb: 'An INPUT at line level, stereo on an RCA pair. Players, interfaces, a turntable with its preamp ON.', box: () => ({ x: mixJack('ch1.line.L').x - 9, y: mixJack('ch1.line.L').y - 9, w: 18, h: 42 }) },
   { id: 'phono', label: 'CH1 PHONO IN', short: 'PHONO', blurb: 'An INPUT for a raw turntable cartridge: it adds about 36 dB of gain and undoes the record’s RIAA curve. A line-level source here overloads it.', box: () => ({ x: mixJack('ch1.phono.L').x - 9, y: mixJack('ch1.phono.L').y - 9, w: 18, h: 42 }) },
   { id: 'gnd', label: 'GND POST', short: 'GND', blurb: 'Where a turntable’s thin ground wire goes (a SIGNAL ground, against hum). It is not the mains earth, and nothing replaces that.', box: () => ring(mixJack('gnd'), 9) },
@@ -199,21 +263,26 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
         frame={FRAME}
         motion={motion}
         a11y={`The back of ${src === 'A' ? 'deck A' : 'the turntable'} above the back of the mixer, with the source's white and red RCA plugs. Channel 1 left hears ${sideWord(route.L)}, right hears ${sideWord(route.R)}; input selector ${booth.ch[1].input}.`}
+        // labels keep OFF both panels (they sit in the gap or the margins,
+        // with a leader) and prefer the space clear of the leads
+        obstacles={[srcBox3(src), { x: S3.mix.x, y: S3.mix.y, w: MIXER_REAR.w, h: MIXER_REAR.h }]}
+        soft={[{ x: 52, y: srcBox3(src).h, w: 104, h: S3.mix.y - srcBox3(src).h }]}
         callouts={[
-          { id: 'line', text: selPair === 'line' ? 'SELECTOR → LINE' : 'CH1 LINE', at: { x: mixJack('ch1.line.R').x + 7, y: mixJack('ch1.line.R').y + 6 }, dx: 18, dy: 30, tone: selPair === 'line' ? ('green' as const) : undefined },
-          { id: 'phono', text: selPair === 'phono' ? 'SELECTOR → PHONO' : 'CH1 PHONO', at: { x: mixJack('ch1.phono.R').x - 6, y: mixJack('ch1.phono.R').y + 6 }, dx: -30, dy: 30, tone: selPair === 'phono' ? ('green' as const) : undefined },
-          ...(box ? [{ id: 'id', text: sock.label, at: { x: box.x + box.w / 2, y: box.y }, dx: 0, dy: -16, tone: 'blue' as const }] : []),
+          ...(box ? [{ id: 'id', text: sock.label, at: { x: box.x + box.w / 2, y: box.y + box.h / 2 }, dx: 0, dy: -16, tone: 'blue' as const }] : []),
+          { id: 'line', text: selPair === 'line' ? 'SELECTOR → LINE' : 'CH1 LINE', at: { x: mixJack('ch1.line.L').x + 8, y: mixJack('ch1.line.L').y - 8 }, dx: 26, dy: -26, tone: selPair === 'line' ? ('green' as const) : undefined },
+          { id: 'phono', text: selPair === 'phono' ? 'SELECTOR → PHONO' : 'CH1 PHONO', at: { x: mixJack('ch1.phono.L').x - 8, y: mixJack('ch1.phono.L').y - 8 }, dx: -26, dy: -26, tone: selPair === 'phono' ? ('green' as const) : undefined },
+          ...(src === 'TT' ? [{ id: 'gw', text: 'GROUND WIRE', at: { x: groundLane3()[0][0], y: S3.lane.gnd - 14 }, dx: -20, dy: -6, tone: 'plain' as const }] : []),
         ]}
       >
-        {src === 'A' ? <PlayerRear x={0} y={SRC_Y} on label="DECK A (REAR)" /> : <TurntableRear x={10} y={SRC_Y} on preamp={booth.ttPreamp} />}
-        <MixerRear x={MIX.x} y={MIX.y} on />
-        {src === 'TT' ? <Line p1={vec(10 + TT_REAR_JACKS.gnd.x, TT_REAR_JACKS.gnd.y)} p2={vec(mixJack('gnd').x, mixJack('gnd').y)} color="#2e7d3a" strokeWidth={1.2} /> : null}
+        {src === 'A' ? <PlayerRear x={0} y={S3.srcY} on label="DECK A (REAR)" /> : <TurntableRear x={S3.ttX} y={S3.srcY} on preamp={booth.ttPreamp} />}
+        <MixerRear x={S3.mix.x} y={S3.mix.y} on />
+        {src === 'TT' ? <GroundWire /> : null}
         {(['line', 'phono'] as const).map((k) => {
           const pb = pairBox(k);
           return selPair === k ? null : <RoundedRect key={k} x={pb.x} y={pb.y} width={pb.w} height={pb.h} r={4} color="rgba(6,6,8,0.55)" />;
         })}
         {runs.map((r) => (
-          <CableRun key={r.id} r={r} />
+          <SwingingLead key={r.id} r={r} pivot={srcJack3(src, r.label as 'L' | 'R')} swing={audio.flowMotion} />
         ))}
         {selPair ? <Halo b={pairBox(selPair)} tone="green" /> : null}
         {box ? <Halo b={box} /> : null}

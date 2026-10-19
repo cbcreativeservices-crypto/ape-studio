@@ -13,17 +13,55 @@
  * cable); it GLOWS while audio is actually flowing down it (the renderer's
  * route, not a guess).
  */
-import { memo } from 'react';
-import { BlurMask, Group, Line, LinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
+import { memo, useMemo } from 'react';
+import { BlurMask, Circle, Group, Line, LinearGradient, Path, RadialGradient, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { MIXER_REAR, MIXER_REAR_JACKS, PLAYER_REAR, PLAYER_REAR_JACKS } from '../geometry/boothGeometry';
+import { TT_REAR, TT_REAR_JACKS } from '../geometry/dressGeometry';
 import { INK } from './ink';
-import { GroundPost, IecInlet, RcaSocket, Rj45, Rocker, SlideSwitch, TrsSocket, UsbB, XlrSocket } from './parts';
+import { IecInlet, RcaSocket, Rj45, Rocker, SlideSwitch, TrsSocket, UsbB, XlrSocket } from './parts';
 import { DinSocket } from './eventParts';
 import { MIXER_REAR_EXTRA } from '../geometry/eventGeometry';
 import { SceneText } from './sceneText';
 
-export const TT_REAR = { w: 300, h: 90 } as const;
-export const TT_REAR_JACKS = { outL: { x: 84, y: 46 }, outR: { x: 108, y: 46 }, gnd: { x: 140, y: 46 }, preamp: { x: 176, y: 40 }, ac: { x: 230, y: 36 } } as const;
+// the turntable's panel and sockets live in the pure geometry (the cable
+// test reaches them); its GND post is LEFT of its outputs (Screen 3 fix)
+export { TT_REAR, TT_REAR_JACKS };
+
+/** A chassis GROUND post as it really is: a threaded stud with a knurled
+ *  thumb nut on a washer (a spade lug clamps under the nut). Face-on, `d` mm
+ *  across the nut. */
+export function GndPost({ cx, cy, d }: { cx: number; cy: number; d: number }) {
+  const r = d / 2;
+  const knurl = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    for (let i = 0; i < 24; i++) {
+      const a = (i / 24) * Math.PI * 2;
+      p.moveTo(cx + Math.cos(a) * r * 0.78, cy + Math.sin(a) * r * 0.78);
+      p.lineTo(cx + Math.cos(a) * r * 0.98, cy + Math.sin(a) * r * 0.98);
+    }
+    return p.detach();
+  }, [cx, cy, r]);
+  return (
+    <Group>
+      {/* the washer on the panel, the nut's shadow, the nut, its knurl, the stud */}
+      <Circle cx={cx} cy={cy} r={r * 1.22} color="#07070a" />
+      <Circle cx={cx} cy={cy} r={r * 1.14}>
+        <RadialGradient c={vec(cx - r * 0.4, cy - r * 0.5)} r={r * 1.6} colors={['#8d929a', '#3a3e45']} />
+      </Circle>
+      <Circle cx={cx + r * 0.18} cy={cy + r * 0.26} r={r} color="rgba(0,0,0,0.6)">
+        <BlurMask blur={r * 0.25} style="normal" />
+      </Circle>
+      <Circle cx={cx} cy={cy} r={r}>
+        <RadialGradient c={vec(cx - r * 0.35, cy - r * 0.4)} r={r * 1.5} colors={['#e3e6ea', '#9aa0a8', '#4a4e55']} positions={[0, 0.45, 1]} />
+      </Circle>
+      <Path path={knurl} style="stroke" strokeWidth={Math.max(0.25, r * 0.07)} color="rgba(0,0,0,0.45)" />
+      <Circle cx={cx} cy={cy} r={r * 0.36} color="#2a2c31" />
+      <Circle cx={cx} cy={cy} r={r * 0.24}>
+        <RadialGradient c={vec(cx - r * 0.08, cy - r * 0.1)} r={r * 0.3} colors={['#c9cdd3', '#5c626b']} />
+      </Circle>
+    </Group>
+  );
+}
 
 /** Legend type on the rear panels: 4 mm (capitals ≈ 3 mm). */
 const LEG = 4;
@@ -127,7 +165,7 @@ export const TurntableRear = memo(function TurntableRear({ x, y, on, preamp }: {
       <Leg x={J.outL.x} y={J.outL.y + 13} t="L" />
       <Leg x={J.outR.x} y={J.outR.y + 13} t="R" />
       <Leg x={J.gnd.x} y={J.gnd.y - 9} t="GND" />
-      <GroundPost cx={J.gnd.x} cy={J.gnd.y} d={11} />
+      <GndPost cx={J.gnd.x} cy={J.gnd.y} d={10} />
       {/* the built-in preamp switch: PHONO (raw cartridge) / LINE */}
       <Leg x={J.preamp.x} y={J.preamp.y - 4} t="PHONO · LINE" size={LEG_S} />
       <RoundedRect x={J.preamp.x - 10} y={J.preamp.y} width={20} height={14} r={2} color="#050506" />
@@ -172,7 +210,7 @@ export const MixerRear = memo(function MixerRear({ x, y, on, extras }: { x: numb
       {lr(J['ch2.phono.L'].x - 12)}
       {lr(J['ch1.phono.L'].x - 12)}
       <Leg x={J.gnd.x} y={J.gnd.y + 13} t="GND" size={LEG_S} />
-      <GroundPost cx={J.gnd.x} cy={J.gnd.y} d={10} />
+      <GndPost cx={J.gnd.x} cy={J.gnd.y} d={9.5} />
       <Bracket x0={J['booth.L'].x - 9} x1={J['booth.L'].x + 9} y={27} t="BOOTH" />
       <TrsSocket cx={J['booth.L'].x} cy={J['booth.L'].y} d={13} />
       <TrsSocket cx={J['booth.R'].x} cy={J['booth.R'].y} d={13} />
