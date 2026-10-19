@@ -221,7 +221,9 @@ describe('the what’s-left screen names each screen’s unmet goals (learning X
       assert.match(s, /export const GOALS_[A-Z]+ = \[/, `${f} declares its goal labels`);
       shorts.push(short!);
     }
-    assert.equal(shorts.length, 12);
+    // Stage 1 (12) + Stage 2b (19–24); 13–18 arrive from branch dj-lab — counted generically
+    assert.ok(shorts.length >= 18, `${shorts.length} screens`);
+    assert.equal(new Set(shorts).size, shorts.length, 'every screen has its own short name');
     // every goal chip shows exactly once: the practice chips end where the
     // check-yourself chips begin
     for (const f of readdirSync(dir).filter((n) => /^p\d\d/.test(n))) {

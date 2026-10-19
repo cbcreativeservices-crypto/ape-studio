@@ -66,12 +66,17 @@ describe('DJ Systems Lab — wiring', () => {
     assert.match(read('src/dev/webPreviews.tsx'), /DJSystemsLab: DJSystemsLabScreen/);
     assert.match(read('src/features/audio/ExposureCheckin.tsx'), /'DJSystemsLab'/);
   });
-  it('has the twelve Stage 1 screens, in order, each a rack page', () => {
+  it('has its screens in outline order (1–12, then 19–24; 13–18 slot in from branch dj-lab), each a rack page', () => {
     const idx = read(`${DJ}/pages/index.ts`);
     const list = idx.match(/DJ_PAGES[^=]*=\s*\[([^\]]+)\]/);
     assert.ok(list);
-    const ids = list![1].split(',').map((s) => s.trim()).filter(Boolean);
-    assert.deepEqual(ids, ['P01', 'P02', 'P03', 'P04', 'P05', 'P06', 'P07', 'P08', 'P09', 'P10', 'P11', 'P12']);
+    // counted generically (comments dropped), so the merge of 13–18 keeps it green
+    const ids = list![1].replace(/\/\/[^\n]*/g, '').split(',').map((s) => s.trim()).filter(Boolean);
+    assert.ok(ids.length >= 18, `${ids.length} screens`);
+    assert.deepEqual(ids.slice(0, 12), ['P01', 'P02', 'P03', 'P04', 'P05', 'P06', 'P07', 'P08', 'P09', 'P10', 'P11', 'P12']);
+    assert.deepEqual(ids.slice(-6), ['P19', 'P20', 'P21', 'P22', 'P23', 'P24']);
+    const nums = ids.map((x) => Number(x.slice(1)));
+    for (let i = 1; i < nums.length; i++) assert.ok(nums[i] > nums[i - 1], `${ids[i]} after ${ids[i - 1]}`);
     for (const f of FILES.filter((x) => /pages\/p\d\d/.test(x))) {
       const s = read(f);
       assert.match(s, /rack: true/, `${f} is not a rack page`);
