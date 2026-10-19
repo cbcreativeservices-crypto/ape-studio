@@ -134,6 +134,13 @@ function RoomTray({ onView }: { onView: () => void }) {
   );
 }
 
+/** The label gap round the plinth (points; added to the layout's own 2 pt). */
+export const PLINTH_GAP_PT = 6;
+const plinthGap = (s: number) => {
+  const g = PLINTH_GAP_PT / Math.max(1e-6, s);
+  return [{ x: -g, y: -g, w: TT_W + 2 * g, h: TT_D + 2 * g }];
+};
+
 function PageVinyl({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit();
   // FULL SCREEN: the zoom step (1 on the glass), and the text scale the
@@ -230,6 +237,11 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
             // FULL SCREEN's shape: the side view over the turntable's top view
             aspect={0.86}
             obstacles={[{ x: 0, y: 0, w: TT_W, h: TT_D }, ...TT_PARTS.map((p) => turntablePartBox(p, armAng))]}
+            // the plinth again, grown by a gap in POINTS (6 pt over the
+            // layout's own 2 pt), so a label never sits on its edge at any
+            // zoom (morning report 2026-10-19: "labels touch the plinth edge
+            // in full screen")
+            obstaclesAt={plinthGap}
             callouts={callouts}
             screenOverlay={(W, H, _xf, k) => {
               const kk = Math.sqrt(k);
