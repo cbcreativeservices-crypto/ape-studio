@@ -237,3 +237,25 @@ export function zoomedXf(
   const oy = Math.max(ymin, Math.min(ymax, c0y + pan.y));
   return { xf: { s, ox, oy }, limits: { minX: xmin - c0x, maxX: xmax - c0x, minY: ymin - c0y, maxY: ymax - c0y } };
 }
+
+/* ── a pinned side view that zooms inside its own panel ─────────────── */
+
+/** FULL SCREEN zoom of a side view (polish 2026-10-19, grade round 1:
+ *  "3x enlarges only the top view"): the drawing grows `zoom` times inside
+ *  its own window, cut to it, centred on `focus` (drawing mm) and kept from
+ *  showing past its edges; its words keep their size. Callers skip it at
+ *  1× (the glass), so nothing there moves.
+ *  Returns the drawing's origin (screen points). */
+export function zoomedOrigin(win: Rect, s: number, focus: { x: number; y: number }, xRange: readonly [number, number], yRange: readonly [number, number] | null, ySign: 1 | -1) {
+  // x: the focus at the window's centre, clamped to the drawing's ends
+  let ox = win.x + win.w / 2 - focus.x * s;
+  ox = Math.min(win.x - xRange[0] * s, Math.max(win.x + win.w - xRange[1] * s, ox));
+  // y (ySign −1: the drawing's y runs UP): the focus at the centre, the top
+  // edge never inside the window (the bottom runs on, cropped)
+  let oy = win.y + win.h / 2 - ySign * focus.y * s;
+  if (yRange) {
+    const top = ySign === 1 ? yRange[0] : yRange[1];
+    oy = Math.min(win.y - ySign * top * s, oy);
+  }
+  return { ox, oy };
+}

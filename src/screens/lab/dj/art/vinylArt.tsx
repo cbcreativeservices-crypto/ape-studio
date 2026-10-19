@@ -43,6 +43,7 @@ import { RcaSocket } from './parts';
 import { SceneText } from './sceneText';
 import { FORCE_RANGE, armSidePose, dialReads, isBalanced, trueForce, type VinylState } from '../model/djVinyl';
 import { ARM_MOVE, ARM_SIDE, armPartAt, armSection } from '../geometry/armGeometry';
+import { zoomedOrigin } from './djZoom';
 import { TT, type Box } from '../geometry/boothGeometry';
 
 function Frame({ b, title, k, right, rightTint }: { b: Box; title: string; k: number; right?: string; rightTint?: string }) {
@@ -106,7 +107,7 @@ const FLOAT_SPRING = { stiffness: 24, damping: 3.6, mass: 1 } as const;
  * then the bar lowers it (onto the record) or lets it float — and a floating
  * arm settles about the gimbal like the balance beam it is.
  */
-export function ArmSide({ b, v, ang, k = 1 }: { b: Box; v: VinylState; ang: number; k?: number }) {
+export function ArmSide({ b, v, ang, k = 1, zoom = 1 }: { b: Box; v: VinylState; ang: number; k?: number; zoom?: number }) {
   const fs = 9.5 * k;
   const S = ARM_SIDE;
   // the drawing's mm box: x −24 … 342 (the record runs on past the left
@@ -117,16 +118,23 @@ export function ArmSide({ b, v, ang, k = 1 }: { b: Box; v: VinylState; ang: numb
   const mmX0 = -24;
   const mmW = 366;
   const mmH = 82;
-  const s = Math.min((b.w - loupeW - 22) / mmW, (b.h - head - foot) / mmH);
-  const ox = b.x + 6 - mmX0 * s;
-  const oy = b.y + head + Math.max(0, (b.h - head - foot - mmH * s) / 2) + 62 * s;
+  const z = Math.max(1, zoom);
+  const s1 = Math.min((b.w - loupeW - 22) / mmW, (b.h - head - foot) / mmH);
+  const s = s1 * z;
+  // the drawing's window (its clip): left of the loupe, between the bands
+  const win = { x: b.x + 2, y: b.y + head - 2, w: b.w - loupeW - 14, h: b.h - head - foot + 1 };
+  const P = { x: S.pivotX, y: S.tubeY };
+  // zoomed, the view opens on the lesson's part: the gimbal and counterweight
+  // while the arm is up to balance, else the headshell, stylus and groove
+  const zo = z > 1 ? zoomedOrigin(win, s, v.armUp ? { x: P.x + 20, y: P.y } : { x: S.stylusX + 20, y: (S.recTop + P.y) / 2 }, [mmX0, mmX0 + mmW], [-62, 20], 1) : null;
+  const ox = zo ? zo.ox : b.x + 6 - mmX0 * s;
+  const oy = zo ? zo.oy : b.y + head + Math.max(0, (b.h - head - foot - mmH * s) / 2) + 62 * s;
   const X = (x: number) => ox + x * s;
   const Y = (y: number) => oy + y * s;
   const pose = armSidePose(v);
   const F = trueForce(v);
   const balanced = v.armUp && isBalanced(v);
   const dial = dialReads(v);
-  const P = { x: S.pivotX, y: S.tubeY };
   // ── the motion (the same timing as the top view's swing) ──
   const swing = useSharedValue(ang);
   const base = useSharedValue(pose.angle);
@@ -316,7 +324,8 @@ export function ArmSide({ b, v, ang, k = 1 }: { b: Box; v: VinylState; ang: numb
       )}
       <SceneText x={loupe.x - 8} y={footY} size={fs} text={`ANTI-SKATE ${v.antiSkate.toFixed(0)}`} color={INK.print} face="label" align="right" minPt={9.5} />
       {/* the loupe: the counterweight's dial ring, read at its pointer line */}
-      <Line p1={vec(X(P.x + 46), Y(P.y - 16))} p2={vec(loupe.x, loupe.y + loupe.h / 2)} color="rgba(255,198,77,0.45)" strokeWidth={1} />
+      {/* (zoomed in on the stylus, the ring is out of the window: no leader) */}
+      {X(P.x + 46) <= win.x + win.w ? <Line p1={vec(X(P.x + 46), Y(P.y - 16))} p2={vec(loupe.x, loupe.y + loupe.h / 2)} color="rgba(255,198,77,0.45)" strokeWidth={1} /> : null}
       <RoundedRect x={loupe.x} y={loupe.y} width={loupe.w} height={loupe.h} r={8} color="#0b0c0f" />
       <Group clip={Skia.RRectXY(Skia.XYWHRect(loupe.x, loupe.y, loupe.w, loupe.h), 8, 8)}>
         <RoundedRect x={loupe.x + loupe.w * 0.42} y={loupe.y} width={loupe.w * 0.5} height={loupe.h}>
@@ -586,7 +595,11 @@ export function roomTurntable(feet: boolean) {
   return { feetH, base, top, platterTop, recTop: platterTop + R.tt.disc, total: platterTop + R.tt.disc - R.tableTop };
 }
 
-export function RoomView({ b, v, ang, gain, howlDb, k = 1 }: { b: Box; v: VinylState; ang: number; gain: number; howlDb: number; k?: number }) {
+/** The ROOM view's zoom stops at 2×: the turntable, the name of its feet
+ *  and the near monitor stay in one window. */
+export const ROOM_ZOOM_MAX = 2;
+
+export function RoomView({ b, v, ang, gain, howlDb, k = 1, zoom = 1 }: { b: Box; v: VinylState; ang: number; gain: number; howlDb: number; k?: number; zoom?: number }) {
   const fs = 9.5 * k;
   const R = ROOM_SIDE;
   const head = 30 * k;
@@ -594,14 +607,24 @@ export function RoomView({ b, v, ang, gain, howlDb, k = 1 }: { b: Box; v: VinylS
   // above it, so no gear part can ever draw over a word there
   const foot = fs + 8;
   const availH = b.h - head - foot - 4;
-  const s = Math.min((b.w - 12) / (R.view.x1 - R.view.x0), availH / (R.view.y1 - R.view.y0));
+  const z = Math.min(ROOM_ZOOM_MAX, Math.max(1, zoom));
+  const s = z * Math.min((b.w - 12) / (R.view.x1 - R.view.x0), availH / (R.view.y1 - R.view.y0));
+  const feetLabel = v.feet ? 'ISOLATION FEET' : 'ITS OWN FEET';
+  // the drawing's window (its clip, between the title and the footer band)
+  const win = { x: b.x + 2, y: b.y + head - 4, w: b.w - 4, h: b.h - head - foot + 4 };
+  // zoomed, the view opens on the turntable on its feet — the window's left
+  // edge leaves room for the feet's name — and runs on toward the monitor
+  const labelMm = (feetLabel.length * fs * 0.62 + 16) / s;
+  const zo = z > 1 ? zoomedOrigin(win, s, { x: R.tt.x - labelMm + (win.w / s) / 2, y: R.tableTop + 150 }, [R.view.x0, R.view.x1], [R.view.y0, R.view.y1], -1) : null;
+  const ox = zo ? zo.ox : b.x + (b.w - (R.view.x1 - R.view.x0) * s) / 2 - R.view.x0 * s;
+  const oy = zo ? zo.oy : b.y + head + R.view.y1 * s;
   // the bottom of the view: the floor when the panel is tall enough
-  const y0 = Math.max(-30, R.view.y1 - availH / s);
+  const y0 = zo ? Math.max(-30, (oy - (win.y + win.h)) / s) : Math.max(-30, R.view.y1 - availH / s);
   const floorShown = y0 <= 0;
-  const ox = b.x + (b.w - (R.view.x1 - R.view.x0) * s) / 2 - R.view.x0 * s;
-  const oy = b.y + head + R.view.y1 * s;
   const X = (x: number) => ox + x * s;
   const Y = (y: number) => oy - y * s;
+  const ELEC = 'ELECTRICAL (OVERLAY): STYLUS TO MIXER TO MONITOR';
+  const elecW = ELEC.length * fs * 0.62;
   const status = gain >= 1 ? 'HOWL' : gain >= 0.6 ? 'BOOMY' : gain > 0.02 ? 'QUIET' : 'NO LOOP';
   const tint = gain >= 1 ? INK.peak : gain >= 0.6 ? INK.amber : INK.green;
   const T = roomTurntable(v.feet);
@@ -645,17 +668,19 @@ export function RoomView({ b, v, ang, gain, howlDb, k = 1 }: { b: Box; v: VinylS
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [woof.x, woof.y, s, ox]);
+  // the ELECTRICAL run's height: zoomed, kept inside the window under its words
+  const wireTop = zo ? Math.max(Y(R.view.y1 - 40), win.y + fs + 8) : Y(R.view.y1 - 40);
   const wire = useMemo(() => {
     // the ELECTRICAL path, drawn apart as an overlay: stylus → mixer → monitor
     const p = Skia.PathBuilder.Make();
-    const top = Y(R.view.y1 - 40);
+    const top = wireTop;
     p.moveTo(X(sx), Y(headH + 14));
     p.lineTo(X(sx), top);
     p.lineTo(X(mon.x + depth + R.mon.w * 0.6), top);
     p.lineTo(X(mon.x + depth + R.mon.w * 0.6), Y(mon.y + mon.h) - 2);
     return p.detach();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [s, ox, oy, sx, headH, mon.x, mon.y]);
+  }, [s, ox, oy, sx, headH, mon.x, mon.y, wireTop]);
   const arrow = useMemo(() => {
     const p = Skia.PathBuilder.Make();
     const x = X(mon.x + depth + R.mon.w * 0.6);
@@ -680,7 +705,6 @@ export function RoomView({ b, v, ang, gain, howlDb, k = 1 }: { b: Box; v: VinylS
       </RoundedRect>
     );
   };
-  const feetLabel = v.feet ? 'ISOLATION FEET' : 'ITS OWN FEET';
   const footL = R.tt.x + 40 - (v.feet ? 33 : 22);
   return (
     <Group>
@@ -790,14 +814,18 @@ export function RoomView({ b, v, ang, gain, howlDb, k = 1 }: { b: Box; v: VinylS
         </Path>
         <Path path={arrow} color={INK.blue} opacity={0.85} />
       </Group>
-      <SceneText x={(X(sx) + X(mon.x + depth + R.mon.w * 0.6)) / 2} y={Y(R.view.y1 - 40) - 4} size={fs} text="ELECTRICAL (OVERLAY): STYLUS TO MIXER TO MONITOR" color={INK.blue} face="label" align="center" minPt={9.5} />
-      <SceneText x={woof.x - Math.max(30, woof.x - X(R.tt.x + R.tt.w * 0.55)) * 0.55} y={Y(recTop + 300)} size={fs} text="AIR" color={INK.amber} face="label" align="center" minPt={9.5} />
+      {/* zoomed, the words in the drawing are cut to its window (never over
+          the title or the footer) and the ELECTRICAL words stay inside it */}
+      <Group clip={zo ? Skia.XYWHRect(win.x, win.y, win.w, win.h) : undefined}>
+        <SceneText x={zo ? Math.min(win.x + win.w - elecW / 2 - 4, Math.max(win.x + elecW / 2 + 4, (X(sx) + X(mon.x + depth + R.mon.w * 0.6)) / 2)) : (X(sx) + X(mon.x + depth + R.mon.w * 0.6)) / 2} y={wireTop - 4} size={fs} text={ELEC} color={INK.blue} face="label" align="center" minPt={9.5} />
+        <SceneText x={woof.x - Math.max(30, woof.x - X(R.tt.x + R.tt.w * 0.55)) * 0.55} y={Y(recTop + 300)} size={fs} text="AIR" color={INK.amber} face="label" align="center" minPt={9.5} />
+        {/* the feet's name, in the clear air over the table left of the
+            turntable, with a short leader to the left foot it names */}
+        <SceneText x={X(R.tt.x) - 6} y={Y(R.tableTop) - 3} size={fs} text={feetLabel} color={INK.print} face="label" align="right" minPt={9.5} />
+        <Line p1={vec(X(R.tt.x) - 3, Y(R.tableTop) - 3 - fs * 0.36)} p2={vec(X(footL) - 1, Y(R.tableTop) - 3 - fs * 0.36)} color={INK.printDim} strokeWidth={1} />
+      </Group>
       {/* the footer band: status words only, clear of every gear part */}
       {howlDb > -60 ? <SceneText x={b.x + 10} y={b.y + b.h - 6} size={fs} text={`80 Hz BUILD-UP ${howlDb.toFixed(0)} dBFS (HELD SAFE)`} color={tint} face="label" minPt={9.5} /> : null}
-      {/* the feet's name, in the clear air over the table left of the
-          turntable, with a short leader to the left foot it names */}
-      <SceneText x={X(R.tt.x) - 6} y={Y(R.tableTop) - 3} size={fs} text={feetLabel} color={INK.print} face="label" align="right" minPt={9.5} />
-      <Line p1={vec(X(R.tt.x) - 3, Y(R.tableTop) - 3 - fs * 0.36)} p2={vec(X(footL) - 1, Y(R.tableTop) - 3 - fs * 0.36)} color={INK.printDim} strokeWidth={1} />
     </Group>
   );
 }

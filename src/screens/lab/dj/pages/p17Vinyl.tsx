@@ -10,13 +10,15 @@
  * the live channel is flagged as a THUMP. The fault (a different cause from
  * the Observe): a raw turntable into a LINE input — no phono stage at all.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { colors } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene, type Callout } from '../art/Scene';
+import { DjZoomContext } from '../art/djZoom';
+import { useStageTextScale } from '../../rack/stageAspect';
 import { TurntableTop, TT_PARTS, armPartAt, armPoseAngle, turntablePartBox } from '../art/TurntableTop';
 import { ArmSide, PhonoChain, RoomView, type PhonoCount } from '../art/vinylArt';
 import { TT, TT_D, TT_W } from '../geometry/boothGeometry';
@@ -134,6 +136,11 @@ function RoomTray({ onView }: { onView: () => void }) {
 
 function PageVinyl({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit();
+  // FULL SCREEN: the zoom step (1 on the glass), and the text scale the
+  // Scene hands its screenOverlay — the side panel's height is taken at it,
+  // so the top view's room must start where that panel really ends
+  const zStep = useContext(DjZoomContext).z;
+  const kz = useStageTextScale();
   const { ready } = useScreenSetup((b) => {
     let x = connect(connect(b, 'tt.rcaL', 'ch1.phono.L')!, 'tt.rcaR', 'ch1.phono.R')!;
     const pos = TRACKS.nightFerry.leadInSec + 16 * barSec('nightFerry');
@@ -217,7 +224,9 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
             h={hh}
             frame={frame}
             motion={motion}
-            fit={{ x: 0, y: panelH(hh, 1), w, h: hh - panelH(hh, 1) }}
+            // the panel's height at the overlay's text scale (it was taken at
+            // 1: in FULL SCREEN the panel ran down over the top view's labels)
+            fit={{ x: 0, y: panelH(hh, kz), w, h: hh - panelH(hh, kz) }}
             // FULL SCREEN's shape: the side view over the turntable's top view
             aspect={0.86}
             obstacles={[{ x: 0, y: 0, w: TT_W, h: TT_D }, ...TT_PARTS.map((p) => turntablePartBox(p, armAng))]}
@@ -225,7 +234,9 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
             screenOverlay={(W, H, _xf, k) => {
               const kk = Math.sqrt(k);
               const b = { x: 6, y: 4, w: W - 12, h: panelH(H, k) - 8 };
-              return view === 'ARM' ? <ArmSide b={b} v={v} ang={armAng} k={kk} /> : view === 'PHONO' ? <PhonoChain b={b} preamp={booth.ttPreamp} input={booth.ch[1].input} count={count} plugTo={plugTarget(booth)} gnd={v.gnd} k={kk} /> : <RoomView b={b} v={v} ang={armAng} gain={G} howlDb={s2?.howlDb ?? -120} k={kk} />;
+              // the side views zoom with the step (grade round 1: only the top
+              // view grew); the PHONO chain and its RIAA plot stay pinned
+              return view === 'ARM' ? <ArmSide b={b} v={v} ang={armAng} k={kk} zoom={zStep} /> : view === 'PHONO' ? <PhonoChain b={b} preamp={booth.ttPreamp} input={booth.ch[1].input} count={count} plugTo={plugTarget(booth)} gnd={v.gnd} k={kk} /> : <RoomView b={b} v={v} ang={armAng} gain={G} howlDb={s2?.howlDb ?? -120} k={kk} zoom={zStep} />;
             }}
             a11y={`You are looking at ${view === 'ARM' ? 'the tonearm from the side — its gimbal, counterweight and dial ring, the cue lever, the headshell and cartridge over the record' : view === 'PHONO' ? 'the phono chain from the cartridge to the channel, the turntable’s and the mixer’s rear panels with the leads and the ground wire, and the RIAA playback curve' : 'the booth from the side, drawn to one scale: the table, the turntable on its feet and the booth monitor, with the sound’s path through the air and, as an overlay, the electrical path'}, above the turntable from the top. Dial ${dialReads(v).toFixed(1)} grams; tracking ${trackWord.toLowerCase()}.`}
           >
