@@ -255,6 +255,15 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
   const selPair: 'line' | 'phono' | null = booth.ch[1].input === 'LINE' ? 'line' : booth.ch[1].input === 'PHONO' ? 'phono' : null;
   const peak = last ? Math.max(...Array.from(last.raw.ch1)) : null;
   const sideWord = (s: typeof route.L) => (s ? `${s.source === 'TT' ? 'TT' : 'DECK ' + s.source} ${s.side}` : '—');
+  // the leads (and the ground wire) are obstacles too: no word sits on a cable
+  const leadBoxes: Box[] = [];
+  for (const l of [lane3(src, 'L', runs[0].plugged ? (booth.plugs[runs[0].id as PlugId] as JackId) : null), lane3(src, 'R', runs[1].plugged ? (booth.plugs[runs[1].id as PlugId] as JackId) : null), ...(src === 'TT' ? [groundLane3()] : [])]) {
+    for (let i = 1; i < l.length; i++) {
+      const [x0, y0] = l[i - 1];
+      const [x1, y1] = l[i];
+      leadBoxes.push({ x: Math.min(x0, x1) - 4, y: Math.min(y0, y1) - 4, w: Math.abs(x1 - x0) + 8, h: Math.abs(y1 - y0) + 12 });
+    }
+  }
   const stage = useMemo(
     () => (w: number, h: number) => (
       <Scene
@@ -265,7 +274,7 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
         a11y={`The back of ${src === 'A' ? 'deck A' : 'the turntable'} above the back of the mixer, with the source's white and red RCA plugs. Channel 1 left hears ${sideWord(route.L)}, right hears ${sideWord(route.R)}; input selector ${booth.ch[1].input}.`}
         // labels keep OFF both panels (they sit in the gap or the margins,
         // with a leader) and prefer the space clear of the leads
-        obstacles={[srcBox3(src), { x: S3.mix.x, y: S3.mix.y, w: MIXER_REAR.w, h: MIXER_REAR.h }]}
+        obstacles={[srcBox3(src), { x: S3.mix.x, y: S3.mix.y, w: MIXER_REAR.w, h: MIXER_REAR.h }, ...leadBoxes]}
         soft={[{ x: 52, y: srcBox3(src).h, w: 104, h: S3.mix.y - srcBox3(src).h }]}
         callouts={[
           ...(box ? [{ id: 'id', text: sock.label, at: { x: box.x + box.w / 2, y: box.y + box.h / 2 }, dx: 0, dy: -16, tone: 'blue' as const }] : []),

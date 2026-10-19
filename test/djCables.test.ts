@@ -17,7 +17,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { BUILT_PLUGS, PLUGS, type JackId, type PlugId } from '../src/screens/lab/dj/model/djModel.ts';
-import { MAP_PLUGS, PLUG_R, farKindOf, fixedEnd, fixedKindOf, jackPt, routeOf } from '../src/screens/lab/dj/geometry/mapGeometry.ts';
+import { MAP, MAP_BODIES, MAP_PLUGS, PLUG_R, farKindOf, fixedEnd, fixedKindOf, jackPt, routeOf } from '../src/screens/lab/dj/geometry/mapGeometry.ts';
 import { PLAYER, TT, stylusAt, armAngleFor, GROOVE } from '../src/screens/lab/dj/geometry/boothGeometry.ts';
 import { builtBooth, type Booth } from '../src/screens/lab/dj/model/djModel.ts';
 import type { BoothRender } from '../src/screens/lab/dj/engine/djRender.ts';
@@ -361,6 +361,31 @@ describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed
     // unpowered, or no render: dark
     assert.equal(D.speakerLit({ ...b, power: { ...b.power, paR: false } }, rOnly, 'paR'), false);
     assert.equal(D.speakerLit(b, null, 'paR'), false);
+  });
+
+  it('every word on the patch band keeps off the gear and off the other words — on the phone, full screen and at 3×', () => {
+    // the label face's measure (a copy of art/Scene textWidthPt, which is .tsx)
+    const tw = (t: string, k = 1) => {
+      let em = 0;
+      for (const c of t) em += 'MW'.includes(c) ? 0.74 : " .,:;·'’|!I1()".includes(c) ? 0.3 : 0.55;
+      return em * 10 * k + t.length * 0.6 * k;
+    };
+    const ov = (a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+    const bad: string[] = [];
+    for (const [name, st] of [['wired', WIRED], ['fault', FAULT], ['unwired', UNWIRED]] as const) {
+      // phone (1×, the plugged audio flags), FULL SCREEN 1× and 3× (every flag)
+      const audio = MAP_PLUGS.filter((p) => PLUGS[p].kind !== 'iec' && st[p]);
+      for (const [s, k, shown] of [[0.33, 1, audio], [0.37, 1, MAP_PLUGS], [1.08, Math.sqrt(3), MAP_PLUGS]] as const) {
+        const placed = D.patchLabels4(st, shown, () => false, s, k, tw);
+        for (const p of placed) {
+          for (const b of [...MAP_BODIES, MAP.front]) if (ov(p, b) > 0.5) bad.push(`${name} @${s}: ${p.id} on the gear at (${b.x}, ${b.y})`);
+          for (const q of placed) if (q !== p && ov(p, q) > 0) bad.push(`${name} @${s}: ${p.id} on ${q.id}`);
+        }
+        // every audio flag that is asked for is placed (only a mains cord's may wait for a closer zoom)
+        for (const p of shown) if (PLUGS[p].kind !== 'iec' && !placed.some((q) => q.id === p || (q.text.endsWith('L·R') && q.text.startsWith(p[0])))) bad.push(`${name} @${s}: ${p} has no flag`);
+      }
+    }
+    assert.deepEqual(bad, []);
   });
 
   it('the drawing and the bezel both use the per-feed light; mains cords are secondary, under the audio', () => {

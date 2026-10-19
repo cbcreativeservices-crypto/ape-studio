@@ -22,7 +22,7 @@
  */
 import { MIXER_REAR_JACKS, PLAYER_REAR, PLAYER_REAR_JACKS, type Box, type Pt } from './boothGeometry.ts';
 import { MONITOR_H, MONITOR_W, SPEAKER_H, SPEAKER_W } from './gearGeometry.ts';
-import { MAP, FLOOR_Y, phonesJackPt, routeOf, type SpeakerKey } from './mapGeometry.ts';
+import { FLAG, FLAG_TEXT, MAP, MAP_BODIES, MAP_PLUGS, TIED, FLOOR_Y, PLUG_R, farKindOf, fixedEnd, fixedKindOf, jackPt, phonesJackPt, routeOf, type SpeakerKey } from './mapGeometry.ts';
 import { PLUGS, deviceLive, speakerFeed, type Booth, type JackId, type PlugId } from '../model/djModel.ts';
 import type { BoothRender } from '../engine/djRender.ts';
 
@@ -186,7 +186,9 @@ export function lane3(src: Source3, side: 'L' | 'R', to: JackId | null): P2[] {
   const d = mixJack3(to as keyof typeof MIXER_REAR_JACKS);
   const lane = S3.lane[side];
   if (BOTTOM_ROW(to)) {
-    const col = d.x + S3.sideCol;
+    // beside the stack: right of the LINE pair (clear of its halo), or between
+    // the PHONO and LINE pairs (11 mm from each column)
+    const col = d.x + (to.includes('phono') ? S3.sideCol : S3.sideCol + 2);
     return [[a.x, a.y], [a.x, lane], [col, lane], [col, d.y], [d.x, d.y]];
   }
   return [[a.x, a.y], [a.x, lane], [d.x, lane], [d.x, d.y]];
@@ -354,3 +356,173 @@ export function run4(p: PlugId, plugs: Partial<Record<PlugId, JackId | null>>): 
 /** The headphones on the table (room band, 1:5): their box. */
 export const roomPhonesBox: Box = { x: ROOM4.phones, y: roomTableTop - 300 * ROOM_F, w: 200 * ROOM_F, h: 300 * ROOM_F };
 export const MAP_PATCH = MAP;
+
+/* ── the words on Screen 4's patch band ───────────────────────────────── */
+
+export type LabelItem =
+  | { kind: 'flag'; id: PlugId; text: string; live: boolean; edge: string; along: readonly P2[]; prefer: P2; loose?: Box; optional?: boolean }
+  | { kind: 'name'; id: string; text: string; box: Box };
+export type Placed = { id: string; kind: 'flag' | 'name'; text: string; x: number; y: number; w: number; h: number; live?: boolean; edge?: string; leader?: { x0: number; y0: number; x1: number; y1: number } };
+
+const overlap = (a: Box, b: Box) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+
+/**
+ * Place the patch band's words (patch mm): each name beside its device, each
+ * cable's flag ON its own cable, none on gear, a plug, another word or
+ * another cable where it can be helped. Greedy, in the order given. `s` is
+ * the scene's pt per mm, `k` the words' zoom growth.
+ */
+export function placeLabels(items: readonly LabelItem[], bodies: readonly Box[], plugs: readonly { x: number; y: number; r: number }[], cables: readonly { id: string; pts: readonly P2[] }[], s: number, k: number, textWidthPt: (t: string, k: number) => number, band: Box): Placed[] {
+  const out: Placed[] = [];
+  const samples = cables.map((c) => {
+    const pts: P2[] = [];
+    for (let i = 1; i < c.pts.length; i++) {
+      const [x0, y0] = c.pts[i - 1];
+      const [x1, y1] = c.pts[i];
+      const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) / 6));
+      for (let j = 0; j < n; j++) pts.push([x0 + ((x1 - x0) * j) / n, y0 + ((y1 - y0) * j) / n]);
+    }
+    return { id: c.id, pts };
+  });
+  const cost = (r: Box, own: string | null) => {
+    let c = 0;
+    if (r.x < band.x || r.y < band.y || r.x + r.w > band.x + band.w || r.y + r.h > band.y + band.h) c += 5000;
+    for (const b of bodies) {
+      const o = overlap(r, b);
+      if (o > 0.5) c += 2500 + (o / (r.w * r.h)) * 4000; // never on the gear
+    }
+    for (const p of plugs) c += (overlap(r, { x: p.x - p.r, y: p.y - p.r, w: p.r * 2, h: p.r * 2 }) / (r.w * r.h)) * 6000;
+    for (const q of out) c += overlap(r, { x: q.x - 1.5 / s, y: q.y - 1.5 / s, w: q.w + 3 / s, h: q.h + 3 / s }) > 0 ? 9000 : 0;
+    for (const cs of samples) {
+      if (cs.id === own) continue;
+      let n = 0;
+      for (const [x, y] of cs.pts) if (x > r.x && x < r.x + r.w && y > r.y && y < r.y + r.h) n++;
+      c += n * 60;
+    }
+    return c;
+  };
+  for (const it of items) {
+    if (it.kind === 'flag' && !it.loose) {
+      const pt = (9.5 * k) / s;
+      const w = (textWidthPt(it.text, k) * 0.92 + 8 * k) / s;
+      const h = pt * 1.32;
+      let best: { c: number; x: number; y: number } | null = null;
+      const pts = it.along;
+      for (let i = 0; i < pts.length; i++) {
+        const [px, py] = pts[i];
+        // the flag sits ON its cable: centred on it, or slid along it so the
+        // cable still runs through the flag (a flag on an edge run stays in)
+        for (const f of [0, -0.38, 0.38]) {
+          const cx = px + f * w;
+          const r = { x: cx - w / 2, y: py - h / 2, w, h };
+          const c = cost(r, it.id) + Math.hypot(px - it.prefer[0], py - it.prefer[1]) * 0.6 + Math.abs(f) * 30;
+          if (!best || c < best.c) best = { c, x: cx, y: py };
+        }
+      }
+      // a secondary flag (a mains cord's) that finds no clean place waits for a closer zoom
+      if (best && !(it.optional && best.c >= 2500)) out.push({ id: it.id, kind: 'flag', text: it.text, x: best.x - w / 2, y: best.y - h / 2, w, h, live: it.live, edge: it.edge });
+    } else {
+      // a name beside its device, or a LOOSE cable's flag beside its plug
+      // (with a leader), never over the gear the loose end hangs in front of
+      const isFlag = it.kind === 'flag';
+      const fs = ((isFlag ? 9.5 : 10) * k) / s;
+      const w = isFlag ? (textWidthPt(it.text, k) * 0.92 + 8 * k) / s : (textWidthPt(it.text, k) + 8 * k) / s;
+      const h = isFlag ? fs * 1.32 : fs * 1.45;
+      const b = it.kind === 'flag' ? it.loose! : it.box;
+      const cands: { x: number; y: number; ax: number; ay: number }[] = [];
+      for (const d of [2, 8, 16, 28, 44, 64, 92, 124].map((v) => v / s)) {
+        for (const f of [0.15, 0.5, 0.85]) {
+          const cx = b.x + b.w * f;
+          cands.push({ x: cx - w / 2, y: b.y - d - h, ax: cx, ay: b.y });
+          cands.push({ x: cx - w / 2, y: b.y + b.h + d, ax: cx, ay: b.y + b.h });
+          const cy = b.y + b.h * f;
+          cands.push({ x: b.x - d - w, y: cy - h / 2, ax: b.x, ay: cy });
+          cands.push({ x: b.x + b.w + d, y: cy - h / 2, ax: b.x + b.w, ay: cy });
+        }
+      }
+      let best: { c: number; x: number; y: number; ax: number; ay: number } | null = null;
+      for (const cd of cands) {
+        const r = { x: cd.x, y: cd.y, w, h };
+        const lx = Math.max(r.x, Math.min(r.x + r.w, cd.ax));
+        const ly = Math.max(r.y, Math.min(r.y + r.h, cd.ay));
+        const c = cost(r, null) + Math.hypot(lx - cd.ax, ly - cd.ay) * s * 0.8;
+        if (!best || c < best.c) best = { c, ...cd };
+      }
+      if (best) {
+        const r = { x: best.x, y: best.y, w, h };
+        const lx = Math.max(r.x, Math.min(r.x + r.w, best.ax));
+        const ly = Math.max(r.y, Math.min(r.y + r.h, best.ay));
+        const long = Math.hypot(lx - best.ax, ly - best.ay) * s > 6;
+        if (it.kind === 'flag' && it.optional && best.c >= 2500) continue;
+        out.push({ id: it.id, kind: it.kind, text: it.text, ...r, leader: long ? { x0: best.ax, y0: best.ay, x1: lx, y1: ly } : undefined, live: it.kind === 'flag' ? it.live : undefined, edge: it.kind === 'flag' ? it.edge : undefined });
+      }
+    }
+  }
+  return out;
+}
+
+/** The patch band's top edge (patch mm): right under the room's floor strip. */
+export const PATCH_TOP = ROOM_FLOOR + 10 - PATCH_DY;
+
+/** Every word on Screen 4's patch band for a wiring, a set of shown flags
+ *  and a zoom (`s` pt per mm, `k` the words' growth): pure, so the test can
+ *  prove none sits on gear, on a plug or on another word. */
+export function patchLabels4(plugsAt: Partial<Record<PlugId, JackId | null>>, shown: readonly PlugId[], live: (p: PlugId) => boolean, s: number, k: number, measure: (t: string, k: number) => number): Placed[] {
+  const plugs: { x: number; y: number; r: number }[] = [];
+  for (const p of MAP_PLUGS) {
+    const a = fixedEnd(p);
+    if (a && PLUGS[p].kind !== 'phones') plugs.push({ x: a.x, y: a.y, r: PLUG_R[fixedKindOf(p)] + 1 });
+    const to = plugsAt[p];
+    if (to) {
+      const b = jackPt(to);
+      plugs.push({ x: b.x, y: b.y, r: PLUG_R[farKindOf(p)] + 1 });
+    }
+  }
+  const runOf = (p: PlugId): P2[] => (plugsAt[p] ? run4(p, plugsAt) : lane4(p, null));
+  const bodies: Box[] = [...MAP_BODIES, MAP.front];
+  const cables = MAP_PLUGS.map((p) => ({ id: p as string, pts: runOf(p) }));
+  // at phone size a tied RCA pair that runs together carries ONE flag (its
+  // plugs' white and red already tell L from R): "A L·R"
+  const merged = new Map<PlugId, string>();
+  const dropped = new Set<PlugId>();
+  if (s < 0.6) {
+    for (const [a, b] of TIED) {
+      if (shown.includes(a) && shown.includes(b) && plugsAt[a] && plugsAt[b]) {
+        merged.set(a, `${(FLAG_TEXT[a] ?? a).split(' ')[0]} L·R`);
+        dropped.add(b);
+      }
+    }
+  }
+  const order = shown.filter((p) => !dropped.has(p)).sort((a, b) => (PLUGS[a].kind === 'iec' ? 1 : 0) - (PLUGS[b].kind === 'iec' ? 1 : 0));
+  const edgeOf = (p: PlugId) => (PLUGS[p].kind === 'rca' ? (p.endsWith('R') ? '#7a2018' : '#8d9097') : PLUGS[p].kind === 'xlr' ? '#3d4046' : '#6f757e');
+  const items: LabelItem[] = [
+    { kind: 'name', id: 'db', text: 'DECK B', box: MAP_BODIES[0] },
+    { kind: 'name', id: 'mx', text: 'MIXER', box: MAP_BODIES[1] },
+    { kind: 'name', id: 'da', text: 'DECK A', box: MAP_BODIES[2] },
+    { kind: 'name', id: 'st', text: 'POWER STRIP', box: MAP_BODIES[3] },
+    { kind: 'name', id: 'hp', text: 'TO THE HEADPHONES', box: { x: PHONES_BREAK.x - 6, y: PHONES_BREAK.y - 7, w: 12, h: 14 } },
+    ...order.map((p): LabelItem => {
+      const along = runOf(p);
+      const plugged = plugsAt[p] != null;
+      // candidates: points along the run, away from its plugs
+      const a0 = along[0];
+      const a1 = along[along.length - 1];
+      const cands: P2[] = [];
+      for (let i = 1; i < along.length; i++) {
+        const [x0, y0] = along[i - 1];
+        const [x1, y1] = along[i];
+        const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) / 8));
+        for (let j = 0; j < n; j++) {
+          const q: P2 = [x0 + ((x1 - x0) * j) / n, y0 + ((y1 - y0) * j) / n];
+          if (Math.hypot(q[0] - a0[0], q[1] - a0[1]) > 14 && Math.hypot(q[0] - a1[0], q[1] - a1[1]) > 14) cands.push(q);
+        }
+      }
+      if (cands.length === 0) cands.push(a1);
+      const pref = (plugged ? FLAG[p] : null) ?? cands[Math.floor(cands.length / 2)];
+      // a loose end's flag goes beside its plug (with a leader), off the gear
+      const loose = plugged ? undefined : { x: a1[0] - 8, y: a1[1] - 8, w: 16, h: 16 };
+      return { kind: 'flag', id: p, text: merged.get(p) ?? FLAG_TEXT[p] ?? PLUGS[p].short, live: live(p), edge: edgeOf(p), along: cands, prefer: pref as P2, loose, optional: PLUGS[p].kind === 'iec' };
+    }),
+  ];
+  return placeLabels(items, bodies, plugs, cables, s, k, measure, { x: 0, y: PATCH_TOP + 2, w: 1040, h: 828 - PATCH_TOP });
+}
