@@ -709,7 +709,11 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
       <SceneText x={woof.x - Math.max(30, woof.x - X(R.tt.x + R.tt.w * 0.55)) * 0.55} y={Y(recTop + 330)} size={fs} text="AIR" color={INK.amber} face="label" align="center" minPt={9.5} />
       {/* the footer band: status words only, clear of every gear part */}
       {howlDb > -60 ? <SceneText x={b.x + 10} y={b.y + b.h - 6} size={fs} text={`80 Hz BUILD-UP ${howlDb.toFixed(0)} dBFS (HELD SAFE)`} color={tint} face="label" minPt={9.5} /> : null}
-      <SceneText x={b.x + b.w - 8} y={b.y + b.h - 6} size={fs} text={v.feet ? 'ISOLATION FEET' : 'ITS OWN FEET'} color={INK.print} face="label" align="right" minPt={9.5} />
+      {/* the feet's name, in the clear air left of the turntable, with a
+          hairline leader straight down to the left foot it names */}
+      <SceneText x={b.x + 8} y={Y(R.tableTop + feetH + 95)} size={fs} text={v.feet ? 'ISOLATION FEET' : 'ITS OWN FEET'} color={INK.print} face="label" minPt={9.5} />
+      <Line p1={vec(X(R.tt.x + 40), Y(R.tableTop + feetH + 95) + 3)} p2={vec(X(R.tt.x + 40), Y(R.tableTop + feetH) - 1)} color={INK.printDim} strokeWidth={1} />
+      <Circle cx={X(R.tt.x + 40)} cy={Y(R.tableTop + feetH) - 1} r={1.6} color={INK.printDim} />
     </Group>
   );
 }

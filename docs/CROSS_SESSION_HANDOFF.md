@@ -681,8 +681,8 @@ needs: nothing
 
 ### 2026-10-18 21:36 · ccode · 72242637
 changed: Merge dj-lab-b: DJ Systems Lab screens 19-24 into the full 24-screen lab
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (client only)
+needs: nothing
 
 
 ### 2026-10-18 20:29 · ccode · 9fa31669

@@ -198,14 +198,15 @@ function TargetBand() {
   );
 }
 
-/** The ladders' names, horizontal at 9 pt: MIC and BOOTH under their
- *  ladders, CROWD and REC over theirs, so no two names ever touch. */
+/** The ladders' names, horizontal at 9 pt, all ABOVE the ladders in two
+ *  staggered rows (MIC and BOOTH on the upper row, CROWD and REC on the
+ *  lower), so no two names touch and none meets the panel's labels below. */
 function MeterNames({ voice }: { voice: readonly boolean[] }) {
   const lm = useLabelMm(9);
   return (
     <Group>
       {MET.xs.map((x, i) => (
-        <SceneText key={x} x={x + MET.w / 2} y={i % 2 === 0 ? MET.y + MET.h + 2 + lm * 0.95 : MET.y - 3} size={lm} text={MET_NAMES[i]} color={voice[i] ? INK.green : INK.print} face="label" align="center" />
+        <SceneText key={x} x={x + MET.w / 2} y={i % 2 === 0 ? MET.y - 3 - lm * 1.15 : MET.y - 3} size={lm} text={MET_NAMES[i]} color={voice[i] ? INK.green : INK.print} face="label" align="center" />
       ))}
     </Group>
   );
