@@ -124,18 +124,31 @@ export function DvsRig({ b, gnd, ttPlaying, usbLive, k = 1 }: { b: Box; gnd: boo
       <RoundedRect x={lp.x} y={row(3) - 5 * k} width={lp.w} height={10 * k} r={3 * k}>
         <LinearGradient start={vec(0, row(3) - 5 * k)} end={vec(0, row(3) + 5 * k)} colors={['#5a5e66', '#33363c', '#1e2024']} />
       </RoundedRect>
-      <Path
-        path={(() => {
-          const p = Skia.PathBuilder.Make();
-          p.moveTo(lp.x + lp.w - 2 * k, row(3) - 5 * k);
-          p.lineTo(lp.x + lp.w * 0.72 + 2 * k, lp.y + 6);
-          p.lineTo(lp.x + lp.w * 0.72 - 5 * k, lp.y + 5);
-          p.lineTo(lp.x + lp.w - 10 * k, row(3) - 5 * k);
-          p.close();
-          return p.detach();
-        })()}
-        color="#2a2c31"
-      />
+      {/* the lid, open and leaning back from its hinge at the rear: its
+          outer shell and, inside it, the screen's edge */}
+      {(() => {
+        const hx = lp.x + lp.w - 4 * k;
+        const hy = row(3) - 5 * k;
+        const len = Math.min(lp.w * 0.95, hy - lp.y - 4);
+        const a = (100 * Math.PI) / 180;
+        const tx = hx - Math.cos(a) * len;
+        const ty = hy - Math.sin(a) * len;
+        const p = Skia.PathBuilder.Make();
+        p.moveTo(hx, hy);
+        p.lineTo(tx, ty);
+        p.lineTo(tx - 4.5 * k, ty + 0.8 * k);
+        p.lineTo(hx - 5 * k, hy);
+        p.close();
+        return (
+          <Group>
+            <Path path={p.detach()}>
+              <LinearGradient start={vec(hx - 5 * k, 0)} end={vec(hx, 0)} colors={['#1a1b1f', '#4a4e56']} />
+            </Path>
+            <Line p1={vec(hx - 4.6 * k, hy - 2 * k)} p2={vec(tx - 4 * k, ty + 2 * k)} color="#0f2233" strokeWidth={1.4 * k} />
+            <Circle cx={hx - 2.5 * k} cy={hy} r={2 * k} color="#5a5e66" />
+          </Group>
+        );
+      })()}
       <RoundedRect x={port.x - 2 * k} y={port.y - 2 * k} width={6 * k} height={4 * k} r={1} color="#050506" />
       {/* the turntable's ground lug and RCA pair */}
       <Circle cx={lug.x} cy={lug.y} r={d * 0.4}>

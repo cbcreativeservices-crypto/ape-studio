@@ -105,11 +105,12 @@ export function ArmSide({ b, v, k = 1 }: { b: Box; v: VinylState; k?: number }) 
   const loupeW = 78 * k;
   const head = 20 * k;
   const foot = 14 * k;
-  const mmW = 356;
+  const mmW = 348;
   const mmH = 122;
   const s = Math.min((b.w - loupeW - 22) / mmW, (b.h - head - foot) / mmH);
-  const ox = b.x + 8 + 14 * s;
-  const oy = b.y + head + 62 * s;
+  const ox = b.x + 8 + 6 * s;
+  // centred in the height left between the title and the footer line
+  const oy = b.y + head + Math.max(0, (b.h - head - foot - mmH * s) / 2) + 62 * s;
   const X = (x: number) => ox + x * s;
   const Y = (y: number) => oy + y * s;
   const pose = armSidePose(v);
@@ -273,6 +274,8 @@ export function ArmSide({ b, v, k = 1 }: { b: Box; v: VinylState; k?: number }) 
             <Group>
               <Solid x={S.stylusX - 30} y={S.recTop - 8} w={70} h={8} c={['#2a2c31', '#121316']} r={2} />
               <RoundedRect x={S.stylusX - 4} y={S.recTop - 9.5} width={8} height={1.6} r={0.6} color="#8a9099" />
+              {/* its LCD, lit, on the gauge's front face */}
+              <RoundedRect x={S.stylusX - 26} y={S.recTop - 6.4} width={18} height={4.6} r={0.8} color={inRangeF ? '#1d6b3a' : '#6b1d1d'} />
             </Group>
           ) : null}
         </Group>
@@ -280,9 +283,7 @@ export function ArmSide({ b, v, k = 1 }: { b: Box; v: VinylState; k?: number }) 
       {/* words, in screen points, in the free space */}
       {v.scale && !v.armUp ? (
         <Group>
-          <RoundedRect x={X(S.stylusX - 26)} y={Y(S.recTop - 7.4)} width={22 * s * 2.2} height={6.8 * s} r={2} color="#0f2233" />
-          <SceneText x={X(S.stylusX - 26) + 22 * s * 1.1} y={Y(S.recTop - 1.8)} size={Math.max(9.5, 6 * s) * k} text={`${Math.max(0, F).toFixed(2)} g`} color={inRangeF ? INK.green : '#ff8a7e'} face="mono" align="center" minPt={9} />
-          <SceneText x={X(S.stylusX + 8)} y={b.y + b.h - 4} size={fs} text="DIGITAL STYLUS SCALE: THE TRUE FORCE" color={INK.printDim} face="label" align="center" minPt={9.5} />
+          <SceneText x={b.x + 10} y={b.y + b.h - 4} size={fs} text={`STYLUS SCALE READS ${Math.max(0, F).toFixed(2)} g: THE TRUE FORCE`} color={inRangeF ? INK.green : '#ff8a7e'} face="label" minPt={9.5} />
         </Group>
       ) : (
         <SceneText x={b.x + 10} y={b.y + b.h - 4} size={fs} text={`THIS CARTRIDGE: ${FORCE_RANGE.min}–${FORCE_RANGE.max} g`} color={INK.printDim} face="label" minPt={9.5} />
@@ -607,8 +608,7 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
   return (
     <Group>
       <Frame b={b} title="THE BOOTH · SIDE VIEW, TO SCALE" k={k} right={`LOOP ×${gain.toFixed(2)} · ${status}`} rightTint={tint} />
-      {howlDb > -60 ? <SceneText x={b.x + 8} y={b.y + b.h - 4} size={fs} text={`80 Hz BUILD-UP ${howlDb.toFixed(0)} dBFS (HELD SAFE)`} color={tint} face="label" minPt={9.5} /> : null}
-      <Group clip={Skia.XYWHRect(b.x + 2, b.y + head - 4, b.w - 4, b.h - head + 2)}>
+            <Group clip={Skia.XYWHRect(b.x + 2, b.y + head - 4, b.w - 4, b.h - head + 2)}>
         {/* the table: back legs (further, darker), the apron, the top, front legs */}
         {leg(40, true)}
         {leg(R.tableEnd - 20, true)}
@@ -675,7 +675,13 @@ export function RoomView({ b, v, gain, howlDb, k = 1 }: { b: Box; v: VinylState;
         <Path path={arrow} color={INK.blue} opacity={0.85} />
       </Group>
       <SceneText x={(X(R.tt.x + 150) + X(mon.x + depth + R.mon.w * 0.6)) / 2} y={Y(R.view.y1 - 40) - 4} size={fs} text="ELECTRICAL (OVERLAY): STYLUS TO MIXER TO MONITOR" color={INK.blue} face="label" align="center" minPt={9.5} />
-      <SceneText x={woof.x - Math.max(30, woof.x - X(R.tt.x + R.tt.w * 0.55)) * 0.55} y={Y(recTop + 130)} size={fs} text="AIR" color={INK.amber} face="label" align="center" minPt={9.5} />
+      <SceneText x={woof.x - Math.max(30, woof.x - X(R.tt.x + R.tt.w * 0.55)) * 0.55} y={Y(recTop + 330)} size={fs} text="AIR" color={INK.amber} face="label" align="center" minPt={9.5} />
+      {howlDb > -60 ? (
+        <Group>
+          <RoundedRect x={b.x + 6} y={b.y + b.h - fs - 7} width={fs * 21} height={fs + 6} r={3} color="rgba(8,8,10,0.88)" />
+          <SceneText x={b.x + 10} y={b.y + b.h - 6} size={fs} text={`80 Hz BUILD-UP ${howlDb.toFixed(0)} dBFS (HELD SAFE)`} color={tint} face="label" minPt={9.5} />
+        </Group>
+      ) : null}
       {v.feet ? <SceneText x={X(R.tt.x + R.tt.w / 2)} y={Y(R.tableTop - 40) + fs} size={fs} text="ISOLATION FEET" color="#c9b8f0" face="label" align="center" minPt={9.5} /> : null}
     </Group>
   );

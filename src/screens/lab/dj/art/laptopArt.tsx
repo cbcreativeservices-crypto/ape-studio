@@ -33,7 +33,7 @@ export const RIG = {
 } as const;
 /** The table line: every device's front edge. */
 export const RIG_FRONT = 390;
-export const RIG_FRAME: Box = { x: -24, y: -128, w: 1338, h: 540 };
+export const RIG_FRAME: Box = { x: -12, y: -128, w: 1562, h: 540 };
 /** The mixer's rear USB-B socket, seen from above: on its rear edge, mirrored
  *  from the rear panel (rear x 222 → top x 48). */
 const MIX_USB: Pt = { x: RIG.mixer.x + MIXER_W - 222, y: RIG.mixer.y };

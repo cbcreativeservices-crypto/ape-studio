@@ -33,7 +33,7 @@ import { SceneText } from './sceneText';
 
 const LEG = 4;
 
-export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highlight = [], showRecord = true, powered = true, slipmat = true, record = 'music' }: { x: number; y: number; d: DeckState; playing: boolean; highlight?: readonly TurntablePart[]; showRecord?: boolean; powered?: boolean; /** Stage 2 (additive): the felt slipmat under the record. */ slipmat?: boolean; /** Stage 2 (additive): a DVS CONTROL record (white vinyl, black label) instead of music. */ record?: 'music' | 'control' }) {
+export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highlight = [], showRecord = true, powered = true, slipmat = true, record = 'music', armOff = false }: { x: number; y: number; d: DeckState; playing: boolean; highlight?: readonly TurntablePart[]; showRecord?: boolean; powered?: boolean; /** Stage 2 (additive): the felt slipmat under the record. */ slipmat?: boolean; /** Stage 2 (additive): a DVS CONTROL record (white vinyl, black label) instead of music. */ record?: 'music' | 'control'; /** Stage 2 review 2 (additive): the arm lifted and swung clear (balancing) — drawn back at its rest while the platter turns. */ armOff?: boolean }) {
   const P = TT.platter;
   const R = P.d / 2;
   const rr = TT.record.d / 2;
@@ -56,7 +56,8 @@ export const TurntableTop = memo(function TurntableTop({ x, y, d, playing, highl
   // the arm: rest, or riding the groove as the track plays
   const pos = useDeckPos({ ...d, playing: spinning });
   const total = d.track ? trackSeconds(d.track) : 1;
-  const armXf = useDerivedValue(() => [{ rotate: armAngleAt(pos.value, total, spinning) }]);
+  const armRides = spinning && !armOff;
+  const armXf = useDerivedValue(() => [{ rotate: armAngleAt(pos.value, total, armRides) }]);
   const grooves = useMemo(() => {
     const p = Skia.PathBuilder.Make();
     for (let r = TT.record.label / 2 + 6; r < rr - 3; r += 1.6) p.addCircle(P.cx, P.cy, r);

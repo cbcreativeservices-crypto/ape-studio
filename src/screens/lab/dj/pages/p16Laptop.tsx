@@ -176,10 +176,10 @@ function PageLaptop({ ctx }: { ctx: PageCtx }) {
             obstacles={RIG_BODIES}
             callouts={[
               // the cable flags sit ON their cable lanes, behind the gear
-              { id: 'mu', text: l.usbMixer ? 'USB · AUDIO BOTH WAYS' : 'MIXER USB OUT', at: { x: (RP.mixLane.x + RP.mixUsb.x) / 2, y: RP.mixLane.y }, dx: 0, dy: -14, tone: l.usbMixer ? ('blue' as const) : ('red' as const) },
+              { id: 'mu', text: l.usbMixer ? 'USB · AUDIO BOTH WAYS' : 'MIXER USB OUT', at: { x: RP.mixLane.x, y: RP.mixLane.y }, dx: -12, dy: -10, tone: l.usbMixer ? ('blue' as const) : ('red' as const) },
               { id: 'cu', text: l.usbCtrl ? 'USB · CONTROL + POWER, NO AUDIO' : 'CONTROLLER UNPLUGGED', at: { x: (RP.ctlLane.x + RP.ctlUsb.x) / 2, y: RP.ctlLane.y }, dx: 0, dy: -16, tone: l.usbCtrl ? ('amber' as const) : ('red' as const) },
-              { id: 'c1', text: `CH1 ${booth.ch[1].input}`, at: mix(STRIP_X[1], 24), dx: 22, dy: -40, tone: booth.ch[1].input === 'USB' ? ('green' as const) : ('plain' as const) },
-              { id: 'c2', text: `CH2 ${booth.ch[2].input}`, at: mix(STRIP_X[2], 24), dx: 0, dy: -40, tone: booth.ch[2].input === 'USB' ? ('green' as const) : ('plain' as const) },
+              { id: 'c1', text: `CH1 ${booth.ch[1].input}`, at: mix(STRIP_X[1], 24), dx: -6, dy: -36, tone: booth.ch[1].input === 'USB' ? ('green' as const) : ('plain' as const) },
+              { id: 'c2', text: `CH2 ${booth.ch[2].input}`, at: mix(STRIP_X[2] + 16, 24), dx: 14, dy: -10, tone: booth.ch[2].input === 'USB' ? ('green' as const) : ('plain' as const) },
             ]}
             screenOverlay={(W, H, _xf, k) => <AudioSetupPanel b={{ x: 6, y: 4, w: W - 12, h: panelH(H, k) - 8 }} l={l} dropTimes={dropTimes} count={run.current.count} k={Math.sqrt(k)} />}
             a11y={`You are looking at the DJ software’s audio setup window above the rig, drawn to one scale: a controller on the left, the laptop, and the mixer on the right, with a USB cable from the laptop to each. Output device ${l.device}, buffer ${l.buffer} samples, ${outputLatencyMs(l.buffer, l.rate).toFixed(1)} milliseconds of latency, load ${Math.round(loadOf(l) * 100)} percent; deck 1 to ${l.assign.A}, deck 2 to ${l.assign.B}.`}

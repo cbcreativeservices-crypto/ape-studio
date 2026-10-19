@@ -188,7 +188,7 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
   // callouts and the label obstacles ride the arm (visual review 2, blocker 3)
   const spinning = tt.playing && !!tt.track;
   const posNow = spinning ? tt.posSec + Math.max(0, motion.clock.value - tt.at) * (1 + tt.pitch / 100) : tt.posSec;
-  const armAng = armAngleAt(posNow, tt.track ? trackSeconds(tt.track) : 1, spinning);
+  const armAng = armAngleAt(posNow, tt.track ? trackSeconds(tt.track) : 1, spinning && !v.armUp);
   const hl = view === 'ARM' ? (['counterweight', 'headshell'] as const) : view === 'ROOM' ? (['platter'] as const) : ([] as const);
   const callouts: Callout[] =
     view === 'ARM'
@@ -212,8 +212,7 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
             fit={{ x: 0, y: panelH(hh, 1), w, h: hh - panelH(hh, 1) }}
             // FULL SCREEN's shape: the side view over the turntable's top view
             aspect={0.86}
-            obstacles={TT_PARTS.map((p) => turntablePartBox(p, armAng))}
-            soft={[{ x: 0, y: 0, w: TT_W, h: TT_D }]}
+            obstacles={[{ x: 0, y: 0, w: TT_W, h: TT_D }, ...TT_PARTS.map((p) => turntablePartBox(p, armAng))]}
             callouts={callouts}
             screenOverlay={(W, H, _xf, k) => {
               const kk = Math.sqrt(k);
@@ -222,7 +221,7 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
             }}
             a11y={`You are looking at ${view === 'ARM' ? 'the tonearm from the side — its gimbal, counterweight and dial ring, the cue lever, the headshell and cartridge over the record' : view === 'PHONO' ? 'the phono chain from the cartridge to the channel, the turntable’s and the mixer’s rear panels with the leads and the ground wire, and the RIAA playback curve' : 'the booth from the side, drawn to one scale: the table, the turntable on its feet and the booth monitor, with the sound’s path through the air and, as an overlay, the electrical path'}, above the turntable from the top. Dial ${dialReads(v).toFixed(1)} grams; tracking ${trackWord.toLowerCase()}.`}
           >
-            <TurntableTop x={0} y={0} d={tt} playing={tt.playing} highlight={hl} slipmat={v.slipmat} />
+            <TurntableTop x={0} y={0} d={tt} playing={tt.playing} highlight={hl} slipmat={v.slipmat} armOff={v.armUp} />
           </Scene>
         ),
         bezel: [

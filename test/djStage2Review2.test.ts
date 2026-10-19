@@ -62,7 +62,8 @@ describe('DJ Systems Lab — screen 17: the halos ride the arm', () => {
     assert.match(page, /armPartAt\('counterweight', armAng\)/);
     assert.match(page, /turntablePartBox\(p, armAng\)/);
     const art = read('src/screens/lab/dj/art/TurntableTop.tsx');
-    assert.match(art, /rotate: armAngleAt\(pos\.value, total, spinning\)/);
+    assert.match(art, /rotate: armAngleAt\(pos\.value, total, armRides\)/);
+    assert.match(page, /armAngleAt\(posNow, [\s\S]*?spinning && !v\.armUp\)/);
     assert.match(art, /<Group transform=\{armXf\}>[\s\S]*ARM_HALOS\.includes\(h\)/);
   });
 });

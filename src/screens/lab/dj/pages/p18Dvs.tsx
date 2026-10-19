@@ -178,7 +178,7 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
             fit={{ x: 0, y: topH(hh, 1), w: ttW(w), h: hh - topH(hh, 1) }}
             // FULL SCREEN's shape: scope and map over the turntable and the cabling
             aspect={1.12}
-            obstacles={TT_PARTS.map((p) => turntablePartBox(p, armAng))}
+            obstacles={[{ x: 0, y: 0, w: TT_W, h: TT_D }, ...TT_PARTS.map((p) => turntablePartBox(p, armAng))]}
             screenOverlay={(W, H, _xf, k) => {
               const kk = Math.sqrt(k);
               const th = topH(H, k) - 8;
