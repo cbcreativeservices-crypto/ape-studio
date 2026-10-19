@@ -19,7 +19,6 @@ const FOOTER_SECTIONS: { heading: string; links: { href: string; label: string }
       { href: "/verify", label: "Verify a Credential" },
       { href: "/employers", label: "For Employers" },
       { href: "/institutions", label: "Institutions & Teams" },
-      { href: "/tubes", label: "Tube Reference" },
     ],
   },
   {
@@ -46,9 +45,8 @@ export default function Footer() {
           </p>
           <p className="mt-2 max-w-sm text-sm text-text-muted">
             A structured educational system for learning, organizing, applying,
-            and documenting professional audio knowledge. The mobile app is the
-            primary learning environment; this site supports accounts,
-            credentials, references, and verification.
+            and documenting professional audio knowledge. Learning happens in the
+            Pro Audio Training Academy app for iPhone, iPad and Android.
           </p>
         </div>
         {FOOTER_SECTIONS.map((section) => (

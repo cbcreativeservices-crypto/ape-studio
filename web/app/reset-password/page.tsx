@@ -44,7 +44,7 @@ export default function ResetPasswordPage() {
         return;
       }
       setDone(true);
-      setTimeout(() => router.push("/dashboard"), 1200);
+      setTimeout(() => router.push("/"), 1200);
     } finally {
       setBusy(false);
     }
@@ -63,7 +63,7 @@ export default function ResetPasswordPage() {
         </p>
       ) : done ? (
         <p role="status" className="mt-6 rounded-md border border-green/40 bg-green/10 px-3 py-2 text-sm text-foreground">
-          Password updated. Taking you to your dashboard…
+          Password updated. You can now sign in to the app with your new password.
         </p>
       ) : (
         <form onSubmit={onSubmit} className="mt-8 space-y-5">

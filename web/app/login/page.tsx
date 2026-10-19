@@ -26,7 +26,8 @@ export default function LoginPage() {
         setError("That email and password didn't match. Please try again.");
         return;
       }
-      router.push("/dashboard");
+      const next = new URLSearchParams(window.location.search).get("next");
+      router.push(next && next.startsWith("/") && !next.startsWith("//") ? next : "/employers/account");
       router.refresh();
     } catch {
       setError("Sign-in is temporarily unavailable. Please try again shortly.");
@@ -62,11 +63,11 @@ export default function LoginPage() {
   return (
     <div className="mx-auto flex max-w-md flex-col px-4 py-20 sm:px-6">
       <h1 className="font-display text-3xl font-semibold uppercase tracking-wide text-foreground">
-        Member Sign In
+        Employer &amp; Instructor Sign In
       </h1>
       <p className="mt-3 text-sm text-text-sub">
-        Sign in to see your progress and credentials. Accounts are created in the
-        Pro Audio Training Academy mobile app.
+        For verified employer and instructor accounts. Learner accounts are
+        created and used in the Pro Audio Training Academy mobile app.
       </p>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-5">

@@ -67,7 +67,7 @@ export default function Page() {
             Accessibility
           </p>
           <p className="mt-1 text-sm text-text-sub">
-            Report a barrier or ask for help using this website.
+            Report a barrier or ask for help.
           </p>
         </Link>
         <Link
@@ -78,7 +78,7 @@ export default function Page() {
             How we use AI
           </p>
           <p className="mt-1 text-sm text-text-sub">
-            Internal drafting only today. Human review before anything is published.
+            A person reviews everything before it is published.
           </p>
         </Link>
       </div>

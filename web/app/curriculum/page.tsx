@@ -91,8 +91,9 @@ export default function Page() {
       <Section title="Technical accuracy, review, and updates">
         <p>
           Curriculum content is developed for technical accuracy and reviewed on
-          its merits. Review is currently led by the Academy’s Curriculum
-          Director; as the Academy grows, outside and peer review will expand.
+          its merits. Review is led by the Academy’s Curriculum
+          Director, who brings 28 years of teaching professional audio and four
+          decades of industry experience.
         </p>
         <p>
           The material draws on established technical references, recognized

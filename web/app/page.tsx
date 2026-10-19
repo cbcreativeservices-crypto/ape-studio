@@ -154,8 +154,8 @@ function HomeContent() {
           </div>
         </Well>
         <p className="mx-auto mt-4 max-w-2xl text-center text-xs text-text-muted">
-          Interactive studying lives in the mobile app. Create your account there,
-          then sign in here to track progress and verify credentials.
+          Studying happens in the Pro Audio Training Academy app. Download it to
+          create your account and start learning.
         </p>
         <div className="mt-5 text-center">
           <Link

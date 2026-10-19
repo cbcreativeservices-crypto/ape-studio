@@ -230,7 +230,7 @@ export default function EmployerApplyForm() {
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <a
-            href="/login"
+            href="/login?next=/employers/apply"
             className="rounded-md bg-amber px-5 py-2.5 text-sm font-semibold text-background hover:bg-amber-deep"
           >
             Sign in

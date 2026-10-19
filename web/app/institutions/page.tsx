@@ -5,12 +5,11 @@ import { PageHero, Section, List } from "@/components/content";
 export const metadata: Metadata = {
   title: "Institutions & Teams",
   description:
-    "Bulk and multi-seat licensing for schools, studios, and industry on Pro Audio Training Academy. Unique login codes available now; custom institutional tools are planned.",
+    "Bulk and multi-seat licensing for schools, studios, and industry on Pro Audio Training Academy. Discounted seats with unique login codes for your learners.",
 };
 
 const EMAIL = "info@proaudiotrainingacademy.com";
 const QUOTE_MAIL = `mailto:${EMAIL}?subject=${encodeURIComponent("Institution licensing quote")}`;
-const UPDATES_MAIL = `mailto:${EMAIL}?subject=${encodeURIComponent("Institutional tier updates")}`;
 
 export default function Page() {
   return (
@@ -56,40 +55,6 @@ export default function Page() {
         </a>
       </Section>
 
-      <Section title="Coming soon — the Institutional tier (planned)">
-        <List
-          items={[
-            <>
-              <strong>Custom topics</strong> — build a topic from only the terms
-              you want your learners studying.
-            </>,
-            <>
-              <strong>Custom certificates</strong> — choose exactly which topics
-              count toward a certificate you issue.
-            </>,
-            <>
-              <strong>Custom courses & programs</strong> — assemble courses and
-              full programs tailored to your curriculum.
-            </>,
-            <>
-              <strong>Custom database & app configuration</strong> — a
-              configuration shaped to your institution’s needs.
-            </>,
-            <>
-              <strong>User management</strong> — add, organize, and manage your
-              learners.
-            </>,
-            <>
-              <strong>Progress tracking & analytics</strong> — follow each user’s
-              progress and see reporting across your cohort.
-            </>,
-          ]}
-        />
-        <p>
-          Interested as it comes online? Email{" "}
-          <a href={UPDATES_MAIL}>{EMAIL}</a> and we’ll keep you posted.
-        </p>
-      </Section>
 
       <p className="mx-auto max-w-3xl px-4 text-sm text-text-muted sm:px-6">
         Need to check a credential instead?{" "}
