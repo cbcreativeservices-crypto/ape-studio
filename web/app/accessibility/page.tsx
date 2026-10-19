@@ -57,8 +57,8 @@ export default function Page() {
           If anything on our website or in the app is hard to use, we want to
           know. Email <a href={ACCESS_MAIL}>{EMAIL}</a> and tell us the page,
           what you were trying to do, and the device or assistive technology
-          you use. We reply within 3–5 business days and can provide
-          information in another format on request.
+          you use. We reply within 3–5 business days. If you need information in a
+          different format, contact us and we’ll do our best to help.
         </p>
         <p>Last reviewed: October 2026.</p>
       </Section>
