@@ -35,9 +35,9 @@ export function LaunchOverlay({ error }: { error: boolean }) {
           WebkitBackdropFilter: "blur(10px)",
         }}
       >
-        <p className="font-mono text-[0.65rem] uppercase tracking-[0.3em] text-amber">Coming soon</p>
+        <p className="font-mono text-[0.65rem] uppercase tracking-[0.3em] text-amber">Pro Audio Training Academy</p>
         <h1 id="launch-title" className="mt-1.5 font-display text-2xl font-semibold uppercase leading-tight tracking-wide text-foreground">
-          Monday, October&nbsp;12
+          Coming soon
         </h1>
         <p className="mt-1 text-xs text-text-sub">{TAGLINE}</p>
 
