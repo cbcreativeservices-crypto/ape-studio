@@ -7,11 +7,11 @@
  * the processing LOAD, a DROPOUT lamp that flashes on every dropout the
  * render put in the sound, and each deck's output pair.
  */
-import { Group, Line, RoundedRect, vec } from '@shopify/react-native-skia';
+import { BlurMask, Group, Line, LinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import { INK } from './ink';
 import { Cable, Led } from './parts';
-import { ControllerTop, CTRL_D, CTRL_USB, CTRL_W, LAPTOP_H, LAPTOP_USB, LAPTOP_W, Laptop, RearPlugTop, UsbAPlugTop } from './gear';
+import { ControllerTop, CTRL_D, CTRL_USB, CTRL_W, LAPTOP_H, LAPTOP_USB, LAPTOP_W, Laptop, UsbAPlugTop } from './gear';
 import { MixerTop } from './MixerTop';
 import { useMotion } from './motion';
 import { SceneText } from './sceneText';
@@ -19,68 +19,116 @@ import { MIXER_D, MIXER_W, type Box, type Pt } from '../geometry/boothGeometry';
 import { bufferMs, loadOf, outputLatencyMs, type LaptopState } from '../model/djLaptop';
 import type { Booth } from '../model/djModel';
 
-/** The rig's layout (mm): laptop top-left (×0.8), controller under it
- *  (×0.48), the mixer on the right (×1). */
+/**
+ * The rig's layout (mm), ALL AT ONE SCALE (visual review 2 #9, D67): the
+ * controller (550 mm) on the left, the laptop (330 mm) in the middle, the
+ * booth's mixer (270 mm) on the right, their front edges on one line — the
+ * true relative sizes. The laptop's left port feeds the controller, its
+ * right port the mixer; each cable runs in its own lane BEHIND the devices.
+ */
 export const RIG = {
-  laptop: { x: 0, y: 0, s: 0.8 },
-  ctrl: { x: 0, y: LAPTOP_H * 0.8 + 50, s: 0.48 },
-  mixer: { x: LAPTOP_W * 0.8 + 72, y: 30 },
+  ctrl: { x: 0, y: 70, s: 1 },
+  laptop: { x: 620, y: 40, s: 1 },
+  mixer: { x: 1020, y: 0 },
 } as const;
-export const RIG_FRAME: Box = { x: -56, y: -16, w: LAPTOP_W * 0.8 + 72 + MIXER_W + 66, h: LAPTOP_H * 0.8 + 50 + CTRL_D * 0.48 + 26 };
-/** The mixer's rear USB socket, seen from above: its rear edge, mirrored. */
+/** The table line: every device's front edge. */
+export const RIG_FRONT = 390;
+export const RIG_FRAME: Box = { x: -24, y: -128, w: 1338, h: 540 };
+/** The mixer's rear USB-B socket, seen from above: on its rear edge, mirrored
+ *  from the rear panel (rear x 222 → top x 48). */
 const MIX_USB: Pt = { x: RIG.mixer.x + MIXER_W - 222, y: RIG.mixer.y };
-const LAP_R: Pt = { x: RIG.laptop.x + LAPTOP_USB.R.x * RIG.laptop.s, y: RIG.laptop.y + LAPTOP_USB.R.y * RIG.laptop.s };
-const LAP_L: Pt = { x: RIG.laptop.x + LAPTOP_USB.L.x * RIG.laptop.s, y: RIG.laptop.y + LAPTOP_USB.L.y * RIG.laptop.s };
-const CTL_USB: Pt = { x: RIG.ctrl.x + CTRL_USB.x * RIG.ctrl.s, y: RIG.ctrl.y };
-export const RIG_POINTS = { mixUsb: MIX_USB, lapR: LAP_R, lapL: LAP_L, ctlUsb: CTL_USB };
-/** Device bodies (label obstacles). */
+const LAP_R: Pt = { x: RIG.laptop.x + LAPTOP_USB.R.x, y: RIG.laptop.y + LAPTOP_USB.R.y };
+const LAP_L: Pt = { x: RIG.laptop.x + LAPTOP_USB.L.x, y: RIG.laptop.y + LAPTOP_USB.L.y };
+const CTL_USB: Pt = { x: RIG.ctrl.x + CTRL_USB.x, y: RIG.ctrl.y };
+/** The cables' lanes: the mixer's down the gap and along y −60 behind the
+ *  mixer; the controller's down its own gap and along y 22 behind it. */
+const MIX_LANE = { x: 1000, y: -62 };
+const CTL_LANE = { x: 578, y: 22 };
+export const RIG_POINTS = { mixUsb: MIX_USB, lapR: LAP_R, lapL: LAP_L, ctlUsb: CTL_USB, mixLane: MIX_LANE, ctlLane: CTL_LANE };
+/** Device bodies (HARD label obstacles: no label lies on the gear). */
 export const RIG_BODIES: readonly Box[] = [
-  { x: RIG.laptop.x, y: RIG.laptop.y, w: LAPTOP_W * RIG.laptop.s, h: LAPTOP_H * RIG.laptop.s },
-  { x: RIG.ctrl.x, y: RIG.ctrl.y, w: CTRL_W * RIG.ctrl.s, h: CTRL_D * RIG.ctrl.s },
+  { x: RIG.laptop.x, y: RIG.laptop.y, w: LAPTOP_W, h: LAPTOP_H },
+  { x: RIG.ctrl.x, y: RIG.ctrl.y, w: CTRL_W, h: CTRL_D },
   { x: RIG.mixer.x, y: RIG.mixer.y, w: MIXER_W, h: MIXER_D },
+  // the plugs standing out of the devices
+  { x: MIX_USB.x - 10, y: MIX_USB.y - 30, w: 20, h: 30 },
+  { x: CTL_USB.x - 10, y: CTL_USB.y - 30, w: 20, h: 30 },
+  { x: LAP_R.x, y: LAP_R.y - 9, w: 38, h: 18 },
+  { x: LAP_L.x - 38, y: LAP_L.y - 9, w: 38, h: 18 },
 ];
 
 const USB_STYLE = { colour: '#3a3d43', width: 4.2, pattern: 'dots' as const };
 
-/** The rig: devices, then each USB cable in its own lane, glowing with what
- *  it carries (audio blue while the software's decks reach the mixer). */
-export function LaptopRig({ booth, audioLive, flow }: { booth: Booth; audioLive: boolean; flow: boolean }) {
-  const l = booth.laptop;
-  // each cable in its own lane: out of the plug's boot, round the device
-  // edges, into the plug seated in the other device
-  const laneX = (LAP_R.x + 36 + RIG.mixer.x) / 2;
-  const mixRun: [number, number][] = [[LAP_R.x + 36, LAP_R.y], [laneX, LAP_R.y], [laneX, MIX_USB.y - 36], [MIX_USB.x, MIX_USB.y - 36], [MIX_USB.x, MIX_USB.y - 22]];
-  const ctlLaneY = (RIG.laptop.y + LAPTOP_H * RIG.laptop.s + CTL_USB.y - 22) / 2;
-  const ctlRun: [number, number][] = [[LAP_L.x - 36, LAP_L.y], [LAP_L.x - 44, LAP_L.y], [LAP_L.x - 44, ctlLaneY], [CTL_USB.x, ctlLaneY], [CTL_USB.x, CTL_USB.y - 22]];
+/** A USB-B plug seated in a rear socket, seen from above: the socket's metal
+ *  shroud on the rear edge, the square overmould with its moulded USB mark,
+ *  and the strain relief the cable leaves from (pointing away up the page). */
+export function UsbBPlugSeated({ x, y }: { x: number; y: number }) {
   return (
     <Group>
-      <Laptop x={RIG.laptop.x} y={RIG.laptop.y} s={RIG.laptop.s} />
+      {/* the socket's metal shroud, just proud of the rear edge */}
+      <RoundedRect x={x - 7} y={y - 2.5} width={14} height={3} r={0.8}>
+        <LinearGradient start={vec(x - 7, 0)} end={vec(x + 7, 0)} colors={['#6c727b', '#e1e5ea', '#5c626b']} />
+      </RoundedRect>
+      <RoundedRect x={x - 8 + 1} y={y - 22 + 1.5} width={16} height={19} r={3} color="rgba(0,0,0,0.6)">
+        <BlurMask blur={1.5} style="normal" />
+      </RoundedRect>
+      <RoundedRect x={x - 8} y={y - 22} width={16} height={19} r={3}>
+        <LinearGradient start={vec(x - 8, 0)} end={vec(x + 8, 0)} colors={['#2a2c31', '#4a4d54', '#121315']} />
+      </RoundedRect>
+      <Line p1={vec(x - 5, y - 20.5)} p2={vec(x + 5, y - 20.5)} color="rgba(255,255,255,0.16)" strokeWidth={0.7} />
+      {/* the moulded trident mark */}
+      <Line p1={vec(x, y - 18)} p2={vec(x, y - 9)} color="rgba(255,255,255,0.28)" strokeWidth={0.8} />
+      <Line p1={vec(x - 3, y - 15)} p2={vec(x + 3, y - 15)} color="rgba(255,255,255,0.28)" strokeWidth={0.8} />
+      {/* the strain relief */}
+      <RoundedRect x={x - 3.4} y={y - 32} width={6.8} height={11} r={3}>
+        <LinearGradient start={vec(x - 3.4, 0)} end={vec(x + 3.4, 0)} colors={['#202226', '#3a3d43', '#121315']} />
+      </RoundedRect>
+    </Group>
+  );
+}
+
+/** The rig: devices, then each USB cable in its own lane, glowing with what
+ *  it carries (audio blue while the software's decks reach the mixer;
+ *  control amber). An unplugged cable lies loose behind its device. */
+export function LaptopRig({ booth, audioLive, flow }: { booth: Booth; audioLive: boolean; flow: boolean }) {
+  const l = booth.laptop;
+  const mixRun: [number, number][] = [[LAP_R.x + 36, LAP_R.y], [MIX_LANE.x, LAP_R.y], [MIX_LANE.x, MIX_LANE.y], [MIX_USB.x, MIX_LANE.y], [MIX_USB.x, MIX_USB.y - 32]];
+  const ctlRun: [number, number][] = [[LAP_L.x - 36, LAP_L.y], [CTL_LANE.x, LAP_L.y], [CTL_LANE.x, CTL_LANE.y], [CTL_USB.x, CTL_LANE.y], [CTL_USB.x, CTL_USB.y - 32]];
+  return (
+    <Group>
+      {/* the table under the rig, its front edge lit */}
+      <RoundedRect x={-400} y={-400} width={2200} height={400 + RIG_FRONT + 26} r={0} color="#121316" />
+      <RoundedRect x={-400} y={RIG_FRONT + 26} width={2200} height={3} r={0} color="rgba(255,255,255,0.10)" />
       <ControllerTop x={RIG.ctrl.x} y={RIG.ctrl.y} s={RIG.ctrl.s} />
+      <Laptop x={RIG.laptop.x} y={RIG.laptop.y} s={RIG.laptop.s} />
       <MixerTop x={RIG.mixer.x} y={RIG.mixer.y} booth={booth} />
       {l?.usbMixer ? (
         <Group>
           <Cable pts={mixRun} style={USB_STYLE} glow={audioLive ? INK.blue : null} flow={flow && audioLive} />
           <UsbAPlugTop x={LAP_R.x} y={LAP_R.y} dir={1} />
-          <RearPlugTop x={MIX_USB.x} y={MIX_USB.y} kind="usb" />
+          <UsbBPlugSeated x={MIX_USB.x} y={MIX_USB.y} />
         </Group>
       ) : (
         <Group>
-          <Cable pts={[[MIX_USB.x, MIX_USB.y - 22], [MIX_USB.x, MIX_USB.y - 40], [MIX_USB.x + 30, MIX_USB.y - 44]]} style={USB_STYLE} />
-          <RearPlugTop x={MIX_USB.x} y={MIX_USB.y} kind="usb" />
-          <UsbAPlugTop x={MIX_USB.x + 44} y={MIX_USB.y - 44} dir={1} />
+          {/* the empty socket, and the cable's B end lying behind the mixer */}
+          <RoundedRect x={MIX_USB.x - 7} y={MIX_USB.y - 2.5} width={14} height={3} r={0.8} color="#6c727b" />
+          <Cable pts={[[LAP_R.x + 36, LAP_R.y], [MIX_LANE.x - 14, LAP_R.y], [MIX_LANE.x - 14, MIX_LANE.y + 40], [MIX_LANE.x + 20, MIX_LANE.y + 10]]} style={USB_STYLE} />
+          <UsbAPlugTop x={LAP_R.x} y={LAP_R.y} dir={1} />
+          <UsbBPlugSeated x={MIX_LANE.x + 30} y={MIX_LANE.y + 36} />
         </Group>
       )}
       {l?.usbCtrl ? (
         <Group>
-          <Cable pts={ctlRun} style={USB_STYLE} glow={l.usbCtrl ? INK.amber : null} />
+          <Cable pts={ctlRun} style={USB_STYLE} glow={INK.amber} />
           <UsbAPlugTop x={LAP_L.x} y={LAP_L.y} dir={-1} />
-          <RearPlugTop x={CTL_USB.x} y={CTL_USB.y} kind="usb" />
+          <UsbBPlugSeated x={CTL_USB.x} y={CTL_USB.y} />
         </Group>
       ) : (
         <Group>
-          <Cable pts={[[CTL_USB.x, CTL_USB.y - 22], [CTL_USB.x, CTL_USB.y - 40], [CTL_USB.x - 30, CTL_USB.y - 46]]} style={USB_STYLE} />
-          <RearPlugTop x={CTL_USB.x} y={CTL_USB.y} kind="usb" />
-          <UsbAPlugTop x={CTL_USB.x - 44} y={CTL_USB.y - 46} dir={-1} />
+          <RoundedRect x={CTL_USB.x - 7} y={CTL_USB.y - 2.5} width={14} height={3} r={0.8} color="#6c727b" />
+          <Cable pts={[[LAP_L.x - 36, LAP_L.y], [CTL_LANE.x, LAP_L.y], [CTL_LANE.x, CTL_LANE.y], [CTL_USB.x + 90, CTL_LANE.y], [CTL_USB.x + 60, CTL_LANE.y - 6]]} style={USB_STYLE} />
+          <UsbAPlugTop x={LAP_L.x} y={LAP_L.y} dir={-1} />
+          <UsbBPlugSeated x={CTL_USB.x + 50} y={CTL_LANE.y + 18} />
         </Group>
       )}
     </Group>

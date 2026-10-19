@@ -159,7 +159,9 @@ export function stemWindow(id: TrackId, t0: number, n: number, gains: StemGains,
 
 /* ── stem overviews (the lanes: real min/max of each part) ────────────── */
 
-export type StemOverview = { colSec: number; hi: Record<StemId, Float32Array>; lo: Record<StemId, Float32Array>; seconds: number };
+/** `rms` (ADDITIVE, visual review 2 #8): each column's RMS, so a stem lane
+ *  draws the house waveform stack — peak envelope over an RMS core. */
+export type StemOverview = { colSec: number; hi: Record<StemId, Float32Array>; lo: Record<StemId, Float32Array>; rms: Record<StemId, Float32Array>; seconds: number };
 export const STEM_COLS_PER_SEC = 32;
 const overviewCache = new Map<string, StemOverview>();
 
@@ -176,6 +178,8 @@ export async function stemOverview(id: TrackId, source: 'ORIGINAL' | 'SEPARATED'
   const cols = Math.ceil(total * STEM_COLS_PER_SEC);
   const hi = Object.fromEntries(STEM_IDS.map((s) => [s, new Float32Array(cols)])) as Record<StemId, Float32Array>;
   const lo = Object.fromEntries(STEM_IDS.map((s) => [s, new Float32Array(cols)])) as Record<StemId, Float32Array>;
+  const sq = Object.fromEntries(STEM_IDS.map((s) => [s, new Float64Array(cols)])) as Record<StemId, Float64Array>;
+  const cnt = new Float64Array(cols);
   const f = masterCurve(id, rawPeakOf(id) ?? 1);
   const lin = f(1e-4) / 1e-4;
   const chunk = 2;
@@ -186,20 +190,24 @@ export async function stemOverview(id: TrackId, source: 'ORIGINAL' | 'SEPARATED'
     const raw = assembleRaw(id, t0, n, true).stems!;
     const parts = source === 'ORIGINAL' ? raw : separateAll(raw, t0, n);
     const base = Math.round(t0 * SR);
+    for (let i = 0; i < n; i++) cnt[Math.min(cols - 1, Math.floor((base + i) / perCol))] += 1;
     for (const s of STEM_IDS) {
       const buf = parts[s];
       const H = hi[s];
       const L = lo[s];
+      const Q = sq[s];
       for (let i = 0; i < n; i++) {
         const m = ((buf.l[i] + buf.r[i]) / 2) * lin;
         const c = Math.min(cols - 1, Math.floor((base + i) / perCol));
         if (m > H[c]) H[c] = m;
         if (m < L[c]) L[c] = m;
+        Q[c] += m * m;
       }
     }
     if (breath) await breath();
   }
-  const o = { colSec: 1 / STEM_COLS_PER_SEC, hi, lo, seconds: total };
+  const rms = Object.fromEntries(STEM_IDS.map((s) => [s, Float32Array.from(sq[s], (v, c) => Math.sqrt(v / Math.max(1, cnt[c])))])) as Record<StemId, Float32Array>;
+  const o = { colSec: 1 / STEM_COLS_PER_SEC, hi, lo, rms, seconds: total };
   overviewCache.set(key, o);
   return o;
 }
