@@ -90,7 +90,7 @@ numbers). No brand likeness, no trade dress, no logos.
 | F32 | The turntable ground wire is a signal ground; protective mains earth is never removed for hum | S14, S15 | 17 | as stated |
 | F33 | Turntable acoustic feedback through the table and stylus differs from microphone feedback; isolation and placement reduce it | S05 (plan DJ22) | 17 | modelled as one resonance; held safe |
 | F34 | DVS: a control signal (speed, direction, position) read by software after calibration; absolute, relative, internal and thru modes; poor signals and recovery; never route the control tone to the PA | S08, S19 | 18 | generic; quadrature is a common principle — real timecodes also carry position data (not modelled) |
-| F35 | Mains hum is 50 or 60 Hz by country; ONE booth has one mains | general engineering | 17, 20, 23, 24 | the lab uses 60 Hz (the US mains) on every screen and says "50 Hz in many countries" (audio review #4) |
+| F35 | Mains hum is 50 or 60 Hz by country; ONE booth has one mains | general engineering | 17, 20, 23, 24 | the lab uses 60 Hz (the US mains) on every screen — djVinyl and djEvent `HUM_HZ` agree — and the text says "60 Hz (50 Hz in many countries)" (audio review #4) |
 
 ## Stage 2 UNKNOWNS (U6–U11; the Stage 2b unknowns are U13–U19)
 

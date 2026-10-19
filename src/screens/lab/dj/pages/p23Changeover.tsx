@@ -334,7 +334,7 @@ function PageChange({ ctx }: { ctx: PageCtx }) {
         ],
         params: [
           trimKey(booth, 2),
-          { kind: 'group', id: 'plug', label: 'PLUG', valueLabel: ev.lap2.usb ? 'USB 2 IN' : 'NOT IN', render: () => <PlugTray onHot={setHot} onEarth={setEarth} onUnplug2={() => { hotSeen.current = false; setHot(null); }} /> },
+          { kind: 'group', id: 'plug', label: 'PLUG', valueLabel: ev.lap2.usb ? 'USB 2' : 'NOT IN', render: () => <PlugTray onHot={setHot} onEarth={setEarth} onUnplug2={() => { hotSeen.current = false; setHot(null); }} /> },
           { kind: 'group', id: 'predict', label: 'PREDICT', valueLabel: verdict ? (verdict.right ? 'RIGHT' : 'RETRY') : `${marked.size} OF 8`, render: () => <PredictTray marked={marked} setMarked={(s) => { setMarked(s); setVerdict(null); }} onCheck={() => setVerdict(gradePrediction(getBooth(), marked))} verdict={verdict} /> },
           { kind: 'group', id: 'mix', label: 'MIX', valueLabel: programOn(booth) ? 'ON AIR' : 'SILENT', render: () => <MixTray tr={tr} req={() => void audio.requestSound()} /> },
           stopKey(tr),

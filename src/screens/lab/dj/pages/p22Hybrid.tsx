@@ -92,8 +92,8 @@ function Stage({ booth, now }: { booth: Booth; now: number }) {
       {/* audio: the drum machine's OUT L / R into CH 2 LINE (TS jack → RCA) */}
       {dm.audio ? (
         <Group>
+          <CableRun r={{ id: 'dmR', kind: 'trs', farKind: 'rca', colour: '#e2463a', pts: [[out('outR').x, out('outR').y], [out('outR').x, 124], [J['ch2.line.R'].x, 124], [J['ch2.line.R'].x, J['ch2.line.R'].y]], plugged: true, live: running, label: 'DM R', dashed: true }} labelAt={[212, 124]} />
           <CableRun r={{ id: 'dmL', kind: 'trs', farKind: 'rca', colour: '#e9e9ec', pts: [[out('outL').x, out('outL').y], [out('outL').x, 118], [33, 118], [33, J['ch2.line.L'].y], [J['ch2.line.L'].x, J['ch2.line.L'].y]], plugged: true, live: running, label: 'DM L' }} labelAt={[150, 118]} />
-          <CableRun r={{ id: 'dmR', kind: 'trs', farKind: 'rca', colour: '#e2463a', pts: [[out('outR').x, out('outR').y], [out('outR').x, 124], [J['ch2.line.R'].x, 124], [J['ch2.line.R'].x, J['ch2.line.R'].y]], plugged: true, live: running, label: 'DM R', dashed: true }} labelAt={[200, 124]} />
           <CableRun r={{ id: 'bL', kind: 'rca', colour: '#e9e9ec', pts: [[-40, 18], [-14, 18], [-6, 40]], plugged: false, live: false, label: 'B L' }} labelAt={[-28, 18]} />
           <CableRun r={{ id: 'bR', kind: 'rca', colour: '#e2463a', pts: [[-40, 84], [-16, 84], [-8, 104]], plugged: false, live: false, label: 'B R', dashed: true }} labelAt={[-28, 84]} />
         </Group>

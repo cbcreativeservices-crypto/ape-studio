@@ -233,7 +233,7 @@ function SetupTray({ setView, map, setMap }: { setView: (v: View3) => void; map:
 const FLOOR_WORD: Box = { x: -170, y: 300, w: 340, h: 46 };
 
 const fmtDba = (v: number | null) => (v == null ? '—' : v.toFixed(0));
-const PLACE_SHORT: Record<Placement, string> = { CORNERS: 'AIM IN', STRAIGHT: 'STRAIGHT', BEHIND: 'BEHIND' };
+const PLACE_SHORT: Record<Placement, string> = { CORNERS: 'AIM IN', STRAIGHT: 'DOWN', BEHIND: 'BEHIND' };
 
 function PagePa({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion, last } = useEventKit();

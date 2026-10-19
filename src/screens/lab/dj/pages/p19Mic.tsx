@@ -448,7 +448,7 @@ function PageMic({ ctx }: { ctx: PageCtx }) {
     ...MET.xs.map((x) => ({ x: x - 4, y: MET.y - 2, w: MET.w + 10, h: MET.h + 4 })),
     // the mic's body and plug, the cable's drop and lane (no label sits on them)
     ...(wireless ? [{ x: WMIC_AT.x - 26, y: WMIC_AT.y - 22, w: 262, h: 44 }, { x: RX_AT.x, y: RX_AT.y, w: RX_W, h: RX_H }] : [{ x: MIC_AT.x - 26, y: MIC_AT.y - 26, w: t.x - MIC_AT.x + 26, h: t.y - MIC_AT.y + 40 }, { x: t.x - 4, y: t.y - 12, w: pe.x - t.x + 8, h: 24 }, { x: DROP_X - 6, y: pe.y, w: 12, h: LANE_Y - pe.y }]),
-    { x: FRONT_AT.x, y: LANE_Y - 5, w: (wireless ? RX_AT.x + RX_JACKS.out.x : DROP_X) - FRONT_AT.x + 6, h: 10 },
+    { x: FRONT_AT.x, y: LANE_Y - 10, w: (wireless ? RX_AT.x + RX_JACKS.out.x : DROP_X) - FRONT_AT.x + 6, h: 20 },
   ];
   const mixerSoft: Box[] = [{ x: FRONT_AT.x, y: FRONT_AT.y, w: FRONT_W, h: FRONT_H }];
   const mixerCallouts: Callout[] = [

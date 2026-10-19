@@ -72,7 +72,7 @@ function FullHost({ w, h, render }: { w: number; h: number; render: (w: number, 
   const glassW = useContext(StageGlassWidth);
   const lock = useScrollLock();
   const root = useRef<View>(null);
-  const [anchor, setAnchor] = useState(() => {
+  const [anchor] = useState(() => {
     if (Date.now() - lastUnmountAt > 400) anchorMirror = null;
     return anchorMirror;
   });
@@ -95,7 +95,16 @@ function FullHost({ w, h, render }: { w: number; h: number; render: (w: number, 
     });
     return false;
   };
-  const win = useMemo(() => zoomWindow(w, h, zoom, anchor), [w, h, zoom, anchor]);
+  // The rack scrolls ONCE per zoom step, on the box's first size; the body
+  // can grow afterwards (its hint line shrinks to one line), which grows the
+  // box but not the scroll. So the window keeps the offset of its first
+  // render on this step and takes the new size.
+  const first = useRef<{ x: number; y: number } | null>(null);
+  const win = useMemo(() => {
+    const z0 = zoomWindow(w, h, zoom, anchor);
+    if (!first.current) first.current = { x: z0.x, y: z0.y };
+    return { ...z0, x: Math.min(first.current.x, Math.max(0, w - z0.w)), y: Math.min(first.current.y, Math.max(0, h - z0.h)) };
+  }, [w, h, zoom, anchor]);
   // the learner's drag of the zoomed gear (relative to the opening camera)
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const panRef = useRef(pan);
@@ -134,10 +143,6 @@ function FullHost({ w, h, render }: { w: number; h: number; render: (w: number, 
     },
     [],
   );
-  useEffect(() => {
-    // keep the mirror's latest value for the next step's window
-    setAnchor(anchorMirror);
-  }, [zoom]);
   const ctx = useMemo(() => ({ z: zoomed ? zoom : 1, pan, limits }), [zoomed, zoom, pan]);
   return (
     <StageAspectReport.Provider value={null}>

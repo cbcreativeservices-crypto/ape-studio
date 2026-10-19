@@ -448,7 +448,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
             value: booth.ch[2].fader,
             level: true,
             onChange: (v) => updateBooth((b) => ({ ...b, ch: { ...b.ch, 2: { ...b.ch[2], fader: v } } })),
-            format: (v) => `CH 2 ${Math.round(v * 100)}% · CH 1 ${f1v}% (CH 1 ↓ ↑ below)`,
+            format: (v) => `CH 2 ${Math.round(v * 100)}% · CH 1 ${f1v}%`,
             formatShort: (v) => `${Math.round(v * 100)}/${f1v}`,
             nudges: [
               { label: 'CH 1 ↓', onPress: () => nudge(1, -0.1), a11y: 'Channel 1 fader down a step' },

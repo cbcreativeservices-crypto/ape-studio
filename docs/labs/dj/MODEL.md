@@ -228,6 +228,9 @@ The turntable now runs the booth clock and the sound on its own
   whose columns sum to 1, plus a ±0.08 random wobble of the melody's own share
   every 1024 samples. All on = the track; a muted melody leaves a ghost (about
   −19 dB).
+- The drawing (second visual review): each lane's RMS core uses the track's
+  headroom gain × 1.25 (the shared waveform renderer's scale); the ghost is
+  drawn at 10^(ghostDb / 20) of the lane.
 
 ### Laptop (model/djLaptop)
 - The mixer's USB pairs: USB 1/2 → CH1, USB 3/4 → CH2 (selector on USB). Device
@@ -237,6 +240,10 @@ The turntable now runs the booth clock and the sound on its own
   2 % of buffers a spike (exponential, mean 0.8 ms, at most 4 ms) steals time;
   C + spike > P is a DROPOUT (that buffer zeroed in the USB audio). Stable
   buffers at 48 kHz: 256 / 512 / 1024. Deterministic per buffer index.
+- The drawing is at ONE scale (second visual review #9): controller at x 0,
+  laptop at x 620, mixer at x 1020 (mm), front edges on the 390 mm line.
+- Screen 18 (DVS) runs a 256-sample buffer at 48 kHz: a 12.7 ms round trip
+  (DVS players usually run the smallest buffer that stays free of dropouts).
 
 ### Vinyl (model/djVinyl)
 - True force = weight − 2.3 (the hidden balance point); dial = weight − ring
@@ -246,11 +253,21 @@ The turntable now runs the booth clock and the sound on its own
   Tracking ability = wall / 2.85 g; below 1, loud bright passages distort
   (compressed, with a noise "spit"), per channel; under 1.6 g it skips one
   revolution once per sound chunk.
-- No ground wire: 50 Hz with its 3rd and 5th harmonics at a 0.2 mV equivalent at
-  the cartridge (it then gets the phono stage's gain and RIAA bass boost).
+- No ground wire: 60 Hz (the lab's one mains, `HUM_HZ`; the screen says "60 Hz
+  (50 Hz in many countries)") with its 3rd and 5th harmonics at a 0.2 mV
+  equivalent at the cartridge (it then gets the phono stage's gain and RIAA
+  bass boost).
+- The RIAA PLOT draws the analog curve (+19.3 dB at 20 Hz, −19.6 dB at
+  20 kHz); the AUDIO uses the digital fit (engine/djDsp `RIAA_PLAYBACK`),
+  within about 1 dB up to 10 kHz and about 3 dB shallower at 20 kHz.
+- A stylus moved (the arm lifted or lowered) while CH 1 hears the turntable
+  and its fader is above 0.3 is flagged as a THUMP on screen; no sound is
+  played.
 - Acoustic loop G = 1.25 × booth gain × (CH1 fader gain / 0.72) × (near 1 / away
   0.35) × (feet off 1 / on 0.22): an 80 Hz band-pass (Q 2.5) in an 8 ms loop;
   G ≥ 1 builds a howl held under 0.3 (line) by a soft limiter; listen −9 dB.
+  80 Hz is the lab's ONE turntable-and-table resonance: Screen 20's
+  turntable loop (djEvent `TT_RUMBLE_HZ`) uses the same value.
 
 ### DVS (model/djDvs)
 - Control record = a 1 kHz quadrature tone, phase = the record's position,
