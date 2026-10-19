@@ -25,15 +25,15 @@ const DEG = Math.PI / 180;
  * The lesson's ATTENTION mark around a part: a soft amber glow and a hairline
  * ring — never a fill over the control (the control itself stays readable).
  */
-export function Halo({ b, round = false, tone = 'amber' }: { b: { x: number; y: number; w: number; h: number }; round?: boolean; tone?: 'amber' | 'red' }) {
+export function Halo({ b, round = false, tone = 'amber' }: { b: { x: number; y: number; w: number; h: number }; round?: boolean; tone?: 'amber' | 'red' | 'green' }) {
   const r = round ? Math.min(b.w, b.h) / 2 : Math.min(8, Math.min(b.w, b.h) * 0.3);
-  const c = tone === 'red' ? INK.peak : INK.amber;
+  const c = tone === 'red' ? INK.peak : tone === 'green' ? INK.green : INK.amber;
   return (
     <Group>
-      <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={r} style="stroke" strokeWidth={3.2} color={c} opacity={tone === 'red' ? 0.6 : 0.35}>
+      <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={r} style="stroke" strokeWidth={3.2} color={c} opacity={tone === 'amber' ? 0.35 : 0.6}>
         <BlurMask blur={3.5} style="normal" />
       </RoundedRect>
-      <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={r} style="stroke" strokeWidth={tone === 'red' ? 1.6 : 0.8} color={c} opacity={0.95} />
+      <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={r} style="stroke" strokeWidth={tone === 'amber' ? 0.8 : 1.6} color={c} opacity={0.95} />
     </Group>
   );
 }

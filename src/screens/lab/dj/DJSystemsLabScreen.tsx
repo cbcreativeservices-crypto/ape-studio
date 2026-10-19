@@ -17,8 +17,8 @@
  * OBSERVE · PRACTICE · CHECK YOURSELF) under the pinned booth; a screen marks
  * itself done when its practice goals, its check and its
  * troubleshooting exercise are met. FINISH opens the what's-left screen
- * (PagedLab → LabEndScreen): every screen not yet done, by name, PRACTISE
- * AGAIN and DONE. Credit is never removed; START OVER (PRACTICE) only clears
+ * (PagedLab → LabEndScreen): every screen not yet done, by name, with the
+ * goals it still has to meet, PRACTISE AGAIN and DONE. Credit is never removed; START OVER (PRACTICE) only clears
  * this device's page marks.
  *
  * Truth architecture: model/djModel.ts + model/djDeck.ts + model/djTime.ts
@@ -36,7 +36,8 @@ import { useEffect } from 'react';
 import { PagedLab } from '../kit/PagedLab';
 import { releaseTracks } from './engine/djMusic';
 import { clearDeckCache } from './engine/djRender';
-import { DJ_PAGES } from './pages';
+import { DJ_GOALS, DJ_PAGES } from './pages';
+import { leftLine } from './booth/goalStore';
 
 export const DJ_LAB_ID = 'dj-systems';
 export const DJ_LAB_TITLE = 'DJ Systems Lab';
@@ -45,6 +46,11 @@ export const DJ_ACCURACY_DETAIL =
   'This lab MODELS a DJ booth on your phone. Its music is synthesised in the app, its mixer is one generic design (real mixers differ — their manuals win), and its meters read this model in dBFS, never your ears or a room. The phone plays it through one uncalibrated output at a level you choose, behind a protective limiter — that is not a safe-listening measurement, and a phone microphone cannot measure what reaches your ears. Learn the method here; check levels with a calibrated meter and your own equipment.';
 
 const HANDS_ON = 'Its practice goals, its check and its troubleshooting exercise — NEXT moves on without counting it.';
+
+/** A screen's what's-left row: the goals it still has to meet, by name
+ *  (learning review 2026-10-18 X5) — from its last visit this session, or
+ *  every goal of a screen not opened yet. NEXT still moves on without it. */
+const leftDetail = (i: number): string | undefined => (DJ_PAGES[i] && DJ_GOALS[i] ? leftLine(DJ_PAGES[i].short, DJ_GOALS[i]) : undefined);
 
 export function DJSystemsLabScreen() {
   // Leaving the lab releases the synthesised tracks' clip banks and the deck
@@ -63,6 +69,7 @@ export function DJSystemsLabScreen() {
       subtitle="Connect, cue, mix and troubleshoot a two-deck DJ booth."
       pages={DJ_PAGES}
       handsOnDetail={HANDS_ON}
+      pageDetail={leftDetail}
       accuracyDetail={DJ_ACCURACY_DETAIL}
     />
   );

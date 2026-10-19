@@ -10,46 +10,67 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { LabChip } from '../LabShell';
 import { getBooth, updateBooth } from './booth/boothStore';
-import { connect, deviceLive, JACK_NAMES, PLUGS, powerThump, type Booth, type DeviceId, type JackId, type PlugId } from './model/djModel';
+import { connect, deviceLive, hotPatchSpeakers, JACK_NAMES, PLUGS, powerThump, type Booth, type DeviceId, type JackId, type PlugId, type SpeakerId } from './model/djModel';
 
-export function PatchTray({ plugs, onPatched }: { plugs: readonly PlugId[]; onPatched?: (p: PlugId, j: JackId | null) => void }) {
+/**
+ * PATCH: pick a cable, then where its free end goes. A move of a LIVE audio
+ * cable — into or out of a powered speaker that is on, or on a channel that
+ * is up — raises a HOT-PATCH warning here, like THUMP (audio review
+ * 2026-10-18 #3), and `onHot` lets the page flash the speakers that would
+ * have heard it. The lab never plays the bang.
+ */
+export function PatchTray({ plugs, onPatched, onSelect, onHot, initial }: {
+  plugs: readonly PlugId[];
+  onPatched?: (p: PlugId, j: JackId | null) => void;
+  /** The cable picked in step 1 (the map shows its label flag). */
+  onSelect?: (p: PlugId) => void;
+  onHot?: (speakers: readonly SpeakerId[], p: PlugId) => void;
+  initial?: PlugId;
+}) {
   const booth = getBooth();
-  const [sel, setSel] = useState<PlugId>(plugs[0]);
+  const [sel, setSel] = useState<PlugId>(initial && plugs.includes(initial) ? initial : plugs[0]);
+  const [hot, setHot] = useState<PlugId | null>(null);
   const def = PLUGS[sel];
   const at = booth.plugs[sel];
+  const patch = (j: JackId | null) => {
+    const spk = hotPatchSpeakers(getBooth(), sel, j);
+    setHot(spk.length ? sel : null);
+    if (spk.length) onHot?.(spk, sel);
+    updateBooth((b) => connect(b, sel, j));
+    onPatched?.(sel, j);
+  };
   return (
     <View style={styles.tray}>
       <Text style={styles.head}>1 · PICK A CABLE (its other end is already in its source)</Text>
       <View style={styles.row}>
         {plugs.map((p) => (
-          <LabChip key={p} label={`${PLUGS[p].short}${booth.plugs[p] ? ' ✓' : ''}`} selected={sel === p} onPress={() => setSel(p)} compact />
+          <LabChip
+            key={p}
+            label={`${PLUGS[p].short}${booth.plugs[p] ? ' ✓' : ''}`}
+            selected={sel === p}
+            onPress={() => {
+              setSel(p);
+              onSelect?.(p);
+            }}
+            compact
+          />
         ))}
       </View>
       <Text style={styles.note}>{`${def.from} → ${at ? JACK_NAMES[at] : 'not plugged in'}`}</Text>
-      <Text style={styles.head}>2 · TAP WHERE ITS FREE END GOES</Text>
+      <Text style={styles.head}>2 · TAP WHERE ITS LOOSE END GOES</Text>
       <View style={styles.row}>
         {def.fits.map((j) => (
           <LabChip
             key={j}
             label={JACK_NAMES[j].replace('Power strip ', 'OUTLET ').replace('PA speaker', 'PA').replace('Booth monitor', 'BOOTH').replace(' input', ' IN')}
             selected={at === j}
-            onPress={() => {
-              updateBooth((b) => connect(b, sel, j));
-              onPatched?.(sel, j);
-            }}
+            onPress={() => patch(j)}
             compact
           />
         ))}
-        <LabChip
-          label="UNPLUG"
-          selected={at == null}
-          onPress={() => {
-            updateBooth((b) => connect(b, sel, null));
-            onPatched?.(sel, null);
-          }}
-          compact
-        />
+        <LabChip label="UNPLUG" selected={at == null} onPress={() => patch(null)} compact />
       </View>
+      {hot ? <Text style={styles.warn}>{`HOT-PATCH — ${PLUGS[hot].short} moved while it was live. The lab keeps it quiet; on a real system that pop or buzz goes straight through the speakers. Turn the MASTER (or that channel’s fader) down, or the speakers off, before you move an audio cable.`}</Text> : null}
     </View>
   );
 }

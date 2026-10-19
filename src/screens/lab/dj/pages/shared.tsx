@@ -16,10 +16,13 @@ import type { BoothMotion } from '../art/motion';
 
 export type BoothKit = { booth: Booth; audio: BoothAudio; tr: Transport; motion: BoothMotion };
 
-export function useBoothKit(): BoothKit {
+/** `lockPhase`: decks start in phase with each other (the pre-matched blend
+ *  screens 6, 8 and 9). */
+export function useBoothKit(opts?: { lockPhase?: boolean }): BoothKit {
   const booth = useBooth();
   const audio = useBoothAudio();
-  const tr = useMemo(() => transportOf(audio), [audio]);
+  const lockPhase = !!opts?.lockPhase;
+  const tr = useMemo(() => transportOf(audio, { lockPhase }), [audio, lockPhase]);
   const motion = useMemo(() => ({ clock: audio.clock, meters: audio.meters }), [audio.clock, audio.meters]);
   return { booth, audio, tr, motion };
 }
@@ -44,6 +47,14 @@ export function peakCell(k: string, db: number | null): BezelItem {
   if (db == null || db === -Infinity) return { k, v: '—', tint: colors.textSub };
   if (db >= 0) return { k, v: 'CLIP', tint: PEAK_RED };
   return { k, v: `${db.toFixed(1)} dBFS`, tint: levelColorForDb(db, -40, 0) };
+}
+
+/** A peak readout for a narrow cell: the number on the value line, the
+ *  unit under it, so the cell keeps its word (D36). */
+export function peakShort(k: string, db: number | null, flex?: number): BezelItem {
+  if (db == null || db === -Infinity) return { k, v: '—', tint: colors.textSub, flex };
+  if (db >= 0) return { k, v: 'CLIP', tint: PEAK_RED, flex };
+  return { k, v: db.toFixed(1), vA11y: `${db.toFixed(1)} dBFS`, sub: /PEAK/.test(k) ? 'dBFS' : 'dBFS PEAK', tint: levelColorForDb(db, -40, 0), flex };
 }
 
 /** The sound status in a word, for the bezel. */

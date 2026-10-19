@@ -6,13 +6,14 @@
  * the amplitude ramp; a readout prints its number beside its word; a fader
  * with no effect says why (`locked`); a clear STOP is always in reach.
  */
+import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { LabChip } from '../LabShell';
 import type { DockParam } from '../rack/rackTypes';
 import type { BoothAudio } from './booth/useBoothAudio';
 import { getBooth, setPerspective, updateBooth } from './booth/boothStore';
-import { playPause, setPitch, setPlaying } from './model/djDeck';
+import { alignPhase, playPause, setPitch, setPlaying } from './model/djDeck';
 import { PITCH_RANGE_PCT } from './model/djTime';
 import { TRIM_UNITY, dbStr, eqDb, faderGain, levelKnobGain, listenDb, trimDb, trimPos, type Booth, type ChannelId, type DeckId, type Perspective } from './model/djModel';
 
@@ -27,15 +28,19 @@ export type Transport = {
   soundOn: () => void;
 };
 
-export function transportOf(audio: BoothAudio): Transport {
+/** `lockPhase`: a deck that starts while the other plays starts IN PHASE
+ *  with it (the screens that pre-match deck B's tempo for a blend lesson —
+ *  audio review 2026-10-18 #2; Screen 10 teaches doing it by hand). */
+export function transportOf(audio: BoothAudio, opts?: { lockPhase?: boolean }): Transport {
+  const lock = (b: Booth, t: number, deck: DeckId) => (opts?.lockPhase && b.decks[deck].playing ? alignPhase(b, t, deck) : b);
   return {
     toggle: (deck) => {
       if (!getBooth().decks[deck].playing) void audio.requestSound();
-      updateBooth((b, t) => playPause(b, t, deck));
+      updateBooth((b, t) => lock(playPause(b, t, deck), t, deck));
     },
     play: (deck) => {
       void audio.requestSound();
-      updateBooth((b, t) => setPlaying(b, t, deck, true));
+      updateBooth((b, t) => lock(setPlaying(b, t, deck, true), t, deck));
     },
     stopAll: audio.stop,
     soundDeclined: audio.soundDeclined,
@@ -200,9 +205,13 @@ export const listenKey = (booth: Booth): DockParam => ({
   render: () => <ListenTray booth={getBooth()} />,
 });
 
+/** The DECKS key's value: which decks play, or STOPPED (learning X4). */
+export const decksValue = (booth: Booth, decks: readonly DeckId[] = ['A', 'B']): string => decks.filter((d) => booth.decks[d].playing).join('+') || 'STOPPED';
+
 /** The standard BOOTH tray: both decks' PLAY/PAUSE and the LISTEN choice in
- *  one sheet, so a page's own keys keep the dock (≤ 5 keys on a phone). */
-export function BoothTray({ booth, tr, decks = ['A', 'B'] }: { booth: Booth; tr: Transport; decks?: readonly DeckId[] }) {
+ *  one sheet, so a page's own keys keep the dock (≤ 5 keys on a phone). A
+ *  page may add its own rows under the decks (`extra`). */
+export function BoothTray({ booth, tr, decks = ['A', 'B'], extra, listen = true }: { booth: Booth; tr: Transport; decks?: readonly DeckId[]; extra?: ReactNode; listen?: boolean }) {
   return (
     <View style={styles.tray}>
       <View style={styles.row}>
@@ -212,19 +221,35 @@ export function BoothTray({ booth, tr, decks = ['A', 'B'] }: { booth: Booth; tr:
         {tr.soundDeclined ? <LabChip label="TURN SOUND ON" selected={false} onPress={tr.soundOn} /> : null}
       </View>
       {tr.soundDeclined ? <Text style={styles.trayFine}>Sound is off: the booth still runs and its meters still read the model — you just do not hear it.</Text> : null}
-      <ListenTray booth={booth} />
+      {extra}
+      {listen ? <ListenTray booth={booth} /> : null}
     </View>
   );
 }
 
-export const boothKey = (booth: Booth, tr: Transport, decks: readonly DeckId[] = ['A', 'B']): DockParam => ({
+export const boothKey = (booth: Booth, tr: Transport, decks: readonly DeckId[] = ['A', 'B'], extra?: () => ReactNode, id = 'booth'): DockParam => ({
   kind: 'group',
-  id: 'booth',
+  id,
   label: 'DECKS',
-  valueLabel: decks.filter((d) => booth.decks[d].playing).join('+') || '—',
+  valueLabel: decksValue(booth, decks),
   valueA11y: `${decks.filter((d) => booth.decks[d].playing).map((d) => `deck ${d}`).join(' and ') || 'nothing'} playing; listening as ${booth.perspective.toLowerCase()}`,
-  render: () => <BoothTray booth={getBooth()} tr={tr} decks={decks} />,
+  render: () => <BoothTray booth={getBooth()} tr={tr} decks={decks} extra={extra?.()} />,
 });
+
+/** A row of chip choices in a tray (a channel fader's two teaching
+ *  positions, an input selector): a heading and the chips. */
+export function ChipRow({ head, chips }: { head: string; chips: { label: string; on: boolean; onPress: () => void }[] }) {
+  return (
+    <View style={styles.tray}>
+      <Text style={styles.head}>{head}</Text>
+      <View style={styles.row}>
+        {chips.map((c) => (
+          <LabChip key={c.label} label={c.label} selected={c.on} onPress={c.onPress} compact />
+        ))}
+      </View>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   tray: { gap: 8 },
@@ -232,4 +257,5 @@ const styles = StyleSheet.create({
   trayNote: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
   trayFine: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   level: { color: colors.amber, fontFamily: fonts.mono, fontSize: 13, paddingHorizontal: 4 },
+  head: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.2 },
 });

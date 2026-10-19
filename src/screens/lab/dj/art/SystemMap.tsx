@@ -152,7 +152,13 @@ function MixerFront() {
   );
 }
 
-export const SystemMap = memo(function SystemMap({ booth, last, flow, thump = [] }: { booth: Booth; last: BoothRender | null; flow: boolean; thump?: readonly SpeakerKey[] }) {
+/**
+ * `flagFor`: which cables carry their label flag. At 1× on a phone all
+ * sixteen flags crowd the map (fix round 2), so Screen 4 shows only the
+ * cable being patched, the one just patched and any in the wrong place; FULL
+ * SCREEN shows them all. Default: every flag.
+ */
+export const SystemMap = memo(function SystemMap({ booth, last, flow, thump = [], flagFor }: { booth: Booth; last: BoothRender | null; flow: boolean; thump?: readonly SpeakerKey[]; flagFor?: (p: PlugId) => boolean }) {
   const runs: Run[] = MAP_PLUGS.map((p) => ({
     id: p,
     kind: PLUGS[p].kind,
@@ -220,6 +226,7 @@ export const SystemMap = memo(function SystemMap({ booth, last, flow, thump = []
       })}
       {/* the flags last, over every cable */}
       {runs.map((r) => {
+        if (flagFor && !flagFor(r.id as PlugId)) return null;
         // a loose end's flag hangs under its plug, a pair's R one lower so the two never touch
         const end = r.pts[r.pts.length - 1];
         const at = r.plugged

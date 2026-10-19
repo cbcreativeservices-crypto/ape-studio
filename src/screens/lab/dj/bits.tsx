@@ -17,6 +17,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { useMarkWhen } from '../tuning/components/primitives';
 import type { PageCtx } from '../kit/PagedLab';
+import { reportGoals } from './booth/goalStore';
 
 export const STEP_TITLES = ['UNDERSTAND', 'EXPLORE', 'LISTEN & OBSERVE', 'PRACTICE', 'CHECK YOURSELF'] as const;
 
@@ -67,13 +68,16 @@ export function Note({ children, tone = 'plain' }: { children: ReactNode; tone?:
 
 export type Goal = { label: string; hit: boolean };
 
-export function useVisitGoals(ctx: PageCtx, goals: Goal[]): boolean[] {
+/** `page` (the screen's short name) reports the unmet goals to the
+ *  what's-left screen (booth/goalStore). */
+export function useVisitGoals(ctx: PageCtx, goals: Goal[], page?: string): boolean[] {
   const seen = useRef<boolean[]>(goals.map(() => ctx.isDone));
   if (ctx.isDone && !seen.current.every(Boolean)) seen.current = goals.map(() => true);
   if (seen.current.length !== goals.length) seen.current = goals.map((_, i) => seen.current[i] ?? false);
   goals.forEach((g, i) => {
     if (g.hit) seen.current[i] = true;
   });
+  if (page) reportGoals(page, goals.map((g) => g.label), seen.current);
   const all = seen.current.every(Boolean);
   useMarkWhen(all, () => {
     if (!ctx.isDone) ctx.markDone();

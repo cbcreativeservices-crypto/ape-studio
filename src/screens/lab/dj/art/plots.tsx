@@ -70,6 +70,11 @@ export function CurvePlot({ b, curve, x }: { b: PlotBox; curve: XfCurve; x: numb
   return (
     <Group>
       <Frame b={b} title={`CROSSFADER · ${curve}`} />
+      {/* which line is which side (learning review p08 #2) */}
+      <Line p1={vec(b.x + b.w - 118, b.y + 10)} p2={vec(b.x + b.w - 104, b.y + 10)} color={INK.white} strokeWidth={2.2} />
+      <SceneText x={b.x + b.w - 100} y={b.y + 14} size={9.5} text="SIDE A" color={INK.white} face="label" minPt={9.5} />
+      <Line p1={vec(b.x + b.w - 60, b.y + 10)} p2={vec(b.x + b.w - 46, b.y + 10)} color={INK.blue} strokeWidth={2.2} />
+      <SceneText x={b.x + b.w - 42} y={b.y + 14} size={9.5} text="SIDE B" color={INK.blue} face="label" minPt={9.5} />
       <Line p1={vec(inner.x, zero)} p2={vec(inner.x + inner.w, zero)} color="rgba(255,255,255,0.18)" strokeWidth={1} />
       <Line p1={vec(inner.x + inner.w / 2, inner.y)} p2={vec(inner.x + inner.w / 2, inner.y + inner.h)} color="rgba(255,255,255,0.10)" strokeWidth={1} />
       <Path path={paths.a} style="stroke" strokeWidth={2.2} color={INK.white} strokeCap="round" />
