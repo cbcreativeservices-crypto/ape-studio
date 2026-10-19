@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-18 20:59 · ccode · d0539f34
+changed: DJ Systems Lab Stage 2b: the event rig (model, engine, kit hooks)
+affects other side: nothing (client-only, unpublished branch dj-lab-b; additive PagedLab `optionalPage` and labEnd `optional` that no other lab sets; no DB, no OTA)
+needs: nothing
+
+
 ### 2026-10-18 18:07 · ccode · ea675ab0
 changed: DJ Systems Lab: final 390 px screenshots after fix round 2
 affects other side: nothing (client-only DJ Systems Lab fix round 2 on the unpublished branch dj-lab; additive PagedLab/RackUnit props no other lab sets; no DB, no OTA)
