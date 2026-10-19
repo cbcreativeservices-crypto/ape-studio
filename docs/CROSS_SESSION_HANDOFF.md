@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-18 23:44 · ccode · 50c30832
+changed: DJ lab screen 17: room view footer band, real isolation pucks, STAGES label
+affects other side: nothing (DJ lab client screen 17 only)
+needs: nothing
+
+
 ### 2026-10-18 23:38 · ccode · 598b475b
 changed: DJ lab screens 13-18: preview pass fixes and final2 captures
 affects other side: nothing (DJ lab client screens 13-18 only)
