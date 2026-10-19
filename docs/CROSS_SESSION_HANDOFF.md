@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-18 23:23 · ccode · 1ae1c96b
+changed: DJ lab 19-24: setup readiness gates goals, key-locked pre-match, failed transitions stay failed, capstone fault bank with probes and plausible debriefs
+affects other side: nothing (client only, branch dj-lab-c, unpublished)
+needs: nothing
+
+
 ### 2026-10-18 21:36 · ccode · 72242637
 changed: Merge dj-lab-b: DJ Systems Lab screens 19-24 into the full 24-screen lab
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

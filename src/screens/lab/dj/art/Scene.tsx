@@ -27,6 +27,7 @@ import { StageAspectReport, useStageTextScale } from '../../rack/stageAspect';
 import { fitView, type Box, type Pt } from '../geometry/boothGeometry';
 import { MotionContext, type BoothMotion } from './motion';
 import { SceneFontsProvider } from './sceneText';
+import { DjZoomContext, zoomedXf } from './djZoom';
 
 export type Callout = {
   id: string;
@@ -44,7 +45,7 @@ export type Xf = { s: number; ox: number; oy: number };
 const TONE = { amber: colors.amber, plain: colors.textPrimary, blue: '#8fbcff', red: '#ff8a7e', green: '#7dff9f' } as const;
 const EDGE = { amber: 'rgba(255,198,77,0.75)', plain: 'rgba(255,255,255,0.55)', blue: 'rgba(143,188,255,0.75)', red: 'rgba(255,138,126,0.8)', green: 'rgba(125,255,159,0.75)' } as const;
 
-export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, screenOverlay, a11y, children, pad = 6, fit, aspect, labelsOutsideFit = false }: {
+export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, screenOverlay, a11y, children, pad = 6, fit, aspect, labelsOutsideFit = false, focus }: {
   w: number;
   h: number;
   frame: Box;
@@ -68,28 +69,54 @@ export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, scr
   aspect?: number | false;
   /** The glass outside `fit` is free space (not a plot): labels may use it. */
   labelsOutsideFit?: boolean;
+  /** ADDITIVE (visual review 2026-10-18 #22): the part (scene mm) a FULL
+   *  SCREEN zoom opens on — the part the lesson is about. Default: the first
+   *  callout's part, else the frame's centre. */
+  focus?: Box;
 }) {
   // The drawing grows by the full-screen zoom; its words grow too (D35),
   // but by the square root, so a closer look shows more drawing, not just
   // bigger labels over the same parts.
   const kz = useStageTextScale();
-  const k = Math.sqrt(Math.max(1, kz));
+  // In the DJ rack's full screen the gear zooms by `dz.z` inside a window
+  // whose plots stay pinned (art/djZoom); the words grow by its square root.
+  const dz = useContext(DjZoomContext);
+  const zoomed = dz.z > 1;
+  const k = Math.sqrt(Math.max(1, kz * dz.z));
   const report = useContext(StageAspectReport);
   const shape = aspect === false ? null : aspect ?? (fit ? null : frame.w / frame.h);
   const shapeKey = shape == null ? 0 : Math.round(shape * 1000) / 1000;
   useEffect(() => {
     if (shapeKey > 0) report?.aspect(shapeKey, 0);
   }, [report, shapeKey]);
+  const c0 = callouts[0]?.at;
+  const fx = focus ? focus.x + focus.w / 2 : c0 ? c0.x : frame.x + frame.w / 2;
+  const fy = focus ? focus.y + focus.h / 2 : c0 ? c0.y : frame.y + frame.h / 2;
   const xf = useMemo(() => {
     const f = fit ?? { x: 0, y: 0, w, h };
     const v = fitView(frame, f.w, f.h, pad);
-    return { s: v.s, ox: v.ox + f.x, oy: v.oy + f.y };
-  }, [frame, w, h, pad, fit?.x, fit?.y, fit?.w, fit?.h]);
+    const base = { s: v.s, ox: v.ox + f.x, oy: v.oy + f.y };
+    if (!zoomed) return base;
+    const zx = zoomedXf(base, f, frame, { x: fx, y: fy }, dz.z, dz.pan);
+    if (dz.limits) dz.limits.current = zx.limits;
+    return zx.xf;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [frame, w, h, pad, fit?.x, fit?.y, fit?.w, fit?.h, zoomed, dz.z, dz.pan.x, dz.pan.y, fx, fy]);
+  // zoomed, only the labels of parts inside the gear's region are placed
+  const shown = useMemo(() => {
+    if (!zoomed) return callouts;
+    const f = fit ?? { x: 0, y: 0, w, h };
+    return callouts.filter((c) => {
+      const px = xf.ox + c.at.x * xf.s;
+      const py = xf.oy + c.at.y * xf.s;
+      return px >= f.x + 4 && px <= f.x + f.w - 4 && py >= f.y + 4 && py <= f.y + f.h - 4;
+    });
+  }, [zoomed, callouts, xf, fit?.x, fit?.y, fit?.w, fit?.h, w, h]);
   const { s, ox, oy } = xf;
   const boxes = useMemo(
-    () => layoutCallouts(callouts, xf, w, h, k, obstacles ?? [], soft ?? [], labelsOutsideFit ? undefined : fit),
+    () => layoutCallouts(shown, xf, w, h, k, obstacles ?? [], soft ?? [], labelsOutsideFit ? undefined : fit),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [callouts, ox, oy, s, w, h, k, obstacles, soft, fit?.x, fit?.y, fit?.w, fit?.h, labelsOutsideFit],
+    [shown, ox, oy, s, w, h, k, obstacles, soft, fit?.x, fit?.y, fit?.w, fit?.h, labelsOutsideFit],
   );
   const fs = 10 * k;
   return (
