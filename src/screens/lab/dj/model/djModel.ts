@@ -276,6 +276,10 @@ export type Booth = {
   perspective: Perspective;
   listen: number;
   sampler: SamplerState;
+  /** ADDITIVE (Stage 2b, screens 19–24): the EVENT RIG — microphone, venue
+   *  PA, recorder, drum machine, laptops (model/djEvent.ts). Absent on the
+   *  Stage 1 screens, which therefore render exactly as before. */
+  ev?: import('./djEvent.ts').EventRig;
 };
 
 export const freshDeck = (track: TrackId | null = null): DeckState => ({
@@ -524,7 +528,13 @@ export function anchorAt(b: Booth, t: number): Booth {
     const d = decks[id];
     decks[id] = { ...d, posSec: deckPos(d, t), at: t };
   }
-  return { ...b, decks, tt: { ...b.tt, posSec: deckPos(b.tt, t), at: t } };
+  const out: Booth = { ...b, decks, tt: { ...b.tt, posSec: deckPos(b.tt, t), at: t } };
+  // the event rig's laptop decks keep their place the same way (Stage 2b)
+  if (b.ev) {
+    const lap = (l: import('./djEvent.ts').Laptop) => ({ ...l, deck: { ...l.deck, posSec: deckPos(l.deck, t), at: t } });
+    out.ev = { ...b.ev, lap1: lap(b.ev.lap1), lap2: lap(b.ev.lap2) };
+  }
+  return out;
 }
 
 /* ── helpers ──────────────────────────────────────────────────────────── */

@@ -285,13 +285,28 @@ export function ballistics(rawLin: Float32Array, start: MeterState = FLOOR_STATE
   return { meter, hold, raw, end: { m, h, age: hAge } };
 }
 
+/** ADDITIVE (Stage 2b, the event rig — engine/djEventRender.ts):
+ *  `inject` gives a channel a source that is not a player's RCA cable (a
+ *  laptop on the channel's USB input, a drum machine in its LINE inputs):
+ *  when it returns a buffer, that buffer is the channel's input (line level)
+ *  and goes through trim, EQ, filter, meter, cue and fader like any other;
+ *  `keep` hands back the mix bus (after its clip) and the cue bus, so the
+ *  event layer can build its outputs from them. Omitted = exactly as before. */
+export type RenderOpts = {
+  inject?: Partial<Record<ChannelId, (input: Booth['ch'][ChannelId]['input'], n: number) => StereoBuf | null>>;
+  keep?: boolean;
+};
+
+/** The buses `keep` hands back. */
+export type KeptStages = { busL: Float32Array; busR: Float32Array; cueL: Float32Array; cueR: Float32Array };
+
 /**
  * Render the booth for `seconds` from booth time `t0` (the booth must be
  * anchored at t0 — deck positions are read as they are). `from` is the state
  * to continue (see `carryAt`); without it every filter and meter starts at
  * rest.
  */
-export function renderBooth(b: Booth, t0: number, seconds: number, from?: RenderCarry | null): BoothRender {
+export function renderBooth(b: Booth, t0: number, seconds: number, from?: RenderCarry | null, opts?: RenderOpts): BoothRender & { kept?: KeptStages } {
   const n = Math.max(1, Math.round(seconds * SR));
   const joined = !!from && Math.abs(from.t1 - t0) <= JOIN_TOL_S;
   const dspAll: StreamDsp = joined && from!.dsp ? cloneDsp(from!.dsp) : freshDsp();
@@ -329,6 +344,12 @@ export function renderBooth(b: Booth, t0: number, seconds: number, from?: Render
     const r = new Float32Array(n);
     if (route.L) l.set(src[route.L.source][route.L.side === 'L' ? 'l' : 'r']);
     if (route.R) r.set(src[route.R.source][route.R.side === 'L' ? 'l' : 'r']);
+    // a source the event rig plugs in (a laptop on USB, a drum machine on LINE)
+    const injected = deviceLive(b, 'mixer') ? opts?.inject?.[ch]?.(c.input, n) : null;
+    if (injected) {
+      l.set(injected.l);
+      r.set(injected.r);
+    }
     const dsp = dspAll.ch[ch];
     if (route.jackClass === 'phono') {
       // The PHONO stage: +36 dB with the RIAA playback curve, then its own clip.
@@ -477,7 +498,8 @@ export function renderBooth(b: Booth, t0: number, seconds: number, from?: Render
     ends[tap] = bl.end;
   }
   const carry: RenderCarry = { t1: t0 + n / SR, dsp: dspAll, meters: ends };
-  return { t0, seconds: n / SR, playback: { l: playL, r: playR }, meter, hold, raw, clipped, busOver, rmsDb: rms as Record<Tap, number>, limiterDb, carry };
+  const out = { t0, seconds: n / SR, playback: { l: playL, r: playR }, meter, hold, raw, clipped, busOver, rmsDb: rms as Record<Tap, number>, limiterDb, carry };
+  return opts?.keep ? { ...out, kept: { busL, busR, cueL, cueR } } : out;
 }
 
 /** The channel a tap belongs to, for the drawing. */

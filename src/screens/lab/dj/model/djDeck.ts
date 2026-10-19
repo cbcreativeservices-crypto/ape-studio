@@ -21,6 +21,7 @@
  */
 import { TRACKS, trackSeconds, trueGrid, type TrackId } from '../engine/djMusic.ts';
 import { DECK_IDS, anchorAt, deckPos, type Booth, type DeckId, type DeckState } from './djModel.ts';
+import { evPlaying, stopEv } from './djEvent.ts';
 import { PITCH_RANGE_PCT, beatAt, beatJump as jumpBy, clampPitch, loopTrackSec, quantizeTime, syncPhaseTime, syncPitch, type Grid } from './djTime.ts';
 
 /** The grid the DJ software shows for this deck (its analysis + the
@@ -205,10 +206,14 @@ export function stopAll(b: Booth, t: number): Booth {
   const a = anchorAt(b, t);
   const decks = { ...a.decks };
   for (const id of DECK_IDS) decks[id] = { ...decks[id], playing: false };
-  return { ...a, decks };
+  // STOP ALL reaches the event rig's sources too (Stage 2b): laptops, the
+  // drum machine, a waiting announcement
+  return a.ev ? { ...a, decks, ev: stopEv(a.ev, t) } : { ...a, decks };
 }
 
-export const anyPlaying = (b: Booth): boolean => DECK_IDS.some((id) => b.decks[id].playing && !!b.decks[id].track);
+/** Something is sounding: a deck, or (Stage 2b) a laptop or the drum machine
+ *  of the event rig — the booth clock runs while it is true. */
+export const anyPlaying = (b: Booth): boolean => DECK_IDS.some((id) => b.decks[id].playing && !!b.decks[id].track) || evPlaying(b.ev);
 
 /** Position of a deck now, in TRUE beats (what the ear counts). */
 export function trueBeat(b: Booth, id: DeckId, t: number): number | null {
