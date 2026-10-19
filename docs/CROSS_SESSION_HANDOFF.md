@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 06:10 · ccode · 160e35b2
+changed: DJ Systems Lab 3-4 round 3: loose ends hang straight down in their own lanes; MIXER and its front edge always named; full screen 1x fills; flash keeps off the room title; turntable rear at true width
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-10-19 04:35 · ccode · aee16ab6
 changed: DJ Systems Lab: round-2 regrade of screens 3 and 4
 affects other side: nothing (client only)
