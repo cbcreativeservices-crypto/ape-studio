@@ -1,0 +1,175 @@
+[
+  {
+    "screen": 1,
+    "title": "Welcome and safe operation",
+    "scores": {"1": 8, "2": 8, "3": 8, "4": 8, "5": null, "6": null, "7": null, "8": null, "9": 8, "10": 8, "11": 8, "12": 5, "13": null, "14": 6, "15": 7, "16": 7, "17": 8, "18": 8, "19": 7, "20": 5},
+    "areas": {"A": 8.0, "B": null, "C": 8.0, "D": 6.25, "E": 8.0, "F": 6.0},
+    "overall": 7.39,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "12": "FULL SCREEN 3x (live, 390x844): the CROWD / BOOTH / PHONES strip is a screen-fixed overlay (BoothStage screenOverlay + boothFit), so it sits over the zoomed deck while the drawing is clipped to a short band; the jog, CUE and PLAY cannot be brought into view above it.",
+      "14": "The PLAY callout's leader runs horizontally across the bottom of deck A's body. When the display is shortened (contents list open) the callouts drift: 'DECK B' lands over the mixer and 'MIXER' over deck B, with long crossing leaders.",
+      "20": "At 390 wide each device is about 120 px across and every control legend stays hidden (silk-screen size, shown only at 9 pt or more). At 3x full screen the view is a letterbox under the fixed strip, so zooming doesn't reveal the controls the lesson points at (PLAY)."
+    },
+    "worst3": [
+      "3x full screen: the listening-perspective strip covers the zoomed deck and the drawing is clipped to a thin band (layering + phone readability)",
+      "PLAY leader drawn across deck A's lower body; callouts drift onto the wrong device when the display is shortened",
+      "Listening perspective is shown only as three UI tiles, not as the PA / monitors / headphones themselves"
+    ],
+    "screenshot": "final/01_welcome_390.jpg"
+  },
+  {
+    "screen": 2,
+    "title": "Meet the DJ equipment",
+    "scores": {"1": 7, "2": 7, "3": null, "4": 7, "5": null, "6": null, "7": null, "8": null, "9": null, "10": null, "11": null, "12": 7, "13": 6, "14": 6, "15": 7, "16": 7, "17": 7, "18": 8, "19": 8, "20": 6},
+    "areas": {"A": 7.0, "B": null, "C": null, "D": 6.6, "E": 7.5, "F": 7.0},
+    "overall": 6.96,
+    "capped": false,
+    "letter": "C",
+    "evidence": {
+      "13": "Laptop + controller: the two MASTER OUT cables leave the controller's rear edge and stop in mid-air about 20 mm short of the frame edge (p02 LaptopAndController, end x = CTRL_W + 30), so they cannot be traced to anything. The audio interface's two output cables are short stubs that end in space.",
+      "14": "PLATTER and RECORD labels sit on the record itself. 'ITS BACK: OUT L · OUT R · USB' wraps between 'OUT' and 'L'. On the mixer, the PHONES leader runs a long way down through the split switch and resonance knob.",
+      "20": "In the VINYL and MODULAR system views each unit is about a third of the 390 width and its controls are unreadable; the printed legends appear only in FULL SCREEN zoom."
+    },
+    "worst3": [
+      "Output cables (controller MASTER OUT, interface OUT L/R) end in mid-air instead of leading off-frame toward a destination",
+      "Labels placed on the objects (PLATTER/RECORD on the record) and a badly wrapped interface-rear label",
+      "Headphones read as doubled cups (pad silhouette offset beside each cup), and the interface's top and rear are drawn as two separate boxes, which a beginner can read as two devices"
+    ],
+    "screenshot": "final/02_gear_390.jpg"
+  },
+  {
+    "screen": 3,
+    "title": "Connections and signal types",
+    "scores": {"1": 8, "2": 7, "3": 7, "4": 5, "5": null, "6": null, "7": null, "8": null, "9": 6, "10": 7, "11": 7, "12": 4, "13": 4, "14": 6, "15": 7, "16": 6, "17": 7, "18": 7, "19": 7, "20": 6},
+    "areas": {"A": 6.75, "B": null, "C": 6.67, "D": 5.4, "E": 7.0, "F": 6.5},
+    "overall": 6.43,
+    "capped": false,
+    "letter": "C",
+    "evidence": {
+      "4": "Patched RCA leads drop as rigid vertical and horizontal runs with no slack, and the loose plugs hang stiffly at fixed angles. With the TURNTABLE source, the ground wire is a taut straight line drawn diagonally across the gap between the units (p03 line 210, a 1.2-unit Skia Line).",
+      "9": "The only motion is the glow and pulse on a live cable. Nothing in the picture shows the source playing, because the view is of the device's back.",
+      "12": "Confirmed live at 3x: the red (R) lead runs straight down OVER the white plug sitting in LINE L to reach LINE R below it, hiding the white plug. Code: runFor() routes R as [a, (a.x, lane), (d.x, lane), d] where d.x equals the stacked L jack's x. The green ground wire also crosses the red RCA lead.",
+      "13": "L and R share one vertical lane into the stacked CH1 LINE jacks, so one plug is covered and you can't see that it is in the right socket. The turntable ground wire is a hairline with no spade lugs or terminals at either end.",
+      "14": "At 3x the CH1 PHONO callout sits on the rear panel next to the GND post. At 390 the printed rear legends (CH1, PHONO, LINE, BOOTH, MASTER) are below 9 pt and hidden, so the jacks are named only by callouts.",
+      "16": "The thin green diagonal line (ground wire, TT source) reads as a stray line; it has no ends and no label at 1x.",
+      "20": "At 390 the RCA jacks are about 10 px across and their names are hidden. You need FULL SCREEN 3x to read which pair is LINE and which is PHONO."
+    },
+    "worst3": [
+      "The R RCA lead is routed straight over the L plug in the stacked LINE jacks (L plug hidden at 3x): the two leads share a lane",
+      "The turntable ground wire is a taut, straight hairline primitive with no lugs, crossing the RCA lead",
+      "Cables have no slack or sag; patched leads are rigid orthogonal runs between two panels"
+    ],
+    "screenshot": "final/03_connect_390.jpg"
+  },
+  {
+    "screen": 4,
+    "title": "Build your first DJ system",
+    "scores": {"1": 7, "2": 6, "3": 5, "4": 5, "5": null, "6": null, "7": null, "8": null, "9": 6, "10": 6, "11": 7, "12": 4, "13": 6, "14": 5, "15": 4, "16": 5, "17": 7, "18": 6, "19": 6, "20": 4},
+    "areas": {"A": 5.75, "B": null, "C": 6.33, "D": 4.8, "E": 6.5, "F": 5.0},
+    "overall": 5.67,
+    "capped": false,
+    "letter": "C",
+    "evidence": {
+      "2": "One picture uses two scales: the room band is at 15 % (ROOM_SCALE) and the patch band at full size. The PA speakers are about 10 px tall at 390, and the headphones are drawn at 0.35. The scales are stated on the drawing, but they still compete.",
+      "3": "Each speaker's signal LED is driven by the SUMMED level (SystemMap sig(): last.rmsDb.crowd for both PAs, last.rmsDb.booth for both monitors). In the screen's own fault 'HALF THE PA IS SILENT' (MASTER L in a booth monitor), the dead PA L still shows a green signal LED if it is powered. The bezel computes each side separately; the drawing doesn't.",
+      "4": "In the patch band every lead runs as a rigid orthogonal lane in mid-air between panels (no sag). The headphones float in the band with a power cord running across them.",
+      "9": "Motion is a decorative pulse travelling along the glowing cables plus LED changes; nothing physical moves.",
+      "10": "The cable glow follows the render, but the speaker LEDs don't follow each speaker's own feed (see 3), so the picture can disagree with the PA L·R bezel.",
+      "12": "1x FULL SCREEN: the PWR MIX flag covers PWR A; PHONES and PWR BTH R crowd the HEADPHONES label; the PWR BTH R cord runs across the headphones drawing. At 3x the DECK B callout covers the MST R flag and the POWER STRIP label sits on the plugs.",
+      "14": "Flags and callouts overlap one another (see 12). Callouts sit on objects (HEADPHONES on the headphones, POWER STRIP on the strip). At inline 1x only the active flag shows, so most leads are unlabelled.",
+      "15": "Seven glowing amber dashed power cords looping to the frame edges dominate the picture. The audio path (RCA to mixer to MASTER/BOOTH to speakers), which is the point of the lesson, is visually secondary.",
+      "16": "Dashed amber glow everywhere, plus long dashed leader lines from each input plate up to its room speaker, make the 390 view read as a tangle.",
+      "18": "Two scales inside one drawing, and a cable style (laned, tied, dashed-glow) that differs from Screen 3's free runs.",
+      "19": "It does show the whole system, but a beginner has to mentally mirror the rear view (deck B left, PA R left) AND switch between two scales to follow one lead.",
+      "20": "At 390 the room gear is about 10 px and the patch band is a dense tangle. Reading which lead goes where needs FULL SCREEN 3x and panning."
+    },
+    "worst3": [
+      "Amber glowing power cords dominate the map, and the audio path is lost; flags and callouts overlap at 1x and 3x",
+      "Speaker signal LEDs come from the summed crowd/booth level, so in the 'half the PA is silent' fault the dead PA still shows signal",
+      "Unreadable at phone size: two scales in one picture, room speakers about 10 px, leads as rigid mid-air lanes"
+    ],
+    "screenshot": "final/04b_build_wired_390.jpg"
+  },
+  {
+    "screen": 5,
+    "title": "Load and play music",
+    "scores": {"1": 8, "2": 8, "3": 8, "4": 8, "5": null, "6": null, "7": null, "8": null, "9": 8, "10": 8, "11": 8, "12": 6, "13": null, "14": 7, "15": 8, "16": 7, "17": 8, "18": 8, "19": 8, "20": 7},
+    "areas": {"A": 8.0, "B": null, "C": 8.0, "D": 7.0, "E": 8.0, "F": 7.5},
+    "overall": 7.72,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "12": "The 'OPERATING DECK A · ON AIR' tag sits across the player's top edge and bezel. In 1x FULL SCREEN, the CUE and PLAY callouts are squeezed together under the buttons at the lower-left corner."
+    },
+    "worst3": [
+      "The OPERATING/ON AIR tag overlaps the top of the player body",
+      "CUE and PLAY callouts cramped at the lower-left edge in 1x full screen",
+      "Control legends (LOOP, JUMP, SYNC) invisible at 390; only the screen and the haloed buttons read"
+    ],
+    "screenshot": "final/05_play_390.jpg"
+  },
+  {
+    "screen": 6,
+    "title": "Set gain and read meters",
+    "scores": {"1": 8, "2": 8, "3": 8, "4": 8, "5": null, "6": null, "7": null, "8": null, "9": 8, "10": 8, "11": 8, "12": 6, "13": null, "14": 6, "15": 8, "16": 7, "17": 8, "18": 8, "19": 8, "20": 7},
+    "areas": {"A": 8.0, "B": null, "C": 8.0, "D": 6.75, "E": 8.0, "F": 7.5},
+    "overall": 7.67,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "12": "At 3x the TRIM 1 callout covers the printed TRIM legend (only 'RIM' shows), and the amber halo ring runs over the printed 'CH 1' legend.",
+      "14": "The page draws its own meter scale and 'CH1' captions beside the LED columns, duplicating the panel's printed scale and its '1 L R 2' legends ('CH1' over '1' at 3x). Callouts collide with the silk-screen legends at 3x."
+    },
+    "worst3": [
+      "Callouts and halos land on the printed panel legends at 3x (TRIM 1 over TRIM, halo over CH 1)",
+      "Duplicated meter labelling: page overlay scale/CH1 captions plus the panel's own printed scale and 1/L/R/2",
+      "Meter columns are only about 6 px wide at 390; the -24/-12 marks are readable but tight"
+    ],
+    "screenshot": "final/06_gain_390.jpg"
+  },
+  {
+    "screen": 7,
+    "title": "Headphone cue and booth monitoring",
+    "scores": {"1": 7, "2": 4, "3": 8, "4": 6, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 6, "13": 5, "14": 5, "15": 7, "16": 6, "17": 7, "18": 6, "19": 7, "20": 6},
+    "areas": {"A": 6.25, "B": null, "C": 7.67, "D": 5.8, "E": 6.5, "F": 6.5},
+    "overall": 6.52,
+    "capped": false,
+    "letter": "C",
+    "evidence": {
+      "2": "Three unstated scales in one picture (p07 HP s 0.48, BM s 0.30, mixer band 1:1): the booth monitor (270 mm wide) is drawn at 81 units, narrower than the headphones (96 units), so the monitor reads as smaller than a pair of headphones.",
+      "4": "The headphones, the booth monitor and four LED meter columns float in empty space: no table, stand or housing.",
+      "12": "The mixer band is cut through its knob rows (fade masks top and bottom). At 3x the SPLIT and BOOTH LEVEL callouts cover the printed 'SPLIT CUE' and 'BOOTH/PHONES' legends.",
+      "13": "The headphones' coiled cable ends in a loose plug in mid-air; it isn't plugged into the mixer's PHONES jack, even though the lesson is what the phones jack carries.",
+      "14": "Seen live with the display shortened (contents open): 'R: CUE' lands LEFT of 'L: CUE' with crossing leaders, and 'PHONES L · R' sits away from its meters. The four LED columns have no dB scale.",
+      "16": "Four free-floating LED columns with no housing or scale look like placeholder bars.",
+      "18": "Mixed scales inside one picture, unlike Screens 1, 5 and 6, which keep one true scale.",
+      "20": "The cup labels and the meters are small at 390; the four meters are about 8 px wide with no scale."
+    },
+    "worst3": [
+      "Mismatched scales: the booth monitor is drawn narrower than the headphones (s 0.30 vs 0.48, unstated)",
+      "Headphones, monitor and meter columns float in space; the headphone plug isn't connected to the PHONES jack",
+      "L/R cup labels can swap sides with crossing leaders when the display is shortened; meters have no dB scale"
+    ],
+    "screenshot": "final/07_cue_390.jpg"
+  },
+  {
+    "screen": 8,
+    "title": "Channel faders and crossfaders",
+    "scores": {"1": 8, "2": 8, "3": 9, "4": 8, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 6, "13": null, "14": 7, "15": 8, "16": 7, "17": 8, "18": 8, "19": 8, "20": 7},
+    "areas": {"A": 8.25, "B": null, "C": 7.67, "D": 7.0, "E": 8.0, "F": 7.5},
+    "overall": 7.73,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "12": "The crossfader curve plot is a screen overlay over the top of the mixerLower view; the knob row under it is sliced by the plot's bottom edge (knob tops peek out under the frame)."
+    },
+    "worst3": [
+      "The curve plot overlays and slices the top of the mixer drawing",
+      "The plot has no dB axis: only the 0 dB line and 'centre -3.0 dB', so the BLEND/DIP/CUT shapes can't be read in numbers",
+      "The plot stays small and does not zoom in FULL SCREEN; a duplicate 'CH1' callout sits beside the printed '1'"
+    ],
+    "screenshot": "final/08_faders_390.jpg"
+  }
+]

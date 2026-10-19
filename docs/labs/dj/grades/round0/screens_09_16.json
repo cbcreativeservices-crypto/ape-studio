@@ -1,0 +1,171 @@
+[
+  {
+    "screen": 9,
+    "title": "EQ isolators and filters",
+    "scores": {"1": 8, "2": 8, "3": 9, "4": 9, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 5, "13": null, "14": 6, "15": 7, "16": 7, "17": 8, "18": 8, "19": 7, "20": 6},
+    "areas": {"A": 8.5, "B": null, "C": 7.67, "D": 6.25, "E": 8.0, "F": 6.5},
+    "overall": 7.54,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "12": "FULL SCREEN 1x: the CH1 and CH2 callout chips sit on top of each strip's top (TRIM) knob, covering it. At 3x the CH2 LOW chip takes the place of the printed LOW legend beside the knob.",
+      "14": "The EQ plot has no LOW / MID / HIGH band names. The 250 Hz and 2.5 kHz crossover lines are faint amber, and at phone size the panel legends are hidden, so only the ringed knob is named.",
+      "20": "At 390 wide the mixer knobs are about 14 pt across, and the cue keys and faders are cut by the readout strip. In full screen the plot stays the same small height while the mixer fills the glass."
+    },
+    "worst3": [
+      "Callout chips collide with the gear: CH1/CH2 chips sit on the TRIM knobs at full screen 1x, and the CH2 LOW chip replaces the printed LOW legend at 3x",
+      "The frequency plot has no band names (LOW/MID/HIGH) and only faint crossover marks, so a beginner cannot map the knob to the curve region",
+      "Phone crop slices the cue keys and faders at the bottom edge, and the knobs are tiny at 390"
+    ],
+    "screenshot": "final/09_eq_390.jpg"
+  },
+  {
+    "screen": 10,
+    "title": "Tempo, beatmatching and phrasing",
+    "scores": {"1": 8, "2": 8, "3": 9, "4": 9, "5": null, "6": null, "7": null, "8": null, "9": 8, "10": 8, "11": 8, "12": 6, "13": null, "14": 6, "15": 7, "16": 6, "17": 8, "18": 8, "19": 8, "20": 6},
+    "areas": {"A": 8.5, "B": null, "C": 8.0, "D": 6.25, "E": 8.0, "F": 7.0},
+    "overall": 7.67,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "12": "The A TEMPO inset frame includes a grey sliver of deck A's jog wheel down its left edge. At 3x the JOG B chip sits on the player body over the left key column.",
+      "14": "The MIXER inset is drawn so small that none of its legends render, so it is a picture of unnamed faders.",
+      "16": "The cut-off jog arc in the A TEMPO inset and the unreadable mixer inset are unexplained fragments beside the main drawing.",
+      "20": "At 390 each waveform lane is only about 60 pt tall, and the mixer inset's faders are a few pixels wide. Full screen fixes the decks but keeps the lanes short."
+    },
+    "worst3": [
+      "MIXER inset too small to read at 390, so it adds clutter without information",
+      "A TEMPO inset shows a cropped sliver of deck A's jog at its edge (the 'what is that arc' test)",
+      "Waveform lanes are short on the phone, so the beat offset is hard to see without the phase strip"
+    ],
+    "screenshot": "final/10_tempo_390.jpg"
+  },
+  {
+    "screen": 11,
+    "title": "Beatgrids, sync and quantize",
+    "scores": {"1": 8, "2": 8, "3": 9, "4": 9, "5": null, "6": null, "7": null, "8": null, "9": 8, "10": 8, "11": 8, "12": 5, "13": null, "14": 6, "15": 7, "16": 6, "17": 8, "18": 8, "19": 7, "20": 6},
+    "areas": {"A": 8.5, "B": null, "C": 8.0, "D": 6.0, "E": 8.0, "F": 6.5},
+    "overall": 7.56,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "12": "At FULL SCREEN 3x the QUANTIZE chip overlaps its own halo. The SYNC leader crosses the QUANTIZE halo, and the SYNC halo also encloses the MASTER key, so it rings two keys.",
+      "14": "The lane chip 'B · GRID 122.0 BPM · CHECK IT' covers the start of deck B's waveform. The violet kick ticks under the lanes are very small at 390.",
+      "16": "On the phone the jog wheel is cut in half by the readout strip, leaving a large partial disc with no purpose on this screen.",
+      "19": "The lesson's key evidence, kicks missing the grid lines, depends on tiny violet ticks. A beginner has to hunt for the mismatch.",
+      "20": "At 390 the lanes are about 80 pt tall and the kick ticks are only a few pixels, and the deck crop shows mostly an empty half-jog."
+    },
+    "worst3": [
+      "Halo and callout collisions at 3x: QUANTIZE chip on its halo, SYNC leader crossing it, SYNC halo swallowing MASTER",
+      "Grid-versus-kick mismatch carried by tiny kick ticks, weak at phone size",
+      "Half-cropped jog disc under the lanes takes space without teaching anything"
+    ],
+    "screenshot": "final/11_grid_390.jpg"
+  },
+  {
+    "screen": 12,
+    "title": "Cue points, loops and samples",
+    "scores": {"1": 8, "2": 8, "3": 8, "4": 9, "5": null, "6": null, "7": null, "8": null, "9": 8, "10": 8, "11": 8, "12": 6, "13": null, "14": 6, "15": 7, "16": 5, "17": 8, "18": 8, "19": 7, "20": 6},
+    "areas": {"A": 8.25, "B": null, "C": 8.0, "D": 6.0, "E": 8.0, "F": 6.5},
+    "overall": 7.47,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "12": "The PHONES and CROWD LED meters are squeezed into the lane's top-right corner beside the waveform. The TRANSPORT CUE label sits on the player body.",
+      "14": "The PHONES/CROWD meters have no scale and are a few pixels wide. Hot-cue marks on the waveform are thin coloured ticks only 0.5 lane-units tall.",
+      "16": "The view starts 66 mm into the mixer, so a column of half-cut knobs, an amber key and a fader is sliced along the left edge with no explanation.",
+      "19": "Saved hot cues and the loop show as tiny marks in the lane. The link between a pad and the place it jumps to is hard to see.",
+      "20": "At 390 the meters and cue marks are too small, and the left-edge mixer fragment wastes width."
+    },
+    "worst3": [
+      "Sliced mixer column at the left edge (half knobs, an amber key), a classic 'what is that' fragment",
+      "PHONES/CROWD meters are tiny, unscaled and jammed into the waveform corner, though they carry the sampler-to-crowd lesson",
+      "Hot-cue and loop marks on the waveform are too thin to read on a phone"
+    ],
+    "screenshot": "final/12_loops_390.jpg"
+  },
+  {
+    "screen": 13,
+    "title": "Effects and their routing",
+    "scores": {"1": 7, "2": 8, "3": 8, "4": 9, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 7, "12": 7, "13": 7, "14": 6, "15": 8, "16": 7, "17": 7, "18": 8, "19": 7, "20": 6},
+    "areas": {"A": 8.0, "B": null, "C": 7.33, "D": 7.0, "E": 7.5, "F": 6.5},
+    "overall": 7.41,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "14": "On the phone the map's sub-labels (FADER, BUS, MASTER, FX OFF) are at the 9 pt floor, and MASTER FX touches its dashed border. SEND 1 floats between the rows, away from its own lane. The full-screen effects panel shows no legends below 2x, so LEVEL, FEEDBACK, SENDS and CH SELECT are unnamed knobs.",
+      "20": "The wet lane is about 60 pt tall at 390. The effects panel appears only in full screen, and its controls cannot be identified until 2-3x."
+    },
+    "worst3": [
+      "The effects panel at full screen 1x is a row of unnamed knobs (legends appear only at 2-3x)",
+      "With continuous music the echo's WET band reads as a copy of the dry level, so the repeats are hard to pick out. The delay is correct (246 ms = 1/2 beat at 122 BPM, bracket exact), but the picture undersells it",
+      "Routing-map typography is crowded at 390: SEND 1 label detached from its lane, MASTER FX text on its border, two SEND arrowheads stacked at SEND FX"
+    ],
+    "screenshot": "final2/13b_echo_on_scope_390.jpg"
+  },
+  {
+    "screen": 14,
+    "title": "Playback speed, pitch and key",
+    "scores": {"1": 6, "2": 7, "3": 9, "4": 9, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 4, "13": null, "14": 5, "15": 7, "16": 5, "17": 7, "18": 7, "19": 8, "20": 6},
+    "areas": {"A": 7.75, "B": null, "C": 7.67, "D": 5.25, "E": 7.0, "F": 7.0},
+    "overall": 7.01,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "1": "The 'where each tonic sounds' strip is styled like a piano, but every key, black or white, is a full-height column of equal width. It reads as a malformed keyboard rather than a deliberate chromatic strip. On the player, the KEY -/+ and TEMPO RANGE leaders point at keys hidden under the plot panels.",
+      "12": "The two plot panels are laid over the left half of deck B's player, and an arc of the jog wheel shows between and behind them. At FULL SCREEN 3x the MASTER callout chip sits on the TEMPO fader's halo and covers its printed TEMPO legend.",
+      "14": "The KEY -/+ and TEMPO RANGE callouts point to dimmed, half-hidden keys, and at 3x the MASTER chip overprints the TEMPO legend.",
+      "16": "The jog-wheel arc fragment between the plot panels, and the empty dimmed key caps across the top of the player, are unexplained shapes.",
+      "20": "At 390 the two plots share the left 58 % of the glass, so the tonic strip's note names are at the 9.5 pt floor. Full screen keeps the plots narrow."
+    },
+    "worst3": [
+      "Overlays on the gear: plot panels laid over the player with a stray jog arc showing, and the MASTER chip covering the TEMPO legend at 3x",
+      "Piano-styled tonic strip with full-height equal black keys looks like a wrong keyboard, though the maths behind it is right",
+      "Callout leaders point to keys that are hidden or dimmed under the panels (KEY -/+, TEMPO RANGE)"
+    ],
+    "screenshot": "final2/14_key_matched_flat_390.jpg"
+  },
+  {
+    "screen": 15,
+    "title": "Stems and source separation",
+    "scores": {"1": 6, "2": 5, "3": 6, "4": 9, "5": null, "6": null, "7": null, "8": null, "9": 8, "10": 6, "11": 8, "12": 7, "13": null, "14": 7, "15": 8, "16": 7, "17": 7, "18": 8, "19": 8, "20": 6},
+    "areas": {"A": 6.5, "B": null, "C": 7.33, "D": 7.25, "E": 7.5, "F": 7.0},
+    "overall": 7.02,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "1": "The CH1/CH2 bar beside the lanes is drawn as a green level meter, but it is the channel FADER position (stemArt MixBar, level = booth.ch[n].fader). It shows a full green column while the decks are stopped.",
+      "2": "The stem pads have no fixed size: square-ish on the phone, they stretch into tall 2:1 bars in FULL SCREEN, which no real stem pad is.",
+      "3": "The lanes are true per-stem measurements and the separation leak is real. The 'level to the mix' bar, though, is static fader travel styled as a meter, so it implies a level that is not there (silent deck, full bar).",
+      "10": "That bar never moves with the music (no meter tap), so it is out of step with the scrolling stems beside it.",
+      "20": "In the two-deck view each column has 3 s of lanes about 120 pt wide. FULL SCREEN 3x shows the same picture as 1x, so zoom reveals no extra detail."
+    },
+    "worst3": [
+      "The channel bar is fader position styled as a live level meter: full green while nothing plays",
+      "Stem pads stretch to tall bars in full screen (no true pad size)",
+      "Bass stem drawn as faceted hexagonal blobs, and zoom (3x) adds no detail to the lanes"
+    ],
+    "screenshot": "final2/15b_both_decks_ghost_390.jpg"
+  },
+  {
+    "screen": 16,
+    "title": "Laptop software and audio interfaces",
+    "scores": {"1": 8, "2": 9, "3": 8, "4": 8, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 6, "13": 8, "14": 5, "15": 7, "16": 6, "17": 8, "18": 8, "19": 8, "20": 5},
+    "areas": {"A": 8.25, "B": null, "C": 7.67, "D": 6.4, "E": 8.0, "F": 6.5},
+    "overall": 7.49,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "12": "The CH1 USB chip sits on the mixer's top-left corner beside the USB plug and cable entry, crowding the connection it should clarify.",
+      "14": "The CH2 USB callout jumps between states. Idle, it sits beside the mixer. With MIXER USB playing, the layout drops it far below the mixer onto the empty table with a long leader.",
+      "16": "At 390 a wide empty dark band sits under the rig. At FULL SCREEN 1x the rig is a thin strip with about two-thirds of the glass empty, plus a rotate-the-phone hint.",
+      "20": "On the phone the true-scale rig makes the mixer about 50 pt wide and the controller's controls specks. The lesson's parts (input selector on USB, the ports) are only readable at 2-3x."
+    },
+    "worst3": [
+      "Rig too small at 390 and lost in empty space at full screen 1x (true scale costs legibility)",
+      "CH2 USB callout jumps to a long leader below the mixer when the state changes",
+      "CH1 USB chip crowds the USB plug and cable entry on the mixer's corner"
+    ],
+    "screenshot": "final2/16b_mixer_usb_playing_390.jpg"
+  }
+]

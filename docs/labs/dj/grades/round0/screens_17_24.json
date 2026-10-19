@@ -1,0 +1,181 @@
+[
+  {
+    "screen": 17,
+    "title": "Vinyl turntables and phono audio",
+    "scores": {"1": 7, "2": 5, "3": 8, "4": 7, "5": null, "6": null, "7": null, "8": null, "9": 6, "10": 5, "11": 8, "12": 5, "13": 7, "14": 6, "15": 7, "16": 6, "17": 7, "18": 7, "19": 8, "20": 7},
+    "areas": {"A": 6.75, "B": null, "C": 6.33, "D": 6.2, "E": 7.0, "F": 7.5},
+    "overall": 6.65,
+    "capped": false,
+    "letter": "C",
+    "evidence": {
+      "2": "ARM side view: the platter/record strip is drawn only from x -14 to 104 mm (vinylArt ArmSide) under a 230 mm arm whose pivot is at 264 mm; along the arm's line a 12-inch record runs to about 70 mm from the pivot, so roughly 90 mm of record is missing under the arm. ROOM view says TO SCALE but the turntable profile (60 mm plinth + 18 mm platter + feet) is far thinner than a real DJ deck.",
+      "9": "The arm snaps to its rest the instant the platter stops (TurntableTop armRides = spinning && !armOff); DJ turntables have no auto-return, so the arm should stay in the groove. The balance tilt is a pose swap with no inertia.",
+      "10": "Top view and side view disagree: platter stopped (the screen's opening state), the top view shows the arm on its rest while the side view says ON THE RECORD · PARALLEL with the stylus in the groove. Lifted for balancing, the top view again draws the arm on the rest while the side view floats it over the cue lever.",
+      "12": "FULL SCREEN ROOM view: a table leg is drawn over the footer, cutting \"80 Hz BUILD-UP\" to \"80 [leg] BUILD-UP\" (17_full_1x). The HEADSHELL + CARTRIDGE plate sits on the plinth's bottom-right corner.",
+      "14": "ISOLATION FEET label sits on the table's front edge; the 80 Hz footer collides with a leg; the bezel's fourth label truncates to \"PHONO STAG...\" instead of dropping the label.",
+      "16": "ROOM view: the table legs stop as dark stubs in mid-frame (the floor is clipped away), and the air wavefronts pass through the turntable body — a viewer asks what the blocks under the table are."
+    },
+    "worst3": [
+      "Stopped or lifted, the top view puts the arm on its rest while the side view shows it on the record: the two views of one turntable contradict each other, and a DJ deck has no auto-return.",
+      "ARM side view: the record under the arm is about 90 mm too short for a 230 mm arm, so the 'side elevation authored in mm' is not to scale where it matters.",
+      "FULL SCREEN ROOM view: a table leg covers the '80 Hz' in the build-up footer, and the leg stubs end in mid-air."
+    ],
+    "screenshot": "final2/17b_playing_halos_on_arm_390.jpg"
+  },
+  {
+    "screen": 18,
+    "title": "Digital vinyl systems",
+    "scores": {"1": 6, "2": 5, "3": 8, "4": 6, "5": null, "6": null, "7": null, "8": null, "9": 8, "10": 8, "11": 8, "12": 7, "13": 6, "14": 6, "15": 8, "16": 7, "17": 5, "18": 6, "19": 8, "20": 7},
+    "areas": {"A": 6.25, "B": null, "C": 8.0, "D": 6.8, "E": 5.5, "F": 7.5},
+    "overall": 6.82,
+    "capped": false,
+    "letter": "C",
+    "evidence": {
+      "1": "The rear cabling inset reduces the turntable's and the mixer's rear panels to plain grey slabs with sockets, and the laptop to two thin strokes (base and lid edge). Real turntable rears and laptops do not look like this.",
+      "2": "The turntable's rear panel is drawn as a tall narrow slab as tall as the mixer's rear, and the laptop is tiny. The inset has no common scale with the turntable top view beside it.",
+      "4": "The rear panels and the laptop float as tiles in the inset, with no plinth, table or surface under them.",
+      "13": "The RCA leads are straight bars with identical round ends: no plug bodies and no slack. The GND lead and the USB lead are bare lines.",
+      "14": "The CTRL L/R plate sits in the lane between the L and R leads, and the USB tag sits on the USB cable. At 3x a faint yellow band runs behind the CTRL tag across the gap.",
+      "17": "Primitive stand-ins: rectangles for the rear panels and a two-line laptop, next to a well-rendered turntable top. The route map is plain boxes (acceptable for data) but its arrowheads are tiny."
+    },
+    "worst3": [
+      "The rear-cabling inset is primitive: grey slabs for the turntable and mixer rears, and a two-stroke laptop.",
+      "No common scale in the inset: the turntable rear is drawn as tall as the mixer rear, and the laptop is a sliver.",
+      "The RCA and USB leads are straight bars with no plug bodies, and the tags sit on or between the cables."
+    ],
+    "screenshot": "final2/18b_playing_ring_cabling_390.jpg"
+  },
+  {
+    "screen": 19,
+    "title": "Microphones, announcements and talkover",
+    "scores": {"1": 7, "2": 7, "3": 8, "4": 4, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 4, "13": 6, "14": 4, "15": 6, "16": 5, "17": 7, "18": 7, "19": 7, "20": 6},
+    "areas": {"A": 6.5, "B": null, "C": 7.67, "D": 5.0, "E": 7.0, "F": 6.5},
+    "overall": 6.48,
+    "capped": false,
+    "letter": "C",
+    "evidence": {
+      "4": "The handheld mic, wired or wireless, hangs in mid-air above the mixer at a tilt, with no hand, stand or surface under it (MIC_AT / WMIC_AT in p19Mic).",
+      "12": "While talking, the meter names MIC and BOOTH at the meters' feet collide with the 'MIC 2 · NO +48 V' callout plate (19_mic_talking_390). The MIC ON plate sits on the panel's lower edge.",
+      "13": "The XLR cable is traceable in its own lane, but the MIC flag sits on the cable and the 'SEND: BOOTH OFF · REC OFF' leader crosses the cable's lane.",
+      "14": "Text collides in the meter block (see 12). Long diagonal leaders (GAIN 1, MIC OFF, MIC 1 · +48 V) cross the panel face. 'MIC 1 · +48 V' reads as 'phantom on' even while the tray says +48 V OFF.",
+      "15": "The large floating mic dominates the panel, although the lesson is about the panel's gain, ON, talkover and sends. The controls are small beside it.",
+      "16": "A floating mic over the gear and an empty MUSIC DIP strip pinned above with no bar until talkover reads as an artefact before the learner talks.",
+      "20": "At 390 wide the panel's legends and callouts are dense, and the ROOM view's speakers are a few points across. Full screen 3x fixes the room but not the crowded mixer callouts."
+    },
+    "worst3": [
+      "The microphone floats in mid-air above the mixer, held by nothing.",
+      "When talking, the meter names (MIC, BOOTH) collide with the 'MIC 2 · NO +48 V' callout plate.",
+      "Leaders cross the panel and the cable. 'MIC 1 · +48 V' looks like phantom is on while it is off."
+    ],
+    "screenshot": "final2/19_mic_talking_390.jpg"
+  },
+  {
+    "screen": 20,
+    "title": "PA speakers, subs and venue connections",
+    "scores": {"1": 8, "2": 6, "3": 9, "4": 6, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 4, "13": 8, "14": 6, "15": 7, "16": 6, "17": 7, "18": 7, "19": 8, "20": 7},
+    "areas": {"A": 7.25, "B": null, "C": 7.67, "D": 6.2, "E": 7.0, "F": 7.5},
+    "overall": 7.11,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "2": "ROOM plan: the turntable (45 cm, PlanView BoothTable dev(-92,45,...)) spans -114.5 to -69.5 cm on a table that ends at -110 cm, so it overhangs by 4.5 cm. SYSTEM view: the powered top's base sits about 15 px (about 4 cm at that scale) above the sub's floor line.",
+      "4": "SYSTEM view: the top and the sub stand on different floor lines (the top floats). HANDOFF, unplugged: the two XLR leads hang as stiff diagonals.",
+      "12": "At 3x the turntable's platter overlaps the left player's footprint by about 8 cm and runs under the left booth monitor at the table corner: two pieces of gear in one place (confirmed live and in PlanView code).",
+      "14": "The 'MASTER L' leader runs diagonally across the mixer's rear. In the plan, the 'PA L · TOP + SUB' / 'PA R · TOP + SUB' plates sit on the speaker symbols.",
+      "16": "In the plan, the tops' tripod legs show as unexplained black whiskers at 390 wide (the 'what is that?' test)."
+    },
+    "worst3": [
+      "In the ROOM plan, the turntable overlaps the left player, overhangs the table edge and runs under the booth monitor.",
+      "SYSTEM view: the powered top floats above the sub's floor line.",
+      "Plan labels sit on the speaker symbols, and the tripod legs read as stray whiskers at phone size."
+    ],
+    "screenshot": "final2/20c_pa_system_390.jpg"
+  },
+  {
+    "screen": 21,
+    "title": "Recording and streaming",
+    "scores": {"1": 8, "2": 8, "3": 9, "4": 6, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 7, "13": 8, "14": 5, "15": 7, "16": 6, "17": 7, "18": 8, "19": 8, "20": 7},
+    "areas": {"A": 7.75, "B": null, "C": 7.67, "D": 6.6, "E": 7.5, "F": 7.5},
+    "overall": 7.42,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "4": "The handheld recorder stands upright in mid-air beside the mixer's rear, resting on nothing.",
+      "14": "The take lane's dBFS axis is linear in amplitude (correct), so -12 and -24 sit about 3 pt apart and crowd each other at 390 wide. The REC OUT leader runs down across the jack rows to its socket.",
+      "16": "The green bars under the take (where the voice is) carry no label of their own; only a caption in the far corner ('VOICE IN THE TAKE') explains them."
+    },
+    "worst3": [
+      "Take axis labels -12 and -24 crowd together at phone size.",
+      "The recorder floats beside the mixer with no surface under it.",
+      "The voice-mark bars under the take are explained only by a distant corner caption."
+    ],
+    "screenshot": "final2/21_rec_take_390.jpg"
+  },
+  {
+    "screen": 22,
+    "title": "Hybrid DJ systems",
+    "scores": {"1": 7, "2": 7, "3": 9, "4": 6, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 5, "13": 6, "14": 6, "15": 7, "16": 6, "17": 7, "18": 7, "19": 7, "20": 7},
+    "areas": {"A": 7.25, "B": null, "C": 7.67, "D": 6.0, "E": 7.0, "F": 7.0},
+    "overall": 7.01,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "4": "The drum machine's back panel is drawn as a separate strip floating above its own top view. Nothing says the two are faces of one box, so it reads as two objects.",
+      "12": "At 3x the MIDI lead covers the mixer rear's 'MIDI OUT' silk legend (it reads 'MI ... T'), and the display legends 'BPM' and 'CLK' touch ('BPMCLK').",
+      "13": "Deck B's leads stop at 'B L' / 'B R' flags hanging off the panel's left edge (the source is not drawn), and the red lead has an odd S-kink by its socket.",
+      "14": "Legend collisions at zoom (see 12). Callout plates otherwise read at 9 pt or more.",
+      "16": "The cut-off B L / B R lead ends and the detached rear strip look unfinished at a glance."
+    },
+    "worst3": [
+      "At 3x the MIDI cable is drawn over the mixer's MIDI OUT legend, and BPM/CLK run together on the display.",
+      "The drum machine's rear panel floats as a separate object above its top view.",
+      "Deck B's leads end in mid-air at flags, with a kinked red lead."
+    ],
+    "screenshot": "final2/22_hybrid_following_390.jpg"
+  },
+  {
+    "screen": 23,
+    "title": "Performer changeovers and backup playback",
+    "scores": {"1": 6, "2": null, "3": 8, "4": null, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 7, "13": 6, "14": 6, "15": 8, "16": 6, "17": 5, "18": 7, "19": 8, "20": 6},
+    "areas": {"A": 7.0, "B": null, "C": 7.67, "D": 6.6, "E": 6.0, "F": 7.0},
+    "overall": 6.95,
+    "capped": false,
+    "letter": "C",
+    "evidence": {
+      "1": "A signal-flow board: the gear appears only as tiny card icons (a laptop sliver, a circle for a player, a square for the wall socket). Dimensions and gravity are N/A for an abstract board.",
+      "13": "At the board's left edge the laptop's power line and the yellow ground-loop path run 3 to 4 px apart for most of their length, which is hard to tell apart at 390 wide.",
+      "14": "The numbered prediction badges (1–8) sit on or right beside the lines (badge 2 is on the power line). The card sub-lines are at the 9 pt floor.",
+      "16": "The yellow numbered badges have no key in the drawing; their meaning lives in the lesson text.",
+      "17": "Cards are plain boxes with small glyph icons. At 3x they become large empty rectangles, with no more gear detail.",
+      "20": "At 390 the card sub-text is small. Zooming to 3x enlarges empty card bodies rather than revealing detail."
+    },
+    "worst3": [
+      "Gear shown as boxes with tiny glyphs; at 3x the cards are empty rectangles.",
+      "The ground-loop path and a power line run almost on top of each other at the left edge.",
+      "The numbered badges sit on the lines and are not keyed in the drawing."
+    ],
+    "screenshot": "final2/23_changeover_hum_390.jpg"
+  },
+  {
+    "screen": 24,
+    "title": "Troubleshooting and the complete system challenge",
+    "scores": {"1": 6, "2": null, "3": 8, "4": null, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 5, "13": 5, "14": 7, "15": 7, "16": 7, "17": 5, "18": 7, "19": 7, "20": 6},
+    "areas": {"A": 7.0, "B": null, "C": 7.67, "D": 6.2, "E": 6.0, "F": 6.5},
+    "overall": 6.8,
+    "capped": false,
+    "letter": "C",
+    "evidence": {
+      "1": "The same signal-flow board as screen 23: decks, the mic, speakers and the recorder are tiny glyphs on cards (the mic is a ball on a stick). Dimensions and gravity are N/A.",
+      "12": "The blue output routes leave MIX close together and bunch and cross just right of it on their way to BOOTH, PHONES and RECORDER.",
+      "13": "Seven power cords run to the strip in parallel lanes only 2 to 4 px apart at 390 wide (right edge, x about 340–365). They cannot be traced end to end on a phone without zooming.",
+      "17": "Cards are boxes with glyph icons. At 3x a card is a large empty panel with a meter.",
+      "20": "The power-cord lanes and the card sub-text are at the limit of legibility at 390 wide, and 3x shows empty card bodies."
+    },
+    "worst3": [
+      "Seven power cords in 2–4 px lanes cannot be traced on a phone.",
+      "The output routes bunch and cross just after MIX.",
+      "Gear shown as boxes with tiny glyphs; at 3x the cards are empty."
+    ],
+    "screenshot": "final2/24_event_doors_open_390.jpg"
+  }
+]
