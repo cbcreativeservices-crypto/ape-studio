@@ -13,7 +13,7 @@ import { LabChip } from '../LabShell';
 import type { DockParam } from '../rack/rackTypes';
 import type { BoothAudio } from './booth/useBoothAudio';
 import { getBooth, setPerspective, updateBooth } from './booth/boothStore';
-import { alignPhase, playPause, setPitch, setPlaying } from './model/djDeck';
+import { alignPhase, playPause, playWantsSound, setPitch, setPlaying } from './model/djDeck';
 import { PITCH_RANGE_PCT } from './model/djTime';
 import { TRIM_UNITY, dbStr, eqDb, faderGain, levelKnobGain, listenDb, trimDb, trimPos, type Booth, type ChannelId, type DeckId, type Perspective } from './model/djModel';
 
@@ -35,11 +35,12 @@ export function transportOf(audio: BoothAudio, opts?: { lockPhase?: boolean }): 
   const lock = (b: Booth, t: number, deck: DeckId) => (opts?.lockPhase && b.decks[deck].playing ? alignPhase(b, t, deck) : b);
   return {
     toggle: (deck) => {
-      if (!getBooth().decks[deck].playing) void audio.requestSound();
+      // an empty deck plays nothing: it never asks for sound
+      if (playWantsSound(getBooth(), deck, true)) void audio.requestSound();
       updateBooth((b, t) => lock(playPause(b, t, deck), t, deck));
     },
     play: (deck) => {
-      void audio.requestSound();
+      if (playWantsSound(getBooth(), deck)) void audio.requestSound();
       updateBooth((b, t) => lock(setPlaying(b, t, deck, true), t, deck));
     },
     stopAll: audio.stop,

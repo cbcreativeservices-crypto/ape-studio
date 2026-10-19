@@ -21,14 +21,20 @@ import { getLabPreview } from '../../../../features/lab/labPreviewStore';
 import { dbToLin, protectiveLimitInPlace } from '../engine/djDsp';
 import { listenDb } from '../model/djModel';
 import { getBooth } from './boothStore';
-import type { TakeView } from './takeStore';
+import { finishedFor, useTake, type TakeView } from './takeStore';
 
-export type TakePlayer = { playing: boolean; finished: boolean; play: (t: TakeView) => void; stop: () => void; pos: SharedValue<number> };
+/** `finished`: the take in the recorder NOW was played to its end (tied to
+ *  that take's id — an earlier take's end never carries over; toddler bug
+ *  test 2026-10-19). `finishedId` / `playedId` (ADDITIVE): which take. */
+export type TakePlayer = { playing: boolean; finished: boolean; finishedId: number | null; playedId: number | null; play: (t: TakeView) => void; stop: () => void; pos: SharedValue<number> };
 
 export function useTakePlayer(stopBooth: () => void): TakePlayer {
   const { requestAudioOutput } = useAudioOutputGate();
   const [playing, setPlaying] = useState(false);
-  const [finished, setFinished] = useState(false);
+  const [finishedId, setFinishedId] = useState<number | null>(null);
+  const [playedId, setPlayedId] = useState<number | null>(null);
+  const current = useTake();
+  const finished = finishedFor(finishedId, current);
   const pos = useSharedValue(0);
   const startTs = useSharedValue(0);
   const len = useSharedValue(0);
@@ -59,7 +65,8 @@ export function useTakePlayer(stopBooth: () => void): TakePlayer {
     (t: TakeView) => {
       stopBooth();
       const gen = ++genRef.current;
-      setFinished(false);
+      setFinishedId(null);
+      setPlayedId(t.id);
       void (async () => {
         const ok = await requestAudioOutput();
         if (gen !== genRef.current) return;
@@ -89,7 +96,7 @@ export function useTakePlayer(stopBooth: () => void): TakePlayer {
           frame.setActive(false);
           pos.value = t.seconds;
           setPlaying(false);
-          setFinished(true);
+          setFinishedId(t.id);
         }, t.seconds * 1000 + 150);
       })();
     },
@@ -108,5 +115,5 @@ export function useTakePlayer(stopBooth: () => void): TakePlayer {
   );
   useStopWhenSilenced(playing, stop);
   useStopOnClose(stop);
-  return { playing, finished, play, stop, pos };
+  return { playing, finished, finishedId, playedId, play, stop, pos };
 }

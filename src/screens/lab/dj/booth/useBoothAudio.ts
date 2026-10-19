@@ -48,7 +48,8 @@ import { useDecorativeMotion } from '../../../../features/settings/decorativeMot
 import { anchorAt, type Booth } from '../model/djModel';
 import { anyPlaying } from '../model/djDeck';
 import { carryAt, renderBooth, TAPS, type BoothRender, type Tap } from '../engine/djRender';
-import { boothNow, boothRunning, getBooth, stopBooth, subscribeBooth, syncClock } from './boothStore';
+import { boothNow, boothRunning, boothVersion, getBooth, readingFresh, stopBooth, subscribeBooth, syncClock } from './boothStore';
+import { closeOpenTake } from './takeStore';
 
 /** What the drawing reads for the meters (one chunk). */
 export type MeterFrame = {
@@ -78,8 +79,15 @@ export type BoothAudio = {
   /** Booth seconds, per frame. */
   clock: SharedValue<number>;
   meters: SharedValue<MeterFrame | null>;
-  /** The latest chunk's render, for the well's words (chunk-rate React state). */
+  /** The latest chunk's render, for the well's words (chunk-rate React state).
+   *  null while the booth is stopped (a stopped readout reads "—"). */
   last: BoothRender | null;
+  /** ADDITIVE (toddler bug test 2026-10-19): the booth version `last` was
+   *  rendered from (boothStore.boothVersion), and whether that is the booth
+   *  as it is NOW. A reading from before the latest change is stale: it
+   *  stays `last` until the next chunk starts sounding. */
+  lastStamp: number | null;
+  lastFresh: boolean;
   /** Ask the sound gate (call from a PLAY press). Resolves whether sound is
    *  on. Once the learner has said no on this screen, a PLAY press does not
    *  ask again (the booth runs silently); `force` (a TURN SOUND ON press) does. */
@@ -129,7 +137,9 @@ export function useBoothAudio(opts?: BoothAudioOpts): BoothAudio {
   const { requestAudioOutput } = useAudioOutputGate();
   const flowMotion = useDecorativeMotion();
   const [status, setStatus] = useState<BoothAudio['status']>('idle');
-  const [last, setLast] = useState<BoothRender | null>(null);
+  const [lastRec, setLastRec] = useState<{ render: BoothRender; stamp: number } | null>(null);
+  const last = lastRec?.render ?? null;
+  const lastStamp = lastRec?.stamp ?? null;
 
   const clock = useSharedValue(boothNow());
   const meters = useSharedValue<MeterFrame | null>(null);
@@ -195,6 +205,7 @@ export function useBoothAudio(opts?: BoothAudioOpts): BoothAudio {
       const began = Date.now();
       await breath();
       if (!aliveRef.current || gen !== genRef.current) return;
+      const stamp = boothVersion();
       const booth = anchorAt(getBooth(), t0);
       // continue the stream: a contiguous chunk carries every filter memory
       // and meter; a re-render inside the sounding chunk carries the meters
@@ -232,7 +243,7 @@ export function useBoothAudio(opts?: BoothAudioOpts): BoothAudio {
         currentRef.current = { t0, dur, render, player: k };
         meters.value = frameOf(render);
         optsRef.current?.onChunk?.(render);
-        setLast(render);
+        setLastRec({ render, stamp });
         setStatus(wantSound ? 'playing' : 'silent');
         // Prepare the next chunk to start exactly as this one ends.
         const lead = latencyRef.current + 0.35;
@@ -256,6 +267,7 @@ export function useBoothAudio(opts?: BoothAudioOpts): BoothAudio {
       silencePlayers();
       currentRef.current = null;
       meters.value = null;
+      setLastRec(null);
       setStatus('idle');
       resyncClock();
       return;
@@ -288,6 +300,7 @@ export function useBoothAudio(opts?: BoothAudioOpts): BoothAudio {
     stopBooth();
     currentRef.current = null;
     meters.value = null;
+    setLastRec(null);
     setStatus('idle');
     resyncClock();
   }, [meters, resyncClock, silencePlayers]);
@@ -322,6 +335,9 @@ export function useBoothAudio(opts?: BoothAudioOpts): BoothAudio {
       // Leaving the screen stops the booth (the house rule: no sound without
       // its display); the decks keep their places for the next screen.
       stopBooth();
+      // ...and a take still recording ends here: the next screen's chunks
+      // must never write into it (toddler bug test 2026-10-19).
+      closeOpenTake(boothNow());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -331,5 +347,10 @@ export function useBoothAudio(opts?: BoothAudioOpts): BoothAudio {
   useStopOnClose(stop);
 
   const leadSec = useCallback(() => latencyRef.current + 0.06, []);
-  return useMemo(() => ({ status, clock, meters, last, requestSound, soundDeclined, stop, flowMotion, leadSec }), [status, clock, meters, last, requestSound, soundDeclined, stop, flowMotion, leadSec]);
+  // read on every render of the screen (it re-renders on each booth change)
+  const lastFresh = readingFresh(lastStamp, boothVersion());
+  return useMemo(
+    () => ({ status, clock, meters, last, lastStamp, lastFresh, requestSound, soundDeclined, stop, flowMotion, leadSec }),
+    [status, clock, meters, last, lastStamp, lastFresh, requestSound, soundDeclined, stop, flowMotion, leadSec],
+  );
 }

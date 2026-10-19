@@ -80,6 +80,16 @@ export function playPause(b: Booth, t: number, id: DeckId): Booth {
   return mapDeck(b, t, id, (d) => (d.track ? { ...d, playing: !d.playing } : d));
 }
 
+/** Would PLAY on this deck start sound? Only a deck with a track plays
+ *  (playPause / setPlaying leave an empty deck as it is), so only then does
+ *  a PLAY press ask the sound gate (toddler bug test 2026-10-19: PLAY on an
+ *  empty deck asked for sound and nothing played). `toggle`: the press is a
+ *  PLAY/PAUSE key, which starts sound only from paused. */
+export function playWantsSound(b: Booth, id: DeckId, toggle = false): boolean {
+  const d = b.decks[id];
+  return !!d.track && !(toggle && d.playing);
+}
+
 export function setPlaying(b: Booth, t: number, id: DeckId, playing: boolean): Booth {
   return mapDeck(b, t, id, (d) => (d.track ? { ...d, playing } : d));
 }

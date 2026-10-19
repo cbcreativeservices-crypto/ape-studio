@@ -17,7 +17,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { useMarkWhen } from '../tuning/components/primitives';
 import type { PageCtx } from '../kit/PagedLab';
-import { latchGoals, reportGoals, setupPending } from './booth/goalStore';
+import { faultStep, latchGoals, reportGoals, setupPending } from './booth/goalStore';
 
 export const STEP_TITLES = ['UNDERSTAND', 'EXPLORE', 'LISTEN & OBSERVE', 'PRACTICE', 'CHECK YOURSELF'] as const;
 
@@ -189,6 +189,12 @@ export function EvidenceCheck({ eyebrow = 'CHECK YOURSELF', task, start, startLa
  * one at a time, and the answer once the booth itself shows it fixed
  * (`fixed` is a predicate over the live booth — the learner repairs it with
  * the same controls, never by ticking a box).
+ *
+ * ARMED (toddler bug test 2026-10-19, P1): a `fixed` that is already true
+ * when the fault starts (a flag or a reading left from before START) never
+ * counts. The card is armed by a render that shows the fault really on
+ * (booth/goalStore.faultStep), and solved only while armed. START AGAIN
+ * re-runs `start` for a fault the learner has wrecked mid-run.
  */
 export function FaultCard({ title, symptom, start, fixed, hints, why, onFixed, startLabel = 'START THE FAULT', intro, extra, open }: {
   title: string;
@@ -211,12 +217,15 @@ export function FaultCard({ title, symptom, start, fixed, hints, why, onFixed, s
 }) {
   const [on, setOn] = useState(false);
   const [shown, setShown] = useState(0);
+  const armed = useRef(false);
   useEffect(() => {
     if (open === true && !on) {
+      armed.current = false;
       setOn(true);
       setShown(0);
       fired.current = false;
     } else if (open === false && on) {
+      armed.current = false;
       setOn(false);
       setShown(0);
       fired.current = false;
@@ -224,8 +233,18 @@ export function FaultCard({ title, symptom, start, fixed, hints, why, onFixed, s
     // follow the page's flag only
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
-  const solved = on && fixed;
+  const step = faultStep(armed.current, on, fixed);
+  armed.current = step.armed;
+  const solved = step.solved;
   const fired = useRef(false);
+  /** START and START AGAIN: the fault from its beginning, disarmed. */
+  const begin = () => {
+    armed.current = false;
+    start();
+    setOn(true);
+    setShown(0);
+    fired.current = false;
+  };
   useMarkWhen(solved, () => {
     if (!fired.current) {
       fired.current = true;
@@ -240,12 +259,7 @@ export function FaultCard({ title, symptom, start, fixed, hints, why, onFixed, s
           <Text style={styles.p}>{intro ?? 'Something will go wrong in the booth. Find it with the meters, the drawing and your ears, then fix it with the controls.'}</Text>
           <Pressable
             style={styles.faultBtn}
-            onPress={() => {
-              start();
-              setOn(true);
-              setShown(0);
-              fired.current = false;
-            }}
+            onPress={begin}
             accessibilityRole="button"
             accessibilityLabel={startLabel === 'START THE FAULT' ? 'Start the fault' : startLabel.toLowerCase()}
           >
@@ -261,15 +275,27 @@ export function FaultCard({ title, symptom, start, fixed, hints, why, onFixed, s
           ))}
           {solved ? (
             <Text style={styles.fixed}>{`Fixed. ${why}`}</Text>
-          ) : shown < hints.length ? (
-            <Pressable style={styles.faultBtn} onPress={() => setShown((s) => s + 1)} accessibilityRole="button" accessibilityLabel="Show a hint">
-              <Text style={styles.faultBtnText}>SHOW A HINT</Text>
-            </Pressable>
-          ) : null}
+          ) : (
+            <View style={styles.faultRow}>
+              {shown < hints.length ? (
+                <Pressable style={styles.faultBtn} onPress={() => setShown((s) => s + 1)} accessibilityRole="button" accessibilityLabel="Show a hint">
+                  <Text style={styles.faultBtnText}>SHOW A HINT</Text>
+                </Pressable>
+              ) : null}
+              {/* a page that opens the fault itself (the capstone's doors)
+                  restarts it from its own controls */}
+              {open === undefined ? (
+                <Pressable style={styles.faultBtn} onPress={begin} accessibilityRole="button" accessibilityLabel="Start the fault again">
+                  <Text style={styles.faultBtnText}>START AGAIN</Text>
+                </Pressable>
+              ) : null}
+            </View>
+          )}
           {solved ? (
             <Pressable
               style={styles.faultBtn}
               onPress={() => {
+                armed.current = false;
                 setOn(false);
                 setShown(0);
                 fired.current = false;
@@ -320,6 +346,7 @@ const styles = StyleSheet.create({
   symptom: { color: colors.textPrimary, fontFamily: fonts.barlowSemiBold, fontSize: 14.5, lineHeight: 21 },
   hint: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19 },
   fixed: { color: colors.green, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20 },
+  faultRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   faultBtn: { alignSelf: 'flex-start', borderRadius: 9, borderWidth: 1, borderColor: '#3a3a44', paddingVertical: 9, paddingHorizontal: 14, minHeight: 40, justifyContent: 'center' },
   faultBtnText: { color: colors.textSecondary, fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.9 },
 });

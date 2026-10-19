@@ -193,6 +193,9 @@ export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, scr
             style={[styles.calloutText, { color: TONE[b.c.tone ?? 'amber'], fontSize: fs, lineHeight: LINE * k, letterSpacing: 0.6 * k }]}
             numberOfLines={b.lines.length}
             allowFontScaling={false}
+            // a label is part of the picture: a triple-tap on the web must
+            // never select it like a paragraph (toddler bug test 2026-10-19)
+            selectable={false}
           >
             {b.lines.join('\n')}
           </Text>
@@ -349,10 +352,11 @@ export function layoutCallouts(
 }
 
 const styles = StyleSheet.create({
-  callout: { position: 'absolute', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(8,8,10,0.55)' },
+  callout: { position: 'absolute', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(8,8,10,0.55)', userSelect: 'none' },
   calloutText: {
     fontFamily: fonts.oswaldMedium,
     textAlign: 'center',
+    userSelect: 'none',
     textShadowColor: 'rgba(0,0,0,0.95)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 3,

@@ -17,8 +17,8 @@
  * actually playing (`syncClock`) — while sound is on, the audio IS the clock.
  */
 import { useSyncExternalStore } from 'react';
-import { anchorAt, builtBooth, LISTEN_FRESH, type Booth, type Perspective } from '../model/djModel';
-import { anyPlaying, stopAll } from '../model/djDeck';
+import { anchorAt, builtBooth, LISTEN_FRESH, type Booth, type Perspective } from '../model/djModel.ts';
+import { anyPlaying, stopAll } from '../model/djDeck.ts';
 
 type Listener = () => void;
 
@@ -53,7 +53,18 @@ export function syncClock(t: number): void {
   baseWall = wall();
 }
 
+/** The booth's VERSION: one more on every change (ADDITIVE, toddler bug
+ *  test 2026-10-19). useBoothAudio stamps each render with the version it
+ *  was made from, so a reading can tell whether it already carries the
+ *  latest change. */
+let version = 0;
+export const boothVersion = (): number => version;
+
+/** Was a render stamped `stamp` made from the booth at version `now`? */
+export const readingFresh = (stamp: number | null, now: number = version): boolean => stamp != null && stamp === now;
+
 function emit(): void {
+  version++;
   for (const l of [...listeners]) l();
 }
 

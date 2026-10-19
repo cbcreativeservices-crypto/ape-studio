@@ -3,18 +3,23 @@
  * store + the sound/clock engine + the transport), chunk-level readings from
  * the latest render, and bezel cells coloured by the house ramp.
  */
-import { useMemo } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import { colors } from '../../../../theme/tokens';
 import { levelColorForDb } from '../../../../features/tools/levelColor';
 import type { BezelItem } from '../../rack/rackTypes';
 import { useBooth } from '../booth/boothStore';
+import { kitReady, setupPending } from '../booth/goalStore';
 import { useBoothAudio, type BoothAudio, type BoothAudioOpts } from '../booth/useBoothAudio';
 import { transportOf, type Transport } from '../dock';
 import type { BoothRender, Stage, Tap } from '../engine/djRender';
 import type { Booth } from '../model/djModel';
 import type { BoothMotion } from '../art/motion';
 
-export type BoothKit = { booth: Booth; audio: BoothAudio; tr: Transport; motion: BoothMotion };
+/** `ready` (ADDITIVE, toddler bug test 2026-10-19): false on the kit's
+ *  first render (it still sees the booth the previous screen left) and
+ *  while any screen's setup (booth/setup.useScreenSetup) is pending — every
+ *  page has it, so a new page cannot forget to wait for its own booth. */
+export type BoothKit = { booth: Booth; audio: BoothAudio; tr: Transport; motion: BoothMotion; ready: boolean };
 
 /** `lockPhase`: decks start in phase with each other (the pre-matched blend
  *  screens 6, 8 and 9). */
@@ -25,7 +30,9 @@ export function useBoothKit(opts?: { lockPhase?: boolean; audio?: BoothAudioOpts
   const lockPhase = !!opts?.lockPhase;
   const tr = useMemo(() => transportOf(audio, { lockPhase }), [audio, lockPhase]);
   const motion = useMemo(() => ({ clock: audio.clock, meters: audio.meters }), [audio.clock, audio.meters]);
-  return { booth, audio, tr, motion };
+  const [mounted, setMounted] = useState(false);
+  useLayoutEffect(() => setMounted(true), []);
+  return { booth, audio, tr, motion, ready: kitReady(mounted, setupPending()) };
 }
 
 /** The loudest raw block (dBFS, before any clip) of a tap in a render. */

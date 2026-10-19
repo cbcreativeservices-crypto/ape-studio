@@ -11,15 +11,18 @@
  * audio.
  */
 import { useSyncExternalStore } from 'react';
-import { SR } from '../engine/djDsp';
-import type { EventRender } from '../engine/djEventRender';
+import { SR } from '../engine/djDsp.ts';
+import type { EventRender } from '../engine/djEventRender.ts';
 
 export const TAKE_MAX_S = 40;
 
-type Take = { armedAt: number; l: Float32Array; r: Float32Array; mic: Float32Array; written: number; closedAt: number | null; version: number };
+type Take = { id: number; armedAt: number; l: Float32Array; r: Float32Array; mic: Float32Array; written: number; closedAt: number | null; version: number };
 
 let take: Take | null = null;
 let version = 0;
+/** Every take gets its own id: two takes armed while the booth clock stood
+ *  still share an `armedAt`, never an id. */
+let nextId = 1;
 const listeners = new Set<() => void>();
 const emit = () => {
   version++;
@@ -29,7 +32,7 @@ const emit = () => {
 /** Start a new take at booth time t (the old one is dropped). */
 export function armTake(t: number): void {
   const n = TAKE_MAX_S * SR;
-  take = { armedAt: t, l: new Float32Array(n), r: new Float32Array(n), mic: new Float32Array(n), written: 0, closedAt: null, version: 0 };
+  take = { id: nextId++, armedAt: t, l: new Float32Array(n), r: new Float32Array(n), mic: new Float32Array(n), written: 0, closedAt: null, version: 0 };
   emit();
 }
 
@@ -39,6 +42,12 @@ export function closeTake(t: number): void {
   take.closedAt = t;
   take.written = Math.min(take.written, Math.max(0, Math.round((t - take.armedAt) * SR)));
   emit();
+}
+
+/** A take still recording ends at booth time t (useBoothAudio, as its
+ *  screen goes: the next screen's chunks never write into it). */
+export function closeOpenTake(t: number): void {
+  if (take && take.closedAt == null) closeTake(t);
 }
 
 export function clearTake(): void {
@@ -69,6 +78,8 @@ export function writeChunk(r: EventRender): void {
 }
 
 export type TakeView = {
+  /** ADDITIVE: this take's own id (useTakePlayer ties `finished` to it). */
+  id: number;
   armedAt: number;
   closed: boolean;
   seconds: number;
@@ -122,6 +133,7 @@ function viewOf(t: Take | null): TakeView | null {
     voice[c] = m > 0.0032 ? 1 : 0; // the mic's own part above −50 dBFS
   }
   return {
+    id: t.id,
     armedAt: t.armedAt,
     closed: t.closedAt != null,
     seconds: n / SR,
@@ -138,6 +150,11 @@ export function getTake(): TakeView | null {
   if (cached.v !== version) cached = { v: version, view: viewOf(take) };
   return cached.view;
 }
+
+/** Did the take a player FINISHED (`finishedId`) play to its end — and is
+ *  it this take? A take played to its end never reads finished for the
+ *  next one (toddler bug test 2026-10-19). */
+export const finishedFor = (finishedId: number | null, t: TakeView | null): boolean => finishedId != null && !!t && t.id === finishedId;
 
 /** Recording now? */
 export const takeOpen = (): boolean => !!take && take.closedAt == null;

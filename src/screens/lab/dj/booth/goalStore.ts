@@ -74,6 +74,24 @@ export function clearSetupPending(key: object): void {
  * latches — unless the screen is not `ready` (its setup not yet applied),
  * when nothing new latches. Latched goals never unlatch (credit is kept).
  */
+/**
+ * One render's FaultCard step (pure; bits.FaultCard — toddler bug test
+ * 2026-10-19, the P1 pattern). A fault whose `fixed` is ALREADY true when it
+ * starts (a flag from the last run, a reading from before START) used to
+ * read FIXED at once. The card is ARMED only by a render that shows the
+ * fault really on (`on && !fixed`); it is solved only while armed. Off
+ * disarms; START and START AGAIN begin disarmed.
+ */
+export function faultStep(armed: boolean, on: boolean, fixed: boolean): { armed: boolean; solved: boolean } {
+  const a = on && (armed || !fixed);
+  return { armed: a, solved: a && fixed };
+}
+
+/** Every page's `ready` (pages/shared.useBoothKit, pure half): not on the
+ *  kit's first render (it still sees the previous screen's booth) and not
+ *  while any screen's setup is pending. */
+export const kitReady = (mounted: boolean, pending: boolean): boolean => mounted && !pending;
+
 export function latchGoals(prev: readonly boolean[], hits: readonly boolean[], ready: boolean): boolean[] {
   const out = hits.map((_, i) => prev[i] ?? false);
   if (!ready) return out;
