@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 03:34 · ccode · c37d0275
+changed: DJ Systems Lab 19: true-size mic from the combo jack, meters top-left, panel larger, labels in clear air; room plan with no device overlaps
+affects other side: nothing (client art only: p19Mic, MicGear, PlanView, djRoom placement — ROOM.table now 1.7 m, drawing/labels only; no physics numbers change)
+needs: nothing
+
+
 ### 2026-10-19 02:53 · ccode · 2a88e1f5
 changed: Merge dj-lab-d: overnight fixes for DJ screens 2, 3, 4 and 7
 affects other side: nothing (client only)
