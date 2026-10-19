@@ -46,7 +46,11 @@ const LEG = 4;
 
 const CUP = { L: 46, R: 154, cy: 162, rx: 34, ry: 47 } as const;
 
-export const Headphones = memo(function Headphones({ x, y, s = 1, leftGlow, rightGlow, showPlug = true }: { x: number; y: number; s?: number; leftGlow?: string | null; rightGlow?: string | null; showPlug?: boolean }) {
+/** `cord={false}` leaves the cord off at the cup (ADDITIVE, Screen 7): the
+ *  page then draws it (PhonesCord) from `PHONES_CORD_EXIT` into a jack. */
+export const PHONES_CORD_EXIT = { x: 46, y: 205 } as const;
+
+export const Headphones = memo(function Headphones({ x, y, s = 1, leftGlow, rightGlow, showPlug = true, cord = true }: { x: number; y: number; s?: number; leftGlow?: string | null; rightGlow?: string | null; showPlug?: boolean; cord?: boolean }) {
   const band = useMemo(() => {
     const p = Skia.PathBuilder.Make();
     p.moveTo(30, 96);
@@ -112,8 +116,10 @@ export const Headphones = memo(function Headphones({ x, y, s = 1, leftGlow, righ
         <Oval x={cx - CUP.rx + 3} y={CUP.cy - CUP.ry + 5} width={CUP.rx * 2} height={CUP.ry * 2} color="rgba(0,0,0,0.6)">
           <BlurMask blur={5} style="normal" />
         </Oval>
-        {/* the cushion (inner side): leatherette, pleated */}
-        <Oval x={cushCx - 15} y={CUP.cy - CUP.ry} width={30} height={CUP.ry * 2}>
+        {/* the cushion (inner side): leatherette, pleated — a little shorter
+            than the shell it is fixed to, so it reads as the pad on the cup,
+            not a second cup beside it (grade 2026-10-19) */}
+        <Oval x={cushCx - 15} y={CUP.cy - CUP.ry * 0.93} width={30} height={CUP.ry * 1.86}>
           <LinearGradient start={vec(cushCx - 15, CUP.cy - CUP.ry)} end={vec(cushCx + 15, CUP.cy + CUP.ry)} colors={['#3b3d42', '#1c1d21', '#0d0e10']} />
         </Oval>
         <Path path={pleats} style="stroke" strokeWidth={0.7} color="rgba(0,0,0,0.6)" />
@@ -123,8 +129,8 @@ export const Headphones = memo(function Headphones({ x, y, s = 1, leftGlow, righ
           <RadialGradient c={vec(shellCx - 12, CUP.cy - 26)} r={70} colors={['#565a62', '#2a2c31', '#121315', '#08080a']} positions={[0, 0.35, 0.75, 1]} />
         </Oval>
         <Oval x={shellCx - 28} y={CUP.cy - CUP.ry + 1} width={56} height={CUP.ry * 2 - 2} style="stroke" strokeWidth={1} color="rgba(255,255,255,0.12)" />
-        {/* the seam between shell and cushion */}
-        <Oval x={cx - out * 6 - 3} y={CUP.cy - CUP.ry + 2} width={6} height={CUP.ry * 2 - 4} color="#060607" />
+        {/* the seam where the pad meets the shell's inner rim */}
+        <Oval x={shellCx - out * 28 - 1.6} y={CUP.cy - CUP.ry * 0.9} width={3.2} height={CUP.ry * 1.8} color="#060607" />
         <Oval x={shellCx - 14} y={CUP.cy - 34} width={14} height={26} color="rgba(255,255,255,0.13)">
           <BlurMask blur={4} style="normal" />
         </Oval>
@@ -183,15 +189,22 @@ export const Headphones = memo(function Headphones({ x, y, s = 1, leftGlow, righ
       {cup('L', leftGlow)}
       {cup('R', rightGlow)}
       {/* the cable leaves the LEFT cup, coils, then runs straight to the plug */}
-      <Line p1={vec(46, 205)} p2={vec(46, 213)} color="#121315" strokeWidth={3.2} strokeCap="round" />
-      {coil.map((c, i) => (
-        <Group key={i} transform={[{ translateX: c.cx }, { translateY: c.cy }, { rotate: c.a + Math.PI / 2 }]}>
-          <Oval x={-6.4} y={-2.6} width={12.8} height={5.2} style="stroke" strokeWidth={2.6} color="#0f1012" />
-          <Path path={coilLit} style="stroke" strokeWidth={0.7} color="rgba(255,255,255,0.24)" strokeCap="round" />
+      {cord ? (
+        <Group>
+          <Line p1={vec(46, 205)} p2={vec(46, 213)} color="#121315" strokeWidth={3.2} strokeCap="round" />
+          {coil.map((c, i) => (
+            <Group key={i} transform={[{ translateX: c.cx }, { translateY: c.cy }, { rotate: c.a + Math.PI / 2 }]}>
+              <Oval x={-6.4} y={-2.6} width={12.8} height={5.2} style="stroke" strokeWidth={2.6} color="#0f1012" />
+              <Path path={coilLit} style="stroke" strokeWidth={0.7} color="rgba(255,255,255,0.24)" strokeCap="round" />
+            </Group>
+          ))}
+          <Line p1={vec(coil[coil.length - 1].cx, coil[coil.length - 1].cy)} p2={vec(PHONES_CABLE_END.x, PHONES_CABLE_END.y)} color="#121315" strokeWidth={3} strokeCap="round" />
+          {showPlug ? <JackPlug x={PHONES_CABLE_END.x} y={PHONES_CABLE_END.y} /> : null}
         </Group>
-      ))}
-      <Line p1={vec(coil[coil.length - 1].cx, coil[coil.length - 1].cy)} p2={vec(PHONES_CABLE_END.x, PHONES_CABLE_END.y)} color="#121315" strokeWidth={3} strokeCap="round" />
-      {showPlug ? <JackPlug x={PHONES_CABLE_END.x} y={PHONES_CABLE_END.y} /> : null}
+      ) : (
+        // the cord's moulded strain relief out of the cup's base
+        <RoundedRect x={46 - 3.4} y={203} width={6.8} height={9} r={2.4} color="#16171a" />
+      )}
     </Group>
   );
 });
@@ -242,6 +255,206 @@ export function JackPlug({ x, y }: { x: number; y: number }) {
       </Rect>
       <Rect x={x - 3.17} y={y + 50.7} width={6.35} height={1.3} color="#0b0b0d" />
       <Path path={tip}>{metal(x - 3.2, x + 3.2)}</Path>
+    </Group>
+  );
+}
+
+/* ── cords lying on the desk ──────────────────────────────────────────── */
+
+export type P2 = [number, number];
+
+/** The cubic pieces of a Catmull-Rom curve through `pts`: a cable lying
+ *  loose on a desk takes smooth, unforced bends — never a ruled right angle. */
+function curveSegs(pts: readonly P2[]): [P2, P2, P2, P2][] {
+  const out: [P2, P2, P2, P2][] = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i];
+    const p1 = pts[i + 1];
+    const pm = pts[i - 1] ?? p0;
+    const pp = pts[i + 2] ?? p1;
+    out.push([p0, [p0[0] + (p1[0] - pm[0]) / 6, p0[1] + (p1[1] - pm[1]) / 6], [p1[0] - (pp[0] - p0[0]) / 6, p1[1] - (pp[1] - p0[1]) / 6], p1]);
+  }
+  return out;
+}
+
+/** A smooth curve through every point (mm): the path of a loose cable. */
+export function curvePath(pts: readonly P2[]) {
+  const p = Skia.PathBuilder.Make();
+  if (pts.length === 0) return p.detach();
+  p.moveTo(pts[0][0], pts[0][1]);
+  for (const [, c1, c2, b] of curveSegs(pts)) p.cubicTo(c1[0], c1[1], c2[0], c2[1], b[0], b[1]);
+  return p.detach();
+}
+
+/** Points every `step` mm along the curve through `pts`, with the heading
+ *  (radians) there — pure, so a test can check a cord's run. */
+export function curveSamples(pts: readonly P2[], step: number): { x: number; y: number; a: number; d: number }[] {
+  const out: { x: number; y: number; a: number; d: number }[] = [];
+  let d = 0;
+  let next = 0;
+  for (const [a, c1, c2, b] of curveSegs(pts)) {
+    let prev = a;
+    for (let i = 1; i <= 40; i++) {
+      const t = i / 40;
+      const u = 1 - t;
+      const x = u * u * u * a[0] + 3 * u * u * t * c1[0] + 3 * u * t * t * c2[0] + t * t * t * b[0];
+      const y = u * u * u * a[1] + 3 * u * u * t * c1[1] + 3 * u * t * t * c2[1] + t * t * t * b[1];
+      const seg = Math.hypot(x - prev[0], y - prev[1]);
+      d += seg;
+      if (d >= next) {
+        out.push({ x, y, a: Math.atan2(y - prev[1], x - prev[0]), d });
+        next += step;
+      }
+      prev = [x, y];
+    }
+  }
+  return out;
+}
+
+/** A headphone cord lying on the desk along `pts` (mm): coiled between the
+ *  arc lengths `coil` (from the start, mm), plain elsewhere. */
+export function PhonesCord({ pts, coil }: { pts: readonly P2[]; coil: [number, number] }) {
+  const path = useMemo(() => curvePath(pts), [pts]);
+  const loops = useMemo(() => curveSamples(pts, 3.5).filter((p) => p.d >= coil[0] && p.d <= coil[1]), [pts, coil]);
+  const lit = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    p.addArc(Skia.XYWHRect(-6.4, -2.6, 12.8, 5.2), 195, 110);
+    return p.detach();
+  }, []);
+  return (
+    <Group>
+      <Path path={path} style="stroke" strokeWidth={3.4} color="rgba(0,0,0,0.55)" strokeCap="round" transform={[{ translateX: 1 }, { translateY: 1.6 }]}>
+        <BlurMask blur={1.4} style="normal" />
+      </Path>
+      <Path path={path} style="stroke" strokeWidth={3} color="#121315" strokeCap="round" />
+      <Path path={path} style="stroke" strokeWidth={0.6} color="rgba(255,255,255,0.14)" strokeCap="round" transform={[{ translateX: -0.6 }, { translateY: -0.7 }]} />
+      {loops.map((c, i) => (
+        <Group key={i} transform={[{ translateX: c.x }, { translateY: c.y }, { rotate: c.a + Math.PI / 2 }]}>
+          <Oval x={-6.4} y={-2.6} width={12.8} height={5.2} style="stroke" strokeWidth={2.6} color="#0f1012" />
+          <Path path={lit} style="stroke" strokeWidth={0.7} color="rgba(255,255,255,0.24)" strokeCap="round" />
+        </Group>
+      ))}
+    </Group>
+  );
+}
+
+/** A 6.35 mm headphone plug SEATED in a front-panel jack, seen from above:
+ *  the panel's front face is the line y, the plug's knurled shell and boot
+ *  stand out from it toward +y, and the cord leaves the boot at
+ *  (x, y + SEATED_PLUG_LEN). The tip, ring and sleeve are inside the jack. */
+export const SEATED_PLUG_LEN = 31;
+export function SeatedJackPlugTop({ x, y }: { x: number; y: number }) {
+  const boot = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    p.moveTo(x - 4.8, y + 19);
+    p.lineTo(x + 4.8, y + 19);
+    p.lineTo(x + 2.8, y + SEATED_PLUG_LEN);
+    p.lineTo(x - 2.8, y + SEATED_PLUG_LEN);
+    p.close();
+    return p.detach();
+  }, [x, y]);
+  return (
+    <Group>
+      {/* its shadow on the desk, cast down-right */}
+      <RoundedRect x={x - 5 + 1.6} y={y + 2} width={10} height={SEATED_PLUG_LEN - 2} r={3} color="rgba(0,0,0,0.6)">
+        <BlurMask blur={1.6} style="normal" />
+      </RoundedRect>
+      {/* the gold collar against the jack's nut, then the knurled shell */}
+      <Rect x={x - 4.4} y={y} width={8.8} height={1.8}>
+        <LinearGradient start={vec(x - 4.4, 0)} end={vec(x + 4.4, 0)} colors={['#8a7440', '#f0dc9e', '#8a7440']} />
+      </Rect>
+      <RoundedRect x={x - 5} y={y + 1.8} width={10} height={17.2} r={1.4}>
+        <LinearGradient start={vec(x - 5, 0)} end={vec(x + 5, 0)} colors={['#7a8089', '#eef1f4', '#9aa0a8', '#5c626b']} positions={[0, 0.35, 0.6, 1]} />
+      </RoundedRect>
+      {[5, 8, 11, 14, 17].map((g) => (
+        <Line key={g} p1={vec(x - 5, y + g)} p2={vec(x + 5, y + g)} color="rgba(0,0,0,0.3)" strokeWidth={0.5} />
+      ))}
+      <Path path={boot}>
+        <LinearGradient start={vec(x - 5, 0)} end={vec(x + 5, 0)} colors={['#2a2c31', '#121315', '#060607']} />
+      </Path>
+    </Group>
+  );
+}
+
+/** The run `pts` moved sideways by `d` mm (to its left, along each point's
+ *  normal): the second conductor of a stereo RCA pair keeps its own lane
+ *  beside the first, never merged with it. Pure. */
+export function offsetPts(pts: readonly P2[], d: number): P2[] {
+  return pts.map((p, i) => {
+    const a = pts[Math.max(0, i - 1)];
+    const b = pts[Math.min(pts.length - 1, i + 1)];
+    const dx = b[0] - a[0];
+    const dy = b[1] - a[1];
+    const L = Math.hypot(dx, dy) || 1;
+    return [p[0] + (dy / L) * d, p[1] - (dx / L) * d] as P2;
+  });
+}
+
+/** A plug seen from ABOVE entering a device's rear edge at (x, y), its body
+ *  standing back from the edge (−y), at scale `s`: an RCA (white or red
+ *  collar, nickel barrel hidden in the socket) or a LAN (RJ45) plug with
+ *  its latch boot. */
+export function SmallPlugTop({ x, y, kind, s = 1 }: { x: number; y: number; kind: 'rcaWhite' | 'rcaRed' | 'lan'; s?: number }) {
+  if (kind === 'lan') {
+    const w = 12 * s;
+    const l = 24 * s;
+    return (
+      <Group>
+        <RoundedRect x={x - w / 2 + 0.8 * s} y={y - l + 1.4 * s} width={w} height={l} r={2 * s} color="rgba(0,0,0,0.55)">
+          <BlurMask blur={1.2 * s} style="normal" />
+        </RoundedRect>
+        <RoundedRect x={x - w / 2} y={y - l * 0.45} width={w} height={l * 0.45} r={1.2 * s}>
+          <LinearGradient start={vec(x - w / 2, 0)} end={vec(x + w / 2, 0)} colors={['#9fb0bf', '#dfe8ef', '#8a99a6']} />
+        </RoundedRect>
+        <RoundedRect x={x - w * 0.4} y={y - l} width={w * 0.8} height={l * 0.58} r={2 * s}>
+          <LinearGradient start={vec(x - w / 2, 0)} end={vec(x + w / 2, 0)} colors={['#3a5a7a', '#5d86ad', '#2c4560']} />
+        </RoundedRect>
+      </Group>
+    );
+  }
+  const w = 9 * s;
+  const l = 22 * s;
+  const collar = kind === 'rcaRed' ? '#c0392b' : '#e8e8e8';
+  return (
+    <Group>
+      <RoundedRect x={x - w / 2 + 0.8 * s} y={y - l + 1.4 * s} width={w} height={l} r={2 * s} color="rgba(0,0,0,0.55)">
+        <BlurMask blur={1.2 * s} style="normal" />
+      </RoundedRect>
+      <RoundedRect x={x - w / 2} y={y - l * 0.32} width={w} height={l * 0.32} r={1 * s}>
+        <LinearGradient start={vec(x - w / 2, 0)} end={vec(x + w / 2, 0)} colors={['#7a8089', '#eef1f4', '#5c626b']} />
+      </RoundedRect>
+      <Rect x={x - w / 2} y={y - l * 0.46} width={w} height={l * 0.14} color={collar} />
+      <RoundedRect x={x - w * 0.36} y={y - l} width={w * 0.72} height={l * 0.56} r={2 * s}>
+        <LinearGradient start={vec(x - w / 2, 0)} end={vec(x + w / 2, 0)} colors={['#3a3c42', '#141518', '#0b0b0d']} />
+      </RoundedRect>
+    </Group>
+  );
+}
+
+/** A foam isolation pad (front view, w × h mm) that a desktop monitor sits
+ *  on: dense grey foam, its top edge lit, a fine open-cell texture. */
+export function IsolationPad({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
+  const cells = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    for (let i = 0; i < Math.floor(w / 3); i++) {
+      for (let j = 0; j < Math.max(1, Math.floor(h / 3)); j++) {
+        const cx = x + 1.5 + i * 3 + (j % 2) * 1.5;
+        const cy = y + 2 + j * 3;
+        if (cx < x + w - 1 && cy < y + h - 1) p.addCircle(cx, cy, 0.45);
+      }
+    }
+    return p.detach();
+  }, [x, y, w, h]);
+  return (
+    <Group>
+      <RoundedRect x={x + 2} y={y + 2} width={w} height={h} r={2} color="rgba(0,0,0,0.6)">
+        <BlurMask blur={2} style="normal" />
+      </RoundedRect>
+      <RoundedRect x={x} y={y} width={w} height={h} r={2}>
+        <LinearGradient start={vec(0, y)} end={vec(0, y + h)} colors={['#4a4d52', '#2e3034', '#1c1d20']} />
+      </RoundedRect>
+      <Path path={cells} color="rgba(0,0,0,0.35)" />
+      <Line p1={vec(x + 1.5, y + 0.6)} p2={vec(x + w - 1.5, y + 0.6)} color="rgba(255,255,255,0.18)" strokeWidth={0.8} />
     </Group>
   );
 }

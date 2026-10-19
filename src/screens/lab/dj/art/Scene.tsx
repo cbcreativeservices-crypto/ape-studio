@@ -48,7 +48,7 @@ export type Xf = { s: number; ox: number; oy: number };
 const TONE = { amber: colors.amber, plain: colors.textPrimary, blue: '#8fbcff', red: '#ff8a7e', green: '#7dff9f' } as const;
 const EDGE = { amber: 'rgba(255,198,77,0.75)', plain: 'rgba(255,255,255,0.55)', blue: 'rgba(143,188,255,0.75)', red: 'rgba(255,138,126,0.8)', green: 'rgba(125,255,159,0.75)' } as const;
 
-export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, screenOverlay, a11y, children, pad = 6, fit, aspect, labelsOutsideFit = false, focus }: {
+export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, screenOverlay, a11y, children, pad = 6, fit, aspect, labelsOutsideFit = false, focus, printed }: {
   w: number;
   h: number;
   frame: Box;
@@ -76,6 +76,12 @@ export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, scr
    *  SCREEN zoom opens on — the part the lesson is about. Default: the first
    *  callout's part, else the frame's centre. */
   focus?: Box;
+  /** ADDITIVE (grade 2026-10-19, Screen 7): printed panel legends (scene mm,
+   *  with their type size in mm). Each is a label obstacle only once the zoom
+   *  renders it legible (≥ 9 pt, the size at which sceneText draws it), so a
+   *  close look never hides a legend under a callout while the 1× view keeps
+   *  its room. */
+  printed?: readonly (Box & { size: number })[];
 }) {
   // The drawing grows by the full-screen zoom; its words grow too (D35),
   // but by the square root, so a closer look shows more drawing, not just
@@ -117,9 +123,13 @@ export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, scr
   }, [zoomed, callouts, xf, fit?.x, fit?.y, fit?.w, fit?.h, w, h]);
   const { s, ox, oy } = xf;
   const boxes = useMemo(
-    () => layoutCallouts(shown, xf, w, h, k, obstacles ?? [], soft ?? [], labelsOutsideFit ? undefined : fit),
+    () => {
+      const legible = printed ? printed.filter((p) => p.size * s >= 9 - 1e-3) : [];
+      const hard = legible.length ? [...(obstacles ?? []), ...legible] : obstacles ?? [];
+      return layoutCallouts(shown, xf, w, h, k, hard, soft ?? [], labelsOutsideFit ? undefined : fit);
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [shown, ox, oy, s, w, h, k, obstacles, soft, fit?.x, fit?.y, fit?.w, fit?.h, labelsOutsideFit],
+    [shown, ox, oy, s, w, h, k, obstacles, soft, fit?.x, fit?.y, fit?.w, fit?.h, labelsOutsideFit, printed],
   );
   const fs = 10 * k;
   return (

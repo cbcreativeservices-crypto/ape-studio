@@ -12,7 +12,7 @@
  * slight perspective with its cast shadow (parts.PlugFace).
  */
 import { useContext, useMemo } from 'react';
-import { Group, Line, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { Group, Line, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import type { CableKind } from '../model/djModel';
 import { INK } from './ink';
 import { Cable, LoosePlug, PlugFace, PLUG_R, sagPath, smoothPath, type CablePattern, type CableStyle, type PlugKind } from './parts';
@@ -38,6 +38,17 @@ export type Run = {
   farKind?: PlugKind;
   /** No plug at the fixed end (a headphone cable is moulded into the cups). */
   noFixedPlug?: boolean;
+  /** ADDITIVE (overnight fix 2026-10-19): the DRESSED run (geometry/
+   *  dressGeometry — real bend radii, catenary sag on the spans that hang),
+   *  stroked as given; `pts` then only names the lane. */
+  dense?: [number, number][];
+  /** ADDITIVE: a secondary cable (Screen 4's mains cords): thinner, darker,
+   *  ribbed, drawn under the audio, and never glowing — a live cord shows
+   *  only a fine amber thread. */
+  quiet?: boolean;
+  /** ADDITIVE: how far a loose end dips below its chord (mm; default 16). A
+   *  plug hanging from its socket barely dips at all. */
+  looseSag?: number;
 };
 
 const WIDTH: Record<CableKind, number> = { rca: 3.2, xlr: 4.6, trs: 4.2, phones: 3, iec: 6.2 };
@@ -46,7 +57,17 @@ export function styleOf(r: Run): CableStyle {
   const k = r.kind;
   const pattern: CablePattern = k === 'xlr' ? (r.dashed ? 'dash' : 'stripe') : k === 'trs' ? 'dots' : k === 'iec' ? 'ribs' : r.dashed ? 'dash' : 'plain';
   const colour = k === 'rca' ? (r.colour === INK.rcaRed ? '#7a2018' : '#8d9097') : k === 'xlr' ? '#3d4046' : k === 'iec' ? '#16171a' : '#101113';
+  if (r.quiet) return { colour: '#0f1012', width: WIDTH[k] * 0.62, pattern: 'ribs' };
   return { colour, width: WIDTH[k], pattern };
+}
+
+/** A dense polyline as a path (the dressed run is already smooth). */
+function polyPath(pts: readonly [number, number][]) {
+  const pb = Skia.PathBuilder.Make();
+  if (pts.length === 0) return pb.detach();
+  pb.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) pb.lineTo(pts[i][0], pts[i][1]);
+  return pb.detach();
 }
 
 const plugOf = (k: CableKind): PlugKind => (k === 'phones' ? 'trs' : k);
@@ -60,23 +81,26 @@ export function CableRun({ r, flow = false, labelAt }: { r: Run; flow?: boolean;
   const farKind = r.farKind ?? fixedKind;
   // a loose end hangs: sag from the last bend to where the plug lies
   const path = useMemo(() => {
+    if (r.dense && r.dense.length >= 2) return polyPath(r.dense);
     if (r.plugged || r.pts.length < 2) return smoothPath(r.pts);
     const pre = r.pts.slice(0, -1);
     const lastBend = pre[pre.length - 1];
     const pb = Skia.PathBuilder.Make();
     if (pre.length >= 2) pb.addPath(smoothPath(pre));
     else pb.moveTo(lastBend[0], lastBend[1]);
-    pb.addPath(sagPath(lastBend, b, 16), undefined, true);
+    pb.addPath(sagPath(lastBend, b, r.looseSag ?? 16), undefined, true);
     return pb.detach();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [r.pts, r.plugged]);
-  // the direction the far plug faces (along the last segment)
-  const pen = r.pts[r.pts.length - 2] ?? a;
+  }, [r.pts, r.dense, r.plugged, r.looseSag]);
+  // the direction the far plug faces (along the last stretch of the run)
+  const tail = r.dense && r.dense.length >= 2 ? r.dense : r.pts;
+  const pen = tailPoint(tail, b);
   const angOut = Math.atan2(b[1] - pen[1], b[0] - pen[0]);
-  const glow = r.live ? (r.kind === 'iec' ? INK.amber : INK.blue) : null;
+  const glow = r.live && !r.quiet ? (r.kind === 'iec' ? INK.amber : INK.blue) : null;
   return (
     <Group>
-      <Cable pts={r.pts} path={path} style={st} glow={glow} flow={flow && r.live} />
+      <Cable pts={r.pts} path={path} style={st} glow={glow} flow={flow && r.live && !r.quiet} />
+      {r.quiet && r.live ? <Path path={path} style="stroke" strokeWidth={0.7} color={INK.amber} opacity={0.5} /> : null}
       {r.noFixedPlug ? null : <PlugFace cx={a[0]} cy={a[1]} kind={fixedKind} colour={r.colour} />}
       {r.plugged ? (
         <PlugFace cx={b[0]} cy={b[1]} kind={farKind} colour={r.colour} dir={Math.atan2(pen[1] - b[1], pen[0] - b[0])} />
@@ -86,6 +110,13 @@ export function CableRun({ r, flow = false, labelAt }: { r: Run; flow?: boolean;
       {labelAt ? <CableFlag x={labelAt[0]} y={labelAt[1]} text={r.label} live={r.live} edge={st.colour === '#101113' || st.colour === '#16171a' ? '#5c626b' : st.colour} /> : null}
     </Group>
   );
+}
+
+/** A point a few mm back along the run from its end `b` (the way the plug
+ *  faces), so a dense dressed run still gives a steady direction. */
+function tailPoint(pts: readonly [number, number][], b: [number, number]): [number, number] {
+  for (let i = pts.length - 2; i >= 0; i--) if (Math.hypot(pts[i][0] - b[0], pts[i][1] - b[1]) >= 6) return pts[i];
+  return pts[0];
 }
 
 /** A label flag tied onto a cable: always 9 pt or more on the glass, and
@@ -107,7 +138,7 @@ export function CableFlag({ x, y, text, live, edge }: { x: number; y: number; te
 
 /** Hook-and-loop ties binding two parallel lanes every 60 mm along their
  *  shared run (x from x0 to x1 at lanes y0 / y1). */
-export function LaneTies({ x0, x1, y0, y1 }: { x0: number; x1: number; y0: number; y1: number }) {
+export function LaneTies({ x0, x1, y0, y1, sag }: { x0: number; x1: number; y0: number; y1: number; sag?: (x: number) => number }) {
   const ties: number[] = [];
   const lo = Math.min(x0, x1) + 30;
   const hi = Math.max(x0, x1) - 30;
@@ -117,7 +148,7 @@ export function LaneTies({ x0, x1, y0, y1 }: { x0: number; x1: number; y0: numbe
   return (
     <Group>
       {ties.map((x) => (
-        <Group key={x}>
+        <Group key={x} transform={sag ? [{ translateY: sag(x) }] : undefined}>
           <RoundedRect x={x - 2.4} y={top} width={4.8} height={hgt} r={1.6} color="#0a0a0c" />
           <RoundedRect x={x - 1.9} y={top + 0.4} width={3.8} height={hgt - 0.8} r={1.3} color="#24262b" />
           <Line p1={vec(x - 1.4, top + 1)} p2={vec(x - 1.4, top + hgt - 1)} color="rgba(255,255,255,0.12)" strokeWidth={0.5} />
