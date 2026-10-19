@@ -38,6 +38,9 @@ export type Callout = {
   dx: number;
   dy: number;
   tone?: 'amber' | 'plain' | 'blue' | 'red' | 'green';
+  /** ADDITIVE (2026-10-19): the label's lines, broken by the caller and
+   *  each kept whole (a two-line label where a one-line one has no room). */
+  lines?: readonly string[];
 };
 
 export type Xf = { s: number; ox: number; oy: number };
@@ -247,7 +250,7 @@ export function layoutCallouts(
   for (const c of cs) {
     const px = xf.ox + c.at.x * xf.s;
     const py = xf.oy + c.at.y * xf.s;
-    const lines = wrapLabel(c.text, maxW - padX * 2, k);
+    const lines = c.lines ? [...c.lines] : wrapLabel(c.text, maxW - padX * 2, k);
     const bw = Math.ceil(Math.max(...lines.map((l) => textWidthPt(l, k))) + padX * 2);
     const bh = Math.ceil(lines.length * lineH + 4 * k);
     const cands: { x: number; y: number; pref: number }[] = [];

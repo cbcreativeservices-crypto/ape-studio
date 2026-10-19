@@ -10,9 +10,13 @@
  *                     the WIRELESS transmitter is longer, with a battery
  *                     cover, a status window and an antenna cap, and no XLR.
  *   MicXlrPlug        the cable's female XLR on the mic's tail.
- *   ReceiverRear      a half-rack wireless receiver's REAR panel (210 × 44):
- *                     two antennas, DC in, the XLR output and its MIC / LINE
- *                     output switch.
+ *   ReceiverRear      a half-rack wireless receiver's REAR panel (210 × 44),
+ *                     standing on its feet: two antennas, the MIC / LINE
+ *                     output switch, the XLR output, DC in (DcPlugged: its
+ *                     supply's plug).
+ *   TableTop          the booth table: its top seen from just above and its
+ *                     front lip — the mic and its lead LIE on it (lab-art
+ *                     grade 2026-10-19: no mic held up by nothing).
  *   MixerFront        this mixer's FRONT panel (270 × 56) — the face under the
  *                     crossfader: MIC 2 and MIC 1 combo inputs (only MIC 1
  *                     with +48 V), their GAIN knobs, the two headphone jacks
@@ -184,15 +188,19 @@ export function XlrPlugged({ cx, cy }: { cx: number; cy: number }) {
 
 export const RX_W = 210;
 export const RX_H = 44;
-export const RX_JACKS = { out: { x: 112, y: 24 } } as const;
+/** Its rear sockets (panel-local mm): the balanced XLR output toward the
+ *  mixer side, the DC inlet toward the far side — so their two leads leave
+ *  in opposite directions and never cross. */
+export const RX_JACKS = { out: { x: 82, y: 24 }, dc: { x: 152, y: 24 }, sw: { x: 42, y: 23 } } as const;
 
 export const ReceiverRear = memo(function ReceiverRear({ x, y, rxOut, on }: { x: number; y: number; rxOut: 'MIC' | 'LINE'; on: boolean }) {
+  const J = RX_JACKS;
   return (
     <Group transform={[{ translateX: x }, { translateY: y }]}>
       {/* the two antennas, up from their BNC jacks */}
       {[
         { bx: 14, a: -1.73 },
-        { bx: RX_W - 14, a: -1.41 },
+        { bx: RX_W - 14, a: -1.6 },
       ].map((an) => (
         <Group key={an.bx}>
           <Line p1={vec(an.bx, 12)} p2={vec(an.bx + Math.cos(an.a) * 150, 12 + Math.sin(an.a) * 150)} color="#0b0c0e" strokeWidth={6} strokeCap="round" />
@@ -211,6 +219,10 @@ export const ReceiverRear = memo(function ReceiverRear({ x, y, rxOut, on }: { x:
         <LinearGradient start={vec(0, 0)} end={vec(0, RX_H)} colors={['#2e3136', '#17181b']} />
       </RoundedRect>
       <RoundedRect x={0.5} y={0.5} width={RX_W - 1} height={RX_H - 1} r={3.5} style="stroke" strokeWidth={0.8} color={INK.bevel} />
+      {/* its rubber feet, on the table */}
+      {[12, RX_W - 22].map((fx) => (
+        <RoundedRect key={fx} x={fx} y={RX_H - 1} width={10} height={1.6} r={0.6} color="#050506" />
+      ))}
       {[14, RX_W - 14].map((bx) => (
         <Circle key={bx} cx={bx} cy={24} r={5}>
           <RadialGradient c={vec(bx - 1.5, 22.5)} r={6} colors={[INK.metalHi, INK.metalLo]} />
@@ -218,36 +230,74 @@ export const ReceiverRear = memo(function ReceiverRear({ x, y, rxOut, on }: { x:
       ))}
       <SceneText x={14} y={38} size={LEG} text="ANT A" color={INK.printDim} face="label" align="center" />
       <SceneText x={RX_W - 14} y={38} size={LEG} text="ANT B" color={INK.printDim} face="label" align="center" />
-      {/* DC in */}
-      <Circle cx={42} cy={24} r={4.4} color="#0b0c0e" />
-      <Circle cx={42} cy={24} r={1.6} color="#c9ccd2" />
-      <SceneText x={42} y={38} size={LEG} text="DC IN" color={INK.print} face="label" align="center" />
       {/* the output switch: MIC | LINE */}
-      <RoundedRect x={64} y={18} width={26} height={11} r={2} color="#050506" />
-      <RoundedRect x={rxOut === 'MIC' ? 65.2 : 77.6} y={19.2} width={12} height={8.6} r={1.6}>
-        <LinearGradient start={vec(0, 19)} end={vec(0, 28)} colors={['#b9bec6', '#5c626b']} />
+      <RoundedRect x={J.sw.x - 13} y={J.sw.y - 5} width={26} height={11} r={2} color="#050506" />
+      <RoundedRect x={rxOut === 'MIC' ? J.sw.x - 11.8 : J.sw.x + 0.6} y={J.sw.y - 3.8} width={12} height={8.6} r={1.6}>
+        <LinearGradient start={vec(0, J.sw.y - 4)} end={vec(0, J.sw.y + 5)} colors={['#b9bec6', '#5c626b']} />
       </RoundedRect>
-      <SceneText x={70} y={14} size={LEG} text="MIC" color={rxOut === 'MIC' ? INK.amber : INK.printDim} face="label" align="center" />
-      <SceneText x={84} y={14} size={LEG} text="LINE" color={rxOut === 'LINE' ? INK.amber : INK.printDim} face="label" align="center" />
-      <SceneText x={77} y={39} size={LEG} text="OUTPUT LEVEL" color={INK.print} face="label" align="center" />
+      <SceneText x={J.sw.x - 7} y={14} size={LEG} text="MIC" color={rxOut === 'MIC' ? INK.amber : INK.printDim} face="label" align="center" />
+      <SceneText x={J.sw.x + 7} y={14} size={LEG} text="LINE" color={rxOut === 'LINE' ? INK.amber : INK.printDim} face="label" align="center" />
+      <SceneText x={J.sw.x} y={39} size={LEG} text="OUTPUT LEVEL" color={INK.print} face="label" align="center" />
       {/* the XLR output (male) and a jack output */}
       <Group>
-        <RoundedRect x={RX_JACKS.out.x - 12} y={RX_JACKS.out.y - 12} width={24} height={24} r={2.4}>
-          <LinearGradient start={vec(RX_JACKS.out.x - 12, 0)} end={vec(RX_JACKS.out.x + 12, 0)} colors={['#3a3d44', '#15161a']} />
+        <RoundedRect x={J.out.x - 12} y={J.out.y - 12} width={24} height={24} r={2.4}>
+          <LinearGradient start={vec(J.out.x - 12, 0)} end={vec(J.out.x + 12, 0)} colors={['#3a3d44', '#15161a']} />
         </RoundedRect>
-        <Circle cx={RX_JACKS.out.x} cy={RX_JACKS.out.y} r={9}>
-          <RadialGradient c={vec(RX_JACKS.out.x - 3, RX_JACKS.out.y - 3)} r={11} colors={[INK.metalHi, INK.metalMid, INK.metalLo]} />
+        <Circle cx={J.out.x} cy={J.out.y} r={9}>
+          <RadialGradient c={vec(J.out.x - 3, J.out.y - 3)} r={11} colors={[INK.metalHi, INK.metalMid, INK.metalLo]} />
         </Circle>
-        <Circle cx={RX_JACKS.out.x} cy={RX_JACKS.out.y} r={7.4} color="#0b0b0d" />
+        <Circle cx={J.out.x} cy={J.out.y} r={7.4} color="#0b0b0d" />
       </Group>
-      <SceneText x={RX_JACKS.out.x} y={9} size={LEG} text="BAL OUT" color={INK.print} face="label" align="center" />
-      <TrsSocket cx={146} cy={24} d={9} />
-      <SceneText x={146} y={38} size={LEG} text="OUT" color={INK.print} face="label" align="center" />
-      <Led cx={170} cy={14} r={1.6} on={on} colour={INK.green} />
-      <SceneText x={178} y={15} size={LEG} text="RF" color={INK.printDim} face="label" />
+      <SceneText x={J.out.x} y={9} size={LEG} text="BAL OUT" color={INK.print} face="label" align="center" />
+      <TrsSocket cx={114} cy={24} d={9} />
+      <SceneText x={114} y={38} size={LEG} text="OUT" color={INK.print} face="label" align="center" />
+      {/* DC in */}
+      <Circle cx={J.dc.x} cy={J.dc.y} r={4.4} color="#0b0c0e" />
+      <Circle cx={J.dc.x} cy={J.dc.y} r={1.6} color="#c9ccd2" />
+      <SceneText x={J.dc.x} y={9} size={LEG} text="DC IN" color={INK.print} face="label" align="center" />
+      <Led cx={174} cy={14} r={1.6} on={on} colour={INK.green} />
+      <SceneText x={174} y={38} size={LEG} text="RF" color={INK.printDim} face="label" align="center" />
     </Group>
   );
 });
+
+/** The power supply's DC plug seated in the receiver's DC inlet (seen from
+ *  behind, its lead dropping away), at scene (cx, cy). */
+export function DcPlugged({ cx, cy }: { cx: number; cy: number }) {
+  return (
+    <Group>
+      <Oval x={cx - 6} y={cy - 4} width={13} height={14} color="rgba(0,0,0,0.5)">
+        <BlurMask blur={2} style="normal" />
+      </Oval>
+      <RoundedRect x={cx - 4.4} y={cy - 4.4} width={8.8} height={14} r={3}>
+        <LinearGradient start={vec(cx - 4.4, 0)} end={vec(cx + 4.4, 0)} colors={['#3a3c42', '#121315', '#0b0b0d']} />
+      </RoundedRect>
+      <Circle cx={cx} cy={cy} r={2.4} color="#1d1f23" />
+      <RoundedRect x={cx - 2} y={cy + 9} width={4} height={6} r={1.4} color="#121315" />
+    </Group>
+  );
+}
+
+/* ── the booth table (front elevation + the top seen just above it) ───── */
+
+/** The table the gear stands on: its top seen from just above (the back
+ *  line at `y`, where the gear's feet are, to the front edge at `y + depth`)
+ *  and the front edge's lip. The mic and the leads LIE on it. */
+export function TableTop({ x0, x1, y, depth }: { x0: number; x1: number; y: number; depth: number }) {
+  return (
+    <Group>
+      <Rect x={x0} y={y} width={x1 - x0} height={depth}>
+        <LinearGradient start={vec(0, y)} end={vec(0, y + depth)} colors={['#121317', '#1a1b20', '#202227']} />
+      </Rect>
+      <Line p1={vec(x0, y + 0.4)} p2={vec(x1, y + 0.4)} color="rgba(0,0,0,0.8)" strokeWidth={0.8} />
+      {/* the front edge: a rounded lip catching the light */}
+      <Rect x={x0} y={y + depth} width={x1 - x0} height={7}>
+        <LinearGradient start={vec(0, y + depth)} end={vec(0, y + depth + 7)} colors={['#3a3c42', '#16171a', '#0b0b0d']} />
+      </Rect>
+      <Line p1={vec(x0, y + depth + 0.5)} p2={vec(x1, y + depth + 0.5)} color="rgba(255,255,255,0.18)" strokeWidth={0.8} />
+    </Group>
+  );
+}
 
 /* ── this mixer's front panel (270 × 56) ──────────────────────────────── */
 

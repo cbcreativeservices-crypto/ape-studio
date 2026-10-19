@@ -24,16 +24,16 @@
  */
 import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Group, Line, LinearGradient, Rect, RoundedRect, vec } from '@shopify/react-native-skia';
+import { BlurMask, Group, Line, LinearGradient, Oval, Rect, RoundedRect, vec } from '@shopify/react-native-skia';
 import { useDerivedValue } from 'react-native-reanimated';
 import { colors } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene, type Callout } from '../art/Scene';
-import { HandheldMic, MicXlrPlug, MixerFront, ReceiverRear, XlrPlugged, FRONT, FRONT_W, FRONT_H, frontPartBox, RX_JACKS, RX_W, RX_H, type FrontPart } from '../art/MicGear';
+import { DcPlugged, HandheldMic, MicXlrPlug, MixerFront, ReceiverRear, TableTop, XlrPlugged, FRONT, FRONT_W, FRONT_H, frontPartBox, RX_JACKS, RX_W, RX_H, type FrontPart } from '../art/MicGear';
 import { HeatLegend, LEGEND_H, PlanView, PLAN_STAGE, planAt, planObstacles } from '../art/PlanView';
-import { CableFlag, CableRun } from '../art/cables';
-import { Cable, LED_DB, LedColumn } from '../art/parts';
+import { CableFlag } from '../art/cables';
+import { Cable, LED_DB, LedColumn, LoosePlug } from '../art/parts';
 import { useTapDb } from '../art/motion';
 import { useDuckDb, useExtTapDb } from '../art/eventMotion';
 import { INK } from '../art/ink';
@@ -83,50 +83,97 @@ const LOOK_ROOM = 'You are looking down on the room: the booth table, the PA top
 
 /* ── the stage (mm) ───────────────────────────────────────────────────── */
 
-const FRAME_WIRED: Box = { x: 0, y: 0, w: 390, h: 238 };
-const FRAME_WIRELESS: Box = { x: 0, y: -10, w: 652, h: 248 };
-const MET = { y: 17, h: 114, w: 8, xs: [30, 60, 90, 120] as const };
+/** The booth table: the mixer and the receiver stand on its back line
+ *  (y), the mic and its lead LIE on its top (lab-art grade 2026-10-19: the
+ *  mic hung in mid-air, held by nothing). */
+const TABLE = { y: 216, depth: 84 } as const;
+const FRAME_WIRED: Box = { x: 0, y: 0, w: 390, h: TABLE.y + TABLE.depth + 9 };
+const FRAME_WIRELESS: Box = { x: 0, y: -10, w: 630, h: TABLE.y + TABLE.depth + 19 };
+/** With the receiver beside the mixer, the meters move right, past it. */
+const MET_SHIFT_WIRELESS = 236;
+/** The feed meters, at the top RIGHT: the space over the panel's left is
+ *  the labels' (each label right above its control, short upright leaders). */
+const MET = { y: 17, h: 114, w: 8, xs: [292, 320, 348, 376] as const };
 const MET_NAMES = ['MIC', 'CROWD', 'BOOTH', 'REC'] as const;
-const FRONT_AT = { x: 44, y: 150 };
-const MIC_AT = { x: 170, y: 44, ang: 0.33 };
-const WMIC_AT = { x: 172, y: 32, ang: 0 };
-const RX_AT = { x: 432, y: 152 };
-/** The cable's lane under the front panel, and its drop at the right. */
-const LANE_Y = 224;
-const DROP_X = 378;
+/** The panel at the left of the table: its labels go above it, the sends'
+ *  to its right, and the mic and its lead lie in front of it. */
+const FRONT_AT = { x: 4, y: TABLE.y - FRONT_H };
+const RX_AT = { x: 290, y: TABLE.y - RX_H };
+/** The mic lying on the table, its grille ball to the left: a rigid body
+ *  rests on its two lowest points — the ball and the plug's barrel at the
+ *  tail (the wireless: its antenna cap) — so it lies tilted a few degrees. */
+const CONTACT_Y = 280;
+const BALL_X = 112;
+const BALL_R: Record<MicDevice, number> = { DYNAMIC: 25, CONDENSER: 23, WIRELESS: 25 };
+const TAIL_R: Record<MicDevice, number> = { DYNAMIC: 11, CONDENSER: 11, WIRELESS: 14.5 };
+const REST: Record<MicDevice, number> = { DYNAMIC: 205, CONDENSER: 205, WIRELESS: 236 };
+const micAt = (d: MicDevice) => ({ x: BALL_X, y: CONTACT_Y - BALL_R[d], ang: Math.asin((BALL_R[d] - TAIL_R[d]) / REST[d]) });
+/** The lead's run along the table at the mixer's foot, and where the wired
+ *  lead turns back from the mic's tail. */
+const LANE_Y = TABLE.y + 5;
+const LOOP_X = 374;
 
 const jackAt = (inp: MicInput): { x: number; y: number } | null =>
   inp === 'MIC1' ? { x: FRONT_AT.x + FRONT.mic1.x, y: FRONT_AT.y + FRONT.mic1.y } : inp === 'MIC2' ? { x: FRONT_AT.x + FRONT.mic2.x, y: FRONT_AT.y + FRONT.mic2.y } : null;
 
 /** The mic's tail (scene mm) where its cable leaves, and the plug's far end. */
-const tailAt = () => ({ x: MIC_AT.x + Math.cos(MIC_AT.ang) * 182, y: MIC_AT.y + Math.sin(MIC_AT.ang) * 182 });
-const plugEnd = () => {
-  const t = tailAt();
-  return { x: t.x + 44 * Math.cos(MIC_AT.ang), y: t.y + 44 * Math.sin(MIC_AT.ang) };
+const tailAt = (d: MicDevice) => {
+  const m = micAt(d);
+  return { x: m.x + Math.cos(m.ang) * 182, y: m.y + Math.sin(m.ang) * 182 };
 };
+const plugEnd = (d: MicDevice) => {
+  const m = micAt(d);
+  const t = tailAt(d);
+  return { x: t.x + 44 * Math.cos(m.ang), y: t.y + 44 * Math.sin(m.ang) };
+};
+const rxOut = () => ({ x: RX_AT.x + RX_JACKS.out.x, y: RX_AT.y + RX_JACKS.out.y });
+const rxDc = () => ({ x: RX_AT.x + RX_JACKS.dc.x, y: RX_AT.y + RX_JACKS.dc.y });
 
-/** The mic cable: from the mic's plug (or the receiver's BAL OUT) down past
- *  the right of the mixer, along its own lane under the front panel, and up
- *  into the socket from below — the way a lead reaches a front-panel jack.
- *  Unplugged, its free end lies in the clear space under the panel. */
-function MicCable({ inp, wireless, live }: { inp: MicInput; wireless: boolean; live: boolean }) {
+type P = [number, number];
+const XLR_STYLE = { colour: '#3d4046', width: 4.6, pattern: 'stripe' as const };
+
+/** The mic lead, LYING on the table: from the mic's plug it turns back
+ *  toward the mixer, runs along the table at the mixer's foot, and rises
+ *  into the front-panel jack (the plug's boot pointing down, the way a lead
+ *  hangs from a front jack). The wireless receiver's lead drops from its
+ *  BAL OUT to the table and runs the same lane. Unplugged, the free end
+ *  lies on the table, its plug pointing at the panel. */
+function MicCable({ inp, device, live }: { inp: MicInput; device: MicDevice; live: boolean }) {
   const j = jackAt(inp);
-  const s = wireless ? { x: RX_AT.x + RX_JACKS.out.x, y: RX_AT.y + RX_JACKS.out.y } : plugEnd();
-  const dropX = wireless ? s.x : DROP_X;
-  if (!j) {
-    const pts: [number, number][] = wireless
-      ? [[s.x, s.y], [s.x, LANE_Y - 6], [s.x - 46, LANE_Y + 2]]
-      : [[s.x, s.y], [dropX, s.y + 14], [dropX, LANE_Y - 10], [dropX - 50, LANE_Y + 2]];
-    return <CableRun r={{ id: 'mic', kind: 'xlr', colour: '#3d4046', pts, plugged: false, live: false, label: 'MIC', noFixedPlug: !wireless }} labelAt={[dropX, (s.y + LANE_Y) / 2]} />;
+  const wireless = device === 'WIRELESS';
+  let run: P[];
+  let flag: P;
+  if (wireless) {
+    const o = rxOut();
+    run = [[o.x, o.y + 18], [o.x, LANE_Y]];
+    flag = [(FRONT_AT.x + FRONT_W + RX_AT.x) / 2, LANE_Y];
+  } else {
+    const pe = plugEnd(device);
+    run = [[pe.x, pe.y], [pe.x + 20, pe.y + 2], [LOOP_X, pe.y - 10], [LOOP_X, LANE_Y + 12], [LOOP_X - 12, LANE_Y]];
+    flag = [LOOP_X, (pe.y + LANE_Y) / 2 + 4];
   }
-  const pts: [number, number][] = wireless
-    ? [[s.x, s.y], [s.x, LANE_Y], [j.x, LANE_Y], [j.x, j.y + 18]]
-    : [[s.x, s.y], [dropX, s.y + 14], [dropX, LANE_Y], [j.x, LANE_Y], [j.x, j.y + 18]];
+  // the free end lies on the table in front of the panel's foot, clear of it
+  const free: P = [wireless ? rxOut().x - 84 : 300, LANE_Y + 7];
+  const pts: P[] = j ? [...run, [j.x, LANE_Y], [j.x, j.y + 18]] : [...run, free];
   return (
     <Group>
-      <Cable pts={pts} style={{ colour: '#3d4046', width: 4.6, pattern: 'stripe' }} glow={live ? INK.blue : null} flow={live} />
-      <XlrPlugged cx={j.x} cy={j.y} />
-      <CableFlag x={dropX} y={(s.y + LANE_Y) / 2 + 6} text="MIC" live={live} edge="#5c626b" />
+      <Cable pts={pts} style={XLR_STYLE} glow={live && !!j ? INK.blue : null} flow={live && !!j} />
+      {wireless ? <XlrPlugged cx={rxOut().x} cy={rxOut().y} /> : null}
+      {j ? <XlrPlugged cx={j.x} cy={j.y} /> : <LoosePlug x={free[0]} y={free[1]} ang={Math.PI} kind="xlr" colour="#3d4046" />}
+      <CableFlag x={flag[0]} y={flag[1]} text="MIC" live={live && !!j} edge="#5c626b" />
+    </Group>
+  );
+}
+
+/** The receiver's power: its supply's DC plug, the lead down to the table
+ *  and away to the supply (off the picture, on the far side from the mic
+ *  lead — the two never cross). */
+function DcLead() {
+  const d = rxDc();
+  return (
+    <Group>
+      <Cable pts={[[d.x, d.y + 14], [d.x, LANE_Y + 6], [FRAME_WIRELESS.x + FRAME_WIRELESS.w + 20, LANE_Y + 6]]} style={{ colour: '#101113', width: 2.6, pattern: 'plain' }} />
+      <DcPlugged cx={d.x} cy={d.y} />
     </Group>
   );
 }
@@ -216,24 +263,29 @@ function MeterNames({ voice }: { voice: readonly boolean[] }) {
  *  (screen points), out of the gear: a bar growing leftward from 0 dB, with
  *  its scale (the talkover's real gain, block by block). */
 export const DIP_H = 30;
-function DipStrip({ w, k }: { w: number; k: number }) {
+function DipStrip({ w, k, idle }: { w: number; k: number; idle: string }) {
   const duck = useDuckDb();
   const fs = 9 * k;
   const x0 = 76 * k;
   const x1 = w - 30 * k;
   const bw = x1 - x0;
-  const y = 7 * k;
-  const bh = 7 * k;
+  const y = 4 * k;
+  const bh = 10 * k;
   const len = useDerivedValue(() => Math.min(1, -duck.value / 24) * bw);
   const bx = useDerivedValue(() => x1 - len.value);
+  // with no dip, the bar says so (and why) instead of sitting empty
+  const idleOn = useDerivedValue(() => (duck.value > -0.5 ? 1 : 0));
   return (
     <Group>
       <RoundedRect x={4} y={2} width={w - 8} height={DIP_H * k - 4} r={6} color="rgba(8,8,10,0.85)" />
-      <SceneText x={10 * k} y={y + bh} size={fs} text="MUSIC DIP" color={INK.amber} face="label" />
+      <SceneText x={10 * k} y={y + bh * 0.82} size={fs} text="MUSIC DIP" color={INK.amber} face="label" />
       <RoundedRect x={x0 - 1} y={y - 1} width={bw + 2} height={bh + 2} r={2} color="#050506" />
       <Rect x={bx} y={y} width={len} height={bh}>
         <LinearGradient start={vec(x0, 0)} end={vec(x1, 0)} colors={['#ff8a3d', INK.amber]} />
       </Rect>
+      <Group opacity={idleOn}>
+        <SceneText x={x0 + 5 * k} y={y + bh * 0.82} size={fs} text={idle} color={INK.printDim} face="label" />
+      </Group>
       {[0, 6, 12, 18, 24].map((d) => (
         <Group key={d}>
           <Line p1={vec(x1 - (d / 24) * bw, y + bh + 1)} p2={vec(x1 - (d / 24) * bw, y + bh + 4 * k)} color={INK.printDim} strokeWidth={1} />
@@ -247,23 +299,31 @@ function DipStrip({ w, k }: { w: number; k: number }) {
 function MixerView({ booth, live, voiceLive, voice }: { booth: Booth; live: boolean; voiceLive: boolean; voice: readonly boolean[] }) {
   const m = evOf(booth).mic;
   const wireless = m.device === 'WIRELESS';
-  const t = tailAt();
+  const frame = wireless ? FRAME_WIRELESS : FRAME_WIRED;
+  const at = micAt(m.device);
+  const t = tailAt(m.device);
+  const pe = plugEnd(m.device);
+  const len = wireless ? 250 : pe.x - at.x + 25;
   return (
     <Group>
-      <Meters voice={voice} />
+      <TableTop x0={frame.x - 40} x1={frame.x + frame.w + 40} y={TABLE.y} depth={TABLE.depth} />
+      <Group transform={[{ translateX: wireless ? MET_SHIFT_WIRELESS : 0 }]}>
+        <Meters voice={voice} />
+      </Group>
       <MixerFront x={FRONT_AT.x} y={FRONT_AT.y} mic={m} highlight={hiFront(booth)} />
       {wireless ? (
         <Group>
+          <DcLead />
           <ReceiverRear x={RX_AT.x} y={RX_AT.y} rxOut={m.rxOut} on={live} />
-          <HandheldMic x={WMIC_AT.x} y={WMIC_AT.y} ang={WMIC_AT.ang} device="WIRELESS" live={live} />
         </Group>
-      ) : (
-        <Group>
-          <HandheldMic x={MIC_AT.x} y={MIC_AT.y} ang={MIC_AT.ang} device={m.device} live={live} />
-          <MicXlrPlug x={t.x} y={t.y} ang={MIC_AT.ang} />
-        </Group>
-      )}
-      <MicCable inp={m.input} wireless={wireless} live={voiceLive} />
+      ) : null}
+      <MicCable inp={m.input} device={m.device} live={voiceLive} />
+      {/* the mic lying on the table: its soft contact shadow, the mic, the plug */}
+      <Oval x={at.x - 24} y={CONTACT_Y - 4} width={len} height={8} color="rgba(0,0,0,0.6)">
+        <BlurMask blur={3} style="normal" />
+      </Oval>
+      <HandheldMic x={at.x} y={at.y} ang={at.ang} device={m.device} live={live} />
+      {wireless ? null : <MicXlrPlug x={t.x} y={t.y} ang={at.ang} />}
     </Group>
   );
 }
@@ -440,29 +500,51 @@ function PageMic({ ctx }: { ctx: PageCtx }) {
   const fp = (p: FrontPart) => {
     const bx = frontPartBox(p);
     // the control and its printed legend above it (legends show when zoomed)
-    return { x: bx.x + FRONT_AT.x, y: bx.y + FRONT_AT.y - 7, w: bx.w, h: bx.h + 7 };
+    return { x: bx.x + FRONT_AT.x, y: bx.y + FRONT_AT.y - 12, w: bx.w, h: bx.h + 12 };
   };
-  const t = tailAt();
-  const pe = plugEnd();
+  const mAt = micAt(m.device);
+  const pe = plugEnd(m.device);
+  const metShift = wireless ? MET_SHIFT_WIRELESS : 0;
   const mixerObstacles: Box[] = [
+    // the whole front panel: a label never sits on it (zoomed in, every
+    // label is pushed off it, above or beside)
+    { x: FRONT_AT.x, y: FRONT_AT.y, w: FRONT_W, h: FRONT_H },
     ...(['mic1', 'mic2', 'gain1', 'gain2', 'level', 'on', 'talk', 'depth', 'sendBooth', 'sendRec', 'phantom'] as FrontPart[]).map(fp),
-    ...MET.xs.map((x) => ({ x: x - 4, y: MET.y - 2, w: MET.w + 10, h: MET.h + 4 })),
-    // the mic's body and plug, the cable's drop and lane (no label sits on them)
-    ...(wireless ? [{ x: WMIC_AT.x - 26, y: WMIC_AT.y - 22, w: 262, h: 44 }, { x: RX_AT.x, y: RX_AT.y, w: RX_W, h: RX_H }] : [{ x: MIC_AT.x - 26, y: MIC_AT.y - 26, w: t.x - MIC_AT.x + 26, h: t.y - MIC_AT.y + 40 }, { x: t.x - 4, y: t.y - 12, w: pe.x - t.x + 8, h: 24 }, { x: DROP_X - 6, y: pe.y, w: 12, h: LANE_Y - pe.y }]),
-    { x: FRONT_AT.x, y: LANE_Y - 10, w: (wireless ? RX_AT.x + RX_JACKS.out.x : DROP_X) - FRONT_AT.x + 6, h: 20 },
+    ...MET.xs.map((x) => ({ x: x - 4 + metShift, y: MET.y - 2, w: MET.w + 10, h: MET.h + 4 })),
+    { x: MET.xs[0] - 26 + metShift, y: MET.y - 12, w: MET.xs[3] - MET.xs[0] + 40, h: 12 },
+    { x: MET.xs[0] - 26 + metShift, y: MET.y - 2, w: 24, h: MET.h + 4 },
+    // the mic lying on the table, its lead's lane and turn (no label sits on them)
+    { x: mAt.x - 27, y: CONTACT_Y - 54, w: (wireless ? 252 : pe.x - mAt.x) + 30, h: 58 },
+    { x: FRONT_AT.x, y: LANE_Y - 6, w: (wireless ? RX_AT.x + RX_JACKS.out.x : LOOP_X) - FRONT_AT.x + 6, h: 12 },
+    ...(wireless ? [{ x: RX_AT.x, y: RX_AT.y - 150, w: RX_W, h: RX_H + 150 }] : [{ x: LOOP_X - 8, y: LANE_Y, w: 16, h: pe.y - LANE_Y + 8 }]),
   ];
   const mixerSoft: Box[] = [{ x: FRONT_AT.x, y: FRONT_AT.y, w: FRONT_W, h: FRONT_H }];
-  const mixerCallouts: Callout[] = [
-    { id: 'g', text: m.input === 'NONE' ? 'GAIN' : `GAIN ${m.input === 'MIC2' ? '2' : '1'} +${gainDb.toFixed(0)} dB`, at: { x: FRONT_AT.x + (m.input === 'MIC2' ? FRONT.gain2.x : FRONT.gain1.x), y: FRONT_AT.y + FRONT.gain1.y - 7 }, dx: 0, dy: -18 },
-    { id: 'm1', text: m.phantom ? 'MIC 1 · +48 V ON' : 'MIC 1 · +48 V', at: { x: FRONT_AT.x + FRONT.mic1.x, y: FRONT_AT.y + FRONT.mic1.y - 11 }, dx: 0, dy: -16, tone: m.input === 'MIC1' ? 'amber' : 'plain' },
-    { id: 'm2', text: 'MIC 2 · NO +48 V', at: { x: FRONT_AT.x + FRONT.mic2.x, y: FRONT_AT.y + FRONT.mic2.y + 10 }, dx: 0, dy: 16, tone: m.input === 'MIC2' ? 'amber' : 'plain' },
-    { id: 'on', text: m.on ? 'MIC ON' : 'MIC OFF', at: { x: FRONT_AT.x + FRONT.on.x + FRONT.on.w / 2, y: FRONT_AT.y + FRONT.on.y }, dx: 0, dy: -16, tone: m.on ? 'red' : 'plain' },
-    { id: 'to', text: m.talkover ? 'TALK OVER ON' : 'TALK OVER', at: { x: FRONT_AT.x + FRONT.talk.x + FRONT.talk.w / 2, y: FRONT_AT.y + FRONT.talk.y }, dx: 14, dy: -16, tone: m.talkover ? 'amber' : 'plain' },
-    { id: 'snd', text: `SEND: BOOTH ${m.toBooth ? 'ON' : 'OFF'} · REC ${m.toRec ? 'ON' : 'OFF'}`, at: { x: FRONT_AT.x + FRONT.sendRec.x, y: FRONT_AT.y + FRONT.sendRec.y + 6 }, dx: 0, dy: 14, tone: 'plain' },
-    wireless
-      ? { id: 'rx', text: `RECEIVER OUT: ${m.rxOut}`, at: { x: RX_AT.x + 77, y: RX_AT.y + 23 }, dx: 0, dy: 24, tone: m.rxOut === 'LINE' && m.input !== 'NONE' ? 'red' : 'plain' }
-      : { id: 'mk', text: m.device === 'CONDENSER' ? 'CONDENSER MIC' : 'DYNAMIC MIC', at: { x: MIC_AT.x, y: MIC_AT.y - 24 }, dx: -6, dy: -12, tone: 'plain' },
-  ];
+  // every panel label ABOVE the panel with a short upright leader, the sends
+  // to its right (the table below carries the mic and its lead)
+  // every panel label ABOVE its control with a short upright leader (the
+  // meters sit at the right, out of their way; MIC ON and TALK OVER in two
+  // rows so neither leader crosses the other's words); the sends to the
+  // panel's right; the table below carries the mic and its lead. Each
+  // mic input's label carries its GAIN while the mic is in it.
+  const gainLine = `GAIN +${gainDb.toFixed(0)} dB`;
+  const m1Lines = ['MIC 1', m.phantom ? '+48 V ON' : '+48 V OFF', ...(m.input === 'MIC1' ? [gainLine] : [])];
+  const m2Lines = ['MIC 2', 'NO +48 V', ...(m.input === 'MIC2' ? [gainLine] : [])];
+  const S = wireless ? 0.56 : 0.9; // the stage's pt per mm at 390 wide: asks in points
+  const above = (n: number, py: number) => -(py - (156 - (n * 12.5 + 4) / S / 2)) * S;
+  const m1At = { x: FRONT_AT.x + FRONT.mic1.x, y: FRONT_AT.y + FRONT.mic1.y - 11 };
+  const m2At = { x: FRONT_AT.x + FRONT.mic2.x, y: FRONT_AT.y + FRONT.mic2.y - 10 };
+  const onAt = { x: FRONT_AT.x + FRONT.on.x + FRONT.on.w / 2, y: FRONT_AT.y + FRONT.on.y };
+  const toAt = { x: FRONT_AT.x + FRONT.talk.x + FRONT.talk.w - 6, y: FRONT_AT.y + FRONT.talk.y };
+  const sndAt = { x: FRONT_AT.x + FRONT.sendRec.x + FRONT.sendRec.w, y: FRONT_AT.y + FRONT.sendRec.y + 3 };
+  const mixerCallouts: Callout[] = ([
+    { id: 'snd', text: `SEND BOOTH ${m.toBooth ? 'ON' : 'OFF'} SEND REC ${m.toRec ? 'ON' : 'OFF'}`, lines: [`SEND BOOTH ${m.toBooth ? 'ON' : 'OFF'}`, `SEND REC ${m.toRec ? 'ON' : 'OFF'}`], at: sndAt, dx: (282 - sndAt.x) * S, dy: (199 - sndAt.y) * S, tone: m.toRec ? 'amber' : 'plain' },
+    { id: 'to', text: m.talkover ? 'TALK OVER ON' : 'TALK OVER', at: toAt, dx: 0, dy: (125 - toAt.y) * S, tone: m.talkover ? 'amber' : 'plain' },
+    { id: 'm1', text: m1Lines.join(' '), lines: m1Lines, at: m1At, dx: 0, dy: above(m1Lines.length, m1At.y), tone: m.input === 'MIC1' ? 'amber' : 'plain' },
+    { id: 'm2', text: m2Lines.join(' '), lines: m2Lines, at: m2At, dx: 0, dy: above(m2Lines.length, m2At.y), tone: m.input === 'MIC2' ? 'amber' : 'plain' },
+    { id: 'on', text: m.on ? 'MIC ON' : 'MIC OFF', at: onAt, dx: 0, dy: above(1, onAt.y), tone: m.on ? 'red' : 'plain' },
+    ...(wireless ? [{ id: 'rx', text: `RECEIVER OUT: ${m.rxOut}`, at: { x: RX_AT.x + RX_JACKS.sw.x, y: RX_AT.y + 4 }, dx: 0, dy: -30, tone: m.rxOut === 'LINE' && m.input !== 'NONE' ? ('red' as const) : ('plain' as const) }] : []),
+    { id: 'mk', text: m.device === 'CONDENSER' ? 'CONDENSER MIC' : m.device === 'WIRELESS' ? 'WIRELESS MIC' : 'DYNAMIC MIC', at: { x: mAt.x + 60, y: CONTACT_Y - 4 }, dx: 0, dy: 16, tone: 'plain' },
+  ] as Callout[]).filter((c) => !wireless || !['snd', 'to', 'on'].includes(c.id)); // the wireless view: the receiver's lesson, the panel's lit keys and the dock carry the rest
   const roomCallouts: Callout[] = [
     { id: 'mic', text: `MIC · ${fb.state === 'RINGING' ? 'RINGING' : fb.state === 'EDGE' ? 'ON THE EDGE' : Number.isFinite(fb.marginDb) ? `${fb.marginDb.toFixed(0)} dB SPARE` : 'OFF'}`, at: planAt.mic(m.pos), dx: 0, dy: 34, tone: fb.state === 'RINGING' ? 'red' : fb.state === 'EDGE' ? 'amber' : 'green' },
     { id: 'pl', text: 'PA L', at: planAt.top(ev.venue.place, 'L'), dx: -10, dy: -20, tone: fb.worst?.id === 'topL' && fb.state !== 'SAFE' ? 'red' : 'plain' },
@@ -491,7 +573,7 @@ function PageMic({ ctx }: { ctx: PageCtx }) {
               fit={{ x: 0, y: DIP_H * k, w, h: h - DIP_H * k }}
               aspect={false}
               focus={{ x: FRONT_AT.x + 90, y: FRONT_AT.y, w: 120, h: FRONT_H }}
-              screenOverlay={(sw, _sh, _xf, kz) => <DipStrip w={sw} k={Math.sqrt(Math.max(1, kz))} />}
+              screenOverlay={(sw, _sh, _xf, kz) => <DipStrip w={sw} k={Math.sqrt(Math.max(1, kz))} idle={m.talkover ? 'NO DIP · TALK TO DIP THE MUSIC' : 'NO DIP · TALK OVER IS OFF'} />}
               a11y={`${LOOK_MIXER} The mic is ${m.input === 'NONE' ? 'not plugged in' : `in ${MIC_INPUTS[m.input].label}`}, ${m.on ? 'on' : 'off'}. The green bracket on the MIC meter is the speech target, ${TARGET.lo} to ${TARGET.hi} dBFS.`}
               obstacles={mixerObstacles}
               soft={mixerSoft}
