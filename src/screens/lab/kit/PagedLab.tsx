@@ -464,9 +464,9 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   const endUnits: LabEndUnit[] = pagesWithCheck.map((p, i) =>
     check && i === pages.length
       ? { id: String(i), label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' }
-      : { id: String(i), label: p.title, ...(handsOnDetail && p.manualDone ? { detail: handsOnDetail } : null), ...(optionalPage?.(i) ? { optional: true } : null) },
+      : { id: String(i), label: p.title, ...(handsOnDetail && p.manualDone ? { detail: handsOnDetail } : null) },
   );
-  const endRows: LabEndUnit[] = endUnits.map((u, i) => (check && i === pages.length ? u : { ...u, ...pageDetailOf(i) }));
+  const endRows: LabEndUnit[] = endUnits.map((u, i) => (check && i === pages.length ? u : { ...u, ...pageDetailOf(i), ...(optionalPage?.(i) ? { optional: true } : null) }));
   const endCleared = new Set<string>();
   pagesWithCheck.forEach((_, i) => {
     const banked = check && i === pages.length
