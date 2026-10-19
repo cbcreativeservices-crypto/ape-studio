@@ -20,7 +20,7 @@ import { Group, LinearGradient, Rect, RoundedRect, Skia, vec } from '@shopify/re
 import { StageInFullScreen, useStageTextScale } from '../../rack/stageAspect';
 import type { Booth } from '../model/djModel';
 import { BOOTH_D, BOOTH_LAYOUT, MIXER_D, MIXER_W, PLAYER_D, PLAYER_W, VIEWS, fitView, type Box, type ViewName } from '../geometry/boothGeometry';
-import { MIXER_PARTS, MixerTop, mixerPartBox, type MixerPart } from './MixerTop';
+import { MIXER_PARTS, MixerTop, mixerLegendBoxes, mixerPartBox, type MixerPart } from './MixerTop';
 import { PLAYER_PARTS, PlayerTop, playerPartBox, type PlayerPart } from './PlayerTop';
 import { INK } from './ink';
 import type { BoothMotion } from './motion';
@@ -65,6 +65,10 @@ export type BoothStageSpec = {
   labelsOutsideFit?: boolean;
   /** Extra label obstacles (booth mm). */
   obstacles?: readonly Box[];
+  /** ADDITIVE (polish 2026-10-19, Screen 6): the mixer's printed legends
+   *  (BOOTH_MIXER_LEGENDS) as zoom-aware label obstacles — Scene `printed`:
+   *  each blocks a callout only once a zoom renders it legible. */
+  printed?: readonly (Box & { size: number })[];
 };
 
 const intersects = (a: Box, b: Box) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
@@ -76,6 +80,8 @@ export const BOOTH_OBSTACLES: readonly Box[] = [
   shift(mixerPartBox('meters'), BOOTH_LAYOUT.mixer),
   ...(['A', 'B'] as const).flatMap((d) => PLAYER_PARTS.map((p) => shift(playerPartBox(p), BOOTH_LAYOUT[d]))),
 ];
+/** The mixer's printed legends, in booth mm, with their type size (mm). */
+export const BOOTH_MIXER_LEGENDS: readonly (Box & { size: number })[] = mixerLegendBoxes().map((b) => ({ ...b, x: b.x + BOOTH_LAYOUT.mixer.x, y: b.y + BOOTH_LAYOUT.mixer.y }));
 export const BOOTH_BODIES: readonly Box[] = [
   { x: BOOTH_LAYOUT.A.x, y: BOOTH_LAYOUT.A.y, w: PLAYER_W, h: PLAYER_D },
   { x: BOOTH_LAYOUT.mixer.x, y: BOOTH_LAYOUT.mixer.y, w: MIXER_W, h: MIXER_D },
@@ -125,6 +131,7 @@ export function BoothStage({ w, h, booth, spec, motion }: { w: number; h: number
   const view = typeof v === 'string' ? VIEWS[v] : v;
   const insets = useFull ? [] : spec.insets ?? [];
   const obstacles = useMemo(() => [...BOOTH_OBSTACLES.filter((b) => intersects(b, view)), ...(spec.obstacles ?? [])], [view, spec.obstacles]);
+  const printed = useMemo(() => spec.printed?.filter((b) => intersects(b, view)), [view, spec.printed]);
   const fit = useFull ? spec.fullFit?.(w, h, k) : spec.fit?.(w, h, k);
   const screenOverlay = (W: number, H: number, xf: Xf, kk: number) => (
     <Group>
@@ -142,6 +149,7 @@ export function BoothStage({ w, h, booth, spec, motion }: { w: number; h: number
       motion={motion}
       callouts={spec.callouts}
       obstacles={obstacles}
+      printed={printed}
       soft={BOOTH_BODIES}
       screenOverlay={screenOverlay}
       fit={fit}

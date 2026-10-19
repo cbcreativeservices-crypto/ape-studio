@@ -14,7 +14,7 @@ import type { BezelItem } from '../../rack/rackTypes';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Group, Line, vec } from '@shopify/react-native-skia';
-import { BoothStage } from '../art/BoothStage';
+import { BOOTH_MIXER_LEGENDS, BoothStage } from '../art/BoothStage';
 import { METER_SCALE, meterSegY } from '../art/MixerTop';
 import { INK } from '../art/ink';
 import { SceneText } from '../art/sceneText';
@@ -154,6 +154,9 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
                 ...(wrongInput && booth.decks.B.playing ? [{ id: 'in2', text: `CH2 INPUT: ${c2.input}`, at: onMixer(STRIP_X[2] + 16, MIXER.inputSel.y), dx: 18, dy: -6, tone: 'red' as const }] : []),
               ],
               obstacles: [{ x: BOOTH_LAYOUT.mixer.x + 64, y: BOOTH_LAYOUT.mixer.y + MIXER.meters.y - 6, w: 44, h: MIXER.meters.h + 12 }, { x: BOOTH_LAYOUT.mixer.x + 100, y: BOOTH_LAYOUT.mixer.y + MIXER.meters.y + MIXER.meters.h, w: 72, h: 16 }],
+              // the printed legends (TRIM, CH 1, MASTER …) keep the callouts
+              // off them once a zoom makes them legible (as on Screens 2 and 7)
+              printed: BOOTH_MIXER_LEGENDS,
               screenOverlay: (_W, _H, xf, k) => <MeterScaleStrip xf={xf} k={k} />,
               a11y: `The mixer from above: the two input selectors, the two TRIM knobs, the four meters (channel 1, master left, master right, channel 2) and the BUS OVER light. Channel 2 listens to ${c2.input}.`,
             }}
