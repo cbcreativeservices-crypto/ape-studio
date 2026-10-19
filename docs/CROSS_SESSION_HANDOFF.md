@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 10:12 · ccode · aa571e88
+changed: Session handoff 2026-10-19 (DJ lab, custom list, lab intro popups, cloud-session notes)
+affects other side: nothing (docs only)
+needs: nothing
+
+
 ### 2026-10-19 09:59 · ccode · 60570463
 changed: Labs: free labs show the glossary popup to everyone; Calculator lab: none
 affects other side: nothing in the DB (client only, device-local seen flags). The owner decided the Calculator lab gets NO popup, so the "Audio calculations" row proposed in the e8930c4f entry is NO LONGER NEEDED; the other glossary fixes listed there (Compression, Voice, Spectrum Analyzer, Monitoring, FM Synthesis, Microphone types, Pitch Correction) still stand.
