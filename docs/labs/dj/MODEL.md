@@ -164,3 +164,177 @@ NOT YET MEASURED (Node: an 8 s two-deck render with EQ and filter ≈ 0.18 s).
 | One phone output | perspectives instead of independent outputs | stated on Screens 1 and 7 |
 | Chunked audio | short gaps possible at chunk joins (filters and meters continue across them) | — |
 | Hot-patch | flagged, never played | "a half-inserted plug buzzes" |
+
+---
+
+# Stage 2b — the event rig (screens 19–24)
+
+Code: `model/djEvent.ts` (the rig's state and rules), `model/djRoom.ts` (the
+room and its coverage), `model/djChangeover.ts`, `model/djCapstone.ts`,
+`engine/djEventRender.ts` (the signal path, built ON `renderBooth`),
+`engine/djVoice.ts`, `engine/djDrumMachine.ts`, `booth/takeStore.ts`,
+`booth/useTakePlayer.ts`. Tests: `test/djEvent`, `djRecord`, `djHybrid`,
+`djChangeover`, `djCapstone`, `djRegistry` (`.test.ts`).
+
+The rig lives on the ONE shared booth as the optional `booth.ev`; a Stage 1
+screen has none and renders exactly as before. `renderBooth` gained two
+additive options (`inject`: a source for a channel that is not a player's
+RCA cable — a laptop on USB, a drum machine on LINE; `keep`: hand back the
+mix and cue buses) and `useBoothAudio` an optional renderer and `onChunk`.
+
+## 12. The microphone (screen 19)
+
+This mixer's mic section is on its FRONT panel (270 × 56 mm, under the
+crossfader; the headphone jacks keep the top view's 66 / 88 mm):
+
+| Control | Model |
+|---|---|
+| MIC 1 | XLR / jack combo, **+48 V phantom** (the only input with it) |
+| MIC 2 | XLR / jack combo, **no phantom** |
+| GAIN 1 / 2 | +10 … +60 dB, linear in dB |
+| LEVEL | unity at ¾ (the house level-knob taper) |
+| ON | the mute |
+| TALK OVER + DEPTH | voice-keyed dip of the music, −6 … −24 dB (default −12) |
+| SEND → BOOTH, → REC | default OFF (the common factory setting); MASTER always carries the mic |
+
+- Speech at the capsule: its PEAK is −52 dBFS at 0 dB gain (a dynamic mic,
+  about 94 dB SPL close up), so +44 dB puts peaks near −8 dBFS. A condenser
+  is +12 dB hotter and silent without phantom from its input; a wireless
+  receiver's output switch gives mic level or LINE (+38 dB).
+- The mic INPUT STAGE overloads above −20 dBFS-at-0-dB, before the gain
+  knob: a LINE-level receiver in a mic input distorts at any gain.
+- +48 V switched with the channel on and up is flagged POP (never played).
+- The voice is `djVoice`: a synthesised speech-like phrase (Rosenberg
+  glottal source, Klatt formant resonators from the Speech & Voice Lab,
+  seeded consonant noise), 4.5 s, no words.
+- Talkover: an envelope on the mic bus (release 120 ms) keys a gain on the
+  music bus (attack 15 ms, release 450 ms) when speech is above −45 dBFS.
+- Order: music bus (after its own clip) × dip + mic → MASTER knob → clip;
+  BOOTH = music × dip + mic·send → BOOTH knob; REC OUT = music × dip +
+  mic·send, fixed level; the headphones' master side is the program before
+  the MASTER knob.
+
+## 13. Feedback (screens 19, 20) — modelled, kept SAFE
+
+`feedbackOf(booth)`: each speaker that carries the mic is a loop. Loop gain
+(dB) = the speaker's 1 m level per dBFS − the capsule offset (146 dB)
++ the mic chain (sensitivity + gain + level) + the output knob (MASTER and
+the venue gain for the PA; BOOTH for the monitors) + the speaker's
+directivity toward the mic − 20·log10(distance) + the mic's cardioid pickup
+toward the speaker + a +3 dB room peak. Paths add as power. Margin = −loop;
+≤ 0 dB RINGING, < 3 dB EDGE. The ring frequency: 630 Hz on the booth path,
+2.5 kHz on the PA path (model). At +44 dB gain: at the decks (rear to the
+room) about 7 dB spare; mic sent to the booth about 2 dB; pointed at a
+monitor or out on the floor, it rings.
+
+**Safety:** the lab plays only a quiet stand-in ring: a sine at the ring
+frequency, growing 12 dB/s to a CAP of −30 dBFS at the mic bus (before the
+LISTEN gain and the protective limiter), dying 60 dB/s once the loop is
+broken. Pinned: `RING_CAP_DBFS` holds at full gain on the floor.
+
+Turntable acoustic feedback (screen 20) is a different loop, shown on its
+gauge and never played: margin = 6.8 dB − (the subs' bass at the decks re
+the floor centre) − (feed − −20 dBFS) − the venue gain + 18 dB with
+isolation feet. Subs under the tops: about +6.5 dB; under the booth: about
+−8 dB.
+
+## 14. The room and the venue (screen 20)
+
+The plan (metres; back wall y = 0; DJ at (0, 0.8); table y 1.1 … 1.8;
+monitors (±1.25, 1.3) aimed at the DJ; floor y 3.2 … 11, centre (0, 7)).
+
+- **Coverage:** a top's nominal angle is its −6 dB angle; level =
+  −6·(θ/θ½)² inside ±90° (−24 dB at 90° for a 90° box), then −24 … −28 dB
+  behind. Subs: 20·log10(1 − 0.25·(1 − cos θ)) — about −6 dB behind.
+  Inverse square from 1 m (clamped at 0.5 m), in plan; sources add as power.
+- **Levels (model):** each top 108 dBA at 1 m on axis fed −20 dBFS average;
+  each monitor 92 dBA. The floor and the DJ's ears follow the feed the
+  render measures. Exposure: the Calculator Lab's `nioshDose` (85 dBA / 8 h,
+  3 dB exchange) over a 4-hour set at the DJ's level.
+- **Placements:** CORNERS (±4.6, 2.6) aimed at the floor centre — no hole
+  in front, the decks ≥ 8 dB below the floor; STRAIGHT — a hole in front of
+  the floor; BEHIND (±0.9, 0.3) — the decks louder than the floor.
+- **Handoff:** MASTER L / R into the stage box's DJ L / DJ R (swaps are
+  flagged); an unbalanced run adds hum (−50 dBFS) and a 9 kHz roll-off. The
+  ENGINEER's gain (−12 … +9 dB, asked in 3 dB steps) moves the room, never
+  the DJ's meters.
+- **Processor:** crossover ON = LR4 at 100 Hz (two Butterworth sections):
+  tops high-passed, a MONO sub ((L + R)/2) low-passed; the sum is flat.
+  Crossover OFF = the boxes' own roll-offs (tops 2nd-order HP 50 Hz, sub
+  2nd-order LP 200 Hz) overlap and the sum bulges. The crowd perspective in
+  a venue is the floor centre: tops + sub.
+
+## 15. Recording (screen 21)
+
+Taps: REC OUT (fixed level, before the MASTER knob, the mic by its send),
+BOOTH OUT (follows the BOOTH knob), LOOPBACK (the computer records only
+what it plays). The recorder: input gain −20 … +20 dB, its own meters
+before its own clip at 0 dBFS. The TAKE (`takeStore`) is written from each
+chunk as it starts sounding (a re-render overwrites from its start), up to
+40 s; its lane is min / max per column of the capture, its voice marks where
+the mic's own part of the take is above −50 dBFS; PLAY THE TAKE plays the
+captured samples (the booth stops first) at the LISTEN level through the
+protective limiter.
+
+## 16. The hybrid rig (screen 22)
+
+The mixer's rear MIDI OUT sends clock from the beat counter of the channel
+its CLOCK switch picks. MIDI clock is 24 ticks a beat, so an EXT drum
+machine counts the leader's TRUE beats: its tempo is the leader's, tick for
+tick, and it stops when the leader stops. Clock gives the tempo, not the
+bar: bar 1 falls where it STARTS (pressed by ear, or armed for the leader's
+next bar line). Leads: 5-pin MIDI and TRS-MIDI type A carry it; type B fits
+and delivers nothing; USB between two devices needs a host. INT = its own
+tempo (drifts). Its audio is a separate lead (OUT L / R into CH 2's LINE
+inputs; deck B's RCA leads come out). Pattern: 16 steps of shaker, rim and
+two congas, synthesised.
+
+## 17. Changeovers (screen 23)
+
+DJ 1's laptop on USB 1 → CH 1 (selector USB); DJ 2's laptop for USB 2 →
+CH 2; deck B holds DJ 2's backup on CH 2's LINE. `wouldStop(item)`: the
+crowd loses its music only if the item feeds every on-air source (or is the
+mixer's power or the MASTER lines). A charger is not a source (battery).
+GROUND LOOP: a charger earthed on another circuit + the USB lead = a
+−42 dBFS 60 Hz buzz (with its 3rd and 5th) in that channel; cured by the
+battery, the booth strip or a USB isolator. Lifting the mains earth is
+REFUSED (there is no such state). A frozen laptop outputs silence (some
+output a stuck buzz).
+
+## 18. The closing event (screen 24)
+
+The fault bank (`djCapstone.FAULTS`): CH 2 selector on PHONO, CH 2 on the
+wrong crossfader side, MASTER R unplugged, CH 1 trim hot, PA L on another
+circuit (hum in the crowd only), the headphone blend at MASTER, the mic not
+sent to REC, the recorder's gain hot, a damaged file on deck B. One fault,
+and half the time a second from a different subsystem that cannot hide the
+first (`compatible`). `scenarioFor(seed)` is a seeded mulberry32 — the event
+number replays the same faults. The debrief draws its wrong options from
+other faults (seeded), always offers the unsafe earth lift as a wrong
+repair / prevention, and shuffles each part's options (a seeded
+Fisher–Yates), so the right answer moves but replays the same way.
+
+## 19. Optional paths and the ending
+
+Screens 16–18 are optional equipment paths (`pages/registry`); required
+completion = every other screen. Pages are numbered BY ID (`DJ_PAGE_NO`:
+declared after the 13–18 gap, otherwise the previous + 1). PagedLab's
+additive `optionalPage` marks them in CONTENTS and on the what's-left
+screen (an OPTIONAL PATHS group, never counted, never holding LAB COMPLETE)
+and stores the lab as done once every required page is. Screen 24 closes
+the lab: WHAT THIS LAB COVERS, built from the registry.
+
+## 20. Simplifications register (Stage 2b)
+
+| What | How it is simplified | How the learner is told |
+|---|---|---|
+| The voice | a synthesised speech-like phrase, no words | "a synthesised speech-like sound — no words" (TALK tray) |
+| Feedback | one loop number per path, a fixed ring frequency, a capped quiet ring | "a quiet stand-in of a ring" |
+| Turntable feedback | a margin gauge only, never played | "shown on its gauge; it never plays the howl" |
+| Coverage | mid-band plan model, no height, no reflections | the map is "(MODEL)" |
+| Levels in dBA | a stated model calibration | "dBA (MODEL)"; "a modelled level" |
+| MIDI clock | tempo follows the leader's true beat exactly (no jitter, no latency) | — |
+| Ground loop | a fixed hum level when the loop exists | "a hum" |
+| A frozen laptop | silence | — |
+| The take | 40 s maximum, session only | — |
+| Phantom pop, hot plug | flagged, never played | the warning |

@@ -75,3 +75,67 @@ numbers). No brand likeness, no trade dress, no logos.
 - The cable flow pulse is an overlay of WHERE the signal goes; it claims no speed (decorative motion).
 - Waveforms: peak envelope (min/max), RMS core and the drums' low band (the kick, 140 Hz) are all measured from the assembled tracks offline (djMusic.analyseTrack, shipped in djTrackData.ts, pinned by test/djMusic.test.ts); each lane is scaled so the track's 99th-percentile peak reaches 80 % of its half-height, and the colour keeps the true level. Kick ticks are the low band's onsets.
 - Silk-screen legends are drawn at real size (4 mm type, capitals about 3 mm) and appear only once the zoom renders them at 9 pt or more.
+
+---
+
+## Stage 2b (screens 19–24), checked 2026-10-18 by the Stage 2b build (Claude, Opus 5.5)
+
+| # | Fact cluster | Source (research plan ID) | Used on | Status |
+|---|---|---|---|---|
+| F25 | Phantom power is a property of the INPUT: some DJ mixers give their mic input +48 V, others specify mics that need none | S01, S03 (plan, "apparent contradictions") | 19 | as stated; this lab's mixer: MIC 1 yes, MIC 2 no |
+| F26 | A mixer may exclude the mic from its booth and record feeds by default (an internal setting) — the crowd hearing the mic proves nothing about the recording | S02 | 19, 21, 24 | as stated; this lab's default: mic not in BOOTH or REC |
+| F27 | Dynamic mics, wireless receiver outputs (mic / line switch), mic gain, mute, talkover / ducking, mic position, routing to audience, booth and recorder | plan DJ23 | 19 | generic; talkover behaviour varies (voice-keyed here) |
+| F28 | Powered vs passive systems, line inputs, balanced runs, labelled L / R, handing a feed to a venue engineer; venue gain and processing distinct from performance controls | S13, S14; plan DJ21 | 20 | as stated |
+| F29 | Crossover roles, mono bass, safe summing (a summing circuit, not a Y-cable), placement from a defined room model; turntable acoustic feedback distinct from mic feedback | S05, S16; plan DJ22 | 20 | as stated; LR4 at 100 Hz is THIS MODEL's processor |
+| F30 | Nominal coverage angle = the −6 dB angle; level falls quickly outside it; subwoofers are near-omnidirectional | general loudspeaker practice (manufacturer coverage specifications) | 19, 20 | the −6·(θ/θ½)² shape is THIS MODEL's mid-band approximation |
+| F31 | Record taps, capture levels, mic inclusion, software capture routes, monitoring loops; recording / streaming permissions depend on material, service and application | S02, S07, S12; plan DJ28 | 21 | stated generically; no service named |
+| F32 | Audio routing vs MIDI control vs clock / network sync; timing, transport and phase depend on the protocol; a clock connection carries no sound | plan DJ27 | 22 | as stated |
+| F33 | MIDI clock = 24 pulses per quarter note; start / stop messages; the two TRS-MIDI wirings (type A / type B); USB devices need a host | MIDI 1.0 specification; the MIDI association's TRS adapter recommended practice | 22 | standard values |
+| F34 | Input lists, USB / media handovers, dual computer paths, independent backup playback, level matching, talking to the engineer; which disconnection interrupts the playing source | S03; plan DJ29, DJ10 | 23 | as stated |
+| F35 | Protective earth is never removed to cure hum; isolation (a transformer, a USB isolator) or a DI's audio ground lift breaks a loop safely | S14, S15; plan DJ24 | 23, 24 | as stated |
+| F36 | Startup / shutdown order (speakers on last, off first) | S13 | 24 | as stated (reuses F11) |
+| F37 | Troubleshooting by signal tracing and by symptom; randomise causes only where the simulation demonstrates them; debrief cause, evidence, repair, prevention | plan DJ30 and its troubleshooting challenge bank | 24 | the fault bank uses the plan's rows the simulation shows accurately |
+| F38 | Sound exposure: NIOSH 85 dBA / 8 h, 3 dB exchange (educational model); a phone's volume is not ear-level SPL | S09 (reuses F22) | 20 | via the Calculator Lab's `nioshDose` |
+| F39 | Typical speech and mic levels: close speech about 94 dB SPL at the capsule; dynamic mic about 2 mV/Pa; line about 40 dB above mic level | general engineering references (reuses F9) | 19 | TYPICAL values; vary by mic and voice |
+
+### UNKNOWNS (Stage 2b — never drawn or stated as known)
+
+- U6 — Where any particular mixer sends its mic by default, and whether its
+  talkover is voice-keyed or switch-held. The lab states its own design.
+- U7 — Real feedback frequencies of any room (the model uses fixed 630 Hz /
+  2.5 kHz). Real rooms ring where their own response peaks.
+- U8 — Real coverage of any particular loudspeaker below about 1 kHz (the
+  map is a mid-band model) and the effect of height and reflections.
+- U9 — The dBA a real PA makes for a given feed (the lab's 108 dBA at 1 m
+  for −20 dBFS is a stated calibration, not a measurement).
+- U10 — Whether a given drum machine wants TRS-MIDI type A or B, accepts
+  clock over USB, or starts on MIDI START: device-specific.
+- U11 — How a particular laptop behaves when it freezes (silence, a stuck
+  buffer buzz, or the audio driver crashing).
+- U12 — Device render time of the event layer on the owner's phones: NOT
+  MEASURED (Node: an 8 s render with the mic, the venue and the recorder is
+  about 0.3 s).
+
+### Drawings (Stage 2b) — generic class dimensions
+
+| Object | Typical class dimensions used |
+|---|---|
+| Handheld vocal mic | 182 mm long; ball grille Ø 50 mm (condenser Ø 46, finer, flatter); body Ø 36 → 24 mm; male XLR at the tail; wireless transmitter 236 mm, no XLR |
+| Wireless receiver (half-rack), rear | 210 × 44 mm; two antennas about 150 mm drawn; BNC, DC IN, XLR out with a MIC / LINE switch |
+| Mixer front panel | 270 × 56 mm (this lab's mixer is 270 mm wide); combo inputs Ø 20–22 mm; knobs Ø 11–14 mm |
+| Stage box face | 200 × 116 mm; four female XLR; scribble strip |
+| 12-inch top (plan) | 36.5 × 40 cm footprint; tripod legs 110 cm spread |
+| 18-inch subwoofer | 550 × 700 mm front; plan 55 × 70 cm |
+| 2U power amplifier | 482 × 88 mm (19-inch rack) |
+| Handheld recorder | 72 × 156 mm top face; 52 × 38 mm display; 3.5 mm LINE IN |
+| Compact drum machine | 330 × 176 mm top; rear 330 × 52 mm: DC, USB-C, 5-pin MIDI IN / OUT, 3.5 mm TRS MIDI IN, OUT L / R, PHONES |
+
+### Simplifications (drawings, Stage 2b)
+
+- The room plan is in centimetres, seen from above (back wall at the top,
+  the DJ's left drawn to the right); the coverage field is the model's mid
+  band, smoothed between cells; the plan omits height.
+- The signal-flow board (screens 23, 24) is a diagram (abstract data); each
+  card carries a small drawing of its real object.
+- The clock lead's moving dots mark the beats the clock carries, not a
+  signal speed (an overlay of WHEN).
