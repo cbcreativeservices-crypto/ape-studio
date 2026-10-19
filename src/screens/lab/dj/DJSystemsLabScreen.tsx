@@ -1,7 +1,7 @@
 /**
  * DJ Systems Lab (owner GO 2026-10-18) — the owner's 24-screen outline
  * (docs/labs/dj/OWNER_24_SCREEN_OUTLINE.txt) on the PagedLab shell: Stage 1
- * (screens 1–12), 13–18 (branch dj-lab, merged later; 16–18 are OPTIONAL
+ * (screens 1–12), Stage 2 (13–18; 16–18 are OPTIONAL
  * equipment paths) and Stage 2b (19–24: microphones, the PA and the venue,
  * recording, hybrid rigs, changeovers, and the closing event challenge,
  * which ends the lab). Every screen is a Rack Unit page over
@@ -15,7 +15,8 @@
  *   4 Build your first DJ system     10 Tempo, beatmatching and phrasing
  *   5 Load and play music            11 Beatgrids, sync and quantize
  *   6 Set gain and read meters       12 Cue points, loops and samples
- *  13–18 (branch dj-lab)             19 Microphones and talkover
+ *  13–18 effects, key, stems, laptop, 19 Microphones and talkover
+ *        vinyl, digital vinyl
  *                                    20 PA speakers, subs and the venue
  *                                    21 Recording and streaming
  *                                    22 Hybrid DJ systems
@@ -25,7 +26,7 @@
  * OPTIONAL PATHS (owner outline): 16–18 are equipment paths a learner may
  * skip; the lab counts as complete with every other screen done
  * (pages/registry, PagedLab `optionalPage`). Matched BY OUTLINE NUMBER
- * (DJ_PAGE_NO), so the rule holds once 13–18 arrive.
+ * (DJ_PAGE_NO).
  *
  * Each screen keeps its five steps together (UNDERSTAND · EXPLORE · LISTEN &
  * OBSERVE · PRACTICE · CHECK YOURSELF) under the pinned booth; a screen marks

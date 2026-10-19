@@ -1,12 +1,12 @@
 /**
  * The DJ Systems Lab's screens, in the owner's 24-screen outline order.
- * Stage 1 is screens 1–12; screens 13–18 are built on branch dj-lab and
- * slot in at the marked comments; 19–24 are Stage 2b (branch dj-lab-b).
+ * Stage 1 is screens 1–12; Stage 2 is 13–18 and Stage 2b is 19–24, all
+ * merged into the one 24-screen lab.
  *
  * Each page's OUTLINE NUMBER comes from DJ_PAGE_NO (pages/registry
  * numberPages): declared here for the pages after the gap, and "the one
  * before + 1" for every other — so the numbers, the optional paths (16–18)
- * and the closing "what this lab covers" read right with or without 13–18.
+ * and the closing "what this lab covers" read right.
  */
 import type { PageDef } from '../../kit/PagedLab';
 import { GOALS_WELCOME, P01 } from './p01Welcome';

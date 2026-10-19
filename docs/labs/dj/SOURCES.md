@@ -90,9 +90,9 @@ numbers). No brand likeness, no trade dress, no logos.
 | F32 | The turntable ground wire is a signal ground; protective mains earth is never removed for hum | S14, S15 | 17 | as stated |
 | F33 | Turntable acoustic feedback through the table and stylus differs from microphone feedback; isolation and placement reduce it | S05 (plan DJ22) | 17 | modelled as one resonance; held safe |
 | F34 | DVS: a control signal (speed, direction, position) read by software after calibration; absolute, relative, internal and thru modes; poor signals and recovery; never route the control tone to the PA | S08, S19 | 18 | generic; quadrature is a common principle — real timecodes also carry position data (not modelled) |
-| F35 | Mains hum is 50 or 60 Hz by country | general engineering | 17 | the lab uses 50 Hz and says "or 60" |
+| F35 | Mains hum is 50 or 60 Hz by country; ONE booth has one mains | general engineering | 17, 20, 23, 24 | the lab uses 60 Hz (the US mains) on every screen and says "50 Hz in many countries" (audio review #4) |
 
-## Stage 2 UNKNOWNS
+## Stage 2 UNKNOWNS (U6–U11; the Stage 2b unknowns are U13–U19)
 
 - U6 — Any real mixer's FX tap points (pre/post fader), trails behaviour and send/return routing: the lab states its own and says real mixers differ.
 - U7 — A real player's key-lock quality and the ratio where its artifacts become audible.
@@ -111,45 +111,56 @@ numbers). No brand likeness, no trade dress, no logos.
 | Control record | 12-inch, white vinyl, black label (generic — no timecode artwork) |
 | Tonearm side view, booth side view | schematic elevations, labelled by function, not to scale (said in their titles: SIDE VIEW) |
 
-<!-- Stage 2b (screens 19–24), merged from branch dj-lab-b; its section and F/U numbers overlap Stage 2 (13–18) above -->
+<!-- Stage 2b (screens 19–24), merged from branch dj-lab-b; its numbers were renumbered (F40–F60, U13–U19) so none repeats Stage 2 (13–18) above -->
 
 ---
 
-## Stage 2b (screens 19–24), checked 2026-10-18 by the Stage 2b build (Claude, Opus 5.5)
+## Stage 2b (screens 19–24), checked 2026-10-18 by the Stage 2b build (Claude, Opus 5.5) — renumbered F40–F54 / U13–U19 after the merge (audio review #31)
 
 | # | Fact cluster | Source (research plan ID) | Used on | Status |
 |---|---|---|---|---|
-| F25 | Phantom power is a property of the INPUT: some DJ mixers give their mic input +48 V, others specify mics that need none | S01, S03 (plan, "apparent contradictions") | 19 | as stated; this lab's mixer: MIC 1 yes, MIC 2 no |
-| F26 | A mixer may exclude the mic from its booth and record feeds by default (an internal setting) — the crowd hearing the mic proves nothing about the recording | S02 | 19, 21, 24 | as stated; this lab's default: mic not in BOOTH or REC |
-| F27 | Dynamic mics, wireless receiver outputs (mic / line switch), mic gain, mute, talkover / ducking, mic position, routing to audience, booth and recorder | plan DJ23 | 19 | generic; talkover behaviour varies (voice-keyed here) |
-| F28 | Powered vs passive systems, line inputs, balanced runs, labelled L / R, handing a feed to a venue engineer; venue gain and processing distinct from performance controls | S13, S14; plan DJ21 | 20 | as stated |
-| F29 | Crossover roles, mono bass, safe summing (a summing circuit, not a Y-cable), placement from a defined room model; turntable acoustic feedback distinct from mic feedback | S05, S16; plan DJ22 | 20 | as stated; LR4 at 100 Hz is THIS MODEL's processor |
-| F30 | Nominal coverage angle = the −6 dB angle; level falls quickly outside it; subwoofers are near-omnidirectional | general loudspeaker practice (manufacturer coverage specifications) | 19, 20 | the −6·(θ/θ½)² shape is THIS MODEL's mid-band approximation |
-| F31 | Record taps, capture levels, mic inclusion, software capture routes, monitoring loops; recording / streaming permissions depend on material, service and application | S02, S07, S12; plan DJ28 | 21 | stated generically; no service named |
-| F32 | Audio routing vs MIDI control vs clock / network sync; timing, transport and phase depend on the protocol; a clock connection carries no sound | plan DJ27 | 22 | as stated |
-| F33 | MIDI clock = 24 pulses per quarter note; start / stop messages; the two TRS-MIDI wirings (type A / type B); USB devices need a host | MIDI 1.0 specification; the MIDI association's TRS adapter recommended practice | 22 | standard values |
-| F34 | Input lists, USB / media handovers, dual computer paths, independent backup playback, level matching, talking to the engineer; which disconnection interrupts the playing source | S03; plan DJ29, DJ10 | 23 | as stated |
-| F35 | Protective earth is never removed to cure hum; isolation (a transformer, a USB isolator) or a DI's audio ground lift breaks a loop safely | S14, S15; plan DJ24 | 23, 24 | as stated |
-| F36 | Startup / shutdown order (speakers on last, off first) | S13 | 24 | as stated (reuses F11) |
-| F37 | Troubleshooting by signal tracing and by symptom; randomise causes only where the simulation demonstrates them; debrief cause, evidence, repair, prevention | plan DJ30 and its troubleshooting challenge bank | 24 | the fault bank uses the plan's rows the simulation shows accurately |
-| F38 | Sound exposure: NIOSH 85 dBA / 8 h, 3 dB exchange (educational model); a phone's volume is not ear-level SPL | S09 (reuses F22) | 20 | via the Calculator Lab's `nioshDose` |
-| F39 | Typical speech and mic levels: close speech about 94 dB SPL at the capsule; dynamic mic about 2 mV/Pa; line about 40 dB above mic level | general engineering references (reuses F9) | 19 | TYPICAL values; vary by mic and voice |
+| F40 | Phantom power is a property of the INPUT: some DJ mixers give their mic input +48 V, others specify mics that need none | S01, S03 (plan, "apparent contradictions") | 19 | as stated; this lab's mixer: MIC 1 yes, MIC 2 no |
+| F41 | A mixer may exclude the mic from its booth and record feeds by default (an internal setting) — the crowd hearing the mic proves nothing about the recording | S02 | 19, 21, 24 | as stated; this lab's default: mic not in BOOTH or REC |
+| F42 | Dynamic mics, wireless receiver outputs (mic / line switch), mic gain, mute, talkover / ducking, mic position, routing to audience, booth and recorder | plan DJ23 | 19 | generic; talkover behaviour varies (voice-keyed here) |
+| F43 | Powered vs passive systems, line inputs, balanced runs, labelled L / R, handing a feed to a venue engineer; venue gain and processing distinct from performance controls | S13, S14; plan DJ21 | 20 | as stated |
+| F44 | Crossover roles, mono bass, safe summing (a summing circuit, not a Y-cable), placement from a defined room model; turntable acoustic feedback distinct from mic feedback | S05, S16; plan DJ22 | 20 | as stated; LR4 at 100 Hz is THIS MODEL's processor |
+| F45 | Nominal coverage angle = the −6 dB angle; level falls quickly outside it; subwoofers are near-omnidirectional | general loudspeaker practice (manufacturer coverage specifications) | 19, 20 | the −6·(θ/θ½)² shape is THIS MODEL's mid-band approximation |
+| F46 | Record taps, capture levels, mic inclusion, software capture routes, monitoring loops; recording / streaming permissions depend on material, service and application | S02, S07, S12; plan DJ28 | 21 | stated generically; no service named |
+| F47 | Audio routing vs MIDI control vs clock / network sync; timing, transport and phase depend on the protocol; a clock connection carries no sound | plan DJ27 | 22 | as stated |
+| F48 | MIDI clock = 24 pulses per quarter note; start / stop messages; the two TRS-MIDI wirings (type A / type B); USB devices need a host | MIDI 1.0 specification; the MIDI association's TRS adapter recommended practice | 22 | standard values |
+| F49 | Input lists, USB / media handovers, dual computer paths, independent backup playback, level matching, talking to the engineer; which disconnection interrupts the playing source | S03; plan DJ29, DJ10 | 23 | as stated |
+| F50 | Protective earth is never removed to cure hum; isolation (a transformer, a USB isolator) or an audio ground lift breaks a loop safely; one shared strip OFTEN cures a charger loop (a two-pin charger can still leak a whine into USB); many USB isolators run only at the slower USB speed | S14, S15; plan DJ24 | 23, 24 | as stated |
+| F51 | Startup / shutdown order (speakers on last, off first) | S13 | 24 | as stated (reuses F11) |
+| F52 | Troubleshooting by signal tracing and by symptom; randomise causes only where the simulation demonstrates them; debrief cause, evidence, repair, prevention | plan DJ30 and its troubleshooting challenge bank | 24 | the fault bank uses the plan's rows the simulation shows accurately |
+| F53 | Sound exposure: NIOSH 85 dBA / 8 h, 3 dB exchange (educational model); a phone's volume is not ear-level SPL | S09 (reuses F22) | 20 | via the Calculator Lab's `nioshDose` |
+| F54 | Typical speech and mic levels: close speech about 94 dB SPL at the capsule; dynamic mic about 2 mV/Pa; line about 40–55 dB above mic level (consumer −10 dBV ≈ 44 dB, pro +4 dBu ≈ 56 dB over a dynamic mic’s ≈ −52 dBu on close speech; the model uses +44 dB) | general engineering references (reuses F9) | 19 | TYPICAL values; vary by mic and voice |
+
+### Added by the second reviews (2026-10-18)
+
+| ID | Fact | Source | Screens | Status |
+|---|---|---|---|---|
+| F55 | In live sound "left" is named from the audience: the left main stands at HOUSE LEFT (the audience's left, the DJ's right); which side is L is the venue's call and many club systems run mono | general live-sound practice (audio review #2) | 19, 20 | the lab draws PA L at house left and says so in a TERM |
+| F56 | Speaker stands: level ground, legs fully out, the top locked, legs taped clear, never above the stand's rating; a passive amplifier is OFF (or down) while a speaker cable is connected or moved | stand and amplifier manuals (general safety practice; audio review #3) | 20 | stated as safety |
+| F57 | Several subs playing the same mono bass add COHERENTLY: +6 dB in step, deep nulls out of step; spaced subs make a power alley and lobes | acoustics (wave superposition); audio review #12, visual review #16 | 20 | the bass map draws the coherent sum at 60 Hz; the levels and the turntable loop use the power average |
+| F58 | Set mic gain on normal speech with headroom (peaks around −18 to −8 dBFS here), then check a shout (+10 dB or more) stays clean | general live-sound practice (audio review #5) | 19 | a suggested starting point, not a rule |
+| F59 | A crossover pair sums flat only when the sub and the tops are time-aligned and in polarity (a delay and polarity at the processor) | loudspeaker system practice (audio review #11) | 20 | stated in Step 3; the model's sub and tops arrive together |
+| F60 | A stem file set rebuilds a track closely, not always exactly (master-bus processing acts on the full mix); LOAD is an average, dropouts come from spikes | audio review #21, #22 | 15, 16 | noted for the other screens' copy |
 
 ### UNKNOWNS (Stage 2b — never drawn or stated as known)
 
-- U6 — Where any particular mixer sends its mic by default, and whether its
+- U13 — Where any particular mixer sends its mic by default, and whether its
   talkover is voice-keyed or switch-held. The lab states its own design.
-- U7 — Real feedback frequencies of any room (the model uses fixed 630 Hz /
+- U14 — Real feedback frequencies of any room (the model uses fixed 630 Hz /
   2.5 kHz). Real rooms ring where their own response peaks.
-- U8 — Real coverage of any particular loudspeaker below about 1 kHz (the
+- U15 — Real coverage of any particular loudspeaker below about 1 kHz (the
   map is a mid-band model) and the effect of height and reflections.
-- U9 — The dBA a real PA makes for a given feed (the lab's 108 dBA at 1 m
+- U16 — The dBA a real PA makes for a given feed (the lab's 108 dBA at 1 m
   for −20 dBFS is a stated calibration, not a measurement).
-- U10 — Whether a given drum machine wants TRS-MIDI type A or B, accepts
+- U17 — Whether a given drum machine wants TRS-MIDI type A or B, accepts
   clock over USB, or starts on MIDI START: device-specific.
-- U11 — How a particular laptop behaves when it freezes (silence, a stuck
+- U18 — How a particular laptop behaves when it freezes (silence, a stuck
   buffer buzz, or the audio driver crashing).
-- U12 — Device render time of the event layer on the owner's phones: NOT
+- U19 — Device render time of the event layer on the owner's phones: NOT
   MEASURED (Node: an 8 s render with the mic, the venue and the recorder is
   about 0.3 s).
 
