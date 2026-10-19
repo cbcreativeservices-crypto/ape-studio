@@ -55,8 +55,7 @@ export const metadata: Metadata = {
     "pro audio training",
     "professional audio education",
     "audio engineering course",
-    "credential verification",
-    "tube reference",
+    "credential verification",
   ],
   robots: GATE_ENABLED
     ? { index: false, follow: false }
