@@ -634,6 +634,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 02:22 · ccode · a2a36a4c
+changed: DJ Systems Lab 19: the mic lies on the booth table; labels clear of the panel and the meters
+affects other side: nothing (client only)
+needs: nothing
+
+
+### 2026-10-19 02:22 · ccode · 0f53e9db
+changed: DJ Systems Lab 23 + 24: the signal-flow boards show their devices; power cords traceable
+affects other side: nothing (client only)
+needs: nothing
+
+
+### 2026-10-19 00:30 · ccode · 05ed0244
+changed: DJ Systems Lab: first grading of all 24 screens (house art scale), before overnight fixes
+affects other side: nothing (client only)
+needs: nothing
+
+
 ### 2026-10-18 23:52 · ccode · 44bb766f
 changed: Merge dj-lab-c: second-round fixes for screens 19-24 and lab-wide items
 affects other side: nothing (client only; the DJ lab's credential requirement is ON HOLD by the owner until the lab ships)

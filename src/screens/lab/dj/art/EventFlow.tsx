@@ -158,7 +158,7 @@ function StripCard({ n }: { n: FlowNode }) {
   const bodyH = 18;
   const oy = stripOutletY(n);
   const named = s.outlets.filter((o) => o.label).sort((a, b) => a.x - b.x);
-  const row1 = n.y + bodyH + 5 + lm * 0.95;
+  const rowY = n.y + bodyH + 5 + lm * 0.95;
   const T = wrapMm(n.title, lm, n.x + n.w - 4 - s.textX, width);
   const subs = n.sub == null ? [] : typeof n.sub === 'string' ? [n.sub] : n.sub;
   const S = subs.flatMap((t) => wrapMm(t, lm, n.x + n.w - 4 - s.textX, width));
@@ -198,27 +198,35 @@ function StripCard({ n }: { n: FlowNode }) {
           <Circle cx={o.x} cy={oy + 3.2} r={1.3} color="#000" />
         </Group>
       ))}
-      {/* each cord's name under its outlet, in two staggered rows */}
-      {named.map((o, i) => {
-        const w = width(o.label!) * lm;
-        const tagR = o.tag != null ? lm * 0.75 + 1.5 : 0;
-        const total = w + tagR * 2;
-        const cx = Math.max(n.x + 3 + total / 2, Math.min(n.x + n.w - 3 - total / 2, o.x));
-        const y = row1 + (i % 2) * lh;
-        const x0 = cx - total / 2;
-        return (
-          <Group key={`n${o.x}`}>
-            <Line p1={vec(o.x, oy + 6.8)} p2={vec(o.x, y - lm * 0.95 - 0.8)} color="rgba(255,255,255,0.22)" strokeWidth={0.5} />
-            {o.tag != null ? <Tag x={x0 + tagR - 0.5} y={y - lm * 0.36} num={o.tag} verdict={o.tagVerdict ?? null} /> : null}
-            <SceneText x={x0 + tagR * 2} y={y} size={lm} text={o.label!} color={INK.print} face="label" />
-          </Group>
-        );
-      })}
+      {/* each cord's name under its outlet, in two staggered rows; a row-2
+          name gets a hairline up to its outlet only where that line clears
+          every row-1 name (a row-1 name sits right under its own outlet) */}
+      {(() => {
+        const placed = named.map((o, i) => {
+          const w = width(o.label!) * lm;
+          const tagR = o.tag != null ? lm * 0.75 + 1.5 : 0;
+          const total = w + tagR * 2;
+          const cx = Math.max(n.x + 3 + total / 2, Math.min(n.x + n.w - 3 - total / 2, o.x));
+          return { o, row: i % 2, x0: cx - total / 2, x1: cx + total / 2, tagR };
+        });
+        const row1 = placed.filter((p) => p.row === 0);
+        return placed.map((p) => {
+          const y = rowY + p.row * lh;
+          const lead = p.row === 1 && !row1.some((q) => p.o.x > q.x0 - 1 && p.o.x < q.x1 + 1);
+          return (
+            <Group key={`n${p.o.x}`}>
+              {lead ? <Line p1={vec(p.o.x, oy + 6.8)} p2={vec(p.o.x, y - lm * 0.95 - 0.8)} color="rgba(255,255,255,0.22)" strokeWidth={0.5} /> : null}
+              {p.o.tag != null ? <Tag x={p.x0 + p.tagR - 0.5} y={y - lm * 0.36} num={p.o.tag} verdict={p.o.tagVerdict ?? null} /> : null}
+              <SceneText x={p.x0 + p.tagR * 2} y={y} size={lm} text={p.o.label!} color={INK.print} face="label" />
+            </Group>
+          );
+        });
+      })()}
       {T.map((t, i) => (
-        <SceneText key={`t${i}`} x={s.textX} y={row1 + i * lh} size={lm} text={t} color={INK.white} face="label" />
+        <SceneText key={`t${i}`} x={s.textX} y={rowY + i * lh} size={lm} text={t} color={INK.white} face="label" />
       ))}
       {S.map((t, i) => (
-        <SceneText key={`s${i}`} x={s.textX} y={row1 + (T.length + i) * lh} size={lm} text={t} color={INK.printDim} face="label" />
+        <SceneText key={`s${i}`} x={s.textX} y={rowY + (T.length + i) * lh} size={lm} text={t} color={INK.printDim} face="label" />
       ))}
     </Group>
   );
