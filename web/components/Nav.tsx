@@ -108,13 +108,6 @@ export default function Nav() {
         </ul>
         <div className="flex items-center gap-3">
           <Link
-            href="/login"
-            aria-current={pathname === "/login" ? "page" : undefined}
-            className="hidden text-sm font-medium text-text-sub transition-colors hover:text-amber sm:inline"
-          >
-            Sign in
-          </Link>
-          <Link
             href="/get"
             aria-current={pathname === "/get" ? "page" : undefined}
             className="rounded-md bg-amber px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-amber-deep"
@@ -165,16 +158,6 @@ export default function Nav() {
                 </li>
               );
             })}
-            <li>
-              <Link
-                href="/login"
-                aria-current={pathname === "/login" ? "page" : undefined}
-                className="block rounded-md px-2 py-2.5 text-base font-medium text-text-sub hover:bg-surface hover:text-amber sm:hidden"
-                onClick={() => setOpen(false)}
-              >
-                Sign in
-              </Link>
-            </li>
           </ul>
         </div>
       ) : null}

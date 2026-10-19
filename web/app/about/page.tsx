@@ -24,9 +24,8 @@ export default function Page() {
           the knowledge you gain is something you can apply and document.
         </p>
         <p>
-          The mobile app is where the learning happens. This site supports it —
-          explaining the Academy, holding accounts and credentials, and letting
-          those credentials be verified.
+          All of the learning happens in the Pro Audio Training Academy app for
+          iPhone, iPad and Android.
         </p>
       </Section>
 

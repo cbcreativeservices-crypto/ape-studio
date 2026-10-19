@@ -14,16 +14,14 @@ export default function Page() {
     <div className="pb-16">
       <PageHero
         eyebrow="How we use AI"
-        title="Internal help. Human judgment."
-        lede="This website does not use a chatbot or an AI tutor. Where we use artificial intelligence, it is to assist our own work — and a person still decides what gets published."
+        title="Human judgment first"
+        lede="We use artificial intelligence as a behind-the-scenes production tool. A person reviews and approves everything we publish."
       />
 
-      <Section title="What we use AI for today">
+      <Section title="How we use AI">
         <p>
-          Artificial intelligence and similar tools may help us draft text,
-          organize information, produce preliminary illustrations, spot
-          inconsistencies, or speed up production. That is internal
-          development work.
+          Artificial intelligence tools help our team draft text, organize
+          information, create illustrations and check for inconsistencies.
         </p>
         <p>
           Artificial intelligence does not independently approve or publish
@@ -33,10 +31,10 @@ export default function Page() {
         </p>
       </Section>
 
-      <Section title="What we do not do today">
+      <Section title="What AI does not do">
         <List
           items={[
-            "This website does not include a user-facing AI assistant.",
+            "There is no AI chatbot or AI tutor on this website.",
             "We do not send learner personal information to external generative AI systems.",
             "AI does not grade you, award credentials, or decide whether a credential is valid.",
           ]}

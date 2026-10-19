@@ -75,16 +75,6 @@ export default async function Page({
                 more seats, the better the rate.
               </p>
             </div>
-            <div className="connect-sheet-row">
-              <p className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-text-muted">
-                Coming
-              </p>
-              <p>
-                Custom topics, certificates, courses, and app configuration
-                shaped to your program, plus cohort reporting. Not for sale
-                yet.
-              </p>
-            </div>
           </div>
         </Section>
 

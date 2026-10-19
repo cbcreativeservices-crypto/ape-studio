@@ -36,10 +36,9 @@ export default function Page() {
           ]}
         />
         <p>
-          The mobile app is the primary learning environment. This website is the
-          companion — for understanding the Academy, managing your account and
-          membership, tracking progress and credentials, verifying credentials,
-          institutional information, and member references.
+          Everything happens in the Pro Audio Training Academy app for iPhone,
+          iPad and Android — your lessons, labs, glossary, quizzes, progress and
+          credentials.
         </p>
       </Section>
 
