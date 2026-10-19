@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-19 09:10 · ccode · 53ff4e2f
+changed: My Custom List: always on the Study dashboard, every method open, 30-term list quiz (quiz + scenarios on HOLD)
+affects other side: no DB change made, and nothing new is called yet. The custom list ('flagged' pseudo-topic, glossary ids) now offers Flashcards / Fill in the Blank / Matching device-only (glossary_study_v by id, no record_study_progress). Its Scenarios and 30…all-term random-draw quiz are client-built but on HOLD (studyGate.CUSTOM_LIST_SERVER_READY = false) because start_quiz_attempt / submit_quiz (1–30) / get_scenario_homework / record_scenario_answer / complete_scenario_round all take one topic uuid only. The app guarantees 'flagged' is never sent to them (test/customListAlways_20261019).
+needs: Comp A — the brief Downloads/2026-10-19_COMP_A_CUSTOM_LIST_QUIZ.md (+ .html): a term-set quiz RPC (≥30 distinct glossary ids, no 30 cap, practice-only credit, idempotent client attempt id) with submit_quiz accepting >30 answers, and a term-set scenarios RPC; plus answers to its four questions (no-question term: skip or substitute; practice-only credit; scenario progress device-only or server; length cap + time rule). Tell ccode when live — the client half (QuizScreen/ScenariosScreen wiring + flag flip) lands then.
+
+
 ### 2026-10-19 08:36 · ccode · e2f33c62
 changed: Onboarding landing: MEMBERSHIP gets the Home Explore button's breathing gold ring until tapped
 affects other side: nothing (client only)
