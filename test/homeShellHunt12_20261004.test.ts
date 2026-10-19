@@ -58,10 +58,11 @@ test('2. Dashboard: an unreadable ★ Custom List is not "0 TERMS"', () => {
   assert.match(src, /const starredCount = starredUnreadable\s*\?\s*'TERMS COULD NOT BE READ'/);
   // No count printed straight from the placeholder set any more.
   assert.doesNotMatch(src, /`\$\{starred\.size\} TERM\$\{starred\.size === 1 \? '' : 'S'\} · MY CUSTOM LIST`/);
-  // 2026-10-19: the list rides the full rack; each method shows the count line,
-  // and an UNREADABLE list still opens its method (customMethodTap → 'open'),
-  // whose screen says "could not load" with its own Retry.
-  assert.match(src, /subtitle=\{starredCount\}/);
+  // 2026-10-19: the list rides the full rack (its meters read full — owner);
+  // the count line is on the topic card, and an UNREADABLE list still opens its
+  // method (customMethodTap → 'open'), whose screen says "could not load" with
+  // its own Retry.
+  assert.match(src, /\{dispIsCustom\s*\? starredCount/);
   assert.match(src, /if \(dispIsCustom && !customMethodOpens\(\)\) return;/, 'methods stay live on an unreadable list');
 });
 

@@ -117,6 +117,7 @@ import {
   CUSTOM_CHECKING_TITLE,
   CUSTOM_EMPTY_BODY,
   CUSTOM_EMPTY_TITLE,
+  CUSTOM_LIST_METER_PCT,
   CUSTOM_QUIZ_MIN_TITLE,
   CUSTOM_UNREADABLE_BODY,
   CUSTOM_UNREADABLE_TITLE,
@@ -1913,7 +1914,9 @@ export function DashboardScreen() {
   const overallPctFor = (t: Topic): number => {
     // Every real topic has all four methods (owner 2026-08-13); only the Custom
     // List pseudo-topic has none.
-    const keys = t.id === FLAGGED_TOPIC_ID ? [] : METHOD_ORDER.map((m) => m.key);
+    // MY CUSTOM LIST reads full, always (owner 2026-10-19).
+    if (t.id === FLAGGED_TOPIC_ID) return CUSTOM_LIST_METER_PCT;
+    const keys = METHOD_ORDER.map((m) => m.key);
     const rows = data.methodRows.filter((r) => r.achievement_id === t.id);
     const itemCount = data.itemCountByTopic.get(t.id) ?? 0;
     return topicOverallPct(keys, (k) => rows.find((r) => r.method_key === k), itemCount, t.id, rpFor);
@@ -2013,7 +2016,9 @@ export function DashboardScreen() {
   const dispTopicInactive =
     dispTopic.global_sequence != null &&
     inactiveGs.current.has(dispTopic.global_sequence);
-  const dispOverallPct = jogActive ? overallPctFor(dispTopic) : overallPct;
+  // MY CUSTOM LIST: the topic card's % and meter read 100 and never move (owner
+  // 2026-10-19: "show all always at 100% already … to show they are open").
+  const dispOverallPct = dispIsCustom ? CUSTOM_LIST_METER_PCT : jogActive ? overallPctFor(dispTopic) : overallPct;
 
   const topicProg = data.progressByTopic.get(topic.id);
   const rawQuizState =
@@ -2496,14 +2501,15 @@ export function DashboardScreen() {
                     {/* LED instrument screen under one glass panel (owner
                         2026-08-06): TITLE · % · full-width LED meter. */}
                     {isCustom ? (
-                      // The list's own count where a topic shows its meter: it
-                      // keeps no server progress, so a 0% would be a fiction.
+                      // Owner 2026-10-19: the meter reads FULL from the start and
+                      // never moves — it says "open and available", not progress
+                      // (none is kept for the list). The word still tells an
+                      // empty list apart; the count is on the topic card.
                       <GlassScreen
                         title={m.label}
                         value={starred.size > 0 || !starredRead || starredUnreadable ? 'OPEN' : 'EMPTY'}
                         valueColor={colors.customList}
-                        subtitle={starredCount}
-                        subtitleColor={colors.customList}
+                        segments={segmentsForPct(CUSTOM_LIST_METER_PCT)}
                       />
                     ) : (
                     <GlassScreen
@@ -2657,9 +2663,8 @@ export function DashboardScreen() {
                 : quizState === 'ready'
                   ? 'READY'
                   : 'LOCKED';
-            const qSummary = isCustom
-              ? 'AT LEAST 30 TERMS'
-              : quizState === 'locked'
+            const qSummary =
+              quizState === 'locked'
                 ? 'GATES UNMET'
                 : quizState === 'ready'
                   ? 'ALL GATES MET'
@@ -2687,7 +2692,12 @@ export function DashboardScreen() {
                   <View style={styles.methodLeft}>
                     {/* Same LED-screen-under-glass as the method panels (owner
                         2026-08-06): TITLE · status · gate summary line. */}
-                    <GlassScreen title={isCustom ? 'LIST QUIZ' : 'TOPIC QUIZ'} value={qShort} valueColor={qColor} subtitle={qSummary} subtitleColor={qColor} off={!quizPowered} />
+                    {isCustom ? (
+                      // The list quiz's meter reads FULL too (owner 2026-10-19).
+                      <GlassScreen title="LIST QUIZ" value={qShort} valueColor={qColor} segments={segmentsForPct(CUSTOM_LIST_METER_PCT)} />
+                    ) : (
+                      <GlassScreen title="TOPIC QUIZ" value={qShort} valueColor={qColor} subtitle={qSummary} subtitleColor={qColor} off={!quizPowered} />
+                    )}
                   </View>
                   {!quizPowered ? (
                     // Powered off — a DEAD clear cap, no light/colour/nav.

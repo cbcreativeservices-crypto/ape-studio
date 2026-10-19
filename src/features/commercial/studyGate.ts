@@ -129,6 +129,15 @@ export function customListHasQuiz(serverReady: boolean = CUSTOM_LIST_SERVER_READ
   return serverReady;
 }
 
+/**
+ * Rule 2b (owner 2026-10-19): "On My Custom List - do not progress progress
+ * bars, show all always at 100% already (also to show they are open and
+ * available to use)." Every custom-list meter — each method, the list quiz and
+ * the topic card — reads FULL from the start and never moves, whatever the
+ * list holds (an empty list still says EMPTY in words). Nothing is recorded.
+ */
+export const CUSTOM_LIST_METER_PCT = 100;
+
 /** Rule 2: every custom-list method is powered from the start. */
 export function customListMethodPowered(_method: string): true {
   return true;

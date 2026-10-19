@@ -262,3 +262,30 @@ test('4d. the length popup is a centred DimModal popup built on the same rules',
   assert.match(d, /const ids = drawRandomTerms\(starred, n\);/);
   assert.match(d, /popupOpenRef\.current = termsOpen \|\| trophyOpen \|\| deckOpen \|\| upgradeOpen \|\| customQuizOpen \|\| dashIntroUp;/);
 });
+
+/* ── 5. Every meter reads 100% from the start (owner 2026-10-19) ──────────── */
+
+test('5. every custom-list meter is FULL and never moves; nothing is recorded', () => {
+  // "On My Custom List - do not progress progress bars, show all always at 100%
+  // already (also to show they are open and available to use)."
+  assert.equal(rules.CUSTOM_LIST_METER_PCT, 100);
+  const d = read(DASH);
+  // Each method panel: a full meter, not a progress figure; EMPTY still in words.
+  const at = d.indexOf('{isCustom ? (\n                      // Owner 2026-10-19: the meter reads FULL');
+  assert.ok(at > 0, 'the custom method panel is missing');
+  const panel = d.slice(at, d.indexOf('/>', at));
+  assert.match(panel, /segments=\{segmentsForPct\(CUSTOM_LIST_METER_PCT\)\}/);
+  assert.match(panel, /'OPEN' : 'EMPTY'/);
+  assert.doesNotMatch(panel, /pct|rawPct|methodPct/);
+  // The list quiz (when it appears) and the topic card read full too.
+  assert.match(d, /<GlassScreen title="LIST QUIZ" value=\{qShort\} valueColor=\{qColor\} segments=\{segmentsForPct\(CUSTOM_LIST_METER_PCT\)\} \/>/);
+  assert.match(d, /const dispOverallPct = dispIsCustom \? CUSTOM_LIST_METER_PCT : jogActive/);
+  assert.match(d, /if \(t\.id === FLAGGED_TOPIC_ID\) return CUSTOM_LIST_METER_PCT;/);
+  // Full is a display, never a completion: no ✓, no celebration, no credit.
+  assert.match(d, /const complete = !isCustom && isApplicable && rawPct >= 100;/);
+  // And no progress is written for the list by any method screen.
+  for (const f of ['src/screens/study/FillInBlankScreen.tsx', 'src/screens/study/MatchingScreen.tsx']) {
+    assert.match(read(f), /if \(customMode\) return; \/\/ the custom list: nothing to mirror/, f);
+  }
+  assert.match(read('src/screens/study/FlashcardsScreen.tsx'), /if \(flaggedMode\) return; \/\/ pseudo-topic: nothing to mirror/);
+});
