@@ -14,7 +14,16 @@
  */
 import { createContext, useContext } from 'react';
 
-export type StageReport = { aspect: (aspect: number, pad: number) => void; fixed: () => void };
+export type StageReport = {
+  aspect: (aspect: number, pad: number) => void;
+  fixed: () => void;
+  /** OPTIONAL, additive (owner 2026-10-19, option A "READ"): a drawing whose
+   *  printed words are too small to show at 3× reports the zoom (× the 1×
+   *  step) at which its smallest printed word reaches 9 pt; the full screen
+   *  then offers a READ step at that factor. `null` withdraws it. A drawing
+   *  that never calls it keeps the zoom row exactly as before. */
+  readAt?: (factor: number | null) => void;
+};
 
 export const StageAspectReport = createContext<StageReport | null>(null);
 

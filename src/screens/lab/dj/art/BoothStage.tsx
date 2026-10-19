@@ -69,6 +69,9 @@ export type BoothStageSpec = {
    *  (BOOTH_MIXER_LEGENDS) as zoom-aware label obstacles — Scene `printed`:
    *  each blocks a callout only once a zoom renders it legible. */
   printed?: readonly (Box & { size: number })[];
+  /** ADDITIVE (owner 2026-10-19, option A): FULL SCREEN offers a READ step
+   *  that brings printed words this size (mm) to 9 pt (Scene `readMm`). */
+  readMm?: number | null;
 };
 
 const intersects = (a: Box, b: Box) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
@@ -150,6 +153,7 @@ export function BoothStage({ w, h, booth, spec, motion }: { w: number; h: number
       callouts={spec.callouts}
       obstacles={obstacles}
       printed={printed}
+      readMm={useFull ? undefined : spec.readMm}
       soft={BOOTH_BODIES}
       screenOverlay={screenOverlay}
       fit={fit}

@@ -27,7 +27,7 @@ import { StageAspectReport, StageInFullScreen, useStageTextScale } from '../../r
 import { fitView, type Box, type Pt } from '../geometry/boothGeometry';
 import { MotionContext, type BoothMotion } from './motion';
 import { SceneFontsProvider } from './sceneText';
-import { DjZoomContext, sameFrame, zoomedXf } from './djZoom';
+import { DjZoomContext, readZoomFor, sameFrame, zoomedXf } from './djZoom';
 
 export type Callout = {
   id: string;
@@ -48,7 +48,10 @@ export type Xf = { s: number; ox: number; oy: number };
 const TONE = { amber: colors.amber, plain: colors.textPrimary, blue: '#8fbcff', red: '#ff8a7e', green: '#7dff9f' } as const;
 const EDGE = { amber: 'rgba(255,198,77,0.75)', plain: 'rgba(255,255,255,0.55)', blue: 'rgba(143,188,255,0.75)', red: 'rgba(255,138,126,0.8)', green: 'rgba(125,255,159,0.75)' } as const;
 
-export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, screenOverlay, a11y, children, pad = 6, fit, aspect, labelsOutsideFit = false, focus, printed, fill = false, obstaclesAt }: {
+/** The zoom past which a Scene's callouts stop growing (READ, option A). */
+export const READ_WORDS_CAP = 3;
+
+export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, screenOverlay, a11y, children, pad = 6, fit, aspect, labelsOutsideFit = false, focus, printed, fill = false, obstaclesAt, readMm }: {
   w: number;
   h: number;
   frame: Box;
@@ -91,6 +94,12 @@ export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, scr
    *  words drawn in the picture at a fixed type size (a band's printed
    *  title): `s` pt per mm, `k` the words' growth. */
   obstaclesAt?: (s: number, k: number) => readonly Box[];
+  /** ADDITIVE (owner 2026-10-19, option A): the smallest printed word's size
+   *  (mm) this drawing should be READ at. In FULL SCREEN at 1× the Scene
+   *  reports the zoom that brings it to 9 pt, and the shared full screen
+   *  offers a READ step there. `null` withdraws a report (a view of the same
+   *  stage that needs none); undefined reports nothing. */
+  readMm?: number | null;
 }) {
   // The drawing grows by the full-screen zoom; its words grow too (D35),
   // but by the square root, so a closer look shows more drawing, not just
@@ -110,7 +119,9 @@ export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, scr
   }, [fill, inFull, fit, w, h, frame, pad]);
   const zEff = dz.z * fillZ;
   const zoomed = zEff > 1.001;
-  const k = Math.sqrt(Math.max(1, kz * dz.z));
+  // (past 3× — the READ step — the callouts stop growing: READ is for the
+  // gear's own printed words, which grow with the drawing)
+  const k = Math.sqrt(Math.max(1, kz * Math.min(dz.z, READ_WORDS_CAP)));
   const report = useContext(StageAspectReport);
   const shape = aspect === false ? null : aspect ?? (fit ? null : frame.w / frame.h);
   const shapeKey = shape == null ? 0 : Math.round(shape * 1000) / 1000;
@@ -150,6 +161,12 @@ export function Scene({ w, h, frame, motion, callouts = [], obstacles, soft, scr
     });
   }, [zoomed, callouts, xf, fit?.x, fit?.y, fit?.w, fit?.h, w, h]);
   const { s, ox, oy } = xf;
+  // READ: measured at the full screen's 1× (no zoom step on), from the scale
+  // the words are drawn at there
+  const readF = readMm === undefined || !inFull || dz.z !== 1 ? undefined : readMm === null ? null : readZoomFor(readMm, s);
+  useEffect(() => {
+    if (readF !== undefined) report?.readAt?.(readF);
+  }, [report, readF]);
   const boxes = useMemo(
     () => {
       const legible = printed ? printed.filter((p) => p.size * s >= 9 - 1e-3) : [];

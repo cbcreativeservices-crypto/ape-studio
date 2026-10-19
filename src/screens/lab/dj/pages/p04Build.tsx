@@ -13,6 +13,7 @@ import { StageInFullScreen } from '../../rack/stageAspect';
 import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { Scene, textWidthPt } from '../art/Scene';
+import { PRINTED_MIN_MM } from '../art/djZoom';
 import { MAP_FRAME, SystemMap, patchBox, roomSpeakerBox } from '../art/SystemMap';
 import { MAP_BODIES, type SpeakerKey } from '../geometry/mapGeometry';
 import { ROOM_FLOOR, followBox4, roomPhonesBox, roomTitleBox4, speakerLit } from '../geometry/dressGeometry';
@@ -109,6 +110,10 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
       obstacles={cable ? [] : hard}
       obstaclesAt={cable ? undefined : titleAt}
       fill
+      // FULL SCREEN's READ step on the map: zoom until the rear panels'
+      // printed words (3.4 mm) read at 9 pt (owner 2026-10-19, option A); the
+      // CABLE view withdraws it
+      readMm={cable ? null : PRINTED_MIN_MM}
       focus={view === 'CABLE' ? patchBox(follow) : patchBox(MAP_BODIES[1])}
       callouts={
         cable

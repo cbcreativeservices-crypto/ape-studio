@@ -14,6 +14,7 @@ import { UnderstandingCheck } from '../../tuning/components/check';
 import type { PageCtx, PageDef } from '../../kit/PagedLab';
 import { nioshDose } from '../../calc/workspaces/splSafety';
 import { BoothStage } from '../art/BoothStage';
+import { PRINTED_MIN_MM } from '../art/djZoom';
 import { INK } from '../art/ink';
 import { SceneText } from '../art/sceneText';
 import { BOOTH_LAYOUT, PLAYER, VIEWS } from '../geometry/boothGeometry';
@@ -149,6 +150,9 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
             motion={motion}
             spec={{
               view: 'booth',
+              // FULL SCREEN's READ step: zoom until the gear's printed words
+              // (3.4 mm) read at 9 pt (owner 2026-10-19, option A)
+              readMm: PRINTED_MIN_MM,
               fit: (W, H) => boothFit(W, H),
               labelsOutsideFit: true,
               aspect: VIEWS.booth.w / (VIEWS.booth.h + 70 + STRIP_H * (VIEWS.booth.w / 374)),

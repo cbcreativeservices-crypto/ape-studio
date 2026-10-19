@@ -259,3 +259,20 @@ export function zoomedOrigin(win: Rect, s: number, focus: { x: number; y: number
   }
   return { ox, oy };
 }
+
+/* ── READ: the full-screen step at which the printed words can be read ── */
+
+/** The smallest PRINTED word on the DJ gear (mm): the 3.4 mm legends of the
+ *  mixer, the players and the rear panels (owner 2026-10-19, option A). */
+export const PRINTED_MIN_MM = 3.4;
+/** A little over the exact factor, so the window the DJ host draws at READ
+ *  (a few points off the 1× box) still puts the smallest word at 9 pt. */
+export const READ_SAFETY = 1.04;
+
+/** The zoom (× the full screen's 1×) at which a printed word `mm` tall,
+ *  drawn at `s1` pt per mm at 1×, reaches `minPt` (sceneText draws nothing
+ *  under 9 pt). */
+export function readZoomFor(mm: number, s1: number, minPt = 9): number | null {
+  if (!(mm > 0) || !(s1 > 0)) return null;
+  return (minPt / (mm * s1)) * READ_SAFETY;
+}
