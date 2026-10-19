@@ -134,7 +134,7 @@ function RoomTray({ onView }: { onView: () => void }) {
 
 function PageVinyl({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit();
-  useScreenSetup((b) => {
+  const { ready } = useScreenSetup((b) => {
     let x = connect(connect(b, 'tt.rcaL', 'ch1.phono.L')!, 'tt.rcaR', 'ch1.phono.R')!;
     const pos = TRACKS.nightFerry.leadInSec + 16 * barSec('nightFerry');
     x = { ...x, decks: { A: { ...x.decks.A, playing: false }, B: { ...x.decks.B, playing: false } } };
@@ -168,16 +168,21 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
     updateBooth((b, t) => ({ ...b, tt: { ...b.tt, posSec: b.tt.posSec + REV_SEC, at: t } }));
   }, [skipping, audio.last]);
   const zeroedRight = v.ringZero != null && Math.abs(v.ringZero - BALANCE_AT) <= 0.1;
-  if (!v.armUp && zeroedRight && Math.abs(F - FORCE_RANGE.suggest) <= 0.2 && Math.abs(dialReads(v) - FORCE_RANGE.suggest) <= 0.2) h.current.set = true;
-  if (v.scale && !v.armUp && inRange(v)) h.current.scale = true;
-  if (inRange(v) && Math.abs(v.antiSkate - F) <= 0.3) h.current.as = true;
-  if (!v.gnd && tt.playing && booth.ch[1].fader > 0.3) h.current.humHeard = true;
-  if (h.current.humHeard && v.gnd && tt.playing) h.current.gnd = true;
-  if (tt.playing && G >= 1) h.current.howled = true;
-  if (h.current.howled && tt.playing && G < 0.6 && booth.mixer.booth >= 0.7) h.current.howlFixed = true;
+  // nothing is judged on the FIRST render, which still sees the booth the
+  // previous screen left — Screen 18's correct vinyl setup ticked "Balance,
+  // zero, set 4 g" and "Match the anti-skate" on PREV (toddler hunt 2026-10-19)
+  if (ready) {
+    if (!v.armUp && zeroedRight && Math.abs(F - FORCE_RANGE.suggest) <= 0.2 && Math.abs(dialReads(v) - FORCE_RANGE.suggest) <= 0.2) h.current.set = true;
+    if (v.scale && !v.armUp && inRange(v)) h.current.scale = true;
+    if (inRange(v) && Math.abs(v.antiSkate - F) <= 0.3) h.current.as = true;
+    if (!v.gnd && tt.playing && booth.ch[1].fader > 0.3) h.current.humHeard = true;
+    if (h.current.humHeard && v.gnd && tt.playing) h.current.gnd = true;
+    if (tt.playing && G >= 1) h.current.howled = true;
+    if (h.current.howled && tt.playing && G < 0.6 && booth.mixer.booth >= 0.7) h.current.howlFixed = true;
+  }
   const hits = [h.current.set, h.current.scale, h.current.as, h.current.gnd, h.current.howlFixed, faultFixed, check];
   const goals = GOALS_VINYL.map((label, i) => ({ label, hit: hits[i] }));
-  const latched = useVisitGoals(ctx, goals, 'VINYL');
+  const latched = useVisitGoals(ctx, goals, 'VINYL', ready);
   const wf = wallForce(v);
   const trk = { l: trackAbility(wf.L) >= 1, r: trackAbility(wf.R) >= 1 };
   const trackWord = v.armUp ? 'ARM UP' : skips(v) ? 'SKIPS' : trk.l && trk.r ? 'CLEAN' : !trk.l && !trk.r ? 'MISTRACKS' : `MISTRACKS ${trk.r ? 'L' : 'R'}`;

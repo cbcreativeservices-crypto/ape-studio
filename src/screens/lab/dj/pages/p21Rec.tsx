@@ -19,7 +19,7 @@
  * first voice mark; and CHECK YOURSELF is evidence: a BOOTH OUT take with a
  * booth move in it, played back.
  */
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { StyleSheet, View } from 'react-native';
 import { Group } from '@shopify/react-native-skia';
@@ -41,7 +41,7 @@ import { armTake, closeTake, getTake, takeOpen, useTake, writeChunk } from '../b
 import { useTakePlayer } from '../booth/useTakePlayer';
 import { levelKnobGain, type Booth } from '../model/djModel';
 import { REC_TAPS, evOf, micGainPos, recGainDb, recGainPos, withMic, withRec, type RecTap } from '../model/djEvent';
-import { announce, dbCell, EventListen, extPeak, musicOn, Row, TrayNote, useEventKit, voiceCell, voiceIn, withFreshEvent } from './eventShared';
+import { announce, dbCell, EventListen, extPeak, musicOn, Row, TrayNote, useEventKit, useFreshReading, voiceCell, voiceIn, withFreshEvent } from './eventShared';
 import { PEAK_RED, peakDb } from './shared';
 import type { BoothRender } from '../engine/djRender';
 import { isEventRender } from '../engine/djEventRender';
@@ -90,7 +90,7 @@ function GearView({ booth, live, elapsed, clip }: { booth: Booth; live: boolean;
 
 /* ── the trays ───────────────────────────────────────────────────────── */
 
-function RecTray({ tr, lead, onPlay, onStop, playing }: { tr: Transport; lead: () => number; onPlay: () => void; onStop: () => void; playing: boolean }) {
+function RecTray({ tr, lead, onPlay, onStop, onArm, playing }: { tr: Transport; lead: () => number; onPlay: () => void; onStop: () => void; onArm: (t: number) => void; playing: boolean }) {
   const b = getBooth();
   const ev = evOf(b);
   const m = ev.mic;
@@ -103,6 +103,7 @@ function RecTray({ tr, lead, onPlay, onStop, playing }: { tr: Transport; lead: (
     } else {
       const t = boothNow();
       armTake(t);
+      onArm(t);
       updateBooth((x) => withRec(x, { armedAt: t }));
       if (!musicOn(getBooth())) tr.play('A');
     }
@@ -145,13 +146,29 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
     if (isEventRender(r)) writeChunk(r);
   }, []);
   const { booth, audio, tr, motion, last } = useEventKit({ onChunk });
-  useScreenSetup((b) => {
+  const { ready } = useScreenSetup((b) => {
     let x = cueAtBar(b, 'A', 'nightFerry', 17);
     x = { ...x, ch: { 1: { ...x.ch[1], fader: 0.85, xf: 'THRU', cue: false }, 2: { ...x.ch[2], fader: 0, cue: false } }, mixer: { ...x.mixer, master: 0.6, booth: 0.45, xf: 0.5 }, perspective: 'CROWD' };
     return withFreshEvent(x, (ev) => ({ ...ev, mic: { ...ev.mic, device: 'DYNAMIC', input: 'MIC1', on: true, gain1: micGainPos(44), toRec: false }, rec: { tap: 'NONE', gain: recGainPos(-10), armedAt: null } }));
   });
   const take = useTake();
   const player = useTakePlayer(audio.stop);
+  // A take left RECORDING by a screen the learner walked away from (here, or
+  // the capstone) kept filling from every chunk while the recorder read
+  // STOPPED: close it on arrival and on leaving (toddler hunt 2026-10-19).
+  useEffect(() => {
+    if (takeOpen()) closeTake(boothNow());
+    return () => {
+      if (takeOpen()) closeTake(boothNow());
+    };
+  }, []);
+  // which take was armed on THIS visit, and which one was last played: the
+  // playback goals need the take just recorded here, actually played (an
+  // old take played to its end left `finished` on for the next one)
+  const armedHere = useRef<number | null>(null);
+  const playedTake = useRef<number | null>(null);
+  const heardThisTake = !!take && armedHere.current === take.armedAt && playedTake.current === take.armedAt && (player.finished || player.playing);
+  const fresh = useFreshReading(booth, last);
   const [check, setCheck] = useState(false);
   // the take plays with the booth stopped: re-read its progress as it
   // crosses each half second (the playhead's own value, no polling)
@@ -170,7 +187,7 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
   // the experiment: MASTER moved ≥ 3 dB while recording from REC OUT
   const masterAtArm = useRef<number | null>(null);
   const moved = useRef(false);
-  if (armed && rec.tap === 'REC_OUT') {
+  if (ready && armed && rec.tap === 'REC_OUT') {
     if (masterAtArm.current == null) masterAtArm.current = booth.mixer.master;
     const d = Math.abs(20 * Math.log10(levelKnobGain(booth.mixer.master) / Math.max(1e-6, levelKnobGain(masterAtArm.current))));
     if (d >= 3) moved.current = true;
@@ -178,7 +195,7 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
   // the check: a BOOTH OUT take with a booth move of 3 dB or more in it
   const boothAtArm = useRef<number | null>(null);
   const boothTake = useRef<'none' | 'recording' | 'moved' | 'done'>('none');
-  if (armed && rec.tap === 'BOOTH') {
+  if (ready && armed && rec.tap === 'BOOTH') {
     if (boothAtArm.current == null) {
       boothAtArm.current = booth.mixer.booth;
       boothTake.current = 'recording';
@@ -197,14 +214,14 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
   const playing = booth.decks.A.playing;
   const hits = [
     rec.tap === 'REC_OUT' && moved.current,
-    armed && playing && recPk >= -12 && recPk <= -3 && !recClip,
-    armed && voiceIn(last, 'rec'),
-    (player.finished || player.playing) && !!take && take.hasVoice && take.peakDb > -30 && player.pos.value >= firstVoiceSec(take) + 2,
+    fresh && armed && playing && recPk >= -12 && recPk <= -3 && !recClip,
+    fresh && armed && voiceIn(last, 'rec'),
+    heardThisTake && !!take && take.hasVoice && take.peakDb > -30 && player.pos.value >= firstVoiceSec(take) + 2,
     faultFixed,
     check,
   ];
   const goals = GOALS_REC.map((label, i) => ({ label, hit: hits[i] }));
-  const latched = useVisitGoals(ctx, goals, 'REC');
+  const latched = useVisitGoals(ctx, goals, 'REC', ready);
   const elapsed = armed ? fmtT(Math.max(0, boothNow() - (rec.armedAt ?? 0))) : take ? fmtT(take.seconds) : '0:00';
   const live = playing && (rec.tap === 'REC_OUT' || rec.tap === 'BOOTH');
 
@@ -287,7 +304,7 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
             onSelect: (id) => updateBooth((b) => withRec(b, { tap: id as RecTap })),
             sticky: true,
           },
-          { kind: 'group', id: 'rec', label: 'REC', valueLabel: armed ? '● REC' : player.playing ? '▶ TAKE' : take ? 'TAKE' : 'READY', render: () => <RecTray tr={tr} lead={audio.leadSec} onPlay={() => { const t = getTake(); if (t) player.play(t); }} onStop={player.stop} playing={player.playing} /> },
+          { kind: 'group', id: 'rec', label: 'REC', valueLabel: armed ? '● REC' : player.playing ? '▶ TAKE' : take ? 'TAKE' : 'READY', render: () => <RecTray tr={tr} lead={audio.leadSec} onPlay={() => { const t = getTake(); if (t) { playedTake.current = t.armedAt; player.play(t); } }} onStop={player.stop} onArm={(t) => { armedHere.current = t; }} playing={player.playing} /> },
           stopKey(tr),
         ],
         initialParam: 'tap',
@@ -314,7 +331,7 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
       <Step n={5}>
         <EvidenceCheck
           task="record about 10 s from BOOTH OUT, move the BOOTH level by 3 dB or more while it records, then STOP and play the take back — and find the jump in it."
-          met={boothTake.current === 'done' && (player.playing || player.finished)}
+          met={boothTake.current === 'done' && heardThisTake}
           progress={boothTake.current === 'recording' ? 'Recording from BOOTH OUT — now move the BOOTH (MASTER is not it).' : boothTake.current === 'moved' ? 'The booth move is in the take — STOP, then PLAY THE TAKE.' : null}
           explain="BOOTH OUT follows the BOOTH knob, so every booth move is in the file — the jump is there in the waveform. REC OUT is taken before the knobs: that is why it is the tap for a recording."
           onMet={() => setCheck(true)}
@@ -325,13 +342,17 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
           start={() => {
             void audio.requestSound();
             const t = boothNow();
-            if (!takeOpen()) armTake(t);
+            if (!takeOpen()) {
+              armTake(t);
+              armedHere.current = t;
+            }
             updateBooth((b, tt) => {
               const x = withRec(b, { tap: 'REC_OUT', gain: recGainPos(18), armedAt: evOf(b).rec.armedAt ?? t });
               return { ...x, decks: { ...x.decks, A: { ...x.decks.A, playing: true, at: tt } } };
             });
           }}
-          fixed={!!last && playing && last.ext.clipped.rec === 0 && recGainDb(rec.gain) <= 6 && rec.tap !== 'NONE'}
+          // LOOPBACK records nothing, so it cannot be the recorder's cure
+          fixed={!!last && playing && last.ext.clipped.rec === 0 && recGainDb(rec.gain) <= 6 && (rec.tap === 'REC_OUT' || rec.tap === 'BOOTH')}
           hints={['Compare MASTER PEAK and REC PEAK on the strip: which one is in the red?', 'The MASTER is fine — the overload is the RECORDER’s own input gain.', 'Bring REC GAIN down until REC PEAK sits around −6 dBFS. Leave the MASTER where it is.']}
           why="Every stage has its own limit: a clean MASTER says nothing about a recorder whose own input is turned up too far. Fix the stage that clips — and know that the clipped seconds already in the file stay clipped."
           onFixed={() => setFaultFixed(true)}

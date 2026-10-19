@@ -25,7 +25,7 @@
  * the registry, by its outline number, the optional paths marked), and
  * FINISH › the what's-left screen.
  */
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
@@ -46,14 +46,15 @@ import { decksValue, stopKey, type Transport } from '../dock';
 import { PatchTray, PowerTray, type PowerEvent } from '../trays';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, preMatched, useScreenSetup } from '../booth/setup';
-import { armTake, closeTake, writeChunk } from '../booth/takeStore';
+import { armTake, closeTake, takeOpen, writeChunk } from '../booth/takeStore';
 import { load } from '../model/djDeck';
 import { BUILT_PLUGS, POWERED, deviceLive, dbStr, speakerFeed, trimDb, trimPos, xfGainFor, type Booth, type ChannelId, type DeviceId, type XfAssign } from '../model/djModel';
 import { evOf, micGainPos, recGainDb, recGainPos, withEv, withMic, withRec } from '../model/djEvent';
 import { DEBRIEF_PARTS, FAULTS, TRANSITION_FRESH, allFixed, debriefOptions, hintsFor, plant, scenarioFor, transitionStep, type DebriefPart, type FaultId, type Scenario, type TransitionState } from '../model/djCapstone';
 import { DJ_COVERS, isOptionalNo } from './registry';
 import { getDjRegistry } from './registryRuntime';
-import { announce, EventListen, musicOn, Row, TrayNote, useEventKit, voiceIn, withFreshEvent } from './eventShared';
+import { announce, EventListen, musicOn, Row, TrayNote, useEventKit, useFreshReading, voiceIn, withFreshEvent } from './eventShared';
+import { holdDoneUnlessFresh } from './eventGuards';
 import { PEAK_RED } from './shared';
 import type { BoothRender } from '../engine/djRender';
 import { isEventRender, type EventRender } from '../engine/djEventRender';
@@ -322,10 +323,16 @@ function Debrief({ fault, seed, head, onDone }: { fault: FaultId; seed: number; 
   const [picked, setPicked] = useState<Record<DebriefPart, number | null>>({ cause: null, evidence: null, repair: null, prevention: null });
   const fired = useRef(false);
   const allRight = qs.every((q) => picked[q.part] === q.correct);
-  if (allRight && !fired.current) {
-    fired.current = true;
-    onDone();
-  }
+  // tell the page AFTER this render (a parent's state set while rendering
+  // the child is a React error; toddler hunt 2026-10-19)
+  const doneRef = useRef(onDone);
+  doneRef.current = onDone;
+  useEffect(() => {
+    if (allRight && !fired.current) {
+      fired.current = true;
+      doneRef.current();
+    }
+  }, [allRight]);
   return (
     <View style={styles.debrief}>
       <Text style={styles.debriefHead}>{head}</Text>
@@ -397,15 +404,28 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
   const cued = useRef(false);
   const trans = useRef<TransitionState>(TRANSITION_FRESH);
   const ev = evOf(booth);
+  // a reading counts for the show only when it was rendered from the booth as
+  // it is now: a voice still sounding from before OPEN THE DOORS passed
+  // "Announce to the room AND the recording" with REC_NO_MIC just planted
+  // (toddler hunt 2026-10-19)
+  const fresh = useFreshReading(booth, last);
+  // a take left recording here keeps filling on the next screen: close it
+  useEffect(
+    () => () => {
+      if (takeOpen()) closeTake(boothNow());
+    },
+    [],
+  );
   const allOn = POWERED.every((d) => deviceLive(booth, d));
   // the power goal re-arms once everything is OFF again (learning #4)
   if (POWERED.every((d) => !booth.power[d])) thumped.current = false;
   // private cue: deck B playing, CUE 2, fader down, the headphones carrying it
-  if (doorsOpen && booth.decks.B.playing && booth.ch[2].cue && booth.ch[2].fader <= 0.05 && !!last && last.rmsDb.cue > -55 && Math.max(last.rmsDb.phonesL, last.rmsDb.phonesR) > -60 && booth.mixer.cueMix < 0.5) cued.current = true;
+  if (fresh && doorsOpen && booth.decks.B.playing && booth.ch[2].cue && booth.ch[2].fader <= 0.05 && !!last && last.rmsDb.cue > -55 && Math.max(last.rmsDb.phonesL, last.rmsDb.phonesR) > -60 && booth.mixer.cueMix < 0.5) cued.current = true;
   if (doorsOpen && last) {
     let mn = 0;
     for (const v of last.meter.crowd) if (v < mn) mn = v;
-    trans.current = transitionStep(trans.current, booth, { crowdMinDb: mn, clipped: last.clipped.bus + last.clipped.master + last.clipped.ch1 + last.clipped.ch2 > 0 });
+    // a reading from before the last move can start or fail the change, never finish it
+    trans.current = holdDoneUnlessFresh(trans.current, transitionStep(trans.current, booth, { crowdMinDb: mn, clipped: last.clipped.bus + last.clipped.master + last.clipped.ch1 + last.clipped.ch2 > 0 }), fresh);
   }
   const fixedAll = doorsOpen && allFixed(booth, scenario);
   const allDebriefed = scenario.faults.every((_, i) => debriefed[i]);
@@ -415,7 +435,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
     allOn && lastPower != null && !thumped.current,
     cued.current,
     trans.current.done && !trans.current.failed,
-    doorsOpen && ev.rec.armedAt != null && voiceIn(last, 'crowd') && voiceIn(last, 'rec'),
+    fresh && doorsOpen && ev.rec.armedAt != null && voiceIn(last, 'crowd') && voiceIn(last, 'rec'),
     fixedAll,
     fixedAll && allDebriefed,
     check,
@@ -436,6 +456,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
     trans.current = TRANSITION_FRESH;
     setDebriefed({});
     audio.stop();
+    if (takeOpen()) closeTake(boothNow());
     updateBooth((b) => prepared(b));
   };
   const onPower = (e: PowerEvent) => {

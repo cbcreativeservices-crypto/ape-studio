@@ -45,7 +45,7 @@ import { cueAtBar, useScreenSetup } from '../booth/setup';
 import { connect, levelKnobGain, type Booth } from '../model/djModel';
 import { PLACEMENTS, ROOM, SUB_PLACES, topsDbaAt, type Placement, type SubPlace } from '../model/djRoom';
 import { VENUE_GAIN_MAX_DB, VENUE_GAIN_MIN_DB, evOf, turntableMarginDb, venueHandoffOk, venueSwapped, withVenue, type VenuePatch } from '../model/djEvent';
-import { EventListen, Row, TrayNote, useEventKit, withFreshEvent } from './eventShared';
+import { EventListen, Row, TrayNote, useEventKit, useFreshReading, withFreshEvent } from './eventShared';
 import { PEAK_RED } from './shared';
 
 const TERMS = [
@@ -268,12 +268,16 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
   const at100 = xoverResp(100, v.xover, v.subs).sum;
   const flatAt100 = Math.abs(at100) <= 1;
   const floorHum = !!last && last.ext.hum.crowd;
+  // the floor and the dose count only from a render of the booth as it is
+  // NOW: SET IT UP below moved the tops BEHIND and passed at once on the old
+  // placement's dose (toddler hunt 2026-10-19)
+  const fresh = useFreshReading(booth, last);
   const hits = [
     venueHandoffOk(v),
-    venueHandoffOk(v) && playing && floor != null && floor >= 95 && !masterClip && booth.mixer.master <= 0.8 && v.gainDb > VENUE_GAIN_MIN_DB,
+    fresh && venueHandoffOk(v) && playing && floor != null && floor >= 95 && !masterClip && booth.mixer.master <= 0.8 && v.gainDb > VENUE_GAIN_MIN_DB,
     v.xover && v.subs && flatAt100,
     placedOk,
-    playing && dose != null && dose <= 100 && floor != null && floor >= 90,
+    fresh && playing && dose != null && dose <= 100 && floor != null && floor >= 90,
     own,
     faultFixed,
     check,
@@ -417,7 +421,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
             });
             setView('ROOM');
           }}
-          met={v.place === 'BEHIND' && playing && dose != null && dose <= 100 && floor != null && floor >= 90}
+          met={fresh && v.place === 'BEHIND' && playing && dose != null && dose <= 100 && floor != null && floor >= 90}
           progress={v.place === 'BEHIND' && dose != null ? `4-HOUR DOSE ${dose} % · FLOOR ${fmtDba(floor)} dBA` : null}
           explain="Behind the DJ, the tops’ beam passes the decks: the booth monitors and the engineer’s gain are all you have, and the margin is thin. That is why tops belong in front of the DJ line."
           onMet={() => setOwn(true)}

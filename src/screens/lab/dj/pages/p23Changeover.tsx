@@ -45,7 +45,8 @@ import { dbStr, trimDb, type Booth, type ChannelId } from '../model/djModel';
 import { EARTH_LIFT_REFUSAL, evOf, lapPlay, withLap } from '../model/djEvent';
 import { CHANGE_ITEMS, CHANGE_NAMES, changeoverHum, gradePrediction, onAir, programOn, sourceOf, type ChangeItem } from '../model/djChangeover';
 import { TRANSITION_FRESH, transitionStepBy, type TransitionState } from '../model/djCapstone';
-import { EventListen, Row, TrayNote, useEventKit, withFreshEvent } from './eventShared';
+import { EventListen, Row, TrayNote, useEventKit, useFreshReading, withFreshEvent } from './eventShared';
+import { holdDoneUnlessFresh } from './eventGuards';
 import { PEAK_RED } from './shared';
 
 const TERMS = [
@@ -282,6 +283,13 @@ function MixTray({ tr, req }: { tr: Transport; req: () => void }) {
         <LabChip label={b.ch[2].cue ? 'CUE 2 ●' : 'CUE 2'} selected={b.ch[2].cue} onPress={() => cue(2)} compact />
       </Row>
       {tr.soundDeclined ? <LabChip label="TURN SOUND ON" selected={false} onPress={tr.soundOn} compact /> : null}
+      {!ev.lap2.alive ? (
+        // after the freeze, DJ 2's laptop can be restarted for another go at
+        // the changeover (it stayed frozen for the rest of the visit)
+        <Row head="DJ 2’S LAPTOP IS FROZEN">
+          <LabChip label="RESTART DJ 2’S LAPTOP" selected={false} onPress={() => updateBooth((x, t) => lapPlay(withLap(x, 2, { alive: true }), t, 2, false))} compact />
+        </Row>
+      ) : null}
       <EventListen withRecorder={false} />
     </View>
   );
@@ -310,6 +318,7 @@ function PageChange({ ctx }: { ctx: PageCtx }) {
   const [check, setCheck] = useState(false);
   const [faultFixed, setFaultFixed] = useState(false);
   const [gapNote, setGapNote] = useState<string | null>(null);
+  const [recovered, setRecovered] = useState(false);
   const hotSeen = useRef(false);
   const humSeen = useRef(false);
   const trans = useRef<TransitionState>(TRANSITION_FRESH);
@@ -318,21 +327,27 @@ function PageChange({ ctx }: { ctx: PageCtx }) {
   const backupArmed = useRef(false);
   const ev = evOf(booth);
   const hum = changeoverHum(booth);
-  if (hum) humSeen.current = true;
+  // nothing is judged before this screen's own setup (the first render still
+  // sees the previous screen's booth), and a reading counts only when it was
+  // rendered from the booth as it is now (toddler hunt 2026-10-19)
+  const fresh = useFreshReading(booth, last);
+  if (ready && hum) humSeen.current = true;
   if (hot) hotSeen.current = true;
   const ch1 = chanLevels(last, 1);
   const ch2 = chanLevels(last, 2);
-  const matched = ev.lap2.usb && booth.ch[2].input === 'USB' && ev.lap2.deck.playing && booth.ch[2].cue && booth.ch[2].fader <= 0.05 && ch1.avg != null && ch2.avg != null && Math.abs(ch1.avg - ch2.avg) <= 2 && (ch2.peak ?? 0) < -1;
+  const matched = fresh && ev.lap2.usb && booth.ch[2].input === 'USB' && ev.lap2.deck.playing && booth.ch[2].cue && booth.ch[2].fader <= 0.05 && ch1.avg != null && ch2.avg != null && Math.abs(ch1.avg - ch2.avg) <= 2 && (ch2.peak ?? 0) < -1;
   // the changeover (DJ 1 → DJ 2), read chunk by chunk
-  if (last) {
+  if (ready && last) {
     let mn = 0;
     for (const v of last.meter.crowd) if (v < mn) mn = v;
-    trans.current = transitionStepBy(trans.current, onAir(booth, 1), onAir(booth, 2), booth.ch[2].fader, { crowdMinDb: mn, clipped: last.clipped.bus + last.clipped.master > 0 });
+    // a reading from before the last fader move can start or fail the change,
+    // never finish it
+    trans.current = holdDoneUnlessFresh(trans.current, transitionStepBy(trans.current, onAir(booth, 1), onAir(booth, 2), booth.ch[2].fader, { crowdMinDb: mn, clipped: last.clipped.bus + last.clipped.master > 0 }), fresh);
   }
   const backupOnAir = onAir(booth, 2) && sourceOf(booth, 2)?.kind === 'deck';
   if (backupOnAir && ev.lap1.usb && programOn(booth)) backupArmed.current = true;
   if (!programOn(booth)) backupArmed.current = false;
-  const backupProved = backupArmed.current && !ev.lap1.usb && backupOnAir && programOn(booth) && !!last && last.rmsDb.crowd > -45;
+  const backupProved = fresh && backupArmed.current && !ev.lap1.usb && backupOnAir && programOn(booth) && !!last && last.rmsDb.crowd > -45;
   const hits = [
     !!verdict?.right,
     ev.lap2.usb && booth.ch[2].input === 'USB' && !hotSeen.current,
@@ -416,6 +431,8 @@ function PageChange({ ctx }: { ctx: PageCtx }) {
           title="DJ 2’S LAPTOP FREEZES"
           symptom="Mid-set, the music stops dead: DJ 2’s laptop has frozen. DJ 1’s laptop is still connected; the backup stick is in deck B."
           start={() => {
+            void audio.requestSound();
+            setRecovered(false);
             setGapNote(null);
             updateBooth((b, t) => {
               let x = withLap(b, 2, { usb: true, alive: true, charger: 'STRIP' });
@@ -427,10 +444,13 @@ function PageChange({ ctx }: { ctx: PageCtx }) {
             });
             freezeAt.current = boothNow();
           }}
-          fixed={!ev.lap2.alive && programOn(booth)}
+          // once recovered it stays recovered (RESTART DJ 2’S LAPTOP must not
+          // turn the solved card back into the fault)
+          fixed={recovered || (!ev.lap2.alive && programOn(booth))}
           hints={['Read ON AIR: what is the crowd hearing? Which sources are still running?', 'Look at the board: which source is still playing, with its channel down?', 'Open MIX: the quickest recovery is a source that is already running.']}
           why={`${gapNote ? `${gapNote} ` : ''}Never let the outgoing source go until the new one has run safely for a while — and keep a backup that needs no computer, cued on a channel. The quickest recovery is the one already playing.`}
           onFixed={() => {
+            setRecovered(true);
             if (freezeAt.current != null) setGapNote(`The room was quiet for about ${Math.max(0, boothNow() - freezeAt.current).toFixed(1)} s.`);
             setFaultFixed(true);
           }}

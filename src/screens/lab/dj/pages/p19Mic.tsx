@@ -42,7 +42,7 @@ import { fitView, type Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, EvidenceCheck, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey, type Transport } from '../dock';
-import { getBooth, updateBooth } from '../booth/boothStore';
+import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
 import { type Booth } from '../model/djModel';
 import {
@@ -63,8 +63,9 @@ import {
   type MicInput,
   type MicPos,
 } from '../model/djEvent';
-import { announce, announcing, dbCell, EventListen, extPeak, hadSpeech, musicOn, Row, TrayNote, useEventKit, voiceCell, voiceIn, withFreshEvent } from './eventShared';
+import { announce, announcing, dbCell, EventListen, extPeak, hadSpeech, musicOn, Row, TrayNote, useEventKit, useFreshReading, voiceCell, voiceIn, withFreshEvent } from './eventShared';
 import { PEAK_RED } from './shared';
+import { renderedSince } from './s1Guards';
 
 const TERMS = [
   { term: 'Phantom power (+48 V)', def: 'A small DC voltage some inputs send up the mic cable to power a condenser mic. It belongs to the INPUT: on this mixer only MIC 1 has it. A balanced dynamic mic needs none and ignores it; keep +48 V off for anything not made for it (some ribbon mics, unbalanced adapters, line gear on a combo jack).' },
@@ -557,7 +558,14 @@ function PageMic({ ctx }: { ctx: PageCtx }) {
   const overloadSince = useRef<number | null>(null);
   const m = ev.mic;
   const fb = feedbackOf(booth);
-  if (fb.state === 'RINGING' && m.on) ringSeen.current = true;
+  // a reading counts only when it was rendered from the booth as it is now,
+  // and nothing is judged before this screen's own setup (toddler hunt
+  // 2026-10-19: the dynamic mic's speech ticked the condenser goal the
+  // moment the condenser went into MIC 1)
+  const freshNow = useFreshReading(booth, last);
+  const fresh = ready && freshNow;
+  const faultAt = useRef<number | null>(null);
+  if (ready && fb.state === 'RINGING' && m.on) ringSeen.current = true;
   const micPk = extPeak(last, 'mic', true);
   const speaking = hadSpeech(last);
   const clean = !!last && last.ext.clipped.micPre === 0 && last.ext.clipped.micInput === 0;
@@ -565,16 +573,16 @@ function PageMic({ ctx }: { ctx: PageCtx }) {
   const shout = !!last && speaking && !!lastSay && (lastSay.db ?? 0) > 0;
   const dip = last ? last.ext.duckMinDb : 0;
   const recovered = !!last && last.ext.duckDb.length > 0 && last.ext.duckDb[last.ext.duckDb.length - 1] > -1;
-  if (m.talkover && speaking && dip <= -6 && booth.decks.A.playing) dipped.current = true;
+  if (fresh && m.talkover && speaking && dip <= -6 && booth.decks.A.playing) dipped.current = true;
   const inTarget = micPk != null && micPk >= TARGET.lo && micPk <= TARGET.hi;
   const overload = micInputOverload(m);
   if (overload && speaking) overloadSince.current ??= Date.now();
   if (!overload) overloadSince.current = null;
   const showOverload = overloadSince.current != null && Date.now() - overloadSince.current > 10000;
   const hits = [
-    speaking && !shout && inTarget && clean,
-    dipped.current && recovered,
-    m.device === 'CONDENSER' && micAlive(m) && speaking && micPk != null && micPk > -40,
+    fresh && speaking && !shout && inTarget && clean,
+    dipped.current && fresh && recovered,
+    fresh && m.device === 'CONDENSER' && micAlive(m) && speaking && micPk != null && micPk > -40,
     ringSeen.current && m.on && fb.marginDb >= 6,
     faultFixed,
     check,
@@ -745,7 +753,7 @@ function PageMic({ ctx }: { ctx: PageCtx }) {
             });
             announce(audio.leadSec() + 0.6);
           }}
-          met={m.device === 'WIRELESS' && m.rxOut === 'MIC' && speaking && !shout && inTarget && clean}
+          met={fresh && m.device === 'WIRELESS' && m.rxOut === 'MIC' && speaking && !shout && inTarget && clean}
           progress={m.device === 'WIRELESS' && speaking && !clean ? 'Still clipping — and not at the GAIN knob. What sits before it?' : null}
           explain="A line-level signal is some 40–55 dB hotter than a mic. It overloads the mic input’s first stage, before the GAIN knob can do anything — so the cure is the receiver’s output switch on MIC (or a line input), then GAIN set by the meter."
           onMet={() => setCheck(true)}
@@ -755,13 +763,16 @@ function PageMic({ ctx }: { ctx: PageCtx }) {
           symptom="The room heard your announcement clearly, but the recording has the music only."
           start={() => {
             void audio.requestSound();
+            faultAt.current = boothNow();
             updateBooth((b, tt) => {
               const x = withMic(b, { device: 'DYNAMIC', input: 'MIC1', on: true, gain1: micGainPos(44), level: 0.75, toRec: false, pos: 'DECKS' });
               return { ...x, decks: { ...x.decks, A: { ...x.decks.A, playing: true, at: tt } }, ev: { ...x.ev!, rec: { ...x.ev!.rec, tap: 'REC_OUT' } }, perspective: 'CROWD' };
             });
             announce(audio.leadSec() + 0.6);
           }}
-          fixed={voiceIn(last, 'rec')}
+          // only a voice rendered AFTER the fault began: the voice still sounding
+          // from before it fixed it on the spot (toddler hunt 2026-10-19)
+          fixed={renderedSince(last, faultAt.current) && voiceIn(last, 'rec')}
           hints={['Read VOICE IN on the strip: which feeds carry the mic?', 'The CROWD has it; the recording does not. What decides which outputs carry the mic?', 'Open ROUTE: the mic’s sends. Then TALK again and watch the REC meter.']}
           why="On this mixer, as on many, the mic is NOT sent to the record output (or the booth) until you switch it in. The crowd hearing the mic proves nothing about the recording: check the feed you are recording, on its own meter."
           onFixed={() => setFaultFixed(true)}

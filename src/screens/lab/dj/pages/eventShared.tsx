@@ -5,7 +5,7 @@
  * announcement, and bezel cells. Built ON pages/shared and dock, never
  * instead of them.
  */
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
@@ -17,6 +17,7 @@ import { LISTEN_FRESH, dbStr, listenDb, type Booth } from '../model/djModel';
 import { anyPlaying } from '../model/djDeck';
 import { evOf, freshEvent, type EventRig } from '../model/djEvent';
 import { PEAK_RED, useBoothKit, type BoothKit } from './shared';
+import { renderedSince } from './s1Guards';
 import type { BoothAudioOpts } from '../booth/useBoothAudio';
 import { levelColorForDb } from '../../../../features/tools/levelColor';
 
@@ -29,6 +30,19 @@ export function useEventKit(opts?: { lockPhase?: boolean; onChunk?: BoothAudioOp
   const kit = useBoothKit({ lockPhase: opts?.lockPhase, audio: audioOpts });
   const last = isEventRender(kit.audio.last) ? kit.audio.last : null;
   return { ...kit, last };
+}
+
+/** Is `last` rendered from the booth as it is NOW (pages/s1Guards
+ *  renderedSince)? Every booth change dates itself; a reading from before
+ *  it never pairs with the flags after it (toddler hunt 2026-10-19). */
+export function useFreshReading(booth: Booth, last: { t0: number } | null): boolean {
+  const prev = useRef<Booth | null>(null);
+  const at = useRef<number | null>(null);
+  if (prev.current !== booth) {
+    prev.current = booth;
+    at.current = boothNow();
+  }
+  return renderedSince(last, at.current);
 }
 
 /** A booth with a fresh event rig (a screen's own baseline), patched. */

@@ -33,6 +33,7 @@ import { controlScope } from '../engine/djStage2';
 import { useBoothKit } from './shared';
 import { Choices, TrayNote, s2Of, s2styles } from './s2kit';
 import { SkipOptional } from './skipOptional';
+import { clampNeedle } from './eventGuards';
 
 const TERMS = [
   { term: 'Control record', def: 'A record with no music on it — a steady tone the software can read. Its speed and direction tell the software how to play the track.' },
@@ -66,11 +67,11 @@ function TtTray({ onDrop, requestSound }: { onDrop: () => void; requestSound: ()
           selected={false}
           onPress={() => {
             onDrop();
-            dvsUpdate((x, t) => ({ ...x, tt: { ...x.tt, posSec: x.tt.posSec + 30, at: t } }));
+            dvsUpdate((x, t) => ({ ...x, tt: { ...x.tt, posSec: clampNeedle(x.tt.posSec + 30, x.tt.track ? trackSeconds(x.tt.track) : 0), at: t } }));
           }}
           compact
         />
-        <LabChip label="BACK −30 s" selected={false} onPress={() => { onDrop(); dvsUpdate((x, t) => ({ ...x, tt: { ...x.tt, posSec: Math.max(1, x.tt.posSec - 30), at: t } })); }} compact />
+        <LabChip label="BACK −30 s" selected={false} onPress={() => { onDrop(); dvsUpdate((x, t) => ({ ...x, tt: { ...x.tt, posSec: clampNeedle(x.tt.posSec - 30, x.tt.track ? trackSeconds(x.tt.track) : 0), at: t } })); }} compact />
       </View>
       <Choices head="PLATTER PITCH" value={Math.round(b.tt.pitch)} items={[-4, 0, 4].map((p) => ({ id: p, label: p === 0 ? '0 %' : `${p > 0 ? '+' : ''}${p} %` }))} onPick={(p) => dvsUpdate((x) => ({ ...x, tt: { ...x.tt, pitch: p as number } }))} note="In ABSOLUTE and RELATIVE the software deck follows the platter’s speed." />
     </View>
@@ -104,7 +105,7 @@ function SignalTray({ onCal }: { onCal: (ok: boolean) => void }) {
 
 function PageDvs({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion } = useBoothKit();
-  useScreenSetup((b) => {
+  const { ready } = useScreenSetup((b) => {
     let x = connect(connect(b, 'tt.rcaL', 'ch1.phono.L')!, 'tt.rcaR', 'ch1.phono.R')!;
     const pos = TRACKS.nightFerry.leadInSec + 16 * barSec('nightFerry');
     x = { ...x, decks: { A: { ...x.decks.A, track: 'nightFerry', posSec: pos, playing: false, pitch: 0 }, B: { ...x.decks.B, playing: false } } };
@@ -143,10 +144,15 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
     dvsUpdate((b, t) => ({ ...b, tt: { ...b.tt, posSec: b.tt.posSec + REV_SEC, at: t } }));
   }, [skipping, audio.last]);
   const musicLive = A.playing && booth.ch[1].input === 'USB' && d.mode !== 'THRU';
-  if (d.mode === 'ABS' && tt.playing && lock === 'LOCKED' && A.playing && booth.ch[1].input === 'USB' && last && last.rmsDb.ch1 > -45) h.current.play = true;
-  if (d.dirty && tt.playing && d.mode === 'INT' && A.playing) h.current.ride = true;
-  if (!d.calibrated) h.current.uncal = true;
-  if (h.current.uncal && d.calibrated && q >= 0.8) h.current.cal = true;
+  // nothing is judged on the FIRST render (the previous screen's booth): a
+  // dvs left uncalibrated on an earlier visit, carried through Screen 19,
+  // ticked "Calibrate after a change" on arrival (toddler hunt 2026-10-19)
+  if (ready) {
+    if (d.mode === 'ABS' && tt.playing && lock === 'LOCKED' && A.playing && booth.ch[1].input === 'USB' && last && last.rmsDb.ch1 > -45) h.current.play = true;
+    if (d.dirty && tt.playing && d.mode === 'INT' && A.playing) h.current.ride = true;
+    if (!d.calibrated) h.current.uncal = true;
+    if (h.current.uncal && d.calibrated && q >= 0.8) h.current.cal = true;
+  }
   const onDrop = () => {
     const b = getBooth();
     const lk = dvsLock(b);
@@ -155,7 +161,7 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
   };
   const hits = [h.current.play, h.current.abs, h.current.rel, h.current.ride, h.current.cal, faultFixed, check];
   const goals = GOALS_DVS.map((label, i) => ({ label, hit: hits[i] }));
-  const latched = useVisitGoals(ctx, goals, 'DVS');
+  const latched = useVisitGoals(ctx, goals, 'DVS', ready);
   const scope = s2?.scope ?? controlScope(booth, 0);
   const topH = (H: number, k: number) => Math.round(Math.min(170 * Math.sqrt(k), H * 0.54));
   const frame = { x: -10, y: -10, w: TT_W + 20, h: TT_D + 20 };

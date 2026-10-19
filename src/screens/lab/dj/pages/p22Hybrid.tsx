@@ -40,7 +40,8 @@ import { cueAtBar, useScreenSetup } from '../booth/setup';
 import { BUILT_PLUGS, connect, type Booth } from '../model/djModel';
 import { CLOCK_CABLES, clockArrives, counterBpm, dmBpm, evOf, withDm, type ClockCable } from '../model/djEvent';
 import { dmBeatLine, dmDrift, dmPhase, dmRunning, leaderBeatLine, nextDeckABar, nextLeaderBar } from '../engine/djDrumMachine';
-import { EventListen, Row, TrayNote, useEventKit, withFreshEvent } from './eventShared';
+import { EventListen, Row, TrayNote, useEventKit, useFreshReading, withFreshEvent } from './eventShared';
+import { clampIntBpm } from './eventGuards';
 import { PEAK_RED } from './shared';
 
 const TERMS = [
@@ -154,7 +155,7 @@ function ClockTray() {
       </Row>
       <Row head={`ITS OWN TEMPO ${dm.intBpm.toFixed(1)} BPM`}>
         {[-1, -0.1, 0.1, 1].map((d) => (
-          <LabChip key={d} label={`${d > 0 ? '+' : '−'}${Math.abs(d)}`} selected={false} onPress={() => set({ intBpm: Math.round((evOf(getBooth()).dm.intBpm + d) * 10) / 10 })} compact />
+          <LabChip key={d} label={`${d > 0 ? '+' : '−'}${Math.abs(d)}`} selected={false} onPress={() => set({ intBpm: clampIntBpm(evOf(getBooth()).dm.intBpm + d) })} compact />
         ))}
       </Row>
     </View>
@@ -240,7 +241,7 @@ function AudioTray() {
 
 function PageHybrid({ ctx }: { ctx: PageCtx }) {
   const { booth, audio, tr, motion, last } = useEventKit();
-  useScreenSetup((b) => {
+  const { ready } = useScreenSetup((b) => {
     let x = cueAtBar(b, 'A', 'nightFerry', 17);
     x = { ...x, ch: { 1: { ...x.ch[1], fader: 0.85, xf: 'THRU', cue: false }, 2: { ...x.ch[2], fader: 0, cue: false, input: 'LINE' } }, mixer: { ...x.mixer, master: 0.6, xf: 0.5 }, perspective: 'CROWD' };
     return withFreshEvent(x);
@@ -260,7 +261,7 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
   const drift = dm.sync === 'INT' && running ? dmDrift(booth, boothNow()) : null;
   const intArmed = useRef(false);
   const driftSeen = useRef(false);
-  if (startMsg === 'armedInt' && dm.sync === 'INT') intArmed.current = true;
+  if (ready && startMsg === 'armedInt' && dm.sync === 'INT') intArmed.current = true;
   if (dm.sync !== 'INT' || dm.startedAt == null) intArmed.current = false;
   if (intArmed.current && drift && Math.abs(drift.barBeats) >= 0.25) driftSeen.current = true;
   const extArmed = useRef(false);
@@ -271,6 +272,8 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
   } else pitchAtStart.current = null;
   const following = running && dm.sync === 'EXT' && arrives && dm.clockSrc === 1 && booth.decks.A.playing;
   const onTheOne = following && !!phase && Math.abs(phase.barBeats) <= 0.125;
+  // CH 2's level counts only from a render of the booth as it is now
+  const fresh = useFreshReading(booth, last);
   const ch2Live = !!last && last.rmsDb.ch2 > -50 && booth.ch[2].fader > 0.3 && dm.audio && running;
   if (startMsg === 'armed' && following) {
     if (!extArmed.current) ownPitch.current = booth.decks.A.pitch;
@@ -281,9 +284,9 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
     ownPitch.current = null;
   }
   const ownDone = extArmed.current && onTheOne && ownPitch.current != null && Math.abs(booth.decks.A.pitch - ownPitch.current) >= 1;
-  const hits = [following, onTheOne, ch2Live, following && pitchAtStart.current != null && Math.abs(booth.decks.A.pitch - pitchAtStart.current) >= 1, ownDone, faultFixed, check || driftSeen.current];
+  const hits = [following, onTheOne, fresh && ch2Live, following && pitchAtStart.current != null && Math.abs(booth.decks.A.pitch - pitchAtStart.current) >= 1, ownDone, faultFixed, check || driftSeen.current];
   const goals = GOALS_HYBRID.map((label, i) => ({ label, hit: hits[i] }));
-  const latched = useVisitGoals(ctx, goals, 'HYBRID');
+  const latched = useVisitGoals(ctx, goals, 'HYBRID', ready);
   const shown = phase ?? drift;
   const phaseText = !shown ? (dm.sync === 'INT' && running ? 'OWN TEMPO' : '—') : Math.abs(shown.barBeats) <= 0.125 ? 'ON THE ONE' : `${shown.barBeats > 0 ? '+' : '−'}${Math.abs(shown.barBeats).toFixed(2)} BEATS`;
   const startNote =
@@ -363,7 +366,7 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
           start={() => {
             void audio.requestSound();
             updateBooth((b, t) => {
-              const x = withDm(b, { sync: 'INT', startedAt: null, intBpm: Math.round(((counterBpm(b, 1) ?? 122) - 0.8) * 10) / 10 });
+              const x = withDm(b, { sync: 'INT', startedAt: null, intBpm: clampIntBpm((counterBpm(b, 1) ?? 122) - 0.8) });
               return { ...x, decks: { ...x.decks, A: { ...x.decks.A, playing: true, at: t } } };
             });
             setStartMsg(null);
