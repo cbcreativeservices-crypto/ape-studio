@@ -4,7 +4,8 @@
  * before the prose, and every control must change something visible).
  *
  *   ChannelStrip      · a channel drawn top-to-bottom like the real strip,
- *                       the pre and post tap points and where each send leaves
+ *                       the mute, the pre and post tap points and where each
+ *                       send leaves
  *   FeedbackLoop      · a plan of performer, microphone, its polar pattern,
  *                       the wedge in or out of the null, and the loop
  *   PatchPanel        · the stagebox's output sockets and the bus on each
@@ -93,9 +94,9 @@ function Frame({ h, a11y, children }: { h: number; a11y: string; children: React
 
 export type StripStation = 'input' | 'hpf' | 'eq' | 'insert' | 'fader' | 'sends' | 'assign' | 'direct';
 
-export const STRIP_H = 246;
+export const STRIP_H = 250;
 
-/** The strip is drawn as wide as the glass allows (354 × 246, aspect 1.44)
+/** The strip is drawn as wide as the glass allows (354 × 250, aspect 1.42)
  *  so its words read at 9 pt on a phone. The explanatory sub-captions that
  *  used to sit under each block ("mic level → line level", "wedges — the
  *  fader cannot touch it"…) live in the selected station's card in the well
@@ -105,31 +106,43 @@ export function ChannelStrip({ selected, onTap }: { selected: StripStation; onTa
   const BW = 134;
   const BH = 20;
   const cx = X + BW / 2;
+  // Signal order matches the engine (features/soundsystems/console.ts
+  // sendContribution, finding SS-03 2026-10-20): THIS console's MUTE sits
+  // ABOVE the pre-fader tap, so a mute silences the monitor sends too; the
+  // fader and pan sit below it, between the PRE and POST taps.
   const rows: { id: StripStation; y: number; label: string }[] = [
     { id: 'input', y: 6, label: 'INPUT · PREAMP GAIN' },
-    { id: 'hpf', y: 34, label: 'HIGH-PASS 80–120 Hz' },
-    { id: 'eq', y: 62, label: 'CHANNEL EQ' },
-    { id: 'insert', y: 90, label: 'INSERT · THROUGH' },
-    { id: 'fader', y: 138, label: 'FADER · PAN · MUTE' },
-    { id: 'assign', y: 186, label: 'ASSIGN' },
+    { id: 'hpf', y: 32, label: 'HIGH-PASS 80–120 Hz' },
+    { id: 'eq', y: 58, label: 'CHANNEL EQ' },
+    { id: 'insert', y: 84, label: 'INSERT · THROUGH' },
+    { id: 'fader', y: 150, label: 'FADER · PAN' },
+    { id: 'assign', y: 192, label: 'ASSIGN' },
   ];
+  /** MUTE's own small block. pagesRoute STATIONS has no 'mute' station (its
+   *  card is the fader's "Fader, pan and mute"), so tapping MUTE selects
+   *  'fader' and MUTE lights with the fader block. */
+  const MW = 70;
+  const muteY = 110;
+  const muteH = 18;
   const line = (y1: number, y2: number) => <Line x1={cx} y1={y1} x2={cx} y2={y2} stroke={CABLE_COLORS.line} strokeWidth={2} />;
   const sel = (id: StripStation) => selected === id;
-  const preY = 124;
-  const postY = 172;
+  const preY = 139;
+  const postY = 181;
   const RX = 198;
   const RW = 140;
   return (
-    <Frame h={STRIP_H} a11y="A channel strip in signal order from the top: input and preamp gain, high-pass filter, channel EQ, insert, then the pre-fader tap point where monitor sends leave, the fader with pan and mute (on this console the mute also silences the pre-fader sends; that depends on the console), the post-fader tap point where effects sends and the direct output leave, and the assignment to the main bus or a group. Tap a block to read about it.">
-      {line(26, 34)}
-      {line(54, 62)}
-      {line(82, 90)}
-      {line(110, 138)}
-      {line(158, 186)}
-      {line(206, 212)}
+    <Frame h={STRIP_H} a11y="A channel strip in signal order from the top: input and preamp gain, high-pass filter, channel EQ, insert, then the mute (on this console the mute also silences the pre-fader sends; that depends on the console), then the pre-fader tap point where monitor sends leave, the fader with pan, the post-fader tap point where effects sends and the direct output leave, and the assignment to the main bus or a group. Tap a block to read about it; the mute is read with the fader.">
+      {line(26, 32)}
+      {line(52, 58)}
+      {line(78, 84)}
+      {line(104, muteY)}
+      {line(muteY + muteH, 150)}
+      {line(170, 192)}
+      {line(212, 218)}
       {rows.map((r) => (
         <Box key={r.id} x={X} y={r.y} w={BW} h={BH} label={r.label} on={sel(r.id)} onPress={() => onTap(r.id)} a11y={`${r.label}${sel(r.id) ? ', selected' : ''}`} />
       ))}
+      <Box x={cx - MW / 2} y={muteY} w={MW} h={muteH} label="MUTE" on={sel('fader')} onPress={() => onTap('fader')} a11y={`Mute, before the pre-fader tap: on this console it silences the monitor sends too. Read with the fader${sel('fader') ? ', selected' : ''}`} />
       {/* the two tap points */}
       <Circle cx={cx} cy={preY} r={4} fill="#0e1015" stroke={sel('sends') ? colors.cyanBright : CABLE_COLORS.line} strokeWidth={1.4} />
       <SvgText x={cx - 9} y={preY + 3.4} fontSize={FS} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} textAnchor="end" letterSpacing={1}>PRE</SvgText>
@@ -150,14 +163,14 @@ export function ChannelStrip({ selected, onTap }: { selected: StripStation; onTa
       {/* Control line DCA → fader, routed down the right margin and in
           BETWEEN the two send boxes (clash sweep 2026-10-10: the old diagonal
           crossed the PRE send arrow). */}
-      <Path d={`M ${RX + RW} 66 L ${RX + RW + 8} 66 L ${RX + RW + 8} 148 L ${RX - 4} 148`} stroke="#5a5f6a" strokeWidth={1.2} fill="none" strokeDasharray="3 3" />
-      <Arrow x1={RX - 4} y1={148} x2={X + BW + 4} y2={148} color="#5a5f6a" dashed width={1.2} />
+      <Path d={`M ${RX + RW} 66 L ${RX + RW + 8} 66 L ${RX + RW + 8} 160 L ${RX - 4} 160`} stroke="#5a5f6a" strokeWidth={1.2} fill="none" strokeDasharray="3 3" />
+      <Arrow x1={RX - 4} y1={160} x2={X + BW + 4} y2={160} color="#5a5f6a" dashed width={1.2} />
       {/* assignment outputs: one or the other */}
-      <Line x1={X + 31} y1={212} x2={X + 103} y2={212} stroke={CABLE_COLORS.line} strokeWidth={2} />
-      <Line x1={X + 31} y1={212} x2={X + 31} y2={218} stroke={CABLE_COLORS.line} strokeWidth={2} />
-      <Line x1={X + 103} y1={212} x2={X + 103} y2={218} stroke={CABLE_COLORS.line} strokeWidth={2} />
-      <Box x={X} y={218} w={62} h={BH} label="L/R MAIN" on={sel('assign')} onPress={() => onTap('assign')} a11y="Assigned direct to the main bus" />
-      <Box x={X + 72} y={218} w={62} h={BH} label="GROUP" on={sel('assign')} onPress={() => onTap('assign')} a11y="Assigned to a subgroup, which then feeds main" />
+      <Line x1={X + 31} y1={218} x2={X + 103} y2={218} stroke={CABLE_COLORS.line} strokeWidth={2} />
+      <Line x1={X + 31} y1={218} x2={X + 31} y2={224} stroke={CABLE_COLORS.line} strokeWidth={2} />
+      <Line x1={X + 103} y1={218} x2={X + 103} y2={224} stroke={CABLE_COLORS.line} strokeWidth={2} />
+      <Box x={X} y={224} w={62} h={BH} label="L/R MAIN" on={sel('assign')} onPress={() => onTap('assign')} a11y="Assigned direct to the main bus" />
+      <Box x={X + 72} y={224} w={62} h={BH} label="GROUP" on={sel('assign')} onPress={() => onTap('assign')} a11y="Assigned to a subgroup, which then feeds main" />
     </Frame>
   );
 }
