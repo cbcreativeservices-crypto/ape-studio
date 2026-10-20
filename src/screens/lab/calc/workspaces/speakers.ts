@@ -723,7 +723,7 @@ const WS_CV70: Workspace = {
     'per speaker) is NOT modeled here — it makes real levels slightly lower than the tap math. ' +
     'Low-frequency content below a step-down transformer’s rated band can saturate it: ' +
     'high-pass distributed lines around 70–100 Hz unless the transformers are rated lower.',
-  glossary: ['constant-voltage (70V / 100V) distribution', '70-volt system', 'Headroom', 'Transformer tap', 'Impedance'],
+  glossary: ['constant-voltage (70V / 100V) distribution', '70-volt system', 'Headroom', 'Loudspeaker Tap Impedance', 'Impedance'],
   fields: [
     {
       key: 'vline',

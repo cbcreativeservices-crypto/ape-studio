@@ -152,7 +152,7 @@ const IMD: Workspace = {
     'Frequency-only model: products at |m·f₁ ± n·f₂|; order = |m|+|n|. Whether each product is ' +
     'audible depends on the nonlinearity and levels, which this does not model — it locates the ' +
     'frequencies, not their amplitudes.',
-  glossary: ['Intermodulation', 'Distortion', 'Harmonics', 'Nonlinearity', 'Frequency'],
+  glossary: ['Intermodulation', 'Distortion', 'Harmonics', 'nonlinear distortion', 'Frequency'],
   fields: [
     { key: 'f1', name: 'TONE 1 (f₁)', quantity: 'frequency', placeholder: '19000', help: 'First input frequency.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
     { key: 'f2', name: 'TONE 2 (f₂)', quantity: 'frequency', placeholder: '20000', help: 'Second input frequency.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },

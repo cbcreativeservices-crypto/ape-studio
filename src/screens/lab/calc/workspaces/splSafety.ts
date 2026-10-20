@@ -308,7 +308,7 @@ const WS_SPL_ADD: Workspace = {
     'crowd/machine noise. Identical signals from identical speakers can sum coherently ' +
     '(up to +6 dB for two) at positions where they arrive in phase, and cancel where they do ' +
     'not. Real multi-speaker systems live between the two models and vary by position.',
-  glossary: ['Sound Pressure Level', 'Decibel', 'Summation', 'Phase', 'Correlation'],
+  glossary: ['Sound Pressure Level', 'Decibel', 'Incoherent Summation', 'Phase', 'Correlation'],
   fields: [
     { key: 'levels', name: 'SOURCE LEVELS', quantity: 'list', signed: true, placeholder: '95, 92, 88', help: 'The individual levels in dB SPL, comma-separated — one per source.' },
     { key: 'lvl', name: 'LEVEL OF ONE SOURCE', quantity: 'spl', signed: true, placeholder: '95', help: 'The level a single one of the identical sources produces at the listening position.' },
@@ -492,7 +492,7 @@ const WS_DOSE: Workspace = {
     'workspace does not evaluate. Real protection depends on the jurisdiction’s rules, the ' +
     'measurement method (dosimetry position, A-weighting, slow response), and hearing ' +
     'conservation programs — talk to a qualified professional for anything real.',
-  glossary: ['Sound Pressure Level', 'Decibel', 'A weighting', 'Leq', 'Exposure', 'Exchange rate'],
+  glossary: ['Sound Pressure Level', 'Decibel', 'A weighting', 'Leq', 'Exposure/Dose', 'Exchange rate'],
   fields: [
     { key: 'lex', name: 'EXPOSURE LEVEL', quantity: 'spl', signed: true, placeholder: '94', help: 'The A-weighted level (dBA) the person is exposed to.' },
     { key: 'doseLevels', name: 'INTERVAL LEVELS', quantity: 'list', signed: true, placeholder: '85, 94, 100', help: 'A-weighted level (dBA) of each interval, comma-separated — paired by position with the durations below.' },

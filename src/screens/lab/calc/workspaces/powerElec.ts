@@ -79,7 +79,7 @@ const TRANSFORMER: Workspace = {
   warnings:
     'Ideal-transformer model: turns ratio N = Vp/Vs = √(Zp/Zs); impedance ratio = N². Real ' +
     'transformers add insertion loss, limited bandwidth, and saturation the ideal ignores.',
-  glossary: ['Transformer', 'Impedance', 'Voltage', 'Turns ratio', 'Current'],
+  glossary: ['Audio transformer', 'Impedance', 'Voltage', 'Turns ratio', 'Current'],
   fields: [
     { key: 'zp', name: 'PRIMARY IMPEDANCE', quantity: 'impedance', placeholder: '600', help: 'Impedance seen at the primary (input) side.', warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
     { key: 'zs', name: 'SECONDARY IMPEDANCE', quantity: 'impedance', placeholder: '150', help: 'Impedance of the load on the secondary (output) side.', warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },

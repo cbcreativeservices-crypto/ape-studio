@@ -274,7 +274,7 @@ const RFLINK: Workspace = {
     'matched polarisation and the far field — distances under one wavelength are refused. Real ' +
     'environments add ground reflection, multipath, body and obstruction loss, and noise — always ' +
     'keep margin well above zero. Enter frequency in MHz; powers in dBm.',
-  glossary: ['Radio Frequency', 'Wireless', 'Decibel', 'Antenna', 'Gain'],
+  glossary: ['Radio Frequency', 'Wireless microphone system', 'Decibel', 'Antenna', 'Gain'],
   fields: [
     { key: 'dist', name: 'LINK DISTANCE', quantity: 'length', placeholder: '50', help: 'Transmitter-to-receiver distance.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'freqMHz', name: 'FREQUENCY (MHz)', quantity: 'number', nonNegative: true, placeholder: '550', help: 'RF carrier frequency in megahertz.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
