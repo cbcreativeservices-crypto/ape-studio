@@ -144,3 +144,9 @@ Every finding is fixed except those marked 👤 or "part". Waiting for the owner
 - **CB-04:** 10 VERIFY notes and 9 EXPERT REVIEW claims for owner or expert sign-off.
 - **Gain lab:** more unused display code (ChainColumns, StageColumn, ColumnControl, StageIcon). Remove?
 - **Mute vs pre-fader:** Sound Systems' console mutes pre sends; the Mixing lab's mixer keeps them feeding. Both now say it depends on the console. Keep, or make both the same?
+
+## Owner instructions for the overnight pass (2026-10-20, late)
+"keep fixing and grading until all labs are improved enough … finish the upgrades for me overnight."
+1. Art changes: **commit them**, each in its own commit, with a before/after page for the morning (easy to undo).
+2. New problems found by re-grading: **fix them** on the same rules (verify first, hedge conventions, a test per fix). Anything uncertain or design-level goes on the morning list.
+3. **Push dj-lab when done** (Vercel preview only; no eas, no OTA, never audio-tools-engine).
