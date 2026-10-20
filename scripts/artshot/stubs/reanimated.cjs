@@ -1,7 +1,7 @@
 // 'react-native-reanimated' for artshot: every animation lands at its target;
 // shared values are plain {value} boxes; worklets run on the JS thread.
 const React = require('react');
-const sv = (v) => ({ value: v, get: () => v, set(n) { this.value = typeof n === 'function' ? n(this.value) : n; }, addListener() {}, removeListener() {}, modify(fn) { this.value = fn(this.value); } });
+const sv = (v) => ({ _isReanimatedSharedValue: true, value: v, get: () => v, set(n) { this.value = typeof n === 'function' ? n(this.value) : n; }, addListener() {}, removeListener() {}, modify(fn) { this.value = fn(this.value); } });
 const id = (x) => x;
 const noop = () => {};
 const easingFn = () => id;
