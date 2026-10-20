@@ -167,3 +167,11 @@ Every finding is fixed except those marked 👤 or "part". Waiting for the owner
 6. Art layout picks: DJ screen 3 CH legends under the inputs; screen 4 MASTER OUT words moved 8 mm; Sound Systems wedge tags "AUX1"; Gain XLR socket top-left of the preamp; transformer wave capped at 2×; Cable Install hidden-line dashes; SS-03 MUTE as a small box.
 7. Stereo in-ears: also allow two cables between the same pair of devices (bigger change)?
 8. Remaining small clashes noticed: SS stage-left wall runs over the BARRIER label; DJ freed MASTER L hangs across deck A's leads; DJ screen 4 red RCA leads over their LINE legends.
+
+## Owner answers to the morning list (2026-10-21)
+1. 2.1: **accept mono into both tops** ("often mono is used anyway…"). Done (8941dbc7).
+2. DJ booth into PHONES: ccode's recommendation — model the booth monitor fed from the PHONES jack (it plays the headphone cue, not the booth mix). In progress.
+3. DJ unbalanced run: **draw the adapter** (a jack lead with an XLR adapter). In progress.
+4. MK-01 XLR destinations: ccode's recommendation — keep as drawn (stage: upstage "TO STAGE BOX"; studio: "TO WALL PANEL").
+5. Patchbay contact at 87 %: **keep**.
+6. The seven layout picks (DJ screen 3 CH legends under the inputs; screen 4 MASTER OUT words 8 mm right; SS wedge tags "AUX1"; Gain XLR socket top-left; transformer wave capped at 2×; Cable Install hidden-line dashes; SS MUTE small box): **approved as drawn** ("approved with your recommendations").
