@@ -35,5 +35,5 @@ Full suite 12,659 / 12,659 at `afd98ea0`. Type check clean.
    - Screens 6, 16 and 18 in full screen.
    - A 320-wide zoom row: 1× 2× 3× FIT READ.
    - Any other lab: no READ key.
-2. **Five calculator glossary names have no live entry:** Exposure, Nonlinearity, Summation, Transformer tap, Wireless. They predate the sense tags. The owner hasn't decided between asking Comp A for entries and relinking them to existing entries.
+2. **Calculator glossary names: handed to Comp A** (owner, 2026-10-20). See `docs/COMP_A_CALC_GLOSSARY_NAMES_2026_10_20.md`: 5 names with no entry, `Transformer` opening the AI/ML sense, and 4 names with two entries. When Comp A replies with the final names, ccode updates the workspace lists and adds a ratchet.
 3. The DJ lab merge into the store branch, and the device or OTA check: unchanged from 10-19.
