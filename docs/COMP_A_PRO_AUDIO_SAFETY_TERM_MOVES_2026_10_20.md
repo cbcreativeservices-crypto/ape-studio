@@ -9,7 +9,7 @@
 >
 > Comp A moved 557 questions and carried or removed those progress keys. `2026102001` now starts with a guard that stops it. **Do not apply it.**
 >
-> **Still a draft:** `2026102002` ("Call 911" → "Call Emergency Services"). The live row still reads "Call 911".
+> **`2026102002` is SUPERSEDED as well (same guard).** Comp A's own package, with the owner's go, renames "Call 911" to "Call Emergency Services". It also splits the Plain English into 2 sentences for the grade-9 reading limit and rewords Practical Application the same way. It updates the 6 entries that list "Call 911" as a related term (AED, Burn, Emergency, First Aid Kit, Heat Stress, Medical Emergency) and changes "911" to "emergency services" in 5 quiz questions. Comp A will report when it is live.
 
 **Draft, not applied:** `supabase/migrations/2026102001_pro_audio_safety_term_moves.sql`. Apply it only after you have checked it. The owner approved every move.
 

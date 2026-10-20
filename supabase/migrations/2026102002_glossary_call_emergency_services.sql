@@ -1,3 +1,13 @@
+-- ⛔ SUPERSEDED — DO NOT APPLY (Comp A, 2026-10-20).
+-- Comp A's guarded package (owner's go) carries this rename and definition and also:
+--   - splits the Plain English into 2 sentences (it measured just over the grade-9 reading limit);
+--   - rewords Practical Application the same way;
+--   - updates the 6 entries that list "Call 911" as a related term (AED, Burn, Emergency,
+--     First Aid Kit, Heat Stress, Medical Emergency) so those links keep working;
+--   - rewords "911" to "emergency services" in 5 of its quiz questions.
+-- Kept for the record only. The guard below makes an accidental run stop before it changes anything.
+do $$ begin raise exception 'SUPERSEDED: 2026102002 must not be applied (Comp A delivers its own package 2026-10-20)'; end $$;
+
 -- DRAFT — NOT APPLIED. Comp A applies it after checking it (owner: "yes comp a", 2026-10-20).
 --
 -- Pro Audio Safety is for every learner, worldwide: its "Call 911" entry named only the US/Canada
