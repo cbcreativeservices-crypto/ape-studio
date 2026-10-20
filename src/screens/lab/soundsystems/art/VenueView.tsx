@@ -59,8 +59,14 @@ const CROSS = { top: 206, bottom: 222 }; // cross-aisle (the delays stand in it)
 
 export type PlotBeam = Beam & {
   color: string;
-  /** Feed tag printed beside the loudspeaker (L, R, SUB, FILL…). */
+  /** Feed tag printed beside the loudspeaker (L, R, SUB, FILL…; in BUILD the
+   *  console output its cable carries — AUX 2, MAIN L, OUT ?). */
   feed?: string;
+  /** Where the tag prints, from the box's centre (default 0, +26, middle —
+   *  under the box). BUILD moves a tag that would meet a neighbour. */
+  feedDx?: number;
+  feedDy?: number;
+  feedAnchor?: 'start' | 'middle' | 'end';
   /** Set delay, ms (delays only). */
   delayMs?: number;
   /** A live box launches wavefronts; a silent one is drawn dark. */
@@ -88,6 +94,8 @@ export type VenueViewProps = {
   onTapSlot?: (slot: SlotId) => void;
   onTapPlaced?: (id: string) => void;
   onTapLink?: (link: Link) => void;
+  /** What a cable carries, read with its tap target (BUILD: "carries AUX 2"). */
+  linkA11y?: (link: Link) => string | undefined;
   /** Extra overlay, drawn last (timing rings, callouts). */
   overlay?: React.ReactNode;
   badge?: string;
@@ -458,6 +466,20 @@ function sectorPath(cx: number, cy: number, r0: number, r1: number, aimDeg: numb
   return `M ${p(r0, a0)} L ${p(r1, a0)} A ${r1} ${r1} 0 ${large} 0 ${p(r1, a1)} L ${p(r0, a1)} A ${r0} ${r0} 0 ${large} 1 ${p(r0, a0)} Z`;
 }
 
+/** The LIP word's box (x 111, baseline 124, ~22 units wide at PLOT_FS). */
+const LIP_BOX = { x0: 99, x1: 123, y0: 113, y1: 125 };
+/** Does a beam's feed tag (≈7 units a character at PLOT_FS, cap height ≈10.5)
+ *  cover a box? */
+function tagHits(b: PlotBeam, box: { x0: number; x1: number; y0: number; y1: number }): boolean {
+  if (!b.feed) return false;
+  const w = b.feed.length * 7;
+  const x = b.x + (b.feedDx ?? 0);
+  const y = b.y + (b.feedDy ?? 26);
+  const anchor = b.feedAnchor ?? 'middle';
+  const x0 = anchor === 'start' ? x : anchor === 'end' ? x - w : x - w / 2;
+  return x0 < box.x1 && x0 + w > box.x0 && y - 10.5 < box.y1 && y > box.y0;
+}
+
 /** A word printed on the plot, with a dark halo under it so the floor tint
  *  and the coverage fans never veil it (drawn twice: halo, then the fill —
  *  paint-order is not available on every react-native-svg target). */
@@ -537,6 +559,7 @@ export function VenueView(p: VenueViewProps) {
   }, [liveBeams, p.field, p.seam]);
 
   const occupied = new Set(placed.map((x) => x.slot));
+  const lipClear = !beams.some((b) => b.feed && tagHits(b, LIP_BOX));
 
   return (
     <View style={styles.wrap} accessible accessibilityRole="image" accessibilityLabel={p.a11y}>
@@ -658,7 +681,9 @@ export function VenueView(p: VenueViewProps) {
             over the floor field and the coverage so the tint never veils them. */}
         <PlotLabel x={37} y={65} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={2}>SR</PlotLabel>
         <PlotLabel x={323} y={25} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={2}>SL</PlotLabel>
-        <PlotLabel x={111} y={124} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={2}>LIP</PlotLabel>
+        {/* The LIP word steps aside for a feed tag printed over it (BUILD:
+            a wedge at Wedge 1 tags its aux right here) — the lip line stays. */}
+        {lipClear ? <PlotLabel x={111} y={124} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={2}>LIP</PlotLabel> : null}
         <PlotLabel x={44} y={PLOT_H - 8} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>HOUSE L</PlotLabel>
         <PlotLabel x={316} y={PLOT_H - 8} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>HOUSE R</PlotLabel>
         <PlotLabel x={180} y={PLOT_H - 8} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>FOH · MIX</PlotLabel>
@@ -681,7 +706,7 @@ export function VenueView(p: VenueViewProps) {
               <Path d={d} stroke="#000" strokeWidth={3} fill="none" opacity={0.45} />
               <Path d={d} stroke={col} strokeWidth={2} fill="none" opacity={live ? 0.95 : 0.35} strokeDasharray={l.level === 'wireless' ? '3 4' : undefined} strokeLinecap="round" strokeLinejoin="round" />
               {live && l.level !== 'wireless' ? <Path d={d} stroke="#fff" strokeWidth={0.6} fill="none" opacity={0.3} /> : null}
-              {p.onTapLink ? <Path d={d} stroke="transparent" strokeWidth={14} fill="none" onPress={() => p.onTapLink?.(l)} accessibilityLabel={`Cable from ${gearSpec(a.kind).name} to ${gearSpec(b.kind).name}, ${l.level} level — tap to remove`} /> : null}
+              {p.onTapLink ? <Path d={d} stroke="transparent" strokeWidth={14} fill="none" onPress={() => p.onTapLink?.(l)} accessibilityLabel={`Cable from ${gearSpec(a.kind).name} to ${gearSpec(b.kind).name}, ${l.level} level${p.linkA11y?.(l) ? `, ${p.linkA11y(l)}` : ''} — tap to remove`} /> : null}
             </G>
           );
         })}
@@ -746,7 +771,7 @@ export function VenueView(p: VenueViewProps) {
             <G key={x.id}>
               <PlanGlyph kind={x.kind} id={`vv-${x.id}`} x={px} y={py} rotateDeg={placedRotation(x)} dim={!live} lit={live} rig={beam?.rig === 'flown' ? 'flown' : 'stack'} highlight={sel ? colors.cyanBright : undefined} />
               {beam?.feed ? (
-                <PlotLabel x={px} y={py + 26} fontSize={PLOT_FS} fill={beam.color} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1}>
+                <PlotLabel x={px + (beam.feedDx ?? 0)} y={py + (beam.feedDy ?? 26)} fontSize={PLOT_FS} fill={beam.color} fontFamily={fonts.oswaldSemiBold} textAnchor={beam.feedAnchor ?? 'middle'} letterSpacing={1}>
                   {beam.feed}
                 </PlotLabel>
               ) : null}

@@ -462,6 +462,11 @@ export function bandConsole(): ConsoleState {
       { id: 'aux6', name: 'Aux 6 · Subs', purpose: 'sub', masterDb: 0 },
       // Kept for the lobby / overflow announce feed so no wedge ever hears it.
       { id: 'aux7', name: 'Aux 7 · Announce', purpose: 'other', masterDb: 0 },
+      // The singer's in-ear mix (owner decision 6, 2026-10-20): the BUILD
+      // festival's in-ear transmitter takes this output. No ROUTE page or
+      // console panel draws every aux — each names its own columns — so an
+      // eighth aux changes no layout.
+      { id: 'aux8', name: 'Aux 8 · In-ears', purpose: 'iem', masterDb: 0 },
     ],
     subgroups: [
       { id: 'sub-drums', name: 'Drums', faderDb: 0, toMain: true },

@@ -74,14 +74,29 @@ export function layoutToBeams(layout: readonly PlacedSpeaker[], opts: { flown?: 
   });
 }
 
+/** Where a BUILD feed tag ("AUX 2", "MAIN L", "OUT ?") prints beside its
+ *  loudspeaker. Below the box by default (VenueView's +26), except where a
+ *  neighbour sits there at the plot's drawn size (WF-SS-02 clutter pass,
+ *  2026-10-20):
+ *    · a sub at house left/right prints ABOVE itself — below, its tag ran
+ *      into the main's tag 36 units outboard;
+ *    · the centre cluster prints to its LEFT — below is the centre sub. */
+export function feedTagPlace(slot: SlotId): Pick<PlotBeam, 'feedDx' | 'feedDy' | 'feedAnchor'> {
+  if (slot === 'subL' || slot === 'subR') return { feedDy: -18 };
+  if (slot === 'mainC') return { feedDx: -12, feedDy: 4, feedAnchor: 'end' };
+  return {};
+}
+
 /** Beams for a BUILD-mode system: every radiating loudspeaker on the plot,
  *  aimed by its position — mains toed in, side fills across the stage, the
- *  drum fill at the drummer, wedges back at the performer. */
-export function placedToBeams(placed: readonly Placed[], live: ReadonlySet<string>): PlotBeam[] {
+ *  drum fill at the drummer, wedges back at the performer. `feeds` (BUILD)
+ *  gives each loudspeaker's tag: the console output its cable carries. */
+export function placedToBeams(placed: readonly Placed[], live: ReadonlySet<string>, feeds?: ReadonlyMap<string, string>): PlotBeam[] {
   const out: PlotBeam[] = [];
   for (const p of placed) {
     const s = slotDef(p.slot);
     const on = live.has(p.id);
+    const n = out.length;
     switch (p.kind) {
       case 'poweredSub':
       case 'passiveSub':
@@ -112,6 +127,8 @@ export function placedToBeams(placed: readonly Placed[], live: ReadonlySet<strin
       default:
         break;
     }
+    const tag = feeds?.get(p.id);
+    if (tag && out.length > n) out[n] = { ...out[n], feed: tag, ...feedTagPlace(p.slot) };
   }
   return out;
 }

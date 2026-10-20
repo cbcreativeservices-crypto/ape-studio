@@ -38,6 +38,7 @@ const { SOUND_SYSTEMS_CHECK } = await import('../src/features/soundsystems/check
 type System = import('../src/features/soundsystems/types.ts').SoundSystem;
 type GearKind = import('../src/features/soundsystems/types.ts').GearKind;
 type SlotId = import('../src/features/soundsystems/types.ts').SlotId;
+type ConsoleOut = import('../src/features/soundsystems/types.ts').ConsoleOut;
 
 const src = (p: string) => readFileSync(new URL(`../src/${p}`, import.meta.url), 'utf8');
 const ROUTE = src('screens/lab/soundsystems/pagesRoute.tsx');
@@ -57,8 +58,8 @@ class Build {
     this.ids[tag] = v.id;
     return this;
   }
-  link(a: string, b: string): this {
-    const v = sys.connect(this.s, this.ids[a], this.ids[b]);
+  link(a: string, b: string, out?: ConsoleOut): this {
+    const v = sys.connect(this.s, this.ids[a], this.ids[b], out);
     assert.ok(v.ok, `link ${a} → ${b}: ${v.ok ? '' : v.reason}`);
     this.s = v.system;
     return this;
@@ -77,12 +78,15 @@ describe('SS-02 · every loudspeaker must be fed THROUGH the console', () => {
       .put('l', 'passiveSpeaker', 'mainL').put('r', 'passiveSpeaker', 'mainR').put('sl', 'passiveSub', 'subL').put('sr', 'passiveSub', 'subR')
       .put('fl', 'poweredSpeaker', 'frontFillL').put('fr', 'poweredSpeaker', 'frontFillR').put('dl', 'poweredSpeaker', 'delayL').put('dr', 'poweredSpeaker', 'delayR')
       .link('m1', 'box').link('m2', 'box').link('d1', 'box').link('d2', 'box').link('box', 'con').link('box', 'proc')
-      .link('proc', 'ampT').link('proc', 'ampS').link('ampT', 'l').link('ampT', 'r').link('ampS', 'sl').link('ampS', 'sr')
-      .link('proc', 'fl').link('proc', 'fr').link('proc', 'dl').link('proc', 'dr');
+      .link('proc', 'ampT').link('proc', 'ampS').link('ampT', 'l', 'mainL').link('ampT', 'r', 'mainR').link('ampS', 'sl', 'mainL').link('ampS', 'sr', 'mainR')
+      .link('proc', 'fl', 'mainL').link('proc', 'fr', 'mainR').link('proc', 'dl', 'mainL').link('proc', 'dr', 'mainR');
     assert.equal(sys.allSinksLive(b.s), true, 'the plain trace still calls it live — that was the hole');
     assert.equal(sys.sinksThroughConsole(b.s), false);
     const g = gradeCapstone(cap('outdoor'), b.s, con.bandConsole());
-    assert.deepEqual(g.unmet, ['viaConsole']);
+    // No console output reaches a loudspeaker either, so the FEEDS row
+    // (WF-SS-02) fails with it — the outputs chosen are only names until
+    // the console return carries them.
+    assert.deepEqual(g.unmet, ['viaConsole', 'feeds']);
     // the console return closes it
     const fixed = sys.connect(b.s, b.ids.con, b.ids.box);
     assert.ok(fixed.ok);

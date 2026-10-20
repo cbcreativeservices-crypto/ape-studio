@@ -7,7 +7,11 @@
  *          them, tap a cable to remove it.
  *   DOCK   PART — one key that is both the parts list and a lane: tap it to
  *          read the bin, ride it to flip through the parts while the plot
- *          shows where each may stand · CONSOLE (routing capstones) opens
+ *          shows where each may stand · OUTPUT (when the selected device's
+ *          cable comes from the console side) — which console output that
+ *          cable carries: a lane for the console's fifteen, a tap key for
+ *          two to four, LOCKED when only one reaches it (WF-SS-02,
+ *          2026-10-20) · CONSOLE (routing capstones) opens
  *          the desk in a tray over the well while the plot stays live ·
  *          REMOVE and CLEAR appear only when they can do something.
  *   WELL   what is in hand, the last verdict, the selected device's card,
@@ -26,11 +30,12 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx } from '../kit/PagedLab';
 import { Body, Btn, Card, Eyebrow, Prompt, Row } from '../tuning/components/primitives';
 import { GEAR, gearSpec, isSource, LEVEL_LABEL } from '../../../features/soundsystems/gear';
-import { connect, disconnect, EMPTY_SYSTEM, place, removePlaced, SLOTS, slotAccepts, slotDef, trace, upstream, downstream } from '../../../features/soundsystems/system';
+import { carriesOutputs, connect, consoleWalk, disconnect, EMPTY_SYSTEM, feedLink, linkCarries, outChoices, place, removePlaced, setLinkOut, SLOTS, slotAccepts, slotDef, trace, upstream, downstream, type ConsoleWalk } from '../../../features/soundsystems/system';
+import { OUT_UNSET, outLabel, outName, outTag, outUse } from '../../../features/soundsystems/outputs';
 import { CAPSTONES_IN_ORDER, gradeCapstone, type Capstone } from '../../../features/soundsystems/capstones';
 import { bandConsole, type ConsoleState } from '../../../features/soundsystems/console';
 import { markCapstonePassed } from '../../../features/soundsystems/progress';
-import type { GearKind, Link, SlotId, SoundSystem } from '../../../features/soundsystems/types';
+import type { ConsoleOut, GearKind, Link, SlotId, SoundSystem } from '../../../features/soundsystems/types';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { ChapterTag, GoalChips, KeyFact, ReqRow, useVisitGoals, VerdictLine } from './bits';
 import { GearGlyph } from './art/gearArt';
@@ -56,6 +61,7 @@ export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM) {
   const [sawUnsafe, setSawUnsafe] = useState(false);
   const t = useMemo(() => trace(system), [system]);
   const live = useMemo(() => new Set(t.live), [t]);
+  const walk = useMemo(() => consoleWalk(system), [system]);
 
   const targets = useMemo<SlotId[]>(() => (part ? SLOTS.filter((s) => slotAccepts(s.id, part)).map((s) => s.id) : []), [part]);
 
@@ -83,7 +89,8 @@ export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM) {
           setSystem(v.system);
           const a = system.placed.find((p) => p.id === selected)!;
           const b = system.placed.find((p) => p.id === id)!;
-          setMsg({ text: `${gearSpec(a.kind).name} → ${gearSpec(b.kind).name}, at ${LEVEL_LABEL[v.link.level]}.`, ok: true });
+          const pick = gearSpec(b.kind).radiates && carriesOutputs(v.system, v.link) ? ' Tap OUTPUT to choose the console output it carries.' : '';
+          setMsg({ text: `${gearSpec(a.kind).name} → ${gearSpec(b.kind).name}, at ${LEVEL_LABEL[v.link.level]}.${pick}`, ok: true });
           setSelected(id);
         } else {
           setMsg({ text: v.reason, unsafe: v.unsafe });
@@ -109,6 +116,11 @@ export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM) {
     [],
   );
 
+  const setOut = useCallback((l: Link, out: ConsoleOut) => {
+    setSystem((s) => setLinkOut(s, l.from, l.to, out));
+    setMsg({ text: `This cable now carries ${outName(out)}.`, ok: true });
+  }, []);
+
   const remove = useCallback(() => {
     if (!selected) return;
     setSystem((s) => removePlaced(s, selected));
@@ -123,7 +135,7 @@ export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM) {
     setMsg(null);
   }, []);
 
-  return { system, part, setPart, selected, setSelected, msg, targets, live, trace: t, tapSlot, tapPlaced, tapLink, remove, reset, refusals, sawUnsafe };
+  return { system, part, setPart, selected, setSelected, msg, targets, live, trace: t, walk, tapSlot, tapPlaced, tapLink, setOut, remove, reset, refusals, sawUnsafe };
 }
 
 type BuilderRack = { rack: SsRack; wellTop: ReactNode; prompt: string; status: string };
@@ -135,7 +147,11 @@ type BuilderRack = { rack: SsRack; wellTop: ReactNode; prompt: string; status: s
  */
 function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKind[], extras: { bezel?: BezelItem; console?: DockParam; wellTop?: ReactNode; title?: { title: string; subtitle?: string } } = {}): BuilderRack {
   const sel = b.selected ? b.system.placed.find((p) => p.id === b.selected) : undefined;
-  const beams = useMemo(() => placedToBeams(b.system.placed, b.live), [b.system.placed, b.live]);
+  const tags = useMemo(() => feedTags(b.walk), [b.walk]);
+  const beams = useMemo(() => placedToBeams(b.system.placed, b.live, tags), [b.system.placed, b.live, tags]);
+  const selLink = sel ? feedLink(b.system, sel.id, b.walk) : undefined;
+  const output = selLink && sel ? outputParam(b, selLink, sel.kind) : undefined;
+  const carried = selLink ? carriedWord(linkCarries(b.system, selLink, b.walk)) : '';
   const inHand = b.part ? gearSpec(b.part) : null;
   const items = kinds.map((k) => ({ id: k }));
   const exhausted = (k: GearKind) => !gearSpec(k).many && b.system.placed.some((p) => p.kind === k);
@@ -152,6 +168,7 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
       empty: 'nothing in hand — tap to pick a part',
       blurb: (x) => (exhausted(x.id as GearKind) ? `${gearSpec(x.id as GearKind).name}: already in the build. Tap it on the plot to select it.` : `${gearSpec(x.id as GearKind).blurb} Stands at: ${SLOTS.filter((s) => slotAccepts(s.id, x.id as GearKind)).map((s) => s.label).slice(0, 4).join(', ')}${SLOTS.filter((s) => slotAccepts(s.id, x.id as GearKind)).length > 4 ? '…' : ''}.`),
     }),
+    ...(output ? [output] : []),
     ...(extras.console ? [extras.console] : []),
     ...(sel ? [{ kind: 'action', id: 'remove', label: 'REMOVE', onPress: b.remove, tint: colors.red } as DockParam] : []),
     ...(b.system.placed.length ? [{ kind: 'action', id: 'clear', label: 'CLEAR', onPress: b.reset } as DockParam] : []),
@@ -162,7 +179,14 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
     { k: 'LIVE', v: `${b.trace.live.length}`, tint: b.trace.live.length ? colors.green : undefined, flex: 0.8 },
     extras.bezel ?? { k: 'SILENT', v: `${b.trace.silent.length}`, tint: b.trace.silent.length ? colors.orange : undefined, flex: 0.9 },
   ];
-  const prompt = b.part ? `Tap a highlighted position to place the ${gearSpec(b.part).name.toLowerCase()}.` : sel ? 'Tap another device to connect from the selected one.' : 'Tap PART to pick a part, then a position on the plot.';
+  const unset = !!sel && gearSpec(sel.kind).radiates && !!selLink && b.walk.feeds.get(sel.id) === '*';
+  const prompt = b.part
+    ? `Tap a highlighted position to place the ${gearSpec(b.part).name.toLowerCase()}.`
+    : unset
+      ? 'Tap OUTPUT to choose which console output feeds it — or tap another device to connect from it.'
+      : sel
+        ? 'Tap another device to connect from the selected one.'
+        : 'Tap PART to pick a part, then a position on the plot.';
   const status = `${b.trace.live.length} live · ${b.trace.silent.length} silent · ${b.trace.strandedSources.length} source${b.trace.strandedSources.length === 1 ? '' : 's'} unconnected`;
   const wellTop = (
     <>
@@ -185,7 +209,7 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
             <GearGlyph kind={sel.kind} size={44} label={gearSpec(sel.kind).name} />
             <View style={{ flex: 1, gap: 2 }}>
               <Eyebrow>{`${gearSpec(sel.kind).name.toUpperCase()} · ${slotDef(sel.slot).label.toUpperCase()}`}</Eyebrow>
-              <Text style={styles.small}>FED BY · {upstream(b.system, sel.id).map((p) => gearSpec(p.kind).name).join(', ') || 'nothing'}</Text>
+              <Text style={styles.small}>FED BY · {upstream(b.system, sel.id).map((p) => gearSpec(p.kind).name).join(', ') || 'nothing'}{carried ? ` · ${carried}` : ''}</Text>
               <Text style={styles.small}>FEEDS · {downstream(b.system, sel.id).map((p) => gearSpec(p.kind).name).join(', ') || 'nothing'}</Text>
               <Text style={[styles.small, { color: b.live.has(sel.id) ? colors.green : gearSpec(sel.kind).radiates ? colors.orange : colors.textMuted }]}>
                 {gearSpec(sel.kind).radiates ? (b.live.has(sel.id) ? '● LIVE — a source reaches it' : '○ SILENT — no complete path from a source') : b.trace.reached.has(sel.id) ? '● signal reaches it' : '○ no signal yet'}
@@ -222,6 +246,7 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
           onTapSlot={b.tapSlot}
           onTapPlaced={b.tapPlaced}
           onTapLink={b.tapLink}
+          linkA11y={(l) => cableWords(linkCarries(b.system, l, b.walk))}
           a11y={`The venue plot. ${b.system.placed.length} device${b.system.placed.length === 1 ? '' : 's'} placed, ${b.system.links.length} cable${b.system.links.length === 1 ? '' : 's'}, ${b.live.size} loudspeaker${b.live.size === 1 ? '' : 's'} live.${b.part ? ` ${b.targets.length} positions accept the ${gearSpec(b.part).name.toLowerCase()}.` : ''}`}
         />
       );
@@ -238,6 +263,83 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
     params,
   };
   return { rack, wellTop, prompt, status };
+}
+
+/* ── the console output each cable carries (WF-SS-02) ────────────────────── */
+
+/** Each loudspeaker's plot tag: the output it is fed from, or OUT ?. */
+function feedTags(walk: ConsoleWalk): ReadonlyMap<string, string> {
+  const m = new Map<string, string>();
+  for (const [id, f] of walk.feeds) m.set(id, f === '*' ? OUT_UNSET : outTag(f));
+  return m;
+}
+
+/** The inspect card's word for what the selected device's cable carries. */
+function carriedWord(c: ConsoleOut | 'all' | '*' | null): string {
+  if (!c) return '';
+  if (c === 'all') return 'ALL OUTPUTS';
+  return c === '*' ? OUT_UNSET : outLabel(c);
+}
+
+/** The cable's tap target reads what it carries. */
+function cableWords(c: ConsoleOut | 'all' | '*' | null): string | undefined {
+  if (!c) return undefined;
+  if (c === 'all') return 'carries every console output';
+  return c === '*' ? 'no console output chosen' : `carries ${outName(c)}`;
+}
+
+/** OUTPUT — which console output the cable INTO the selected device carries.
+ *  Fifteen (straight from the console or a stagebox return) ride a lane; two
+ *  to four are a tap key; one is LOCKED, with the reason (D75). */
+function outputParam(b: ReturnType<typeof useBuilder>, l: Link, kind: GearKind): DockParam | undefined {
+  const choices = outChoices(b.system, l, b.walk);
+  if (choices.length === 0) return undefined;
+  const from = b.system.placed.find((p) => p.id === l.from);
+  const fromName = from ? gearSpec(from.kind).name.toLowerCase() : 'device';
+  const chosen = l.out && choices.includes(l.out) ? l.out : null;
+  const sink = !!gearSpec(kind).radiates;
+  if (choices.length === 1 && (!l.out || chosen)) {
+    const only = choices[0];
+    return {
+      kind: 'options',
+      id: 'output',
+      label: 'OUTPUT',
+      valueLabel: outTag(only),
+      valueA11y: outName(only),
+      options: [{ id: only, label: outLabel(only), blurb: outUse(only) }],
+      selectedId: only,
+      onSelect: () => {},
+      locked: `Only ${outName(only)} reaches the ${fromName}, so this cable carries it. Choose a different output on the cable before it.`,
+    };
+  }
+  const options = choices.map((o) => ({ id: o, label: outLabel(o), blurb: outUse(o) }));
+  if (choices.length <= 4) {
+    return {
+      kind: 'options',
+      id: 'output',
+      label: 'OUTPUT',
+      valueLabel: chosen ? outTag(chosen) : OUT_UNSET,
+      valueA11y: chosen ? outName(chosen) : 'no output chosen',
+      options,
+      selectedId: chosen,
+      onSelect: (id) => b.setOut(l, id as ConsoleOut),
+    };
+  }
+  const lane = flipFader({
+    id: 'output',
+    label: 'OUTPUT',
+    title: `CONSOLE OUTPUT — what the cable from the ${fromName} carries`,
+    items: choices.map((id) => ({ id })),
+    selectedId: chosen ?? '',
+    onSelect: (id) => b.setOut(l, id as ConsoleOut),
+    name: (x) => outName(x.id as ConsoleOut),
+    short: (x) => outTag(x.id as ConsoleOut),
+    empty: sink ? 'OUT ? — tap to choose the output' : 'all outputs pass — choose at each loudspeaker',
+    blurb: (x) => outUse(x.id as ConsoleOut),
+  });
+  // The lane binds to OUTPUT when it appears (the Tuning precedent,
+  // 2026-10-14): the next drag picks the output, not another part.
+  return lane.kind === 'fader' ? { ...lane, autoBind: true } : lane;
 }
 
 /* ── page 1 · free build ────────────────────────────────────────────────── */
@@ -362,7 +464,7 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
         render: () => (
           <View style={{ gap: 10 }}>
             <Body>▲/▼ step a level; PRE lights the pre-fader tap. The buses below show who hears what — computed, not promised. The plot stays live above.</Body>
-            <ConsolePanel cs={cs} onChange={setCs} channels={ui.channels} columns={ui.columns} sendNames={{ aux1: 'SINGER', aux2: 'GUITAR', aux3: 'BASS', aux4: 'DRUMS', aux5: 'REVERB', aux6: 'SUBS', aux7: 'LOBBY' }} />
+            <ConsolePanel cs={cs} onChange={setCs} channels={ui.channels} columns={ui.columns} sendNames={{ aux1: 'SINGER', aux2: 'GUITAR', aux3: 'BASS', aux4: 'DRUMS', aux5: 'REVERB', aux6: 'SUBS', aux7: 'LOBBY', aux8: 'IN-EARS' }} />
             {ui.subgroups ? <SubgroupStrip cs={cs} onChange={setCs} /> : null}
             {ui.dcas ? <DcaStrip cs={cs} onChange={setCs} /> : null}
             {ui.matrices?.map((m) => (
@@ -394,6 +496,9 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
         <ReqRow key={r.id} met={grade.met.includes(r.id)} text={r.text} />
       ))}
       {grade.pass ? <VerdictLine ok>Capstone {capstone.n} passed — recorded on the lab’s home page. The build stays here to explore; CONTINUE when ready.</VerdictLine> : null}
+      {/* Owner decision 8 (2026-10-20): a capstone passed before the OUTPUTS
+          row existed stays passed — the record is never taken back. */}
+      {!grade.pass && ctx.isDone ? <Text style={styles.small}>Passed earlier — still credited. This checklist is the build on the plot now.</Text> : null}
     </Card>
   );
   const r = useBuilderRack(b, capstone.bin, {
