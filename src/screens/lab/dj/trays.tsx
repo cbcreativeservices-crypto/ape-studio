@@ -3,7 +3,9 @@
  * booth. TAP-TO-CONNECT (house rule: never drag-only): pick a cable by its
  * fixed end, then tap the jack its free end goes into — only the jacks in
  * its `fits` list are offered (anything else is refused by the model, never
- * drawn; not every physical fit is offered yet — model/djModel PlugDef).
+ * drawn). Two of them fit but do the WRONG JOB (DJ-02: the booth TRS plug
+ * in the PHONES jack, the headphone plug in a speaker input): the tray says
+ * why while the plug sits there (model/djModel wrongJob).
  * POWER lists each device's switch; the order is the lesson.
  */
 import { useState } from 'react';
@@ -11,7 +13,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { LabChip } from '../LabShell';
 import { getBooth, updateBooth } from './booth/boothStore';
-import { connect, deviceLive, hotPatchSpeakers, JACK_NAMES, PLUGS, powerThump, type Booth, type DeviceId, type JackId, type PlugId, type SpeakerId } from './model/djModel';
+import { connect, deviceLive, hotPatchSpeakers, JACK_NAMES, PLUGS, powerThump, wrongJob, type Booth, type DeviceId, type JackId, type PlugId, type SpeakerId } from './model/djModel';
 
 /**
  * PATCH: pick a cable, then where its free end goes. A move of a LIVE audio
@@ -71,6 +73,7 @@ export function PatchTray({ plugs, onPatched, onSelect, onHot, initial }: {
         ))}
         <LabChip label="UNPLUG" selected={at == null} onPress={() => patch(null)} compact />
       </View>
+      {wrongJob(sel, at) ? <Text style={styles.wrong}>{`WRONG JOB — ${wrongJob(sel, at)}`}</Text> : null}
       {hot ? <Text style={styles.warn}>{`HOT-PATCH — ${PLUGS[hot].short} moved while it was live. The lab keeps it quiet; on a real system that pop or buzz goes straight through the speakers. Turn the MASTER (or that channel’s fader) down, or the speakers off, before you move an audio cable.`}</Text> : null}
     </View>
   );
@@ -121,4 +124,5 @@ const styles = StyleSheet.create({
   powerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   dev: { fontFamily: fonts.oswaldMedium, fontSize: 13, letterSpacing: 0.8 },
   warn: { color: '#ff8a7e', fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
+  wrong: { color: colors.amber, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
 });

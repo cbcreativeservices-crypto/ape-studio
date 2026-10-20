@@ -72,7 +72,8 @@ function liveOf(b: Booth, last: BoothRender | null, p: PlugId): boolean {
   if (p.startsWith('B.')) return b.decks.B.playing && deviceLive(b, 'playerB');
   if (p === 'mst.xlrL') return last.rmsDb.masterL > -90;
   if (p === 'mst.xlrR') return last.rmsDb.masterR > -90;
-  if (p.startsWith('bth.')) return last.rmsDb.booth > -90;
+  // a booth line in the PHONES jack (DJ-02, the wrong job): nothing plays
+  if (p.startsWith('bth.')) return at !== 'mix.phones' && last.rmsDb.booth > -90;
   if (p === 'phones') return phonesPlugged(b) && Math.max(last.rmsDb.phonesL, last.rmsDb.phonesR) > -90;
   return false;
 }
@@ -352,7 +353,7 @@ export const SystemMap = memo(function SystemMap({ booth, last, flow, thump = []
           const pl = MAP.plate[k];
           return (
             <Group key={`pl${k}`}>
-              <SpeakerPlate x={pl.x} y={pl.y} on={spkOn(k)} title={PLATE_TITLE[k]} live={lit(k)} />
+              <SpeakerPlate x={pl.x} y={pl.y} on={spkOn(k)} title={PLATE_TITLE[k]} live={lit(k)} mic={k === 'paR' && !!booth.ev?.paRMic} />
               {thump.includes(k) ? <Halo b={{ x: pl.x - 4, y: pl.y - 4, w: PLATE_W + 8, h: PLATE_H + 8 }} tone="red" /> : null}
             </Group>
           );

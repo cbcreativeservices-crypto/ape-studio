@@ -107,6 +107,21 @@ export const LANE = {
 const EDGE: Partial<Record<PlugId, number>> = { 'ac.paL': 6, 'ac.boothR': 15, 'ac.boothL': 1025, 'ac.paR': 1034 };
 const OVER: Partial<Record<PlugId, number>> = { 'ac.boothR': 740, 'ac.boothL': 740, 'ac.paR': 748, 'ac.paL': 748 };
 
+/** DJ-02 (owner 2026-10-20, "allow and explain"): the two moves that FIT on
+ *  real gear but do the wrong job get real routes, in the column between
+ *  deck B's rear (ends x 340) and the mixer's (starts x 375) and on one lane
+ *  just above the rear panels (Screen 4's output lanes end at 509; the panels
+ *  start at 526): 9 mm under the lowest, 8 over the panels. A booth TRS run into the PHONES jack crosses left on that
+ *  lane, drops the column's right side and comes in `WRONG_JOB_UNDER` mm
+ *  under the jack (the way the headphone cable comes in); the headphone cable
+ *  into a speaker input climbs the column's left side from the floor and
+ *  crosses on the same lane to the plate. */
+export const WRONG_JOB_LANE = 518;
+export const BTH_PHONES_X = 363;
+export const PHONES_UP_X = 351;
+export const WRONG_JOB_UNDER = 15;
+const PHONES_FLOOR = 704;
+
 /** The column an RCA (or any) cable climbs to reach a TOP-row jack, so it
  *  never runs over the bottom-row plug under it. */
 const approachX = (j: JackId, b: Pt): number => (j.endsWith('.L') && (j.startsWith('ch') || j.startsWith('booth')) ? b.x - 11 : b.x);
@@ -131,9 +146,23 @@ export function routeOf(p: PlugId, to: JackId | null): [number, number][] {
       // into another mixer jack (a mistake the tray allows): straight across
       return [...start, [b.x, lane], [b.x, b.y]];
     }
+    if (to === 'mix.phones') {
+      // the BOOTH TRS plug in the PHONES jack (DJ-02: it fits — the wrong
+      // job): up to the wrong-job lane, left to the gap between deck B and
+      // the mixer, down that gap (never across the mixer's rear panel), and
+      // in under the front edge, the way the headphone cable comes in
+      const up: [number, number][] = p === 'bth.trsR' ? [[a.x, a.y], [a.x - 14, a.y], [a.x - 14, WRONG_JOB_LANE]] : [[a.x, a.y], [a.x, WRONG_JOB_LANE]];
+      return [...up, [BTH_PHONES_X, WRONG_JOB_LANE], [BTH_PHONES_X, b.y + WRONG_JOB_UNDER], [b.x, b.y + WRONG_JOB_UNDER], [b.x, b.y]];
+    }
     return [...start, [b.x, lane], [b.x, b.y]];
   }
   if (kind === 'phones') {
+    if (to !== 'mix.phones') {
+      // the headphone plug in a speaker's combo input (DJ-02: it fits — the
+      // wrong job): along the floor, up the gap between deck B and the mixer,
+      // across on its own lane above the rear panels, and up into the plate
+      return [[a.x, a.y], [a.x, PHONES_FLOOR], [PHONES_UP_X, PHONES_FLOOR], [PHONES_UP_X, WRONG_JOB_LANE], [b.x, WRONG_JOB_LANE], [b.x, b.y]];
+    }
     return [[a.x, a.y], [a.x + 26, a.y + 3], [a.x + 45, b.y + 19], [b.x, b.y + 19], [b.x, b.y]];
   }
   // power

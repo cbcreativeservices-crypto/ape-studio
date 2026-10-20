@@ -166,10 +166,11 @@ export type PlugDef = {
   device: DeviceId | 'phones';
   /** Short name for a dock key. */
   short: string;
-  /** The jacks the PATCH tray offers it — NOT every physical fit: on real
-   *  gear the BOOTH TRS plug also goes into the headphone jack, and the
-   *  headphone plug into a speaker's combo input (wiring audit WF-DJ-02,
-   *  waiting on the owner: Screen 4 has no drawn route for those moves). */
+  /** The jacks the PATCH tray offers it: where its plug goes on real gear.
+   *  That includes two moves that FIT but do the wrong job (wiring audit
+   *  DJ-02, owner 2026-10-20 "allow and explain"): the BOOTH TRS plug into the
+   *  6.35 mm headphone jack, and the headphone plug into a speaker's combo
+   *  input — each explained by `wrongJob`, and silent in the render. */
   fits: readonly JackId[];
 };
 
@@ -186,9 +187,9 @@ export const PLUGS: Record<PlugId, PlugDef> = {
   'tt.rcaR': { id: 'tt.rcaR', kind: 'rca', from: 'Turntable out R (red)', device: 'turntable', short: 'TT·R', fits: LINE_PHONO_JACKS },
   'mst.xlrL': { id: 'mst.xlrL', kind: 'xlr', from: 'Mixer MASTER OUT L (XLR)', device: 'mixer', short: 'MST·L', fits: SPEAKER_JACKS },
   'mst.xlrR': { id: 'mst.xlrR', kind: 'xlr', from: 'Mixer MASTER OUT R (XLR)', device: 'mixer', short: 'MST·R', fits: SPEAKER_JACKS },
-  'bth.trsL': { id: 'bth.trsL', kind: 'trs', from: 'Mixer BOOTH OUT L (TRS)', device: 'mixer', short: 'BTH·L', fits: SPEAKER_JACKS },
-  'bth.trsR': { id: 'bth.trsR', kind: 'trs', from: 'Mixer BOOTH OUT R (TRS)', device: 'mixer', short: 'BTH·R', fits: SPEAKER_JACKS },
-  phones: { id: 'phones', kind: 'phones', from: 'Headphones (stereo plug)', device: 'phones', short: 'PHONES', fits: ['mix.phones'] },
+  'bth.trsL': { id: 'bth.trsL', kind: 'trs', from: 'Mixer BOOTH OUT L (TRS)', device: 'mixer', short: 'BTH·L', fits: [...SPEAKER_JACKS, 'mix.phones'] },
+  'bth.trsR': { id: 'bth.trsR', kind: 'trs', from: 'Mixer BOOTH OUT R (TRS)', device: 'mixer', short: 'BTH·R', fits: [...SPEAKER_JACKS, 'mix.phones'] },
+  phones: { id: 'phones', kind: 'phones', from: 'Headphones (stereo plug)', device: 'phones', short: 'PHONES', fits: ['mix.phones', ...SPEAKER_JACKS] },
   'ac.playerA': { id: 'ac.playerA', kind: 'iec', from: 'Deck A power cord', device: 'playerA', short: 'PWR A', fits: STRIP_JACKS },
   'ac.playerB': { id: 'ac.playerB', kind: 'iec', from: 'Deck B power cord', device: 'playerB', short: 'PWR B', fits: STRIP_JACKS },
   'ac.mixer': { id: 'ac.mixer', kind: 'iec', from: 'Mixer power cord', device: 'mixer', short: 'PWR MIX', fits: STRIP_JACKS },
@@ -463,6 +464,23 @@ export function plugCorrect(b: Booth, p: PlugId): boolean {
   const at = b.plugs[p];
   if (PLUGS[p].kind === 'iec') return at != null;
   return at === want;
+}
+
+/**
+ * DJ-02: a move that FITS but does the wrong job, in words (null = not one of
+ * them). Nothing plays through either — the render takes a speaker's feed
+ * only from a MASTER or BOOTH plug, and the headphones only from the PHONES
+ * jack — and neither makes a hazard sound.
+ */
+export function wrongJob(p: PlugId, jack: JackId | null): string | null {
+  if (!jack) return null;
+  if ((p === 'bth.trsL' || p === 'bth.trsR') && jack === 'mix.phones') {
+    return 'It fits — but that jack is an output: two outputs tied together, nothing plays. The booth line belongs in a booth monitor’s input.';
+  }
+  if (p === 'phones' && jack.endsWith('.in')) {
+    return 'It fits — but headphones are a listening device, not a source: nothing plays. The headphones belong in the mixer’s PHONES jack.';
+  }
+  return null;
 }
 
 /** A plug in a jack outside its `fits` list is refused — tap-to-connect

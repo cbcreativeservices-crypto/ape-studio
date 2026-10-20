@@ -87,7 +87,7 @@ function runPts(from: 'L' | 'R', to: 13 | 14): [number, number][] {
   return [[a.x, a.y], [a.x, lane], [b.x, lane], [b.x, b.y]];
 }
 
-function HandoffView({ booth }: { booth: Booth }) {
+export function HandoffView({ booth }: { booth: Booth }) {
   const v = evOf(booth).venue;
   const runs: { p: VenuePatch; to: 13 | 14 }[] = [
     { p: v.djL, to: 13 },
@@ -107,7 +107,10 @@ function HandoffView({ booth }: { booth: Booth }) {
           <CableRun
             key={r.to}
             flow
-            r={{ id: `v${r.to}`, kind: unbal ? 'trs' : 'xlr', colour: '#3d4046', pts, plugged: true, live: true, label: from === 'L' ? 'MST L' : 'MST R', dashed: from === 'R' }}
+            // DJ-10: the unbalanced run is an XLR-ended lead (its plugs fit the
+            // mixer's male and the stage box's female XLRs, C13); its CABLE is
+            // what is unbalanced: thinner, plain, flagged UNBAL
+            r={{ id: `v${r.to}`, kind: 'xlr', colour: '#3d4046', pts, plugged: true, live: true, label: `${from === 'L' ? 'MST L' : 'MST R'}${unbal ? ' · UNBAL' : ''}`, dashed: from === 'R', unbal }}
             labelAt={[(pts[1][0] + pts[2][0]) / 2 + (from === 'R' ? 20 : 0), lane]}
           />
         );

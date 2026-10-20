@@ -32,7 +32,7 @@ import { memo, useMemo } from 'react';
 import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Oval, Path, RadialGradient, Rect, RoundedRect, Skia, SweepGradient, vec } from '@shopify/react-native-skia';
 import { useSharedValue } from 'react-native-reanimated';
 import { CUE_COLOURS, INK } from './ink';
-import { ComboSocket, Fader, Key, Knob, Led, LedColumn, IecInlet, RcaSocket, Rocker, RoundButton, shade, TrsSocket, UsbB, UsbC, XlrSocket } from './parts';
+import { ComboSocket, Fader, Key, Knob, Led, LedColumn, IecInlet, RcaSocket, Rocker, RoundButton, shade, SlideSwitch, TrsSocket, UsbB, UsbC, XlrSocket } from './parts';
 import { WaveBody } from './waveDraw';
 import { SceneText } from './sceneText';
 import { PHONES_CABLE_END, PHONES_H, PHONES_W, PLATE, PLATE_H, PLATE_W, SPEAKER_H, SPEAKER_W, STRIP_D, STRIP_W, stripOutletX } from '../geometry/gearGeometry';
@@ -616,8 +616,26 @@ export function TripodStand({ x, top, s = 1, floor }: { x: number; top: number; 
 export const SPEAKER_REAR_W = 230;
 export const SPEAKER_REAR_H = 300;
 export const SPEAKER_REAR = { input: { x: 70, y: 70 }, thru: { x: 160, y: 70 }, level: { x: 70, y: 150 }, power: { x: 140, y: 210 }, ac: { x: 52, y: 214 } } as const;
+/** The INPUT switch (DJ-03): a 2-position MIC · LINE slide switch, its
+ *  centre on the rear panel (local mm). A real one is about 12 × 6 mm. */
+export const SPEAKER_REAR_MICLINE = { x: 115, y: 152 } as const;
+export const MICLINE_W = 12;
+export const MICLINE_H = 6;
 
-export const SpeakerRear = memo(function SpeakerRear({ x, y, s = 1, on, level = 0.75 }: { x: number; y: number; s?: number; on: boolean; level?: number }) {
+/** The MIC · LINE input switch with its legend over it (DJ-03; capstone
+ *  fault PA_INPUT_MIC): the slider sits LEFT on MIC, RIGHT on LINE. */
+function MicLineSwitch({ cx, cy, mic, size }: { cx: number; cy: number; mic: boolean; size: number }) {
+  return (
+    <Group>
+      <SlideSwitch x={cx - MICLINE_W / 2} y={cy - MICLINE_H / 2} w={MICLINE_W} h={MICLINE_H} pos={mic ? 0 : 1} positions={2} />
+      <SceneText x={cx} y={cy - MICLINE_H / 2 - 2.5} size={size} text="MIC · LINE" color={INK.print} face="label" align="center" />
+    </Group>
+  );
+}
+
+/** `mic`: the speaker's own input switch is on MIC (the booth's model has it
+ *  for PA R only — djEvent `paRMic`); otherwise it is drawn on LINE. */
+export const SpeakerRear = memo(function SpeakerRear({ x, y, s = 1, on, level = 0.75, mic = false }: { x: number; y: number; s?: number; on: boolean; level?: number; mic?: boolean }) {
   const W = SPEAKER_REAR_W;
   const H = SPEAKER_REAR_H;
   const R = SPEAKER_REAR;
@@ -640,6 +658,7 @@ export const SpeakerRear = memo(function SpeakerRear({ x, y, s = 1, on, level = 
       <ComboSocket cx={R.input.x} cy={R.input.y} d={30} />
       <XlrSocket cx={R.thru.x} cy={R.thru.y} d={24} male />
       <Knob cx={R.level.x} cy={R.level.y} d={26} value={level} />
+      <MicLineSwitch cx={SPEAKER_REAR_MICLINE.x} cy={SPEAKER_REAR_MICLINE.y} mic={mic} size={LEG} />
       <Led cx={150} cy={140} r={3} on={on} colour={INK.green} />
       <Led cx={170} cy={140} r={3} on={false} colour={INK.peak} />
       <IecInlet x={R.ac.x - 12} y={R.ac.y - 8} s={1.4} />
@@ -654,9 +673,13 @@ export const SpeakerRear = memo(function SpeakerRear({ x, y, s = 1, on, level = 
 });
 
 /** A powered speaker's compact INPUT PLATE (face-on, 150 × 92), as the room
- *  map wires it at true size: combo input, level, IEC inlet, power switch. */
+ *  map wires it at true size: combo input, MIC · LINE switch, level, IEC
+ *  inlet, power switch. */
+/** The plate's MIC · LINE switch centre (local mm, DJ-03): over LEVEL, under
+ *  the title, clear of the input, the light and every cable's lane. */
+export const PLATE_MICLINE = { x: 74, y: 28 } as const;
 
-export const SpeakerPlate = memo(function SpeakerPlate({ x, y, on, title, live }: { x: number; y: number; on: boolean; title: string; live?: boolean }) {
+export const SpeakerPlate = memo(function SpeakerPlate({ x, y, on, title, live, mic = false }: { x: number; y: number; on: boolean; title: string; live?: boolean; mic?: boolean }) {
   const W = PLATE_W;
   const H = PLATE_H;
   const P = PLATE;
@@ -673,6 +696,7 @@ export const SpeakerPlate = memo(function SpeakerPlate({ x, y, on, title, live }
       <SceneText x={8} y={13} size={7} text={title} color={INK.amber} face="label" />
       <ComboSocket cx={P.input.x} cy={P.input.y} d={22} />
       <Knob cx={P.level.x} cy={P.level.y} d={14} value={0.75} />
+      <MicLineSwitch cx={PLATE_MICLINE.x} cy={PLATE_MICLINE.y} mic={mic} size={LEG} />
       <IecInlet x={P.ac.x - 12} y={P.ac.y - 8} s={1} />
       <Rocker x={P.power.x - 5.5} y={P.power.y - 9} s={0.85} on={on} />
       <Led cx={P.level.x + 18} cy={P.level.y - 12} r={2} on={on} colour={live ? INK.green : INK.blue} />

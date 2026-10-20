@@ -49,6 +49,11 @@ export type Run = {
   /** ADDITIVE: how far a loose end dips below its chord (mm; default 16). A
    *  plug hanging from its socket barely dips at all. */
   looseSag?: number;
+  /** ADDITIVE (DJ-10, owner 2026-10-20): an UNBALANCED lead with XLR ends —
+   *  its plugs stay XLR (so each fits its jack, rule C13) but its cable is
+   *  thinner, plain-jacketed (no balanced line's stripe), and its flag is
+   *  edged in amber so the hum's cause is visible. */
+  unbal?: boolean;
 };
 
 const WIDTH: Record<CableKind, number> = { rca: 3.2, xlr: 4.6, trs: 4.2, phones: 3, iec: 6.2 };
@@ -58,6 +63,7 @@ export function styleOf(r: Run): CableStyle {
   const pattern: CablePattern = k === 'xlr' ? (r.dashed ? 'dash' : 'stripe') : k === 'trs' ? 'dots' : k === 'iec' ? 'ribs' : r.dashed ? 'dash' : 'plain';
   const colour = k === 'rca' ? (r.colour === INK.rcaRed ? '#7a2018' : '#8d9097') : k === 'xlr' ? '#3d4046' : k === 'iec' ? '#16171a' : '#101113';
   if (r.quiet) return { colour: '#0f1012', width: WIDTH[k] * 0.62, pattern: 'ribs' };
+  if (r.unbal) return { colour: '#24262b', width: WIDTH[k] * 0.6, pattern: r.dashed ? 'dash' : 'plain' };
   return { colour, width: WIDTH[k], pattern };
 }
 
@@ -107,7 +113,7 @@ export function CableRun({ r, flow = false, labelAt }: { r: Run; flow?: boolean;
       ) : (
         <LoosePlug x={b[0]} y={b[1]} ang={angOut} kind={r.kind === 'phones' ? 'phones' : farKind} colour={r.colour} />
       )}
-      {labelAt ? <CableFlag x={labelAt[0]} y={labelAt[1]} text={r.label} live={r.live} edge={st.colour === '#101113' || st.colour === '#16171a' ? '#5c626b' : st.colour} /> : null}
+      {labelAt ? <CableFlag x={labelAt[0]} y={labelAt[1]} text={r.label} live={r.live} edge={r.unbal ? INK.amber : st.colour === '#101113' || st.colour === '#16171a' ? '#5c626b' : st.colour} /> : null}
     </Group>
   );
 }

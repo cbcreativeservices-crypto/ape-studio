@@ -22,8 +22,8 @@
  */
 import { MIXER_REAR, MIXER_REAR_JACKS, PLAYER_REAR, PLAYER_REAR_JACKS, type Box, type Pt } from './boothGeometry.ts';
 import { MONITOR_H, MONITOR_W, PLATE_H, SPEAKER_H, SPEAKER_W } from './gearGeometry.ts';
-import { FLAG, FLAG_TEXT, LANE, MAP, MAP_BODIES, MAP_PLUGS, TIED, plateBox, FLOOR_Y, PLUG_R, farKindOf, fixedEnd, fixedKindOf, jackPt, routeOf, type SpeakerKey } from './mapGeometry.ts';
-import { PLUGS, deviceLive, speakerFeed, type Booth, type JackId, type PlugId } from '../model/djModel.ts';
+import { FLAG, FLAG_TEXT, LANE, MAP, MAP_BODIES, MAP_PLUGS, BTH_PHONES_X, PHONES_UP_X, TIED, WRONG_JOB_LANE, WRONG_JOB_UNDER, plateBox, FLOOR_Y, PLUG_R, farKindOf, fixedEnd, fixedKindOf, jackPt, routeOf, type SpeakerKey } from './mapGeometry.ts';
+import { PLUGS, deviceLive, speakerFeed, wrongJob, type Booth, type JackId, type PlugId } from '../model/djModel.ts';
 import type { BoothRender } from '../engine/djRender.ts';
 
 export type P2 = [number, number];
@@ -532,8 +532,25 @@ export function lane4(p: PlugId, to: JackId | null): P2[] {
   if (PLUGS[p].kind === 'phones') {
     const a = PHONES_BREAK;
     const b = to === 'mix.phones' ? phonesJack4 : null;
-    if (!b) return routeOf(p, to);
+    if (!b) {
+      // DJ-02: into a speaker's combo input — from its break mark a little
+      // right to the gap between deck B and the mixer, up it, across on its
+      // own lane above the rear panels, and up into the plate's input
+      const j = jackPt(to);
+      return [[a.x, a.y], [PHONES_UP_X, a.y], [PHONES_UP_X, WRONG_JOB_LANE], [j.x, WRONG_JOB_LANE], [j.x, j.y]];
+    }
     return [[a.x, a.y], [b.x, a.y], [b.x, b.y]];
+  }
+  if (to === 'mix.phones') {
+    // DJ-02: a BOOTH TRS plug in the PHONES jack — the map's route (its
+    // wrong-job lane, the column, under the jack) into the jack on THIS
+    // screen's front edge (phonesJack4); it never crosses the rear panel
+    const r = routeOf(p, to);
+    const n = r.length;
+    r[n - 3] = [BTH_PHONES_X, phonesJack4.y + WRONG_JOB_UNDER];
+    r[n - 2] = [phonesJack4.x, phonesJack4.y + WRONG_JOB_UNDER];
+    r[n - 1] = [phonesJack4.x, phonesJack4.y];
+    return r;
   }
   const r = routeOf(p, to);
   const lane = LANE4[p];
@@ -1036,7 +1053,8 @@ export function patchLabels4(plugsAt: Partial<Record<PlugId, JackId | null>>, sh
     const plugged = plugsAt[p] != null;
     const seen = opt.view ? along.filter((q) => q[0] >= band.x && q[0] <= band.x + band.w && q[1] >= band.y && q[1] <= band.y + band.h) : along;
     if (seen.length === 0) return null;
-    const pref = (plugged ? FLAG[p] : null) ?? seen[Math.floor(seen.length / 2)];
+    // (a wrong-job move — DJ-02 — has no fixed flag spot: its run is its own)
+    const pref = (plugged && !wrongJob(p, plugsAt[p] ?? null) ? FLAG[p] : null) ?? seen[Math.floor(seen.length / 2)];
     // a loose end's flag goes beside its hanging plug (with a leader), off the gear
     const loose = plugged ? undefined : loosePlugBox4(p);
     return { kind: 'flag', id: p, text: merged.get(p) ?? FLAG_TEXT[p] ?? PLUGS[p].short, live: live(p), edge: edgeOf(p), along: opt.view ? seen : along, prefer: pref as P2, loose, optional: !focus.has(p) };
