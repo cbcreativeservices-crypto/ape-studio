@@ -120,7 +120,9 @@ registerRuleLogic({
       const capture = cell(r, 'in_capture');
       const phantom = cell(r, 'in_phantom');
       if (phantom === '' || phantom === 'na') return false;
-      if (capture === 'condenser_mic') return phantom === 'off';
+      // Active ribbons need phantom like a condenser; only a PASSIVE ribbon
+      // (ribbon_mic) keeps the caution (rule book L6).
+      if (capture === 'condenser_mic' || capture === 'active_ribbon_mic') return phantom === 'off';
       // di and wireless are excluded on purpose: active DIs want phantom,
       // passive ones do not, and receivers vary by device (C's intent).
       return ['ribbon_mic', 'line', 'playback'].includes(capture) && phantom === 'on';
@@ -426,7 +428,7 @@ registerActivityChecks({
         inputs(c).length > 0 &&
         !inputs(c).some((r) => {
           const capture = cell(r, 'in_capture');
-          if (capture === 'condenser_mic') return cell(r, 'in_phantom') !== 'on';
+          if (capture === 'condenser_mic' || capture === 'active_ribbon_mic') return cell(r, 'in_phantom') !== 'on';
           if (['line', 'playback', 'ribbon_mic'].includes(capture)) {
             return cell(r, 'in_phantom') === 'on';
           }

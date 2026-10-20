@@ -10,7 +10,7 @@
  * which has been false for some time and hid the ones that genuinely are not.
  *
  * STILL UNVERIFIED — 10 sourceNotes across 5 records, grep '— VERIFY':
- *   connectors.analog.ts:365,478 · connectors.digital.ts:579,690,807,912 ·
+ *   connectors.analog.ts:365,479 · connectors.digital.ts:579,690,807,912 ·
  *   connectors.recognition.ts:716 · connectors.speaker.ts:602,606,707
  * These are the only facts in this SAFETY-CRITICAL set not yet confirmed.
  * Re-count rather than trusting this list once any of them is resolved.

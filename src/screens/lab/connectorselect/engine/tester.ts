@@ -107,7 +107,7 @@ export const FAULTS: readonly FaultCase[] = [
     inspect: 'The boot slides back too easily — the shield braid has pulled away from the pin-1 solder cup.',
     options: ['Shield (pin 1) disconnected', 'Open conductor on pin 3', 'Pins 2 and 3 reversed', 'The cable is fine'],
     correct: 0,
-    explain: 'Signal pins pass but pin 1 is dark: the shield is open. Audio often still passes — with the interference protection gone. Hum that changes when you touch things is the giveaway.',
+    explain: 'Signal pins pass but pin 1 is dark: the shield is open. Audio often still passes — with the interference protection gone. Hum that changes when you touch things is the giveaway. Pin 1 is also the return path for phantom power, so a condenser mic or active DI on this cable will likely go silent.',
   },
   {
     id: 'pins_23_reversed',

@@ -324,7 +324,11 @@ export const STAGE5_TECHNICAL: StageDef = {
                 },
                 {
                   value: "ribbon_mic",
-                  label: "Ribbon microphone"
+                  label: "Ribbon microphone (passive)"
+                },
+                {
+                  value: "active_ribbon_mic",
+                  label: "Ribbon microphone (active)"
                 },
                 {
                   value: "di",
@@ -1024,10 +1028,10 @@ export const STAGE5_TECHNICAL: StageDef = {
       severity: "attention",
       kind: "mismatch",
       title: "Phantom power does not match the source",
-      detail: "Most condenser microphones need phantom power and are silent without it. Phantom sent to a ribbon microphone, a line output or a playback device can damage some of them, and should be a deliberate decision rather than a default left on.",
-      fixHint: "Set phantom on for condensers and active devices that need it, off for line and playback sources, and check each ribbon's requirement before the day.",
+      detail: "Most condenser microphones and active ribbon microphones need phantom power and are silent without it. Phantom sent to a passive ribbon microphone, a line output or a playback device can damage some of them, and should be a deliberate decision rather than a default left on.",
+      fixHint: "Set phantom on for condensers, active ribbons and other active devices that need it, off for line and playback sources, and check each ribbon's requirement before the day.",
       needsLogic: true,
-      logicIntent: "Fire for each input_list row where in_capture is condenser_mic and in_phantom is off, or where in_capture is ribbon_mic, line or playback and in_phantom is on. Do not fire when in_phantom is empty or na, and do not fire for di or wireless rows, since those vary by device.",
+      logicIntent: "Fire for each input_list row where in_capture is condenser_mic or active_ribbon_mic and in_phantom is off, or where in_capture is ribbon_mic (passive), line or playback and in_phantom is on. Do not fire when in_phantom is empty or na, and do not fire for di or wireless rows, since those vary by device.",
       learnMore: {
         route: "MicLab"
       }
@@ -1063,7 +1067,7 @@ export const STAGE5_TECHNICAL: StageDef = {
       needsLogic: true,
       logicIntent: "Fire when any signal_path row has sp_from filled and sp_to empty. Also fire when live_recording or recording is among the stage 1 services and no row's sp_to mentions a recorder or interface, or when livestream_feed is among the services or livestream among the platforms and no row's sp_to mentions a stream or encoder. Match words loosely and do not fire when signal_path is empty.",
       learnMore: {
-        route: "SignalChainLab"
+        route: "SoundSystemsRoute"
       }
     },
     {
@@ -1080,7 +1084,7 @@ export const STAGE5_TECHNICAL: StageDef = {
       needsLogic: true,
       logicIntent: "Fire when a signal_path row has sp_level instrument and neither sp_via nor sp_to mentions a DI, direct box or instrument input. Also fire when an input_list row has in_capture line or playback with in_connection ts, since that is an unbalanced source on what is usually a long run. Match words loosely; nudge only.",
       learnMore: {
-        route: "SignalChainLab"
+        route: "ConnectorSelectLab"
       }
     },
     {

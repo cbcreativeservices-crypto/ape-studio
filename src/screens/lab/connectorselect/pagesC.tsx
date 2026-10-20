@@ -108,7 +108,7 @@ const PageBuildA = makeScenarioPage(
 const PageBuildB = makeScenarioPage(
   'STATION 5 · BUILD THE SYSTEM — MONITORS & POWER',
   SCENARIOS.slice(4, 8),
-  'Line level, speaker level, and the one connection in this lab that can destroy equipment. Choose like it is your rig.',
+  'Line level, speaker level, and the connection in this lab most likely to destroy equipment. Choose like it is your rig.',
 );
 const PageBuildC = makeScenarioPage(
   'STATION 5 · BUILD THE SYSTEM — SOURCES & DATA',

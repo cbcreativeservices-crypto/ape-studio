@@ -202,7 +202,7 @@ const SPECTRUM_BLURBS: Record<SpectrumKey, string> = {
   guitar: 'A comb of evenly spaced spikes: the harmonics of one played note, each a multiple of the fundamental.',
   hum: 'Thin spikes at 60 Hz and its multiples — the electrical signature. If you see this, chase grounding and cables, not EQ.',
   feedback: 'One violently tall, narrow spike: a single frequency running away. Find it here, then pull that frequency down.',
-  pinknoise: 'Equal energy per octave — a straight downward slope on this log display. The calibration reference.',
+  pinknoise: 'Equal energy per octave. This lab’s analyzer is FFT-style (equal-width bands), so pink noise reads as a straight downward slope; a 1/3-octave RTA shows it flat. The calibration reference.',
 };
 
 const SPECTRUM_CAPTIONS: Record<SpectrumKey, string> = {
@@ -218,7 +218,7 @@ const SPECTRUM_CAPTIONS: Record<SpectrumKey, string> = {
   feedback:
     'Feedback: ONE towering narrow spike (here near 1.7–1.8 kHz) and nothing else notable. A single spike that GROWS over time is the PA about to scream — act before it does.',
   pinknoise:
-    'Pink noise: a smooth −3 dB/octave RAMP, falling evenly left to right on a log display. The reference tilt — finished mixes usually sit near it, not flat.',
+    'Pink noise: a smooth −3 dB/octave RAMP, falling evenly left to right — how an FFT-style analyzer like this one (equal-width bands) draws it. A 1/3-octave RTA draws pink noise flat. On this display it is the reference tilt — finished mixes usually sit near it, not flat.',
 };
 
 const LOOK_FOR = [

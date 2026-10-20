@@ -137,7 +137,7 @@ export const PLUG_COMPARISONS: PlugComparison[] = [
   {
     id: 'eth_8p8c_protocols',
     aLabel: 'Audio-over-IP network port (e.g. Dante)',
-    bLabel: 'Digital-snake or office LAN port (e.g. AES50)',
+    bLabel: 'Digital-snake port (e.g. AES50), or a plain office LAN port',
     sameLooks:
       'Audio-over-IP systems, digital-snake protocols, and plain office networking all use the same 8P8C modular plug.',
     question: 'Interchangeable?',

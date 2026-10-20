@@ -33,7 +33,7 @@ export const CARRIED_CATEGORIES: CarriedCategory[] = [
   {
     id: 'headphone_level',
     label: 'HEADPHONE AUDIO',
-    blurb: 'A small amplifier’s output — enough to drive earcups. More than line level demands, far less than a loudspeaker needs.',
+    blurb: 'A small amplifier’s output. Its voltage is often close to line level; the difference is the current it can push into low-impedance earcups. Far less than a loudspeaker needs.',
   },
   {
     id: 'speaker_level',

@@ -386,7 +386,8 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
       'Mixer aux/media inputs (often via adaptation to 1/4-inch or RCA)',
       'Camera and portable recorder inputs (equipment-dependent)',
     ],
-    construction: 'balanced_shielded',
+    // No `construction` tag (as trrs_35): the common build is stereo on a
+    // shared return, which no cross-section here models; the note says it.
     constructionNote:
       'Consumer 3.5 mm cables typically carry two small conductors plus a common shield/return — the same two-plus-shield idea as larger cables, miniaturized. The small build trades durability for size; the strain relief is usually what determines the cable’s lifespan.',
     pinouts: [

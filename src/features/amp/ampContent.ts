@@ -503,7 +503,7 @@ export const RACK_SCENARIOS: RackScenario[] = [
       ['Ventilation', 'Clear, 1U gap above'], ['Input', '−6 dB below mixer clip'], ['Front panel', 'CLIP flickers on the loudest peaks only'], ['Power sequence', 'Correct'],
     ].map(([label, value]) => ({ label, value })),
     answer: 'normal',
-    explain: 'A 4 Ω load on an amplifier rated for it, real cable, airflow, and a CLIP light that only flickers on the very loudest peaks: that is ordinary, healthy operation with reasonable headroom.',
+    explain: 'A 4 Ω load on an amplifier rated for it, real cable, and airflow. A CLIP light that only flickers briefly on the very loudest peaks may be acceptable on some amplifiers (check its manual), and many engineers would still trim the input a little for headroom. A CLIP light that stays lit, or lights on ordinary passages, is not acceptable.',
   },
 ];
 

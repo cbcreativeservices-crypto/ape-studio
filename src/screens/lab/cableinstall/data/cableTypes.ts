@@ -158,7 +158,7 @@ export const CI_CABLE_TYPES: CiCableType[] = [
     tint: CI_CLASS_TINTS.control,
     signal: 'GPIO, serial, dimming/control protocols',
     use: 'both',
-    concerns: ['Identify the protocol before routing', 'Some control (e.g. dimmer runs) is a NOISE SOURCE — plan neighbors', 'Documentation prevents mystery wires'],
+    concerns: ['Identify the protocol before routing', 'Dimmer runs are POWER, not control, and a classic NOISE SOURCE — plan neighbors', 'Documentation prevents mystery wires'],
   },
   {
     id: 'multipair',

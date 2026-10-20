@@ -225,6 +225,11 @@ const eqConfig: FxLabConfig = {
 };
 export const EqLabScreen = () => <FxLabScreen config={eqConfig} />;
 
+// Rule book F3: 100% wet is the send/return setting. One line, shared by the
+// delay and reverb MIX choices, so the insert-vs-send difference is stated.
+const SEND_RETURN_WET =
+  'The usual setting on an aux send/return: the dry signal stays on the channel and the return adds only the effect. Used as an insert, MIX does the blending instead.';
+
 // ──────────────────────────────────────────────────────── LAB 2 · Delay ──
 const delayConfig: FxLabConfig = {
   labId: 'delay',
@@ -263,7 +268,7 @@ const delayConfig: FxLabConfig = {
       choices: [
         { label: '25%', value: 0.25 },
         { label: '50%', value: 0.5 },
-        { label: '100% WET', value: 1.0 },
+        { label: '100% WET', value: 1.0, blurb: SEND_RETURN_WET },
       ],
       initial: 0.5,
     },
@@ -395,7 +400,7 @@ const reverbConfig: FxLabConfig = {
       choices: [
         { label: '35%', value: 0.35 },
         { label: '70%', value: 0.7 },
-        { label: '100% WET', value: 1.0 },
+        { label: '100% WET', value: 1.0, blurb: SEND_RETURN_WET },
       ],
       initial: 0.35,
     },

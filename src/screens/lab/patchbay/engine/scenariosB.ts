@@ -298,7 +298,7 @@ export const ASSESSMENT_ITEMS: AssessmentItem[] = [
     options: ['Nothing at all', 'The source, unchanged', 'The tuner’s output'],
     correct: 0,
     explain: 'Either insertion on a full-normal pair opens the contact; the destination loses its feed.',
-    wrong: [undefined, 'That is the HALF-normal tap. This bay breaks on top.', 'A tuner is a destination at the far end of your cord — it sends nothing back.'],
+    wrong: [undefined, 'That is the HALF-normal tap. A full-normal pair breaks on EITHER jack, the top included.', 'A tuner is a destination at the far end of your cord — it sends nothing back.'],
     render: {
       state: { config: 'full', topPlugged: true, bottomPlugged: false },
       sourceLabel: 'CONSOLE OUT 1',

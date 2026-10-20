@@ -83,7 +83,7 @@ function PageTap({ ctx }: { ctx: PageCtx }) {
       {chips}
       <Card>
         <Eyebrow>WORDS YOU WILL HEAR FOR THE TOP-JACK TRICK</Eyebrow>
-        <Body>tap · mult · split · monitor · parallel feed — all describing the same move: a copy of the source taken without interrupting its normal destination.</Body>
+        <Body>tap · split · monitor feed — all describing the same move: a copy of the source taken without interrupting its normal destination. Two nearby words mean something else: a MULT is a separate group of jacks wired together on the bay, used to copy one signal to several places; and some bays offer a PARALLEL pair, where top and bottom are wired straight across with no switch to break.</Body>
       </Card>
       <Prompt>
         Now pull the top cord and instead patch the DRUM MACHINE into the BOTTOM. Before you look at the readout, answer for

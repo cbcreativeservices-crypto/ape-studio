@@ -347,7 +347,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     kind: 'list',
     labs: [
       { name: 'Compression', blurb: 'Threshold, ratio, attack/release, envelope.', route: 'CompressionLab' },
-      { name: 'Gate / Expander', blurb: 'Downward expansion, chatter, sidechain.', route: 'GateLab' },
+      { name: 'Gate / Expander', blurb: 'Downward expansion, range, hold, chatter.', route: 'GateLab' },
       { name: 'Limiter', blurb: 'Brickwall ceiling, true-peak, loudness.', route: 'LimiterLab' },
       // LIVE V1 (owner brief 2026-09-02): the family hub opens with the De-Esser
       // & Sibilance Control lab; the other processors are listed as planned.
