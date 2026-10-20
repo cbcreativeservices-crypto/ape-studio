@@ -21,7 +21,14 @@
 
 /** One stage of the canonical channel path, in signal order. The signal-flow
  *  page renders these as stations; the drag-to-connect exercise asks the
- *  learner to rebuild the order. */
+ *  learner to rebuild the order.
+ *
+ *  This is the DAW channel model (wiring fix MX-02, 2026-10-20): a recorded
+ *  clip with CLIP GAIN, no input trim / preamp stage, and SENDS as one
+ *  post-fader station. A live console strip (preamp gain, HPF, insert, EQ,
+ *  pre and post taps) is taught in Sound Systems ROUTE. The order check is
+ *  strict-exact against THIS model; the pre-fader exception is taught on the
+ *  pre/post page, not in the builder. */
 export const CHANNEL_PATH = [
   { id: 'source', name: 'SOURCE', blurb: 'The recorded clip or live input.' },
   { id: 'clipgain', name: 'CLIP GAIN', blurb: 'Level of the clip itself, before everything.' },
@@ -88,6 +95,8 @@ export const PATH_TRUTHS: readonly PathTruth[] = [
     kind: 'bus',
     name: 'Bus',
     carriesAudio: true,
+    // Teaching simplification of the DAW model (MX-02): "bus" names the PATH;
+    // a bus routinely sums too — the summing case is taught as the subgroup.
     sumsChannels: false,
     remoteGainControl: false,
     isCopy: false,
@@ -223,8 +232,13 @@ export function mainPathGain(c: Channel, console_: Console): number {
 }
 
 /** The gain a channel contributes to one AUX RETURN's input. Pre-fader sends
- *  ignore the fader (and mute follows the console convention: pre-fader keeps
- *  feeding the send). Post-fader sends follow fader, mute AND the VCA. */
+ *  ignore the fader. Whether a muted channel's pre-fader send keeps feeding
+ *  DEPENDS ON THE CONSOLE (some analog desks kill it with the mute, others do
+ *  not; many digital desks let you choose — one app-wide statement,
+ *  shared with soundsystems/console.ts, wiring fix MX-01/SS-03 2026-10-20).
+ *  THIS lab's mixer keeps the pre-fader send feeding through a mute; the
+ *  Sound Systems console silences it. Post-fader sends follow fader, mute AND
+ *  the VCA. */
 export function sendPathGain(c: Channel, auxId: string, console_: Console): number {
   const s = c.sends[auxId];
   if (!s) return 0;

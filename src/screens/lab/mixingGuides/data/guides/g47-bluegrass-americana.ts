@@ -327,7 +327,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Align pickup and mic (polarity flip, 0.5–2 ms delay); this audience complains about loud long before quiet.",
+      "text": "Align pickup and mic (0.5–2 ms delay), then check polarity: flip it and keep the setting that sounds fuller; this audience complains about loud long before quiet.",
       "bullet": true
     }
   ],

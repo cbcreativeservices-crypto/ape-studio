@@ -11,7 +11,9 @@
  * ANY plan): the PA stacks stand on the deck's downstage corners, clear of
  * the front row; the front row keeps a centre aisle (where its name sits);
  * the DI box sits on the floor behind the combo, its cable to the amp's back
- * panel (it ran over the cabinet's top). The organ console, its pedalboard
+ * panel (it ran over the cabinet's top) — to the amp's LINE / DI OUT jack,
+ * never its speaker or extension-speaker output (wiring fix MK-01,
+ * 2026-10-20; DI_CABLE_JACKS). The organ console, its pedalboard
  * and its bench are ONE assembly (the bench stands over the back of the
  * pedalboard: the organist sits above the pedals, heels on their back ends).
  * STUDIO: no wedges — each performer (the guitarist, and the organist at the
@@ -23,6 +25,7 @@ import { cabLayout, LESLIE } from './speakerModel.ts';
 import { chairRowFacingStage, frontRowAt } from '../../../../../../features/lab/audienceChairsModel.ts';
 import { chairFoots, foot, kitPieceFoots, rectOfCircle, shift, wedgeFoot, type PlanCable, type PlanFoot, type PlanRect } from '../planFoot.ts';
 import { cueFootprints, type CueRig } from '../monitoring/cueMix.ts';
+import type { In, Out } from './signalChain.ts';
 
 export type PlanScene = 'stage' | 'studio';
 
@@ -83,7 +86,11 @@ export const PLAYER_SPACE_R = 520;
 export const ORGAN_SPACE = { u0: POS.organ.u - 300, u1: POS.bench.u + 420, v0: POS.organ.v - 720, v1: POS.organ.v + 720 } as const;
 
 /** The DI box's jack end (rotated: jacks toward the amp) and its cable to
- *  the combo's back panel. */
+ *  the combo's back panel: the amp's LINE / DI OUT jack into the DI's input,
+ *  never the speaker output (signalChain patchVerdict: speakerOut → diIn is
+ *  'stop'). The plan does not draw the guitar → amp cord or the DI's XLR to
+ *  the stage box (needs before/after for owner, MK-01). */
+export const DI_CABLE_JACKS: { amp: Out; di: In } = { amp: 'lineOut', di: 'diIn' };
 export const DI_CABLE: PlanCable = { id: 'diCable', kind: 'instrumentCable', pts: [{ u: POS.di.u + 68, v: POS.di.v - 18 }, { u: CAB.box.x0 + 10, v: 180 }], from: 'dibox', to: 'cab' };
 
 /** The studio headphone mix: the guitarist's mixer at the right hand (the

@@ -347,7 +347,7 @@ export function RoutingPanel({ w, h, plan, trace, problems, looks, a11y }: { w: 
   const xf = useMemo(() => fitXform('side', box, w, h, 6), [w, h, H]); // eslint-disable-line react-hooks/exhaustive-deps
   const srcY = rows(plan.sources.length, H);
   const dstY = rows(plan.dests.length, H);
-  const bad = new Set(problems.flatMap((p) => ('dest' in p ? [p.dest] : p.code === 'echo' ? ['remoteReturn'] : p.code === 'ambienceInPa' ? ['pa'] : [])));
+  const bad = new Set(problems.flatMap((p) => ('dest' in p ? [p.dest] : p.code === 'ambienceInPa' ? ['pa'] : [])));
   const wires = useMemo(() => {
     const dim = make();
     const lit = make();

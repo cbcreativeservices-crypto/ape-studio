@@ -613,7 +613,9 @@ export const POWER_CASES: PowerCase[] = [
 export const POWER_NUANCE =
   '"Condenser" does not necessarily mean "48 V only." Some run on batteries, lower-voltage phantom ' +
   'schemes, plug-in power from a camera or recorder, or proprietary powering. For professional audio, ' +
-  'however, 48 V phantom is extremely common — the selection question is simply: can the rig on THIS job power THIS mic?';
+  'however, 48 V phantom is extremely common — the selection question is simply: can the rig on THIS job power THIS mic? ' +
+  'A tube (valve) condenser is the clear exception: it does not run on phantom but on its own power supply, joined to the mic ' +
+  'by a dedicated multi-pin cable, with the supply’s output going on to the mic input.';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Lesson 7 — Form Factor Matters

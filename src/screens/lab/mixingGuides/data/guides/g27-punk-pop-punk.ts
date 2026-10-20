@@ -77,7 +77,7 @@ export const GUIDE: MixingGuide = {
         "source": "Snare",
         "cut": "HPF 80–100 Hz; narrow −3 dB at ring (often 500 Hz–1 kHz)",
         "boost": "+2–3 dB at 180–250 Hz (body); +2–4 dB at 2–4 kHz (crack); shelf +2 dB at 8–10 kHz",
-        "notes": "Bottom mic for wire snap, flipped polarity, tucked under"
+        "notes": "Bottom mic for wire snap, tucked under; check polarity: flip it and keep the setting that sounds fuller"
       },
       {
         "source": "Toms",

@@ -79,7 +79,7 @@ export const GUIDE: MixingGuide = {
         "source": "Snare",
         "cut": "HPF 80–100 Hz; narrow −3 dB at ring (500 Hz–1 kHz)",
         "boost": "+2–4 dB at 180–250 Hz (body); +2–3 dB at 4–6 kHz (crack)",
-        "notes": "Bottom mic polarity-flipped, 6–10 dB under top for rattle"
+        "notes": "Bottom mic 6–10 dB under top for rattle; check polarity: flip it and keep the setting that sounds fuller"
       },
       {
         "source": "Toms",

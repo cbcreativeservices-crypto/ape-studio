@@ -204,7 +204,7 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
               </Group>
             ) : null}
             {/* the guitar's 1 × 12 cabinet (its speaker faces the audience) and its
-                DI box on the floor behind it, the cable to the amp's back panel */}
+                DI box on the floor behind it, the cable to the amp's LINE / DI OUT on its back panel (never the speaker output) */}
             <PlanAmpTop u0={CAB.box.x0} u1={CAB.box.x1} v0={CAB.box.z0} v1={CAB.box.z1} />
             <Line p1={vec(DI_CABLE.pts[0].u, DI_CABLE.pts[0].v)} p2={vec(DI_CABLE.pts[1].u, DI_CABLE.pts[1].v)} color="#2a2c32" strokeWidth={16} strokeCap="round" />
             <Group transform={[{ translateX: POS.di.u }, { translateY: POS.di.v }, { rotate: Math.PI }]}>

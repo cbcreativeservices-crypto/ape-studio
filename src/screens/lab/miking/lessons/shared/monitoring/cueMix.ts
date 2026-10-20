@@ -1,7 +1,9 @@
 /**
  * THE STUDIO HEADPHONE MIX (owner 2026-10-15) — pure geometry, no Skia.
  *
- * Real studios monitor through headphones, not wedges: at EACH performer's
+ * Most studio tracking is monitored through headphones rather than wedges
+ * (control-room tracking and speaker playback exist too — MK-03 hedge,
+ * 2026-10-20). This lab's studio plans draw, at EACH performer's
  * station a personal headphone mixer (a personal monitor mixer, ≈ 236 wide ×
  * 188 deep × 64 tall mm, on its own round-base stand) with the player's
  * headphones plugged into it, and each mixer fed back from the control room
@@ -13,7 +15,7 @@
  * caller at a realistic reach beside its performer — never on them.
  *
  * ROUTING (cables drawn independently — traceable, parallel lanes, never
- * merged; D69): each mixer's feed leaves the back of its stand, runs straight
+ * merged; D70): each mixer's feed leaves the back of its stand, runs straight
  * to its OWN lane along the wall that holds the distribution point, then
  * along that lane to the box. The mixer farthest along the wall gets the lane
  * nearest the wall, so no feed ever crosses another; at the box the lanes

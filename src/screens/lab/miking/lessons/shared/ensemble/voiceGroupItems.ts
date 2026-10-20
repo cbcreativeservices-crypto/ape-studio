@@ -9,7 +9,9 @@
  *   • the no-provocation rule: monitors up only to the agreed performance
  *     level; at any ring, lower that send at once and fix the geometry —
  *     never raise level to find the feedback point (E04 L111 rewritten);
- *   • choir and group mics never go into the singers' own monitor mix;
+ *   • choir and group mics stay out of the singers' own monitor mix, as a
+ *     suggested starting point (some engineers add a little, with care, or
+ *     use in-ear monitors — wiring fix MK-03, 2026-10-20);
  *   • every doubling of open mics costs about 3 dB of gain before feedback.
  *
  * Item-writing rules (LESSON_JOURNEY §5): three options of like length, real
@@ -60,14 +62,15 @@ export const noProvoke = (p: string, page: SourcePageId): MikingScenario => ({
   },
 });
 
-/** Group or choir mics stay out of the singers' own monitor mix. */
+/** Group or choir mics stay out of the singers' own monitor mix (a starting
+ *  point, not a rule: in-ears or a little, with care, are the exceptions). */
 export const ownMonitor = (p: string, page: SourcePageId, who = 'choir'): MikingScenario => ({
   id: `${p}.mon`,
   page,
   prompt: `The ${who} asks to hear more of themselves in their monitor. What do you send?`,
   options: ['A little piano or band, not their own mics', 'Their own group mics, turned up loud', 'All of the group mics, plus a little of the room'],
   correct: 'A little piano or band, not their own mics',
-  explain: `Sending ${who} mics back into the ${who}’s own monitor is a sure way to feedback: the monitor faces the very mics that hear it. Keep monitors low and give them what they need to stay in time and in tune — the piano, the band.`,
+  explain: `Sending ${who} mics back into the ${who}’s own monitor is the quickest way to feedback: the monitor faces the very mics that hear it. Most engineers keep them out of the wedges (in-ear monitors, or a little added with care, are the exceptions). Keep monitors low and give them what they need to stay in time and in tune — the piano, the band.`,
   why: {
     'Their own group mics, turned up loud': 'The monitor would then play straight into the mics feeding it — the loop that rings.',
     'All of the group mics, plus a little of the room': 'More open mics in the monitor makes the loop worse, and the room adds nothing they need.',
