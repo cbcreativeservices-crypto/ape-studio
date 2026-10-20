@@ -475,7 +475,7 @@ const WS_COMB: Workspace = {
     'infinite depth. Real reflections arrive quieter and filtered, so real notches are ' +
     'shallower and the peaks smaller than the ideal +6 dB. Path-difference conversion uses the ' +
     'classroom dry-air speed of sound.',
-  glossary: ['Comb Filtering', 'Phase', 'Reflection', 'Frequency', 'Delay', 'Interference'],
+  glossary: ['Comb Filtering', 'Phase', 'Reflection (acoustics)', 'Frequency', 'Delay', 'Interference'],
   fields: [
     {
       key: 'dt',
@@ -634,7 +634,7 @@ const WS_LATENCY: Workspace = {
     'safety-buffer overhead the spec sheet may not show, so measured round trips (loopback ' +
     'test) usually exceed this total. When the number matters, measure it: record a click ' +
     'through a physical loopback and read the offset.',
-  glossary: ['Latency', 'Buffer', 'Sample Rate', 'Sample', 'Monitoring', 'Analog-to-digital conversion'],
+  glossary: ['Latency', 'Buffer', 'Sample Rate', 'Sample', 'Monitoring (audio)', 'Analog-to-digital conversion'],
   fields: [
     {
       key: 'buf',

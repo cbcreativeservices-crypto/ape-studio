@@ -66,7 +66,7 @@ const WS_COMPRESSOR: Workspace = {
     'above the threshold, and output = input below it. It ignores knee shape, attack/release ' +
     'timing, and any program-dependent (auto) behaviour — so it predicts the SETTLED gain, not ' +
     'the moment-to-moment gain reduction during a transient.',
-  glossary: ['Compression', 'Threshold', 'Ratio', 'Gain Reduction', 'Makeup Gain', 'Dynamic Range'],
+  glossary: ['Dynamic range compression', 'Threshold', 'Ratio', 'Gain Reduction', 'Makeup Gain', 'Dynamic Range'],
   fields: [
     { key: 'thr', name: 'THRESHOLD', quantity: 'db', signed: true, placeholder: '-20', help: 'The level (dBFS) above which compression begins. Below it, the signal is untouched.' },
     { key: 'ratio', name: 'RATIO (n:1)', quantity: 'number', nonNegative: true, placeholder: '4', help: 'How many dB must go IN above threshold for 1 dB to come OUT above it. 4 means 4:1.', warn: { test: (x) => x < 1, msg: 'Ratio must be at least 1:1 (1:1 is no compression).' } },
