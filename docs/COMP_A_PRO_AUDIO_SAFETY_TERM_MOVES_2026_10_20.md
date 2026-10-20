@@ -9,7 +9,7 @@
 >
 > Comp A moved 557 questions and carried or removed those progress keys. `2026102001` now starts with a guard that stops it. **Do not apply it.**
 >
-> **`2026102002` is SUPERSEDED as well (same guard).** Comp A's own package, with the owner's go, renames "Call 911" to "Call Emergency Services". It also splits the Plain English into 2 sentences for the grade-9 reading limit and rewords Practical Application the same way. It updates the 6 entries that list "Call 911" as a related term (AED, Burn, Emergency, First Aid Kit, Heat Stress, Medical Emergency) and changes "911" to "emergency services" in 5 quiz questions. Comp A will report when it is live.
+> **`2026102002` is SUPERSEDED as well (same guard).** Comp A's own package, with the owner's go, renames "Call 911" to "Call Emergency Services". It also splits the Plain English into 2 sentences for the grade-9 reading limit and rewords Practical Application the same way. It updates the 6 entries that list "Call 911" as a related term (AED, Burn, Emergency, First Aid Kit, Heat Stress, Medical Emergency) and changes "911" to "emergency services" in 5 quiz questions, with no answer key changed; the 2 US/Canada questions keep 911 as the answer. **LIVE (Comp A, VERIFY all true).** ccode re-read it: the entry is named "Call Emergency Services", no row is named "Call 911", no related-term list names "Call 911", and 6 related-term lists name the new term.
 
 **Draft, not applied:** `supabase/migrations/2026102001_pro_audio_safety_term_moves.sql`. Apply it only after you have checked it. The owner approved every move.
 
