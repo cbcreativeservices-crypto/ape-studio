@@ -436,7 +436,7 @@ const WS_IMPEDANCE: Workspace = {
 /* 3 · Speaker Cable Loss                                             */
 /* ------------------------------------------------------------------ */
 
-/** The common speaker gauges the recommendation scans. */
+/** The common speaker gauges the suggestion scans. */
 const AWG_LIST = [10, 12, 14, 16, 18];
 
 // Every whole gauge is costed AS ITSELF (full-app run 2, 2026-10-01). It used
@@ -617,13 +617,13 @@ const WS_CABLE: Workspace = {
     },
     {
       key: 'recgauge',
-      name: 'Recommended gauge for a run (reverse)',
+      name: 'Suggested gauge for a run (reverse)',
       inputs: ['len', 'z', 'maxloss'],
       formula: 'smallest listed gauge with 20·log10(Z/(Z+2·L·R/m)) within budget',
       plainFormula:
-        'The recommended gauge is the thinnest listed wire whose level loss — twenty times the log of the load over the load plus the loop resistance — stays within the budget.',
+        'The suggested gauge is the thinnest listed wire whose level loss — twenty times the log of the load over the load plus the loop resistance — stays within the budget.',
       explain:
-        'Scans the standard cable gauges and recommends the thinnest (highest AWG number) that keeps the run within your loss budget. Thicker always works; it just costs more copper. If even the heaviest listed gauge fails, the run is too long — shorten it, relax the budget, or switch to a 70 V line.',
+        'Scans the standard cable gauges and suggests the thinnest (highest AWG number) that keeps the run within your loss budget. Thicker always works; it just costs more copper. If even the heaviest listed gauge fails, the run is too long — shorten it, relax the budget, or move the amplifier nearer the speaker (or use powered speakers); for distributed paging or background music, a 70 V line.',
       keySymbols: ['·', 'log₁₀', 'Z', '/', 'R'],
       compute: (v) => {
         const L = n(v.len);
@@ -639,13 +639,13 @@ const WS_CABLE: Workspace = {
           return [
             {
               label: 'NO LISTED GAUGE PASSES',
-              text: `Even 10 AWG exceeds the ${fmt(dB)} dB budget over ${fmt(L)} m into ${fmt(z)} Ω — shorten the run, raise the budget, or use a 70 V line.`,
+              text: `Even 10 AWG exceeds the ${fmt(dB)} dB budget over ${fmt(L)} m into ${fmt(z)} Ω — shorten the run, raise the budget, or move the amplifier nearer the speaker (or use powered speakers); for distributed paging or background music, a 70 V line.`,
             },
           ];
         }
         const rloop = 2 * L * ohmPerM(rec);
         return [
-          { label: 'RECOMMENDED GAUGE', text: `${rec} AWG — the thinnest listed gauge meeting the ${fmt(dB)} dB budget.` },
+          { label: 'SUGGESTED GAUGE', text: `${rec} AWG — the thinnest listed gauge meeting the ${fmt(dB)} dB budget.` },
           { label: 'ITS LOSS ON THIS RUN', value: 20 * Math.log10(z / (z + rloop)), quantity: 'db' },
         ];
       },
@@ -681,7 +681,7 @@ const WS_CABLE: Workspace = {
         const z = n(v.z);
         return [
           `For each listed gauge: Rloop = 2 × ${fmt(L)} m × (Ω/m), then loss = 20·log10(${fmt(z)}/(${fmt(z)}+Rloop)).`,
-          'The table marks each gauge PASS or FAIL against your budget; the recommendation is the thinnest (highest AWG number) that passes — thicker always works, it just costs more copper.',
+          'The table marks each gauge PASS or FAIL against your budget; the suggestion is the thinnest (highest AWG number) that passes — thicker always works, it just costs more copper.',
         ];
       },
     },
@@ -703,19 +703,19 @@ const WS_CV70: Workspace = {
     'addition: sum the taps, keep headroom, and never exceed the amplifier.',
   whyItMatters:
     'Constant-voltage lines exist to make long multi-speaker runs practical — high voltage means ' +
-    'low current, so thin cable and dozens of speakers per line work. But the amplifier’s ' +
+    'low current, so lighter cable than an 8 Ω run and dozens of speakers per line work — line loss still applies on long runs. But the amplifier’s ' +
     'wattage is a hard budget: overload the line and the whole zone distorts or trips, not just ' +
     'one speaker.',
   example:
     '12 ceiling speakers tapped at 10 W each on a 250 W / 70 V amplifier: load = 120 W. With a ' +
-    '1 dB headroom factor the recommended amp is ≥ 120 × 10^(1/10) ≈ 151 W — the 250 W amp ' +
+    '1 dB headroom factor the suggested amp is ≥ 120 × 10^(1/10) ≈ 151 W — the 250 W amp ' +
     'passes with 130 W (52%) to spare, line current ≈ 120/70.7 ≈ 1.7 A, and 7 more 10 W ' +
     'speakers fit while still holding the 1 dB reserve (13 would fill the amplifier to 100% ' +
     'with no headroom at all).',
   mistakes: [
     'Loading an amplifier to 100% of its rating — distributed amps want about 20% of the rating held in reserve (load to ≈ 80% — the 1 dB default here) for transformer losses, line loss, and program peaks.',
     'Summing speaker RATINGS instead of TAP settings — a "32 W" ceiling speaker tapped at 5 W puts 5 W on the line, not 32.',
-    'Running long 8 Ω low-impedance lines where a 70 V system belongs — the cable loss math (see Speaker Cable Loss) turns brutal past ~20–30 m.',
+    'Running long 8 Ω low-impedance lines where a 70 V system belongs — for distributed speakers, the cable loss math (see Speaker Cable Loss) turns brutal past ~20–30 m on light gauge into low impedance. For a few full-range speakers, moving the amplifier nearer (or powered speakers) is the other fix.',
   ],
   warnings:
     'Keep roughly 20% of the amplifier’s rating in reserve on distributed lines (load it to about ' +
@@ -766,7 +766,7 @@ const WS_CV70: Workspace = {
       // about 80 % of its rating: 10·log10(1/0.8) = 0.97 dB ≈ 1 dB, which keeps
       // 1 − 10^(−0.1) = 20.6 % in reserve.
       placeholder: '1',
-      help: 'Reserve factor: recommended amp = load × 10^(headroom/10). 1 dB keeps ≈ 21% of the amp’s rating in reserve (load ≈ 79%); 2 dB keeps ≈ 37%.',
+      help: 'Reserve factor: suggested amp = load × 10^(headroom/10). 1 dB keeps ≈ 21% of the amp’s rating in reserve (load ≈ 79%); 2 dB keeps ≈ 37%.',
     },
     {
       key: 'tapw',
@@ -783,9 +783,9 @@ const WS_CV70: Workspace = {
       inputs: ['taps', 'prated', 'vline', 'hr'],
       formula: 'load = Σtaps; amp ≥ Σtaps × 10^(headroom/10); I = Σtaps / Vline',
       plainFormula:
-        'The line load equals the sum of the tap settings; the recommended amplifier is at least that sum times ten raised to the headroom over ten; the line current is the load divided by the line voltage.',
+        'The line load equals the sum of the tap settings; the suggested amplifier is at least that sum times ten raised to the headroom over ten; the line current is the load divided by the line voltage.',
       explain:
-        'Budgeting a constant-voltage (70 V / 100 V) distributed line is simple addition: sum every speaker’s tap wattage. The amplifier’s rating is a hard ceiling — keep about 20% of it in reserve (≈ 1 dB). High line voltage means low current, which is exactly why these lines can run thin cable to dozens of speakers.',
+        'Budgeting a constant-voltage (70 V / 100 V) distributed line is simple addition: sum every speaker’s tap wattage. The amplifier’s rating is a hard ceiling — keep about 20% of it in reserve (≈ 1 dB). High line voltage means low current, which is exactly why these lines can run lighter cable than an 8 Ω run to dozens of speakers — line loss still applies on long runs.',
       keySymbols: ['Σ', '≥', '×', 'x²', '/'],
       compute: (v) => {
         const taps = arr(v.taps).filter((t) => t > 0);
@@ -798,7 +798,7 @@ const WS_CV70: Workspace = {
         const remaining = prated - load;
         return [
           { label: `SYSTEM LOAD (${taps.length} speakers)`, value: load, quantity: 'power' },
-          { label: `RECOMMENDED AMP ≥ (with ${fmt(hr)} dB headroom)`, value: recommended, quantity: 'power', chainable: false },
+          { label: `SUGGESTED AMP ≥ (with ${fmt(hr)} dB headroom)`, value: recommended, quantity: 'power', chainable: false },
           // An overloaded amp has no capacity left, not a NEGATIVE capacity
           // (calc check A, 2026-10-03): 330 W of taps on a 250 W amp read
           // "REMAINING AMP CAPACITY −80 W". Name the overload as what it is.
@@ -828,8 +828,8 @@ const WS_CV70: Workspace = {
         const vline = n(v.vline);
         return [
           `Sum the taps: ${taps.map((t) => fmt(t)).join(' + ')} = ${fmt(load)} W on the line.`,
-          `Headroom factor 10^(${fmt(hr)}/10) = ${fmt(Math.pow(10, hr / 10))} → recommended amp ≥ ${fmt(load * Math.pow(10, hr / 10))} W.`,
-          `Line current at full allocation: ${fmt(load)} W ÷ ${fmt(vline)} V = ${fmt(load / vline)} A — the low current is exactly why constant-voltage lines can run thin cable.`,
+          `Headroom factor 10^(${fmt(hr)}/10) = ${fmt(Math.pow(10, hr / 10))} → suggested amp ≥ ${fmt(load * Math.pow(10, hr / 10))} W.`,
+          `Line current at full allocation: ${fmt(load)} W ÷ ${fmt(vline)} V = ${fmt(load / vline)} A — the low current is exactly why constant-voltage lines can run lighter cable than an 8 Ω run (line loss still applies on long runs).`,
         ];
       },
     },

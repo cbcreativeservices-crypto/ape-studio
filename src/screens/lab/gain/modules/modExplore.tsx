@@ -185,14 +185,15 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
     >
       <View style={styles.well}>
         <GlossaryText style={styles.body}>
-          A real channel is a rack of separate devices — and from the outside, all a device shows you
-          is a SIG light and a CLIP light. SIGNAL X-RAY sees through every box at once: the level at
+          A real channel strip is a chain of separate stages — and from the outside, all a stage shows
+          you is a SIG and a CLIP light. SIGNAL X-RAY sees through every stage at once: the level at
           every point in the chain, gain staging as a system instead of isolated knobs.
         </GlossaryText>
         <ZoneLegend />
         <Text style={styles.caption}>
-          The source is a quiet instrument/source — fixed. The preamp rides the dock lane; the rest
-          of the chain lives in the PROCESS and LEVELS trays.
+          The source is a quiet mic — fixed — cabled into the preamp’s XLR input. The preamp rides
+          the dock lane; the rest of the chain lives in the PROCESS and LEVELS trays. The MASTER
+          feeds a powered nearfield monitor over a line lead.
         </Text>
         <View style={[styles.note, healthy && styles.noteGood]}>
           <Text style={[styles.noteText, healthy && styles.noteTextGood]}>

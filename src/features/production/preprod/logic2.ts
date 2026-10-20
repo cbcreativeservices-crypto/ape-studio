@@ -57,6 +57,15 @@ const mentions = (haystack: string, re: RegExp): boolean => re.test(haystack.toL
 /** Two entries, not one: a range, a pair, or two names. */
 const namesTwo = (s: string): boolean => s !== '' && /[-–—,/&+]|\band\b/i.test(s);
 
+/** One STEREO channel or track ("ST 1", "St2", "stereo 3", "interleaved"):
+ *  also a correct home for a stereo pair (PR-R2-01, wiring round 2 — stereo
+ *  console channels and stereo recorder tracks exist; one MONO channel is
+ *  the mistake). */
+const namesStereo = (s: string): boolean => /\bstereo\b|\binterleaved\b|^st$|\bst\s*-?\s*\d+\b|\bst\d/i.test(s.trim());
+
+/** A stereo pair's home: two mono entries, or one stereo one. */
+const holdsPair = (s: string): boolean => namesTwo(s) || namesStereo(s);
+
 /** Channels the stage 5 input list actually asks for, or null if there is none. */
 function inputListChannels(ctx: RuleContext): number | null {
   const list = rows(ctx.get('technical', 'input_list'));
@@ -110,8 +119,8 @@ registerRuleLogic({
       // column is a question not yet answered, not an answer that is wrong.
       if (consoleChannels === '' && trackNames === '') return false;
       return (
-        (consoleChannels !== '' && !namesTwo(consoleChannels)) ||
-        (trackNames !== '' && !namesTwo(trackNames))
+        (consoleChannels !== '' && !holdsPair(consoleChannels)) ||
+        (trackNames !== '' && !holdsPair(trackNames))
       );
     }),
 
@@ -162,6 +171,15 @@ registerRuleLogic({
       return !mentions(chain, /\bdi\b|direct box|direct input|instrument input|hi-?z/);
     });
     if (instrumentWithoutDi) return true;
+    // A speaker-level output wired into an input (PR-R2-03, wiring round 2):
+    // speaker level belongs on a loudspeaker, or on a DI / load box made for
+    // it. Fires only when the arrival names an input-side device.
+    const speakerIntoInput = rows(ctx.get('technical', 'signal_path')).some((r) => {
+      if (cell(r, 'sp_level') !== 'speaker') return false;
+      if (mentions(`${cell(r, 'sp_via')} ${cell(r, 'sp_to')}`, /\bdi\b|direct box|load box|attenuat|speaker[- ]level input/)) return false;
+      return mentions(cell(r, 'sp_to'), /console|mixer|desk|\binput|interface|pre-?amp|recorder|\bdaw\b|stage ?box|snake|channel/);
+    });
+    if (speakerIntoInput) return true;
     // An unbalanced jack on what is usually a long run back to the stage box.
     return rows(ctx.get('technical', 'input_list')).some(
       (r) => ['line', 'playback'].includes(cell(r, 'in_capture')) && cell(r, 'in_connection') === 'ts',
@@ -402,7 +420,7 @@ registerActivityChecks({
   'build-the-input-list': [
     {
       id: 'stereo-has-two',
-      label: 'Every stereo source occupies two console channels and two recorder tracks',
+      label: 'Every stereo source has two console inputs (two mono channels or one stereo channel) and two recorder tracks (or one stereo track)',
       /**
        * Stricter than the `technical-stereo-one-channel` rule, on purpose. The
        * rule only inspects rows already declared as two channels, because a
@@ -415,7 +433,7 @@ registerActivityChecks({
         inputs(c).length > 0 &&
         !inputs(c).some((r) => {
           if (cellNum(r, 'in_channels') === 2) {
-            return !namesTwo(cell(r, 'in_console')) || !namesTwo(cell(r, 'in_track'));
+            return !holdsPair(cell(r, 'in_console')) || !holdsPair(cell(r, 'in_track'));
           }
           const readsStereo = /\bstereo\b|\bpair\b/i.test(cell(r, 'in_source'));
           return readsStereo && cell(r, 'in_notes') === '';

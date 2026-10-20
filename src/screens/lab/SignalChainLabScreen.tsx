@@ -19,7 +19,7 @@
  *
  * HONESTY (§1.7): modules run their lab-default teaching parameters (each
  * module's full controls live in its own lab — stated on screen); the chain
- * order is the FIXED canonical order (reordering is a future lesson; the
+ * order is this rack's fixed order (reordering is a future lesson; the
  * order lessons live in the ⓘ Common Mistakes). GR meters are measured.
  * Audio needs the v6 engine build — below it the diagram + lessons stay live
  * with the standard honest note.
@@ -66,7 +66,7 @@ const grMoved = (a: { comp: number; gate: number; limiter: number }, b: { comp: 
   Math.abs(a.comp - b.comp) >= GR_EPS_DB || Math.abs(a.gate - b.gate) >= GR_EPS_DB || Math.abs(a.limiter - b.limiter) >= GR_EPS_DB;
 const P = FX_PARAM;
 
-/** The chain modules in the FIXED canonical order (matches fx::Id routing),
+/** The chain modules in this rack's fixed order (matches fx::Id routing),
  *  drawn as half-rack units (chainRack.tsx, art fix 2026-10-16): each with
  *  its teaching default printed under it and its knobs set there (pointer
  *  0..1 on the unit's teaching range — log for time, ratio and frequency). */
@@ -80,7 +80,7 @@ const MODULES: ChainUnit[] = [
   { id: FX.delay, label: 'DELAY', setting: '375 ms · 40 %', knobs: [lg(375, 1, 2000), 0.4, 0.5] },
   { id: FX.reverb, label: 'REVERB', setting: 'RT60 1.5 s', knobs: [lg(1.5, 0.1, 10), 0.5] },
   { id: FX.stereo, label: 'STEREO', setting: 'width 150 %', knobs: [150 / 200] },
-  { id: FX.limiter, label: 'LIMIT', setting: 'ceiling −25 dB', knobs: [5 / 30, lg(120, 10, 2000)], gr: 'limiter', grMax: 24 },
+  { id: FX.limiter, label: 'LIMIT', setting: 'low ceiling −25 dB', knobs: [5 / 30, lg(120, 10, 2000)], gr: 'limiter', grMax: 24 },
 ];
 
 type FxOp = { fx: number; param: number; value: number };
@@ -507,7 +507,9 @@ export function SignalChainLabScreen() {
         own lab. The order is this rack’s fixed order, not a universal one; WHY order matters is in the ⓘ mistakes. One
         honest quirk: this engine’s fixed order runs COMP before GATE, while on a real console you
         would usually gate FIRST so compression never raises the noise floor — the mistakes list
-        explains.
+        explains. The limiter’s ceiling is set LOW (−25 dB) on purpose, so it has work to do on
+        this −20 dB test source; a real output ceiling sits just under full scale (commonly
+        around −1 dBTP).
       </Text>
 
       {scenario ? (

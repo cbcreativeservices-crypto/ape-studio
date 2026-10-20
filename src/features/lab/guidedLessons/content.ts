@@ -292,9 +292,9 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'range', name: 'Range / Depth (Floor)', range: '−∞…−6 dB · default ~−40 dB', definition: 'How much attenuation when "closed". A partial range is gentler and more natural (expander-like).' },
       { key: 'hysteresis', name: 'Hysteresis', range: '0–25 dB · default ~3 dB', definition: 'Separate open vs close thresholds to stop chatter near the threshold.' },
       { key: 'lookahead', name: 'Lookahead', range: '0–5 ms · default 0', definition: 'Delays the audio so the gate can open before a transient, preserving the attack.', advanced: true },
-      { key: 'sidechain', name: 'Sidechain / Key input', definition: 'External trigger source (e.g. gate a pad from the kick).' },
-      { key: 'key_filter', name: 'Key filter (HPF/LPF on detector)', definition: 'Band-limits the detector so only the intended band opens the gate.' },
-      { key: 'sc_listen', name: 'Sidechain Listen / Monitor', definition: 'Audition the (filtered) detector signal to tune it.' },
+      { key: 'sidechain', name: 'Sidechain / Key input', definition: 'External trigger source (e.g. gate a pad from the kick). Not in this lab — common on hardware and plugin gates.' },
+      { key: 'key_filter', name: 'Key filter (HPF/LPF on detector)', definition: 'Band-limits the detector so only the intended band opens the gate. Not in this lab — common on hardware and plugin gates.' },
+      { key: 'sc_listen', name: 'Sidechain Listen / Monitor', definition: 'Audition the (filtered) detector signal to tune it. Not in this lab — found on many hardware and plugin gates.' },
       { key: 'gain_reduction', name: 'Gain reduction (meter)', definition: 'The LIVE, measured amount the gate is pulling the signal DOWN right now, in dB — a real engine reading, not a drawing. It reads deep (toward the floor) when the gate is closed on quiet material and 0 when the gate is open.' },
     ],
     commonMistakes: [
@@ -326,7 +326,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'and loudness; true-peak mode guards inter-sample peaks.',
     controls: [
       { key: 'display', name: 'What the display shows', definition: "The flat shelf is the brickwall: output can never pass the ceiling no matter how hard you push in. The GR meter below is the LIVE, measured reduction while you hit it." },
-      { key: 'ceiling', name: 'Ceiling (Output ceiling)', range: '−12…0 dBTP · default −1.0 dBTP', definition: 'Absolute maximum output. −1.0 dBTP is safe for streaming/lossy encodes.' },
+      { key: 'ceiling', name: 'Ceiling (Output ceiling)', range: '−12…0 dBTP · default −1.0 dBTP', definition: 'Absolute maximum output. −1 dBTP is a commonly quoted margin; lossy delivery often uses −2 dBTP; check the destination’s current spec.' },
       { key: 'drive', name: 'Threshold / Input Gain (Drive)', range: '0…+24 dB drive · default 0', definition: 'How hard you push into the limiter → how much gain reduction/loudness.' },
       { key: 'release', name: 'Release', range: '1 ms–1 s · default ~100 ms / Auto', definition: 'Recovery time. Too fast → distortion/pumping (esp. bass); too slow → dulls dynamics.' },
       { key: 'attack', name: 'Attack', range: '0–5 ms · near-instant', definition: 'A hair of attack lets transient "punch" through before catching it.', advanced: true },
@@ -338,7 +338,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     commonMistakes: [
       'Pushing for loudness → squashing — flattens dynamics, kills punch, adds distortion (the loudness-war trap). A few dB GR is plenty.',
-      'Ignoring inter-sample peaks — 0 dBFS looks safe but clips on D/A and after MP3/AAC; set ~−1.0 dBTP and enable True-Peak.',
+      'Ignoring inter-sample peaks — 0 dBFS looks safe but clips on D/A and after MP3/AAC; enable True-Peak and leave a margin (−1 dBTP is commonly quoted, lossy delivery often uses −2; check the destination’s current spec).',
       'Release too fast — causes distortion and pumping, most audibly on bass.',
       'No lookahead — fast transients overshoot and clip.',
       'Using the limiter as a compressor — a limiter catches peaks; a compressor shapes dynamics. Reaching for the limiter to "compress" over-squashes.',
@@ -346,7 +346,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Forgetting dither on the final 24→16-bit export step.',
     ],
     proTips: [
-      'Gain-stage INTO the limiter with the input/drive; leave the ceiling fixed at −1.0 dBTP and judge by GR + ears, not the number.',
+      'Gain-stage INTO the limiter with the input/drive; leave the ceiling fixed at the destination’s figure (−1 dBTP is commonly quoted, −2 for lossy delivery) and judge by GR + ears, not the number.',
       'Compare Attack 0 vs a hair of attack to hear transient punch return.',
     ],
     formula: 'Limiter ≈ compressor with ratio → ∞. True-peak estimation needs ≥4× oversampling to reconstruct inter-sample peaks. Ceiling is a hard cap: out ≤ ceiling always.',

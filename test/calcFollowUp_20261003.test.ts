@@ -189,7 +189,7 @@ describe('F5 — the 70 V headroom default matches its own words', () => {
   });
   it('the worked example agrees with the default: 151 W recommended, 7 more fit', () => {
     const taps = Array(12).fill(10);
-    near(num(outs('cv70', 'load', { taps, prated: 250, vline: 70.7, hr }), `RECOMMENDED AMP ≥ (with ${hr} dB headroom)`), 120 * Math.pow(10, 0.1), 1e-9);
+    near(num(outs('cv70', 'load', { taps, prated: 250, vline: 70.7, hr }), `SUGGESTED AMP ≥ (with ${hr} dB headroom)`), 120 * Math.pow(10, 0.1), 1e-9);
     assert.match(row(outs('cv70', 'morespeakers', { taps, prated: 250, tapw: 10, hr }), 'MORE SPEAKERS THAT FIT')?.text ?? '', /^7 more speakers/);
     assert.match(ws('cv70').example ?? '', /≈ 151 W .* 7 more 10 W/);
   });

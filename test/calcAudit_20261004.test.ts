@@ -450,8 +450,8 @@ const V: [string, string, Record<string, unknown>, Record<string, number> | stri
   ['loudtp', 'windows', { sr: 44100 }, { 'BLOCK STEP (75% overlap)': 4410 }],
   ['loudtp', 'loudnessDelta', { lufsA: -14, lufsB: -20 }, { 'DIFFERENCE (LU)': 6, 'PERCEIVED LOUDNESS RATIO': pw(2, 0.6) }],
   ['loudtp', 'loudnessDelta', { lufsA: -24, lufsB: -14 }, { 'PERCEIVED LOUDNESS RATIO': 2 }],
-  ['loudtp', 'truePeakMargin', { samplePeak: -0.1, lossy: 0 }, { 'RECOMMENDED CEILING (dBTP)': -1, 'OVER CEILING BY': 0.9 }],
-  ['loudtp', 'truePeakMargin', { samplePeak: -3, lossy: 1 }, { 'RECOMMENDED CEILING (dBTP)': -2, 'MARGIN TO CEILING': 1 }],
+  ['loudtp', 'truePeakMargin', { samplePeak: -0.1, lossy: 0 }, { 'SUGGESTED CEILING (dBTP)': -1, 'OVER CEILING BY': 0.9 }],
+  ['loudtp', 'truePeakMargin', { samplePeak: -3, lossy: 1 }, { 'SUGGESTED CEILING (dBTP)': -2, 'MARGIN TO CEILING': 1 }],
   // ── align
   ['align', 'delayForOffset', { offset: 1.2, temp: 20, sr: 48000 }, { 'DELAY TO ALIGN': 1.2 / c20, 'DELAY IN SAMPLES': 1.2 * 48000 / c20 }],
   ['align', 'delayForOffset', { offset: 0, temp: 20, sr: 48000 }, { 'DELAY TO ALIGN': 0 }],

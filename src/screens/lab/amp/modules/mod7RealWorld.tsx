@@ -317,9 +317,9 @@ export function Mod7RealWorld() {
                       Each channel sees ≈ {bridgeZ} Ω ÷ 2 = {br.effectivePerChannelZ} Ω
                     </Text>
                     {bridgeZ < MIN_BRIDGED_Z ? (
-                      <Text style={styles.warn}>⚠ {bridgeZ} Ω bridged is below the {MIN_BRIDGED_Z} Ω bridged minimum — each channel is effectively driving {br.effectivePerChannelZ} Ω.</Text>
+                      <Text style={styles.warn}>⚠ {bridgeZ} Ω bridged is below this amplifier’s {MIN_BRIDGED_Z} Ω bridged minimum (twice its {MIN_STEREO_Z} Ω stereo minimum; check the manual) — each channel is effectively driving {br.effectivePerChannelZ} Ω.</Text>
                     ) : (
-                      <Text style={styles.ok}>✓ {bridgeZ} Ω meets the {MIN_BRIDGED_Z} Ω bridged minimum.</Text>
+                      <Text style={styles.ok}>✓ {bridgeZ} Ω meets this amplifier’s {MIN_BRIDGED_Z} Ω bridged minimum (twice its {MIN_STEREO_Z} Ω stereo minimum; check the manual).</Text>
                     )}
                     <Body>
                       The two channels drive opposite ends of the load with opposite-polarity signals, so the load sees the

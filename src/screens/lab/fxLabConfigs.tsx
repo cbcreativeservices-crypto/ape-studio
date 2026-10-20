@@ -914,7 +914,7 @@ const compConfig: FxLabConfig = {
     {
       label: 'RATIO', paramId: P.ratio, lessonKey: 'ratio',
       choices: [
-        { label: '2:1 GLUE', value: 2, blurb: 'Gentle — 2 dB in over the threshold becomes 1 dB out. The transparent, mix-bus setting.' },
+        { label: '2:1 GLUE', value: 2, blurb: 'Gentle — 2 dB in over the threshold becomes 1 dB out. Transparent — a common gentle mix-bus starting point.' },
         { label: '4:1', value: 4, blurb: 'The workhorse — obvious control without obvious squash. Most channel compression lives here.' },
         { label: '8:1', value: 8, blurb: 'Heavy — the level barely rises past the threshold. You HEAR this one working.' },
         { label: '20:1 LIMIT', value: 20, blurb: 'Effectively a ceiling — at this ratio a compressor IS a limiter.' },

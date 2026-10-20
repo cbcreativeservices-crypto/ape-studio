@@ -27,7 +27,7 @@ import { levelColor, rampColors } from '../../../features/tools/levelColor';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import { useDecorativeMotion } from '../../../features/settings/decorativeMotion';
-import { GEAR_ASPECT, StageGear, StageLink } from './gainGear';
+import { GEAR_ASPECT, MicCableRun, StageGear, StageLink } from './gainGear';
 import { DragSlider } from '../foundations/bits';
 import { useStageTextScale } from '../rack/stageAspect';
 import { useScaledStyles } from '../stageScale';
@@ -228,6 +228,14 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
   const room = h / ts - METER_CHROME;
   const shortLabel = twoLineLabel && room - REGION_LINE < MIN_METER;
   const meterH = Math.max(MIN_METER, room - (twoLineLabel && !shortLabel ? REGION_LINE : 0)) * ts;
+  // The mic → preamp XLR cable (GN-R2-03): one lane drawn over both gear
+  // boxes, so it is placed from the same flex geometry the columns get —
+  // the glass's inner width split into equal wraps, each a link (or the
+  // first column's spacer) plus a column with its gear centred.
+  const micCable = cols.length > 1 && cols[0].kind === 'source';
+  const gearW = GEAR_H * GEAR_ASPECT * ts;
+  const wrapW = (w - 2 * 10 * ts) / cols.length;
+  const gearLeft0 = LINK_W * ts + (wrapW - LINK_W * ts - gearW) / 2;
   return (
     <View style={[s.stageGlass, { width: w, height: h }]}>
       {/* Signal path header: INPUT ▸ … ▸ OUTPUT */}
@@ -249,7 +257,9 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
             style={[
               s.pathTrace,
               {
-                left: `${50 / cols.length}%`,
+                // with the mic cable drawn, the printed flow line starts at
+                // the preamp: the first hop is the cable itself
+                left: `${(micCable ? 150 : 50) / cols.length}%`,
                 right: `${50 / cols.length}%`,
                 top: (3 + GEAR_H / 2) * ts - 0.75,
               },
@@ -325,6 +335,18 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
             </View>
           );
         })}
+        {micCable ? (
+          <View pointerEvents="none" style={{ position: 'absolute', left: gearLeft0, top: 3 * ts, width: wrapW + gearW, height: GEAR_H * ts }}>
+            <MicCableRun
+              gearW={gearW}
+              gearH={GEAR_H * ts}
+              span={wrapW}
+              chevronX={wrapW + (LINK_W * ts) / 2 - gearLeft0}
+              hot={!!cols[1].node.distorted && (cols[1].display ?? 'meter') !== 'hidden'}
+              dim={cols[0].display === 'hidden' || cols[1].display === 'hidden'}
+            />
+          </View>
+        ) : null}
       </View>
     </View>
   );

@@ -296,7 +296,7 @@ export const STAGE5_TECHNICAL: StageDef = {
           fieldId: "input_list",
           label: "Input list",
           kind: "table",
-          help: "One row per input. A stereo source is two rows or two channels, never one. The console channel and recorder track columns are what the patch is checked against on the day.",
+          help: "One row per input. A stereo source needs two inputs: two mono console channels or one stereo channel (write it as ST 1), and two mono recorder tracks or one stereo track. The console channel and recorder track columns are what the patch is checked against on the day.",
           required: true,
           columns: [
             {
@@ -662,7 +662,7 @@ export const STAGE5_TECHNICAL: StageDef = {
           fieldId: "split_method",
           label: "How are inputs shared between destinations?",
           kind: "choice",
-          help: "When the same source must reach the house console, a recorder and a stream, something has to split it. Decide what, and who owns the split.",
+          help: "When the same source must reach the house console, a recorder and a stream, something has to split it. Decide what, and who owns the split. On a passive splitter only one console supplies phantom power, normally the one on the direct side; the isolated side leaves it off.",
           required: false,
           options: [
             {
@@ -1015,10 +1015,10 @@ export const STAGE5_TECHNICAL: StageDef = {
       severity: "attention",
       kind: "mismatch",
       title: "A stereo source has been given one channel",
-      detail: "A stereo pair needs two console channels and two recorder tracks. With one, half of it is either missing or summed to mono by whoever notices, and the recording cannot be un-summed later.",
-      fixHint: "Give every stereo source two channels and two tracks, or record in the notes that it is deliberately captured in mono.",
+      detail: "A stereo pair needs two inputs: two mono console channels or one stereo channel, and two mono recorder tracks or one stereo track. On a single mono channel, half of it is either missing or summed to mono by whoever notices, and the recording cannot be un-summed later.",
+      fixHint: "Give every stereo source two mono channels or a stereo channel (ST 1), and two tracks or a stereo track, or record in the notes that it is deliberately captured in mono.",
       needsLogic: true,
-      logicIntent: "Fire for each input_list row where in_channels is 2 and either in_console or in_track names a single channel or track rather than two. Detect a single number or a single name; treat a range or two comma-separated entries as two. Nudge only; do not fire when the console or track columns are empty."
+      logicIntent: "Fire for each input_list row where in_channels is 2 and either in_console or in_track names a single mono channel or track rather than two. Detect a single number or a single name; treat a range or two comma-separated entries as two, and a stereo entry (ST 1, stereo, interleaved) as a correct home for the pair. Nudge only; do not fire when the console or track columns are empty."
     },
     {
       ruleId: "technical-phantom-mismatch",
@@ -1079,10 +1079,10 @@ export const STAGE5_TECHNICAL: StageDef = {
       severity: "attention",
       kind: "mismatch",
       title: "A level or format conflict in the signal path",
-      detail: "An instrument plugged straight into a microphone input, a line output into a microphone preamp at full gain, or an unbalanced jack on a long run to the stage box each work badly in a way that is blamed on something else. The DI that was missing is the usual cause.",
-      fixHint: "Put a DI between instrument-level sources and the console, match line outputs to line inputs, and check each row's leaving level against what the destination expects.",
+      detail: "An instrument plugged straight into a microphone input, a speaker-level output wired into a console or recorder input, or an unbalanced jack on a long run to the stage box each work badly in a way that is blamed on something else. The DI that was missing is the usual cause.",
+      fixHint: "Put a DI between instrument-level sources and the console, send speaker-level outputs only to loudspeakers (or through a DI or load box made for speaker level), match line outputs to line inputs, and check each row's leaving level against what the destination expects.",
       needsLogic: true,
-      logicIntent: "Fire when a signal_path row has sp_level instrument and neither sp_via nor sp_to mentions a DI, direct box or instrument input. Also fire when an input_list row has in_capture line or playback with in_connection ts, since that is an unbalanced source on what is usually a long run. Match words loosely; nudge only.",
+      logicIntent: "Fire when a signal_path row has sp_level instrument and neither sp_via nor sp_to mentions a DI, direct box or instrument input. Also fire when a signal_path row has sp_level speaker and sp_to names an input-side device (console, mixer, input, interface, preamp, recorder, stage box) with no DI or load box in sp_via or sp_to. Also fire when an input_list row has in_capture line or playback with in_connection ts, since that is an unbalanced source on what is usually a long run. Match words loosely; nudge only.",
       learnMore: {
         route: "ConnectorSelectLab"
       }
@@ -1238,7 +1238,7 @@ export const STAGE5_TECHNICAL: StageDef = {
   activity: {
     activityId: "build-the-input-list",
     title: "Build the input list",
-    prompt: "A five-piece band with a lead vocalist has sent a stage plot, and a first input list has been drafted from it by someone in a hurry. The console and recorder have sixteen channels. Fix the list so that every source is captured correctly, every stereo source has two channels, phantom is right on every row, the bass has a proper path to the console, and the whole thing fits the channels you actually have.",
+    prompt: "A five-piece band with a lead vocalist has sent a stage plot, and a first input list has been drafted from it by someone in a hurry. The console and recorder have sixteen channels. Fix the list so that every source is captured correctly, every stereo source has two inputs, phantom is right on every row, the bass has a proper path to the console, and the whole thing fits the channels you actually have.",
     onlyFor: [
       "music",
       "live"
@@ -1455,7 +1455,7 @@ export const STAGE5_TECHNICAL: StageDef = {
       "technical.click_playback": "yes",
       "technical.cue_mixes": []
     },
-    passWhen: "Every stereo source occupies two console channels and two recorder tracks; every condenser in this list has phantom on and no line or playback row has phantom on; the bass and the acoustic guitar pickup reach the console through a DI on an XLR or balanced connection; the summed channel count is no more than the sixteen available, achieved by removing, combining or deliberately monoing sources with the change noted; and at least one cue mix exists that carries the click.",
+    passWhen: "Every stereo source has two console inputs (two mono channels or one stereo channel) and two recorder tracks (or one stereo track); every condenser in this list has phantom on and no line or playback row has phantom on; the bass and the acoustic guitar pickup reach the console through a DI on an XLR or balanced connection; the summed channel count is no more than the sixteen available, achieved by removing, combining or deliberately monoing sources with the change noted; and at least one cue mix exists that carries the click.",
     debrief: "The first list looked complete. It had seventeen rows asking for nineteen channels on a sixteen-channel system, and four of the rows were quietly wrong in ways that would have cost the overheads, the keys, the hi-hat and the lead vocal. Notice that every fix was a decision, not a purchase: what to sum, what to drop, where the DI goes, who hears the click. The input list is the one document on a production that has to be exactly right, because everything downstream is patched from it and nobody re-checks it once the cables are in."
   }
 };

@@ -149,17 +149,23 @@ const PADS: Workspace = {
   intro:
     'A resistive pad drops a signal by a fixed amount while keeping the impedance the source and ' +
     'load expect. Enter the attenuation and the characteristic impedance and get the resistor ' +
-    'values for a T-pad and a Pi-pad, both matched on each side.',
+    'values for a T-pad and a Pi-pad, both matched on each side — the networks 600 Ω matched ' +
+    'systems and test gear use. On a balanced line use the H-pad (or O-pad) form: split each ' +
+    'series arm, one half per leg.',
   whyItMatters:
     'Pads tame hot sources (a −20 dB pad ahead of a mic pre), match levels between gear, and set ' +
-    'fixed trims. Doing it with the RIGHT network keeps impedances matched so nothing loads down ' +
-    'or reflects — a bare series resistor changes the impedance and the frequency response with it.',
+    'fixed trims. A matched T or Pi pad holds a set impedance on both sides — what 600 Ω matched ' +
+    'systems and test gear expect. Most modern gear is bridging instead (a low-impedance output ' +
+    'into a high-impedance input), where a simple L-pad divider (one series and one shunt ' +
+    'resistor) sets the loss and matching is not the goal. A bare series resistor alone gives a ' +
+    'loss that depends on whatever input it feeds.',
   example:
     'A −20 dB, 600 Ω T-pad: K = 10^(20/20) = 10. Series arms R1 = R2 = 600·(10−1)/(10+1) ≈ 491 Ω; ' +
     'shunt R3 = 600·2·10/(10²−1) ≈ 121 Ω.',
   mistakes: [
-    'Using a single series resistor as a "pad" — it attenuates but breaks the impedance match, unlike a proper T or Pi network.',
-    'Padding with the wrong characteristic impedance — a 600 Ω pad in a 10 kΩ line neither matches nor attenuates as intended.',
+    'Using a single series resistor as a "pad" — its loss depends on the input it feeds, unlike a proper L, T or Pi network.',
+    'Using a matched pad where nothing is matched — a 600 Ω T or Pi pad between a low-impedance output and a 10 kΩ input does not give its rated loss; on bridging gear, work out an L-pad divider instead.',
+    'Building an unbalanced T or Pi pad into a balanced line — use the H-pad (from a T) or O-pad (from a Pi): split each series arm, one half per leg.',
     'Forgetting pads are lossy by design — they throw signal away as heat; that is the point, but mind resistor power ratings on hot lines.',
   ],
   warnings:
@@ -180,7 +186,7 @@ const PADS: Workspace = {
       plainFormula:
         'The series arms equal the impedance times (the multiplier minus one) over (the multiplier plus one); the shunt equals the impedance times twice the multiplier over (the multiplier squared minus one); the multiplier is ten raised to the attenuation over twenty.',
       explain:
-        'A T-pad drops the signal a fixed amount while keeping the source and load impedance matched on both sides — two series arms and one shunt. A bare series resistor would attenuate but break the match and colour the response; the T network holds the impedance so nothing loads down or reflects.',
+        'A T-pad drops the signal a fixed amount while keeping the source and load impedance matched on both sides — two series arms and one shunt — as a 600 Ω matched system or test set expects. On bridging gear (low-impedance out, high-impedance in) an L-pad divider is the usual tool instead. On a balanced line, split each series arm, one half per leg (an H-pad); the shunt stays across the pair.',
       keySymbols: ['R', 'Z', '·', '−', '/', 'x²', 'x₁'],
       compute: (v) => {
         const K = Math.pow(10, n(v.atten) / 20);
@@ -209,7 +215,7 @@ const PADS: Workspace = {
       plainFormula:
         'The series resistor equals the impedance times (the multiplier squared minus one) over twice the multiplier; each shunt resistor equals the impedance times (the multiplier plus one) over (the multiplier minus one).',
       explain:
-        'A Pi-pad does the same job as a T-pad — a fixed, impedance-matched attenuation — but arranges one series resistor between two shunt resistors, one at each end. Same K multiplier (ten raised to the dB over twenty), different topology; both throw the signal away as heat by design.',
+        'A Pi-pad does the same job as a T-pad — a fixed, impedance-matched attenuation — but arranges one series resistor between two shunt resistors, one at each end. Same K multiplier (ten raised to the dB over twenty), different topology; both throw the signal away as heat by design. On a balanced line, split the series resistor, one half per leg (an O-pad).',
       keySymbols: ['R', 'Z', '·', 'x²', '−', '/'],
       compute: (v) => {
         const K = Math.pow(10, n(v.atten) / 20);
