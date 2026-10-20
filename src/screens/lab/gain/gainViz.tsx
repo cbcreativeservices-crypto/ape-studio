@@ -3,16 +3,13 @@
  * 2026-08-07).
  *
  * Layouts:
- *  • ChainColumns — the pre-rack layout for lessons 1–5: stages as COLUMNS
- *    left→right (INPUT ▸ … ▸ OUTPUT), each a vertical 3-zone meter + a
- *    VERTICAL fader; fixed stages carry a FIXED tag. No module renders it
- *    today (2026-10-20) — the rack ChainStage replaced it.
  *  • ChainStage — every module today (rack conversion 2026-08-23, below):
  *    the chain as drawn channel-strip gear (gainGear.tsx) over meter columns.
  *    Real-gear honesty in modules 6–8: with Signal X-Ray OFF a column shows
  *    only its SIG/CLIP LEDs; X-Ray ON reveals every meter at once.
- *    (The old TRS-patched DeviceCard rack was never rendered and was removed
- *    2026-10-20, wiring finding GN-02.)
+ *    (The old TRS-patched DeviceCard rack and the pre-rack ChainColumns
+ *    layout were never rendered and were removed 2026-10-20, wiring finding
+ *    GN-02, owner go.)
  *
  * Meters colour by the app MIDI ramp (levelColor): blue = too low, green =
  * healthy, yellow/red = hot/overload.
@@ -25,7 +22,6 @@
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { fitValue } from '../../../theme/legibility';
-import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
@@ -33,11 +29,9 @@ import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } fro
 import { useDecorativeMotion } from '../../../features/settings/decorativeMotion';
 import { GEAR_ASPECT, StageGear, StageLink } from './gainGear';
 import { DragSlider } from '../foundations/bits';
-import { VerticalFader } from '../eq/modules/eqBits';
 import { useStageTextScale } from '../rack/stageAspect';
 import { useScaledStyles } from '../stageScale';
 import {
-  computeChain,
   meterFill,
   LOW_EDGE,
   ZONE_CLIP_FILL,
@@ -158,124 +152,6 @@ export function StageMeterV({
           {shortLabel ? regionLabelFor(node).split(' ')[0] : regionLabelFor(node)}
         </Text>
       )}
-    </View>
-  );
-}
-
-// ───────────────────────────────────────────── columns layout (M1–M5) ───────
-export type ColumnControl = {
-  value: number; // 0..1
-  onChange: (t: number) => void;
-  readout: string;
-  /** Where unity (0 dB) sits on this fader, 0..1 from the bottom. Omitted on
-   *  the SOURCE fader, which has no unity — it is a level, not a gain. */
-  unity?: number;
-};
-
-export function StageColumn({
-  name,
-  kind,
-  node,
-  control,
-  note,
-}: {
-  name: string;
-  kind: StageKind;
-  node: ChainNode;
-  control?: ColumnControl;
-  /** Line under the column (e.g. the source descriptor). */
-  note?: string;
-}) {
-  const tint = levelColor(meterFill(node.level));
-  return (
-    <View style={styles.col}>
-      <StageIcon kind={kind} size={26} />
-      <Text style={styles.colName}>{name}</Text>
-      <View style={styles.colMeterRow}>
-        <StageMeterV node={node} />
-        {control ? (
-          <VerticalFader value={control.value} onChange={control.onChange} label="" tint={tint} unity={control.unity} />
-        ) : null}
-      </View>
-      {control ? (
-        <Text style={[styles.colReadout, { color: tint }]}>{control.readout}</Text>
-      ) : (
-        <View style={styles.fixedTag}>
-          <Text style={styles.fixedTagText}>FIXED</Text>
-        </View>
-      )}
-      {note ? <Text style={styles.colNote}>{note}</Text> : null}
-    </View>
-  );
-}
-
-/** The whole chain as columns, with the signal path labeled across the top. */
-export function ChainColumns({
-  source,
-  stages,
-  sourceRange = [-40, -6],
-  onSource,
-  onGain,
-  sourceNote,
-}: {
-  source: number;
-  stages: Stage[];
-  sourceRange?: [number, number];
-  onSource?: (v: number) => void;
-  onGain?: (key: string, v: number) => void;
-  sourceNote?: boolean;
-}) {
-  const nodes = computeChain(source, stages);
-  const [lo, hi] = sourceRange;
-  return (
-    <View style={styles.colsPanel}>
-      {/* Signal path header: INPUT ▸ … ▸ OUTPUT */}
-      <View style={styles.pathRow}>
-        <Text style={styles.pathEnd}>INPUT</Text>
-        <View style={styles.pathLine} />
-        <Text style={styles.pathArrowBig}>▸</Text>
-        <View style={styles.pathLine} />
-        <Text style={styles.pathEnd}>OUTPUT</Text>
-      </View>
-      <View style={styles.colsRow}>
-        <StageColumn
-          name="SOURCE"
-          kind="source"
-          node={nodes[0]}
-          control={
-            onSource
-              ? {
-                  value: (source - lo) / (hi - lo),
-                  onChange: (t) => onSource(Math.round(lo + t * (hi - lo))),
-                  readout: 'LEVEL',
-                }
-              : undefined
-          }
-          note={sourceNote ? sourceDesc(nodes[0]) : undefined}
-        />
-        {stages.map((st, i) => (
-          <View key={st.key} style={styles.colWithArrow}>
-            <Text style={[styles.colArrow, nodes[i + 1].distorted && { color: '#ff5f4e' }]}>▸</Text>
-            <StageColumn
-              name={st.name.toUpperCase()}
-              kind={st.kind}
-              node={nodes[i + 1]}
-              control={
-                st.adjustable && onGain
-                  ? {
-                      value: (st.gain - st.min) / (st.max - st.min),
-                      onChange: (t) => onGain(st.key, Math.round(st.min + t * (st.max - st.min))),
-                      readout: `${st.gain >= 0 ? '+' : ''}${st.gain} dB`,
-                      // Only when 0 dB is actually on this fader's travel.
-                      unity:
-                        st.min < 0 && st.max > 0 ? (0 - st.min) / (st.max - st.min) : undefined,
-                    }
-                  : undefined
-              }
-            />
-          </View>
-        ))}
-      </View>
     </View>
   );
 }
@@ -471,64 +347,6 @@ function usePeakHold(fill: number) {
 }
 
 // ───────────────────────────────────────────── stage icons + button ─────────
-/** Simple line-art equipment glyph per stage kind. */
-export function StageIcon({ kind, size = 30 }: { kind: StageKind; size?: number }) {
-  const s = size;
-  const c = colors.textSecondary;
-  return (
-    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={s} height={s} viewBox="0 0 32 32" fill="none">
-      {kind === 'source' && (
-        <>
-          <Rect x={12} y={4} width={8} height={14} rx={4} stroke={c} strokeWidth={1.6} />
-          <Path d="M9 14a7 7 0 0 0 14 0" stroke={c} strokeWidth={1.6} strokeLinecap="round" />
-          <Line x1={16} y1={21} x2={16} y2={26} stroke={c} strokeWidth={1.6} />
-          <Line x1={11} y1={27} x2={21} y2={27} stroke={c} strokeWidth={1.6} strokeLinecap="round" />
-        </>
-      )}
-      {kind === 'preamp' && (
-        <>
-          <Rect x={4} y={9} width={24} height={14} rx={2} stroke={c} strokeWidth={1.6} />
-          <Circle cx={11} cy={16} r={4} stroke={c} strokeWidth={1.5} />
-          <Line x1={11} y1={16} x2={11} y2={12.5} stroke={c} strokeWidth={1.4} strokeLinecap="round" />
-          <Line x1={19} y1={13} x2={24} y2={13} stroke={c} strokeWidth={1.3} />
-          <Line x1={19} y1={19} x2={24} y2={19} stroke={c} strokeWidth={1.3} />
-        </>
-      )}
-      {(kind === 'eq' || kind === 'processor') && (
-        <>
-          <Rect x={4} y={7} width={24} height={18} rx={2} stroke={c} strokeWidth={1.6} />
-          <Path d="M7 20 Q13 20 16 13 Q19 20 25 12" stroke={colors.amber} strokeWidth={1.5} fill="none" strokeLinecap="round" />
-        </>
-      )}
-      {kind === 'comp' && (
-        <>
-          <Rect x={4} y={7} width={24} height={18} rx={2} stroke={c} strokeWidth={1.6} />
-          <Path d="M16 10 L16 20 M12 16 L16 21 L20 16" stroke={colors.amber} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
-        </>
-      )}
-      {kind === 'fader' && (
-        <>
-          <Line x1={16} y1={5} x2={16} y2={27} stroke={c} strokeWidth={1.6} />
-          <Rect x={10} y={13} width={12} height={6} rx={1.5} fill="#22242c" stroke={colors.amber} strokeWidth={1.5} />
-        </>
-      )}
-      {kind === 'bus' && (
-        <>
-          <Path d="M5 8 L14 16 M5 24 L14 16 M14 16 L27 16" stroke={c} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
-          <Circle cx={14} cy={16} r={2.2} fill={c} />
-        </>
-      )}
-      {kind === 'output' && (
-        <>
-          <Rect x={6} y={11} width={7} height={10} stroke={c} strokeWidth={1.6} />
-          <Path d="M13 11 L21 6 L21 26 L13 21" stroke={c} strokeWidth={1.6} strokeLinejoin="round" fill="none" />
-          <Path d="M24 12a6 6 0 0 1 0 8" stroke={c} strokeWidth={1.4} strokeLinecap="round" />
-        </>
-      )}
-    </Svg>
-  );
-}
-
 /** Small tappable button used across the lab. `good` = the green variant. */
 export function GainBtn({
   label,
@@ -583,19 +401,12 @@ const styles = StyleSheet.create({
   distBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.5, color: '#ff7a1e' },
 
   // columns
-  colsPanel: { borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 10 },
   pathRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   pathEnd: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.amber },
   pathLine: { flex: 1, height: 1, backgroundColor: '#3a4150' },
   pathArrowBig: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.amber },
-  colsRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
-  colWithArrow: { flexDirection: 'row', alignItems: 'center', flexShrink: 1 },
-  colArrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: '#4a5060', paddingHorizontal: 1, marginTop: 60 },
-  col: { alignItems: 'center', gap: 5, flexShrink: 1 },
   colName: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.6, color: colors.textPrimary, textAlign: 'center' },
-  colMeterRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 2 },
   colReadout: { fontFamily: fonts.mono, fontSize: 10 },
-  colNote: { fontFamily: fonts.barlowRegular, fontSize: 9.5, lineHeight: 12, color: colors.textSub, textAlign: 'center', maxWidth: 84 },
   fixedTag: { borderRadius: 4, borderWidth: 1, borderColor: '#33353d', paddingHorizontal: 6, paddingVertical: 2, backgroundColor: '#101014' },
   fixedTagText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.8, color: colors.textSub },
 
