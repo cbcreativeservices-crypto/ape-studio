@@ -73,8 +73,9 @@ function liveOf(b: Booth, last: BoothRender | null, p: PlugId): boolean {
   if (p.startsWith('B.')) return b.decks.B.playing && deviceLive(b, 'playerB');
   if (p === 'mst.xlrL') return last.rmsDb.masterL > -90;
   if (p === 'mst.xlrR') return last.rmsDb.masterR > -90;
-  // a booth line in the PHONES jack (DJ-02, the wrong job): nothing plays
-  if (p.startsWith('bth.')) return at !== 'mix.phones' && last.rmsDb.booth > -90;
+  // a booth cable whose mixer end is in the PHONES jack (DJ-R3-PHONES)
+  // carries the headphone feed to its monitor
+  if (p.startsWith('bth.')) return at === 'mix.phones' ? Math.max(last.rmsDb.phonesL, last.rmsDb.phonesR) > -90 : last.rmsDb.booth > -90;
   if (p === 'phones') return phonesPlugged(b) && Math.max(last.rmsDb.phonesL, last.rmsDb.phonesR) > -90;
   return false;
 }

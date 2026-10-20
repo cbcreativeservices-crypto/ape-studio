@@ -12,7 +12,7 @@
  * slight perspective with its cast shadow (parts.PlugFace).
  */
 import { useContext, useMemo } from 'react';
-import { Group, Line, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { Circle, Group, Line, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import type { CableKind } from '../model/djModel';
 import { INK } from './ink';
 import { Cable, LoosePlug, PlugFace, PLUG_R, sagPath, smoothPath, type CablePattern, type CableStyle, type PlugKind } from './parts';
@@ -55,6 +55,12 @@ export type Run = {
    *  thinner, plain-jacketed (no balanced line's stripe), and its flag is
    *  edged in amber so the hum's cause is visible. */
   unbal?: boolean;
+  /** ADDITIVE (DJ-R3-ADAPTER, owner 2026-10-21 "use adapter as it is what is
+   *  realistic"): the far end is a 6.35 mm TS jack in a jack-to-XLR ADAPTER —
+   *  the adapter's XLR-male body seated in the female XLR socket, the TS
+   *  plug in the jack at its back (drawn further out, the adapter's length
+   *  in perspective). Both fit their jacks (C13). */
+  farAdapter?: boolean;
 };
 
 const WIDTH: Record<CableKind, number> = { rca: 3.2, xlr: 4.6, trs: 4.2, phones: 3, iec: 6.2 };
@@ -109,12 +115,30 @@ export function CableRun({ r, flow = false, labelAt }: { r: Run; flow?: boolean;
       <Cable pts={r.pts} path={path} style={st} glow={glow} flow={flow && r.live && !r.quiet} />
       {r.quiet && r.live ? <Path path={path} style="stroke" strokeWidth={0.7} color={INK.amber} opacity={0.5} /> : null}
       {r.noFixedPlug ? null : <PlugFace cx={a[0]} cy={a[1]} kind={fixedKind} colour={r.colour} />}
-      {r.plugged ? (
+      {r.plugged && r.farAdapter ? (
+        <AdapterFace cx={b[0]} cy={b[1]} colour={r.colour} />
+      ) : r.plugged ? (
         <PlugFace cx={b[0]} cy={b[1]} kind={farKind} colour={r.colour} dir={Math.atan2(pen[1] - b[1], pen[0] - b[0])} />
       ) : (
         <LoosePlug x={b[0]} y={b[1]} ang={angOut} kind={r.kind === 'phones' ? 'phones' : farKind} colour={r.colour} />
       )}
       {labelAt ? <CableFlag x={labelAt[0]} y={labelAt[1]} text={r.label} live={r.live} edge={r.unbal ? INK.amber : st.colour === '#101113' || st.colour === '#16171a' ? '#5c626b' : st.colour} /> : null}
+    </Group>
+  );
+}
+
+/** DJ-R3-ADAPTER: a jack-to-XLR adapter in a female XLR socket, face-on —
+ *  its XLR-male barrel (an XLR plug's 21 mm shell, PlugFace 'xlr'), and the
+ *  6.35 mm TS plug in the jack at its back, standing out by the adapter's
+ *  length in the same perspective (down and to the right). */
+function AdapterFace({ cx, cy, colour }: { cx: number; cy: number; colour: string }) {
+  const out = 1.6;
+  return (
+    <Group>
+      <PlugFace cx={cx} cy={cy} kind="xlr" colour={colour} />
+      {/* the jack in the adapter's back: a dark ring round the TS plug */}
+      <Circle cx={cx + 3.4 * 0.55} cy={cy + 3.4 * 0.75} r={7.4} color="#0b0c0e" />
+      <PlugFace cx={cx + 3.4 * 0.55 + out * 0.55} cy={cy + 3.4 * 0.75 + out * 0.75} kind="trs" colour={colour} />
     </Group>
   );
 }

@@ -480,7 +480,12 @@ export function renderBooth(b: Booth, t0: number, seconds: number, from?: Render
   rms.phonesR = rmsDbOf(pR, null);
 
   // The speakers hear whatever output is plugged into them.
-  const outs = { MASTER: { L: mL, R: mR }, BOOTH: { L: bL, R: bR } } as const;
+  // DJ-R3-PHONES: a booth monitor fed from the PHONES jack hears the
+  // headphone feed (PHONES knob, cue / cue mix), its stereo summed into the
+  // monitor's one input
+  const pMono = new Float32Array(n);
+  for (let i = 0; i < n; i++) pMono[i] = (pL[i] + pR[i]) / 2;
+  const outs = { MASTER: { L: mL, R: mR }, BOOTH: { L: bL, R: bR }, PHONES: { L: pMono, R: pMono } } as const;
   const spk = (s: SpeakerId): Float32Array | null => {
     const f = speakerFeed(b, s);
     return f ? outs[f.out][f.side] : null;

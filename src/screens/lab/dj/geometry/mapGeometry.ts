@@ -21,7 +21,7 @@
  */
 import { MIXER_REAR, MIXER_REAR_JACKS, PLAYER_REAR, PLAYER_REAR_JACKS, type Box, type Pt } from './boothGeometry.ts';
 import { PHONES_CABLE_END, PLATE, PLATE_H, PLATE_W, STRIP_D, STRIP_OUTLET_Y, STRIP_W, stripOutletXMirrored } from './gearGeometry.ts';
-import { PLUGS, type JackId, type PlugId } from '../model/djModel.ts';
+import { PHONES_MONITOR, PLUGS, type JackId, type PlugId } from '../model/djModel.ts';
 
 export type SpeakerKey = 'paL' | 'paR' | 'boothL' | 'boothR';
 export type PlugKindMap = 'rca' | 'xlr' | 'trs' | 'iec' | 'mains';
@@ -108,21 +108,44 @@ export const LANE = {
 const EDGE: Partial<Record<PlugId, number>> = { 'ac.paL': 6, 'ac.boothR': 15, 'ac.boothL': 1025, 'ac.paR': 1034 };
 const OVER: Partial<Record<PlugId, number>> = { 'ac.boothR': 740, 'ac.boothL': 740, 'ac.paR': 748, 'ac.paL': 748 };
 
-/** DJ-02 (owner 2026-10-20, "allow and explain"): the two moves that FIT on
+/** DJ-02 (owner 2026-10-20, "allow and explain"): the moves that FIT on
  *  real gear but do the wrong job get real routes, in the column between
- *  deck B's rear (ends x 340) and the mixer's (starts x 375) and on one lane
- *  just above the rear panels (Screen 4's output lanes end at 509; the panels
- *  start at 526): 11 mm under the lowest, 6 over the panels (DJ-R2-08: it
- *  was 518, and touched MASTER L's run where that sags — dressGeometry caps
- *  that sag at 3 mm, so the two keep 3.5 mm or more between their edges). A booth TRS run into the PHONES jack crosses left on that
- *  lane, drops the column's right side and comes in `WRONG_JOB_UNDER` mm
- *  under the jack (the way the headphone cable comes in); the headphone cable
- *  into a speaker input climbs the column's left side from the floor and
- *  crosses on the same lane to the plate. */
+ *  deck B's rear (ends x 340) and the mixer's (starts x 375) and just above
+ *  the rear panels (Screen 4's output lanes end at 509; the panels start at
+ *  526). The headphone cable into a speaker input climbs the column's left
+ *  side from the floor and crosses on `WRONG_JOB_LANE` (6 mm over the panels;
+ *  DJ-R2-08: it was 518, and touched MASTER L's run where that sags —
+ *  dressGeometry caps that sag at 3 mm) to the plate.
+ *  DJ-R3-PHONES (owner 2026-10-21): a BOOTH cable whose MIXER end is in the
+ *  PHONES jack leaves the jack downward (`WRONG_JOB_UNDER` mm, the way the
+ *  headphone cable comes in), runs left under the mixer to the column's right
+ *  side (`BTH_PHONES_X`), climbs it and crosses on its own lane
+ *  (`PHONES_BOOTH_LANE`, 1 mm under the headphones' — the two never coexist,
+ *  as both need the PHONES jack — so its edge keeps 4 mm from MASTER L's
+ *  sagging run) to its booth monitor's plate. Its BOOTH OUT socket is empty. */
 export const WRONG_JOB_LANE = 520;
+export const PHONES_BOOTH_LANE = 521;
 export const BTH_PHONES_X = 363;
 export const PHONES_UP_X = 351;
 export const WRONG_JOB_UNDER = 15;
+
+/** DJ-R3-PHONES: the run of a BOOTH cable whose mixer end is in the PHONES
+ *  jack at `jack` (the map's or Screen 4's), to its booth monitor's input —
+ *  it STARTS at the PHONES jack (that is where its mixer-end plug is). */
+export function phonesBoothRoute(p: PlugId, jack: Pt): [number, number][] {
+  const m = speakerInput(PHONES_MONITOR[p]!.slice(0, -3) as SpeakerKey);
+  const under = jack.y + WRONG_JOB_UNDER;
+  return [[jack.x, jack.y], [jack.x, under], [BTH_PHONES_X, under], [BTH_PHONES_X, PHONES_BOOTH_LANE], [m.x, PHONES_BOOTH_LANE], [m.x, m.y]];
+}
+
+/** The two plugs of a cable as drawn: its fixed-end plug (null = none drawn:
+ *  the headphones' cable is moulded into the cups) and its far plug (null =
+ *  loose). DJ-R3-PHONES: a BOOTH cable "at" the PHONES jack has its mixer-end
+ *  plug IN that jack and its far plug in its monitor's input. */
+export function plugEnds(p: PlugId, to: JackId | null, jack: (j: JackId) => Pt = jackPt): { fixed: Pt | null; far: Pt | null } {
+  if (to === 'mix.phones' && PHONES_MONITOR[p]) return { fixed: jack('mix.phones'), far: jack(PHONES_MONITOR[p]!) };
+  return { fixed: PLUGS[p].kind === 'phones' ? null : fixedEnd(p), far: to ? jack(to) : null };
+}
 const PHONES_FLOOR = 704;
 
 /** The column an RCA (or any) cable climbs to reach a TOP-row jack, so it
@@ -150,12 +173,9 @@ export function routeOf(p: PlugId, to: JackId | null): [number, number][] {
       return [...start, [b.x, lane], [b.x, b.y]];
     }
     if (to === 'mix.phones') {
-      // the BOOTH TRS plug in the PHONES jack (DJ-02: it fits — the wrong
-      // job): up to the wrong-job lane, left to the gap between deck B and
-      // the mixer, down that gap (never across the mixer's rear panel), and
-      // in under the front edge, the way the headphone cable comes in
-      const up: [number, number][] = p === 'bth.trsR' ? [[a.x, a.y], [a.x - 14, a.y], [a.x - 14, WRONG_JOB_LANE]] : [[a.x, a.y], [a.x, WRONG_JOB_LANE]];
-      return [...up, [BTH_PHONES_X, WRONG_JOB_LANE], [BTH_PHONES_X, b.y + WRONG_JOB_UNDER], [b.x, b.y + WRONG_JOB_UNDER], [b.x, b.y]];
+      // DJ-R3-PHONES: the BOOTH cable's MIXER end in the PHONES jack, its far
+      // end in its booth monitor — from the jack, never across a rear panel
+      return phonesBoothRoute(p, b);
     }
     return [...start, [b.x, lane], [b.x, b.y]];
   }

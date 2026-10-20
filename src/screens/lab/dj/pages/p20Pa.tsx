@@ -18,7 +18,8 @@
  * only — the headphones add to it), and the Calculator Lab's own NIOSH
  * function (85 dBA, 3 dB exchange) turns a 4-hour set into a dose. The
  * fault (second learning review 2026-10-18, 20 #3: a core PA fault that
- * needs no optional screen): the 20 m run on an UNBALANCED lead, humming on
+ * needs no optional screen): the 20 m run on an UNBALANCED lead (DJ-R3-ADAPTER:
+ * a jack lead with an XLR adapter, what a DJ really brings), humming on
  * the floor. The turntable loop (the subs shaking the table) stays on the
  * ROOM's gauge to explore.
  */
@@ -114,11 +115,13 @@ export function HandoffView({ booth }: { booth: Booth }) {
           <CableRun
             key={r.to}
             flow
-            // DJ-10: the unbalanced run is an XLR-ended lead (its plugs fit the
-            // mixer's male and the stage box's female XLRs, C13); its WIRING is
-            // what is unbalanced (DJ-R2-02: pin 3 tied to pin 1, e.g. an
-            // adaptor lead): thinner, plain, flagged UNBAL
-            r={{ id: `v${r.to}`, kind: 'xlr', colour: '#3d4046', pts, plugged: true, live: true, label: `${from === 'L' ? 'MST L' : 'MST R'}${unbal ? ' · UNBAL' : ''}`, dashed: from === 'R', unbal }}
+            // DJ-R3-ADAPTER (owner 2026-10-21): the unbalanced run is what a DJ
+            // really brings — an XLR-to-jack lead (its female XLR on the
+            // mixer's male MASTER OUT) whose 6.35 mm TS jack goes into a
+            // jack-to-XLR adapter in the stage box's female XLR (every plug
+            // fits its jack, C13). The TS jack ties pin 3 to pin 1: the run is
+            // unbalanced — thinner, plain, flagged UNBAL
+            r={{ id: `v${r.to}`, kind: 'xlr', colour: '#3d4046', pts, plugged: true, live: true, label: `${from === 'L' ? 'MST L' : 'MST R'}${unbal ? ' · UNBAL' : ''}`, dashed: from === 'R', unbal, farAdapter: unbal }}
             labelAt={[(pts[2][0] + pts[3][0]) / 2 + (from === 'R' ? 20 : 0), lane]}
           />
         );
@@ -188,9 +191,9 @@ function VenueTray({ tr, onAsk }: { tr: Transport; onAsk: (msg: string) => void 
       </Row>
       <Row head="THE 20 m RUN TO THE STAGE BOX">
         <LabChip label="XLR (BALANCED)" selected={v.cable === 'XLR'} onPress={() => set({ cable: 'XLR' })} compact />
-        <LabChip label="XLR ENDS, UNBALANCED WIRING" selected={v.cable === 'UNBAL'} onPress={() => set({ cable: 'UNBAL' })} compact />
+        <LabChip label="JACK LEAD + XLR ADAPTER" selected={v.cable === 'UNBAL'} onPress={() => set({ cable: 'UNBAL' })} compact />
       </Row>
-      {v.cable === 'UNBAL' ? <TrayNote tone="warn">XLR ends, unbalanced wiring (pin 3 tied to pin 1 — e.g. an adaptor lead): the plugs fit, the wiring does not balance.</TrayNote> : null}
+      {v.cable === 'UNBAL' ? <TrayNote tone="warn">A jack lead with an XLR adapter — unbalanced: an XLR-to-jack lead from your MASTER OUT, its 6.35 mm TS jack in a jack-to-XLR adapter at the stage box. Every plug fits, but the TS jack ties pin 3 to pin 1, so the line no longer balances.</TrayNote> : null}
       <Row head={`ASK THE ENGINEER (their gain on your feed: ${v.gainDb >= 0 ? '+' : '−'}${Math.abs(v.gainDb)} dB)`}>
         <LabChip label="“UP 3 dB, PLEASE”" selected={false} onPress={() => ask(3)} compact />
         <LabChip label="“DOWN 3 dB”" selected={false} onPress={() => ask(-3)} compact />
@@ -352,7 +355,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
               <PlanView spec={{ map, place: v.place, subPos: v.subPos, subs: v.subs, feedDbfs: feed > -90 ? feed : -20, monitors: true, turntable: true, edges: map === 'TOPS', points: true, djTone: dose != null && dose > 100 ? '#ff5a48' : '#5bff85' }} />
             </Scene>
           ) : view === 'HANDOFF' ? (
-            <Scene w={w} h={h} frame={H_FRAME} motion={motion} focus={{ x: 150, y: -20, w: 320, h: 260 }} a11y={`${LOOK.HANDOFF} DJ L gets ${v.djL ?? 'nothing'}, DJ R gets ${v.djR ?? 'nothing'}; the run is ${v.cable === 'XLR' ? 'balanced XLR' : 'a lead with XLR ends and unbalanced wiring'}.`} obstacles={handoffObstacles} callouts={handoffCallouts}>
+            <Scene w={w} h={h} frame={H_FRAME} motion={motion} focus={{ x: 150, y: -20, w: 320, h: 260 }} a11y={`${LOOK.HANDOFF} DJ L gets ${v.djL ?? 'nothing'}, DJ R gets ${v.djR ?? 'nothing'}; the run is ${v.cable === 'XLR' ? 'balanced XLR' : 'a jack lead with an XLR adapter at the stage box — unbalanced'}.`} obstacles={handoffObstacles} callouts={handoffCallouts}>
               <HandoffView booth={booth} />
             </Scene>
           ) : (
@@ -462,7 +465,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
           }}
           fixed={venueHandoffOk(evOf(booth).venue) && !floorHum}
           hints={['The booth and the headphones are clean, so where does the hum get in: before the mixer, or after it?', 'Look at the HANDOFF: what kind of cable makes the 20 m run to the stage box?', 'Open VENUE: the 20 m run.']}
-          why="This lead has XLR ends but unbalanced wiring (pin 3 tied to pin 1 — e.g. an adaptor lead), so its shield is also the music’s return wire — and over 20 m its shield also carries ground current between the booth’s earth and the stage’s earth: that is the hum. A balanced line carries the music on two wires and the input cancels whatever both pick up. A hum only on the venue’s feed, not in the booth or the headphones, entered after the mixer."
+          why="This run is a jack lead with an XLR adapter — unbalanced: the 6.35 mm TS jack ties pin 3 to pin 1, so its shield is also the music’s return wire — and over 20 m its shield also carries ground current between the booth’s earth and the stage’s earth: that is the hum. A balanced line carries the music on two wires and the input cancels whatever both pick up. A hum only on the venue’s feed, not in the booth or the headphones, entered after the mixer."
           onFixed={() => setFaultFixed(true)}
         />
         <GoalChips goals={goals.slice(5)} latched={latched.slice(5)} />

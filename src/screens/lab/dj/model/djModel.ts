@@ -167,10 +167,14 @@ export type PlugDef = {
   /** Short name for a dock key. */
   short: string;
   /** The jacks the PATCH tray offers it: where its plug goes on real gear.
-   *  That includes two moves that FIT but do the wrong job (wiring audit
-   *  DJ-02, owner 2026-10-20 "allow and explain"): the BOOTH TRS plug into the
-   *  6.35 mm headphone jack, and the headphone plug into a speaker's combo
-   *  input — each explained by `wrongJob`, and silent in the render. */
+   *  That includes moves that FIT but do the wrong job (wiring audit DJ-02,
+   *  owner 2026-10-20 "allow and explain"), each explained by `wrongJob`:
+   *  the headphone plug into a speaker's combo input (silent in the render),
+   *  and — for a BOOTH cable only — 'mix.phones', which moves that cable's
+   *  MIXER end from BOOTH OUT to the 6.35 mm PHONES jack while its far end
+   *  stays in its booth monitor (DJ-R3-PHONES, owner 2026-10-21: the
+   *  realistic mistake; see `PHONES_MONITOR`). That monitor then PLAYS the
+   *  headphone feed. */
   fits: readonly JackId[];
 };
 
@@ -210,6 +214,27 @@ export const JACK_NAMES: Record<JackId, string> = {
   'strip.1': 'Power strip 1', 'strip.2': 'Power strip 2', 'strip.3': 'Power strip 3', 'strip.4': 'Power strip 4',
   'strip.5': 'Power strip 5', 'strip.6': 'Power strip 6', 'strip.7': 'Power strip 7', 'strip.8': 'Power strip 8',
 };
+
+/**
+ * DJ-R3-PHONES (owner 2026-10-21, "do your recommendation for best user
+ * learning takeaway"): the realistic mistake is feeding a booth monitor from
+ * the mixer's PHONES jack instead of BOOTH OUT. A BOOTH cable "at"
+ * 'mix.phones' means: its MIXER end is in the PHONES jack (the BOOTH OUT
+ * socket is empty) and its far end is in THIS booth monitor's input — so the
+ * cable holds both jacks (`jacksHeld`). The monitor then plays the headphone
+ * feed: it follows the PHONES knob and the CUE buttons / cue mix, not the
+ * BOOTH knob, and the stereo headphone signal goes into its one (mono) input
+ * (the render sums it, `speakerFeed` → 'PHONES').
+ */
+export const PHONES_MONITOR: Partial<Record<PlugId, JackId>> = { 'bth.trsL': 'boothL.in', 'bth.trsR': 'boothR.in' };
+
+/** Every jack a plug's cable occupies when it is "at" `at` (a BOOTH cable
+ *  whose mixer end is in PHONES also holds its booth monitor's input). */
+export function jacksHeld(p: PlugId, at: JackId | null): JackId[] {
+  if (!at) return [];
+  const mon = at === 'mix.phones' ? PHONES_MONITOR[p] : undefined;
+  return mon ? [at, mon] : [at];
+}
 
 /** Where each plug goes in a correctly built system. */
 export const BUILT_PLUGS: Record<PlugId, JackId | null> = {
@@ -437,7 +462,9 @@ export function channelRoute(b: Booth, ch: ChannelId): ChannelRoute {
 }
 
 export type SpeakerId = 'paL' | 'paR' | 'boothL' | 'boothR';
-export type MixerOut = { out: 'MASTER' | 'BOOTH'; side: 'L' | 'R' } | null;
+/** 'PHONES': a BOOTH cable's mixer end moved to the PHONES jack (DJ-R3-PHONES)
+ *  — the monitor hears the headphone feed, summed to its one input. */
+export type MixerOut = { out: 'MASTER' | 'BOOTH' | 'PHONES'; side: 'L' | 'R' } | null;
 
 /** Which mixer output feeds a speaker's input (and the speaker is live). */
 export function speakerFeed(b: Booth, spk: SpeakerId): MixerOut {
@@ -445,6 +472,7 @@ export function speakerFeed(b: Booth, spk: SpeakerId): MixerOut {
   const jack = `${spk}.in` as JackId;
   for (const p of ['mst.xlrL', 'mst.xlrR', 'bth.trsL', 'bth.trsR'] as PlugId[]) {
     if (b.plugs[p] === jack) return { out: p.startsWith('mst') ? 'MASTER' : 'BOOTH', side: p.endsWith('L') ? 'L' : 'R' };
+    if (b.plugs[p] === 'mix.phones' && PHONES_MONITOR[p] === jack) return { out: 'PHONES', side: p.endsWith('L') ? 'L' : 'R' };
   }
   return null;
 }
@@ -468,14 +496,15 @@ export function plugCorrect(b: Booth, p: PlugId): boolean {
 
 /**
  * DJ-02: a move that FITS but does the wrong job, in words (null = not one of
- * them). Nothing plays through either — the render takes a speaker's feed
- * only from a MASTER or BOOTH plug, and the headphones only from the PHONES
- * jack — and neither makes a hazard sound.
+ * them). The headphone plug in a speaker input plays nothing (the render
+ * takes a speaker's feed only from a mixer output) and makes no hazard
+ * sound. DJ-R3-PHONES: a BOOTH cable's mixer end in the PHONES jack DOES
+ * play — the headphone feed, in that booth monitor.
  */
 export function wrongJob(p: PlugId, jack: JackId | null): string | null {
   if (!jack) return null;
-  if ((p === 'bth.trsL' || p === 'bth.trsR') && jack === 'mix.phones') {
-    return 'It fits — but this cable’s other end is in BOOTH OUT: you have joined two outputs of the same mixer. Nothing plays. The booth line belongs in a booth monitor’s input.';
+  if (PHONES_MONITOR[p] && jack === 'mix.phones') {
+    return 'It plays — but the monitor now follows your HEADPHONE cue, not the booth mix: press CUE on the next track and the monitor plays it too. Its level is the PHONES knob, not BOOTH, and the headphones’ stereo signal goes into the monitor’s one (mono) input. Booth monitors belong on BOOTH OUT.';
   }
   if (p === 'phones' && jack.endsWith('.in')) {
     return 'It fits — but headphones are a listening device, not a source: nothing plays. The headphones belong in the mixer’s PHONES jack.';
@@ -489,7 +518,11 @@ export function wrongJob(p: PlugId, jack: JackId | null): string | null {
 export function connect(b: Booth, p: PlugId, jack: JackId | null): Booth | null {
   if (jack != null && !PLUGS[p].fits.includes(jack)) return null;
   const plugs = { ...b.plugs };
-  if (jack != null) for (const q of PLUG_IDS) if (plugs[q] === jack) plugs[q] = null;
+  // every jack the cable will hold frees up — a BOOTH cable moved to PHONES
+  // also holds its monitor's input (DJ-R3-PHONES), and a cable holding a
+  // jack this one needs comes out
+  const held = jacksHeld(p, jack);
+  for (const q of PLUG_IDS) if (q !== p && jacksHeld(q, plugs[q]).some((j) => held.includes(j))) plugs[q] = null;
   plugs[p] = jack;
   return { ...b, plugs };
 }
@@ -512,7 +545,7 @@ export function powerThump(b: Booth, d: DeviceId): boolean {
 /** A mixer output cable is in this speaker's input. */
 export function speakerCabled(b: Booth, s: SpeakerId): boolean {
   const jack = `${s}.in` as JackId;
-  return (['mst.xlrL', 'mst.xlrR', 'bth.trsL', 'bth.trsR'] as PlugId[]).some((p) => b.plugs[p] === jack);
+  return (['mst.xlrL', 'mst.xlrR', 'bth.trsL', 'bth.trsR'] as PlugId[]).some((p) => jacksHeld(p, b.plugs[p]).includes(jack));
 }
 
 /** Where a mixer output's level is up enough to carry a bang. */
@@ -535,11 +568,14 @@ export function hotPatchSpeakers(b: Booth, p: PlugId, to: JackId | null): Speake
   if (from === to || !deviceLive(b, 'mixer')) return [];
   const kind = PLUGS[p].kind;
   if (kind === 'xlr' || kind === 'trs') {
-    const level = p.startsWith('mst') ? b.mixer.master : b.mixer.booth;
+    // a BOOTH cable's mixer end into or out of PHONES (DJ-R3-PHONES) moves
+    // on its live monitor: the level that bangs is the output it leaves or joins
+    const onPhones = PHONES_MONITOR[p] && (from === 'mix.phones' || to === 'mix.phones');
+    const level = p.startsWith('mst') ? b.mixer.master : onPhones ? Math.max(b.mixer.booth, b.mixer.phones) : b.mixer.booth;
     if (level <= LEVEL_DOWN) return [];
     const hit: SpeakerId[] = [];
-    for (const j of [from, to]) {
-      if (!j || !j.endsWith('.in')) continue;
+    for (const j of [...jacksHeld(p, from), ...jacksHeld(p, to)]) {
+      if (!j.endsWith('.in')) continue;
       const spk = j.slice(0, -3) as SpeakerId;
       if (deviceLive(b, spk) && !hit.includes(spk)) hit.push(spk);
     }
@@ -556,7 +592,7 @@ export function hotPatchSpeakers(b: Booth, p: PlugId, to: JackId | null): Speake
   return SPEAKERS.filter((spk) => {
     const f = speakerFeed(b, spk);
     if (!f) return false;
-    return (f.out === 'MASTER' ? b.mixer.master : b.mixer.booth) > LEVEL_DOWN;
+    return (f.out === 'MASTER' ? b.mixer.master : f.out === 'PHONES' ? b.mixer.phones : b.mixer.booth) > LEVEL_DOWN;
   });
 }
 

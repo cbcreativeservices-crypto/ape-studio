@@ -441,7 +441,12 @@ export function renderEvent(b: Booth, t0: number, seconds: number, prev: EventRe
 
   /* the room */
   const z = new Float32Array(n);
-  const outs = { MASTER: { L: mL, R: mR }, BOOTH: { L: bL, R: bR } } as const;
+  // DJ-R3-PHONES: a booth monitor fed from the PHONES jack hears the
+  // headphone feed (PHONES knob, cue / cue mix), its stereo summed into the
+  // monitor's one input
+  const pMono = new Float32Array(n);
+  for (let i = 0; i < n; i++) pMono[i] = (pL[i] + pR[i]) / 2;
+  const outs = { MASTER: { L: mL, R: mR }, BOOTH: { L: bL, R: bR }, PHONES: { L: pMono, R: pMono } } as const;
   const spk = (s: SpeakerId): Float32Array | null => {
     const f = speakerFeed(b, s);
     return f ? outs[f.out][f.side] : null;

@@ -22,7 +22,7 @@
  */
 import { MIXER_REAR, MIXER_REAR_JACKS, PLAYER_REAR, PLAYER_REAR_JACKS, type Box, type Pt } from './boothGeometry.ts';
 import { MONITOR_H, MONITOR_W, PLATE_H, SPEAKER_H, SPEAKER_W } from './gearGeometry.ts';
-import { FLAG, FLAG_TEXT, LANE, MAP, MAP_BODIES, MAP_PLUGS, BTH_PHONES_X, PHONES_UP_X, TIED, WRONG_JOB_LANE, WRONG_JOB_UNDER, plateBox, FLOOR_Y, PLUG_R, farKindOf, fixedEnd, fixedKindOf, jackPt, routeOf, type SpeakerKey } from './mapGeometry.ts';
+import { FLAG, FLAG_TEXT, LANE, MAP, MAP_BODIES, MAP_PLUGS, PHONES_UP_X, TIED, WRONG_JOB_LANE, phonesBoothRoute, plugEnds, plateBox, FLOOR_Y, PLUG_R, farKindOf, fixedEnd, fixedKindOf, jackPt, routeOf, type SpeakerKey } from './mapGeometry.ts';
 import { PLUGS, deviceLive, speakerFeed, wrongJob, type Booth, type JackId, type PlugId } from '../model/djModel.ts';
 import type { BoothRender } from '../engine/djRender.ts';
 
@@ -398,6 +398,8 @@ export function speakerLit(b: Booth, last: BoothRender | null, k: SpeakerKey): b
   const r = last.rmsDb;
   const on = (db: number) => db > -90;
   if (f.out === 'MASTER') return on(f.side === 'L' ? r.masterL : r.masterR);
+  // DJ-R3-PHONES: fed from the PHONES jack, summed — lit while the headphone feed carries signal
+  if (f.out === 'PHONES') return on(Math.max(r.phonesL, r.phonesR));
   if (!on(r.booth)) return false;
   const mL = on(r.masterL);
   const mR = on(r.masterR);
@@ -580,15 +582,11 @@ export function lane4(p: PlugId, to: JackId | null): P2[] {
     return [[a.x, a.y], [b.x, a.y], [b.x, b.y]];
   }
   if (to === 'mix.phones') {
-    // DJ-02: a BOOTH TRS plug in the PHONES jack — the map's route (its
-    // wrong-job lane, the column, under the jack) into the jack on THIS
-    // screen's front edge (phonesJack4); it never crosses the rear panel
-    const r = routeOf(p, to);
-    const n = r.length;
-    r[n - 3] = [BTH_PHONES_X, phonesJack4.y + WRONG_JOB_UNDER];
-    r[n - 2] = [phonesJack4.x, phonesJack4.y + WRONG_JOB_UNDER];
-    r[n - 1] = [phonesJack4.x, phonesJack4.y];
-    return jog4(p, r);
+    // DJ-R3-PHONES: a BOOTH cable's MIXER end in the PHONES jack on THIS
+    // screen's front edge (phonesJack4), its far end in its booth monitor:
+    // down from the jack, left under the mixer, up the column beside it and
+    // across its own lane to the plate — it never crosses a rear panel
+    return phonesBoothRoute(p, phonesJack4);
   }
   const r = routeOf(p, to);
   const lane = LANE4[p];
@@ -633,14 +631,16 @@ export function run4(p: PlugId, plugs: Partial<Record<PlugId, JackId | null>>): 
   const to = plugs[p] ?? null;
   if (!to) return hang4(p, plugs);
   const l = lane4(p, to);
-  const g = HANG_GROUPS.find((x) => x.plugs.includes(p));
+  // a BOOTH cable moved to PHONES (DJ-R3-PHONES) runs on its own lane, tight
+  // over the rear panels: it never hangs with its old partner
+  const g = to === 'mix.phones' ? undefined : HANG_GROUPS.find((x) => x.plugs.includes(p));
   let shared: Profile | null = null;
   if (g) {
     let lo = Infinity;
     let hi = -Infinity;
     for (const q of g.plugs) {
       const tq = plugs[q] ?? null;
-      if (!tq) continue;
+      if (!tq || tq === 'mix.phones') continue;
       for (const s of horizontalSpans(lane4(q, tq))) {
         if (s.y >= FLOOR_LANE || s.x1 - s.x0 < MIN_HANG) continue;
         lo = Math.min(lo, s.x0);
@@ -1051,13 +1051,11 @@ export function patchLabels4(plugsAt: Partial<Record<PlugId, JackId | null>>, sh
   const focus = new Set<PlugId>(opt.focus ?? shown);
   const plugs: { x: number; y: number; r: number }[] = [];
   for (const p of MAP_PLUGS) {
-    const a = fixedEnd(p);
-    if (a && PLUGS[p].kind !== 'phones') plugs.push({ x: a.x, y: a.y, r: PLUG_R[fixedKindOf(p)] + 1 });
-    const to = plugsAt[p];
-    if (to) {
-      const b = jackPt4(to);
-      plugs.push({ x: b.x, y: b.y, r: PLUG_R[farKindOf(p)] + 1 });
-    }
+    // each plug where it is drawn (DJ-R3-PHONES: a BOOTH cable moved to the
+    // PHONES jack has its plugs in that jack and its monitor's input)
+    const e = plugEnds(p, plugsAt[p] ?? null, jackPt4);
+    if (e.fixed) plugs.push({ x: e.fixed.x, y: e.fixed.y, r: PLUG_R[fixedKindOf(p)] + 1 });
+    if (e.far) plugs.push({ x: e.far.x, y: e.far.y, r: PLUG_R[farKindOf(p)] + 1 });
   }
   // the gear, the band's title, and every loose plug hanging below its socket
   const bodies: Box[] = [...MAP_BODIES, FRONT4, patchTitleBox4(s, k, measure), ...MAP_PLUGS.filter((p) => !plugsAt[p]).map((p) => loosePlugBox4(p, plugsAt))];

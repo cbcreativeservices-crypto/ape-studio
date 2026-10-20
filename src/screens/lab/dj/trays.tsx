@@ -3,9 +3,11 @@
  * booth. TAP-TO-CONNECT (house rule: never drag-only): pick a cable by its
  * fixed end, then tap the jack its free end goes into — only the jacks in
  * its `fits` list are offered (anything else is refused by the model, never
- * drawn). Two of them fit but do the WRONG JOB (DJ-02: the booth TRS plug
- * in the PHONES jack, the headphone plug in a speaker input): the tray says
- * why while the plug sits there (model/djModel wrongJob).
+ * drawn). Some fit but do the WRONG JOB (DJ-02: the headphone plug in a
+ * speaker input; DJ-R3-PHONES: a BOOTH cable's MIXER end moved from BOOTH OUT
+ * to the PHONES jack, its far end still in its monitor — offered as
+ * "MIXER END → PHONES"): the tray says why while the plug sits there
+ * (model/djModel wrongJob).
  * POWER lists each device's switch; the order is the lesson.
  */
 import { useState } from 'react';
@@ -13,7 +15,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { LabChip } from '../LabShell';
 import { getBooth, updateBooth } from './booth/boothStore';
-import { connect, deviceLive, hotPatchSpeakers, JACK_NAMES, PLUGS, powerThump, wrongJob, type Booth, type DeviceId, type JackId, type PlugId, type SpeakerId } from './model/djModel';
+import { connect, deviceLive, hotPatchSpeakers, JACK_NAMES, PHONES_MONITOR, PLUGS, powerThump, wrongJob, type Booth, type DeviceId, type JackId, type PlugId, type SpeakerId } from './model/djModel';
 
 /**
  * PATCH: pick a cable, then where its free end goes. A move of a LIVE audio
@@ -59,13 +61,13 @@ export function PatchTray({ plugs, onPatched, onSelect, onHot, initial }: {
           />
         ))}
       </View>
-      <Text style={styles.note}>{`${def.from} → ${at ? JACK_NAMES[at] : 'not plugged in'}`}</Text>
+      <Text style={styles.note}>{at === 'mix.phones' && PHONES_MONITOR[sel] ? `Mixer PHONES jack (moved from BOOTH OUT) → ${JACK_NAMES[PHONES_MONITOR[sel]!]}` : `${def.from} → ${at ? JACK_NAMES[at] : 'not plugged in'}`}</Text>
       <Text style={styles.head}>2 · TAP WHERE ITS LOOSE END GOES</Text>
       <View style={styles.row}>
         {def.fits.map((j) => (
           <LabChip
             key={j}
-            label={JACK_NAMES[j].replace('Power strip ', 'OUTLET ').replace('PA speaker', 'PA').replace('Booth monitor', 'BOOTH').replace(' input', ' IN')}
+            label={j === 'mix.phones' && PHONES_MONITOR[sel] ? 'MIXER END → PHONES' : JACK_NAMES[j].replace('Power strip ', 'OUTLET ').replace('PA speaker', 'PA').replace('Booth monitor', 'BOOTH').replace(' input', ' IN')}
             selected={at === j}
             onPress={() => patch(j)}
             compact

@@ -50,14 +50,16 @@ describe('wiring round 2 — DJ copy', () => {
   it('DJ-R2-02: the fault lead is named honestly: XLR ends, unbalanced wiring, and the hum is ground current on its shield', () => {
     const p20 = read(`${DJ}pages/p20Pa.tsx`);
     assert.doesNotMatch(p20, /label="UNBALANCED LEAD"/);
-    assert.match(p20, /label="XLR ENDS, UNBALANCED WIRING"/);
-    assert.match(p20, /XLR ends, unbalanced wiring \(pin 3 tied to pin 1 — e\.g\. an adaptor lead\)/);
+    // DJ-R3-ADAPTER (owner 2026-10-21) renamed it: a jack lead with an XLR adapter (test/wiringFix_r3_dj_20261021.test.ts)
+    assert.match(p20, /label="JACK LEAD \+ XLR ADAPTER"/);
+    assert.match(p20, /the TS jack ties pin 3 to pin 1/);
     assert.match(p20, /over 20 m its shield also carries ground current between the booth’s earth and the stage’s earth: that is the hum/);
     assert.doesNotMatch(p20, /why="Over a long run, an unbalanced lead picks up hum/);
   });
-  it('DJ-R2-03: the booth TRS in PHONES joins two outputs of the same mixer — literally', () => {
+  it('DJ-R2-03 (replaced by DJ-R3-PHONES, owner 2026-10-21): the "two outputs joined" move is gone — the booth cable’s mixer end goes to PHONES', () => {
     const t = wrongJob('bth.trsL', 'mix.phones')!;
-    assert.equal(t, 'It fits — but this cable’s other end is in BOOTH OUT: you have joined two outputs of the same mixer. Nothing plays. The booth line belongs in a booth monitor’s input.');
+    assert.doesNotMatch(t, /joined two outputs/);
+    assert.match(t, /^It plays — but the monitor now follows your HEADPHONE cue/);
     assert.equal(wrongJob('bth.trsR', 'mix.phones'), t);
   });
   it('DJ-R2-04: "many" powered speakers have a MIC/LINE switch, not every one', () => {

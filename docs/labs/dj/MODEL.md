@@ -119,6 +119,14 @@ mixer while a connected powered speaker is on is flagged as a THUMP (never
 played loud). Safe order: on = sources → mixer → speakers last; off =
 speakers first.
 
+WRONG-JOB moves (they fit; `wrongJob` explains): the headphone plug in a
+speaker's combo input plays nothing. A BOOTH cable's MIXER end moved from
+BOOTH OUT to the PHONES jack (DJ-R3-PHONES, owner 2026-10-21; its far end
+stays in its booth monitor, `PHONES_MONITOR` / `jacksHeld`) PLAYS: that
+monitor hears the headphone feed — PHONES knob, CUE buttons and cue mix, not
+the BOOTH knob — its stereo summed into the monitor's one input
+(`speakerFeed` → 'PHONES'). The headphones come out (one plug per jack).
+
 HOT-PATCH (`hotPatchSpeakers`): moving an audio cable while it is live is
 flagged too (never played) — a MASTER/BOOTH cable into or out of a live
 speaker while the mixer is on and that output's level is up, or a source
@@ -424,7 +432,9 @@ monitors (±1.25, 1.3) aimed at the DJ; floor y 3.2 … 11, centre (0, 7)).
   a venue is the floor centre: tops + sub. The sum is flat because this sub
   and these tops arrive together; a real system also needs time alignment
   (a delay and the polarity at the processor).
-- **The screen's fault:** the 20 m run on an UNBALANCED lead — a −50 dBFS
+- **The screen's fault:** the 20 m run on an UNBALANCED lead (DJ-R3-ADAPTER: an
+  XLR-to-jack lead from MASTER OUT, its TS jack in a jack-to-XLR adapter at
+  the stage box; the TS jack ties pin 3 to pin 1) — a −50 dBFS
   hum in the venue's feed only (the booth and the headphones stay clean).
 
 ## 16. Recording (screen 21)
