@@ -242,6 +242,10 @@ function PageContact({ ctx }: { ctx: PageCtx }) {
         tip wedges under the spring and lifts it off — the normal is BROKEN, and the spring now touches the plug instead: the
         source rides your patch cord. It isn’t magic and it isn’t a menu setting. A switch opened.
       </Body>
+      <Body>
+        This cutaway is a breaking jack on the source side — the top jack of a full-normal pair, for example. On the common
+        half-normal bay this switch sits in the bottom (input) jack instead, so there your plug takes over the destination.
+      </Body>
     </PatchbayRack>
   );
 }

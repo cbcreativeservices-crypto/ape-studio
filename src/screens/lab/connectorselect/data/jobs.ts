@@ -60,7 +60,7 @@ export const JOB_MATRIX: readonly JobMatrixEntry[] = [
       { id: 'balmono', label: 'Balanced MONO line signal', can: true, backs: ['line_level'], explain: 'Tip +, ring −, sleeve shield. One channel, noise-rejecting.' },
       { id: 'phones', label: 'Stereo headphones', can: true, backs: ['headphone_level'], explain: 'Tip left, ring right, sleeve common. Two channels, unbalanced.' },
       { id: 'insert', label: 'Console insert send/return', can: true, backs: ['line_level'], explain: 'Send on one contact, return on the other — one jack, two directions. Which is which is equipment-defined: verify.' },
-      { id: 'balstereo', label: 'Balanced stereo on one plug', can: false, explain: 'No. Three contacts cannot carry two balanced channels — balanced stereo needs two balanced connections.' },
+      { id: 'balstereo', label: 'Balanced stereo on one plug', can: false, explain: 'No. Three contacts cannot carry two balanced channels — that needs four signal contacts plus the shield (a 5-pin XLR, for example) or two cables.' },
     ],
   },
   {
@@ -74,7 +74,7 @@ export const JOB_MATRIX: readonly JobMatrixEntry[] = [
       { id: 'headsetmic', label: 'Headset microphone (TRRS)', can: true, backs: ['mic_level'], explain: 'The fourth contact adds a mic path — in TWO competing contact orders (CTIA and OMTP), so a headset can be incompatible with a jack it fits.' },
       { id: 'control', label: 'Specialized control uses', can: true, basis: 'trs_35 record, commonMistakes: "equipment that uses 3.5 mm jacks for balanced or non-obvious purposes" (equipment-defined)', explain: 'Some compact gear uses mini-jacks for balanced mono or control duty — equipment-defined; the manual decides.' },
       { id: 'speaker', label: 'Passive speaker connection', can: false, explain: 'No. Amplifier power does not belong on a mini-jack or its fine-gauge cable.' },
-      { id: 'balstereo', label: 'Balanced stereo through one mini plug', can: false, explain: 'Not as a balanced LINE: that needs two balanced connections, each with its own shield. A four-contact plug can drive balanced HEADPHONES (left +/−, right +/−, most often on the 2.5 mm size), but with no shield or ground it is not a balanced line connection.' },
+      { id: 'balstereo', label: 'Balanced stereo through one mini plug', can: false, explain: 'Not as a balanced LINE: that needs four signal contacts plus the shield (a 5-pin XLR, for example) or two cables. A four-contact plug can drive balanced HEADPHONES (left +/−, right +/−, most often on the 2.5 mm size), but with no shield or ground it is not a balanced line connection.' },
     ],
   },
   {

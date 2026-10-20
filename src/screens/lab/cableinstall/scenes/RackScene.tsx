@@ -383,15 +383,36 @@ function ControlTail({ isL }: { isL: boolean }) {
  *  active gear): the horizontals come down the manager and turn in behind
  *  the jacks-to-rear patch panel to its punch-downs on the inside face (the
  *  loom itself); short patch cords then join panel ports 1–4 to switch
- *  ports 1–4 straight down through the manager under the panel. */
-function NetTail() {
+ *  ports 1–4 straight down through the manager under the panel. The run
+ *  BEHIND the panel is drawn as a hidden line (wiring grade CI-R2-02,
+ *  2026-10-20: the loom used to stop at the panel's edge): each horizontal
+ *  dashes on from the rail to its own port's punch-down — h1 → port 1 … h4 →
+ *  port 4, the highest lane to the nearest port on the left, so no two
+ *  hidden lines cross. */
+function NetTail({ isL }: { isL: boolean }) {
   const N = CI_CLASS_TINTS.network;
   const mTop = HMGR2.y + 4;
   const mBot = HMGR2.y + HMGR2.h - 4;
   const mid = (mTop + mBot) / 2;
   const ports = [0, 1, 2, 3];
+  const x0 = isL ? RAIL_XL : RAIL_XR;
+  const modBot = PATCH.modY + PATCH.modH;
   return (
     <G>
+      {ports.map((i) => {
+        const ly = railYOf('g-net', isL, `h${i + 1}`);
+        return (
+          <Path
+            key={`h${i}`}
+            d={`M${x0} ${ly} H${PATCH_XS[i]} V${Math.min(ly, modBot - 1)}`}
+            stroke={N}
+            strokeWidth={0.7}
+            strokeDasharray="3 1.6"
+            opacity={0.8}
+            fill="none"
+          />
+        );
+      })}
       {ports.map((i) => {
         const px = PATCH_XS[i];
         const sx = SW_CX[i];
@@ -484,7 +505,7 @@ function AcTail() {
 function GroupTail({ id, isL }: { id: string; isL: boolean }) {
   if (id === 'g-analog') return <AnalogTail isL={isL} />;
   if (id === 'g-ctl') return <ControlTail isL={isL} />;
-  if (id === 'g-net') return <NetTail />;
+  if (id === 'g-net') return <NetTail isL={isL} />;
   if (id === 'g-fib') return <FiberTail isL={isL} />;
   if (id === 'g-spk') return <SpeakerTail isL={isL} />;
   return <AcTail />;

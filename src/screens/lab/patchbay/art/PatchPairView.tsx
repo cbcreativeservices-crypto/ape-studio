@@ -18,8 +18,10 @@
  *
  * Color doctrine (design pass 2026-09-10, matching the app's red rule): a
  * broken normal is usually the POINT of patching, so the break is descriptive
- * ORANGE; red is reserved for the one genuine hazard — a normal broken AND the
- * destination left hearing nothing (the silent-destination-mid-take disaster).
+ * ORANGE; red is reserved for the genuine hazards — a normal broken AND the
+ * destination left hearing nothing (the silent-destination-mid-take disaster),
+ * and the CLASH (two outputs tied into one input: the merged destination leg
+ * and the status line turn red — wiring grade PB-R2-05, 2026-10-20).
  *
  * Interaction: the two jacks are 44pt+ tap targets that insert/remove a cord
  * (deliberate a11y choice over drag-only — WCAG 2.5.7). They carry the house
@@ -286,6 +288,7 @@ function StatusText({ status, flow, hazard }: ReturnType<typeof pairStatus>) {
         styles.status,
         flow.isSplit && { color: PB.flow },
         flow.normalBroken && { color: hazard ? PB.hazard : PB.break },
+        flow.isMerge && { color: PB.hazard },
       ]}
       accessibilityLiveRegion="polite"
     >
@@ -489,7 +492,7 @@ export function PatchPairDrawing({
             }
             phase={phase}
             reduceMotion={reduceMotion}
-            color={flow.destinationHears === 'patch' ? PB.cord : PB.flow}
+            color={flow.isMerge ? PB.hazard : flow.destinationHears === 'patch' ? PB.cord : PB.flow}
           />
           <DeviceBox y={DEST_Y} label={destLabel} sub="DESTINATION · INPUT" accent={PB.dest} end="top" />
         </Svg>

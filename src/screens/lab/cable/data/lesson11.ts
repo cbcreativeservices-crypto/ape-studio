@@ -188,7 +188,7 @@ const A_PICKS: ConnectionPick[] = [
       travels(
         'mic_level',
         'wrong',
-        'You picked MIC-LEVEL AUDIO. A pickup’s output is stronger than mic level and expects a high-impedance instrument input, not a mic preamp — the wrong input stage sounds weak and dull. What must travel here is INSTRUMENT-LEVEL AUDIO.',
+        'You picked MIC-LEVEL AUDIO. A pickup’s output is usually stronger than mic level and expects a high-impedance instrument input, not a mic preamp — the wrong input stage sounds weak and dull. What must travel here is INSTRUMENT-LEVEL AUDIO.',
         'noise',
       ),
       travels(
@@ -717,7 +717,7 @@ const A_FAULTS: FaultStage = {
           label: 'The cable is unbalanced, so the monitor will hum',
           verdict: 'wrong',
           explain:
-            'Noise is not the issue — loudspeaker runs are unbalanced by nature. The issue is CURRENT: the small shielded conductor is not built to carry amplifier output. That is a heat-and-failure problem, not a hum problem.',
+            'Noise is not the issue at loudspeaker level — the signal is far stronger than any hum the cable picks up. The issue is CURRENT: the small shielded conductor is not built to carry amplifier output. That is a heat-and-failure problem, not a hum problem.',
         },
       ],
     },
@@ -797,7 +797,7 @@ const B_PICKS: ConnectionPick[] = [
       travels(
         'mic_level',
         'wrong',
-        'You picked MIC-LEVEL AUDIO. A pickup’s output is stronger than mic level and expects a high-impedance instrument input — the wrong input stage sounds weak and dull. What must travel here is INSTRUMENT-LEVEL AUDIO.',
+        'You picked MIC-LEVEL AUDIO. A pickup’s output is usually stronger than mic level and expects a high-impedance instrument input — the wrong input stage sounds weak and dull. What must travel here is INSTRUMENT-LEVEL AUDIO.',
         'noise',
       ),
       travels(
@@ -970,7 +970,7 @@ const B_PICKS: ConnectionPick[] = [
       travels(
         'speaker_level',
         'wrong',
-        'You picked LOUDSPEAKER-LEVEL AUDIO. A headphone amplifier drives earcups — more than line level demands, far less than a loudspeaker needs. The categories differ by orders of magnitude. What travels here is HEADPHONE AUDIO.',
+        'You picked LOUDSPEAKER-LEVEL AUDIO. A headphone amplifier’s voltage is often near line level; the difference is the current it delivers into low-impedance earcups — still far less than a loudspeaker needs. What travels here is HEADPHONE AUDIO.',
         'no_signal',
       ),
       travels(
@@ -1100,20 +1100,20 @@ const B_DATA: PickStage = {
           'usb_ok',
           'Type-A/C end to the computer, Type-B end to the interface',
           'correct',
-          'USB is directional by shape: Type-A (or C) marks the HOST end — the computer — and the squarish Type-B socket lives on the peripheral. The keyed shapes exist so host and peripheral can never be confused.',
+          'On this cable the B end sets the roles: the squarish Type-B socket lives on the peripheral, so the A (or C) end is the HOST end — the computer — and the two cannot be swapped. (On a USB-C to USB-C cable either end can be host; the devices negotiate the roles.)',
         ),
         cable(
           'usb_rev',
           'Type-B end to the computer, Type-A end to the interface',
           'wrong',
-          'Backwards. Type-B is the PERIPHERAL end — the fixed socket on the interface — and the host end of the cable is A or C, facing the computer. The keying makes the reversal physically impossible to force: the shapes will not mate the wrong way round. The correct answer is A/C to the computer, B to the interface.',
+          'Backwards. Type-B is the PERIPHERAL end — the fixed socket on the interface — so the other end of this cable (A, or C on a C-to-B cable) is the host end, facing the computer. The keying makes the reversal physically impossible to force: the shapes will not mate the wrong way round. The correct answer is A/C to the computer, B to the interface.',
           'no_signal',
         ),
         cable(
           'usb_any',
           'Either way — USB ends are interchangeable',
           'wrong',
-          'They are not: the connector shapes are keyed to their roles precisely so a host port is never plugged into another host port. A or C faces the host; B (or the device’s own C/Micro-B socket) marks the peripheral.',
+          'Not on this cable: the A and B shapes are keyed to their roles so a host port is never plugged into another host port. A (or the C end of a C-to-B cable) faces the host; B marks the peripheral. Only on a USB-C to USB-C cable can either end be host — there the devices negotiate the roles.',
           'no_signal',
         ),
       ],

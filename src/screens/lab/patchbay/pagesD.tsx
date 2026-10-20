@@ -46,8 +46,9 @@ function PageDirectional({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Lead>
-        A professional caution: “half-normal” does not by itself say WHICH side breaks. The bay above is a genuine
-        half-normalled-TOP design — everything you learned, mirrored.
+        A professional caution: “half-normal” does not by itself say WHICH side breaks. The bay above breaks on the TOP
+        while its outputs still sit on top — everything you learned, mirrored. Real top-breaking bays are usually wired
+        with their INPUTS on top, so the input jack still breaks; this one’s wiring does not match its switching.
       </Lead>
       <PairStatus
         state={state}
@@ -55,17 +56,18 @@ function PageDirectional({ ctx }: { ctx: PageCtx }) {
         destLabel="CONSOLE TAPE RTN 1"
         caption={
           flow.isMerge
-            ? 'CLASH — on a top-breaking bay the bottom does NOT break, so the normal AND your patch both drive one input. That is two outputs wired together, not a mix: avoid it. One reason the common bay breaks on the bottom instead.'
-            : 'This bay breaks on the TOP. Try both jacks and compare against the common bay you know.'
+            ? 'CLASH — on this bay the bottom (input) jack does NOT break, so the normal AND your patch both drive one input. That is two outputs wired together, not a mix: avoid it. The clash comes from feeding a source into the input jack that does not break — the reason a half-normal pair should break on its INPUT jack.'
+            : 'This bay breaks on the TOP — here, its output jack. Try both jacks and compare against the common bay you know.'
         }
       />
       {chips}
       <Card tone="warn">
         <Eyebrow>THE RULE THAT TRAVELS</Eyebrow>
         <Body>
-          The common arrangement is top = tap, bottom = break — but manufacturers document both. Never treat the simplified
-          rule as electrical law: on an unfamiliar bay, VERIFY the configuration (label, manual, or a quick detective test
-          like page twelve) before a session depends on it.
+          On most bays the top row is outputs (a tap) and the bottom row is inputs (the break) — but some bays are wired
+          inputs-on-top. What travels: on a half-normal pair the INPUT jack breaks and the output jack taps. Never treat the
+          top/bottom shortcut as electrical law: on an unfamiliar bay, VERIFY the configuration (label, manual, or a quick
+          detective test like page twelve) before a session depends on it.
         </Body>
       </Card>
     </PatchbayRack>
@@ -149,7 +151,7 @@ function PagePhantom({ ctx }: { ctx: PageCtx }) {
       <Body>
         Note what this warning does NOT say: it does not say “never put microphones on a patchbay.” Professional installations
         are built to do exactly that — correctly. The lesson is that mic-level + phantom requires PROPER SYSTEM DESIGN, not
-        improvisation. (Guidance per Neutrik’s patch-panel documentation.)
+        improvisation. (Guidance per patch-panel maker documentation.)
       </Body>
       <UnderstandingCheck
         question="You need to re-patch a mic line that has phantom power on. The professional move?"

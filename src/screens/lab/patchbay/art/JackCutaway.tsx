@@ -41,7 +41,10 @@ const tipXAt = (insertion: number) => 26 + insertion * 122;
 /** Where the leaf's contact finger meets the plug path, and its resting
  *  height (the dimple's underside). FINGER_X is placed so the nose first
  *  touches the dimple exactly at CONTACT_OPEN_AT (cognition pass 2026-09-10:
- *  the first visible separation must coincide with the declared break). */
+ *  the first visible separation must coincide with the declared break), and
+ *  CONTACT_OPEN_AT is chosen so that at FULL insertion the dimple rests in
+ *  the tip's neck groove (tipXAt(1) − 18 … − 13; wiring grade PB-R2-01,
+ *  2026-10-20 — it used to end on the sleeve). */
 const FINGER_REST_Y = 99;
 const FINGER_X = tipXAt(CONTACT_OPEN_AT) + 1 - 9 * ((103 - FINGER_REST_Y) / 11) ** 2;
 /** The plug's TOP surface at FINGER_X (or null when the plug is not under

@@ -253,12 +253,15 @@ function PageWrap(_: { ctx: PageCtx }) {
         </Body>
       </Card>
       <MantraCard />
+      {/* Sources (D58/D71: no maker names in learner text): normalling and the
+          half-normalled top/bottom variants — Neutrik patch-panel docs; tap/mult —
+          Bittree; source-above / destination-below — ART and Behringer manuals;
+          Normal / Half-Normal / Thru labeling — Samson. */}
       <Card>
         <Eyebrow>SOURCES BEHIND THIS LAB</Eyebrow>
         <Body>
-          Normalling definitions and the half-normalled top/bottom variants: Neutrik patch-panel documentation. Tap/mult
-          behavior: Bittree. Source-above / destination-below layout: ART and Behringer patchbay manuals. Normal / Half-Normal
-          / Thru labeling: Samson.
+          Patch-panel maker documentation and patchbay manuals: normalling definitions and the half-normalled top/bottom
+          variants, tap/mult behavior, the source-above / destination-below layout, and Normal / Half-Normal / Thru labeling.
         </Body>
       </Card>
       <Card>

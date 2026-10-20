@@ -74,7 +74,7 @@ export const CI_CLASS_TINTS = {
 
 /** The class key in words, for captions (keep in step with the tints). */
 export const CI_CLASS_KEY =
-  'red = AC power · cyan = analog audio · green = network · yellow = loudspeaker · white = control · violet = fiber';
+  'red = AC power · cyan = analog audio · green = network · yellow = loudspeaker · white = control and coax · violet = fiber';
 
 export const CI_CABLE_TYPES: CiCableType[] = [
   {
@@ -133,7 +133,7 @@ export const CI_CABLE_TYPES: CiCableType[] = [
     name: 'PoE network cable',
     tint: CI_CLASS_TINTS.network,
     signal: 'Twisted-pair data + DC power to devices',
-    use: 'permanent',
+    use: 'both',
     concerns: ['Same geometry care as data pairs', 'Heat in large powered bundles — follow applicable guidance', 'Connector/termination quality carries power too'],
   },
   {

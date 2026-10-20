@@ -8,6 +8,8 @@
  *   one signal conductor, so the noise that reaches it stays in it. The scope
  *   windows draw a few TRUE cycles of a tone with a faster interference
  *   component added — the arithmetic is exact, the signals illustrative.
+ *   (Drawn: the symmetric-drive case. lesson03 notes under the figure that
+ *   some outputs drive only pin 2 — equal impedance is what balances a line.)
  *
  * WiringTrace — the virtual tester's "inside the cable": every conductor from
  *   END A to END B, DERIVED from the bench data's measured map (never a
