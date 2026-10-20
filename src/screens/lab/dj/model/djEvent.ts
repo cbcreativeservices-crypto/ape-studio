@@ -27,7 +27,7 @@
  * from the beat counter of the channel the CLOCK switch picks), USB 1 and
  * USB 2 (computer audio for CH 1 / CH 2 when their selector is on USB).
  */
-import { deckPos, freshDeck, levelKnobGain, type Booth, type ChannelId, type DeckState } from './djModel.ts';
+import { deckPos, freshDeck, jackSource, levelKnobGain, selectedJacks, type Booth, type ChannelId, type DeckState } from './djModel.ts';
 import { TRACKS, trueGrid, type TrackId } from '../engine/djMusic.ts';
 import { beatAt, playedBpm, timeOfBeat } from './djTime.ts';
 import { MONITORS, PLACEMENTS, REF_FEED_DBFS, MON_DBA_1M, ROOM, TOP_DBA_1M, cardioidDb, micAngleDeg, powerSum, relLevelDb, subsRelAt, type Placement, type SubPlace, type V2 } from './djRoom.ts';
@@ -255,14 +255,15 @@ export const freshVenue = (): VenueState => ({ on: false, djL: null, djR: null, 
 export const venueHandoffOk = (v: VenueState): boolean => v.djL === 'MST_L' && v.djR === 'MST_R' && v.cable === 'XLR';
 export const venueSwapped = (v: VenueState): boolean => v.djL === 'MST_R' && v.djR === 'MST_L';
 
-/** Long unbalanced runs pick up hum (and lose top end) — modelled level of
+/** Long unbalanced runs pick up hum (the top end survives: a line output's
+ *  low impedance keeps the cable's roll-off far above audio) — modelled level of
  *  the hum the venue hears, dBFS. */
 export const UNBAL_HUM_DBFS = -50;
 
 /**
  * TURNTABLE ACOUSTIC FEEDBACK (a different loop from the mic's): the subs
  * shake the table, the stylus reads the shaking as music, the PA plays it
- * louder. Model margin (dB) at about 60 Hz: the sub level at the decks (re
+ * louder. Model margin (dB) at TT_RUMBLE_HZ (80 Hz): the sub level at the decks (re
  * the floor centre's bass), how loud the system plays, and the isolation.
  */
 /** The turntable-and-table resonance: ONE value for the whole lab (second
@@ -335,10 +336,21 @@ export function clockArrives(b: Booth): boolean {
   return CLOCK_CABLES[dm.cable].works;
 }
 
-/** The tempo the beat counter of a channel reads: its source deck's played
- *  BPM (CH 1 = deck A, CH 2 = deck B), or null with nothing playing there. */
+/** The tempo the beat counter of a channel reads: it analyses the AUDIO the
+ *  channel's input selector hears (wiring audit WF-DJ-07), not a deck by
+ *  name — the deck whose cables are in the selected jacks, or the drum
+ *  machine when its audio is patched into CH 2's LINE inputs (its own tempo
+ *  on INTERNAL; slaved to CH 2's own clock it would only be following
+ *  itself, so it gives no tempo). Null with nothing playing there. */
 export function counterBpm(b: Booth, ch: ChannelId): number | null {
-  const d = ch === 1 ? b.decks.A : b.decks.B;
+  const dm = b.ev?.dm;
+  if (ch === 2 && dm?.audio && b.ch[2].input === 'LINE') {
+    return dm.startedAt != null && dm.sync === 'INT' ? dm.intBpm : null;
+  }
+  const jacks = selectedJacks(ch, b.ch[ch].input);
+  const src = jacks ? (jackSource(b, jacks.L) ?? jackSource(b, jacks.R)) : null;
+  if (!src || src.source === 'TT') return null;
+  const d = src.source === 'A' ? b.decks.A : b.decks.B;
   if (!d.track || !d.playing) return null;
   return playedBpm(TRACKS[d.track].bpm, d.pitch);
 }

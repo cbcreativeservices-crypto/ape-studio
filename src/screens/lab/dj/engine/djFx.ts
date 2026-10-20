@@ -1,7 +1,7 @@
 /**
  * djFx — the effects unit's DSP (Stage 2, Screen 13). Pure TypeScript on
  * Float32Array, no React Native; the model (routes, times, the dry/wet law)
- * is model/djEffects.ts. Pinned by test/djStage2Fx.test.ts.
+ * is model/djEffects.ts. Pinned by test/djStage2Engine.test.ts.
  *
  * Every effect returns its WET signal only; the caller mixes it (insert /
  * MASTER: the dry/wet law; SEND: wet × RETURN). Each keeps its state in an

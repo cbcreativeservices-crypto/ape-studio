@@ -3,7 +3,7 @@
  * booth, as pure state transitions at booth time `t` (seconds). Every
  * function anchors the decks at `t` first, so a change made mid-play keeps
  * the music's position continuous. Pinned by test/djTime.test.ts and
- * test/djModel.test.ts.
+ * test/djRender.test.ts.
  *
  * THE GENERIC PLAYER (Stage 1; real players differ — their manuals win):
  *   PLAY/PAUSE  toggles playback.

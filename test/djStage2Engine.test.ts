@@ -385,7 +385,7 @@ describe('Stage 2 — turntable setup (model/djVinyl)', () => {
     const m = wallForce(setVinyl());
     near(m.L, m.R, 1e-9);
   });
-  it('no ground wire: a 50 Hz buzz on the phono channel, even with the record stopped', () => {
+  it('no ground wire: a 60 Hz (HUM_HZ) buzz on the phono channel, even with the record stopped', () => {
     clearDeckCache();
     let b = builtBooth();
     b = { ...b, ttPreamp: 'PHONO', plugs: { ...b.plugs, 'tt.rcaL': 'ch1.phono.L', 'tt.rcaR': 'ch1.phono.R' }, ch: { ...b.ch, 1: { ...b.ch[1], input: 'PHONO', fader: 1 } }, vinyl: { ...setVinyl(), gnd: false } };

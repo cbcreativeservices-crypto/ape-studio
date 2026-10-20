@@ -1,7 +1,8 @@
 /**
  * djModel — THE SHARED DJ BOOTH: one technical model every screen of the
  * DJ Systems Lab reads and writes (owner brief 2026-10-18). Pure TypeScript,
- * no React Native; pinned by test/djModel.test.ts. The full model, with every
+ * no React Native; pinned by test/djRender.test.ts and
+ * test/djLessons.test.ts (routing, connect, hot-patching). The full model, with every
  * range, taper, curve, tap point and simplification, is documented in
  * docs/labs/dj/MODEL.md; the sources and unknowns in docs/labs/dj/SOURCES.md.
  *
@@ -139,6 +140,9 @@ export const POWERED: readonly DeviceId[] = ['playerA', 'playerB', 'mixer', 'paL
 export type JackId =
   | 'ch1.line.L' | 'ch1.line.R' | 'ch1.phono.L' | 'ch1.phono.R'
   | 'ch2.line.L' | 'ch2.line.R' | 'ch2.phono.L' | 'ch2.phono.R'
+  // ONE headphone output: the mixer front's 6.35 mm and 3.5 mm jacks
+  // (art/MicGear FRONT phones635 / phones35) are wired in parallel and carry
+  // the same signal, so the model gives them one jack
   | 'mix.phones'
   | 'paL.in' | 'paR.in' | 'boothL.in' | 'boothR.in'
   | 'strip.1' | 'strip.2' | 'strip.3' | 'strip.4' | 'strip.5' | 'strip.6' | 'strip.7' | 'strip.8';
@@ -162,7 +166,10 @@ export type PlugDef = {
   device: DeviceId | 'phones';
   /** Short name for a dock key. */
   short: string;
-  /** Which jacks it physically fits. */
+  /** The jacks the PATCH tray offers it — NOT every physical fit: on real
+   *  gear the BOOTH TRS plug also goes into the headphone jack, and the
+   *  headphone plug into a speaker's combo input (wiring audit WF-DJ-02,
+   *  waiting on the owner: Screen 4 has no drawn route for those moves). */
   fits: readonly JackId[];
 };
 
@@ -458,8 +465,8 @@ export function plugCorrect(b: Booth, p: PlugId): boolean {
   return at === want;
 }
 
-/** A plug in a jack it does not fit is refused — tap-to-connect never makes
- *  an impossible connection. Returns the new booth or null. Any plug already
+/** A plug in a jack outside its `fits` list is refused — tap-to-connect
+ *  never makes a connection the tray does not offer. Returns the new booth or null. Any plug already
  *  in that jack comes out (one plug per jack). */
 export function connect(b: Booth, p: PlugId, jack: JackId | null): Booth | null {
   if (jack != null && !PLUGS[p].fits.includes(jack)) return null;

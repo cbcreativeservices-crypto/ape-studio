@@ -187,7 +187,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
     id: 'PA_HUM',
     subsystem: 'power',
     symptom: 'A steady hum comes from the left of the room, even between tracks.',
-    cause: 'PA L was plugged into a wall socket on another circuit, making a ground loop through its audio cable.',
+    cause: 'PA L was on another circuit: the MASTER L shield (pin 1) closed a ground loop, and PA L’s input let it in (a pin-1 problem).',
     evidence: 'The hum was in the crowd but not in the booth monitors or the headphones, and only on the left — so it entered after the mixer.',
     repair: 'Power PA L from the booth’s own strip (or put an isolation transformer in the MASTER L line). Never remove the mains earth.',
     prevention: 'Power the whole rig from one distribution point; carry an isolation transformer for the line that hums.',

@@ -1,7 +1,7 @@
 /**
  * djEffects — the DJ Systems Lab's EFFECTS UNIT as a model (Stage 2, Screen
  * 13; research DJ19). Pure TypeScript, no React Native; the DSP that runs it
- * is engine/djFx.ts, and test/djStage2Fx.test.ts pins both.
+ * is engine/djFx.ts, and test/djStage2Engine.test.ts pins both.
  *
  * THIS LAB'S MIXER has ONE effects unit with a ROUTE switch (real mixers
  * differ — many have a beat-FX unit with a channel select AND separate send /

@@ -413,7 +413,8 @@ monitors (±1.25, 1.3) aimed at the DJ; floor y 3.2 … 11, centre (0, 7)).
 - **Edges:** each top's −6 dB edges are drawn to the walls; an edge heading
   for the centre line stops there, so two edges never lie on one another.
 - **Handoff:** MASTER L / R into the stage box's DJ L / DJ R (swaps are
-  flagged); an unbalanced run adds hum (−50 dBFS) and a 9 kHz roll-off. The
+  flagged); an unbalanced run adds hum (−50 dBFS) and no roll-off (a
+  line output's low impedance keeps the cable's corner far above audio). The
   ENGINEER's gain (−12 … +9 dB, asked in 3 dB steps) moves the room, never
   the DJ's meters.
 - **Processor:** crossover ON = LR4 at 100 Hz (two Butterworth sections):

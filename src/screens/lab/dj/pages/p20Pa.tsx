@@ -50,7 +50,7 @@ import { PEAK_RED } from './shared';
 
 const TERMS = [
   { term: 'House left', def: 'Which speaker is LEFT is the venue’s call. In live sound it is usually HOUSE LEFT — the crowd’s left, your RIGHT as you face them. Ask the engineer; many club systems run mono. (This lab draws PA L at house left.)' },
-  { term: 'Balanced line', def: 'Two signal wires and a shield; the input takes the difference between them, so hum picked up equally on both cancels. That is why long runs to a venue are XLR.' },
+  { term: 'Balanced line', def: 'Two signal wires and a shield; the input takes the difference between them, so hum picked up equally on both cancels. That is why long runs to a venue are usually XLR.' },
   { term: 'Crossover', def: 'Splits the music by frequency: the tops get the part above the crossover point (100 Hz here), the subs the part below. Bass is usually sent to the subs in MONO.' },
   { term: 'Coverage angle', def: 'A speaker’s nominal angle is where it is 6 dB down from straight ahead — a 90° top is −6 dB at 45° each side. Outside that, the level falls away fast. Subs spread almost evenly all round.' },
 ] as const;
@@ -61,7 +61,7 @@ type View3 = 'ROOM' | 'HANDOFF' | 'SYSTEM';
 
 const LOOK: Record<View3, string> = {
   ROOM: 'You are looking down on the venue: the stage at the top, the floor coloured by level, the tops with their −6 dB edges, the subs and the booth. PA L stands at house left — on your left here, the DJ’s right.',
-  HANDOFF: 'You are looking at the back of the mixer and the venue’s stage box at the side of the stage, about 20 m of cable away: MASTER L and R into the inputs labelled DJ L and DJ R.',
+  HANDOFF: 'You are looking at the back of the mixer and the venue’s stage box at the side of the stage, about 20 m of cable away: MASTER L and R into the inputs this venue has labelled DJ L and DJ R (13 and 14 here; every venue numbers its own — ask the engineer).',
   SYSTEM: 'You are looking at the venue’s system: the crossover’s response (TOPS, SUB and their SUM), and below, a top and a sub at true size.',
 };
 
@@ -448,7 +448,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
           }}
           fixed={venueHandoffOk(evOf(booth).venue) && !floorHum}
           hints={['The booth and the headphones are clean, so where does the hum get in: before the mixer, or after it?', 'Look at the HANDOFF: what kind of cable makes the 20 m run to the stage box?', 'Open VENUE: the 20 m run.']}
-          why="Over a long run, an unbalanced lead picks up hum (and loses top end); a balanced line carries the music on two wires and the input cancels whatever both pick up. A hum only on the venue’s feed, not in the booth or the headphones, entered after the mixer."
+          why="Over a long run, an unbalanced lead picks up hum; a balanced line carries the music on two wires and the input cancels whatever both pick up. A hum only on the venue’s feed, not in the booth or the headphones, entered after the mixer."
           onFixed={() => setFaultFixed(true)}
         />
         <GoalChips goals={goals.slice(5)} latched={latched.slice(5)} />

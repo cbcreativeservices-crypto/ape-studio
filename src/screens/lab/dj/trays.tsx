@@ -1,9 +1,10 @@
 /**
  * trays — the DJ Systems Lab's dock sheets for connecting and powering the
  * booth. TAP-TO-CONNECT (house rule: never drag-only): pick a cable by its
- * fixed end, then tap the jack its free end goes into — only jacks it
- * physically fits are offered (a mismatch is refused by the model, never
- * drawn). POWER lists each device's switch; the order is the lesson.
+ * fixed end, then tap the jack its free end goes into — only the jacks in
+ * its `fits` list are offered (anything else is refused by the model, never
+ * drawn; not every physical fit is offered yet — model/djModel PlugDef).
+ * POWER lists each device's switch; the order is the lesson.
  */
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';

@@ -1,6 +1,6 @@
 /**
  * djStems — the decks' STEMS (Stage 2, Screen 15; research DJ20). Pure
- * TypeScript; pinned by test/djStage2Stems.test.ts.
+ * TypeScript; pinned by test/djStage2Engine.test.ts.
  *
  * ORIGINAL STEMS. This lab's music is BUILT from four parts (engine/djMusic:
  * drums, bass, chords, lead — called MELODY here), so a deck can play from

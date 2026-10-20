@@ -2,7 +2,8 @@
  * djEventRender — the EVENT RIG's signal path (screens 19–24), built ON the
  * Stage 1 booth render (djRender.renderBooth), never beside it: one booth
  * state, one render, one set of meters. Pure TypeScript; pinned by
- * test/djEventRender.test.ts. Model in docs/labs/dj/MODEL.md §13–§19.
+ * test/djEvent.test.ts (with test/djRecord.test.ts and
+ * test/djCapstone.test.ts). Model in docs/labs/dj/MODEL.md §13–§19.
  *
  *   renderBooth(…, { inject, keep })
  *     inject: a laptop on CH 1 / CH 2's USB input, a drum machine in CH 2's
@@ -107,7 +108,7 @@ type EvCarry = {
   ringAmp: number;
   ringPh: number;
   humPh: number;
-  xo: { topL: BqState[]; topR: BqState[]; sub: BqState[]; unbalL: BqState; unbalR: BqState };
+  xo: { topL: BqState[]; topR: BqState[]; sub: BqState[] };
   meters: Record<EvTap, MeterState>;
 };
 
@@ -121,14 +122,14 @@ const freshCarry = (): EvCarry => ({
   ringAmp: 0,
   ringPh: 0,
   humPh: 0,
-  xo: { topL: [bqState(), bqState()], topR: [bqState(), bqState()], sub: [bqState(), bqState()], unbalL: bqState(), unbalR: bqState() },
+  xo: { topL: [bqState(), bqState()], topR: [bqState(), bqState()], sub: [bqState(), bqState()] },
   meters: { mic: { ...FLOOR }, recL: { ...FLOOR }, recR: { ...FLOOR }, sub: { ...FLOOR } },
 });
 
 const cloneCarry = (c: EvCarry): EvCarry => ({
   ...c,
   lim: { g: c.lim.g },
-  xo: { topL: c.xo.topL.map((q) => ({ ...q })), topR: c.xo.topR.map((q) => ({ ...q })), sub: c.xo.sub.map((q) => ({ ...q })), unbalL: { ...c.xo.unbalL }, unbalR: { ...c.xo.unbalR } },
+  xo: { topL: c.xo.topL.map((q) => ({ ...q })), topR: c.xo.topR.map((q) => ({ ...q })), sub: c.xo.sub.map((q) => ({ ...q })) },
   meters: { ...c.meters },
 });
 
@@ -225,8 +226,10 @@ export function xoverResp(f: number, xover: boolean, subs: boolean): { tops: num
   return { tops: db(t), sub: subs ? db(s0) : -120, sum: db(sum) };
 }
 
-/** A long unbalanced run: cable capacitance takes the top end off. */
-const LP_UNBAL: Biquad = rbj(9000, 0.6, 0, 'lowpass');
+/* A long unbalanced run HUMS but keeps its top end (wiring audit WF-DJ-05):
+   a mixer's low-impedance line output drives 20 m of cable (a few nF) with
+   its corner far above the audio band — the roll-off belongs to a
+   high-impedance source such as a pickup, not to this run. */
 
 /** A mains hum: the fundamental and its odd harmonics (a buzz), at `db`. */
 function addHum(l: Float32Array, r: Float32Array | null, db: number, ph0: number): number {
@@ -458,8 +461,6 @@ export function renderEvent(b: Booth, t0: number, seconds: number, prev: EventRe
     if (a) inL.set(a);
     if (c) inR.set(c);
     if (v.cable === 'UNBAL' && (a || c)) {
-      biquadInPlace(inL, LP_UNBAL, ec.xo.unbalL);
-      biquadInPlace(inR, LP_UNBAL, ec.xo.unbalR);
       ec.humPh = addHum(inL, inR, UNBAL_HUM_DBFS, ec.humPh);
       humCrowd = true;
     }

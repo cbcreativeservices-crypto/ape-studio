@@ -1,7 +1,7 @@
 /**
  * djDvs — a DIGITAL VINYL SYSTEM on the shared booth (Stage 2, Screen 18;
  * research DJ26). SIMULATED: nothing reads a real control record. Pure
- * TypeScript; pinned by test/djStage2Dvs.test.ts.
+ * TypeScript; pinned by test/djStage2Engine.test.ts.
  *
  * THE RIG (one profile; real systems vary): a CONTROL RECORD on the
  * turntable carries no music — a steady 1 kHz stereo tone whose two sides are

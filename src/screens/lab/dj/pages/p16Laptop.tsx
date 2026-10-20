@@ -62,7 +62,7 @@ function SetupTray() {
           setHot(d === 'MIXER USB' && (b.laptop?.device ?? 'MIXER USB') !== 'MIXER USB' && fullLevelSwitch(b));
           setLap(() => ({ device: d as LaptopState['device'] }));
         }}
-        note={!l.usbMixer ? 'The mixer is not in the list: its USB cable is out (RIG). A device the computer cannot see — no cable, or no driver on systems that need one — cannot be chosen.' : l.device === 'BUILT-IN' ? 'BUILT-IN: the laptop’s own speakers and headphone jack. Nothing reaches the mixer.' : 'The mixer’s own USB audio interface: deck 1 on USB 1/2, deck 2 on USB 3/4.'}
+        note={!l.usbMixer ? 'The mixer is not in the list: its USB cable is out (RIG). A device the computer cannot see — no cable, or no driver on systems that need one — cannot be chosen.' : l.device === 'BUILT-IN' ? 'BUILT-IN: the laptop’s own speakers and headphone jack. Nothing reaches the mixer.' : 'The mixer’s own USB audio interface: deck 1 on the channel pair USB 1/2, deck 2 on the pair USB 3/4 — both pairs over the one USB cable.'}
       />
       {hot ? <TrayNote warn>FULL LEVEL — the music reached the mixer the instant the device connected, with the channel faders up. The lab keeps it at its own level; for real, pick the device with the faders down.</TrayNote> : null}
       <Choices head="BUFFER (samples)" value={l.buffer} items={BUFFERS.map((b) => ({ id: b, label: `${b} · ${bufferMs(b, l.rate).toFixed(1)} ms` }))} onPick={(b) => setLap(() => ({ buffer: b as number }))} />
@@ -81,7 +81,7 @@ function OutputsTray() {
       {(['A', 'B'] as DeckId[]).map((d) => (
         <Choices key={d} head={`SOFTWARE DECK ${d === 'A' ? 1 : 2} → OUTPUT`} value={l.assign[d]} items={pairs.map((p) => ({ id: p, label: p }))} onPick={(p) => setLap((x) => ({ assign: { ...x.assign, [d]: p as UsbPair } }))} />
       ))}
-      <TrayNote>The mixer hears USB 1/2 on channel 1 and USB 3/4 on channel 2 (each channel’s input selector on USB). Two decks on one pair arrive mixed together on one channel.</TrayNote>
+      <TrayNote>On this lab’s mixer, channel 1 hears the USB pair 1/2 and channel 2 the pair USB 3/4 (each channel’s input selector on USB). A pair is two audio channels (L and R) inside the one USB connection, not a socket. Two decks on one pair arrive mixed together on one channel.</TrayNote>
     </View>
   );
 }

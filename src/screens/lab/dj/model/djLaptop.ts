@@ -1,7 +1,7 @@
 /**
  * djLaptop — a laptop running DJ software, on the shared booth (Stage 2,
  * Screen 16; research DJ09). SIMULATED: no real USB, MIDI or audio device is
- * touched. Pure TypeScript; pinned by test/djStage2Laptop.test.ts.
+ * touched. Pure TypeScript; pinned by test/djStage2Engine.test.ts.
  *
  * THE RIG (one profile; real rigs vary):
  *   LAPTOP ──USB── MIXER   the mixer's own USB audio interface: AUDIO both

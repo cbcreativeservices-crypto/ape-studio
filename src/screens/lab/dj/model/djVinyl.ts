@@ -1,7 +1,7 @@
 /**
  * djVinyl — the turntable's SETUP on the shared booth (Stage 2, Screen 17;
  * research DJ06, DJ07, DJ22's turntable feedback, DJ24's grounding). Pure
- * TypeScript; pinned by test/djStage2Vinyl.test.ts. The values are THIS
+ * TypeScript; pinned by test/djStage2Engine.test.ts. The values are THIS
  * LAB'S teaching cartridge; a real one's instructions win.
  *
  * TRACKING FORCE. The counterweight's position sets the downforce: the arm

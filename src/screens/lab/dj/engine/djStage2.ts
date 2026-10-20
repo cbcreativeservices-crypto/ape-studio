@@ -214,7 +214,7 @@ export function stage2Of(b: Booth, t0: number, n: number, from: S2Carry | null |
           }
         }
       }
-      // the ground HUM (50 Hz and its odd harmonics: a buzz), at the cartridge
+      // the ground HUM (HUM_HZ, 60 Hz, and its odd harmonics: a buzz), at the cartridge
       if (!v.gnd && !v.armUp && b.power.turntable) {
         const hv = (HUM_V / CART_V) * 0.5 * (phonoOut ? 1 / PHONO_G : 1);
         for (let i = 0; i < n; i++) {

@@ -2,8 +2,8 @@
  * Screen 23 — Performer changeovers and backup playback (research DJ29, with
  * the media backups of DJ10 and the handling and power of DJ24).
  *
- * The outgoing DJ plays from a laptop on the mixer's USB 1 (CH 1); the
- * incoming DJ brings a laptop for USB 2 (CH 2) and a BACKUP stick in deck B
+ * The outgoing DJ plays from a laptop on the mixer's USB port 1 (CH 1); the
+ * incoming DJ brings a laptop for USB port 2 (CH 2) and a BACKUP stick in deck B
  * (CH 2's LINE input) — playback that needs no computer. Two computer paths,
  * so nobody unplugs the music to change over. Drawn as the event's signal-
  * flow board (art/EventFlow) with the power row under it, where a GROUND
@@ -51,7 +51,7 @@ import { PEAK_RED } from './shared';
 
 const TERMS = [
   { term: 'Input list', def: 'Which source is on which channel and input, written down and agreed before the night — so nobody has to guess what a cable feeds.' },
-  { term: 'USB audio', def: 'A laptop’s music reaching the mixer over its USB cable: the mixer’s USB 1 feeds CH 1 and USB 2 feeds CH 2 when that channel’s input selector is on USB. (Screen 16 shows more.)' },
+  { term: 'USB audio', def: 'A laptop’s music reaching the mixer over its USB cable. This lab’s mixer has two USB PORTS, printed USB 1 and USB 2: port 1 feeds CH 1 and port 2 feeds CH 2 when that channel’s input selector is on USB. A port is a whole USB connection — not the same thing as Screen 16’s USB 1/2 and USB 3/4, which are pairs of audio channels inside ONE USB connection. (Screen 16 shows more.)' },
   { term: 'Backup playback', def: 'A way to keep music going that does not depend on the thing most likely to fail: a stick in a player, ready on a channel, while a laptop plays.' },
   { term: 'Ground loop', def: 'Two earthed paths between pieces of gear — a charger on another circuit, and the USB or audio lead — make a loop that picks up mains hum (60 Hz, 50 Hz in many countries). Break it in the audio or USB path with an isolator (a small box that breaks the ground in the lead), or power everything from one strip, which often cures it. A charger can still whine on the same strip: then try the battery. Never remove the protective earth — the mains earth that keeps a fault from making metal live.' },
 ] as const;
@@ -188,14 +188,14 @@ function PlugTray({ onHot, onEarth, onUnplug2 }: { onHot: (w: string | null) => 
   };
   return (
     <View style={styles.tray}>
-      <Row head="DJ 2’S LAPTOP → THE MIXER’S USB 2">
+      <Row head="DJ 2’S LAPTOP → THE MIXER’S USB PORT 2">
         <LabChip
-          label={l2.usb ? 'USB 2: CONNECTED (UNPLUG)' : 'CONNECT USB 2'}
+          label={l2.usb ? 'USB PORT 2: CONNECTED (UNPLUG)' : 'CONNECT USB PORT 2'}
           selected={l2.usb}
           onPress={() => {
             const g = getBooth();
             if (l2.usb) onUnplug2();
-            else onHot(g.ch[2].input === 'USB' && g.ch[2].fader > 0.02 ? 'HOT — a source plugged in on a channel that is up. Fader DOWN first. Unplug USB 2, pull CH 2 down and connect again.' : null);
+            else onHot(g.ch[2].input === 'USB' && g.ch[2].fader > 0.02 ? 'HOT — a source plugged in on a channel that is up. Fader DOWN first. Unplug USB port 2, pull CH 2 down and connect again.' : null);
             updateBooth((x) => withLap(x, 2, { usb: !evOf(x).lap2.usb }));
           }}
           compact
@@ -203,12 +203,12 @@ function PlugTray({ onHot, onEarth, onUnplug2 }: { onHot: (w: string | null) => 
         <LabChip label={l2.isolator ? 'USB ISOLATOR IN' : 'NO ISOLATOR'} selected={l2.isolator} onPress={() => updateBooth((x) => withLap(x, 2, { isolator: !evOf(x).lap2.isolator }))} compact />
       </Row>
       <TrayNote tone="fine">A USB isolator breaks the ground in the USB lead. Check it supports your interface’s USB speed — many run only at the slower one.</TrayNote>
-      <Row head="DJ 1’S LAPTOP → THE MIXER’S USB 1">
-        <LabChip label={ev.lap1.usb ? 'USB 1: CONNECTED (UNPLUG)' : 'CONNECT USB 1'} selected={ev.lap1.usb} onPress={() => updateBooth((x) => withLap(x, 1, { usb: !evOf(x).lap1.usb }))} compact />
+      <Row head="DJ 1’S LAPTOP → THE MIXER’S USB PORT 1">
+        <LabChip label={ev.lap1.usb ? 'USB PORT 1: CONNECTED (UNPLUG)' : 'CONNECT USB PORT 1'} selected={ev.lap1.usb} onPress={() => updateBooth((x) => withLap(x, 1, { usb: !evOf(x).lap1.usb }))} compact />
       </Row>
       <Row head="CH 1 · CH 2 INPUT SELECTORS">
-        <LabChip label={`CH 1: ${b.ch[1].input === 'USB' ? 'USB 1' : 'LINE'}`} selected={false} onPress={() => sel(1, b.ch[1].input === 'USB' ? 'LINE' : 'USB')} compact />
-        <LabChip label={`CH 2: ${b.ch[2].input === 'USB' ? 'USB 2' : 'LINE (DECK B)'}`} selected={false} onPress={() => sel(2, b.ch[2].input === 'USB' ? 'LINE' : 'USB')} compact />
+        <LabChip label={`CH 1: ${b.ch[1].input === 'USB' ? 'USB (PORT 1)' : 'LINE'}`} selected={false} onPress={() => sel(1, b.ch[1].input === 'USB' ? 'LINE' : 'USB')} compact />
+        <LabChip label={`CH 2: ${b.ch[2].input === 'USB' ? 'USB (PORT 2)' : 'LINE (DECK B)'}`} selected={false} onPress={() => sel(2, b.ch[2].input === 'USB' ? 'LINE' : 'USB')} compact />
       </Row>
       <Row head="DJ 2’S LAPTOP CHARGER">
         {(['WALL', 'STRIP', 'NONE'] as const).map((c) => (
@@ -394,8 +394,8 @@ function PageChange({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={2}>
         <Do>Open MIX and start DJ 1’s laptop — it is on air on CH 1. Then open PREDICT: which disconnection would stop the music right now? Check your answer.</Do>
-        <P>Now connect DJ 2 (PLUG): USB 2 in, CH 2’s selector to USB 2 — with CH 2’s fader DOWN. A 60 Hz hum appears on CH 2 (50 Hz in many countries): follow its loop on the board.</P>
-        {hot ? <Note tone="safety">{`${hot}${hot.includes('Unplug USB 2') ? '' : ' To try again: unplug USB 2, pull CH 2 down and connect again.'}`}</Note> : null}
+        <P>Now connect DJ 2 (PLUG): USB port 2 in, CH 2’s selector to USB — with CH 2’s fader DOWN. A 60 Hz hum appears on CH 2 (50 Hz in many countries): follow its loop on the board.</P>
+        {hot ? <Note tone="safety">{`${hot}${hot.includes('Unplug USB port 2') ? '' : ' To try again: unplug USB port 2, pull CH 2 down and connect again.'}`}</Note> : null}
         {earth ? <Note tone="safety">{earth}</Note> : null}
       </Step>
       <Step n={3}>
@@ -410,7 +410,7 @@ function PageChange({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={5}>
         <EvidenceCheck
-          task="prove the backup needs no computer. With DJ 1’s laptop on air, put the backup stick (deck B, CH 2 on LINE) on air with no gap, take CH 1 down — then unplug USB 1. The music must not stop."
+          task="prove the backup needs no computer. With DJ 1’s laptop on air, put the backup stick (deck B, CH 2 on LINE) on air with no gap, take CH 1 down — then unplug USB port 1. The music must not stop."
           start={() => {
             void audio.requestSound();
             backupArmed.current = false;
@@ -423,7 +423,7 @@ function PageChange({ ctx }: { ctx: PageCtx }) {
             });
           }}
           met={backupProved}
-          progress={backupArmed.current ? 'The backup is on air — now unplug USB 1 (PLUG).' : ev.lap1.usb ? null : 'USB 1 is out — the backup must be on air BEFORE the laptop goes.'}
+          progress={backupArmed.current ? 'The backup is on air — now unplug USB port 1 (PLUG).' : ev.lap1.usb ? null : 'USB port 1 is out — the backup must be on air BEFORE the laptop goes.'}
           explain="The stick plays with no computer at all: a frozen or unplugged laptop cannot stop it. It would NOT save you from the mixer’s power or the MASTER cables — every source goes through those."
           onMet={() => setCheck(true)}
         />

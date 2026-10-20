@@ -3,7 +3,8 @@
  * AUTHORED IN MILLIMETRES (class dimensions in SOURCES.md, "Drawings,
  * Stage 2b"):
  *
- *   StageBox      the venue's tie-in box at the booth (200 × 116 face):
+ *   StageBox      the venue's tie-in box at the side of the stage, about
+ *                 20 m of cable from the booth (200 × 116 face):
  *                 four XLR female inputs numbered and labelled on its
  *                 scribble strip (DJ L · DJ R · MIC · SPARE), the snake's
  *                 boot out of its side to the engineer's position.

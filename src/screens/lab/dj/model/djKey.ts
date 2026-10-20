@@ -1,6 +1,6 @@
 /**
  * djKey — speed, pitch and key (Stage 2, Screen 14; research DJ20). Pure
- * TypeScript; pinned by test/djStage2Key.test.ts.
+ * TypeScript; pinned by test/djStage2Engine.test.ts.
  *
  *   SPEED changes PITCH. A deck played `rate` times faster sounds
  *   12·log2(rate) semitones higher (a turntable, or a player with key lock

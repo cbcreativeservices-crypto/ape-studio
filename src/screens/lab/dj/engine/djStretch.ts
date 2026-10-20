@@ -1,7 +1,7 @@
 /**
  * djStretch — KEY LOCK and KEY SHIFT for real (Stage 2, Screen 14): a
  * time-stretch by WSOLA (waveform-similarity overlap-add) followed by a
- * resample. Pure TypeScript; pinned by test/djStage2Key.test.ts.
+ * resample. Pure TypeScript; pinned by test/djStage2Engine.test.ts.
  *
  * WSOLA, the textbook method (Verhelst & Roelands): the output is built from
  * 42.7 ms Hann-windowed grains overlapping by half (they sum to exactly 1).
