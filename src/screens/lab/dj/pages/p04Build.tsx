@@ -120,8 +120,8 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
           ? []
           : [
               ...keys.map((k) => label(`th${k}`, flash!.word, top(k), 0, -10, 'red')),
-              label('par', 'PA R', top('paR'), 18, 0),
-              label('pal', 'PA L', top('paL'), -18, 0),
+              label('pal', 'PA L', top('paL'), 18, 0),
+              label('par', 'PA R', top('paR'), -18, 0),
               label('br', 'BOOTH R', top('boothR'), -16, -12),
               label('bl', 'BOOTH L', top('boothL'), 16, -12),
             ]
@@ -132,7 +132,7 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
   );
 }
 
-const LOOK = 'You are looking at the whole booth from BEHIND, the way you reach round to wire it, so it is mirrored. At the top, the room at 1:5: the PA speakers on their stands at the corners (PA R on the left), the table with deck B, the mixer, deck A, the headphones and the booth monitors. Below, at full size, everything you plug: each speaker’s input plate, the three rear panels, the mixer’s front edge with the headphone cable (it carries on up to the headphones) and the power strip.';
+const LOOK = 'You are looking at the whole booth from BEHIND, the way you reach round to wire it, so it is mirrored. At the top, the room at 1:5: the PA speakers on their stands at the corners (PA L on your left: house left, the crowd’s left, as on screen 20), the table with deck B, the mixer, deck A, the headphones and the booth monitors. Below, at full size, everything you plug: each speaker’s input plate, the three rear panels, the mixer’s front edge with the headphone cable (it carries on up to the headphones) and the power strip.';
 
 function unbuilt(b: Booth): Booth {
   const plugs = { ...b.plugs };
@@ -343,7 +343,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
               let x: Booth = { ...b };
               const plugs = { ...x.plugs };
               for (const p of [...AUDIO_PLUGS, ...POWER_PLUGS]) plugs[p] = null;
-              x = { ...x, plugs: { ...plugs, 'A.rcaL': 'ch1.line.L', 'A.rcaR': 'ch1.line.R', 'B.rcaL': 'ch2.line.L', 'B.rcaR': 'ch2.line.R', 'bth.trsR': 'boothR.in', phones: 'mix.phones', 'ac.paL': 'strip.1', 'ac.boothL': 'strip.2', 'ac.playerA': 'strip.3', 'ac.mixer': 'strip.4', 'ac.playerB': 'strip.5', 'ac.boothR': 'strip.6', 'ac.paR': 'strip.7' } };
+              x = { ...x, plugs: { ...plugs, 'A.rcaL': 'ch1.line.L', 'A.rcaR': 'ch1.line.R', 'B.rcaL': 'ch2.line.L', 'B.rcaR': 'ch2.line.R', 'bth.trsR': 'boothR.in', phones: 'mix.phones', 'ac.paR': 'strip.1', 'ac.boothL': 'strip.2', 'ac.playerA': 'strip.3', 'ac.mixer': 'strip.4', 'ac.playerB': 'strip.5', 'ac.boothR': 'strip.6', 'ac.paL': 'strip.7' } };
               x = connect(connect(x, 'mst.xlrR', 'paR.in')!, 'mst.xlrL', 'boothL.in')!;
               const power = { ...x.power };
               for (const d of POWERED) power[d] = true;

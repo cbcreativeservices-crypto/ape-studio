@@ -1,10 +1,13 @@
 /**
  * mapGeometry — the Screen 4 system map, laid out in millimetres (pure, so
  * test/djCables.test.ts can check every route). Seen from BEHIND the booth,
- * the way you reach round to wire it, so everything is MIRRORED: deck B on
- * the left, the mixer, deck A on the right; the right-hand speakers (PA R,
- * booth R) on the left and the left-hand ones on the right — consistent with
- * the mixer's rear (CH 2 and MASTER R on the left).
+ * the way you reach round to wire it — that is, from the AUDIENCE side — so the
+ * gear is MIRRORED: deck B on the left, the mixer, deck A on the right; the
+ * booth monitors (the DJ's own: monitor L on the DJ's left) R on the left and
+ * L on the right — consistent with the mixer's rear (CH 2 and MASTER R on the
+ * left). The PA is named from the audience (screen 20, djRoom): PA L stands
+ * at HOUSE LEFT, which is YOUR left from this side, so the two MASTER runs
+ * cross once on their way out (wiring audit WF-DJ-01, owner 2026-10-20).
  *
  * TWO BANDS (visual review 2026-10-18, finding 14):
  *   ROOM   the floor, the PA speakers on tripod stands, the DJ table with the
@@ -35,9 +38,9 @@ export const MAP_FRAME: Box = { x: -8, y: -8, w: 1056, h: 840 };
 
 export const MAP = {
   // the room band (positions of each object's centre line, mm of the map)
-  room: { paR: 95, boothR: 418, boothL: 642, paL: 965, table: { x: 395, w: 270 } },
+  room: { paL: 95, boothR: 418, boothL: 642, paR: 965, table: { x: 395, w: 270 } },
   // the patch band
-  plate: { paR: { x: 20, y: 380 }, boothR: { x: 250, y: 380 }, boothL: { x: 640, y: 380 }, paL: { x: 870, y: 380 } },
+  plate: { paL: { x: 20, y: 380 }, boothR: { x: 250, y: 380 }, boothL: { x: 640, y: 380 }, paR: { x: 870, y: 380 } },
   B: { x: 20, y: 526 },
   mixer: { x: 375, y: 526 },
   A: { x: 700, y: 526 },
@@ -92,15 +95,16 @@ export function fixedEnd(p: PlugId): Pt | null {
 export const LANE = {
   // RCA, below the rear panels
   'B.rcaL': 642, 'B.rcaR': 650, 'A.rcaL': 658, 'A.rcaR': 666,
-  // outputs, between the plates and the rear panels
-  'mst.xlrR': 492, 'mst.xlrL': 500, 'bth.trsL': 508, 'bth.trsR': 516,
+  // outputs, between the plates and the rear panels (MASTER L runs left to
+  // PA L, MASTER R right to PA R: they cross once, at right angles)
+  'mst.xlrL': 492, 'mst.xlrR': 500, 'bth.trsL': 508, 'bth.trsR': 516,
   // speaker power, under the plates, out to the room's edges, down, and in
   // over the strip (the outer cord to the outer outlet: no crossing)
   'ac.paR': 476, 'ac.paL': 476, 'ac.boothR': 484, 'ac.boothL': 484,
   // device power, between the mixer front and the strip
   'ac.mixer': 716, 'ac.playerB': 724, 'ac.playerA': 732,
 } as const;
-const EDGE: Partial<Record<PlugId, number>> = { 'ac.paR': 6, 'ac.boothR': 15, 'ac.boothL': 1025, 'ac.paL': 1034 };
+const EDGE: Partial<Record<PlugId, number>> = { 'ac.paL': 6, 'ac.boothR': 15, 'ac.boothL': 1025, 'ac.paR': 1034 };
 const OVER: Partial<Record<PlugId, number>> = { 'ac.boothR': 740, 'ac.boothL': 740, 'ac.paR': 748, 'ac.paL': 748 };
 
 /** The column an RCA (or any) cable climbs to reach a TOP-row jack, so it
@@ -163,16 +167,16 @@ export const fixedKindOf = (p: PlugId): PlugKindMap => (PLUGS[p].kind === 'phone
 /** Where each run's label flag sits (on its own lane, staggered). */
 export const FLAG: Record<string, [number, number]> = {
   'B.rcaL': [170, 642], 'B.rcaR': [262, 650], 'A.rcaL': [700, 658], 'A.rcaR': [612, 666],
-  'mst.xlrR': [160, 492], 'mst.xlrL': [840, 500], 'bth.trsL': [600, 508], 'bth.trsR': [384, 516],
+  'mst.xlrL': [160, 492], 'mst.xlrR': [840, 500], 'bth.trsL': [600, 508], 'bth.trsR': [384, 516],
   'ac.mixer': [575, 716], 'ac.playerB': [445, 724], 'ac.playerA': [650, 732],
-  'ac.paR': [66, 748], 'ac.boothR': [236, 740], 'ac.boothL': [826, 740], 'ac.paL': [968, 748],
+  'ac.paL': [66, 748], 'ac.boothR': [236, 740], 'ac.boothL': [826, 740], 'ac.paR': [968, 748],
   phones: [330, 704],
 };
 
 /** Where the mixer outputs' flags sit while their cables hang loose (the
  *  four ends hang close together, so their flags take staggered rows). */
 export const LOOSE_FLAG: Partial<Record<PlugId, [number, number]>> = {
-  'bth.trsR': [468, 642], 'mst.xlrR': [548, 670], 'bth.trsL': [492, 700], 'mst.xlrL': [606, 642],
+  'bth.trsR': [384, 516], 'mst.xlrR': [548, 670], 'bth.trsL': [492, 700], 'mst.xlrL': [606, 642],
 };
 
 /** Plain-word names for the flags (9 pt on the glass). */

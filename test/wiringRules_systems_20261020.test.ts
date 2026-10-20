@@ -38,8 +38,8 @@ const { MAP } = await import('../src/screens/lab/dj/geometry/mapGeometry.ts');
 const KNOWN_FINDINGS = {
   // WF-SS-01: fixed 2026-10-20 (amp unity −18): the amplifier clips last.
   ampClipsBeforeUpstreamAtUnity: false,
-  // WF-DJ-01: screen 4's map (seen from the audience side) puts PA R at house left.
-  djMapPaRAtHouseLeft: true,
+  // WF-DJ-01: fixed 2026-10-20 (owner approved the before/after): PA L at house left.
+  djMapPaRAtHouseLeft: false,
 };
 
 describe('F6 the power amplifier is the last stage to clip (Sound Systems, unity settings)', () => {

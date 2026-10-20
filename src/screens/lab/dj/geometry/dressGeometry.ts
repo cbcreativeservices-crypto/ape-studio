@@ -356,7 +356,7 @@ export const patchBox = (b: Box): Box => ({ x: b.x, y: b.y + PATCH_DY, w: b.w, h
 /** Speakers on tripod stands (bottom of the cabinet 1.4 m up), the booth
  *  monitors on a 0.9 m table, centres along the room (mm of the map). */
 export const ROOM4 = {
-  cx: { paR: 112, boothR: 367, boothL: 693, paL: 936 } as Record<SpeakerKey, number>,
+  cx: { paL: 112, boothR: 367, boothL: 693, paR: 936 } as Record<SpeakerKey, number>,
   table: { x: 320, w: 420 },
   paBottom: 1400,
   tableH: 900,
@@ -502,14 +502,16 @@ export function loosePlugBox4(p: PlugId): Box {
  * now keep at least 11 mm apart (the two halves of an RCA twin lead keep
  * their 8 mm, tied): the map's own routes (mapGeometry.routeOf) with their
  * lane heights moved. Up top, under the plates: speaker power 476 / 487, the
- * MASTER runs 498 / 500 and the BOOTH runs 513 / 514 (a left-going and a
- * right-going run share a height but never a stretch). Under the panels: deck
+ * left-going MASTER L 498 with BOOTH R 514 under it, the right-going MASTER R
+ * 509 with BOOTH L 520 under it (PA L at house left, WF-DJ-01: MASTER L and R
+ * cross once; a left-going and a right-going run share a height but never a
+ * stretch). Under the panels: deck
  * B's pair 638 / 646, deck A's 658 / 666. Down low: the mixer's cord 710,
  * deck B's 720, deck A's 724, the speaker cords over the strip 738 / 750.
  */
 export const LANE4: Partial<Record<PlugId, number>> = {
   'B.rcaL': 638, 'B.rcaR': 646, 'A.rcaL': 658, 'A.rcaR': 666,
-  'mst.xlrR': 498, 'mst.xlrL': 500, 'bth.trsL': 513, 'bth.trsR': 514,
+  'bth.trsL': 487, 'mst.xlrR': 498, 'bth.trsR': 498, 'mst.xlrL': 509,
   'ac.paR': 476, 'ac.paL': 476, 'ac.boothR': 487, 'ac.boothL': 487,
   'ac.mixer': 710, 'ac.playerB': 720, 'ac.playerA': 724,
 };
@@ -553,8 +555,8 @@ export function lane4(p: PlugId, to: JackId | null): P2[] {
  */
 const HANG_GROUPS: { plugs: readonly PlugId[]; sag: number }[] = [
   // the outputs' runs hang between the plates and the panels' top edges
-  { plugs: ['mst.xlrR', 'bth.trsR'], sag: 6 },
-  { plugs: ['mst.xlrL', 'bth.trsL'], sag: 8 },
+  { plugs: ['mst.xlrL', 'bth.trsR'], sag: 6 },
+  { plugs: ['mst.xlrR', 'bth.trsL'], sag: 8 },
   // the inputs' pairs hang under the panels (deck A's over the mixer front)
   { plugs: ['B.rcaL', 'B.rcaR'], sag: 16 },
   { plugs: ['A.rcaL', 'A.rcaR'], sag: 5 },
@@ -912,9 +914,12 @@ export function placeLabels(items: readonly LabelItem[], bodies: readonly Box[],
       } else {
         // a name beside its device, or a LOOSE cable's flag beside its plug
         const b = it.kind === 'flag' ? it.loose! : it.box;
+        // a loose end's plug is narrow: its flag may also slide further
+        // sideways (WF-DJ-01: BOOTH L's hanging plug sits under the MIXER name)
+        const gs = it.kind === 'flag' ? [0, -0.4, 0.4, -0.8, 0.8, -1.2, 1.2, -1.6, 1.6] : [0, -0.4, 0.4];
         for (const d of [2, 8, 16, 28, 44, 64, 92, 124, 160, 200].map((v) => v / s)) {
           for (const f of [0.5, 0.15, 0.85, 0.3, 0.7, 0, 1]) {
-            for (const g of [0, -0.4, 0.4]) {
+            for (const g of gs) {
               const pg = Math.abs(g) * 6;
               const cx = b.x + b.w * f;
               cands.push({ x: cx - w / 2 + g * w, y: b.y - d - h, ax: cx, ay: b.y, pref: pg });
@@ -1066,8 +1071,12 @@ export function patchLabels4(plugsAt: Partial<Record<PlugId, JackId | null>>, sh
     // a flag — the flag moves instead), then the cable you are working on,
     // beside its cable; then the words that show only where they find clean
     // air: the audio flags (the lesson), the other names, the power flags
-    ...names.filter((n) => !n.optional),
+    // (the POWER STRIP's name waits for the cord you are working on: with
+    // PA L at house left, the left PA cord's flag needs the strip's left side
+    // on a phone — WF-DJ-01)
+    ...names.filter((n) => !n.optional && n.id !== 'st'),
     ...(required.map(flagItem).filter(Boolean) as LabelItem[]),
+    ...names.filter((n) => !n.optional && n.id === 'st'),
     ...(extra.filter((p) => !isPower(p)).map(flagItem).filter(Boolean) as LabelItem[]),
     ...names.filter((n) => n.optional),
     ...(extra.filter(isPower).map(flagItem).filter(Boolean) as LabelItem[]),

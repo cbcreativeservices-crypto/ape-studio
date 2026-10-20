@@ -64,7 +64,7 @@ From the Phase 0 inventory: five read-only reports, in `docs/wiring/inventory/`.
 
 | ID | Sev | Check | Rule | Finding | Proposed fix |
 |---|---|---|---|---|---|
-| DJ-01 | S1 | ✅ | — | **PA L is on opposite sides of the room.** Screen 4 (map seen from behind the booth) puts PA R on the DJ's right, which is house left. Screen 20 and its own glossary entry put PA L at house left. | Make screen 4 follow house-left = PA L (mirror the speakers on the map). Add a cross-screen test. |
+| DJ-01 | S1 | 🔧 fixed 10-20 | — | **PA L is on opposite sides of the room.** Screen 4 (map seen from behind the booth) puts PA R on the DJ's right, which is house left. Screen 20 and its own glossary entry put PA L at house left. | Make screen 4 follow house-left = PA L (mirror the speakers on the map). Add a cross-screen test. |
 | DJ-02 | S1 | ◻ | C13 | The plug "fits" table is not physical fit. The booth TRS plug can't be tried in the phones jack, nor the phones plug in a speaker's TRS input, though both fit on real gear and screen 3 teaches exactly this mistake. | Allow the physical fit; flag it as the wrong job. |
 | DJ-03 | S1 | ◻ | — | The drawn powered speaker has **no MIC/LINE input switch**, but a capstone fault (`PA_INPUT_MIC`) depends on it. | Draw the switch on the speaker's rear and plate. |
 | DJ-04 | S1 | ◻ | — | "USB 1/2" means two things: a channel pair on screens 16/18, two physical ports on screen 23. | Rename: "USB channels 1–2 / 3–4" vs "USB port A / B". |

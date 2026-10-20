@@ -105,7 +105,7 @@ describe('DJ Systems Lab — the room map’s cables', () => {
   });
 
   it('no route passes within one plug radius of another plug — the Screen 4 fault', () => {
-    const fault: State = { ...UNWIRED, 'A.rcaL': 'ch1.line.L', 'A.rcaR': 'ch1.line.R', 'B.rcaL': 'ch2.line.L', 'B.rcaR': 'ch2.line.R', 'bth.trsR': 'boothR.in', phones: 'mix.phones', 'mst.xlrR': 'paR.in', 'mst.xlrL': 'boothL.in', 'ac.paL': 'strip.1', 'ac.boothL': 'strip.2', 'ac.playerA': 'strip.3', 'ac.mixer': 'strip.4', 'ac.playerB': 'strip.5', 'ac.boothR': 'strip.6', 'ac.paR': 'strip.7' };
+    const fault: State = { ...UNWIRED, 'A.rcaL': 'ch1.line.L', 'A.rcaR': 'ch1.line.R', 'B.rcaL': 'ch2.line.L', 'B.rcaR': 'ch2.line.R', 'bth.trsR': 'boothR.in', phones: 'mix.phones', 'mst.xlrR': 'paR.in', 'mst.xlrL': 'boothL.in', 'ac.paR': 'strip.1', 'ac.boothL': 'strip.2', 'ac.playerA': 'strip.3', 'ac.mixer': 'strip.4', 'ac.playerB': 'strip.5', 'ac.boothR': 'strip.6', 'ac.paL': 'strip.7' };
     assert.deepEqual(clearances(fault), []);
   });
 
@@ -331,7 +331,7 @@ describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed
     }
     return bad;
   };
-  const FAULT: State = { ...UNWIRED, 'A.rcaL': 'ch1.line.L', 'A.rcaR': 'ch1.line.R', 'B.rcaL': 'ch2.line.L', 'B.rcaR': 'ch2.line.R', 'bth.trsR': 'boothR.in', phones: 'mix.phones', 'mst.xlrR': 'paR.in', 'mst.xlrL': 'boothL.in', 'ac.paL': 'strip.1', 'ac.boothL': 'strip.2', 'ac.playerA': 'strip.3', 'ac.mixer': 'strip.4', 'ac.playerB': 'strip.5', 'ac.boothR': 'strip.6', 'ac.paR': 'strip.7' };
+  const FAULT: State = { ...UNWIRED, 'A.rcaL': 'ch1.line.L', 'A.rcaR': 'ch1.line.R', 'B.rcaL': 'ch2.line.L', 'B.rcaR': 'ch2.line.R', 'bth.trsR': 'boothR.in', phones: 'mix.phones', 'mst.xlrR': 'paR.in', 'mst.xlrL': 'boothL.in', 'ac.paR': 'strip.1', 'ac.boothL': 'strip.2', 'ac.playerA': 'strip.3', 'ac.mixer': 'strip.4', 'ac.playerB': 'strip.5', 'ac.boothR': 'strip.6', 'ac.paL': 'strip.7' };
 
   it('the DRESSED runs keep one plug radius from every other plug — wired, the fault, and every single move', () => {
     assert.deepEqual(dressedClear(WIRED), []);
@@ -353,7 +353,7 @@ describe('DJ Systems Lab — Screen 4’s map (two bands, dressed runs, per-feed
     // climbs past the R lead's column (a twin lead does exactly that), and a
     // booth run climbs once across the MASTER run above it; along the span
     // they stay a lane apart — a crossing, never a merge
-    for (const [a, b] of [['A.rcaL', 'A.rcaR'], ['B.rcaL', 'B.rcaR'], ['mst.xlrR', 'bth.trsR'], ['mst.xlrL', 'bth.trsL']] as const) {
+    for (const [a, b] of [['A.rcaL', 'A.rcaR'], ['B.rcaL', 'B.rcaR'], ['mst.xlrL', 'bth.trsR'], ['mst.xlrR', 'bth.trsL']] as const) {
       const ra = D.run4(a, WIRED);
       const rb = D.run4(b, WIRED);
       let touching = 0;
@@ -619,7 +619,7 @@ describe('DJ Systems Lab — round 3: Screen 4’s loose ends hang, its words st
       for (const c of t) em += 'MW'.includes(c) ? 0.74 : " .,:;·'’|!I1()".includes(c) ? 0.3 : 0.55;
       return em * 10 * k + t.length * 0.6 * k;
     };
-    const FAULT: State = { ...UNWIRED, 'A.rcaL': 'ch1.line.L', 'A.rcaR': 'ch1.line.R', 'B.rcaL': 'ch2.line.L', 'B.rcaR': 'ch2.line.R', 'bth.trsR': 'boothR.in', phones: 'mix.phones', 'mst.xlrR': 'paR.in', 'mst.xlrL': 'boothL.in', 'ac.paL': 'strip.1', 'ac.boothL': 'strip.2', 'ac.playerA': 'strip.3', 'ac.mixer': 'strip.4', 'ac.playerB': 'strip.5', 'ac.boothR': 'strip.6', 'ac.paR': 'strip.7' };
+    const FAULT: State = { ...UNWIRED, 'A.rcaL': 'ch1.line.L', 'A.rcaR': 'ch1.line.R', 'B.rcaL': 'ch2.line.L', 'B.rcaR': 'ch2.line.R', 'bth.trsR': 'boothR.in', phones: 'mix.phones', 'mst.xlrR': 'paR.in', 'mst.xlrL': 'boothL.in', 'ac.paR': 'strip.1', 'ac.boothL': 'strip.2', 'ac.playerA': 'strip.3', 'ac.mixer': 'strip.4', 'ac.playerB': 'strip.5', 'ac.boothR': 'strip.6', 'ac.paL': 'strip.7' };
     const bad: string[] = [];
     for (const [name, st] of [['wired', WIRED], ['fault', FAULT], ['unwired', UNWIRED]] as const) {
       // the phone's whole-booth glass with each cable picked (or just patched, as BTH L was)
