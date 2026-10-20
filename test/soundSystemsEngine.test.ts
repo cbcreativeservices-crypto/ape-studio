@@ -579,12 +579,18 @@ describe('coverage model', () => {
     const b = cov.beamLevelDb(main, 0, 160);
     assert.ok(Math.abs(a - b - 6.02) < 0.05, `${a - b}`);
   });
-  it('two mains overlapping down the centre add about 3 dB, and the floor goes dark far away', () => {
+  it('two mains carrying the same signal add about 6 dB on the aligned centre line, a power sum (about 3 dB) off it, and the floor goes dark far away (SS-08)', () => {
     const l = { x: 40, y: 0, aimDeg: 15, coverDeg: 90 };
     const r = { x: 320, y: 0, aimDeg: -15, coverDeg: 90 };
     const one = cov.fieldDb([l], 180, 200);
     const two = cov.fieldDb([l, r], 180, 200);
-    assert.ok(two - one > 2.5 && two - one < 3.5, `${two - one}`);
+    assert.ok(two - one > 5.5 && two - one < 6.5, `${two - one}`);
+    // 30 units off the line the arrivals are far out of step: power sum.
+    const offL = cov.fieldDb([l], 210, 200);
+    const offR = cov.fieldDb([r], 210, 200);
+    const offBoth = cov.fieldDb([l, r], 210, 200);
+    const power = 10 * Math.log10(10 ** (offL / 10) + 10 ** (offR / 10));
+    assert.ok(Math.abs(offBoth - power) < 0.01, `${offBoth} vs ${power}`);
     assert.equal(cov.fieldValue([{ x: 180, y: 0, aimDeg: 0, coverDeg: 60 }], 180, 6000), 0);
     assert.equal(cov.fieldValue([], 10, 10), 0);
   });

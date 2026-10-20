@@ -261,7 +261,7 @@ function PageFreeBuild({ ctx }: { ctx: PageCtx }) {
       <GoalChips goals={goals} latched={latched} />
       <CableLegend levels={['mic', 'line', 'speaker', 'digital', 'wireless']} />
       <Text style={styles.status}>{r.status}</Text>
-      <KeyFact>A loudspeaker is LIVE only when an unbroken path of valid links runs from a source to it. A dim loudspeaker is a placed loudspeaker with no such path — the most common state of a real system at four in the afternoon. The engine refuses a link for one of three reasons — wrong level, a full input, or a loop — and the one hazardous refusal (speaker level into a line input) is drawn as a warning.</KeyFact>
+      <KeyFact>A loudspeaker is LIVE only when an unbroken path of valid links runs from a source to it. A dim loudspeaker is a placed loudspeaker with no such path — the most common state of a real system at four in the afternoon. The engine refuses a link with its reason — most often the wrong level, a full input, or a loop — and the one hazardous refusal (speaker level into a line input) is drawn as a warning.</KeyFact>
     </SoundSystemsRackLayout>
   );
 }

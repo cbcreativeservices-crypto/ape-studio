@@ -9,16 +9,19 @@
  * Everything a ROUTE page says about "who hears what" is computed here, so an
  * exercise's verdict and its explanation can never disagree.
  *
- * Convention (the consoles technicians actually meet — analog and digital):
- * a PRE-FADER send ignores the channel FADER and the DCA level but FOLLOWS
- * the channel mute, mute groups and a DCA mute — "pre-fader" means before the
- * fader, not before the mute. Some consoles offer a per-desk "pre-mute"
- * option for monitor world; the engine keeps the default. A POST-FADER send
- * follows the fader, the mute and the DCA.
+ * Mute vs pre-fader sends DEPENDS ON THE CONSOLE (one app-wide statement,
+ * shared with mixing/engine/routing.ts — wiring fix SS-03/MX-01 2026-10-20):
+ * on some analog desks the channel mute also kills the pre-fader sends, on
+ * others it leaves them running, and many digital desks let you choose.
+ * THIS lab's console: a PRE-FADER send ignores the channel FADER and the DCA
+ * level but FOLLOWS the channel mute, mute groups and a DCA mute. A
+ * POST-FADER send follows the fader, the mute and the DCA.
  *
  * A channel can be assigned to the main bus AND to a subgroup that also goes
- * to main — the double-routing fault: it arrives twice, about 6 dB louder,
- * bypassing the group's insert. The engine models it so the fault is visible.
+ * to main: it arrives twice, about 6 dB louder, half of it bypassing the
+ * group's insert. By accident that is the double-routing fault; on purpose
+ * it is parallel processing (dry channel plus a crushed group). The engine
+ * models the sum so either is visible.
  */
 
 export type SendTap = 'pre' | 'post';
@@ -139,8 +142,8 @@ export function doubleRouted(ch: Channel, cs: ConsoleState): boolean {
 export function sendContribution(ch: Channel, auxId: string, cs: ConsoleState): number {
   const s = ch.sends[auxId];
   if (!s) return 0;
-  // The mute is before everything that leaves the channel — pre-fader sends
-  // included. That is what "pre-fader" has always meant.
+  // On THIS console the mute is before everything that leaves the channel —
+  // pre-fader sends included. Other consoles differ (see the header).
   if (channelMuted(ch, cs)) return 0;
   if (s.tap === 'pre') return db2lin(s.db);
   return db2lin(s.db) * db2lin(ch.faderDb) * dcaGain(ch, cs);
@@ -385,7 +388,7 @@ export const WHICH_TOOL: readonly WhichToolCase[] = [
   },
   {
     id: 'subs-aux',
-    situation: 'Only the kick, bass, floor tom and keyboard should reach the subwoofers, at levels you choose.',
+    situation: 'Only the kick, bass and keyboard should reach the subwoofers, at levels you choose.',
     correct: 'aux',
     why: 'An AUX-FED SUB: a post-fader send from just those channels, so the sub feed follows the mix but carries nothing the low end does not need.',
     wrong: {

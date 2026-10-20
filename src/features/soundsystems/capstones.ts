@@ -21,7 +21,7 @@ import {
   type ConsoleState,
 } from './console';
 import { isSource } from './gear';
-import { allSinksLive, chainTo, count, feedsThrough, inRole, inSlot, trace, upstream } from './system';
+import { allSinksLive, chainTo, count, feedsThrough, inRole, inSlot, sinksThroughConsole, trace, upstream } from './system';
 import type { GearKind, SoundSystem } from './types';
 
 export type Requirement = {
@@ -136,6 +136,10 @@ const vocalsNotInSubs = (cs: ConsoleState) => cs.channels.filter((c) => c.family
 
 const req = (id: string, text: string, kind: Requirement['kind'], test: Requirement['test']): Requirement => ({ id, text, kind, test });
 
+/** Every build is graded on it: the console is IN the path, not beside it
+ *  (wiring findings SS-02, 2026-10-20). */
+const VIA_CONSOLE = req('viaConsole', 'Every loudspeaker is fed THROUGH the console — nothing goes around the mix', 'build', (s) => count(s, 'console') >= 1 && sinksThroughConsole(s));
+
 export const CAPSTONES: readonly Capstone[] = [
   {
     id: 'speech',
@@ -150,6 +154,7 @@ export const CAPSTONES: readonly Capstone[] = [
       req('console', 'A mixing console at front of house', 'build', (s) => count(s, 'console') === 1),
       req('mains', 'A powered loudspeaker at main left AND main right', 'build', (s) => anySpeakerIn(s, 'mainL') && anySpeakerIn(s, 'mainR')),
       req('live', 'Every loudspeaker is live from the microphone', 'build', live),
+      VIA_CONSOLE,
     ],
   },
   {
@@ -166,6 +171,7 @@ export const CAPSTONES: readonly Capstone[] = [
       req('mono', 'ONE loudspeaker at the centre main position (a single box over the sub) — no left/right pair', 'build', (s) => anySpeakerIn(s, 'mainC') && !anySpeakerIn(s, 'mainL') && !anySpeakerIn(s, 'mainR')),
       req('sub', 'A subwoofer at the centre sub position', 'build', (s) => anySubIn(s, 'subC')),
       req('live', 'Every loudspeaker live, every source connected', 'build', live),
+      VIA_CONSOLE,
     ],
   },
   {
@@ -184,6 +190,7 @@ export const CAPSTONES: readonly Capstone[] = [
       req('processor', 'Every main and sub is fed THROUGH the loudspeaker processor', 'build', (s) => roleViaProcessor(s, 'main') && roleViaProcessor(s, 'sub')),
       req('amps', 'Every passive cabinet is driven by a power amplifier', 'build', (s) => passiveHasAmp(s) && count(s, 'amp') >= 1),
       req('live', 'Everything live', 'build', live),
+      VIA_CONSOLE,
     ],
   },
   {
@@ -202,6 +209,7 @@ export const CAPSTONES: readonly Capstone[] = [
       req('dedicated', 'The sub is fed by its OWN link from the console — not from a top', 'build', subsHaveDedicatedFeed),
       req('topsDirect', 'For THIS build the tops are fed direct, not through the sub (the sub’s pass-through is the other valid way — see the brief)', 'build', topsNotViaSub),
       req('live', 'Everything live', 'build', live),
+      VIA_CONSOLE,
     ],
   },
   {
@@ -217,6 +225,7 @@ export const CAPSTONES: readonly Capstone[] = [
       req('wedges', 'Four wedges in the four monitor positions', 'build', (s) => wedgesPlaced(s) >= 4),
       req('driven', 'Every passive wedge has an amplifier; every wedge is live', 'build', (s) => passiveHasAmp(s) && live(s)),
       req('mains', 'A main pair for the house', 'build', (s) => anySpeakerIn(s, 'mainL') && anySpeakerIn(s, 'mainR')),
+      VIA_CONSOLE,
       req('fourMixes', 'Console: something is sent to each of Aux 1–4', 'route', (_s, cs) => fourMonitorMixes(cs)),
       req('pre', 'Console: every monitor send is PRE-fader', 'route', (_s, cs) => monitorsPre(cs)),
     ],
@@ -231,6 +240,7 @@ export const CAPSTONES: readonly Capstone[] = [
     routing: true,
     requirements: [
       req('system', 'A working system: sources, console, live mains', 'build', (s) => count(s, 'console') === 1 && anySpeakerIn(s, 'mainL') && anySpeakerIn(s, 'mainR') && live(s)),
+      VIA_CONSOLE,
       req('drumsSub', 'Kick, snare and overheads on the DRUMS subgroup', 'route', (_s, cs) => drumsSubgrouped(cs)),
       req('drumsMain', 'The drums still reach the main mix (the subgroup is assigned to main)', 'route', (_s, cs) => drumsReachMain(cs)),
       req('reverb', 'Both vocals sent to Aux 5 (reverb), POST-fader', 'route', (_s, cs) => vocalReverbPost(cs)),
@@ -247,6 +257,7 @@ export const CAPSTONES: readonly Capstone[] = [
     routing: true,
     requirements: [
       req('system', 'Mains, front fills and subs placed and live', 'build', (s) => anySpeakerIn(s, 'mainL') && anySpeakerIn(s, 'mainR') && anySpeakerIn(s, 'frontFillL') && anySpeakerIn(s, 'frontFillR') && count(s, 'poweredSub') >= 1 && live(s)),
+      VIA_CONSOLE,
       req('fills', 'Matrix 2 (front fills) takes the MAIN mix', 'route', (_s, cs) => fillsFromMain(cs)),
       req('lobby', 'Matrix 3 (lobby) takes the main mix AND the announce mic by its own route — the mic sent to Aux 7, the matrix taking Aux 7', 'route', (_s, cs) => lobbyFromMainAndMc(cs)),
       req('subs', 'Matrix 1 (subs) takes the MAIN mix', 'route', (_s, cs) => subsMatrixFromMain(cs)),
@@ -269,6 +280,7 @@ export const CAPSTONES: readonly Capstone[] = [
       req('processor', 'Mains, subs, fills and delays ALL fed through the processor', 'build', (s) => roleViaProcessor(s, 'main') && roleViaProcessor(s, 'sub') && roleViaProcessor(s, 'fill') && roleViaProcessor(s, 'delay')),
       req('amps', 'Every passive cabinet has an amplifier', 'build', passiveHasAmp),
       req('live', 'Everything live', 'build', live),
+      VIA_CONSOLE,
     ],
   },
   {
@@ -285,6 +297,7 @@ export const CAPSTONES: readonly Capstone[] = [
       req('link', 'The console is fed by the stagebox over the network link', 'build', consoleFedByStagebox),
       req('noSnake', 'No analog snake', 'build', (s) => count(s, 'snake') === 0),
       req('mains', 'A live main pair (and subs if you like)', 'build', (s) => anySpeakerIn(s, 'mainL') && anySpeakerIn(s, 'mainR') && live(s)),
+      VIA_CONSOLE,
     ],
   },
   {
@@ -302,6 +315,7 @@ export const CAPSTONES: readonly Capstone[] = [
       req('monitors', 'Four wedges placed and live', 'build', (s) => wedgesPlaced(s) >= 4),
       req('iem', 'An in-ear transmitter feeding a bodypack', 'build', (s) => count(s, 'iemTx') >= 1 && count(s, 'iemPack') >= 1 && trace(s).live.some((id) => s.placed.find((p) => p.id === id)?.kind === 'iemPack')),
       req('live', 'Everything live, every passive cabinet amplified', 'build', (s) => passiveHasAmp(s) && live(s)),
+      VIA_CONSOLE,
       req('fourMixes', 'Console: four monitor mixes, all pre-fader', 'route', (_s, cs) => fourMonitorMixes(cs) && monitorsPre(cs)),
       req('rec', 'Console: Matrix 4 (recording) takes the main mix', 'route', (_s, cs) => recordingFromMain(cs)),
       req('subs', 'Console: Aux 6 (the sub aux) carries only kick, bass and keys — no vocal or speech', 'route', (_s, cs) => subAuxLowOnly(cs) && vocalsNotInSubs(cs)),

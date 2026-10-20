@@ -281,7 +281,7 @@ function PageBenchIntro({ ctx }: { ctx: PageCtx }) {
       </Lead>
       <Card tone="math">
         <Eyebrow>WHERE THE WALK STARTS</Eyebrow>
-        <Body>Not always at the microphone. The symptom tells you which stations are already cleared: “one vocal is dead, the band is fine” starts at that source; “nothing anywhere, but every channel meter is dancing” starts at the console output, because the meters have already vouched for everything before it. Every case prints its start. Probes before it are not wrong, only wasted.</Body>
+        <Body>Not always at the microphone. The symptom tells you which stations are already cleared: “one vocal is dead, the band is fine” starts at that source; “nothing anywhere” starts at the console input, because one look at the channel meters clears or condemns everything before it — and when they are dancing, the next probe is the console output. Every case prints its start. Probes before it are not wrong, only wasted.</Body>
       </Card>
       <Card tone="math">
         <Eyebrow>HOW A CASE IS GRADED</Eyebrow>

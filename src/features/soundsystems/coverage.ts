@@ -18,8 +18,12 @@
  *     so the model draws it.
  *   • Subwoofers radiate all round at low frequencies; a cardioid or
  *     end-fire sub array rejects to the rear by 12–24 dB.
- *   • Several sources sum as POWER (uncorrelated): two mains overlapping down
- *     the centre add about 3 dB there, not 6.
+ *   • Two boxes carrying the SAME signal are CORRELATED: where their
+ *     arrivals line up in time (the centre line between a matched pair)
+ *     they add in pressure, about +6 dB; away from that line the arrivals
+ *     slip apart, the sum combs, and on average it reads as a power sum,
+ *     about +3 dB. Unrelated boxes (fills, delays, tops against subs) sum as
+ *     power (wiring findings SS-08, 2026-10-20).
  *
  * Levels are in dB relative to a source ON AXIS AT ITS THROW DISTANCE (the
  * distance it was chosen to cover). The floor field maps +12 dB (too hot,
@@ -116,10 +120,44 @@ export function beamLevelDb(b: Beam, px: number, py: number): number {
   return gainDb - patDb - distDb - shadowDb;
 }
 
-/** Power-summed level of every beam at a point, dB. −Infinity when empty. */
+/** Metres per plot unit — the plan's own scale (a 600 mm wedge is drawn
+ *  8.1 units deep, VenueView). */
+export const PLOT_UNIT_M = 0.074;
+
+/** The wavelength, in plot units, over which a matched pair stays in step:
+ *  about 1 kHz for tops (0.34 m), about 60 Hz for subwoofers (5.7 m). Past
+ *  one wavelength of path difference the pair is combing, not adding. */
+function coherentSpan(b: Beam): number {
+  const pattern = b.pattern ?? (b.coverDeg >= 360 ? 'omni' : 'horn');
+  return (pattern === 'horn' ? 0.343 : 5.7) / PLOT_UNIT_M;
+}
+
+/** A matched pair: same kind of box at the same level and throw — the two
+ *  halves of a main or sub pair, carrying the same programme. */
+function matchedPair(a: Beam, b: Beam): boolean {
+  return (a.pattern ?? (a.coverDeg >= 360 ? 'omni' : 'horn')) === (b.pattern ?? (b.coverDeg >= 360 ? 'omni' : 'horn'))
+    && (a.gain ?? 1) === (b.gain ?? 1)
+    && (a.throw ?? DEFAULT_THROW) === (b.throw ?? DEFAULT_THROW)
+    && (a.spread ?? 'point') === (b.spread ?? 'point');
+}
+
+/** Summed level of every beam at a point, dB. −Infinity when empty.
+ *  Power sum, plus the coherent (pressure) term for a matched pair where
+ *  their arrivals line up: +6 dB on the aligned line, falling to the +3 dB
+ *  power sum within about a wavelength of path difference. */
 export function fieldDb(beams: readonly Beam[], px: number, py: number): number {
   if (beams.length === 0) return -Infinity;
-  const p = beams.reduce((s, b) => s + Math.pow(10, beamLevelDb(b, px, py) / 10), 0);
+  const amp = beams.map((b) => Math.pow(10, beamLevelDb(b, px, py) / 20));
+  let p = amp.reduce((s, a) => s + a * a, 0);
+  for (let i = 0; i < beams.length; i++) {
+    for (let j = i + 1; j < beams.length; j++) {
+      if (!matchedPair(beams[i], beams[j])) continue;
+      const di = Math.hypot(px - beams[i].x, py - beams[i].y);
+      const dj = Math.hypot(px - beams[j].x, py - beams[j].y);
+      const w = Math.max(0, 1 - Math.abs(di - dj) / coherentSpan(beams[i]));
+      p += 2 * amp[i] * amp[j] * w;
+    }
+  }
   return 10 * Math.log10(Math.max(1e-12, p));
 }
 

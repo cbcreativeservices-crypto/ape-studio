@@ -50,7 +50,7 @@ const SUB_FEEDS: Record<SubFeedMode, { name: string; path: string; reaches: stri
   aux: {
     name: 'Aux-fed',
     path: 'Selected channels → post-fader aux send → aux output → processor LOW input → subwoofer',
-    reaches: 'Only the channels you send: kick, bass, floor tom, keys. Nothing else — however low it goes.',
+    reaches: 'Only the channels you send — on this lab’s console kick, bass and keys (a floor tom often joins them on a full kit). Nothing else — however low it goes.',
     control: 'Per channel AND overall: each send level, and the aux master as a sub fader.',
     when: 'Band mixing where a clean, controlled low end matters and the operator is at the console all night.',
     reachesShort: 'SENT ONLY',
@@ -127,7 +127,7 @@ function PageSubFeeds({ ctx }: { ctx: PageCtx }) {
         <Body>CONTROL · {f.control}</Body>
         <Body>WHEN · {f.when}</Body>
       </Card>
-      <KeyFact>A subwoofer reproduces from about 30–40 Hz up to the crossover at 80–120 Hz and nothing else. Crossover-fed subs get everything below that from every channel. Aux-fed and matrix-fed subs get what you choose — which is why an accidental vocal send puts a singer’s chest in the subwoofers with the crossover blameless.</KeyFact>
+      <KeyFact>A subwoofer reproduces from about 30–40 Hz up to the crossover at 80–120 Hz and nothing else. Crossover-fed subs get everything below that from every channel. Aux-fed subs get only the channels you send; matrix-fed subs get the buses you choose (a matrix taking MAIN sends the whole mix) — which is why an accidental vocal send puts a singer’s chest in the subwoofers with the crossover blameless.</KeyFact>
       <Card>
         <Eyebrow>ALSO IN THE CHAIN</Eyebrow>
         <Body>High-pass and low-pass filters make the crossover; a powered subwoofer’s internal crossover does the same job without a processor, and hands the tops a high-passed feed from its own output. Polarity and delay between the subs and the tops are set at the crossover point — the alignment page covers that.</Body>
@@ -271,7 +271,7 @@ function PageSubPlacement({ ctx }: { ctx: PageCtx }) {
 /* ── 10 · Stage monitors ────────────────────────────────────────────────── */
 
 const MONITOR_KINDS: readonly { id: string; kind: GearKind; slot: SlotId; name: string; blurb: string; feed: string }[] = [
-  { id: 'wedge', kind: 'wedge', slot: 'mon2', name: 'Floor wedge', feed: 'ONE AUX · PRE', blurb: 'On the floor at the lip, angled up at one performer, fed from one aux send. Its whole design is to be heard by the person in front of it and rejected by the microphone above it — which is why it sits in the microphone’s null, directly behind it.' },
+  { id: 'wedge', kind: 'wedge', slot: 'mon2', name: 'Floor wedge', feed: 'ONE AUX · PRE', blurb: 'On the floor at the lip, angled up at one performer, fed from one aux send. Its whole design is to be heard by the person in front of it and rejected by the microphone above it — which is why it sits in the microphone’s null: directly behind a cardioid, about 110–125° off-axis for a super- or hypercardioid, which has a small rear lobe.' },
   { id: 'side', kind: 'wedge', slot: 'sideFillL', name: 'Side fill', feed: 'STEREO AUX', blurb: 'A larger cabinet at the wing, firing across the stage with a general mix so performers who move still hear the band. Left and right side fills are usually a pair on one stereo mix.' },
   { id: 'drum', kind: 'poweredSub', slot: 'drumFill', name: 'Drum fill', feed: 'ONE AUX · PRE', blurb: 'A sub-and-top stack beside the drummer, aimed at the throne: the one performer who needs to feel the kick and bass as well as hear them.' },
   { id: 'iem', kind: 'iemPack', slot: 'stageC', name: 'In-ear monitors', feed: 'STEREO AUX · TX', blurb: 'Sealed earphones from a bodypack — wired or wireless. No wedge on the floor, no spill into the microphones, a stereo mix if the transmitter is stereo. Isolation is the point, and also the hazard.' },
@@ -533,7 +533,7 @@ function PageWiring({ ctx }: { ctx: PageCtx }) {
         ))}
         <CableLegend levels={['mic', 'line', 'speaker', 'digital', 'wireless']} />
       </Card>
-      <KeyFact>Five signal levels, and a connector’s shape never tells you which one it carries. Speaker level into a line or mic input damages the input. Mic level into a line input is 40–50 dB too quiet — a whisper you will chase with gain and noise. Line level into a passive loudspeaker moves no cone you can hear. Every refusal in BUILD mode is one of these three sentences.</KeyFact>
+      <KeyFact>Five signal levels travel on cables (sound in the air and radio links are the other two the lab tracks), and a connector’s shape never tells you which one it carries. Speaker level into a line or mic input damages the input. Mic level into a line input is 40–60 dB too quiet — a whisper you will chase with gain and noise. Line level into a passive loudspeaker moves no cone you can hear. Most refusals in BUILD mode are one of these three sentences; the rest are housekeeping — a full input, a loop, a link that already exists, or a device with no signal output.</KeyFact>
       <Card>
         <Eyebrow>THE REST OF THE CHAPTER LIVES IN THE CABLE LABS</Eyebrow>
         <Body>Balanced and unbalanced signals, XLR/TRS/TS/speakON/Ethernet, correct amplifier-to-loudspeaker wiring, clocking and sample rate, cable routing and strain relief, signal cables kept apart from power, ground loops and isolation, redundancy, labelling and documentation.</Body>

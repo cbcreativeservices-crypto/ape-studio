@@ -85,9 +85,9 @@ export const SOUND_SYSTEMS_CHECK: readonly UnderstandingQuestion[] = [
   {
     id: 'delay-time',
     prompt: 'A delay loudspeaker stands 30 m closer to the back rows than the mains. Roughly what delay does it need, and why?',
-    options: ['About 87 ms, so its sound arrives together with the mains', 'None — closer is better', '30 ms, one per metre', 'It should be run early to lead the mains'],
-    correct: 'About 87 ms, so its sound arrives together with the mains',
-    explanation: 'Sound travels roughly 343 m/s at 20 °C, so 30 m is about 87 ms. Undelayed, the delay loudspeaker leads the mains and the ear hears two events.',
+    options: ['About 87 ms, so its sound arrives with the mains — then often a few ms more', 'None — closer is better', '30 ms, one per metre', 'It should be run early to lead the mains'],
+    correct: 'About 87 ms, so its sound arrives with the mains — then often a few ms more',
+    explanation: 'Sound travels roughly 343 m/s at 20 °C, so 30 m is about 87 ms. Undelayed, the delay loudspeaker leads the mains and the ear hears two events. Many engineers then add a few milliseconds more so the mains arrive first and stay the perceived source (the precedence effect).',
   },
   {
     id: 'polarity',

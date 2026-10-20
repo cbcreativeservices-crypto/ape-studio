@@ -68,7 +68,7 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
       <Prompt>Raise the preamp, bring the faders and trims back to unity, and watch the haze fall.</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <ChainMeterKey />
-      <KeyFact>Every stage has a clip point above and a noise floor below; gain structure is the art of keeping the signal between them at EVERY stage — with the preamp doing the work and the faders near unity. The console’s nominal +4 dBu sits at about −18 dBFS on its digital meters.</KeyFact>
+      <KeyFact>Every stage has a clip point above and a noise floor below; gain structure is the art of keeping the signal between them at EVERY stage — with the preamp doing the work and the faders near unity. On many consoles the nominal +4 dBu reads around −18 to −20 dBFS on the digital meters, and this lab’s console puts it at −18. The reference varies: EBU R68 aligns 0 dBu to −18 dBFS, SMPTE RP155 aligns +4 dBu to −20 dBFS — check your console’s own.</KeyFact>
       <Card>
         <Eyebrow>THE VOCABULARY, ON THE METER</Eyebrow>
         <Body>Noise floor — the grey haze. Headroom — the bracket from the peak up to the red clip line. Signal-to-noise — the height of the signal above the haze. Unity — the control at 0, passing what it receives. Analog clipping flattens at a rail; digital clipping stops at 0 dBFS, and both light the same red CLIP indicator here. Gain-before-feedback and the power-up order belong to the next pages.</Body>

@@ -51,10 +51,10 @@ const STATIONS: readonly { id: StripStation; name: string; what: string; kind: s
   { id: 'input', name: 'Input and preamp gain', kind: 'THROUGH', what: 'The physical input (or the digital patch that chooses one) and the preamp that raises mic level to line level — 40 to 60 dB of gain for a vocal microphone. Gain is set here, once, for the source; everything after it works at line level.' },
   { id: 'hpf', name: 'High-pass filter', kind: 'THROUGH', what: 'Removes what the source has no business carrying below its cut-off: stage rumble, handling noise, plosives. Around 80–120 Hz for a vocal, higher for overheads and acoustic guitar, lower or off for kick, bass and keys — the sources that live down there.' },
   { id: 'eq', name: 'Channel EQ', kind: 'THROUGH', what: 'Shapes ONE source for the mix. Not the place to fix the room — that is the system EQ in the processor, applied once to the whole output.' },
-  { id: 'insert', name: 'Insert', kind: 'THROUGH', what: 'A processor placed IN the path — a compressor, a gate — so the whole channel passes through it. Nothing is copied; everything goes through. On a digital console it is a block in the strip; on an analog one, a send-and-return jack.' },
-  { id: 'fader', name: 'Fader, pan and mute', kind: 'THROUGH', what: 'The channel’s level in the main mix and its position between left and right. Post-fader sends follow the fader; pre-fader sends do not. On this console the MUTE also silences the pre-fader sends — the common digital-console default; the classic analog rule left them running. A DCA or a mute group acts here too — a hand on the fader, with no audio of its own.' },
+  { id: 'insert', name: 'Insert', kind: 'THROUGH', what: 'A processor placed IN the path — a compressor, a gate — so the whole channel passes through it. Nothing is copied; everything goes through. On a digital console it is a block in the strip; on an analog one, a send-and-return jack. Where it sits depends on the console: this lab’s strip puts it after the EQ, most compact analog desks put it before the EQ (straight after the preamp and high-pass), and many digital desks let you choose pre- or post-EQ.' },
+  { id: 'fader', name: 'Fader, pan and mute', kind: 'THROUGH', what: 'The channel’s level in the main mix and its position between left and right. Post-fader sends follow the fader; pre-fader sends do not. On this console the MUTE also silences the pre-fader sends. That depends on the console: on some analog desks the mute kills the pre-fader sends too, on others it leaves them running, and many digital desks let you choose. A DCA or a mute group acts here too — a hand on the fader, with no audio of its own.' },
   { id: 'sends', name: 'Aux sends', kind: 'A COPY', what: 'Adjustable COPIES of the channel to other buses. PRE-fader for monitors, so the house fader cannot move a wedge; POST-fader for effects — the reverb here — and aux-fed subs, so the wet and the low end stay in proportion to the fader.' },
-  { id: 'assign', name: 'Assignment', kind: 'THE PATH', what: 'Where the channel’s main path goes: direct to the L/R main bus, or into a subgroup that then goes to main — one or the other, never both; both is the double-routing fault. A DCA and mute groups are controls over the channel, not paths for it.' },
+  { id: 'assign', name: 'Assignment', kind: 'THE PATH', what: 'Where the channel’s main path goes: direct to the L/R main bus, or into a subgroup that then goes to main — usually one or the other. Both by accident is the double-routing fault: about 6 dB hot, half of it around the group’s insert. Both on purpose is parallel processing — the dry channel plus a heavily compressed group, blended with the group fader. A DCA and mute groups are controls over the channel, not paths for it.' },
   { id: 'direct', name: 'Direct output', kind: 'A COPY', what: 'The channel by itself on its own output, usually for a multitrack recorder — pre- or post-fader by setting, and on a digital console a patch like any other.' },
 ];
 
@@ -213,7 +213,7 @@ function PagePrePost({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>ON THIS CONSOLE</Eyebrow>
-        <Body>A pre-fader send ignores the FADER. On this console — like most digital consoles by default — the channel MUTE silences its pre-fader sends as well, so a muted vocal leaves the wedge too. The classic analog rule was different: a pre-fader send ignored the mute and kept feeding the wedge. Know which yours does, because a monitor engineer will ask before the first song.</Body>
+        <Body>A pre-fader send ignores the FADER. Whether it also ignores the MUTE depends on the console: on some analog desks the mute kills the pre-fader sends too, on others the send keeps feeding the wedge, and many digital desks let you choose. On this console the channel MUTE silences its pre-fader sends as well, so a muted vocal leaves the wedge too. Know which yours does, because a monitor engineer will ask before the first song.</Body>
       </Card>
     </SoundSystemsRackLayout>
   );
@@ -440,7 +440,7 @@ function PageGroups({ ctx }: { ctx: PageCtx }) {
         <Body>DRUMS SUBGROUP · audio sums here — one fader, one insert point for a drum compressor.</Body>
         <Body>AUX 4 · the drummer’s wedge, pre-fader: neither the subgroup fader nor the DCA touches this.</Body>
       </Card>
-      <KeyFact>A subgroup carries audio: the channels sum in it, and the group fader scales the sum. A DCA carries none: it is a remote hand on each member’s fader — so anything tapped before the fader never meets it. A channel in a subgroup that is ALSO assigned to L/R arrives twice: the double-routing fault, flagged with △ on the strip.</KeyFact>
+      <KeyFact>A subgroup carries audio: the channels sum in it, and the group fader scales the sum. A DCA carries none: it is a remote hand on each member’s fader — so anything tapped before the fader never meets it. A channel in a subgroup that is ALSO assigned to L/R arrives twice, flagged with △ on the strip: by accident it is the double-routing fault; on purpose it is parallel processing, and then the flag is your reminder that it is deliberate.</KeyFact>
     </SoundSystemsRackLayout>
   );
 }

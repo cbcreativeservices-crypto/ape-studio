@@ -120,7 +120,7 @@ export function ChannelStrip({ selected, onTap }: { selected: StripStation; onTa
   const RX = 198;
   const RW = 140;
   return (
-    <Frame h={STRIP_H} a11y="A channel strip in signal order from the top: input and preamp gain, high-pass filter, channel EQ, insert, then the pre-fader tap point where monitor sends leave, the fader with pan and mute, the post-fader tap point where effects sends and the direct output leave, and the assignment to the main bus or a group. Tap a block to read about it.">
+    <Frame h={STRIP_H} a11y="A channel strip in signal order from the top: input and preamp gain, high-pass filter, channel EQ, insert, then the pre-fader tap point where monitor sends leave, the fader with pan and mute (on this console the mute also silences the pre-fader sends; that depends on the console), the post-fader tap point where effects sends and the direct output leave, and the assignment to the main bus or a group. Tap a block to read about it.">
       {line(26, 34)}
       {line(54, 62)}
       {line(82, 90)}

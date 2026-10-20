@@ -339,4 +339,39 @@ export function feedsThrough(system: SoundSystem, sinkId: string, kind: GearKind
   return chainTo(system, sinkId).some((p) => p.kind === kind && p.id !== sinkId);
 }
 
+/** Is every radiating sink fed THROUGH the console — never around it?
+ *  Links carry no bus identity, so `trace` alone lets a build pass with the
+ *  console bypassed (a stagebox emits line; playback can drive a powered box
+ *  direct). This walk tracks whether the signal has passed a console yet:
+ *  a stagebox's or snake's outputs to anything but the console are the
+ *  console's RETURNS, so they carry signal only once the console has been
+ *  passed. A sink reached on any path that skips the console is bypassed
+ *  (wiring findings SS-02, 2026-10-20). */
+export function sinksThroughConsole(system: SoundSystem): boolean {
+  const kindOf = new Map(system.placed.map((p) => [p.id, p.kind]));
+  const viaConsole = new Set<string>();
+  const bypass = new Set<string>();
+  const queue: Array<[string, boolean]> = system.placed.filter((p) => isSource(p.kind)).map((p) => [p.id, false]);
+  while (queue.length) {
+    const [id, passed] = queue.shift()!;
+    const seen = passed ? viaConsole : bypass;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    const kind = kindOf.get(id);
+    for (const l of system.links) {
+      if (l.from !== id) continue;
+      const toKind = kindOf.get(l.to);
+      if (toKind === 'console') {
+        queue.push([l.to, true]);
+        continue;
+      }
+      // Stage-side multicore outputs before the console are its returns: dead.
+      if (!passed && (kind === 'stagebox' || kind === 'snake')) continue;
+      queue.push([l.to, passed]);
+    }
+  }
+  const sinks = system.placed.filter((p) => isSink(p.kind));
+  return sinks.length > 0 && sinks.every((p) => viaConsole.has(p.id) && !bypass.has(p.id));
+}
+
 export const EMPTY_SYSTEM: SoundSystem = { placed: [], links: [] };
