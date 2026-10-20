@@ -199,9 +199,11 @@ describe('FEEDS on every capstone', () => {
     assert.deepEqual(unmet('matrices', repoint(s, 'frontFillL', 'mainL')), ['feeds']);
     assert.deepEqual(unmet('matrices', repoint(s, 'subC', 'aux6')), ['feeds']);
   });
-  it('outdoor: fills and delays on a main or a matrix, never an aux', () => {
+  it('outdoor: fills on a main or Matrix 2, delays on their own side’s main, MONO or Matrix 2 — never an aux, the lobby or the recording (round 2, SS-R2-06)', () => {
     const { s } = referenceBuild('outdoor');
-    assert.deepEqual(unmet('outdoor', repoint(s, 'delayL', 'mtx3')), []);
+    assert.deepEqual(unmet('outdoor', repoint(s, 'delayL', 'mtx2')), []);
+    assert.deepEqual(unmet('outdoor', repoint(s, 'delayL', 'mainMono')), []);
+    assert.deepEqual(unmet('outdoor', repoint(s, 'delayL', 'mtx3')), ['feeds']);
     assert.deepEqual(unmet('outdoor', repoint(s, 'delayL', 'aux7')), ['feeds']);
   });
   it('festival: the in-ear transmitter must take Aux 8 (decision 6); the subs Aux 6', () => {
@@ -215,7 +217,9 @@ describe('FEEDS on every capstone', () => {
   it('feedFits: a monitor position or a pack never takes a main; unchosen never fits', () => {
     const at = (kind: 'poweredWedge' | 'iemPack' | 'poweredSub', slot: 'mon1' | 'wingL' | 'drumFill' | 'subL') => ({ id: 'x', kind, slot });
     assert.equal(feedFits(at('poweredWedge', 'mon1'), 'mainMono'), false);
-    assert.equal(feedFits(at('poweredWedge', 'mon1'), 'aux8'), true);
+    assert.equal(feedFits(at('poweredWedge', 'mon1'), 'aux8'), false, 'a wedge takes a monitor aux, not the in-ear aux (round 2, SS-R2-05)');
+    assert.equal(feedFits(at('poweredWedge', 'mon1'), 'aux1'), true);
+    assert.equal(feedFits(at('iemPack', 'wingL'), 'aux8'), true);
     assert.equal(feedFits(at('poweredSub', 'drumFill'), 'aux4'), true);
     assert.equal(feedFits(at('iemPack', 'wingL'), 'mainL'), false);
     assert.equal(feedFits(at('poweredSub', 'subL'), '*'), false);

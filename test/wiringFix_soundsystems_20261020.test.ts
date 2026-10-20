@@ -205,11 +205,11 @@ describe('SS-10 · small inconsistencies', () => {
     assert.match(LEARN_B, /on this lab’s console kick, bass and keys/);
     assert.match(LEARN_B, /a matrix taking MAIN sends the whole mix/);
   });
-  it('2.1 via the sub: two console outputs for L and R', () => {
+  it('2.1 via the sub: L and R on two inputs keep the tops stereo; one cable is a mono feed (round 2, SS-R2-09)', () => {
     const c = OUTPUT_CONFIGS.find((x) => x.id === 'two-one')!;
     assert.ok(c.layout.some((l) => l.feed === 'L') && c.layout.some((l) => l.feed === 'R'));
     assert.doesNotMatch(c.what, /One console output/);
-    assert.match(c.what, /Two console outputs, L and R/);
+    assert.match(c.what, /Many subs take L and R on two inputs and pass both on, high-passed, so the tops stay stereo; with one cable into the sub — a mono feed — the tops play mono\./);
   });
   it('toe-in: the inner edge meets the centre line about a third of the way back (true to the plot)', () => {
     const s = sys.slotDef('mainL');

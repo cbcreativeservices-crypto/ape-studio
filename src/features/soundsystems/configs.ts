@@ -103,7 +103,7 @@ export const OUTPUT_CONFIGS: readonly OutputConfig[] = [
     id: 'two-one',
     name: '2.1 — sub in the chain',
     layout: [TOP_L, TOP_R, { slot: 'subC', feed: 'SUB', kind: 'sub' }],
-    what: 'A stereo pair and a subwoofer fed in series: console → powered sub → the sub’s high-passed outputs → the tops. Two console outputs, L and R, into the sub’s two inputs; the sub’s own crossover does the split.',
+    what: 'A stereo pair and a subwoofer fed in series: console → powered sub → the sub’s high-passed outputs → the tops. Many subs take L and R on two inputs and pass both on, high-passed, so the tops stay stereo; with one cable into the sub — a mono feed — the tops play mono. Either way the sub’s own crossover does the split.',
     when: 'Small powered rigs where the sub has a crossover and thru outputs, and nobody needs to touch the sub level from the console.',
     changes: 'The tops are high-passed by the sub and play cleaner and louder; the sub level is a knob on the cabinet, not a fader.',
   },

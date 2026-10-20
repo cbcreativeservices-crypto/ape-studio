@@ -2,7 +2,9 @@
  * The ten capstone reference builds — one per BUILD capstone, each the
  * proof that its brief is satisfiable on the venue plot the lab provides,
  * every cable from the console side carrying an explicit console output
- * (WF-SS-02, 2026-10-20). Shared by soundSystemsEngine.test.ts and
+ * (WF-SS-02, 2026-10-20) — mono subs on MAIN MONO where LEARN calls them the
+ * standard, and no amplifier passing more than its two mixes (round-2 grade
+ * SS-R2-01/07). Shared by soundSystemsEngine.test.ts and
  * consoleOutputs_20261020.test.ts so the two can never drift.
  *
  * Import it AFTER registering the house resolver hook (the source modules
@@ -12,6 +14,7 @@ import assert from 'node:assert/strict';
 
 const sys = await import('../src/features/soundsystems/system.ts');
 const con = await import('../src/features/soundsystems/console.ts');
+const caps = await import('../src/features/soundsystems/capstones.ts');
 
 type System = import('../src/features/soundsystems/types.ts').SoundSystem;
 type GearKind = import('../src/features/soundsystems/types.ts').GearKind;
@@ -41,7 +44,9 @@ export class Build {
 /** A reference build per capstone — the proof that each brief is satisfiable
  *  on the venue plot the lab provides. */
 export function referenceBuild(id: string): { s: System; cs: CS } {
-  let cs = con.bandConsole();
+  // The console each capstone page starts from (non-routing capstones come
+  // with their sub buses preset — SS-R2-04).
+  let cs = caps.capstoneConsole(caps.capstone(id));
   const b = new Build();
   const pre = (ch: string, aux: string) => (cs = con.setSend(cs, ch, aux, { db: 0, tap: 'pre' }));
   const post = (ch: string, aux: string) => (cs = con.setSend(cs, ch, aux, { db: 0, tap: 'post' }));
@@ -71,7 +76,7 @@ export function referenceBuild(id: string): { s: System; cs: CS } {
         .put('box', 'stagebox', 'stageBox').put('con', 'console', 'foh').put('proc', 'processor', 'rack1').put('ampT', 'amp', 'rack2').put('ampS', 'amp', 'rack3')
         .put('l', 'passiveSpeaker', 'mainL').put('r', 'passiveSpeaker', 'mainR').put('sl', 'passiveSub', 'subL').put('sr', 'passiveSub', 'subR')
         .link('m1', 'box').link('m2', 'box').link('d1', 'box').link('rx', 'box').link('box', 'con').link('con', 'proc')
-        .link('proc', 'ampT').link('proc', 'ampS').link('ampT', 'l', 'mainL').link('ampT', 'r', 'mainR').link('ampS', 'sl', 'mainL').link('ampS', 'sr', 'mainR');
+        .link('proc', 'ampT').link('proc', 'ampS').link('ampT', 'l', 'mainL').link('ampT', 'r', 'mainR').link('ampS', 'sl', 'mainMono').link('ampS', 'sr', 'mainMono');
       break;
     case 'two-one':
       b.put('pb', 'playback', 'stageC').put('con', 'console', 'foh').put('l', 'poweredSpeaker', 'mainL').put('r', 'poweredSpeaker', 'mainR').put('sub', 'poweredSub', 'subC')
@@ -109,7 +114,7 @@ export function referenceBuild(id: string): { s: System; cs: CS } {
         .put('l', 'passiveSpeaker', 'mainL').put('r', 'passiveSpeaker', 'mainR').put('sl', 'passiveSub', 'subL').put('sr', 'passiveSub', 'subR')
         .put('fl', 'poweredSpeaker', 'frontFillL').put('fr', 'poweredSpeaker', 'frontFillR').put('dl', 'poweredSpeaker', 'delayL').put('dr', 'poweredSpeaker', 'delayR')
         .link('m1', 'box').link('m2', 'box').link('d1', 'box').link('d2', 'box').link('box', 'con').link('con', 'proc')
-        .link('proc', 'ampT').link('proc', 'ampS').link('ampT', 'l', 'mainL').link('ampT', 'r', 'mainR').link('ampS', 'sl', 'mainL').link('ampS', 'sr', 'mainR')
+        .link('proc', 'ampT').link('proc', 'ampS').link('ampT', 'l', 'mainL').link('ampT', 'r', 'mainR').link('ampS', 'sl', 'mainMono').link('ampS', 'sr', 'mainMono')
         .link('proc', 'fl', 'mtx2').link('proc', 'fr', 'mtx2').link('proc', 'dl', 'mainL').link('proc', 'dr', 'mainR');
       break;
     case 'network':
@@ -129,6 +134,7 @@ export function referenceBuild(id: string): { s: System; cs: CS } {
         .link('box', 'proc').link('proc', 'ampT').link('proc', 'ampS').link('ampT', 'l', 'mainL').link('ampT', 'r', 'mainR').link('ampS', 'sl', 'aux6').link('ampS', 'sr', 'aux6')
         .link('box', 'w1', 'aux1').link('box', 'w2', 'aux2').link('box', 'w3', 'aux3').link('box', 'w4', 'aux4').link('box', 'tx', 'aux8').link('tx', 'pack');
       fourMixes();
+      pre('vox', 'aux8');
       cs = con.setMatrixInput(cs, 'mx-rec', 'main', 0);
       auxFedSubs();
       break;

@@ -337,7 +337,7 @@ function PageMonitors({ ctx }: { ctx: PageCtx }) {
       <ChapterTag n={6}>STAGE MONITORS AND PERFORMER MIXES</ChapterTag>
       <Body>The stage from above: a wedge at the lip aimed back at its performer, a side fill at the stage-left wing firing across, a drum fill beside the riser, and a performer at centre wearing in-ears.</Body>
       <GoalChips goals={goals} latched={latched} />
-      <KeyFact>The audience hears one mix. Each performer needs a different one — more of themselves, less of the drummer, a click nobody else may hear. Monitoring is a second sound system pointed the other way, and its sends are PRE-FADER: the house fader must never move a wedge. Each aux output feeds one wedge amplifier channel, one powered wedge or one in-ear transmitter; a stereo in-ear mix needs a stereo aux and a stereo transmitter.</KeyFact>
+      <KeyFact>The audience hears one mix. Each performer needs a different one — more of themselves, less of the drummer, a click nobody else may hear. Monitoring is a second sound system pointed the other way, and its sends are normally PRE-FADER, so the house fader does not move a wedge. Each aux output feeds one wedge amplifier channel, one powered wedge or one in-ear transmitter; a stereo in-ear mix needs a stereo aux and a stereo transmitter.</KeyFact>
       <Card tone="warn">
         <Eyebrow>HEARING SAFETY — IN-EAR LEVELS</Eyebrow>
         <Body>Sealed in-ears remove the room, so a performer reaches for level to feel the band. The limiter on the bodypack is not optional, and the mix should be built so the performer is comfortable at a moderate setting. A wedge is loud in a room; an in-ear is loud in an ear canal.</Body>
@@ -452,7 +452,7 @@ const LEVELS: readonly { level: SignalLevel; volts: string; carried: string; cab
   { level: 'instrument', volts: 'tenths of a volt, high impedance, unbalanced', carried: 'Guitars, basses, keyboards', cable: 'Unbalanced ¼-inch TS — short runs only, then a DI' },
   { level: 'line', volts: 'about a volt (+4 dBu nominal)', carried: 'Console outputs, processors, playback', cable: 'Balanced XLR or TRS' },
   { level: 'speaker', volts: 'tens of volts, amps of current', carried: 'Amplifier outputs only', cable: 'Speaker cable with speakON — never a signal cable' },
-  { level: 'digital', volts: 'data, not audio', carried: 'Stagebox ↔ console, AES3, Dante, AVB, MADI', cable: 'Category cable, coaxial or fibre — clocked from one master' },
+  { level: 'digital', volts: 'audio carried as data', carried: 'Stagebox ↔ console, AES3, Dante, AVB, MADI', cable: 'Category cable, coaxial or fibre — clocked from one master' },
 ];
 
 const PAIRS: readonly { from: GearKind; to: GearKind }[] = [

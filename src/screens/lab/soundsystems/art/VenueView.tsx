@@ -69,6 +69,9 @@ export type PlotBeam = Beam & {
   feedAnchor?: 'start' | 'middle' | 'end';
   /** Set delay, ms (delays only). */
   delayMs?: number;
+  /** A feed tag with no loudspeaker behind it (an in-ear pack, SS-R2-13):
+   *  no coverage, no share of the floor field. */
+  tagOnly?: boolean;
   /** A live box launches wavefronts; a silent one is drawn dark. */
   live?: boolean;
   /** How far past the throw distance the sector is drawn (default 1.8 — a
@@ -163,6 +166,10 @@ type Pt = { x: number; y: number };
 export type CableRoutes = {
   /** Path per link, keyed `${from}-${to}`. */
   paths: Map<string, string>;
+  /** Links drawn by their twin: the console → stagebox / snake return that
+   *  rides the same network cable (or multicore jacket) as the stagebox →
+   *  console link (round-2 grade SS-R2-12) — keyed as `paths`, painted once. */
+  merged: Set<string>;
   /** Tape / tie marks across bundled lanes, at even intervals. */
   ties: string[];
 };
@@ -245,6 +252,7 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
   const key = (l: Link) => `${l.from}-${l.to}`;
   const paths = new Map<string, string>();
   const ties: string[] = [];
+  const merged = new Set<string>();
 
   /* every straight leg drawn so far, to keep the next one off it */
   type Seg = { v: boolean; c: number; a: number; b: number };
@@ -280,6 +288,10 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
   type StageRun = { l: Link; s: Placed; f: Placed; lip: boolean };
   const wall: WallRun[] = [];
   const farWall: WallRun[] = [];
+  /** Front of house → a house-LEFT loudspeaker: along the back of the house
+   *  and up the house-left wall, never across the stage front (SS-R2-13: the
+   *  stage-left loom's run to main left crossed the wedges' feed tags). */
+  const fohFar: WallRun[] = [];
   const stageRuns: StageRun[] = [];
   const ls: Run[] = [];
   const radio: Run[] = [];
@@ -288,6 +300,12 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
     const a = byId.get(l.from);
     const b = byId.get(l.to);
     if (!a || !b) continue;
+    // The console's returns ride the SAME cable as the inputs (the network
+    // link, or the return pairs in the multicore): drawn once.
+    if (a.kind === 'console' && (b.kind === 'stagebox' || b.kind === 'snake') && links.some((m) => m.from === l.to && m.to === l.from)) {
+      merged.add(key(l));
+      continue;
+    }
     if (l.level === 'wireless') {
       radio.push({ l, a, b });
       continue;
@@ -296,7 +314,9 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
     const zb = zoneOf(b.slot);
     if ((za === 'foh') !== (zb === 'foh')) {
       const foh = za === 'foh' ? a : b;
-      wall.push({ l, top: foh === a ? b : a, foh, house: null });
+      const top = foh === a ? b : a;
+      if (zoneOf(top.slot) === 'house' && xy(top.slot).x < 170) fohFar.push({ l, top, foh, house: top });
+      else wall.push({ l, top, foh, house: null });
     } else if ((side(za) && zb === 'house') || (side(zb) && za === 'house')) {
       const top = side(za) ? a : b;
       const house = top === a ? b : a;
@@ -381,6 +401,32 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
     ties.push(...tieMarks(vLanes, true), ...tieMarks(hLanes, false));
   }
 
+  /* ── front of house to house left: back of the house, up the house-left wall ── */
+  {
+    // Concentric: the highest row takes the outer wall lane, the outer back
+    // lane and the leftmost drop, so no two runs cross.
+    const lanes = [...fohFar].sort((p, q) => xy(p.house!.slot).y - xy(q.house!.slot).y || xy(p.house!.slot).x - xy(q.house!.slot).x);
+    const rT = 6;
+    const vLanes: { c: number; a: number; b: number }[] = [];
+    const hLanes: { c: number; a: number; b: number }[] = [];
+    lanes.forEach((w, k) => {
+      const h = w.house!;
+      const hp = xy(h.slot);
+      const foh = xy(w.foh!.slot);
+      const by = LOOM_BACK_Y - CABLE_GAP * k;
+      let wx = SR_WALL_X + CABLE_GAP * k;
+      const exitY = port(h, 'y', hp.y, (c) => !clash(false, c, wx, hp.x));
+      while (clash(true, wx, exitY, by)) wx += CABLE_GAP;
+      const dx = port(w.foh!, 'x', foh.x - 12 - CABLE_GAP * (lanes.length - 1 - k), (c) => c < foh.x - 4 && !clash(true, c, by, foh.y) && !clash(false, by, wx, c));
+      const pts: Pt[] = [{ x: hp.x, y: exitY }, { x: wx, y: exitY }, { x: wx, y: by }, { x: dx, y: by }, { x: dx, y: foh.y }];
+      paths.set(key(w.l), squarePath(pts, rT));
+      addLegs(pts);
+      vLanes.push({ c: wx, a: exitY + rT, b: by - rT });
+      hLanes.push({ c: by, a: wx + rT, b: dx - rT });
+    });
+    ties.push(...tieMarks(vLanes, true), ...tieMarks(hLanes, false));
+  }
+
   /* ── stage runs: riser front and lip, out to stage left ── */
   const throughLabel = (x: number, y0: number, y1: number) => x > RISER_LABEL.x0 && x < RISER_LABEL.x1 && Math.max(y0, y1) > RISER_LABEL.y0 && Math.min(y0, y1) < RISER_LABEL.y1;
   for (const lip of [false, true]) {
@@ -454,7 +500,12 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
     const bow = Math.min(10, len * 0.12);
     paths.set(key(l), `M ${f1(pa.x)} ${f1(pa.y)} Q ${f1((pa.x + pb.x) / 2 - (dy / len) * bow)} ${f1((pa.y + pb.y) / 2 + (dx / len) * bow)} ${f1(pb.x)} ${f1(pb.y)}`);
   }
-  return { paths, ties };
+  for (const k of merged) {
+    const [l] = links.filter((x) => key(x) === k);
+    const d = paths.get(`${l.to}-${l.from}`);
+    if (d) paths.set(k, d);
+  }
+  return { paths, ties, merged };
 }
 
 function sectorPath(cx: number, cy: number, r0: number, r1: number, aimDeg: number, halfDeg: number): string {
@@ -504,9 +555,9 @@ export function VenueView(p: VenueViewProps) {
   // recomputed the ~780-cell field for nothing — on the alignment page every
   // DELAY step did it though no beam had moved. Only what moves the field
   // counts here; colour, feed tag and delay text are drawn elsewhere.
-  const beamKey = beams.map((b) => (b.live === false ? '' : [b.x, b.y, b.aimDeg, b.coverDeg, b.gain ?? 1, b.throw ?? '', b.spread ?? '', b.rig ?? '', b.pattern ?? ''].join(','))).join('|');
+  const beamKey = beams.map((b) => (b.live === false || b.tagOnly ? '' : [b.x, b.y, b.aimDeg, b.coverDeg, b.gain ?? 1, b.throw ?? '', b.spread ?? '', b.rig ?? '', b.pattern ?? ''].join(','))).join('|');
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const liveBeams = useMemo(() => beams.filter((b) => b.live !== false), [beamKey]);
+  const liveBeams = useMemo(() => beams.filter((b) => b.live !== false && !b.tagOnly), [beamKey]);
 
   // The field over the whole room — the deck included, because a sub
   // arrangement's rear rejection (or an omni sub's stage rumble) is the
@@ -626,6 +677,7 @@ export function VenueView(p: VenueViewProps) {
         {/* coverage: the −6 dB sector of each loudspeaker, lit from the cabinet */}
         <G clipPath="url(#vv-room)">
           {beams.map((b, i) => {
+            if (b.tagOnly) return null;
             const omni = b.coverDeg >= 360 || b.pattern === 'omni' || b.pattern === 'cardioid' || b.pattern === 'endfire';
             const live = b.live !== false;
             const thr = b.throw ?? 120;
@@ -701,12 +753,28 @@ export function VenueView(p: VenueViewProps) {
           const col = LEVEL_COLOR[l.level];
           const d = routes.paths.get(`${l.from}-${l.to}`);
           if (!d) return null;
+          // A merged return shares its twin's drawn cable: the twin draws it,
+          // and a tap on it removes both directions — it is one cable.
+          if (routes.merged.has(`${l.from}-${l.to}`)) return null;
+          const back = routes.merged.has(`${l.to}-${l.from}`) ? links.find((m) => m.from === l.to && m.to === l.from) : undefined;
           return (
             <G key={`${l.from}-${l.to}`}>
               <Path d={d} stroke="#000" strokeWidth={3} fill="none" opacity={0.45} />
               <Path d={d} stroke={col} strokeWidth={2} fill="none" opacity={live ? 0.95 : 0.35} strokeDasharray={l.level === 'wireless' ? '3 4' : undefined} strokeLinecap="round" strokeLinejoin="round" />
               {live && l.level !== 'wireless' ? <Path d={d} stroke="#fff" strokeWidth={0.6} fill="none" opacity={0.3} /> : null}
-              {p.onTapLink ? <Path d={d} stroke="transparent" strokeWidth={14} fill="none" onPress={() => p.onTapLink?.(l)} accessibilityLabel={`Cable from ${gearSpec(a.kind).name} to ${gearSpec(b.kind).name}, ${l.level} level${p.linkA11y?.(l) ? `, ${p.linkA11y(l)}` : ''} — tap to remove`} /> : null}
+              {p.onTapLink ? (
+                <Path
+                  d={d}
+                  stroke="transparent"
+                  strokeWidth={14}
+                  fill="none"
+                  onPress={() => {
+                    p.onTapLink?.(l);
+                    if (back) p.onTapLink?.(back);
+                  }}
+                  accessibilityLabel={`Cable from ${gearSpec(a.kind).name} to ${gearSpec(b.kind).name}, ${l.level} level${back ? ', carrying the console’s outputs back the same way' : ''}${p.linkA11y?.(l) ? `, ${p.linkA11y(l)}` : ''} — tap to remove`}
+                />
+              ) : null}
             </G>
           );
         })}

@@ -80,12 +80,22 @@ export function layoutToBeams(layout: readonly PlacedSpeaker[], opts: { flown?: 
  *  2026-10-20):
  *    · a sub at house left/right prints ABOVE itself — below, its tag ran
  *      into the main's tag 36 units outboard;
- *    · the centre cluster prints to its LEFT — below is the centre sub. */
-export function feedTagPlace(slot: SlotId): Pick<PlotBeam, 'feedDx' | 'feedDy' | 'feedAnchor'> {
+ *    · the centre cluster prints to its LEFT — below is the centre sub;
+ *    · an in-ear pack prints beside itself (feedTagPlace's kind). */
+export function feedTagPlace(slot: SlotId, kind?: Placed['kind']): Pick<PlotBeam, 'feedDx' | 'feedDy' | 'feedAnchor'> {
+  // An in-ear pack prints beside itself: below a stage position is the
+  // wedge row, below the stage-left wing the main right box (SS-R2-13).
+  if (kind === 'iemPack') return slot === 'wingL' ? { feedDx: -12, feedDy: -6, feedAnchor: 'end' } : { feedDx: 12, feedDy: 4, feedAnchor: 'start' };
   if (slot === 'subL' || slot === 'subR') return { feedDy: -18 };
   if (slot === 'mainC') return { feedDx: -12, feedDy: 4, feedAnchor: 'end' };
   return {};
 }
+
+/** The four wedge positions stand 40 units apart on one row: their tags
+ *  print without the space ("AUX1") so neighbours read as separate words
+ *  (SS-R2-13). */
+const WEDGE_ROW: readonly SlotId[] = ['mon1', 'mon2', 'mon3', 'mon4'];
+const compactTag = (tag: string) => tag.replace(/^AUX (\d)$/, 'AUX$1');
 
 /** Beams for a BUILD-mode system: every radiating loudspeaker on the plot,
  *  aimed by its position — mains toed in, side fills across the stage, the
@@ -124,11 +134,16 @@ export function placedToBeams(placed: readonly Placed[], live: ReadonlySet<strin
         out.push({ x: s.x, y: s.y, aimDeg: aim, coverDeg: 70, gain: 0.1, throw: thr, reach: 1.1, color: BEAM_COLOR.wedge, live: on });
         break;
       }
+      case 'iemPack':
+        // The pack radiates into one pair of ears, not the room: its feed is
+        // tagged (SS-R2-13), with no coverage drawn.
+        if (feeds?.has(p.id)) out.push({ x: s.x, y: s.y, aimDeg: 0, coverDeg: 0, color: BEAM_COLOR.wedge, live: on, tagOnly: true });
+        break;
       default:
         break;
     }
     const tag = feeds?.get(p.id);
-    if (tag && out.length > n) out[n] = { ...out[n], feed: tag, ...feedTagPlace(p.slot) };
+    if (tag && out.length > n) out[n] = { ...out[n], feed: WEDGE_ROW.includes(p.slot) ? compactTag(tag) : tag, ...feedTagPlace(p.slot, p.kind) };
   }
   return out;
 }

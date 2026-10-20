@@ -16,7 +16,7 @@
  * page can render it as a warning, not a shrug.
  */
 import { gearSpec, isSink, isSource } from './gear';
-import { CONSOLE_OUTS } from './outputs';
+import { auxPurpose, CONSOLE_OUTS } from './outputs';
 import type { ConsoleOut, GearKind, Link, Placed, SignalLevel, SlotId, SlotRole, SoundSystem } from './types';
 
 /* ── the venue plot ──────────────────────────────────────────────────────── */
@@ -368,6 +368,9 @@ export type ConsoleWalk = {
   feeds: ReadonlyMap<string, Feed>;
   /** What reaches each device from the console's outputs. */
   arriving: ReadonlyMap<string, Carry>;
+  /** In-ear packs fed a stereo pair at their transmitter → the pair, in
+   *  console order (their feed is the in-ear aux of the pair). */
+  pairs: ReadonlyMap<string, readonly [ConsoleOut, ConsoleOut]>;
 };
 
 const isMulticore = (k: GearKind | undefined) => k === 'stagebox' || k === 'snake';
@@ -386,8 +389,25 @@ function carriedBy(l: Link, kindOf: ReadonlyMap<string, GearKind>, arriving: Rea
   const at = fromKind === 'console' ? EVERY_OUT : arriving.get(l.from) ?? NOTHING;
   if (at.size === 0) return NOTHING;
   if (fromKind === 'console' && isMulticore(toKind)) return EVERY_OUT;
+  // The transmitter → bodypack hop is radio, not a cable: the pack hears
+  // whatever the transmitter was sent (SS-R2-02), so no output is chosen on it.
+  if (fromKind === 'iemTx') return at;
   if (l.out) return at.has(l.out) ? new Set([l.out]) : new Set(['*']);
   return at;
+}
+
+/** An amplifier has two channels: one mix each (SS-R2-01). */
+export const AMP_CHANNELS = 2;
+
+/** A stereo in-ear mix: two adjacent auxes (odd + even, the pair most
+ *  consoles link as one stereo send) where one is the in-ear aux — on this
+ *  console Aux 7 + Aux 8. The pack's feed is then the in-ear aux. */
+function stereoIemFeed(c: Carry): ConsoleOut | null {
+  const outs = [...c].filter((o): o is ConsoleOut => o !== '*');
+  if (outs.length !== 2 || c.size !== 2 || !outs.every((o) => o.startsWith('aux'))) return null;
+  const [a, b] = outs.map((o) => Number(o.slice(3))).sort((x, y) => x - y);
+  if (a % 2 !== 1 || b !== a + 1) return null;
+  return outs.find((o) => auxPurpose(o) === 'iem') ?? null;
 }
 
 function arrivingAt(system: SoundSystem, kindOf: ReadonlyMap<string, GearKind>): Map<string, Carry> {
@@ -454,16 +474,20 @@ export function consoleWalk(system: SoundSystem): ConsoleWalk {
   const sinks = system.placed.filter((p) => isSink(p.kind));
   const arriving = arrivingAt(system, kindOf);
   const feeds = new Map<string, Feed>();
+  const pairs = new Map<string, readonly [ConsoleOut, ConsoleOut]>();
   for (const p of sinks) {
     const c = arriving.get(p.id);
     if (!c || c.size === 0) continue;
-    const only = c.size === 1 ? [...c][0] : '*';
+    const stereo = p.kind === 'iemPack' ? stereoIemFeed(c) : null;
+    if (stereo) pairs.set(p.id, CONSOLE_OUTS.filter((o) => c.has(o)) as unknown as readonly [ConsoleOut, ConsoleOut]);
+    const only = c.size === 1 ? [...c][0] : stereo ?? '*';
     feeds.set(p.id, only);
   }
   return {
     viaConsole: sinks.length > 0 && sinks.every((p) => viaConsole.has(p.id) && !bypass.has(p.id)),
     feeds,
     arriving,
+    pairs,
   };
 }
 
@@ -487,7 +511,30 @@ export function carriesOutputs(system: SoundSystem, l: Link, walk: ConsoleWalk =
   const toKind = kind(l.to);
   if (toKind === 'console') return false;
   if (fromKind === 'console') return !isMulticore(toKind);
+  if (fromKind === 'iemTx') return false; // radio, not a cable (SS-R2-02)
   return [...(walk.arriving.get(l.from) ?? [])].some((o) => o !== '*');
+}
+
+/** Amplifiers asked to pass more distinct console outputs to their
+ *  loudspeakers than they have channels (SS-R2-01), with what each carries.
+ *  One cable INTO an amp may carry every output (owner decision 1); what
+ *  counts is how many different mixes leave it. */
+export function ampsOverChannels(system: SoundSystem, walk: ConsoleWalk = consoleWalk(system)): { id: string; outs: ConsoleOut[] }[] {
+  const kindOf = new Map(system.placed.map((p) => [p.id, p.kind]));
+  const over: { id: string; outs: ConsoleOut[] }[] = [];
+  for (const amp of system.placed.filter((p) => p.kind === 'amp')) {
+    const outs = new Set<ConsoleOut>();
+    for (const l of system.links) {
+      if (l.from !== amp.id) continue;
+      // A cable passing several outputs on reads OUT ? at its loudspeaker
+      // already; only single outputs count as the mixes the amp passes.
+      const c = carriedBy(l, kindOf, walk.arriving);
+      const only = c.size === 1 ? [...c][0] : '*';
+      if (only !== '*') outs.add(only);
+    }
+    if (outs.size > AMP_CHANNELS) over.push({ id: amp.id, outs: CONSOLE_OUTS.filter((o) => outs.has(o)) });
+  }
+  return over;
 }
 
 /** The outputs a cable may be set to carry: those reaching the device it

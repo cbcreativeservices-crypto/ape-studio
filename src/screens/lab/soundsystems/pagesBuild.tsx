@@ -32,8 +32,8 @@ import { Body, Btn, Card, Eyebrow, Prompt, Row } from '../tuning/components/prim
 import { GEAR, gearSpec, isSource, LEVEL_LABEL } from '../../../features/soundsystems/gear';
 import { carriesOutputs, connect, consoleWalk, disconnect, EMPTY_SYSTEM, feedLink, linkCarries, outChoices, place, removePlaced, setLinkOut, SLOTS, slotAccepts, slotDef, trace, upstream, downstream, type ConsoleWalk } from '../../../features/soundsystems/system';
 import { OUT_UNSET, outLabel, outName, outTag, outUse } from '../../../features/soundsystems/outputs';
-import { CAPSTONES_IN_ORDER, gradeCapstone, type Capstone } from '../../../features/soundsystems/capstones';
-import { bandConsole, type ConsoleState } from '../../../features/soundsystems/console';
+import { CAPSTONES_IN_ORDER, capstoneConsole, CONSOLE_PRESET_NOTE, gradeCapstone, type Capstone } from '../../../features/soundsystems/capstones';
+import type { ConsoleState } from '../../../features/soundsystems/console';
 import { markCapstonePassed } from '../../../features/soundsystems/progress';
 import type { ConsoleOut, GearKind, Link, SlotId, SoundSystem } from '../../../features/soundsystems/types';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
@@ -267,10 +267,14 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
 
 /* ── the console output each cable carries (WF-SS-02) ────────────────────── */
 
-/** Each loudspeaker's plot tag: the output it is fed from, or OUT ?. */
+/** Each loudspeaker's plot tag: the output it is fed from, or OUT ?; an
+ *  in-ear pack on a stereo pair reads both ("AUX 7+8"). */
 function feedTags(walk: ConsoleWalk): ReadonlyMap<string, string> {
   const m = new Map<string, string>();
-  for (const [id, f] of walk.feeds) m.set(id, f === '*' ? OUT_UNSET : outTag(f));
+  for (const [id, f] of walk.feeds) {
+    const pair = walk.pairs.get(id);
+    m.set(id, pair ? `AUX ${pair[0].slice(3)}+${pair[1].slice(3)}` : f === '*' ? OUT_UNSET : outTag(f));
+  }
   return m;
 }
 
@@ -363,7 +367,7 @@ function PageFreeBuild({ ctx }: { ctx: PageCtx }) {
       <GoalChips goals={goals} latched={latched} />
       <CableLegend levels={['mic', 'line', 'speaker', 'digital', 'wireless']} />
       <Text style={styles.status}>{r.status}</Text>
-      <KeyFact>A loudspeaker is LIVE only when an unbroken path of valid links runs from a source to it. A dim loudspeaker is a placed loudspeaker with no such path — the most common state of a real system at four in the afternoon. The engine refuses a link with its reason — most often the wrong level, a full input, or a loop — and the one hazardous refusal (speaker level into a line input) is drawn as a warning.</KeyFact>
+      <KeyFact>A loudspeaker is LIVE only when an unbroken path of valid links runs from a source to it. A dim loudspeaker is a placed loudspeaker with no such path — the most common state of a real system at four in the afternoon. The engine refuses a link with its reason — most often the wrong level, a full input, or a loop — and the one hazardous refusal (speaker level into a line input) is drawn as a warning. An analog cable carries one console output; a multicore or a network link carries them all.</KeyFact>
     </SoundSystemsRackLayout>
   );
 }
@@ -413,11 +417,12 @@ const ROUTE_UI: Partial<Record<string, RouteUi>> = {
     ],
   },
   festival: {
-    columns: ['send:aux1', 'send:aux2', 'send:aux3', 'send:aux4', 'send:aux6'],
+    columns: ['send:aux1', 'send:aux2', 'send:aux3', 'send:aux4', 'send:aux6', 'send:aux8'],
     matrices: [{ id: 'mx-rec', sources: [{ id: 'main', label: 'MAIN' }, { id: 'aux1', label: 'AUX 1' }] }],
     hears: [
       { title: 'AUX 1 · WEDGE 1 HEARS', kind: 'aux', id: 'aux1' },
       { title: 'AUX 6 · THE SUBS HEAR', kind: 'aux', id: 'aux6' },
+      { title: 'AUX 8 · THE IN-EARS HEAR', kind: 'aux', id: 'aux8' },
       { title: 'MATRIX 4 · RECORDING HEARS', kind: 'matrix', id: 'mx-rec' },
     ],
   },
@@ -438,10 +443,12 @@ function hearsList(cs: ConsoleState, h: RouteUi['hears'][number]) {
 
 function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
   const built = useBuilder();
-  const [cs, setCs] = usePageMemory<ConsoleState>('console', bandConsole);
+  // A capstone that never opens the console starts it with its sub buses
+  // preset (SS-R2-04, capstoneConsole) — the page says so below the brief.
+  const [cs, setCs] = usePageMemory<ConsoleState>('console', () => capstoneConsole(capstone));
   // CLEAR starts the capstone over — the plot AND the console routing
   // (bug hunt 2026-09-29: it used to leave the console as routed).
-  const b = { ...built, reset: () => { built.reset(); setCs(bandConsole()); } };
+  const b = { ...built, reset: () => { built.reset(); setCs(capstoneConsole(capstone)); } };
   const grade = useMemo(() => gradeCapstone(capstone, b.system, cs), [capstone, b.system, cs]);
   useEffect(() => {
     if (grade.pass) {
@@ -488,9 +495,16 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
   const requirements = (
     <Card tone={grade.pass ? 'ok' : 'plain'}>
       <Eyebrow>{grade.pass ? 'REQUIREMENTS MET — CAPSTONE PASSED' : `REQUIREMENTS · ${grade.met.length} OF ${capstone.requirements.length}`}</Eyebrow>
-      {buildReqs.map((r) => (
-        <ReqRow key={r.id} met={grade.met.includes(r.id)} text={r.text} />
-      ))}
+      {buildReqs.map((r) => {
+        const met = grade.met.includes(r.id);
+        const why = met ? null : r.why?.(b.system, cs);
+        return (
+          <View key={r.id}>
+            <ReqRow met={met} text={r.text} />
+            {why ? <Text style={styles.why}>{why}</Text> : null}
+          </View>
+        );
+      })}
       {routeReqs.length ? <Eyebrow>ON THE CONSOLE</Eyebrow> : null}
       {routeReqs.map((r) => (
         <ReqRow key={r.id} met={grade.met.includes(r.id)} text={r.text} />
@@ -511,6 +525,7 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
     <SoundSystemsRackLayout rack={r.rack} caption={`Capstone ${capstone.n} of 10 · ${capstone.venue}. Build it on the plot from the bin in PART${ui ? ', then open CONSOLE to route it' : ''} — the checklist below fills itself in as you go.`} wellTop={r.wellTop}>
       <ChapterTag n={capstone.n}>{`CAPSTONE ${capstone.n} OF 10 · ${capstone.venue.toUpperCase()}`}</ChapterTag>
       <Body>{capstone.brief}</Body>
+      {!capstone.routing && capstone.bin.some((k) => k === 'poweredSub' || k === 'passiveSub') ? <Text style={styles.small}>{CONSOLE_PRESET_NOTE}</Text> : null}
       <Prompt>{r.prompt}</Prompt>
       <CableLegend levels={['mic', 'line', 'speaker', 'digital', 'wireless']} />
       <Text style={styles.status}>{r.status}</Text>
@@ -533,5 +548,6 @@ const styles = StyleSheet.create({
   hand: { flexDirection: 'row', gap: 10, alignItems: 'center', borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,198,77,.45)', backgroundColor: '#1a1409', padding: 8 },
   inspect: { flexDirection: 'row', gap: 10, alignItems: 'center' },
   small: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
+  why: { color: colors.orange, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, marginLeft: 30 },
   status: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 0.8 },
 });

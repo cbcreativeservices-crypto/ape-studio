@@ -593,10 +593,10 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'ok', note: 'A tick through the whole mix every few seconds.', flags: ['clicks'] },
       },
     ),
-    options: ['A digital clock mismatch — one clock master, everything else slaved to it', 'A bad microphone cable', 'A ground loop', 'Feedback'],
+    options: ['A digital clock mismatch — one clock master, everything else following it', 'A bad microphone cable', 'A ground loop', 'Feedback'],
     correct: 0,
     explain: 'One bad cable affects one channel; a clock fault affects every channel at once, at the same instant. Two devices each believing they are master is the classic cause.',
-    fix: 'Choose ONE clock master — on a proprietary link usually the console — and set every other device to slave from it. On Dante or AES67 the network ELECTS the master: the equivalent mistake is two devices forced to preferred master, or one forced to INTERNAL. Confirm the sample rates match.',
+    fix: 'Choose ONE clock master — on a proprietary link usually the console — and set every other device to follow it. On Dante or AES67 the network ELECTS the master: the equivalent mistake is two devices forced to preferred master, or one forced to INTERNAL. Confirm the sample rates match.',
     forward: 'Every channel together means the fault is where the channels first share a clock — the console’s digital input, not any microphone.',
   },
   {
