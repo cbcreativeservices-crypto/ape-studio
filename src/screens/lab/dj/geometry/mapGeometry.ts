@@ -12,7 +12,7 @@
  * TWO BANDS (visual review 2026-10-18, finding 14):
  *   ROOM   the floor, the PA speakers on tripod stands, the DJ table with the
  *          booth monitors and the gear on it — every object at ONE stated
- *          scale (ROOM_SCALE); the distances are not to scale (said on it);
+ *          scale (dressGeometry.ROOM_F, 1:5); the distances are not to scale (said on it);
  *   PATCH  everything you plug, at TRUE size: each speaker's input plate
  *          (combo input + IEC), the three rear panels, the mixer's front edge
  *          with the headphone jack, the headphones, the power strip.
@@ -30,7 +30,8 @@ export type PlugKindMap = 'rca' | 'xlr' | 'trs' | 'iec' | 'mains';
  *  any plug it is not attached to. */
 export const PLUG_R: Record<PlugKindMap, number> = { rca: 5.4, xlr: 10.5, trs: 6.4, iec: 12, mains: 17 };
 
-/** The room band's one scale: speakers, stands and table at 15 %. */
+/** The map's first room-band scale (15 %), no longer drawn: Screen 4 draws
+ *  its room at dressGeometry.ROOM_F (1:5, 20 %) — DJ-R2-16. */
 export const ROOM_SCALE = 0.15;
 export const FLOOR_Y = 330;
 
@@ -111,12 +112,14 @@ const OVER: Partial<Record<PlugId, number>> = { 'ac.boothR': 740, 'ac.boothL': 7
  *  real gear but do the wrong job get real routes, in the column between
  *  deck B's rear (ends x 340) and the mixer's (starts x 375) and on one lane
  *  just above the rear panels (Screen 4's output lanes end at 509; the panels
- *  start at 526): 9 mm under the lowest, 8 over the panels. A booth TRS run into the PHONES jack crosses left on that
+ *  start at 526): 11 mm under the lowest, 6 over the panels (DJ-R2-08: it
+ *  was 518, and touched MASTER L's run where that sags — dressGeometry caps
+ *  that sag at 3 mm, so the two keep 3.5 mm or more between their edges). A booth TRS run into the PHONES jack crosses left on that
  *  lane, drops the column's right side and comes in `WRONG_JOB_UNDER` mm
  *  under the jack (the way the headphone cable comes in); the headphone cable
  *  into a speaker input climbs the column's left side from the floor and
  *  crosses on the same lane to the plate. */
-export const WRONG_JOB_LANE = 518;
+export const WRONG_JOB_LANE = 520;
 export const BTH_PHONES_X = 363;
 export const PHONES_UP_X = 351;
 export const WRONG_JOB_UNDER = 15;

@@ -49,8 +49,9 @@ export type Run = {
   /** ADDITIVE: how far a loose end dips below its chord (mm; default 16). A
    *  plug hanging from its socket barely dips at all. */
   looseSag?: number;
-  /** ADDITIVE (DJ-10, owner 2026-10-20): an UNBALANCED lead with XLR ends —
-   *  its plugs stay XLR (so each fits its jack, rule C13) but its cable is
+  /** ADDITIVE (DJ-10, owner 2026-10-20): an UNBALANCED lead with XLR ends
+   *  (DJ-R2-02: unbalanced wiring, pin 3 tied to pin 1 — e.g. an adaptor
+   *  lead) — its plugs stay XLR (so each fits its jack, rule C13) but its cable is
    *  thinner, plain-jacketed (no balanced line's stripe), and its flag is
    *  edged in amber so the hum's cause is visible. */
   unbal?: boolean;

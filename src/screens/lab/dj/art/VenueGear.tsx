@@ -40,6 +40,9 @@ export const SB_IN = [
   { n: 15, label: 'MIC', x: 124, y: 62 },
   { n: 16, label: 'SPARE', x: 170, y: 62 },
 ] as const;
+/** How far left of its socket's centre each printed channel number sits (mm):
+ *  a cable plugged in from above runs down the socket's centre line. */
+export const SB_NUM_DX = 9;
 
 export const StageBox = memo(function StageBox({ x, y, hot = [] }: { x: number; y: number; hot?: readonly number[] }) {
   // the scribble strips are written in marker at 9 pt, so they read on the
@@ -60,7 +63,9 @@ export const StageBox = memo(function StageBox({ x, y, hot = [] }: { x: number; 
       {[[8, 8], [SB_W - 8, 8], [8, SB_H - 8], [SB_W - 8, SB_H - 8]].map(([sx, sy]) => (
         <Circle key={`${sx}${sy}`} cx={sx} cy={sy} r={2.2} color="#8b9099" />
       ))}
-      <SceneText x={12} y={20} size={6} text="STAGE BOX · TO FOH" color={INK.amber} face="label" />
+      {/* the title right-aligned, clear of the DJ L / DJ R runs that come
+          down into inputs 13 and 14 from above (DJ-R2-06) */}
+      <SceneText x={SB_W - 12} y={20} size={6} text="STAGE BOX · TO FOH" color={INK.amber} face="label" align="right" />
       {SB_IN.map((j) => (
         <Group key={j.n}>
           <XlrSocket cx={j.x} cy={j.y} d={22} male={false} />
@@ -69,7 +74,9 @@ export const StageBox = memo(function StageBox({ x, y, hot = [] }: { x: number; 
           <Group transform={[{ translateX: j.x }, { translateY: j.y + 17 + Math.max(15, marker * 1.35) / 2 + marker * 0.36 }, { rotate: -0.04 }]}>
             <SceneText x={0} y={0} size={marker} text={j.label} color={hot.includes(j.n) ? '#16306e' : '#5b5f6a'} face="label" align="center" />
           </Group>
-          <SceneText x={j.x} y={j.y - 18} size={LEG + 1} text={String(j.n)} color={INK.print} face="label" align="center" />
+          {/* the channel number above the socket's left corner, off the
+              cable's line into it (DJ-R2-06) */}
+          <SceneText x={j.x - SB_NUM_DX} y={j.y - 18} size={LEG + 1} text={String(j.n)} color={INK.print} face="label" align="center" />
         </Group>
       ))}
     </Group>

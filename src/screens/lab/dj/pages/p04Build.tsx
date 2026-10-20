@@ -30,7 +30,7 @@ import { soundCell, useBoothKit } from './shared';
 
 const TERMS = [
   { term: 'Signal path', def: 'The route the music takes, stage by stage: player → cable → mixer input → channel → mix → output → speaker. When something is silent, you follow it until it stops.' },
-  { term: 'Powered speaker', def: 'A speaker with its own amplifier inside: it takes a line-level signal and needs its own mains power. Its rear has an input switch (set LINE, not MIC) and a level knob (set at its marked unity point).' },
+  { term: 'Powered speaker', def: 'A speaker with its own amplifier inside: it takes a line-level signal and needs its own mains power. Many have an input switch (MIC/LINE): set LINE. Its level knob is set at its marked unity point.' },
   { term: 'Power sequencing', def: 'The order you switch things on and off: sources and mixer first, amplified speakers LAST (and off FIRST), so switching bangs never reach them.' },
   { term: 'Protective earth', def: 'The mains safety connection (the earth pin). Never remove or tape it to cure hum — it is what protects people if a fault happens.' },
 ] as const;

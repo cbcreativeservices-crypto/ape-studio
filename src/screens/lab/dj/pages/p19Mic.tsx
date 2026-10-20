@@ -730,7 +730,7 @@ function PageMic({ ctx }: { ctx: PageCtx }) {
         <P>Set GAIN on your normal speaking voice until its peaks sit around −18 to −8 dBFS — the green bracket on the MIC meter, and MIC PEAK on the strip (a suggested starting point). Then press SHOUT: it should stay out of the red. Announcements get louder than you think. Then turn TALK OVER on (ROUTE) and talk again: watch MUSIC DIP drop while you speak and come back after.</P>
         {shoutClipped ? <Note tone="try">The shout clipped: bring GAIN down a few dB and try again — set for the shout, not just the speech.</Note> : null}
         {pop ? <Note tone="safety">POP — +48 V was switched with the mic channel ON and up. On a real system that crack goes through every speaker carrying the mic. Switch phantom with the mic OFF (or its level down).</Note> : null}
-        {showOverload ? <Note tone="safety">The receiver’s LINE output is overloading the mic input before the GAIN knob — turning GAIN down cannot clean it. Set the receiver to MIC.</Note> : null}
+        {showOverload ? <Note tone="safety">On this lab’s mixer (and many), the receiver’s LINE output overloads the mic input before the GAIN knob — turning GAIN down cannot clean it. Set the receiver to MIC.</Note> : null}
       </Step>
       <Step n={3}>
         <P>Swap to the CONDENSER: in MIC 2 it is silent (no phantom there). Move it to MIC 1 and switch +48 V on — with the mic OFF first. It is hotter than the dynamic: GAIN comes down.</P>
@@ -755,7 +755,7 @@ function PageMic({ ctx }: { ctx: PageCtx }) {
           }}
           met={fresh && m.device === 'WIRELESS' && m.rxOut === 'MIC' && speaking && !shout && inTarget && clean}
           progress={m.device === 'WIRELESS' && speaking && !clean ? 'Still clipping — and not at the GAIN knob. What sits before it?' : null}
-          explain="A line-level signal is some 40–55 dB hotter than a mic. It overloads the mic input’s first stage, before the GAIN knob can do anything — so the cure is the receiver’s output switch on MIC (or a line input), then GAIN set by the meter."
+          explain="A line-level signal is some 40–55 dB hotter than a mic. On this lab’s mixer (and many), it overloads the mic input’s first stage, before the GAIN knob can do anything — so the cure is the receiver’s output switch on MIC (or a line input), then GAIN set by the meter."
           onMet={() => setCheck(true)}
         />
         <FaultCard

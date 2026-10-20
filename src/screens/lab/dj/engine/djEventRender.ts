@@ -498,7 +498,7 @@ export function renderEvent(b: Booth, t0: number, seconds: number, prev: EventRe
     // capstone: PA R's input switch on MIC — the line feed overloads the
     // speaker's own input stage (+30 dB into a soft clip). The level is held
     // near the clean side's so the lab never plays it loud: the fault is the
-    // distortion, shown on PA R's own clip light.
+    // distortion, shown on PA R's own LIMIT (clip) light.
     if (ev.paRMic && spk('paR')) {
       const d = new Float32Array(n);
       const drive = dbToLin(30);

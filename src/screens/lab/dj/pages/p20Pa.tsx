@@ -79,12 +79,19 @@ const sbIn = (n: 13 | 14) => {
  *  never cross, MASTER R goes up OVER the mixer and MASTER L down UNDER it
  *  (visual review #15: two lanes, traceable, never one double line). */
 const LANE = { over: -18, under: 132 } as const;
+/** DJ-R2-07: each run leaves its plug SIDEWAYS before it turns, so it never
+ *  covers the panel's printing: MASTER R steps left (between the BOOTH
+ *  jacks' legends and the MASTER OUT bracket) before it climbs, MASTER L
+ *  steps right (past its own "L" legend, short of the USB) before it drops. */
+const JOG = { R: -16, L: 8 } as const;
+const mstX = (side: 'L' | 'R') => mst(side).x + JOG[side];
 
 function runPts(from: 'L' | 'R', to: 13 | 14): [number, number][] {
   const a = mst(from);
   const b = sbIn(to);
   const lane = from === 'R' ? LANE.over : LANE.under;
-  return [[a.x, a.y], [a.x, lane], [b.x, lane], [b.x, b.y]];
+  const x = mstX(from);
+  return [[a.x, a.y], [x, a.y], [x, lane], [b.x, lane], [b.x, b.y]];
 }
 
 export function HandoffView({ booth }: { booth: Booth }) {
@@ -102,16 +109,17 @@ export function HandoffView({ booth }: { booth: Booth }) {
         if (!r.p) return null;
         const from = r.p === 'MST_L' ? 'L' : 'R';
         const pts = runPts(from, r.to);
-        const lane = pts[1][1];
+        const lane = pts[2][1];
         return (
           <CableRun
             key={r.to}
             flow
             // DJ-10: the unbalanced run is an XLR-ended lead (its plugs fit the
-            // mixer's male and the stage box's female XLRs, C13); its CABLE is
-            // what is unbalanced: thinner, plain, flagged UNBAL
+            // mixer's male and the stage box's female XLRs, C13); its WIRING is
+            // what is unbalanced (DJ-R2-02: pin 3 tied to pin 1, e.g. an
+            // adaptor lead): thinner, plain, flagged UNBAL
             r={{ id: `v${r.to}`, kind: 'xlr', colour: '#3d4046', pts, plugged: true, live: true, label: `${from === 'L' ? 'MST L' : 'MST R'}${unbal ? ' · UNBAL' : ''}`, dashed: from === 'R', unbal }}
-            labelAt={[(pts[1][0] + pts[2][0]) / 2 + (from === 'R' ? 20 : 0), lane]}
+            labelAt={[(pts[2][0] + pts[3][0]) / 2 + (from === 'R' ? 20 : 0), lane]}
           />
         );
       })}
@@ -119,9 +127,11 @@ export function HandoffView({ booth }: { booth: Booth }) {
       {(['MST_L', 'MST_R'] as const)
         .filter((p) => v.djL !== p && v.djR !== p)
         .map((p) => {
-          const a = mst(p === 'MST_L' ? 'L' : 'R');
+          const side = p === 'MST_L' ? 'L' : 'R';
+          const a = mst(side);
+          const x = mstX(side);
           const dx = p === 'MST_L' ? 34 : -34;
-          return <CableRun key={p} r={{ id: p, kind: 'xlr', colour: '#3d4046', pts: [[a.x, a.y], [a.x, a.y + 80], [a.x + dx, a.y + 126]], plugged: false, live: false, label: p === 'MST_L' ? 'MST L' : 'MST R', dashed: p === 'MST_R' }} labelAt={[a.x + dx * 0.4, a.y + 98]} />;
+          return <CableRun key={p} r={{ id: p, kind: 'xlr', colour: '#3d4046', pts: [[a.x, a.y], [x, a.y], [x, a.y + 80], [x + dx, a.y + 126]], plugged: false, live: false, label: p === 'MST_L' ? 'MST L' : 'MST R', dashed: p === 'MST_R' }} labelAt={[x + dx * 0.4, a.y + 98]} />;
         })}
     </Group>
   );
@@ -178,8 +188,9 @@ function VenueTray({ tr, onAsk }: { tr: Transport; onAsk: (msg: string) => void 
       </Row>
       <Row head="THE 20 m RUN TO THE STAGE BOX">
         <LabChip label="XLR (BALANCED)" selected={v.cable === 'XLR'} onPress={() => set({ cable: 'XLR' })} compact />
-        <LabChip label="UNBALANCED LEAD" selected={v.cable === 'UNBAL'} onPress={() => set({ cable: 'UNBAL' })} compact />
+        <LabChip label="XLR ENDS, UNBALANCED WIRING" selected={v.cable === 'UNBAL'} onPress={() => set({ cable: 'UNBAL' })} compact />
       </Row>
+      {v.cable === 'UNBAL' ? <TrayNote tone="warn">XLR ends, unbalanced wiring (pin 3 tied to pin 1 — e.g. an adaptor lead): the plugs fit, the wiring does not balance.</TrayNote> : null}
       <Row head={`ASK THE ENGINEER (their gain on your feed: ${v.gainDb >= 0 ? '+' : '−'}${Math.abs(v.gainDb)} dB)`}>
         <LabChip label="“UP 3 dB, PLEASE”" selected={false} onPress={() => ask(3)} compact />
         <LabChip label="“DOWN 3 dB”" selected={false} onPress={() => ask(-3)} compact />
@@ -315,8 +326,8 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
     { x: 190, y: LANE.under - 8, w: 140, h: 16 },
     { x: sbx(14).x - 8, y: LANE.over, w: 16, h: SB_AT.y - LANE.over },
     { x: sbx(13).x - 8, y: LANE.under, w: 16, h: SB_AT.y - LANE.under },
-    { x: mst('L').x - 7, y: mst('L').y, w: 14, h: LANE.under - mst('L').y },
-    { x: mst('R').x - 7, y: LANE.over, w: 14, h: mst('R').y - LANE.over },
+    { x: mstX('L') - 7, y: mst('L').y, w: 14, h: LANE.under - mst('L').y },
+    { x: mstX('R') - 7, y: LANE.over, w: 14, h: mst('R').y - LANE.over },
   ];
   const sysCallouts: Callout[] = [
     { id: 'tp', text: v.tops === 'PASSIVE' ? 'PASSIVE TOP' : 'POWERED TOP', at: { x: 40 + SPEAKER_W / 2, y: 60 + 40 }, dx: 0, dy: -30, tone: 'plain' },
@@ -341,7 +352,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
               <PlanView spec={{ map, place: v.place, subPos: v.subPos, subs: v.subs, feedDbfs: feed > -90 ? feed : -20, monitors: true, turntable: true, edges: map === 'TOPS', points: true, djTone: dose != null && dose > 100 ? '#ff5a48' : '#5bff85' }} />
             </Scene>
           ) : view === 'HANDOFF' ? (
-            <Scene w={w} h={h} frame={H_FRAME} motion={motion} focus={{ x: 150, y: -20, w: 320, h: 260 }} a11y={`${LOOK.HANDOFF} DJ L gets ${v.djL ?? 'nothing'}, DJ R gets ${v.djR ?? 'nothing'}; the run is ${v.cable === 'XLR' ? 'balanced XLR' : 'an unbalanced lead'}.`} obstacles={handoffObstacles} callouts={handoffCallouts}>
+            <Scene w={w} h={h} frame={H_FRAME} motion={motion} focus={{ x: 150, y: -20, w: 320, h: 260 }} a11y={`${LOOK.HANDOFF} DJ L gets ${v.djL ?? 'nothing'}, DJ R gets ${v.djR ?? 'nothing'}; the run is ${v.cable === 'XLR' ? 'balanced XLR' : 'a lead with XLR ends and unbalanced wiring'}.`} obstacles={handoffObstacles} callouts={handoffCallouts}>
               <HandoffView booth={booth} />
             </Scene>
           ) : (
@@ -391,7 +402,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>{LOOK[view]}</Look>
-        <P>In a venue your MASTER is a line feed to someone else’s system: hand it over labelled and balanced, at its unity mark, and let the engineer set the room. What the crowd hears then depends on the processor, the speakers and where they stand.</P>
+        <P>In a venue your MASTER is a line feed to someone else’s system: hand it over labelled and balanced, at its unity mark, and let the engineer set the room. The stage box inputs are mic preamps: the engineer pads them or sets the gain low for your line feed. What the crowd hears then depends on the processor, the speakers and where they stand.</P>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
@@ -451,7 +462,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
           }}
           fixed={venueHandoffOk(evOf(booth).venue) && !floorHum}
           hints={['The booth and the headphones are clean, so where does the hum get in: before the mixer, or after it?', 'Look at the HANDOFF: what kind of cable makes the 20 m run to the stage box?', 'Open VENUE: the 20 m run.']}
-          why="Over a long run, an unbalanced lead picks up hum; a balanced line carries the music on two wires and the input cancels whatever both pick up. A hum only on the venue’s feed, not in the booth or the headphones, entered after the mixer."
+          why="This lead has XLR ends but unbalanced wiring (pin 3 tied to pin 1 — e.g. an adaptor lead), so its shield is also the music’s return wire — and over 20 m its shield also carries ground current between the booth’s earth and the stage’s earth: that is the hum. A balanced line carries the music on two wires and the input cancels whatever both pick up. A hum only on the venue’s feed, not in the booth or the headphones, entered after the mixer."
           onFixed={() => setFaultFixed(true)}
         />
         <GoalChips goals={goals.slice(5)} latched={latched.slice(5)} />

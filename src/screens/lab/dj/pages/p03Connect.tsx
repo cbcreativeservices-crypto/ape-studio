@@ -329,7 +329,8 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
       >
         {/* the turntable's rear at its true 450 mm: it runs past both edges of the picture (round 3) */}
         {src === 'A' ? <PlayerRear x={0} y={S3.srcY} on label="DECK A (REAR)" /> : <TurntableRear x={S3.ttX - TT3_INSET} y={S3.srcY} on preamp={booth.ttPreamp} w={TT3_REAR_W} inset={TT3_INSET} />}
-        <MixerRear x={S3.mix.x} y={S3.mix.y} on />
+        {/* CH 1 / CH 2 printed under the inputs: the leads come down from above (DJ-R2-09) */}
+        <MixerRear x={S3.mix.x} y={S3.mix.y} on channelsBelow />
         {src === 'TT' ? <GroundWire /> : null}
         {(['line', 'phono'] as const).map((k) => {
           const pb = pairBox(k);
@@ -428,7 +429,7 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
       <Step n={1}>
         <Look>{`You are looking at the back of ${src === 'A' ? 'deck A' : 'the turntable'} above the back of the mixer, with the source’s white and red RCA plugs. Seen from behind, the mixer is mirrored: channel 2 and MASTER R are on the left.`}</Look>
         <P>Every socket has a DIRECTION, a CONNECTOR, a SIGNAL (audio, data or power), a LEVEL and a number of CHANNELS — read all five before you plug in, because the shape alone never proves two things belong together.</P>
-        <P>Levels differ by thousands of times, which is why a mixer has separate PHONO and LINE inputs.</P>
+        <P>Levels differ by tens to hundreds of times (about 36–56 dB, from a cartridge or a mic up to line level), which is why a mixer has separate PHONO and LINE inputs.</P>
         <LevelLadder />
         <Terms items={TERMS} />
       </Step>
@@ -455,7 +456,7 @@ function PageConnect({ ctx }: { ctx: PageCtx }) {
           options={['LINE — the turntable already did the phono stage', 'PHONO — turntables always go to PHONO', 'Either — the mixer sorts it out', 'MASTER OUT']}
           correct={0}
           explain="With its preamp on, the turntable sends a line-level signal that has already had its RIAA curve undone. A PHONO input would add the gain and the curve a SECOND time — loud, boomy and distorted."
-          wrong={[undefined, 'Only a RAW cartridge signal (switch on PHONO) goes to a PHONO input.', 'The mixer cannot tell — the two inputs do very different things.', 'MASTER OUT is an output; inputs and outputs never connect directly like that.']}
+          wrong={[undefined, 'Only a RAW cartridge signal (switch on PHONO) goes to a PHONO input.', 'The mixer cannot tell — the two inputs do very different things.', 'MASTER OUT is an output too: an output always goes into an INPUT, never into another output.']}
           onCorrect={() => setCheck(true)}
         />
         <FaultCard

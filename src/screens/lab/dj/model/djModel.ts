@@ -475,7 +475,7 @@ export function plugCorrect(b: Booth, p: PlugId): boolean {
 export function wrongJob(p: PlugId, jack: JackId | null): string | null {
   if (!jack) return null;
   if ((p === 'bth.trsL' || p === 'bth.trsR') && jack === 'mix.phones') {
-    return 'It fits — but that jack is an output: two outputs tied together, nothing plays. The booth line belongs in a booth monitor’s input.';
+    return 'It fits — but this cable’s other end is in BOOTH OUT: you have joined two outputs of the same mixer. Nothing plays. The booth line belongs in a booth monitor’s input.';
   }
   if (p === 'phones' && jack.endsWith('.in')) {
     return 'It fits — but headphones are a listening device, not a source: nothing plays. The headphones belong in the mixer’s PHONES jack.';

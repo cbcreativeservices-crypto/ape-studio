@@ -95,7 +95,7 @@ function RigTray() {
         <LabChip label={l.usbMixer ? 'LAPTOP ↔ MIXER USB: IN' : 'LAPTOP ↔ MIXER USB: OUT'} selected={l.usbMixer} onPress={() => setLap((x) => ({ usbMixer: !x.usbMixer, device: x.usbMixer ? 'BUILT-IN' : x.device }))} />
         <LabChip label={l.usbCtrl ? 'CONTROLLER USB: IN' : 'CONTROLLER USB: OUT'} selected={l.usbCtrl} onPress={() => setLap((x) => ({ usbCtrl: !x.usbCtrl }))} />
       </View>
-      <TrayNote>The mixer’s cable carries AUDIO both ways (and timing for it). The controller’s carries CONTROL messages and bus POWER — no audio at all.</TrayNote>
+      <TrayNote>The mixer’s cable carries AUDIO both ways (and timing for it). The controller’s carries CONTROL messages and bus POWER: this controller carries no audio (many have their own interface).</TrayNote>
       {([1, 2] as ChannelId[]).map((c) => (
         <Choices key={c} head={`CH${c} INPUT SELECTOR`} value={b.ch[c].input} items={(['LINE', 'PHONO', 'USB'] as const).map((i) => ({ id: i, label: i }))} onPick={(i) => updateBooth((x) => ({ ...x, ch: { ...x.ch, [c]: { ...x.ch[c], input: i as 'LINE' } } }))} />
       ))}

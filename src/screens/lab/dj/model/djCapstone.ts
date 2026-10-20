@@ -374,7 +374,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
     subsystem: 'output',
     symptom: 'The right of the room sounds harsh and distorted; the left is clean.',
     cause: 'PA R’s own input switch was on MIC, so the line-level feed overloaded its input.',
-    evidence: 'Both MASTER meters were clean and PA L sounded fine, but PA R’s own clip light was red — the overload was inside the speaker.',
+    evidence: 'Both MASTER meters were clean and PA L sounded fine, but PA R’s own LIMIT (clip) light was red — the overload was inside the speaker.',
     repair: 'Turn the MASTER down, set PA R’s input switch to LINE, then bring the MASTER back up.',
     prevention: 'Check every speaker’s input switch and level knob in the line check.',
     probe: 'The MASTER meters are clean — so which speaker’s own light is red?',
@@ -382,7 +382,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
     wrong: {
       cause: [
         { t: 'The MASTER was clipping.', why: 'The MASTER meters were clean, and PA L was clean on the same feed.' },
-        { t: 'The MASTER R cable was faulty.', why: 'A bad cable crackles or drops out; here PA R’s own clip light was red.' },
+        { t: 'The MASTER R cable was faulty.', why: 'A bad cable crackles or drops out; here PA R’s own LIMIT (clip) light was red.' },
       ],
       evidence: [
         { t: 'The MASTER R meter was in the red.', why: 'It was clean: the overload was inside the speaker.' },

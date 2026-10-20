@@ -96,13 +96,25 @@ function Panel({ w, h, vents }: { w: number; h: number; vents?: { x0: number; x1
 
 /** A printed group legend: the words, and a hairline bracket over the
  *  sockets from x0 to x1 (the bracket's feet point down at them). */
-function Bracket({ x0, x1, y, t, tone = INK.print }: { x0: number; x1: number; y: number; t: string; tone?: string }) {
+function Bracket({ x0, x1, y, t, tone = INK.print, tx }: { x0: number; x1: number; y: number; t: string; tone?: string; tx?: number }) {
   return (
     <Group>
-      <SceneText x={(x0 + x1) / 2} y={y - 2} size={LEG} text={t} color={tone} face="label" align="center" />
+      <SceneText x={tx ?? (x0 + x1) / 2} y={y - 2} size={LEG} text={t} color={tone} face="label" align="center" />
       <Line p1={vec(x0, y + 2.6)} p2={vec(x0, y)} color={INK.printDim} strokeWidth={0.45} />
       <Line p1={vec(x0, y)} p2={vec(x1, y)} color={INK.printDim} strokeWidth={0.45} />
       <Line p1={vec(x1, y)} p2={vec(x1, y + 2.6)} color={INK.printDim} strokeWidth={0.45} />
+    </Group>
+  );
+}
+/** The same legend printed UNDER its sockets (ADDITIVE, DJ-R2-09): the
+ *  hairline at `y`, its feet pointing UP at them, the words below it. */
+function BracketUnder({ x0, x1, y, t, tone = INK.print }: { x0: number; x1: number; y: number; t: string; tone?: string }) {
+  return (
+    <Group>
+      <SceneText x={(x0 + x1) / 2} y={y + 2 + LEG} size={LEG} text={t} color={tone} face="label" align="center" />
+      <Line p1={vec(x0, y - 2.6)} p2={vec(x0, y)} color={INK.printDim} strokeWidth={0.45} />
+      <Line p1={vec(x0, y)} p2={vec(x1, y)} color={INK.printDim} strokeWidth={0.45} />
+      <Line p1={vec(x1, y)} p2={vec(x1, y - 2.6)} color={INK.printDim} strokeWidth={0.45} />
     </Group>
   );
 }
@@ -191,7 +203,14 @@ export const TurntableRear = memo(function TurntableRear({ x, y, on, preamp, w, 
  *  the Stage 1 panel exactly as before. */
 export type MixerRearExtras = { clock: 'OFF' | 1 | 2 };
 
-export const MixerRear = memo(function MixerRear({ x, y, on, extras }: { x: number; y: number; on: boolean; extras?: MixerRearExtras }) {
+/** ADDITIVE (DJ-R2-07): `masterWordsDx` moves the words MASTER OUT (BAL)
+ *  along their bracket (mm, + = right) — Screen 4 sets it so the MASTER R
+ *  cable, which leaves its socket straight up, never runs over them.
+ *  ADDITIVE (DJ-R2-09): `channelsBelow` prints CH 2 and CH 1 under their
+ *  inputs instead of over them — for Screen 3, whose RCA leads all come DOWN
+ *  into the inputs. Omitted = the panel exactly as before. */
+export const MIXER_CH_UNDER_Y = 81;
+export const MixerRear = memo(function MixerRear({ x, y, on, extras, masterWordsDx = 0, channelsBelow = false }: { x: number; y: number; on: boolean; extras?: MixerRearExtras; masterWordsDx?: number; channelsBelow?: boolean }) {
   const J = MIXER_REAR_JACKS;
   const col = (k: 'ch2.phono' | 'ch2.line' | 'ch1.phono' | 'ch1.line') => (
     <Group key={k}>
@@ -210,8 +229,17 @@ export const MixerRear = memo(function MixerRear({ x, y, on, extras }: { x: numb
     <Group transform={[{ translateX: x }, { translateY: y }]}>
       <Panel w={MIXER_REAR.w} h={MIXER_REAR.h} vents={extras ? { x0: 236, x1: 262 } : { x0: 150, x1: 262 }} />
       <SceneText x={8} y={13} size={6} text="MIXER (REAR)" color={INK.amber} face="label" />
-      <Bracket x0={J['ch2.phono.L'].x - 7} x1={J['ch2.line.L'].x + 7} y={27} t="CH 2" />
-      <Bracket x0={J['ch1.phono.L'].x - 7} x1={J['ch1.line.L'].x + 7} y={27} t="CH 1" />
+      {channelsBelow ? (
+        <>
+          <BracketUnder x0={J['ch2.phono.L'].x - 7} x1={J['ch2.line.L'].x + 7} y={MIXER_CH_UNDER_Y} t="CH 2" />
+          <BracketUnder x0={J['ch1.phono.L'].x - 7} x1={J['ch1.line.L'].x + 7} y={MIXER_CH_UNDER_Y} t="CH 1" />
+        </>
+      ) : (
+        <>
+          <Bracket x0={J['ch2.phono.L'].x - 7} x1={J['ch2.line.L'].x + 7} y={27} t="CH 2" />
+          <Bracket x0={J['ch1.phono.L'].x - 7} x1={J['ch1.line.L'].x + 7} y={27} t="CH 1" />
+        </>
+      )}
       {(['ch2.phono', 'ch2.line', 'ch1.phono', 'ch1.line'] as const).map(col)}
       {lr(J['ch2.phono.L'].x - 12)}
       {lr(J['ch1.phono.L'].x - 12)}
@@ -222,7 +250,7 @@ export const MixerRear = memo(function MixerRear({ x, y, on, extras }: { x: numb
       <TrsSocket cx={J['booth.R'].x} cy={J['booth.R'].y} d={13} />
       <Leg x={J['booth.L'].x + 11} y={J['booth.L'].y + 1.4} t="L" size={LEG_S} />
       <Leg x={J['booth.R'].x + 11} y={J['booth.R'].y + 1.4} t="R" size={LEG_S} />
-      <Bracket x0={J['master.R'].x - 12} x1={J['master.L'].x + 12} y={27} t="MASTER OUT (BAL)" />
+      <Bracket x0={J['master.R'].x - 12} x1={J['master.L'].x + 12} y={27} t="MASTER OUT (BAL)" tx={(J['master.R'].x + J['master.L'].x) / 2 + masterWordsDx} />
       <XlrSocket cx={J['master.R'].x} cy={J['master.R'].y} d={19} male />
       <XlrSocket cx={J['master.L'].x} cy={J['master.L'].y} d={19} male />
       <Leg x={J['master.R'].x} y={J['master.R'].y + 19} t="R" />

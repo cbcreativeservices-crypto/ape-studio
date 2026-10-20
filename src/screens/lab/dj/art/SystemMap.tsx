@@ -40,11 +40,12 @@ import type { BoothRender } from '../engine/djRender';
 import { MIXER_REAR, PLAYER_REAR } from '../geometry/boothGeometry';
 import { PLATE_H, PLATE_W } from '../geometry/gearGeometry';
 import { FLAG_TEXT, MAP, MAP_PLUGS, TIED, farKindOf, type SpeakerKey } from '../geometry/mapGeometry';
-import { FRONT4, PATCH_DY, ROOM_TITLE, PHONES_BREAK, ROOM4, ROOM_F, ROOM_FLOOR, drawnRun4, lane4, patchLabels4, phonesJack4, roomPhonesBox, roomSpeakerBox4, roomTableTop, speakerLit, type P2, type Placed } from '../geometry/dressGeometry';
+import { FRONT4, MASTER_WORDS_DX4, PATCH_DY, ROOM_TITLE, PHONES_BREAK, ROOM4, ROOM_F, ROOM_FLOOR, drawnRun4, lane4, patchLabels4, phonesJack4, roomPhonesBox, roomSpeakerBox4, roomTableTop, speakerLit, type P2, type Placed } from '../geometry/dressGeometry';
 import type { Box } from '../geometry/boothGeometry';
 import { INK } from './ink';
 import { CableFlag, CableRun, LaneTies, type Run } from './cables';
-import { Headphones, PowerSpeaker, PowerStrip, SpeakerPlate, TripodStand } from './gear';
+import { Headphones, PowerSpeaker, PowerStrip, SpeakerPlate, SpeakerRear, SPEAKER_REAR_W, TripodStand } from './gear';
+import { MONITOR_H, MONITOR_W } from '../geometry/gearGeometry';
 import { MixerRear, PlayerRear } from './RearPanels';
 import { Halo } from './parts';
 import { SceneFontsContext, SceneText, useLabelMm } from './sceneText';
@@ -81,6 +82,27 @@ function liveOf(b: Booth, last: BoothRender | null, p: PlugId): boolean {
 const PLUG_COLOUR = (p: PlugId) => (PLUGS[p].kind === 'rca' ? (p.endsWith('L') ? INK.rcaWhite : INK.rcaRed) : '#2a2c31');
 
 /* ── the room band (1:5) ──────────────────────────────────────────────── */
+
+/** A booth monitor seen from BEHIND (DJ-R2-10): this band looks from the
+ *  audience side, and the monitors face the DJ — so you see their backs: a
+ *  plain dark cabinet (no grille), a hand-hold slot, and the amplifier plate
+ *  (art/gear SpeakerRear, scaled into the lower half). Drawn at scale `s`. */
+const MON_PLATE_S = 0.74;
+const MonitorBack = memo(function MonitorBack({ x, y, s, on }: { x: number; y: number; s: number; on: boolean }) {
+  const W = MONITOR_W;
+  const H = MONITOR_H;
+  const pw = SPEAKER_REAR_W * MON_PLATE_S;
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }, { scale: s }]}>
+      <RoundedRect x={0} y={0} width={W} height={H} r={W * 0.05}>
+        <LinearGradient start={vec(0, 0)} end={vec(W, H)} colors={['#2a2c31', '#17181b', '#0f1012']} />
+      </RoundedRect>
+      <RoundedRect x={0} y={0} width={W} height={H} r={W * 0.05} style="stroke" strokeWidth={4} color={INK.bevel} />
+      <RoundedRect x={W / 2 - 45} y={34} width={90} height={22} r={11} color="#08090b" />
+      <SpeakerRear x={(W - pw) / 2} y={H - 300 * MON_PLATE_S - 16} s={MON_PLATE_S} on={on} />
+    </Group>
+  );
+});
 
 function Room({ booth, last, thump }: { booth: Booth; last: BoothRender | null; thump: readonly SpeakerKey[] }) {
   const F = ROOM_F;
@@ -147,7 +169,8 @@ function Room({ booth, last, thump }: { booth: Booth; last: BoothRender | null; 
         return (
           <Group key={k}>
             {lit(k) ? glow(k) : null}
-            <PowerSpeaker x={b.x} y={b.y} s={F} on={spkOn(k)} small signal={lit(k)} />
+            {/* their BACKS: they face the DJ, and this band is seen from the audience side (DJ-R2-10) */}
+            <MonitorBack x={b.x} y={b.y} s={F} on={spkOn(k)} />
           </Group>
         );
       })}
@@ -286,7 +309,8 @@ export const SystemMap = memo(function SystemMap({ booth, last, flow, thump = []
       id: p,
       kind: PLUGS[p].kind,
       colour: PLUG_COLOUR(p),
-      pts: lane4(p, booth.plugs[p] ?? null),
+      // a loose end's lane IS its drawn hang (MASTER R's drape depends on the booth — DJ-R2-11)
+      pts: plugged ? lane4(p, booth.plugs[p] ?? null) : geo[p]!,
       dense: geo[p],
       plugged,
       live: liveOf(booth, last, p),
@@ -359,7 +383,9 @@ export const SystemMap = memo(function SystemMap({ booth, last, flow, thump = []
           );
         })}
         <PlayerRear x={MAP.B.x} y={MAP.B.y} on={deviceLive(booth, 'playerB')} label="DECK B (REAR)" />
-        <MixerRear x={MAP.mixer.x} y={MAP.mixer.y} on={deviceLive(booth, 'mixer')} />
+        {/* MASTER OUT (BAL) moved right along its bracket, off MASTER R's
+            cable as it leaves upward to the speaker (DJ-R2-07) */}
+        <MixerRear x={MAP.mixer.x} y={MAP.mixer.y} on={deviceLive(booth, 'mixer')} masterWordsDx={MASTER_WORDS_DX4} />
         <PlayerRear x={MAP.A.x} y={MAP.A.y} on={deviceLive(booth, 'playerA')} label="DECK A (REAR)" />
         <MixerFront />
         <PowerStrip x={MAP.strip.x} y={MAP.strip.y} on used={used} mirrored />

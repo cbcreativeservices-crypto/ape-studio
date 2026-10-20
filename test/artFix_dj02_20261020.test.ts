@@ -50,7 +50,7 @@ describe('DJ-02: the tray allows the physical fits and explains the wrong job', 
     }
   });
   it('each is explained as the wrong job, in the owner’s words; the right moves are not', () => {
-    assert.match(wrongJob('bth.trsL', 'mix.phones')!, /^It fits — but that jack is an output: two outputs tied together, nothing plays/);
+    assert.match(wrongJob('bth.trsL', 'mix.phones')!, /^It fits — but this cable’s other end is in BOOTH OUT: you have joined two outputs of the same mixer\. Nothing plays/);
     assert.match(wrongJob('bth.trsR', 'mix.phones')!, /booth line belongs in a booth monitor/);
     for (const j of ['paL.in', 'paR.in', 'boothL.in', 'boothR.in'] as const) assert.match(wrongJob('phones', j)!, /^It fits — but headphones are a listening device, not a source: nothing plays/);
     for (const p of MAP_PLUGS) if (BUILT_PLUGS[p]) assert.equal(wrongJob(p, BUILT_PLUGS[p]), null, `${p} in its built jack`);
@@ -159,7 +159,7 @@ describe('DJ-02: Screen 4 draws each move on a real route', () => {
     for (const [p, j] of MOVES) {
       const st = moved(p, j);
       const cables = D.cableObstacles4(st);
-      const hanging = MAP_PLUGS.filter((q) => !st[q]).map(D.loosePlugBox4);
+      const hanging = MAP_PLUGS.filter((q) => !st[q]).map((q) => D.loosePlugBox4(q, st)); // DJ-R2-11: a freed MASTER R drapes clear of deck A's leads
       for (const [view, s, k, shown] of [['phone', 0.327, 1, [p]], ['full 1×', 0.37, 1, MAP_PLUGS], ['full 3×', 1.08, Math.sqrt(3), MAP_PLUGS]] as const) {
         const fb = D.followBox4(p, st, 345 / 318);
         for (const box of [undefined, view === 'phone' ? fb : undefined]) {

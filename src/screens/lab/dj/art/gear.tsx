@@ -660,7 +660,8 @@ export const SpeakerRear = memo(function SpeakerRear({ x, y, s = 1, on, level = 
       <Knob cx={R.level.x} cy={R.level.y} d={26} value={level} />
       <MicLineSwitch cx={SPEAKER_REAR_MICLINE.x} cy={SPEAKER_REAR_MICLINE.y} mic={mic} size={LEG} />
       <Led cx={150} cy={140} r={3} on={on} colour={INK.green} />
-      <Led cx={170} cy={140} r={3} on={false} colour={INK.peak} />
+      {/* LIMIT (clip): lit red when the switch is on MIC and the line feed overloads the input (DJ-R2-12, capstone PA_INPUT_MIC) */}
+      <Led cx={170} cy={140} r={3} on={on && mic} colour={INK.peak} />
       <IecInlet x={R.ac.x - 12} y={R.ac.y - 8} s={1.4} />
       <Rocker x={R.power.x} y={R.power.y - 6} s={1.6} on={on} />
       <SceneText x={R.input.x} y={R.input.y - 26} size={LEG + 1} text="INPUT" color={INK.print} face="label" align="center" />

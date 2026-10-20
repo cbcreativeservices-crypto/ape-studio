@@ -310,6 +310,10 @@ export function pairBox3(k: 'line' | 'phono'): Box {
   return { x: j.x - 9, y: j.y - 9, w: 18, h: 42 };
 }
 
+/** Baseline of the CH 1 / CH 2 legends printed under the inputs (Screen 3,
+ *  DJ-R2-09): art/RearPanels MIXER_CH_UNDER_Y + 2 + their 4 mm type. */
+const CH_UNDER_BASE = 81 + 2 + 4;
+
 /** The mixer rear's printed legends round the jacks a parked lead could
  *  leave from (art/RearPanels.MixerRear prints them; 3.4 mm type). */
 export function legends3(): Box[] {
@@ -325,6 +329,9 @@ export function legends3(): Box[] {
     at(J['booth.R'].x + 11, J['booth.R'].y + 1.4, 1),
     // the dim L / R beside each channel's PHONO column
     ...(['ch1', 'ch2'] as const).flatMap((c) => [at(J[`${c}.phono.L`].x - 12, J[`${c}.phono.L`].y + 1.4, 1), at(J[`${c}.phono.R`].x - 12, J[`${c}.phono.R`].y + 1.4, 1)]),
+    // CH 1 / CH 2, printed UNDER the inputs on this screen (DJ-R2-09: the
+    // leads come down from above; RearPanels MIXER_CH_UNDER_Y, 4 mm type)
+    ...(['ch1', 'ch2'] as const).map((c) => ({ ...at((J[`${c}.phono.L`].x + J[`${c}.line.L`].x) / 2, CH_UNDER_BASE, 4), y: S3.mix.y + CH_UNDER_BASE - 4, h: 4.6 })),
   ];
 }
 
@@ -463,14 +470,24 @@ function hangEnd4(p: PlugId, a: Pt): number {
  *  a column): it eases left off the column, then hangs straight. */
 const DRAPE_BTH_L = { dx: -20, over: 42 };
 
+/** DJ-R2-11: a loose MASTER R while deck A's pair is patched (a move freed
+ *  it). Straight down, its XLR would hang across deck A's two leads under
+ *  the mixer; instead the cable drops off the panel, eases 23 mm left as it
+ *  crosses them, and hangs straight again, so its plug lies in the clear air
+ *  between deck A's leads and the strip (patch mm). With deck A unpatched it
+ *  hangs under its own socket as before. */
+export const DRAPE_MST_R = { dx: -23, from: 636, over: 26, boot: 676 } as const;
+const drapesMstR = (p: PlugId, plugs?: Partial<Record<PlugId, JackId | null>>): boolean => p === 'mst.xlrR' && !!plugs && !!(plugs['A.rcaL'] || plugs['A.rcaR']);
+
 /**
  * A loose end as drawn (patch mm, dense): from its socket (or the headphone
  * cable's break mark) down to its plug's boot. It ends exactly vertical, so
  * its plug hangs pins-down.
  */
-export function hang4(p: PlugId): P2[] {
+export function hang4(p: PlugId, plugs?: Partial<Record<PlugId, JackId | null>>): P2[] {
   const a = PLUGS[p].kind === 'phones' ? PHONES_BREAK : fixedEnd(p)!;
-  const y1 = hangEnd4(p, a);
+  const drape = drapesMstR(p, plugs);
+  const y1 = drape ? DRAPE_MST_R.boot : hangEnd4(p, a);
   const L = y1 - a.y;
   const bow = BOW[p] ?? 1.2;
   const out: P2[] = [];
@@ -483,14 +500,19 @@ export function hang4(p: PlugId): P2[] {
       const u = Math.max(0, Math.min(1, (y - a.y) / DRAPE_BTH_L.over));
       x += DRAPE_BTH_L.dx * u * u * (3 - 2 * u);
     }
+    if (drape) {
+      const u = Math.max(0, Math.min(1, (y - DRAPE_MST_R.from) / DRAPE_MST_R.over));
+      x += DRAPE_MST_R.dx * u * u * (3 - 2 * u);
+    }
     out.push([x, y]);
   }
   return out;
 }
 
-/** The hanging plug's body (patch mm): from its boot down to its pins. */
-export function loosePlugBox4(p: PlugId): Box {
-  const h = hang4(p);
+/** The hanging plug's body (patch mm): from its boot down to its pins
+ *  (`plugs`: the rest of the booth, for MASTER R's drape — DJ-R2-11). */
+export function loosePlugBox4(p: PlugId, plugs?: Partial<Record<PlugId, JackId | null>>): Box {
+  const h = hang4(p, plugs);
   const [x, y] = h[h.length - 1];
   const k = LOOSE_PLUG[looseKind(p)];
   return { x: x - k.half, y, w: k.half * 2, h: k.len };
@@ -502,10 +524,10 @@ export function loosePlugBox4(p: PlugId): Box {
  * now keep at least 11 mm apart (the two halves of an RCA twin lead keep
  * their 8 mm, tied): the map's own routes (mapGeometry.routeOf) with their
  * lane heights moved. Up top, under the plates: speaker power 476 / 487, the
- * left-going MASTER L 498 with BOOTH R 514 under it, the right-going MASTER R
- * 509 with BOOTH L 520 under it (PA L at house left, WF-DJ-01: MASTER L and R
- * cross once; a left-going and a right-going run share a height but never a
- * stretch). Under the panels: deck
+ * right-going BOOTH L 487 and MASTER R 498, the left-going BOOTH R 498 and
+ * MASTER L 509 (PA L at house left, WF-DJ-01: MASTER L and R cross once; a
+ * left-going and a right-going run share a height but never a stretch;
+ * DJ-R2-16: this list follows LANE4 below). Under the panels: deck
  * B's pair 638 / 646, deck A's 658 / 666. Down low: the mixer's cord 710,
  * deck B's 720, deck A's 724, the speaker cords over the strip 738 / 750.
  */
@@ -522,6 +544,22 @@ const MAP_OVER: Partial<Record<PlugId, number>> = { 'ac.boothR': 740, 'ac.boothL
  *  edge, before it drops to its lane (it used to drop straight down across
  *  the rear panel's face). */
 export const MIXER_CORD_X = MAP.mixer.x + MIXER_REAR.w + 8;
+
+/** DJ-R2-07: two output cables leave their socket SIDEWAYS before they climb,
+ *  so neither runs over the panel's printed words: BOOTH L up and right
+ *  (over its own "L", clear of it) to climb between the BOOTH and MASTER OUT
+ *  brackets; MASTER L right, past the MASTER OUT bracket's foot, short of the
+ *  AC inlet. Only this first short stretch changes: the lanes are as before. */
+export const JOG4: Partial<Record<PlugId, { dx: number; dy: number }>> = { 'bth.trsL': { dx: 14, dy: -10 }, 'mst.xlrL': { dx: 17, dy: 0 } };
+/** ...and the words MASTER OUT (BAL) sit 8 mm right of their bracket's
+ *  centre, off MASTER R's cable, which climbs straight from its socket. */
+export const MASTER_WORDS_DX4 = 8;
+function jog4(p: PlugId, r: P2[]): P2[] {
+  const j = JOG4[p];
+  if (!j || r.length < 2 || r[1][0] !== r[0][0] || r[1][1] >= r[0][1]) return r;
+  const x = r[0][0] + j.dx;
+  return [r[0], [x, r[0][1] + j.dy], [x, r[1][1]], ...r.slice(2)];
+}
 
 /** Screen 4's lane for each plug (patch-band mm, before PATCH_DY): the map's
  *  own routes on the re-spaced lanes; the headphone cable starts at its break
@@ -550,7 +588,7 @@ export function lane4(p: PlugId, to: JackId | null): P2[] {
     r[n - 3] = [BTH_PHONES_X, phonesJack4.y + WRONG_JOB_UNDER];
     r[n - 2] = [phonesJack4.x, phonesJack4.y + WRONG_JOB_UNDER];
     r[n - 1] = [phonesJack4.x, phonesJack4.y];
-    return r;
+    return jog4(p, r);
   }
   const r = routeOf(p, to);
   const lane = LANE4[p];
@@ -562,7 +600,7 @@ export function lane4(p: PlugId, to: JackId | null): P2[] {
   const was = (LANE as Partial<Record<PlugId, number>>)[p];
   const wasOver = MAP_OVER[p];
   const over = OVER4[p];
-  return r.map(([x, y]): P2 => [x, lane != null && y === was ? lane : over != null && y === wasOver ? over : y]);
+  return jog4(p, r.map(([x, y]): P2 => [x, lane != null && y === was ? lane : over != null && y === wasOver ? over : y]));
 }
 
 /**
@@ -572,7 +610,8 @@ export function lane4(p: PlugId, to: JackId | null): P2[] {
  */
 const HANG_GROUPS: { plugs: readonly PlugId[]; sag: number }[] = [
   // the outputs' runs hang between the plates and the panels' top edges
-  { plugs: ['mst.xlrL', 'bth.trsR'], sag: 6 },
+  // (MASTER L's at most 3 mm, DJ-R2-08: the wrong-job lane runs under it)
+  { plugs: ['mst.xlrL', 'bth.trsR'], sag: 3 },
   { plugs: ['mst.xlrR', 'bth.trsL'], sag: 8 },
   // the inputs' pairs hang under the panels (deck A's over the mixer front)
   { plugs: ['B.rcaL', 'B.rcaR'], sag: 16 },
@@ -592,7 +631,7 @@ function horizontalSpans(pts: readonly P2[]): { x0: number; x1: number; y: numbe
  *  jack (a group's shared sag needs its partners' spans). */
 export function run4(p: PlugId, plugs: Partial<Record<PlugId, JackId | null>>): P2[] {
   const to = plugs[p] ?? null;
-  if (!to) return hang4(p);
+  if (!to) return hang4(p, plugs);
   const l = lane4(p, to);
   const g = HANG_GROUPS.find((x) => x.plugs.includes(p));
   let shared: Profile | null = null;
@@ -622,7 +661,7 @@ export function run4(p: PlugId, plugs: Partial<Record<PlugId, JackId | null>>): 
  */
 export function drawnRun4(p: PlugId, plugs: Partial<Record<PlugId, JackId | null>>): P2[] {
   if (plugs[p]) return run4(p, plugs);
-  return hang4(p);
+  return hang4(p, plugs);
 }
 
 /** Half a cable's drawn width on Screen 4 (mm): art/cables WIDTH, a mains
@@ -682,7 +721,7 @@ export function followBox4(p: PlugId, plugs: Partial<Record<PlugId, JackId | nul
   for (const q of pts) add(q[0], q[1]);
   // a loose end: its hanging plug too
   if (!plugs[p]) {
-    const pb = loosePlugBox4(p);
+    const pb = loosePlugBox4(p, plugs);
     add(pb.x, pb.y);
     add(pb.x + pb.w, pb.y + pb.h);
   }
@@ -1021,7 +1060,7 @@ export function patchLabels4(plugsAt: Partial<Record<PlugId, JackId | null>>, sh
     }
   }
   // the gear, the band's title, and every loose plug hanging below its socket
-  const bodies: Box[] = [...MAP_BODIES, FRONT4, patchTitleBox4(s, k, measure), ...MAP_PLUGS.filter((p) => !plugsAt[p]).map(loosePlugBox4)];
+  const bodies: Box[] = [...MAP_BODIES, FRONT4, patchTitleBox4(s, k, measure), ...MAP_PLUGS.filter((p) => !plugsAt[p]).map((p) => loosePlugBox4(p, plugsAt))];
   const cables = cableObstacles4(plugsAt);
   const runOf = (p: PlugId): P2[] => cables.find((c) => c.id === p)!.pts as P2[];
   let band = PATCH_BAND;
@@ -1056,7 +1095,7 @@ export function patchLabels4(plugsAt: Partial<Record<PlugId, JackId | null>>, sh
     // (a wrong-job move — DJ-02 — has no fixed flag spot: its run is its own)
     const pref = (plugged && !wrongJob(p, plugsAt[p] ?? null) ? FLAG[p] : null) ?? seen[Math.floor(seen.length / 2)];
     // a loose end's flag goes beside its hanging plug (with a leader), off the gear
-    const loose = plugged ? undefined : loosePlugBox4(p);
+    const loose = plugged ? undefined : loosePlugBox4(p, plugsAt);
     return { kind: 'flag', id: p, text: merged.get(p) ?? FLAG_TEXT[p] ?? PLUGS[p].short, live: live(p), edge: edgeOf(p), along: opt.view ? seen : along, prefer: pref as P2, loose, optional: !focus.has(p) };
   };
   const near = s >= 0.6;

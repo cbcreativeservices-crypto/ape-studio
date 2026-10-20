@@ -418,7 +418,7 @@ export type EventRig = {
   mediaFail: boolean;
   /** Capstone (ADDITIVE, audio review #30): PA R's own input switch is on
    *  MIC, so the line feed overloads the speaker's input — PA R distorts,
-   *  its clip light is red, the MASTER meters stay clean. */
+   *  its LIMIT (clip) light is red, the MASTER meters stay clean. */
   paRMic?: boolean;
 };
 
