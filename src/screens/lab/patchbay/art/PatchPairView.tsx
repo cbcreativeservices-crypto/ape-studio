@@ -252,7 +252,7 @@ export function pairStatus(state: PairState, sourceLabel: string, destLabel: str
     : flow.isSplit
       ? `SPLIT — ${sourceLabel} feeds ${destLabel} AND the patch cord`
       : flow.isMerge
-        ? `PARALLEL — ${destLabel} receives the normal AND the patch`
+        ? `CLASH — two outputs drive ${destLabel} (not a mix)`
         : flow.normalActive
           ? `NORMAL INTACT — ${sourceLabel} → ${destLabel}, no cord required`
           : flow.normalBroken

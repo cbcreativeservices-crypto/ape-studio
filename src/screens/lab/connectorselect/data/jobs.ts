@@ -74,7 +74,7 @@ export const JOB_MATRIX: readonly JobMatrixEntry[] = [
       { id: 'headsetmic', label: 'Headset microphone (TRRS)', can: true, backs: ['mic_level'], explain: 'The fourth contact adds a mic path — in TWO competing contact orders (CTIA and OMTP), so a headset can be incompatible with a jack it fits.' },
       { id: 'control', label: 'Specialized control uses', can: true, basis: 'trs_35 record, commonMistakes: "equipment that uses 3.5 mm jacks for balanced or non-obvious purposes" (equipment-defined)', explain: 'Some compact gear uses mini-jacks for balanced mono or control duty — equipment-defined; the manual decides.' },
       { id: 'speaker', label: 'Passive speaker connection', can: false, explain: 'No. Amplifier power does not belong on a mini-jack or its fine-gauge cable.' },
-      { id: 'balstereo', label: 'Balanced stereo through one mini plug', can: false, explain: 'No. Even the four-contact TRRS cannot carry two balanced channels — balanced stereo needs two balanced connections.' },
+      { id: 'balstereo', label: 'Balanced stereo through one mini plug', can: false, explain: 'Not as a balanced LINE: that needs two balanced connections, each with its own shield. A four-contact plug can drive balanced HEADPHONES (left +/−, right +/−, most often on the 2.5 mm size), but with no shield or ground it is not a balanced line connection.' },
     ],
   },
   {

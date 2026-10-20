@@ -174,7 +174,7 @@ type Declare = {
 const DECLARES: readonly Declare[] = [
   {
     id: 'aes_wall',
-    setup: 'A wall panel jack labeled “AES OUT” — a female XLR, identical to every mic jack in the building — must reach a processor’s AES input.',
+    setup: 'A wall panel jack labeled “AES OUT” — a male XLR (an output), identical to the analog line-out jacks beside it — must reach a processor’s AES input.',
     image: 'xlr3',
     imageName: 'XLR connector',
     signalQ: 'What signal does this equipment expect the connection to carry?',

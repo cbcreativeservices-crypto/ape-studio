@@ -158,7 +158,7 @@ export const WRONG_PATCH_CASES: WrongPatchCase[] = [
       'Half-normal keeps the top gentle, but the BOTTOM still breaks. The patched source takes over the destination; the original source keeps running — into an open contact.',
     wrong: [
       undefined,
-      'The common bay doesn’t parallel two sources into one input — the bottom insertion physically opens the normal first.',
+      'The common bay never ties two sources into one input — the bottom insertion physically opens the normal first. (Two outputs wired together are not a mix.)',
       'The top jack is empty; nothing routed the synth away. The change happened at the BOTTOM contact.',
       '“Mute” isn’t a patchbay concept — a specific contact opened. Which one?',
     ],
@@ -208,7 +208,7 @@ export const DESIGN_ROWS: DesignRow[] = [
     verdicts: {
       half: { ok: false, note: 'Any normal here points the compressor’s output at its own input — a feedback loop with no cables patched. Processor pairs stay THRU.' },
       full: { ok: false, note: 'Any normal here points the compressor’s output at its own input — a feedback loop with no cables patched. Processor pairs stay THRU.' },
-      thru: { ok: true, note: 'Exactly. The processor only ever joins a chain deliberately, by cable — never by default.' },
+      thru: { ok: true, note: 'Exactly. A processor’s own OUT → IN pair stays THRU. It joins a chain by cable, or through a normal from another row designed for it (many studios normal outboard into a console insert on purpose).' },
     },
   },
   {
@@ -333,7 +333,7 @@ export const ASSESSMENT_ITEMS: AssessmentItem[] = [
     correct: 1,
     explain: 'The bottom is the breaking side: your patch takes over the destination; the original dead-ends.',
     wrong: [
-      'The bottom contact opens BEFORE your signal lands — no parallel mix on the common bay.',
+      'The bottom contact opens BEFORE your signal lands — the common bay never ties two outputs into one input.',
       undefined,
       'The TAP is the top jack’s trick. The bottom replaces.',
     ],

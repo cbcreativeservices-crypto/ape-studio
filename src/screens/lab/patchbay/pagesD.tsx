@@ -28,7 +28,7 @@ function PageDirectional({ ctx }: { ctx: PageCtx }) {
   const flow = resolvePair(state);
   const goals = [
     { label: 'BREAK IT FROM THE TOP', hit: state.topPlugged && flow.normalBroken },
-    { label: 'SEE THE PARALLEL (bottom on this bay)', hit: flow.isMerge },
+    { label: 'SEE THE CLASH (bottom on this bay)', hit: flow.isMerge },
   ];
   const latched = useVisitGoals(ctx, goals);
   const chips = <GoalChips goals={goals} latched={latched} />;
@@ -55,7 +55,7 @@ function PageDirectional({ ctx }: { ctx: PageCtx }) {
         destLabel="CONSOLE TAPE RTN 1"
         caption={
           flow.isMerge
-            ? 'PARALLEL — on a top-breaking bay the bottom does NOT break: two feeds arrive at once. One reason the common bay breaks on the bottom instead.'
+            ? 'CLASH — on a top-breaking bay the bottom does NOT break, so the normal AND your patch both drive one input. That is two outputs wired together, not a mix: avoid it. One reason the common bay breaks on the bottom instead.'
             : 'This bay breaks on the TOP. Try both jacks and compare against the common bay you know.'
         }
       />
@@ -142,7 +142,7 @@ function PagePhantom({ ctx }: { ctx: PageCtx }) {
           contacts.{'\n'}
           • Different patchbay designs handle grounding differently — do not assume every TRS/TT bay is suitable.{'\n'}
           • Follow the patchbay manufacturer’s wiring instructions for microphone circuits.{'\n'}
-          • Where a design requires it, turn phantom power OFF before patching or unpatching.{'\n'}
+          • Turn phantom power OFF (and the channel down) before patching or unpatching mic-level points, and check the mic: some ribbon mics can be damaged.{'\n'}
           • Dedicated microphone patching systems exist and follow their own practices.
         </Body>
       </Card>
@@ -152,14 +152,14 @@ function PagePhantom({ ctx }: { ctx: PageCtx }) {
         improvisation. (Guidance per Neutrik’s patch-panel documentation.)
       </Body>
       <UnderstandingCheck
-        question="Your bay’s manual says its design requires it: you need to re-patch a mic line that has phantom power on. The professional move?"
+        question="You need to re-patch a mic line that has phantom power on. The professional move?"
         options={[
           'Turn phantom off first, then re-patch',
           'Patch quickly so the transient is short',
           'It never matters — TRS bays are all phantom-safe',
         ]}
         correct={0}
-        explain="Where the design calls for it, kill the phantom before the plug moves. A fast hand does not outrun a contact scraping 48 volts."
+        explain="Kill the phantom (and pull the channel down) before the plug moves. A fast hand does not outrun a contact scraping 48 volts."
         wrong={[
           undefined,
           'Speed doesn’t remove the transient — the plug still drags across live contacts.',

@@ -122,7 +122,7 @@ export const ASSESSMENT_BANK: readonly AsmtQuestion[] = [
   {
     id: 'same_xlr',
     kind: 'samejob',
-    q: 'A wall panel has three identical female XLR jacks: MIC 1, AES OUT, and COMMS. What is true?',
+    q: 'A wall panel has three identical female XLR jacks: MIC 1, AES IN, and COMMS. What is true?',
     options: ['Each may need a DIFFERENT cable despite identical jacks', 'Any XLR cable serves all three equally well', 'The AES jack is analog because it is XLR', 'Identical jacks guarantee identical signals'],
     correct: 0,
     explain: 'Analog mic, 110-ohm digital and intercom share the shell — the label, not the jack, tells you what runs there.',

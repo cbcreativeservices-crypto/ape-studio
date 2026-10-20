@@ -130,8 +130,8 @@ describe('cable tester maps', () => {
 
 /** Findings the audit made that are not yet fixed (owner decisions pending). May only shrink. */
 const KNOWN_FINDINGS = {
-  // C2: an output wall jack described as a FEMALE XLR (WF-CS-02)
-  femaleXlrOut: ['connectorselect/pagesB.tsx', 'connectorselect/data/assessment.ts'],
+  // C2: an output wall jack described as a FEMALE XLR (WF-CS-02, fixed 2026-10-20)
+  femaleXlrOut: [] as string[],
 };
 
 describe('C2 an XLR output is male: no “… OUT” jack is described as a female XLR', () => {
@@ -139,5 +139,40 @@ describe('C2 an XLR output is male: no “… OUT” jack is described as a fema
   it('only the listed known findings remain', () => {
     const hits = files.filter((f) => /\bOUT\b[^.]{0,80}female XLR|female XLR[^.]{0,40}\bOUT\b/.test(readFileSync(join(root, 'src/screens/lab', f), 'utf8')));
     assert.deepEqual(hits.sort(), [...KNOWN_FINDINGS.femaleXlrOut].sort());
+  });
+});
+
+/** Fixed findings (owner go 2026-10-20): the wrong wording must not come back. */
+describe('fixed cable-lab findings stay fixed', () => {
+  const src = (f: string) => readFileSync(join(root, 'src/screens/lab', f), 'utf8');
+  it('CS-01 a four-contact plug is not said to be unable to carry balanced headphones', () => {
+    assert.doesNotMatch(src('connectorselect/data/jobs.ts'), /TRRS cannot carry two balanced/);
+  });
+  it('CS-04 balanced is defined by equal impedance, not "two copies"', () => {
+    const s = src('connectorselect/data/practice.ts');
+    assert.doesNotMatch(s, /two copies of ONE signal/);
+    assert.match(s, /equal impedance to ground/);
+  });
+  it('CB-01 instrument level is "usually" between mic and line; active pickups named', () => {
+    assert.match(src('cable/data/lesson01.ts'), /usually stronger than mic level[^']*active pickups/);
+  });
+  it('CI-01 a shield is not said to stop magnetic coupling', () => {
+    const s = src('cableinstall/scenes/EmiScene.tsx');
+    assert.doesNotMatch(s, /intercepts field coupling/);
+    assert.match(s, /MAGNETIC hum[^']*twisting and distance/);
+  });
+  it('PB-01 two outputs into one input is never called a parallel feed or a mix', () => {
+    for (const f of ['patchbay/pagesD.tsx', 'patchbay/art/PatchPairView.tsx', 'patchbay/engine/scenarios.ts', 'patchbay/engine/scenariosB.ts']) {
+      const s = src(f);
+      assert.doesNotMatch(s, /PARALLEL —|Parallel mixing|no parallel mix|parallel two sources/, f);
+    }
+  });
+  it('PB-02 the THRU rule is scoped to a processor’s own out → in pair', () => {
+    assert.doesNotMatch(src('patchbay/engine/scenariosB.ts'), /never by default/);
+  });
+  it('PB-03 phantom rule matches the rule book (L6): off before patching, check the mic', () => {
+    const s = src('patchbay/pagesD.tsx');
+    assert.doesNotMatch(s, /Where a design requires it, turn phantom/);
+    assert.match(s, /Turn phantom power OFF[^']*check the mic/);
   });
 });

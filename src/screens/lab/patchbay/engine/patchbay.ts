@@ -61,9 +61,9 @@ export type PairFlow = {
   bottomFeedsDestination: boolean;
   /** The SOURCE reaches two places at once (the half-normal tap / split / mult). */
   isSplit: boolean;
-  /** The DESTINATION receives two feeds at once (normal + patch in parallel —
-   *  only possible on a half-normalled-TOP bay; one reason the common bays
-   *  break on the bottom instead). */
+  /** The DESTINATION is driven by two outputs at once (normal + patch tied
+   *  together — not a mix, and a fault to avoid; only possible on a
+   *  half-normalled-TOP bay; one reason the common bays break on the bottom). */
   isMerge: boolean;
   /** What the destination hears right now. */
   destinationHears: DestinationFeed;

@@ -169,7 +169,7 @@ export type Misconception = {
 export const MISCONCEPTIONS: readonly Misconception[] = [
   { id: 'trs_stereo', claim: 'TRS always means stereo.', answer: false, correction: 'TRS means THREE CONTACTS. Balanced mono, stereo headphones and insert send/return all use the same plug.' },
   { id: 'xlr_mic', claim: 'XLR always carries a microphone signal.', answer: false, correction: 'XLR also carries balanced line, AES3 digital, intercom and more. The shell never identifies the signal.' },
-  { id: 'balanced_stereo', claim: 'Balanced means stereo.', answer: false, correction: 'Balanced is a NOISE-REJECTION scheme: two copies of ONE signal plus a shield. A balanced connection is mono.' },
+  { id: 'balanced_stereo', claim: 'Balanced means stereo.', answer: false, correction: 'Balanced is a NOISE-REJECTION scheme: ONE signal on two conductors with equal impedance to ground, plus a shield. Many outputs drive both legs in opposite polarity; some drive only one. Either way a balanced connection is mono.' },
   { id: 'fit_compatible', claim: 'If two connectors fit, the devices are compatible.', answer: false, correction: 'Fit is question 1 of 4. Signal, construction and safety still have to pass — the most expensive mistakes all FIT perfectly.' },
   { id: 'midi_audio', claim: 'MIDI cables carry musical audio.', answer: false, correction: 'MIDI carries INSTRUCTIONS — which note, how hard, which control. No recorded sound ever travels down a MIDI cable.' },
   { id: 'adapter_converts', claim: 'An adapter automatically converts the signal.', answer: false, correction: 'A passive adapter converts the SHAPE only — it can preserve or degrade a connection, never upgrade it. Level, balance, impedance and protocol are untouched.' },

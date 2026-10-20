@@ -11,6 +11,7 @@ From the Phase 0 inventory: five read-only reports, in `docs/wiring/inventory/`.
 - ✅ verified by ccode in the code.
 - ◻ reported by the inventory and not yet re-checked (each is re-checked when it is fixed).
 - ✗ rejected after checking.
+- 🔧 fixed (owner go 2026-10-20), pinned in `test/wiringRules_cableLabs_20261020.test.ts`.
 
 ---
 
@@ -18,22 +19,22 @@ From the Phase 0 inventory: five read-only reports, in `docs/wiring/inventory/`.
 
 | ID | Lab | Sev | Check | Rule | Finding | Proposed fix |
 |---|---|---|---|---|---|---|
-| CS-01 | Connector Select | S1 | ◻ | C3 | "Even the four-contact TRRS cannot carry two balanced channels" (`connectorselect/data/jobs.ts:180`). 2.5 mm TRRS and 4-pin XLR balanced headphone leads do exactly that. | Reword: balanced stereo needs four signal contacts; a 3-contact TRS cannot, and a 4-contact TRRS can (balanced headphone leads). |
-| CS-02 | Connector Select | S1 | ✅ | C2 | A wall jack labelled **"AES OUT" is described as a female XLR** (`pagesB.tsx:176`, `data/assessment.ts:125`). The Cable lab teaches that outputs are male. | Make it "AES IN" on the processor side, or say the wall plate is a male output. Pinned as a known finding in the new test. |
+| CS-01 | Connector Select | S1 | 🔧 fixed 10-20 | C3 | "Even the four-contact TRRS cannot carry two balanced channels" (`connectorselect/data/jobs.ts:180`). 2.5 mm TRRS and 4-pin XLR balanced headphone leads do exactly that. | Reword: balanced stereo needs four signal contacts; a 3-contact TRS cannot, and a 4-contact TRRS can (balanced headphone leads). |
+| CS-02 | Connector Select | S1 | 🔧 fixed 10-20 | C2 | A wall jack labelled **"AES OUT" is described as a female XLR** (`pagesB.tsx:176`, `data/assessment.ts:125`). The Cable lab teaches that outputs are male. | Make it "AES IN" on the processor side, or say the wall plate is a male output. Pinned as a known finding in the new test. |
 | CS-03 | Connector Select | — | ✗ | C13 | The inventory said the speakON-to-XLR tray choice "can't mate". **Rejected:** it is a cable with a speakON on one end and an XLR on the other, so both ends fit. "Plugs in, never do it" is the correct lesson. | None. |
-| CS-04 | Connector Select | S2 | ◻ | — | The balanced definition is "two copies of ONE signal" (`data/practice.ts:172`, and the Cable lab's `art/wiring.tsx`). The true definition is equal impedance to ground; impedance-balanced outputs (one leg carries no signal) are common. | Add one line: "many outputs drive both legs; the defining feature is equal impedance". |
+| CS-04 | Connector Select | S2 | 🔧 fixed 10-20 | — | The balanced definition is "two copies of ONE signal" (`data/practice.ts:172`, and the Cable lab's `art/wiring.tsx`). The true definition is equal impedance to ground; impedance-balanced outputs (one leg carries no signal) are common. | Add one line: "many outputs drive both legs; the defining feature is equal impedance". |
 | CS-05 | Connector Select | S3 | ◻ | L5 | The tester's open-shield fault says only "hum" (`engine/tester.ts:340`). With pin 1 open, phantom has no return, so a condenser goes silent. | Add the phantom consequence. |
 | CS-06 | Connector Select | S3 | ◻ | — | "The one connection in this lab that can destroy equipment" (`pagesC.tsx:111`), while other choices are also marked unsafe. | Say "the connection most likely to destroy equipment". |
-| CB-01 | Cable | S2 | ◻ | L1 | Instrument level is stated flatly as "between mic and line" (`data/lesson01.ts:26`, `lesson11.ts:191,197`). Active pickups reach line level. | "usually between…; active pickups can reach line level". |
+| CB-01 | Cable | S2 | 🔧 fixed 10-20 | L1 | Instrument level is stated flatly as "between mic and line" (`data/lesson01.ts:26`, `lesson11.ts:191,197`). Active pickups reach line level. | "usually between…; active pickups can reach line level". |
 | CB-02 | Cable | S3 | ◻ | — | Headphone level is defined by voltage (`lesson01.ts:36`). The real difference is current drive into a low impedance. | Reword. |
 | CB-03 | Cable | S3 | ◻ | — | `trs_35` construction is tagged `balanced_shielded` (`connectors.analog.ts:389`), while its note and Connector Select model it as stereo-common. | Align the tag. |
 | CB-04 | Cable | S3 | ◻ | — | Ten source notes are still marked "VERIFY", plus four "EXPERT REVIEW PENDING" (`registry.ts:12-14`). | Owner or expert sign-off list. |
 | CB-05 | Cable | S3 | ◻ | — | The comparison "Digital-snake or office LAN port (e.g. AES50)" (`lesson04.ts:271`) mixes a proprietary snake protocol with office Ethernet. | Split the example. |
-| CI-01 | Cable Install | S1 | ◻ | R2 | "Shield plus correct termination intercepts field coupling" (`scenes/EmiScene.tsx:72`). Shields do little against low-frequency **magnetic** fields from feeders and transformers; twisting and distance do. | Say which field: shield for electric, twist and distance for magnetic. |
+| CI-01 | Cable Install | S1 | 🔧 fixed 10-20 | R2 | "Shield plus correct termination intercepts field coupling" (`scenes/EmiScene.tsx:72`). Shields do little against low-frequency **magnetic** fields from feeders and transformers; twisting and distance do. | Say which field: shield for electric, twist and distance for magnetic. |
 | CI-02 | Cable Install | S3 | ◻ | — | "Dimmer runs" are called control cable (`data/cableTypes.ts:161`). They are power. | Reword. |
-| PB-01 | Patchbay | S1 | ◻ | P2–P4 | On a top-breaking bay, two outputs feed one input, and the lab calls this "two feeds… parallel / mixing" (`engine/patchbay.ts:64-67,118`; `pagesD.tsx:58`; `engine/scenarios.ts:109`). Electrically it ties two outputs together, which Connector Select calls a hazard. | Say "two outputs tied together, not a mix — avoid it". |
-| PB-02 | Patchbay | S2 | ◻ | P1 | "The processor only ever joins a chain deliberately, by cable — never by default" (`engine/scenariosB.ts:442`). Many studios normal outboard gear into console inserts on purpose. | Scope it to the processor's own out-to-in pair. |
-| PB-03 | Patchbay | S2 | ◻ | L6 | Phantom advice differs from the Cable lab ("where a design requires it" vs "turn phantom off before repatching mic-level points"). | Use one rule (rule book L6). |
+| PB-01 | Patchbay | S1 | 🔧 fixed 10-20 | P2–P4 | On a top-breaking bay, two outputs feed one input, and the lab calls this "two feeds… parallel / mixing" (`engine/patchbay.ts:64-67,118`; `pagesD.tsx:58`; `engine/scenarios.ts:109`). Electrically it ties two outputs together, which Connector Select calls a hazard. | Say "two outputs tied together, not a mix — avoid it". |
+| PB-02 | Patchbay | S2 | 🔧 fixed 10-20 | P1 | "The processor only ever joins a chain deliberately, by cable — never by default" (`engine/scenariosB.ts:442`). Many studios normal outboard gear into console inserts on purpose. | Scope it to the processor's own out-to-in pair. |
+| PB-03 | Patchbay | S2 | 🔧 fixed 10-20 | L6 | Phantom advice differs from the Cable lab ("where a design requires it" vs "turn phantom off before repatching mic-level points"). | Use one rule (rule book L6). |
 | PB-04 | Patchbay | S3 | ◻ | — | Vocabulary is merged: "tap · mult · split · monitor · parallel feed" (`pagesB.tsx:86`). A mult is a dedicated bussed group. | Separate the terms. |
 | PB-05 | Patchbay | S3 | ◻ | — | "This bay breaks on top" is used as the wrong-answer text for a full-normal bay (`engine/scenariosB.ts:532`). | Fix the wording. |
 

@@ -23,7 +23,7 @@ export const CARRIED_CATEGORIES: CarriedCategory[] = [
     id: 'instrument_level',
     label: 'INSTRUMENT-LEVEL AUDIO',
     blurb:
-      'A guitar or bass pickup’s signal: stronger than mic level, weaker than line level, and picky about the input that receives it.',
+      'A guitar or bass pickup’s signal: usually stronger than mic level and weaker than line level (active pickups can reach line level). A passive pickup is picky about the input that receives it.',
   },
   {
     id: 'line_level',

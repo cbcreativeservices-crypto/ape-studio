@@ -455,7 +455,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
         otherName: 'Balanced mono 3.5 mm connection on compact equipment',
         why: 'The same plug serves stereo unbalanced and balanced mono duty, and nothing on the plug distinguishes them.',
         consequence:
-          'A stereo source into a balanced mono input arrives as left-minus-right and center content cancels; a balanced output into a stereo input puts an inverted copy on one side. Odd, thin audio — no damage.',
+          'A stereo source into a balanced mono input arrives as left-minus-right and center content cancels; a balanced output into a stereo input often puts an inverted copy on one side. Odd, thin audio — no damage.',
       },
     ],
     inspectionPoints: [
