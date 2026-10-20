@@ -36,9 +36,8 @@ const { MAP } = await import('../src/screens/lab/dj/geometry/mapGeometry.ts');
 
 /** Verified findings not yet fixed. May only shrink. */
 const KNOWN_FINDINGS = {
-  // WF-SS-01: at the default (unity) settings the amplifier has less headroom
-  // than the stages before it, so it clips first.
-  ampClipsBeforeUpstreamAtUnity: true,
+  // WF-SS-01: fixed 2026-10-20 (amp unity −18): the amplifier clips last.
+  ampClipsBeforeUpstreamAtUnity: false,
   // WF-DJ-01: screen 4's map (seen from the audience side) puts PA R at house left.
   djMapPaRAtHouseLeft: true,
 };
