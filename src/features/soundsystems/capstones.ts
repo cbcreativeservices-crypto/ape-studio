@@ -303,7 +303,7 @@ export const CAPSTONES: readonly Capstone[] = [
     n: 3,
     title: '2.1 with a dedicated subwoofer output',
     venue: 'A DJ night in a bar. Playback only.',
-    brief: 'Two common ways to wire a 2.1: (a) the tops fed from the powered sub’s HIGH-PASSED outputs — two cables (L and R) into the sub where it has two inputs, or one cable, a mono feed, where it has one, like this lab’s — and the sub’s own crossover does the split; (b) the sub on its OWN console output and the tops fed direct, each with its own high-pass. Build (b) here, because it makes the sub level a fader move at the console.',
+    brief: 'Two common ways to wire a 2.1: (a) the tops fed from the powered sub’s HIGH-PASSED outputs — two cables (L and R) into the sub where it has two inputs, or one cable, a mono feed, where it has one, like this lab’s — and the sub’s own crossover does the split; (b) the sub on its OWN console output and the tops fed direct, each with its own high-pass. Build (b) here, because it makes the sub level a fader move at the console. Stereo or MONO into both tops both pass: many small systems run mono, so every seat hears the whole mix rather than one side of it.',
     bin: ['playback', 'wirelessRx', 'console', 'poweredSpeaker', 'poweredSub', 'powerDistro'],
     routing: false,
     requirements: [
@@ -315,7 +315,9 @@ export const CAPSTONES: readonly Capstone[] = [
       req('topsDirect', 'For THIS build the tops are fed direct, not through the sub (the sub’s pass-through is the other valid way — see the brief)', 'build', topsNotViaSub),
       req('live', 'Everything live', 'build', live),
       VIA_CONSOLE,
-      feedsReq('Outputs: MAIN L to the left top, MAIN R to the right; the sub on its own output — Aux 6 or Matrix 1', (v) => stereoLR(v) && subsOn(v, ['aux6', 'mtx1'])),
+      // owner 2026-10-21: mono into both tops is accepted here — many small
+      // systems run mono so every seat hears the whole mix
+      feedsReq('Outputs: the tops on MAIN L and MAIN R — or MONO into both; the sub on its own output — Aux 6 or Matrix 1', (v) => subsOn(v, ['aux6', 'mtx1'])),
     ],
   },
   {

@@ -167,13 +167,13 @@ describe('FEEDS on every capstone', () => {
     const f = referenceBuild('festival');
     assert.deepEqual(unmet('festival', repoint(f.s, 'mon4', 'aux3')), ['feeds']);
   });
-  it('crossed L/R fails; mono into both passes speech and Groups/FX only (decision 2)', () => {
+  it('crossed L/R fails; mono into both passes speech, Groups/FX (decision 2) and 2.1 (owner 2026-10-21)', () => {
     for (const id of ['speech', 'groups-fx', 'two-one', 'stereo-subs', 'network', 'monitors', 'matrices', 'outdoor', 'festival']) {
       const { s } = referenceBuild(id);
       const crossed = repoint(repoint(s, 'mainL', 'mainR'), 'mainR', 'mainL');
       assert.deepEqual(unmet(id, crossed), ['feeds'], `${id} crossed`);
       const mono = repoint(repoint(s, 'mainL', 'mainMono'), 'mainR', 'mainMono');
-      assert.deepEqual(unmet(id, mono), id === 'speech' || id === 'groups-fx' ? [] : ['feeds'], `${id} mono`);
+      assert.deepEqual(unmet(id, mono), id === 'speech' || id === 'groups-fx' || id === 'two-one' ? [] : ['feeds'], `${id} mono`);
     }
   });
   it('the centre box takes MAIN MONO only; a main never takes an aux', () => {
