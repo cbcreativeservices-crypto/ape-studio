@@ -50,9 +50,9 @@ Nothing is deleted. Definitions, question text and difficulty are unchanged.
 ## App side
 No code change is needed. The app reads topics and terms from the database. Two code comments name moved terms ("Occlusion effect", "Noise susceptibility" in `src/features/study/scenarioHomework.ts`); they describe a past finding and need no change.
 
-## Not in this migration (owner to decide separately)
-US-only wording in terms that stay:
-- "Call 911" → "Call emergency services (911 in the US)".
-- "OSHA" and "Permissible Exposure Limit" should say they are US rules.
+## Second draft: worldwide emergency wording (owner: "yes comp a", 2026-10-20)
+`supabase/migrations/2026102002_glossary_call_emergency_services.sql`, independent of the first draft. "Call 911" becomes **"Call Emergency Services"**. Its definition and plain English name 911 (US and Canada), 112 (European Union) and 999 (UK). It is keyed on the row id plus the current text, so it changes nothing if the row was edited since. Its VERIFY should show `renamed_1` = 1 and `old_name_0` = 0. Quiz question text is not changed: questions that say "911" are still correct for the US.
 
-**Tell ccode when it is applied**, with the three VERIFY numbers.
+"OSHA" and "Permissible Exposure Limit" already say they are US rules, so they need no change.
+
+**Tell ccode when each is applied**, with its VERIFY numbers.
