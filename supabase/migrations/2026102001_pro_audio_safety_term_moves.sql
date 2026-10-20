@@ -1,3 +1,15 @@
+-- ⛔ SUPERSEDED — DO NOT APPLY (Comp A, 2026-10-20).
+-- The Pro Audio Safety term moves are LIVE from Comp A's own package (VERIFY: pas_terms 122,
+-- pas_questions 675, log_rows 111; all_terms_at_destination, questions_followed,
+-- safety_study_rows_clean, no_safety_regression, topic_totals all true).
+-- This draft was wrong in two ways Comp A found:
+--   1. it also moved the 2 legacy option-less questions on eebac0e9 (SAFE-R2-18, SAFE-R2-22),
+--      which the graded-question trigger rejects — the whole transaction would have failed;
+--   2. it left the moved terms' study progress on Pro Audio Safety, which would have blocked
+--      completion. Comp A's package moved 557 questions and carried or removed those keys.
+-- Kept for the record only. The guard below makes an accidental run stop before it changes anything.
+do $$ begin raise exception 'SUPERSEDED: 2026102001 must not be applied (Comp A applied its own package 2026-10-20)'; end $$;
+
 -- DRAFT — NOT APPLIED. Comp A applies it only after checking it (owner approved the moves 2026-10-20).
 --
 -- Pro Audio Safety (global_sequence 3060, free for everyone) keeps the safety every learner needs;

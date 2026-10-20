@@ -1,5 +1,16 @@
 # Comp A: move 111 specialist terms out of Pro Audio Safety (2026-10-20)
 
+> ## ⛔ SUPERSEDED: the moves are LIVE from Comp A's own package (2026-10-20)
+> Comp A applied its own package, **not** `2026102001`. VERIFY: pas_terms 122, pas_questions 675, log_rows 111. all_terms_at_destination, questions_followed, safety_study_rows_clean, no_safety_regression and topic_totals were all true. Confirmed read-only by ccode: 122 terms and 111 log rows.
+>
+> `2026102001` would have failed for two reasons:
+> 1. It also moved the 2 legacy option-less questions on `eebac0e9` (SAFE-R2-18, SAFE-R2-22), which the graded-question trigger rejects.
+> 2. It left the moved terms' study progress on Pro Audio Safety, which would have blocked completion.
+>
+> Comp A moved 557 questions and carried or removed those progress keys. `2026102001` now starts with a guard that stops it. **Do not apply it.**
+>
+> **Still a draft:** `2026102002` ("Call 911" → "Call Emergency Services"). The live row still reads "Call 911".
+
 **Draft, not applied:** `supabase/migrations/2026102001_pro_audio_safety_term_moves.sql`. Apply it only after you have checked it. The owner approved every move.
 
 ## Why
