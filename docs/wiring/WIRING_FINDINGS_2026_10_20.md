@@ -150,3 +150,20 @@ Every finding is fixed except those marked 👤 or "part". Waiting for the owner
 1. Art changes: **commit them**, each in its own commit, with a before/after page for the morning (easy to undo).
 2. New problems found by re-grading: **fix them** on the same rules (verify first, hedge conventions, a test per fix). Anything uncertain or design-level goes on the morning list.
 3. **Push dj-lab when done** (Vercel preview only; no eas, no OTA, never audio-tools-engine).
+
+## Overnight result (2026-10-21 morning)
+- **Round 1:** 62 findings fixed; the art fixes (SS-03 strip, DJ-02/03/10, MK-01) drawn and committed.
+- **New:** Sound Systems BUILD cables carry which console output (plan + 8 owner decisions).
+- **Round 2 (fresh graders):** grades before the round-2 fixes — A: Mastering, Digital, Modular, Meter, Cable Install; B/B+: Cable, Connector Select, Patchbay, DJ, Signal Chain, Gain, FX, Amp, Production, Calc, De-Esser; C: Sound Systems (new outputs feature). Round-2 findings fixed: DJ 16, cable labs 16, Sound Systems 17, other labs 22 (+ Meter dBTP line). Each in `test/wiringFix_r2_*_20261020`.
+- Full suite 12,898 / 12,898; tsc clean. Before/after images: rendered with `scripts/artshot`.
+- **Not done:** DE-R2-01 (de-esser split-band drawing); round-3 grading (to confirm the round-2 fixes reach A); Miking/Mixing/Mic Select round-2 grading.
+
+### Waiting for the owner (morning list)
+1. SS-R2-08: 2.1 tops on MONO (LEARN draws mono; BUILD accepts mono only for Speech and Groups/FX).
+2. DJ-R2-03: keep "booth TRS into PHONES" (two outputs on the same mixer), or model the monitor's lead into PHONES (it plays the phones feed)?
+3. DJ-R2-02: the unbalanced run: keep XLR ends + honest name, or draw a jack/RCA lead with an XLR adaptor?
+4. MK-01: stage XLR upstage "TO STAGE BOX" (as drawn) / side wing / toward FOH; studio "TO WALL PANEL" / "TO CONTROL ROOM".
+5. Patchbay cutaway contact opens at 87 % insertion (was 60 %): keep?
+6. Art layout picks: DJ screen 3 CH legends under the inputs; screen 4 MASTER OUT words moved 8 mm; Sound Systems wedge tags "AUX1"; Gain XLR socket top-left of the preamp; transformer wave capped at 2×; Cable Install hidden-line dashes; SS-03 MUTE as a small box.
+7. Stereo in-ears: also allow two cables between the same pair of devices (bigger change)?
+8. Remaining small clashes noticed: SS stage-left wall runs over the BARRIER label; DJ freed MASTER L hangs across deck A's leads; DJ screen 4 red RCA leads over their LINE legends.

@@ -37,3 +37,15 @@ Full suite 12,659 / 12,659 at `afd98ea0`. Type check clean.
    - Any other lab: no READ key.
 2. **Calculator glossary names: handed to Comp A** (owner, 2026-10-20). See `docs/COMP_A_CALC_GLOSSARY_NAMES_2026_10_20.md`: 5 names with no entry, `Transformer` opening the AI/ML sense, and 4 names with two entries. When Comp A replies with the final names, ccode updates the workspace lists and adds a ratchet.
 3. The DJ lab merge into the store branch, and the device or OTA check: unchanged from 10-19.
+
+## Wiring audit (evening 2026-10-20 → overnight, owner go)
+Everything is on `dj-lab` (pushed in the morning for the Vercel preview; no eas, no OTA, audio-tools-engine untouched).
+- Rule book, findings register and owner answers: `docs/wiring/` (`WIRING_RULEBOOK_DRAFT_2026_10_20.md`, `WIRING_FINDINGS_2026_10_20.md` — its last two sections are the overnight result and the owner's morning list).
+- Fixes in every lab, each pinned in `test/wiringRules_*` / `test/wiringFix_*_20261020` / `test/artFix_*_20261020`.
+- Sound Systems BUILD outputs: `docs/wiring/SOUNDSYSTEMS_OUTPUTS_PLAN_2026_10_20.md`.
+- Calculator glossary names follow Comp A's live entries (`test/calcGlossaryNames_20261020`).
+- Comp B: batch-1 wiring audit (sent) and the 22-claim fact-check (`docs/wiring/COMP_B_FACTCHECK_CABLE_CLAIMS_2026_10_20.md`) — replies pending.
+- New dev tool: `scripts/artshot` renders lab Skia art to PNG in Node (before/after images).
+- Custom List hold: unchanged (owner: later). Comp A's handoff entry not yet on GitHub.
+- Not checked on a phone.
+- Full suite 12,898 / 12,898; tsc clean.
