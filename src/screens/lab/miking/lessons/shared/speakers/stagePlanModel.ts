@@ -23,7 +23,7 @@
 import type { Wedge } from '../../../engine/model/types.ts';
 import { cabLayout, LESLIE } from './speakerModel.ts';
 import { chairRowFacingStage, frontRowAt } from '../../../../../../features/lab/audienceChairsModel.ts';
-import { chairFoots, foot, kitPieceFoots, rectOfCircle, shift, wedgeFoot, type PlanCable, type PlanFoot, type PlanRect } from '../planFoot.ts';
+import { chairFoots, foot, kitPieceFoots, rectOfCircle, shift, wedgeFoot, type PlanCable, type PlanFoot, type PlanPt, type PlanRect } from '../planFoot.ts';
 import { cueFootprints, type CueRig } from '../monitoring/cueMix.ts';
 import type { In, Out } from './signalChain.ts';
 
@@ -88,10 +88,86 @@ export const ORGAN_SPACE = { u0: POS.organ.u - 300, u1: POS.bench.u + 420, v0: P
 /** The DI box's jack end (rotated: jacks toward the amp) and its cable to
  *  the combo's back panel: the amp's LINE / DI OUT jack into the DI's input,
  *  never the speaker output (signalChain patchVerdict: speakerOut → diIn is
- *  'stop'). The plan does not draw the guitar → amp cord or the DI's XLR to
- *  the stage box (needs before/after for owner, MK-01). */
+ *  'stop'). */
 export const DI_CABLE_JACKS: { amp: Out; di: In } = { amp: 'lineOut', di: 'diIn' };
 export const DI_CABLE: PlanCable = { id: 'diCable', kind: 'instrumentCable', pts: [{ u: POS.di.u + 68, v: POS.di.v - 18 }, { u: CAB.box.x0 + 10, v: 180 }], from: 'dibox', to: 'cab' };
+
+/* The rest of the signal path, end to end (MK-01 drawing, 2026-10-20; D70:
+ * every cable its own traceable lane):
+ *  - the guitar's INSTRUMENT CORD, from the jack at the guitar's tail (the
+ *    strap end): on the floor under the player, out from behind them (inside
+ *    their own space), then in its own lane to the amp's INPUT on the front
+ *    panel's +v end — clear of the air path (v = 0), of every word, and of
+ *    the studio phones cord (which drops from the head above it);
+ *  - the DI's XLR out (its upstage end) to the plan's edge: upstage, TO STAGE
+ *    BOX (off the plan); in the studio, to the WALL PANEL (the room's tie
+ *    lines to the control room), on the upstage wall above the cabinet,
+ *    where its words have room. */
+export const GUITAR_CORD_JACKS: { guitar: Out; amp: In } = { guitar: 'instrumentOut', amp: 'ampIn' };
+/** The guitar's output jack at the tail (PlanInstrumentEdge: the body
+ *  118…163 × −128…327, local) and its straight plug, 43 long. */
+export const GUITAR_JACK = { u: POS.player.u + 140, v: POS.player.v + 327, plug: 43 } as const;
+/** The amp's INPUT jack on the front panel (CAB.box.x1), at its +v end; a
+ *  right-angle plug (20 proud of the panel), so the cord can run down the
+ *  cabinet's front, clear of the CAB word below it. */
+export const AMP_INPUT = { u: CAB.box.x1, v: 215, plug: 20 } as const;
+/** The cord's lane outside the player's space. STAGE (drawn turned): beside
+ *  the PLAYER and CAB words, then down the cabinet's front into the plug.
+ *  STUDIO: straight in at the plug's height (the CAB word sits below the
+ *  cabinet, the PLAYER word beside the player). */
+export const CORD_LANE: Record<PlanScene, number> = { stage: 560, studio: AMP_INPUT.v };
+/** The drawn cord (plan mm): the guitar's plug → a U-turn beside the tail →
+ *  on the floor under the torso → out behind the player → its lane → the
+ *  amp's plug. */
+export function guitarCordDrawn(scene: PlanScene) {
+  const plug = { u: AMP_INPUT.u + AMP_INPUT.plug, v: AMP_INPUT.v };
+  const v = CORD_LANE[scene];
+  const lane = v === plug.v ? [{ u: POS.player.u - PLAYER_SPACE_R, v }, plug] : [{ u: POS.player.u - PLAYER_SPACE_R, v }, { u: plug.u, v }, plug];
+  const J = { u: GUITAR_JACK.u, v: GUITAR_JACK.v + GUITAR_JACK.plug };
+  return {
+    from: J,
+    // a U-turn at the plug (seen leaving the jack), back beside the tail…
+    turn: [{ u: J.u, v: J.v + 55 }, { u: J.u - 50, v: J.v + 50 }, { u: J.u - 50, v: J.v - 50 }],
+    // …then on the floor under the torso (the studio phones cord drops from
+    // the head over it there), out behind the player
+    under: [{ u: J.u - 50, v: J.v - 190 }, { u: POS.player.u - 50, v: POS.player.v + 150 }, { u: POS.player.u - 150, v: POS.player.v + 230 }],
+    lane,
+  };
+}
+/** The cord's run outside the player's space (its start inside the space is the player's own). */
+export function guitarCord(scene: PlanScene): PlanCable {
+  return { id: 'guitarCord', kind: 'instrumentCable', pts: guitarCordDrawn(scene).lane, from: 'playerSpace', to: 'cab' };
+}
+
+export const DI_XLR_JACKS: { di: Out; to: In } = { di: 'diOut', to: 'micIn' };
+/** The DI's XLR (local +55…70, turned: its upstage end). */
+export const DI_XLR_AT = { u: POS.di.u - 70, v: POS.di.v } as const;
+/** The studio's wall panel: on the upstage (u0) wall, above the cabinet. */
+export const WALL_PANEL_V = -700;
+export function diXlr(scene: PlanScene): PlanCable {
+  const pts =
+    scene === 'stage'
+      ? [DI_XLR_AT, { u: PLAN_BOX.stage.u0, v: DI_XLR_AT.v }]
+      : [DI_XLR_AT, { u: -950, v: DI_XLR_AT.v }, { u: -950, v: WALL_PANEL_V }, { u: SPK_ROOM.u0, v: WALL_PANEL_V }];
+  return { id: 'diXlr', kind: 'xlr', pts, from: 'dibox' };
+}
+/** Its far end: the plan's upstage edge (stage) or the wall panel (studio). */
+export function diXlrEnd(scene: PlanScene): PlanPt {
+  const k = diXlr(scene).pts;
+  return k[k.length - 1];
+}
+/** The off-plan destination's words. */
+export const DI_XLR_TO: Record<PlanScene, string> = { stage: 'TO STAGE BOX', studio: 'TO WALL PANEL' };
+/** Every cable the plan draws (the studio's headphone cables come from cueMix). */
+export function spkCables(scene: PlanScene): PlanCable[] {
+  return [DI_CABLE, ...spkPathCables(scene)];
+}
+/** The MK-01 cables (guitar cord, DI XLR): the plan's words keep clear of
+ *  them. (The short DI → amp cable keeps its 10-15 label layout: the DI's
+ *  name sits beside it, off its line.) */
+export function spkPathCables(scene: PlanScene): PlanCable[] {
+  return [guitarCord(scene), diXlr(scene)];
+}
 
 /** The studio headphone mix: the guitarist's mixer at the right hand (the
  *  side away from the neck), just outside their space; the organist's beside
