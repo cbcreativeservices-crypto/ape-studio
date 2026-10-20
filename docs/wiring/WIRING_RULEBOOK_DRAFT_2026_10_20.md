@@ -1,6 +1,6 @@
 # Wiring & Signal-Flow Rule Book — DRAFT v1 (2026-10-20)
 
-**Status: DRAFT. The owner signs it off alone (owner, 2026-10-20).** Nothing in the labs changes on the strength of this file until a rule is approved.
+**Status: DRAFT — owner answers recorded 2026-10-20 (below); final sign-off by the owner alone.** Nothing in the labs changes on the strength of this file until a rule is approved.
 
 **Purpose.** This is the single standard every lab visual is audited against for cables, connectors, routing, signal path and signal flow. A lab is grade **A** on wiring only when it breaks **no** rule here and shows nothing a working professional would question.
 
@@ -96,7 +96,7 @@
 
 | ID | Rule | Status | Source |
 |---|---|---|---|
-| G1 | Power on: sources → mixer/processing → amplifiers or powered speakers **last**. Power off in reverse: speakers **first**. | U (best practice) | — |
+| G1 | Power on: sources → mixer/processing → amplifiers or powered speakers **last**. Power off in reverse: speakers **first**. | U (best practice) | Owner, 2026-10-20: "Powering on goes from input to output (speakers last), powering down goes from output to input (speakers first)." |
 | G2 | Never lift, cut or defeat the mains safety earth. | U | Electrical codes |
 | G3 | Legitimate hum fixes: a DI or isolator ground-lift switch (pin 1 at the DI only), an isolation transformer, balanced connections, and powering gear from the same circuit. | U | Rane notes; Whitlock |
 | G4 | A turntable's ground wire goes to the mixer's GND post. It is a **signal** ground, not a safety earth. | U | — |
@@ -109,3 +109,10 @@
 3. **Insert wiring (C5):** teach tip = send, ring = return as "most consoles". **Yes / No**
 4. **Phantom and ribbons (L6):** the safe rule is "phantom off while patching; check the mic". **Yes / No**
 5. **Anything to add?** Rules from your own experience that colleagues check first. Free text, or "none".
+
+## Owner answers (2026-10-20)
+1. Conventions: say "most …" and name the common exception. **Approved.** (Applies to C5 insert wiring too.)
+2. Patchbay P5: top = outputs, bottom = inputs as the app default, with a note that some bays differ. **Approved.**
+3. Insert C5: covered by answer 1.
+4. Phantom L6: "phantom off while patching; check the mic". **Approved.**
+5. Owner's rule: power on input → output (speakers last); power off output → input (speakers first). **Recorded as G1.**

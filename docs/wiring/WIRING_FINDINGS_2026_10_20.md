@@ -121,3 +121,11 @@ Verified so far by ccode: CS-02, SS-01 and DJ-01 (plus the rejection CS-03). The
 3. **Mixing Guides (MG-01):** they are hand-edited. May I edit the five polarity lines by hand? **Yes / No**
 4. **Dead code** (Gain lab DeviceCards; unused gain functions): remove it? **Yes / No**
 5. **DJ-01 (PA L):** follow screen 20 (house left) and change screen 4's map? **Yes / No**
+
+## Owner answers (2026-10-20)
+1. S1 findings: **fix them**, cable labs first, a test per fix.
+2. S2 findings: **fix with "most / depends on the console" wording.**
+3. Mixing Guides MG-01: **hand-edit the five polarity lines** (never regenerate).
+4. Dead code in the Gain lab: **remove.**
+5. DJ-01: **screen 20 is right** (PA L at house left); mirror screen 4's speakers.
+6. SS-01: **default amp attenuator about −18 dB**, so the amp clips last; fix the comment and hint text.
