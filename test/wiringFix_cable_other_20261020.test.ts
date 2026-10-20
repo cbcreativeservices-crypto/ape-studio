@@ -131,3 +131,11 @@ describe('FX, Modular, Meter, Amp', () => {
     assert.match(s, /may be acceptable on some amplifiers[^']*stays lit[^']*not acceptable/);
   });
 });
+
+describe('AM-01 bridged speakON pins (owner 2026-10-20: "check the amp’s manual")', () => {
+  it('Rack 2 says the bridged pins differ by amplifier and sends you to the manual, naming no pins', async () => {
+    const { readFileSync } = await import('node:fs');
+    const s = readFileSync(new URL('../src/features/amp/ampContent.ts', import.meta.url), 'utf8');
+    assert.match(s, /which pins carry the bridged signal differs from amplifier to amplifier: check the amp’s manual/);
+  });
+});

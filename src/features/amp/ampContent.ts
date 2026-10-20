@@ -458,7 +458,7 @@ export const RACK_SCENARIOS: RackScenario[] = [
       ['Ventilation', 'Clear'], ['Input', '−10 dB below mixer clip, CH1 only'], ['Front panel', 'CLIP dark · PROTECT dark'], ['Power sequence', 'Correct'],
     ].map(([label, value]) => ({ label, value })),
     answer: 'normal',
-    explain: 'Everything checks out: a documented bridge wiring, an 8 Ω load that meets the usual bridged minimum, real speaker cable, clear airflow, healthy input level. Not every rack has a fault — knowing when to leave it alone is a skill.',
+    explain: 'Everything checks out: a documented bridge wiring, an 8 Ω load that meets the usual bridged minimum, real speaker cable, clear airflow, healthy input level. Not every rack has a fault — knowing when to leave it alone is a skill. On a speakON output, which pins carry the bridged signal differs from amplifier to amplifier: check the amp’s manual, as this rack did.',
   },
   {
     id: 'rk-vent', title: 'Rack 3',
