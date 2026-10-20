@@ -340,8 +340,11 @@ const FAULT_EXPLAIN: Record<FaultKey, string> = {
   pre: 'PREAMP TOO HOT — the very first gain decision clips, and everything after inherits the damage.',
   eq: 'EQ SET TOO HOT — a healthy preamp level gets boosted straight into the ceiling at the EQ.',
   comp: 'COMPRESSOR OUTPUT TOO HOT — its make-up gain slams the signal over the top.',
-  fad: 'CHANNEL FADER TOO HOT — pushed so far up it overloads right at the fader.',
-  bus: 'BUS OVERLOADED — the sum tips over the ceiling at the bus.',
+  // GN-01/GN-02 (2026-10-20): this lab models an analog-style channel where
+  // the fader and bus each feed an amplifier with its own ceiling — say so;
+  // and the model runs ONE channel, so there is no sum to blame at the bus.
+  fad: 'CHANNEL FADER TOO HOT — pushed so far up that the gain stage right after it overloads. In this lab every stage is an active stage with its own ceiling; a passive fader cannot clip by itself, and on a floating-point digital desk the overload shows up later, at the output.',
+  bus: 'BUS GAIN TOO HOT — the bus stage lifts the signal over its ceiling. This lab runs one channel; on a real desk it is usually many channels summing together that push a bus over.',
 };
 
 const INSPECT_NAMES: Record<string, string> = {

@@ -90,8 +90,8 @@ export function DigitalLabHomeScreen() {
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
         <SignalPathBanner />
         <Text style={styles.body}>
-          Follow the complete chain — acoustic sound → microphone → analog voltage → anti-aliasing
-          filter → sampling → quantization → binary data → processing → reconstruction → sound —
+          Follow the complete chain — acoustic sound → microphone → preamp (analog voltage) →
+          anti-aliasing filter → sampling → quantization → binary data → processing → reconstruction → sound —
           in eight connected modules. Take them in order, or jump straight to what you need.
         </Text>
         <Text style={styles.sectionTitle}>THE EIGHT MODULES</Text>

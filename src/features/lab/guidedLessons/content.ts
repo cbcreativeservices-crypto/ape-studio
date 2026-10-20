@@ -618,10 +618,10 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'alone; the chain teaches how they INTERACT: what each module feeds the next changes what ' +
       'the next one does.',
     controls: [
-      { key: 'display', name: 'What the display shows', definition: "The diagram is the actual signal path, Source → … → Output. Each pill is a module you can toggle on/off; the GR meters below show what the dynamics stages are doing to the level." },
-      { key: 'module_toggle', name: 'Module enable/bypass', definition: 'Each module can be switched in or out of the chain. A bypassed module still occupies its slot — the chain order is the canonical studio order.' },
-      { key: 'chain_order', name: 'Chain order', definition: 'The fixed, canonical order. EQ before compression changes what the compressor reacts to; a limiter anywhere but last voids its ceiling guarantee.' },
-      { key: 'gain_staging', name: 'Gain staging', definition: 'The level each stage hands the next. Run stages too hot and the final limiter over-works and squashes — watch the live GR meters between modules.' },
+      { key: 'display', name: 'What the display shows', definition: "The diagram is the actual signal path, Source → … → Output, drawn as nine rack units on one patch cable. The MODULES key in the dock switches each unit in or out (a bypassed unit stays in place, dimmed); each dynamics unit's own GR lights and number show what it is doing to the level." },
+      { key: 'module_toggle', name: 'Module enable/bypass', definition: 'Each module can be switched in or out of the chain. A bypassed module still occupies its slot — the chain order is this rack’s fixed order, not a universal studio order.' },
+      { key: 'chain_order', name: 'Chain order', definition: 'This rack’s fixed order (it runs COMP before GATE; on most consoles you would gate first). EQ before compression changes what the compressor reacts to; a limiter anywhere but last can no longer hold the output under its ceiling.' },
+      { key: 'gain_staging', name: 'Gain staging', definition: 'The level each stage hands the next. Run stages too hot and the final limiter over-works and squashes — watch the live GR reading on each dynamics unit.' },
       { key: 'gain_reduction', name: 'Gain-reduction meters', definition: 'The LIVE, measured dB each dynamics module (compressor / gate / limiter) is pulling the signal down by RIGHT NOW — real engine readings, not drawings. Comparing them across the chain shows how each stage feeds the next: a hot compressor makes the limiter work harder.' },
     ],
     commonMistakes: [
@@ -632,7 +632,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Delay→reverb vs reverb→delay — the order changes the resulting space/decay character; a deliberate choice, not random.',
       'Gain-staging into the limiter — running each stage too hot makes the final limiter over-work and squash; watch levels between modules.',
       'Stacking dynamics without gain-matching — cumulative squashing you can’t hear because each stage is louder.',
-      'Limiter not last — a brickwall limiter anywhere but the end voids the true-ceiling guarantee.',
+      'Limiter not last — anything after the limiter can push the level back over its ceiling. Even last, a brickwall limiter holds a true-peak ceiling only if it uses true-peak detection (oversampling); a sample-peak limiter can still let inter-sample peaks past.',
       'Judging by cumulative only — not comparing per-module vs whole-chain leads to blaming the wrong module for a problem.',
       'Bypass ≠ remove — a bypassed module still occupies the chain order for A/B reasoning.',
     ],
@@ -640,7 +640,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Build the same idea in two orders mentally (EQ→comp vs comp→EQ) and A/B the result — the GR meter tells you what the compressor is reacting to.',
       'Turn modules on ONE at a time and listen to what each adds — then all together. The difference between the sum and the parts is the interaction.',
     ],
-    formula: 'Canonical chain: Source → EQ → Comp → Gate → Distortion → Modulation → Delay → Reverb → Stereo → Limiter → Output. Each stage’s output is the next stage’s input — that composition IS the lesson.',
+    formula: 'This rack’s fixed chain: Source → EQ → Comp → Gate → Distortion → Modulation → Delay → Reverb → Stereo → Limiter → Output. Each stage’s output is the next stage’s input — that composition IS the lesson.',
   },
 
   // ─────────────────────────────── EXPANSION · Bass Guitar Lab (2026-07-26) ──
@@ -811,7 +811,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'patch_bass', name: 'Patch · Acid Bass', definition: 'Envelope → cutoff with a fast decay, driven by the sequencer: every note snaps open bright and slams shut. The signature “squelch” is the FILTER envelope, not the oscillator — proof that timbre is shaped after the VCO.' },
       { key: 'patch_wobble', name: 'Patch · Wobble', definition: 'LFO → cutoff: the filter sweeps rhythmically while the pitch holds still — movement without melody. The classic dubstep wobble is just one LFO on one destination.' },
       { key: 'patch_vibrato', name: 'Patch · Vibrato Lead', definition: 'LFO → pitch at low depth: a gentle, singing wobble in the note itself. It’s the SAME LFO as the wobble patch, only re-routed to pitch instead of cutoff — one modulator, a different destination.' },
-      { key: 'patch_tremolo', name: 'Patch · Tremolo', definition: 'LFO → amp: the loudness pulses while pitch and tone stay put — the third classic LFO destination. Pitch → cutoff → amp are the three places one control signal can go.' },
+      { key: 'patch_tremolo', name: 'Patch · Tremolo', definition: 'LFO → amp: the loudness pulses while pitch and tone stay put — the third classic LFO destination. Pitch, cutoff and amp are the three places this lab’s LFO can go; on a real modular, a control signal can patch into almost any CV input (pulse width, resonance, another module’s rate).' },
     ],
     commonMistakes: [
       'Filtering a sine and hearing nothing change — the filter can only REMOVE harmonics; a sine has none above the fundamental. Subtractive synthesis needs a bright source.',

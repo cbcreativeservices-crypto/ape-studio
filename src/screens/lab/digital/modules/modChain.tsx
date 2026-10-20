@@ -57,11 +57,11 @@ const BLOCK_INFO: Record<AdcBlockKey, BlockInfo> = {
     title: 'PREAMP (analog gain)',
     purpose: 'Raises mic level to line level. THE gain decision of the whole chain happens here.',
     io: 'IN mic-level → OUT line-level voltage',
-    failure: 'Pushed too hard it saturates: rounded, thickening distortion. That is an ANALOG clip — a separate event from digital full scale, and it happens first in the chain.',
+    failure: 'Pushed too hard it saturates: rounded, thickening distortion. That is an ANALOG clip — a separate event from digital full scale. Which limit is reached first depends on the design: on most interfaces the converter reaches 0 dBFS before the analog stage clips; this lab’s model lets the preamp saturate a little first so you can see both.',
   },
   filter: {
     title: 'ANTI-ALIASING FILTER',
-    purpose: 'Removes content above half the sample rate so it cannot fold back as aliases.',
+    purpose: 'Removes content above half the sample rate so it cannot fold back as aliases. Drawn here as one analog block, the classic model; most modern (delta-sigma) converters keep only a gentle analog filter, oversample, and do the steep filtering digitally.',
     io: 'IN line signal → OUT band-limited signal',
     failure: 'Without it, ultrasonic content folds into the audio band as inharmonic alias tones that no later stage can remove.',
   },
@@ -199,7 +199,9 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
         <Text style={dstyles.body}>
           One knob, two separate limits. The ANALOG stage clips at the preamp (rounded
           saturation); DIGITAL full scale cuts a hard flat top at exactly 0 dBFS. They are
-          different events at different points in the chain.
+          different events at different points in the chain. Which one you hit first
+          depends on the design: on most interfaces the converter reaches 0 dBFS before the
+          analog stage clips; this lab's model lets the preamp saturate a little first.
         </Text>
         <Text style={dstyles.caption}>
           {r.zone === 'TOO LOW'
@@ -208,7 +210,7 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
               ? 'RIGHT: peaks around −18…−10 dBFS. Healthy SNR, real headroom for surprises — the modern converter sweet spot.'
               : r.analogClip || r.digitalOver
                 ? 'TOO HIGH: the peaks are flattened — analog saturation rounds them, digital full scale shears them. Either way, that information is gone forever. No plugin, no float format, nothing downstream can rebuild it.'
-                : 'TOO HIGH: peaks are hot. A transient louder than expected will clip — analog first (rounded), then digital full scale (flat-topped).'}
+                : 'TOO HIGH: peaks are hot. A transient louder than expected will clip — in this lab’s model analog first (rounded), then digital full scale (flat-topped).'}
         </Text>
 
         {/* ── The conversion chain ── */}

@@ -422,7 +422,7 @@ export function SignalChainLabScreen() {
               <Text style={styles.stageHead}>
                 {chainCount === 0
                   ? 'THE CHAIN — ALL BYPASSED: THE SIGNAL PASSES DRY (MODULES key)'
-                  : 'THE CHAIN — CANONICAL ORDER (MODULES key toggles each)'}
+                  : 'THE CHAIN — THIS RACK’S FIXED ORDER (MODULES key toggles each)'}
               </Text>
               <Pressable onLongPress={() => openLesson(anyDyn ? 'gain_reduction' : 'module_toggle')} delayLongPress={350} accessible={false}>
                 <ChainRack
@@ -504,7 +504,7 @@ export function SignalChainLabScreen() {
 
       <Text style={styles.caption}>
         Modules run their lab-default teaching settings — each module’s full controls live in its
-        own lab. The order is the fixed canonical order; WHY it matters is in the ⓘ mistakes. One
+        own lab. The order is this rack’s fixed order, not a universal one; WHY order matters is in the ⓘ mistakes. One
         honest quirk: this engine’s fixed order runs COMP before GATE, while on a real console you
         would usually gate FIRST so compression never raises the noise floor — the mistakes list
         explains.
