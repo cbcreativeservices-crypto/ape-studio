@@ -437,9 +437,7 @@ export function SignalChainLabScreen() {
               </Pressable>
               {/* R3-SC-01 (owner 2026-10-21): the engine is stereo and outboard
                   is patched at the rear; the one drawn lane stands for both. */}
-              <Text style={styles.stageNote} numberOfLines={1}>
-                ONE LANE = THE STEREO PAIR (L + R) · OUTBOARD IS PATCHED AT THE REAR
-              </Text>
+              <Text style={styles.stageNote}>ONE LANE = THE STEREO PAIR · PATCHED AT THE REAR</Text>
             </View>
           ),
         },
@@ -574,7 +572,8 @@ const styles = StyleSheet.create({
   // Stage: chain diagram on top, GR meter row anchored below on the same glass.
   stageInner: { padding: 10, gap: 6 },
   stageHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.textSub },
-  stageNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.8, color: '#8d8f99', height: 12 },
+  // Short enough for one line on the narrowest stage (~300 pt), so no cap and no "…".
+  stageNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.8, color: '#8d8f99', lineHeight: 12 },
 
   chainWrap: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 4 },
 });
