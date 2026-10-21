@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 08:28 · ccode · a88d7939
+changed: Miking C04 (owner 2026-10-21): the steel's path names the VOLUME PEDAL, not the pitch pedals
+affects other side: nothing (client lab text only)
+needs: nothing
+
+
 ### 2026-10-21 08:15 · ccode · 1d7e8181
 changed: Miking, Mixing, Mixing Guides, Mic Select round 2 (owner go): DI and amp direct-out lanes, combo as one body, DI XLR outs on every plan, backline cables drawn; hedged wording
 affects other side: nothing (client lab text/art only)
