@@ -16,7 +16,7 @@
  * page can render it as a warning, not a shrug.
  */
 import { gearSpec, isSink, isSource } from './gear';
-import { auxPurpose, CONSOLE_OUTS } from './outputs';
+import { CONSOLE_OUTS, IEM_PAIR, isIemPair } from './outputs';
 import type { ConsoleOut, GearKind, Link, Placed, SignalLevel, SlotId, SlotRole, SoundSystem } from './types';
 
 /* ── the venue plot ──────────────────────────────────────────────────────── */
@@ -399,15 +399,15 @@ function carriedBy(l: Link, kindOf: ReadonlyMap<string, GearKind>, arriving: Rea
 /** An amplifier has two channels: one mix each (SS-R2-01). */
 export const AMP_CHANNELS = 2;
 
-/** A stereo in-ear mix: two adjacent auxes (odd + even, the pair most
- *  consoles link as one stereo send) where one is the in-ear aux — on this
- *  console Aux 7 + Aux 8. The pack's feed is then the in-ear aux. */
+/** A stereo in-ear mix: the console's dedicated in-ear pair, Aux 9 · In-ears
+ *  L + Aux 10 · In-ears R (odd + even, the pair most consoles link as one
+ *  stereo send; round-3 grade R3-SS-01 — it used to be Aux 7 + 8, and Aux 7
+ *  is the lobby's announce feed). Any other two outputs are no single feed.
+ *  The pack's feed is then the pair's left aux. */
 function stereoIemFeed(c: Carry): ConsoleOut | null {
   const outs = [...c].filter((o): o is ConsoleOut => o !== '*');
-  if (outs.length !== 2 || c.size !== 2 || !outs.every((o) => o.startsWith('aux'))) return null;
-  const [a, b] = outs.map((o) => Number(o.slice(3))).sort((x, y) => x - y);
-  if (a % 2 !== 1 || b !== a + 1) return null;
-  return outs.find((o) => auxPurpose(o) === 'iem') ?? null;
+  if (outs.length !== 2 || c.size !== 2 || !isIemPair(outs)) return null;
+  return IEM_PAIR[0];
 }
 
 function arrivingAt(system: SoundSystem, kindOf: ReadonlyMap<string, GearKind>): Map<string, Carry> {

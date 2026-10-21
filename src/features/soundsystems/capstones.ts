@@ -24,7 +24,7 @@ import {
   type ConsoleState,
 } from './console';
 import { isSink, isSource } from './gear';
-import { auxPurpose, outFamily, outTag } from './outputs';
+import { auxPurpose, IEM_PAIR, isIemPair, outFamily, outTag } from './outputs';
 import { allSinksLive, ampsOverChannels, chainTo, consoleWalk, count, feedsThrough, inRole, inSlot, sinksThroughConsole, slotDef, trace, upstream, type ConsoleWalk, type Feed } from './system';
 import type { GearKind, Placed, SoundSystem } from './types';
 
@@ -104,15 +104,21 @@ const passiveHasAmp = (s: SoundSystem) => {
 const isMainOut = (f: Feed) => f !== '*' && outFamily(f) === 'main';
 const isMonitorAux = (f: Feed) => f !== '*' && (auxPurpose(f) === 'monitor' || auxPurpose(f) === 'iem');
 
+/** A house-left box takes MAIN L, a house-right box MAIN R. */
+const ownSideMain = (p: Placed, f: Feed) => (slotDef(p.slot).x < 180 ? f === 'mainL' : slotDef(p.slot).x > 180 ? f === 'mainR' : false);
+
 /** Is this output right for the loudspeaker at this position? (owner
  *  decisions 2–5, 2026-10-20; round-2 grade SS-R2-05/06/16) A monitor
  *  position takes a MONITOR aux (Aux 1–4 — not the in-ear aux, never a
  *  main); an in-ear pack a monitor or in-ear aux; main left takes MAIN L or
  *  MONO, main right MAIN R or MONO, the centre cluster MONO; a sub left or
  *  right any main, Aux 6 or Matrix 1, a centre sub MONO, Aux 6 or Matrix 1
- *  (MAIN L alone is half a mix); a front fill a main or Matrix 2 (fills); a
- *  delay its own side's main, MONO or Matrix 2 — never the lobby or the
- *  recording matrix. No single output ('*' or none) is never right. */
+ *  (MAIN L alone is half a mix). Fills and delays need their own level and
+ *  delay, and a left box belongs on the left side (round-3 grade R3-SS-02,
+ *  owner: tighten): a front fill takes its own side's main, MONO or Matrix 2
+ *  (front fills); a delay its own side's main or MONO — the processor sets
+ *  its delay; never the front-fill matrix, the lobby or the recording. No
+ *  single output ('*' or none) is never right. */
 export function feedFits(p: Placed, f: Feed | null): boolean {
   if (!f || f === '*') return false;
   if (p.kind === 'iemPack') return isMonitorAux(f);
@@ -125,9 +131,9 @@ export function feedFits(p: Placed, f: Feed | null): boolean {
       if (p.slot === 'subC' || p.slot === 'subC2') return f === 'mainMono' || f === 'aux6' || f === 'mtx1';
       return isMainOut(f) || f === 'aux6' || f === 'mtx1';
     case 'fill':
-      return isMainOut(f) || f === 'mtx2';
+      return ownSideMain(p, f) || f === 'mainMono' || f === 'mtx2';
     case 'delay':
-      return (p.slot === 'delayL' ? f === 'mainL' : f === 'mainR') || f === 'mainMono' || f === 'mtx2';
+      return ownSideMain(p, f) || f === 'mainMono';
     default:
       return false;
   }
@@ -162,9 +168,13 @@ const fillsOn = (v: FeedView, out: Feed) => {
   const fills = inRole(v.s, 'fill');
   return fills.length > 0 && fills.every((p) => v.feed(p.id) === out);
 };
-const iemOn = (v: FeedView, out: Feed) => {
+/** Stereo in-ears: the pack fed the dedicated In-ears L/R pair. */
+const iemOnPair = (w: ConsoleWalk, id: string) => isIemPair(w.pairs.get(id));
+/** The in-ears on the in-ear aux (Aux 8), or in stereo on the dedicated
+ *  In-ears L/R pair (Aux 9 + 10) — never another pair (R3-SS-01). */
+const iemOnInEarAux = (v: FeedView) => {
   const packs = v.s.placed.filter((p) => p.kind === 'iemPack');
-  return packs.length > 0 && packs.every((p) => v.feed(p.id) === out);
+  return packs.length > 0 && packs.every((p) => v.feed(p.id) === 'aux8' || iemOnPair(v.w, p.id));
 };
 
 /** The FEEDS row every capstone carries: the common fit plus the
@@ -176,9 +186,27 @@ const feedsReq = (text: string, extra: (v: FeedView) => boolean = () => true): R
   }),
   why: (s) => {
     const over = ampsOverChannels(s)[0];
-    return over ? `An amplifier has two channels: one mix each. This one is asked to pass ${over.outs.length} (${over.outs.map(outTag).join(', ')}) — give the extra wedges or boxes an amplifier of their own.` : null;
+    if (over) return `An amplifier has two channels: one mix each. This one is asked to pass ${over.outs.length} (${over.outs.map(outTag).join(', ')}) — give the extra wedges or boxes an amplifier of their own.`;
+    return misfitWhy(s);
   },
 });
+
+/** The plain reason a fill, a delay or an in-ear pack is on the wrong
+ *  output, when one of them is (R3-SS-01/02). */
+function misfitWhy(s: SoundSystem): string | null {
+  const v = feedView(s);
+  for (const p of sinksOf(v)) {
+    const f = v.feed(p.id);
+    if (!f || feedFits(p, f)) continue;
+    const role = slotDef(p.slot).role;
+    const side = slotDef(p.slot).x < 180 ? 'left' : 'right';
+    if (role === 'fill') return `A front fill needs its own level and delay: give it Matrix 2 (front fills), or MONO or its own side’s main. A ${side} fill belongs on the ${side} side.`;
+    if (role === 'delay') return `A delay speaker takes its own side’s main or MONO — the processor gives it its own level and delay. Matrix 2 belongs to the front fills, and a ${side} delay belongs on the ${side} side.`;
+  }
+  const pack = s.placed.find((p) => p.kind === 'iemPack' && (v.w.arriving.get(p.id)?.size ?? 0) === 2 && !iemOnPair(v.w, p.id));
+  if (pack) return 'A stereo in-ear mix uses the In-ears L/R pair: Aux 9 and Aux 10. Aux 7 is the announce feed for the lobby.';
+  return null;
+}
 
 /* ── console predicates for the routing capstones ────────────────────────── */
 
@@ -202,10 +230,17 @@ const wedgeAuxesCarry = (s: SoundSystem, cs: ConsoleState) => {
     return !f || f === '*' || auxPurpose(f) !== 'monitor' || hears(auxBus(cs, f)).length > 0;
   });
 };
-/** The in-ear aux carries the singer's vocal, pre-fader (SS-R2-03). */
-const iemVocalPre = (cs: ConsoleState) => {
-  const send = cs.channels.find((c) => c.id === 'vox')?.sends.aux8;
-  return !!send && send.tap === 'pre' && send.db > -60 && hears(auxBus(cs, 'aux8')).some((h) => h.channelId === 'vox');
+/** The in-ear aux carries the singer's vocal, pre-fader (SS-R2-03) — Aux 8,
+ *  or BOTH sides of the In-ears L/R pair when the build feeds the pack in
+ *  stereo (R3-SS-01). */
+const vocalPreOn = (cs: ConsoleState, aux: string) => {
+  const send = cs.channels.find((c) => c.id === 'vox')?.sends[aux];
+  return !!send && send.tap === 'pre' && send.db > -60 && hears(auxBus(cs, aux)).some((h) => h.channelId === 'vox');
+};
+const iemVocalPre = (s: SoundSystem, cs: ConsoleState) => {
+  const w = consoleWalk(s);
+  const stereo = s.placed.some((p) => p.kind === 'iemPack' && iemOnPair(w, p.id));
+  return stereo ? IEM_PAIR.every((a) => vocalPreOn(cs, a)) : vocalPreOn(cs, 'aux8');
 };
 // A send at OFF (≤ −60 dB) is no send — an unused wedge stepped ▼ must not
 // fail "every monitor send is PRE" (bug hunt 2026-09-29).
@@ -392,7 +427,7 @@ export const CAPSTONES: readonly Capstone[] = [
       req('amps', 'Every passive cabinet has an amplifier', 'build', passiveHasAmp),
       req('live', 'Everything live', 'build', live),
       VIA_CONSOLE,
-      feedsReq('Outputs: MAIN L to the left main, MAIN R to the right; the subs on MAIN MONO, a sub aux or matrix; the fills on a main or Matrix 2; each delay on its own side’s main, MONO or Matrix 2', stereoLR),
+      feedsReq('Outputs: MAIN L to the left main, MAIN R to the right; the subs on MAIN MONO, a sub aux or matrix; each front fill on Matrix 2, MONO or its own side’s main; each delay on its own side’s main or MONO', stereoLR),
     ],
   },
   {
@@ -429,9 +464,9 @@ export const CAPSTONES: readonly Capstone[] = [
       req('iem', 'An in-ear transmitter feeding a bodypack', 'build', (s) => count(s, 'iemTx') >= 1 && count(s, 'iemPack') >= 1 && trace(s).live.some((id) => s.placed.find((p) => p.id === id)?.kind === 'iemPack')),
       req('live', 'Everything live, every passive cabinet amplified', 'build', (s) => passiveHasAmp(s) && live(s)),
       VIA_CONSOLE,
-      feedsReq('Outputs: MAIN L left, MAIN R right; each wedge on a different monitor aux; the in-ears on Aux 8 (or Aux 7 + 8 for a stereo mix); the subs on Aux 6', (v) => stereoLR(v) && wedgesOnOwnAux(v) && iemOn(v, 'aux8') && subsOn(v, ['aux6'])),
+      feedsReq('Outputs: MAIN L left, MAIN R right; each wedge on a different monitor aux; the in-ears on Aux 8 (or, for a stereo mix, the In-ears L/R pair: Aux 9 + 10); the subs on Aux 6', (v) => stereoLR(v) && wedgesOnOwnAux(v) && iemOnInEarAux(v) && subsOn(v, ['aux6'])),
       req('fourMixes', 'Console: four monitor mixes, all pre-fader', 'route', (s, cs) => fourMonitorMixes(cs) && monitorsPre(cs) && wedgeAuxesCarry(s, cs)),
-      req('iemMix', 'Console: Aux 8 (in-ears) carries the singer’s vocal, PRE-fader', 'route', (_s, cs) => iemVocalPre(cs)),
+      req('iemMix', 'Console: Aux 8 (in-ears) carries the singer’s vocal, PRE-fader — for stereo in-ears, both Aux 9 and Aux 10', 'route', (s, cs) => iemVocalPre(s, cs)),
       req('rec', 'Console: Matrix 4 (recording) takes the main mix', 'route', (_s, cs) => recordingFromMain(cs)),
       req('subs', 'Console: Aux 6 (the sub aux) carries only kick, bass and keys — no vocal or speech', 'route', (_s, cs) => subAuxLowOnly(cs) && vocalsNotInSubs(cs)),
     ],

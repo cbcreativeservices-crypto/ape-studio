@@ -467,6 +467,12 @@ export function bandConsole(): ConsoleState {
       // console panel draws every aux — each names its own columns — so an
       // eighth aux changes no layout.
       { id: 'aux8', name: 'Aux 8 · In-ears', purpose: 'iem', masterDb: 0 },
+      // The stereo in-ear pair (round-3 grade R3-SS-01, owner: a dedicated
+      // in-ear pair): odd + even, linked as one stereo send, used for
+      // nothing else — so a stereo in-ear mix never borrows Aux 7, the
+      // announce feed the lobby matrix takes.
+      { id: 'aux9', name: 'Aux 9 · In-ears L', purpose: 'iem', masterDb: 0 },
+      { id: 'aux10', name: 'Aux 10 · In-ears R', purpose: 'iem', masterDb: 0 },
     ],
     subgroups: [
       { id: 'sub-drums', name: 'Drums', faderDb: 0, toMain: true },

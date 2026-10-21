@@ -9,7 +9,7 @@
  *          read the bin, ride it to flip through the parts while the plot
  *          shows where each may stand · OUTPUT (when the selected device's
  *          cable comes from the console side) — which console output that
- *          cable carries: a lane for the console's fifteen, a tap key for
+ *          cable carries: a lane for the console's seventeen, a tap key for
  *          two to four, LOCKED when only one reaches it (WF-SS-02,
  *          2026-10-20) · CONSOLE (routing capstones) opens
  *          the desk in a tray over the well while the plot stays live ·
@@ -268,7 +268,7 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
 /* ── the console output each cable carries (WF-SS-02) ────────────────────── */
 
 /** Each loudspeaker's plot tag: the output it is fed from, or OUT ?; an
- *  in-ear pack on a stereo pair reads both ("AUX 7+8"). */
+ *  in-ear pack on the stereo In-ears L/R pair reads both ("AUX 9+10"). */
 function feedTags(walk: ConsoleWalk): ReadonlyMap<string, string> {
   const m = new Map<string, string>();
   for (const [id, f] of walk.feeds) {
@@ -293,7 +293,7 @@ function cableWords(c: ConsoleOut | 'all' | '*' | null): string | undefined {
 }
 
 /** OUTPUT — which console output the cable INTO the selected device carries.
- *  Fifteen (straight from the console or a stagebox return) ride a lane; two
+ *  Seventeen (straight from the console or a stagebox return) ride a lane; two
  *  to four are a tap key; one is LOCKED, with the reason (D75). */
 function outputParam(b: ReturnType<typeof useBuilder>, l: Link, kind: GearKind): DockParam | undefined {
   const choices = outChoices(b.system, l, b.walk);
@@ -417,7 +417,9 @@ const ROUTE_UI: Partial<Record<string, RouteUi>> = {
     ],
   },
   festival: {
-    columns: ['send:aux1', 'send:aux2', 'send:aux3', 'send:aux4', 'send:aux6', 'send:aux8'],
+    // Aux 8 (mono in-ears) and the stereo In-ears L/R pair, Aux 9 + 10
+    // (R3-SS-01): the desk scrolls sideways past five columns.
+    columns: ['send:aux1', 'send:aux2', 'send:aux3', 'send:aux4', 'send:aux6', 'send:aux8', 'send:aux9', 'send:aux10'],
     matrices: [{ id: 'mx-rec', sources: [{ id: 'main', label: 'MAIN' }, { id: 'aux1', label: 'AUX 1' }] }],
     hears: [
       { title: 'AUX 1 · WEDGE 1 HEARS', kind: 'aux', id: 'aux1' },
@@ -471,7 +473,7 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
         render: () => (
           <View style={{ gap: 10 }}>
             <Body>▲/▼ step a level; PRE lights the pre-fader tap. The buses below show who hears what — computed, not promised. The plot stays live above.</Body>
-            <ConsolePanel cs={cs} onChange={setCs} channels={ui.channels} columns={ui.columns} sendNames={{ aux1: 'SINGER', aux2: 'GUITAR', aux3: 'BASS', aux4: 'DRUMS', aux5: 'REVERB', aux6: 'SUBS', aux7: 'LOBBY', aux8: 'IN-EARS' }} />
+            <ConsolePanel cs={cs} onChange={setCs} channels={ui.channels} columns={ui.columns} sendNames={{ aux1: 'SINGER', aux2: 'GUITAR', aux3: 'BASS', aux4: 'DRUMS', aux5: 'REVERB', aux6: 'SUBS', aux7: 'LOBBY', aux8: 'MONO', aux9: 'STEREO L', aux10: 'STEREO R' }} />
             {ui.subgroups ? <SubgroupStrip cs={cs} onChange={setCs} /> : null}
             {ui.dcas ? <DcaStrip cs={cs} onChange={setCs} /> : null}
             {ui.matrices?.map((m) => (

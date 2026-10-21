@@ -66,21 +66,27 @@ describe('r2_soundsystems', () => {
     assert.deepEqual(unmet('monitors', b2.s, r.cs), []);
     for (const c of CAPSTONES) assert.deepEqual(sys.ampsOverChannels(referenceBuild(c.id).s), [], c.id);
   });
-  it('SS-R2-02: stereo in-ears (Aux 7 + 8) pass; no OUTPUT key on the radio hop', () => {
+  // Round 3 (R3-SS-01, owner: a dedicated in-ear pair): the stereo pass moved
+  // from Aux 7 + 8 (Aux 7 is the lobby's announce feed) to the In-ears L/R
+  // pair, Aux 9 + 10 — the vocal on both sides of it, pre-fader.
+  it('SS-R2-02: stereo in-ears (now the In-ears L/R pair, Aux 9 + 10) pass; no OUTPUT key on the radio hop', () => {
     const r = referenceBuild('festival');
-    let s = sys.setLinkOut(r.s, kindId(r.s, 'stagebox'), kindId(r.s, 'iemTx'), 'aux7');
-    const v = sys.connect(s, kindId(s, 'processor'), kindId(s, 'iemTx'), 'aux8');
+    let s = sys.setLinkOut(r.s, kindId(r.s, 'stagebox'), kindId(r.s, 'iemTx'), 'aux9');
+    const v = sys.connect(s, kindId(s, 'processor'), kindId(s, 'iemTx'), 'aux10');
     assert.ok(v.ok);
     s = v.system;
-    assert.equal(sys.feedOf(s, kindId(s, 'iemPack')), 'aux8');
-    assert.deepEqual(sys.consoleWalk(s).pairs.get(kindId(s, 'iemPack')), ['aux7', 'aux8']);
-    assert.deepEqual(unmet('festival', s, r.cs), []);
+    assert.equal(sys.feedOf(s, kindId(s, 'iemPack')), 'aux9');
+    assert.deepEqual(sys.consoleWalk(s).pairs.get(kindId(s, 'iemPack')), ['aux9', 'aux10']);
+    let cs = con.setSend(r.cs, 'vox', 'aux9', { db: 0, tap: 'pre' });
+    cs = con.setSend(cs, 'vox', 'aux10', { db: 0, tap: 'pre' });
+    assert.deepEqual(unmet('festival', s, cs), []);
     const radio = s.links.find((l) => l.to === kindId(s, 'iemPack'))!;
     assert.equal(sys.carriesOutputs(s, radio), false);
     assert.deepEqual(sys.outChoices(s, radio), []);
   });
   it('SS-R2-03: festival has an Aux 8 column and the in-ear vocal PRE check', () => {
-    assert.match(src('screens/lab/soundsystems/pagesBuild.tsx'), /'send:aux6', 'send:aux8'\]/);
+    // Round 3 (R3-SS-01): the stereo In-ears L/R columns follow Aux 8.
+    assert.match(src('screens/lab/soundsystems/pagesBuild.tsx'), /'send:aux6', 'send:aux8', 'send:aux9', 'send:aux10'\]/);
     const { s, cs } = referenceBuild('festival');
     assert.deepEqual(unmet('festival', s, con.setSend(cs, 'vox', 'aux8', { db: 0, tap: 'post' })), ['iemMix']);
     assert.match(cap('festival').requirements.find((q) => q.id === 'iemMix')!.text, /Aux 8 \(in-ears\) carries the singer’s vocal, PRE-fader/);
@@ -118,7 +124,8 @@ describe('r2_soundsystems', () => {
     const d = src('screens/lab/soundsystems/art/diagrams.tsx');
     assert.ok(!d.includes('label="DCA · MUTE GROUP"'));
     assert.ok(d.includes('label="DCA LEVEL"') && d.includes('label="DCA MUTE · MUTE GROUP"'));
-    for (const l of ['AUX 1–4, 7–8 · PRE', 'AUX 5–6 · POST', 'DIRECT OUT · PRE/POST']) assert.ok(d.includes(`label="${l}"`), l);
+    // Round 3 (R3-SS-01): the pre-fader sends now include the In-ears L/R pair.
+    for (const l of ['AUX 1–4, 7–10 · PRE', 'AUX 5–6 · POST', 'DIRECT OUT · PRE/POST']) assert.ok(d.includes(`label="${l}"`), l);
     assert.ok(d.includes("label: 'HIGH-PASS' }"));
     const r = src('screens/lab/soundsystems/pagesRoute.tsx');
     assert.doesNotMatch(r, /A DCA or a mute group acts here too — a hand on the fader/);

@@ -526,16 +526,149 @@ function sectorPath(cx: number, cy: number, r0: number, r1: number, aimDeg: numb
 
 /** The LIP word's box (x 111, baseline 124, ~22 units wide at PLOT_FS). */
 const LIP_BOX = { x0: 99, x1: 123, y0: 113, y1: 125 };
-/** Does a beam's feed tag (≈7 units a character at PLOT_FS, cap height ≈10.5)
- *  cover a box? */
-function tagHits(b: PlotBeam, box: { x0: number; x1: number; y0: number; y1: number }): boolean {
-  if (!b.feed) return false;
-  const w = b.feed.length * 7;
-  const x = b.x + (b.feedDx ?? 0);
-  const y = b.y + (b.feedDy ?? 26);
-  const anchor = b.feedAnchor ?? 'middle';
+/* ── feed tags clear of the cable lanes (round-3 grade R3-SS-04) ─────────── */
+
+type Box = { x0: number; x1: number; y0: number; y1: number };
+type Anchor = 'start' | 'middle' | 'end';
+/** Where one feed tag prints: its baseline point, anchor and plate box. */
+export type TagPlace = { x: number; y: number; anchor: Anchor; box: Box; clear: boolean };
+
+/** The keyline plate around a tag: the tag's own width (Oswald SemiBold
+ *  advances, in ems, at PLOT_FS plus letter-spacing 1 — measured on the
+ *  rendered plot: MONO ≈34 units, MAIN R ≈40, AUX1 ≈29), cap height ≈10,
+ *  padded so a lane that must pass under it reads as passing under. */
+export const TAG_PAD = 2.5;
+const ADV: Record<string, number> = { M: 0.66, W: 0.72, O: 0.55, Q: 0.55, D: 0.53, G: 0.52, N: 0.53, H: 0.53, U: 0.53, I: 0.24, L: 0.4, T: 0.42, E: 0.42, F: 0.41, S: 0.46, J: 0.33, '1': 0.36, ' ': 0.3, '?': 0.42, '·': 0.24 };
+export function tagWidth(text: string): number {
+  return [...text].reduce((w, ch) => w + (ADV[ch] ?? 0.5) * PLOT_FS + 1, 0);
+}
+function tagBox(text: string, x: number, y: number, anchor: Anchor): Box {
+  const w = tagWidth(text);
   const x0 = anchor === 'start' ? x : anchor === 'end' ? x - w : x - w / 2;
-  return x0 < box.x1 && x0 + w > box.x0 && y - 10.5 < box.y1 && y > box.y0;
+  return { x0: x0 - TAG_PAD, x1: x0 + w + TAG_PAD, y0: y - 10 - TAG_PAD, y1: y + TAG_PAD };
+}
+const overlaps = (a: Box, b: Box) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
+const inset = (b: Box, d: number): Box => ({ x0: b.x0 + d, x1: b.x1 - d, y0: b.y0 + d, y1: b.y1 - d });
+
+/** A cable path (M / L / Q / A, as routeCables writes them) → its straight
+ *  pieces; a bend's control point stands in for the curve. */
+export function pathSegments(d: string): [number, number, number, number][] {
+  const tok = d.match(/[MLQA]|-?[\d.]+/g) ?? [];
+  const segs: [number, number, number, number][] = [];
+  let pts: [number, number][] = [];
+  const flush = () => {
+    for (let k = 1; k < pts.length; k++) segs.push([pts[k - 1][0], pts[k - 1][1], pts[k][0], pts[k][1]]);
+    pts = [];
+  };
+  let cmd = '';
+  let i = 0;
+  while (i < tok.length) {
+    if (/[MLQA]/.test(tok[i])) {
+      cmd = tok[i++];
+      if (cmd === 'M') flush();
+      continue;
+    }
+    const n = (k: number) => Number(tok[i + k]);
+    if (cmd === 'M' || cmd === 'L') {
+      pts.push([n(0), n(1)]);
+      i += 2;
+    } else if (cmd === 'Q') {
+      pts.push([n(0), n(1)], [n(2), n(3)]);
+      i += 4;
+    } else if (cmd === 'A') {
+      pts.push([n(5), n(6)]);
+      i += 7;
+    } else i++;
+  }
+  flush();
+  return segs;
+}
+
+/** Does a straight piece cross a box (Liang–Barsky)? */
+export function segmentHitsBox(seg: readonly number[], r: Box): boolean {
+  const [ax, ay, bx, by] = seg;
+  let t0 = 0;
+  let t1 = 1;
+  const clip = (p: number, q: number) => {
+    if (p === 0) return q > 0;
+    const t = q / p;
+    if (p < 0) {
+      if (t > t1) return false;
+      if (t > t0) t0 = t;
+    } else {
+      if (t < t0) return false;
+      if (t < t1) t1 = t;
+    }
+    return true;
+  };
+  return clip(-(bx - ax), ax - r.x0) && clip(bx - ax, r.x1 - ax) && clip(-(by - ay), ay - r.y0) && clip(by - ay, r.y1 - ay) && t0 < t1;
+}
+
+/** Spots a tag may move to when its own spot sits on a lane, from the
+ *  device's centre, nearest first: under, over, inboard / outboard at the
+ *  device's row, the lower and upper corners, then one step farther. */
+const TAG_SPOTS: readonly (readonly [number, number, Anchor])[] = [
+  [0, 26, 'middle'],
+  [0, -16, 'middle'],
+  [-15, 4, 'end'],
+  [15, 4, 'start'],
+  [-4, 26, 'end'],
+  [4, 26, 'start'],
+  [-4, -16, 'end'],
+  [4, -16, 'start'],
+  [-15, -8, 'end'],
+  [15, -8, 'start'],
+  [-15, 16, 'end'],
+  [15, 16, 'start'],
+  [0, 38, 'middle'],
+  [0, -28, 'middle'],
+];
+/** The SR word (LABEL_BOXES holds SL, LIP, RISER and BARRIER). */
+const SR_BOX: Box = { x0: 24, x1: 50, y0: 54, y1: 67 };
+/** A plan glyph's footprint, generously (the largest, a sub or a rotated
+ *  main, is ≈20 × 15 units). */
+const GLYPH_HALF = { x: 10, y: 7.5 };
+
+/** Where each beam's feed tag prints. A tag keeps the spot its page gave it
+ *  (feedDx / feedDy / feedAnchor) unless that spot sits on a cable lane or
+ *  on another tag; then it takes the nearest spot clear of every lane, every
+ *  other tag and device, the plot's words and its edges. When no spot is
+ *  clear it keeps its own, and its keyline plate (drawn when the plot has
+ *  cables) carries it over the lanes. One rule for every scene, so a
+ *  learner's own build gets it too (R3-SS-04). */
+export function placeFeedTags(beams: readonly PlotBeam[], placed: readonly Placed[], routes: CableRoutes): Map<PlotBeam, TagPlace> {
+  const lanes = [...routes.paths].filter(([k]) => !routes.merged.has(k)).flatMap(([, d]) => pathSegments(d));
+  const onLane = (b: Box) => lanes.some((s) => segmentHitsBox(s, b));
+  const glyphs: Box[] = placed.map((x) => {
+    const q = xy(x.slot);
+    return { x0: q.x - GLYPH_HALF.x, x1: q.x + GLYPH_HALF.x, y0: q.y - GLYPH_HALF.y, y1: q.y + GLYPH_HALF.y };
+  });
+  const words: Box[] = [...LABEL_BOXES, SR_BOX];
+  const tagged = beams.filter((b) => !!b.feed);
+  const out = new Map<PlotBeam, TagPlace>();
+  for (const b of tagged) {
+    const x = b.x + (b.feedDx ?? 0);
+    const y = b.y + (b.feedDy ?? 26);
+    const anchor = b.feedAnchor ?? 'middle';
+    const box = tagBox(b.feed!, x, y, anchor);
+    out.set(b, { x, y, anchor, box, clear: !onLane(box) });
+  }
+  for (const b of tagged) {
+    const cur = out.get(b)!;
+    // Two plates may meet edge to edge (inset 1), never overlap.
+    const others = tagged.filter((o) => o !== b).map((o) => inset(out.get(o)!.box, 1));
+    if (cur.clear && !others.some((o) => overlaps(o, cur.box))) continue;
+    const free = (box: Box) =>
+      box.x0 >= 4 && box.x1 <= PLOT_W - 4 && box.y0 >= 4 && box.y1 <= PLOT_H - 4 && !onLane(box) && !others.some((o) => overlaps(o, box)) && !glyphs.some((g) => overlaps(g, box)) && !words.some((w) => overlaps(w, box));
+    for (const [dx, dy, anchor] of TAG_SPOTS) {
+      const box = tagBox(b.feed!, b.x + dx, b.y + dy, anchor);
+      if (free(box)) {
+        out.set(b, { x: b.x + dx, y: b.y + dy, anchor, box, clear: true });
+        break;
+      }
+    }
+  }
+  return out;
 }
 
 /** A word printed on the plot, with a dark halo under it so the floor tint
@@ -617,7 +750,12 @@ export function VenueView(p: VenueViewProps) {
   }, [liveBeams, p.field, p.seam]);
 
   const occupied = new Set(placed.map((x) => x.slot));
-  const lipClear = !beams.some((b) => b.feed && tagHits(b, LIP_BOX));
+  // Feed tags clear of the cable lanes (R3-SS-04); on a plot with cables
+  // each sits on a dark keyline plate, so a lane that must pass under one
+  // still reads as passing under.
+  const tags = useMemo(() => placeFeedTags(beams, placed, routes), [beams, placed, routes]);
+  const plated = links.length > 0;
+  const lipClear = ![...tags.values()].some((t) => overlaps(inset(t.box, TAG_PAD), LIP_BOX));
 
   return (
     <View style={styles.wrap} accessible accessibilityRole="image" accessibilityLabel={p.a11y}>
@@ -842,13 +980,17 @@ export function VenueView(p: VenueViewProps) {
           const live = !p.liveIds || p.liveIds.has(x.id) || !spec.radiates;
           const sel = p.selectedId === x.id;
           const beam = beams.find((b) => Math.abs(b.x - px) < 0.5 && Math.abs(b.y - py) < 0.5);
+          const tag = beam ? tags.get(beam) : undefined;
           return (
             <G key={x.id}>
               <PlanGlyph kind={x.kind} id={`vv-${x.id}`} x={px} y={py} rotateDeg={placedRotation(x)} dim={!live} lit={live} rig={beam?.rig === 'flown' ? 'flown' : 'stack'} highlight={sel ? colors.cyanBright : undefined} />
-              {beam?.feed ? (
-                <PlotLabel x={px + (beam.feedDx ?? 0)} y={py + (beam.feedDy ?? 26)} fontSize={PLOT_FS} fill={beam.color} fontFamily={fonts.oswaldSemiBold} textAnchor={beam.feedAnchor ?? 'middle'} letterSpacing={1}>
-                  {beam.feed}
-                </PlotLabel>
+              {beam?.feed && tag ? (
+                <>
+                  {plated ? <Rect x={tag.box.x0} y={tag.box.y0} width={tag.box.x1 - tag.box.x0} height={tag.box.y1 - tag.box.y0} rx={3} fill="#0a0b0e" opacity={0.82} stroke={beam.color} strokeOpacity={0.6} strokeWidth={0.75} /> : null}
+                  <PlotLabel x={tag.x} y={tag.y} fontSize={PLOT_FS} fill={beam.color} fontFamily={fonts.oswaldSemiBold} textAnchor={tag.anchor} letterSpacing={1}>
+                    {beam.feed}
+                  </PlotLabel>
+                </>
               ) : null}
               {beam?.delayMs != null ? (
                 <PlotLabel x={px} y={py + 39} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.mono} textAnchor="middle" letterSpacing={0}>

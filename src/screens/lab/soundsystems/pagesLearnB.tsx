@@ -452,7 +452,7 @@ const LEVELS: readonly { level: SignalLevel; volts: string; carried: string; cab
   { level: 'instrument', volts: 'tenths of a volt, high impedance, unbalanced', carried: 'Guitars, basses, keyboards', cable: 'Unbalanced ¼-inch TS — short runs only, then a DI' },
   { level: 'line', volts: 'about a volt (+4 dBu nominal)', carried: 'Console outputs, processors, playback', cable: 'Balanced XLR or TRS' },
   { level: 'speaker', volts: 'tens of volts, amps of current', carried: 'Amplifier outputs only', cable: 'Speaker cable with speakON — never a signal cable' },
-  { level: 'digital', volts: 'audio carried as data', carried: 'Stagebox ↔ console, AES3, Dante, AVB, MADI', cable: 'Category cable, coaxial or fibre — clocked from one master' },
+  { level: 'digital', volts: 'audio carried as data', carried: 'Stagebox ↔ console, AES3, Dante, AVB, MADI', cable: '110 Ω AES cable on XLR (AES3), coax (AES3id or MADI), category cable (Dante or AVB) or fibre — clocked from one master' },
 ];
 
 const PAIRS: readonly { from: GearKind; to: GearKind }[] = [

@@ -4,7 +4,7 @@
  * 1–8), so the lab can check a wedge is fed from an aux and stereo is wired
  * L/R").
  *
- * Fifteen outputs: MAIN L, MAIN R and the MAIN MONO sum, Aux 1–8 and Matrix
+ * Seventeen outputs: MAIN L, MAIN R and the MAIN MONO sum, Aux 1–10 and Matrix
  * 1–4. The aux purposes come from the lab console itself (`bandConsole()`),
  * so the BUILD check and the ROUTE pages can never disagree about what Aux 6
  * is for. Pure data — no React.
@@ -24,6 +24,8 @@ export const CONSOLE_OUTS: readonly ConsoleOut[] = [
   'aux6',
   'aux7',
   'aux8',
+  'aux9',
+  'aux10',
   'mtx1',
   'mtx2',
   'mtx3',
@@ -34,6 +36,17 @@ export type OutFamily = 'main' | 'aux' | 'mtx';
 
 export function outFamily(o: ConsoleOut): OutFamily {
   return o.startsWith('main') ? 'main' : o.startsWith('aux') ? 'aux' : 'mtx';
+}
+
+/** The stereo in-ear pair (round-3 grade R3-SS-01, owner: a dedicated
+ *  in-ear pair): Aux 9 · In-ears L and Aux 10 · In-ears R, used for nothing
+ *  else. A pack fed two auxes passes as stereo ONLY on this pair — never on
+ *  Aux 7, the announce feed for the lobby matrix. */
+export const IEM_PAIR: readonly [ConsoleOut, ConsoleOut] = ['aux9', 'aux10'];
+
+/** Is this pair of outputs the stereo in-ear pair? */
+export function isIemPair(pair: readonly ConsoleOut[] | undefined | null): boolean {
+  return !!pair && pair.length === 2 && pair.includes(IEM_PAIR[0]) && pair.includes(IEM_PAIR[1]);
 }
 
 /** The console matrix each MTX output is (console.ts ids). */
@@ -91,7 +104,9 @@ export function outUse(o: ConsoleOut): string {
     case 'monitor':
       return `${outName(o)}: a monitor mix for one position.`;
     case 'iem':
-      return `${outName(o)}: the in-ear mix, for the transmitter.`;
+      return IEM_PAIR.includes(o)
+        ? `${outName(o)}: one side of the stereo in-ear pair. Send Aux 9 and Aux 10 to the transmitter together.`
+        : `${outName(o)}: the in-ear mix, for the transmitter.`;
     case 'fx':
       return `${outName(o)}: the effects send — it feeds the reverb, not a loudspeaker.`;
     case 'sub':

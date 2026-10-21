@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 08:13 · ccode · a92d972e
+changed: DJ round 3 (owner 2026-10-21): BOOTH tap unplugs the booth monitors; passive tops get an NL4 lead from the amp; balanced-line wording
+affects other side: nothing (client lab text/art only)
+needs: nothing
+
+
 ### 2026-10-21 07:59 · ccode · 65207f8d
 changed: Patchbay round 3 (owner go): two-outputs CLASH, cutaway notes (enlarged, ring spring not shown), cords in their own lanes, full-normal wording
 affects other side: nothing (client lab text/art only)

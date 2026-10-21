@@ -3,8 +3,9 @@
  * owner go 2026-10-20; plan + the owner's eight decisions in
  * docs/wiring/SOUNDSYSTEMS_OUTPUTS_PLAN_2026_10_20.md).
  *
- * Pins: the fifteen outputs and their names; Aux 8 · In-ears on the lab
- * console; the one walk (`consoleWalk`) — the multicore carries every
+ * Pins: the seventeen outputs and their names (fifteen until round 3: the
+ * stereo In-ears L/R pair, Aux 9 + 10, was added for R3-SS-01); Aux 8 ·
+ * In-ears on the lab console; the one walk (`consoleWalk`) — the multicore carries every
  * output, an unchosen or stale choice reads '*', the input side ignores
  * `out`, `trace` never reads it; the FEEDS row on all ten capstones (every
  * reference build passes it, a build with no outputs chosen is live and
@@ -61,15 +62,17 @@ const repoint = (s: System, slot: string, out: ConsoleOut | null): System => {
 const feedAt = (s: System, slot: string) => sys.feedOf(s, s.placed.find((x) => x.slot === slot)!.id);
 
 describe('the console outputs', () => {
-  it('fifteen: MAIN L/R/MONO, Aux 1–8, Matrix 1–4 — unique, with plain labels', () => {
-    assert.equal(outs.CONSOLE_OUTS.length, 15);
-    assert.equal(new Set(outs.CONSOLE_OUTS).size, 15);
+  // Round 3 (R3-SS-01, owner: a dedicated in-ear pair): Aux 9 + 10 join the
+  // console, so fifteen outputs became seventeen and eight auxes ten.
+  it('seventeen: MAIN L/R/MONO, Aux 1–10, Matrix 1–4 — unique, with plain labels', () => {
+    assert.equal(outs.CONSOLE_OUTS.length, 17);
+    assert.equal(new Set(outs.CONSOLE_OUTS).size, 17);
     assert.equal(outs.outLabel('mainL'), 'MAIN L');
     assert.equal(outs.outLabel('aux2'), 'AUX 2');
     assert.equal(outs.outLabel('mtx1'), 'MTX 1 · SUBS');
     assert.equal(outs.outTag('mtx1'), 'MTX 1');
     assert.equal(outs.OUT_UNSET, 'OUT ?');
-    assert.deepEqual(outs.CONSOLE_OUTS.map(outs.outFamily).filter((f) => f === 'aux').length, 8);
+    assert.deepEqual(outs.CONSOLE_OUTS.map(outs.outFamily).filter((f) => f === 'aux').length, 10);
     for (const o of outs.CONSOLE_OUTS) {
       assert.ok(outs.outTag(o).length <= 6, `${o}: the plot tag stays short`);
       assert.ok(outs.outUse(o).length > 10, o);
@@ -78,7 +81,7 @@ describe('the console outputs', () => {
   it('Aux 8 · In-ears is on the lab console; the aux purposes come from it', () => {
     const cs = con.bandConsole();
     assert.deepEqual(cs.auxes.find((a) => a.id === 'aux8'), { id: 'aux8', name: 'Aux 8 · In-ears', purpose: 'iem', masterDb: 0 });
-    assert.equal(cs.auxes.length, 8);
+    assert.equal(cs.auxes.length, 10, 'Aux 1–8 plus the In-ears L/R pair (R3-SS-01)');
     assert.equal(outs.auxPurpose('aux8'), 'iem');
     assert.equal(outs.auxPurpose('aux1'), 'monitor');
     assert.equal(outs.auxPurpose('aux6'), 'sub');
@@ -107,7 +110,7 @@ describe('the console walk', () => {
     const conBox = b.s.links.find((l) => l.from === b.ids.con && l.to === b.ids.box)!;
     assert.equal(sys.carriesOutputs(b.s, conBox), false);
     assert.equal(sys.linkCarries(b.s, conBox), 'all');
-    assert.equal(sys.outChoices(b.s, b.s.links.find((l) => l.to === b.ids.w)!).length, 15);
+    assert.equal(sys.outChoices(b.s, b.s.links.find((l) => l.to === b.ids.w)!).length, 17, 'every output, the In-ears L/R pair included (R3-SS-01)');
   });
   it('the input side ignores `out`; trace and chainTo never read it', () => {
     const b = base().put('l', 'poweredSpeaker', 'mainL').link('mic', 'con', 'aux4').link('con', 'l', 'mainL');
@@ -199,9 +202,12 @@ describe('FEEDS on every capstone', () => {
     assert.deepEqual(unmet('matrices', repoint(s, 'frontFillL', 'mainL')), ['feeds']);
     assert.deepEqual(unmet('matrices', repoint(s, 'subC', 'aux6')), ['feeds']);
   });
-  it('outdoor: fills on a main or Matrix 2, delays on their own side’s main, MONO or Matrix 2 — never an aux, the lobby or the recording (round 2, SS-R2-06)', () => {
+  // Round 3 (R3-SS-02, owner: tighten): a delay no longer passes on Matrix 2
+  // — that matrix is the front fills' — so this case flipped from [] to
+  // ['feeds']; test/wiringFix_r3_soundsystems_20261021 pins the rest.
+  it('outdoor: fills on their own side’s main, MONO or Matrix 2, delays on their own side’s main or MONO — never an aux, the lobby, the recording or the fills’ matrix (SS-R2-06, R3-SS-02)', () => {
     const { s } = referenceBuild('outdoor');
-    assert.deepEqual(unmet('outdoor', repoint(s, 'delayL', 'mtx2')), []);
+    assert.deepEqual(unmet('outdoor', repoint(s, 'delayL', 'mtx2')), ['feeds']);
     assert.deepEqual(unmet('outdoor', repoint(s, 'delayL', 'mainMono')), []);
     assert.deepEqual(unmet('outdoor', repoint(s, 'delayL', 'mtx3')), ['feeds']);
     assert.deepEqual(unmet('outdoor', repoint(s, 'delayL', 'aux7')), ['feeds']);

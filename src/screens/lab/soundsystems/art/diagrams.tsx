@@ -154,7 +154,7 @@ export function ChannelStrip({ selected, onTap }: { selected: StripStation; onTa
       <SvgText x={cx - 9} y={postY + 3.4} fontSize={FS} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} textAnchor="end" letterSpacing={1}>POST</SvgText>
       {/* sends leave as copies */}
       <Arrow x1={cx + 4} y1={preY} x2={RX - 2} y2={preY} color={sel('sends') ? colors.cyanBright : CABLE_COLORS.line} />
-      <Box x={RX} y={preY - 10} w={RW} h={BH} label="AUX 1–4, 7–8 · PRE" on={sel('sends')} onPress={() => onTap('sends')} a11y={`Pre-fader aux sends: the wedges, the announce feed and the in-ears${sel('sends') ? ', selected' : ''}`} />
+      <Box x={RX} y={preY - 10} w={RW} h={BH} label="AUX 1–4, 7–10 · PRE" on={sel('sends')} onPress={() => onTap('sends')} a11y={`Pre-fader aux sends: the wedges, the announce feed and the in-ears${sel('sends') ? ', selected' : ''}`} />
       <Arrow x1={cx + 4} y1={postY} x2={RX - 2} y2={postY} color={sel('sends') ? colors.cyanBright : CABLE_COLORS.line} />
       <Box x={RX} y={postY - 10} w={RW} h={BH} label="AUX 5–6 · POST" on={sel('sends')} onPress={() => onTap('sends')} a11y={`Post-fader aux sends to the reverb and the subs${sel('sends') ? ', selected' : ''}`} />
       {/* The direct out tees off the post-fader send line PAST the strip
