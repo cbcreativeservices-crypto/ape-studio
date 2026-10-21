@@ -35,7 +35,8 @@ function PageDirection(_: { ctx: PageCtx }) {
     <View style={{ gap: 12 }}>
       <Lead>
         A patchbay puts every important input and output of the studio on one panel. Before any routing tricks, learn the one
-        convention everything else stands on.
+        convention everything else stands on — on most bays, and on every bay in this lab. Some bays are wired the other way:
+        check the label.
       </Lead>
       <Card>
         <Eyebrow>TOP ROW = SOURCES · OUTPUTS</Eyebrow>
@@ -241,6 +242,10 @@ function PageContact({ ctx }: { ctx: PageCtx }) {
         At rest, the tip spring presses on the normal contact and the source flows to the destination. As the plug seats, its
         tip wedges under the spring and lifts it off — the normal is BROKEN, and the spring now touches the plug instead: the
         source rides your patch cord. It isn’t magic and it isn’t a menu setting. A switch opened.
+      </Body>
+      <Body>
+        This cutaway is a breaking jack on the source side — the top jack of a full-normal pair, for example. On the common
+        half-normal bay this switch sits in the bottom (input) jack instead, so there your plug takes over the destination.
       </Body>
     </PatchbayRack>
   );

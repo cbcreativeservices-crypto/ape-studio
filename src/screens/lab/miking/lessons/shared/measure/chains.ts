@@ -79,7 +79,7 @@ export const MEAS_CHAIN: ChainSpec = {
         recorder: 'A recorder’s dBFS is relative to its own digital maximum — not a sound pressure level.',
         copied: 'A sensitivity belongs to one capsule and chain and its record: never copy it from a look-alike.',
         none: 'Without this chain’s sensitivity the reading cannot be a calibrated level.',
-        phantom: 'Plain phantom power is not a measurement mic’s supply.',
+        phantom: 'Plain phantom power is not the supply for either capsule in this chain. (Many system-tuning measurement mics do run on 48 V phantom; these lab-grade capsules do not.)',
       },
       label: 'A CALIBRATED CHAIN · NEXT, THE FIELD CHECK',
     },
@@ -90,7 +90,7 @@ export const MEAS_CHAIN: ChainSpec = {
       ok: { record: ['own', 'none'], power: ['polsupply', 'ccp', 'approved'] },
       why: {
         copied: 'A copied number would dress a comparison up as a level. Leave it out and call it relative.',
-        phantom: 'Plain phantom power is not a measurement mic’s supply.',
+        phantom: 'Plain phantom power is not the supply for either capsule in this chain. (Many system-tuning measurement mics do run on 48 V phantom; these lab-grade capsules do not.)',
       },
       label: 'A RELATIVE COMPARISON · LABEL IT SO',
     },

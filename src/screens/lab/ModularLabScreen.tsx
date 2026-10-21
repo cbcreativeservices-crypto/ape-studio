@@ -616,8 +616,9 @@ export function ModularLabScreen() {
           setting. V/OCT and PITCH = pitch inputs · GATE = note on/off · MAN = the envelope’s
           hand gate, held down for the drone when the sequencer is off · CV1 / CV2 = control
           inputs (the VCF’s CV1 knob sets how far the envelope moves the filter) · the ENV has
-          two OUT jacks carrying the same envelope, so it can feed two places · the VCA is a pair
-          in a row: OFS 1 closed (the envelope opens it), OFS 2 open (the LFO can only dip it) ·
+          two OUT jacks carrying the same envelope, so it can feed two places · the VCA is two
+          gain stages in series inside one module, so it has one IN and one OUT: OFS 1 closed
+          (the envelope opens it), OFS 2 open (the LFO can only dip it) ·
           LVL = output level.
         </Text>
         <Text style={styles.caption}>
@@ -894,10 +895,11 @@ const RACK: ModuleSpec[] = [
     hp: 8,
     help: 'vca',
     trim: colors.amber,
-    // A DUAL VCA, channel 1 normalled into channel 2 (the engine MULTIPLIES:
-    // gain = env × tremolo): CV1 = the envelope opening channel 1 from
-    // OFFSET 1 = 0; CV2 = the LFO dipping channel 2, whose OFFSET 2 sits fully
-    // open. IN feeds channel 1, OUT leaves channel 2.
+    // TWO GAIN STAGES IN SERIES inside one module, wired internally (the
+    // engine MULTIPLIES: gain = env × tremolo): CV1 = the envelope opening
+    // stage 1 from OFFSET 1 = 0; CV2 = the LFO dipping stage 2, whose OFFSET 2
+    // sits fully open. One IN (stage 1), one OUT (stage 2) — not a dual VCA
+    // with jacks per channel (MD-01, 2026-10-20), so the caption says so.
     knobs: [
       { id: 'ofs1', x: 2, f: 0.5, label: 'OFS 1' },
       { id: 'ofs2', x: 6, f: 0.5, label: 'OFS 2' },

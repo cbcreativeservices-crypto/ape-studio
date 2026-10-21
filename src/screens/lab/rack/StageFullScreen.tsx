@@ -53,7 +53,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../../components/DimModal';
 import { colors, fonts } from '../../../theme/tokens';
 import { StageAspectReport, StageGlassWidth, StageInFullScreen, StageTextScale, StageZoom, type StageReport } from './stageAspect';
-import { anchorOffset, baseSize, compaction, factorOf, fitFactor, isLandscape, textScaleFor, wantsRotate, zoomSteps } from './stageFitMath';
+import { READ_ROW_NARROW_W, anchorOffset, baseSize, compaction, factorOf, fitFactor, isLandscape, textScaleFor, wantsRotate, zoomSteps } from './stageFitMath';
 import { ScrollLockProvider } from '../scrollLock';
 
 /** The dock fold outlives one opening (a learner who folded it sideways
@@ -187,11 +187,21 @@ export function StageFullScreen({
   // the drawing's own shape. A drawing that paints the whole box itself
   // reports nothing and zooms as the plain box.
   const [shape, setShape] = useState<{ aspect: number; pad: number } | null>(null);
+  // Cleared on CLOSE only: the drawing reports at 1× as it mounts on the
+  // next opening (a child's effect runs before this view's own).
+  const [read, setRead] = useState<number | null>(null);
+  useEffect(() => {
+    if (!visible) setRead(null);
+  }, [visible]);
   const report = useMemo<StageReport>(
     () => ({
       aspect: (a: number, pad: number) =>
         setShape((cur) => (cur && cur.aspect === a && cur.pad === pad ? cur : { aspect: a, pad })),
       fixed: () => {},
+      // READ (option A): the factor at which the drawing's printed words reach
+      // 9 pt, reported by the drawing at 1× (rounded so a re-render's float
+      // noise does not re-set it)
+      readAt: (f: number | null) => setRead(f == null ? null : Math.round(f * 100) / 100),
     }),
     [],
   );
@@ -206,7 +216,10 @@ export function StageFullScreen({
   // height-limited drawing top and bottom.
   const { w: baseW, h: baseH } = baseSize({ fitW, fitH, shape: effShape });
   const fit = fitFactor({ baseW, baseH, fitW, fitH });
-  const steps = zoomSteps(fit);
+  const steps = zoomSteps(fit, read, width < READ_ROW_NARROW_W);
+  // a row carrying READ uses the compact keys (the sideways size) so it fits
+  // beside the title and ✕ at 320 wide; every other row is unchanged
+  const compactKeys = landscape || steps.some((s) => s.key === 'read');
   // A rotation can take the FIT step away while it is selected (night pass 2,
   // 2026-10-01): the drawing fell back to 1× but no key read selected. The
   // key that is actually showing is the one lit.
@@ -294,18 +307,18 @@ export function StageFullScreen({
           <Text style={[styles.title, landscape && styles.titleLandscape]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
             {title}
           </Text>
-          <View style={[styles.zooms, fold.readoutsInBar && readouts ? styles.zoomsTight : null]} accessibilityRole="radiogroup" accessibilityLabel="Zoom">
+          <View style={[styles.zooms, fold.readoutsInBar && readouts ? styles.zoomsTight : null, compactKeys && !landscape ? styles.zoomsCompact : null]} accessibilityRole="radiogroup" accessibilityLabel="Zoom">
             {steps.map((s) => {
               const on = s.key === shownKey;
               return (
                 <Pressable
                   key={s.key}
                   onPress={() => setStepKey(s.key)}
-                  style={[styles.zoomBtn, landscape && styles.zoomBtnLandscape, on && styles.zoomBtnOn]}
+                  style={[styles.zoomBtn, compactKeys && styles.zoomBtnLandscape, on && styles.zoomBtnOn]}
                   hitSlop={4}
                   accessibilityRole="radio"
                   accessibilityState={{ selected: on }}
-                  accessibilityLabel={s.key === 'fit' ? 'Zoom to fit the screen' : `Zoom ${s.factor} times`}
+                  accessibilityLabel={s.key === 'fit' ? 'Zoom to fit the screen' : s.key === 'read' ? 'Zoom in until the printed words can be read' : `Zoom ${s.factor} times`}
                 >
                   <Text style={[styles.zoomText, on && styles.zoomTextOn]}>{s.label}</Text>
                 </Pressable>
@@ -454,6 +467,7 @@ const styles = StyleSheet.create({
   // Beside the readouts the zoom row keeps its own width — the strip's
   // cells are flexible and would otherwise squeeze 2× and 3× off the bar.
   zoomsTight: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto', gap: 4 },
+  zoomsCompact: { gap: 4 },
   zoomBtn: {
     minWidth: 48,
     minHeight: 40,

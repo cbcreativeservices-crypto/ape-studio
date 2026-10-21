@@ -99,7 +99,7 @@ export const WRONG_PATCH_CASES: WrongPatchCase[] = [
     ],
     correct: 0,
     explain:
-      'Patching runs SOURCE / OUTPUT → DESTINATION / INPUT. Two bottom-row jacks are two inputs: nothing in that cord is producing signal. Signal falls downhill — a patch must start at a top-row source.',
+      'Patching runs SOURCE / OUTPUT → DESTINATION / INPUT. Two bottom-row jacks are two inputs: nothing in that cord is producing signal. Signal falls downhill — a patch must start at a top-row source. And both bottom plugs broke their normals: Interface In 1 and Console Line 1 have lost their normal sources too.',
     wrong: [
       undefined,
       'The cord is fine. Check what KIND of jack each end is plugged into.',
@@ -158,7 +158,7 @@ export const WRONG_PATCH_CASES: WrongPatchCase[] = [
       'Half-normal keeps the top gentle, but the BOTTOM still breaks. The patched source takes over the destination; the original source keeps running — into an open contact.',
     wrong: [
       undefined,
-      'The common bay doesn’t parallel two sources into one input — the bottom insertion physically opens the normal first.',
+      'The common bay never ties two sources into one input — the bottom insertion physically opens the normal first. (Two outputs wired together are not a mix.)',
       'The top jack is empty; nothing routed the synth away. The change happened at the BOTTOM contact.',
       '“Mute” isn’t a patchbay concept — a specific contact opened. Which one?',
     ],
@@ -208,7 +208,7 @@ export const DESIGN_ROWS: DesignRow[] = [
     verdicts: {
       half: { ok: false, note: 'Any normal here points the compressor’s output at its own input — a feedback loop with no cables patched. Processor pairs stay THRU.' },
       full: { ok: false, note: 'Any normal here points the compressor’s output at its own input — a feedback loop with no cables patched. Processor pairs stay THRU.' },
-      thru: { ok: true, note: 'Exactly. The processor only ever joins a chain deliberately, by cable — never by default.' },
+      thru: { ok: true, note: 'Exactly. A processor’s own OUT → IN pair stays THRU. It joins a chain by cable, or through a normal from another row designed for it (many studios normal outboard into a console insert on purpose).' },
     },
   },
   {
@@ -298,7 +298,7 @@ export const ASSESSMENT_ITEMS: AssessmentItem[] = [
     options: ['Nothing at all', 'The source, unchanged', 'The tuner’s output'],
     correct: 0,
     explain: 'Either insertion on a full-normal pair opens the contact; the destination loses its feed.',
-    wrong: [undefined, 'That is the HALF-normal tap. This bay breaks on top.', 'A tuner is a destination at the far end of your cord — it sends nothing back.'],
+    wrong: [undefined, 'That is the HALF-normal tap. A full-normal pair breaks on EITHER jack, the top included.', 'A tuner is a destination at the far end of your cord — it sends nothing back.'],
     render: {
       state: { config: 'full', topPlugged: true, bottomPlugged: false },
       sourceLabel: 'CONSOLE OUT 1',
@@ -333,7 +333,7 @@ export const ASSESSMENT_ITEMS: AssessmentItem[] = [
     correct: 1,
     explain: 'The bottom is the breaking side: your patch takes over the destination; the original dead-ends.',
     wrong: [
-      'The bottom contact opens BEFORE your signal lands — no parallel mix on the common bay.',
+      'The bottom contact opens BEFORE your signal lands — the common bay never ties two outputs into one input.',
       undefined,
       'The TAP is the top jack’s trick. The bottom replaces.',
     ],
@@ -348,7 +348,7 @@ export const ASSESSMENT_ITEMS: AssessmentItem[] = [
     id: 'a6',
     eyebrow: 'FIND THE BROKEN NORMAL',
     question:
-      'Interface In 1 went silent mid-session. The bay is full-normal. One cord hangs from the TOP of pair 01 to an analyzer someone left connected. The fix?',
+      'On a full-normal bay, Interface In 1 went silent mid-session. One cord hangs from the TOP of its pair to an analyzer someone left connected. The fix?',
     options: [
       'Pull the forgotten top cord',
       'Replace the interface input',

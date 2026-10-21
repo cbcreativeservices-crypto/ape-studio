@@ -40,9 +40,15 @@ export type CableChoice = {
   id: string;
   /** Tray label: what the cable IS, construction included. */
   name: string;
-  /** Connector on each end — photos come from the verified image map. */
+  /** Connector on each end — photos come from the verified image map.
+   *  `a` plugs into the source's OUTPUT, `b` into the destination's INPUT
+   *  (the tray pictures an XLR `a` end FEMALE and `b` end MALE — rule C2). */
   a: ConnectorId;
   b: ConnectorId;
+  /** A box the run passes through (two cables, not one): the tray draws
+   *  `a ——  VIA  —— b` so a TS-in / XLR-out DI is never shown as one
+   *  TS-to-XLR cable (R3-CS-S3). */
+  via?: string;
   verdict: 'correct' | ProblemKind;
   /** Overrides the FINAL four-question row values where the problem kind's
    *  default mapping would claim something the verified records deny
@@ -88,7 +94,7 @@ export const SCENARIOS: readonly Scenario[] = [
     choices: [
       { id: 'a', name: 'XLR microphone cable — balanced shielded pair', a: 'xlr3', b: 'xlr3', verdict: 'correct', explain: 'Phantom power rides the SAME two signal pins back up the mic cable — a proper balanced cable carries the signal down and the power up. Mute the channel before plugging, then switch +48 V on.' },
       { id: 'b', name: 'XLR-to-TS adapter cable into a line input', a: 'xlr3', b: 'ts_quarter', verdict: 'bal_unbal', explain: 'The adapter unbalances the connection — and an unbalanced path cannot deliver phantom power correctly. The condenser stays silent.' },
-      { id: 'c', name: 'RCA interconnect with adapters piled on each end', a: 'rca', b: 'rca', verdict: 'bal_unbal', explain: 'Adapters make it fit; they do not make it balanced, and phantom cannot ride an unbalanced consumer interconnect. An adapter never converts the signal.' },
+      { id: 'c', name: 'RCA interconnect with adapters piled on each end', a: 'rca', b: 'rca', verdict: 'bal_unbal', explain: 'Adapters make it fit; they do not make it balanced, and phantom cannot ride an unbalanced consumer interconnect. A plain wired adapter changes only the shape, never the signal.' },
       { id: 'd', name: '1/4-inch speaker cable', a: 'ts_speaker_legacy', b: 'ts_speaker_legacy', verdict: 'no_fit', explain: 'Wrong plugs for both ends — and speaker cable is the wrong construction for any mic-level job even where it fits.' },
     ],
     note: 'Phantom power is the reason the CABLE matters, not just the plugs: it needs both signal conductors and the shield reference intact.',
@@ -100,7 +106,7 @@ export const SCENARIOS: readonly Scenario[] = [
     from: { device: 'Electric guitar', port: '1/4-inch output' },
     to: { device: 'DI box → mixer', port: 'DI instrument in · DI XLR out → mic input' },
     choices: [
-      { id: 'a', name: 'TS instrument cable to the DI + XLR mic cable to the mixer', a: 'ts_quarter', b: 'xlr3', verdict: 'correct', explain: 'Exactly the DI’s job: a short unbalanced instrument cable into the DI, then a balanced XLR run to the mixer. High-impedance signal travels short; balanced signal travels far.' },
+      { id: 'a', name: 'TS instrument cable to the DI + XLR mic cable to the mixer', a: 'ts_quarter', b: 'xlr3', via: 'DI box', verdict: 'correct', explain: 'Exactly the DI’s job: a short unbalanced instrument cable into the DI, then a balanced XLR run to the mixer. High-impedance signal travels short; balanced signal travels far.' },
       { id: 'b', name: 'One long TS instrument cable straight to a mixer line input', a: 'ts_quarter', b: 'ts_quarter', verdict: 'fits_but_verify', explain: 'It fits and may pass sound — but a long unbalanced high-impedance run collects noise and loses top end, and a line input is not an instrument input. This is what the DI exists to fix.' },
       { id: 'c', name: '1/4-inch speaker cable to the DI', a: 'ts_speaker_legacy', b: 'ts_speaker_legacy', verdict: 'wrong_construction', explain: 'Identical plug, wrong cable: unshielded speaker cable on an instrument run hums and buzzes. The jacket printing — not the plug — tells you which you are holding.' },
       { id: 'd', name: 'XLR mic cable straight from the guitar', a: 'xlr3', b: 'xlr3', verdict: 'no_fit', explain: 'The guitar has no XLR output. Fit fails first.' },
@@ -114,8 +120,8 @@ export const SCENARIOS: readonly Scenario[] = [
     to: { device: 'Mixer', port: 'Line inputs 5 and 6' },
     choices: [
       { id: 'a', name: 'TWO balanced TRS cables — L to input 5, R to input 6', a: 'trs_quarter', b: 'trs_quarter', verdict: 'correct', explain: 'Stereo is two mono connections. Two cables, two inputs, panned left and right at the mixer.' },
-      { id: 'b', name: 'One Y-cable joining L and R into one input', a: 'trs_quarter', b: 'trs_quarter', verdict: 'outputs_combined', explain: 'A passive Y forces two output stages to fight each other into one jack — level and tone suffer and the outputs are stressed. Outputs are never passively joined.' },
-      { id: 'c', name: 'One stereo TRS cable into ONE balanced input', a: 'trs_quarter', b: 'trs_quarter', verdict: 'bal_unbal', rowsOverride: { construction: true }, explain: 'A balanced input amplifies the DIFFERENCE between tip and ring — fed L and R, it hears left-minus-right and the center of the music cancels to a thin ghost. The cable’s construction is fine; the ASSIGNMENT is the mismatch.' },
+      { id: 'b', name: 'One Y-cable joining L and R into one input', a: 'ts_quarter', b: 'ts_quarter', verdict: 'outputs_combined', explain: 'A passive Y forces two output stages to fight each other into one jack — level and tone suffer and the outputs are stressed. Outputs are never passively joined.' },
+      { id: 'c', name: 'A 2×TS-to-TRS Y lead into ONE balanced input', a: 'ts_quarter', b: 'trs_quarter', verdict: 'bal_unbal', rowsOverride: { construction: true }, explain: 'A balanced input amplifies the DIFFERENCE between tip and ring — fed L and R, it hears left-minus-right and the center of the music cancels to a thin ghost. The cable’s construction is fine; the ASSIGNMENT is the mismatch.' },
       { id: 'd', name: 'RCA stereo pair', a: 'rca', b: 'rca', verdict: 'no_fit', explain: 'The keyboard’s 1/4-inch outputs will not accept RCA plugs without adapters — and the right answer is sitting in the tray.' },
     ],
     note: 'The Y-cable rule has a mirror: one output may feed a Y that SPLITS to two inputs on some gear, but two OUTPUTS never passively join.',
@@ -128,7 +134,7 @@ export const SCENARIOS: readonly Scenario[] = [
     to: { device: 'Powered monitors ×2', port: 'INPUT (XLR female)' },
     choices: [
       { id: 'a', name: 'Two balanced TRS-to-XLR cables', a: 'trs_quarter', b: 'xlr3', verdict: 'correct', explain: 'Balanced out to balanced in, one cable per monitor. Different plugs on each end, same balanced construction inside.' },
-      { id: 'b', name: 'Two TS instrument cables with TS-to-XLR adapters', a: 'ts_quarter', b: 'xlr3', verdict: 'bal_unbal', explain: 'The TS plug grounds the balanced input’s inverting leg — it usually passes sound but throws away the noise rejection you paid for. The adapter converted the fit, not the signal.' },
+      { id: 'b', name: 'Two TS instrument cables with TS-to-XLR adapters', a: 'ts_quarter', b: 'xlr3', verdict: 'bal_unbal', explain: 'The TS plug grounds the balanced input’s inverting leg — it usually passes sound but throws away the noise rejection you paid for. At the interface end the TS sleeve also grounds the output’s cold leg — some balanced outputs do not like that, so check the manual. The adapter converted the fit, not the signal.' },
       { id: 'c', name: 'Two 1/4-inch speaker cables with adapters', a: 'ts_speaker_legacy', b: 'xlr3', verdict: 'wrong_construction', explain: 'Powered monitors take LINE level on shielded cable — unshielded speaker cable is built for a different job and invites hum.' },
       { id: 'd', name: 'One TOSLINK optical cable', a: 'toslink', b: 'toslink', verdict: 'no_fit', explain: 'Neither the interface’s analog outs nor the monitors’ XLR inputs are optical ports.' },
     ],
@@ -141,7 +147,7 @@ export const SCENARIOS: readonly Scenario[] = [
     to: { device: 'Powered loudspeaker', port: 'INPUT (XLR/combo)' },
     choices: [
       { id: 'a', name: 'XLR cable — balanced shielded pair', a: 'xlr3', b: 'xlr3', verdict: 'correct', explain: 'A powered speaker takes LINE level — its amplifier is inside the box. Balanced XLR handles the 20 m run quietly.' },
-      { id: 'b', name: 'speakON speaker cable with an adapter', a: 'speakon_nl4', b: 'xlr3', verdict: 'wrong_construction', explain: 'speakON cable is for amplifier POWER runs to passive speakers. A powered speaker’s input wants a line-level signal on shielded cable — the adapter changed the plug, not the job.' },
+      { id: 'b', name: 'speakON speaker cable with adapters on both ends', a: 'speakon_nl4', b: 'speakon_nl4', verdict: 'wrong_construction', explain: 'speakON cable is for speaker-level runs from an amplifier to passive speakers. Here it needs an adapter at BOTH ends just to fit — the mixer’s XLR output and the speaker’s XLR input. A powered speaker wants a line-level signal on shielded cable; the adapters changed the plugs, not the job.' },
       { id: 'c', name: 'RCA interconnect with adapters', a: 'rca', b: 'rca', verdict: 'bal_unbal', explain: 'Unbalanced consumer cable on a 20 m stage run collects hum and buzz. It may pass signal; it will not pass it quietly.' },
       { id: 'd', name: 'Category network cable', a: 'ethernet_8p8c', b: 'ethernet_8p8c', verdict: 'no_fit', explain: 'Neither end is a network port. Data cable has its own scenarios.' },
     ],
@@ -149,14 +155,14 @@ export const SCENARIOS: readonly Scenario[] = [
   {
     id: 's07_amp_passive',
     title: 'Power amplifier → passive loudspeaker',
-    brief: 'A rack power amplifier drives a passive PA cabinet. This is amplifier POWER, not signal.',
+    brief: 'A rack power amplifier drives a passive PA cabinet. This is a speaker-level signal — high voltage and real current — not line level.',
     from: { device: 'Power amplifier', port: 'CH A OUTPUT (speakON)' },
     to: { device: 'Passive loudspeaker', port: 'INPUT (speakON)' },
     choices: [
       { id: 'a', name: 'speakON speaker cable — heavy-gauge two-conductor', a: 'speakon_nl4', b: 'speakon_nl4', verdict: 'correct', explain: 'Exactly what speakON exists for: latched, touch-safe contacts and heavy unshielded conductors sized for amplifier current.' },
       { id: 'b', name: '1/4-inch instrument cable with adapters', a: 'ts_quarter', b: 'ts_quarter', verdict: 'wrong_construction', rowsOverride: { safe: false }, explain: 'The classic damaging substitution in live sound: an instrument cable’s small conductor loses power and can heat and fail on amplifier duty. Never substitute instrument cable for speaker cable.' },
-      { id: 'c', name: 'XLR mic cable with adapters', a: 'xlr3', b: 'xlr3', verdict: 'wrong_construction', rowsOverride: { safe: false }, explain: 'Mic cable is shielded small-gauge pair for tiny signals — amplifier power does not belong on it, whatever adapters make fit.' },
-      { id: 'd', name: 'speakON cable, amp output → mixer LINE INPUT', a: 'speakon_nl4', b: 'xlr3', verdict: 'speaker_into_input', explain: 'Never. An amplifier output into any mic or line input can overdrive and damage the input circuitry — this is the one tray choice that risks equipment, not just the show.' },
+      { id: 'c', name: 'XLR mic cable with adapters', a: 'xlr3', b: 'xlr3', verdict: 'wrong_construction', rowsOverride: { safe: false }, explain: 'Mic cable is shielded small-gauge pair for tiny signals — a speaker-level signal does not belong on it, whatever adapters make fit.' },
+      { id: 'd', name: 'speakON cable, amp output → mixer LINE INPUT', a: 'speakon_nl4', b: 'xlr3', verdict: 'speaker_into_input', explain: 'Never. An amplifier output into any mic or line input can overdrive and damage the input circuitry — this is the tray choice most likely to damage equipment directly, not just the show.' },
     ],
     note: 'Speaker runs follow their own power rule: amplifier off before connecting or disconnecting speaker cables.',
   },
@@ -183,7 +189,7 @@ export const SCENARIOS: readonly Scenario[] = [
       { id: 'a', name: 'RCA stereo pair into the PHONO input (+ ground lead)', a: 'rca', b: 'rca', verdict: 'correct', explain: 'Phono level is millivolts with RIAA equalization — it needs the phono stage behind the PHONO jacks, and the ground lead stops the hum.' },
       { id: 'b', name: 'Same RCA pair into the CD/LINE input', a: 'rca', b: 'rca', verdict: 'wrong_level', explain: 'Identical plugs, wrong level: phono into a line input is faint and thin because the line input has no phono gain or RIAA curve. Fit was never the question.' },
       { id: 'c', name: 'RCA pair through a coaxial S/PDIF DIGITAL input', a: 'rca', b: 'rca', verdict: 'protocol', explain: 'The S/PDIF jack expects digital data, not analog millivolts — same shell, different world. Silence.' },
-      { id: 'd', name: '3.5 mm TRS cable with RCA adapters into LINE', a: 'trs_35', b: 'rca', verdict: 'wrong_level', explain: 'However it is adapted, phono level into a line input stays faint and thin — an adapter converts fit, never level or equalization.' },
+      { id: 'd', name: '3.5 mm TRS cable with RCA adapters into LINE', a: 'trs_35', b: 'rca', verdict: 'wrong_level', explain: 'However it is adapted, phono level into a line input stays faint and thin — a plain wired adapter changes the fit, never the level or equalization.' },
     ],
     note: 'If the turntable has a PHONO/LINE switch, the switch decides which input is right — check it before blaming the cable.',
   },

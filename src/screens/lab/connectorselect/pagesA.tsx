@@ -55,7 +55,7 @@ export function BenchCard({ id, open, onToggle }: { id: ConnectorId; open: boole
           {factLine('MAY CARRY', rec.carried.map((c) => CARRIED_LABELS[c]).join(' · '))}
           {factLine('TYPICALLY FROM', rec.typicalSources.slice(0, 3).join(' · '))}
           {factLine('TYPICALLY INTO', rec.typicalDestinations.slice(0, 3).join(' · '))}
-          {factLine('RETENTION', rec.locking.method === 'none' || rec.locking.method === 'friction' ? 'Friction only — no lock' : `Locks: ${rec.locking.method.replace('_', '-')}`)}
+          {factLine('RETENTION', rec.locking.method === 'none' || rec.locking.method === 'friction' ? 'Friction only — no lock' : `Locks: ${rec.locking.method.replace('_', '-')}${rec.locking.someModels ? ' (on some models)' : ''}`)}
           {rec.constructionNote ? factLine('CABLE BEHIND IT', rec.constructionNote) : null}
           <View style={styles.mistakeBox}>
             <Text style={styles.mistakeEyebrow}>MOST COMMON MISTAKE</Text>
@@ -271,7 +271,7 @@ function PageBenchSpeaker({ ctx }: { ctx: PageCtx }) {
       <Lead>{group.blurb}</Lead>
       <Card tone="warn">
         <Eyebrow>THE FAMILY RULE</Eyebrow>
-        <Body>Everything on this bench carries AMPLIFIER POWER, not signal. Heavy unshielded conductors, connections made with the amplifier OFF — and never, ever into an input.</Body>
+        <Body>Everything on this bench carries a speaker-level signal — high voltage and real current from an amplifier, not line level. Heavy unshielded conductors, connections made with the amplifier OFF — and never, ever into an input.</Body>
       </Card>
       {group.ids.map((id) => (
         <BenchCard key={id} id={id} open={bench.open.has(id)} onToggle={() => bench.toggleId(id)} />

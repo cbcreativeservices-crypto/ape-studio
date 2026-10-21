@@ -31,7 +31,7 @@ import { join } from 'node:path';
 import { JUST_MAJOR_THIRD, MEANTONE_FIFTH, ratioToCents, centsToRatio } from '../src/features/tuning/tuningMath.ts';
 
 const root = join(process.cwd(), 'src', 'screens', 'lab', 'tuning');
-const read = (p: string) => readFileSync(join(root, p), 'utf8');
+const read = (p: string) => readFileSync(join(root, p), 'utf8').replace(/\r\n/g, '\n');
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 
 const registry = strip(read('chapters/index.ts'));

@@ -25,6 +25,9 @@ import {
 /** Drawing units (legibility pass 2026-09-25: labels ≥ DIAGRAM_FONT, the SVG
  *  drawn at the width the glass hands it, height = w / aspect). */
 const DEV_W = 360;
+/** The device diagram's return wire runs here: under the device box (to
+ *  106) and the SUPPLY / LOAD names (to 110), above the current meter. */
+const RETURN_Y = 116;
 const DEV_H = 150;
 const XF_W = 360;
 const XF_H = 136;
@@ -49,7 +52,7 @@ function regionFor(control: number): { label: string; short: string; sub: string
 /** Controlled current, 0..1 of full, for the control signal. */
 const currentFor = (control: number) => (control < 0.15 ? 0 : Math.min(1, (control - 0.15) / 0.7));
 
-function DeviceDiagram({ device, control, width, height }: { device: Device; control: number; width: number; height: number }) {
+export function DeviceDiagram({ device, control, width, height }: { device: Device; control: number; width: number; height: number }) {
   const t = DEVICE_TERMS[device];
   const i = currentFor(control);
   // The device box is wide (160) so its terminal names fit at a legible size.
@@ -90,6 +93,11 @@ function DeviceDiagram({ device, control, width, height }: { device: Device; con
       {/* controlled current to the load — a loudspeaker */}
       <Line x1={dx + dw} y1={69} x2={294} y2={69} stroke={AMP_COLORS.output} strokeWidth={2 + i * 4} strokeOpacity={0.35 + i * 0.65} />
       <SpeakerSymbol x={300} y={58} color={AMP_COLORS.output} />
+      {/* the load's RETURN to the supply's − terminal (AM-R2-02, wiring round
+          2): from the speaker's bottom terminal down under the device and
+          back to the supply's left (−) lead, so the current has a closed
+          loop — the same current, so the same weight as the forward path */}
+      <Path d={`M300 80 V${RETURN_Y} H6 V69`} fill="none" stroke={AMP_COLORS.output} strokeWidth={1.6 + i * 2.4} strokeOpacity={0.3 + i * 0.5} strokeLinejoin="round" />
       <SvgText x={318} y={110} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>LOAD</SvgText>
       {/* current meter (relative) */}
       <SvgText x={4} y={134} fontSize={DIAGRAM_FONT} fill={colors.textMuted} fontFamily={fonts.oswaldMedium}>CONTROLLED CURRENT · relative</SvgText>
@@ -99,9 +107,10 @@ function DeviceDiagram({ device, control, width, height }: { device: Device; con
   );
 }
 
-function TransformerDiagram({ np, ns, width, height }: { np: number; ns: number; width: number; height: number }) {
+export function TransformerDiagram({ np, ns, width, height }: { np: number; ns: number; width: number; height: number }) {
   const turnsP = Math.max(2, Math.round(np / 100));
   const turnsS = Math.max(2, Math.round(ns / 100));
+  const secScale = Math.min(2, Math.max(0.25, ns / Math.max(1, np)));
   // sweep 0 bulges the primary OUT to the left of the core, sweep 1 the
   // secondary out to the right — both windings sit on the core's faces
   // (the primary used to bulge inward and overlap the core block).
@@ -131,7 +140,9 @@ function TransformerDiagram({ np, ns, width, height }: { np: number; ns: number;
       <SvgText x={100} y={14} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.input} textAnchor="middle" fontFamily={fonts.oswaldMedium}>PRIMARY · Np {np}</SvgText>
       <SvgText x={262} y={14} fontSize={DIAGRAM_FONT} fill={AMP_COLORS.output} textAnchor="middle" fontFamily={fonts.oswaldMedium}>SECONDARY · Ns {ns}</SvgText>
       <Path d="M30 70 q10 -20 20 0 t20 0 t20 0 t20 0" fill="none" stroke={AMP_COLORS.input} strokeWidth={1.5} />
-      <Path d="M250 70 q10 -20 20 0 t20 0 t20 0 t20 0" fill="none" stroke={AMP_COLORS.output} strokeWidth={1.5} />
+      {/* Vs = Vp × Ns / Np (AM-R2-03): the secondary wave's height follows
+          the turns ratio, clamped to ¼…2× so it stays a wave on the glass */}
+      <Path d={`M250 70 q10 ${-20 * secScale} 20 0 t20 0 t20 0 t20 0`} fill="none" stroke={AMP_COLORS.output} strokeWidth={1.5} />
       {/* the flux loop, round the frame through both limbs */}
       <Rect x={156} y={25} width={48} height={90} rx={6} fill="none" stroke={AMP_COLORS.supply} strokeWidth={1.2} strokeDasharray="3,2" />
       <Path d="M180 25 l-5 -3 v6 z" fill={AMP_COLORS.supply} />

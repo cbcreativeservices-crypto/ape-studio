@@ -177,7 +177,7 @@ describe('routing (routing.ts)', () => {
     assert.ok(reaches(plan, 'host', 'remoteReturn') && !reaches(plan, 'guest', 'remoteReturn'));
   });
   it('the guest in their own return is an echo (mix-minus missing)', () => {
-    assert.deepEqual(routeProblems(withSends(plan, 'guest', ['phones', 'stream', 'remoteReturn'])), [{ code: 'echo', source: 'guest' }]);
+    assert.deepEqual(routeProblems(withSends(plan, 'guest', ['phones', 'stream', 'remoteReturn'])), [{ code: 'echo', dest: 'remoteReturn', source: 'guest' }]);
   });
   it('the guest on a loudspeaker near an open mic loops back', () => {
     assert.deepEqual(routeProblems(withSends(plan, 'guest', ['monitor', 'stream'])), [{ code: 'speakerLoop', dest: 'monitor', source: 'guest' }]);

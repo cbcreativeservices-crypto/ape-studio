@@ -246,7 +246,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // ("anything in the Audio Fundamentals container is part of the
       // fundamentals requisite") — credit is inert server-side until the owner
       // runs docs/APE_PATCHBAY_LAB_SEED_2026_09_10.sql.
-      { name: 'Patchbay Signal Flow & Normalling', blurb: 'Top is the source, bottom is the destination — thru, full-normal and half-normal, the switching contact that makes them real, and the patch that changes everything.', route: 'PatchbayLab', key: 'af_patchbay', member: true },
+      { name: 'Patchbay Signal Flow & Normalling', blurb: 'On most bays, top is the source and bottom is the destination — thru, full-normal and half-normal, the switching contact that makes them real, and the patch that changes everything.', route: 'PatchbayLab', key: 'af_patchbay', member: true },
       // LIVE (owner 2026-08-07): own home + 8 modules (Signal X-Ray et al).
       { name: 'Gain Staging', blurb: 'Set levels right at every stage — headroom, noise floor, unity gain through the chain.', route: 'GainLabHome', key: 'af_gain_staging', member: true },
     ],
@@ -320,6 +320,9 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     kind: 'list',
     labs: [
       { name: 'Sound Systems Lab', blurb: 'Begin with an empty venue; finish having designed, wired, routed, tested, tuned and troubleshot a complete live sound reinforcement system — fourteen chapters, a venue builder, a live console, an operating walk-through and a twenty-two-fault bench.', route: 'SoundSystemsLab', member: true },
+      // DJ Systems Lab (owner GO 2026-10-18): Stage 1, twelve screens on one
+      // shared two-deck booth. Members only — nothing free for a guest.
+      { name: 'DJ Systems Lab', blurb: 'Connect, cue, mix and troubleshoot a two-deck DJ booth — safe listening, the gear, cables and levels, building the system, gain and meters, headphone cue, faders, EQ and filters, beatmatching, grids and sync, cues, loops and samples.', route: 'DJSystemsLab', member: true },
     ],
   },
   {
@@ -344,7 +347,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     kind: 'list',
     labs: [
       { name: 'Compression', blurb: 'Threshold, ratio, attack/release, envelope.', route: 'CompressionLab' },
-      { name: 'Gate / Expander', blurb: 'Downward expansion, chatter, sidechain.', route: 'GateLab' },
+      { name: 'Gate / Expander', blurb: 'Downward expansion, range, hold, chatter.', route: 'GateLab' },
       { name: 'Limiter', blurb: 'Brickwall ceiling, true-peak, loudness.', route: 'LimiterLab' },
       // LIVE V1 (owner brief 2026-09-02): the family hub opens with the De-Esser
       // & Sibilance Control lab; the other processors are listed as planned.

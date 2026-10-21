@@ -527,6 +527,16 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
       "It means training your ears the way a musician trains for pitch. You listen to known changes over and over until you recognise them instantly. Then you can hear a boost at a certain frequency, or too much compression, and name it. It turns vague reactions into clear decisions at the desk.",
     glossaryId: "c9f87f96-20eb-44a4-a8fe-5465e49816a2",
   },
+  // DJ Systems Lab came from dj-lab after the 2026-10-19 rulings (merged 2026-10-21);
+  // live glossary row read 2026-10-21. Term choice is ccode's (owner may change it).
+  DJSystemsLab: {
+    status: 'wired',
+    lab: "DJ Systems Lab",
+    term: "DJ (Disc Jockey)",
+    plainEnglish:
+      "A DJ, short for disc jockey, is someone who picks and plays recorded music for a crowd. They use special gear to blend one song into the next smoothly.",
+    glossaryId: "8d561c7d-d7f0-4c12-ab5f-5178fef2394c",
+  },
   // Owner 2026-10-19: the Calculator lab gets NO glossary popup.
   CalcLab: { status: 'none', lab: "Audio Calculator Laboratory", reason: "owner 2026-10-19: no glossary popup for the calculator lab" },
 };

@@ -31,7 +31,7 @@ import { WedgePlan } from '../KitPlan';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, planTurn, unionRect } from '../planFoot.ts';
-import { CAB, CHAIR_ROW, DECK_EDGE_U, DI_CABLE, inAisle, KIT_AT, LESLIE_TOP, ORGAN, ORGAN_SPACE, PA_AT, PLAN_BOX, PLAYER_SPACE_R, POS, ROOM_DRAWN, planItems, spkCue, spkFoots, spkItemFootIds, type PlanScene } from './stagePlanModel.ts';
+import { AMP_INPUT, CAB, CHAIR_ROW, DECK_EDGE_U, DI_CABLE, DI_XLR_TO, diXlr, diXlrEnd, GUITAR_JACK, guitarCordDrawn, inAisle, KIT_AT, LESLIE_TOP, ORGAN, ORGAN_SPACE, PA_AT, PLAN_BOX, PLAYER_SPACE_R, POS, ROOM_DRAWN, planItems, spkCue, spkPathCables, spkFoots, spkItemFootIds, type PlanScene } from './stagePlanModel.ts';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
 
@@ -40,6 +40,11 @@ const make = () => Skia.Path.Make();
 const AMBER = '#ffc64d';
 const BLUE = '#6fa8ff';
 const GREY = '#8a8f9c';
+/* Cable styles (MK-01, 2026-10-20): an INSTRUMENT cable (the guitar's cord,
+ * the amp's LINE / DI OUT to the DI) is a plain dark cord; the XLR is a
+ * thicker, lighter cable with a striped core (the DJ lab's XLR look). */
+const INSTR = { color: '#2a2c32', w: 16, edge: '#5a5f69' } as const;
+const XLR = { color: '#666b75', w: 22, stripe: '#c3c7cf' } as const;
 
 export type { PlanScene } from './stagePlanModel.ts';
 export { PLAN_BOX, planItems } from './stagePlanModel.ts';
@@ -121,7 +126,9 @@ function build() {
   playerSpace.addCircle(POS.player.u, POS.player.v, PLAYER_SPACE_R);
   const organSpace = rr(make(), ORGAN_SPACE.u0, ORGAN_SPACE.v0, ORGAN_SPACE.u1, ORGAN_SPACE.v1, 60);
   const deck = rr(make(), PLAN_BOX.stage.u0, PLAN_BOX.stage.v0, DECK_EDGE_U, PLAN_BOX.stage.v1, 0);
-  return { head, organ, lid, cheeks, manuals, keyLines, blackKeys, presets, pedalNat, pedalSharp, pedalFrame, bench, benchLid, leslie, leslieTop, grain, chairs, room, playerSpace, organSpace, deck };
+  // the right-angle plug: its head on the panel, the cord leaving toward +v
+  const inputPlug = rr(make(), AMP_INPUT.u, AMP_INPUT.v - 12, AMP_INPUT.u + AMP_INPUT.plug, AMP_INPUT.v + 16, 5);
+  return { inputPlug, head, organ, lid, cheeks, manuals, keyLines, blackKeys, presets, pedalNat, pedalSharp, pedalFrame, bench, benchLid, leslie, leslieTop, grain, chairs, room, playerSpace, organSpace, deck };
 }
 function getBuilt(): Built {
   return (built ??= build());
@@ -147,6 +154,29 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
     return fs.length ? unionRect(fs) : null;
   };
   const cue = scene === 'studio' ? spkCue() : null;
+  // The guitar's cord: from the tail jack, on the floor under the player, out
+  // behind them and in its own lane to the amp's INPUT; the DI's XLR.
+  const paths = useMemo(() => {
+    const C = guitarCordDrawn(scene);
+    const cord = make();
+    cord.moveTo(C.from.u, C.from.v);
+    for (const [c1, c2, q] of [C.turn, C.under]) cord.cubicTo(c1.u, c1.v, c2.u, c2.v, q.u, q.v);
+    cord.quadTo(C.lane[0].u + 200, C.lane[0].v, C.lane[0].u, C.lane[0].v);
+    for (const q of C.lane.slice(1)) cord.lineTo(q.u, q.v);
+    const xlr = make();
+    diXlr(scene).pts.forEach((q, i) => (i ? xlr.lineTo(q.u, q.v) : xlr.moveTo(q.u, q.v)));
+    return { cord, xlr };
+  }, [scene]);
+  const guitarPlug = useMemo(() => rr(make(), GUITAR_JACK.u - 9, GUITAR_JACK.v, GUITAR_JACK.u + 9, GUITAR_JACK.v + GUITAR_JACK.plug, 5), []);
+  const xlrEnd = diXlrEnd(scene);
+  // The XLR's off-plan destination, named beside the cable's end: first on
+  // the side away from the kit (the turned stage) / along the wall (studio).
+  const xlrPlaces = T.places({ u0: xlrEnd.u, u1: xlrEnd.u + 160, v0: xlrEnd.v - 12, v1: xlrEnd.v + 12 }, xf.s / ts);
+  const k = ts / xf.s;
+  const xlrPick =
+    scene === 'stage'
+      ? [2, 1, 0, 3].map((i) => xlrPlaces[i])
+      : [{ u: xlrEnd.u + 40, v: xlrEnd.v - 9 * k, align: 'left' as const }, { u: xlrEnd.u + 40, v: xlrEnd.v + 11 * k, align: 'left' as const }, ...xlrPlaces];
   const labels: StaticLabel[] = [
     ...items.map((i) => {
       const own = footOf(i.id);
@@ -155,6 +185,7 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
       return { id: i.id, text: shortOf(i.id), u: first.u, v: first.v, align: first.align, alts: i.id === 'audience' ? [] : places.slice(1), point: { u: i.u, v: i.v }, tone: i.id === highlight ? ('amber' as const) : ('muted' as const) };
     }),
     ...(cue ? cueLabels(cue).map((l) => ({ ...l, tone: 'illustrative' as const })) : []),
+    { id: 'diXlrTo', text: DI_XLR_TO[scene], u: xlrPick[0].u, v: xlrPick[0].v, align: xlrPick[0].align, alts: xlrPick.slice(1), point: { u: xlrEnd.u + 80, v: xlrEnd.v }, tone: 'illustrative' as const },
   ];
   const tap = (x: number, y: number) => {
     const { u, v } = T.unPt({ u: (x - xf.ox) / xf.s, v: (y - xf.oy) / xf.s });
@@ -204,9 +235,19 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
               </Group>
             ) : null}
             {/* the guitar's 1 × 12 cabinet (its speaker faces the audience) and its
-                DI box on the floor behind it, the cable to the amp's back panel */}
+                DI box on the floor behind it, the cable to the amp's LINE / DI OUT on its back panel (never the speaker output) */}
             <PlanAmpTop u0={CAB.box.x0} u1={CAB.box.x1} v0={CAB.box.z0} v1={CAB.box.z1} />
-            <Line p1={vec(DI_CABLE.pts[0].u, DI_CABLE.pts[0].v)} p2={vec(DI_CABLE.pts[1].u, DI_CABLE.pts[1].v)} color="#2a2c32" strokeWidth={16} strokeCap="round" />
+            <Line p1={vec(DI_CABLE.pts[0].u, DI_CABLE.pts[0].v)} p2={vec(DI_CABLE.pts[1].u, DI_CABLE.pts[1].v)} color={INSTR.color} strokeWidth={INSTR.w} strokeCap="round" />
+            {/* the DI's XLR out: upstage to the stage box (off the plan) / to the studio's wall panel */}
+            <Path path={paths.xlr} style="stroke" color={XLR.color} strokeWidth={XLR.w} strokeCap="butt" strokeJoin="round" />
+            <Path path={paths.xlr} style="stroke" color={XLR.stripe} strokeWidth={5} strokeCap="butt">
+              <DashPathEffect intervals={[34, 22]} />
+            </Path>
+            {/* the guitar's cord to the amp's INPUT (front panel), on the floor under the player */}
+            <Path path={paths.cord} style="stroke" strokeWidth={INSTR.w + 6} strokeCap="round" strokeJoin="round" color={INSTR.edge} />
+            <Path path={paths.cord} style="stroke" strokeWidth={INSTR.w} strokeCap="round" strokeJoin="round" color={INSTR.color} />
+            <Path path={b.inputPlug} color="#15161a" />
+            <Path path={b.inputPlug} style="stroke" strokeWidth={3} color="#9aa0ab" />
             <Group transform={[{ translateX: POS.di.u }, { translateY: POS.di.v }, { rotate: Math.PI }]}>
               <PlanDiBox />
             </Group>
@@ -218,6 +259,9 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
                 <FigureHead fill={b.head} />
               </Group>
             </Group>
+            {/* the cord's plug in the guitar's tail jack */}
+            <Path path={guitarPlug} color="#15161a" />
+            <Path path={guitarPlug} style="stroke" strokeWidth={3} color="#9aa0ab" />
             {/* the organ console, its pedalboard, the bench; the rotary cabinet beside it */}
             <Group transform={[{ translateX: POS.organ.u }, { translateY: POS.organ.v }]}>
               <Path path={b.pedalFrame} color="#2a1a0c" />
@@ -296,7 +340,7 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
             </Line>
           </Group>
         </Canvas>
-        <StaticLabels labels={T.labels(labels)} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(T.foots(foots), T.cables(cue ? cueCables(cue) : []))} />
+        <StaticLabels labels={T.labels(labels)} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(T.foots(foots), T.cables([...spkPathCables(scene), ...(cue ? cueCables(cue) : [])]))} />
       </View>
     </Pressable>
   );

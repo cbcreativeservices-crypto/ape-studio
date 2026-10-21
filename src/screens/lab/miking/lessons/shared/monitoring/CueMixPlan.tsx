@@ -11,7 +11,7 @@
  *     (band over two cups) so they read as headphones — plugged into that
  *     mixer by its own cord;
  *   • each mixer's own feed back to the distribution point at the room edge
- *     (CONTROL ROOM), every feed its own traceable lane (D69).
+ *     (CONTROL ROOM), every feed its own traceable lane (D70).
  *
  * The caller adds the words (HEADPHONE MIX, CONTROL ROOM) through its own
  * label layout: `cueLabels` gives them.

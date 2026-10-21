@@ -123,7 +123,7 @@ export const GUIDE: MixingGuide = {
         "source": "Timbales (under)",
         "cut": "HPF 80 Hz; −3 dB at 500 Hz",
         "boost": "+2 dB at 150–200 Hz (shell body)",
-        "notes": "Flip polarity against top mics; check for comb filtering"
+        "notes": "Check polarity against the top mics: flip it and keep the setting that sounds fuller; check for comb filtering"
       },
       {
         "source": "Campana / cowbell",

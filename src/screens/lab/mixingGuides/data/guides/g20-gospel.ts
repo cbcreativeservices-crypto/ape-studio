@@ -272,7 +272,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Gospel is a singer’s music. Lead vocals sit clearly above the band — often 3–5 dB louder in perceived level than in rock — with every melisma, growl and run audible. Keep the tone warm and present; harshness on big belts is the top complaint, so use dynamic EQ at 2.5–4 kHz rather than static cuts. Use a supercardioid handheld, since leaders roam in front of loud wedges. Pitch correction is light; audible tuning on a gospel lead robs the runs of feeling. Ad-libs over the vamp are featured, not tucked. Choirs: one cardioid condenser covers roughly 15–20 singers; place at or above back-row height, 2–3 ft in front, spaced by the 3:1 rule, and never send choir mics to choir wedges."
+      "text": "Gospel is a singer’s music. Lead vocals sit clearly above the band — often 3–5 dB louder in perceived level than in rock — with every melisma, growl and run audible. Keep the tone warm and present; harshness on big belts is the top complaint, so use dynamic EQ at 2.5–4 kHz rather than static cuts. Use a supercardioid handheld, since leaders roam in front of loud wedges. Pitch correction is light; audible tuning on a gospel lead robs the runs of feeling. Ad-libs over the vamp are featured, not tucked. Choirs: one cardioid condenser covers roughly 15–20 singers; place at or above back-row height, 2–3 ft in front, spaced by the 3:1 rule, and keep choir mics out of the choir wedges (in-ears, or a little added with care, are the exceptions)."
     }
   ],
   "loudness": [

@@ -423,9 +423,13 @@ export function GearFront({ kind, x, y }: { kind: PathDevice; x: number; y: numb
 
 export const GEAR_NAME: Record<PathDevice, string> = { daw: 'DAW', dac: 'DAC', monitorCtl: 'MON CTL', amp: 'POWER AMP', passive: 'PASSIVE', active: 'ACTIVE' };
 
-/** The cable between two neighbouring devices, by what it carries. */
+/** The cable between two neighbouring devices, by what it carries. USB
+ *  (data) leaves the DAW only into a device that converts it — the D/A
+ *  converter or a monitor controller with one built in. Anywhere else the
+ *  DAW box stands for computer + interface, whose analog output is a line
+ *  cable (MA-02, wiring 2026-10-20: never USB into an amp or a monitor). */
 function cableFor(a: PathDevice, b: PathDevice): 'usb' | 'line' | 'speaker' {
-  if (a === 'daw') return 'usb';
+  if (a === 'daw') return b === 'dac' || b === 'monitorCtl' ? 'usb' : 'line';
   if (a === 'amp' && b === 'passive') return 'speaker';
   return 'line';
 }

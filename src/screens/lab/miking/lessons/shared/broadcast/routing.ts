@@ -12,11 +12,15 @@
  * where. The checks say in words what a real system would do:
  *
  *   echo            a remote contributor's own voice sent back to them in
- *                   their return: they hear themselves late. Their return is
- *                   the program MINUS their own voice (mix-minus);
+ *                   their return OR their earpiece (IFB): they hear
+ *                   themselves late. Their return is the program MINUS their
+ *                   own voice (mix-minus) (wiring fix MK-04, 2026-10-20);
  *   speakerLoop     the remote return (or the program) played on a nearby
- *                   loudspeaker while a studio mic is open: the mic picks it
- *                   up again — use headphones;
+ *                   MONITOR loudspeaker while a studio mic is open: the mic
+ *                   picks it up again — use headphones. The PA is not flagged:
+ *                   a remote voice or playback on the PA near open mics is the
+ *                   normal live case (B05 clips, B06 remote panellist),
+ *                   handled by mix-minus and gain before feedback (MK-04);
  *   missing         a source the brief needs is not in a destination (the
  *                   audience question absent from the stream or the press
  *                   feed — "a press feed is only the mix routed into it");
@@ -47,7 +51,7 @@ export const DESTINATIONS: Readonly<Record<DestId, { label: string; short: strin
   recorder: { label: 'the recorder', short: 'RECORDER', kind: 'feed', words: 'Each mic on its own track, plus the mix: for the edit and a backup.' },
   ifb: { label: 'an earpiece (IFB)', short: 'EARPIECE', kind: 'people', words: 'A talker’s earpiece: the program, with the producer’s cues when they talk.' },
   talkback: { label: 'talkback', short: 'TALKBACK', kind: 'people', words: 'The producer speaking to the talent and the crew — kept off the air.' },
-  pressBox: { label: 'the press feed box', short: 'PRESS FEED', kind: 'feed', words: 'A box that takes one line-level mix and gives each reporter an isolated mic-level output: a copy of the mix, not another mic.' },
+  pressBox: { label: 'the press feed box', short: 'PRESS FEED', kind: 'feed', words: 'A box that takes one line-level mix and gives each reporter an isolated output, usually mic level (many switch to line): a copy of the mix, not another mic.' },
   remoteReturn: { label: 'the remote guest’s return', short: 'RETURN', kind: 'people', words: 'What a remote guest hears: the program MINUS their own voice (mix-minus), or they hear themselves late.' },
 };
 
@@ -77,8 +81,8 @@ export function feeds(plan: RoutingPlan, dest: DestId): RouteSource[] {
 }
 
 export type RouteProblem =
-  | { code: 'echo'; source: string }
-  | { code: 'speakerLoop'; dest: 'monitor' | 'pa'; source: string }
+  | { code: 'echo'; dest: 'remoteReturn' | 'ifb'; source: string }
+  | { code: 'speakerLoop'; dest: 'monitor'; source: string }
   | { code: 'missing'; dest: DestId; source: string }
   | { code: 'ambienceInPa'; source: string }
   | { code: 'talkbackOnAir'; dest: DestId }
@@ -92,7 +96,7 @@ export function routeProblems(plan: RoutingPlan): RouteProblem[] {
   const out: RouteProblem[] = [];
   const kind = (id: string) => plan.sources.find((s) => s.id === id)?.kind;
   for (const s of plan.sources) {
-    if (s.kind === 'remote' && reaches(plan, s.id, 'remoteReturn')) out.push({ code: 'echo', source: s.id });
+    if (s.kind === 'remote') for (const d of ['remoteReturn', 'ifb'] as const) if (reaches(plan, s.id, d)) out.push({ code: 'echo', dest: d, source: s.id });
     if (s.kind === 'ambience' && reaches(plan, s.id, 'pa')) out.push({ code: 'ambienceInPa', source: s.id });
   }
   // A remote voice or the program on a loudspeaker near an open studio mic.
@@ -124,7 +128,7 @@ export function problemWords(plan: RoutingPlan, p: RouteProblem): string {
   const name = (id: string) => plan.sources.find((s) => s.id === id)?.label ?? id;
   switch (p.code) {
     case 'echo':
-      return `${name(p.source)} is sent back in their own return: they hear their own voice late. Give them the program MINUS their own voice.`;
+      return `${name(p.source)} is sent back in their own ${p.dest === 'ifb' ? 'earpiece' : 'return'}: they hear their own voice late. Give them the program MINUS their own voice.`;
     case 'speakerLoop':
       return `${name(p.source)} plays on ${DESTINATIONS[p.dest].label} next to an open mic: the mic picks it up again. Use headphones or an earpiece.`;
     case 'missing':

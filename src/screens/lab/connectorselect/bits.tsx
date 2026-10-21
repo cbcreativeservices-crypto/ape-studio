@@ -17,7 +17,7 @@ import { useMarkWhen, Btn } from '../tuning/components/primitives';
 import { navigationRef } from '../../../navigation/navigationRef';
 import type { PageCtx } from '../kit/PagedLab';
 import type { ConnectorId } from '../cable/cableTypes';
-import { connectorImages } from '../cable/connectorImages';
+import { cableEndImage, connectorImages, type CableEndRole } from '../cable/connectorImages';
 import { CENTRAL_LESSON } from './data/roster';
 import type { Verdict } from './engine/evaluate';
 
@@ -127,18 +127,23 @@ export function usePrefetchConnectorPhotos(ids: readonly ConnectorId[]): void {
   }, [key]);
 }
 
-export function ConnectorPhoto({ id, size = 96, single, name }: {
+export function ConnectorPhoto({ id, size = 96, single, end, name }: {
   id: ConnectorId;
   size?: number;
   /** Show only the primary view — for dense contexts like the cable tray. */
   single?: boolean;
+  /** A CABLE END (R3-CS-01, rule C2): shows that end's own view — the end
+   *  into an output is FEMALE, the end into an input MALE (xlr3). Implies
+   *  a single image. */
+  end?: CableEndRole;
   /** Spoken name for assistive tech. DELIBERATELY OMITTED on assessment
    *  identification questions — naming the connector there would leak the
    *  answer; the generic label is the honest choice in that one context. */
   name?: string;
 }) {
+  const endImage = end ? cableEndImage(id, end) : null;
   const all = connectorImages(id);
-  const images = single ? all.slice(0, 1) : all;
+  const images = end ? (endImage ? [endImage] : []) : single ? all.slice(0, 1) : all;
   if (!images.length) return null;
   return (
     <View style={styles.photoRow}>

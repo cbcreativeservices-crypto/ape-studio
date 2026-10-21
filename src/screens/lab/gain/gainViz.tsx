@@ -2,18 +2,14 @@
  * gainViz — the Gain Staging Lab's visual system (owner spec + edit pass
  * 2026-08-07).
  *
- * TWO layouts:
- *  • ChainColumns — lessons 1–5: stages as COLUMNS left→right (signal path
- *    INPUT ▸ … ▸ OUTPUT across the top), each column a vertical 3-zone meter +
- *    a VERTICAL fader (MIDI-coloured); fixed stages carry a FIXED tag so it's
- *    obvious where there is no user control.
- *  • DeviceCard + CableLink — modules 6–8: the chain as REAL-WORLD-styled rack
- *    devices (screws, nameplate, jack labels) stacked top→down, patched
- *    OUTPUT → INPUT with the red TRS cable idiom from the dashboard's
- *    "matching" MethodIcon (dark-red sheath #6e1a12 + #ff5a48 core + silver
- *    connectors). Real-gear honesty: with Signal X-Ray OFF a device shows only
- *    its SIG/CLIP LEDs — you don't get to see the level inside; X-Ray ON
- *    reveals every meter in the chain at once.
+ * Layouts:
+ *  • ChainStage — every module today (rack conversion 2026-08-23, below):
+ *    the chain as drawn channel-strip gear (gainGear.tsx) over meter columns.
+ *    Real-gear honesty in modules 6–8: with Signal X-Ray OFF a column shows
+ *    only its SIG/CLIP LEDs; X-Ray ON reveals every meter at once.
+ *    (The old TRS-patched DeviceCard rack and the pre-rack ChainColumns
+ *    layout were never rendered and were removed 2026-10-20, wiring finding
+ *    GN-02, owner go.)
  *
  * Meters colour by the app MIDI ramp (levelColor): blue = too low, green =
  * healthy, yellow/red = hot/overload.
@@ -23,24 +19,20 @@
  * faders move to the dock, so the columns carry meters/LEDs/collapsed slots
  * only. stageTint/stageStatus feed the bezel readouts.
  */
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { fitValue } from '../../../theme/legibility';
-import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import { useDecorativeMotion } from '../../../features/settings/decorativeMotion';
-import { GEAR_ASPECT, StageGear, StageLink } from './gainGear';
+import { GEAR_ASPECT, MicCableRun, StageGear, StageLink } from './gainGear';
 import { DragSlider } from '../foundations/bits';
-import { VerticalFader } from '../eq/modules/eqBits';
 import { useStageTextScale } from '../rack/stageAspect';
 import { useScaledStyles } from '../stageScale';
 import {
-  computeChain,
   meterFill,
-  verdictFor,
   LOW_EDGE,
   ZONE_CLIP_FILL,
   ZONE_HOT_FILL,
@@ -164,124 +156,6 @@ export function StageMeterV({
   );
 }
 
-// ───────────────────────────────────────────── columns layout (M1–M5) ───────
-export type ColumnControl = {
-  value: number; // 0..1
-  onChange: (t: number) => void;
-  readout: string;
-  /** Where unity (0 dB) sits on this fader, 0..1 from the bottom. Omitted on
-   *  the SOURCE fader, which has no unity — it is a level, not a gain. */
-  unity?: number;
-};
-
-export function StageColumn({
-  name,
-  kind,
-  node,
-  control,
-  note,
-}: {
-  name: string;
-  kind: StageKind;
-  node: ChainNode;
-  control?: ColumnControl;
-  /** Line under the column (e.g. the source descriptor). */
-  note?: string;
-}) {
-  const tint = levelColor(meterFill(node.level));
-  return (
-    <View style={styles.col}>
-      <StageIcon kind={kind} size={26} />
-      <Text style={styles.colName}>{name}</Text>
-      <View style={styles.colMeterRow}>
-        <StageMeterV node={node} />
-        {control ? (
-          <VerticalFader value={control.value} onChange={control.onChange} label="" tint={tint} unity={control.unity} />
-        ) : null}
-      </View>
-      {control ? (
-        <Text style={[styles.colReadout, { color: tint }]}>{control.readout}</Text>
-      ) : (
-        <View style={styles.fixedTag}>
-          <Text style={styles.fixedTagText}>FIXED</Text>
-        </View>
-      )}
-      {note ? <Text style={styles.colNote}>{note}</Text> : null}
-    </View>
-  );
-}
-
-/** The whole chain as columns, with the signal path labeled across the top. */
-export function ChainColumns({
-  source,
-  stages,
-  sourceRange = [-40, -6],
-  onSource,
-  onGain,
-  sourceNote,
-}: {
-  source: number;
-  stages: Stage[];
-  sourceRange?: [number, number];
-  onSource?: (v: number) => void;
-  onGain?: (key: string, v: number) => void;
-  sourceNote?: boolean;
-}) {
-  const nodes = computeChain(source, stages);
-  const [lo, hi] = sourceRange;
-  return (
-    <View style={styles.colsPanel}>
-      {/* Signal path header: INPUT ▸ … ▸ OUTPUT */}
-      <View style={styles.pathRow}>
-        <Text style={styles.pathEnd}>INPUT</Text>
-        <View style={styles.pathLine} />
-        <Text style={styles.pathArrowBig}>▸</Text>
-        <View style={styles.pathLine} />
-        <Text style={styles.pathEnd}>OUTPUT</Text>
-      </View>
-      <View style={styles.colsRow}>
-        <StageColumn
-          name="SOURCE"
-          kind="source"
-          node={nodes[0]}
-          control={
-            onSource
-              ? {
-                  value: (source - lo) / (hi - lo),
-                  onChange: (t) => onSource(Math.round(lo + t * (hi - lo))),
-                  readout: 'LEVEL',
-                }
-              : undefined
-          }
-          note={sourceNote ? sourceDesc(nodes[0]) : undefined}
-        />
-        {stages.map((st, i) => (
-          <View key={st.key} style={styles.colWithArrow}>
-            <Text style={[styles.colArrow, nodes[i + 1].distorted && { color: '#ff5f4e' }]}>▸</Text>
-            <StageColumn
-              name={st.name.toUpperCase()}
-              kind={st.kind}
-              node={nodes[i + 1]}
-              control={
-                st.adjustable && onGain
-                  ? {
-                      value: (st.gain - st.min) / (st.max - st.min),
-                      onChange: (t) => onGain(st.key, Math.round(st.min + t * (st.max - st.min))),
-                      readout: `${st.gain >= 0 ? '+' : ''}${st.gain} dB`,
-                      // Only when 0 dB is actually on this fader's travel.
-                      unity:
-                        st.min < 0 && st.max > 0 ? (0 - st.min) / (st.max - st.min) : undefined,
-                    }
-                  : undefined
-              }
-            />
-          </View>
-        ))}
-      </View>
-    </View>
-  );
-}
-
 // ───────────────────────────────────── rack stage (Rack Unit, 2026-08-23) ───
 /** Meter-tint helper for bezel cells / dock faders (the MIDI ramp). */
 export function stageTint(node: ChainNode): string {
@@ -354,6 +228,14 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
   const room = h / ts - METER_CHROME;
   const shortLabel = twoLineLabel && room - REGION_LINE < MIN_METER;
   const meterH = Math.max(MIN_METER, room - (twoLineLabel && !shortLabel ? REGION_LINE : 0)) * ts;
+  // The mic → preamp XLR cable (GN-R2-03): one lane drawn over both gear
+  // boxes, so it is placed from the same flex geometry the columns get —
+  // the glass's inner width split into equal wraps, each a link (or the
+  // first column's spacer) plus a column with its gear centred.
+  const micCable = cols.length > 1 && cols[0].kind === 'source';
+  const gearW = GEAR_H * GEAR_ASPECT * ts;
+  const wrapW = (w - 2 * 10 * ts) / cols.length;
+  const gearLeft0 = LINK_W * ts + (wrapW - LINK_W * ts - gearW) / 2;
   return (
     <View style={[s.stageGlass, { width: w, height: h }]}>
       {/* Signal path header: INPUT ▸ … ▸ OUTPUT */}
@@ -375,7 +257,9 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
             style={[
               s.pathTrace,
               {
-                left: `${50 / cols.length}%`,
+                // with the mic cable drawn, the printed flow line starts at
+                // the preamp: the first hop is the cable itself
+                left: `${(micCable ? 150 : 50) / cols.length}%`,
                 right: `${50 / cols.length}%`,
                 top: (3 + GEAR_H / 2) * ts - 0.75,
               },
@@ -451,14 +335,24 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
             </View>
           );
         })}
+        {micCable ? (
+          <View pointerEvents="none" style={{ position: 'absolute', left: gearLeft0, top: 3 * ts, width: wrapW + gearW, height: GEAR_H * ts }}>
+            <MicCableRun
+              gearW={gearW}
+              gearH={GEAR_H * ts}
+              span={wrapW}
+              chevronX={wrapW + (LINK_W * ts) / 2 - gearLeft0}
+              hot={!!cols[1].node.distorted && (cols[1].display ?? 'meter') !== 'hidden'}
+              dim={cols[0].display === 'hidden' || cols[1].display === 'hidden'}
+            />
+          </View>
+        ) : null}
       </View>
     </View>
   );
 }
 
-// ───────────────────────────────────────────── device cards (M6–M8) ─────────
-/** Clip LED pair — all a real device shows you from the outside. */
-
+// ───────────────────────────────────────────── peak hold ─────────────────────
 /**
  * Peak hold — the thin tick that stays at the highest level reached.
  *
@@ -474,167 +368,7 @@ function usePeakHold(fill: number) {
   return { peak, reset: () => setPeak(fill) };
 }
 
-/** One stage row (owner 2026-08-10 layout): the left ¾ is the data panel —
- *  LEDs / meter / slider / readouts, two rows tall. The right ¼ is a column:
- *  top row the DEVICE itself (a generic rack box carrying the device name),
- *  bottom row the patch cable dropping straight down into the next device. */
-export function DeviceCard({
-  name,
-  kind,
-  last,
-  xray,
-  onPress,
-  children,
-}: {
-  name: string;
-  kind: StageKind;
-  first?: boolean;
-  last?: boolean;
-  /** X-Ray styling: scan-blue border + darkened face while revealed. */
-  xray?: boolean;
-  onPress?: () => void;
-  children?: ReactNode;
-}) {
-  const body = (
-    <View style={styles.stageRow}>
-      {/* ── left ¾ — data / controls panel ── */}
-      <View style={[styles.panel, xray && styles.panelXray, !last && styles.panelGap]}>{children}</View>
-      {/* ── right ¼ — the device box, then its output cable ── */}
-      <View style={styles.rightCol}>
-        <View style={[styles.deviceBox, xray && styles.deviceBoxXray]}>
-          <View style={[styles.screw, { top: 3, left: 3 }]} />
-          <View style={[styles.screw, { top: 3, right: 3 }]} />
-          <View style={[styles.screw, { bottom: 3, left: 3 }]} />
-          <View style={[styles.screw, { bottom: 3, right: 3 }]} />
-          <StageIcon kind={kind} size={18} />
-          <Text style={styles.deviceName} numberOfLines={1} adjustsFontSizeToFit>
-            {name.toUpperCase()}
-          </Text>
-        </View>
-        {!last ? <DeviceCable /> : <View style={styles.cableCol} />}
-      </View>
-    </View>
-  );
-  if (onPress) {
-    return (
-      <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={`${name} device`}>
-        {body}
-      </Pressable>
-    );
-  }
-  return body;
-}
-
-/** The straight vertical patch cable from this device's output into the next
- *  device below: chrome TRS plugs seated at each end, insulated sheath with a
- *  sheen + the app's slim red signal tracer. Pure Views so it stretches to
- *  whatever height the row leaves it. */
-function DeviceCable() {
-  return (
-    <View style={styles.cableCol}>
-      <View style={styles.plug}>
-        <View style={styles.plugSheen} />
-        <View style={[styles.plugRing, { bottom: 1.5 }]} />
-      </View>
-      <View style={styles.cableSheath}>
-        <View style={styles.cableCore} />
-        <View style={styles.cableSheen} />
-        <View style={styles.cableTracer} />
-      </View>
-      <View style={styles.plug}>
-        <View style={styles.plugSheen} />
-        <View style={[styles.plugRing, { top: 1.5 }]} />
-      </View>
-    </View>
-  );
-}
-
-/** Horizontal 3-zone meter for a device face (X-Ray / revealed view). */
-export function DeviceMeter({ node, showLevel }: { node: ChainNode; showLevel?: boolean }) {
-  const fill = meterFill(node.level);
-  const col = levelColor(fill);
-  return (
-    <View style={styles.hWrap}>
-      <View style={styles.hTrack}>
-        <View style={[styles.hZone, { left: 0, width: pct(ZONE_LOW_FILL), backgroundColor: '#13233f' }]} />
-        <View style={[styles.hZone, { left: pct(ZONE_LOW_FILL), width: pct(ZONE_HOT_FILL - ZONE_LOW_FILL), backgroundColor: '#122a17' }]} />
-        <View style={[styles.hZone, { left: pct(ZONE_HOT_FILL), width: pct(1 - ZONE_HOT_FILL), backgroundColor: '#2a1410' }]} />
-        <GradientView colors={rampColors(fill)} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[styles.hFill, { width: pct(fill) }]} />
-        <View style={[styles.hCeil, { left: pct(ZONE_CLIP_FILL) }]} />
-      </View>
-      <View style={styles.hUnder}>
-        {node.stageClipped ? (
-          <Text style={styles.clipBadge}>CLIP</Text>
-        ) : node.distorted ? (
-          <Text style={styles.distBadge}>DISTORTED</Text>
-        ) : (
-          <Text style={[styles.vRegion, { color: col }]}>{regionLabelFor(node)}</Text>
-        )}
-        {showLevel ? <Text style={styles.hVerdict}>{verdictFor(node)}</Text> : null}
-      </View>
-    </View>
-  );
-}
-
 // ───────────────────────────────────────────── stage icons + button ─────────
-/** Simple line-art equipment glyph per stage kind. */
-export function StageIcon({ kind, size = 30 }: { kind: StageKind; size?: number }) {
-  const s = size;
-  const c = colors.textSecondary;
-  return (
-    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={s} height={s} viewBox="0 0 32 32" fill="none">
-      {kind === 'source' && (
-        <>
-          <Rect x={12} y={4} width={8} height={14} rx={4} stroke={c} strokeWidth={1.6} />
-          <Path d="M9 14a7 7 0 0 0 14 0" stroke={c} strokeWidth={1.6} strokeLinecap="round" />
-          <Line x1={16} y1={21} x2={16} y2={26} stroke={c} strokeWidth={1.6} />
-          <Line x1={11} y1={27} x2={21} y2={27} stroke={c} strokeWidth={1.6} strokeLinecap="round" />
-        </>
-      )}
-      {kind === 'preamp' && (
-        <>
-          <Rect x={4} y={9} width={24} height={14} rx={2} stroke={c} strokeWidth={1.6} />
-          <Circle cx={11} cy={16} r={4} stroke={c} strokeWidth={1.5} />
-          <Line x1={11} y1={16} x2={11} y2={12.5} stroke={c} strokeWidth={1.4} strokeLinecap="round" />
-          <Line x1={19} y1={13} x2={24} y2={13} stroke={c} strokeWidth={1.3} />
-          <Line x1={19} y1={19} x2={24} y2={19} stroke={c} strokeWidth={1.3} />
-        </>
-      )}
-      {(kind === 'eq' || kind === 'processor') && (
-        <>
-          <Rect x={4} y={7} width={24} height={18} rx={2} stroke={c} strokeWidth={1.6} />
-          <Path d="M7 20 Q13 20 16 13 Q19 20 25 12" stroke={colors.amber} strokeWidth={1.5} fill="none" strokeLinecap="round" />
-        </>
-      )}
-      {kind === 'comp' && (
-        <>
-          <Rect x={4} y={7} width={24} height={18} rx={2} stroke={c} strokeWidth={1.6} />
-          <Path d="M16 10 L16 20 M12 16 L16 21 L20 16" stroke={colors.amber} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
-        </>
-      )}
-      {kind === 'fader' && (
-        <>
-          <Line x1={16} y1={5} x2={16} y2={27} stroke={c} strokeWidth={1.6} />
-          <Rect x={10} y={13} width={12} height={6} rx={1.5} fill="#22242c" stroke={colors.amber} strokeWidth={1.5} />
-        </>
-      )}
-      {kind === 'bus' && (
-        <>
-          <Path d="M5 8 L14 16 M5 24 L14 16 M14 16 L27 16" stroke={c} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
-          <Circle cx={14} cy={16} r={2.2} fill={c} />
-        </>
-      )}
-      {kind === 'output' && (
-        <>
-          <Rect x={6} y={11} width={7} height={10} stroke={c} strokeWidth={1.6} />
-          <Path d="M13 11 L21 6 L21 26 L13 21" stroke={c} strokeWidth={1.6} strokeLinejoin="round" fill="none" />
-          <Path d="M24 12a6 6 0 0 1 0 8" stroke={c} strokeWidth={1.4} strokeLinecap="round" />
-        </>
-      )}
-    </Svg>
-  );
-}
-
 /** Small tappable button used across the lab. `good` = the green variant. */
 export function GainBtn({
   label,
@@ -689,19 +423,12 @@ const styles = StyleSheet.create({
   distBadge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.5, color: '#ff7a1e' },
 
   // columns
-  colsPanel: { borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 10 },
   pathRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   pathEnd: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.amber },
   pathLine: { flex: 1, height: 1, backgroundColor: '#3a4150' },
   pathArrowBig: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.amber },
-  colsRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
-  colWithArrow: { flexDirection: 'row', alignItems: 'center', flexShrink: 1 },
-  colArrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: '#4a5060', paddingHorizontal: 1, marginTop: 60 },
-  col: { alignItems: 'center', gap: 5, flexShrink: 1 },
   colName: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.6, color: colors.textPrimary, textAlign: 'center' },
-  colMeterRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 2 },
   colReadout: { fontFamily: fonts.mono, fontSize: 10 },
-  colNote: { fontFamily: fonts.barlowRegular, fontSize: 9.5, lineHeight: 12, color: colors.textSub, textAlign: 'center', maxWidth: 84 },
   fixedTag: { borderRadius: 4, borderWidth: 1, borderColor: '#33353d', paddingHorizontal: 6, paddingVertical: 2, backgroundColor: '#101014' },
   fixedTagText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.8, color: colors.textSub },
 
@@ -743,26 +470,7 @@ const styles = StyleSheet.create({
   slotUnder: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.4, color: colors.textSub },
   slotLedLabel: { fontFamily: fonts.mono, fontSize: 9, color: colors.textSub, marginTop: 2 },
 
-  // stage rows — left ¾ data panel, right ¼ device + cable (owner 2026-08-10)
-  stageRow: { flexDirection: 'row', gap: 8, alignItems: 'stretch' },
-  panel: { flex: 3, borderRadius: 10, borderWidth: 1.5, borderColor: '#34363e', backgroundColor: '#1a1c22', paddingVertical: 7, paddingHorizontal: 12, gap: 5, justifyContent: 'center' },
-  panelXray: { borderColor: 'rgba(127,212,255,.55)', backgroundColor: '#10151b' },
-  panelGap: { marginBottom: 10 },
-  rightCol: { flex: 1, alignSelf: 'stretch' },
-  deviceBox: { flex: 1, borderRadius: 8, borderWidth: 1.5, borderColor: '#34363e', backgroundColor: '#22242c', alignItems: 'center', justifyContent: 'center', gap: 1, paddingHorizontal: 8, paddingVertical: 4 },
-  deviceBoxXray: { borderColor: 'rgba(127,212,255,.55)', backgroundColor: '#131a21' },
-  screw: { position: 'absolute', width: 4, height: 4, borderRadius: 2, backgroundColor: '#55555f', borderWidth: 0.5, borderColor: '#0c0c0f' },
-  deviceName: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.8, color: colors.textPrimary, textAlign: 'center' },
 
-  // the drop cable (right column, 2nd row)
-  cableCol: { flex: 1, alignItems: 'center' },
-  plug: { width: 9, height: 8, borderRadius: 2, backgroundColor: '#c8ccd4', borderWidth: 0.6, borderColor: '#8b8f97', overflow: 'hidden' },
-  plugSheen: { position: 'absolute', left: 1.5, top: 0.5, bottom: 0.5, width: 1.6, borderRadius: 0.8, backgroundColor: '#eef1f5', opacity: 0.85 },
-  plugRing: { position: 'absolute', left: 0, right: 0, height: 0.9, backgroundColor: '#0d0d0f' },
-  cableSheath: { flex: 1, width: 7, borderRadius: 3.5, backgroundColor: '#0b0b0d', overflow: 'hidden', marginVertical: -1 },
-  cableCore: { position: 'absolute', top: 1, bottom: 1, left: 1, right: 1, borderRadius: 2.5, backgroundColor: '#2c2f36' },
-  cableSheen: { position: 'absolute', left: 1.6, top: 2, bottom: 2, width: 1.2, borderRadius: 0.6, backgroundColor: '#5a5f6a', opacity: 0.55 },
-  cableTracer: { position: 'absolute', left: 3, top: 2, bottom: 2, width: 1, backgroundColor: '#c23a2d', opacity: 0.7 },
 
   led: { width: 9, height: 9, borderRadius: 4.5, backgroundColor: '#23252d', borderWidth: 1, borderColor: '#0c0c0f' },
   ledSig: { backgroundColor: '#3fae52' },
@@ -771,14 +479,6 @@ const styles = StyleSheet.create({
      only red mark on a meter is its ceiling. */
   vPeak: { position: 'absolute', left: 0, right: 0, height: 1.5, backgroundColor: '#e9e9ef' },
 
-  // horizontal device meter
-  hWrap: { gap: 3 },
-  hTrack: { height: 13, borderRadius: 4, overflow: 'hidden', backgroundColor: '#0c0d11', borderWidth: 1, borderColor: '#23252d' },
-  hZone: { position: 'absolute', top: 0, bottom: 0 },
-  hFill: { position: 'absolute', top: 1, bottom: 1, left: 0, borderRadius: 2, opacity: 0.95 },
-  hCeil: { position: 'absolute', top: -1, bottom: -1, width: 2, backgroundColor: '#ff5f4e' },
-  hUnder: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  hVerdict: { fontFamily: fonts.barlowRegular, fontSize: 10.5, color: colors.textSub, flexShrink: 1 },
 
   // buttons
   btn: { borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 11, paddingVertical: 8, backgroundColor: '#17171c' },

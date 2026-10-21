@@ -210,15 +210,15 @@ const LOUDTP: Workspace = {
       inputs: ['samplePeak', 'lossy'],
       formula: 'ceiling = −1 dBTP (lossless) or −2 dBTP (lossy)',
       plainFormula:
-        'The recommended true-peak ceiling is minus one dBTP for lossless delivery, or minus two dBTP for lossy delivery.',
+        'A commonly quoted true-peak margin is minus one dBTP; lossy delivery often uses minus two dBTP. Check the destination’s current spec.',
       explain:
-        'Picks a safe true-peak ceiling and shows your margin to it. A sample-peak meter can under-read: true inter-sample peaks can sit up to about 3 dB higher, and lossy encoding (MP3/AAC) adds overshoot — so lossy delivery drops the ceiling from −1 to −2 dBTP. Measure true peak with an oversampling meter to be sure.',
+        'Suggests a starting true-peak ceiling and shows your margin to it: −1 dBTP is a commonly quoted margin, and lossy delivery often uses −2 dBTP. A sample-peak meter can under-read: true inter-sample peaks can sit up to about 3 dB higher, and lossy encoding (MP3/AAC) adds overshoot. Check the destination’s current spec, and measure true peak with an oversampling meter to be sure.',
       keySymbols: ['−'],
-      note: 'Inter-sample peaks can exceed the sample peak by up to ~3 dB; lossy encoding adds overshoot, so drop the ceiling.',
+      note: 'Inter-sample peaks can exceed the sample peak by up to ~3 dB; lossy encoding adds overshoot, so lossy delivery often drops the ceiling to −2 dBTP. Check the destination’s current spec.',
       compute: (v) => {
         const ceiling = n(v.lossy) >= 1 ? -2 : -1;
         return [
-          { label: 'RECOMMENDED CEILING (dBTP)', value: ceiling, quantity: 'number', chainable: false },
+          { label: 'SUGGESTED CEILING (dBTP)', value: ceiling, quantity: 'number', chainable: false },
           { label: 'SAMPLE-PEAK HEADROOM TO 0 dBFS', value: -n(v.samplePeak), quantity: 'db', chainable: false },
           { ...ceilingMargin(ceiling - n(v.samplePeak)), quantity: 'db', chainable: false },
         ];
@@ -227,7 +227,7 @@ const LOUDTP: Workspace = {
         const ceiling = n(v.lossy) >= 1 ? -2 : -1;
         const cm = ceilingMargin(ceiling - n(v.samplePeak));
         return [
-          `${n(v.lossy) >= 1 ? 'Lossy' : 'Lossless'} delivery → recommended true-peak ceiling ${fmt(ceiling)} dBTP.`,
+          `${n(v.lossy) >= 1 ? 'Lossy' : 'Lossless'} delivery → suggested true-peak ceiling ${fmt(ceiling)} dBTP (a commonly quoted margin — check the destination’s current spec).`,
           `Your sample peak of ${fmt(n(v.samplePeak))} dBFS is ${fmt(-n(v.samplePeak))} dB below full scale — but true peak can sit up to ~3 dB higher.`,
           cm.label === 'OVER CEILING BY'
             ? `Sample peak − ceiling = ${fmt(n(v.samplePeak))} − (${fmt(ceiling)}) = ${fmt(cm.value)} dB OVER the ceiling — lower the level or limit before export; measure true peak with an oversampling meter to be sure.`

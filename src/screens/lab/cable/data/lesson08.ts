@@ -92,7 +92,7 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
         correct: 'INSTRUMENT-LEVEL AUDIO',
         explain:
           'A passive pickup produces instrument-level audio that wants a high-impedance input — exactly what a DI box provides before converting the signal for the mic line.',
-        hint: 'Stronger than mic level, weaker than line level — and picky about the input that receives it.',
+        hint: 'Usually stronger than mic level and weaker than line level (active pickups can reach line level) — and picky about the input that receives it.',
       },
       {
         prompt: 'Which connector?',

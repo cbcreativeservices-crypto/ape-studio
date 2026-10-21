@@ -92,7 +92,7 @@ const CRAFT_DECISIONS: CraftDecision[] = [
     prompt: '② The spare mic-cable length:',
     options: [
       { id: 'loops', label: 'LEAVE LOOSE LOOPS ON DECK', ok: false, short: 'Loose loops migrate into lanes and snag feet, stands and wheels.' },
-      { id: 'dressed', label: 'DRESS THE SLACK AT THE BOX', ok: true, short: 'Working slack lives coiled at the box — reachable, never underfoot.' },
+      { id: 'dressed', label: 'DRESS THE SLACK AT THE BOX', ok: true, short: 'Working slack lives coiled at the box with its end capped — reachable, never underfoot, and never plugged into a return.' },
     ],
   },
   {
@@ -398,6 +398,25 @@ const JACK_OUT = SNAKE.y + 9.8;
  *  face is drum, VOX 3, VOX 2, VOX 1 — VOX 1 is the lowest lane and peels
  *  down first, the drum is the top lane and peels up the riser side. */
 const EDGE = { split: JACK_X[0] - LANE_GAP, keys: JACK_X[0], amp: JACK_X[1], drum: JACK_X[2], vox: [JACK_X[5], JACK_X[4], JACK_X[3]] } as const;
+/**
+ * DRUM FAN-OUT (B-CI-02, 2026-10-21): the drum sub-snake is a multicore, so
+ * it never lands on one XLR. Just upstage of the snake head it ends in a
+ * fan-out boot and splays into four XLR tails (kick, snare, two overheads),
+ * each onto its own input. The snake head carries nine inputs (IN_X, the
+ * box grows to fit; returns stay six): keys, amp, the four drum tails, then
+ * VOX 3 / 2 / 1 — so the three vocal lanes step right in a concentric jog
+ * (VOX 1 turns highest) before they drop onto their own inputs.
+ */
+const SNAKE_INPUTS = 9;
+/** Keyboard output (rear panel, x 314 on its downstage edge y 60) → the DI's
+ *  input jack (x 321) from below, its lane between the keys and the label. */
+const KEYS_DI_D = 'M314 60 V62 Q314 63.4 315.4 63.4 H319.6 Q321 63.4 321 62 V58.6';
+const IN_X = Array.from({ length: SNAKE_INPUTS }, (_, i) => JACK_X[0] + i * 3.6);
+const DRUM_TAILS = [IN_X[2], IN_X[3], IN_X[4], IN_X[5]] as const;
+const DRUM_FAN = { top: 132.4, y: 139, splay: 143.6 } as const;
+/** Each vocal line's own input (VOX 1 right-most) and the y of its jog. */
+const VOX_JACK = [IN_X[8], IN_X[7], IN_X[6]] as const;
+const VOX_JOG_Y = [124, 124 + LANE_GAP, 124 + 2 * LANE_GAP] as const;
 const DRUM_Y = 85;
 /** Along the riser face, VOX 1 / 2 / 3 (VOX 1 lowest). */
 const FACE_Y = [DRUM_Y + 3 * LANE_GAP, DRUM_Y + 2 * LANE_GAP, DRUM_Y + LANE_GAP] as const;
@@ -421,33 +440,85 @@ const WEDGE_JACK = (x: number) => ({ x: x + WEDGE_JACK_DX, y: WEDGE_Y + WEDGE_JA
  *  edge — so the mixes visibly travel MON → split → snake → wedges. */
 const RET = { x: EDGE.split - LANE_GAP, topY: TOP_Y.split - LANE_GAP, slX: 333.4 + LANE_GAP, monY: MON.y + 4, snakeY: SNAKE.y + 4.4 } as const;
 const SPLIT_MON_Y = MON.y + 4 + LANE_GAP;
-/** The spare line's dressed coil hangs off the left-most return jack. */
+/** The spare line's dressed coil sits at the box, under the left-most
+ *  return jack but NOT in it (B-CI-05: a return is an output — a spare line
+ *  never parks on one); its free end leaves the coil's foot, capped. */
 const COIL = { cx: JACK_X[0], cy: 168, r: [4.5, 7.5] } as const;
+const COIL_END = { y0: COIL.cy + COIL.r[1], y1: COIL.cy + COIL.r[1] + 3.6 } as const;
 
 /** As found: the three vocal lines leave their input jacks and web
  *  straight across the playing area to the stands — loose, crossing, but
  *  each its own line from jack to stand. */
 const AS_FOUND_VOX = [
-  `M${JACK_X[5]} ${JACK_IN} H48 C56 156 84 158 98 150 C108 144 116 134 ${VOX_XS[0]} ${VOX_Y + 1}`,
-  `M${JACK_X[4]} ${JACK_IN} V143 C41.4 138 50 137 58 141 C68 146 74 151 90 150 C120 148 170 146 186 136 C196 130 199 125 ${VOX_XS[1]} ${VOX_Y + 1}`,
-  `M${JACK_X[3]} ${JACK_IN} V134 C37.8 122 50 116 64 116 C86 116 96 136 112 146 C150 168 250 160 272 140 C280 132 282 126 ${VOX_XS[2]} ${VOX_Y + 1}`,
+  `M${VOX_JACK[0]} ${JACK_IN} C60 156 84 158 98 150 C108 144 116 134 ${VOX_XS[0]} ${VOX_Y + 1}`,
+  `M${VOX_JACK[1]} ${JACK_IN} V143 C52.2 138 56 137 60 141 C68 146 74 151 90 150 C120 148 170 146 186 136 C196 130 199 125 ${VOX_XS[1]} ${VOX_Y + 1}`,
+  `M${VOX_JACK[2]} ${JACK_IN} V134 C48.6 122 54 116 64 116 C86 116 96 136 112 146 C150 168 250 160 272 140 C280 132 282 126 ${VOX_XS[2]} ${VOX_Y + 1}`,
 ] as const;
 /** As found: one spare line lying in three loose loops on deck, both ends
  *  free — one continuous cable, every loop its own. */
 const SPARE_LOOPS =
-  'M52 153 C54 148 58 141 64 140 A6 6 0 0 1 64 152 A6 6 0 0 1 64 140 ' +
+  'M62 155 C61 150 60 142 64 140 A6 6 0 0 1 64 152 A6 6 0 0 1 64 140 ' +
   'C68 138 72 136 77 136 A5 5 0 0 1 77 146 A5 5 0 0 1 77 136 ' +
   'C81 135 84 133 88 133 A4 4 0 0 1 88 141 A4 4 0 0 1 88 133 C92 133 95 135 96 138';
 /** As found: the three monitor feeds lie bare and loose across the deck from
  *  their return jacks into each wedge's own rear input — VOX 2's over the
- *  deck between wedges 1 and 2, VOX 3's across the stair landing. */
+ *  deck between wedges 1 and 2, VOX 3's across the stair landing (and past
+ *  the stair quad box, never over it). */
 const J_MON = VOX_XS.map((x) => WEDGE_JACK(x));
 const AS_FOUND_MON = [
   `M${SEND_X[0]} ${JACK_OUT} V161 C45 170 70 173.5 92 173 C110 172.6 ${J_MON[0].x} 178 ${J_MON[0].x} ${J_MON[0].y}`,
   `M${SEND_X[1]} ${JACK_OUT} V165 C41.4 175 60 177 90 177 C120 177 136 176 146 164 C154 154 178 148 184 158 C188 166 186 176 196 176 C203 176 ${J_MON[1].x} 174 ${J_MON[1].x} ${J_MON[1].y}`,
-  `M${SEND_X[2]} ${JACK_OUT} V168 C37.8 178 60 180.5 100 180.5 C170 180.5 200 179 220 172 C240 164 256 162 266 170 C272 175 ${J_MON[2].x} 179 ${J_MON[2].x} ${J_MON[2].y}`,
+  `M${SEND_X[2]} ${JACK_OUT} V168 C37.8 178 60 180.5 100 180.5 C170 180.5 200 179 220 172 C240 164 252 168 258 176 C262 181 ${J_MON[2].x} 181 ${J_MON[2].x} ${J_MON[2].y}`,
 ] as const;
-const MON3_BADGE = { x: 160, y: 166 } as const;
+const MON3_BADGE = { x: 160, y: 177 } as const;
+/**
+ * WEDGE POWER (B-CI-01, lead 2026-10-21: the wedges are POWERED; owner
+ * 2026-10-21: each wedge's mains shown on its OWN lead — the common rig, and
+ * the clearer lesson — never linked wedge to wedge). The feeds above are
+ * line-level XLR from the snake head's returns, so each wedge also needs
+ * mains. The lip behind the wedges is the audio's lane, so the AC keeps
+ * upstage of it, every lead its own lane:
+ *  · a downstage quad box at the SL edge (WQUAD, fed from the SL wing) gives
+ *    wedge 3 its own lead into its SL side panel (the wedge's AC inlet);
+ *  · its second outlet feeds a SECOND quad box (WQUAD2) on deck between the
+ *    stair and wedge 3 — that feeder passes hard behind wedge 3, crossing its
+ *    XLR feed square;
+ *  · WQUAD2 gives wedge 2 and wedge 1 an outlet and a lead each: wedge 2's
+ *    in the wedge row, wedge 1's hard behind wedge 2 (crossing its feed
+ *    square) and up into the row SR of it. The two leads cross the stair
+ *    walkway under their own low-profile cover, apart from the audio's.
+ * Quad boxes: 4 outlets on the face toward the wedges (AC_PITCH apart), the
+ * feeder entering the far face through its gland; 0.14 × 0.44 m on deck.
+ */
+const WEDGE_AC_Y = WEDGE_Y + 4.3;
+const WEDGE_HALF = 9.6;
+const AC_PITCH = 3.5;
+/** The power lane hard behind a wedge — upstage of every feed lane. */
+const AC_BEHIND_Y = WEDGE_AC_Y + AC_PITCH;
+/** The second box's feeder, behind wedge 3 (still upstage of its feed). */
+const AC_FEED_Y = WEDGE_AC_Y + 2 * AC_PITCH;
+const QUAD = { w: 4.6, h: 4 * AC_PITCH, plug: 2.2 } as const;
+/** Each box's four outlet slots (y). The SL box sits a slot lower, so it
+ *  stays clear of the WEDGES word above it; the stair box stays clear of
+ *  wedge 3's feed lane below it. */
+const WQUAD = { x: 327, slots: [WEDGE_AC_Y, AC_BEHIND_Y, AC_FEED_Y, AC_FEED_Y + AC_PITCH] } as const;
+const WQUAD2 = { x: 265.6, slots: [WEDGE_AC_Y - AC_PITCH, WEDGE_AC_Y, AC_BEHIND_Y, AC_FEED_Y] } as const;
+/** Wedge 1's lead comes up into the wedge row just SR of wedge 2. */
+const AC_RISE_X = VOX_XS[1] - WEDGE_HALF - 2.4;
+/** Each wedge's own mains lead, wedge 1 → 3: from its quad-box outlet to the
+ *  AC inlet on its SL side panel. */
+const WEDGE_MAINS = [
+  `M${WQUAD2.x - QUAD.plug} ${AC_BEHIND_Y} H${AC_RISE_X} V${WEDGE_AC_Y} H${VOX_XS[0] + WEDGE_HALF}`,
+  `M${WQUAD2.x - QUAD.plug} ${WEDGE_AC_Y} H${VOX_XS[1] + WEDGE_HALF}`,
+  `M${WQUAD.x - QUAD.plug} ${WEDGE_AC_Y} H${VOX_XS[2] + WEDGE_HALF}`,
+] as const;
+/** The plugs seated in the quad boxes' outlets: [box x, slot y]. */
+const QUAD_PLUGS = [
+  [WQUAD.x, WEDGE_AC_Y],
+  [WQUAD.x, AC_FEED_Y],
+  [WQUAD2.x, WEDGE_AC_Y],
+  [WQUAD2.x, AC_BEHIND_Y],
+] as const;
 
 /** A numbered hazard badge on the plot, matching the numbered call below —
  *  amber while the hazard stands, a green tick once it is dressed. */
@@ -464,7 +535,6 @@ function HazardBadge({ x, y, n, fixed }: { x: number; y: number; n: number; fixe
 function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFixed: boolean; slackFixed: boolean; monFixed: boolean }) {
   const h = Math.round(w * (205 / 360));
   const mic = CI_CLASS_TINTS.analog;
-  const spk = CI_CLASS_TINTS.speaker;
   const pwr = CI_CLASS_TINTS.power;
   const grey = '#6b6e76';
   const edgeX = PLOT.x + PLOT.w;
@@ -475,7 +545,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       width={w}
       height={h}
       viewBox="0 0 360 205"
-      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 metre deck, audience at the bottom. Drum riser upstage centre with a drum sub-snake, keys stage left, guitar amp and player stage right, three singers facing the audience, each with a boom stand just downstage of them and a wedge further downstage aimed back at them, the downstage playing area, a stair at the downstage lip, the snake head downstage right with its trunk to FOH and a split to monitor world in the stage-left wing. Numbered badges mark the three hazards. Mic lines ${routeFixed ? 'taped up the stage-right edge and along the riser face, clear of the playing area' : 'webbed straight across the playing area'}; spare mic cable ${slackFixed ? 'coiled at the snake head' : 'in loose loops on deck'}; monitor feeds ${monFixed ? 'taped along the downstage lip behind the wedges, with a low-profile cover and glow tape where the stair meets the deck' : 'bare across the deck'}.`}
+      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 metre deck, audience at the bottom. Drum riser upstage centre with a drum sub-snake that fans out at the snake head into four XLR tails, one per input, keys stage left, guitar amp and player stage right, three singers facing the audience, each with a boom stand just downstage of them and a wedge further downstage aimed back at them, the downstage playing area, a stair at the downstage lip, the snake head downstage right with its trunk to FOH and a split to monitor world in the stage-left wing. The wedges are powered, each on its own mains lead from its own quad-box outlet: a downstage quad box at the stage-left edge feeds wedge 3 and a second quad box beside the stair, which feeds wedges 2 and 1; the power leads keep upstage of the audio feeds, cross them square, and have their own cover at the stair. Numbered badges mark the three hazards. Mic lines ${routeFixed ? 'taped up the stage-right edge and along the riser face, clear of the playing area' : 'webbed straight across the playing area'}; spare mic cable ${slackFixed ? 'coiled at the snake head with its end capped' : 'in loose loops on deck'}; line-level monitor feeds (XLR) ${monFixed ? 'taped along the downstage lip behind the wedges, with a low-profile cover and glow tape where the stair meets the deck' : 'bare across the deck'}.`}
     >
       <Rect x={0} y={0} width={360} height={205} rx={10} fill="#0c0c10" />
       <StageDeck x={PLOT.x} y={PLOT.y} w={PLOT.w} h={PLOT.h} grid={PLOT.m} />
@@ -514,6 +584,10 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
           it used to overlap the instrument (clash sweep 2026-10-10). */}
       <PerformerTop x={290} y={35} m={PLOT.m} />
       <DiBoxTop x={323} y={56} />
+      {/* the keyboard's output (on its rear panel, the downstage edge) to the
+          DI's input — a short instrument lead, its own lane under the DI
+          (wiring grade 2026-10-21: no lead was drawn at all) */}
+      <JacketPath d={KEYS_DI_D} color={mic} width={1.6} shadow={false} />
       <PlanLabel x={290} y={72} text="KEYS · DI" size={9.6} />
       <GtrAmpTop x={40} y={30} />
       <MicStandTop x={51} y={50} boom={0} reach={5} />
@@ -530,7 +604,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
           wing to FOH — never over the downstage lip into the audience. Drawn
           under the cables so every line visibly lands on its own jack. */}
       <JacketPath d={`M${SNAKE.x} ${SNAKE.y + 10} H10 V200`} color="#5d6068" width={4.2} />
-      <SnakeHeadTop x={SNAKE.x} y={SNAKE.y} />
+      <SnakeHeadTop x={SNAKE.x} y={SNAKE.y} inputs={SNAKE_INPUTS} />
 
       {/* already dressed before you arrived: the split to monitor world, the
           keys DI and the amp mic — up the SR edge and along the upstage edge
@@ -550,14 +624,19 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       ))}
       <JacketPath d={`M323 53 V${TOP_Y.keys} H${EDGE.keys} V${JACK_IN}`} color={mic} width={2.2} shadow={false} />
       <JacketPath d={`M51 55 V58 H${EDGE.amp} V${JACK_IN}`} color={mic} width={2.2} shadow={false} />
-      <JacketPath d={`M${RISER.x + 2} ${RISER.y + 10} H${RISER.x - 4} V${DRUM_Y} H${EDGE.drum} V${JACK_IN}`} color={grey} width={2.4} shadow={false} />
+      <JacketPath d={`M${RISER.x + 2} ${RISER.y + 10} H${RISER.x - 4} V${DRUM_Y} H${EDGE.drum} V${DRUM_FAN.top}`} color={grey} width={2.4} shadow={false} />
+      {/* the sub-snake's fan-out: a boot, then one XLR tail per input */}
+      {DRUM_TAILS.map((x) => (
+        <JacketPath key={`dtl${x}`} d={`M${EDGE.drum} ${DRUM_FAN.y} L${x} ${DRUM_FAN.splay} V${JACK_IN}`} color={mic} width={1.4} shadow={false} />
+      ))}
+      <Rect x={EDGE.drum - 1.9} y={DRUM_FAN.top - 0.4} width={3.8} height={DRUM_FAN.y - DRUM_FAN.top + 0.8} rx={1} fill="#3a3c42" stroke="#0a0a0c" strokeWidth={0.4} />
       {/* tape across the whole bundle, wherever its lanes run together */}
       {[60, 110, 160, 210, 260, 310].map((x) => (
         <TapeStrip key={`ut${x}`} x={x} y={(RET.topY + TOP_Y.keys) / 2} len={11.6} />
       ))}
       <TapeStrip x={(RET.x + EDGE.keys) / 2} y={40} angle={0} len={11.6} />
       <TapeStrip x={(RET.x + EDGE.amp) / 2} y={64} angle={0} len={15.1} />
-      {[112, 136].map((y) => (
+      {[112, 126].map((y) => (
         <TapeStrip key={`st${y}`} x={(RET.x + EDGE.drum) / 2} y={y} angle={0} len={18.6} />
       ))}
       {[52, 92, 132].map((x) => (
@@ -578,10 +657,12 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       {VOX_XS.map((x) => (
         <WedgeTop key={`wg${x}`} x={x} y={WEDGE_Y} />
       ))}
-      <PlanLabel x={296} y={WEDGE_Y + 4} text="WEDGES" anchor="start" size={9.6} />
+      <PlanLabel x={294} y={WEDGE_Y - 1.6} text="WEDGES" anchor="start" size={9.6} />
 
-      {/* label above the monitor-send lanes, clear of wedge 1 */}
-      <PlanLabel x={50} y={166.5} text="SNAKE HEAD" anchor="start" size={9.6} />
+      {/* label above the monitor-send lanes, on two lines so it ends well
+          clear of wedge 1 (wiring grade 2026-10-21: one line ran into it) */}
+      <PlanLabel x={59.6} y={160} text="SNAKE" anchor="start" size={9} />
+      <PlanLabel x={59.6} y={168.8} text="HEAD" anchor="start" size={9} />
       <PlanLabel x={14} y={201} text="TO FOH" anchor="start" size={9.6} />
       <ConsoleTop x={MON.x} y={MON.y} w={18} h={14} />
       <PlanLabel x={MON.x + 9} y={MON.y - 4} text="MON" size={9.6} />
@@ -597,8 +678,8 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       {VOX_XS.map((x, i) => (
         <SwapPath
           key={`gv${x}`}
-          d={`M${EDGE.vox[i]} ${JACK_IN} V${FACE_Y[i]} H${x + 20} V${VOX_Y + 4} H${x + 6.9} L${x + 1.2} ${VOX_Y + 0.7}`}
-          len={[240, 330, 420][i]}
+          d={`M${VOX_JACK[i]} ${JACK_IN} V${VOX_JOG_Y[i]} H${EDGE.vox[i]} V${FACE_Y[i]} H${x + 20} V${VOX_Y + 4} H${x + 6.9} L${x + 1.2} ${VOX_Y + 0.7}`}
+          len={[260, 350, 440][i]}
           tint={mic}
           width={2.2}
           mode="good"
@@ -609,9 +690,10 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       <SwapGroup show={routeFixed} delay={260}>
         {/* tape across the vocal lanes on the SR edge and the riser face —
             only as wide as the lanes still running together at that point */}
-        {[112, 136].map((y) => (
+        {[112].map((y) => (
           <TapeStrip key={`sv${y}`} x={EDGE.vox[1]} y={y} angle={0} len={11} />
         ))}
+        <TapeStrip x={VOX_JACK[1]} y={140} angle={0} len={11} />
         {[
           [52, 3],
           [92, 3],
@@ -633,11 +715,60 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
 
       {/* ② SLACK — one spare line lying in loose loops on deck (each loop
           is that one cable's own loop) pulls away; the spare length lands
-          coiled at the snake head, its tail on its own return jack */}
+          coiled at the snake head, its free end capped — plugged into
+          nothing (never onto a return, which is an output) */}
       <SwapPath d={SPARE_LOOPS} len={180} tint={mic} width={2} mode="bad" fixed={slackFixed} intro={60} />
       <SwapCircle cx={COIL.cx} cy={COIL.cy} r={COIL.r[0]} tint={mic} width={2} show={slackFixed} />
       <SwapCircle cx={COIL.cx} cy={COIL.cy} r={COIL.r[1]} tint={mic} width={2} show={slackFixed} delay={80} />
-      <SwapPath d={`M${COIL.cx} ${JACK_OUT} V${COIL.cy - COIL.r[1]}`} len={6} tint={mic} width={2} mode="good" fixed={slackFixed} delay={120} />
+      <SwapPath d={`M${COIL.cx} ${COIL_END.y0} V${COIL_END.y1}`} len={4} tint={mic} width={2} mode="good" fixed={slackFixed} delay={120} />
+      <SwapGroup show={slackFixed} delay={200}>
+        {/* the XLR's dust cap on the free end */}
+        <Rect x={COIL.cx - 1.5} y={COIL_END.y1 - 0.4} width={3} height={2.4} rx={0.8} fill="#2a2c31" stroke="#9aa0a8" strokeWidth={0.4} />
+      </SwapGroup>
+
+      {/* wedge power: every wedge its OWN mains lead from its own quad-box
+          outlet (owner 2026-10-21) — never linked wedge to wedge. The SL wing
+          feeds the SL quad box (wedge 3's lead + the feeder to the second box
+          by the stair); the second box feeds wedges 2 and 1. All upstage of
+          the feed lanes, crossing each feed square. */}
+      <Path d={`M${edgeX + 8} ${AC_BEHIND_Y} H${WQUAD.x + QUAD.w}`} stroke={pwr} strokeWidth={1.8} strokeLinecap="round" />
+      {/* the power leads' own low-profile cover across the stair walkway */}
+      <Rect x={STAIR.x - 4} y={WEDGE_AC_Y - 3} width={STAIR.w + 6.4} height={AC_PITCH + 6} rx={1} fill="#1b1c20" stroke="#050506" strokeWidth={0.5} />
+      <JacketPath d={`M${WQUAD.x - QUAD.plug} ${AC_FEED_Y} H${WQUAD2.x + QUAD.w}`} color={pwr} width={1.8} shadow={false} />
+      {WEDGE_MAINS.map((d, i) => (
+        <JacketPath key={`ac${i}`} d={d} color={pwr} width={1.8} shadow={false} />
+      ))}
+      <Rect x={STAIR.x - 3} y={WEDGE_AC_Y - 1.8} width={STAIR.w + 4.4} height={AC_PITCH + 3.6} rx={0.8} fill="#e3b73a" stroke="#6b5520" strokeWidth={0.4} />
+      {/* the two quad boxes: four outlets on the face toward the wedges, the
+          feeder in through a gland on the far face */}
+      {[
+        { box: WQUAD, gy: AC_BEHIND_Y },
+        { box: WQUAD2, gy: AC_FEED_Y },
+      ].map(({ box: { x: bx, slots }, gy }) => (
+        <G key={`qb${bx}`}>
+          <Rect x={bx} y={slots[0] - AC_PITCH / 2} width={QUAD.w} height={QUAD.h} rx={0.8} fill="#2a2c31" stroke={pwr} strokeWidth={0.6} />
+          {slots.map((sy) => (
+            <Rect key={`qs${sy}`} x={bx + 0.7} y={sy - 1} width={1.8} height={2} rx={0.4} fill="#0d0e11" stroke="#4a4e56" strokeWidth={0.3} />
+          ))}
+          <Rect x={bx + QUAD.w - 0.3} y={gy - 1} width={1.3} height={2} rx={0.4} fill="#3a3c42" stroke="#0a0a0c" strokeWidth={0.3} />
+        </G>
+      ))}
+      {QUAD_PLUGS.map(([bx, sy]) => (
+        <Rect key={`qp${bx}-${sy}`} x={bx - QUAD.plug} y={sy - 1.1} width={QUAD.plug + 0.5} height={2.2} rx={0.5} fill="#1d1f24" stroke={pwr} strokeWidth={0.4} />
+      ))}
+      {/* each wedge's AC inlet, on its SL side panel, its own lead seated */}
+      {VOX_XS.map((x) => (
+        <Rect key={`acj${x}`} x={x + WEDGE_HALF - 0.9} y={WEDGE_AC_Y - 1.4} width={1.8} height={2.8} rx={0.4} fill="#0d0e11" stroke={pwr} strokeWidth={0.35} />
+      ))}
+      {[
+        [310, WEDGE_AC_Y, 4.6],
+        [310, AC_FEED_Y, 4.6],
+        [278, AC_FEED_Y, 4.6],
+        [217, (WEDGE_AC_Y + AC_BEHIND_Y) / 2, AC_PITCH + 2.8],
+        [160, WEDGE_AC_Y, 4.6],
+      ].map(([x, y, len]) => (
+        <TapeStrip key={`act${x}-${y}`} x={x} y={y} len={len} />
+      ))}
 
       {/* ③ MONITOR FEEDS — from the snake head's own return jacks (SR, the
           same side as the inputs). As found they lie bare and loose across
@@ -646,7 +777,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
           peeling up onto its own wedge, the stair crossing under a
           low-profile cover with glow tape */}
       {AS_FOUND_MON.map((d, i) => (
-        <SwapPath key={`bm${i}`} d={d} len={[140, 300, 360][i]} tint={spk} width={2.2} mode="bad" fixed={monFixed} intro={300 + i * 70} />
+        <SwapPath key={`bm${i}`} d={d} len={[140, 300, 360][i]} tint={mic} width={2.2} mode="bad" fixed={monFixed} intro={300 + i * 70} />
       ))}
       {VOX_XS.map((x, i) => {
         const j = WEDGE_JACK(x);
@@ -655,7 +786,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
             key={`gm${x}`}
             d={`M${SEND_X[i]} ${JACK_OUT} V${SEND_Y[i]} H${j.x} V${j.y}`}
             len={[130, 220, 320][i]}
-            tint={spk}
+            tint={mic}
             width={2.2}
             mode="good"
             fixed={monFixed}
@@ -904,13 +1035,15 @@ function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
           face (C 174, A 179, B 184) so no two routes ever share a stroke
           (owner 2026-10-10: every run traceable on its own). */}
       {/* ROUTE A — straight across under a mat (amber) */}
-      <RoutePath d="M48 100 L300 179" len={280} tint={ROUTE_TINTS[0]} width={2.8} phase={phaseFor(0, pick)} index={0} />
+      {/* every route starts ON the distro's face, x 42 (wiring grade
+          2026-10-21: they started 6 units short of it, in mid-air) */}
+      <RoutePath d="M42 100 L300 179" len={280} tint={ROUTE_TINTS[0]} width={2.8} phase={phaseFor(0, pick)} index={0} />
       {/* a rubber mat thrown over the run — not a protector */}
       <Rect x={172} y={134} width={30} height={12} rx={1} fill="#141518" stroke="#3a3c42" strokeWidth={0.6} />
       <Path d={[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => `M${174 + i * 3.2} 136 l1.6 1.6 l-1.6 1.6 l1.6 1.6 l-1.6 1.6 l1.6 1.6`).join('')} stroke="#26282d" strokeWidth={0.5} fill="none" />
       <PlanLabel x={187} y={130} text="MAT" />
       {/* ROUTE B — one marked, vehicle-rated crossing (teal) */}
-      <RoutePath d="M48 106 V184 H300" len={340} tint={ROUTE_TINTS[1]} width={2.8} phase={phaseFor(1, pick)} index={1} />
+      <RoutePath d="M42 106 H48 V184 H300" len={346} tint={ROUTE_TINTS[1]} width={2.8} phase={phaseFor(1, pick)} index={1} />
       {/* the protector spans the WHOLE roll lane (its edges cross route B (y 184) at
           x ≈ 185 and 251), high-vis marked both sides */}
       <RampTop x={174} y={170} w={78} h={16} />
@@ -918,7 +1051,7 @@ function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
       <Line x1={254} y1={168} x2={254} y2={190} stroke={CI_CLASS_TINTS.speaker} strokeWidth={1.4} strokeDasharray="3,3" />
       <PlanLabel x={224} y={201} text="RATED + MARKED" />
       {/* ROUTE C — long perimeter behind the cases (purple) */}
-      <RoutePath d="M48 94 V30 H292 V174 H300" len={480} tint={ROUTE_TINTS[2]} width={2.6} phase={phaseFor(2, pick)} index={2} />
+      <RoutePath d="M42 94 H48 V30 H292 V174 H300" len={486} tint={ROUTE_TINTS[2]} width={2.6} phase={phaseFor(2, pick)} index={2} />
       {/* a case rolls the load-in path once — and finds the mat crossing */}
       <TrafficPass x1={76} y1={10} x2={234} y2={204} run={pick != null} delay={900} duration={2000} cart crossAt={0.684} />
       {/* letters */}
@@ -1543,17 +1676,17 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
           width={artW}
           aspect={360 / 205}
           title="STAGE PLAN"
-          badge="Training visualization — stage plot to scale (1 m grid); teaching colors, field cable colors vary."
+          badge="Training visualization — stage plot to scale (1 m grid; cables drawn wider for tracing); teaching colors, field cable colors vary."
           render={(w) => (
             <StagePlan w={w} routeFixed={drawnFixed('route')} slackFixed={drawnFixed('slack')} monFixed={drawnFixed('mon')} />
           )}
           controls={craftDock}
         />
         <Text style={s.caption}>
-          Training visualization — stage plot to scale (faint grid = 1 m), in the lab’s teaching colors (field cable
-          colors vary): cyan = mic lines · yellow = monitor (loudspeaker) feeds · grey = multicores (trunk to FOH, split to
-          MON, drum sub-snake) · red = AC power to quad boxes · grey strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair ·
-          dashed = the way performers come up the stair. The amp, keys and split lines were already dressed right.
+          Training visualization — stage plot to scale (faint grid = 1 m; cables drawn wider for tracing), in the lab’s teaching colors (field cable
+          colors vary): cyan = mic and line-level lines, and the keys' short instrument lead to its DI (the wedge feeds are line-level XLR into powered wedges) · grey = multicores (trunk to FOH, split to
+          MON, the MON returns back to the snake head, drum sub-snake — it fans out into one cyan XLR tail per input at the snake head) · red = AC power (quad boxes, and each wedge's own mains lead from its own quad-box outlet, apart from the audio and crossing it square) · grey strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair ·
+          dashed = the way performers come up the stair · the spare mic line is coiled at the box with its end capped, not plugged into a return. The amp, keys and split lines were already dressed right.
         </Text>
         <View style={{ gap: 12 }}>
           {CRAFT_DECISIONS.map((d, di) => {

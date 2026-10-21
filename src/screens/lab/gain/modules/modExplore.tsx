@@ -185,14 +185,15 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
     >
       <View style={styles.well}>
         <GlossaryText style={styles.body}>
-          A real channel is a rack of separate devices — and from the outside, all a device shows you
-          is a SIG light and a CLIP light. SIGNAL X-RAY sees through every box at once: the level at
+          A real channel strip is a chain of separate stages — and from the outside, all a stage shows
+          you is a SIG and a CLIP light. SIGNAL X-RAY sees through every stage at once: the level at
           every point in the chain, gain staging as a system instead of isolated knobs.
         </GlossaryText>
         <ZoneLegend />
         <Text style={styles.caption}>
-          The source is a quiet instrument/source — fixed. The preamp rides the dock lane; the rest
-          of the chain lives in the PROCESS and LEVELS trays.
+          The source is a quiet mic — fixed — cabled into the preamp’s XLR input. The preamp rides
+          the dock lane; the rest of the chain lives in the PROCESS and LEVELS trays. The MASTER
+          feeds a powered nearfield monitor over a line lead.
         </Text>
         <View style={[styles.note, healthy && styles.noteGood]}>
           <Text style={[styles.noteText, healthy && styles.noteTextGood]}>
@@ -340,8 +341,11 @@ const FAULT_EXPLAIN: Record<FaultKey, string> = {
   pre: 'PREAMP TOO HOT — the very first gain decision clips, and everything after inherits the damage.',
   eq: 'EQ SET TOO HOT — a healthy preamp level gets boosted straight into the ceiling at the EQ.',
   comp: 'COMPRESSOR OUTPUT TOO HOT — its make-up gain slams the signal over the top.',
-  fad: 'CHANNEL FADER TOO HOT — pushed so far up it overloads right at the fader.',
-  bus: 'BUS OVERLOADED — the sum tips over the ceiling at the bus.',
+  // GN-01/GN-02 (2026-10-20): this lab models an analog-style channel where
+  // the fader and bus each feed an amplifier with its own ceiling — say so;
+  // and the model runs ONE channel, so there is no sum to blame at the bus.
+  fad: 'CHANNEL FADER TOO HOT — pushed so far up that the gain stage right after it overloads. In this lab every stage is an active stage with its own ceiling; a passive fader cannot clip by itself, and on a floating-point digital desk the overload shows up later, at the output.',
+  bus: 'BUS GAIN TOO HOT — the bus stage lifts the signal over its ceiling. This lab runs one channel; on a real desk it is usually many channels summing together that push a bus over.',
 };
 
 const INSPECT_NAMES: Record<string, string> = {

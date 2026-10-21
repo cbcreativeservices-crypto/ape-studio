@@ -65,7 +65,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
       },
     ],
     balanced: 'either',
-    channels: 'mono',
+    channels: 'varies',
     locking: {
       method: 'latch',
       howToConfirm: 'Push in until the latch clicks. A locked plug will not pull free without pressing the release tab.',
@@ -386,7 +386,8 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
       'Mixer aux/media inputs (often via adaptation to 1/4-inch or RCA)',
       'Camera and portable recorder inputs (equipment-dependent)',
     ],
-    construction: 'balanced_shielded',
+    // No `construction` tag (as trrs_35): the common build is stereo on a
+    // shared return, which no cross-section here models; the note says it.
     constructionNote:
       'Consumer 3.5 mm cables typically carry two small conductors plus a common shield/return — the same two-plus-shield idea as larger cables, miniaturized. The small build trades durability for size; the strain relief is usually what determines the cable’s lifespan.',
     pinouts: [
@@ -455,7 +456,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
         otherName: 'Balanced mono 3.5 mm connection on compact equipment',
         why: 'The same plug serves stereo unbalanced and balanced mono duty, and nothing on the plug distinguishes them.',
         consequence:
-          'A stereo source into a balanced mono input arrives as left-minus-right and center content cancels; a balanced output into a stereo input puts an inverted copy on one side. Odd, thin audio — no damage.',
+          'A stereo source into a balanced mono input arrives as left-minus-right and center content cancels; a balanced output into a stereo input often puts an inverted copy on one side. Odd, thin audio — no damage.',
       },
     ],
     inspectionPoints: [
@@ -640,7 +641,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
       },
     ],
     balanced: 'unbalanced',
-    channels: 'mono',
+    channels: 'varies',
     locking: {
       method: 'friction',
       howToConfirm: 'The shell’s spring grip should hold the plug snugly on the jack; a loose, wobbly fit means worn spring fingers.',
@@ -757,11 +758,12 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
     channels: 'mono',
     locking: {
       method: 'latch',
+      someModels: true,
       howToConfirm:
         'On latching models an inserted XLR clicks in and will not pull free without pressing the release tab. Many combo receptacles — including those on common compact interfaces — have no XLR latch, and the 1/4-inch path is always friction-only. Check the one in front of you.',
     },
     directionality:
-      'A combo receptacle is an input on equipment: the center accepts a male XLR and the surrounding bore accepts a 1/4-inch plug. One receptacle, two electrical paths — the host equipment defines what each path expects.',
+      'A combo receptacle is an input on equipment: the center takes a 1/4-inch plug and the XLR contacts sit in the ring around it (a male XLR plugs in over them). One receptacle, two electrical paths — the host equipment defines what each path expects.',
     hotPlug: {
       policy: 'mute_first',
       rationale:
@@ -816,7 +818,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
     glossary: ['XLR Cable', 'XLRF', 'XLRM', 'TRS Connector (Tip-Ring-Sleeve)', 'Balanced signaling'],
     relatedLessons: ['l03_analog', 'l04_same_plug', 'l08_selection'],
     sourceNotes: [
-      'Combination receptacle geometry (XLR contacts in the center, 1/4-inch jack in the surrounding bore): widely produced connector type; “combo” used generically — VERIFIED 2026-08-15: Neutrik NCJ6FI-S product page',
+      'Combination receptacle geometry (1/4-inch jack in the center, XLR contacts in the ring around it): widely produced connector type; “combo” used generically — VERIFIED 2026-08-15: Neutrik NCJ6FI-S product page',
       'XLR path pin roles 1 shield / 2 + / 3 −: AES14-1992 / IEC 60268-12 convention — VERIFIED 2026-08-15: AES14-1992 (s2019)',
       'TRS path tip +/ring −/sleeve shield balanced convention; what each path expects (mic/line/instrument, pad, phantom routing) is equipment-defined — VERIFIED 2026-08-15: Focusrite Scarlett user guides',
       'Phantom power conventionally applied to the XLR pins only, not the TRS path: common design practice, equipment-dependent — VERIFIED 2026-08-15: Focusrite Scarlett user guides',

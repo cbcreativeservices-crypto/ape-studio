@@ -458,7 +458,7 @@ export const RACK_SCENARIOS: RackScenario[] = [
       ['Ventilation', 'Clear'], ['Input', '−10 dB below mixer clip, CH1 only'], ['Front panel', 'CLIP dark · PROTECT dark'], ['Power sequence', 'Correct'],
     ].map(([label, value]) => ({ label, value })),
     answer: 'normal',
-    explain: 'Everything checks out: a documented bridge wiring, an 8 Ω load that meets the usual bridged minimum, real speaker cable, clear airflow, healthy input level. Not every rack has a fault — knowing when to leave it alone is a skill.',
+    explain: 'Everything checks out: a documented bridge wiring, an 8 Ω load that meets the usual bridged minimum, real speaker cable, clear airflow, healthy input level. Not every rack has a fault — knowing when to leave it alone is a skill. On a speakON output, which pins carry the bridged signal differs from amplifier to amplifier: check the amp’s manual, as this rack did.',
   },
   {
     id: 'rk-vent', title: 'Rack 3',
@@ -503,7 +503,7 @@ export const RACK_SCENARIOS: RackScenario[] = [
       ['Ventilation', 'Clear, 1U gap above'], ['Input', '−6 dB below mixer clip'], ['Front panel', 'CLIP flickers on the loudest peaks only'], ['Power sequence', 'Correct'],
     ].map(([label, value]) => ({ label, value })),
     answer: 'normal',
-    explain: 'A 4 Ω load on an amplifier rated for it, real cable, airflow, and a CLIP light that only flickers on the very loudest peaks: that is ordinary, healthy operation with reasonable headroom.',
+    explain: 'A 4 Ω load on an amplifier rated for it, real cable, and airflow. A CLIP light that only flickers briefly on the very loudest peaks may be acceptable on some amplifiers (check its manual), and many engineers would still trim the input a little for headroom. A CLIP light that stays lit, or lights on ordinary passages, is not acceptable.',
   },
 ];
 

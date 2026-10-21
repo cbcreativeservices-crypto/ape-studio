@@ -20,7 +20,7 @@ import { readFileSync } from 'node:fs';
 const stripComments = (src: string) =>
   src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/[^\n]*/g, '$1');
 const read = (rel: string) =>
-  stripComments(readFileSync(new URL(`../src/${rel}`, import.meta.url), 'utf8'));
+  stripComments(readFileSync(new URL(`../src/${rel}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n'));
 
 const profile = read('screens/profile/ProfileScreen.tsx');
 const awards = read('screens/awards/AwardsScreen.tsx');

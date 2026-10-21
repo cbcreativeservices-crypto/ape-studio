@@ -28,7 +28,7 @@ function PageDirectional({ ctx }: { ctx: PageCtx }) {
   const flow = resolvePair(state);
   const goals = [
     { label: 'BREAK IT FROM THE TOP', hit: state.topPlugged && flow.normalBroken },
-    { label: 'SEE THE PARALLEL (bottom on this bay)', hit: flow.isMerge },
+    { label: 'SEE THE CLASH (bottom on this bay)', hit: flow.isMerge },
   ];
   const latched = useVisitGoals(ctx, goals);
   const chips = <GoalChips goals={goals} latched={latched} />;
@@ -46,8 +46,9 @@ function PageDirectional({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Lead>
-        A professional caution: “half-normal” does not by itself say WHICH side breaks. The bay above is a genuine
-        half-normalled-TOP design — everything you learned, mirrored.
+        A professional caution: “half-normal” does not by itself say WHICH side breaks. The bay above breaks on the TOP
+        while its outputs still sit on top — everything you learned, mirrored. Real top-breaking bays are usually wired
+        with their INPUTS on top, so the input jack still breaks; this one’s wiring does not match its switching.
       </Lead>
       <PairStatus
         state={state}
@@ -55,17 +56,18 @@ function PageDirectional({ ctx }: { ctx: PageCtx }) {
         destLabel="CONSOLE TAPE RTN 1"
         caption={
           flow.isMerge
-            ? 'PARALLEL — on a top-breaking bay the bottom does NOT break: two feeds arrive at once. One reason the common bay breaks on the bottom instead.'
-            : 'This bay breaks on the TOP. Try both jacks and compare against the common bay you know.'
+            ? 'CLASH — on this bay the bottom (input) jack does NOT break, so the normal AND your patch both drive one input. That is two outputs wired together, not a mix: avoid it. The clash comes from feeding a source into the input jack that does not break — the reason a half-normal pair should break on its INPUT jack.'
+            : 'This bay breaks on the TOP — here, its output jack. Try both jacks and compare against the common bay you know.'
         }
       />
       {chips}
       <Card tone="warn">
         <Eyebrow>THE RULE THAT TRAVELS</Eyebrow>
         <Body>
-          The common arrangement is top = tap, bottom = break — but manufacturers document both. Never treat the simplified
-          rule as electrical law: on an unfamiliar bay, VERIFY the configuration (label, manual, or a quick detective test
-          like page twelve) before a session depends on it.
+          On most bays the top row is outputs (a tap) and the bottom row is inputs (the break) — but some bays are wired
+          inputs-on-top. What travels: on a half-normal pair the INPUT jack breaks and the output jack taps. Never treat the
+          top/bottom shortcut as electrical law: on an unfamiliar bay, VERIFY the configuration (label, manual, or a quick
+          detective test like page twelve) before a session depends on it.
         </Body>
       </Card>
     </PatchbayRack>
@@ -99,9 +101,11 @@ function PageConductors({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>T · R · S</Eyebrow>
         <Body>
-          TIP and RING carry the balanced signal pair; SLEEVE is the shield/ground. A TT (bantam) plug packs the same three
-          into a smaller frame. The switching contacts you watched exist for the SIGNAL conductors — tip and ring — inside
-          real bays; the sleeve is typically bussed straight through, not switched.
+          TIP and RING carry the balanced signal pair; SLEEVE is the shield/ground. The plug you have been driving is a
+          ¼-inch TRS patch plug, the kind this bay's jacks take. TT (bantam) is a separate, smaller family that packs the
+          same three conductors into a smaller frame; a TT plug does not fit a ¼-inch jack. The cutaway drew only the TIP spring. In real bays the RING has its own spring and normal contact
+          too, switched by the same plug; the drawing leaves it out so the tip spring is easy to see. The sleeve is most often
+          wired straight through, not switched.
         </Body>
       </Card>
       <UnderstandingCheck
@@ -142,24 +146,24 @@ function PagePhantom({ ctx }: { ctx: PageCtx }) {
           contacts.{'\n'}
           • Different patchbay designs handle grounding differently — do not assume every TRS/TT bay is suitable.{'\n'}
           • Follow the patchbay manufacturer’s wiring instructions for microphone circuits.{'\n'}
-          • Where a design requires it, turn phantom power OFF before patching or unpatching.{'\n'}
+          • Turn phantom power OFF (and the channel down) before patching or unpatching mic-level points, and check the mic: some ribbon mics can be damaged.{'\n'}
           • Dedicated microphone patching systems exist and follow their own practices.
         </Body>
       </Card>
       <Body>
         Note what this warning does NOT say: it does not say “never put microphones on a patchbay.” Professional installations
         are built to do exactly that — correctly. The lesson is that mic-level + phantom requires PROPER SYSTEM DESIGN, not
-        improvisation. (Guidance per Neutrik’s patch-panel documentation.)
+        improvisation. (Guidance per patch-panel maker documentation.)
       </Body>
       <UnderstandingCheck
-        question="Your bay’s manual says its design requires it: you need to re-patch a mic line that has phantom power on. The professional move?"
+        question="You need to re-patch a mic line that has phantom power on. The professional move?"
         options={[
           'Turn phantom off first, then re-patch',
           'Patch quickly so the transient is short',
           'It never matters — TRS bays are all phantom-safe',
         ]}
         correct={0}
-        explain="Where the design calls for it, kill the phantom before the plug moves. A fast hand does not outrun a contact scraping 48 volts."
+        explain="Kill the phantom (and pull the channel down) before the plug moves. A fast hand does not outrun a contact scraping 48 volts."
         wrong={[
           undefined,
           'Speed doesn’t remove the transient — the plug still drags across live contacts.',

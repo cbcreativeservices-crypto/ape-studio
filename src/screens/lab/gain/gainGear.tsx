@@ -11,14 +11,19 @@
  *
  *   SOURCE   the house vocal mic on its stand (soundsystems gearArt, drawn in
  *            millimetres — head Ø51, body 162 mm)
- *   PREAMP   input section: 48V + Ø buttons, the red GAIN knob, SIG / PEAK LEDs
+ *   PREAMP   input section: the XLR input socket, 48V + Ø buttons, the red
+ *            GAIN knob, SIG / PEAK LEDs. The mic's own cable (MicCableRun)
+ *            runs from its tail along the floor and plugs into that socket
+ *            (wiring round 2, GN-R2-03, owner-approved art 2026-10-20)
  *   EQ       three gain knobs, HF / MID / LF; the MID carries the stage's boost
  *   COMP     gain-reduction LED ladder + THRESHOLD and OUTPUT knobs (the
  *            lab's COMPRESSOR OUTPUT, ±12 dB — bipolar, centre detent)
  *   FADER    the channel fader, cap on the console taper (faderDbToFrac)
  *   BUS      the group fader (blue cap) with its lit assign button
- *   OUTPUT   the red-capped master fader feeding a 2-way nearfield monitor
- *            (cabinet 1 : 1.6, the 180 × 290 mm class). A stage whose range
+ *   OUTPUT   the red-capped master fader feeding a 2-way POWERED nearfield
+ *            monitor (cabinet 1 : 1.6, the 180 × 290 mm class) by a line lead
+ *            from the strip's output jack down and round behind the cabinet
+ *            to its rear input (GN-R2-04). A stage whose range
  *            runs past +12 dB (no console fader does) is drawn as an OUTPUT
  *            LEVEL knob instead (audio review 2026-10-16).
  *
@@ -181,8 +186,11 @@ export function StageGear({ node, w, h, hidden }: { node: ChainNode; w: number; 
       body = (
         <G>
           <Section id={id} />
+          {/* the XLR input socket, top left (the mic's plug seats in it —
+              MicCableRun draws the plug and its cable) */}
+          <XlrSocket cx={XLR_IN.x} cy={XLR_IN.y} dim={!show} />
           {/* 48V (off: a dynamic mic needs none) and Ø */}
-          <Button x={8.5} y={4} />
+          <Button x={16.4} y={4} />
           <Button x={23.3} y={4} />
           <Knob id={id} cx={18} cy={19.5} r={7.6} frac={show ? gainFrac(node) : null} cap="#c4372a" />
           <Led cx={13} cy={34} on={show && node.level > LOW_EDGE} color="#3fae52" />
@@ -243,7 +251,15 @@ export function StageGear({ node, w, h, hidden }: { node: ChainNode; w: number; 
           ) : (
             <Fader x={10} y0={4.5} y1={35.5} db={node.gain ?? 0} capColor="#c4372a" showCap={show} />
           )}
-          {/* 2-way nearfield monitor, cabinet 1 : 1.6 (180 × 290 mm class) */}
+          {/* the line lead: a plug in the strip's output jack, down to the
+              floor and round behind the cabinet to the monitor's rear input
+              (drawn first, so the cabinet hides its far end) */}
+          <G opacity={hidden ? 0.5 : 1}>
+            <Path d="M 17.2 30.6 C 18.9 30.6 18.4 36.9 20.6 37.4 L 23.4 37.4 C 24.6 37.4 24.9 35.4 24.9 32" stroke="#3a3e46" strokeWidth={1.5} fill="none" strokeLinecap="round" />
+            <Path d="M 17.2 30.6 C 18.9 30.6 18.4 36.9 20.6 37.4 L 23.4 37.4 C 24.6 37.4 24.9 35.4 24.9 32" stroke="#0d0e10" strokeWidth={0.9} fill="none" strokeLinecap="round" />
+            <Rect x={15.6} y={29.8} width={1.9} height={1.6} rx={0.4} fill="#a7aeb8" stroke="#000" strokeWidth={0.25} />
+          </G>
+          {/* 2-way powered nearfield monitor, cabinet 1 : 1.6 (180 × 290 mm class) */}
           <G opacity={hidden ? 0.5 : 1}>
             <Rect x={19.6} y={9.5} width={14.2} height={22.7} rx={1.6} fill={`url(#${id}-cab)`} stroke="#060607" strokeWidth={0.5} />
             <Circle cx={26.7} cy={14.2} r={2.3} fill="#0b0c0e" stroke="#4a4e57" strokeWidth={0.5} />
@@ -268,23 +284,73 @@ export function StageGear({ node, w, h, hidden }: { node: ChainNode; w: number; 
   );
 }
 
-/** The link between two stages, at the gear's centre line: the first hop
- *  (mic → preamp) is a real XLR cable; inside the console the signal path
- *  is the strip's printed flow line with its direction chevron. */
+/** The preamp's XLR input socket, face-on: a female panel socket (metal
+ *  ring, latch tab above). */
+function XlrSocket({ cx, cy, dim }: { cx: number; cy: number; dim?: boolean }) {
+  return (
+    <G opacity={dim ? 0.6 : 1}>
+      <Rect x={cx - 0.9} y={cy - XLR_R - 1.3} width={1.8} height={1.2} rx={0.3} fill="#a7aeb8" />
+      <Circle cx={cx} cy={cy} r={XLR_R} fill="#08090b" stroke="#a7aeb8" strokeWidth={0.6} />
+    </G>
+  );
+}
+
+/** Where the preamp's XLR input socket sits (gear viewBox units). */
+export const XLR_IN = { x: 9.6, y: 6 };
+const XLR_R = 2.9;
+/** Where the vocal mic's own drawn cable (gearArt) reaches the floor, in the
+ *  source gear's viewBox: the mic drawing's cable end (36.6, 58.6) through
+ *  GearInSvg(x 18, y 20, size 40) = 0.625 × p − (2, 0). */
+const MIC_CABLE_END = { x: 20.875, y: 36.625 };
+const FLOOR_Y = 37.9;
+
+/** The mic → preamp XLR cable as ONE lane (GN-R2-03, owner-approved art
+ *  2026-10-20): it picks up where the mic drawing's cable meets the floor,
+ *  runs along the floor past the link, climbs the preamp's left edge and
+ *  ends in the plug seated in the input section's XLR socket. Drawn over
+ *  both gear boxes by the caller (ChainStage), so `span` is the distance
+ *  from the source gear's left edge to the preamp gear's left edge, in the
+ *  same units as gearW/gearH; `chevronX` (same units, from the same edge)
+ *  is the middle of the link between them, where the run's direction
+ *  chevron sits on the floor run. */
+export function MicCableRun({ gearW, gearH, span, chevronX, hot, dim }: { gearW: number; gearH: number; span: number; chevronX: number; hot: boolean; dim?: boolean }) {
+  const k = gearH / GEAR_VB_H;
+  const x1 = span / k;
+  const px = x1 + XLR_IN.x;
+  const py = XLR_IN.y;
+  const cx = chevronX / k;
+  const up = x1 + 2.1; // the climb, in the preamp box's free left margin
+  const d =
+    `M ${MIC_CABLE_END.x} ${MIC_CABLE_END.y} C ${MIC_CABLE_END.x + 1.3} ${FLOOR_Y - 0.4} ${MIC_CABLE_END.x + 2.4} ${FLOOR_Y} ${MIC_CABLE_END.x + 4} ${FLOOR_Y} ` +
+    `L ${up - 1.6} ${FLOOR_Y} C ${up - 0.3} ${FLOOR_Y} ${up} ${FLOOR_Y - 1} ${up} ${FLOOR_Y - 2.6} ` +
+    `L ${up} ${py + 3.4} C ${up} ${py + 1.2} ${px - 3.6} ${py} ${px - 1.8} ${py}`;
+  const core = hot ? '#5a1810' : '#0d0e10';
+  return (
+    <Svg width={span + gearW} height={gearH} viewBox={`0 0 ${x1 + GEAR_VB_W} ${GEAR_VB_H}`} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <G opacity={dim ? 0.5 : 1}>
+        <Path d={d} stroke="#3a3e46" strokeWidth={1.5} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <Path d={d} stroke={core} strokeWidth={0.95} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        {/* the XLR plug seated in the socket, seen end-on: boot + shell */}
+        <Circle cx={px} cy={py} r={2.4} fill="#1b1d22" stroke="#000" strokeWidth={0.35} />
+        <Circle cx={px} cy={py} r={1.2} fill="#2a2d33" />
+      </G>
+      <Path d={`M ${cx - 1.6} ${FLOOR_Y - 2.3} L ${cx + 1.6} ${FLOOR_Y} L ${cx - 1.6} ${FLOOR_Y + 2.3}`} stroke={hot ? '#ff5f4e' : '#ffc64d'} strokeWidth={1} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+/** The link between two stages, at the gear's centre line: inside the
+ *  console the signal path is the strip's printed flow line with its
+ *  direction chevron. The first hop (mic → preamp) is the real XLR cable,
+ *  drawn as one lane by MicCableRun along the floor (with its chevron), so
+ *  its link draws nothing. */
 export function StageLink({ w, h, cable, hot }: { w: number; h: number; cable: boolean; hot: boolean }) {
   const y = h / 2;
-  const tone = hot ? '#ff5f4e' : cable ? '#0d0e10' : '#7a6630';
+  const tone = hot ? '#ff5f4e' : '#7a6630';
+  if (cable) return <Svg width={w} height={h} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />;
   return (
     <Svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-      {cable ? (
-        <G>
-          <Line x1={0} y1={y} x2={w} y2={y} stroke={hot ? '#5a1810' : '#0b0b0d'} strokeWidth={3.2} strokeLinecap="round" />
-          <Line x1={0} y1={y - 0.7} x2={w} y2={y - 0.7} stroke="#5a5f6a" strokeWidth={0.6} opacity={0.55} />
-          <Line x1={0} y1={y + 0.5} x2={w} y2={y + 0.5} stroke="#c23a2d" strokeWidth={0.6} opacity={0.7} />
-        </G>
-      ) : (
-        <Line x1={0} y1={y} x2={w} y2={y} stroke={tone} strokeWidth={1.3} />
-      )}
+      <Line x1={0} y1={y} x2={w} y2={y} stroke={tone} strokeWidth={1.3} />
       <Path d={`M ${w / 2 - 2} ${y - 3} L ${w / 2 + 2} ${y} L ${w / 2 - 2} ${y + 3}`} stroke={hot ? '#ff5f4e' : '#ffc64d'} strokeWidth={1.2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
     </Svg>
   );

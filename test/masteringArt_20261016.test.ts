@@ -137,7 +137,9 @@ describe('the monitoring path is drawn as gear that fits the glass', () => {
   });
   it('cables are drawn by what they carry, each its own stroke', () => {
     const art = read(`${DIR}/mastArt.tsx`);
-    assert.match(art, /if \(a === 'daw'\) return 'usb';/);
+    // MA-02 (wiring 2026-10-20): USB from the DAW only into the converter or
+    // a converting controller — never into an amp or a monitor.
+    assert.match(art, /if \(a === 'daw'\) return b === 'dac' \|\| b === 'monitorCtl' \? 'usb' : 'line';/);
     assert.match(art, /if \(a === 'amp' && b === 'passive'\) return 'speaker';/);
   });
 });

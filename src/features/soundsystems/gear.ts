@@ -147,7 +147,7 @@ export const GEAR: readonly GearSpec[] = [
     accepts: ['line'],
     emits: ['speaker'],
     roles: ['ampRack'],
-    blurb: 'Turns a line-level signal into SPEAKER-LEVEL power — tens of volts and amps of current into a low-impedance load. Its output must only ever meet a passive loudspeaker.',
+    blurb: 'Turns a line-level signal into SPEAKER-LEVEL power — tens of volts and amps of current into a low-impedance load. Its output must only ever meet a passive loudspeaker. Most have two channels — one mix each — and so does this lab’s.',
     from: 'A processor output or a console output.',
     to: 'Passive loudspeakers over speaker cable. Never a line input.',
     many: true,

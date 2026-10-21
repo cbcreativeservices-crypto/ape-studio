@@ -35,8 +35,10 @@ const INK = {
  * braid shield) cable, AUTHORED AT 1.45 viewBox units per mm so every part
  * is its real size relative to the others:
  *   panel jack: hex nut 14 mm across flats, bushing Ø9.5, socket Ø6.4;
- *   plug shaft Ø6.35 × 31 mm — tip 8 (ball + neck groove), insulator 2.5,
- *     ring 5, insulator 2.5, sleeve 13;
+ *   plug shaft Ø6.35 × 31 mm, measured from the tip (the SHAFT table below,
+ *     same as the Cable lab's plugs.tsx) — tip ball 8.6 + neck groove to 11,
+ *     insulator 2.5 (to 13.5), ring 5 (to 18.5), insulator 2.5 (to 21),
+ *     sleeve 10 (to 31);
  *   handle (barrel) Ø13 × 38 mm with grip grooves;
  *   strain-relief boot 25 mm, Ø10 tapering to the cable;
  *   cable Ø6.5 mm PVC jacket; braid shield Ø5.2; two insulated conductors
@@ -250,21 +252,46 @@ function Strands({ cx, cy, r, tint = INK.copper }: { cx: number; cy: number; r: 
 
 /** One insulated conductor end-on: the coloured insulation, lit from the
  *  upper left, round its stranded copper. */
-function Insulated({ cx, cy, r, color, core = 0.55 }: { cx: number; cy: number; r: number; color: string; core?: number }) {
+function Insulated({ cx, cy, r, color, core = 0.55, stripe }: { cx: number; cy: number; r: number; color: string; core?: number; stripe?: string }) {
   return (
     <G>
       <Circle cx={cx} cy={cy} r={r} fill={color} stroke="#0c0d0f" strokeWidth={0.6} />
+      {/* a striped mate (white with its pair's colour), seen end-on as a
+          coloured band on the insulation */}
+      {stripe ? (
+        <Path d={`M ${cx + r * 0.78} ${cy - r * 0.2} A ${r * 0.8} ${r * 0.8} 0 0 1 ${cx - r * 0.2} ${cy + r * 0.78}`} fill="none" stroke={stripe} strokeWidth={r * 0.3} />
+      ) : null}
       <Path d={`M ${cx - r * 0.78} ${cy - r * 0.15} A ${r * 0.8} ${r * 0.8} 0 0 1 ${cx + r * 0.15} ${cy - r * 0.78}`} fill="none" stroke="#ffffff" strokeWidth={r * 0.14} opacity={0.35} strokeLinecap="round" />
       <Strands cx={cx} cy={cy} r={r * core} />
     </G>
   );
 }
 
-function Pair({ cx, cy, r = 7, gap = 8 }: { cx: number; cy: number; r?: number; gap?: number }) {
+/** Category-cable pair colours (TIA-568): each pair is a solid colour and a
+ *  white mate striped with it. R3-CS-04: all four pairs were orange/blue. */
+export const CAT_PAIR_COLORS = ['#3d7dd6', '#d9822b', '#3a9a4a', '#7a4a2a'] as const;
+const CAT_WHITE = '#ecebe6';
+
+/** Centre-to-centre spacing of a pair's two conductors: never less than one
+ *  diameter plus a hairline, so the insulations never overlap (R3-CS-04). */
+export function pairSpacing(r: number, gap?: number): number {
+  return Math.max(gap ?? 0, 2 * r + 1);
+}
+
+function Pair({ cx, cy, r = 7, gap, color }: { cx: number; cy: number; r?: number; gap?: number; color?: string }) {
+  const g = pairSpacing(r, gap);
+  if (color) {
+    return (
+      <G>
+        <Insulated cx={cx - g / 2} cy={cy} r={r} color={color} />
+        <Insulated cx={cx + g / 2} cy={cy} r={r} color={CAT_WHITE} stripe={color} />
+      </G>
+    );
+  }
   return (
     <G>
-      <Insulated cx={cx - gap / 2} cy={cy} r={r} color="#d9822b" />
-      <Insulated cx={cx + gap / 2} cy={cy} r={r} color="#3d7dd6" />
+      <Insulated cx={cx - g / 2} cy={cy} r={r} color="#d9822b" />
+      <Insulated cx={cx + g / 2} cy={cy} r={r} color="#3d7dd6" />
     </G>
   );
 }
@@ -282,7 +309,7 @@ export function CrossSectionView({ kind, width = 120, a11y, controls }: { kind: 
         { r: 52, fill: INK.jacket },
         { r: 42, fill: INK.shield },
       ];
-      inner = <Pair cx={C} cy={C} r={12} gap={22} />;
+      inner = <Pair cx={C} cy={C} r={12} gap={25} />;
       break;
     case 'instrument':
       rings = [
@@ -303,8 +330,8 @@ export function CrossSectionView({ kind, width = 120, a11y, controls }: { kind: 
       rings = [{ r: 52, fill: '#1f1f22' }];
       inner = (
         <G>
-          <Insulated cx={C - 16} cy={C} r={17} color="#d9822b" core={0.7} />
-          <Insulated cx={C + 16} cy={C} r={17} color="#3d7dd6" core={0.7} />
+          <Insulated cx={C - 17.5} cy={C} r={17} color="#d9822b" core={0.7} />
+          <Insulated cx={C + 17.5} cy={C} r={17} color="#3d7dd6" core={0.7} />
         </G>
       );
       break;
@@ -326,10 +353,10 @@ export function CrossSectionView({ kind, width = 120, a11y, controls }: { kind: 
       rings = [{ r: 52, fill: '#2b7de9' }];
       inner = (
         <G>
-          <Pair cx={C - 20} cy={C - 20} r={6.5} gap={10} />
-          <Pair cx={C + 20} cy={C - 20} r={6.5} gap={10} />
-          <Pair cx={C - 20} cy={C + 20} r={6.5} gap={10} />
-          <Pair cx={C + 20} cy={C + 20} r={6.5} gap={10} />
+          <Pair cx={C - 20} cy={C - 20} r={6.5} gap={14} color={CAT_PAIR_COLORS[0]} />
+          <Pair cx={C + 20} cy={C - 20} r={6.5} gap={14} color={CAT_PAIR_COLORS[1]} />
+          <Pair cx={C - 20} cy={C + 20} r={6.5} gap={14} color={CAT_PAIR_COLORS[2]} />
+          <Pair cx={C + 20} cy={C + 20} r={6.5} gap={14} color={CAT_PAIR_COLORS[3]} />
         </G>
       );
       break;
@@ -348,9 +375,9 @@ export function CrossSectionView({ kind, width = 120, a11y, controls }: { kind: 
       ];
       inner = (
         <G>
-          <Pair cx={C - 16} cy={C - 14} r={6} gap={9} />
-          <Pair cx={C + 16} cy={C - 14} r={6} gap={9} />
-          <Pair cx={C} cy={C + 6} r={6} gap={9} />
+          <Pair cx={C - 16} cy={C - 14} r={6} gap={13} />
+          <Pair cx={C + 16} cy={C - 14} r={6} gap={13} />
+          <Pair cx={C} cy={C + 6} r={6} gap={13} />
           <Insulated cx={C - 18} cy={C + 20} r={7} color="#c23a3a" />
           <Insulated cx={C + 18} cy={C + 20} r={7} color="#2a2a2e" />
         </G>

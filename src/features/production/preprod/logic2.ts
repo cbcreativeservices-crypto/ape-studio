@@ -57,6 +57,15 @@ const mentions = (haystack: string, re: RegExp): boolean => re.test(haystack.toL
 /** Two entries, not one: a range, a pair, or two names. */
 const namesTwo = (s: string): boolean => s !== '' && /[-–—,/&+]|\band\b/i.test(s);
 
+/** One STEREO channel or track ("ST 1", "St2", "stereo 3", "interleaved"):
+ *  also a correct home for a stereo pair (PR-R2-01, wiring round 2 — stereo
+ *  console channels and stereo recorder tracks exist; one MONO channel is
+ *  the mistake). */
+const namesStereo = (s: string): boolean => /\bstereo\b|\binterleaved\b|^st$|\bst\s*-?\s*\d+\b|\bst\d/i.test(s.trim());
+
+/** A stereo pair's home: two mono entries, or one stereo one. */
+const holdsPair = (s: string): boolean => namesTwo(s) || namesStereo(s);
+
 /** Channels the stage 5 input list actually asks for, or null if there is none. */
 function inputListChannels(ctx: RuleContext): number | null {
   const list = rows(ctx.get('technical', 'input_list'));
@@ -110,8 +119,8 @@ registerRuleLogic({
       // column is a question not yet answered, not an answer that is wrong.
       if (consoleChannels === '' && trackNames === '') return false;
       return (
-        (consoleChannels !== '' && !namesTwo(consoleChannels)) ||
-        (trackNames !== '' && !namesTwo(trackNames))
+        (consoleChannels !== '' && !holdsPair(consoleChannels)) ||
+        (trackNames !== '' && !holdsPair(trackNames))
       );
     }),
 
@@ -120,7 +129,9 @@ registerRuleLogic({
       const capture = cell(r, 'in_capture');
       const phantom = cell(r, 'in_phantom');
       if (phantom === '' || phantom === 'na') return false;
-      if (capture === 'condenser_mic') return phantom === 'off';
+      // Active ribbons need phantom like a condenser; only a PASSIVE ribbon
+      // (ribbon_mic) keeps the caution (rule book L6).
+      if (capture === 'condenser_mic' || capture === 'active_ribbon_mic') return phantom === 'off';
       // di and wireless are excluded on purpose: active DIs want phantom,
       // passive ones do not, and receivers vary by device (C's intent).
       return ['ribbon_mic', 'line', 'playback'].includes(capture) && phantom === 'on';
@@ -154,12 +165,28 @@ registerRuleLogic({
   },
 
   'technical-level-format-conflict': (ctx) => {
+    // An instrument-level source wired straight into a mic, console or
+    // stage-box input (R3-PR-01, wiring round 3). A guitar into its pedals,
+    // effects or amp is instrument level by design and is never flagged; a
+    // DI or an instrument (hi-Z) input anywhere on the hop clears it.
     const instrumentWithoutDi = rows(ctx.get('technical', 'signal_path')).some((r) => {
       if (cell(r, 'sp_level') !== 'instrument') return false;
-      const chain = `${cell(r, 'sp_via')} ${cell(r, 'sp_to')}`;
-      return !mentions(chain, /\bdi\b|direct box|direct input|instrument input|hi-?z/);
+      const to = cell(r, 'sp_to');
+      if (mentions(`${cell(r, 'sp_via')} ${to}`, /\bdi\b|direct box|direct input|instrument input|hi-?z/)) return false;
+      // "pre-amp" is a mic input, not an amp (R4-PROD-01): the hyphen is a word break.
+      if (mentions(to, /(?<!pre-?)\bamps?\b|amplifier|\bcombo\b|pedal|effects?\b|\bfx\b|stomp|tuner/)) return false;
+      return mentions(to, /\bmic\b|microphone|console|mixer|desk|stage ?box|snake|channel|pre-?amp|xlr/);
     });
     if (instrumentWithoutDi) return true;
+    // A speaker-level output wired into an input (PR-R2-03, wiring round 2):
+    // speaker level belongs on a loudspeaker, or on a DI / load box made for
+    // it. Fires only when the arrival names an input-side device.
+    const speakerIntoInput = rows(ctx.get('technical', 'signal_path')).some((r) => {
+      if (cell(r, 'sp_level') !== 'speaker') return false;
+      if (mentions(`${cell(r, 'sp_via')} ${cell(r, 'sp_to')}`, /\bdi\b|direct box|load box|attenuat|speaker[- ]level input/)) return false;
+      return mentions(cell(r, 'sp_to'), /console|mixer|desk|\binput|interface|pre-?amp|recorder|\bdaw\b|stage ?box|snake|channel/);
+    });
+    if (speakerIntoInput) return true;
     // An unbalanced jack on what is usually a long run back to the stage box.
     return rows(ctx.get('technical', 'input_list')).some(
       (r) => ['line', 'playback'].includes(cell(r, 'in_capture')) && cell(r, 'in_connection') === 'ts',
@@ -400,7 +427,7 @@ registerActivityChecks({
   'build-the-input-list': [
     {
       id: 'stereo-has-two',
-      label: 'Every stereo source occupies two console channels and two recorder tracks',
+      label: 'Every stereo source has two console inputs (two mono channels or one stereo channel) and two recorder tracks (or one stereo track)',
       /**
        * Stricter than the `technical-stereo-one-channel` rule, on purpose. The
        * rule only inspects rows already declared as two channels, because a
@@ -413,7 +440,7 @@ registerActivityChecks({
         inputs(c).length > 0 &&
         !inputs(c).some((r) => {
           if (cellNum(r, 'in_channels') === 2) {
-            return !namesTwo(cell(r, 'in_console')) || !namesTwo(cell(r, 'in_track'));
+            return !holdsPair(cell(r, 'in_console')) || !holdsPair(cell(r, 'in_track'));
           }
           const readsStereo = /\bstereo\b|\bpair\b/i.test(cell(r, 'in_source'));
           return readsStereo && cell(r, 'in_notes') === '';
@@ -426,7 +453,7 @@ registerActivityChecks({
         inputs(c).length > 0 &&
         !inputs(c).some((r) => {
           const capture = cell(r, 'in_capture');
-          if (capture === 'condenser_mic') return cell(r, 'in_phantom') !== 'on';
+          if (capture === 'condenser_mic' || capture === 'active_ribbon_mic') return cell(r, 'in_phantom') !== 'on';
           if (['line', 'playback', 'ribbon_mic'].includes(capture)) {
             return cell(r, 'in_phantom') === 'on';
           }

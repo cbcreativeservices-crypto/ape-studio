@@ -33,13 +33,15 @@ import { WedgePlan, planIdsOf } from '../KitPlan';
 import type { BuiltGuitarModel, GuitarScene } from './guitarModel.ts';
 import { GuitarSceneArt } from './GuitarArt';
 import { KitTop } from '../kitScene/KitSceneArt';
-import { GUITAR_WIDE, KIT_TURN, kitOriginAt, SIZES, WALL, guitarCue, guitarPlanFoots, planFrame, shownIn, stringsPlan, type GuitarPlanOpts, type PlanKind, type PlanObject } from './stagePlanModel.ts';
-import { clearOfFoots, labelPlaces, unionRect, type PlanFoot } from '../planFoot.ts';
+import { DI_XLR_TO, GUITAR_WIDE, KIT_TURN, kitOriginAt, SIZES, WALL, diXlr, guitarCue, guitarPlanFoots, planFrame, shownIn, stringsPlan, type GuitarPlanOpts, type PlanKind, type PlanObject } from './stagePlanModel.ts';
+import { clearOfFoots, labelPlaces, unionRect, type PlanFoot, type PlanPt } from '../planFoot.ts';
 import { cueCables, cueHub, cueLabels, type CueRig } from '../monitoring/cueMix.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 
 const AMBER = '#ffc64d';
 const GREY = '#8a8f9c';
+/** The XLR's look (the speaker plan's, speakers/StagePlan XLR), at this plan's cable weight. */
+const XLR = { color: '#666b75', w: 16, stripe: '#c3c7cf' } as const;
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 type XZ = { x: number; z: number };
 
@@ -106,7 +108,9 @@ function ChairPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
   );
 }
 
-function DiPlan({ o, hi, from }: { o: PlanObject; hi: boolean; from: XZ }) {
+/** The DI: its input cord from the tail jack (its −v end) and, R2-MK-03, its
+ *  XLR out from the far (+v) end to the plan's edge (stagePlanModel diXlr). */
+function DiPlan({ o, hi, from, xlr }: { o: PlanObject; hi: boolean; from: XZ; xlr: readonly PlanPt[] }) {
   const { hu, hv } = SIZES.di;
   const box = rr(o.at.x - hu, o.at.z - hv, o.at.x + hu, o.at.z + hv, 12);
   const cable = useMemo(() => {
@@ -115,9 +119,18 @@ function DiPlan({ o, hi, from }: { o: PlanObject; hi: boolean; from: XZ }) {
     p.cubicTo(from.x - 120, from.z + 60, o.at.x + 80, o.at.z - 160, o.at.x, o.at.z - hv);
     return p;
   }, [from.x, from.z, o.at.x, o.at.z, hv]);
+  const xlrPath = useMemo(() => {
+    const p = Skia.Path.Make();
+    xlr.forEach((q, i) => (i ? p.lineTo(q.u, q.v) : p.moveTo(q.u, q.v)));
+    return p;
+  }, [xlr]);
   return (
     <Group>
       <Path path={cable} style="stroke" strokeWidth={10} color="#0b0c0f" strokeCap="round" />
+      <Path path={xlrPath} style="stroke" strokeWidth={XLR.w} color={XLR.color} strokeCap="butt" strokeJoin="round" />
+      <Path path={xlrPath} style="stroke" strokeWidth={4} color={XLR.stripe} strokeCap="butt">
+        <DashPathEffect intervals={[40, 40]} />
+      </Path>
       <Path path={box}>
         <LinearGradient start={vec(o.at.x - hu, o.at.z - hv)} end={vec(o.at.x + hu, o.at.z + hv)} colors={['#6b707b', '#3a3d45', '#1d1e23']} />
       </Path>
@@ -248,6 +261,9 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
       [sc, scene, wedges, all],
     );
     const cue = scene === 'studio' ? guitarCue(sc) : null;
+    // R2-MK-03: the DI's XLR out (stage routing in the close-up, where it runs off the frame).
+    const diObj = objs.find((o) => o.kind === 'di');
+    const xlr = useMemo(() => (diObj ? diXlr(diObj.at, scene === 'studio' ? 'studio' : 'stage') : null), [diObj?.at.x, diObj?.at.z, scene]); // eslint-disable-line react-hooks/exhaustive-deps
     const footOf = (id: string) => {
       const ids = id === 'player' ? ['player', 'instrument'] : id === 'kit' ? foots.filter((f) => f.group === 'kit').map((f) => f.id) : [id];
       const fs = foots.filter((f) => ids.includes(f.id));
@@ -279,6 +295,13 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
     if (chosen) add(chosen);
     for (const it of visible) add(it);
     labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'KEEP CLEAR', u: F.space.u0 + 20, v: F.space.v0 - 40, align: 'left', point: { u: F.space.u0 + 20, v: F.space.v0 + 20 }, tone: 'illustrative' });
+    if (xlr && scene !== 'kit') {
+      // The XLR's off-plan destination, named beside the cable's end.
+      const end = xlr.pts[xlr.pts.length - 1];
+      const k = textScale / xf.s;
+      const [first, ...alts] = [{ u: end.u + 40, v: end.v - 11 * k, align: 'left' as const }, { u: end.u + 40, v: end.v + 13 * k, align: 'left' as const }, ...labelPlaces({ u0: end.u, u1: end.u + 160, v0: end.v - 12, v1: end.v + 12 }, xf.s / textScale)];
+      labels.push({ id: 'diXlrTo', text: DI_XLR_TO[scene], u: first.u, v: first.v, align: first.align, alts, point: { u: end.u + 80, v: end.v }, tone: 'illustrative' });
+    }
     const seen = new Set<string>();
     const uniq: StaticLabel[] = [
       ...labels.filter((l) => {
@@ -326,7 +349,7 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
               {objs.filter((o) => o.kind === 'kit').map((o) => <KitFromAbove key={o.id} o={o} hi={lit.has(o.id)} />)}
               {objs.filter((o) => o.kind === 'bassAmp').map((o) => <AmpPlan key={o.id} o={o} hi={lit.has(o.id)} />)}
               {objs.filter((o) => o.kind === 'pa').map((o) => <PaPlan key={o.id} o={o} hi={lit.has(o.id)} />)}
-              {objs.filter((o) => o.kind === 'di').map((o) => <DiPlan key={o.id} o={o} hi={lit.has(o.id)} from={tailJack} />)}
+              {objs.filter((o) => o.kind === 'di').map((o) => <DiPlan key={o.id} o={o} hi={lit.has(o.id)} from={tailJack} xlr={xlr?.pts ?? []} />)}
               {stageWedges.map((wd) => (
                 <WedgePlan key={wd.id} at={wd.p} faces={wd.faces} hi={lit.has(wd.id)} />
               ))}
@@ -339,12 +362,12 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
             </Group>
           </Canvas>
         </Pressable>
-        <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, cue ? cueCables(cue) : [])} />
+        <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, [...(cue ? cueCables(cue) : []), ...(xlr ? [xlr] : [])])} />
       </View>
     );
   }
 
-  return function StagePlanPage({ lesson, answers, onAnswered, variant }: PageProps): ReactNode {
+  function StagePlanPage({ lesson, answers, onAnswered, variant }: PageProps): ReactNode {
     const C = copyOf(lesson);
     const sc = built.scenes[variant] ?? built.scenes[built.model.defaultVariant];
     const items = lesson.setting.items;
@@ -479,7 +502,10 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
       },
     ];
     return <PageSteps steps={steps} />;
-  };
+  }
+  /** The plan drawing on its own (dev renders: scripts/artshot). */
+  StagePlanPage.Plan = Plan;
+  return StagePlanPage;
 }
 
 /** The plain hearing line every string lesson carries (the research's

@@ -104,6 +104,8 @@ import { MicSelectLabScreen } from '../screens/lab/micselect/MicSelectLabScreen'
 import { MasteringLabScreen } from '../screens/lab/mastering/MasteringLabScreen';
 // Drum Tuning Lab (2026-10-01): `#labpreview/DrumTuningLab` walks all seven chapters.
 import { DrumTuningLabScreen } from '../screens/lab/drumtuning/DrumTuningLabScreen';
+// DJ Systems Lab (2026-10-18): `#labpreview/DJSystemsLab` walks all twelve screens.
+import { DJSystemsLabScreen } from '../screens/lab/dj/DJSystemsLabScreen';
 // Miking Labs (2026-10-04): `#labpreview/MikingHub`, `#labpreview/MikingLesson/M01`
 // (add `?page=placement` before the hash to open a page).
 import { MikingHubScreen } from '../screens/lab/miking/MikingHubScreen';
@@ -209,6 +211,7 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   GainModule: GainModuleScreen as ComponentType,
   MasteringLab: MasteringLabScreen as ComponentType,
   DrumTuningLab: DrumTuningLabScreen as ComponentType,
+  DJSystemsLab: DJSystemsLabScreen as ComponentType,
   MikingHub: MikingHubScreen as ComponentType,
   EarLab: EarLabScreen as ComponentType,
   MikingLesson: MikingLessonScreen as ComponentType,

@@ -75,7 +75,7 @@ function MeshOver({ clip, x0, y0, x1, y1, step = 2.4, color = '#1b1c20', opacity
     </Group>
   );
 }
-/** The XLR end: a slightly narrower ring, the connector's dark socket insert. */
+/** The XLR end: a slightly narrower ring, the male XLR's recessed pin insert. */
 function XlrTail({ cx, y, r }: { cx: number; y: number; r: number }) {
   return (
     <>

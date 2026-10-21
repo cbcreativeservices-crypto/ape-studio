@@ -106,9 +106,11 @@ export const GAIN_STAGES: readonly GainStageSpec[] = [
   { id: 'procIn', label: 'Processor input', min: -20, max: 20, clipDbu: 20, noiseDbu: -95, unity: 0 },
   { id: 'procOut', label: 'Processor output', min: -20, max: 20, clipDbu: 20, noiseDbu: -95, unity: 0 },
   // A pro amplifier reaches full output at about +4 dBu in with its attenuator
-  // wide open; the console and processor peak at +20. So the attenuator sits
-  // around −12 at "unity" — the amplifier must be the LAST stage to clip.
-  { id: 'amp', label: 'Amplifier input attenuator', min: -40, max: 0, clipDbu: 4, noiseDbu: -95, unity: -12 },
+  // wide open; the console and processor clip at +20. At −16 the amplifier
+  // would clip together with them (+20 − 16 = +4), so "unity" sits a little
+  // lower, at −18: the amplifier is the LAST stage to clip (wiring audit
+  // WF-SS-01, owner go 2026-10-20; pinned in test/wiringRules_systems_20261020).
+  { id: 'amp', label: 'Amplifier input attenuator', min: -40, max: 0, clipDbu: 4, noiseDbu: -95, unity: -18 },
   { id: 'speaker', label: 'Loudspeaker', min: null, max: null, clipDbu: 4, noiseDbu: -95, unity: 0 },
 ];
 

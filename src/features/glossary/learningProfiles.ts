@@ -115,7 +115,7 @@ const READY_TERMS_FM = ['FM Synthesis', 'Frequency modulation'];
 const READY_TERMS_BINAURAL = ['Sound Localization', 'Spatial Audio', 'Head-related transfer function'];
 const READY_TERMS_MODULAR = [
   'Synthesizer', 'Synthesis', 'Subtractive Synthesis', 'VCO', 'VCF', 'LFO', 'ADSR',
-  'Envelope', 'Sequencer', 'Step Sequencer', 'cutoff frequency', 'Patch', 'Tremolo', 'Vibrato',
+  'Envelope', 'Sequencer', 'Step Sequencer', 'cutoff frequency', 'Patch (synth preset)', 'Tremolo', 'Vibrato',
 ];
 // Foundations of Sound (2026-07-26, course MVP = Modules 1–4). DB-verified;
 // only what the MVP genuinely teaches TODAY — 'Frequency' and 'Loudness' wait
@@ -168,7 +168,7 @@ const READY_TERMS_DIGITAL = [
 // Off-Axis with SpeakerLab, Cardioid with MicLab — each already teaches its
 // sense; the Wave lab reinforces them without stealing the link.
 const READY_TERMS_WAVE = [
-  'Reflection', 'Specular reflection', 'Early reflection', 'First Reflection Point',
+  'Reflection (acoustics)', 'Specular reflection', 'Early reflection', 'First Reflection Point',
   'Absorption', 'Absorption coefficient', 'Diffusion', 'Diffuser', 'Refraction',
   'Diffraction', 'Interference', 'Constructive Interference', 'Destructive Interference',
   'Room mode', 'Axial mode', 'Tangential mode', 'Oblique mode', 'Schroeder frequency',
@@ -189,7 +189,7 @@ const READY_TERMS_METER = [
   'VU Meter (Volume Unit Meter)', 'Meter Ballistics', 'Metering', 'Peak Hold',
   'RMS', 'Crest factor', 'DC offset', 'Transient', 'Dynamic Range', 'Headroom',
   'LUFS', 'Loudness', 'Momentary loudness measurement', 'True Peak',
-  'Spectrum Analyzer', 'Spectrogram', 'Waterfall analysis', 'Waterfall Plot (CSD)',
+  'Real-time analyzer', 'Spectrogram', 'Waterfall analysis', 'Waterfall Plot (CSD)',
   'Oscilloscope', 'Goniometer', 'Phase scope', 'Correlation', 'Stereo Image',
 ];
 

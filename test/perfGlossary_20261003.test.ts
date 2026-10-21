@@ -21,9 +21,9 @@ import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import ts from 'typescript';
 
-const SCREEN = readFileSync(new URL('../src/screens/glossary/GlossaryScreen.tsx', import.meta.url), 'utf8');
-const POPUP = readFileSync(new URL('../src/features/glossary/GlossaryTermPopup.tsx', import.meta.url), 'utf8');
-const ROOT = readFileSync(new URL('../src/features/glossary/GlossaryPrefetchRoot.tsx', import.meta.url), 'utf8');
+const SCREEN = readFileSync(new URL('../src/screens/glossary/GlossaryScreen.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+const POPUP = readFileSync(new URL('../src/features/glossary/GlossaryTermPopup.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+const ROOT = readFileSync(new URL('../src/features/glossary/GlossaryPrefetchRoot.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
 const between = (src: string, a: string, b: string) => {
   const i = src.indexOf(a);

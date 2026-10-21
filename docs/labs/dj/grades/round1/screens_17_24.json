@@ -1,0 +1,155 @@
+[
+  {
+    "screen": 17,
+    "title": "Vinyl turntables and phono audio",
+    "scores": {"1": 8, "2": 7, "3": 8, "4": 7, "5": null, "6": null, "7": null, "8": null, "9": 8, "10": 8, "11": 8, "12": 7, "13": 8, "14": 6, "15": 7, "16": 7, "17": 8, "18": 8, "19": 8, "20": 7},
+    "areas": {"A": 7.5, "B": null, "C": 8.0, "D": 7.0, "E": 8.0, "F": 7.5},
+    "overall": 7.56,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "14": "ROOM view with the monitor ON A STAND, AWAY (17g_room_iso_away_390): the first air wavefront arc runs straight through the header 'ELECTRICAL (OVERLAY): STYLUS TO MIXER TO MONITOR' (through '(OVERLAY):'), so a drawing line crosses words. At FULL SCREEN 3x the top view's 'PITCH' legend is cut by the dock edge (17_full_3x)."
+    },
+    "worst3": [
+      "ROOM, monitor away: an air wavefront arc cuts through the ELECTRICAL (OVERLAY) header text.",
+      "FULL SCREEN 3x enlarges only the top view; the tonearm side view and the booth side view stay at panel size, so their 9 pt labels and the stylus/record detail never grow.",
+      "Booth side view: the table legs and the monitor stand's post end in fades in mid-frame, and the wavefront arcs pass under the turntable's plinth between its feet, which reads a little odd."
+    ],
+    "screenshot": "final3/17_arm_stopped_on_record_390.jpg"
+  },
+  {
+    "screen": 18,
+    "title": "Digital vinyl systems",
+    "scores": {"1": 7, "2": 7, "3": 8, "4": 7, "5": null, "6": null, "7": null, "8": null, "9": 8, "10": 8, "11": 8, "12": 7, "13": 6, "14": 7, "15": 7, "16": 7, "17": 7, "18": 7, "19": 8, "20": 5},
+    "areas": {"A": 7.25, "B": null, "C": 8.0, "D": 6.8, "E": 7.0, "F": 6.5},
+    "overall": 7.21,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "13": "BEHIND THE BOOTH: the leads now have plug bodies and nested lanes (dvsRigRuns), but at 390 wide the RCA pair, the ground wire and the USB run as 1 to 2 px lines inside a ~200 px inset; GROUND CONNECTED and GROUND LOOSE look the same at phone size (18b vs 18c), and the loose spade cannot be found without a zoom that does not exist (see 20).",
+      "20": "DvsRig is drawn in the screenOverlay, sized by its box, so FULL SCREEN 3x makes the inset panel taller but the drawing stays the same width (18_full_3x: big empty bands above and below it). The rear sockets (~4 px) and the leads can never be inspected on a phone; only the turntable top view zooms."
+    },
+    "worst3": [
+      "The rear-cabling inset cannot be zoomed: FULL SCREEN 3x leaves it at phone size inside a taller empty panel.",
+      "At 390 the RCA pair and the ground wire are hairlines; the loose ground spade is not visible, so the GND LOOSE state shows only as header text.",
+      "The laptop stand straddles the mixer and the 'CTRL L/R' name sits at the far right under the turntable, away from the RCA leads it names."
+    ],
+    "screenshot": "final3/18b_playing_rear_cabling_390.jpg"
+  },
+  {
+    "screen": 19,
+    "title": "Microphones, announcements and talkover",
+    "scores": {"1": 7, "2": 5, "3": 8, "4": 7, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 7, "13": 7, "14": 6, "15": 6, "16": 7, "17": 7, "18": 7, "19": 7, "20": 7},
+    "areas": {"A": 6.75, "B": null, "C": 7.67, "D": 6.6, "E": 7.0, "F": 7.0},
+    "overall": 6.98,
+    "capped": false,
+    "letter": "C",
+    "evidence": {
+      "2": "The mic now lies on the table (good), but it is drawn far too big for the panel behind it: in 19_mic_talking the handheld is ~0.87 of the two-input panel's width and its grille ball is ~2.2x the combo jack's face; with a ~24 mm combo jack that makes the mic ~250 mm long against a real 160-180 mm handheld. The wireless view uses a different mic-to-panel ratio (~0.97), so the two views do not share a scale either.",
+      "14": "Wireless view (19_wireless_line): the red 'RECEIVER OUT: LINE' leader runs diagonally across the receiver's front panel to its switch. The TALK OVER leader is a long diagonal. The meter scale (-6/-12/-24) and the staggered names sit right at the 9 pt floor and read crowded at 390.",
+      "15": "The oversized mic fills the lower half of the display while the lesson's controls (GAIN, ON, TALK OVER, sends) are small knobs and keys on a strip; the top-left third of the display (above the panel, left of the meters) is empty black."
+    },
+    "worst3": [
+      "The handheld mic is about 1.5x real size against the mixer panel, and its scale differs between the wired and wireless views.",
+      "The RECEIVER OUT leader crosses the receiver's face; meter labels are crowded at the 9 pt floor.",
+      "The big mic dominates while the lesson's controls are small; the top-left of the display and a band under the table in the wireless view are empty."
+    ],
+    "screenshot": "final3/19_mic_talking_390.jpg"
+  },
+  {
+    "screen": 20,
+    "title": "PA speakers, subs and venue connections",
+    "scores": {"1": 8, "2": 6, "3": 9, "4": 6, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 4, "13": 7, "14": 6, "15": 7, "16": 6, "17": 7, "18": 7, "19": 8, "20": 7},
+    "areas": {"A": 7.25, "B": null, "C": 7.67, "D": 6.0, "E": 7.0, "F": 7.5},
+    "overall": 7.06,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "2": "Not touched overnight (PlanView/VenueGear/p20 unchanged since round 0). ROOM plan: the turntable dev(-92, 45, ...) spans -114.5 to -69.5 cm; it overhangs the booth table and runs into the left player (-78 to -46 cm). SYSTEM view: the powered top's base sits above the sub's floor line.",
+      "4": "SYSTEM view: the top and the sub do not stand on one floor line. HANDOFF (checked live): with VENUE NOT FED the two XLR leads hang as stiff straight diagonals to angled plugs, and the stage box floats with nothing under it.",
+      "12": "ROOM plan (code-confirmed): the turntable overlaps the left player's footprint by about 8 cm and runs under the left booth monitor at the table corner.",
+      "14": "HANDOFF (live): the MASTER L leader runs diagonally across the mixer's rear panel; in the plan, the PA L / PA R TOP + SUB plates sit on the speaker symbols.",
+      "16": "Plan view: the tops' tripod legs read as unexplained black whiskers at 390 wide."
+    },
+    "worst3": [
+      "ROOM plan: the turntable overlaps the left player and overhangs the booth table (unchanged).",
+      "SYSTEM view: the powered top floats above the sub's floor line; HANDOFF leads are stiff diagonals.",
+      "Labels on the speaker symbols in the plan; the MASTER L leader across the mixer rear; tripod-leg whiskers."
+    ],
+    "screenshot": "final2/20c_pa_system_390.jpg"
+  },
+  {
+    "screen": 21,
+    "title": "Recording and streaming",
+    "scores": {"1": 8, "2": 8, "3": 9, "4": 6, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 7, "13": 8, "14": 5, "15": 7, "16": 6, "17": 7, "18": 8, "19": 8, "20": 7},
+    "areas": {"A": 7.75, "B": null, "C": 7.67, "D": 6.6, "E": 7.5, "F": 7.5},
+    "overall": 7.42,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "4": "Not touched overnight. The handheld recorder stands upright in mid-air to the right of the mixer's rear, with no table, hand or tripod under it.",
+      "14": "Checked live: the 'REC OUT' leader drops from its plate straight down through two rows of RCA jacks to the bottom-row socket, and the 'MASTER -> THE ROOM' leader is a long diagonal across the panel's top. The take axis puts -12 and -24 a few points apart (correct linear-amplitude spacing, but crowded at 390).",
+      "16": "The green bars under the take carry no label of their own; only the far-corner caption 'VOICE IN THE TAKE' explains them."
+    },
+    "worst3": [
+      "The REC OUT leader crosses the jack rows, and the take axis labels -12/-24 crowd each other.",
+      "The recorder floats beside the mixer with nothing under it.",
+      "The voice-mark bars under the take are explained only by a distant caption."
+    ],
+    "screenshot": "final2/21_rec_take_390.jpg"
+  },
+  {
+    "screen": 22,
+    "title": "Hybrid DJ systems",
+    "scores": {"1": 7, "2": 7, "3": 9, "4": 6, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 5, "13": 6, "14": 6, "15": 7, "16": 6, "17": 7, "18": 7, "19": 7, "20": 7},
+    "areas": {"A": 7.25, "B": null, "C": 7.67, "D": 6.0, "E": 7.0, "F": 7.0},
+    "overall": 7.01,
+    "capped": false,
+    "letter": "B",
+    "evidence": {
+      "4": "Not touched overnight (checked live with the 5-PIN MIDI lead in). The drum machine's back panel is still a separate strip floating above its own top view; nothing shows they are two faces of one box.",
+      "12": "At 3x (round-0 evidence, code unchanged) the MIDI lead covers the mixer rear's MIDI OUT legend and the display's BPM/CLK legends touch.",
+      "13": "Deck B's leads still end at 'B L' / 'B R' flags hanging off the panel's left edge, and the red lead has an S-kink by its socket.",
+      "14": "Legend collisions at zoom (see 12); the 'MIDI · CLOCK OFF' tag sits on the MIDI lead.",
+      "16": "The cut-off B L / B R lead ends and the detached rear strip look unfinished at a glance."
+    },
+    "worst3": [
+      "The drum machine's rear panel floats as a separate object above its top view.",
+      "At 3x the MIDI cable covers the MIDI OUT legend; BPM/CLK touch.",
+      "Deck B's leads end at flags in mid-air, with a kinked red lead."
+    ],
+    "screenshot": "final2/22_hybrid_following_390.jpg"
+  },
+  {
+    "screen": 23,
+    "title": "Performer changeovers and backup playback",
+    "scores": {"1": 7, "2": null, "3": 8, "4": null, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 7, "13": 7, "14": 7, "15": 8, "16": 7, "17": 7, "18": 7, "19": 8, "20": 7},
+    "areas": {"A": 7.5, "B": null, "C": 7.67, "D": 7.2, "E": 7.0, "F": 7.5},
+    "overall": 7.41,
+    "capped": false,
+    "letter": "B",
+    "evidence": {},
+    "worst3": [
+      "Still a schematic board: at 390 the device drawings on the cards are small (a laptop ~35 px wide) and the card sub-lines sit at the 9 pt floor.",
+      "The booth strip says 'ALSO THE DECKS, PA AND BOOTH' but only two cords (DJ 1's charger, mixer) are drawn into it, so the strip's other outlets are explained only in words.",
+      "The 'GROUND LOOP · HUM' caption sits under Deck B's card, a little away from the yellow loop path it names; at 3x it is cut to 'HUM' at the left edge until you drag."
+    ],
+    "screenshot": "final3/23_changeover_hum_390.jpg"
+  },
+  {
+    "screen": 24,
+    "title": "Troubleshooting and the complete system challenge",
+    "scores": {"1": 7, "2": null, "3": 8, "4": null, "5": null, "6": null, "7": null, "8": null, "9": 7, "10": 8, "11": 8, "12": 7, "13": 7, "14": 7, "15": 7, "16": 7, "17": 7, "18": 7, "19": 7, "20": 7},
+    "areas": {"A": 7.5, "B": null, "C": 7.67, "D": 7.0, "E": 7.0, "F": 7.0},
+    "overall": 7.31,
+    "capped": false,
+    "letter": "B",
+    "evidence": {},
+    "worst3": [
+      "Dense board at 390: seven cords, two rows of outlet names and the cards' 9 pt sub-lines leave little air; it reads, but only just.",
+      "'WALL SOCKET OTHER CIRCUIT' is squeezed against the right edge beside PA L, and Deck A's cord leaves its card sideways to reach its lane.",
+      "At 3x the MIX card's meter shows a lone white segment mid-column, which reads as a stray mark out of context."
+    ],
+    "screenshot": "final3/24_event_doors_open_390.jpg"
+  }
+]

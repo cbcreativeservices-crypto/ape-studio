@@ -83,7 +83,7 @@ function PageTap({ ctx }: { ctx: PageCtx }) {
       {chips}
       <Card>
         <Eyebrow>WORDS YOU WILL HEAR FOR THE TOP-JACK TRICK</Eyebrow>
-        <Body>tap · mult · split · monitor · parallel feed — all describing the same move: a copy of the source taken without interrupting its normal destination.</Body>
+        <Body>tap · split · monitor feed — all describing the same move: a copy of the source taken without interrupting its normal destination. Two nearby words mean something else: a MULT is a separate group of jacks wired together on the bay, used to copy one signal to several places; and some bays offer a PARALLEL pair, where top and bottom are wired straight across with no switch to break, so both jacks are taps: a cord in either one takes a copy and cuts nothing off.</Body>
       </Card>
       <Prompt>
         Now pull the top cord and instead patch the DRUM MACHINE into the BOTTOM. Before you look at the readout, answer for
@@ -253,12 +253,15 @@ function PageWrap(_: { ctx: PageCtx }) {
         </Body>
       </Card>
       <MantraCard />
+      {/* Sources (D58/D71: no maker names in learner text): normalling and the
+          half-normalled top/bottom variants — Neutrik patch-panel docs; tap/mult —
+          Bittree; source-above / destination-below — ART and Behringer manuals;
+          Normal / Half-Normal / Thru labeling — Samson. */}
       <Card>
         <Eyebrow>SOURCES BEHIND THIS LAB</Eyebrow>
         <Body>
-          Normalling definitions and the half-normalled top/bottom variants: Neutrik patch-panel documentation. Tap/mult
-          behavior: Bittree. Source-above / destination-below layout: ART and Behringer patchbay manuals. Normal / Half-Normal
-          / Thru labeling: Samson.
+          Patch-panel maker documentation and patchbay manuals: normalling definitions and the half-normalled top/bottom
+          variants, tap/mult behavior, the source-above / destination-below layout, and Normal / Half-Normal / Thru labeling.
         </Body>
       </Card>
       <Card>

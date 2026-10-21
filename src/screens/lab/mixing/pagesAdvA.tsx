@@ -52,7 +52,7 @@ function PageGate({ ctx }: { ctx: PageCtx }) {
             question="A post-fader send to a reverb: what happens to the reverb when you pull the channel fader down?"
             options={['Nothing — sends are independent of faders', 'It falls with the fader — post-fader copies follow the mix', 'It gets louder to compensate automatically', 'The reverb switches itself to the next channel']}
             correct={1}
-            explain="Post-fader means tapped AFTER the fader — the copy follows every mix move. That is why effects ride post and cue feeds ride pre."
+            explain="Post-fader means tapped AFTER the fader — the copy follows every mix move. That is why effects usually ride post and cue feeds usually ride pre."
             wrong={[
               'So muting a channel would leave its reverb blasting — mix one show and this theory dies fast.',
               undefined,
@@ -289,7 +289,7 @@ function PageGroupsDeep({ ctx }: { ctx: PageCtx }) {
 
 const AUX_TOPICS = [
   { id: 'returns', name: 'Multiple returns', blurb: 'Separate reverbs for drums and vocals; a tempo delay; a parallel path — each its own return, each mixable and mutable alone.' },
-  { id: 'cue', name: 'Cue mixes', blurb: 'Pre-fader feeds per performer. Your mix moves never reach their ears; their balance never limits yours.' },
+  { id: 'cue', name: 'Cue mixes', blurb: 'Pre-fader feeds per performer. Your fader moves never reach their ears; their balance never limits yours.' },
   { id: 'sidechain', name: 'Sidechain feeds', blurb: 'A send can feed a DETECTOR instead of an effect — the kick telling the bass compressor when to duck.' },
   { id: 'solosafe', name: 'Solo-safe returns', blurb: 'Solo a track and its reverb return stays audible — returns marked solo-safe are exempt from the solo cut.' },
   { id: 'feedback', name: 'Feedback prevention', // ⛔ A RETURN DOES OUTPUT TO THE MIX — routing.ts declares `out: 'mix'`,

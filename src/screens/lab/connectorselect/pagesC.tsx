@@ -65,9 +65,17 @@ function ScenarioCard({ s, onSolved }: { s: Scenario; onSolved: () => void }) {
           />
           {picked === c.id ? (
             <View style={styles.trayEnds}>
-              <ConnectorPhoto id={c.a} size={44} single name={getConnector(c.a)?.displayName} />
-              <Text style={styles.trayLine} accessibilityElementsHidden importantForAccessibility="no">———</Text>
-              <ConnectorPhoto id={c.b} size={44} single name={getConnector(c.b)?.displayName} />
+              {/* R3-CS-01 (rule C2): end a plugs into the OUTPUT (an XLR
+                  reads FEMALE), end b into the INPUT (MALE) */}
+              <ConnectorPhoto id={c.a} size={44} end="into_output" name={getConnector(c.a)?.displayName} />
+              {c.via ? (
+                <Text style={styles.trayLine} accessibilityLabel={`through the ${c.via}`}>
+                  {`—— ${c.via.toUpperCase()} ——`}
+                </Text>
+              ) : (
+                <Text style={styles.trayLine} accessibilityElementsHidden importantForAccessibility="no">———</Text>
+              )}
+              <ConnectorPhoto id={c.b} size={44} end="into_input" name={getConnector(c.b)?.displayName} />
             </View>
           ) : null}
         </View>
@@ -108,7 +116,7 @@ const PageBuildA = makeScenarioPage(
 const PageBuildB = makeScenarioPage(
   'STATION 5 · BUILD THE SYSTEM — MONITORS & POWER',
   SCENARIOS.slice(4, 8),
-  'Line level, speaker level, and the one connection in this lab that can destroy equipment. Choose like it is your rig.',
+  'Line level, speaker level, and the connection in this lab most likely to destroy equipment. Choose like it is your rig.',
 );
 const PageBuildC = makeScenarioPage(
   'STATION 5 · BUILD THE SYSTEM — SOURCES & DATA',

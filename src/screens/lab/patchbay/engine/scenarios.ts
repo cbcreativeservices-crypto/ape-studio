@@ -107,7 +107,7 @@ export const PREDICT_SCENARIOS: PredictScenario[] = [
     explain:
       'Half-normal breaks on the BOTTOM. The insertion opens the normal and the patched drum machine takes over the destination; the synth now dead-ends at its jack.',
     wrong: [
-      'Parallel mixing is not what the common bay does — the bottom insertion physically opens the normal contact first.',
+      'Not a mix: the bottom insertion physically opens the normal contact first. (Two outputs wired into one input are not a mix — mixing is a mixer’s job.)',
       undefined,
       'The TAP is the top jack’s trick. The bottom is the breaking side on the common half-normal bay.',
       'The destination isn’t silent — your patched source is feeding it.',

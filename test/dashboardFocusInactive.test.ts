@@ -16,7 +16,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const src = readFileSync(join(process.cwd(), 'src', 'screens', 'dashboard', 'DashboardScreen.tsx'), 'utf8');
+const src = readFileSync(join(process.cwd(), 'src', 'screens', 'dashboard', 'DashboardScreen.tsx'), 'utf8').replace(/\r\n/g, '\n');
 
 test('a focused topic that is inactive OR not enrolled at all is brought onto the deck', () => {
   // 2026-09-30: the inactive-only switch missed a topic the bundle outlived

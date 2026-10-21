@@ -104,7 +104,7 @@ export const GUIDE: MixingGuide = {
         "source": "Darbuka (bottom/port mic)",
         "cut": "LPF 3–5 kHz; −3 dB at 300–500 Hz",
         "boost": "+2–3 dB at 70–100 Hz",
-        "notes": "Flip polarity and check alignment against the top mic"
+        "notes": "Check polarity against the top mic: flip it and keep the setting that sounds fuller; check alignment too"
       },
       {
         "source": "Kick / 808",

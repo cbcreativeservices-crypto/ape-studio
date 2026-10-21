@@ -15,7 +15,10 @@
  *   half-normal  → normal survives until the BREAK side is plugged
  *                  (common bays break on BOTTOM, so the top is a tap; Neutrik
  *                  also documents half-normalled-TOP bays — spec §22: teach
- *                  "verify the bay", never an absolute law)
+ *                  "verify the bay", never an absolute law. Real top-breaking
+ *                  bays are usually wired inputs-on-top, so the INPUT jack
+ *                  still breaks; the lab's breakSide 'top' keeps outputs on top
+ *                  to show what happens when wiring and switching disagree.)
  *
  * Vocabulary note (spec §1): "Thru" is the safer teaching term — some
  * manufacturers give "isolated" more specific meanings.
@@ -61,9 +64,10 @@ export type PairFlow = {
   bottomFeedsDestination: boolean;
   /** The SOURCE reaches two places at once (the half-normal tap / split / mult). */
   isSplit: boolean;
-  /** The DESTINATION receives two feeds at once (normal + patch in parallel —
-   *  only possible on a half-normalled-TOP bay; one reason the common bays
-   *  break on the bottom instead). */
+  /** The DESTINATION is driven by two outputs at once (normal + patch tied
+   *  together — not a mix, and a fault to avoid; only possible when the
+   *  OUTPUT jack is the breaking one — the reason a half-normal pair should
+   *  break on its input jack). */
   isMerge: boolean;
   /** What the destination hears right now. */
   destinationHears: DestinationFeed;
@@ -129,8 +133,14 @@ export function resolvePair(s: PairState): PairFlow {
  * and every sentence consistent. The X-ray page carries the app's standard
  * "conceptual model" badge. */
 
-/** Fraction of plug travel at which the teaching model opens the contact. */
-export const CONTACT_OPEN_AT = 0.6;
+/** Fraction of plug travel at which the teaching model opens the contact.
+ *  The cutaway's tip spring sits where the plug's TIP neck groove lands at
+ *  full insertion, so the nose can only reach it — and lift it — late in the
+ *  travel, as in a real jack. 0.87 (wiring grade PB-R2-01, 2026-10-20; was
+ *  0.6 — the finger had to sit far forward and ended on the sleeve); 0.85
+ *  (B-PB-01, 2026-10-21): re-derived for the ¼-inch TRS plug's longer tip,
+ *  so the spring's dimple rests mid-groove. */
+export const CONTACT_OPEN_AT = 0.85;
 
 /** Is the normal switching contact held open at this insertion depth (0–1)? */
 export function contactsOpen(insertion: number): boolean {

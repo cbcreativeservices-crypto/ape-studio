@@ -1,0 +1,316 @@
+
+DJ Systems Lab
+Research and Master Plan
+Pro Audio Training Academy | October 14 2026
+Recommended direction
+Build a practical DJ Systems Lab that teaches learners to identify equipment, connect a complete system, follow the audio, operate the controls, and solve problems during a performance. Use a configurable virtual DJ booth as the shared environment for lessons and challenges.
+The proposed curriculum contains 30 topics in six sections. It covers vinyl, media players, laptop controllers, standalone systems, digital vinyl systems, and hybrid performance rigs. Learners should understand both what a control does to sound and where that control sits in the signal path.
+The primary audience includes beginning DJs, mobile event operators, musicians adding DJ performance, venue technicians, and audio students supporting visiting DJs. Advanced exercises extend the same system into recording, software routing, performer changeovers, and fault recovery.
+What learners should be able to do
+Build an appropriate setup and explain the roles of the player, controller, mixer, interface, headphones, booth monitors, and audience sound system.
+Choose compatible ports and signal levels, set input gain with headroom, cue privately, and distinguish the audience feed from monitoring and recording feeds.
+Use faders, EQ, filters, transport, tempo, loops, effects, and supported stem controls with an understanding of their audible consequences.
+Prepare playback media and backups, hand a clean feed to a sound engineer, and troubleshoot methodically while protecting hearing and equipment.
+Basis and scope
+Technical findings are grounded in the official manufacturer and NIOSH sources listed at the end. The curriculum, interface, scoring, and release phases are design recommendations. Core connection and routing principles have high confidence; exact device behavior requires the manual for the selected model and firmware. App implementation feasibility requires review of the existing code and audio engine.
+
+Research findings and design implications
+Agreement within the relevant sources
+Manufacturer documentation consistently makes correct routing central to operation. Inputs, monitoring, computer audio, and outputs have distinct roles. Source selection and signal level must match the connection. The lab should therefore teach learners to trace a route and inspect the relevant meter before changing controls at random. [S01, S04, S06, S07]
+The software documentation also supports teaching preparation and diagnosis: audio buffer settings affect responsiveness and reliability, beatgrids can need correction, and DVS requires an interpretable control signal. These are useful exercises rather than settings to hide behind automatic operation. [S07, S08, S10]
+Where approaches differ
+There is no universal DJ mixer topology. The Xone 96 provides analog mixing with computer interfaces; a standalone system can perform without a laptop and may also offer a computer controller mode. Cue taps, fader curves, output controls, and microphone feeds vary. Teach a documented generic model, then allow explicit device profiles. [S01, S06]
+Streaming, offline playback, recording, and stems depend on the software and service. As a concrete current example, Serato documents that Spotify playback requires an internet connection and does not support stems or recording within Serato DJ Pro. Do not apply that restriction to every streaming service. [S12, S17]
+Apparent contradictions resolved by the hardware
+A rule such as “DJ mixers cannot power condenser microphones” would be incorrect: the DJM A9 offers a phantom powered microphone input, while the Xone 96 manual specifies microphones that do not require phantom power. These are different product capabilities, not conflicting evidence. Make phantom support a property of the input. [S01, S03]
+Likewise, “the audience hears the microphone, so the recorder must hear it” is unreliable. Allen and Heath documents default microphone exclusions from the Xone 96 booth and record feeds. The lab should make this an intentional diagnosis challenge. [S02]
+Important gaps for this app
+These sources do not establish how the Academy app currently handles independent headphone outputs, device latency, USB hardware, real DVS input, or external MIDI. Those features need an app audit and physical device tests. A simulated split cue exercise can ship without promising independent cue and master output from every phone.
+They also do not establish universal EQ positions, crossover settings, tracking forces, loudness targets, or transition choices. Use equipment specifications and scenario goals, and present musical choices as choices. Recheck software and streaming examples before each release.
+
+Six system profiles
+Give each profile a visible equipment list, front and rear views, and an audio route. Audio, control data, network data, and power must remain distinguishable even when a cable carries more than one function.
+Profile
+Core equipment and route
+Main teaching question
+Laptop controller
+Laptop software plus a controller with audio interface; master to PA and cue to headphones.
+Where is the audio generated and which device provides the outputs?
+Modular players
+Two or more media players feed a separate DJ mixer; mixer feeds monitoring and PA.
+Which cables carry player audio and which support linking?
+Traditional vinyl
+Two turntables, suitable phono stages, DJ mixer, headphones, and PA.
+Is the cartridge signal receiving the correct gain and RIAA equalization?
+Digital vinyl system
+Control vinyl or other supported transport control, compatible interface or mixer, software, and outputs.
+How does platter movement control the digital track?
+Standalone system
+Integrated player and mixer with local storage; network services where supported.
+Which functions work with no laptop and no internet?
+Hybrid rig
+DJ mixer with players or software plus drum machine, sampler, or synthesizer.
+Which connections carry audio and which provide timing or control?
+
+Controls and capabilities are separate
+A controller is a control surface; whether it also contains an audio interface or an independent mixer is device specific. A standalone unit can also have a controller mode. Avoid presenting these terms as mutually exclusive hardware categories. The SC LIVE 4 is a documented example of standalone and computer controller operation. [S06]
+Connection properties to show
+Every port should identify direction, connector, signal type, level, channel count, and supported mode. A stereo pair of RCA sockets differs from one balanced TRS mono connection; a TRS headphone jack can carry stereo. Connector shape alone cannot establish compatibility. [S01, S13]
+For a conventional linked player setup, keep each player to mixer audio connection visible. PRO DJ LINK can distribute media and timing information between supported devices; it should not be shown as a universal replacement for the mixer input audio connection. [S18]
+
+Section A Equipment and signal flow
+Each topic combines a short explanation, a guided manipulation, a listening or inspection task, and an independent challenge.
+DJ01 Choose a DJ system
+Compare all six profiles for home practice, mobile events, club playback, and hybrid performance. Explain the computer, media, input, monitoring, and backup requirements of the chosen setup.
+Practice: Build a system from a limited inventory and explain why each device is necessary.
+DJ02 Identify equipment and controls
+Explore turntables, players, controllers, mixers, rotary mixers, battle mixers, interfaces, headphones, powered speakers, amplifiers, subs, and recorders. Distinguish controls from audio processing and connector panels.
+Practice: Match equipment and control groups to their roles, then locate them in a booth.
+DJ03 Choose cables and ports
+Introduce RCA, XLR, TS, TRS, headphone adapters, USB, network, and supported digital audio connections. Label balanced mono, unbalanced mono, and stereo uses explicitly. [S01, S13]
+Practice: Patch a stereo source without losing a side or connecting incompatible signal levels.
+DJ04 Separate audio from control and power
+Explain analog audio, digital audio, MIDI or HID control, media storage, network linking, and power. USB may carry several functions; network functionality depends on the protocol. [S07, S18]
+Practice: Trace what crosses each cable in a controller rig and a linked player rig.
+DJ05 Trace the complete signal path
+Follow the selected deck through channel processing and mix buses to audience, headphones, booth, and recorder. Make each tap point inspectable. [S01, S02]
+Practice: Find the first stage where a playing source disappears and restore that route.
+
+Section B Decks sources and preparation
+Each topic combines a short explanation, a guided manipulation, a listening or inspection task, and an independent challenge.
+DJ06 Set up a turntable
+Introduce platter drive, slipmat, tonearm, headshell, cartridge, stylus, counterweight, tracking force, anti skate, and isolation. Follow the cartridge and turntable instructions for setup values. [S05]
+Practice: Complete a virtual setup checklist and identify likely causes of skipping or mechanical feedback.
+DJ07 Match phono and line signals
+Explain cartridge level and RIAA playback equalization. Show a turntable with its preamp bypassed feeding PHONO, and its enabled preamp feeding LINE. Avoid missing or duplicated phono processing. [S04]
+Practice: Repair a quiet thin vinyl feed and a distorted feed caused by the wrong input mode.
+DJ08 Use players and standalone systems
+Explore loading, transport, jog modes, deck layers, displays, local storage, and computer modes. Confirm the actual number of playable decks and external inputs in each profile. [S06]
+Practice: Load a prepared local track and identify the active deck before operating its controls.
+DJ09 Configure laptop audio and USB
+Cover hardware recognition, driver and OS compatibility checks, device selection, channel mapping, sample rate, and buffer latency. Smaller buffers trade processing margin for responsiveness. [S07]
+Practice: Resolve a wrong output assignment and select a stable buffer in a simulated workload.
+DJ10 Prepare media and backups
+Teach file organization, supported formats, analysis, playlists, cues, verified exports, duplicate media, and a tested offline backup. Treat software databases and streaming access as profile specific. [S10, S12, S17]
+Practice: Prepare a short set and recover when its network source becomes unavailable.
+
+Section C Mixer operation and monitoring
+Each topic combines a short explanation, a guided manipulation, a listening or inspection task, and an independent challenge.
+DJ11 Select inputs and set channel gain
+Teach input selectors, trim, channel processing, and the separation between source gain and performance fader moves. Use the meter at the selected stage to check the result. [S01]
+Practice: Match two differently recorded tracks while preserving headroom and keeping the PA level controlled.
+DJ12 Read meters and locate clipping
+Introduce peaks, average level, headroom, dBFS, and analog meter references. Meter calibration and the meter tap belong to the device profile. A low output level does not repair earlier clipping.
+Practice: Find an overloaded stage even when the final output meter appears acceptable.
+DJ13 Use channel faders and crossfaders
+Teach channel faders, crossfader assignment, through or bypass settings, response curves, cut in behavior, and reverse options. Include smooth transitions and introductory cuts. [S01]
+Practice: Choose a gradual curve for blending and a fast curve for cuts, then explain the audible difference.
+DJ14 Control cue headphones and booth
+Separate headphone cue selection, cue to master blend, split cue, headphone level, and booth level. Show pre or post EQ cue behavior only where the profile supports it. [S01]
+Practice: Prepare the next deck privately and lower the booth without changing the audience feed.
+DJ15 Use EQ isolators and filters
+Compare tone controls, deeper isolator cuts, high pass and low pass filters, and resonance. Define the simulated slopes and ranges. Teach bass handover as one option rather than a required transition.
+Practice: Compare two transitions at matched playback level and explain masking, overlap, or filter coloration.
+
+Section D Playback and performance audio
+Each topic combines a short explanation, a guided manipulation, a listening or inspection task, and an independent challenge.
+DJ16 Match tempo beats and phrases
+Teach BPM, beat alignment, bar counting, phrasing, jog nudges, tempo faders, and the difference between correcting drift and correcting an offset. Include stable and changing tempo examples.
+Practice: Align two drum loops by ear, correct their drift, and start a transition at a stated phrase boundary.
+DJ17 Use beatgrids sync and quantize
+Show the grid as an editable interpretation of the track. Compare tempo synchronization, beat alignment, and quantized actions according to the profile. Include incorrect first beats and half or double BPM analysis. [S10]
+Practice: Correct a deliberately misplaced grid and explain why an automatic action had sounded wrong.
+DJ18 Use cue points loops and samples
+Distinguish the transport cue point from headphone cue. Teach hot cues, manual and beat loops, loop exit, beat jump, and sample routing. Use visible deck and bus assignments.
+Practice: Extend an instrumental phrase with a loop and add a sample without accidentally cueing the audience feed.
+DJ19 Route and time effects
+Compare channel insert, send and return, and master effects. Introduce dry and wet level, delay time, feedback, reverb tails, filtering, and selected modulation effects. [S01, S03]
+Practice: Apply an echo to the outgoing deck and diagnose an effect routed to the wrong source.
+DJ20 Explore pitch key lock and stems
+Separate playback speed, pitch change, time stretching, and key shift. Compare original multitracks with algorithmically separated stems and listen for leakage or artifacts. Supported stem controls vary. [S11, S12]
+Practice: Remove a vocal, compare the result with a clean source stem, and judge a musical transition without requiring key matching.
+
+Section E PA systems microphones and safety
+Each topic combines a short explanation, a guided manipulation, a listening or inspection task, and an independent challenge.
+DJ21 Connect the DJ rig to the PA
+Cover powered and passive systems, appropriate line inputs, balanced runs where available, stereo feeds, and handing a feed to a venue engineer. Keep venue gain and system processing distinct from performance controls. [S13, S14]
+Practice: Deliver a labeled left and right feed and agree on operating level before raising audience volume.
+DJ22 Manage subs mono and booth placement
+Teach crossover roles, bass overlap, mono compatibility, safe summing, and speaker placement. Distinguish turntable acoustic feedback from microphone feedback. Use a defined room model rather than universal placement rules. [S05, S16]
+Practice: Compare stereo and mono playback, then reduce a simulated turntable feedback loop by changing the setup.
+DJ23 Use microphones and talkover
+Cover dynamic microphones, wireless receiver outputs, mic gain, mute, talkover or ducking, microphone position, and routing to audience, booth, and recorder. Phantom capability depends on the input. [S01, S02, S03]
+Practice: Make an announcement over music and restore a missing microphone in the recording feed.
+DJ24 Power and handle equipment safely
+Use the documented startup and shutdown sequence, secure cables, protect gear from liquids, and distinguish protective earth from signal grounding. Audio isolation or an appropriate DI can address some hum problems. [S13, S14, S15]
+Practice: Sequence a defined rig correctly and reject a proposed mains earth removal as a hum repair.
+DJ25 Manage sound exposure
+Teach cumulative exposure from headphones and loudspeakers, lower monitoring levels, isolation, breaks, and suitable hearing protection. Use the NIOSH 85 dBA eight hour reference and 3 dB exchange rate as an educational model. [S09]
+Practice: Compare exposure scenarios and choose ways to reduce dose without treating phone volume percentage as ear level SPL.
+
+Section F Advanced routing and show operation
+Each topic combines a short explanation, a guided manipulation, a listening or inspection task, and an independent challenge.
+DJ26 Understand DVS and transport control
+Follow a control signal into compatible hardware and software, then digital music back to the mixer. Introduce calibration and absolute, relative, internal, and supported through modes. [S08, S19]
+Practice: Identify a poor control signal, switch to a supported recovery mode, and avoid routing control tone to the PA.
+DJ27 Build a hybrid performance rig
+Add a drum machine, sampler, synthesizer, or extra controller. Distinguish audio routing from MIDI control and clock or network synchronization. Timing, transport, and phase behavior depend on the supported protocol.
+Practice: Synchronize a percussion part and route its audio without assuming that a clock connection carries sound.
+DJ28 Record and stream a DJ set
+Inspect record taps, capture device levels, microphone inclusion, software capture routes, and monitoring loops. Recording and streaming permissions and features depend on the material, service, and application. [S02, S07, S12]
+Practice: Capture a short approved practice performance and verify both music and microphone on playback.
+DJ29 Change performers and use backups
+Plan input lists, USB and media handovers, dual computer paths where available, independent playback backup, level matching, and communication with the engineer. Show which disconnection would interrupt the playing source. [S03]
+Practice: Complete a performer changeover while preserving the audience program and then recover from a laptop failure.
+DJ30 Troubleshoot a complete performance
+Combine signal tracing with symptom based diagnosis. Teach source, input selection, meter taps, faders, assignments, output routing, downstream equipment, and cables as separate checks.
+Practice: Solve a randomized event scenario and explain the cause, confirming evidence, repair, and prevention.
+
+The shared interactive DJ booth
+Use one saved system across learning modes so learners can see how a changed connection or setting affects the entire rig. Begin with a two deck system and reveal complexity as the lesson requires it.
+Views and controls
+View
+What the learner can inspect or change
+Equipment
+Add a deck, mixer, controller, laptop, interface, headphones, booth, PA, sub, microphone, or recorder. Select a supported system profile.
+Connections
+Inspect rear panels, choose ports and cable types, and follow a route. Provide tap to connect as well as drag gestures.
+Operation
+Operate the active deck and mixer with transport, trim, faders, EQ, filters, cue, monitoring, and supported effects.
+Signal flow
+See active connections, source selection, processing stages, meter taps, mute states, and separate audience, cue, booth, and record buses.
+Listen and diagnose
+Switch the listening perspective and compare before and after. Display captions, waveform or spectrum changes, and the explanation for an observed fault.
+
+A first guided activity
+Start with two local practice tracks, an integrated controller interface, headphones, and powered speakers. The learner connects the rig at low output level, starts deck A, selects the correct channel input, and establishes channel gain with headroom. They then route deck B into headphone cue while keeping its audience fader closed.
+Next, they match tempo, listen to a short transition, and watch the combined mix meter. A second pass deliberately overloads the channel; lowering the final output makes the example quieter but leaves the modeled distortion. The repair requires correcting the overloaded stage. Finish by lowering output, following the shutdown sequence, and explaining the signal route.
+Modes that serve different needs
+Explore mode allows free inspection and save or reset. Guided mode introduces one new function at a time. Challenge mode hides the cause and asks the learner to use evidence. Compare mode plays matched level examples. An optional hardware checklist lets learners apply the same lesson to their own equipment without implying that the app can verify its wiring.
+On a phone with a single stereo output, present audience and cue as selectable listening perspectives. True independent headphone cue is a separate feature requiring compatible multichannel hardware and platform support. Split cue can be demonstrated within a stereo headphone feed with clearly identified left and right content.
+
+Troubleshooting challenge bank
+Each challenge should state the symptom, make inspection tools available, and accept valid diagnostic routes. Randomize causes only when the simulated system can demonstrate them accurately. Begin with single faults before combining failures.
+Symptom
+Possible seeded cause
+Evidence and repair
+Nothing in the PA
+Wrong source selector, closed fader, crossfader assignment, or muted output.
+Locate the last live meter or monitor point; correct the missing route.
+Quiet thin vinyl
+Raw cartridge signal is fed to LINE.
+Inspect preamp mode and input; provide one appropriate phono stage. [S04]
+Distorted vinyl
+Turntable line output is fed into PHONO.
+Match output and input modes, then reset gain. [S04]
+Headphones are silent
+Wrong cue source or cue blend, low phones level, or disconnected output.
+Inspect the headphone bus independently of the audience bus. [S01]
+Booth changes the wrong feed
+Learner is adjusting master instead of booth.
+Identify the output control and its destination in the selected profile. [S01]
+PA works but capture lacks speech
+Microphone is excluded from the chosen record feed.
+Inspect the recording route and choose an available feed including speech. [S02]
+Glitches during scratching
+Simulated buffer is too small for the assigned workload.
+Use the dropout indicator; increase processing margin. [S07]
+Tracks agree on BPM but clash
+Beat offset, wrong grid, or conflicting phrase starts.
+Inspect timing and listen before correcting the relevant error. [S10]
+One side or some content disappears
+Missing stereo cable or unsuitable mono routing.
+Check both channels; use an appropriate summing route where needed. [S13, S16]
+Hum after a laptop is connected
+A modeled signal ground loop.
+Use supported audio isolation; retain protective mains earth. [S14, S15]
+Low frequency howl near the decks
+Modeled acoustic feedback through the turntable.
+Reduce the relevant feed and change isolation or speaker placement. [S05]
+Network loss interrupts the plan
+Track depends on online access.
+Switch to tested local backup media; check service specific offline support. [S12, S17]
+
+Additional advanced faults: control tone reaches the audience, a DVS deck is in the wrong mode, an effects return creates a loop, a playing deck is overwritten, a recorder clips despite acceptable PA level, or a performer disconnects the active computer.
+
+Audio accuracy and implementation rules
+Specify a teaching model
+Document the default order of processing, meter positions, cue taps, microphone routing, and record taps. A suitable first model has two stereo decks, input selection and trim, channel EQ and filter, channel fader and crossfader assignment, and a summed mix with separate output controls. State the cue and recording taps explicitly. Device profiles may override these properties.
+Keep signal generation, processing, routing, meter display, and playback volume connected to the same state. A cable animation must reflect an actual route. Save a complete snapshot, including deck positions, assignments, cue selections, faults, and simulation version, so a shared exercise can be reproduced.
+Teach level references accurately
+Keep digital dBFS, analog dBu or dBV, and acoustic dBA distinct. Zero on an analog mixer meter is not necessarily digital clipping. Allow the summed bus and effects to overload independently of the channel inputs. A downstream gain reduction changes level but cannot undo already clipped samples. [S01, S07]
+For a defined mathematical demonstration, two identical, aligned signals added at unity gain double amplitude, a rise of approximately 6.02 dB. Equal level uncorrelated signals add about 3.01 dB in average power. These are different conditions; neither is a universal peak increase for arbitrary songs. Crossfader gain curves must be stated and computed from their selected model.
+Keep simulated faults at controlled playback level
+Model the audible character of clipping, hum, feedback, or mismatched phono processing, then apply conservative final playback gain and a protective output limiter. Show the modeled overload before that playback protection. Avoid using actual loud feedback, loud control tones, or deliberate device output clipping to teach these effects.
+Provide the app sound warning before first playback, a clear stop control, and a fresh low playback level after an output route change. Never describe the volume slider as a calibrated safe listening level. Phone microphones do not measure headphone sound at the ear. [S09]
+Separate live processing from demonstrations
+Use real DSP for gain, routing, faders, basic EQ, filters, and short delays where feasible. Use clearly labeled prepared examples for source separation artifacts, complex room feedback, or hardware faults until a validated model exists. Original source stems can demonstrate stem mixing, but must not be labeled as the output of an AI separation algorithm.
+A first version can simulate USB, MIDI, DVS, and network faults without implementing those external protocols. Add actual hardware integration only after platform support, recovery behavior, routing, and latency are verified on physical iOS and Android devices.
+
+Build sequence assessment and app integration
+A staged release
+Stage
+Recommended scope
+Completion condition
+First release
+Six explanatory system profiles; working two deck mixer; cable and signal flow views; cue perspective; gain and meters; basic EQ; guided setup; core faults.
+The learner can connect, cue, mix, diagnose silence, and correct clipping in a reproducible exercise.
+Expansion
+Phono scenarios, media preparation, beatgrid correction, loops, effects, mic routing, mono checks, recording demonstrations, and saved configurations.
+Each feature changes the modeled audio or route accurately and has a matching independent challenge.
+Advanced release
+Four decks, DVS and hybrid demonstrations, performer changeovers, more faults, and optional hardware integration.
+Device specific functions pass hardware testing and recovery tests before being offered as live capabilities.
+
+Lesson and assessment pattern
+For each DJ topic, author the objective, equipment profile, prerequisite, signal diagram, technical explanation, guided procedure, audible or visible observations, common mistakes, independent challenge, explanation of the answer, and official references. Include a practical hardware checklist where it adds value.
+Assess technical actions separately from musical taste. Proposed technical checks include compatible connections, independent cue, appropriate headroom, required signal at all destinations, and a verified repair. Timing exercises should use calibrated tolerances for the tested device. Do not make a genre, harmonic key choice, or one EQ position the only correct artistic answer.
+For a capstone, ask the learner to prepare a small event system, demonstrate private cue, make a clean transition, deliver an announcement to both audience and recorder, and recover from one fault. The debrief should identify the cause and supporting evidence. Completion represents the specific educational tasks performed; any Academy credential policy remains a separate decision.
+Connections to other Academy content
+Link definitions to the glossary and connect relevant activities to Cable, Signal Flow, EQ, Sound Systems, Acoustics, Grounding and Shielding, and Pro Audio Safety content. Where those labs or components are available, reuse their models and terminology after confirming compatibility. Spectrum and waveform views can show changes, while the SPL tool remains a separate measurement workflow.
+Mobile usability and verification
+Use zoomable equipment panels, one focused control group at a time, tap alternatives to dragging, labeled screen reader controls, numeric entry, and patterns or labels in addition to cable colors. Offer reduced motion and optional visual explanations for listening tasks. Test interruptions, headphones and Bluetooth route changes, disconnects, saved state restoration, offline lessons, and CPU load on representative devices.
+
+Official sources 1 to 9
+Sources accessed October 14 2026. Bracketed source IDs throughout the plan refer to these entries. Manufacturer capabilities apply to the named product or software configuration.
+[S01] Allen and Heath  Xone 96 User Guide
+Input selection, cue and split cue, fader curves, meter and output behavior, connectors, phono routing, and microphone limitations. Open official source
+[S02] Allen and Heath  Xone 96 cannot record Microphone
+Documents the default exclusion of microphone feeds from booth and record outputs and the existence of internal configuration options. Open official source
+[S03] AlphaTheta and Pioneer DJ  DJM A9 product introduction
+Official example of a mixer with microphone phantom power, two computer connections, DVS support, and assignable effects. Product claims are not treated as comparative sound quality evidence. Open official source
+[S04] Audio Technica  Setting the pre amplifier selector switch
+Specifies PHONO output to a phono input and LINE output to an auxiliary or line input for a turntable with a switchable preamp. Open official source
+[S05] Audio Technica  AT LP1240 USB XP Edition User Manual
+Turntable setup, tracking force, anti skate, care, connections, and troubleshooting. Values must follow the actual installed cartridge and turntable instructions. Open official source
+[S06] Denon DJ  SC LIVE 4 Standalone DJ System
+Official example of local media playback, standalone operation, computer controller mode, deck layers, and distinct main, booth, and headphone connections. Open official source
+[S07] Serato  Audio settings in Serato DJ Pro
+Audio buffer and latency tradeoff, deck assignments, selected device output, and software audio capture routes. Open official source
+[S08] Serato  Calibrating Serato DJ Pro
+Explains why external DVS control signals need calibration and distinguishes control information from the digital music being played. Open official source
+[S09] CDC and NIOSH  Understand Noise Exposure
+Occupational exposure reference of 85 dBA over eight hours, 3 dB exchange rate, sound level measurement, and cumulative exposure. This is guidance, not a guarantee of individual safety. Open official source
+
+Official sources 10 to 19
+Sources accessed October 14 2026. Bracketed source IDs throughout the plan refer to these entries. Manufacturer capabilities apply to the named product or software configuration.
+[S10] AlphaTheta  XDJ AZ Beatgrid manual
+Official example of analysis dependent beatgrid adjustment, first beat correction, and grid shifting. Open official source
+[S11] Serato  Using Stems
+Vocal, melody, bass, and drum controls and stem effects in supported Serato DJ configurations. Open official source
+[S12] Serato  Serato DJ and Spotify Frequently Asked Questions
+Current service specific restrictions on offline playback, stems, and recording; use as a dated example rather than a universal streaming rule. Open official source
+[S13] QSC  KS Series User Manual
+System power sequencing, signal connections, and loudspeaker system context. See the System Power Sequencing section. Open official source
+[S14] Rane  Sound System Interconnection
+Balanced and unbalanced connections, isolation approaches, and retaining original protective grounding provisions. Open official source
+[S15] Radial Engineering  Direct Box Frequently Asked Questions
+Explains the function of an audio ground lift on a DI output. This must remain distinct from removing mains protective earth. Open official source
+[S16] Radial Engineering  Highline Stereo
+Example of purpose designed stereo and mono routing and summing. Connector adapters alone should not imply a safe summing circuit. Open official source
+[S17] AlphaTheta and rekordbox  rekordbox version 7 Frequently Asked Questions
+Official reference for software, media, stem processing, and service specific offline playback requirements. Recheck the relevant entries at lesson publication. Open official source
+[S18] AlphaTheta  PRO DJ LINK and audio connection FAQ
+Official linked player example requiring an audio connection in addition to the LAN connection to feed the mixer. Open official source
+[S19] Serato  Virtual Deck Play Modes
+Explains absolute, relative, internal, through, and supported wireless transport modes, including hardware dependent recovery options. Open official source

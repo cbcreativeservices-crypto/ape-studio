@@ -14,7 +14,7 @@
 import { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
-import { PLUG_COMPARISONS, type InterchangeAnswer } from '../data/lesson04';
+import { PLUG_COMPARISONS, type InterchangeAnswer, type PlugComparison } from '../data/lesson04';
 import { SECTION_SHORT, SectionTile, type SectionId } from '../art/sections';
 import { SharedPlugFigure, type SharedPlug } from '../art/plugs';
 import {
@@ -38,13 +38,23 @@ const CHOICES: { id: InterchangeChoice; label: string }[] = [
 ];
 
 /** Misconception-correcting nudge for a wrong pick — never reveals the key. */
-function wrongHint(picked: InterchangeChoice, answer: InterchangeAnswer): string {
+export function wrongHint(picked: InterchangeChoice, comp: Pick<PlugComparison, 'answer' | 'oneWay'>): string {
   if (picked === 'yes') {
     return 'Fit is never the test. Behind identical shells, the cable construction, the specification, or the assigned job can differ — look again.';
   }
-  return answer === 'depends'
-    ? 'Look closer: is anything physically different here, or is it the same cable — with a job assignment or format that must match at both ends?'
+  if (comp.answer === 'depends') {
+    return 'Look closer: is anything physically different here, or is it the same cable — with a job assignment or format that must match at both ends?';
+  }
+  // R3-CB-02: a digital/data cable can do the analog job, so "no setting can
+  // make this swap correct" was wrong one way. Still not interchangeable.
+  return comp.oneWay
+    ? `Not as a two-way swap — the difference is built into the cable. ${comp.oneWay}`
     : 'No assignment or setting can make this swap correct — the difference is built into the cable, connector, or system itself.';
+}
+
+/** The correct-pick verdict: the why, plus the one-way note where it applies. */
+export function correctText(comp: Pick<PlugComparison, 'why' | 'oneWay'>): string {
+  return comp.oneWay ? `${comp.why} ${comp.oneWay}` : comp.why;
 }
 
 export function Lesson04Body() {
@@ -151,7 +161,7 @@ export function Lesson04Body() {
           </DetailCard>
 
           {verdict && picked ? (
-            <VerdictBanner verdict={verdict} text={verdict === 'correct' ? comp.why : wrongHint(picked, comp.answer)} />
+            <VerdictBanner verdict={verdict} text={verdict === 'correct' ? correctText(comp) : wrongHint(picked, comp)} />
           ) : null}
 
           {solved ? (

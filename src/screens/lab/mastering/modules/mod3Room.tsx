@@ -145,7 +145,7 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <Body>Choose a DEVICE — it appears faintly at the end of the chain, marked NEXT › — then + CONNECT it (the selection moves on to the next unplaced device by itself). Build the complete monitoring path: playback software → conversion → monitor control → power amplifier (if the loudspeakers need one) → loudspeakers. Each cable is drawn by what it carries: USB from the computer, balanced line between the boxes, the red-and-black speaker pair from a power amplifier. The display grades the order and the pairing: COMPLETE, WORKS · MINIMAL, or CHECK THE CHAIN.</Body>
+              <Body>Choose a DEVICE — it appears faintly at the end of the chain, marked NEXT › — then + CONNECT it (the selection moves on to the next unplaced device by itself). Build the complete monitoring path: playback software → conversion → monitor control → power amplifier (if the loudspeakers need one) → loudspeakers. Each cable is drawn by what it carries: USB from the computer only into the converter (or a controller that converts inside itself), balanced line after conversion, the red-and-black speaker pair from a power amplifier. The display grades the order and the pairing: COMPLETE, WORKS · MINIMAL, or CHECK THE CHAIN.</Body>
               <Card tone={verdict.grade === 'complete' ? 'accent' : 'plain'}>
                 {verdict.notes.length ? verdict.notes.map((n) => <Body key={n}>• {n}</Body>) : <Body>Every stage in order. Try the other loudspeaker type: a passive pair needs the amplifier, an active pair makes it a mistake.</Body>}
               </Card>

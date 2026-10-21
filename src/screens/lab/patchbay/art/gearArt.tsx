@@ -243,17 +243,23 @@ export function GearArt({ kind, x, y, w, h, cx, end, accent }: {
   );
 }
 
-/** A loose TT patch-cord plug lying along +x (handle, sleeve, ring, tip),
- *  its cord leaving from the handle's left end at (x, y). Length 26 units. */
+/** A loose ¼-inch TRS patch-cord plug lying along +x (handle, sleeve,
+ *  insulator, ring, insulator, tip), its cord leaving from the handle's left
+ *  end at (x, y) — the bay is a ¼-inch bay, so its cords carry ¼-inch plugs
+ *  (B-PB-01, 2026-10-21; it used to be drawn as TT/bantam). True proportions at
+ *  0.52 units per mm: 6.35 mm shaft (3.3 units) × 32 mm (16.6 units) — tip
+ *  6.9 mm with its neck groove, insulators 2.9 mm, ring 4.9 mm, sleeve
+ *  14.4 mm — behind a short molded boot ≈ 10.7 mm across. Length 28.6 units. */
 export function CordPlug({ x, y, color }: { x: number; y: number; color: string }) {
+  const s = x + 12; // the handle face: the shaft starts here
   return (
     <G>
-      <Path d={`M ${x} ${y - 2.2} L ${x + 3} ${y - 3.6} L ${x + 14} ${y - 3.6} L ${x + 14} ${y + 3.6} L ${x + 3} ${y + 3.6} L ${x} ${y + 2.2} Z`} fill="#1d1e22" stroke={color} strokeWidth={1} />
-      <Rect x={x + 14} y={y - 1.6} width={6} height={3.2} fill="#8a8b93" />
-      <Rect x={x + 20} y={y - 1.6} width={0.9} height={3.2} fill="#141518" />
-      <Rect x={x + 20.9} y={y - 1.6} width={2.4} height={3.2} fill="#c8a24a" />
-      <Rect x={x + 23.3} y={y - 1.6} width={0.9} height={3.2} fill="#141518" />
-      <Path d={`M ${x + 24.2} ${y - 1.2} Q ${x + 26.6} ${y - 1.6} ${x + 26.6} ${y} Q ${x + 26.6} ${y + 1.6} ${x + 24.2} ${y + 1.2} Z`} fill={color} />
+      <Path d={`M ${x} ${y - 1.9} L ${x + 3} ${y - 2.8} L ${s} ${y - 2.8} L ${s} ${y + 2.8} L ${x + 3} ${y + 2.8} L ${x} ${y + 1.9} Z`} fill="#1d1e22" stroke={color} strokeWidth={1} />
+      <Rect x={s} y={y - 1.65} width={7.5} height={3.3} fill="#8a8b93" />
+      <Rect x={s + 7.5} y={y - 1.65} width={1.5} height={3.3} fill="#141518" />
+      <Rect x={s + 9} y={y - 1.65} width={2.55} height={3.3} fill="#c8a24a" />
+      <Rect x={s + 11.55} y={y - 1.65} width={1.5} height={3.3} fill="#141518" />
+      <Path d={`M ${s + 13.05} ${y - 1.05} L ${s + 14.2} ${y - 1.05} L ${s + 14.6} ${y - 1.65} Q ${s + 16.6} ${y - 1.65} ${s + 16.6} ${y} Q ${s + 16.6} ${y + 1.65} ${s + 14.6} ${y + 1.65} L ${s + 14.2} ${y + 1.05} L ${s + 13.05} ${y + 1.05} Z`} fill={color} />
     </G>
   );
 }

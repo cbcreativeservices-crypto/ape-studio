@@ -188,7 +188,7 @@ const A_PICKS: ConnectionPick[] = [
       travels(
         'mic_level',
         'wrong',
-        'You picked MIC-LEVEL AUDIO. A pickup’s output is stronger than mic level and expects a high-impedance instrument input, not a mic preamp — the wrong input stage sounds weak and dull. What must travel here is INSTRUMENT-LEVEL AUDIO.',
+        'You picked MIC-LEVEL AUDIO. A pickup’s output is usually stronger than mic level and expects a high-impedance instrument input, not a mic preamp — the wrong input stage sounds weak and dull. What must travel here is INSTRUMENT-LEVEL AUDIO.',
         'noise',
       ),
       travels(
@@ -598,7 +598,7 @@ const A_PICKS: ConnectionPick[] = [
         'spk_lead',
         'speakON-style loudspeaker lead',
         'correct',
-        'A speakON-style loudspeaker lead — two heavier unshielded conductors sized for the current, in a twist-locking, touch-protected shell. Insert, twist until it clicks, and confirm the lock with a gentle tug — with the line muted or powered down.',
+        'A speakON-style loudspeaker lead — two heavier unshielded conductors sized for the current, in a twist-locking, touch-protected shell. Insert, twist until it clicks, and confirm the lock with a gentle tug — with the line muted or powered down. Many amps use speakON/¼-inch combo outputs; older ones a plain ¼-inch TS jack. Whichever jack it is, the cable must be loudspeaker cable.',
       ),
       cable(
         'ts_inst',
@@ -618,7 +618,7 @@ const A_PICKS: ConnectionPick[] = [
         'xlr',
         '3-pin XLR microphone cable',
         'wrong',
-        'You picked an XLR microphone cable — a shielded twisted pair for mic-level signals. It does not mate with a speakON output, and its small shielded conductors are not loudspeaker cable in any case. The correct choice is a loudspeaker lead.',
+        'You picked an XLR microphone cable — a shielded twisted pair for mic-level signals. It does not mate with the amplifier’s speaker output, and its small shielded conductors are not loudspeaker cable in any case. The correct choice is a loudspeaker lead.',
         'no_signal',
       ),
     ],
@@ -710,14 +710,14 @@ const A_FAULTS: FaultStage = {
           label: 'The plugs will not fit the amplifier or the monitor',
           verdict: 'wrong',
           explain:
-            'They fit — older amplifiers and cabinets use exactly this 1/4-inch TS jack for loudspeaker connections, which is what makes this the classic wrong-cable trap. Fitting is never proof of correctness; the cable construction is the problem here.',
+            'They fit — many amps use speakON/¼-inch combo outputs, and older amps and cabinets a plain ¼-inch TS jack, so an instrument cable plugs right in. That is what makes this the classic wrong-cable trap. Fitting is never proof of correctness; the cable construction is the problem here.',
         },
         {
           id: 'why_hum',
           label: 'The cable is unbalanced, so the monitor will hum',
           verdict: 'wrong',
           explain:
-            'Noise is not the issue — loudspeaker runs are unbalanced by nature. The issue is CURRENT: the small shielded conductor is not built to carry amplifier output. That is a heat-and-failure problem, not a hum problem.',
+            'Noise is not the issue at loudspeaker level — the signal is far stronger than any hum the cable picks up. The issue is CURRENT: the small shielded conductor is not built to carry amplifier output. That is a heat-and-failure problem, not a hum problem.',
         },
       ],
     },
@@ -778,7 +778,7 @@ const B_PICKS: ConnectionPick[] = [
         'rca',
         'RCA (phono) cable',
         'wrong',
-        'You picked an RCA cable — an unbalanced consumer connector. A combo receptacle accepts XLR in the center and a 1/4-inch plug in the bore; an RCA plug mates with neither path. The correct choice is a balanced XLR microphone cable.',
+        'You picked an RCA cable — an unbalanced consumer connector. A combo receptacle takes a 1/4-inch plug in the center and an XLR on the contacts around it; an RCA plug mates with neither path. The correct choice is a balanced XLR microphone cable.',
         'no_signal',
       ),
     ],
@@ -797,7 +797,7 @@ const B_PICKS: ConnectionPick[] = [
       travels(
         'mic_level',
         'wrong',
-        'You picked MIC-LEVEL AUDIO. A pickup’s output is stronger than mic level and expects a high-impedance instrument input — the wrong input stage sounds weak and dull. What must travel here is INSTRUMENT-LEVEL AUDIO.',
+        'You picked MIC-LEVEL AUDIO. A pickup’s output is usually stronger than mic level and expects a high-impedance instrument input — the wrong input stage sounds weak and dull. What must travel here is INSTRUMENT-LEVEL AUDIO.',
         'noise',
       ),
       travels(
@@ -931,21 +931,21 @@ const B_PICKS: ConnectionPick[] = [
       ),
       cable(
         'xlr_bal',
-        'Balanced XLR line cables',
+        'Balanced TRS-to-XLR line cables',
         'accepted',
-        'Equally correct where the monitors carry XLR inputs — the same balanced connection in a latching shell. Pick by the jacks on the equipment.',
+        'Equally correct where the monitors carry XLR inputs — a TRS plug at the interface’s line output, an XLR plug at the monitor: the same balanced connection. Pick by the jacks on the equipment.',
       ),
       cable(
         'rca_unbal',
-        'Unbalanced RCA cables',
+        'Unbalanced TS-to-RCA cables',
         'accepted',
-        'Also defensible where the monitors provide RCA inputs: it works, but unbalanced — keep the runs short and expect less interference rejection than the balanced choice gives you. That trade-off is the balanced-vs-unbalanced decision in one sentence.',
+        'Also defensible where the monitors provide RCA inputs: a TS plug at the interface’s line output (most interface outputs accept one — check the manual), an RCA plug at the monitor. It works, but unbalanced — keep the runs short and expect less interference rejection than the balanced choice gives you. That trade-off is the balanced-vs-unbalanced decision in one sentence.',
       ),
       cable(
         'spk_lead',
         'speakON-style loudspeaker lead',
         'wrong',
-        'You picked a speakON-style loudspeaker lead. Powered monitors take a LINE-LEVEL feed — no loudspeaker-level line ever reaches them, and a speakON lead does not mate with a line input. The correct choice is a balanced line cable (TRS or XLR), or RCA where that is what the monitor offers.',
+        'You picked a speakON-style loudspeaker lead. Powered monitors take a LINE-LEVEL feed — no loudspeaker-level line ever reaches them, and a speakON lead does not mate with a line input. The correct choice is a balanced TRS line cable (TRS-to-XLR where the monitor has XLR inputs), or TS-to-RCA where RCA is what the monitor offers.',
         'no_signal',
       ),
     ],
@@ -970,7 +970,7 @@ const B_PICKS: ConnectionPick[] = [
       travels(
         'speaker_level',
         'wrong',
-        'You picked LOUDSPEAKER-LEVEL AUDIO. A headphone amplifier drives earcups — more than line level demands, far less than a loudspeaker needs. The categories differ by orders of magnitude. What travels here is HEADPHONE AUDIO.',
+        'You picked LOUDSPEAKER-LEVEL AUDIO. A headphone amplifier’s voltage is often near line level; the difference is the current it delivers into low-impedance earcups — still far less than a loudspeaker needs. What travels here is HEADPHONE AUDIO.',
         'no_signal',
       ),
       travels(
@@ -1100,20 +1100,20 @@ const B_DATA: PickStage = {
           'usb_ok',
           'Type-A/C end to the computer, Type-B end to the interface',
           'correct',
-          'USB is directional by shape: Type-A (or C) marks the HOST end — the computer — and the squarish Type-B socket lives on the peripheral. The keyed shapes exist so host and peripheral can never be confused.',
+          'On this cable the B end sets the roles: the squarish Type-B socket lives on the peripheral, so the A (or C) end is the HOST end — the computer — and the two cannot be swapped. (On a USB-C to USB-C cable either end can be host; the devices negotiate the roles.)',
         ),
         cable(
           'usb_rev',
           'Type-B end to the computer, Type-A end to the interface',
           'wrong',
-          'Backwards. Type-B is the PERIPHERAL end — the fixed socket on the interface — and the host end of the cable is A or C, facing the computer. The keying makes the reversal physically impossible to force: the shapes will not mate the wrong way round. The correct answer is A/C to the computer, B to the interface.',
+          'Backwards. Type-B is the PERIPHERAL end — the fixed socket on the interface — so the other end of this cable (A, or C on a C-to-B cable) is the host end, facing the computer. The keying makes the reversal physically impossible to force: the shapes will not mate the wrong way round. The correct answer is A/C to the computer, B to the interface.',
           'no_signal',
         ),
         cable(
           'usb_any',
           'Either way — USB ends are interchangeable',
           'wrong',
-          'They are not: the connector shapes are keyed to their roles precisely so a host port is never plugged into another host port. A or C faces the host; B (or the device’s own C/Micro-B socket) marks the peripheral.',
+          'Not on this cable: the A and B shapes are keyed to their roles so a host port is never plugged into another host port. A (or the C end of a C-to-B cable) faces the host; B marks the peripheral. Only on a USB-C to USB-C cable can either end be host — there the devices negotiate the roles.',
           'no_signal',
         ),
       ],

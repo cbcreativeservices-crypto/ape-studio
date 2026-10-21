@@ -49,11 +49,14 @@ const cov = await import('../src/features/soundsystems/coverage.ts');
 const { SOUND_SYSTEMS_CHECK, rightJudgements } = await import('../src/features/soundsystems/check.ts');
 const { getWorkspace } = await import('../src/screens/lab/calc/registry.ts');
 const progress = await import('../src/features/soundsystems/progress.ts');
+// The ten capstone reference builds, shared with consoleOutputs_20261020.
+const { referenceBuild } = await import('./_ssReferenceBuilds.ts');
 
 type System = import('../src/features/soundsystems/types.ts').SoundSystem;
 type GearKind = import('../src/features/soundsystems/types.ts').GearKind;
 type SlotId = import('../src/features/soundsystems/types.ts').SlotId;
 type Station = import('../src/features/soundsystems/types.ts').Station;
+type ConsoleOut = import('../src/features/soundsystems/types.ts').ConsoleOut;
 
 /* ── builder helpers ─────────────────────────────────────────────────────── */
 
@@ -67,8 +70,9 @@ class Build {
     this.ids[tag] = v.id;
     return this;
   }
-  link(a: string, b: string): this {
-    const v = sys.connect(this.s, this.ids[a], this.ids[b]);
+  /** `out` names the console output the cable carries (WF-SS-02). */
+  link(a: string, b: string, out?: ConsoleOut): this {
+    const v = sys.connect(this.s, this.ids[a], this.ids[b], out);
     assert.ok(v.ok, `connect ${a}→${b}: ${v.ok ? '' : v.reason}`);
     this.s = v.system;
     return this;
@@ -372,108 +376,6 @@ describe('fault library', () => {
 
 /* ── capstones ───────────────────────────────────────────────────────────── */
 
-type CS = import('../src/features/soundsystems/console.ts').ConsoleState;
-
-/** A reference build per capstone — the proof that each brief is satisfiable
- *  on the venue plot the lab provides. */
-function referenceBuild(id: string): { s: System; cs: CS } {
-  let cs = con.bandConsole();
-  const b = new Build();
-  const pre = (ch: string, aux: string) => (cs = con.setSend(cs, ch, aux, { db: 0, tap: 'pre' }));
-  const post = (ch: string, aux: string) => (cs = con.setSend(cs, ch, aux, { db: 0, tap: 'post' }));
-  const fourMixes = () => {
-    pre('vox', 'aux1');
-    pre('gtr', 'aux2');
-    pre('bass', 'aux3');
-    pre('kick', 'aux4');
-  };
-  const auxFedSubs = () => {
-    post('kick', 'aux6');
-    post('bass', 'aux6');
-    post('keys', 'aux6');
-  };
-  switch (id) {
-    case 'speech':
-      b.put('mic', 'vocalMic', 'stageC').put('con', 'console', 'foh').put('l', 'poweredSpeaker', 'mainL').put('r', 'poweredSpeaker', 'mainR')
-        .link('mic', 'con').link('con', 'l').link('con', 'r');
-      break;
-    case 'mono-music':
-      b.put('mic', 'vocalMic', 'stageC').put('di', 'di', 'stageL').put('pb', 'playback', 'stageR').put('con', 'console', 'foh')
-        .put('c', 'poweredSpeaker', 'mainC').put('sub', 'poweredSub', 'subC')
-        .link('mic', 'con').link('di', 'con').link('pb', 'con').link('con', 'c').link('con', 'sub');
-      break;
-    case 'stereo-subs':
-      b.put('m1', 'vocalMic', 'stageC').put('m2', 'instrumentMic', 'riserC').put('d1', 'di', 'stageL').put('rx', 'wirelessRx', 'stageR')
-        .put('box', 'stagebox', 'stageBox').put('con', 'console', 'foh').put('proc', 'processor', 'rack1').put('ampT', 'amp', 'rack2').put('ampS', 'amp', 'rack3')
-        .put('l', 'passiveSpeaker', 'mainL').put('r', 'passiveSpeaker', 'mainR').put('sl', 'passiveSub', 'subL').put('sr', 'passiveSub', 'subR')
-        .link('m1', 'box').link('m2', 'box').link('d1', 'box').link('rx', 'box').link('box', 'con').link('con', 'proc')
-        .link('proc', 'ampT').link('proc', 'ampS').link('ampT', 'l').link('ampT', 'r').link('ampS', 'sl').link('ampS', 'sr');
-      break;
-    case 'two-one':
-      b.put('pb', 'playback', 'stageC').put('con', 'console', 'foh').put('l', 'poweredSpeaker', 'mainL').put('r', 'poweredSpeaker', 'mainR').put('sub', 'poweredSub', 'subC')
-        .link('pb', 'con').link('con', 'l').link('con', 'r').link('con', 'sub');
-      break;
-    case 'monitors':
-      b.put('m1', 'vocalMic', 'stageC').put('m2', 'instrumentMic', 'riserC').put('d1', 'di', 'stageL').put('d2', 'di', 'stageR').put('con', 'console', 'foh')
-        .put('w1', 'poweredWedge', 'mon1').put('w2', 'poweredWedge', 'mon2').put('w3', 'poweredWedge', 'mon3').put('w4', 'poweredWedge', 'mon4')
-        .put('l', 'poweredSpeaker', 'mainL').put('r', 'poweredSpeaker', 'mainR')
-        .link('m1', 'con').link('m2', 'con').link('d1', 'con').link('d2', 'con')
-        .link('con', 'w1').link('con', 'w2').link('con', 'w3').link('con', 'w4').link('con', 'l').link('con', 'r');
-      fourMixes();
-      break;
-    case 'groups-fx':
-      b.put('mic', 'vocalMic', 'stageC').put('con', 'console', 'foh').put('l', 'poweredSpeaker', 'mainL').put('r', 'poweredSpeaker', 'mainR')
-        .link('mic', 'con').link('con', 'l').link('con', 'r');
-      for (const d of ['kick', 'snare', 'oh']) cs = con.setChannel(cs, d, { toMain: false, subgroup: 'sub-drums' });
-      post('vox', 'aux5');
-      post('bvox', 'aux5');
-      for (const c of ['kick', 'snare', 'oh', 'bass', 'gtr', 'keys', 'vox', 'bvox']) cs = con.setChannel(cs, c, { dca: 'dca-band' });
-      break;
-    case 'matrices':
-      b.put('mic', 'vocalMic', 'stageC').put('rx', 'wirelessRx', 'stageL').put('pb', 'playback', 'stageR').put('con', 'console', 'foh')
-        .put('l', 'poweredSpeaker', 'mainL').put('r', 'poweredSpeaker', 'mainR').put('fl', 'poweredSpeaker', 'frontFillL').put('fr', 'poweredSpeaker', 'frontFillR').put('sub', 'poweredSub', 'subC')
-        .link('mic', 'con').link('rx', 'con').link('pb', 'con').link('con', 'l').link('con', 'r').link('con', 'fl').link('con', 'fr').link('con', 'sub');
-      cs = con.setMatrixInput(cs, 'mx-fills', 'main', 0);
-      pre('mc', 'aux7');
-      cs = con.setMatrixInput(cs, 'mx-lobby', 'main', -6);
-      cs = con.setMatrixInput(cs, 'mx-lobby', 'aux7', 0);
-      cs = con.setMatrixInput(cs, 'mx-subs', 'main', 0);
-      break;
-    case 'outdoor':
-      b.put('m1', 'vocalMic', 'stageC').put('m2', 'instrumentMic', 'riserC').put('d1', 'di', 'stageL').put('d2', 'di', 'stageR')
-        .put('box', 'stagebox', 'stageBox').put('con', 'console', 'foh').put('proc', 'processor', 'rack1').put('ampT', 'amp', 'rack2').put('ampS', 'amp', 'rack3')
-        .put('l', 'passiveSpeaker', 'mainL').put('r', 'passiveSpeaker', 'mainR').put('sl', 'passiveSub', 'subL').put('sr', 'passiveSub', 'subR')
-        .put('fl', 'poweredSpeaker', 'frontFillL').put('fr', 'poweredSpeaker', 'frontFillR').put('dl', 'poweredSpeaker', 'delayL').put('dr', 'poweredSpeaker', 'delayR')
-        .link('m1', 'box').link('m2', 'box').link('d1', 'box').link('d2', 'box').link('box', 'con').link('con', 'proc')
-        .link('proc', 'ampT').link('proc', 'ampS').link('ampT', 'l').link('ampT', 'r').link('ampS', 'sl').link('ampS', 'sr')
-        .link('proc', 'fl').link('proc', 'fr').link('proc', 'dl').link('proc', 'dr');
-      break;
-    case 'network':
-      b.put('m1', 'vocalMic', 'stageC').put('m2', 'instrumentMic', 'riserC').put('d1', 'di', 'stageL').put('rx', 'wirelessRx', 'stageR')
-        .put('box', 'stagebox', 'stageBox').put('con', 'console', 'foh').put('proc', 'processor', 'rack1').put('amp', 'amp', 'rack2')
-        .put('l', 'passiveSpeaker', 'mainL').put('r', 'passiveSpeaker', 'mainR')
-        .link('m1', 'box').link('m2', 'box').link('d1', 'box').link('rx', 'box').link('box', 'con').link('con', 'box')
-        .link('box', 'proc').link('proc', 'amp').link('amp', 'l').link('amp', 'r');
-      break;
-    case 'festival':
-      b.put('m1', 'vocalMic', 'stageC').put('m2', 'vocalMic', 'stageL').put('m3', 'instrumentMic', 'riserC').put('m4', 'instrumentMic', 'riserL').put('d1', 'di', 'riserR').put('rx', 'wirelessRx', 'stageR')
-        .put('pack', 'iemPack', 'wingL').put('box', 'stagebox', 'stageBox').put('con', 'console', 'foh')
-        .put('proc', 'processor', 'rack1').put('ampT', 'amp', 'rack2').put('ampS', 'amp', 'rack3').put('tx', 'iemTx', 'rack4')
-        .put('l', 'passiveSpeaker', 'mainL').put('r', 'passiveSpeaker', 'mainR').put('sl', 'passiveSub', 'subL').put('sr', 'passiveSub', 'subR')
-        .put('w1', 'poweredWedge', 'mon1').put('w2', 'poweredWedge', 'mon2').put('w3', 'poweredWedge', 'mon3').put('w4', 'poweredWedge', 'mon4')
-        .link('m1', 'box').link('m2', 'box').link('m3', 'box').link('m4', 'box').link('d1', 'box').link('rx', 'box').link('box', 'con').link('con', 'box')
-        .link('box', 'proc').link('proc', 'ampT').link('proc', 'ampS').link('ampT', 'l').link('ampT', 'r').link('ampS', 'sl').link('ampS', 'sr')
-        .link('box', 'w1').link('box', 'w2').link('box', 'w3').link('box', 'w4').link('box', 'tx').link('tx', 'pack');
-      fourMixes();
-      cs = con.setMatrixInput(cs, 'mx-rec', 'main', 0);
-      auxFedSubs();
-      break;
-    default:
-      throw new Error(`no reference build for ${id}`);
-  }
-  return { s: b.s, cs };
-}
-
 describe('capstones', () => {
   it('ten capstones, numbered 1..10 in a difficulty ramp, unique ids, every requirement has a kind', () => {
     assert.equal(CAPSTONES.length, 10);
@@ -509,7 +411,7 @@ describe('capstones', () => {
     const stereo = referenceBuild('speech');
     assert.ok(gradeCapstone(CAPSTONES[1], stereo.s, stereo.cs).unmet.includes('mono'));
     const b = new Build().put('pb', 'playback', 'stageC').put('con', 'console', 'foh').put('sub', 'poweredSub', 'subC').put('l', 'poweredSpeaker', 'mainL').put('r', 'poweredSpeaker', 'mainR')
-      .link('pb', 'con').link('con', 'sub').link('sub', 'l').link('sub', 'r');
+      .link('pb', 'con').link('con', 'sub', 'mainMono').link('sub', 'l').link('sub', 'r');
     const g = gradeCapstone(CAPSTONES[3], b.s, con.bandConsole());
     assert.ok(g.unmet.includes('topsDirect'));
     assert.ok(!g.unmet.includes('dedicated'));
@@ -579,12 +481,18 @@ describe('coverage model', () => {
     const b = cov.beamLevelDb(main, 0, 160);
     assert.ok(Math.abs(a - b - 6.02) < 0.05, `${a - b}`);
   });
-  it('two mains overlapping down the centre add about 3 dB, and the floor goes dark far away', () => {
+  it('two mains carrying the same signal add about 6 dB on the aligned centre line, a power sum (about 3 dB) off it, and the floor goes dark far away (SS-08)', () => {
     const l = { x: 40, y: 0, aimDeg: 15, coverDeg: 90 };
     const r = { x: 320, y: 0, aimDeg: -15, coverDeg: 90 };
     const one = cov.fieldDb([l], 180, 200);
     const two = cov.fieldDb([l, r], 180, 200);
-    assert.ok(two - one > 2.5 && two - one < 3.5, `${two - one}`);
+    assert.ok(two - one > 5.5 && two - one < 6.5, `${two - one}`);
+    // 30 units off the line the arrivals are far out of step: power sum.
+    const offL = cov.fieldDb([l], 210, 200);
+    const offR = cov.fieldDb([r], 210, 200);
+    const offBoth = cov.fieldDb([l, r], 210, 200);
+    const power = 10 * Math.log10(10 ** (offL / 10) + 10 ** (offR / 10));
+    assert.ok(Math.abs(offBoth - power) < 0.01, `${offBoth} vs ${power}`);
     assert.equal(cov.fieldValue([{ x: 180, y: 0, aimDeg: 0, coverDeg: 60 }], 180, 6000), 0);
     assert.equal(cov.fieldValue([], 10, 10), 0);
   });

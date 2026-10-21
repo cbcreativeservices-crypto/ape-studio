@@ -81,7 +81,7 @@ describe('laneFeed: one onChange per frame, newest wins, nothing lost', () => {
 });
 
 describe('ParamLane uses the feed and a UI-thread cap', () => {
-  const s = readFileSync(new URL('../src/screens/lab/rack/ParamLane.tsx', import.meta.url), 'utf8');
+  const s = readFileSync(new URL('../src/screens/lab/rack/ParamLane.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   it('moves go through feed.move, the grab through feed.grant, release and terminate through settle (feed.end)', () => {
     assert.match(s, /feed\.grant\(v\);/);
     assert.match(s, /feed\.move\(v\);/);
@@ -97,12 +97,12 @@ describe('ParamLane uses the feed and a UI-thread cap', () => {
   it('a preview lane (onCommit) commits once on release and prints the finger value live', () => {
     assert.match(s, /if \(onCommitRef\.current && last != null\) \{[\s\S]{0,300}onCommitRef\.current\(last\);\n\s*\}/);
     assert.match(s, /const readout = live \?\? pageReadout;/);
-    const rack = readFileSync(new URL('../src/screens/lab/rack/RackUnit.tsx', import.meta.url), 'utf8');
+    const rack = readFileSync(new URL('../src/screens/lab/rack/RackUnit.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
     assert.match(rack, /onCommit=\{bound\.onCommit\}/);
   });
   it('every Miking fader that moves a mic previews and commits (no page re-render per move)', () => {
     for (const f of ['engine/scene/placementDock.ts', 'lessons/shared/journeyPages.tsx', 'pages/PContext.tsx', 'lessons/shared/electric/ampPages.tsx', 'lessons/shared/hand/handPages.tsx', 'lessons/shared/handdrums/pages/HContext.tsx', 'lessons/spk/pages.tsx']) {
-      const src = readFileSync(new URL(`../src/screens/lab/miking/${f}`, import.meta.url), 'utf8');
+      const src = readFileSync(new URL(`../src/screens/lab/miking/${f}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
       assert.doesNotMatch(src, /rig\.moveTo\(/, `${f}: a fader moves the mic with rig.moveTo (a page re-render per move)`);
       assert.match(src, /rig\.preview\(/, f);
       assert.match(src, /onCommit: /, f);

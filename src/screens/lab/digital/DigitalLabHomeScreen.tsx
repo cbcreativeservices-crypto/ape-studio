@@ -26,7 +26,9 @@ import { useWideOnTablet } from '../../../theme/useIsTablet';
 import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
 
-const PATH = ['SOUND', 'ANALOG', 'SAMPLES', 'NUMBERS', 'PROCESSING', 'RECONSTRUCTION', 'SOUND'];
+// DG-R2-01 (wiring round 2): the reconstructed voltage is not sound yet — an
+// amplifier and a loudspeaker turn it back into air.
+const PATH = ['SOUND', 'ANALOG', 'SAMPLES', 'NUMBERS', 'PROCESSING', 'RECONSTRUCTION', 'AMPLIFIER', 'LOUDSPEAKER', 'SOUND'];
 
 /** The static signal-path labels — the lab's chain in one row. */
 function SignalPathBanner() {
@@ -90,8 +92,8 @@ export function DigitalLabHomeScreen() {
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
         <SignalPathBanner />
         <Text style={styles.body}>
-          Follow the complete chain — acoustic sound → microphone → analog voltage → anti-aliasing
-          filter → sampling → quantization → binary data → processing → reconstruction → sound —
+          Follow the complete chain — acoustic sound → microphone → preamp (analog voltage) →
+          anti-aliasing filter → sampling → quantization → binary data → processing → reconstruction → amplifier → loudspeaker → sound —
           in eight connected modules. Take them in order, or jump straight to what you need.
         </Text>
         <Text style={styles.sectionTitle}>THE EIGHT MODULES</Text>

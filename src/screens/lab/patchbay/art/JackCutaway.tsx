@@ -22,6 +22,13 @@ import { useEffect, type ReactNode } from 'react';
  * the electrical threshold is the engine's CONTACT_OPEN_AT teaching constant,
  * the visible lift begins exactly THERE (never before — the picture must not
  * contradict the readout), and the panel carries a CONCEPTUAL MODEL badge.
+ *
+ * Two honesty notes under the body (wiring grade R3-PB-02, 2026-10-21):
+ * ENLARGED — the body is drawn ≈ 76 × 39 mm at the plug's 3.46 units/mm,
+ * larger than a real jack, so the parts are readable; and RING SPRING NOT
+ * SHOWN — a TRS jack also switches the ring, but a ring leaf drawn honestly
+ * would meet the passing tip first and open at a different depth than the
+ * single CONTACT_OPEN_AT readout, so it is named and left out instead.
  */
 import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
@@ -41,19 +48,24 @@ const tipXAt = (insertion: number) => 26 + insertion * 122;
 /** Where the leaf's contact finger meets the plug path, and its resting
  *  height (the dimple's underside). FINGER_X is placed so the nose first
  *  touches the dimple exactly at CONTACT_OPEN_AT (cognition pass 2026-09-10:
- *  the first visible separation must coincide with the declared break). */
+ *  the first visible separation must coincide with the declared break), and
+ *  CONTACT_OPEN_AT is chosen so that at FULL insertion the dimple rests in
+ *  the tip's neck groove (tipXAt(1) − 23 … − 15; wiring grade PB-R2-01,
+ *  2026-10-20 — it used to end on the sleeve; re-derived for the ¼-inch plug,
+ *  B-PB-01 2026-10-21: the dimple, ±2.4 wide, sits mid-groove at 0.85). */
 const FINGER_REST_Y = 99;
 const FINGER_X = tipXAt(CONTACT_OPEN_AT) + 1 - 9 * ((103 - FINGER_REST_Y) / 11) ** 2;
 /** The plug's TOP surface at FINGER_X (or null when the plug is not under
  *  it): the round nose (y 92–103 over its last 9 units), the neck groove the
- *  spring rides at full insertion (y 96), the ring/sleeve barrel (y 92). */
+ *  spring rides at full insertion (y 96), the tip ball / ring / sleeve barrel
+ *  (y 92). */
 function plugTopAt(insertion: number): number | null {
   if (insertion <= 0.02) return null;
   const tipX = tipXAt(insertion);
   const rel = FINGER_X - tipX;
   if (rel > 1) return null;
   if (rel >= -8) return 103 - 11 * Math.sqrt(Math.max(0, Math.min(1, (1 - rel) / 9)));
-  if (rel >= -18 && rel <= -13) return 96;
+  if (rel >= -23 && rel <= -15) return 96;
   return 92;
 }
 /** The dimple's underside: resting, or riding the plug. */
@@ -74,6 +86,9 @@ export const JACK_ASPECT = W / H;
 
 /** The honesty badge (a CONCEPTUAL MODEL) — on the page card and, for a rack
  *  page, silk-screened under the glass. */
+/** The two notes printed under the jack body (R3-PB-02). */
+export const JACK_NOTES = ['ENLARGED — DRAWN LARGER THAN A REAL JACK', 'RING SPRING NOT SHOWN — IT SWITCHES THE SAME WAY'] as const;
+
 export const JACK_BADGE = `CONCEPTUAL MODEL — this one opens at ${Math.round(CONTACT_OPEN_AT * 100)}% in; real jacks open partway, the exact point varies by design.`;
 
 /** W16 (2026-09-18): Android-only live region; silent on iOS. `insertion` is a DRAG,
@@ -109,7 +124,7 @@ export function JackCutawayDrawing({ insertion, reduceMotion, showConductors, w,
     ` L ${FINGER_X + 1.2} ${fy - 9.6} L ${CONTACT_X + 1} ${leafY + 1.6} Z`;
   const phase = useFlowPhase(true, reduceMotion);
 
-  const a11y = `Jack cutaway at ${Math.round(insertion * 100)} percent insertion. ` +
+  const a11y = `Jack cutaway, enlarged; the ring spring is not shown. At ${Math.round(insertion * 100)} percent insertion. ` +
     (open
       ? 'The plug has lifted the tip spring off the normal contact: the normal is broken and the source now rides the patch cord.'
       : 'The tip spring is resting on the normal contact: the normal path to the destination is intact.');
@@ -144,6 +159,11 @@ export function JackCutawayDrawing({ insertion, reduceMotion, showConductors, w,
             the anchor block, TIP SPRING below the leaf (it sat on it), and
             "← PLUG OUT" above the bushing (it ran across it). */}
         <SvgText x={146} y={44} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={1.6}>INSIDE THE JACK — CUTAWAY</SvgText>
+        {/* the honesty notes, under the body and clear of the panel and the
+            plug's cord (R3-PB-02) */}
+        {JACK_NOTES.map((t, i) => (
+          <SvgText key={t} x={62} y={178 + i * 12} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={0.8}>{t}</SvgText>
+        ))}
 
         {/* SOURCE feed from the rear into the spring anchor block */}
         <FlowPath d={`M 326 61 L 298 61`} flowing phase={phase} reduceMotion={reduceMotion} color={PB.source} width={2.4} />
@@ -181,35 +201,42 @@ export function JackCutawayDrawing({ insertion, reduceMotion, showConductors, w,
           </G>
         ) : null}
 
-        {/* the plug: TT anatomy — tip cap, insulator, ring band, insulator,
-            sleeve — riding the insertion slider. The plug is ALWAYS a whole patch-cord plug: shaft, then its
-            molded handle (TT handle ≈ 7.5 mm across at 5 units per mm), the
-            cord running off the frame to the left — never a bar in space.
-            The handle face stops on the panel nut at full insertion. */}
+        {/* the plug: a ¼-inch TRS patch plug, matching the bay's ¼-inch jacks
+            (B-PB-01, 2026-10-21; it used to be drawn as TT/bantam) — tip,
+            insulator, ring, insulator, sleeve — riding the insertion slider.
+            True proportions at ≈ 3.46 units per mm: the 6.35 mm shaft is 22
+            units across, 32 mm (111 units) from nose to the handle face, tip
+            6.9 mm (ball + neck groove), insulators 2.9 mm, ring 4.9 mm, sleeve
+            14.4 mm. The plug is ALWAYS a whole patch-cord plug: shaft, then its
+            molded handle (≈ 10.7 mm across), the cord running off the frame to
+            the left — never a bar in space. The handle face stops on the front
+            panel at full insertion. */}
         {insertion > 0.02 ? (
         <G>
-            <Rect x={Math.max(-6, tipX - 116)} y={92} width={Math.max(0, tipX - 40 - Math.max(-6, tipX - 116))} height={22} rx={4} fill="#63656d" stroke="#7d7f88" strokeWidth={1} />
-            <Rect x={Math.max(-6, tipX - 40)} y={92} width={4} height={22} fill="#141518" />
-            <Rect x={Math.max(-6, tipX - 36)} y={92} width={14} height={22} fill="#c8a24a" />
-            <Rect x={Math.max(-6, tipX - 22)} y={92} width={4} height={22} fill="#141518" />
-            {/* the TT tip (art pass 2026-10-10): a ball nose behind which the
+            <Rect x={Math.max(-6, tipX - 110)} y={92} width={Math.max(0, tipX - 60 - Math.max(-6, tipX - 110))} height={22} rx={4} fill="#63656d" stroke="#7d7f88" strokeWidth={1} />
+            <Rect x={tipX - 60} y={92.4} width={10} height={21.2} fill="#141518" stroke="#3d3e44" strokeWidth={0.8} />
+            <Rect x={tipX - 50} y={92} width={17} height={22} fill="#c8a24a" />
+            <Rect x={tipX - 33} y={92.4} width={10} height={21.2} fill="#141518" stroke="#3d3e44" strokeWidth={0.8} />
+            {/* the tip (art pass 2026-10-10): a ball nose behind which the
                 neck groove narrows — the groove the tip spring rides */}
-            <Path d={`M ${tipX - 18} 96 L ${tipX - 13} 96 Q ${tipX - 12} 92 ${tipX - 8} 92 Q ${tipX + 1} 92 ${tipX + 1} 103 Q ${tipX + 1} 114 ${tipX - 8} 114 Q ${tipX - 12} 114 ${tipX - 13} 110 L ${tipX - 18} 110 Z`} fill={PB.cord} />
-            {/* round-bar shading: a lit band along the top, core shadow below */}
-            <Rect x={Math.max(-6, tipX - 116)} y={95} width={Math.max(0, tipX - 10 - Math.max(-6, tipX - 116))} height={3} fill="#ffffff" opacity={0.22} />
-            <Rect x={Math.max(-6, tipX - 116)} y={107} width={Math.max(0, tipX - 10 - Math.max(-6, tipX - 116))} height={6} fill="#000000" opacity={0.22} />
+            <Path d={`M ${tipX - 23} 96 L ${tipX - 15} 96 Q ${tipX - 14} 92 ${tipX - 11} 92 L ${tipX - 8} 92 Q ${tipX + 1} 92 ${tipX + 1} 103 Q ${tipX + 1} 114 ${tipX - 8} 114 L ${tipX - 11} 114 Q ${tipX - 14} 114 ${tipX - 15} 110 L ${tipX - 23} 110 Z`} fill={PB.cord} />
+            {/* round-bar shading: a lit band along the top, core shadow below
+                (sleeve to ring; the groove is never shaded over). The dark
+                insulators carry a thin edge so the shaft reads as one piece. */}
+            <Rect x={Math.max(-6, tipX - 110)} y={95} width={Math.max(0, tipX - 33 - Math.max(-6, tipX - 110))} height={3} fill="#ffffff" opacity={0.22} />
+            <Rect x={Math.max(-6, tipX - 110)} y={107} width={Math.max(0, tipX - 33 - Math.max(-6, tipX - 110))} height={6} fill="#000000" opacity={0.22} />
             {showConductors && insertion > 0.3 ? (
               <G>
                 <SvgText x={tipX - 9} y={128} fontSize={9} fill={PB.cord} textAnchor="middle" fontFamily={fonts.oswaldMedium}>T</SvgText>
                 <Line x1={tipX - 9} y1={116} x2={tipX - 9} y2={120} stroke={PB.cord} strokeWidth={1} />
-                <SvgText x={tipX - 29} y={128} fontSize={9} fill="#c8a24a" textAnchor="middle" fontFamily={fonts.oswaldMedium}>R</SvgText>
-                <Line x1={tipX - 29} y1={116} x2={tipX - 29} y2={120} stroke="#c8a24a" strokeWidth={1} />
-                <SvgText x={Math.max(24, tipX - 60)} y={128} fontSize={9} fill="#9a9ca4" textAnchor="middle" fontFamily={fonts.oswaldMedium}>S</SvgText>
-                <Line x1={Math.max(24, tipX - 60)} y1={116} x2={Math.max(24, tipX - 60)} y2={120} stroke="#9a9ca4" strokeWidth={1} />
+                <SvgText x={tipX - 41} y={128} fontSize={9} fill="#c8a24a" textAnchor="middle" fontFamily={fonts.oswaldMedium}>R</SvgText>
+                <Line x1={tipX - 41} y1={116} x2={tipX - 41} y2={120} stroke="#c8a24a" strokeWidth={1} />
+                <SvgText x={Math.max(24, tipX - 85)} y={128} fontSize={9} fill="#9a9ca4" textAnchor="middle" fontFamily={fonts.oswaldMedium}>S</SvgText>
+                <Line x1={Math.max(24, tipX - 85)} y1={116} x2={Math.max(24, tipX - 85)} y2={120} stroke="#9a9ca4" strokeWidth={1} />
               </G>
             ) : null}
-          <Path d={`M ${tipX - 115 - 140} 84.5 L ${tipX - 119} 84.5 Q ${tipX - 115} 84.5 ${tipX - 115} 89 L ${tipX - 115} 117 Q ${tipX - 115} 121.5 ${tipX - 119} 121.5 L ${tipX - 115 - 140} 121.5 Z`} fill="#1d1e22" stroke={PB.cord} strokeWidth={1.2} />
-          <Rect x={tipX - 115 - 140} y={88} width={136} height={3} fill="#ffffff" opacity={0.08} />
+          <Path d={`M ${tipX - 110 - 140} 84.5 L ${tipX - 114} 84.5 Q ${tipX - 110} 84.5 ${tipX - 110} 89 L ${tipX - 110} 117 Q ${tipX - 110} 121.5 ${tipX - 114} 121.5 L ${tipX - 110 - 140} 121.5 Z`} fill="#1d1e22" stroke={PB.cord} strokeWidth={1.2} />
+          <Rect x={tipX - 110 - 140} y={88} width={136} height={3} fill="#ffffff" opacity={0.08} />
         </G>
         ) : (
           <G>

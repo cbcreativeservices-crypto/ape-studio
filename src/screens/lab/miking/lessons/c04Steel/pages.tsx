@@ -36,7 +36,8 @@ export const C04_SPEC: AmpPagesSpec = {
   ampParts: ['spk.grille', 'amp.panel', 'spk.cabinet', 'spk.baffle', 'spk.cone', 'spk.dust', 'spk.surround', 'spk.frame', 'spk.magnet', 'amp.chassis', 'spk.openBack'],
   ampNoun: 'the steel’s amp',
   string: { spec: PEDAL_STEEL, idx: 5, name: 'One steel string (B, about 247 Hz)', steel: true },
-  chain: { pedals: 'volume', rig: 'combo', diBox: true, ampDirect: true, icons: { player: 'steel' } },
+  // The volume pedal BEFORE the DI, so the swells reach it (owner 2026-10-21).
+  chain: { pedals: 'volume', rig: 'combo', diBox: true, diAfter: 'pedals', ampDirect: true, icons: { player: 'steel' } },
   workedZone: C04_WORKED,
   placeZone: C04_PLACE_START,
   micDefault: 'instDynCard',

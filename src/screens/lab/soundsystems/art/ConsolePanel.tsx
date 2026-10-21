@@ -10,10 +10,11 @@
  * Every cell announces its state; colour is always paired with a word.
  * Reuses the house hardware kit's palette, taper and scribble strip.
  */
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedProps, useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, Defs, Line, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
+import { fitValue } from '../../../../theme/legibility';
 import { LOUDNESS_STOPS, levelColorForDb } from '../../../../features/tools/levelColor';
 import { faderDbToFrac, ScribbleStrip } from '../../kit/gear';
 import { useSettle } from '../../cableinstall/motion';
@@ -120,8 +121,13 @@ export function ConsolePanel({
   const allPre = (auxId: string, tap: 'pre' | 'post') =>
     set((s) => rows.reduce((acc, ch) => (ch.sends[auxId] ? setSend(acc, ch.id, auxId, { db: ch.sends[auxId].db, tap }) : acc), s));
 
-  return (
-    <View style={styles.panel}>
+  // Six or more columns (the festival's four wedges, the subs and the
+  // in-ears) do not fit a phone's tray at the cells' 40-point minimum: the
+  // desk then scrolls sideways, as a wide desk
+  // would, rather than squeezing its cells (SS-R2-03).
+  const wide = columns.length > 5;
+  const desk = (
+    <>
       <View style={styles.head}>
         <View style={styles.tapeCol}>
           <Text style={styles.headCell}>CHANNEL</Text>
@@ -163,6 +169,17 @@ export function ConsolePanel({
           </View>
         );
       })}
+    </>
+  );
+  return (
+    <View style={styles.panel}>
+      {wide ? (
+        <ScrollView horizontal contentContainerStyle={{ flexGrow: 1 }} accessibilityLabel="Console channels — scroll sideways for more sends">
+          <View style={{ flex: 1, gap: 4, minWidth: 72 + columns.length * 48 }}>{desk}</View>
+        </ScrollView>
+      ) : (
+        desk
+      )}
     </View>
   );
 }
@@ -338,7 +355,7 @@ export function BusHears({ title, list, note, running = true }: { title: string;
                   <View style={styles.busBar}>
                     <View style={[styles.busFill, { width: `${Math.max(3, ((db + 60) / 66) * 100)}%`, backgroundColor: levelColorForDb(db, -60, 6) }]} />
                   </View>
-                  <Text style={styles.busDb}>{db > 0 ? '+' : ''}{Math.round(db)}</Text>
+                  <Text style={styles.busDb} {...fitValue(11)}>{db > 0 ? '+' : ''}{Math.round(db)}</Text>
                 </View>
               );
             })

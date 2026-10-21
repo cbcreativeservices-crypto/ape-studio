@@ -26,7 +26,7 @@ import {
   saveTerms,
 } from '../src/features/glossary/offlineCorpus.ts';
 
-const read = (p: string) => readFileSync(p, 'utf8');
+const read = (p: string) => readFileSync(p, 'utf8').replace(/\r\n/g, '\n');
 const screen = read('src/screens/glossary/GlossaryScreen.tsx');
 
 test('re-saving the term list keeps stored definitions and drops removed terms', async () => {

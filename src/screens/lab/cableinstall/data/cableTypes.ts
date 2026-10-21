@@ -74,7 +74,7 @@ export const CI_CLASS_TINTS = {
 
 /** The class key in words, for captions (keep in step with the tints). */
 export const CI_CLASS_KEY =
-  'red = AC power · cyan = analog audio · green = network · yellow = loudspeaker · white = control · violet = fiber';
+  'red = AC power · cyan = analog audio · green = network · yellow = loudspeaker · white = control and coax · violet = fiber';
 
 export const CI_CABLE_TYPES: CiCableType[] = [
   {
@@ -133,7 +133,7 @@ export const CI_CABLE_TYPES: CiCableType[] = [
     name: 'PoE network cable',
     tint: CI_CLASS_TINTS.network,
     signal: 'Twisted-pair data + DC power to devices',
-    use: 'permanent',
+    use: 'both',
     concerns: ['Same geometry care as data pairs', 'Heat in large powered bundles — follow applicable guidance', 'Connector/termination quality carries power too'],
   },
   {
@@ -158,7 +158,7 @@ export const CI_CABLE_TYPES: CiCableType[] = [
     tint: CI_CLASS_TINTS.control,
     signal: 'GPIO, serial, dimming/control protocols',
     use: 'both',
-    concerns: ['Identify the protocol before routing', 'Some control (e.g. dimmer runs) is a NOISE SOURCE — plan neighbors', 'Documentation prevents mystery wires'],
+    concerns: ['Identify the protocol before routing', 'Dimmer runs are POWER, not control, and a classic NOISE SOURCE — plan neighbors', 'Documentation prevents mystery wires'],
   },
   {
     id: 'multipair',

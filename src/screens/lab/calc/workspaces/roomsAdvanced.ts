@@ -199,7 +199,7 @@ const DIFFUSER: Workspace = {
     'Idealised QRD geometry: well depth dₙ = sₙ·λ₀/(2N) with sₙ = n² mod N, low edge ≈ the design ' +
     'frequency, high edge ≈ c/(2·well width). Real diffusers add fin thickness and finite-size ' +
     'effects; treat depths as a starting point.',
-  glossary: ['Diffusion', 'Reflection', 'Wavelength', 'Comb Filtering', 'Standing wave'],
+  glossary: ['Diffusion', 'Reflection (acoustics)', 'Wavelength', 'Comb Filtering', 'Standing wave'],
   fields: [
     { key: 'N', name: 'PRIME N (well count)', quantity: 'number', nonNegative: true, integer: true, placeholder: '7', help: 'Number of wells per period — MUST be prime (7, 11, 13, 17, 23…).', warn: { test: (x) => !isPrime(x), msg: 'N must be a prime number for a quadratic-residue diffuser — QRDs use small primes (7…199).' } },
     { key: 'f0', name: 'DESIGN (LOW) FREQUENCY', quantity: 'frequency', placeholder: '500', help: 'Lowest frequency you want diffused — sets the deepest well.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },

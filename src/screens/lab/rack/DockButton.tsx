@@ -11,9 +11,10 @@
  * Toggles render as ON/OFF keys; actions as plain keys. Long-press = the
  * param's guided lesson (v4 §5), wired via RackUnit.
  */
-import { useCallback, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useRef, useState, type ReactNode } from 'react';
+import { Pressable, StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type TextStyle } from 'react-native';
 import { fitValue } from '../../../theme/legibility';
+import { dockFitSize, dockLabelFit } from './dockFit';
 import * as Haptics from 'expo-haptics';
 import { colors, fonts } from '../../../theme/tokens';
 import { hapticsEnabled } from '../../../features/settings/store';
@@ -89,6 +90,37 @@ export function DockButton({
     onPress();
   }, [isAction, onPress]);
 
+  /**
+   * SHRINK TO FIT, NEVER "…" (owner 2026-10-19: "shrink cut-off dock words
+   * at 320 px to fit (9 pt minimum) in the shared dock"). At 320 wide a key's
+   * label or value ended in "…" ("STOPP…", "PLATTE…"). Each line's natural
+   * width is measured off screen at its authored size, against the key's
+   * inner width; a line that fits today is drawn exactly as before (no change
+   * at 390), one that does not is drawn at the largest size that fits, never
+   * under 9 pt (dockFit). Only a line that cannot fit even at 9 pt keeps the
+   * old behaviour. The verb glyph stays at 12 (it is load-bearing).
+   * Measured, not guessed: the user's system font size is in the measure.
+   */
+  const [btnW, setBtnW] = useState(0);
+  const [labelW, setLabelW] = useState(0);
+  const [spacedW, setSpacedW] = useState(0);
+  const [spacedGlyphW, setSpacedGlyphW] = useState(0);
+  const [valueW, setValueW] = useState(0);
+  const [valueH, setValueH] = useState(0);
+  // Inner width: the 1 px border and 4 px padding each side; a key's LED dot
+  // (8) and its gap (6) sit beside its label.
+  const inner = btnW > 0 ? btnW - 2 - 2 * 4 - (isKey && led != null ? 14 : 0) : 0;
+  const fitsLabel = !isKey || labelLines === 1;
+  const hasGlyph = !isKey && !!glyph;
+  const { fs: labelFs, tight, tracked } = fitsLabel
+    ? dockLabelFit(LABEL_FS, labelW, inner, hasGlyph ? spacedW : 0, hasGlyph ? spacedGlyphW : 0, (label.length + 1) * LABEL_SPACING)
+    : { fs: LABEL_FS, tight: false, tracked: true };
+  const valueFs = (value ? dockFitSize(VALUE_FS, valueW, inner) : VALUE_FS) ?? VALUE_FS;
+  // A shrunk label keeps its tracking in proportion; a shrunk value keeps its
+  // line height, so the key (and the dock) never changes height.
+  const labelSize = labelFs !== LABEL_FS ? { fontSize: labelFs, letterSpacing: tracked ? (LABEL_SPACING * labelFs) / LABEL_FS : 0 } : null;
+  const valueSize = valueFs !== VALUE_FS ? { fontSize: valueFs, ...(valueH > 0 ? { lineHeight: valueH } : null) } : null;
+
   return (
     <Pressable
       style={({ pressed }) => [
@@ -116,12 +148,37 @@ export function DockButton({
       accessibilityState={{ selected: !!selected || !!led }}
       aria-pressed={!!selected || !!led}
       accessibilityLabel={a11y}
+      onLayout={(e: LayoutChangeEvent) => setBtnW(e.nativeEvent.layout.width)}
     >
+      {/* The off-screen measures (invisible, never read aloud). */}
+      <Measure>
+        {/* the line as drawn today */}
+        <MeasureLine style={styles.label} onWidth={setLabelW}>
+          {label}
+          {hasGlyph ? <Text style={styles.glyph}> {glyph}</Text> : null}
+        </MeasureLine>
+        {hasGlyph ? (
+          <>
+            <MeasureLine style={styles.label} onWidth={setSpacedW}>
+              {`${label} `}
+            </MeasureLine>
+            <MeasureLine style={styles.label} onWidth={setSpacedGlyphW}>
+              {`${label} `}
+              <Text style={styles.glyph}>{glyph}</Text>
+            </MeasureLine>
+          </>
+        ) : null}
+        {!isKey && value ? (
+          <MeasureLine style={styles.value} onWidth={setValueW} onHeight={setValueH}>
+            {value}
+          </MeasureLine>
+        ) : null}
+      </Measure>
       {isKey ? (
         <View style={styles.keyRow}>
           {led != null ? <View style={[styles.ledDot, led && styles.ledDotOn]} /> : null}
           <Text
-            style={[styles.label, styles.keyLabel, fired && styles.labelSel]}
+            style={[styles.label, labelSize, styles.keyLabel, fired && styles.labelSel]}
             numberOfLines={labelLines}
           >
             {label}
@@ -129,12 +186,16 @@ export function DockButton({
         </View>
       ) : (
         <>
-          <Text style={[styles.label, selected && styles.labelSel, selected && frameTint ? { color: frameTint } : null]} numberOfLines={1}>
-            {label}
-            {glyph ? <Text style={[styles.glyph, selected && styles.labelSel, selected && frameTint ? { color: frameTint } : null]}> {glyph}</Text> : null}
+          <Text style={[styles.label, labelSize, selected && styles.labelSel, selected && frameTint ? { color: frameTint } : null]} numberOfLines={1}>
+            {tight ? `${label} ` : label}
+            {glyph ? (
+              <Text style={[styles.glyph, selected && styles.labelSel, selected && frameTint ? { color: frameTint } : null]}>
+                {tight ? glyph : ` ${glyph}`}
+              </Text>
+            ) : null}
           </Text>
           {value ? (
-            <Text style={[styles.value, selected && frameTint ? { color: frameTint } : null]} {...fitValue(14)}>
+            <Text style={[styles.value, valueSize, selected && frameTint ? { color: frameTint } : null]} {...fitValue(valueFs)}>
               {value}
             </Text>
           ) : null}
@@ -144,7 +205,41 @@ export function DockButton({
   );
 }
 
+/** The authored sizes (styles.label / styles.value) and the label's spacing. */
+const LABEL_FS = 12;
+const LABEL_SPACING = 0.5;
+const VALUE_FS = 14;
+
+/** A zero-size, clipped, invisible box: what is inside is laid out but never
+ *  seen, touched or read aloud. */
+function Measure({ children }: { children: ReactNode }) {
+  return (
+    <View style={styles.measureBox} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden>
+      {children}
+    </View>
+  );
+}
+
+/** One line at its authored size and natural (unwrapped) width. */
+function MeasureLine({ style, onWidth, onHeight, children }: { style: StyleProp<TextStyle>; onWidth: (w: number) => void; onHeight?: (h: number) => void; children: ReactNode }) {
+  return (
+    <View style={styles.measureRow}>
+      <Text
+        style={style}
+        onLayout={(e: LayoutChangeEvent) => {
+          onWidth(e.nativeEvent.layout.width);
+          onHeight?.(e.nativeEvent.layout.height);
+        }}
+      >
+        {children}
+      </Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  measureBox: { position: 'absolute', left: 0, top: 0, width: 0, height: 0, overflow: 'hidden', opacity: 0 },
+  measureRow: { position: 'absolute', left: 0, top: 0, width: 1000, flexDirection: 'row', alignItems: 'flex-start' },
   btn: {
     flex: 1,
     borderRadius: 10,

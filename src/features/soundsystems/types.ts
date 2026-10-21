@@ -83,11 +83,41 @@ export type Placed = {
   slot: SlotId;
 };
 
+/** A console OUTPUT (finding WF-SS-02, owner go 2026-10-20): the main pair
+ *  and its mono sum, the ten auxes and the four matrices. A cable from the
+ *  console carries ONE of these into a loudspeaker — which one is what lets
+ *  the lab check that a wedge is fed from an aux and that stereo is wired
+ *  L/R. outputs.ts names them. */
+export type ConsoleOut =
+  | 'mainL'
+  | 'mainR'
+  | 'mainMono'
+  | 'aux1'
+  | 'aux2'
+  | 'aux3'
+  | 'aux4'
+  | 'aux5'
+  | 'aux6'
+  | 'aux7'
+  | 'aux8'
+  | 'aux9'
+  | 'aux10'
+  | 'mtx1'
+  | 'mtx2'
+  | 'mtx3'
+  | 'mtx4';
+
 export type Link = {
   from: string;
   to: string;
   /** The level the two ports agreed on when the link was validated. */
   level: SignalLevel;
+  /** The console output this cable carries, chosen where the signal enters a
+   *  loudspeaker (or at a stagebox return / pass-through hop). Absent = not
+   *  chosen: the cable passes on everything that reaches it, and a
+   *  loudspeaker that receives more than one output reads "OUT ?". The input
+   *  side of the console ignores it. */
+  out?: ConsoleOut;
 };
 
 export type SoundSystem = {

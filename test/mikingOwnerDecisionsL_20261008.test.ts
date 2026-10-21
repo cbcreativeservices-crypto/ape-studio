@@ -27,8 +27,8 @@ import { FRAME, LENS } from '../src/screens/lab/miking/lessons/f09LocationSpeech
 import { learnerStrings } from './_mikingItemRules.ts';
 
 const lesson = (id: string) => lessonById(id) as Lesson;
-const src = (rel: string) => readFileSync(new URL(`../src/screens/lab/miking/${rel}`, import.meta.url), 'utf8');
-const log = readFileSync(new URL('../docs/labs/miking/CORRECTIONS_LOG.md', import.meta.url), 'utf8');
+const src = (rel: string) => readFileSync(new URL(`../src/screens/lab/miking/${rel}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+const log = readFileSync(new URL('../docs/labs/miking/CORRECTIONS_LOG.md', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 const len = (p: { x: number; y: number; z: number }) => Math.hypot(p.x, p.y, p.z);
 
 describe('L6A — F09 reads a shotgun to its capsule', () => {

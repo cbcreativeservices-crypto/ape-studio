@@ -144,6 +144,11 @@ export function Lesson03Body() {
         lands equally on both legs of the twisted pair, and the input keeps only their difference.
       </Text>
       <ExpandableFigure aspect={340 / 262} title="BALANCED VS UNBALANCED" render={(w) => <BalancedFigure width={w} />} />
+      <Text style={s.body}>
+        Many outputs drive pin 3 with an inverted copy of the signal, as drawn here. Some drive only pin 2 and hold pin 3
+        at the same impedance to ground — the noise still cancels. Equal impedance on the two legs is what makes a line
+        balanced.
+      </Text>
 
       <Eyebrow text={`KNOWLEDGE CHECK · ${solvedCount} OF ${L03_CHECKS.length} SOLVED`} />
       {!allSolved ? (

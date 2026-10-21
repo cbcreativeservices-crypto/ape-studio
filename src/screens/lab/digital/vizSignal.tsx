@@ -198,7 +198,7 @@ function strokeScale(w: number): number {
 // MODULE 1 HERO — AnalogChainView: one event, three phase-locked views.
 // (a) speaker cone radiating traveling compression/rarefaction bands,
 // (b) mic diaphragm riding the arriving pressure,
-// (c) continuous voltage scrolling out of the mic/preamp.
+// (c) continuous voltage scrolling out of the mic (R3-DG-03: no preamp is drawn).
 
 /** One traveling pressure band (compression = amber, rarefaction = blue).
  *

@@ -59,10 +59,19 @@ const CROSS = { top: 206, bottom: 222 }; // cross-aisle (the delays stand in it)
 
 export type PlotBeam = Beam & {
   color: string;
-  /** Feed tag printed beside the loudspeaker (L, R, SUB, FILL…). */
+  /** Feed tag printed beside the loudspeaker (L, R, SUB, FILL…; in BUILD the
+   *  console output its cable carries — AUX 2, MAIN L, OUT ?). */
   feed?: string;
+  /** Where the tag prints, from the box's centre (default 0, +26, middle —
+   *  under the box). BUILD moves a tag that would meet a neighbour. */
+  feedDx?: number;
+  feedDy?: number;
+  feedAnchor?: 'start' | 'middle' | 'end';
   /** Set delay, ms (delays only). */
   delayMs?: number;
+  /** A feed tag with no loudspeaker behind it (an in-ear pack, SS-R2-13):
+   *  no coverage, no share of the floor field. */
+  tagOnly?: boolean;
   /** A live box launches wavefronts; a silent one is drawn dark. */
   live?: boolean;
   /** How far past the throw distance the sector is drawn (default 1.8 — a
@@ -88,6 +97,8 @@ export type VenueViewProps = {
   onTapSlot?: (slot: SlotId) => void;
   onTapPlaced?: (id: string) => void;
   onTapLink?: (link: Link) => void;
+  /** What a cable carries, read with its tap target (BUILD: "carries AUX 2"). */
+  linkA11y?: (link: Link) => string | undefined;
   /** Extra overlay, drawn last (timing rings, callouts). */
   overlay?: React.ReactNode;
   badge?: string;
@@ -130,13 +141,20 @@ const RISER_LANE_Y = 66;
 const LIP_LANE_Y = 105;
 /** The RISER label (x 180, baseline 64.5): no drop is run through it. */
 const RISER_LABEL = { x0: 152, x1: 208, y0: 52, y1: 67 };
+/** The BARRIER word (start at x 40, baseline 174, ≈ 51 units wide at
+ *  PLOT_FS): under the barrier line at the house-LEFT end. At the house-right
+ *  end the stage-left wall loom's inner lanes (LOOM_WALL_X − CABLE_GAP·k, as
+ *  many as there are runs to front of house) ran over it (owner list
+ *  2026-10-21). The house-left wall carries only the house-left loudspeaker
+ *  runs (four slots), x ≤ SR_WALL_X + 3·CABLE_GAP, so the word stays clear. */
+const BARRIER_LABEL = { x: AUD.left + 18, y: 174, x0: 36, x1: 96, y0: 163, y1: 176 };
 /** The plot's printed words (SL, LIP, RISER, BARRIER): a run never lies
  *  along one. */
 const LABEL_BOXES = [
   { x0: 310, x1: 336, y0: 14, y1: 27 },
   { x0: 92, x1: 130, y0: 113, y1: 126 },
   RISER_LABEL,
-  { x0: 268, x1: 336, y0: 163, y1: 176 },
+  BARRIER_LABEL,
 ];
 const alongLabel = (vertical: boolean, c: number, a: number, b: number) =>
   LABEL_BOXES.some((r) => (vertical ? c > r.x0 && c < r.x1 && Math.max(a, b) > r.y0 && Math.min(a, b) < r.y1 : c > r.y0 && c < r.y1 && Math.max(a, b) > r.x0 && Math.min(a, b) < r.x1));
@@ -155,6 +173,10 @@ type Pt = { x: number; y: number };
 export type CableRoutes = {
   /** Path per link, keyed `${from}-${to}`. */
   paths: Map<string, string>;
+  /** Links drawn by their twin: the console → stagebox / snake return that
+   *  rides the same network cable (or multicore jacket) as the stagebox →
+   *  console link (round-2 grade SS-R2-12) — keyed as `paths`, painted once. */
+  merged: Set<string>;
   /** Tape / tie marks across bundled lanes, at even intervals. */
   ties: string[];
 };
@@ -237,6 +259,7 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
   const key = (l: Link) => `${l.from}-${l.to}`;
   const paths = new Map<string, string>();
   const ties: string[] = [];
+  const merged = new Set<string>();
 
   /* every straight leg drawn so far, to keep the next one off it */
   type Seg = { v: boolean; c: number; a: number; b: number };
@@ -272,6 +295,10 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
   type StageRun = { l: Link; s: Placed; f: Placed; lip: boolean };
   const wall: WallRun[] = [];
   const farWall: WallRun[] = [];
+  /** Front of house → a house-LEFT loudspeaker: along the back of the house
+   *  and up the house-left wall, never across the stage front (SS-R2-13: the
+   *  stage-left loom's run to main left crossed the wedges' feed tags). */
+  const fohFar: WallRun[] = [];
   const stageRuns: StageRun[] = [];
   const ls: Run[] = [];
   const radio: Run[] = [];
@@ -280,6 +307,12 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
     const a = byId.get(l.from);
     const b = byId.get(l.to);
     if (!a || !b) continue;
+    // The console's returns ride the SAME cable as the inputs (the network
+    // link, or the return pairs in the multicore): drawn once.
+    if (a.kind === 'console' && (b.kind === 'stagebox' || b.kind === 'snake') && links.some((m) => m.from === l.to && m.to === l.from)) {
+      merged.add(key(l));
+      continue;
+    }
     if (l.level === 'wireless') {
       radio.push({ l, a, b });
       continue;
@@ -288,7 +321,9 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
     const zb = zoneOf(b.slot);
     if ((za === 'foh') !== (zb === 'foh')) {
       const foh = za === 'foh' ? a : b;
-      wall.push({ l, top: foh === a ? b : a, foh, house: null });
+      const top = foh === a ? b : a;
+      if (zoneOf(top.slot) === 'house' && xy(top.slot).x < 170) fohFar.push({ l, top, foh, house: top });
+      else wall.push({ l, top, foh, house: null });
     } else if ((side(za) && zb === 'house') || (side(zb) && za === 'house')) {
       const top = side(za) ? a : b;
       const house = top === a ? b : a;
@@ -373,6 +408,32 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
     ties.push(...tieMarks(vLanes, true), ...tieMarks(hLanes, false));
   }
 
+  /* ── front of house to house left: back of the house, up the house-left wall ── */
+  {
+    // Concentric: the highest row takes the outer wall lane, the outer back
+    // lane and the leftmost drop, so no two runs cross.
+    const lanes = [...fohFar].sort((p, q) => xy(p.house!.slot).y - xy(q.house!.slot).y || xy(p.house!.slot).x - xy(q.house!.slot).x);
+    const rT = 6;
+    const vLanes: { c: number; a: number; b: number }[] = [];
+    const hLanes: { c: number; a: number; b: number }[] = [];
+    lanes.forEach((w, k) => {
+      const h = w.house!;
+      const hp = xy(h.slot);
+      const foh = xy(w.foh!.slot);
+      const by = LOOM_BACK_Y - CABLE_GAP * k;
+      let wx = SR_WALL_X + CABLE_GAP * k;
+      const exitY = port(h, 'y', hp.y, (c) => !clash(false, c, wx, hp.x));
+      while (clash(true, wx, exitY, by)) wx += CABLE_GAP;
+      const dx = port(w.foh!, 'x', foh.x - 12 - CABLE_GAP * (lanes.length - 1 - k), (c) => c < foh.x - 4 && !clash(true, c, by, foh.y) && !clash(false, by, wx, c));
+      const pts: Pt[] = [{ x: hp.x, y: exitY }, { x: wx, y: exitY }, { x: wx, y: by }, { x: dx, y: by }, { x: dx, y: foh.y }];
+      paths.set(key(w.l), squarePath(pts, rT));
+      addLegs(pts);
+      vLanes.push({ c: wx, a: exitY + rT, b: by - rT });
+      hLanes.push({ c: by, a: wx + rT, b: dx - rT });
+    });
+    ties.push(...tieMarks(vLanes, true), ...tieMarks(hLanes, false));
+  }
+
   /* ── stage runs: riser front and lip, out to stage left ── */
   const throughLabel = (x: number, y0: number, y1: number) => x > RISER_LABEL.x0 && x < RISER_LABEL.x1 && Math.max(y0, y1) > RISER_LABEL.y0 && Math.min(y0, y1) < RISER_LABEL.y1;
   for (const lip of [false, true]) {
@@ -446,7 +507,12 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
     const bow = Math.min(10, len * 0.12);
     paths.set(key(l), `M ${f1(pa.x)} ${f1(pa.y)} Q ${f1((pa.x + pb.x) / 2 - (dy / len) * bow)} ${f1((pa.y + pb.y) / 2 + (dx / len) * bow)} ${f1(pb.x)} ${f1(pb.y)}`);
   }
-  return { paths, ties };
+  for (const k of merged) {
+    const [l] = links.filter((x) => key(x) === k);
+    const d = paths.get(`${l.to}-${l.from}`);
+    if (d) paths.set(k, d);
+  }
+  return { paths, ties, merged };
 }
 
 function sectorPath(cx: number, cy: number, r0: number, r1: number, aimDeg: number, halfDeg: number): string {
@@ -456,6 +522,158 @@ function sectorPath(cx: number, cy: number, r0: number, r1: number, aimDeg: numb
   const p = (r: number, a: number) => `${cx + Math.sin(a) * r} ${cy + Math.cos(a) * r}`;
   if (r0 <= 0) return `M ${cx} ${cy} L ${p(r1, a0)} A ${r1} ${r1} 0 ${large} 0 ${p(r1, a1)} Z`;
   return `M ${p(r0, a0)} L ${p(r1, a0)} A ${r1} ${r1} 0 ${large} 0 ${p(r1, a1)} L ${p(r0, a1)} A ${r0} ${r0} 0 ${large} 1 ${p(r0, a0)} Z`;
+}
+
+/** The LIP word's box (x 111, baseline 124, ~22 units wide at PLOT_FS). */
+const LIP_BOX = { x0: 99, x1: 123, y0: 113, y1: 125 };
+/* ── feed tags clear of the cable lanes (round-3 grade R3-SS-04) ─────────── */
+
+type Box = { x0: number; x1: number; y0: number; y1: number };
+type Anchor = 'start' | 'middle' | 'end';
+/** Where one feed tag prints: its baseline point, anchor and plate box. */
+export type TagPlace = { x: number; y: number; anchor: Anchor; box: Box; clear: boolean };
+
+/** The keyline plate around a tag: the tag's own width (Oswald SemiBold
+ *  advances, in ems, at PLOT_FS plus letter-spacing 1 — measured on the
+ *  rendered plot: MONO ≈34 units, MAIN R ≈40, AUX1 ≈29), cap height ≈10,
+ *  padded so a lane that must pass under it reads as passing under. */
+export const TAG_PAD = 2.5;
+const ADV: Record<string, number> = { M: 0.66, W: 0.72, O: 0.55, Q: 0.55, D: 0.53, G: 0.52, N: 0.53, H: 0.53, U: 0.53, I: 0.24, L: 0.4, T: 0.42, E: 0.42, F: 0.41, S: 0.46, J: 0.33, '1': 0.36, ' ': 0.3, '?': 0.42, '·': 0.24 };
+export function tagWidth(text: string): number {
+  return [...text].reduce((w, ch) => w + (ADV[ch] ?? 0.5) * PLOT_FS + 1, 0);
+}
+/** A tag may break into lines at '\n' (the stereo in-ear pack's "AUX" over
+ *  "9+10", R4-SS-02): each further line prints TAG_LINE lower, all on one
+ *  plate as wide as the widest line. */
+export const TAG_LINE = 12.5;
+function tagBox(text: string, x: number, y: number, anchor: Anchor): Box {
+  const lines = text.split('\n');
+  const w = Math.max(...lines.map(tagWidth));
+  const x0 = anchor === 'start' ? x : anchor === 'end' ? x - w : x - w / 2;
+  return { x0: x0 - TAG_PAD, x1: x0 + w + TAG_PAD, y0: y - 10 - TAG_PAD, y1: y + (lines.length - 1) * TAG_LINE + TAG_PAD };
+}
+const overlaps = (a: Box, b: Box) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
+const inset = (b: Box, d: number): Box => ({ x0: b.x0 + d, x1: b.x1 - d, y0: b.y0 + d, y1: b.y1 - d });
+
+/** A cable path (M / L / Q / A, as routeCables writes them) → its straight
+ *  pieces; a bend's control point stands in for the curve. */
+export function pathSegments(d: string): [number, number, number, number][] {
+  const tok = d.match(/[MLQA]|-?[\d.]+/g) ?? [];
+  const segs: [number, number, number, number][] = [];
+  let pts: [number, number][] = [];
+  const flush = () => {
+    for (let k = 1; k < pts.length; k++) segs.push([pts[k - 1][0], pts[k - 1][1], pts[k][0], pts[k][1]]);
+    pts = [];
+  };
+  let cmd = '';
+  let i = 0;
+  while (i < tok.length) {
+    if (/[MLQA]/.test(tok[i])) {
+      cmd = tok[i++];
+      if (cmd === 'M') flush();
+      continue;
+    }
+    const n = (k: number) => Number(tok[i + k]);
+    if (cmd === 'M' || cmd === 'L') {
+      pts.push([n(0), n(1)]);
+      i += 2;
+    } else if (cmd === 'Q') {
+      pts.push([n(0), n(1)], [n(2), n(3)]);
+      i += 4;
+    } else if (cmd === 'A') {
+      pts.push([n(5), n(6)]);
+      i += 7;
+    } else i++;
+  }
+  flush();
+  return segs;
+}
+
+/** Does a straight piece cross a box (Liang–Barsky)? */
+export function segmentHitsBox(seg: readonly number[], r: Box): boolean {
+  const [ax, ay, bx, by] = seg;
+  let t0 = 0;
+  let t1 = 1;
+  const clip = (p: number, q: number) => {
+    if (p === 0) return q > 0;
+    const t = q / p;
+    if (p < 0) {
+      if (t > t1) return false;
+      if (t > t0) t0 = t;
+    } else {
+      if (t < t0) return false;
+      if (t < t1) t1 = t;
+    }
+    return true;
+  };
+  return clip(-(bx - ax), ax - r.x0) && clip(bx - ax, r.x1 - ax) && clip(-(by - ay), ay - r.y0) && clip(by - ay, r.y1 - ay) && t0 < t1;
+}
+
+/** Spots a tag may move to when its own spot sits on a lane, from the
+ *  device's centre, nearest first: under, over, inboard / outboard at the
+ *  device's row, the lower and upper corners, then one step farther. */
+const TAG_SPOTS: readonly (readonly [number, number, Anchor])[] = [
+  [0, 26, 'middle'],
+  [0, -16, 'middle'],
+  [-15, 4, 'end'],
+  [15, 4, 'start'],
+  [-4, 26, 'end'],
+  [4, 26, 'start'],
+  [-4, -16, 'end'],
+  [4, -16, 'start'],
+  [-15, -8, 'end'],
+  [15, -8, 'start'],
+  [-15, 16, 'end'],
+  [15, 16, 'start'],
+  [0, 38, 'middle'],
+  [0, -28, 'middle'],
+];
+/** The SR word (LABEL_BOXES holds SL, LIP, RISER and BARRIER). */
+const SR_BOX: Box = { x0: 24, x1: 50, y0: 54, y1: 67 };
+/** A plan glyph's footprint, generously (the largest, a sub or a rotated
+ *  main, is ≈20 × 15 units). */
+const GLYPH_HALF = { x: 10, y: 7.5 };
+
+/** Where each beam's feed tag prints. A tag keeps the spot its page gave it
+ *  (feedDx / feedDy / feedAnchor) unless that spot sits on a cable lane or
+ *  on another tag; then it takes the nearest spot clear of every lane, every
+ *  other tag and device, the plot's words and its edges. When no spot is
+ *  clear it keeps its own, and its keyline plate (drawn when the plot has
+ *  cables) carries it over the lanes. One rule for every scene, so a
+ *  learner's own build gets it too (R3-SS-04). */
+export function placeFeedTags(beams: readonly PlotBeam[], placed: readonly Placed[], routes: CableRoutes): Map<PlotBeam, TagPlace> {
+  const lanes = [...routes.paths].filter(([k]) => !routes.merged.has(k)).flatMap(([, d]) => pathSegments(d));
+  const onLane = (b: Box) => lanes.some((s) => segmentHitsBox(s, b));
+  const glyphs: Box[] = placed.map((x) => {
+    const q = xy(x.slot);
+    return { x0: q.x - GLYPH_HALF.x, x1: q.x + GLYPH_HALF.x, y0: q.y - GLYPH_HALF.y, y1: q.y + GLYPH_HALF.y };
+  });
+  const words: Box[] = [...LABEL_BOXES, SR_BOX];
+  const tagged = beams.filter((b) => !!b.feed);
+  const out = new Map<PlotBeam, TagPlace>();
+  for (const b of tagged) {
+    const x = b.x + (b.feedDx ?? 0);
+    const y = b.y + (b.feedDy ?? 26);
+    const anchor = b.feedAnchor ?? 'middle';
+    const box = tagBox(b.feed!, x, y, anchor);
+    out.set(b, { x, y, anchor, box, clear: !onLane(box) });
+  }
+  for (const b of tagged) {
+    const cur = out.get(b)!;
+    // Two plates may meet edge to edge (inset 1), never overlap.
+    const others = tagged.filter((o) => o !== b).map((o) => inset(out.get(o)!.box, 1));
+    if (cur.clear && !others.some((o) => overlaps(o, cur.box))) continue;
+    const free = (box: Box) =>
+      box.x0 >= 4 && box.x1 <= PLOT_W - 4 && box.y0 >= 4 && box.y1 <= PLOT_H - 4 && !onLane(box) && !others.some((o) => overlaps(o, box)) && !glyphs.some((g) => overlaps(g, box)) && !words.some((w) => overlaps(w, box));
+    for (const [dx, dy, anchor] of TAG_SPOTS) {
+      const box = tagBox(b.feed!, b.x + dx, b.y + dy, anchor);
+      if (free(box)) {
+        out.set(b, { x: b.x + dx, y: b.y + dy, anchor, box, clear: true });
+        break;
+      }
+    }
+  }
+  return out;
 }
 
 /** A word printed on the plot, with a dark halo under it so the floor tint
@@ -482,9 +700,9 @@ export function VenueView(p: VenueViewProps) {
   // recomputed the ~780-cell field for nothing — on the alignment page every
   // DELAY step did it though no beam had moved. Only what moves the field
   // counts here; colour, feed tag and delay text are drawn elsewhere.
-  const beamKey = beams.map((b) => (b.live === false ? '' : [b.x, b.y, b.aimDeg, b.coverDeg, b.gain ?? 1, b.throw ?? '', b.spread ?? '', b.rig ?? '', b.pattern ?? ''].join(','))).join('|');
+  const beamKey = beams.map((b) => (b.live === false || b.tagOnly ? '' : [b.x, b.y, b.aimDeg, b.coverDeg, b.gain ?? 1, b.throw ?? '', b.spread ?? '', b.rig ?? '', b.pattern ?? ''].join(','))).join('|');
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const liveBeams = useMemo(() => beams.filter((b) => b.live !== false), [beamKey]);
+  const liveBeams = useMemo(() => beams.filter((b) => b.live !== false && !b.tagOnly), [beamKey]);
 
   // The field over the whole room — the deck included, because a sub
   // arrangement's rear rejection (or an omni sub's stage rumble) is the
@@ -537,6 +755,12 @@ export function VenueView(p: VenueViewProps) {
   }, [liveBeams, p.field, p.seam]);
 
   const occupied = new Set(placed.map((x) => x.slot));
+  // Feed tags clear of the cable lanes (R3-SS-04); on a plot with cables
+  // each sits on a dark keyline plate, so a lane that must pass under one
+  // still reads as passing under.
+  const tags = useMemo(() => placeFeedTags(beams, placed, routes), [beams, placed, routes]);
+  const plated = links.length > 0;
+  const lipClear = ![...tags.values()].some((t) => overlaps(inset(t.box, TAG_PAD), LIP_BOX));
 
   return (
     <View style={styles.wrap} accessible accessibilityRole="image" accessibilityLabel={p.a11y}>
@@ -603,6 +827,7 @@ export function VenueView(p: VenueViewProps) {
         {/* coverage: the −6 dB sector of each loudspeaker, lit from the cabinet */}
         <G clipPath="url(#vv-room)">
           {beams.map((b, i) => {
+            if (b.tagOnly) return null;
             const omni = b.coverDeg >= 360 || b.pattern === 'omni' || b.pattern === 'cardioid' || b.pattern === 'endfire';
             const live = b.live !== false;
             const thr = b.throw ?? 120;
@@ -658,14 +883,16 @@ export function VenueView(p: VenueViewProps) {
             over the floor field and the coverage so the tint never veils them. */}
         <PlotLabel x={37} y={65} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={2}>SR</PlotLabel>
         <PlotLabel x={323} y={25} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={2}>SL</PlotLabel>
-        <PlotLabel x={111} y={124} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={2}>LIP</PlotLabel>
+        {/* The LIP word steps aside for a feed tag printed over it (BUILD:
+            a wedge at Wedge 1 tags its aux right here) — the lip line stays. */}
+        {lipClear ? <PlotLabel x={111} y={124} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={2}>LIP</PlotLabel> : null}
         <PlotLabel x={44} y={PLOT_H - 8} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>HOUSE L</PlotLabel>
         <PlotLabel x={316} y={PLOT_H - 8} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>HOUSE R</PlotLabel>
         <PlotLabel x={180} y={PLOT_H - 8} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1}>FOH · MIX</PlotLabel>
 
         {/* RISER sits under the riser's front edge: inside it, it would sit under the drum-riser positions. */}
         <PlotLabel x={180} y={64.5} fontSize={PLOT_FS} fill="#6a7186" fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1.6}>RISER</PlotLabel>
-        <PlotLabel x={AUD.right - 4} y={174} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="end" letterSpacing={1}>BARRIER</PlotLabel>
+        <PlotLabel x={BARRIER_LABEL.x} y={BARRIER_LABEL.y} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="start" letterSpacing={1}>BARRIER</PlotLabel>
 
         {/* cables */}
         {links.map((l) => {
@@ -676,12 +903,28 @@ export function VenueView(p: VenueViewProps) {
           const col = LEVEL_COLOR[l.level];
           const d = routes.paths.get(`${l.from}-${l.to}`);
           if (!d) return null;
+          // A merged return shares its twin's drawn cable: the twin draws it,
+          // and a tap on it removes both directions — it is one cable.
+          if (routes.merged.has(`${l.from}-${l.to}`)) return null;
+          const back = routes.merged.has(`${l.to}-${l.from}`) ? links.find((m) => m.from === l.to && m.to === l.from) : undefined;
           return (
             <G key={`${l.from}-${l.to}`}>
               <Path d={d} stroke="#000" strokeWidth={3} fill="none" opacity={0.45} />
               <Path d={d} stroke={col} strokeWidth={2} fill="none" opacity={live ? 0.95 : 0.35} strokeDasharray={l.level === 'wireless' ? '3 4' : undefined} strokeLinecap="round" strokeLinejoin="round" />
               {live && l.level !== 'wireless' ? <Path d={d} stroke="#fff" strokeWidth={0.6} fill="none" opacity={0.3} /> : null}
-              {p.onTapLink ? <Path d={d} stroke="transparent" strokeWidth={14} fill="none" onPress={() => p.onTapLink?.(l)} accessibilityLabel={`Cable from ${gearSpec(a.kind).name} to ${gearSpec(b.kind).name}, ${l.level} level — tap to remove`} /> : null}
+              {p.onTapLink ? (
+                <Path
+                  d={d}
+                  stroke="transparent"
+                  strokeWidth={14}
+                  fill="none"
+                  onPress={() => {
+                    p.onTapLink?.(l);
+                    if (back) p.onTapLink?.(back);
+                  }}
+                  accessibilityLabel={`Cable from ${gearSpec(a.kind).name} to ${gearSpec(b.kind).name}, ${l.level} level${back ? ', carrying the console’s outputs back the same way' : ''}${p.linkA11y?.(l) ? `, ${p.linkA11y(l)}` : ''} — tap to remove`}
+                />
+              ) : null}
             </G>
           );
         })}
@@ -742,13 +985,19 @@ export function VenueView(p: VenueViewProps) {
           const live = !p.liveIds || p.liveIds.has(x.id) || !spec.radiates;
           const sel = p.selectedId === x.id;
           const beam = beams.find((b) => Math.abs(b.x - px) < 0.5 && Math.abs(b.y - py) < 0.5);
+          const tag = beam ? tags.get(beam) : undefined;
           return (
             <G key={x.id}>
               <PlanGlyph kind={x.kind} id={`vv-${x.id}`} x={px} y={py} rotateDeg={placedRotation(x)} dim={!live} lit={live} rig={beam?.rig === 'flown' ? 'flown' : 'stack'} highlight={sel ? colors.cyanBright : undefined} />
-              {beam?.feed ? (
-                <PlotLabel x={px} y={py + 26} fontSize={PLOT_FS} fill={beam.color} fontFamily={fonts.oswaldSemiBold} textAnchor="middle" letterSpacing={1}>
-                  {beam.feed}
-                </PlotLabel>
+              {beam?.feed && tag ? (
+                <>
+                  {plated ? <Rect x={tag.box.x0} y={tag.box.y0} width={tag.box.x1 - tag.box.x0} height={tag.box.y1 - tag.box.y0} rx={3} fill="#0a0b0e" opacity={0.82} stroke={beam.color} strokeOpacity={0.6} strokeWidth={0.75} /> : null}
+                  {beam.feed.split('\n').map((line, i) => (
+                    <PlotLabel key={i} x={tag.x} y={tag.y + i * TAG_LINE} fontSize={PLOT_FS} fill={beam.color} fontFamily={fonts.oswaldSemiBold} textAnchor={tag.anchor} letterSpacing={1}>
+                      {line}
+                    </PlotLabel>
+                  ))}
+                </>
               ) : null}
               {beam?.delayMs != null ? (
                 <PlotLabel x={px} y={py + 39} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.mono} textAnchor="middle" letterSpacing={0}>

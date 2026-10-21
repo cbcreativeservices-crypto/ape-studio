@@ -110,7 +110,7 @@ describe('1. every catalog lab is mapped (wired, HOLD or none) — and nothing e
   });
   it('after the owner’s rulings (2026-10-19): 62 wired, none pending, the calculator lab has NO popup', () => {
     const all = Object.entries(L.LAB_TERM_ENTRIES);
-    assert.equal(all.filter(([, e]) => e.status === 'wired').length, 62);
+    assert.equal(all.filter(([, e]) => e.status === 'wired').length, 63); // + DJ Systems Lab (merged from dj-lab 2026-10-21)
     assert.deepEqual(all.filter(([, e]) => e.status === 'hold').map(([k]) => k), []);
     assert.deepEqual(all.filter(([, e]) => e.status === 'none').map(([k]) => k), ['CalcLab']);
     assert.equal(L.wiredLabTerm(L.labTermKey('CalcLab')), null);
@@ -136,6 +136,7 @@ describe('2. the right term — and the right meaning — per lab', () => {
       MicLab: 'Microphone (Mic)',
       DigitalLab: 'Digital Audio',
       SignalChainLab: 'Signal Chain (Signal Path)',
+      DJSystemsLab: 'DJ (Disc Jockey)',
       CableInstallLab: 'Cable dressing',
       GainLabHome: 'Gain Staging',
       BeginningMixingLab: 'Mixing',
@@ -198,7 +199,7 @@ describe('2. the right term — and the right meaning — per lab', () => {
       SpeechLab: 'miking',
     };
     for (const [key, term] of Object.entries(want)) assert.equal(L.wiredLabTerm(key)?.term, term, key);
-    assert.equal(Object.keys(want).length, 62, 'every wired lab is pinned here');
+    assert.equal(Object.keys(want).length, 63, 'every wired lab is pinned here');
   });
   it('the words are the glossary’s, not a paraphrase (spot checks, copied 2026-10-19)', () => {
     assert.equal(wired('EqLab')?.plainEnglish, 'An equalizer boosts or cuts chosen frequencies. It shapes the tone of a sound.');

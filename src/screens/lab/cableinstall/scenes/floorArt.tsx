@@ -157,14 +157,16 @@ export function DiBoxTop({ x, y }: { x: number; y: number }) {
   );
 }
 
-/** The snake head (stage box) from above: the steel box, two rows of XLR
- *  inputs, the trunk leaving toward FOH. */
-export function SnakeHeadTop({ x, y }: { x: number; y: number }) {
+/** The snake head (stage box) from above: the steel box, a top row of XLR
+ *  inputs (`inputs`, 3.6 apart — the box grows to fit) over a bottom row of
+ *  six returns, the trunk leaving toward FOH. */
+export function SnakeHeadTop({ x, y, inputs = 6 }: { x: number; y: number; inputs?: number }) {
+  const w = 24 + (inputs - 6) * 3.6;
   return (
     <G>
-      <Rect x={x + 1} y={y + 1.4} width={24} height={14} rx={1.4} fill="rgba(0,0,0,0.5)" />
-      <Rect x={x} y={y} width={24} height={14} rx={1.4} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.6} />
-      {[0, 1, 2, 3, 4, 5].map((i) => (
+      <Rect x={x + 1} y={y + 1.4} width={w} height={14} rx={1.4} fill="rgba(0,0,0,0.5)" />
+      <Rect x={x} y={y} width={w} height={14} rx={1.4} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.6} />
+      {Array.from({ length: inputs }, (_, i) => i).map((i) => (
         <Circle key={i} cx={x + 3 + i * 3.6} cy={y + 4.2} r={1.25} fill="#050506" stroke="#8d9199" strokeWidth={0.3} />
       ))}
       {[0, 1, 2, 3, 4, 5].map((i) => (

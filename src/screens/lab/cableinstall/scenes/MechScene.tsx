@@ -677,8 +677,9 @@ const TensionMeter = memo(function TensionMeter({ w, h, target, event }: { w: nu
 });
 
 /* ── C — bundle cross-section under a strap, driven by strap tension ────── */
-/** Four class-coloured cables in the bundle (analog, network, speaker, fiber). */
-const BUNDLE_TINTS = [CI_CLASS_TINTS.analog, CI_CLASS_TINTS.network, CI_CLASS_TINTS.speaker, CI_CLASS_TINTS.fiber];
+/** Four class-coloured cables in the bundle (analog, network, a second analog, fiber) — never
+ *  speaker cable in with mic/line (RackScene's class separation; Comp B B-CI-03). */
+const BUNDLE_TINTS = [CI_CLASS_TINTS.analog, CI_CLASS_TINTS.network, CI_CLASS_TINTS.analog, CI_CLASS_TINTS.fiber];
 const LOOSE_MAX = CI_RESTRAINT_ZONES.looseMax;
 const SECURE_MAX = CI_RESTRAINT_ZONES.secureMax;
 const B_CX = 100;

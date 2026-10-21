@@ -292,9 +292,9 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'range', name: 'Range / Depth (Floor)', range: '−∞…−6 dB · default ~−40 dB', definition: 'How much attenuation when "closed". A partial range is gentler and more natural (expander-like).' },
       { key: 'hysteresis', name: 'Hysteresis', range: '0–25 dB · default ~3 dB', definition: 'Separate open vs close thresholds to stop chatter near the threshold.' },
       { key: 'lookahead', name: 'Lookahead', range: '0–5 ms · default 0', definition: 'Delays the audio so the gate can open before a transient, preserving the attack.', advanced: true },
-      { key: 'sidechain', name: 'Sidechain / Key input', definition: 'External trigger source (e.g. gate a pad from the kick).' },
-      { key: 'key_filter', name: 'Key filter (HPF/LPF on detector)', definition: 'Band-limits the detector so only the intended band opens the gate.' },
-      { key: 'sc_listen', name: 'Sidechain Listen / Monitor', definition: 'Audition the (filtered) detector signal to tune it.' },
+      { key: 'sidechain', name: 'Sidechain / Key input', definition: 'External trigger source (e.g. gate a pad from the kick). Not in this lab — common on hardware and plugin gates.' },
+      { key: 'key_filter', name: 'Key filter (HPF/LPF on detector)', definition: 'Band-limits the detector so only the intended band opens the gate. Not in this lab — common on hardware and plugin gates.' },
+      { key: 'sc_listen', name: 'Sidechain Listen / Monitor', definition: 'Audition the (filtered) detector signal to tune it. Not in this lab — found on many hardware and plugin gates.' },
       { key: 'gain_reduction', name: 'Gain reduction (meter)', definition: 'The LIVE, measured amount the gate is pulling the signal DOWN right now, in dB — a real engine reading, not a drawing. It reads deep (toward the floor) when the gate is closed on quiet material and 0 when the gate is open.' },
     ],
     commonMistakes: [
@@ -326,7 +326,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'and loudness; true-peak mode guards inter-sample peaks.',
     controls: [
       { key: 'display', name: 'What the display shows', definition: "The flat shelf is the brickwall: output can never pass the ceiling no matter how hard you push in. The GR meter below is the LIVE, measured reduction while you hit it." },
-      { key: 'ceiling', name: 'Ceiling (Output ceiling)', range: '−12…0 dBTP · default −1.0 dBTP', definition: 'Absolute maximum output. −1.0 dBTP is safe for streaming/lossy encodes.' },
+      { key: 'ceiling', name: 'Ceiling (Output ceiling)', range: '−12…0 dBTP · default −1.0 dBTP', definition: 'Absolute maximum output. −1 dBTP is a commonly quoted margin; lossy delivery often uses −2 dBTP; check the destination’s current spec.' },
       { key: 'drive', name: 'Threshold / Input Gain (Drive)', range: '0…+24 dB drive · default 0', definition: 'How hard you push into the limiter → how much gain reduction/loudness.' },
       { key: 'release', name: 'Release', range: '1 ms–1 s · default ~100 ms / Auto', definition: 'Recovery time. Too fast → distortion/pumping (esp. bass); too slow → dulls dynamics.' },
       { key: 'attack', name: 'Attack', range: '0–5 ms · near-instant', definition: 'A hair of attack lets transient "punch" through before catching it.', advanced: true },
@@ -338,7 +338,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     commonMistakes: [
       'Pushing for loudness → squashing — flattens dynamics, kills punch, adds distortion (the loudness-war trap). A few dB GR is plenty.',
-      'Ignoring inter-sample peaks — 0 dBFS looks safe but clips on D/A and after MP3/AAC; set ~−1.0 dBTP and enable True-Peak.',
+      'Ignoring inter-sample peaks — 0 dBFS looks safe but clips on D/A and after MP3/AAC; enable True-Peak and leave a margin (−1 dBTP is commonly quoted, lossy delivery often uses −2; check the destination’s current spec).',
       'Release too fast — causes distortion and pumping, most audibly on bass.',
       'No lookahead — fast transients overshoot and clip.',
       'Using the limiter as a compressor — a limiter catches peaks; a compressor shapes dynamics. Reaching for the limiter to "compress" over-squashes.',
@@ -346,7 +346,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Forgetting dither on the final 24→16-bit export step.',
     ],
     proTips: [
-      'Gain-stage INTO the limiter with the input/drive; leave the ceiling fixed at −1.0 dBTP and judge by GR + ears, not the number.',
+      'Gain-stage INTO the limiter with the input/drive; leave the ceiling fixed at the destination’s figure (−1 dBTP is commonly quoted, −2 for lossy delivery) and judge by GR + ears, not the number.',
       'Compare Attack 0 vs a hair of attack to hear transient punch return.',
     ],
     formula: 'Limiter ≈ compressor with ratio → ∞. True-peak estimation needs ≥4× oversampling to reconstruct inter-sample peaks. Ceiling is a hard cap: out ≤ ceiling always.',
@@ -618,10 +618,10 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'alone; the chain teaches how they INTERACT: what each module feeds the next changes what ' +
       'the next one does.',
     controls: [
-      { key: 'display', name: 'What the display shows', definition: "The diagram is the actual signal path, Source → … → Output. Each pill is a module you can toggle on/off; the GR meters below show what the dynamics stages are doing to the level." },
-      { key: 'module_toggle', name: 'Module enable/bypass', definition: 'Each module can be switched in or out of the chain. A bypassed module still occupies its slot — the chain order is the canonical studio order.' },
-      { key: 'chain_order', name: 'Chain order', definition: 'The fixed, canonical order. EQ before compression changes what the compressor reacts to; a limiter anywhere but last voids its ceiling guarantee.' },
-      { key: 'gain_staging', name: 'Gain staging', definition: 'The level each stage hands the next. Run stages too hot and the final limiter over-works and squashes — watch the live GR meters between modules.' },
+      { key: 'display', name: 'What the display shows', definition: "The diagram is the actual signal path, Source → … → Output, drawn as nine rack units on one patch cable. The MODULES key in the dock switches each unit in or out (a bypassed unit stays in place, dimmed); each dynamics unit's own GR lights and number show what it is doing to the level." },
+      { key: 'module_toggle', name: 'Module enable/bypass', definition: 'Each module can be switched in or out of the chain. A bypassed module still occupies its slot — the chain order is this rack’s fixed order, not a universal studio order.' },
+      { key: 'chain_order', name: 'Chain order', definition: 'This rack’s fixed order (it runs COMP before GATE; on most consoles you would gate first). EQ before compression changes what the compressor reacts to; a limiter anywhere but last can no longer hold the output under its ceiling.' },
+      { key: 'gain_staging', name: 'Gain staging', definition: 'The level each stage hands the next. Run stages too hot and the final limiter over-works and squashes — watch the live GR reading on each dynamics unit.' },
       { key: 'gain_reduction', name: 'Gain-reduction meters', definition: 'The LIVE, measured dB each dynamics module (compressor / gate / limiter) is pulling the signal down by RIGHT NOW — real engine readings, not drawings. Comparing them across the chain shows how each stage feeds the next: a hot compressor makes the limiter work harder.' },
     ],
     commonMistakes: [
@@ -632,7 +632,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Delay→reverb vs reverb→delay — the order changes the resulting space/decay character; a deliberate choice, not random.',
       'Gain-staging into the limiter — running each stage too hot makes the final limiter over-work and squash; watch levels between modules.',
       'Stacking dynamics without gain-matching — cumulative squashing you can’t hear because each stage is louder.',
-      'Limiter not last — a brickwall limiter anywhere but the end voids the true-ceiling guarantee.',
+      'Limiter not last — anything after the limiter can push the level back over its ceiling. Even last, a brickwall limiter holds a true-peak ceiling only if it uses true-peak detection (oversampling); a sample-peak limiter can still let inter-sample peaks past.',
       'Judging by cumulative only — not comparing per-module vs whole-chain leads to blaming the wrong module for a problem.',
       'Bypass ≠ remove — a bypassed module still occupies the chain order for A/B reasoning.',
     ],
@@ -640,7 +640,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Build the same idea in two orders mentally (EQ→comp vs comp→EQ) and A/B the result — the GR meter tells you what the compressor is reacting to.',
       'Turn modules on ONE at a time and listen to what each adds — then all together. The difference between the sum and the parts is the interaction.',
     ],
-    formula: 'Canonical chain: Source → EQ → Comp → Gate → Distortion → Modulation → Delay → Reverb → Stereo → Limiter → Output. Each stage’s output is the next stage’s input — that composition IS the lesson.',
+    formula: 'This rack’s fixed chain: Source → EQ → Comp → Gate → Distortion → Modulation → Delay → Reverb → Stereo → Limiter → Output. Each stage’s output is the next stage’s input — that composition IS the lesson.',
   },
 
   // ─────────────────────────────── EXPANSION · Bass Guitar Lab (2026-07-26) ──
@@ -811,7 +811,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'patch_bass', name: 'Patch · Acid Bass', definition: 'Envelope → cutoff with a fast decay, driven by the sequencer: every note snaps open bright and slams shut. The signature “squelch” is the FILTER envelope, not the oscillator — proof that timbre is shaped after the VCO.' },
       { key: 'patch_wobble', name: 'Patch · Wobble', definition: 'LFO → cutoff: the filter sweeps rhythmically while the pitch holds still — movement without melody. The classic dubstep wobble is just one LFO on one destination.' },
       { key: 'patch_vibrato', name: 'Patch · Vibrato Lead', definition: 'LFO → pitch at low depth: a gentle, singing wobble in the note itself. It’s the SAME LFO as the wobble patch, only re-routed to pitch instead of cutoff — one modulator, a different destination.' },
-      { key: 'patch_tremolo', name: 'Patch · Tremolo', definition: 'LFO → amp: the loudness pulses while pitch and tone stay put — the third classic LFO destination. Pitch → cutoff → amp are the three places one control signal can go.' },
+      { key: 'patch_tremolo', name: 'Patch · Tremolo', definition: 'LFO → amp: the loudness pulses while pitch and tone stay put — the third classic LFO destination. Pitch, cutoff and amp are the three places this lab’s LFO can go; on a real modular, a control signal can patch into almost any CV input (pulse width, resonance, another module’s rate).' },
     ],
     commonMistakes: [
       'Filtering a sine and hearing nothing change — the filter can only REMOVE harmonics; a sine has none above the fundamental. Subtractive synthesis needs a bright source.',
@@ -1028,7 +1028,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'not frequency response, and floating point does not un-clip a converter.',
     controls: [
       { key: 'source', name: 'Source signal', definition: 'The reference signal being converted — sine, square, triangle, saw, impulse, or noise. Everything downstream (samples, codes, spectra) is computed from this exact waveform.' },
-      { key: 'waveform_view', name: 'Analog waveform view', definition: 'Three synchronized pictures of ONE event: air pressure at the source, the mic diaphragm riding it, and the continuous voltage leaving the preamp. The microphone creates a continuously varying voltage — no numbers exist yet.' },
+      { key: 'waveform_view', name: 'Analog waveform view', definition: 'Three synchronized pictures of ONE event: air pressure at the source, the mic diaphragm riding it, and the continuous voltage the mic puts out. The microphone creates a continuously varying voltage — no numbers exist yet.' },
       { key: 'sample_rate', name: 'Sample rate', definition: 'How many times per second the converter measures the voltage. 48 kHz = one measurement every 20.833 µs. It sets the audio BANDWIDTH available (up to Nyquist) — it does not set loudness resolution.' },
       { key: 'samples_per_cycle', name: 'Samples per cycle', definition: 'Sample rate ÷ signal frequency. A 1 kHz tone at 48 kHz gets 48 samples per cycle; at 3 samples per cycle the drawn dots look sparse but still describe the sine uniquely — until you pass 2.' },
       { key: 'nyquist', name: 'Nyquist frequency', definition: 'Half the sample rate — the highest frequency the sampled data can represent. Approach it and samples-per-cycle approaches 2; pass it and the samples describe a DIFFERENT, lower frequency (an alias).' },
@@ -1042,7 +1042,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'binary_sample', name: 'Sample inspector', definition: 'One stored sample, every way at once: decimal, binary, hex, normalized amplitude, % of full scale and dBFS. Sample 24,001 = 12,486 = 0011000011000110 = +0.381 = −8.4 dBFS — same number, five costumes.' },
       { key: 'bit_toggle', name: 'Bit toggling', definition: 'Flip any bit and watch the value move: the MSB carries half the full scale (and the sign in two\'s complement), the LSB carries one quantization step. Bit significance made physical.' },
       { key: 'twos_complement', name: 'Two\'s complement', definition: 'How signed PCM stores negatives: the top bit carries negative weight. It gives one extra negative code (−32,768 vs +32,767 at 16-bit) and makes binary arithmetic seamless across zero.' },
-      { key: 'adc_chain', name: 'ADC signal flow', definition: 'Mic → preamp → analog gain → anti-aliasing filter → sample-and-hold → quantizer → encoder → PCM stream. Tap any block for its job, its failure modes, and what those failures sound like.' },
+      { key: 'adc_chain', name: 'ADC signal flow', definition: 'Mic → preamp → anti-aliasing filter → sample-and-hold → quantizer → encoder → PCM stream. Tap any block for its job, its failure modes, and what those failures sound like.' },
       { key: 'sample_hold', name: 'Sample-and-hold', definition: 'The converter freezes the instantaneous voltage long enough to measure it. A converter operation — NOT what the final analog output of a DAC looks like.' },
       { key: 'gain_staging', name: 'Gain staging into the ADC', definition: 'Set analog gain BEFORE conversion. Too low: the signal lives near the analog noise. Right: healthy SNR with safe peaks. Too high: clipping — flattened peaks whose information is gone forever. Analog overload and digital full-scale are tracked separately because they happen at different points.' },
       { key: 'float_vs_int', name: 'Integer vs floating point', definition: 'Fixed-point integers have a hard ceiling at full scale. Floating point (sign · exponent · mantissa) has an enormous internal range — great for mixing headroom — but it cannot restore anything clipped BEFORE it, and it must come back to a fixed range at the output.' },
@@ -1053,6 +1053,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'oversampling', name: 'Oversampling', definition: 'Running the converter at a multiple of the base rate pushes the spectral images far from the audio band, so a gentle, well-behaved analog filter finishes the job. It relaxes the filter — it does not add information beyond the original band.' },
       { key: 'isp', name: 'Inter-sample peaks', definition: 'Two samples can sit below 0 dBFS while the reconstructed waveform between them rises ABOVE it. Sample meters say "no clip"; the DAC or a downstream encoder can still overload. This is why true-peak meters oversample.' },
       { key: 'jitter', name: 'Clock & jitter', definition: 'Jitter is timing deviation of the sampling instants — not value rounding. Its audibility depends on magnitude, spectrum, signal content and converter design; buffered/reclocked playback can remove it entirely. Beware sweeping cable-audiophile claims.' },
+      { key: 'clocking', name: 'Clocking', definition: 'A digital system has one clock master. Every other device follows it, at the same sample rate. A device follows by word clock (75 Ω coax, BNC), by the clock inside an AES3 or S/PDIF stream, or by the network clock (PTP) in Dante or AES67. Two masters, or a wrong rate, usually means clicks, pops or dropouts.' },
       { key: 'data_rate', name: 'Data rate & storage', definition: 'Rate = sample rate × bit depth × channels. 48 kHz × 24-bit × 2 = 2.304 Mbit/s ≈ 17.3 MB/min. The full calculator (with storage planning) lives in the Calculator Laboratory.' },
       { key: 'myths', name: 'Myth vs reality', definition: 'The permanent misconception panel: stair steps, "more samples = smoother", bit depth vs frequency, 144 dB from 24 bits, float un-clipping recordings, hot-to-0 dBFS recording. Each myth paired with what is actually true.' },
     ],
@@ -1159,7 +1160,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'lra', name: 'Loudness Range (LRA)', definition: 'The statistical spread between the program\'s soft and loud sections (in LU). A movie might span 20+; a pop master 4–6. It quantifies "how dynamic is this program" — not how loud.' },
       { key: 'true_peak_meter', name: 'True peak (dBTP)', definition: 'The reconstructed analog waveform can rise ABOVE the highest sample between samples. True-peak meters oversample to catch it — why platforms ask for −1 dBTP ceilings, and why "no clipped samples" isn\'t "no clipping".' },
       { key: 'spectrum_read', name: 'Reading a spectrum', definition: 'Left = lows, right = highs, height = energy. Ask three things: where is the energy centered, is the shape smooth or spiky, and is anything sticking up that shouldn\'t be?' },
-      { key: 'spectral_patterns', name: 'Spectrum patterns', definition: 'Speech = formant humps 200 Hz–3 kHz. Kick = LF mound + click bump. Cymbal = dense HF wash. Hum = needle spikes at exact mains harmonics. Feedback = ONE towering narrow spike. Pink noise = smooth −3 dB/octave ramp. Learn seven shapes and you can read most sessions.' },
+      { key: 'spectral_patterns', name: 'Spectrum patterns', definition: 'Speech = formant humps 200 Hz–3 kHz. Kick = LF mound + click bump. Cymbal = dense HF wash. Hum = needle spikes at exact mains harmonics. Feedback = ONE towering narrow spike. Pink noise = smooth −3 dB/octave ramp on an FFT display (flat on a 1/3-octave RTA). Learn seven shapes and you can read most sessions.' },
       { key: 'spectrogram_axes', name: 'Spectrogram axes', definition: 'Time runs HORIZONTAL, frequency VERTICAL, level is COLOR. It is a spectrum filmed over time — the most misread display in audio because people try to read it like a waveform.' },
       { key: 'spectrogram_patterns', name: 'Spectrogram patterns', definition: 'Speech = stacked formant bands with pitch striations. Birdsong = rising/falling thin chirps. Cymbal = bright HF wash fading right. Feedback = one horizontal line getting brighter. Whistle = a single thin steady line. White noise = uniform confetti.' },
       { key: 'waterfall_axes', name: 'Waterfall axes (CSD)', definition: 'Frequency across, level up, TIME stepping TOWARD you: the loud start (t = 0) stands tall at the back, and each slice in front of it is the spectrum a moment later. The front edge is the latest instant — the range decaying toward you IS the decay.' },

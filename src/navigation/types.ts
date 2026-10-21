@@ -382,6 +382,8 @@ export type RootStackParamList = {
    *  in sub-step mode; member-only via the catalog leaf (Instruments &
    *  Recording, training section). */
   DrumTuningLab: undefined;
+  // DJ Systems Lab (2026-10-18): members-only, Stage 1 (twelve screens).
+  DJSystemsLab: undefined;
   /** Miking Labs (owner GO 2026-10-04): the hub lists the ready lessons of a
    *  lab; the lesson host runs one lesson's eight pages. Silent labs — the
    *  route names do not end in `Lab` (blueprint D9: kept out of the audio

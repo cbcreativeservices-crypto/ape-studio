@@ -37,7 +37,7 @@ registerHooks({
 const ws = await import('../src/screens/lab/calc/workflowStore.ts');
 const { workflowStore, workflowGeneration, resetCalcWorkflowStore } = ws;
 const { wholeCount, fmtCarried } = await import('../src/screens/lab/calc/calcUnits.ts');
-const read = (rel: string) => readFileSync(new URL(`../src/${rel}`, import.meta.url), 'utf8');
+const read = (rel: string) => readFileSync(new URL(`../src/${rel}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
 const run = (id: string) => ({
   id,

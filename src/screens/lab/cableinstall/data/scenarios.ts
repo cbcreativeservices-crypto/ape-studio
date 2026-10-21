@@ -104,12 +104,18 @@ export const CI_ROUTE_SCENARIOS: CiRouteScenario[] = [
     cable: 'multipair',
     options: [
       {
+        // Wiring grade R3-CI-04 (2026-10-21): this was named "Shortest" at
+        // relLength 1, but it is drawn as the LONGEST pull (402 units against
+        // 260 for the tray and 232 for the floor — RouteScene ROUTE_SEGS). It
+        // is named for what it is and its length matches the drawing; the
+        // hallway floor is the real shortest, so it carries the
+        // "shortest is not best" flag. The tray route stays the best answer.
         id: 'mech-shortcut',
-        name: 'Shortest — through the mechanical bay',
-        path: 'Straight line behind the stage wall, through the HVAC/mechanical bay, into the rack wall.',
-        relLength: 1,
+        name: 'Through the mechanical bay',
+        path: 'Up behind the stage wall, across through the HVAC/mechanical bay, and down into the rack wall.',
+        relLength: 1.7,
         flags: [
-          { ruleId: 'plan-shortest-not-best', dim: 'routing', cost: 0.3, note: 'Shortest run — but distance was the ONLY thing it wins.' },
+          { ruleId: 'plan-defined-pathways', dim: 'routing', cost: 0.3, note: 'Not a pathway built for cable — it borrows another space, and it is the longest pull of the three.' },
           { ruleId: 'mech-edges', dim: 'protection', cost: 0.45, note: 'Passes equipment that moves and sheet-metal edges — high mechanical exposure.' },
           { ruleId: 'plan-service-access', dim: 'serviceability', cost: 0.4, note: 'The mechanical bay is another trade\'s space — future access is not yours.' },
           { ruleId: 'emi-parallel-exposure', dim: 'signal', cost: 0.3, note: 'Runs beside motor loads for most of its length.' },
@@ -119,7 +125,7 @@ export const CI_ROUTE_SCENARIOS: CiRouteScenario[] = [
         id: 'tray-route',
         name: 'Cable tray via the corridor ceiling',
         path: 'Up to the corridor tray, along the accessible ceiling, down the riser sleeve into the rack.',
-        relLength: 1.4,
+        relLength: 1.1,
         flags: [
           { ruleId: 'plan-defined-pathways', dim: 'routing', cost: 0.4, positive: true, note: 'Uses the pathway built for exactly this — supported, documented, expandable.' },
           { ruleId: 'plan-service-access', dim: 'serviceability', cost: 0.4, positive: true, note: 'Every foot reachable from the corridor — future service is easy.' },
@@ -130,11 +136,12 @@ export const CI_ROUTE_SCENARIOS: CiRouteScenario[] = [
         id: 'floor-shortcut',
         name: 'Across the hallway floor',
         path: 'Out the stage door, across the public hallway under a protector, into the control-room door.',
-        relLength: 1.1,
+        relLength: 1,
         flags: [
           { ruleId: 'floor-walkways', dim: 'safety', cost: 0.7, note: 'A PERMANENT run across a public walking route — protector or not, this is wrong.' },
           { ruleId: 'wall-doorway', dim: 'protection', cost: 0.5, note: 'Two active doorways pinch it forever.' },
           { ruleId: 'floor-ramp-not-magic', dim: 'safety', cost: 0.3, note: 'A protector does not make a permanent public crossing acceptable.' },
+          { ruleId: 'plan-shortest-not-best', dim: 'routing', cost: 0.1, note: 'Shortest run — but distance is the ONLY thing it wins.' },
         ],
       },
     ],
@@ -172,7 +179,8 @@ export const CI_ROUTE_SCENARIOS: CiRouteScenario[] = [
         id: 'duct-ride',
         name: 'Along the main supply duct',
         path: 'Tie the feeds along the big HVAC duct that happens to head toward the cluster.',
-        relLength: 1.1,
+        // drawn 355.5 units against over-grid's 295 → ×1.2 (R4-CI-06)
+        relLength: 1.2,
         flags: [
           { ruleId: 'sup-purpose-built', dim: 'safety', cost: 0.6, note: 'The duct is another system — not a cable support.' },
           { ruleId: 'ceil-maintain-access', dim: 'serviceability', cost: 0.3, note: 'Duct service now requires cutting your feeds free.' },
@@ -516,14 +524,23 @@ export const CI_INSPECTION_POOL: CiInspectionDefect[] = [
   { id: 'ins-1', mistakeId: 'sharp-bend', label: 'Mic line folded hard behind the stage box', zone: 0, x: 12, y: 78 },
   { id: 'ins-2', mistakeId: 'crushed-by-tie', label: 'Snake waist-tied to oval at the stage edge', zone: 0, x: 22, y: 84 },
   { id: 'ins-3', mistakeId: 'connector-strain', label: 'Stage-box fan-out hanging on its XLRs', zone: 0, x: 8, y: 70 },
-  { id: 'ins-4', mistakeId: 'bad-floor-crossing', label: 'Snake crossing the audience aisle bare', zone: 1, x: 42, y: 88 },
+  // ins-4 sits ON the bare stretch of the analog run, past the ramp's end
+  // (R4-CI-01: the aisle crossing itself IS in a rated ramp, x 128–172;
+  // the run then lies bare on the audience floor x 172–210 at y 226.4)
+  { id: 'ins-4', mistakeId: 'bad-floor-crossing', label: 'Snake lying bare on the audience walkway past the ramp', zone: 1, x: 51.4, y: 94.3 },
   { id: 'ins-5', mistakeId: 'traffic-exposure', label: 'Feeder under a doormat in the roll path', zone: 1, x: 58, y: 90 },
   { id: 'ins-6', mistakeId: 'slack-pile', label: 'A spaghetti pile of "spare" cable at stage right', zone: 0, x: 30, y: 80 },
-  { id: 'ins-7', mistakeId: 'door-pinch', label: 'Line pinched under the equipment-room door', zone: 2, x: 66, y: 72 },
+  // ins-7 / ins-10 sit ON their items (wiring grade 2026-10-21): the door's
+  // threshold (opening x 253–260, y 192–228 of the 360 × 240 facility), and
+  // the rated wall where the network run passes through it (x 254–259, y ≈ 101)
+  { id: 'ins-7', mistakeId: 'door-pinch', label: 'Line pinched under the equipment-room door', zone: 2, x: 71.7, y: 92 },
   { id: 'ins-8', mistakeId: 'cord-as-permanent', label: 'Extension cord stapled along the baseboard as permanent feed', zone: 2, x: 74, y: 78 },
   { id: 'ins-9', mistakeId: 'unverified-wall', label: 'Fresh unlabeled hole through the corridor wall', zone: 2, x: 70, y: 55 },
-  { id: 'ins-10', mistakeId: 'bad-penetration', label: 'Rated-wall sleeve left open around the bundle', zone: 2, x: 78, y: 48 },
-  { id: 'ins-11', mistakeId: 'power-signal-mess', label: 'AC and mic lines share one tight bundle up the wall', zone: 2, x: 62, y: 60 },
+  { id: 'ins-10', mistakeId: 'bad-penetration', label: 'Rated-wall sleeve left open around the bundle', zone: 2, x: 71.3, y: 42 },
+  // ins-11 sits ON the run up the wall (x 218–220.6, y 186–218 of the
+  // facility), where the AC cord rides tight against the mic line — at y 192,
+  // high enough to stay clear of ins-5's marker at (208.8, 216) (R4-CI-05)
+  { id: 'ins-11', mistakeId: 'power-signal-mess', label: 'AC and mic lines share one tight bundle up the wall', zone: 2, x: 60.6, y: 80 },
   { id: 'ins-12', mistakeId: 'blocked-vent', label: "Loom dressed across the amp's rear exhaust", zone: 3, x: 88, y: 66 },
   { id: 'ins-13', mistakeId: 'blocked-access', label: 'DSP rear unreachable behind a taut trunk', zone: 3, x: 92, y: 58 },
   { id: 'ins-14', mistakeId: 'unlabeled', label: 'Patch field with zero labels', zone: 3, x: 86, y: 50 },

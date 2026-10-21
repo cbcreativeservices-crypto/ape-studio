@@ -16,7 +16,8 @@
  * page can render it as a warning, not a shrug.
  */
 import { gearSpec, isSink, isSource } from './gear';
-import type { GearKind, Link, Placed, SignalLevel, SlotId, SlotRole, SoundSystem } from './types';
+import { CONSOLE_OUTS, IEM_PAIR, isIemPair } from './outputs';
+import type { ConsoleOut, GearKind, Link, Placed, SignalLevel, SlotId, SlotRole, SoundSystem } from './types';
 
 /* ── the venue plot ──────────────────────────────────────────────────────── */
 
@@ -244,15 +245,28 @@ export function removePlaced(system: SoundSystem, id: string): SoundSystem {
   };
 }
 
-export function connect(system: SoundSystem, fromId: string, toId: string): { ok: true; system: SoundSystem; link: Link } | { ok: false; reason: string; unsafe?: boolean } {
+/** Connect two devices; `out` names the console output the cable carries
+ *  (see `consoleWalk`). */
+export function connect(system: SoundSystem, fromId: string, toId: string, out?: ConsoleOut): { ok: true; system: SoundSystem; link: Link } | { ok: false; reason: string; unsafe?: boolean } {
   const v = canConnect(system, fromId, toId);
   if (!v.ok) return v;
-  const link: Link = { from: fromId, to: toId, level: v.level };
+  const link: Link = out ? { from: fromId, to: toId, level: v.level, out } : { from: fromId, to: toId, level: v.level };
   return { ok: true, link, system: { placed: system.placed, links: [...system.links, link] } };
 }
 
 export function disconnect(system: SoundSystem, fromId: string, toId: string): SoundSystem {
   return { placed: system.placed, links: system.links.filter((l) => !(l.from === fromId && l.to === toId)) };
+}
+
+/** Choose (or clear, with null) the console output one cable carries. */
+export function setLinkOut(system: SoundSystem, fromId: string, toId: string, out: ConsoleOut | null): SoundSystem {
+  return {
+    placed: system.placed,
+    links: system.links.map((l) => {
+      if (l.from !== fromId || l.to !== toId) return l;
+      return out ? { ...l, out } : { from: l.from, to: l.to, level: l.level };
+    }),
+  };
 }
 
 /* ── tracing ─────────────────────────────────────────────────────────────── */
@@ -337,6 +351,216 @@ export function allSinksLive(system: SoundSystem): boolean {
 /** Does any live path pass through a given kind (e.g. every main goes via a processor)? */
 export function feedsThrough(system: SoundSystem, sinkId: string, kind: GearKind): boolean {
   return chainTo(system, sinkId).some((p) => p.kind === kind && p.id !== sinkId);
+}
+
+/** What one sink's cable carries from the console: a single output, or '*'
+ *  when no single output is chosen (the plot tag reads "OUT ?"). */
+export type Feed = ConsoleOut | '*';
+
+type Carry = ReadonlySet<ConsoleOut | '*'>;
+const EVERY_OUT: Carry = new Set<ConsoleOut | '*'>(CONSOLE_OUTS);
+const NOTHING: Carry = new Set();
+
+export type ConsoleWalk = {
+  /** Every radiating sink is fed THROUGH the console — never around it. */
+  viaConsole: boolean;
+  /** Each radiating sink the console's outputs reach → the output it gets. */
+  feeds: ReadonlyMap<string, Feed>;
+  /** What reaches each device from the console's outputs. */
+  arriving: ReadonlyMap<string, Carry>;
+  /** In-ear packs fed a stereo pair at their transmitter → the pair, in
+   *  console order (their feed is the in-ear aux of the pair). */
+  pairs: ReadonlyMap<string, readonly [ConsoleOut, ConsoleOut]>;
+};
+
+const isMulticore = (k: GearKind | undefined) => k === 'stagebox' || k === 'snake';
+
+/** What one cable carries, given what reaches the device it leaves.
+ *  · Into the console: nothing — the input side ignores outputs.
+ *  · Console → stagebox / snake: EVERY output (the network link, or the
+ *    return pairs in the same jacket — owner decision 1).
+ *  · Any other cable with an output chosen: that output, if it reaches the
+ *    device the cable leaves; a stale choice (it does not) carries '*'.
+ *  · No output chosen: whatever reaches the device, passed on. */
+function carriedBy(l: Link, kindOf: ReadonlyMap<string, GearKind>, arriving: ReadonlyMap<string, Carry>): Carry {
+  const fromKind = kindOf.get(l.from);
+  const toKind = kindOf.get(l.to);
+  if (toKind === 'console') return NOTHING;
+  const at = fromKind === 'console' ? EVERY_OUT : arriving.get(l.from) ?? NOTHING;
+  if (at.size === 0) return NOTHING;
+  if (fromKind === 'console' && isMulticore(toKind)) return EVERY_OUT;
+  // The transmitter → bodypack hop is radio, not a cable: the pack hears
+  // whatever the transmitter was sent (SS-R2-02), so no output is chosen on it.
+  if (fromKind === 'iemTx') return at;
+  if (l.out) return at.has(l.out) ? new Set([l.out]) : new Set(['*']);
+  return at;
+}
+
+/** An amplifier has two channels: one mix each (SS-R2-01). */
+export const AMP_CHANNELS = 2;
+
+/** A stereo in-ear mix: the console's dedicated in-ear pair, Aux 9 · In-ears
+ *  L + Aux 10 · In-ears R (odd + even, the pair most consoles link as one
+ *  stereo send; round-3 grade R3-SS-01 — it used to be Aux 7 + 8, and Aux 7
+ *  is the lobby's announce feed). Any other two outputs are no single feed.
+ *  The pack's feed is then the pair's left aux. */
+function stereoIemFeed(c: Carry): ConsoleOut | null {
+  const outs = [...c].filter((o): o is ConsoleOut => o !== '*');
+  if (outs.length !== 2 || c.size !== 2 || !isIemPair(outs)) return null;
+  return IEM_PAIR[0];
+}
+
+function arrivingAt(system: SoundSystem, kindOf: ReadonlyMap<string, GearKind>): Map<string, Carry> {
+  let arriving = new Map<string, Carry>();
+  // Relax to a fixed point: each pass recomputes every device from the pass
+  // before, so a chain N cables deep settles in N passes.
+  for (let pass = 0; pass <= system.links.length + 1; pass++) {
+    const next = new Map<string, Set<ConsoleOut | '*'>>();
+    for (const l of system.links) {
+      const c = carriedBy(l, kindOf, arriving);
+      if (c.size === 0) continue;
+      const acc = next.get(l.to) ?? new Set<ConsoleOut | '*'>();
+      for (const o of c) acc.add(o);
+      next.set(l.to, acc);
+    }
+    const same = next.size === arriving.size && [...next].every(([id, c]) => {
+      const prev = arriving.get(id);
+      return !!prev && prev.size === c.size && [...c].every((o) => prev.has(o));
+    });
+    arriving = next;
+    if (same) break;
+  }
+  return arriving;
+}
+
+/** The one walk behind "through the console" and "fed from which output".
+ *
+ *  THROUGH: links carry no bus identity, so `trace` alone lets a build pass
+ *  with the console bypassed (a stagebox emits line; playback can drive a
+ *  powered box direct). This walk tracks whether the signal has passed a
+ *  console yet: a stagebox's or snake's outputs to anything but the console
+ *  are the console's RETURNS, so they carry signal only once the console has
+ *  been passed. A sink reached on any path that skips the console is
+ *  bypassed (wiring findings SS-02, 2026-10-20).
+ *
+ *  WHICH OUTPUT (WF-SS-02): every output leaves the console; each cable
+ *  carries what `carriedBy` says; a sink's feed is the one output that
+ *  reaches it, or '*' when none or several are chosen (owner decision 7: the
+ *  loudspeaker still lights, only the feed check fails). `trace` and
+ *  `chainTo` never read `out`. */
+export function consoleWalk(system: SoundSystem): ConsoleWalk {
+  const kindOf = new Map(system.placed.map((p) => [p.id, p.kind]));
+  const viaConsole = new Set<string>();
+  const bypass = new Set<string>();
+  const queue: Array<[string, boolean]> = system.placed.filter((p) => isSource(p.kind)).map((p) => [p.id, false]);
+  while (queue.length) {
+    const [id, passed] = queue.shift()!;
+    const seen = passed ? viaConsole : bypass;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    const kind = kindOf.get(id);
+    for (const l of system.links) {
+      if (l.from !== id) continue;
+      const toKind = kindOf.get(l.to);
+      if (toKind === 'console') {
+        queue.push([l.to, true]);
+        continue;
+      }
+      // Stage-side multicore outputs before the console are its returns: dead.
+      if (!passed && isMulticore(kind)) continue;
+      queue.push([l.to, passed]);
+    }
+  }
+  const sinks = system.placed.filter((p) => isSink(p.kind));
+  const arriving = arrivingAt(system, kindOf);
+  const feeds = new Map<string, Feed>();
+  const pairs = new Map<string, readonly [ConsoleOut, ConsoleOut]>();
+  for (const p of sinks) {
+    const c = arriving.get(p.id);
+    if (!c || c.size === 0) continue;
+    const stereo = p.kind === 'iemPack' ? stereoIemFeed(c) : null;
+    if (stereo) pairs.set(p.id, CONSOLE_OUTS.filter((o) => c.has(o)) as unknown as readonly [ConsoleOut, ConsoleOut]);
+    const only = c.size === 1 ? [...c][0] : stereo ?? '*';
+    feeds.set(p.id, only);
+  }
+  return {
+    viaConsole: sinks.length > 0 && sinks.every((p) => viaConsole.has(p.id) && !bypass.has(p.id)),
+    feeds,
+    arriving,
+    pairs,
+  };
+}
+
+/** Is every radiating sink fed THROUGH the console — never around it? */
+export function sinksThroughConsole(system: SoundSystem): boolean {
+  return consoleWalk(system).viaConsole;
+}
+
+/** The output one sink is fed from: a single output, '*' when no single
+ *  output is chosen, or null when no console output reaches it at all. */
+export function feedOf(system: SoundSystem, id: string, walk: ConsoleWalk = consoleWalk(system)): Feed | null {
+  return walk.feeds.get(id) ?? null;
+}
+
+/** Does choosing an output on this cable mean anything? Not into the
+ *  console (the input side), not on the console → stagebox / snake run (it
+ *  carries every output), and not before any console output reaches it. */
+export function carriesOutputs(system: SoundSystem, l: Link, walk: ConsoleWalk = consoleWalk(system)): boolean {
+  const kind = (id: string) => system.placed.find((p) => p.id === id)?.kind;
+  const fromKind = kind(l.from);
+  const toKind = kind(l.to);
+  if (toKind === 'console') return false;
+  if (fromKind === 'console') return !isMulticore(toKind);
+  if (fromKind === 'iemTx') return false; // radio, not a cable (SS-R2-02)
+  return [...(walk.arriving.get(l.from) ?? [])].some((o) => o !== '*');
+}
+
+/** Amplifiers asked to pass more distinct console outputs to their
+ *  loudspeakers than they have channels (SS-R2-01), with what each carries.
+ *  One cable INTO an amp may carry every output (owner decision 1); what
+ *  counts is how many different mixes leave it. */
+export function ampsOverChannels(system: SoundSystem, walk: ConsoleWalk = consoleWalk(system)): { id: string; outs: ConsoleOut[] }[] {
+  const kindOf = new Map(system.placed.map((p) => [p.id, p.kind]));
+  const over: { id: string; outs: ConsoleOut[] }[] = [];
+  for (const amp of system.placed.filter((p) => p.kind === 'amp')) {
+    const outs = new Set<ConsoleOut>();
+    for (const l of system.links) {
+      if (l.from !== amp.id) continue;
+      // A cable passing several outputs on reads OUT ? at its loudspeaker
+      // already; only single outputs count as the mixes the amp passes.
+      const c = carriedBy(l, kindOf, walk.arriving);
+      const only = c.size === 1 ? [...c][0] : '*';
+      if (only !== '*') outs.add(only);
+    }
+    if (outs.size > AMP_CHANNELS) over.push({ id: amp.id, outs: CONSOLE_OUTS.filter((o) => outs.has(o)) });
+  }
+  return over;
+}
+
+/** The outputs a cable may be set to carry: those reaching the device it
+ *  leaves, in console order. */
+export function outChoices(system: SoundSystem, l: Link, walk: ConsoleWalk = consoleWalk(system)): ConsoleOut[] {
+  if (!carriesOutputs(system, l, walk)) return [];
+  const fromKind = system.placed.find((p) => p.id === l.from)?.kind;
+  const at = fromKind === 'console' ? EVERY_OUT : walk.arriving.get(l.from) ?? NOTHING;
+  return CONSOLE_OUTS.filter((o) => at.has(o));
+}
+
+/** The cable into a device that carries its console output (the one an
+ *  OUTPUT choice applies to), if any. */
+export function feedLink(system: SoundSystem, id: string, walk: ConsoleWalk = consoleWalk(system)): Link | undefined {
+  return system.links.find((l) => l.to === id && carriesOutputs(system, l, walk));
+}
+
+/** What one cable carries, for a card: a single output, 'all' (it passes
+ *  every output on, e.g. into a processor), '*' (nothing single chosen
+ *  among some), or null (no console output on it). */
+export function linkCarries(system: SoundSystem, l: Link, walk: ConsoleWalk = consoleWalk(system)): ConsoleOut | 'all' | '*' | null {
+  const kindOf = new Map(system.placed.map((p) => [p.id, p.kind]));
+  const c = carriedBy(l, kindOf, walk.arriving);
+  if (c.size === 0) return null;
+  if (c.size === 1) return [...c][0];
+  return c.size === EVERY_OUT.size && [...EVERY_OUT].every((o) => c.has(o)) ? 'all' : '*';
 }
 
 export const EMPTY_SYSTEM: SoundSystem = { placed: [], links: [] };

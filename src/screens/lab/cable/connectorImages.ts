@@ -108,6 +108,31 @@ export function connectorImages(id: ConnectorId): ConnectorImage[] {
   return single ? [{ url: bucketUrl(single), label: '' }] : [];
 }
 
+/**
+ * Which piece of equipment a CABLE END plugs into (wiring rule C2). On
+ * equipment an XLR output is male (pins) and an input is female, so on the
+ * cable the end that takes signal FROM an output is FEMALE and the end that
+ * feeds an INPUT is MALE. R3-CS-01: the tray once showed gallery[0] (MALE)
+ * at both ends, so every XLR–XLR cable read MALE ——— MALE.
+ */
+export type CableEndRole = 'into_output' | 'into_input';
+
+/** Per-end views for connectors whose two cable ends differ in gender. */
+const CABLE_END_VIEWS: Partial<Record<ConnectorId, Record<CableEndRole, { file: string; label: string }>>> = {
+  xlr3: {
+    into_output: { file: 'xlr-female.webp', label: 'FEMALE' },
+    into_input: { file: 'xlr-male.webp', label: 'MALE' },
+  },
+};
+
+/** The one image for a cable end: the gendered view where the connector has
+ *  one (xlr3), else the connector's primary image; null when unmapped. */
+export function cableEndImage(id: ConnectorId, role: CableEndRole): ConnectorImage | null {
+  const v = CABLE_END_VIEWS[id]?.[role];
+  if (v) return { url: bucketUrl(v.file), label: v.label };
+  return connectorImages(id)[0] ?? null;
+}
+
 /** Public Storage URL for a connector's primary image, or null when none is
  *  mapped (kept for any single-image caller). */
 export function connectorImageUrl(id: ConnectorId): string | null {

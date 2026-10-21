@@ -224,7 +224,7 @@ const BOUNDARY: Workspace = {
     'Ideal rigid-boundary comb model. Real boundaries absorb (softening the null) and each surface ' +
     'adds its own comb; the true in-room response is the sum. First cancellation = c/(4d), first ' +
     'reinforcement = c/(2d).',
-  glossary: ['Comb Filtering', 'Reflection', 'Interference', 'Phase', 'Standing wave', 'Wavelength'],
+  glossary: ['Comb Filtering', 'Reflection (acoustics)', 'Interference', 'Phase', 'Standing wave', 'Wavelength'],
   fields: [
     { key: 'd', name: 'DISTANCE TO BOUNDARY', quantity: 'length', defaultUnit: 'm', placeholder: '0.6', help: 'Driver-to-surface distance (wall, floor, or console).', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound.' },
@@ -326,7 +326,7 @@ const REFLECTION: Workspace = {
   warnings:
     'Ideal two-path comb: teeth spaced Δf = c/Δd, first notch at c/(2·Δd), where Δd is the path ' +
     'difference. Assumes the reflection is a clean single copy; real surfaces filter and scatter it.',
-  glossary: ['Comb Filtering', 'Reflection', 'Interference', 'Delay', 'Phase'],
+  glossary: ['Comb Filtering', 'Reflection (acoustics)', 'Interference', 'Delay', 'Phase'],
   fields: [
     { key: 'dDirect', name: 'DIRECT PATH', quantity: 'length', defaultUnit: 'm', placeholder: '0.3', help: 'Straight-line distance from source to listener/mic.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'dReflected', name: 'REFLECTED PATH', quantity: 'length', defaultUnit: 'm', placeholder: '0.75', help: 'Total distance the reflection travels: source → surface → listener.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },

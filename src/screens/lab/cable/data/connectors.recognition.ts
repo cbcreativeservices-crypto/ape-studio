@@ -740,7 +740,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     hotPlug: {
       policy: 'mute_first',
       rationale:
-        'Mute the amplifier channels (many crews power the amps down) before connecting or disconnecting. Making or breaking a full multiway feed under drive pops hard and stresses drivers; genuine speakON contacts are designed to make and break inside the housing, but working de-energized remains standard practice for high-power systems.',
+        'Mute the amplifier channels (many crews power the amps down) before connecting or disconnecting. Making or breaking a full multiway feed under drive pops hard, can arc across the contacts, and stresses drivers. No speakON-style connector is rated to break a driven load; mute or power the amps down first.',
     },
     advantages: [
       'Up to four amplifier channels to a multi-way cabinet through one locking connector',

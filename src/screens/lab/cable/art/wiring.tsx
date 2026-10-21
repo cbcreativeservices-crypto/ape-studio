@@ -8,6 +8,8 @@
  *   one signal conductor, so the noise that reaches it stays in it. The scope
  *   windows draw a few TRUE cycles of a tone with a faster interference
  *   component added — the arithmetic is exact, the signals illustrative.
+ *   (Drawn: the symmetric-drive case. lesson03 notes under the figure that
+ *   some outputs drive only pin 2 — equal impedance is what balances a line.)
  *
  * WiringTrace — the virtual tester's "inside the cable": every conductor from
  *   END A to END B, DERIVED from the bench data's measured map (never a
@@ -317,7 +319,8 @@ export function WiringTrace({ cable, width, progress, named = true }: { cable: T
   // a crossed pair of wires: name it where they cross
   const crossed = m.wires.filter((w) => w.crossed);
   if (crossed.length >= 2 && !network && named) {
-    parts.push(<Label key="xl" x={(xa + xb) / 2} y={Math.min(...crossed.map((w) => Math.min(yOf(w.ai), yOf(w.bi)))) - 8} text="CROSSED" anchor="middle" size={10} color="#ff7a68" weight="semibold" />);
+    // above the jacket's dashed top edge (top − 4), clear of it and of the wires
+    parts.push(<Label key="xl" x={(xa + xb) / 2} y={top - 9} text="CROSSED" anchor="middle" size={10} color="#ff7a68" weight="semibold" />);
   }
   m.broken.forEach((i) => {
     const ink = wireInk(i);

@@ -13,7 +13,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import {
-  CONNECTIONS, DEFAULTS, FREQ_HINTS, FREQ_MAX, FREQ_MIN, OVER_STAGES, OVER_THRESHOLD_SPAN_DB, PATH_MAIN, PATH_SIDECHAIN, PHRASE,
+  CONNECTIONS, DEFAULTS, FREQ_HINTS, FREQ_MAX, FREQ_MIN, OVER_STAGES, OVER_THRESHOLD_SPAN_DB, PATH_MAIN, PATH_SIDECHAIN, PATH_SPLIT, PHRASE,
   bandpassGain, detectorCurve, eqCut, meanSibilantGr, overSettings, overStage, processPhrase, sFrameSpectrum, vowelBrightnessLossDb,
   type Frame, type FreqHint, type Settings,
 } from '../../../features/deesser/deEsserModel';
@@ -24,14 +24,15 @@ import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/component
 import { UnderstandingCheck } from '../tuning/components/check';
 import { ControlSlider } from '../amp/kit';
 import {
-  BandSpectrum, Caption, DETECTOR_H, DetectorTrace, EQVS_H, EqVsStrips, FRAME_H, FrameStrip, PATH_H, PathDiagram, SPECTRUM_H, Title, VIZ_W,
+  BandSpectrum, Caption, DETECTOR_H, DetectorTrace, EQVS_H, EqVsStrips, FRAME_H, FrameStrip, PathDiagram, SPECTRUM_H, Title, VIZ_W,
 } from './deEsserViz';
+import { pathHeight, pathOrder } from './pathLayout';
 
 /** Every drawing is a 340-unit viewBox drawn at the page width (h = w / aspect)
  *  inside ExpandableFigure, whose FULL SCREEN button sits under it and whose
  *  `controls` are THE SAME elements the page shows — docked under the enlarged
  *  drawing so the learner can adjust and watch (owner 2026-09-25). */
-const ASPECT = { frame: VIZ_W / FRAME_H, eqvs: VIZ_W / EQVS_H, detector: VIZ_W / DETECTOR_H, spectrum: VIZ_W / SPECTRUM_H, path: VIZ_W / PATH_H };
+const ASPECT = { frame: VIZ_W / FRAME_H, eqvs: VIZ_W / EQVS_H, detector: VIZ_W / DETECTOR_H, spectrum: VIZ_W / SPECTRUM_H };
 const CONCEPTUAL = 'Relative levels from a modelled phrase — conceptual, not a calibrated meter.';
 const BAND_CAPTION = "Gold dashed line: the detector's band-pass — the part of this sound it can hear.";
 
@@ -195,25 +196,26 @@ function PageEqVs({ ctx }: { ctx: PageCtx }) {
 
 /* ── 3 detection path ──────────────────────────────────────────────────── */
 
-const ORDER = ['in', 'bpf', 'det', 'thr', 'gc', 'gain', 'out'];
-
 function PagePath({ ctx }: { ctx: PageCtx }) {
   const [rackS] = useRack();
+  // Split-band adds the band split and the sum to the walk (DE-R2-01).
+  const ORDER = pathOrder(rackS.mode);
+  const split = rackS.mode === 'split';
   const [idx, setIdx] = useState(0);
   const [auto, setAuto] = useState(false);
   useEffect(() => {
     if (!auto || ctx.reduceMotion) return;
     const id = setInterval(() => setIdx((i) => (i + 1) % ORDER.length), 1600);
     return () => clearInterval(id);
-  }, [auto, ctx.reduceMotion]);
-  const active = ORDER[idx];
-  const block = [...PATH_MAIN, ...PATH_SIDECHAIN].find((b) => b.id === active)!;
+  }, [auto, ctx.reduceMotion, ORDER.length]);
+  const active = ORDER[idx % ORDER.length];
+  const block = [...PATH_MAIN, ...PATH_SPLIT, ...PATH_SIDECHAIN].find((b) => b.id === active)!;
   // The block reader + its buttons: on the page, and docked under the diagram
   // in full screen so a tapped block can still be read there.
   const reader = (
     <View style={{ gap: 10 }}>
       <Card tone="math">
-        <Eyebrow>{idx + 1} OF {ORDER.length} · {block.name.toUpperCase()}</Eyebrow>
+        <Eyebrow>{(idx % ORDER.length) + 1} OF {ORDER.length} · {block.name.toUpperCase()}</Eyebrow>
         <Body>{block.what}</Body>
       </Card>
       <Row>
@@ -224,22 +226,29 @@ function PagePath({ ctx }: { ctx: PageCtx }) {
   );
   return (
     <View style={{ gap: 12 }}>
-      <Lead>A de-esser is a compressor with a filtered ear. The voice goes straight through a gain element; a filtered copy decides how much that gain element turns down.</Lead>
-      <Prompt>Tap each block, or walk the signal. Notice that the voice itself never passes through the filter.</Prompt>
+      {/* NEW COPY (DE-R2-01, 2026-10-21): the split-band wording; the broadband wording is unchanged. */}
+      <Lead>{split
+        ? 'A de-esser is a compressor with a filtered ear. In split-band mode the voice is split in two: only the hiss band goes through a gain element, the rest of the voice goes straight past it, and the two are added back together. A filtered copy of the voice decides how much that gain element turns down.'
+        : 'A de-esser is a compressor with a filtered ear. The voice goes straight through a gain element; a filtered copy decides how much that gain element turns down.'}</Lead>
+      <Prompt>{split
+        ? 'Tap each block, or walk the signal. Notice that the side chain’s band-pass only listens — and that the gain element only ever sees the hiss band.'
+        : 'Tap each block, or walk the signal. Notice that the voice itself never passes through the filter.'}</Prompt>
       <ExpandableFigure
-        aspect={ASPECT.path}
+        aspect={VIZ_W / pathHeight(rackS.mode)}
         title="SIGNAL PATH"
         controls={<Dock>{reader}</Dock>}
-        render={(w, h) => <PathDiagram width={w} height={h} active={active} mode={rackS.mode} onSelect={(id) => { setIdx(Math.max(0, ORDER.indexOf(id))); setAuto(false); touch(ctx); }} />}
+        render={(w, h) => <PathDiagram width={w} height={h} active={active} mode={rackS.mode} freqHz={rackS.freqHz} onSelect={(id) => { setIdx(Math.max(0, (ORDER as string[]).indexOf(id))); setAuto(false); touch(ctx); }} />}
       />
       {reader}
-      <Body>The band-pass filter is the smart part: it is NOT in the signal path. It only shapes what the detector hears, so the decision is made on the hiss alone while the whole voice passes through untouched until the gain moves.</Body>
+      <Body>{split
+        ? 'The side chain’s band-pass filter is the smart part: it is NOT in the signal path. It only shapes what the detector hears, so the decision is made on the hiss alone. The band split in the main path is a different job: it decides which part of the voice the gain element may turn down. With no reduction, the two bands add back up to the voice as it came in. This lab’s de-esser listens through a band-pass; many de-essers offer a high-pass instead, or a switch between the two.'
+        : 'The band-pass filter is the smart part: it is NOT in the signal path. It only shapes what the detector hears, so the decision is made on the hiss alone while the whole voice passes through untouched until the gain moves. This lab’s de-esser listens through a band-pass; many de-essers offer a high-pass instead, or a switch between the two.'}</Body>
       {/* NEW COPY: check rewritten with length-balanced options. */}
       <Check
-        question="Where does a de-esser's band-pass filter sit?"
-        options={['In the signal path, cutting the highs from the whole voice', 'In the side chain, shaping only what the detector listens to', 'After the gain element, cleaning up whatever is left over', 'Nowhere — a de-esser uses a high shelf, not a band-pass']}
+        question="In this lab's de-esser, where does the band-pass filter sit?"
+        options={['In the signal path, cutting the highs from the whole voice', 'In the side chain, shaping only what the detector listens to', 'After the gain element, cleaning up whatever is left over', 'Nowhere — the detector hears the whole voice, unfiltered']}
         correct={1}
-        explain="The filter is in the side chain: it decides, it does not process. The voice passes through the gain element untouched until the gain moves."
+        explain="The filter is in the side chain: it decides, it does not shape the voice. Without it, the detector would react to loud vowels as well as to hiss."
         onCorrect={() => touch(ctx)}
       />
     </View>
@@ -557,7 +566,7 @@ function PageConnections({ ctx }: { ctx: PageCtx }) {
       {/* NEW COPY: capstone retrieval — the one-sentence definition the whole lab builds. */}
       <Check
         question="Which description of a de-esser is right?"
-        options={['An EQ that cuts around 6 kHz whenever the voice gets loud', 'A compressor whose detector listens through a band-pass filter', 'A gate that opens only while an S sound is present', 'A limiter set to the level of the loudest S in the take']}
+        options={['An EQ that cuts around 6 kHz whenever the voice gets loud', 'A compressor whose detector listens through a hiss filter', 'A gate that opens only while an S sound is present', 'A limiter set to the level of the loudest S in the take']}
         correct={1}
         explain="It is a compressor's detector, threshold and gain computer with one addition: the detector listens to a filtered copy of the voice, so only hiss can trigger it."
         onCorrect={() => ctx.markDone()}

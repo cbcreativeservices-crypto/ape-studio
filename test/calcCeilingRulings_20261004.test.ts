@@ -39,7 +39,7 @@ const run = (samplePeak: number, lossy = 0) => {
   assert.ok(fn, 'loudtp / truePeakMargin exists');
   const outs = fn.compute({ samplePeak, lossy }) as Out[];
   const steps = (fn.steps?.({ samplePeak, lossy }) ?? []) as string[];
-  const ceilingRow = outs.find((o) => /CEILING/.test(o.label) && !/RECOMMENDED/.test(o.label));
+  const ceilingRow = outs.find((o) => /CEILING/.test(o.label) && !/RECOMMENDED|SUGGESTED/.test(o.label));
   assert.ok(ceilingRow, 'a margin/over row exists');
   return { row: ceilingRow, outs, steps };
 };

@@ -192,8 +192,16 @@ export const PATH_MAIN: Block[] = [
   { id: 'out', name: 'Output', what: 'The voice with its S’s under control.' },
 ];
 
+/** Split-band mode's two extra main-path blocks (DE-R2-01, 2026-10-21): the
+ *  voice is split in two, only the hiss band meets the gain element, and the
+ *  two bands are added back together. NEW COPY — owner review queue. */
+export const PATH_SPLIT: Block[] = [
+  { id: 'split', name: 'Band split', what: 'Split-band mode only: the voice is divided in two — the hiss band around the detector frequency, and the rest of the voice. Only the hiss band goes on to the gain element; the rest goes straight to the sum.' },
+  { id: 'sum', name: 'Sum', what: 'The hiss band, after the gain element, is added back to the rest of the voice. When the gain is not reducing, the two bands add up to the voice as it came in.' },
+];
+
 export const PATH_SIDECHAIN: Block[] = [
-  { id: 'bpf', name: 'Band-pass filter', what: 'A copy of the input, filtered so only the hiss region remains. The de-esser listens here, not to the whole voice.' },
+  { id: 'bpf', name: 'Band-pass filter', what: 'A copy of the input, filtered so only the hiss region remains. The de-esser listens here, not to the whole voice. This lab’s de-esser listens through a band-pass; many offer a high-pass or a switch between the two.' },
   { id: 'det', name: 'Level detector', what: 'Measures how loud the filtered copy is, moment to moment.' },
   { id: 'thr', name: 'Threshold compare', what: 'Is the hiss level above the threshold? If not, do nothing.' },
   // NEW COPY (review 2026-09-02): names the ratio, which the model has but the copy never mentioned.

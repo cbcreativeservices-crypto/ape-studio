@@ -4,7 +4,7 @@
  * joined by arrows: no module or signal drawing; the glass is mostly blank
  * with the chain empty; the interaction shows only as three GR numbers").
  *
- * Nine half-rack processors in the engine's fixed canonical order, three to
+ * Nine half-rack processors in this rack's fixed order, three to
  * a row, each a lit front panel with ITS controls set where the lab's
  * teaching defaults put them (the EQ's gain knob at +9 dB, the compressor's
  * threshold at −30 dB and ratio at 4:1 …), and a power/active LED. One patch

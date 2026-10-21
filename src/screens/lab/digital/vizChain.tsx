@@ -138,9 +138,11 @@ const FULL_STAGES: StageMeta[] = [
   { key: 'encoder', label: 'ENCODE', wave: 'bits', color: GREEN },
   { key: 'pcm', label: 'PCM', wave: 'stream', color: GREEN },
 ];
-/** 4-block SIMPLIFIED chain. */
+/** 5-block SIMPLIFIED chain. The preamp stays in it (DG-01, wiring
+ *  2026-10-20): mic → preamp → … exactly as in the full chain. */
 const SIMPLE_STAGES: StageMeta[] = [
   { key: 'mic', label: 'MIC', wave: 'raw', color: BLUE },
+  { key: 'preamp', label: 'PREAMP', wave: 'amped', color: BLUE },
   { key: 'filter', label: 'FILTER', wave: 'smooth', color: BLUE },
   { key: 'conv', label: 'CONVERTER', wave: 'held', color: AMBER },
   { key: 'data', label: 'DATA', wave: 'stream', color: GREEN },

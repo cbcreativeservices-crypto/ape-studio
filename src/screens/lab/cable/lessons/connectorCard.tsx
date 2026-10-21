@@ -200,7 +200,8 @@ export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
       <Section title="CONNECTING IT">
         <Text style={styles.kv}>
           <Text style={styles.k}>Locking: </Text>
-          {rec.locking.method === 'none' ? 'none (friction only)' : rec.locking.method.replace('_', '-')}
+          {/* R3-CB-04: hedge a lock that only some models have (match B-CS-01) */}
+          {rec.locking.method === 'none' ? 'none (friction only)' : `${rec.locking.method.replace('_', '-')}${rec.locking.someModels ? ' (on some models)' : ''}`}
         </Text>
         {rec.locking.howToConfirm ? <Text style={styles.body}>{rec.locking.howToConfirm}</Text> : null}
         {rec.directionality ? <Text style={styles.body}>{rec.directionality}</Text> : null}

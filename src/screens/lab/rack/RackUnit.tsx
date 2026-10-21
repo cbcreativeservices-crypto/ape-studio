@@ -429,7 +429,7 @@ export function RackUnit({
       {/* A tapped LOCKED key's reason (rackTypes fader `locked`). */}
       {(() => {
         const lp = lockedNoteId ? params.find((p) => p.id === lockedNoteId) : null;
-        return lp && lp.kind === 'fader' && lp.locked ? (
+        return lp && (lp.kind === 'fader' || lp.kind === 'options') && lp.locked ? (
           <Text style={styles.lockedNote} accessibilityLiveRegion="polite">
             {lp.label} — locked: {lp.locked}
           </Text>
@@ -448,10 +448,14 @@ export function RackUnit({
                     value="LOCKED"
                     glyph="▪"
                     dim
-                    selected={lockedNoteId === p.id}
-                    onPress={() => setLockedNoteId((cur) => (cur === p.id ? null : p.id))}
+                    selected={lockedNoteId === p.id || (!!p.chooser && openTrayId === p.id)}
+                    onPress={() => {
+                      setLockedNoteId((cur) => (cur === p.id ? null : p.id));
+                      // a locked chooser-fader still offers its other options
+                      if (p.chooser) setOpenTrayId((cur) => (cur === p.id ? null : p.id));
+                    }}
                     onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
-                    a11y={`${p.label}: locked — ${p.locked}.`}
+                    a11y={`${p.label}: locked — ${p.locked}.${p.chooser ? ' Tap to choose another.' : ''}`}
                   />
                 );
               }
@@ -481,6 +485,21 @@ export function RackUnit({
               );
             case 'options':
             case 'group':
+              if (p.kind === 'options' && p.locked) {
+                return (
+                  <DockButton
+                    key={p.id}
+                    label={p.label}
+                    value="LOCKED"
+                    glyph="▸"
+                    dim
+                    selected={lockedNoteId === p.id}
+                    onPress={() => setLockedNoteId((cur) => (cur === p.id ? null : p.id))}
+                    onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
+                    a11y={`${p.label}: locked — ${p.locked}.`}
+                  />
+                );
+              }
               return (
                 <DockButton
                   key={p.id}

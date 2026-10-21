@@ -68,12 +68,27 @@ export function fitFactor({ baseW, baseH, fitW, fitH }: { baseW: number; baseH: 
   return Math.max(1, fitW / baseW, fitH / baseH);
 }
 
-/** The zoom row: the fixed steps plus FIT when it gains, ascending. */
-export function zoomSteps(fit: number): ZoomStep[] {
-  const steps: ZoomStep[] = ZOOM_FACTORS.map((f) => ({ key: String(f), factor: f, label: `${f}×` }));
+/** The zoom row: the fixed steps plus FIT when it gains, ascending; plus
+ *  READ, last, when the drawing reported one past the row's top step (a
+ *  drawing that reports none gets the row exactly as before). On a narrow
+ *  phone a row with READ drops 1.5× so every key fits (READ_ROW_NARROW_W). */
+export function zoomSteps(fit: number, read: number | null = null, narrow = false): ZoomStep[] {
+  const top = Math.max(ZOOM_FACTORS[ZOOM_FACTORS.length - 1], fit > FIT_MIN_GAIN ? fit : 0);
+  const withRead = read != null && read > top * READ_MIN_GAIN;
+  const fixed = withRead && narrow ? ZOOM_FACTORS.filter((f) => f !== 1.5) : ZOOM_FACTORS;
+  const steps: ZoomStep[] = fixed.map((f) => ({ key: String(f), factor: f, label: `${f}×` }));
   if (fit > FIT_MIN_GAIN) steps.push({ key: 'fit', factor: fit, label: 'FIT' });
-  return steps.sort((a, b) => a.factor - b.factor);
+  steps.sort((a, b) => a.factor - b.factor);
+  if (withRead) steps.push({ key: 'read', factor: Math.min(READ_MAX, read), label: 'READ' });
+  return steps;
 }
+
+/** READ (owner 2026-10-19, option A): offered only when it zooms past the
+ *  top fixed step by this much, and never past READ_MAX. */
+export const READ_MIN_GAIN = 1.05;
+export const READ_MAX = 10;
+/** Under this window width (points) a row carrying READ drops 1.5×. */
+export const READ_ROW_NARROW_W = 360;
 
 /** The factor a step key stands for now (a FIT key whose step is gone = 1×). */
 export function factorOf(steps: ZoomStep[], key: string): number {

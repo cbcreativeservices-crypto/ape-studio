@@ -59,6 +59,10 @@ export type PageCtx = {
   /** Jump to another page by index (clamped, scrolls to top, persisted).
    *  Optional so any hand-built ctx from before it existed still type-checks. */
   goTo?: (index: number) => void;
+  /** ADDITIVE (2026-10-18, DJ Systems Lab): whether page `index` counts as
+   *  done — the same test the what's-left screen uses (done here, or its
+   *  credit banked). Lets a closing page tick only what was really done. */
+  isPageDone?: (index: number) => boolean;
 };
 
 export type PageDef = {
@@ -109,7 +113,7 @@ import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type La
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 
-export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail }: {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail, optionalPage }: {
   labId: string;
   title: string;
   subtitle: string;
@@ -137,6 +141,21 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
    *  still moves on — it just does not count that page — so the end screen
    *  says plainly why it is still listed. Omitted = no line (as before). */
   handsOnDetail?: string;
+  /** ADDITIVE (2026-10-18, DJ Systems Lab, learning review X5): the what's-
+   *  left line for page `index` when it is not done — e.g. its unmet goals by
+   *  name. A string replaces `handsOnDetail` for that page; undefined keeps it.
+   *  A page that is done (or banked) shows no line at all (2026-10-19). */
+  pageDetail?: (index: number) => string | undefined;
+  /** ADDITIVE (2026-10-18, DJ Systems Lab): the lab's own calibration caveat,
+   *  shown emphasised at the top of the ⚖️ note (AccuracyNote `detail`) on
+   *  every page. Omitted = the standard note, exactly as before. */
+  accuracyDetail?: string;
+  /** ADDITIVE (2026-10-18, DJ Systems Lab): page `index` is an OPTIONAL path
+   *  (an equipment path a learner may skip). CONTENTS marks it optional, the
+   *  what's-left screen lists it under OPTIONAL PATHS without counting it,
+   *  and the lab counts as done once every OTHER page is. Omitted = every
+   *  page is required, exactly as before. */
+  optionalPage?: (index: number) => boolean;
 }) {
   // The note is owed: the guest reminder waits, so two popups never present together.
   const [proNoteOwed, setProNoteOwed] = useState(proNote);
@@ -186,6 +205,18 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     [check, pages, labId, title],
   );
 
+
+  // Every page done — or, with optional paths, every REQUIRED page done.
+  const optionalRef = useRef(optionalPage);
+  optionalRef.current = optionalPage;
+  const allDone = useCallback(
+    (completed: readonly number[]): boolean => {
+      const opt = optionalRef.current;
+      if (!opt) return completed.length >= pagesWithCheck.length;
+      return pagesWithCheck.every((_, i) => opt(i) || completed.includes(i));
+    },
+    [pagesWithCheck],
+  );
 
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -309,7 +340,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
         next = {
           ...p,
           completed,
-          done: completed.length >= pagesWithCheck.length,
+          done: allDone(completed),
           lastPage: pre.lastPage ?? p.lastPage,
         };
         if (!guestRef.current && !loadedAsGuestRef.current) void savePagedProgress(labId, next);
@@ -370,7 +401,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     }
     const fresh = !base.completed.includes(page);
     const completed = fresh ? [...base.completed, page].sort((a, b) => a - b) : base.completed;
-    persist({ completed, done: completed.length >= pagesWithCheck.length });
+    persist({ completed, done: allDone(completed) });
     /**
      * ⛔ THE APPENDED CHECK PAGE IS NOT ONE OF THE LAB'S PAGES
      * (owner 2026-09-21 bug pass — latent until the first check is authored).
@@ -382,7 +413,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
      * the unit that actually exists.
      */
     if (fresh && page < pages.length) onPageDone?.(page);
-  }, [page, persist, pagesWithCheck.length, pages.length, onPageDone]);
+  }, [page, persist, pagesWithCheck.length, pages.length, onPageDone, allDone]);
   // Bug pass 2026-10-01: (1) a guest's reset is in memory only — the stored
   // copy is device-wide, so removing it as a guest erased the previous
   // account's place (a guest copy is never written, and a removal is a write);
@@ -422,16 +453,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   // See awaitingRestore: nothing of a page is mounted until its place is known.
   const holdPageBody = awaitingRestore && progress == null && !navigatedRef.current;
   const isDone = !!progress?.completed.includes(page);
-  const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo };
 
   // What's-left inputs: a page counts when it is done in this shell's own
   // progress OR its credit unit is banked (so START OVER, which clears only
   // the page marks, never makes banked credit read as missing).
-  const endUnits: LabEndUnit[] = pagesWithCheck.map((p, i) =>
-    check && i === pages.length
-      ? { id: String(i), label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' }
-      : { id: String(i), label: p.title, ...(handsOnDetail && p.manualDone ? { detail: handsOnDetail } : null) },
-  );
   const endCleared = new Set<string>();
   pagesWithCheck.forEach((_, i) => {
     const banked = check && i === pages.length
@@ -439,6 +464,22 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
       : (!!creditLabKey && bankedPages.has(`p${i + 1}`)) || (!!pageCreditKeys[i] && bankedPageKeys.has(pageCreditKeys[i]));
     if (banked || progress?.completed.includes(i)) endCleared.add(String(i));
   });
+  // A lab's own per-page line (pageDetail) wins over the shared hands-on line.
+  // It is a WHAT'S-LEFT line, so a page that is already done carries none
+  // (owner 2026-10-19: a redo is a fresh practice run, and its empty chips
+  // are never listed as "left" under a page that keeps its mark).
+  const pageDetailOf = (i: number): { detail: string | undefined } | null => {
+    if (pageDetail && endCleared.has(String(i))) return { detail: undefined };
+    const d = pageDetail?.(i);
+    return d ? { detail: d } : null;
+  };
+  const endUnits: LabEndUnit[] = pagesWithCheck.map((p, i) =>
+    check && i === pages.length
+      ? { id: String(i), label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' }
+      : { id: String(i), label: p.title, ...(handsOnDetail && p.manualDone ? { detail: handsOnDetail } : null) },
+  );
+  const endRows: LabEndUnit[] = endUnits.map((u, i) => (check && i === pages.length ? u : { ...u, ...pageDetailOf(i), ...(optionalPage?.(i) ? { optional: true } : null) }));
+  const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo, isPageDone: (i: number) => endCleared.has(String(i)) };
   // A lab that banks certificate credit — `p<n>` units OR one key per page
   // (Mixing, owner ruling 2026-10-14 #17) — reads CREDITED, like every other
   // credit lab; only a device-progress lab reads DONE.
@@ -448,7 +489,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   // too, or it is unreachable except by NEXT off the page before it.
   const navUnits: LabNavUnit[] = pagesWithCheck.map((p, i) => ({
     id: String(i),
-    title: p.title,
+    title: optionalPage?.(i) ? `${p.title} (optional)` : p.title,
     done: endCleared.has(String(i)),
     kind: check && i === pages.length ? 'check' : 'unit',
   }));
@@ -477,7 +518,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   return (
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
-        <LabHeader title={ending ? 'Where you are' : def.title} subtitle={title} right={def.rack && !ending ? <AccuracyNote compact /> : undefined} />
+        <LabHeader title={ending ? 'Where you are' : def.title} subtitle={title} right={def.rack && !ending ? <AccuracyNote compact detail={accuracyDetail} /> : undefined} />
         <LabNavBar nav={nav} />
         {unreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
         {/* Before a guest begins (owner 2026-10-04): progress here is not
@@ -487,7 +528,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
         {ending ? (
           <LabEndScreen
             labTitle={title}
-            units={endUnits}
+            units={endRows}
             cleared={endCleared}
             unreadable={unreadable}
             mode={creditMode}
@@ -510,7 +551,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
                   of them after the first sitting, never saw it again. The subtitle is
                   genuinely a first-page thing; the calibration note is a standing
                   statement about every page. */}
-              <AccuracyNote style={styles.accuracy} />
+              <AccuracyNote style={styles.accuracy} detail={accuracyDetail} />
               {holdPageBody ? null : (
                 <>
                   {page === 0 ? <Text style={styles.subtitle}>{subtitle}</Text> : null}

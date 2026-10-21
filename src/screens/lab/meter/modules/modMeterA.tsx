@@ -754,7 +754,7 @@ const LOUDNESS_CHECKS: CheckSpec[] = [
     ],
     correctIdx: 1,
     reveal:
-      'Platforms measure ONE gated, K-weighted average across the entire program — integrated LUFS — and turn the whole track up or down to their target (commonly around −14 LUFS). Peaks only matter as the −1 dBTP safety ceiling. Master louder than the target and the platform simply turns it down — minus the dynamics you crushed.',
+      'Platforms measure ONE gated, K-weighted average across the entire program — integrated LUFS — and turn the whole track up or down to their target (commonly around −14 LUFS). Peaks matter as a true-peak safety ceiling (−1 dBTP is commonly quoted; lossy delivery often uses −2; check the destination’s current spec). Master louder than the target and the platform simply turns it down — minus the dynamics you crushed.',
     wrongHint: 'Which of these numbers describes the WHOLE program with one value?',
   },
   {
