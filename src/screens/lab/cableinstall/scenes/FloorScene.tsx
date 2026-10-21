@@ -398,6 +398,22 @@ const JACK_OUT = SNAKE.y + 9.8;
  *  face is drum, VOX 3, VOX 2, VOX 1 — VOX 1 is the lowest lane and peels
  *  down first, the drum is the top lane and peels up the riser side. */
 const EDGE = { split: JACK_X[0] - LANE_GAP, keys: JACK_X[0], amp: JACK_X[1], drum: JACK_X[2], vox: [JACK_X[5], JACK_X[4], JACK_X[3]] } as const;
+/**
+ * DRUM FAN-OUT (B-CI-02, 2026-10-21): the drum sub-snake is a multicore, so
+ * it never lands on one XLR. Just upstage of the snake head it ends in a
+ * fan-out boot and splays into four XLR tails (kick, snare, two overheads),
+ * each onto its own input. The snake head carries nine inputs (IN_X, the
+ * box grows to fit; returns stay six): keys, amp, the four drum tails, then
+ * VOX 3 / 2 / 1 — so the three vocal lanes step right in a concentric jog
+ * (VOX 1 turns highest) before they drop onto their own inputs.
+ */
+const SNAKE_INPUTS = 9;
+const IN_X = Array.from({ length: SNAKE_INPUTS }, (_, i) => JACK_X[0] + i * 3.6);
+const DRUM_TAILS = [IN_X[2], IN_X[3], IN_X[4], IN_X[5]] as const;
+const DRUM_FAN = { top: 132.4, y: 139, splay: 143.6 } as const;
+/** Each vocal line's own input (VOX 1 right-most) and the y of its jog. */
+const VOX_JACK = [IN_X[8], IN_X[7], IN_X[6]] as const;
+const VOX_JOG_Y = [124, 124 + LANE_GAP, 124 + 2 * LANE_GAP] as const;
 const DRUM_Y = 85;
 /** Along the riser face, VOX 1 / 2 / 3 (VOX 1 lowest). */
 const FACE_Y = [DRUM_Y + 3 * LANE_GAP, DRUM_Y + 2 * LANE_GAP, DRUM_Y + LANE_GAP] as const;
@@ -428,14 +444,14 @@ const COIL = { cx: JACK_X[0], cy: 168, r: [4.5, 7.5] } as const;
  *  straight across the playing area to the stands — loose, crossing, but
  *  each its own line from jack to stand. */
 const AS_FOUND_VOX = [
-  `M${JACK_X[5]} ${JACK_IN} H48 C56 156 84 158 98 150 C108 144 116 134 ${VOX_XS[0]} ${VOX_Y + 1}`,
-  `M${JACK_X[4]} ${JACK_IN} V143 C41.4 138 50 137 58 141 C68 146 74 151 90 150 C120 148 170 146 186 136 C196 130 199 125 ${VOX_XS[1]} ${VOX_Y + 1}`,
-  `M${JACK_X[3]} ${JACK_IN} V134 C37.8 122 50 116 64 116 C86 116 96 136 112 146 C150 168 250 160 272 140 C280 132 282 126 ${VOX_XS[2]} ${VOX_Y + 1}`,
+  `M${VOX_JACK[0]} ${JACK_IN} C60 156 84 158 98 150 C108 144 116 134 ${VOX_XS[0]} ${VOX_Y + 1}`,
+  `M${VOX_JACK[1]} ${JACK_IN} V143 C52.2 138 56 137 60 141 C68 146 74 151 90 150 C120 148 170 146 186 136 C196 130 199 125 ${VOX_XS[1]} ${VOX_Y + 1}`,
+  `M${VOX_JACK[2]} ${JACK_IN} V134 C48.6 122 54 116 64 116 C86 116 96 136 112 146 C150 168 250 160 272 140 C280 132 282 126 ${VOX_XS[2]} ${VOX_Y + 1}`,
 ] as const;
 /** As found: one spare line lying in three loose loops on deck, both ends
  *  free — one continuous cable, every loop its own. */
 const SPARE_LOOPS =
-  'M52 153 C54 148 58 141 64 140 A6 6 0 0 1 64 152 A6 6 0 0 1 64 140 ' +
+  'M62 155 C61 150 60 142 64 140 A6 6 0 0 1 64 152 A6 6 0 0 1 64 140 ' +
   'C68 138 72 136 77 136 A5 5 0 0 1 77 146 A5 5 0 0 1 77 136 ' +
   'C81 135 84 133 88 133 A4 4 0 0 1 88 141 A4 4 0 0 1 88 133 C92 133 95 135 96 138';
 /** As found: the three monitor feeds lie bare and loose across the deck from
@@ -487,7 +503,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       width={w}
       height={h}
       viewBox="0 0 360 205"
-      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 metre deck, audience at the bottom. Drum riser upstage centre with a drum sub-snake, keys stage left, guitar amp and player stage right, three singers facing the audience, each with a boom stand just downstage of them and a wedge further downstage aimed back at them, the downstage playing area, a stair at the downstage lip, the snake head downstage right with its trunk to FOH and a split to monitor world in the stage-left wing. The wedges are powered: a downstage quad box at the stage-left edge feeds mains to wedge 3, and each wedge links its mains on to the next along the wedge row, apart from the audio. Numbered badges mark the three hazards. Mic lines ${routeFixed ? 'taped up the stage-right edge and along the riser face, clear of the playing area' : 'webbed straight across the playing area'}; spare mic cable ${slackFixed ? 'coiled at the snake head' : 'in loose loops on deck'}; line-level monitor feeds (XLR) ${monFixed ? 'taped along the downstage lip behind the wedges, with a low-profile cover and glow tape where the stair meets the deck' : 'bare across the deck'}.`}
+      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 metre deck, audience at the bottom. Drum riser upstage centre with a drum sub-snake that fans out at the snake head into four XLR tails, one per input, keys stage left, guitar amp and player stage right, three singers facing the audience, each with a boom stand just downstage of them and a wedge further downstage aimed back at them, the downstage playing area, a stair at the downstage lip, the snake head downstage right with its trunk to FOH and a split to monitor world in the stage-left wing. The wedges are powered: a downstage quad box at the stage-left edge feeds mains to wedge 3, and each wedge links its mains on to the next along the wedge row, apart from the audio. Numbered badges mark the three hazards. Mic lines ${routeFixed ? 'taped up the stage-right edge and along the riser face, clear of the playing area' : 'webbed straight across the playing area'}; spare mic cable ${slackFixed ? 'coiled at the snake head' : 'in loose loops on deck'}; line-level monitor feeds (XLR) ${monFixed ? 'taped along the downstage lip behind the wedges, with a low-profile cover and glow tape where the stair meets the deck' : 'bare across the deck'}.`}
     >
       <Rect x={0} y={0} width={360} height={205} rx={10} fill="#0c0c10" />
       <StageDeck x={PLOT.x} y={PLOT.y} w={PLOT.w} h={PLOT.h} grid={PLOT.m} />
@@ -542,7 +558,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
           wing to FOH — never over the downstage lip into the audience. Drawn
           under the cables so every line visibly lands on its own jack. */}
       <JacketPath d={`M${SNAKE.x} ${SNAKE.y + 10} H10 V200`} color="#5d6068" width={4.2} />
-      <SnakeHeadTop x={SNAKE.x} y={SNAKE.y} />
+      <SnakeHeadTop x={SNAKE.x} y={SNAKE.y} inputs={SNAKE_INPUTS} />
 
       {/* already dressed before you arrived: the split to monitor world, the
           keys DI and the amp mic — up the SR edge and along the upstage edge
@@ -562,14 +578,19 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       ))}
       <JacketPath d={`M323 53 V${TOP_Y.keys} H${EDGE.keys} V${JACK_IN}`} color={mic} width={2.2} shadow={false} />
       <JacketPath d={`M51 55 V58 H${EDGE.amp} V${JACK_IN}`} color={mic} width={2.2} shadow={false} />
-      <JacketPath d={`M${RISER.x + 2} ${RISER.y + 10} H${RISER.x - 4} V${DRUM_Y} H${EDGE.drum} V${JACK_IN}`} color={grey} width={2.4} shadow={false} />
+      <JacketPath d={`M${RISER.x + 2} ${RISER.y + 10} H${RISER.x - 4} V${DRUM_Y} H${EDGE.drum} V${DRUM_FAN.top}`} color={grey} width={2.4} shadow={false} />
+      {/* the sub-snake's fan-out: a boot, then one XLR tail per input */}
+      {DRUM_TAILS.map((x) => (
+        <JacketPath key={`dtl${x}`} d={`M${EDGE.drum} ${DRUM_FAN.y} L${x} ${DRUM_FAN.splay} V${JACK_IN}`} color={mic} width={1.4} shadow={false} />
+      ))}
+      <Rect x={EDGE.drum - 1.9} y={DRUM_FAN.top - 0.4} width={3.8} height={DRUM_FAN.y - DRUM_FAN.top + 0.8} rx={1} fill="#3a3c42" stroke="#0a0a0c" strokeWidth={0.4} />
       {/* tape across the whole bundle, wherever its lanes run together */}
       {[60, 110, 160, 210, 260, 310].map((x) => (
         <TapeStrip key={`ut${x}`} x={x} y={(RET.topY + TOP_Y.keys) / 2} len={11.6} />
       ))}
       <TapeStrip x={(RET.x + EDGE.keys) / 2} y={40} angle={0} len={11.6} />
       <TapeStrip x={(RET.x + EDGE.amp) / 2} y={64} angle={0} len={15.1} />
-      {[112, 136].map((y) => (
+      {[112, 126].map((y) => (
         <TapeStrip key={`st${y}`} x={(RET.x + EDGE.drum) / 2} y={y} angle={0} len={18.6} />
       ))}
       {[52, 92, 132].map((x) => (
@@ -593,7 +614,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       <PlanLabel x={294} y={WEDGE_Y - 1.6} text="WEDGES" anchor="start" size={9.6} />
 
       {/* label above the monitor-send lanes, clear of wedge 1 */}
-      <PlanLabel x={50} y={166.5} text="SNAKE HEAD" anchor="start" size={9.6} />
+      <PlanLabel x={59.6} y={166.5} text="SNAKE HEAD" anchor="start" size={9} />
       <PlanLabel x={14} y={201} text="TO FOH" anchor="start" size={9.6} />
       <ConsoleTop x={MON.x} y={MON.y} w={18} h={14} />
       <PlanLabel x={MON.x + 9} y={MON.y - 4} text="MON" size={9.6} />
@@ -609,8 +630,8 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       {VOX_XS.map((x, i) => (
         <SwapPath
           key={`gv${x}`}
-          d={`M${EDGE.vox[i]} ${JACK_IN} V${FACE_Y[i]} H${x + 20} V${VOX_Y + 4} H${x + 6.9} L${x + 1.2} ${VOX_Y + 0.7}`}
-          len={[240, 330, 420][i]}
+          d={`M${VOX_JACK[i]} ${JACK_IN} V${VOX_JOG_Y[i]} H${EDGE.vox[i]} V${FACE_Y[i]} H${x + 20} V${VOX_Y + 4} H${x + 6.9} L${x + 1.2} ${VOX_Y + 0.7}`}
+          len={[260, 350, 440][i]}
           tint={mic}
           width={2.2}
           mode="good"
@@ -621,9 +642,10 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       <SwapGroup show={routeFixed} delay={260}>
         {/* tape across the vocal lanes on the SR edge and the riser face —
             only as wide as the lanes still running together at that point */}
-        {[112, 136].map((y) => (
+        {[112].map((y) => (
           <TapeStrip key={`sv${y}`} x={EDGE.vox[1]} y={y} angle={0} len={11} />
         ))}
+        <TapeStrip x={VOX_JACK[1]} y={140} angle={0} len={11} />
         {[
           [52, 3],
           [92, 3],
@@ -664,7 +686,8 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
         <JacketPath key={`ac${x1}`} d={`M${x1} ${WEDGE_AC_Y} H${x2}`} color={pwr} width={1.8} shadow={false} />
       ))}
       <Rect x={STAIR.x - 3} y={WEDGE_AC_Y - 1.8} width={STAIR.w + 6} height={3.6} rx={0.8} fill="#e3b73a" stroke="#6b5520" strokeWidth={0.4} />
-      {VOX_XS.flatMap((x) => [x - WEDGE_HALF, x + WEDGE_HALF]).map((x) => (
+      {/* the AC connectors in use (wedge 1's link out stays empty) */}
+      {VOX_XS.flatMap((x, i) => (i === 0 ? [x + WEDGE_HALF] : [x - WEDGE_HALF, x + WEDGE_HALF])).map((x) => (
         <Rect key={`acj${x}`} x={x - 0.9} y={WEDGE_AC_Y - 1.4} width={1.8} height={2.8} rx={0.4} fill="#0d0e11" stroke={pwr} strokeWidth={0.35} />
       ))}
       {[160, 218, 304].map((x) => (
@@ -1584,7 +1607,7 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
         <Text style={s.caption}>
           Training visualization — stage plot to scale (faint grid = 1 m), in the lab’s teaching colors (field cable
           colors vary): cyan = mic and line-level lines (the wedge feeds are line-level XLR into powered wedges) · grey = multicores (trunk to FOH, split to
-          MON, drum sub-snake) · red = AC power (quad boxes, and the wedges' mains: a downstage quad box, then wedge to wedge, apart from the audio) · grey strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair ·
+          MON, drum sub-snake — it fans out into one cyan XLR tail per input at the snake head) · red = AC power (quad boxes, and the wedges' mains: a downstage quad box, then wedge to wedge, apart from the audio) · grey strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair ·
           dashed = the way performers come up the stair. The amp, keys and split lines were already dressed right.
         </Text>
         <View style={{ gap: 12 }}>

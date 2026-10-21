@@ -4,6 +4,8 @@
  *  - B-CI-01: the wedge feeds leave the snake head's RETURN jacks at line
  *    level (XLR) into POWERED wedges — drawn in the analog class colour, and
  *    every wedge gets mains on its own lanes, apart from the audio bundle.
+ *  - B-CI-02: the drum sub-snake (a multicore) fans out at the snake head
+ *    into one XLR tail per input — never onto a single XLR input.
  */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -36,4 +38,24 @@ test('B-CI-01: every wedge gets mains in the wedge row, never in the feed bundle
   assert.ok(acY < wedgeY + 13.4 / 2, 'AC enters at the side panel, inside the wedge depth');
   // the stair walkway crossing gets its own cover
   assert.match(stagePlan, /y=\{WEDGE_AC_Y - 3\}[^>]*fill="#1b1c20"/);
+});
+
+const ART = readFileSync(new URL('../src/screens/lab/cableinstall/scenes/floorArt.tsx', import.meta.url), 'utf8');
+
+test('B-CI-02: the drum sub-snake fans out into several XLR tails on their own inputs', () => {
+  // the multicore stops at the fan-out boot, never at an input jack
+  assert.doesNotMatch(stagePlan, /H\$\{EDGE\.drum\} V\$\{JACK_IN\}/);
+  assert.match(stagePlan, /H\$\{EDGE\.drum\} V\$\{DRUM_FAN\.top\}`\} color=\{grey\}/);
+  const tails = FLOOR.match(/const DRUM_TAILS = \[(.*)\] as const;/)![1].split(',');
+  assert.ok(tails.length >= 2, 'a fan-out has several tails');
+  assert.equal(new Set(tails.map((t) => t.trim())).size, tails.length, 'each tail on its own input');
+  assert.match(stagePlan, /DRUM_TAILS\.map\(\(x\) => \(\s*<JacketPath[^>]*V\$\{JACK_IN\}`\} color=\{mic\}/);
+  // the snake head grows to carry them; vocal lines land on their own (moved) inputs
+  assert.match(stagePlan, /<SnakeHeadTop x=\{SNAKE\.x\} y=\{SNAKE\.y\} inputs=\{SNAKE_INPUTS\} \/>/);
+  assert.match(ART, /export function SnakeHeadTop\(\{ x, y, inputs = 6 \}/);
+  assert.match(FLOOR, /const VOX_JACK = \[IN_X\[8\], IN_X\[7\], IN_X\[6\]\] as const;/);
+  assert.match(FLOOR, /const DRUM_TAILS = \[IN_X\[2\], IN_X\[3\], IN_X\[4\], IN_X\[5\]\] as const;/);
+  assert.match(stagePlan, /M\$\{VOX_JACK\[i\]\} \$\{JACK_IN\} V\$\{VOX_JOG_Y\[i\]\} H\$\{EDGE\.vox\[i\]\}/);
+  for (const i of [0, 1, 2]) assert.ok(FLOOR.includes(`M\${VOX_JACK[${i}]} \${JACK_IN}`), `as-found VOX ${i + 1} starts on its own input`);
+  assert.match(FLOOR, /fans out into one cyan XLR tail per input/);
 });
