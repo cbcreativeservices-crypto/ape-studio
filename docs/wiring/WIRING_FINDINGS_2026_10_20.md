@@ -182,3 +182,14 @@ Comp B graded the pre-fix zip (all four cable labs B). ccode re-checked each row
 - **Fixed now (text):** B-CB-01 combo geometry (¼-inch in the centre, XLR contacts around it — 4 places); B-CB-02 "the amplifier's speaker output"; B-CB-04 XLR/RCA channels 'varies' (AES3 / S/PDIF are 2-ch); B-CB-05 shield stops electric-field noise, twist + balanced input reject magnetic hum (lesson 2); B-CS-01 combo "Locks: latch (on some models)"; B-CS-02 "2×TS-to-TRS Y lead"; B-PB-02 row convention hedged; B-PB-03 both bottom plugs broke their normals; B-PB-04 "1U ¼-inch bay holds 24 pairs"; B-CI-03 no speaker cable in the mic/line bundle.
 - **Drawings, fixed 2026-10-21 (owner go):** B-PB-01 ¼-inch TRS patch plugs (contact opens at 85 %); B-CI-01 line-level feeds into POWERED wedges with their own mains (linked wedge to wedge); B-CI-02 drum sub-snake fans out into 4 inputs (snake head 9 inputs); B-CI-04 analog run reaches the rack; B-CI-05 spare line coiled and capped. Owner choices open: wedge power linked vs a second quad box; 4 vs 3 drum tails.
 - **Rule book notes 1–9:** to add when the owner signs the rule book off (TT vs ¼-inch, never tie two outputs, cable classes in bundles, C7 bi-amp = C, AES3id, wedge case under L3, half-normal break side, combo geometry, D70 cite).
+
+## Owner answers (2026-10-21, local session)
+1. **Phone checks:** on hold until Apple approves the store build. Then the owner checks on a phone, then the OTA update.
+2. **Cable Install wedge power:** show each wedge's power **individually** (more common, better learning). No wedge-to-wedge link.
+3. **Drum fan-out:** ccode's recommendation, **4 tails** (kick, snare, two overheads), as drawn.
+4. **DJ unbalanced lead:** keep **MASTER OUT + adapter**, as drawn.
+5. **PHONES-fed booth monitor sound:** ccode's choice for learning, the **real result**. A stereo phones jack into a balanced mono input plays L−R: centre content cancels and it sounds thin. The wrong-job text explains why.
+6. **Go:** round-3 grading of all labs; round 2 for Miking, Mixing, Mixing Guides and Mic Select; the de-esser split-band drawing (DE-R2-01); the DJ clashes (and the Sound Systems BARRIER clash).
+7. **Rule book:** shown again to the owner, with Comp B's 9 additions marked HOLD for sign-off.
+8. **Comp B:** the batch-1 report is in and applied. The 22-claim fact-check reply has not arrived on this computer.
+9. **Merge:** when optimal, merge `dj-lab` into the store branch, then pause.
