@@ -447,7 +447,20 @@ const AS_FOUND_MON = [
   `M${SEND_X[1]} ${JACK_OUT} V165 C41.4 175 60 177 90 177 C120 177 136 176 146 164 C154 154 178 148 184 158 C188 166 186 176 196 176 C203 176 ${J_MON[1].x} 174 ${J_MON[1].x} ${J_MON[1].y}`,
   `M${SEND_X[2]} ${JACK_OUT} V168 C37.8 178 60 180.5 100 180.5 C170 180.5 200 179 220 172 C240 164 256 162 266 170 C272 175 ${J_MON[2].x} 179 ${J_MON[2].x} ${J_MON[2].y}`,
 ] as const;
-const MON3_BADGE = { x: 160, y: 166 } as const;
+const MON3_BADGE = { x: 160, y: 177 } as const;
+/**
+ * WEDGE POWER (B-CI-01, lead 2026-10-21: the wedges are POWERED). The feeds
+ * above are line-level XLR from the snake head's returns, so each wedge also
+ * needs mains. The lip behind the wedges is the audio's lane, so the AC keeps
+ * clear of it: a downstage quad box at the SL edge, fed from the SL wing, runs
+ * one AC lead into wedge 3's SL side panel, and each wedge links its mains on
+ * to the next through its side-panel link out — every AC run in the wedge
+ * row, its own lane, never in the feed bundle and never crossing it. Where
+ * the link crosses the stair walkway it goes under its own low-profile cover.
+ */
+const WEDGE_AC_Y = WEDGE_Y + 4.3;
+const WEDGE_HALF = 9.6;
+const WQUAD = { x: 316, y: WEDGE_AC_Y - 2.8 } as const;
 
 /** A numbered hazard badge on the plot, matching the numbered call below —
  *  amber while the hazard stands, a green tick once it is dressed. */
@@ -464,7 +477,6 @@ function HazardBadge({ x, y, n, fixed }: { x: number; y: number; n: number; fixe
 function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFixed: boolean; slackFixed: boolean; monFixed: boolean }) {
   const h = Math.round(w * (205 / 360));
   const mic = CI_CLASS_TINTS.analog;
-  const spk = CI_CLASS_TINTS.speaker;
   const pwr = CI_CLASS_TINTS.power;
   const grey = '#6b6e76';
   const edgeX = PLOT.x + PLOT.w;
@@ -475,7 +487,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       width={w}
       height={h}
       viewBox="0 0 360 205"
-      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 metre deck, audience at the bottom. Drum riser upstage centre with a drum sub-snake, keys stage left, guitar amp and player stage right, three singers facing the audience, each with a boom stand just downstage of them and a wedge further downstage aimed back at them, the downstage playing area, a stair at the downstage lip, the snake head downstage right with its trunk to FOH and a split to monitor world in the stage-left wing. Numbered badges mark the three hazards. Mic lines ${routeFixed ? 'taped up the stage-right edge and along the riser face, clear of the playing area' : 'webbed straight across the playing area'}; spare mic cable ${slackFixed ? 'coiled at the snake head' : 'in loose loops on deck'}; monitor feeds ${monFixed ? 'taped along the downstage lip behind the wedges, with a low-profile cover and glow tape where the stair meets the deck' : 'bare across the deck'}.`}
+      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 metre deck, audience at the bottom. Drum riser upstage centre with a drum sub-snake, keys stage left, guitar amp and player stage right, three singers facing the audience, each with a boom stand just downstage of them and a wedge further downstage aimed back at them, the downstage playing area, a stair at the downstage lip, the snake head downstage right with its trunk to FOH and a split to monitor world in the stage-left wing. The wedges are powered: a downstage quad box at the stage-left edge feeds mains to wedge 3, and each wedge links its mains on to the next along the wedge row, apart from the audio. Numbered badges mark the three hazards. Mic lines ${routeFixed ? 'taped up the stage-right edge and along the riser face, clear of the playing area' : 'webbed straight across the playing area'}; spare mic cable ${slackFixed ? 'coiled at the snake head' : 'in loose loops on deck'}; line-level monitor feeds (XLR) ${monFixed ? 'taped along the downstage lip behind the wedges, with a low-profile cover and glow tape where the stair meets the deck' : 'bare across the deck'}.`}
     >
       <Rect x={0} y={0} width={360} height={205} rx={10} fill="#0c0c10" />
       <StageDeck x={PLOT.x} y={PLOT.y} w={PLOT.w} h={PLOT.h} grid={PLOT.m} />
@@ -578,7 +590,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       {VOX_XS.map((x) => (
         <WedgeTop key={`wg${x}`} x={x} y={WEDGE_Y} />
       ))}
-      <PlanLabel x={296} y={WEDGE_Y + 4} text="WEDGES" anchor="start" size={9.6} />
+      <PlanLabel x={294} y={WEDGE_Y - 1.6} text="WEDGES" anchor="start" size={9.6} />
 
       {/* label above the monitor-send lanes, clear of wedge 1 */}
       <PlanLabel x={50} y={166.5} text="SNAKE HEAD" anchor="start" size={9.6} />
@@ -639,6 +651,26 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       <SwapCircle cx={COIL.cx} cy={COIL.cy} r={COIL.r[1]} tint={mic} width={2} show={slackFixed} delay={80} />
       <SwapPath d={`M${COIL.cx} ${JACK_OUT} V${COIL.cy - COIL.r[1]}`} len={6} tint={mic} width={2} mode="good" fixed={slackFixed} delay={120} />
 
+      {/* wedge power: the SL wing feeds a downstage quad box; one AC lead to
+          wedge 3, then each wedge's link out to the next, in the wedge row */}
+      <Path d={`M${edgeX + 8} ${WEDGE_AC_Y} H${WQUAD.x + 7}`} stroke={pwr} strokeWidth={1.8} strokeLinecap="round" />
+      <Rect x={WQUAD.x} y={WQUAD.y} width={7} height={5.6} rx={0.8} fill="#2a2c31" stroke={pwr} strokeWidth={0.6} />
+      <Rect x={STAIR.x - 4} y={WEDGE_AC_Y - 3} width={STAIR.w + 8} height={6} rx={1} fill="#1b1c20" stroke="#050506" strokeWidth={0.5} />
+      {[
+        [WQUAD.x, VOX_XS[2] + WEDGE_HALF],
+        [VOX_XS[2] - WEDGE_HALF, VOX_XS[1] + WEDGE_HALF],
+        [VOX_XS[1] - WEDGE_HALF, VOX_XS[0] + WEDGE_HALF],
+      ].map(([x1, x2]) => (
+        <JacketPath key={`ac${x1}`} d={`M${x1} ${WEDGE_AC_Y} H${x2}`} color={pwr} width={1.8} shadow={false} />
+      ))}
+      <Rect x={STAIR.x - 3} y={WEDGE_AC_Y - 1.8} width={STAIR.w + 6} height={3.6} rx={0.8} fill="#e3b73a" stroke="#6b5520" strokeWidth={0.4} />
+      {VOX_XS.flatMap((x) => [x - WEDGE_HALF, x + WEDGE_HALF]).map((x) => (
+        <Rect key={`acj${x}`} x={x - 0.9} y={WEDGE_AC_Y - 1.4} width={1.8} height={2.8} rx={0.4} fill="#0d0e11" stroke={pwr} strokeWidth={0.35} />
+      ))}
+      {[160, 218, 304].map((x) => (
+        <TapeStrip key={`act${x}`} x={x} y={WEDGE_AC_Y} len={4.6} />
+      ))}
+
       {/* ③ MONITOR FEEDS — from the snake head's own return jacks (SR, the
           same side as the inputs). As found they lie bare and loose across
           the deck and the stair landing; dressed, they drop out of the box
@@ -646,7 +678,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
           peeling up onto its own wedge, the stair crossing under a
           low-profile cover with glow tape */}
       {AS_FOUND_MON.map((d, i) => (
-        <SwapPath key={`bm${i}`} d={d} len={[140, 300, 360][i]} tint={spk} width={2.2} mode="bad" fixed={monFixed} intro={300 + i * 70} />
+        <SwapPath key={`bm${i}`} d={d} len={[140, 300, 360][i]} tint={mic} width={2.2} mode="bad" fixed={monFixed} intro={300 + i * 70} />
       ))}
       {VOX_XS.map((x, i) => {
         const j = WEDGE_JACK(x);
@@ -655,7 +687,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
             key={`gm${x}`}
             d={`M${SEND_X[i]} ${JACK_OUT} V${SEND_Y[i]} H${j.x} V${j.y}`}
             len={[130, 220, 320][i]}
-            tint={spk}
+            tint={mic}
             width={2.2}
             mode="good"
             fixed={monFixed}
@@ -1551,8 +1583,8 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
         />
         <Text style={s.caption}>
           Training visualization — stage plot to scale (faint grid = 1 m), in the lab’s teaching colors (field cable
-          colors vary): cyan = mic lines · yellow = monitor (loudspeaker) feeds · grey = multicores (trunk to FOH, split to
-          MON, drum sub-snake) · red = AC power to quad boxes · grey strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair ·
+          colors vary): cyan = mic and line-level lines (the wedge feeds are line-level XLR into powered wedges) · grey = multicores (trunk to FOH, split to
+          MON, drum sub-snake) · red = AC power (quad boxes, and the wedges' mains: a downstage quad box, then wedge to wedge, apart from the audio) · grey strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair ·
           dashed = the way performers come up the stair. The amp, keys and split lines were already dressed right.
         </Text>
         <View style={{ gap: 12 }}>
