@@ -29,7 +29,7 @@ import { MIXER_REAR_JACKS } from '../src/screens/lab/dj/geometry/boothGeometry.t
 import * as D from '../src/screens/lab/dj/geometry/dressGeometry.ts';
 
 const ROOT = join(import.meta.dirname, '..');
-const read = (p: string) => readFileSync(join(ROOT, p), 'utf8');
+const read = (p: string) => readFileSync(join(ROOT, p), 'utf8').replace(/\r\n/g, '\n');
 const DJ = 'src/screens/lab/dj/';
 type State = Partial<Record<PlugId, JackId | null>>;
 type P = readonly [number, number];

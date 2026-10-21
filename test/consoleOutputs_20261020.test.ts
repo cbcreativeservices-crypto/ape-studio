@@ -48,7 +48,7 @@ const { Build, referenceBuild } = await import('./_ssReferenceBuilds.ts');
 type System = import('../src/features/soundsystems/types.ts').SoundSystem;
 type ConsoleOut = import('../src/features/soundsystems/types.ts').ConsoleOut;
 
-const src = (p: string) => readFileSync(new URL(`../src/${p}`, import.meta.url), 'utf8');
+const src = (p: string) => readFileSync(new URL(`../src/${p}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 const cap = (id: string) => CAPSTONES.find((c) => c.id === id)!;
 const unmet = (id: string, s: System, cs = referenceBuild(id).cs) => gradeCapstone(cap(id), s, cs).unmet;
 /** The same build with every output choice cleared. */

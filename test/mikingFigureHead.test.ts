@@ -30,16 +30,16 @@ const code = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])
 
 describe('lab figures: the head belongs to the body', () => {
   it('no lab figure draws the line-art head icon (LineHead / HEAD_LINE / a translucent HEAD_FILL)', () => {
-    const bad = files.filter((f) => /\bLineHead\b|\bHEAD_LINE\b|\bHEAD_FILL\b/.test(code(readFileSync(f, 'utf8'))));
+    const bad = files.filter((f) => /\bLineHead\b|\bHEAD_LINE\b|\bHEAD_FILL\b/.test(code(readFileSync(f, 'utf8').replace(/\r\n/g, '\n'))));
     assert.deepEqual(bad, []);
   });
   it('FigureHead paints the head as a skin-tone body mass (the same light, rim, core shadow and contour)', () => {
-    const s = readFileSync(`${ROOT}/lessons/shared/players/PlayerFigure.tsx`, 'utf8');
+    const s = readFileSync(`${ROOT}/lessons/shared/players/PlayerFigure.tsx`, 'utf8').replace(/\r\n/g, '\n');
     assert.match(s, /export function FigureHead\(\{ fill \}: \{ fill: SkPath \}\) \{\n\s*return <FigureMass path=\{fill\} tone="skin"/);
     assert.match(s, /<FigureHead fill=\{b\.head\.fill\} \/>/);
   });
   it('the front head is one outline with its ears and its neck down to the collar', () => {
-    const s = readFileSync(`${ROOT}/lessons/shared/players/PlayerFigure.tsx`, 'utf8');
+    const s = readFileSync(`${ROOT}/lessons/shared/players/PlayerFigure.tsx`, 'utf8').replace(/\r\n/g, '\n');
     assert.match(s, /const fill = union\(skull, \.\.\.ears, capsule\(P\(0, 80\), P\(0, nb - 6\)/);
   });
   it('every family that draws its own figure uses its own skin mass for the head', () => {
@@ -53,7 +53,7 @@ describe('lab figures: the head belongs to the body', () => {
       // Fix pass 2026-10-16: the harmonica close-ups draw the whole profile player (its shared head), not a face fragment.
       ['lessons/a10Harmonica/art.tsx', /<ProfileBehind pose=\{pose\} \/>/],
     ] as const) {
-      assert.match(readFileSync(`${ROOT}/${f}`, 'utf8'), re, f);
+      assert.match(readFileSync(`${ROOT}/${f}`, 'utf8').replace(/\r\n/g, '\n'), re, f);
     }
   });
   it('an adult head is about 1/7.5 of the standing height (BODY.headH against a 1.7 m figure)', async () => {

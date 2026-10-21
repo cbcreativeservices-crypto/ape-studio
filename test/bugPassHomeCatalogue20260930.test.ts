@@ -6,7 +6,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const src = (p: string) => readFileSync(p, 'utf8');
+const src = (p: string) => readFileSync(p, 'utf8').replace(/\r\n/g, '\n');
 
 test('Topic popup: a FREE topic is never said to need membership', () => {
   const s = src('src/screens/curriculum/TopicDetailModal.tsx');

@@ -133,7 +133,7 @@ describe('H9-3 — a refused result shares with no PRIMARY RESULT', async () => 
 
   it('the calculator screen passes the refusal to the report', async () => {
     const { readFileSync } = await import('node:fs');
-    const src = readFileSync(new URL('../src/screens/lab/calc/CalcWorkspaceScreen.tsx', import.meta.url), 'utf8');
+    const src = readFileSync(new URL('../src/screens/lab/calc/CalcWorkspaceScreen.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
     const call = src.slice(src.indexOf('const report = buildReportFromCalc({'), src.indexOf('Share.share({ message: reportToText(report) })'));
     assert.match(call, /\n\s+refused,\n/);
   });

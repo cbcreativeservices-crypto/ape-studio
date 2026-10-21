@@ -22,7 +22,7 @@ import { renderBooth, clearDeckCache } from '../src/screens/lab/dj/engine/djRend
 import { setPlaying } from '../src/screens/lab/dj/model/djDeck.ts';
 
 const ROOT = join(import.meta.dirname, '..');
-const read = (p: string) => readFileSync(join(ROOT, p), 'utf8');
+const read = (p: string) => readFileSync(join(ROOT, p), 'utf8').replace(/\r\n/g, '\n');
 const DJ = 'src/screens/lab/dj/';
 type State = Partial<Record<PlugId, JackId | null>>;
 type P = readonly [number, number];

@@ -16,7 +16,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const read = (p: string) => readFileSync(p, 'utf8');
+const read = (p: string) => readFileSync(p, 'utf8').replace(/\r\n/g, '\n');
 const screen = read('src/screens/glossary/GlossaryScreen.tsx');
 
 const body = (src: string, start: string, len = 2500) => {

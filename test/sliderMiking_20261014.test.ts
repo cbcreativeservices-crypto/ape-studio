@@ -148,7 +148,7 @@ describe('preview lanes print where the mic IS', () => {
       'src/screens/lab/miking/lessons/shared/handdrums/pages/HContext.tsx',
       'src/screens/lab/miking/lessons/shared/journeyPages.tsx',
     ]) {
-      const s = readFileSync(f, 'utf8');
+      const s = readFileSync(f, 'utf8').replace(/\r\n/g, '\n');
       const previews = (s.match(/rig\.preview\(/g) ?? []).length;
       const held = (s.match(/Held\.note\(v, rig\.preview\(/g) ?? []).length;
       assert.equal(held, previews, `${f}: every rig.preview in a lane is noted`);
@@ -158,15 +158,15 @@ describe('preview lanes print where the mic IS', () => {
 
 describe('faders that moved nothing are locked there', () => {
   it('the X/Y ANGLE lane is locked unless the pair is X/Y', () => {
-    const s = readFileSync('src/screens/lab/miking/lessons/m09Overheads/PTwoOverheads.tsx', 'utf8');
+    const s = readFileSync('src/screens/lab/miking/lessons/m09Overheads/PTwoOverheads.tsx', 'utf8').replace(/\r\n/g, '\n');
     assert.match(s, /id: 'angle',[\s\S]{0,700}locked: pid === 'xy' \? undefined :/);
   });
   it('the keys mechanism SWING lane is locked until the bar has been struck (step 3)', () => {
-    const s = readFileSync('src/screens/lab/miking/lessons/shared/keys/keysPages.tsx', 'utf8');
+    const s = readFileSync('src/screens/lab/miking/lessons/shared/keys/keysPages.tsx', 'utf8').replace(/\r\n/g, '\n');
     assert.match(s, /id: 'swing'[^\n]*locked: mShown >= 3 \? undefined :/);
   });
   it('the hand-drum context AIM home follows the lane’s own axis', () => {
-    const s = readFileSync('src/screens/lab/miking/lessons/shared/handdrums/pages/HContext.tsx', 'utf8');
+    const s = readFileSync('src/screens/lab/miking/lessons/shared/handdrums/pages/HContext.tsx', 'utf8').replace(/\r\n/g, '\n');
     assert.match(s, /home: \(\(aimAxis === 'az' \? H\.context\.pose\.az : H\.context\.pose\.el\) - lo\) \/ \(hi - lo\)/);
   });
 });
@@ -243,7 +243,7 @@ describe('a far tap on a placement lane never blocks the JS thread', () => {
   });
 
   it('useRig.preview glides the rest on following macrotasks and commits on arrival', () => {
-    const s = readFileSync('src/screens/lab/miking/engine/scene/useRig.ts', 'utf8');
+    const s = readFileSync('src/screens/lab/miking/engine/scene/useRig.ts', 'utf8').replace(/\r\n/g, '\n');
     assert.match(s, /const preview = useCallback\([\s\S]{0,900}constrainMove\(scene, body\[slot\], live\.current\[slot\]\?\.pose \?\? sv\.value, target, bounds, MOVE_WORK\)[\s\S]{0,1200}g\.h = runSoon\(more\)/);
     assert.match(s, /const commit = useCallback\(\s*\(slot: MicSlot\) => \{\s*const g = glide\.current\[slot\];\s*if \(g\.h\) \{\s*g\.owed = true;/);
     for (const fn of ['moveTo', 'jumpTo', 'settle']) assert.match(s, new RegExp(`const ${fn} = useCallback\\(\\s*\\([^)]*\\) => \\{\\s*stopGlide\\(slot\\);`), `${fn} stops a glide first`);
@@ -259,7 +259,7 @@ describe('preview lanes (onCommit) do not set React state in onChange', () => {
       'src/screens/lab/miking/lessons/f10SpatialField/pages.tsx',
       'src/screens/lab/miking/lessons/shared/sports/sportsPages.tsx',
     ]) {
-      const bodies = previewOnChanges(readFileSync(f, 'utf8'));
+      const bodies = previewOnChanges(readFileSync(f, 'utf8').replace(/\r\n/g, '\n'));
       assert.ok(bodies.length > 0, `${f}: has preview lanes`);
       // Live picture kept (2026-10-14): any setState sits behind an unchanged-step return.
       for (const b of bodies) if (/\bset[A-Z]\w*\(/.test(b)) assert.match(b, /=== live(Step|Aim)\.current\) return;/, `${f}: a preview lane sets state every frame`);
@@ -283,7 +283,7 @@ describe('preview lanes (onCommit) do not set React state in onChange', () => {
       });
     for (const f of walk('src/screens/lab/miking')) {
       if (ALLOWED.has(f)) continue;
-      if (previewOnChanges(readFileSync(f, 'utf8')).some((b) => /\bset[A-Z]\w*\(/.test(b))) bad.push(f);
+      if (previewOnChanges(readFileSync(f, 'utf8').replace(/\r\n/g, '\n')).some((b) => /\bset[A-Z]\w*\(/.test(b))) bad.push(f);
     }
     assert.deepEqual(bad, []);
   });
@@ -296,7 +296,7 @@ describe('the collision broad phase is exact', () => {
       for (const n of readdirSync(d)) {
         const p = `${d}/${n}`;
         if (statSync(p).isDirectory()) walk(p);
-        else if (/\.tsx?$/.test(n)) for (const m of readFileSync(p, 'utf8').matchAll(/['"`]([A-Z]\d{2}[A-Za-z]?)['"`]/g)) ids.add(m[1]);
+        else if (/\.tsx?$/.test(n)) for (const m of readFileSync(p, 'utf8').replace(/\r\n/g, '\n').matchAll(/['"`]([A-Z]\d{2}[A-Za-z]?)['"`]/g)) ids.add(m[1]);
       }
     };
     walk('src/screens/lab/miking');
@@ -345,18 +345,18 @@ describe('fader commit lands where the finger let go (live emulator retest 2026-
   // straight after preview wrote it and committed the OLD pose (a tap or a
   // flick on POSITION was saved where the mic had been).
   it('useRig commits the JS-side mirror of the last preview, not a read-back of the shared value', () => {
-    const s = readFileSync('src/screens/lab/miking/engine/scene/useRig.ts', 'utf8');
+    const s = readFileSync('src/screens/lab/miking/engine/scene/useRig.ts', 'utf8').replace(/\r\n/g, '\n');
     assert.match(s, /const l = live\.current\[slot\];\n\s*live\.current\[slot\] = null;\n\s*write\(slot, l \? l\.pose :/);
     assert.match(s, /constrainMove\(scene, body\[slot\], live\.current\[slot\]\?\.pose \?\? sv\.value, target, bounds, MOVE_WORK\)/);
     assert.equal((s.match(/live\.current\[slot\] = \{ pose: [rq]\.pose, blocked: [rq]\.blocked \}/g) ?? []).length, 2, 'preview and the glide both update the mirror');
   });
   it('the glide spends a time slice per macrotask, not one fixed work slice', () => {
-    const s = readFileSync('src/screens/lab/miking/engine/scene/useRig.ts', 'utf8');
+    const s = readFileSync('src/screens/lab/miking/engine/scene/useRig.ts', 'utf8').replace(/\r\n/g, '\n');
     assert.match(s, /const GLIDE_SLICE_MS = 10;/);
     assert.match(s, /while \(!q\.done && Date\.now\(\) - t0 < GLIDE_SLICE_MS\)/);
   });
   it('a preview lane holds its cap at the release until the commit lands', () => {
-    const s = readFileSync('src/screens/lab/rack/ParamLane.tsx', 'utf8');
+    const s = readFileSync('src/screens/lab/rack/ParamLane.tsx', 'utf8').replace(/\r\n/g, '\n');
     assert.match(s, /if \(held\.current && value === held\.current\.from\) return;/);
     assert.match(s, /const HOLD_MS = 1500;/);
     assert.match(s, /const onGrant = useRef\(\(v: number \| null\) => \{\n\s*releaseHold\(\);/, 'a new touch drops the hold');
@@ -365,7 +365,7 @@ describe('fader commit lands where the finger let go (live emulator retest 2026-
 
 describe('shared-value read-after-write (audit 2026-10-14)', () => {
   it('Harmonograph: a fresh sheet times its draw from 0, not a read-back of progress', () => {
-    const s = readFileSync('src/screens/lab/HarmonographMachine.tsx', 'utf8');
+    const s = readFileSync('src/screens/lab/HarmonographMachine.tsx', 'utf8').replace(/\r\n/g, '\n');
     assert.match(s, /const cur = sameRun \? Math\.min\(1, Math\.max\(0, progress\.value\)\) : 0;/);
   });
 });

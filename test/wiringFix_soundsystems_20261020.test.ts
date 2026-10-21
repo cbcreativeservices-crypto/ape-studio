@@ -40,7 +40,7 @@ type GearKind = import('../src/features/soundsystems/types.ts').GearKind;
 type SlotId = import('../src/features/soundsystems/types.ts').SlotId;
 type ConsoleOut = import('../src/features/soundsystems/types.ts').ConsoleOut;
 
-const src = (p: string) => readFileSync(new URL(`../src/${p}`, import.meta.url), 'utf8');
+const src = (p: string) => readFileSync(new URL(`../src/${p}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 const ROUTE = src('screens/lab/soundsystems/pagesRoute.tsx');
 const LEARN_B = src('screens/lab/soundsystems/pagesLearnB.tsx');
 const LEARN_C = src('screens/lab/soundsystems/pagesLearnC.tsx');

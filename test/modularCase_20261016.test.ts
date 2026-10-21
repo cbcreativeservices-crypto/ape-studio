@@ -9,8 +9,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { harmonicAmp, svfLowpassMag } from '../src/screens/lab/modular/spectrumMath.ts';
 
-const src = readFileSync('src/screens/lab/ModularLabScreen.tsx', 'utf8');
-const spec = readFileSync('src/screens/lab/modular/ModularSpectrum.tsx', 'utf8');
+const src = readFileSync('src/screens/lab/ModularLabScreen.tsx', 'utf8').replace(/\r\n/g, '\n');
+const spec = readFileSync('src/screens/lab/modular/ModularSpectrum.tsx', 'utf8').replace(/\r\n/g, '\n');
 const caseSrc = src.slice(src.indexOf('const HP_MM'), src.indexOf('const styles = StyleSheet.create'));
 
 test('true Eurorack units: 1 HP = 5.08 mm, 3U = 128.5 mm, seven modules', () => {
@@ -58,6 +58,6 @@ test('spectrum: textbook harmonic series and the engine SVF magnitude', () => {
   const a = 20 * Math.log10(svfLowpassMag(8000, 500, 0));
   const b = 20 * Math.log10(svfLowpassMag(16000, 500, 0));
   assert.ok(Math.abs(a - b - 12) < 0.3);
-  const modular = readFileSync('modules/ape-dsp/ios/core/Modular.hpp', 'utf8');
+  const modular = readFileSync('modules/ape-dsp/ios/core/Modular.hpp', 'utf8').replace(/\r\n/g, '\n');
   assert.match(modular, /const double kDamp = 2\.0 - 1\.6 \* resCur_;/, 'the engine filter is still the one the spectrum draws');
 });

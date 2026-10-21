@@ -13,7 +13,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
-const read = (p: string) => readFileSync(new URL(`../src/${p}`, import.meta.url), 'utf8');
+const read = (p: string) => readFileSync(new URL(`../src/${p}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
 type Baseline = { arm(c: number, s?: number): void; runsSince(c: number, s?: number): number };
 
