@@ -34,9 +34,9 @@ import { nioshDose } from '../../calc/workspaces/splSafety';
 import { Scene, type Callout } from '../art/Scene';
 import { HeatLegend, LEGEND_H, PlanView, PLAN_FRAME, planAt, planObstacles, type MapMode } from '../art/PlanView';
 import { MixerRear } from '../art/RearPanels';
-import { PassiveTopRear, PowerAmpRear, SB_IN, SB_H, SB_W, SpeakerLead, StageBox, Subwoofer, XoverPlot, xoverResp, AMP_W, SUB_W } from '../art/VenueGear';
+import { PassiveTopRear, PowerAmpRear, SB_IN, SB_H, SB_W, SpeakerLead, SPEAKER_LEAD_FLAG, StageBox, Subwoofer, XoverPlot, xoverResp, AMP_H, AMP_W, SUB_W } from '../art/VenueGear';
 import { PowerSpeaker, SPEAKER_W } from '../art/gear';
-import { CableRun } from '../art/cables';
+import { CableRun, cableFlagBox } from '../art/cables';
 import { MIXER_REAR, MIXER_REAR_JACKS, type Box } from '../geometry/boothGeometry';
 import { AMP_REAR, NL4, SYS_AMP_AT, SYS_TOP_AT, speakerLeadPts } from '../geometry/eventGeometry';
 import { DjRack } from '../DjRack';
@@ -145,16 +145,80 @@ export function HandoffView({ booth }: { booth: Booth }) {
 
 const S_FRAME: Box = { x: -40, y: -140, w: 1180, h: 900 };
 
-/** R3-DJ-02: the speaker lead's flag sits in the gap between the amp and
- *  the top, on the lead. */
-const LEAD = speakerLeadPts();
-const LEAD_FLAG: [number, number] = [LEAD[Math.round(LEAD.length * 0.2)][0], 14];
 /** The processor's feed into the amp's CH A INPUT: a balanced XLR line (its
  *  male plug in the amp's female socket) coming down from above the view. */
 const AMP_IN_A: [number, number][] = [
   [SYS_AMP_AT.x + AMP_REAR.inA.x, SYS_AMP_AT.y + AMP_REAR.inA.y],
   [SYS_AMP_AT.x + AMP_REAR.inA.x, SYS_AMP_AT.y - 60],
 ];
+/** R4-DJ-02: how far past the frame's edge the amp's other leads run before
+ *  they end — off the glass at every size, so their far plugs (at the mains
+ *  distro, at TOP R) are never drawn hanging in the picture. */
+export const AMP_LEAD_RUN_OFF = 1200;
+/** R4-DJ-02: the mains lead's lane — just under the amp's chassis (its
+ *  bottom edge at y + 88), above the speaker lead's flag. */
+export const AMP_MAINS_LANE_Y = SYS_AMP_AT.y + AMP_H + 8;
+/** R4-DJ-02: the amp's mains lead — its IEC C13 plug seated in AC IN, the
+ *  cord (true scale, ⌀ ≈ 6, ribbed) dropping from the plug and turning LEFT
+ *  under the chassis, out of the frame toward the power distro. Mains keeps
+ *  to the fan side and the underside; every audio lead (the XLR line, both
+ *  speaker leads) is to its right or above it — it crosses none and runs
+ *  beside none (rule book R1, R2, R8). */
+export const AMP_AC: [number, number][] = [
+  [SYS_AMP_AT.x + AMP_REAR.ac.x, SYS_AMP_AT.y + AMP_REAR.ac.y],
+  [SYS_AMP_AT.x + AMP_REAR.ac.x, AMP_MAINS_LANE_Y],
+  [S_FRAME.x - AMP_LEAD_RUN_OFF, AMP_MAINS_LANE_Y],
+];
+/** R4-DJ-02: CH B is not empty — it drives the other top (TOP R, out of
+ *  view): a Speakon lead (NL4FC seated in CH B OUTPUT) rising in its own
+ *  lane out of the frame, called out "TO TOP R". */
+export const AMP_OUT_B: [number, number][] = [
+  [SYS_AMP_AT.x + AMP_REAR.outB.x, SYS_AMP_AT.y + AMP_REAR.outB.y],
+  [SYS_AMP_AT.x + AMP_REAR.outB.x, S_FRAME.y - AMP_LEAD_RUN_OFF],
+];
+
+/** R3-DJ-02: the speaker lead's flag sits in the gap between the amp and
+ *  the top, on the lead; R4-DJ-02: it HANGS from just under the mains lane
+ *  (its top edge given), so at every scale it never covers the mains lead. */
+const LEAD = speakerLeadPts();
+export const LEAD_FLAG: [number, number] = [LEAD[Math.round(LEAD.length * 0.2)][0], AMP_MAINS_LANE_Y + 3.1 + 4];
+
+/** The SYSTEM view's labels (R4-DJ-02 adds CH B's "TO TOP R"). */
+export function sysCallouts(v: { tops: 'POWERED' | 'PASSIVE'; subs: boolean }): Callout[] {
+  const tp: Callout = { id: 'tp', text: v.tops === 'PASSIVE' ? 'PASSIVE TOP (BACK)' : 'POWERED TOP', at: { x: SYS_TOP_AT.x + (v.tops === 'PASSIVE' ? SPEAKER_W * 0.22 : SPEAKER_W / 2), y: SYS_TOP_AT.y + 40 }, dx: 0, dy: -30, tone: 'plain' };
+  const sb: Callout = { id: 'sb', text: v.subs ? '18-INCH SUB' : 'SUB (OFF)', at: { x: 500 + SUB_W / 2, y: 30 }, dx: 0, dy: -24, tone: 'plain' };
+  if (v.tops !== 'PASSIVE') return [tp, sb];
+  // R4-DJ-02: the gear sits in a thin band under the plot, so the amp's two
+  // labels take its two sides — CH B's lead on the left, the amp's name on
+  // the right, level with it — and they are placed before the sub's
+  return [
+    tp,
+    { id: 'cb', text: 'TO TOP R', at: { x: AMP_OUT_B[0][0], y: SYS_AMP_AT.y - 8 }, dx: -14, dy: 0, tone: 'plain' },
+    { id: 'am', text: 'POWER AMP (BACK)', at: { x: SYS_AMP_AT.x + AMP_W - 11, y: SYS_AMP_AT.y + AMP_H / 2 }, dx: 12, dy: 0, tone: 'plain' },
+    sb,
+  ];
+}
+
+/** The SYSTEM view's cables, kept clear of labels (PASSIVE + AMP only). */
+export function sysObstacles(tops: 'POWERED' | 'PASSIVE'): Box[] | undefined {
+  if (tops !== 'PASSIVE') return undefined;
+  const up = (pts: [number, number][], half: number): Box => ({ x: pts[0][0] - half, y: S_FRAME.y, w: half * 2, h: pts[0][1] + half - S_FRAME.y });
+  const ac = AMP_AC[0];
+  return [
+    { x: Math.min(...LEAD.map((p) => p[0])) - NL4.plugD / 2, y: LEAD[0][1] - NL4.plugD / 2, w: NL4.plugD + 20, h: LEAD[LEAD.length - 1][1] - LEAD[0][1] + NL4.plugD },
+    up(AMP_IN_A, 12),
+    up(AMP_OUT_B, NL4.plugD / 2),
+    // the mains lead: its plug and drop, then its run out to the left
+    { x: ac[0] - 15, y: ac[1] - 11, w: 30, h: AMP_MAINS_LANE_Y + 4 - (ac[1] - 11) },
+    { x: S_FRAME.x - AMP_LEAD_RUN_OFF, y: AMP_MAINS_LANE_Y - 4, w: ac[0] + 4 - (S_FRAME.x - AMP_LEAD_RUN_OFF), h: 8 },
+  ];
+}
+
+/** R4-DJ-02: the amp's panel, which a label should rather not cover. */
+export const SYS_SOFT: Box[] = [{ x: SYS_AMP_AT.x, y: SYS_AMP_AT.y, w: AMP_W, h: AMP_H }];
+
+/** The speaker lead's flag, at the Scene's scale: no label may cover it. */
+export const sysObstaclesAt = (s: number, k: number): Box[] => [cableFlagBox(LEAD_FLAG[0], LEAD_FLAG[1], SPEAKER_LEAD_FLAG, s, k, true)];
 
 /**
  * PASSIVE + AMP (R3-DJ-02, owner 2026-10-21): a passive top has no
@@ -163,8 +227,10 @@ const AMP_IN_A: [number, number][] = [
  * amp's Speakon CH A OUTPUT and the top's INPUT cup, joined by a Speakon
  * speaker lead (heavy, unshielded two-core; an NL4FC at each end) — never a
  * mic or line cable (rule book L3, L4, R1). The processor's line comes into
- * the amp's CH A INPUT on XLR from above. One channel is drawn: CH B (the
- * other top) stands empty here.
+ * the amp's CH A INPUT on XLR from above. R4-DJ-02: the amp is powered — its
+ * mains lead (IEC C13 seated in AC IN) drops and leaves the frame to the
+ * left, under the chassis, in its own lane — and CH B drives the other top:
+ * its Speakon lead rises out of the frame, called out "TO TOP R".
  */
 export function SystemView({ booth, live }: { booth: Booth; live: boolean }) {
   const v = evOf(booth).venue;
@@ -173,9 +239,11 @@ export function SystemView({ booth, live }: { booth: Booth; live: boolean }) {
       {v.tops === 'PASSIVE' ? (
         <Group>
           <PowerAmpRear x={SYS_AMP_AT.x} y={SYS_AMP_AT.y} />
+          <CableRun r={{ id: 'ampAc', kind: 'iec', colour: '#16171a', pts: AMP_AC, plugged: true, live: true, label: 'MAINS', farKind: 'mains' }} />
           <CableRun r={{ id: 'ampInA', kind: 'xlr', colour: '#3d4046', pts: AMP_IN_A, plugged: true, live, label: 'FROM PROCESSOR' }} />
+          <SpeakerLead pts={AMP_OUT_B} live={live} />
           <PassiveTopRear x={SYS_TOP_AT.x} y={SYS_TOP_AT.y} />
-          <SpeakerLead pts={LEAD} live={live} labelAt={LEAD_FLAG} />
+          <SpeakerLead pts={LEAD} live={live} labelAt={LEAD_FLAG} labelTop />
         </Group>
       ) : (
         <PowerSpeaker x={SYS_TOP_AT.x} y={SYS_TOP_AT.y} s={1} on signal={live} />
@@ -362,11 +430,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
     { x: mstX('L') - 7, y: mst('L').y, w: 14, h: LANE.under - mst('L').y },
     { x: mstX('R') - 7, y: LANE.over, w: 14, h: mst('R').y - LANE.over },
   ];
-  const sysCallouts: Callout[] = [
-    { id: 'tp', text: v.tops === 'PASSIVE' ? 'PASSIVE TOP (BACK)' : 'POWERED TOP', at: { x: SYS_TOP_AT.x + (v.tops === 'PASSIVE' ? SPEAKER_W * 0.22 : SPEAKER_W / 2), y: SYS_TOP_AT.y + 40 }, dx: 0, dy: -30, tone: 'plain' },
-    { id: 'sb', text: v.subs ? '18-INCH SUB' : 'SUB (OFF)', at: { x: 500 + SUB_W / 2, y: 30 }, dx: 0, dy: -24, tone: 'plain' },
-    ...(v.tops === 'PASSIVE' ? [{ id: 'am', text: 'POWER AMP (BACK)', at: { x: SYS_AMP_AT.x + AMP_W / 2, y: SYS_AMP_AT.y }, dx: 0, dy: -16, tone: 'plain' as const }] : []),
-  ];
+  const sysCalloutsNow = sysCallouts(v);
 
   const fourth =
     view === 'ROOM'
@@ -396,9 +460,11 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
               motion={motion}
               fit={{ x: 0, y: h * 0.5, w, h: h * 0.5 }}
               aspect={false}
-              a11y={`${LOOK.SYSTEM}${v.tops === 'PASSIVE' ? ' The passive top and its power amp are seen from the back: the processor’s line comes into the amp’s CH A input on XLR, and a Speakon speaker cable runs from the amp’s CH A output to the top’s INPUT. The top has no amplifier and no power light of its own.' : ''} The crossover is ${v.xover ? 'on' : 'off'}; at 100 hertz the sum is ${at100.toFixed(1)} dB.`}
-              obstacles={v.tops === 'PASSIVE' ? [{ x: Math.min(...LEAD.map((p) => p[0])) - NL4.plugD / 2, y: LEAD[0][1] - NL4.plugD / 2, w: NL4.plugD + 20, h: LEAD[LEAD.length - 1][1] - LEAD[0][1] + NL4.plugD }, { x: AMP_IN_A[0][0] - 12, y: S_FRAME.y, w: 24, h: AMP_IN_A[0][1] + 12 - S_FRAME.y }] : undefined}
-              callouts={sysCallouts}
+              a11y={`${LOOK.SYSTEM}${v.tops === 'PASSIVE' ? ' The passive top and its power amp are seen from the back: the processor’s line comes into the amp’s CH A input on XLR, and a Speakon speaker cable runs from the amp’s CH A output to the top’s INPUT. The amp’s CH B output feeds the other top, TOP R, on its own Speakon lead out of view, and the amp’s mains lead is plugged into its AC IN. The top has no amplifier and no power light of its own.' : ''} The crossover is ${v.xover ? 'on' : 'off'}; at 100 hertz the sum is ${at100.toFixed(1)} dB.`}
+              obstacles={sysObstacles(v.tops)}
+              obstaclesAt={v.tops === 'PASSIVE' ? sysObstaclesAt : undefined}
+              soft={v.tops === 'PASSIVE' ? SYS_SOFT : undefined}
+              callouts={sysCalloutsNow}
               screenOverlay={(sw, sh, _x, kz) => {
                 const kk = Math.sqrt(Math.max(1, kz));
                 return <XoverPlot b={{ x: 42 * kk, y: 14 * kk, w: sw - 56 * kk, h: sh * 0.5 - 42 * kk }} xover={v.xover} subs={v.subs} k={kk} />;

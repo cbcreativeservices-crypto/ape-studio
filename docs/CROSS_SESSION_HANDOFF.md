@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 09:12 · ccode · ad554761
+changed: Round 4 cable labs (owner go): inspection markers on real faults, as-found rack powered, amber trace, honest route lengths, patch cords clear of bushings, bi-amp HF wording
+affects other side: nothing (client lab art/text only)
+needs: nothing
+
+
 ### 2026-10-21 08:48 · ccode · 30d89590
 changed: Tests (owner go 2026-10-21): normalise CRLF when reading source, so 22 test files pass on Windows checkouts
 affects other side: nothing (tests only)

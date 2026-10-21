@@ -273,7 +273,10 @@ export function Nl4PlugFace({ cx, cy }: { cx: number; cy: number }) {
 /** The Speakon speaker lead along pts (dense, mm): a heavy unshielded
  *  two-core cable at its true diameter, an NL4FC seated at each end, and its
  *  flag. */
-export function SpeakerLead({ pts, live, labelAt }: { pts: [number, number][]; live: boolean; labelAt?: [number, number] }) {
+export const SPEAKER_LEAD_FLAG = 'SPEAKER CABLE · NL4';
+
+/** `labelTop` (R4-DJ-02): labelAt's y is the flag's top edge. */
+export function SpeakerLead({ pts, live, labelAt, labelTop = false }: { pts: [number, number][]; live: boolean; labelAt?: [number, number]; labelTop?: boolean }) {
   const path = useMemo(() => {
     const p = Skia.PathBuilder.Make();
     p.moveTo(pts[0][0], pts[0][1]);
@@ -287,7 +290,7 @@ export function SpeakerLead({ pts, live, labelAt }: { pts: [number, number][]; l
       <Cable pts={pts} path={path} style={{ colour: '#141518', width: NL4.cableD, pattern: 'plain' }} glow={live ? INK.blue : null} />
       <Nl4PlugFace cx={a[0]} cy={a[1]} />
       <Nl4PlugFace cx={b[0]} cy={b[1]} />
-      {labelAt ? <CableFlag x={labelAt[0]} y={labelAt[1]} text="SPEAKER CABLE · NL4" live={live} edge="#5c626b" /> : null}
+      {labelAt ? <CableFlag x={labelAt[0]} y={labelAt[1]} text={SPEAKER_LEAD_FLAG} live={live} edge="#5c626b" top={labelTop} /> : null}
     </Group>
   );
 }

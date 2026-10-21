@@ -56,7 +56,24 @@ const TERMS = [
 
 export const GOALS_REC = ['Tap REC OUT, then move MASTER: the take stays', 'Capture level: peaks −12 … −3 dBFS, no clip', 'The mic in the take', 'Play back a take with music and voice', 'Stop the recorder clipping', 'Pass the check'] as const;
 
-const LOOK = 'You are looking at the back of the mixer and a handheld recorder, joined by a split lead (two RCA plugs into one small stereo plug), and the take below.';
+/**
+ * R4-DJ-01: what LOOK says follows the TAP, exactly as the drawing shows it
+ * (RecorderGear.SplitLead: RCA legs in REC OUT, 6.35 mm jack legs in BOOTH
+ * OUT, one 3.5 mm plug in the recorder's LINE IN; LOOPBACK draws the laptop
+ * and no recorder; UNPLUG, the recorder with nothing in it).
+ */
+export function lookFor(tap: RecTap): string {
+  switch (tap) {
+    case 'REC_OUT':
+      return 'You are looking at the back of the mixer and a handheld recorder, joined by a split lead: two RCA plugs (white and red) in the mixer’s REC OUT, into one small stereo plug (3.5 mm) in the recorder’s LINE IN. The take is below.';
+    case 'BOOTH':
+      return 'You are looking at the back of the mixer and a handheld recorder, joined by a split lead: two ¼-inch (6.35 mm) jack plugs in the mixer’s BOOTH OUT, into one small stereo plug (3.5 mm) in the recorder’s LINE IN. The take is below.';
+    case 'LOOPBACK':
+      return 'You are looking at the back of the mixer and a laptop. No lead joins them: loopback records only what the computer plays. The take is below.';
+    default:
+      return 'You are looking at the back of the mixer and a handheld recorder with nothing in its LINE IN. The take is below.';
+  }
+}
 
 /* ── the stage (mm) ───────────────────────────────────────────────────── */
 
@@ -281,7 +298,7 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
             fit={{ x: 0, y: 0, w, h: h * GEAR_SHARE }}
             aspect={false}
             focus={rec.tap === 'LOOPBACK' ? undefined : { x: REC_AT.x - 40, y: REC_AT.y + 40, w: 120, h: 80 }}
-            a11y={`${LOOK} Tap: ${rec.tap === 'NONE' ? 'nothing plugged in' : REC_TAPS[rec.tap as Exclude<RecTap, 'NONE'>].label}.${rec.tap === 'BOOTH' ? ' The booth monitors’ two cables hang unplugged beside the mixer: BOOTH OUT holds the recorder’s lead, so the monitors are silent.' : ''} ${take ? `The take is ${take.seconds.toFixed(1)} seconds${take.hasVoice ? ', with the voice in it' : ', with no voice in it'}.` : 'No take yet.'}`}
+            a11y={`${lookFor(rec.tap)} Tap: ${rec.tap === 'NONE' ? 'nothing plugged in' : REC_TAPS[rec.tap as Exclude<RecTap, 'NONE'>].label}.${rec.tap === 'BOOTH' ? ' The booth monitors’ two cables hang unplugged beside the mixer: BOOTH OUT holds the recorder’s lead, so the monitors are silent.' : ''} ${take ? `The take is ${take.seconds.toFixed(1)} seconds${take.hasVoice ? ', with the voice in it' : ', with no voice in it'}.` : 'No take yet.'}`}
             obstacles={[{ x: 0, y: 0, w: MIXER_REAR.w, h: MIXER_REAR.h }, ...(rec.tap === 'BOOTH' ? [LOOSE_STRIP] : []), ...(rec.tap === 'LOOPBACK' ? [] : [{ x: REC_AT.x - 12, y: REC_AT.y, w: REC_W + 18, h: REC_H }, { x: E['rec.L'].x - 8, y: E['rec.L'].y, w: REC_AT.x - E['rec.L'].x, h: 136 + 14 - E['rec.L'].y }])]}
             callouts={callouts}
             screenOverlay={(sw, sh, _x, kz) => <TakeLane b={{ x: 12, y: sh * GEAR_SHARE + 2, w: sw - 24, h: sh * (1 - GEAR_SHARE) - 10 * Math.sqrt(Math.max(1, kz)) }} take={take} pos={player.pos} k={Math.sqrt(Math.max(1, kz))} recording={armed} />}
@@ -340,7 +357,7 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
-        <Look>{LOOK}</Look>
+        <Look>{lookFor(rec.tap)}</Look>
         <P>A recording is only as good as the feed it takes and the level it takes it at — and only playback proves it. Pick the tap, set the RECORDER’s own level, and listen back.</P>
         <Terms items={TERMS} />
       </Step>

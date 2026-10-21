@@ -466,8 +466,13 @@ monitors (±1.25, 1.3) aimed at the DJ; floor y 3.2 … 11, centre (0, 7)).
   ⌀ 10; an NL4FC connector at each end, true size, `NL4`) runs from the
   amp's CH A OUTPUT to the top's INPUT in its own lane
   (`speakerLeadPts`), and the processor's line comes into the amp's CH A
-  INPUT on XLR. One channel is drawn; CH B (the other top) stands empty.
-  Rule book L3, L4, R1.
+  INPUT on XLR. CH A's top is drawn; R4-DJ-02 (2026-10-21): CH B is not
+  empty — its Speakon lead (NL4FC seated) rises out of the frame, called
+  out "TO TOP R" (`AMP_OUT_B`), and the amp is powered: an IEC C13 mains
+  lead seated in AC IN drops and leaves the frame to the LEFT under the
+  chassis in its own lane (`AMP_AC`, `AMP_MAINS_LANE_Y`), crossing and
+  running beside no audio lead; the speaker lead's flag hangs from just
+  under that lane. Rule book L3, L4, R1, R2, R8.
 
 ## 16. Recording (screen 21)
 
@@ -483,6 +488,11 @@ its voice marks where
 the mic's own part of the take is above −50 dBFS; PLAY THE TAKE plays the
 captured samples (the booth stops first) at the LISTEN level through the
 protective limiter.
+
+The screen's LOOK follows the tap (R4-DJ-01, `lookFor`): REC OUT → two
+RCA plugs, BOOTH OUT → two ¼-inch (6.35 mm) jack plugs, each into one
+3.5 mm stereo plug in the recorder's LINE IN — exactly what SplitLead
+draws; LOOPBACK → the laptop, no lead; UNPLUG → nothing in LINE IN.
 
 BOOTH OUT as the tap (R3-DJ-01, owner 2026-10-21 "unplug the booth
 monitors"): the recorder's split lead takes both BOOTH OUT jacks, so the
