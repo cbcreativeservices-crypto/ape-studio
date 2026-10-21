@@ -471,8 +471,11 @@ monitors (±1.25, 1.3) aimed at the DJ; floor y 3.2 … 11, centre (0, 7)).
   out "TO TOP R" (`AMP_OUT_B`), and the amp is powered: an IEC C13 mains
   lead seated in AC IN drops and leaves the frame to the LEFT under the
   chassis in its own lane (`AMP_AC`, `AMP_MAINS_LANE_Y`), crossing and
-  running beside no audio lead; the speaker lead's flag hangs from just
-  under that lane. Rule book L3, L4, R1, R2, R8.
+  running beside no audio lead. The speaker lead's tag is two lines
+  ("SPEAKER CABLE" / "NL4", 9.5 pt) LEFT of the top, tied to the lead by a
+  hairline ending in a dot on the lead, clear of the sub, the top, the amp
+  and the mains at 360×290, 390×330 and 820×600 (wiringFix_r6_dj). Rule
+  book L3, L4, R1, R2, R8.
 
 ## 16. Recording (screen 21)
 

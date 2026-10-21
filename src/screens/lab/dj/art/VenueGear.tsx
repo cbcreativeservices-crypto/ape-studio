@@ -25,14 +25,15 @@
  *
  * Generic: no brand, no logo.
  */
-import { memo, useMemo } from 'react';
+import { memo, useContext, useMemo } from 'react';
 import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Rect, RoundedRect, Skia, SweepGradient, vec } from '@shopify/react-native-skia';
 import { INK } from './ink';
 import { Cable, IecInlet, Knob, Led, Rocker, XlrSocket } from './parts';
 import { CableFlag } from './cables';
 import { SPEAKER_H, SPEAKER_W } from '../geometry/gearGeometry';
-import { AMP_REAR, NL4, PASSIVE_REAR } from '../geometry/eventGeometry';
-import { SceneText, useLabelMm } from './sceneText';
+import { AMP_REAR, NL4, PASSIVE_REAR, SPEAKER_TAG, speakerLeadXAt, speakerTagBox } from '../geometry/eventGeometry';
+import { SceneFontsContext, SceneText, useLabelMm } from './sceneText';
+import { textWidthPt } from './Scene';
 import { xoverResp } from '../engine/djEventRender';
 import { XOVER_HZ } from '../model/djEvent';
 
@@ -273,10 +274,7 @@ export function Nl4PlugFace({ cx, cy }: { cx: number; cy: number }) {
 /** The Speakon speaker lead along pts (dense, mm): a heavy unshielded
  *  two-core cable at its true diameter, an NL4FC seated at each end, and its
  *  flag. */
-export const SPEAKER_LEAD_FLAG = 'SPEAKER CABLE · NL4';
-
-/** `labelTop` (R4-DJ-02): labelAt's y is the flag's top edge. */
-export function SpeakerLead({ pts, live, labelAt, labelTop = false }: { pts: [number, number][]; live: boolean; labelAt?: [number, number]; labelTop?: boolean }) {
+export function SpeakerLead({ pts, live, labelAt }: { pts: [number, number][]; live: boolean; labelAt?: [number, number] }) {
   const path = useMemo(() => {
     const p = Skia.PathBuilder.Make();
     p.moveTo(pts[0][0], pts[0][1]);
@@ -290,7 +288,37 @@ export function SpeakerLead({ pts, live, labelAt, labelTop = false }: { pts: [nu
       <Cable pts={pts} path={path} style={{ colour: '#141518', width: NL4.cableD, pattern: 'plain' }} glow={live ? INK.blue : null} />
       <Nl4PlugFace cx={a[0]} cy={a[1]} />
       <Nl4PlugFace cx={b[0]} cy={b[1]} />
-      {labelAt ? <CableFlag x={labelAt[0]} y={labelAt[1]} text={SPEAKER_LEAD_FLAG} live={live} edge="#5c626b" top={labelTop} /> : null}
+      {labelAt ? <CableFlag x={labelAt[0]} y={labelAt[1]} text="SPEAKER CABLE · NL4" live={live} edge="#5c626b" /> : null}
+    </Group>
+  );
+}
+
+/** The speaker lead's tag's widest line, in points at text scale k. */
+export const speakerTagWidestPt = (k: number) => Math.max(...SPEAKER_TAG.lines.map((l) => textWidthPt(l, k)));
+
+/**
+ * R4-DJ-02 follow-up: the speaker lead's name — a two-line tag standing
+ * LEFT of the passive top (geometry/eventGeometry.speakerTagBox), clear of
+ * the top, the sub, the amp and its leads at every glass size, tied to the
+ * lead by a thin line across the top's plain rear that ends in a dot ON the
+ * lead. 9.5 pt × k.
+ */
+export function SpeakerLeadTag({ live }: { live: boolean }) {
+  const { s, textScale } = useContext(SceneFontsContext);
+  const b = speakerTagBox(s, textScale, speakerTagWidestPt(textScale));
+  const y = SPEAKER_TAG.tieY;
+  const lx = speakerLeadXAt(y);
+  const hair = 1 / Math.max(1e-6, s);
+  const tint = live ? '#8fbcff' : INK.print;
+  return (
+    <Group>
+      <Line p1={vec(b.x + b.w, y)} p2={vec(lx, y)} color="rgba(255,255,255,0.55)" strokeWidth={hair} />
+      <Circle cx={lx} cy={y} r={2.2 * hair} color="#e8ebef" />
+      <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={b.mm * 0.4} color="rgba(10,11,13,0.92)" />
+      <RoundedRect x={b.x} y={b.y} width={b.w} height={b.h} r={b.mm * 0.4} style="stroke" strokeWidth={b.mm * 0.12} color="#5c626b" />
+      {SPEAKER_TAG.lines.map((t, i) => (
+        <SceneText key={t} x={b.x + b.w / 2} y={b.y + b.mm * (1.12 + i * 1.15)} size={b.mm} text={t} color={tint} face="label" align="center" />
+      ))}
     </Group>
   );
 }

@@ -16,8 +16,9 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { AMP_REAR, NL4, PASSIVE_REAR, SYS_AMP_AT, SYS_TOP_AT, speakerLeadPts } from '../src/screens/lab/dj/geometry/eventGeometry.ts';
+import { AMP_REAR, NL4, PASSIVE_REAR, SPEAKER_TAG, SYS_AMP_AT, SYS_TOP_AT, speakerLeadPts, speakerLeadXAt, speakerTagBox } from '../src/screens/lab/dj/geometry/eventGeometry.ts';
 import { SPEAKER_W } from '../src/screens/lab/dj/geometry/gearGeometry.ts';
+import { fitView } from '../src/screens/lab/dj/geometry/boothGeometry.ts';
 
 const ROOT = join(import.meta.dirname, '..');
 const read = (p: string) => readFileSync(join(ROOT, p), 'utf8').replace(/\r\n/g, '\n');
@@ -69,14 +70,14 @@ describe('R4-DJ-02 — Screen 20 SYSTEM: the amp is powered, CH B goes to TOP R'
   const sv = block(p20, /export function SystemView\(/);
   const AMP_H = 88;
   const AMP_W = 482;
-  const S_FRAME = { x: -40, y: -140, w: 1180, h: 900 };
+  const S_FRAME = { x: -40, y: -270, w: 1180, h: 1030 };
   const LANE_Y = SYS_AMP_AT.y + AMP_H + 8;
   const ac = { x: SYS_AMP_AT.x + AMP_REAR.ac.x, y: SYS_AMP_AT.y + AMP_REAR.ac.y };
   const outB = { x: SYS_AMP_AT.x + AMP_REAR.outB.x, y: SYS_AMP_AT.y + AMP_REAR.outB.y };
   const inA = { x: SYS_AMP_AT.x + AMP_REAR.inA.x, y: SYS_AMP_AT.y + AMP_REAR.inA.y };
   it('the geometry the test assumes is the source’s', () => {
     assert.match(vg, /export const AMP_W = 482;\nexport const AMP_H = 88;/);
-    assert.match(p20, /const S_FRAME: Box = \{ x: -40, y: -140, w: 1180, h: 900 \};/);
+    assert.match(p20, /export const S_FRAME: Box = \{ x: -40, y: -270, w: 1180, h: 1030 \};/);
     assert.match(p20, /export const AMP_MAINS_LANE_Y = SYS_AMP_AT\.y \+ AMP_H \+ 8;/);
   });
   it('a mains lead is drawn into AC IN: IEC C13 seated, ribbed mains cord at true scale, a mains plug at its far end', () => {
@@ -102,12 +103,47 @@ describe('R4-DJ-02 — Screen 20 SYSTEM: the amp is powered, CH B goes to TOP R'
     // it leaves the frame on the left, far off the glass
     assert.match(p20, /export const AMP_LEAD_RUN_OFF = 1200;/);
   });
-  it('the speaker lead’s flag hangs from under the mains lane (top-anchored) and is kept clear of labels', () => {
-    assert.match(p20, /export const LEAD_FLAG: \[number, number\] = \[LEAD\[Math\.round\(LEAD\.length \* 0\.2\)\]\[0\], AMP_MAINS_LANE_Y \+ 3\.1 \+ 4\];/);
-    assert.match(sv, /<SpeakerLead pts=\{LEAD\} live=\{live\} labelAt=\{LEAD_FLAG\} labelTop \/>/);
-    assert.match(p20, /obstaclesAt=\{v\.tops === 'PASSIVE' \? sysObstaclesAt : undefined\}/);
-    assert.match(p20, /cableFlagBox\(LEAD_FLAG\[0\], LEAD_FLAG\[1\], SPEAKER_LEAD_FLAG, s, k, true\)/);
+  // Scene.textWidthPt, copied (Scene.tsx imports react-native); pinned to the source below
+  const textWidthPt = (t: string, k = 1) => {
+    let em = 0;
+    for (const c of t) em += 'MW'.includes(c) ? 0.74 : ' .,:;·\'’|!I1()'.includes(c) ? 0.3 : c === '↔' || c === '→' ? 0.9 : 0.55;
+    return em * 10 * k + t.length * 0.6 * k;
+  };
+  const SUB = { x: 500, y: 0, w: 550 };
+  it('the speaker lead is named by a two-line tag LEFT of the top, tied to the lead (no flag on the lead)', () => {
+    const sceneSrc = read(DJ + 'art/Scene.tsx');
+    assert.ok(sceneSrc.includes("for (const c of t) em += 'MW'.includes(c) ? 0.74 : ' .,:;·\\'’|!I1()'.includes(c) ? 0.3 : c === '↔' || c === '→' ? 0.9 : 0.55;\n  return em * 10 * k + t.length * 0.6 * k;"), 'the copy matches Scene.textWidthPt');
+    assert.match(sv, /<SpeakerLead pts=\{LEAD\} live=\{live\} \/>\n\s*<SpeakerLeadTag live=\{live\} \/>/);
+    assert.doesNotMatch(sv, /labelAt=/, 'no flag ON the lead');
+    assert.deepEqual([...SPEAKER_TAG.lines], ['SPEAKER CABLE', 'NL4']);
+    const tag = block(vg, /export function SpeakerLeadTag\(/);
+    assert.match(tag, /speakerTagBox\(s, textScale, speakerTagWidestPt\(textScale\)\)/);
+    assert.match(tag, /<Circle cx=\{lx\} cy=\{y\}/, 'the tie ends in a dot ON the lead');
+    assert.match(p20, /const b = speakerTagBox\(s, k, speakerTagWidestPt\(k\)\);\n  return \[\{ x: b\.x, y: b\.y, w: b\.w, h: b\.h \}\];/, 'no label may cover it');
+    // the tie line runs across the top's plain rear: under the handle, above the connector cup
+    assert.ok(SPEAKER_TAG.tieY > SYS_TOP_AT.y + 60 && SPEAKER_TAG.tieY < SYS_TOP_AT.y + PASSIVE_REAR.cup.y - 10);
+    const lx = speakerLeadXAt(SPEAKER_TAG.tieY);
+    assert.ok(lx > SYS_TOP_AT.x + PASSIVE_REAR.cup.x && lx < SYS_TOP_AT.x + PASSIVE_REAR.cup.x + PASSIVE_REAR.cup.w);
   });
+  // k (the words' growth) exceeds 1 only when the stage itself is enlarged
+  // (full screen: k = √(window ÷ glass)), so it is checked on the big glass
+  for (const [W, H, ks] of [[360, 290, [1]], [390, 330, [1]], [820, 600, [1, 1.5]]] as const) {
+    for (const k of ks) {
+      it(`at ${W}×${H} (k ${k}) the tag is ≥ 9 pt, fully on the glass and clear of the sub, the top, the amp and the mains`, () => {
+        const v = fitView(S_FRAME, W, H * 0.5, 6);
+        const b = speakerTagBox(v.s, k, Math.max(...SPEAKER_TAG.lines.map((l) => textWidthPt(l, k))));
+        assert.ok(SPEAKER_TAG.pt * k >= 9, 'text ≥ 9 pt');
+        assert.ok(b.x + b.w < SUB.x - 4 / v.s, `clear of the sub (${(b.x + b.w).toFixed(0)} < ${SUB.x})`);
+        assert.ok(b.x + b.w < SYS_TOP_AT.x, 'left of the top');
+        assert.ok(b.y > LANE_Y + 3.1, 'below the mains lane and the amp');
+        assert.ok(b.y + b.h < SYS_TOP_AT.y + 600, 'within the top’s height');
+        const left = v.ox + b.x * v.s;
+        assert.ok(left >= 0, `on the glass (left edge ${left.toFixed(1)} pt)`);
+        // both lines fit the box
+        assert.ok(textWidthPt('SPEAKER CABLE', k) / v.s < b.w);
+      });
+    }
+  }
   it('CH B is not empty: a Speakon lead, seated, rises out of the frame in its own lane, called out TO TOP R (≥ 9 pt)', () => {
     assert.match(sv, /<SpeakerLead pts=\{AMP_OUT_B\} live=\{live\} \/>/);
     assert.match(p20, /export const AMP_OUT_B: \[number, number\]\[\] = \[\n  \[SYS_AMP_AT\.x \+ AMP_REAR\.outB\.x, SYS_AMP_AT\.y \+ AMP_REAR\.outB\.y\],\n  \[SYS_AMP_AT\.x \+ AMP_REAR\.outB\.x, S_FRAME\.y - AMP_LEAD_RUN_OFF\],\n\];/);
@@ -115,7 +151,11 @@ describe('R4-DJ-02 — Screen 20 SYSTEM: the amp is powered, CH B goes to TOP R'
     assert.ok(outB.x + NL4.cableD / 2 < (AMP_REAR.outB.x + AMP_REAR.outA.x) / 2 - 12, 'left of the SPEAKER OUT legend');
     assert.ok(outB.x + NL4.plugD / 2 < SYS_AMP_AT.x + AMP_REAR.outA.x - NL4.plugD / 2, 'clear of CH A’s plug');
     // the callout (Scene callouts are 10 pt × k, never under 9 pt)
-    assert.match(p20, /\{ id: 'cb', text: 'TO TOP R', at: \{ x: AMP_OUT_B\[0\]\[0\], y: SYS_AMP_AT\.y - 8 \}, dx: -14, dy: 0, tone: 'plain' \}/);
+    assert.match(p20, /\{ id: 'cb', text: 'TO TOP R', at: \{ x: AMP_OUT_B\[0\]\[0\], y: SYS_AMP_AT\.y - 75 \}, dx: -8, dy: 0, tone: 'plain' \}/);
+    // beside its lead: the frame keeps a 150 mm band above the amp for it, and the XLR line's far end is off the glass too
+    assert.ok(SYS_AMP_AT.y - S_FRAME.y >= 150);
+    assert.ok(SYS_AMP_AT.y - 75 > S_FRAME.y + 40);
+    assert.match(p20, /\[SYS_AMP_AT\.x \+ AMP_REAR\.inA\.x, S_FRAME\.y - AMP_LEAD_RUN_OFF\],/);
     assert.match(read(DJ + 'art/Scene.tsx'), /const fs = 10 \* k;/);
     // its lane is a label obstacle
     assert.match(p20, /up\(AMP_OUT_B, NL4\.plugD \/ 2\)/);

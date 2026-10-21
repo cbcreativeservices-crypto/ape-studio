@@ -34,11 +34,11 @@ import { nioshDose } from '../../calc/workspaces/splSafety';
 import { Scene, type Callout } from '../art/Scene';
 import { HeatLegend, LEGEND_H, PlanView, PLAN_FRAME, planAt, planObstacles, type MapMode } from '../art/PlanView';
 import { MixerRear } from '../art/RearPanels';
-import { PassiveTopRear, PowerAmpRear, SB_IN, SB_H, SB_W, SpeakerLead, SPEAKER_LEAD_FLAG, StageBox, Subwoofer, XoverPlot, xoverResp, AMP_H, AMP_W, SUB_W } from '../art/VenueGear';
+import { PassiveTopRear, PowerAmpRear, SB_IN, SB_H, SB_W, SpeakerLead, SpeakerLeadTag, speakerTagWidestPt, StageBox, Subwoofer, XoverPlot, xoverResp, AMP_H, AMP_W, SUB_W } from '../art/VenueGear';
 import { PowerSpeaker, SPEAKER_W } from '../art/gear';
-import { CableRun, cableFlagBox } from '../art/cables';
+import { CableRun } from '../art/cables';
 import { MIXER_REAR, MIXER_REAR_JACKS, type Box } from '../geometry/boothGeometry';
-import { AMP_REAR, NL4, SYS_AMP_AT, SYS_TOP_AT, speakerLeadPts } from '../geometry/eventGeometry';
+import { AMP_REAR, NL4, SYS_AMP_AT, SYS_TOP_AT, speakerLeadPts, speakerTagBox } from '../geometry/eventGeometry';
 import { DjRack } from '../DjRack';
 import { Do, EvidenceCheck, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey, type Transport } from '../dock';
@@ -143,20 +143,23 @@ export function HandoffView({ booth }: { booth: Booth }) {
 
 /* ── the SYSTEM view (mm) ─────────────────────────────────────────────── */
 
-const S_FRAME: Box = { x: -40, y: -140, w: 1180, h: 900 };
+/** R4-DJ-02 follow-up: the frame keeps 150 mm above the amp (y −120), so the
+ *  label for CH B's lead ("TO TOP R") sits right beside that lead, above the
+ *  amp, on every glass. */
+export const S_FRAME: Box = { x: -40, y: -270, w: 1180, h: 1030 };
 
+/** R4-DJ-02: how far past the frame's edge the amp's leads run before they
+ *  end — off the glass at every size, so their far plugs (at the processor,
+ *  the mains distro, TOP R) are never drawn hanging in the picture. */
+export const AMP_LEAD_RUN_OFF = 1200;
 /** The processor's feed into the amp's CH A INPUT: a balanced XLR line (its
  *  male plug in the amp's female socket) coming down from above the view. */
 const AMP_IN_A: [number, number][] = [
   [SYS_AMP_AT.x + AMP_REAR.inA.x, SYS_AMP_AT.y + AMP_REAR.inA.y],
-  [SYS_AMP_AT.x + AMP_REAR.inA.x, SYS_AMP_AT.y - 60],
+  [SYS_AMP_AT.x + AMP_REAR.inA.x, S_FRAME.y - AMP_LEAD_RUN_OFF],
 ];
-/** R4-DJ-02: how far past the frame's edge the amp's other leads run before
- *  they end — off the glass at every size, so their far plugs (at the mains
- *  distro, at TOP R) are never drawn hanging in the picture. */
-export const AMP_LEAD_RUN_OFF = 1200;
 /** R4-DJ-02: the mains lead's lane — just under the amp's chassis (its
- *  bottom edge at y + 88), above the speaker lead's flag. */
+ *  bottom edge at y + 88). */
 export const AMP_MAINS_LANE_Y = SYS_AMP_AT.y + AMP_H + 8;
 /** R4-DJ-02: the amp's mains lead — its IEC C13 plug seated in AC IN, the
  *  cord (true scale, ⌀ ≈ 6, ribbed) dropping from the plug and turning LEFT
@@ -177,23 +180,22 @@ export const AMP_OUT_B: [number, number][] = [
   [SYS_AMP_AT.x + AMP_REAR.outB.x, S_FRAME.y - AMP_LEAD_RUN_OFF],
 ];
 
-/** R3-DJ-02: the speaker lead's flag sits in the gap between the amp and
- *  the top, on the lead; R4-DJ-02: it HANGS from just under the mains lane
- *  (its top edge given), so at every scale it never covers the mains lead. */
+/** The speaker lead. Its name is a two-line tag LEFT of the top
+ *  (VenueGear.SpeakerLeadTag; R4-DJ-02 follow-up): a flag on the lead was
+ *  wider than the top on a small glass and ran under the sub. */
 const LEAD = speakerLeadPts();
-export const LEAD_FLAG: [number, number] = [LEAD[Math.round(LEAD.length * 0.2)][0], AMP_MAINS_LANE_Y + 3.1 + 4];
 
 /** The SYSTEM view's labels (R4-DJ-02 adds CH B's "TO TOP R"). */
 export function sysCallouts(v: { tops: 'POWERED' | 'PASSIVE'; subs: boolean }): Callout[] {
   const tp: Callout = { id: 'tp', text: v.tops === 'PASSIVE' ? 'PASSIVE TOP (BACK)' : 'POWERED TOP', at: { x: SYS_TOP_AT.x + (v.tops === 'PASSIVE' ? SPEAKER_W * 0.22 : SPEAKER_W / 2), y: SYS_TOP_AT.y + 40 }, dx: 0, dy: -30, tone: 'plain' };
   const sb: Callout = { id: 'sb', text: v.subs ? '18-INCH SUB' : 'SUB (OFF)', at: { x: 500 + SUB_W / 2, y: 30 }, dx: 0, dy: -24, tone: 'plain' };
   if (v.tops !== 'PASSIVE') return [tp, sb];
-  // R4-DJ-02: the gear sits in a thin band under the plot, so the amp's two
-  // labels take its two sides — CH B's lead on the left, the amp's name on
-  // the right, level with it — and they are placed before the sub's
+  // R4-DJ-02: CH B's label sits in the band above the amp, right beside its
+  // lead; the amp's name to its right, level with it — both placed before
+  // the sub's
   return [
     tp,
-    { id: 'cb', text: 'TO TOP R', at: { x: AMP_OUT_B[0][0], y: SYS_AMP_AT.y - 8 }, dx: -14, dy: 0, tone: 'plain' },
+    { id: 'cb', text: 'TO TOP R', at: { x: AMP_OUT_B[0][0], y: SYS_AMP_AT.y - 75 }, dx: -8, dy: 0, tone: 'plain' },
     { id: 'am', text: 'POWER AMP (BACK)', at: { x: SYS_AMP_AT.x + AMP_W - 11, y: SYS_AMP_AT.y + AMP_H / 2 }, dx: 12, dy: 0, tone: 'plain' },
     sb,
   ];
@@ -217,8 +219,11 @@ export function sysObstacles(tops: 'POWERED' | 'PASSIVE'): Box[] | undefined {
 /** R4-DJ-02: the amp's panel, which a label should rather not cover. */
 export const SYS_SOFT: Box[] = [{ x: SYS_AMP_AT.x, y: SYS_AMP_AT.y, w: AMP_W, h: AMP_H }];
 
-/** The speaker lead's flag, at the Scene's scale: no label may cover it. */
-export const sysObstaclesAt = (s: number, k: number): Box[] => [cableFlagBox(LEAD_FLAG[0], LEAD_FLAG[1], SPEAKER_LEAD_FLAG, s, k, true)];
+/** The speaker lead's tag, at the Scene's scale: no label may cover it. */
+export const sysObstaclesAt = (s: number, k: number): Box[] => {
+  const b = speakerTagBox(s, k, speakerTagWidestPt(k));
+  return [{ x: b.x, y: b.y, w: b.w, h: b.h }];
+};
 
 /**
  * PASSIVE + AMP (R3-DJ-02, owner 2026-10-21): a passive top has no
@@ -243,7 +248,8 @@ export function SystemView({ booth, live }: { booth: Booth; live: boolean }) {
           <CableRun r={{ id: 'ampInA', kind: 'xlr', colour: '#3d4046', pts: AMP_IN_A, plugged: true, live, label: 'FROM PROCESSOR' }} />
           <SpeakerLead pts={AMP_OUT_B} live={live} />
           <PassiveTopRear x={SYS_TOP_AT.x} y={SYS_TOP_AT.y} />
-          <SpeakerLead pts={LEAD} live={live} labelAt={LEAD_FLAG} labelTop />
+          <SpeakerLead pts={LEAD} live={live} />
+          <SpeakerLeadTag live={live} />
         </Group>
       ) : (
         <PowerSpeaker x={SYS_TOP_AT.x} y={SYS_TOP_AT.y} s={1} on signal={live} />

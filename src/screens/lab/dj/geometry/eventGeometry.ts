@@ -108,6 +108,36 @@ export function speakerLeadPts(): [number, number][] {
   return out;
 }
 
+/** Where the speaker lead crosses height `y` (SYSTEM mm). */
+export function speakerLeadXAt(y: number): number {
+  const pts = speakerLeadPts();
+  for (let i = 1; i < pts.length; i++) {
+    const [x0, y0] = pts[i - 1];
+    const [x1, y1] = pts[i];
+    if (y >= y0 && y <= y1) return x0 + ((x1 - x0) * (y - y0)) / Math.max(1e-9, y1 - y0);
+  }
+  return y < pts[0][1] ? pts[0][0] : pts[pts.length - 1][0];
+}
+
+/**
+ * R4-DJ-02 follow-up: the speaker lead's name tag. A flag ON the lead was
+ * ~690 mm wide on a small glass (9.5 pt at ~0.13 pt/mm) — wider than the
+ * top, into the sub. So the tag is two lines and stands LEFT of the top,
+ * clear of every box, tied to the lead by a thin line across the top's
+ * plain rear (`tieY`, just above the connector cup, low enough that the top's own label keeps its place above the tag). Its text
+ * is 9.5 pt × k at every size; its box is computed here, purely, from the
+ * Scene's scale `s` (pt per mm), text scale `k` and the widest line's width
+ * in points (Scene.textWidthPt).
+ */
+export const SPEAKER_TAG = { lines: ['SPEAKER CABLE', 'NL4'] as const, tieY: SYS_TOP_AT.y + 260, gapPt: 6, pt: 9.5 } as const;
+export function speakerTagBox(s: number, k: number, widestPt: number): { x: number; y: number; w: number; h: number; mm: number } {
+  const mm = (SPEAKER_TAG.pt * k) / Math.max(1e-6, s);
+  const w = (widestPt * 0.92 + 8 * k) / Math.max(1e-6, s);
+  const h = mm * 2.6;
+  const right = SYS_TOP_AT.x - (SPEAKER_TAG.gapPt * k) / Math.max(1e-6, s);
+  return { x: right - w, y: SPEAKER_TAG.tieY - h / 2, w, h, mm };
+}
+
 /** A loose BOOTH cable as drawn (mixer rear mm, dense): from its entry above
  *  the frame down to its plug's boot. The last stretch is exactly vertical. */
 export function boothLooseHang(side: 'L' | 'R'): [number, number][] {

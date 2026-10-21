@@ -150,27 +150,14 @@ function tailPoint(pts: readonly [number, number][], b: [number, number]): [numb
   return pts[0];
 }
 
-/** ADDITIVE (R4-DJ-02): a flag's box in scene mm at scale `s` (pt per mm)
- *  and text scale `k` — centred on (x, y), or hanging from y with `top`.
- *  Pure: a page passes it to Scene's `obstaclesAt` so no label covers it. */
-export function cableFlagBox(x: number, y: number, text: string, s: number, k: number, top = false): { x: number; y: number; w: number; h: number } {
-  const mm = (9.5 * k) / Math.max(1e-6, s);
-  const w = (textWidthPt(text, k) * 0.92 + 8 * k) / Math.max(1e-6, s);
-  const h = mm * 1.32;
-  return { x: x - w / 2, y: top ? y : y - h / 2, w, h };
-}
-
 /** A label flag tied onto a cable: always 9 pt or more on the glass, and
- *  growing with the full-screen zoom. `top` (ADDITIVE, R4-DJ-02): y is the
- *  flag's top edge, so it hangs clear of whatever runs just above it at
- *  every scale. */
-export function CableFlag({ x, y, text, live, edge, top = false }: { x: number; y: number; text: string; live: boolean; edge: string; top?: boolean }) {
+ *  growing with the full-screen zoom. */
+export function CableFlag({ x, y, text, live, edge }: { x: number; y: number; text: string; live: boolean; edge: string }) {
   const { s, textScale } = useContext(SceneFontsContext);
   const pt = 9.5 * textScale;
   const mm = pt / Math.max(1e-6, s);
   const w = (textWidthPt(text, textScale) * 0.92 + 8 * textScale) / s;
   const h = mm * 1.32;
-  if (top) y += h / 2;
   return (
     <Group>
       <RoundedRect x={x - w / 2} y={y - h / 2} width={w} height={h} r={h * 0.3} color="rgba(10,11,13,0.92)" />
