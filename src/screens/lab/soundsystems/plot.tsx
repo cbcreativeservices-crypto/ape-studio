@@ -5,8 +5,9 @@
  * that show a layout and by BUILD mode.
  */
 import type { PlacedSpeaker } from '../../../features/soundsystems/configs';
-import { slotDef } from '../../../features/soundsystems/system';
-import type { Placed, SlotId } from '../../../features/soundsystems/types';
+import { OUT_UNSET, outTag } from '../../../features/soundsystems/outputs';
+import { linkCarries, pairLinks, slotDef, type ConsoleWalk } from '../../../features/soundsystems/system';
+import type { Link, Placed, SlotId, SoundSystem } from '../../../features/soundsystems/types';
 import { colors } from '../../../theme/tokens';
 import type { PlotBeam } from './art/VenueView';
 
@@ -182,4 +183,13 @@ export function placedRotation(p: Placed): number {
     default:
       return 0;
   }
+}
+
+/** A cable that shares its pair with a twin (stagebox → in-ear transmitter
+ *  twice, owner 2026-10-21) wears a tag plate with the output it carries,
+ *  so the two lanes read apart: "AUX 9", "AUX 10", or OUT ? until chosen. */
+export function twinCableTag(system: SoundSystem, l: Link, walk: ConsoleWalk): string | undefined {
+  if (pairLinks(system, l.from, l.to).length < 2) return undefined;
+  const c = linkCarries(system, l, walk);
+  return !c || c === '*' || c === 'all' ? OUT_UNSET : outTag(c);
 }

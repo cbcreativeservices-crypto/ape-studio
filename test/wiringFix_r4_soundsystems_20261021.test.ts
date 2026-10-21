@@ -15,7 +15,7 @@ import { readFileSync } from 'node:fs';
 
 const sys = await import('../src/features/soundsystems/system.ts');
 const con = await import('../src/features/soundsystems/console.ts');
-const { referenceBuild } = await import('./_ssReferenceBuilds.ts');
+const { referenceBuild, stereoFestivalBuild } = await import('./_ssReferenceBuilds.ts');
 const { ROUTE_UI, hearsShown } = await import('../src/screens/lab/soundsystems/pagesBuild.tsx');
 const { auxHears } = await import('../src/screens/lab/soundsystems/art/ConsolePanel.tsx');
 
@@ -24,13 +24,13 @@ type ConsoleOut = import('../src/features/soundsystems/types.ts').ConsoleOut;
 
 const src = (p: string) => readFileSync(new URL(`../src/${p}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 const kindId = (s: System, k: string) => s.placed.find((p) => p.kind === k)!.id;
-/** The festival reference build with its in-ear transmitter fed two outputs. */
+/** The festival reference build with its in-ear transmitter fed two outputs.
+ *  Round 5 (owner 2026-10-21): BOTH cables now run from the stagebox — the
+ *  second used to come from the loudspeaker processor, because only one
+ *  cable was allowed between a pair; the processor carries the house mix,
+ *  so that route is now flagged (wiringFix_r5_soundsystems_20261021). */
 function stereoFestival(a: ConsoleOut, b: ConsoleOut): System {
-  const r = referenceBuild('festival');
-  const s = sys.setLinkOut(r.s, kindId(r.s, 'stagebox'), kindId(r.s, 'iemTx'), a);
-  const v = sys.connect(s, kindId(s, 'processor'), kindId(s, 'iemTx'), b);
-  assert.ok(v.ok);
-  return v.system;
+  return stereoFestivalBuild(a, b).s;
 }
 const festival = ROUTE_UI.festival!;
 const titles = (s: System) => hearsShown(festival.hears, s, sys.consoleWalk(s)).map((h) => h.title);

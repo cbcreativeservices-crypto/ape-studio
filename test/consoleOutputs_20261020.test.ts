@@ -238,10 +238,13 @@ describe('BUILD page: OUTPUT key, tags, cable words, the record kept', () => {
   const PLOT = src('screens/lab/soundsystems/plot.tsx');
   const VENUE = src('screens/lab/soundsystems/art/VenueView.tsx');
   it('OUTPUT follows PART in the dock: a lane for many, a tap key for 2–4, LOCKED with a reason for one (D75)', () => {
-    assert.match(BUILD, /\.\.\.\(output \? \[output\] : \[\]\),\n {4}\.\.\.\(extras\.console/);
+    // Round 5 (owner 2026-10-21, two cables between one pair): one OUTPUT key
+    // per cable into the selected device — OUTPUT 1 and OUTPUT 2 when two come
+    // in — so the single `output` became the `outputs` list, still after PART.
+    assert.match(BUILD, /\.\.\.outputs,\n {4}\.\.\.\(extras\.console/);
     assert.match(BUILD, /if \(choices\.length <= 4\) \{\n {4}return \{\n {6}kind: 'options',/);
     assert.match(BUILD, /locked: `Only \$\{outName\(only\)\} reaches the/);
-    assert.match(BUILD, /label: 'OUTPUT'/);
+    assert.match(BUILD, /const label = n \? `OUTPUT \$\{n\}` : 'OUTPUT';/);
   });
   it('the prompt names OUTPUT; the card reads the output beside FED BY; the bezel is unchanged', () => {
     assert.match(BUILD, /Tap OUTPUT to choose which console output feeds it/);

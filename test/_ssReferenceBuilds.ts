@@ -143,3 +143,21 @@ export function referenceBuild(id: string): { s: System; cs: CS } {
   }
   return { s: b.s, cs };
 }
+
+/** The festival's STEREO in-ear reference (owner 2026-10-21: "allow two
+ *  cables between the same pair … and fix the reference stereo build"): the
+ *  festival reference with the in-ear transmitter fed TWO cables from the
+ *  stagebox — the first carrying `a` (Aux 9 · In-ears L), the second `b`
+ *  (Aux 10 · In-ears R) — and the singer's vocal PRE on both sides. Nothing
+ *  reaches the transmitter through the loudspeaker processor (it used to: the
+ *  processor carries the house mix, shaped for the PA). */
+export function stereoFestivalBuild(a: ConsoleOut = 'aux9', b: ConsoleOut = 'aux10'): { s: System; cs: CS } {
+  const r = referenceBuild('festival');
+  const id = (k: GearKind) => r.s.placed.find((p) => p.kind === k)!.id;
+  const s = sys.setLinkOut(r.s, id('stagebox'), id('iemTx'), a);
+  const v = sys.connect(s, id('stagebox'), id('iemTx'), b);
+  assert.ok(v.ok, `second stagebox → transmitter cable: ${v.ok ? '' : v.reason}`);
+  let cs = r.cs;
+  for (const aux of ['aux9', 'aux10']) cs = con.setSend(cs, 'vox', aux, { db: 0, tap: 'pre' });
+  return { s: v.system, cs };
+}
