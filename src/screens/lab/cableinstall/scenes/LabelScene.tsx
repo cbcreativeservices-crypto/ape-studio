@@ -123,6 +123,11 @@ function cablePath(i: number): string {
   return `M${START_X[i]} ${r} H${a - 4} C${a} ${r} ${a} ${wy} ${a + 4} ${wy} H${b - 3} C${b} ${wy} ${b} ${s} ${b + 3} ${s} H${RUN_END_X}`;
 }
 const cableTint = (i: number) => (i === NET_CABLE ? CI_CLASS_TINTS.network : CI_CLASS_TINTS.analog);
+/** The trace's highlight: the lab's selection amber (the rack trace's tags
+ *  and rings, the schedule's traced row) — never a cable-class tint; the old
+ *  green read as the network class (R4-CI-04). */
+const TRACE_TINT = colors.amber;
+
 /** Over-estimated run length for the trace draw (over-estimating is safe). */
 const CABLE_LEN = 280;
 
@@ -171,7 +176,7 @@ function LabelFlag({
         rx={1.2}
         fill="#eceae3"
         stroke={tint}
-        strokeWidth={tint === colors.green ? 1.4 : 0.6}
+        strokeWidth={tint === TRACE_TINT ? 1.4 : 0.6}
         opacity={reduce ? 1 : 0}
         animatedProps={flag}
       />
@@ -207,10 +212,10 @@ function TraceBeam({ d }: { d: string }) {
   }));
   return (
     <>
-      <JacketPath d={d} color={colors.green} width={3.2} pv={draw.progress} len={CABLE_LEN} />
+      <JacketPath d={d} color={TRACE_TINT} width={3.2} pv={draw.progress} len={CABLE_LEN} />
       <APath
         d={d}
-        stroke="#eafff1"
+        stroke="#fff6dc"
         strokeWidth={4.2}
         fill="none"
         strokeLinecap="round"
@@ -220,6 +225,16 @@ function TraceBeam({ d }: { d: string }) {
         animatedProps={beam}
       />
     </>
+  );
+}
+
+/** A physical cable number, on its run just past its rack-end flag. */
+function CableBadge({ i }: { i: number }) {
+  return (
+    <G>
+      <Circle cx={BADGE_X} cy={START_Y[i]} r={6.5} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
+      <Callout x={BADGE_X} y={START_Y[i] + 3.6} text={String(i + 1)} size={10.5} color={colors.textSecondary} bg={null} />
+    </G>
   );
 }
 
@@ -324,10 +339,7 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
       ))}
       {/* physical cable numbers, on each run past its rack end */}
       {[0, 1, 2, 3].map((i) => (
-        <G key={i}>
-          <Circle cx={BADGE_X} cy={START_Y[i]} r={6.5} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
-          <Callout x={BADGE_X} y={START_Y[i] + 3.6} text={String(i + 1)} size={10.5} color={colors.textSecondary} bg={null} />
-        </G>
+        <CableBadge key={i} i={i} />
       ))}
       {/* label flags flip open at both ends once identity is assigned */}
       {labeled
@@ -335,7 +347,7 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
             const p = START_Y[i];
             const s = S_Y[PERM_C[i]];
             const isTarget = found && i === TARGET_CABLE;
-            const tint = isTarget ? colors.green : '#6f7378';
+            const tint = isTarget ? TRACE_TINT : '#6f7378';
             return (
               <G key={i}>
                 <LabelFlag x={FLAG_P_X} y={p - 13} w={36} h={12} tint={tint} delay={i * 80} reduce={m.reduce}>
@@ -353,12 +365,15 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
       {found ? (
         <>
           <TraceBeam d={cablePath(TARGET_CABLE)} />
-          <LabelFlag x={FLAG_P_X} y={START_Y[TARGET_CABLE] - 13} w={36} h={12} tint={colors.green} delay={520} reduce={m.reduce}>
-            <SvgText x={FLAG_P_X + 18} y={START_Y[TARGET_CABLE] - 3.6} fontSize={10} fontFamily={fonts.mono} fill="#0b3d1d" textAnchor="middle">
+          {/* the traced cable's number, drawn AFTER the beam so the beam
+              never paints over badge 3 (R4-CI-04) */}
+          <CableBadge i={TARGET_CABLE} />
+          <LabelFlag x={FLAG_P_X} y={START_Y[TARGET_CABLE] - 13} w={36} h={12} tint={TRACE_TINT} delay={520} reduce={m.reduce}>
+            <SvgText x={FLAG_P_X + 18} y={START_Y[TARGET_CABLE] - 3.6} fontSize={10} fontFamily={fonts.mono} fill="#17181b" textAnchor="middle">
               {CABLE_FLAGS[TARGET_CABLE]}
             </SvgText>
           </LabelFlag>
-          <LabelFlag x={FLAG_S_X} y={S_Y[PERM_C[TARGET_CABLE]] - 9} w={9} h={6} tint={colors.green} delay={560} reduce={m.reduce} />
+          <LabelFlag x={FLAG_S_X} y={S_Y[PERM_C[TARGET_CABLE]] - 9} w={9} h={6} tint={TRACE_TINT} delay={560} reduce={m.reduce} />
         </>
       ) : null}
       {/* node names */}

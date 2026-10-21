@@ -287,6 +287,11 @@ function FindCounter({ found, required, total }: { found: number; required: numb
   return <FindProgress found={shown} required={required} total={total} />;
 }
 
+/** ins-11's AC cord: out of the receptacle plug (229.2, 216.6), tight
+ *  against the mic run's inside (x 220.4 beside 218, y 180.4 under 178 —
+ *  2.4 apart, each 2.4 wide: touching), through the wall to the rack. */
+const AC_BUNDLE_D = 'M229.2 216.6 C223.4 216.6 220.4 214 220.4 209 V187 C220.4 183 223 180.4 228 180.4 H276';
+
 /** The combined facility — every environment of the lab in one honest
  *  section view (training visualization; defect markers number the finds). */
 function FacilityScene({
@@ -378,7 +383,9 @@ function FacilityScene({
         </ZoneIn>
         <ZoneIn delay={250} reduce={m.reduce}>
           {/* audience floor + the aisle (a cable ramp where the run crosses):
-              the ramp's body here, its lid drawn over the run below */}
+              the ramp's body here, its lid drawn over the run below. Past
+              the ramp's end (x 172–210) the run lies bare on the walkway:
+              finding ins-4 sits there (R4-CI-01) */}
           <Rect x={128} y={223} width={44} height={5} rx={1} fill="#1b1c20" />
         </ZoneIn>
         {/* representative runs (honest, terminating) — they install themselves */}
@@ -389,6 +396,21 @@ function FacilityScene({
         {/* B-CI-04: the analog run carries on through the wall (above the
             door, like the network run) and lands on the rack's side */}
         <RunIn d="M150 226.4 H210 C216 226.4 218 223 218 218 V186 C218 181 222 178 228 178 H276" len={160} color={CI_CLASS_TINTS.analog} delay={340} run={assembled} />
+        {/* R4-CI-05 (2026-10-21): the AC cord of finding ins-11 — plugged
+            into a wall receptacle beside the run, then tied tight against the
+            mic line up the wall and on through it to the rack (touching, one
+            bundle: the fault the finding names, drawn where its marker sits) */}
+        <ZoneIn delay={250} reduce={m.reduce}>
+          <Rect x={230} y={207} width={7.4} height={14} rx={1} fill="#c9c4b8" stroke="#4a4740" strokeWidth={0.4} />
+          {[210.4, 216.6].map((y) => (
+            <G key={y}>
+              <Rect x={232.2} y={y - 1.3} width={0.7} height={2.2} fill="#2a2926" />
+              <Rect x={234.5} y={y - 1.3} width={0.7} height={2.2} fill="#2a2926" />
+            </G>
+          ))}
+          <Rect x={229.2} y={214.6} width={6} height={4} rx={0.8} fill="#1b1c20" stroke="#55585f" strokeWidth={0.3} />
+        </ZoneIn>
+        <RunIn d={AC_BUNDLE_D} len={110} color={CI_CLASS_TINTS.power} delay={360} run={assembled} />
         <ZoneIn delay={250} reduce={m.reduce}>
           {/* the ramp's lid, over the run in its channel */}
           <Rect x={132} y={223.4} width={36} height={1.8} rx={0.6} fill="#e3b73a" />

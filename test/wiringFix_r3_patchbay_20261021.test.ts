@@ -63,10 +63,12 @@ describe('R3-PB-03 one lane per cord', () => {
     assert.match(s, /\{jack\(CX, ROW_BOT, true, bottomPlugged, -1\)\}/);
     assert.match(s, /<Path d=\{cordDrop\(cx, cy, side\)\}/);
   });
-  it('studio bay: top cord at cx + 12, bottom cord at cx − 12 (opposite sides)', () => {
+  // round 4 (R4-PB-01) moved the drop from cx ± 12 to cx ± 14 (it grazed the
+  // jack below); pinned in wiringFix_r4_cablelabs_20261021.test.ts
+  it('studio bay: top cord at cx + 14, bottom cord at cx − 14 (opposite sides)', () => {
     const s = lab('art/StudioBayView.tsx');
     assert.match(s, /\{ y: ROW_TOP, on: !!plug\.top, side: 1 \}, \{ y: ROW_BOT, on: !!plug\.bottom, side: -1 \}/);
-    assert.match(s, /\$\{cx \+ 12 \* side\} \$\{PY \+ PANEL_H \+ 4\}/);
+    assert.match(s, /\$\{cx \+ 14 \* side\} \$\{PY \+ PANEL_H \+ 4\}/);
   });
 });
 

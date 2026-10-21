@@ -224,7 +224,7 @@ export const ROUTING_SCENARIOS: RoutingScenario[] = [
     // speakon_nl4 biamp_2ch pinout (equipment-dependent) + verifyAgainst,
     // and speakon_nl2.notInterchangeableWith consequence — quote-faithful.
     explain:
-      'In bi-amp mode the crossover comes BEFORE the amplifier: it splits the signal into low and high bands and feeds each band to its own amp channel. The cabinet then takes those two channels in one 4-pole lead: circuit 1 on 1+/1−, circuit 2 on 2+/2−. Which section sits on which circuit varies by model and system — beyond 1+/1−, read it from the loudspeaker documentation, never assume. A 2-pole lead engages circuit 1 only: one driver section plays, the other stays silent, and with no crossover inside the cabinet, a full-range feed onto a high-frequency section can damage it.',
+      'In bi-amp mode the crossover comes BEFORE the amplifier: it splits the signal into low and high bands and feeds each band to its own amp channel. The cabinet then takes those two channels in one 4-pole lead: circuit 1 on 1+/1−, circuit 2 on 2+/2−. Which section sits on which circuit varies by model and system — beyond 1+/1−, read it from the loudspeaker documentation, never assume. A 2-pole lead engages circuit 1 only: one driver section plays, the other stays silent. There is no crossover inside the cabinet, so if that lead comes from a full-range amp channel, its HF section can be damaged.',
     wrongHint:
       'Two amplifier channels must reach this cabinet down one lead. Count the circuits the lead has to carry — a 2-pole connector carries exactly one.',
   },

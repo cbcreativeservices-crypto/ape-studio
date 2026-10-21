@@ -120,8 +120,12 @@ export function StudioBayDrawing({ pairs, selected, onSelect, showNormals, plugs
                     <Circle cx={cx} cy={y} r={2.3 * MM} fill="none" stroke="#3d3e45" strokeWidth={0.8} />
                     {on ? (
                       <>
-                        {/* the cord hangs from the handle down off the panel */}
-                        <Path d={`M ${cx + side} ${y + 3} C ${cx + 5 * side} ${y + 13}, ${cx + 12 * side} ${y + 18}, ${cx + 12 * side} ${PY + PANEL_H + 4}`} stroke={PB.cord} strokeWidth={2.6} fill="none" strokeLinecap="round" />
+                        {/* the cord hangs from the handle down off the panel;
+                            at cx ± 14 the 2.6-wide cord (inner edge 12.7)
+                            clears the jack below (JACK_R 10.7 + stroke → 11.7)
+                            and stays inside the selection outline (15.7) —
+                            at cx ± 12 it grazed the bushing (R4-PB-01) */}
+                        <Path d={`M ${cx + side} ${y + 3} C ${cx + 5 * side} ${y + 13}, ${cx + 14 * side} ${y + 18}, ${cx + 14 * side} ${PY + PANEL_H + 4}`} stroke={PB.cord} strokeWidth={2.6} fill="none" strokeLinecap="round" />
                         <Circle cx={cx} cy={y} r={4.6 * MM} fill="#1d1e22" stroke={PB.cord} strokeWidth={1.6} />
                         <Circle cx={cx} cy={y} r={1.4 * MM} fill="#0c0c0e" stroke="#45464d" strokeWidth={0.6} />
                       </>

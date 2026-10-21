@@ -179,7 +179,8 @@ export const CI_ROUTE_SCENARIOS: CiRouteScenario[] = [
         id: 'duct-ride',
         name: 'Along the main supply duct',
         path: 'Tie the feeds along the big HVAC duct that happens to head toward the cluster.',
-        relLength: 1.1,
+        // drawn 355.5 units against over-grid's 295 → ×1.2 (R4-CI-06)
+        relLength: 1.2,
         flags: [
           { ruleId: 'sup-purpose-built', dim: 'safety', cost: 0.6, note: 'The duct is another system — not a cable support.' },
           { ruleId: 'ceil-maintain-access', dim: 'serviceability', cost: 0.3, note: 'Duct service now requires cutting your feeds free.' },
@@ -523,8 +524,10 @@ export const CI_INSPECTION_POOL: CiInspectionDefect[] = [
   { id: 'ins-1', mistakeId: 'sharp-bend', label: 'Mic line folded hard behind the stage box', zone: 0, x: 12, y: 78 },
   { id: 'ins-2', mistakeId: 'crushed-by-tie', label: 'Snake waist-tied to oval at the stage edge', zone: 0, x: 22, y: 84 },
   { id: 'ins-3', mistakeId: 'connector-strain', label: 'Stage-box fan-out hanging on its XLRs', zone: 0, x: 8, y: 70 },
-  // ins-4 rides the analog run where it now lies on the floor (R3-CI-06)
-  { id: 'ins-4', mistakeId: 'bad-floor-crossing', label: 'Snake crossing the audience aisle bare', zone: 1, x: 42, y: 92 },
+  // ins-4 sits ON the bare stretch of the analog run, past the ramp's end
+  // (R4-CI-01: the aisle crossing itself IS in a rated ramp, x 128–172;
+  // the run then lies bare on the audience floor x 172–210 at y 226.4)
+  { id: 'ins-4', mistakeId: 'bad-floor-crossing', label: 'Snake lying bare on the audience walkway past the ramp', zone: 1, x: 51.4, y: 94.3 },
   { id: 'ins-5', mistakeId: 'traffic-exposure', label: 'Feeder under a doormat in the roll path', zone: 1, x: 58, y: 90 },
   { id: 'ins-6', mistakeId: 'slack-pile', label: 'A spaghetti pile of "spare" cable at stage right', zone: 0, x: 30, y: 80 },
   // ins-7 / ins-10 sit ON their items (wiring grade 2026-10-21): the door's
@@ -534,7 +537,10 @@ export const CI_INSPECTION_POOL: CiInspectionDefect[] = [
   { id: 'ins-8', mistakeId: 'cord-as-permanent', label: 'Extension cord stapled along the baseboard as permanent feed', zone: 2, x: 74, y: 78 },
   { id: 'ins-9', mistakeId: 'unverified-wall', label: 'Fresh unlabeled hole through the corridor wall', zone: 2, x: 70, y: 55 },
   { id: 'ins-10', mistakeId: 'bad-penetration', label: 'Rated-wall sleeve left open around the bundle', zone: 2, x: 71.3, y: 42 },
-  { id: 'ins-11', mistakeId: 'power-signal-mess', label: 'AC and mic lines share one tight bundle up the wall', zone: 2, x: 62, y: 60 },
+  // ins-11 sits ON the run up the wall (x 218–220.6, y 186–218 of the
+  // facility), where the AC cord rides tight against the mic line — at y 192,
+  // high enough to stay clear of ins-5's marker at (208.8, 216) (R4-CI-05)
+  { id: 'ins-11', mistakeId: 'power-signal-mess', label: 'AC and mic lines share one tight bundle up the wall', zone: 2, x: 60.6, y: 80 },
   { id: 'ins-12', mistakeId: 'blocked-vent', label: "Loom dressed across the amp's rear exhaust", zone: 3, x: 88, y: 66 },
   { id: 'ins-13', mistakeId: 'blocked-access', label: 'DSP rear unreachable behind a taut trunk', zone: 3, x: 92, y: 58 },
   { id: 'ins-14', mistakeId: 'unlabeled', label: 'Patch field with zero labels', zone: 3, x: 86, y: 50 },

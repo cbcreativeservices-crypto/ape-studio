@@ -463,7 +463,9 @@ function NetTail({ isL }: { isL: boolean }) {
           DSP's NET port, as the lane above the analog harness; switch port 6
           → up through the horizontal manager, along it, and down the gap
           between the DSP's NET port and its inlet to the interface's NET
-          port. Each its own lane; neither crosses another cable. */}
+          port. Each its own lane, never sharing a path with another cable;
+          the port-6 riser crosses the violet fiber once, at 90° (a legal
+          crossing, R4-CI-03). */}
       <JacketPath d={DSP_LINK_D} color={N} width={W_SIG} shadow={false} />
       <JacketPath d={IFACE_LINK_D} color={N} width={1.4} shadow={false} />
       {[SW_CX[5], SW_CX[7]].map((x) => (
@@ -904,6 +906,13 @@ const WEAVE: { d: string; over: boolean }[] = (() => {
   return out;
 })();
 
+/** As-found (R4-CI-02): the switch's cord, from its C13 boot down and out
+ *  into the right manager (it crosses the stray DSP cord at x 285.5). */
+const AS_FOUND_SW_AC_D = `M${SWITCH.iecX + 7.5} ${SWITCH.iecY + 15.2} C${SWITCH.iecX + 7.5} 106 280 104.5 298 105.5`;
+/** As-found (R4-CI-02): the PDU's own feed, in from the right manager just
+ *  above the hauled AC run (lane y 349) into its inlet plug's boot. */
+const AS_FOUND_PDU_FEED_D = `M298 ${PDU.y + 18.5} H273.6`;
+
 const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; found?: ReadonlySet<string> }) {
   /** Inspector's red strain marks are ANNOTATIONS: they appear only once the
    *  learner has documented that defect — the cable geometry carries it first. */
@@ -963,7 +972,9 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
           switch face to the DSP inlet; the mic line to DSP input 2 */}
       {/* (art fix 2026-10-16) its own lane over the top of the manager row, clear
           of the N-012 cord that runs along it at y 23 and of that cord's flag */}
-      <DrawPath d={`M190 29 C204 15 258 13 272 16 C279 18 281 30 281 48 V136 C281 160 ${DSP.iecX + 7.5} 162 ${DSP.iecX + 7.5} ${DSP.y + 47.2}`} len={260} color={P} width={4} enter={enter} delay={at(360)} />
+      {/* (R4-CI-02) it drops at x 285.5, clear of the switch's own C13 plug
+          (x 265.4–281.8) now seated in the as-found state too */}
+      <DrawPath d={`M190 29 C204 15 258 13 272 16 C281 18 285.5 30 285.5 48 V136 C285.5 160 ${DSP.iecX + 7.5} 162 ${DSP.iecX + 7.5} ${DSP.y + 47.2}`} len={260} color={P} width={4} enter={enter} delay={at(360)} />
       <SvgIn enter={enter} delay={at(520)}>
         {/* ri-13: the wrap-label flag, folded round the cable just above its
             port — and the strip under that port, which disagrees */}
@@ -1112,6 +1123,16 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
 
       <SvgIn enter={enter} delay={at(540)}>
         {WEAVE.map((seg, i) => (seg.over ? null : <JacketPath key={i} d={seg.d} color={A} width={3.2} shadow={false} />))}
+      </SvgIn>
+      {/* ── R4-CI-02 · messy, but nothing lit is unpowered: the switch (its
+          port LEDs are on) has its own cord seated, back out of the right
+          manager where the hauled outlet cords went; and the PDU — feeding
+          the amp and the outlets — has its own feed seated in its inlet */}
+      <DrawPath d={AS_FOUND_SW_AC_D} len={40} color={P} width={3} enter={enter} delay={at(400)} />
+      <DrawPath d={AS_FOUND_PDU_FEED_D} len={30} color={P} width={3} enter={enter} delay={at(400)} />
+      <SvgIn enter={enter} delay={at(500)}>
+        <C13Plug x={SWITCH.iecX} y={SWITCH.iecY} />
+        <C13Plug x={264} y={PDU.y + 5.5} />
       </SvgIn>
       {/* ── ri-10 · three C13 plugs levered sideways because their cords are
           hauled to the right into one tight tie */}

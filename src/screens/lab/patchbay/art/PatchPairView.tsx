@@ -160,9 +160,16 @@ function JackGlyph({ y, plugged, label }: { y: number; plugged: boolean; label: 
 }
 
 /** A patch cord's drop from a face-on plug handle at (cx, cy) down past the
- *  strip's bottom edge, on `side` (+1 right, −1 left) of the column. */
+ *  strip's bottom edge, on `side` (+1 right, −1 left) of the column. At
+ *  cx ± 11 the 2.4-wide cord (inner edge 9.8) clears the jack below it
+ *  (bushing 5.5 mm = 7.67 + its 2-unit plugged stroke → 8.67); at cx ± 9 it
+ *  grazed that bushing (R4-PB-01). */
+export const CORD_DROP_DX = 11;
 export const cordDrop = (cx: number, cy: number, side: 1 | -1) =>
-  `M ${cx + side} ${cy + 2} C ${cx + 4 * side} ${cy + 10}, ${cx + 9 * side} ${cy + 14}, ${cx + 9 * side} ${FACE_H}`;
+  `M ${cx + side} ${cy + 2} C ${cx + 4 * side} ${cy + 10}, ${cx + CORD_DROP_DX * side} ${cy + 14}, ${cx + CORD_DROP_DX * side} ${FACE_H}`;
+/** The featured column's outline half-width: wide enough that the cord at
+ *  cx + 11 runs inside it, clear of its stroke (R4-PB-01). */
+export const FEATURED_HALF_W = 14;
 
 /** A patch cord's FAR plug, SEATED in the jack of the gear it reaches: the
  *  plug (handle + TRS shaft, gearArt's CordPlug) with its shaft entering a
@@ -233,7 +240,7 @@ export function PairFaceplate({ topPlugged, bottomPlugged, w }: { topPlugged: bo
       <Path d={panelPath} fill={PB.panel} stroke={PB.panelEdge} strokeWidth={0.8} />
       <Line x1={4} y1={3} x2={RIGHT - 4} y2={3} stroke="#ffffff" strokeWidth={1} opacity={0.07} />
       {/* the featured COLUMN — this is the vertical pair */}
-      <Rect x={CX - 12} y={ROW_TOP - 11} width={24} height={ROW_BOT - ROW_TOP + 22} rx={7} fill="none" stroke="#6a6b73" strokeWidth={1.1} />
+      <Rect x={CX - FEATURED_HALF_W} y={ROW_TOP - 11} width={2 * FEATURED_HALF_W} height={ROW_BOT - ROW_TOP + 22} rx={7} fill="none" stroke="#6a6b73" strokeWidth={1.1} />
       {cols.map((x) => (
         <G key={x}>
           {jack(x, ROW_TOP, false, false)}
