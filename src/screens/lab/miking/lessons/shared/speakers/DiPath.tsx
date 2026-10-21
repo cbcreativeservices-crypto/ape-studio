@@ -71,12 +71,12 @@ function artOf(n: ChainNode, spec: ChainSpec): IconArt {
 }
 
 /** One node's drawing, centred at 0, 0, in a box of side S (chainIcons.tsx). */
-function NodeIcon({ art, S, lit, out }: { art: IconArt; S: number; lit: boolean; out: 'right' | 'down' }) {
+function NodeIcon({ art, S, lit, out, single }: { art: IconArt; S: number; lit: boolean; out: 'right' | 'down'; single: boolean }) {
   const h = S / 2;
   return (
     <Group>
       {lit ? <RoundedRect x={-h - 6} y={-h - 6} width={S + 12} height={S + 12} r={10} style="stroke" strokeWidth={3} color={AMBER} /> : null}
-      <ChainIcon art={art} S={S} out={out} />
+      <ChainIcon art={art} S={S} out={out} single={single} />
     </Group>
   );
 }
@@ -100,7 +100,7 @@ export function DiPath({ w, h, spec, highlight, onTap, shortOf, badPatch = false
   const { S, SC, nodes, pos, links } = g;
   const paths = useMemo(
     () =>
-      links.map(({ l, seg, arcs }) => {
+      links.map(({ l, seg, arcs, over, plugs }) => {
         const p = make();
         if (seg?.kind === 'line') {
           p.moveTo(seg.pts[0].x, seg.pts[0].y);
@@ -109,7 +109,7 @@ export function DiPath({ w, h, spec, highlight, onTap, shortOf, badPatch = false
           p.moveTo(seg.p0.x, seg.p0.y);
           p.cubicTo(seg.c1.x, seg.c1.y, seg.c2.x, seg.c2.y, seg.p3.x, seg.p3.y);
         }
-        return { l, p, seg, arcs };
+        return { l, p, seg, arcs, over: !!over, plugs: plugs ?? [] };
       }),
     [links],
   );
@@ -145,8 +145,9 @@ export function DiPath({ w, h, spec, highlight, onTap, shortOf, badPatch = false
     <Pressable onPress={(e) => tap(e.nativeEvent.locationX, e.nativeEvent.locationY)} accessible={false} style={{ width: w, height: h }}>
       <View pointerEvents="none" style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
-          {paths.map(({ l, p, seg, arcs }, i) => {
+          {paths.map(({ l, p, seg, arcs, over }, i) => {
             const look = LINK_LOOK[l.kind];
+            if (over) return null; // drawn over the icons, below
             if (arcs) {
               const n = 4;
               return (
@@ -186,10 +187,24 @@ export function DiPath({ w, h, spec, highlight, onTap, shortOf, badPatch = false
             const size = g.merged && n.id === 'amp' ? SC : S;
             return (
               <Group key={n.id} transform={[{ translateX: p.x }, { translateY: p.y }]}>
-                <NodeIcon art={artOf(n, spec)} S={size} lit={highlight === n.id} out={n.id === 'player' && spec.diBox && spec.diAfter !== 'pedals' ? 'down' : 'right'} />
+                <NodeIcon art={artOf(n, spec)} S={size} lit={highlight === n.id} out={n.id === 'player' && spec.diBox && spec.diAfter !== 'pedals' ? 'down' : 'right'} single={n.id === 'dibox' && !!spec.ampDirectDi && !spec.diBox} />
               </Group>
             );
           })}
+          {/* R3-MK-01/02/04: cables seated in a jack on an icon's visible face,
+              drawn over the icons, each plug seen end-on in its jack. */}
+          {paths.filter((q) => q.over).map(({ l, p, plugs }, i) => (
+            <Group key={`over${i}`}>
+              <Path path={p} style="stroke" strokeWidth={LINK_LOOK[l.kind].w + 1.4} strokeCap="round" color="#050506" />
+              <Path path={p} style="stroke" strokeWidth={LINK_LOOK[l.kind].w} strokeCap="round" color={LINK_LOOK[l.kind].color} />
+              {plugs.map((q, k) => (
+                <Group key={k}>
+                  <Circle cx={q.x} cy={q.y} r={Math.max(2, S * 0.035)} color="#1b1c20" />
+                  <Circle cx={q.x} cy={q.y} r={Math.max(2, S * 0.035)} style="stroke" strokeWidth={1.2} color="#9aa0ab" />
+                </Group>
+              ))}
+            </Group>
+          ))}
           {g.speaker && highlight === 'cab' ? <Circle cx={g.speaker.x} cy={g.speaker.y} r={g.speaker.r + 4} style="stroke" strokeWidth={3} color={AMBER} /> : null}
         </Canvas>
         <StaticLabels labels={labels} xf={{ view: 'side', s: 1, ox: 0, oy: 0 }} scale={ts} w={w} />

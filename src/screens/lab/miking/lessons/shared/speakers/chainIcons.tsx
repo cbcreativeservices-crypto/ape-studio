@@ -65,6 +65,7 @@ import type { ReactNode } from 'react';
 import { BlurMask, Circle, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { ElectricFront, buildElectric, electricExtent } from '../electric/ElectricArt';
 import { BASS, GUITAR, type ElectricSpec } from '../electric/electricSpec.ts';
+import { STEEL_ART, VOL_ART } from './signalChain.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 type P2 = readonly [number, number];
@@ -201,6 +202,16 @@ function SteelIcon({ S }: { S: number }) {
         <LinearGradient start={vec(x0 + L - 70, top)} end={vec(x0 + L, top + bh)} colors={[...CHROME]} />
       </Path>
       <Path path={rr(x0 + 64, top - 8, L - 134, 10, 4)} color="#d9dce3" opacity={0.85} />
+      {/* R3-MK-02: the OUTPUT JACK on the body's underside at the changer end
+          (right of the leg), a straight plug seated in it; its cable
+          (DiPath, signalChain steelJack) leaves from the jack. */}
+      <Path path={rr(STEEL_ART.jackU - 15, STEEL_ART.bodyBottom - 2, 30, 10, 3)}>
+        <LinearGradient start={vec(STEEL_ART.jackU - 15, 0)} end={vec(STEEL_ART.jackU + 15, 0)} colors={[...CHROME]} />
+      </Path>
+      <Path path={rr(STEEL_ART.jackU - 9, STEEL_ART.bodyBottom + 8, 18, STEEL_ART.plugTail - STEEL_ART.bodyBottom - 14, 4)}>
+        <LinearGradient start={vec(STEEL_ART.jackU - 9, 0)} end={vec(STEEL_ART.jackU + 9, 0)} colors={['#4b4e57', '#1b1c20', '#050506']} />
+      </Path>
+      <Path path={rr(STEEL_ART.jackU - 5, STEEL_ART.plugTail - 8, 10, 10, 3)} color="#2a2c32" />
     </Group>
   );
 }
@@ -381,18 +392,18 @@ function VolumeIcon({ S }: { S: number }) {
     tread.lineTo(x + 3, y + 7);
   }
   return (
-    <Group transform={[{ translateY: 0.32 * S }, { scale: k }]}>
+    <Group transform={[{ translateY: VOL_ART.dy * S }, { scale: k }]}>
       <Shadow x={-140} y={-10} w={280} h={18} k={k} />
       <Path path={rr(-140, -42, 280, 42, 8)}>
         <LinearGradient start={vec(0, -42)} end={vec(0, 0)} colors={[...STEEL]} />
       </Path>
       <Path path={rr(-140, -42, 280, 42, 8)} style="stroke" strokeWidth={hw} color={INK} />
       {/* Side jacks: input and output sockets in the base. */}
-      {[-60, 20].map((x) => (
+      {[VOL_ART.inX, VOL_ART.outX].map((x) => (
         <Group key={x}>
-          <Circle cx={x} cy={-21} r={10} color="#141519" />
-          <Circle cx={x} cy={-21} r={10} style="stroke" strokeWidth={Math.max(2, 0.4 / k)} color="#d9dce3" />
-          <Circle cx={x} cy={-21} r={3.5} color="#000" />
+          <Circle cx={x} cy={VOL_ART.jackY} r={10} color="#141519" />
+          <Circle cx={x} cy={VOL_ART.jackY} r={10} style="stroke" strokeWidth={Math.max(2, 0.4 / k)} color="#d9dce3" />
+          <Circle cx={x} cy={VOL_ART.jackY} r={3.5} color="#000" />
         </Group>
       ))}
       {/* The heel hinge and the treadle with its rubber tread. */}
@@ -407,7 +418,7 @@ function VolumeIcon({ S }: { S: number }) {
 }
 
 /** A passive DI box, three-quarter view: XLR out on the near end, input/thru plugs at the far end. */
-function DiIcon({ S }: { S: number }) {
+function DiIcon({ S, single = false }: { S: number; single?: boolean }) {
   // L 128 (along x), depth 92 (receding up-right at 30°, half scale), H 50.
   const L = 128;
   const H = 50;
@@ -436,7 +447,7 @@ function DiIcon({ S }: { S: number }) {
     <Group transform={[{ scale: k }]}>
       <Shadow x={x0 - 4} y={y0 - 8} w={L + dx + 6} h={14} k={k} />
       {/* Two cables plugged in at the far end: the input and the thru. */}
-      {[14, 34].map((z, i) => (
+      {(single ? [14] : [14, 34]).map((z, i) => (
         <Group key={z}>
           <Path path={poly([[x0 - plug + 6, y0 - z + 4 + i * 2], [x0 - 26, y0 - z]], false)} style="stroke" strokeWidth={7} strokeCap="round" color={CABLE} />
           <Path path={rr(x0 - 30, y0 - z - 6, 30, 12, 4)}>
@@ -1110,7 +1121,7 @@ function DeskIcon({ S }: { S: number }) {
 export type IconArt = 'guitar' | 'bass' | 'steel' | 'pedals' | 'volume' | 'di' | 'ampOut' | 'auxOut' | 'combo' | 'head' | 'guitarHead' | 'cab112' | 'speaker12' | 'bassCab' | 'mic' | 'desk' | 'rhodes' | 'wurli' | 'wurliAmp' | 'wurliLid';
 
 /** One node's drawing, centred at 0, 0, in a box of side S. */
-export function ChainIcon({ art, S, out = 'right' }: { art: IconArt; S: number; out?: 'right' | 'down' }) {
+export function ChainIcon({ art, S, out = 'right', single = false }: { art: IconArt; S: number; out?: 'right' | 'down'; single?: boolean }) {
   switch (art) {
     case 'guitar':
       return <ElectricIcon s={GUITAR} S={S} out={out} />;
@@ -1123,7 +1134,7 @@ export function ChainIcon({ art, S, out = 'right' }: { art: IconArt; S: number; 
     case 'volume':
       return <VolumeIcon S={S} />;
     case 'di':
-      return <DiIcon S={S} />;
+      return <DiIcon S={S} single={single} />;
     case 'ampOut':
       return <AmpOutIcon S={S} aux={false} />;
     case 'auxOut':

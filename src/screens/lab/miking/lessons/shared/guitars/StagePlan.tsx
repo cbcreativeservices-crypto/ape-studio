@@ -33,7 +33,7 @@ import { WedgePlan, planIdsOf } from '../KitPlan';
 import type { BuiltGuitarModel, GuitarScene } from './guitarModel.ts';
 import { GuitarSceneArt } from './GuitarArt';
 import { KitTop } from '../kitScene/KitSceneArt';
-import { DI_XLR_TO, GUITAR_WIDE, KIT_TURN, kitOriginAt, SIZES, WALL, diXlr, guitarCue, guitarPlanFoots, planFrame, shownIn, stringsPlan, type GuitarPlanOpts, type PlanKind, type PlanObject } from './stagePlanModel.ts';
+import { DI_XLR_TO, GUITAR_WIDE, diCable, diCord, KIT_TURN, kitOriginAt, SIZES, WALL, diXlr, guitarCue, guitarPlanFoots, planFrame, shownIn, stringsPlan, type GuitarPlanOpts, type PlanKind, type PlanObject } from './stagePlanModel.ts';
 import { clearOfFoots, labelPlaces, unionRect, type PlanFoot, type PlanPt } from '../planFoot.ts';
 import { cueCables, cueHub, cueLabels, type CueRig } from '../monitoring/cueMix.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
@@ -115,10 +115,12 @@ function DiPlan({ o, hi, from, xlr }: { o: PlanObject; hi: boolean; from: XZ; xl
   const box = rr(o.at.x - hu, o.at.z - hv, o.at.x + hu, o.at.z + hv, 12);
   const cable = useMemo(() => {
     const p = Skia.Path.Make();
-    p.moveTo(from.x, from.z);
-    p.cubicTo(from.x - 120, from.z + 60, o.at.x + 80, o.at.z - 160, o.at.x, o.at.z - hv);
+    // R3-MK-06: the model's own curve (stagePlanModel diCord / diCable).
+    const c = diCord(from, o.at);
+    p.moveTo(c.p0.u, c.p0.v);
+    p.cubicTo(c.c1.u, c.c1.v, c.c2.u, c.c2.v, c.p3.u, c.p3.v);
     return p;
-  }, [from.x, from.z, o.at.x, o.at.z, hv]);
+  }, [from, o.at]);
   const xlrPath = useMemo(() => {
     const p = Skia.Path.Make();
     xlr.forEach((q, i) => (i ? p.lineTo(q.u, q.v) : p.moveTo(q.u, q.v)));
@@ -294,12 +296,15 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
     const visible = items.filter((i) => shownIn(i, scene));
     if (chosen) add(chosen);
     for (const it of visible) add(it);
-    labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'KEEP CLEAR', u: F.space.u0 + 20, v: F.space.v0 - 40, align: 'left', point: { u: F.space.u0 + 20, v: F.space.v0 + 20 }, tone: 'illustrative' });
+    labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'KEEP CLEAR', u: F.space.u0 + 20, v: F.space.v0 - 40, align: 'left', alts: [{ u: F.space.u0 - 40, v: F.space.v0 + 20, align: 'right' }], point: { u: F.space.u0 + 20, v: F.space.v0 + 20 }, tone: 'illustrative' });
     if (xlr && scene !== 'kit') {
       // The XLR's off-plan destination, named beside the cable's end.
       const end = xlr.pts[xlr.pts.length - 1];
       const k = textScale / xf.s;
-      const [first, ...alts] = [{ u: end.u + 40, v: end.v - 11 * k, align: 'left' as const }, { u: end.u + 40, v: end.v + 13 * k, align: 'left' as const }, ...labelPlaces({ u0: end.u, u1: end.u + 160, v0: end.v - 12, v1: end.v + 12 }, xf.s / textScale)];
+      // R3-MK-05: on stage the cable ends at the upstage edge — its words step
+      // down beside the cable's last run until they are clear.
+      const down = scene === 'stage' ? [0, 1, 2, 3, 4, 5].map((n) => ({ u: end.u + 6 * k, v: end.v + (14 + 20 * n) * k, align: 'left' as const })) : [];
+      const [first, ...alts] = [{ u: end.u + 40, v: end.v - 11 * k, align: 'left' as const }, { u: end.u + 40, v: end.v + 13 * k, align: 'left' as const }, ...down, ...labelPlaces({ u0: end.u, u1: end.u + 160, v0: end.v - 12, v1: end.v + 12 }, xf.s / textScale)];
       labels.push({ id: 'diXlrTo', text: DI_XLR_TO[scene], u: first.u, v: first.v, align: first.align, alts, point: { u: end.u + 80, v: end.v }, tone: 'illustrative' });
     }
     const seen = new Set<string>();
@@ -362,7 +367,7 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
             </Group>
           </Canvas>
         </Pressable>
-        <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, [...(cue ? cueCables(cue) : []), ...(xlr ? [xlr] : [])])} />
+        <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, [...(cue ? cueCables(cue) : []), ...(xlr ? [xlr] : []), ...(diObj ? [diCable(sc, diObj.at)] : [])])} />
       </View>
     );
   }

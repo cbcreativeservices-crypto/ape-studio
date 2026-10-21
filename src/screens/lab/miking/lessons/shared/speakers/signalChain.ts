@@ -34,6 +34,9 @@ export type ChainSpec = {
   diAfter?: 'instrument' | 'pedals';
   /** The amp's own direct / line output. */
   ampDirect: boolean;
+  /** R3-MK-04: that output is an unbalanced jack (a reed piano's AUX OUT), so
+   *  it reaches the desk through a DI box on its own lane: AUX OUT → DI → desk. */
+  ampDirectDi?: boolean;
   /** A node drawn as another object (Lab 2's electric pianos, 2026-10-05):
    *  the instrument as a keyboard, an amplifier and speakers built into it. */
   icons?: Partial<Record<string, NodeKind>>;
@@ -62,7 +65,12 @@ export function buildChain(c: ChainSpec): { nodes: ChainNode[]; links: ChainLink
   if (c.ampDirect) {
     const ampCol = nodes.find((n) => n.id === 'amp')!.col;
     nodes.push({ id: 'ampdi', kind: 'di', lane: 'amp', col: ampCol });
-    links.push({ from: 'amp', to: 'ampdi', kind: 'line' }, { from: 'ampdi', to: 'desk', kind: 'balanced' });
+    links.push({ from: 'amp', to: 'ampdi', kind: 'line' });
+    if (c.ampDirectDi && !c.diBox) {
+      // The unbalanced jack's lead into a DI box, the DI's XLR to the desk.
+      nodes.push({ id: 'dibox', kind: 'di', lane: 'amp', col: ampCol + 1.5 });
+      links.push({ from: 'ampdi', to: 'dibox', kind: 'instrument' }, { from: 'dibox', to: 'desk', kind: 'balanced' });
+    } else links.push({ from: 'ampdi', to: 'desk', kind: 'balanced' });
   }
   if (c.icons) for (const n of nodes) n.kind = c.icons[n.id] ?? n.kind;
   return { nodes, links };
@@ -98,7 +106,15 @@ export const INS: readonly In[] = ['cabinet', 'micIn', 'lineIn', 'diIn', 'ampIn'
  */
 export type XY = { x: number; y: number };
 export type PathSeg = { kind: 'line'; pts: XY[] } | { kind: 'cubic'; p0: XY; c1: XY; c2: XY; p3: XY };
-export type DiPathLink = { l: ChainLink; seg: PathSeg | null; arcs?: { x0: number; x1: number; y: number } };
+export type DiPathLink = {
+  l: ChainLink;
+  seg: PathSeg | null;
+  arcs?: { x0: number; x1: number; y: number };
+  /** R3-MK-01/02/04: drawn OVER the icons, its plug seated in a jack on the
+   *  icon's visible face (each point a plug, seen end-on). */
+  over?: boolean;
+  plugs?: XY[];
+};
 export type DiPathGeom = {
   S: number;
   /** The combo's drawn size (one body, a little larger than a plain icon). */
@@ -138,6 +154,17 @@ const comboY0 = -(COMBO_ART.H - 26) / 2;
 const DESK_HALF_H = 0.348;
 /** The amp direct-out panel (AmpOutIcon): its top 0.22 S above its centre. */
 const AMPOUT_HALF_H = 0.22;
+
+/* R3-MK-01/02 (2026-10-21): the steel's cables are seated in real jacks.
+ * VolumeIcon (k = 0.0035 S per mm, drawn 0.32 S low): its side jacks at
+ * x −60 (IN) and +20 (OUT), 21 mm up the base. SteelIcon (k = 1.25 S / 940,
+ * drawn 0.46 S low): the OUTPUT JACK on the body's underside at the changer
+ * end (u 420, right of the leg); the cable leaves from it. Fractions of S
+ * from the node's centre — chainIcons.tsx draws from the same numbers. */
+export const VOL_ART = { k: 0.0035, dy: 0.32, inX: -60, outX: 20, jackY: -21 } as const;
+export const STEEL_ART = { k: 1.25 / 940, dy: 0.46, jackU: 420, bodyBottom: -610, plugTail: -562 } as const;
+export const volJack = (S: number, which: 'in' | 'out'): XY => ({ x: (which === 'in' ? VOL_ART.inX : VOL_ART.outX) * VOL_ART.k * S, y: (VOL_ART.dy + VOL_ART.jackY * VOL_ART.k) * S });
+export const steelJack = (S: number): XY => ({ x: STEEL_ART.jackU * STEEL_ART.k * S, y: (STEEL_ART.dy + STEEL_ART.bodyBottom * STEEL_ART.k) * S });
 
 /** Points along a drawn link (px). */
 export function sampleSeg(seg: PathSeg, n = 40): XY[] {
@@ -218,7 +245,27 @@ export function diPathLayout(spec: ChainSpec, w: number, h: number, ts: number, 
     if (l.from === 'amp' && l.to === 'ampdi') {
       return { l, seg: { kind: 'line', pts: [{ x: b.x, y: a.y }, { x: b.x, y: b.y - S * AMPOUT_HALF_H + 1 }] } };
     }
+    if (l.from === 'ampdi' && l.to === 'dibox') {
+      // R3-MK-04: the AUX OUT's lead, seated in the panel's jack, into the DI's input end.
+      const p0 = { x: a.x, y: a.y };
+      const p3 = { x: b.x - S * 0.5, y: b.y + S * 0.12 };
+      return { l, seg: { kind: 'cubic', p0, c1: { x: a.x + S * 0.6, y: a.y }, c2: { x: p3.x - S * 0.3, y: p3.y }, p3 }, over: true, plugs: [p0] };
+    }
+    if (a.y === b.y && byId(l.from).kind === 'steel' && byId(l.to).kind === 'volume') {
+      // R3-MK-02: from the steel's body jack (its output, on the body), down to the floor, into the pedal's IN jack.
+      const t = steelJack(S);
+      const j = volJack(S, 'in');
+      const p0 = { x: a.x + t.x, y: a.y + t.y };
+      const p3 = { x: b.x + j.x, y: b.y + j.y };
+      return { l, seg: { kind: 'cubic', p0, c1: { x: p0.x, y: p0.y + (p3.y - p0.y) * 0.9 }, c2: { x: p3.x - S * 0.3, y: p3.y }, p3 }, over: true, plugs: [p3] };
+    }
     if (a.y === b.y) return { l, seg: { kind: 'line', pts: [{ x: a.x + halfW[l.from], y: a.y }, { x: b.x - halfW[l.to], y: b.y }] } };
+    if (b.y > a.y && l.to === 'dibox' && byId(l.from).kind === 'volume') {
+      // R3-MK-01: from the plug in the volume pedal's OUT jack, down into the DI's input end.
+      const j = volJack(S, 'out');
+      const p0 = { x: a.x + j.x, y: a.y + j.y };
+      return { l, seg: { kind: 'cubic', p0, c1: { x: p0.x, y: p0.y + (b.y - p0.y) * 0.5 }, c2: { x: b.x - S * 0.8, y: b.y + S * 0.1 }, p3: { x: b.x - S * 0.5, y: b.y + S * 0.1 } }, over: true, plugs: [p0] };
+    }
     if (b.y > a.y && l.to === 'dibox') {
       // Down into the DI box's input jack, at its far (left) end.
       return { l, seg: { kind: 'cubic', p0: { x: a.x, y: a.y + S * 0.5 }, c1: { x: a.x, y: a.y + S * 0.5 + (b.y - a.y) * 0.4 }, c2: { x: b.x - S * 0.8, y: b.y + S * 0.1 }, p3: { x: b.x - S * 0.5, y: b.y + S * 0.1 } } };
@@ -245,18 +292,20 @@ export function diPathLayout(spec: ChainSpec, w: number, h: number, ts: number, 
   const bad = { p0, c1, c2, p3, mid: { x: (p0.x + 3 * c1.x + 3 * c2.x + p3.x) / 8, y: crest }, labelY };
   const elY = Math.min(bottomRow, (spec.diBox ? lanes.di : lanes.amp) + S * 0.5 + 34 * ts);
   const airY = Math.max(topRow, Math.min(lanes.air - S * 0.5 - 18 * ts, merged ? label.cab.y - 16 * ts : Infinity));
-  // The instrument's cord drops from it (a DI right after the instrument): its
-  // words move right of the cord, where it crosses their row.
-  const cordLink = out.find((k) => k.l.from === 'player' && k.l.to === 'dibox');
+  // The cord that drops into the DI — from the instrument or (R3-MK-01) from
+  // whichever node feeds the DI, a steel's volume pedal: that node's words
+  // move right of the cord, where it crosses their row.
+  const cordLink = out.find((k) => k.l.to === 'dibox' && k.l.kind === 'instrument' && pos[k.l.from].y < pos.dibox.y);
   if (cordLink?.seg) {
-    const row = label.player.y;
+    const id = cordLink.l.from;
+    const row = label[id].y;
     const pts = sampleSeg(cordLink.seg, 60).filter((p) => p.y >= row - 7 * ts - 2 && p.y <= row + 5 * ts + 2);
-    const cx = Math.max(pos.player.x, ...pts.map((p) => p.x));
-    label.player = { x: cx + 4 + labelW('player') / 2, y: row };
+    const cx = Math.max(pos[id].x, ...pts.map((p) => p.x));
+    label[id] = { x: cx + 4 + labelW(id) / 2, y: row };
     // ...and the next word along the row steps right if it would touch them.
-    const next = nodes.filter((n) => n.lane === 'air' && n.id !== 'player' && Math.abs(label[n.id].y - row) < 1).sort((a, b) => label[a.id].x - label[b.id].x)[0];
+    const next = nodes.filter((n) => n.lane === 'air' && n.id !== id && label[n.id].x > pos[id].x && Math.abs(label[n.id].y - row) < 1).sort((a, b) => label[a.id].x - label[b.id].x)[0];
     if (next) {
-      const gap = label[next.id].x - labelW(next.id) / 2 - (label.player.x + labelW('player') / 2);
+      const gap = label[next.id].x - labelW(next.id) / 2 - (label[id].x + labelW(id) / 2);
       if (gap < 6) label[next.id] = { ...label[next.id], x: label[next.id].x + (6 - gap) };
     }
   }

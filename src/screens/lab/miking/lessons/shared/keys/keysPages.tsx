@@ -602,7 +602,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
     const [patch, setPatch] = useState<'cab' | 'desk'>('cab');
     const [scene, setScene] = useState<KeysScene>('stage');
     const [sel, setSel] = useState<string | null>(null);
-    const chainIds = ['player', ...(spec.chain.diBox ? ['dibox'] : []), 'amp', 'cab', 'mic', 'desk', ...(spec.chain.ampDirect ? ['ampdi'] : [])];
+    const chainIds = ['player', ...(spec.chain.diBox ? ['dibox'] : []), 'amp', 'cab', 'mic', 'desk', ...(spec.chain.ampDirect ? ['ampdi'] : []), ...(spec.chain.ampDirectDi && !spec.chain.diBox ? ['dibox'] : [])];
     const chainItems = chainIds.map((id) => byId(id)).filter((x): x is NonNullable<typeof x> => !!x);
     const wedgeIds = lesson.live.wedges.map((w, i) => (i === 0 ? 'wedge' : w.id));
     const planIds = scene === 'stage' ? ['amp', ...(rhodes ? ['keys'] : []), 'musician', 'pedal', 'dibox', ...wedgeIds, 'drums', 'otherAmp', 'audience'] : ['amp', ...(rhodes ? ['keys'] : []), 'musician', 'pedal', 'dibox', 'otherAmp', 'room'];
@@ -635,7 +635,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
               onTap={setCSel}
               shortOf={shortOf}
               badPatch={patch === 'desk'}
-              accessibilityLabel={`The signal path. Top, the air path: ${chainItems.filter((i) => !['dibox', 'ampdi'].includes(i.id)).map((i) => i.label).join(', then ')}. Below, drawn apart: ${spec.chain.diBox ? 'a DI box between the keyboard and the amp, its output to the desk' : 'the instrument’s own auxiliary output to the desk'} — a separate electrical source.${patch === 'desk' ? ' Shown struck out in red: a speaker output patched into the desk, which is never done.' : ''}${cs ? ` Highlighted: ${cs.label}.` : ''}`}
+              accessibilityLabel={`The signal path. Top, the air path: ${chainItems.filter((i) => !['dibox', 'ampdi'].includes(i.id)).map((i) => i.label).join(', then ')}. Below, drawn apart: ${spec.chain.diBox ? 'a DI box between the keyboard and the amp, its output to the desk' : spec.chain.ampDirectDi ? 'the instrument’s own auxiliary output, through a DI box to the desk' : 'the instrument’s own auxiliary output to the desk'} — a separate electrical source.${patch === 'desk' ? ' Shown struck out in red: a speaker output patched into the desk, which is never done.' : ''}${cs ? ` Highlighted: ${cs.label}.` : ''}`}
             />
           ),
           badge: 'Blue = the air a mic hears · amber dashes = a separate electrical path · brown = speaker cable',
