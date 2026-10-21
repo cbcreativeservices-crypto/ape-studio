@@ -427,7 +427,7 @@ export function SignalChainLabScreen() {
               <Pressable onLongPress={() => openLesson(anyDyn ? 'gain_reduction' : 'module_toggle')} delayLongPress={350} accessible={false}>
                 <ChainRack
                   w={w - 20}
-                  h={h - 20 - 20}
+                  h={h - 20 - 20 - 18}
                   units={MODULES}
                   enabled={enabled}
                   live={running}
@@ -435,6 +435,11 @@ export function SignalChainLabScreen() {
                   hotPatches={scenario?.hot ?? []}
                 />
               </Pressable>
+              {/* R3-SC-01 (owner 2026-10-21): the engine is stereo and outboard
+                  is patched at the rear; the one drawn lane stands for both. */}
+              <Text style={styles.stageNote} numberOfLines={1}>
+                ONE LANE = THE STEREO PAIR (L + R) · OUTBOARD IS PATCHED AT THE REAR
+              </Text>
             </View>
           ),
         },
@@ -569,6 +574,7 @@ const styles = StyleSheet.create({
   // Stage: chain diagram on top, GR meter row anchored below on the same glass.
   stageInner: { padding: 10, gap: 6 },
   stageHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, color: colors.textSub },
+  stageNote: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.8, color: '#8d8f99', height: 12 },
 
   chainWrap: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 4 },
 });
