@@ -320,7 +320,9 @@ function FacilityScene({
           <ConcreteCut x={0} y={2} w={360} h={7} />
           <ConcreteCut x={0} y={228} w={360} h={8} />
           {/* ladder tray across the ceiling space on its rods */}
-          <LadderTraySide x0={24} x1={244} y={26} m={60} rodTo={9} rodEvery={1.2} />
+          {/* the tray runs on past the cut edge (x 0): the network run comes
+              from beyond the section in it, never out of mid-air (R3-CI-06) */}
+          <LadderTraySide x0={0} x1={244} y={26} m={60} rodTo={9} rodEvery={1.2} />
           {/* red sprinkler main with its pendant heads */}
           <Rect x={20} y={32.6} width={230} height={2.8} fill="#b8352a" stroke="#4a130d" strokeWidth={0.3} />
           <Rect x={20} y={32.8} width={230} height={0.7} fill="#ff8a78" opacity={0.6} />
@@ -375,16 +377,23 @@ function FacilityScene({
           </SvgText>
         </ZoneIn>
         <ZoneIn delay={250} reduce={m.reduce}>
-          {/* audience floor + the aisle (a cable ramp where the run crosses) */}
+          {/* audience floor + the aisle (a cable ramp where the run crosses):
+              the ramp's body here, its lid drawn over the run below */}
           <Rect x={128} y={223} width={44} height={5} rx={1} fill="#1b1c20" />
-          <Rect x={132} y={223.6} width={36} height={2.4} rx={0.6} fill="#e3b73a" />
         </ZoneIn>
         {/* representative runs (honest, terminating) — they install themselves */}
-        <RunIn d="M36 196 C60 196 70 210 96 210 H140" len={140} color={CI_CLASS_TINTS.analog} delay={300} run={assembled} />
+        {/* R3-CI-06 (2026-10-21): the analog run lies on the stage deck, drops
+            down the riser front to the floor and crosses the aisle THROUGH
+            the cable ramp (it used to float at y 210, over the ramp) */}
+        <RunIn d="M36 196 C42 196 44 200.4 50 200.4 H107 C111 200.4 113.6 203 113.6 207 V222 C113.6 225 116 226.4 120 226.4 H150" len={170} color={CI_CLASS_TINTS.analog} delay={300} run={assembled} />
         {/* B-CI-04: the analog run carries on through the wall (above the
             door, like the network run) and lands on the rack's side */}
-        <RunIn d="M140 210 H196 C220 210 224 200 224 190 C224 182 228 178 236 178 H276" len={160} color={CI_CLASS_TINTS.analog} delay={340} run={assembled} />
-        <RunIn d="M32 25 H236 C250 25 252 40 252 60" len={250} color={CI_CLASS_TINTS.network} delay={280} run={assembled} />
+        <RunIn d="M150 226.4 H210 C216 226.4 218 223 218 218 V186 C218 181 222 178 228 178 H276" len={160} color={CI_CLASS_TINTS.analog} delay={340} run={assembled} />
+        <ZoneIn delay={250} reduce={m.reduce}>
+          {/* the ramp's lid, over the run in its channel */}
+          <Rect x={132} y={223.4} width={36} height={1.8} rx={0.6} fill="#e3b73a" />
+        </ZoneIn>
+        <RunIn d="M0 25 H236 C250 25 252 40 252 60" len={260} color={CI_CLASS_TINTS.network} delay={280} run={assembled} />
         <RunIn d="M252 60 v40 l24 4" len={70} color={CI_CLASS_TINTS.network} delay={380} run={assembled} />
         <RunIn d="M352 228 v-140 l-14 -4" len={160} color={CI_CLASS_TINTS.power} delay={360} run={assembled} />
         {/* defect markers */}

@@ -279,7 +279,7 @@ export function HorizontalManager({ xs, y = HMGR.y }: { xs: number[]; y?: number
  *  drawn ~2× too big): a port's shielded jack 14 × 12.5 mm on a 15 mm pitch,
  *  an SFP cage 14 × 9.5 mm. Port 1 sits under patch port 1 so the patch
  *  cords drop almost straight. */
-export const SWITCH = { y: uY(3), h: U_H, portCy: uY(3) + 12.6 } as const;
+export const SWITCH = { y: uY(3), h: U_H, portCy: uY(3) + 12.6, iecX: 266, iecY: uY(3) + 1 } as const;
 const SW_PITCH = 15 * RK;
 /** Port centres (x), ports 1–8. */
 export const SW_CX = Array.from({ length: 8 }, (_, i) => RACK_CX - 99.4 + i * SW_PITCH);
@@ -314,19 +314,51 @@ export function NetworkSwitch({ lit = [] }: { lit?: number[] }) {
           <Rect x={cx - SFP_CAGE.w / 2 + 0.8} y={cy - SFP_CAGE.h / 2 + 0.8} width={SFP_CAGE.w - 1.6} height={SFP_CAGE.h - 1.6} fill="#141518" />
         </G>
       ))}
+      {/* its own IEC C14 inlet at the right end (wiring grade R3-CI-07,
+          2026-10-21: the switch had no power cord at all) */}
+      <IecInlet x={SWITCH.iecX} y={SWITCH.iecY} />
     </G>
   );
 }
 
 /** 2U DSP rear: 8 XLR-F analog inputs on D-series flanges (numbered on the
- *  silkscreen), an etherCON-type network port, the IEC inlet. */
-export const DSP = { y: uY(4), h: 2 * U_H, jackY: uY(4) + 14, netX: 261 } as const;
+ *  silkscreen), an etherCON-type network port (its audio leaves here, over
+ *  the network, to the switch and on to the interface), a pluggable
+ *  terminal-block CONTROL port (the white control cable lands here — a
+ *  control cable, not a Cat cable; wiring grade R3-CI-07, 2026-10-21), and
+ *  the IEC inlet bottom right. The NET port sits left of the interface
+ *  link's drop, which passes the DSP in the gap between NET and the inlet. */
+export const DSP = { y: uY(4), h: 2 * U_H, jackY: uY(4) + 14, netX: 253, ctlX: 65.5, ctlY: uY(4) + 34.5, iecX: 266 } as const;
+/** A pluggable 3-pin terminal block (3.81 mm pitch), seen end-on: the plug
+ *  body with its screw heads, seated in its header. */
+export function TerminalBlock({ x, y, seated = false }: { x: number; y: number; seated?: boolean }) {
+  const w = 11.4 * RK + 1.4;
+  const h = 5;
+  return (
+    <G>
+      <Rect x={x - w / 2 - 0.6} y={y - h / 2 - 0.6} width={w + 1.2} height={h + 1.2} rx={0.5} fill="#050506" stroke="#6e727a" strokeWidth={0.35} />
+      {seated ? (
+        <G>
+          <Rect x={x - w / 2} y={y - h / 2} width={w} height={h} rx={0.5} fill="#1d1f24" stroke="#0a0a0c" strokeWidth={0.35} />
+          {[-1, 0, 1].map((i) => (
+            <Circle key={i} cx={x + i * 3.81 * RK} cy={y - 0.6} r={0.75} fill="#9ba1a8" stroke="#2c2f34" strokeWidth={0.25} />
+          ))}
+        </G>
+      ) : (
+        [-1, 0, 1].map((i) => <Rect key={i} x={x + i * 3.81 * RK - 0.4} y={y - 1.2} width={0.8} height={2.4} fill="#c9a13c" />)
+      )}
+    </G>
+  );
+}
 export function DspRear({ xs, dress }: { xs: number[]; dress: boolean }) {
   const y = DSP.y;
   return (
     <G>
       <DeviceFace y={y} h={DSP.h} />
-      <Silk x={FACE_X + 4} y={y + DSP.h - 3.6} text="DSP · ANALOG IN" />
+      {/* the control port bottom left, named beside it; the device name after */}
+      <TerminalBlock x={DSP.ctlX} y={DSP.ctlY} />
+      <Silk x={DSP.ctlX + 6} y={y + DSP.h - 3.6} text="CTRL" />
+      <Silk x={DSP.ctlX + 40} y={y + DSP.h - 3.6} text="DSP · ANALOG IN" />
       {xs.map((cx, i) => (
         <G key={cx}>
           <PanelJack x={cx} y={DSP.jackY} k={RK} kind="xlrF" />
@@ -336,7 +368,7 @@ export function DspRear({ xs, dress }: { xs: number[]; dress: boolean }) {
       <PanelJack x={DSP.netX} y={DSP.jackY} k={RK} kind="rj45" />
       <Silk x={DSP.netX} y={y + 30.4} text="NET" anchor="middle" />
       {/* IEC C14 inlet, bottom right (the dressed AC loom seats its cord) */}
-      <IecInlet x={236} y={y + 32} />
+      <IecInlet x={DSP.iecX} y={y + 32} />
     </G>
   );
 }
@@ -352,8 +384,11 @@ export function IecInlet({ x, y }: { x: number; y: number }) {
   );
 }
 
-/** 1U audio interface: six combo XLR/TRS inputs and two XLR-M outputs. */
-export const IFACE = { y: uY(6), h: U_H, jackY: uY(6) + 11 } as const;
+/** 1U audio interface: six combo XLR/TRS inputs, two XLR-M outputs (to the
+ *  amp), its IEC inlet, and an etherCON-type NET port — the DSP's audio
+ *  arrives here over the network, through the switch (wiring grade R3-CI-03,
+ *  2026-10-21: there was no path from the DSP to the interface). */
+export const IFACE = { y: uY(6), h: U_H, jackY: uY(6) + 11, outXs: [211, 229] as const, iecX: 238, netX: 263.5 } as const;
 export function AudioInterface({ xs }: { xs: number[] }) {
   const p = usePaint();
   const y = IFACE.y;
@@ -368,9 +403,11 @@ export function AudioInterface({ xs }: { xs: number[] }) {
         </G>
       ))}
       <Silk x={xs[xs.length - 1] + 12} y={y + 14.4} text="INTERFACE" />
-      {[254, 274].map((cx) => (
+      {IFACE.outXs.map((cx) => (
         <PanelJack key={cx} x={cx} y={IFACE.jackY} k={RK} kind="xlrM" />
       ))}
+      <IecInlet x={IFACE.iecX} y={IFACE.jackY - 5.5} />
+      <PanelJack x={IFACE.netX} y={IFACE.jackY} k={RK} kind="rj45" />
     </G>
   );
 }

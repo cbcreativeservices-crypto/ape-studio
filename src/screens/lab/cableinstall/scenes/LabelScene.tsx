@@ -3,8 +3,8 @@
  * (spec §19).
  *
  * The frustration→identity arc, in four phases:
- *  A  THE FRUSTRATION — an installed Rack → Patch panel → Wall plate → Stage
- *     box system with 4 identical unlabeled cables. "No signal from Stage
+ *  A  THE FRUSTRATION — an installed Rack → Patch panel → Wall sleeve → Stage
+ *     box system: 3 identical unlabeled audio cables and 1 network cable. "No signal from Stage
  *     Input 12 — find its cable." Every tap reveals only "unlabeled cable"
  *     (frustrating BY DESIGN, kept short): after 3 taps the lesson lands —
  *     without identity, every fault is archaeology.
@@ -58,6 +58,7 @@ import {
   withSpring,
   withTiming,
 } from '../motion';
+import { CI_CLASS_TINTS } from '../data/cableTypes';
 import { CI_CABLE_SCHEDULE, CI_LABEL_SCHEME_NOTE, CI_SLACK_SCENARIO, CI_TRACE_TARGET, type CiScheduleRow } from '../data/scenarios';
 import { clamp100 } from '../engine/score';
 import type { CiModuleProps } from '../registry';
@@ -74,36 +75,54 @@ const B_FIELDS = [
   { key: 'id', label: 'CABLE ID', options: ['A-021', 'A-012', 'N-012'], correctIdx: 1 },
 ] as const;
 
-/* ── the installed system (training visualization; one SVG, two states) ── */
-const RACK_Y = [44, 72, 96, 120]; // rack-exit y per cable
-const P_Y = [52, 64, 76, 88]; // patch-panel lane y (12 apart: room for a 12-unit label flag each)
-const W_Y = [62, 70, 78, 86]; // wall-plate lane y
+/* ── the installed system (training visualization; one SVG, two states) ──
+ * Wiring grade R3-CI-01/02 (2026-10-21): every run now starts ON its own
+ * rack-end port and ends ON its own stage-box jack, as the schedule says —
+ * A-010…A-012 from patch panel PP2 ports 10–12 (XLR-M: the signal leaves the
+ * rack end) to stage inputs 10–12 (XLR-F); N-004, the network run, from
+ * switch SW1 port 4 in rack R1 to the stage box's etherCON "NET A", drawn in
+ * the network colour. The wall plate became what it is on this route: a
+ * pass-through SLEEVE the four runs go through (they used to cross the faces
+ * of PP2 and a wall plate without landing on either). */
+const NET_CABLE = 3; // N-004
+const START_Y = [46, 60, 74, 112]; // each run's rack-end port y (PP2 10–12, SW1-04)
+const PP2_X = 112; // PP2's port column for 10–12 (the column at 90 is 7–9)
+const PP2_ROW_X = [90, PP2_X] as const;
+const SW_PORT_X = [21, 29, 37, 45]; // SW1 ports 1–4, on the rack's bottom unit
+const SW_Y = 112;
+const START_X = [PP2_X, PP2_X, PP2_X, SW_PORT_X[3]];
+const W_Y = [62, 70, 78, 86]; // sleeve lane y
 const S_Y = [54, 70, 86, 102]; // stage-box jack y
-const PERM_A = [2, 0, 3, 1]; // cable i → patch lane (crossings by design)
-const PERM_B = [1, 3, 0, 2]; // cable i → wall-plate lane
-const PERM_C = [2, 0, 3, 1]; // cable i → stage jack
+const PERM_B = [1, 3, 0, 2]; // cable i → sleeve lane (crossings by design)
+const PERM_C = [2, 0, 3, 1]; // cable i → stage jack (N-004 → row 2, the etherCON)
+const STAGE_JACK_X = [272, 326] as const; // the box's two jack columns
+const RUN_END_X = 268; // runs end inside the jack's flange, on the jack
+const SLEEVE = { x: 206, w: 20, y: 56, h: 36, wallX: 210, wallW: 12 } as const;
 
 /**
  * Each cable changes lane at its OWN x (owner 2026-10-10: cables shown
  * independently, like a line diagram). The crossings stay — they are the
  * lesson — but they are pairwise and steep, never a knot where all four run
  * through one point, so any one cable can still be followed end to end.
+ * No lane change happens inside the sleeve, under a flag or under a badge.
  */
-const PW_X = [164, 172, 180, 188]; // patch → wall-plate lane change, per cable
-const WS_X = [228, 234, 240, 246]; // wall-plate → stage-jack lane change, per cable
-/** Label flags: over the patch-panel face, and just short of each stage jack
- *  — never over a lane change, so a flag never hides a cable. */
-const FLAG_P_X = 118;
-const FLAG_S_X = 249.5;
+const PW_X = [180, 186, 192, 198]; // start → sleeve lane change, per cable
+const WS_X = [232, 237, 242, 247]; // sleeve → stage-jack lane change, per cable
+/** Label flags: on each run just past its rack-end port, and just short of
+ *  each stage jack — never over a lane change, so a flag never hides a cable. */
+const FLAG_P_X = 124;
+const FLAG_S_X = 254;
+/** The physical cable numbers, on each run past its rack-end flag. */
+const BADGE_X = 168;
 function cablePath(i: number): string {
-  const r = RACK_Y[i];
-  const p = P_Y[PERM_A[i]];
+  const r = START_Y[i];
   const wy = W_Y[PERM_B[i]];
   const s = S_Y[PERM_C[i]];
   const a = PW_X[i];
   const b = WS_X[i];
-  return `M66 ${r} H76 C86 ${r} 82 ${p} 92 ${p} H${a - 5} C${a} ${p} ${a} ${wy} ${a + 5} ${wy} H${b - 3} C${b} ${wy} ${b} ${s} ${b + 3} ${s} H264`;
+  return `M${START_X[i]} ${r} H${a - 4} C${a} ${r} ${a} ${wy} ${a + 4} ${wy} H${b - 3} C${b} ${wy} ${b} ${s} ${b + 3} ${s} H${RUN_END_X}`;
 }
+const cableTint = (i: number) => (i === NET_CABLE ? CI_CLASS_TINTS.network : CI_CLASS_TINTS.analog);
 /** Over-estimated run length for the trace draw (over-estimating is safe). */
 const CABLE_LEN = 280;
 
@@ -204,6 +223,35 @@ function TraceBeam({ d }: { d: string }) {
   );
 }
 
+/** A panel XLR (D-series flange) seen head-on: female = 3 sockets, male = 3 pins. */
+function PanelXlr({ x, y, male = false }: { x: number; y: number; male?: boolean }) {
+  return (
+    <G>
+      <Rect x={x - 5.4} y={y - 6} width={10.8} height={12} rx={1} fill="#1b1c20" stroke="#0a0a0c" strokeWidth={0.4} />
+      <Circle cx={x} cy={y} r={4.2} fill="#050506" stroke="#7b7f86" strokeWidth={0.5} />
+      {[
+        [-1.4, 0.8],
+        [1.4, 0.8],
+        [0, -1.2],
+      ].map(([dx, dy], k) => (
+        <Circle key={k} cx={x + dx} cy={y + dy} r={male ? 0.5 : 0.6} fill={male ? '#d9c47a' : '#8d8a7e'} />
+      ))}
+    </G>
+  );
+}
+
+/** An etherCON-type panel jack: the same D-series flange, an RJ45 opening. */
+function PanelEthercon({ x, y }: { x: number; y: number }) {
+  return (
+    <G>
+      <Rect x={x - 5.4} y={y - 6} width={10.8} height={12} rx={1} fill="#1b1c20" stroke="#0a0a0c" strokeWidth={0.4} />
+      <Circle cx={x} cy={y} r={4.2} fill="#141518" stroke="#7b7f86" strokeWidth={0.5} />
+      <Rect x={x - 2.4} y={y - 1.9} width={4.8} height={3.6} rx={0.3} fill="#030304" stroke="#7b7f86" strokeWidth={0.25} />
+      <Rect x={x - 0.9} y={y + 1.7} width={1.8} height={0.8} fill="#030304" />
+    </G>
+  );
+}
+
 function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: boolean }) {
   const m = useCiMotion();
   const h = Math.round((w * 150) / 360);
@@ -215,72 +263,76 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
       viewBox="0 0 360 150"
       accessibilityLabel={
         labeled
-          ? `Installed system, training visualization: rack R1, patch panel PP2, wall plate and stage box, with four cables now carrying label flags at both ends: ${CABLE_FLAGS.join(', ')}.${found ? ' Cable A-012 is highlighted.' : ''} Interaction happens in the buttons below.`
-          : 'Installed system, training visualization: rack R1, patch panel PP2, wall plate and stage box, connected by four identical unlabeled cables that cross each other. Interaction happens in the buttons below.'
+          ? `Installed system, training visualization: rack R1 with switch SW1, patch panel PP2, a wall sleeve and the stage box. Three audio cables run from PP2 ports 10 to 12 to stage inputs 10 to 12, and one network cable runs from SW1 port 4 to the stage box's NET A jack. Every cable now carries a label flag at both ends: ${CABLE_FLAGS.join(', ')}.${found ? ' Cable A-012 is highlighted.' : ''} Interaction happens in the buttons below.`
+          : 'Installed system, training visualization: rack R1 with switch SW1, patch panel PP2, a wall sleeve and the stage box. Three identical unlabeled audio cables run from PP2 to stage inputs, crossing each other on the way, and one unlabeled network cable runs from the switch to the stage box. Interaction happens in the buttons below.'
       }
     >
       <Rect x={2} y={4} width={356} height={144} rx={10} fill="#101014" />
-      {/* rack R1: frame, rails, the kit with status LEDs */}
+      {/* rack R1: frame, rails, the kit with status LEDs; the bottom unit is
+          switch SW1 with its four ports (N-004 leaves port 4) */}
       <Rect x={10} y={16} width={56} height={118} rx={1.4} fill="#23252a" stroke="#0a0a0c" strokeWidth={0.7} />
       <Rect x={14} y={20} width={48} height={110} fill="#0c0c0f" />
       {[24, 44, 64, 84, 104].map((y, i) => (
         <G key={y}>
           <Rect x={16} y={y} width={44} height={16} rx={0.8} fill="#2b2d33" stroke="#101114" strokeWidth={0.4} />
-          <Rect x={19} y={y + 3} width={16} height={2} fill="#1a1b1f" />
-          <Circle cx={56} cy={y + 4} r={0.9} fill={i % 2 ? '#37d97b' : '#ffc64d'} />
+          {i < 4 ? (
+            <>
+              <Rect x={19} y={y + 3} width={16} height={2} fill="#1a1b1f" />
+              <Circle cx={56} cy={y + 4} r={0.9} fill={i % 2 ? '#37d97b' : '#ffc64d'} />
+            </>
+          ) : (
+            SW_PORT_X.map((x) => (
+              <G key={x}>
+                <Rect x={x - 3} y={SW_Y - 2.4} width={6} height={4.8} rx={0.4} fill="#6d737b" stroke="#2c2f34" strokeWidth={0.3} />
+                <Rect x={x - 2.2} y={SW_Y - 1.7} width={4.4} height={3.2} rx={0.3} fill="#050506" />
+              </G>
+            ))
+          )}
         </G>
       ))}
-      {/* patch panel PP2: two rows of RJ45 keystones */}
-      <Rect x={92} y={48} width={64} height={44} rx={1.4} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.7} />
-      {[58, 74].map((y) => (
-        <G key={y}>
-          {[97, 105, 113, 121, 129, 137, 145].map((x) => (
-            <G key={x}>
-              <Rect x={x - 3} y={y} width={6} height={6} rx={0.6} fill="#e9e8e3" stroke="#8d8a80" strokeWidth={0.3} />
-              <Rect x={x - 2.1} y={y + 0.9} width={4.2} height={3.6} rx={0.3} fill="#050506" />
-            </G>
+      {/* patch panel PP2: two columns of XLR-M (the rack end of the tie
+          lines — the signal leaves here); ports 10–12 are the right column */}
+      <Rect x={80} y={36} width={42} height={48} rx={1.4} fill="#26282d" stroke="#0a0a0c" strokeWidth={0.7} />
+      {PP2_ROW_X.map((x) => (
+        <G key={x}>
+          {START_Y.slice(0, 3).map((y) => (
+            <PanelXlr key={y} x={x} y={y} male />
           ))}
         </G>
       ))}
-      {/* wall plate: double-gang, two XLR inserts */}
-      <Rect x={196} y={54} width={28} height={36} rx={1.4} fill="#d9d7d0" stroke="#8d8a80" strokeWidth={0.6} />
-      {[64, 80].map((y) => (
-        <G key={y}>
-          <Circle cx={210} cy={y} r={4.4} fill="#1a1b1f" stroke="#8d8a80" strokeWidth={0.4} />
-          <Circle cx={210} cy={y} r={3} fill="#050506" />
-        </G>
-      ))}
-      {/* stage box: steel box, two columns of XLR-female jacks */}
+      {/* the wall, and the pass-through sleeve the runs go through (bushed
+          both ends) — no termination here */}
+      <Rect x={SLEEVE.wallX} y={24} width={SLEEVE.wallW} height={110} fill="#2a2a2e" />
+      <Path d={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((k) => `M${SLEEVE.wallX} ${30 + k * 10} l${SLEEVE.wallW} -6`).join('')} stroke="#3c3c42" strokeWidth={0.6} />
+      <Rect x={SLEEVE.x} y={SLEEVE.y} width={SLEEVE.w} height={SLEEVE.h} rx={1.2} fill="#141518" stroke="#9a978e" strokeWidth={0.8} />
+      <Rect x={SLEEVE.x - 1.6} y={SLEEVE.y - 2} width={3.2} height={SLEEVE.h + 4} rx={0.8} fill="#4a4c52" stroke="#0a0a0c" strokeWidth={0.4} />
+      <Rect x={SLEEVE.x + SLEEVE.w - 1.6} y={SLEEVE.y - 2} width={3.2} height={SLEEVE.h + 4} rx={0.8} fill="#4a4c52" stroke="#0a0a0c" strokeWidth={0.4} />
+      {/* stage box: steel box, two columns of XLR-female inputs; the left
+          column's second row is the etherCON NET A, named beside it */}
       <Rect x={256} y={40} width={88} height={68} rx={2.4} fill="#2b2d33" stroke="#0a0a0c" strokeWidth={0.8} />
       <Rect x={258} y={42} width={84} height={3} fill="rgba(255,255,255,0.08)" />
-      {S_Y.map((y) => (
-        <G key={y}>
-          {[268, 310].map((x) => (
-            <G key={x}>
-              <Rect x={x - 5.4} y={y - 6} width={10.8} height={12} rx={1} fill="#1b1c20" stroke="#0a0a0c" strokeWidth={0.4} />
-              <Circle cx={x} cy={y} r={4.2} fill="#050506" stroke="#7b7f86" strokeWidth={0.5} />
-              <Circle cx={x - 1.4} cy={y + 0.8} r={0.6} fill="#8d8a7e" />
-              <Circle cx={x + 1.4} cy={y + 0.8} r={0.6} fill="#8d8a7e" />
-              <Circle cx={x} cy={y - 1.2} r={0.6} fill="#8d8a7e" />
-            </G>
-          ))}
-        </G>
-      ))}
-      {/* the four identical cables (crossing on purpose) */}
+      {S_Y.map((y, row) =>
+        STAGE_JACK_X.map((x, col) =>
+          col === 0 && row === PERM_C[NET_CABLE] ? <PanelEthercon key={`${x}-${y}`} x={x} y={y} /> : <PanelXlr key={`${x}-${y}`} x={x} y={y} />,
+        ),
+      )}
+      <Callout x={281} y={S_Y[PERM_C[NET_CABLE]] + 3.6} text="NET A" size={10} color="#c9ccd3" bg={null} anchor="start" />
+      {/* the four runs: three identical audio lines (crossing on purpose) and
+          the network run in the network colour */}
       {[0, 1, 2, 3].map((i) => (
-        <JacketPath key={i} d={cablePath(i)} color="#4fd0e0" width={2.4} />
+        <JacketPath key={i} d={cablePath(i)} color={cableTint(i)} width={2.4} />
       ))}
-      {/* physical cable numbers at the rack exits */}
+      {/* physical cable numbers, on each run past its rack end */}
       {[0, 1, 2, 3].map((i) => (
         <G key={i}>
-          <Circle cx={71} cy={RACK_Y[i]} r={8} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
-          <Callout x={71} y={RACK_Y[i] + 3.6} text={String(i + 1)} size={10.5} color={colors.textSecondary} bg={null} />
+          <Circle cx={BADGE_X} cy={START_Y[i]} r={6.5} fill="#17171c" stroke="#6f7378" strokeWidth={1.2} />
+          <Callout x={BADGE_X} y={START_Y[i] + 3.6} text={String(i + 1)} size={10.5} color={colors.textSecondary} bg={null} />
         </G>
       ))}
       {/* label flags flip open at both ends once identity is assigned */}
       {labeled
         ? [0, 1, 2, 3].map((i) => {
-            const p = P_Y[PERM_A[i]];
+            const p = START_Y[i];
             const s = S_Y[PERM_C[i]];
             const isTarget = found && i === TARGET_CABLE;
             const tint = isTarget ? colors.green : '#6f7378';
@@ -301,8 +353,8 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
       {found ? (
         <>
           <TraceBeam d={cablePath(TARGET_CABLE)} />
-          <LabelFlag x={FLAG_P_X} y={P_Y[PERM_A[TARGET_CABLE]] - 13} w={36} h={12} tint={colors.green} delay={520} reduce={m.reduce}>
-            <SvgText x={FLAG_P_X + 18} y={P_Y[PERM_A[TARGET_CABLE]] - 3.6} fontSize={10} fontFamily={fonts.mono} fill="#0b3d1d" textAnchor="middle">
+          <LabelFlag x={FLAG_P_X} y={START_Y[TARGET_CABLE] - 13} w={36} h={12} tint={colors.green} delay={520} reduce={m.reduce}>
+            <SvgText x={FLAG_P_X + 18} y={START_Y[TARGET_CABLE] - 3.6} fontSize={10} fontFamily={fonts.mono} fill="#0b3d1d" textAnchor="middle">
               {CABLE_FLAGS[TARGET_CABLE]}
             </SvgText>
           </LabelFlag>
@@ -311,9 +363,9 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
       ) : null}
       {/* node names */}
       <Callout x={38} y={146} text="RACK R1" size={10.5} color="#9ea3ad" bg={null} />
-      <Callout x={124} y={146} text="PATCH PP2" size={10.5} color="#9ea3ad" bg={null} />
-      <Callout x={210} y={146} text="WALL PLATE" size={10.5} color="#9ea3ad" bg={null} />
-      <Callout x={300} y={146} text="STAGE BOX" size={10.5} color="#9ea3ad" bg={null} />
+      <Callout x={101} y={146} text="PATCH PP2" size={10.5} color="#9ea3ad" bg={null} />
+      <Callout x={216} y={146} text="WALL SLEEVE" size={10.5} color="#9ea3ad" bg={null} />
+      <Callout x={303} y={146} text="STAGE BOX" size={10.5} color="#9ea3ad" bg={null} />
     </Svg>
   );
 }
@@ -642,10 +694,9 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
     next.add(i);
     setATapped(next);
     shake(i); // nothing identifies it — the tap gives nothing back
+    const what = i === NET_CABLE ? 'Unlabeled network cable — not audio, but it says nothing about where it goes.' : 'Unlabeled cable — identical to the other audio lines.';
     AccessibilityInfo.announceForAccessibility(
-      next.size >= 3
-        ? 'Unlabeled cable — identical to the others. Three inspected, nothing learned. Without identity, every fault is archaeology.'
-        : 'Unlabeled cable — identical to the others.',
+      next.size >= 3 ? `${what} Three inspected, nothing learned. Without identity, every fault is archaeology.` : what,
     );
   };
 
@@ -754,8 +805,8 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
         render={(w) => <SystemArt w={w} labeled={bDone} found={cFound} />}
       />
       <Text style={styles.tintNote}>
-        TRAINING VISUALIZATION — simplified system; the identical cable tints ARE the point (teaching colors — field
-        colors vary). Numbered markers = the four physical cables below.
+        TRAINING VISUALIZATION — simplified system; the three identical audio cables ARE the point (teaching colors —
+        field colors vary; green = the network run). Numbered markers = the four physical cables below.
       </Text>
 
       {/* ── A · THE FRUSTRATION ─────────────────────────────────────────── */}
@@ -776,11 +827,11 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
                   accessibilityRole="button"
                   accessibilityState={{ disabled: aDone || tapped }}
                   aria-disabled={aDone || tapped}
-                  accessibilityLabel={`Cable ${i + 1}${tapped ? '. Inspected: unlabeled, identical to the others' : aDone ? '. Identical to the rest — no point inspecting further' : '. Tap to inspect'}`}
+                  accessibilityLabel={`Cable ${i + 1}${tapped ? (i === NET_CABLE ? '. Inspected: an unlabeled network cable' : '. Inspected: unlabeled, identical to the others') : aDone ? '. Unlabeled — no point inspecting further' : '. Tap to inspect'}`}
                 >
                   <Text style={styles.cableBtnName}>CABLE {i + 1}</Text>
                   <Text style={[styles.cableBtnSub, tapped && { color: '#ff9b8f' }]}>
-                    {tapped ? '❓ unlabeled — identical to the rest' : aDone ? 'identical — no point continuing' : 'tap to inspect'}
+                    {tapped ? (i === NET_CABLE ? '❓ unlabeled network run — goes where?' : '❓ unlabeled — identical to the rest') : aDone ? 'unlabeled — no point continuing' : 'tap to inspect'}
                   </Text>
                 </Pressable>
               </DeadShake>

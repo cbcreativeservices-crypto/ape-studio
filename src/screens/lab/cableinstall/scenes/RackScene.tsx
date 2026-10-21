@@ -133,10 +133,12 @@ import {
   Rj45PlugRear,
   StrainFlag,
   SWITCH,
+  TerminalBlock,
   TrsPlugRear,
   U_TOP,
 } from './rackArt';
 import type { CiModuleProps } from '../registry';
+import { pathLen } from '../pathLen';
 
 /* ═══════════════════════ geometry (viewBox 340×366) ═══════════════════════ */
 
@@ -168,7 +170,9 @@ const HIT: Record<string, { x: number; y: number; w: number; h: number; mx: numb
 
 const HMGR_XS = Array.from({ length: 14 }, (_, i) => 66 + i * 16);
 const DSP_JACK_XS = [70, 94, 118, 142, 166, 190, 214, 238];
-const IFACE_XS = [70, 92, 114, 136, 158, 180];
+/** Interface combo inputs on a 16-unit (32 mm) pitch, so its rear also fits
+ *  the outputs, the IEC inlet and the NET port (wiring grade R3-CI-03/07). */
+const IFACE_XS = [68, 84, 100, 116, 132, 148];
 const DISTRO_XS = Array.from({ length: 8 }, (_, i) => 64 + i * 19);
 /** Hook-and-loop wraps down the vertical managers, at even ~1.3U intervals. */
 const TIE_YS = Array.from({ length: 10 }, (_, i) => 60 + i * 29);
@@ -229,18 +233,29 @@ function groupCables(gid: string, isL: boolean): string[] {
  *  the order they turn in (top to bottom); a group dressed to the wrong side
  *  rides outside them. */
 const SIDE_ORDER = {
-  L: ['g-net', 'g-fib', 'g-ctl', 'g-analog', 'g-spk', 'g-ac'],
+  // the control cable rides OUTSIDE the analog harness on the left and turns
+  // in last, below it, to the DSP's control port bottom left (R3-CI-07)
+  L: ['g-net', 'g-fib', 'g-analog', 'g-ctl', 'g-spk', 'g-ac'],
   R: ['g-spk', 'g-ac', 'g-net', 'g-fib', 'g-ctl', 'g-analog'],
 } as const;
 /** The rail height where each group's INNER lane turns in. */
 const TURN_Y: Record<string, number> = {
   'g-net': PATCH.y + 9.5, // behind the jacks-to-rear patch panel
   'g-fib': 84.8, // over the switch's top lip, to the SFP cage
-  'g-ctl': 101.2, // the top lane of the DSP harness
+  'g-ctl': 101.2, // right side: the top lane of the DSP harness (see turnY)
   'g-analog': 102.7, // the DSP harness proper, under the switch ports
   'g-spk': AMP.y - 13, // straddling the rear lacing bar over the amp
   'g-ac': PDU.y + 19.5, // into the PDU's own inlet
 };
+/** Where the network link to the DSP runs: the lane above the analog
+ *  harness, from switch port 8 to the DSP's NET port (R3-CI-03). */
+const LINK_Y = 101.2;
+/** The control lane turns in on the LEFT just below the eight analog lanes
+ *  (102.7 … 113.2), so it peels off first, to the CTRL port bottom left; on
+ *  the right (a wrong-side dressing) it rides above the harness, clear of the
+ *  network link's lane. */
+const CTL_TURN = { L: 114.7, R: 99.8 } as const;
+const turnY = (gid: string, isL: boolean) => (gid === 'g-ctl' ? CTL_TURN[isL ? 'L' : 'R'] : TURN_Y[gid]);
 type Lane = LaneCable & { off: number; off0: number };
 function sideLanes(isL: boolean): Lane[] {
   const out: Lane[] = [];
@@ -273,7 +288,7 @@ function laneRun(l: Lane, isL: boolean): { d: string; railY: number } {
   const r1 = yd - C1_Y;
   const r2 = 3 + l.off;
   const r3 = 3 + (l.off - l.off0);
-  const ty = TURN_Y[l.gid] + (l.off - l.off0);
+  const ty = turnY(l.gid, isL) + (l.off - l.off0);
   if (isL) {
     const ex = L_GEO.ex - l.off;
     const lane = L_GEO.lane - l.off;
@@ -303,7 +318,7 @@ function groupRuns(gid: string, isL: boolean) {
     .filter((l) => l.gid === gid)
     .map((l) => ({ ...l, ...laneRun(l, isL) }));
 }
-const railYOf = (gid: string, isL: boolean, key: string) => groupRuns(gid, isL).find((r) => r.key === key)?.railY ?? TURN_Y[gid];
+const railYOf = (gid: string, isL: boolean, key: string) => groupRuns(gid, isL).find((r) => r.key === key)?.railY ?? turnY(gid, isL);
 /** Wrong-zone placements (the entry coil, the horizontal-manager dangle) keep
  *  their cables as separate lanes too: a fixed row per group. */
 const hmgrY = (gi: number) => 21 + gi * 3.2;
@@ -332,12 +347,13 @@ function harnessD(x0: number, yb: number, jx: number, jy: number): string {
   return `M${x0} ${yb} H${jx - s * turn} Q${jx} ${yb} ${jx} ${yb + dir * turn} V${jy}`;
 }
 
-/** The analog harness: eight lines peel off to DSP inputs 1–8, the control
- *  line runs on to the DSP's NET port, and the interface outputs feed the
- *  amp inputs down across the lacing bar. */
+/** The analog harness: eight lines peel off to DSP inputs 1–8, and the
+ *  interface outputs feed the amp inputs down across the lacing bar. (The
+ *  DSP's audio reaches the interface over the network — NetTail.) */
 function AnalogTail({ isL }: { isL: boolean }) {
   const A = CI_CLASS_TINTS.analog;
   const x0 = isL ? RAIL_XL : RAIL_XR;
+  const [o1, o2] = IFACE.outXs;
   // each input's own lane, at the height its loom lane reached the rail —
   // the lowest lane is the one that peels off first (closest to the rail)
   return (
@@ -349,32 +365,42 @@ function AnalogTail({ isL }: { isL: boolean }) {
         <PlugRearView key={`p${jx}`} x={jx} y={DSP.jackY} k={RK} />
       ))}
       {/* interface outputs → amp inputs, down through the open bay */}
-      <JacketPath d={`M254 ${IFACE.jackY} V${SIG_LACE_Y - 6} Q254 ${SIG_LACE_Y - 2} 250 ${SIG_LACE_Y - 2} H146 Q140 ${SIG_LACE_Y - 2} 140 ${SIG_LACE_Y + 4} V${AMP.nl4Y}`} color={A} width={2.2} />
-      <JacketPath d={`M274 ${IFACE.jackY} V${SIG_LACE_Y - 2.6} Q274 ${SIG_LACE_Y + 1.4} 270 ${SIG_LACE_Y + 1.4} H168 Q162 ${SIG_LACE_Y + 1.4} 162 ${SIG_LACE_Y + 7.4} V${AMP.nl4Y}`} color={A} width={2.2} />
-      {[254, 274].map((x) => (
+      <JacketPath d={`M${o1} ${IFACE.jackY} V${SIG_LACE_Y - 6} Q${o1} ${SIG_LACE_Y - 2} ${o1 - 4} ${SIG_LACE_Y - 2} H146 Q140 ${SIG_LACE_Y - 2} 140 ${SIG_LACE_Y + 4} V${AMP.nl4Y}`} color={A} width={2.2} />
+      <JacketPath d={`M${o2} ${IFACE.jackY} V${SIG_LACE_Y - 2.6} Q${o2} ${SIG_LACE_Y + 1.4} ${o2 - 4} ${SIG_LACE_Y + 1.4} H168 Q162 ${SIG_LACE_Y + 1.4} 162 ${SIG_LACE_Y + 7.4} V${AMP.nl4Y}`} color={A} width={2.2} />
+      {IFACE.outXs.map((x) => (
         <PlugRearView key={`o${x}`} x={x} y={IFACE.jackY} k={RK} />
       ))}
       {AMP.inXs.map((x) => (
         <PlugRearView key={`i${x}`} x={x} y={AMP.nl4Y} k={RK} />
       ))}
-      {[200, 230].map((x) => (
+      {[180, 196].map((x) => (
         <HookLoopWrap key={`w${x}`} x={x} y={SIG_LACE_Y} k={RK} halfH={3.6} width={6} />
       ))}
       {/* a hook-and-loop wrap retains the harness just past the rail */}
-      <HookLoopWrap x={isL ? 64 : 276} y={(TURN_Y['g-ctl'] + TURN_Y['g-analog'] + 10.5) / 2} k={RK} halfH={6.6 / RK} width={4} />
+      <HookLoopWrap x={isL ? 64 : 276} y={TURN_Y['g-analog'] + 5.25} k={RK} halfH={6.6 / RK} width={4} />
     </G>
   );
 }
 
-/** The control line: one Cat cable along the top of the analog harness to
- *  the DSP's NET (control) port. */
+/** The control line: a multi-conductor CONTROL cable (white class — not a
+ *  Cat cable; wiring grade R3-CI-07, 2026-10-21: it used to be drawn white
+ *  into the RJ45 NET port) to the DSP's terminal-block CTRL port, bottom
+ *  left. It drops between the rail and input 1, under the jack row, and into
+ *  the seated plug. */
+const CTL_DROP_X = 61.5;
 function ControlTail({ isL }: { isL: boolean }) {
   const C = CI_CLASS_TINTS.control;
   const x0 = isL ? RAIL_XL : RAIL_XR;
+  const y = railYOf('g-ctl', isL, 'c');
+  const s = isL ? -1 : 1;
+  const cx = DSP.ctlX;
+  const d =
+    `M${x0} ${y} H${CTL_DROP_X + s * 2} Q${CTL_DROP_X} ${y} ${CTL_DROP_X} ${y + 2} V130.5 ` +
+    `C${CTL_DROP_X} 134 ${cx} 133 ${cx} 136.5 V${DSP.ctlY}`;
   return (
     <G>
-      <JacketPath d={harnessD(x0, railYOf('g-ctl', isL, 'c'), DSP.netX, DSP.jackY)} color={C} width={W_SIG} shadow={false} />
-      <Rj45PlugRear cx={DSP.netX} cy={DSP.jackY} color={C} />
+      <JacketPath d={d} color={C} width={W_SIG} shadow={false} />
+      <TerminalBlock x={cx} y={DSP.ctlY} seated />
     </G>
   );
 }
@@ -432,9 +458,32 @@ function NetTail({ isL }: { isL: boolean }) {
       {ports.map((i) => (
         <Rj45PlugRear key={`s${i}`} cx={SW_CX[i]} cy={SWITCH.portCy} color={N} />
       ))}
+      {/* the DSP's audio network (wiring grade R3-CI-03, 2026-10-21: there
+          was no path from the DSP to the interface). Switch port 8 → the
+          DSP's NET port, as the lane above the analog harness; switch port 6
+          → up through the horizontal manager, along it, and down the gap
+          between the DSP's NET port and its inlet to the interface's NET
+          port. Each its own lane; neither crosses another cable. */}
+      <JacketPath d={DSP_LINK_D} color={N} width={W_SIG} shadow={false} />
+      <JacketPath d={IFACE_LINK_D} color={N} width={1.4} shadow={false} />
+      {[SW_CX[5], SW_CX[7]].map((x) => (
+        <Rj45PlugRear key={`l${x}`} cx={x} cy={SWITCH.portCy} color={N} />
+      ))}
+      <Rj45PlugRear cx={DSP.netX} cy={DSP.jackY} color={N} />
+      <Rj45PlugRear cx={IFACE.netX} cy={IFACE.jackY} color={N} />
     </G>
   );
 }
+/** Switch port 8 → DSP NET (R3-CI-03). */
+const DSP_LINK_D =
+  `M${SW_CX[7]} ${SWITCH.portCy} V${LINK_Y - 3} Q${SW_CX[7]} ${LINK_Y} ${SW_CX[7] + 3} ${LINK_Y} ` +
+  `H${DSP.netX - 5} Q${DSP.netX} ${LINK_Y} ${DSP.netX} ${LINK_Y + 5} V${DSP.jackY}`;
+/** The horizontal manager's run height for the interface link. */
+const LINK_HM_Y = HMGR2.y + 11;
+/** Switch port 6 → interface NET, via the horizontal manager (R3-CI-03). */
+const IFACE_LINK_D =
+  `M${SW_CX[5]} ${SWITCH.portCy} V${LINK_HM_Y + 4} Q${SW_CX[5]} ${LINK_HM_Y} ${SW_CX[5] + 4} ${LINK_HM_Y} ` +
+  `H${IFACE.netX - 4} Q${IFACE.netX} ${LINK_HM_Y} ${IFACE.netX} ${LINK_HM_Y + 4} V${IFACE.jackY}`;
 
 /** Fiber: one duplex LC patch into the switch's first SFP cage — the duplex
  *  LC clip seen end-on at its real size (~12.5 × 9 mm). */
@@ -477,25 +526,48 @@ function SpeakerTail({ isL }: { isL: boolean }) {
   );
 }
 
-/** AC: the PDU's own feed seated in its inlet, and two IEC cords from its
- *  outlets — one up the right manager to the DSP, one short to the amp
- *  directly above the PDU. */
+/** AC: the PDU's own feed seated in its inlet, and an IEC cord from its own
+ *  outlet to every powered unit (wiring grade R3-CI-07, 2026-10-21: the
+ *  switch and the interface had no power cord). Outlet 4 feeds the amp just
+ *  above the PDU; outlets 1–3 run under the PDU, each in its own lane, up
+ *  the right manager and in to the switch, the DSP and the interface. The
+ *  lanes nest so none crosses another: the outlet further left takes the
+ *  lower lane under the PDU, the outer lane in the manager, and turns in
+ *  higher. */
+const AC_FEEDS: { outlet: number; lane: number; mgrX: number; boot: { x: number; y: number }; inY: number }[] = [
+  { outlet: 0, lane: 362.6, mgrX: 324, boot: { x: SWITCH.iecX + 7.5, y: SWITCH.iecY + 15.2 }, inY: SWITCH.iecY + 19.5 },
+  { outlet: 1, lane: 358.3, mgrX: 319, boot: { x: DSP.iecX + 7.5, y: DSP.y + 32 + 15.2 }, inY: DSP.y + 32 + 19.5 },
+  { outlet: 2, lane: 354, mgrX: 314, boot: { x: IFACE.iecX + 7.5, y: IFACE.jackY - 5.5 + 15.2 }, inY: IFACE.jackY - 5.5 + 20 },
+];
+const acFeedD = (f: (typeof AC_FEEDS)[number]) => {
+  const ox = DISTRO_XS[f.outlet] + 7.5;
+  const ob = PDU.outY + 15.2;
+  const r = 3.5;
+  return (
+    `M${ox} ${ob} V${f.lane - r} Q${ox} ${f.lane} ${ox + r} ${f.lane} H${f.mgrX - r} Q${f.mgrX} ${f.lane} ${f.mgrX} ${f.lane - r} ` +
+    `V${f.inY + r} Q${f.mgrX} ${f.inY} ${f.mgrX - r} ${f.inY} H${f.boot.x + r} Q${f.boot.x} ${f.inY} ${f.boot.x} ${f.inY - r} V${f.boot.y}`
+  );
+};
 function AcTail() {
   const P = CI_CLASS_TINTS.power;
-  const o1 = DISTRO_XS[0] + 7.6;
-  const o2 = DISTRO_XS[1] + 7.6;
+  const o4 = DISTRO_XS[3] + 7.5;
   const boot = PDU.outY + 15.2;
-  const dspBoot = { x: 243.5, y: DSP.y + 32 + 15.2 };
   const ampBoot = { x: 135.5, y: AMP.y + 50 + 15.2 };
   return (
     <G>
-      <JacketPath d={`M${o1} ${boot} V${boot + 4} Q${o1} ${boot + 8} ${o1 + 4} ${boot + 8} H318 Q322 ${boot + 8} 322 ${boot + 4} V${dspBoot.y + 4.3} Q322 ${dspBoot.y + 0.3} 318 ${dspBoot.y + 0.3} H${dspBoot.x}`} color={P} width={3} />
+      {AC_FEEDS.map((f) => (
+        <JacketPath key={f.outlet} d={acFeedD(f)} color={P} width={3} />
+      ))}
       {/* the PDU's own feed, up from the right manager into its inlet */}
       <JacketPath d={`M${RAIL_XR} ${TURN_Y['g-ac']} H273.6`} color={P} width={laneW('g-ac')} />
-      <JacketPath d={`M${o2} ${boot} C${o2} ${boot + 12} ${ampBoot.x} ${boot + 12} ${ampBoot.x} ${boot - 6} V${ampBoot.y}`} color={P} width={3} />
-      <C13Plug x={DISTRO_XS[0]} y={PDU.outY} />
-      <C13Plug x={DISTRO_XS[1]} y={PDU.outY} />
-      <C13Plug x={236} y={DSP.y + 32} />
+      {/* outlet 4 → the amp: down under the outlet, up the gap beside it */}
+      <JacketPath d={`M${o4} ${boot} Q${o4} 350 ${o4 + 4} 350 H134.5 Q138 350 138 346.5 V330 Q138 ${ampBoot.y} ${ampBoot.x} ${ampBoot.y}`} color={P} width={3} />
+      {[0, 1, 2, 3].map((i) => (
+        <C13Plug key={i} x={DISTRO_XS[i]} y={PDU.outY} />
+      ))}
+      <C13Plug x={SWITCH.iecX} y={SWITCH.iecY} />
+      <C13Plug x={DSP.iecX} y={DSP.y + 32} />
+      <C13Plug x={IFACE.iecX} y={IFACE.jackY - 5.5} />
       <C13Plug x={128} y={AMP.y + 50} />
       <C13Plug x={264} y={PDU.y + 5.5} />
     </G>
@@ -659,6 +731,10 @@ function DrawPath({
   dur?: number;
 }) {
   const m = useCiMotion();
+  // The reveal budget is never shorter than the path itself (wiring grade
+  // R3-CI-05, 2026-10-21): a hand-typed `len` under the true length left the
+  // drawn cable stopping short of its plug. `len` is now a floor only.
+  const full = useMemo(() => Math.max(len, pathLen(d)), [len, d]);
   const p = useSharedValue(enter && !m.reduce ? 0 : 1);
   useEffect(() => {
     cancelAnimation(p);
@@ -667,11 +743,11 @@ function DrawPath({
       return;
     }
     p.value = 0;
-    p.value = withDelay(delay, withTiming(1, { duration: dur ?? Math.min(CI_MOTION.draw, 240 + len * 1.9), easing: CI_EASE.out }));
+    p.value = withDelay(delay, withTiming(1, { duration: dur ?? Math.min(CI_MOTION.draw, 240 + full * 1.9), easing: CI_EASE.out }));
     return () => cancelAnimation(p);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enter, delay, dur, len, m.reduce]);
-  return <JacketCable d={d} len={len} p={p} color={color} width={width} opacity={opacity} />;
+  }, [enter, delay, dur, full, m.reduce]);
+  return <JacketCable d={d} len={full} p={p} color={color} width={width} opacity={opacity} />;
 }
 
 /** Same reveal, for the coils and service loops (an ellipse as a path). */
@@ -763,7 +839,7 @@ const Chassis = memo(function Chassis({ dress, enter }: { dress: boolean; enter:
         <HorizontalManager xs={HMGR_XS} y={HMGR2.y} />
       </Band>
       <Band index={4} enter={enter}>
-        <NetworkSwitch lit={dress ? [0, 1, 2, 3] : [0, 4]} />
+        <NetworkSwitch lit={dress ? [0, 1, 2, 3, 5, 7] : [0, 4]} />
       </Band>
       <Band index={5} enter={enter}>
         <DspRear xs={DSP_JACK_XS} dress={dress} />
@@ -887,7 +963,7 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
           switch face to the DSP inlet; the mic line to DSP input 2 */}
       {/* (art fix 2026-10-16) its own lane over the top of the manager row, clear
           of the N-012 cord that runs along it at y 23 and of that cord's flag */}
-      <DrawPath d="M190 29 C204 15 258 13 272 16 C279 18 280 30 280 48 V96 C280 142 250 162 243.5 153.2" len={200} color={P} width={4} enter={enter} delay={at(360)} />
+      <DrawPath d={`M190 29 C204 15 258 13 272 16 C279 18 281 30 281 48 V136 C281 160 ${DSP.iecX + 7.5} 162 ${DSP.iecX + 7.5} ${DSP.y + 47.2}`} len={260} color={P} width={4} enter={enter} delay={at(360)} />
       <SvgIn enter={enter} delay={at(520)}>
         {/* ri-13: the wrap-label flag, folded round the cable just above its
             port — and the strip under that port, which disagrees */}
@@ -904,7 +980,7 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
       </SvgIn>
       <DrawPath d={`M58 29 C44 60 70 110 ${DSP_JACK_XS[1]} ${DSP.jackY}`} len={100} color={A} width={3.2} enter={enter} delay={at(380)} />
       <SvgIn enter={enter} delay={at(520)}>
-        <C13Plug x={236} y={DSP.y + 32} />
+        <C13Plug x={DSP.iecX} y={DSP.y + 32} />
         <PlugRearView x={DSP_JACK_XS[1]} y={DSP.jackY} k={RK} />
       </SvgIn>
 

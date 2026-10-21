@@ -408,6 +408,9 @@ const EDGE = { split: JACK_X[0] - LANE_GAP, keys: JACK_X[0], amp: JACK_X[1], dru
  * (VOX 1 turns highest) before they drop onto their own inputs.
  */
 const SNAKE_INPUTS = 9;
+/** Keyboard output (rear panel, x 314 on its downstage edge y 60) → the DI's
+ *  input jack (x 321) from below, its lane between the keys and the label. */
+const KEYS_DI_D = 'M314 60 V62 Q314 63.4 315.4 63.4 H319.6 Q321 63.4 321 62 V58.6';
 const IN_X = Array.from({ length: SNAKE_INPUTS }, (_, i) => JACK_X[0] + i * 3.6);
 const DRUM_TAILS = [IN_X[2], IN_X[3], IN_X[4], IN_X[5]] as const;
 const DRUM_FAN = { top: 132.4, y: 139, splay: 143.6 } as const;
@@ -581,6 +584,10 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
           it used to overlap the instrument (clash sweep 2026-10-10). */}
       <PerformerTop x={290} y={35} m={PLOT.m} />
       <DiBoxTop x={323} y={56} />
+      {/* the keyboard's output (on its rear panel, the downstage edge) to the
+          DI's input — a short instrument lead, its own lane under the DI
+          (wiring grade 2026-10-21: no lead was drawn at all) */}
+      <JacketPath d={KEYS_DI_D} color={mic} width={1.6} shadow={false} />
       <PlanLabel x={290} y={72} text="KEYS · DI" size={9.6} />
       <GtrAmpTop x={40} y={30} />
       <MicStandTop x={51} y={50} boom={0} reach={5} />
@@ -652,8 +659,10 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       ))}
       <PlanLabel x={294} y={WEDGE_Y - 1.6} text="WEDGES" anchor="start" size={9.6} />
 
-      {/* label above the monitor-send lanes, clear of wedge 1 */}
-      <PlanLabel x={59.6} y={166.5} text="SNAKE HEAD" anchor="start" size={9} />
+      {/* label above the monitor-send lanes, on two lines so it ends well
+          clear of wedge 1 (wiring grade 2026-10-21: one line ran into it) */}
+      <PlanLabel x={59.6} y={160} text="SNAKE" anchor="start" size={9} />
+      <PlanLabel x={59.6} y={168.8} text="HEAD" anchor="start" size={9} />
       <PlanLabel x={14} y={201} text="TO FOH" anchor="start" size={9.6} />
       <ConsoleTop x={MON.x} y={MON.y} w={18} h={14} />
       <PlanLabel x={MON.x + 9} y={MON.y - 4} text="MON" size={9.6} />
@@ -1026,13 +1035,15 @@ function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
           face (C 174, A 179, B 184) so no two routes ever share a stroke
           (owner 2026-10-10: every run traceable on its own). */}
       {/* ROUTE A — straight across under a mat (amber) */}
-      <RoutePath d="M48 100 L300 179" len={280} tint={ROUTE_TINTS[0]} width={2.8} phase={phaseFor(0, pick)} index={0} />
+      {/* every route starts ON the distro's face, x 42 (wiring grade
+          2026-10-21: they started 6 units short of it, in mid-air) */}
+      <RoutePath d="M42 100 L300 179" len={280} tint={ROUTE_TINTS[0]} width={2.8} phase={phaseFor(0, pick)} index={0} />
       {/* a rubber mat thrown over the run — not a protector */}
       <Rect x={172} y={134} width={30} height={12} rx={1} fill="#141518" stroke="#3a3c42" strokeWidth={0.6} />
       <Path d={[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => `M${174 + i * 3.2} 136 l1.6 1.6 l-1.6 1.6 l1.6 1.6 l-1.6 1.6 l1.6 1.6`).join('')} stroke="#26282d" strokeWidth={0.5} fill="none" />
       <PlanLabel x={187} y={130} text="MAT" />
       {/* ROUTE B — one marked, vehicle-rated crossing (teal) */}
-      <RoutePath d="M48 106 V184 H300" len={340} tint={ROUTE_TINTS[1]} width={2.8} phase={phaseFor(1, pick)} index={1} />
+      <RoutePath d="M42 106 H48 V184 H300" len={346} tint={ROUTE_TINTS[1]} width={2.8} phase={phaseFor(1, pick)} index={1} />
       {/* the protector spans the WHOLE roll lane (its edges cross route B (y 184) at
           x ≈ 185 and 251), high-vis marked both sides */}
       <RampTop x={174} y={170} w={78} h={16} />
@@ -1040,7 +1051,7 @@ function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
       <Line x1={254} y1={168} x2={254} y2={190} stroke={CI_CLASS_TINTS.speaker} strokeWidth={1.4} strokeDasharray="3,3" />
       <PlanLabel x={224} y={201} text="RATED + MARKED" />
       {/* ROUTE C — long perimeter behind the cases (purple) */}
-      <RoutePath d="M48 94 V30 H292 V174 H300" len={480} tint={ROUTE_TINTS[2]} width={2.6} phase={phaseFor(2, pick)} index={2} />
+      <RoutePath d="M42 94 H48 V30 H292 V174 H300" len={486} tint={ROUTE_TINTS[2]} width={2.6} phase={phaseFor(2, pick)} index={2} />
       {/* a case rolls the load-in path once — and finds the mat crossing */}
       <TrafficPass x1={76} y1={10} x2={234} y2={204} run={pick != null} delay={900} duration={2000} cart crossAt={0.684} />
       {/* letters */}
@@ -1665,16 +1676,16 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
           width={artW}
           aspect={360 / 205}
           title="STAGE PLAN"
-          badge="Training visualization — stage plot to scale (1 m grid); teaching colors, field cable colors vary."
+          badge="Training visualization — stage plot to scale (1 m grid; cables drawn wider for tracing); teaching colors, field cable colors vary."
           render={(w) => (
             <StagePlan w={w} routeFixed={drawnFixed('route')} slackFixed={drawnFixed('slack')} monFixed={drawnFixed('mon')} />
           )}
           controls={craftDock}
         />
         <Text style={s.caption}>
-          Training visualization — stage plot to scale (faint grid = 1 m), in the lab’s teaching colors (field cable
-          colors vary): cyan = mic and line-level lines (the wedge feeds are line-level XLR into powered wedges) · grey = multicores (trunk to FOH, split to
-          MON, drum sub-snake — it fans out into one cyan XLR tail per input at the snake head) · red = AC power (quad boxes, and each wedge's own mains lead from its own quad-box outlet, apart from the audio and crossing it square) · grey strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair ·
+          Training visualization — stage plot to scale (faint grid = 1 m; cables drawn wider for tracing), in the lab’s teaching colors (field cable
+          colors vary): cyan = mic and line-level lines, and the keys' short instrument lead to its DI (the wedge feeds are line-level XLR into powered wedges) · grey = multicores (trunk to FOH, split to
+          MON, the MON returns back to the snake head, drum sub-snake — it fans out into one cyan XLR tail per input at the snake head) · red = AC power (quad boxes, and each wedge's own mains lead from its own quad-box outlet, apart from the audio and crossing it square) · grey strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair ·
           dashed = the way performers come up the stair · the spare mic line is coiled at the box with its end capped, not plugged into a return. The amp, keys and split lines were already dressed right.
         </Text>
         <View style={{ gap: 12 }}>
