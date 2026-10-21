@@ -122,10 +122,11 @@ export function DiPath({ w, h, spec, highlight, onTap, shortOf, badPatch = false
   }, [g.bad]);
   const mid = g.bad.mid;
   const labels: StaticLabel[] = [
+    // The struck-out patch's words first: they win any clash (always shown, inside the glass).
+    ...(badPatch ? [{ id: 'bad', text: 'SPEAKER OUT → DESK: NEVER', short: 'NEVER', u: mid.x, v: g.bad.labelY, align: 'center' as const, tone: 'amber' as const }] : []),
     ...nodes.map((n) => ({ id: n.id, text: shortOf(n.id), u: g.label[n.id].x, v: g.label[n.id].y, align: 'center' as const, tone: n.lane === 'air' ? undefined : ('amber' as const) })),
     { id: 'lane.air', text: 'AIR — WHAT A MIC HEARS', short: 'AIR', u: g.pad - 10, v: g.airY, align: 'left', tone: 'blue' },
     { id: 'lane.el', text: 'ELECTRICAL — ITS OWN SOURCE', short: 'ELECTRICAL', u: g.pad - 10, v: g.elY, align: 'left', tone: 'amber' },
-    ...(badPatch ? [{ id: 'bad', text: 'SPEAKER OUT → DESK: NEVER', short: 'NEVER', u: mid.x, v: mid.y - 16 * ts, align: 'center' as const, tone: 'amber' as const }] : []),
   ];
   const tap = (x: number, y: number) => {
     let best: string | null = null;
@@ -185,7 +186,7 @@ export function DiPath({ w, h, spec, highlight, onTap, shortOf, badPatch = false
             const size = g.merged && n.id === 'amp' ? SC : S;
             return (
               <Group key={n.id} transform={[{ translateX: p.x }, { translateY: p.y }]}>
-                <NodeIcon art={artOf(n, spec)} S={size} lit={highlight === n.id} out={n.id === 'player' && spec.diBox ? 'down' : 'right'} />
+                <NodeIcon art={artOf(n, spec)} S={size} lit={highlight === n.id} out={n.id === 'player' && spec.diBox && spec.diAfter !== 'pedals' ? 'down' : 'right'} />
               </Group>
             );
           })}

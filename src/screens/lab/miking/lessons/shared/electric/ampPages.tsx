@@ -594,7 +594,8 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     const [patch, setPatch] = useState<'cab' | 'desk'>('cab');
     const [scene, setScene] = useState<BacklineScene>('stage');
     const [sel, setSel] = useState<string | null>(null);
-    const chainIds = ['player', ...(spec.chain.diBox ? ['dibox'] : []), ...(spec.chain.pedals ? ['pedals'] : []), 'amp', 'cab', 'mic', 'desk', ...(spec.chain.ampDirect ? ['ampdi'] : [])];
+    const diLast = spec.chain.diAfter === 'pedals';
+    const chainIds = ['player', ...(spec.chain.diBox && !diLast ? ['dibox'] : []), ...(spec.chain.pedals ? ['pedals'] : []), ...(spec.chain.diBox && diLast ? ['dibox'] : []), 'amp', 'cab', 'mic', 'desk', ...(spec.chain.ampDirect ? ['ampdi'] : [])];
     const chainItems = chainIds.map((id) => byId(id)).filter((x): x is NonNullable<typeof x> => !!x);
     const planIds = scene === 'stage' ? ['amp', 'player', 'pedals', 'dibox', 'wedge', ...lesson.live.wedges.slice(1).map((w) => w.id), 'drums', 'otherAmp', 'audience'] : ['amp', 'player', 'pedals', 'dibox', 'otherAmp', 'room'];
     const planItems = planIds.map((id) => byId(id) ?? (lesson.live.wedges.some((w) => w.id === id) ? { id, label: lesson.live.wedges.find((w) => w.id === id)!.label, short: lesson.live.wedges.find((w) => w.id === id)!.short, note: lesson.live.wedges.find((w) => w.id === id)!.note, tag: 'MONITOR' } : null)).filter((x): x is NonNullable<typeof x> => !!x);
@@ -623,7 +624,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
               onTap={pickC}
               shortOf={shortOf}
               badPatch={patch === 'desk'}
-              accessibilityLabel={`The signal path. Top, the air path: ${chainItems.filter((i) => !['dibox', 'ampdi'].includes(i.id)).map((i) => i.label).join(', then ')}. Below, drawn apart: ${spec.chain.diBox ? 'a DI box between the instrument and the amp, its output to the desk' : ''}${spec.chain.diBox && spec.chain.ampDirect ? '; and ' : ''}${spec.chain.ampDirect ? 'the amp’s own direct output to the desk' : ''} — separate electrical sources.${patch === 'desk' ? ' Shown struck out in red: a speaker output patched into the desk, which is never done.' : ''}${cs ? ` Highlighted: ${cs.label}.` : ''}`}
+              accessibilityLabel={`The signal path. Top, the air path: ${chainItems.filter((i) => !['dibox', 'ampdi'].includes(i.id)).map((i) => i.label).join(', then ')}. Below, drawn apart: ${spec.chain.diBox ? (diLast ? 'a DI box after the volume pedal and before the amp, its output to the desk' : 'a DI box between the instrument and the amp, its output to the desk') : ''}${spec.chain.diBox && spec.chain.ampDirect ? '; and ' : ''}${spec.chain.ampDirect ? 'the amp’s own direct output to the desk' : ''} — separate electrical sources.${patch === 'desk' ? ' Shown struck out in red: a speaker output patched into the desk, which is never done.' : ''}${cs ? ` Highlighted: ${cs.label}.` : ''}`}
             />
           ),
           badge: 'Blue = the air a mic hears · amber dashes = a separate electrical path · brown = speaker cable',
