@@ -16,7 +16,7 @@
  * page can render it as a warning, not a shrug.
  */
 import { gearSpec, isSink, isSource } from './gear';
-import { CONSOLE_OUTS, IEM_PAIR, isIemPair } from './outputs';
+import { CONSOLE_OUTS, IEM_PAIR, isIemPair, outName } from './outputs';
 import type { ConsoleOut, GearKind, Link, Placed, SignalLevel, SlotId, SlotRole, SoundSystem } from './types';
 
 /* ── the venue plot ──────────────────────────────────────────────────────── */
@@ -134,14 +134,56 @@ function reaches(system: SoundSystem, fromId: string, target: string, seen = new
   return system.links.filter((l) => l.from === fromId).some((l) => reaches(system, l.to, target, seen));
 }
 
-export function canConnect(system: SoundSystem, fromId: string, toId: string): ConnectVerdict {
+/** The cables between one pair of devices, in the order they were run. */
+export function pairLinks(system: SoundSystem, fromId: string, toId: string): Link[] {
+  return system.links.filter((l) => l.from === fromId && l.to === toId);
+}
+
+/** Which of its pair's cables this one is (0 = the first run), by identity
+ *  first, then by what it carries; -1 when it is not in the system. */
+export function pairIndex(system: SoundSystem, l: Link): number {
+  const pair = pairLinks(system, l.from, l.to);
+  const same = pair.indexOf(l);
+  return same >= 0 ? same : pair.findIndex((m) => m.out === l.out);
+}
+
+/** A SECOND cable between the same two devices (owner 2026-10-21: "allow two
+ *  cables between the same pair — stage box to in-ear transmitter on Aux 9
+ *  and Aux 10"). It is a real cable only where each one carries its own
+ *  console output into its own input. The destination's free input is
+ *  checked with the rest (`inputCapacity`); here:
+ *    · a cable that carries no console output (a mic into the stagebox,
+ *      anything into the console, the network link) is one link — a second
+ *      would carry the same thing;
+ *    · the same output twice into the same device is the same signal twice;
+ *    · a second cable needs the first to have its output chosen, or the two
+ *      would carry the same thing. */
+function secondCableVerdict(system: SoundSystem, pair: readonly Link[], a: Placed, b: Placed, out: ConsoleOut | undefined): ConnectVerdict | null {
+  if (pair.length === 0) return null;
+  const fromName = gearSpec(a.kind).name.toLowerCase();
+  const toName = gearSpec(b.kind).name.toLowerCase();
+  if (!carriesOutputs(system, { from: a.id, to: b.id, level: pair[0].level })) {
+    return { ok: false, reason: `Already connected — one cable carries everything the ${fromName} sends the ${toName}. Tap the cable to remove it.` };
+  }
+  if (out && pair.some((l) => l.out === out)) {
+    return { ok: false, reason: `A cable from the ${fromName} already carries ${outName(out)} into the ${toName} — a second would be the same signal twice.` };
+  }
+  if (!out && pair.some((l) => !l.out)) {
+    return { ok: false, reason: 'The cable already there carries no single output yet — choose its OUTPUT first, then run a second cable for the other output.' };
+  }
+  return null;
+}
+
+/** May these two connect? `out` is the console output the new cable is to
+ *  carry, when it is known (a second cable between the same pair must carry
+ *  a different one from the first). */
+export function canConnect(system: SoundSystem, fromId: string, toId: string, out?: ConsoleOut): ConnectVerdict {
   if (fromId === toId) return { ok: false, reason: 'A device cannot feed itself.' };
   const a = find(system, fromId);
   const b = find(system, toId);
   if (!a || !b) return { ok: false, reason: 'Place both devices first.' };
-  if (system.links.some((l) => l.from === fromId && l.to === toId)) {
-    return { ok: false, reason: 'Already connected — tap the link to remove it.' };
-  }
+  const second = secondCableVerdict(system, pairLinks(system, fromId, toId), a, b, out);
+  if (second) return second;
   const from = gearSpec(a.kind);
   const to = gearSpec(b.kind);
   if (from.emits.length === 0) {
@@ -248,22 +290,39 @@ export function removePlaced(system: SoundSystem, id: string): SoundSystem {
 /** Connect two devices; `out` names the console output the cable carries
  *  (see `consoleWalk`). */
 export function connect(system: SoundSystem, fromId: string, toId: string, out?: ConsoleOut): { ok: true; system: SoundSystem; link: Link } | { ok: false; reason: string; unsafe?: boolean } {
-  const v = canConnect(system, fromId, toId);
+  const v = canConnect(system, fromId, toId, out);
   if (!v.ok) return v;
   const link: Link = out ? { from: fromId, to: toId, level: v.level, out } : { from: fromId, to: toId, level: v.level };
   return { ok: true, link, system: { placed: system.placed, links: [...system.links, link] } };
 }
 
-export function disconnect(system: SoundSystem, fromId: string, toId: string): SoundSystem {
-  return { placed: system.placed, links: system.links.filter((l) => !(l.from === fromId && l.to === toId)) };
+/** Remove the cables between two devices — all of them, or with `nth` only
+ *  that one (0 = the first run; see `pairIndex`). */
+export function disconnect(system: SoundSystem, fromId: string, toId: string, nth?: number): SoundSystem {
+  let k = -1;
+  return {
+    placed: system.placed,
+    links: system.links.filter((l) => {
+      if (l.from !== fromId || l.to !== toId) return true;
+      k++;
+      return nth !== undefined && k !== nth;
+    }),
+  };
 }
 
-/** Choose (or clear, with null) the console output one cable carries. */
-export function setLinkOut(system: SoundSystem, fromId: string, toId: string, out: ConsoleOut | null): SoundSystem {
+/** Choose (or clear, with null) the console output one cable carries — the
+ *  `nth` cable between the pair (default the first). An output that another
+ *  cable between the same pair already carries is refused: the system comes
+ *  back unchanged (the OUTPUT key never offers it — `outChoices`). */
+export function setLinkOut(system: SoundSystem, fromId: string, toId: string, out: ConsoleOut | null, nth = 0): SoundSystem {
+  const pair = pairLinks(system, fromId, toId);
+  const target = pair[nth];
+  if (!target) return system;
+  if (out && pair.some((l) => l !== target && l.out === out)) return system;
   return {
     placed: system.placed,
     links: system.links.map((l) => {
-      if (l.from !== fromId || l.to !== toId) return l;
+      if (l !== target) return l;
       return out ? { ...l, out } : { from: l.from, to: l.to, level: l.level };
     }),
   };
@@ -543,13 +602,23 @@ export function outChoices(system: SoundSystem, l: Link, walk: ConsoleWalk = con
   if (!carriesOutputs(system, l, walk)) return [];
   const fromKind = system.placed.find((p) => p.id === l.from)?.kind;
   const at = fromKind === 'console' ? EVERY_OUT : walk.arriving.get(l.from) ?? NOTHING;
-  return CONSOLE_OUTS.filter((o) => at.has(o));
+  // A second cable between the same pair never doubles the other's output.
+  const nth = pairIndex(system, l);
+  const taken = new Set(pairLinks(system, l.from, l.to).filter((_, k) => k !== nth).map((m) => m.out));
+  return CONSOLE_OUTS.filter((o) => at.has(o) && !taken.has(o));
 }
 
 /** The cable into a device that carries its console output (the one an
  *  OUTPUT choice applies to), if any. */
 export function feedLink(system: SoundSystem, id: string, walk: ConsoleWalk = consoleWalk(system)): Link | undefined {
   return system.links.find((l) => l.to === id && carriesOutputs(system, l, walk));
+}
+
+/** Every cable into a device that carries a console output — two where a
+ *  stereo pair runs on two cables (stagebox → in-ear transmitter, Aux 9 and
+ *  Aux 10), each with its own OUTPUT key. */
+export function feedLinks(system: SoundSystem, id: string, walk: ConsoleWalk = consoleWalk(system)): Link[] {
+  return system.links.filter((l) => l.to === id && carriesOutputs(system, l, walk));
 }
 
 /** What one cable carries, for a card: a single output, 'all' (it passes

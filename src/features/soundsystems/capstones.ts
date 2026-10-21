@@ -147,7 +147,19 @@ const feedView = (s: SoundSystem): FeedView => {
 const sinksOf = (v: FeedView) => v.s.placed.filter((p) => isSink(p.kind));
 /** Every loudspeaker (and in-ear pack) gets an output that fits its
  *  position, and no amplifier passes more mixes than it has channels. */
-const allFeedsFit = (v: FeedView) => sinksOf(v).length > 0 && sinksOf(v).every((p) => feedFits(p, v.feed(p.id))) && ampsOverChannels(v.s, v.w).length === 0;
+const allFeedsFit = (v: FeedView) => sinksOf(v).length > 0 && sinksOf(v).every((p) => feedFits(p, v.feed(p.id))) && ampsOverChannels(v.s, v.w).length === 0 && !iemTxFromProcessor(v.s);
+
+/** An in-ear transmitter fed from the loudspeaker processor (owner
+ *  2026-10-21: the old stereo reference ran In-ears R through it — wrong to a
+ *  pro). The processor's outputs are the house mix, shaped for the PA. */
+export function iemTxFromProcessor(s: SoundSystem): boolean {
+  const kind = (id: string) => s.placed.find((p) => p.id === id)?.kind;
+  return s.links.some((l) => kind(l.from) === 'processor' && kind(l.to) === 'iemTx');
+}
+
+/** The one plain line the FEEDS row shows for it. */
+export const IEM_FROM_PROCESSOR_WHY =
+  'The in-ear transmitter is fed from the loudspeaker processor — that carries the house mix with its EQ, delay and limiting for the PA, not the performer’s in-ear mix. Feed it from the stagebox: Aux 9 and Aux 10 on two cables.';
 /** Stereo: MAIN L into the left main, MAIN R into the right — mono to both is not stereo. */
 const stereoLR = (v: FeedView) => {
   const l = inSlot(v.s, 'mainL');
@@ -194,6 +206,7 @@ const feedsReq = (text: string, extra: (v: FeedView) => boolean = () => true): R
 /** The plain reason a fill, a delay or an in-ear pack is on the wrong
  *  output, when one of them is (R3-SS-01/02). */
 function misfitWhy(s: SoundSystem): string | null {
+  if (iemTxFromProcessor(s)) return IEM_FROM_PROCESSOR_WHY;
   const v = feedView(s);
   for (const p of sinksOf(v)) {
     const f = v.feed(p.id);
@@ -464,7 +477,7 @@ export const CAPSTONES: readonly Capstone[] = [
       req('iem', 'An in-ear transmitter feeding a bodypack', 'build', (s) => count(s, 'iemTx') >= 1 && count(s, 'iemPack') >= 1 && trace(s).live.some((id) => s.placed.find((p) => p.id === id)?.kind === 'iemPack')),
       req('live', 'Everything live, every passive cabinet amplified', 'build', (s) => passiveHasAmp(s) && live(s)),
       VIA_CONSOLE,
-      feedsReq('Outputs: MAIN L left, MAIN R right; each wedge on a different monitor aux; the in-ears on Aux 8 (or, for a stereo mix, the In-ears L/R pair: Aux 9 + 10); the subs on Aux 6', (v) => stereoLR(v) && wedgesOnOwnAux(v) && iemOnInEarAux(v) && subsOn(v, ['aux6'])),
+      feedsReq('Outputs: MAIN L left, MAIN R right; each wedge on a different monitor aux; the in-ears on Aux 8 (or, for a stereo mix, the In-ears L/R pair: Aux 9 + 10, two cables from the stagebox); the subs on Aux 6', (v) => stereoLR(v) && wedgesOnOwnAux(v) && iemOnInEarAux(v) && subsOn(v, ['aux6'])),
       req('fourMixes', 'Console: four monitor mixes, all pre-fader', 'route', (s, cs) => fourMonitorMixes(cs) && monitorsPre(cs) && wedgeAuxesCarry(s, cs)),
       req('iemMix', 'Console: Aux 8 (in-ears) carries the singer’s vocal, PRE-fader — for stereo in-ears, both Aux 9 and Aux 10', 'route', (s, cs) => iemVocalPre(s, cs)),
       req('rec', 'Console: Matrix 4 (recording) takes the main mix', 'route', (_s, cs) => recordingFromMain(cs)),

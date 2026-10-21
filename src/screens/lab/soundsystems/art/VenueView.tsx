@@ -99,6 +99,10 @@ export type VenueViewProps = {
   onTapLink?: (link: Link) => void;
   /** What a cable carries, read with its tap target (BUILD: "carries AUX 2"). */
   linkA11y?: (link: Link) => string | undefined;
+  /** A tag plate printed beside one cable (BUILD: the output each of two
+   *  cables between the same pair carries — AUX 9 and AUX 10 into the in-ear
+   *  transmitter, owner 2026-10-21). Undefined = no tag on that cable. */
+  cableTag?: (link: Link) => string | undefined;
   /** Extra overlay, drawn last (timing rings, callouts). */
   overlay?: React.ReactNode;
   badge?: string;
@@ -171,8 +175,11 @@ const f1 = (n: number) => Math.round(n * 10) / 10;
 type Pt = { x: number; y: number };
 
 export type CableRoutes = {
-  /** Path per link, keyed `${from}-${to}`. */
+  /** Path per link, keyed `${from}-${to}` — a second cable between the same
+   *  pair `${from}-${to}#2` (see `cableKeys`). */
   paths: Map<string, string>;
+  /** Each link's key into `paths`. */
+  keys: Map<Link, string>;
   /** Links drawn by their twin: the console → stagebox / snake return that
    *  rides the same network cable (or multicore jacket) as the stagebox →
    *  console link (round-2 grade SS-R2-12) — keyed as `paths`, painted once. */
@@ -234,6 +241,22 @@ function tieMarks(lanes: readonly { c: number; a: number; b: number }[], vertica
   return out;
 }
 
+/** Every cable's own key: `${from}-${to}` for the first between a pair, then
+ *  `${from}-${to}#2`, … for a second run between the same two devices (owner
+ *  2026-10-21: stagebox → in-ear transmitter on Aux 9 and Aux 10) — so two
+ *  cables are routed as two lanes, never drawn over each other. */
+export function cableKeys(links: readonly Link[]): Map<Link, string> {
+  const seen = new Map<string, number>();
+  const out = new Map<Link, string>();
+  for (const l of links) {
+    const base = `${l.from}-${l.to}`;
+    const n = (seen.get(base) ?? 0) + 1;
+    seen.set(base, n);
+    out.set(l, n === 1 ? base : `${base}#${n}`);
+  }
+  return out;
+}
+
 /** Cables follow the room the way a stage tech dresses them (owner
  *  2026-10-10: every cable its own traceable line, run professionally):
  *
@@ -256,7 +279,8 @@ function tieMarks(lanes: readonly { c: number; a: number; b: number }[], vertica
  *  clear of every other leg), and bundles carry tape at even intervals. */
 export function routeCables(placed: readonly Placed[], links: readonly Link[]): CableRoutes {
   const byId = new Map(placed.map((x) => [x.id, x]));
-  const key = (l: Link) => `${l.from}-${l.to}`;
+  const keys = cableKeys(links);
+  const key = (l: Link) => keys.get(l) ?? `${l.from}-${l.to}`;
   const paths = new Map<string, string>();
   const ties: string[] = [];
   const merged = new Set<string>();
@@ -512,7 +536,7 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
     const d = paths.get(`${l.to}-${l.from}`);
     if (d) paths.set(k, d);
   }
-  return { paths, ties, merged };
+  return { paths, keys, ties, merged };
 }
 
 function sectorPath(cx: number, cy: number, r0: number, r1: number, aimDeg: number, halfDeg: number): string {
@@ -676,6 +700,157 @@ export function placeFeedTags(beams: readonly PlotBeam[], placed: readonly Place
   return out;
 }
 
+/** A cable tag's plate, and — when it had to stand off its cable — the
+ *  leader from the plate to a dot on its own cable. */
+export type CableTagPlace = TagPlace & { text: string; leader?: { x0: number; y0: number; x1: number; y1: number } };
+
+/** Where each tagged cable's plate prints (owner 2026-10-21: two cables
+ *  between the same pair, each tagged with the output it carries). A plate
+ *  sits BESIDE its own cable — on the side away from its twin, so the two
+ *  read apart — at the first spot along the run (middle of a straight leg
+ *  first) that is clear of every lane, every feed tag and other cable tag,
+ *  every device, the plot's words and its edges. Where a run is packed
+ *  between other runs and racks (the stagebox → rack feeds), the plate
+ *  stands off in the nearest clear spot with a leader to a dot on its own
+ *  cable — the leader crossing as few other runs as it can — so a plate
+ *  never sits on a cable it does not name. Keyed by the cable's key. */
+export function placeCableTags(tagged: readonly (readonly [Link, string])[], placed: readonly Placed[], routes: CableRoutes, feedTags: Iterable<TagPlace>): Map<string, CableTagPlace> {
+  const out = new Map<string, CableTagPlace>();
+  const glyphs: Box[] = placed.map((x) => {
+    const q = xy(x.slot);
+    return { x0: q.x - GLYPH_HALF.x, x1: q.x + GLYPH_HALF.x, y0: q.y - GLYPH_HALF.y, y1: q.y + GLYPH_HALF.y };
+  });
+  const words: Box[] = [...LABEL_BOXES, SR_BOX];
+  const taken: Box[] = [...feedTags].map((t) => inset(t.box, 1));
+  const lanes = [...routes.paths].filter(([k]) => !routes.merged.has(k)).flatMap(([, d]) => pathSegments(d));
+  for (const [l, text] of tagged) {
+    const k = routes.keys.get(l);
+    const d = k ? routes.paths.get(k) : undefined;
+    if (!k || !d) continue;
+    const own = pathSegments(d);
+    const free = (box: Box) =>
+      box.x0 >= 4 && box.x1 <= PLOT_W - 4 && box.y0 >= 4 && box.y1 <= PLOT_H - 4 && !lanes.some((sg) => segmentHitsBox(sg, box)) && !taken.some((o) => overlaps(o, box)) && !glyphs.some((g) => overlaps(g, box)) && !words.some((w) => overlaps(w, box));
+    // Straight legs, longest first; spots along each from its middle out.
+    const legs = own
+      .filter(([ax, ay, bx, by]) => Math.abs(ax - bx) < 0.05 || Math.abs(ay - by) < 0.05)
+      .map((sg) => ({ sg, len: Math.hypot(sg[2] - sg[0], sg[3] - sg[1]) }))
+      .filter((x) => x.len >= 8)
+      .sort((p, q) => q.len - p.len);
+    let place: TagPlace | null = null;
+    const GAP = 1.6 + TAG_PAD;
+    for (const { sg } of legs) {
+      const [ax, ay, bx, by] = sg;
+      const vertical = Math.abs(ax - bx) < 0.05;
+      for (const t of [0.5, 0.35, 0.65, 0.2, 0.8]) {
+        const px = ax + (bx - ax) * t;
+        const py = ay + (by - ay) * t;
+        const spots: [number, number, Anchor][] = vertical
+          ? [
+              [px - GAP, py + 5, 'end'],
+              [px + GAP, py + 5, 'start'],
+            ]
+          : [
+              [px, py - GAP, 'middle'],
+              [px, py + GAP + 10, 'middle'],
+            ];
+        for (const [x, y, anchor] of spots) {
+          const box = tagBox(text, x, y, anchor);
+          if (free(box)) {
+            place = { x, y, anchor, box, clear: true };
+            break;
+          }
+        }
+        if (place) break;
+      }
+      if (place) break;
+    }
+    let leader: CableTagPlace['leader'];
+    if (!place) {
+      const call = calloutSpot(text, own, lanes, free, glyphs, taken, [...out.values()].flatMap((t) => (t.leader ? [t.leader] : [])));
+      if (call) {
+        place = call.place;
+        leader = call.leader;
+      } else {
+        const [ax, ay, bx, by] = (legs[0]?.sg ?? own[0]) as [number, number, number, number];
+        const x = (ax + bx) / 2;
+        const y = (ay + by) / 2 + 5;
+        place = { x, y, anchor: 'middle', box: tagBox(text, x, y, 'middle'), clear: false };
+      }
+    }
+    out.set(k, { ...place, text, leader });
+    taken.push(inset(place.box, 1));
+  }
+  return out;
+}
+
+/** The nearest clear spot for a cable tag that cannot sit beside its cable,
+ *  with the leader to its cable: scored by the leader’s length plus a cost
+ *  for every other run it crosses. Searched on a 2-unit grid within 110
+ *  units of the cable; the dot lands on the cable where it shows (never under
+ *  a device), and a leader never runs over a device, under another plate or
+ *  across another leader. */
+function calloutSpot(
+  text: string,
+  own: readonly (readonly number[])[],
+  lanes: readonly (readonly number[])[],
+  free: (b: Box) => boolean,
+  glyphs: readonly Box[],
+  plates: readonly Box[],
+  leaders: readonly NonNullable<CableTagPlace['leader']>[],
+): { place: TagPlace; leader: NonNullable<CableTagPlace['leader']> } | null {
+  const probe = tagBox(text, 0, 0, 'start');
+  const w = probe.x1 - probe.x0;
+  const h = probe.y1 - probe.y0;
+  const xs = own.flatMap((sg) => [sg[0], sg[2]]);
+  const ys = own.flatMap((sg) => [sg[1], sg[3]]);
+  const R = 110;
+  const others = lanes.filter((sg) => !own.some((o) => o.every((v, i) => Math.abs(v - sg[i]) < 0.01)));
+  const crossings = (x0: number, y0: number, x1: number, y1: number) =>
+    others.filter((sg) => {
+      const b = { x0: Math.min(sg[0], sg[2]) - 0.3, x1: Math.max(sg[0], sg[2]) + 0.3, y0: Math.min(sg[1], sg[3]) - 0.3, y1: Math.max(sg[1], sg[3]) + 0.3 };
+      return segmentHitsBox([x0, y0, x1, y1], b);
+    }).length;
+  // Points along the cable a leader may land on, every 3 units, clear of devices.
+  const dots: [number, number][] = [];
+  for (const sg of own) {
+    const n = Math.max(1, Math.floor(Math.hypot(sg[2] - sg[0], sg[3] - sg[1]) / 3));
+    for (let i = 0; i <= n; i++) {
+      const tx = sg[0] + ((sg[2] - sg[0]) * i) / n;
+      const ty = sg[1] + ((sg[3] - sg[1]) * i) / n;
+      if (!glyphs.some((g) => tx > g.x0 - 1 && tx < g.x1 + 1 && ty > g.y0 - 1 && ty < g.y1 + 1)) dots.push([tx, ty]);
+    }
+  }
+  const crossesLeader = (x0: number, y0: number, x1: number, y1: number) =>
+    leaders.some((q) => {
+      const d = (ax: number, ay: number, bx: number, by: number, cx: number, cy: number) => (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
+      return d(x0, y0, x1, y1, q.x0, q.y0) * d(x0, y0, x1, y1, q.x1, q.y1) < 0 && d(q.x0, q.y0, q.x1, q.y1, x0, y0) * d(q.x0, q.y0, q.x1, q.y1, x1, y1) < 0;
+    });
+  let best: { score: number; place: TagPlace; leader: NonNullable<CableTagPlace['leader']> } | null = null;
+  for (let bx0 = Math.max(4, Math.min(...xs) - R); bx0 + w <= Math.min(PLOT_W - 4, Math.max(...xs) + R); bx0 += 2) {
+    for (let by0 = Math.max(4, Math.min(...ys) - R); by0 + h <= Math.min(PLOT_H - 4, Math.max(...ys) + R); by0 += 2) {
+      const box = { x0: bx0, x1: bx0 + w, y0: by0, y1: by0 + h };
+      if (!free(box)) continue;
+      const cx = (box.x0 + box.x1) / 2;
+      const cy = (box.y0 + box.y1) / 2;
+      for (const [tx, ty] of dots) {
+        // the plate's edge toward the dot
+        const ex = Math.min(Math.max(tx, box.x0), box.x1);
+        const ey = Math.min(Math.max(ty, box.y0), box.y1);
+        const len = Math.hypot(tx - ex, ty - ey);
+        if (len > R) continue;
+        if (plates.some((pb) => segmentHitsBox([ex, ey, tx, ty], inset(pb, 1))) || glyphs.some((g) => segmentHitsBox([ex, ey, tx, ty], inset(g, 2.5))) || crossesLeader(ex, ey, tx, ty)) continue;
+        const score = len + 6 * crossings(ex, ey, tx, ty);
+        if (!best || score < best.score) {
+          const x = box.x0 + TAG_PAD;
+          const y = box.y0 + 10 + TAG_PAD;
+          best = { score, place: { x, y, anchor: 'start', box, clear: true }, leader: { x0: ex, y0: ey, x1: tx, y1: ty } };
+        }
+      }
+    }
+  }
+  return best ? { place: best.place, leader: best.leader } : null;
+}
+
 /** A word printed on the plot, with a dark halo under it so the floor tint
  *  and the coverage fans never veil it (drawn twice: halo, then the fill —
  *  paint-order is not available on every react-native-svg target). */
@@ -760,7 +935,12 @@ export function VenueView(p: VenueViewProps) {
   // still reads as passing under.
   const tags = useMemo(() => placeFeedTags(beams, placed, routes), [beams, placed, routes]);
   const plated = links.length > 0;
-  const lipClear = ![...tags.values()].some((t) => overlaps(inset(t.box, TAG_PAD), LIP_BOX));
+  const cableTagOf = p.cableTag;
+  const cableTags = useMemo(() => {
+    const tagged = cableTagOf ? links.map((l) => [l, cableTagOf(l)] as const).filter((x): x is readonly [Link, string] => !!x[1]) : [];
+    return tagged.length ? placeCableTags(tagged, placed, routes, tags.values()) : new Map<string, CableTagPlace>();
+  }, [cableTagOf, links, placed, routes, tags]);
+  const lipClear = ![...tags.values(), ...cableTags.values()].some((t) => overlaps(inset(t.box, TAG_PAD), LIP_BOX));
 
   return (
     <View style={styles.wrap} accessible accessibilityRole="image" accessibilityLabel={p.a11y}>
@@ -899,16 +1079,19 @@ export function VenueView(p: VenueViewProps) {
           const a = byId.get(l.from);
           const b = byId.get(l.to);
           if (!a || !b) return null;
-          const live = !p.liveIds || p.liveIds.has(b.id);
+          // A cable that wears a tag plate is drawn lit, so it can be followed to its tag.
+          const live = !p.liveIds || p.liveIds.has(b.id) || !!p.cableTag?.(l);
           const col = LEVEL_COLOR[l.level];
-          const d = routes.paths.get(`${l.from}-${l.to}`);
+          // Each cable its own key: a second run between the same pair is its own lane.
+          const k = routes.keys.get(l) ?? `${l.from}-${l.to}`;
+          const d = routes.paths.get(k);
           if (!d) return null;
           // A merged return shares its twin's drawn cable: the twin draws it,
           // and a tap on it removes both directions — it is one cable.
           if (routes.merged.has(`${l.from}-${l.to}`)) return null;
           const back = routes.merged.has(`${l.to}-${l.from}`) ? links.find((m) => m.from === l.to && m.to === l.from) : undefined;
           return (
-            <G key={`${l.from}-${l.to}`}>
+            <G key={k}>
               <Path d={d} stroke="#000" strokeWidth={3} fill="none" opacity={0.45} />
               <Path d={d} stroke={col} strokeWidth={2} fill="none" opacity={live ? 0.95 : 0.35} strokeDasharray={l.level === 'wireless' ? '3 4' : undefined} strokeLinecap="round" strokeLinejoin="round" />
               {live && l.level !== 'wireless' ? <Path d={d} stroke="#fff" strokeWidth={0.6} fill="none" opacity={0.3} /> : null}
@@ -936,6 +1119,30 @@ export function VenueView(p: VenueViewProps) {
             <Path d={d} stroke="#c9ccd4" strokeWidth={1.4} opacity={0.85} strokeLinecap="round" />
           </G>
         ))}
+
+        {/* tag plates on the cables that need one (two between the same pair):
+            the feed tags' keyline plate, in the cable's own colour */}
+        {links.map((l) => {
+          const k = routes.keys.get(l);
+          const t = k ? cableTags.get(k) : undefined;
+          if (!t) return null;
+          const col = LEVEL_COLOR[l.level];
+          return (
+            <G key={`tag-${k}`}>
+              {t.leader ? (
+                <>
+                  <Line x1={t.leader.x0} y1={t.leader.y0} x2={t.leader.x1} y2={t.leader.y1} stroke="#0a0b0e" strokeWidth={2.2} opacity={0.8} strokeLinecap="round" />
+                  <Line x1={t.leader.x0} y1={t.leader.y0} x2={t.leader.x1} y2={t.leader.y1} stroke={col} strokeWidth={0.9} strokeLinecap="round" />
+                  <Circle cx={t.leader.x1} cy={t.leader.y1} r={2.2} fill={col} stroke="#0a0b0e" strokeWidth={0.8} />
+                </>
+              ) : null}
+              <Rect x={t.box.x0} y={t.box.y0} width={t.box.x1 - t.box.x0} height={t.box.y1 - t.box.y0} rx={3} fill="#0a0b0e" opacity={0.82} stroke={col} strokeOpacity={0.6} strokeWidth={0.75} />
+              <PlotLabel x={t.x} y={t.y} fontSize={PLOT_FS} fill={col} fontFamily={fonts.oswaldSemiBold} textAnchor={t.anchor} letterSpacing={1}>
+                {t.text}
+              </PlotLabel>
+            </G>
+          );
+        })}
 
         {/* target slots */}
         {(p.targets ?? []).map((s) => {

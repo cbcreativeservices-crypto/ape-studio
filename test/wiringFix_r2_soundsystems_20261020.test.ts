@@ -72,7 +72,10 @@ describe('r2_soundsystems', () => {
   it('SS-R2-02: stereo in-ears (now the In-ears L/R pair, Aux 9 + 10) pass; no OUTPUT key on the radio hop', () => {
     const r = referenceBuild('festival');
     let s = sys.setLinkOut(r.s, kindId(r.s, 'stagebox'), kindId(r.s, 'iemTx'), 'aux9');
-    const v = sys.connect(s, kindId(s, 'processor'), kindId(s, 'iemTx'), 'aux10');
+    // Round 5 (owner 2026-10-21): the second cable runs from the STAGEBOX too
+    // (two cables between one pair are allowed now); it used to come from the
+    // loudspeaker processor, which carries the house mix and is now flagged.
+    const v = sys.connect(s, kindId(s, 'stagebox'), kindId(s, 'iemTx'), 'aux10');
     assert.ok(v.ok);
     s = v.system;
     assert.equal(sys.feedOf(s, kindId(s, 'iemPack')), 'aux9');

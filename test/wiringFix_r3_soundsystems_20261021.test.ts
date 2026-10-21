@@ -21,7 +21,7 @@ const sys = await import('../src/features/soundsystems/system.ts');
 const con = await import('../src/features/soundsystems/console.ts');
 const outs = await import('../src/features/soundsystems/outputs.ts');
 const { CAPSTONES, gradeCapstone, feedFits } = await import('../src/features/soundsystems/capstones.ts');
-const { referenceBuild } = await import('./_ssReferenceBuilds.ts');
+const { referenceBuild, stereoFestivalBuild } = await import('./_ssReferenceBuilds.ts');
 const { routeCables, placeFeedTags, pathSegments, segmentHitsBox } = await import('../src/screens/lab/soundsystems/art/VenueView.tsx');
 const { placedToBeams } = await import('../src/screens/lab/soundsystems/plot.tsx');
 
@@ -39,13 +39,13 @@ const repoint = (s: System, slot: string, out: ConsoleOut | null): System => {
   const l = s.links.find((x) => x.to === p.id)!;
   return sys.setLinkOut(s, l.from, l.to, out);
 };
-/** The festival reference build with its in-ear transmitter fed two outputs. */
+/** The festival reference build with its in-ear transmitter fed two outputs.
+ *  Round 5 (owner 2026-10-21): BOTH cables now run from the stagebox — the
+ *  second used to come from the loudspeaker processor, because only one
+ *  cable was allowed between a pair; the processor carries the house mix,
+ *  so that route is now flagged (wiringFix_r5_soundsystems_20261021). */
 function stereoFestival(a: ConsoleOut, b: ConsoleOut): System {
-  const r = referenceBuild('festival');
-  const s = sys.setLinkOut(r.s, kindId(r.s, 'stagebox'), kindId(r.s, 'iemTx'), a);
-  const v = sys.connect(s, kindId(s, 'processor'), kindId(s, 'iemTx'), b);
-  assert.ok(v.ok);
-  return v.system;
+  return stereoFestivalBuild(a, b).s;
 }
 const vocalPre = (cs: CS, ...auxes: string[]) => auxes.reduce((acc, a) => con.setSend(acc, 'vox', a, { db: 0, tap: 'pre' }), cs);
 
@@ -93,7 +93,9 @@ describe('R3-SS-01: a dedicated stereo in-ear pair; Announce stays on Aux 7', ()
   });
   it('the same words in BUILD and on the console: requirement text, festival desk columns, the strip', () => {
     const f = cap('festival').requirements;
-    assert.match(f.find((r) => r.id === 'feeds')!.text, /the in-ears on Aux 8 \(or, for a stereo mix, the In-ears L\/R pair: Aux 9 \+ 10\)/);
+    // Round 5 (owner 2026-10-21): the row now says the pair is two cables from
+    // the stagebox (two cables between one pair are allowed now).
+    assert.match(f.find((r) => r.id === 'feeds')!.text, /the in-ears on Aux 8 \(or, for a stereo mix, the In-ears L\/R pair: Aux 9 \+ 10, two cables from the stagebox\)/);
     assert.match(f.find((r) => r.id === 'iemMix')!.text, /for stereo in-ears, both Aux 9 and Aux 10/);
     assert.doesNotMatch(f.map((r) => r.text).join(' '), /Aux 7 \+ 8/);
     const b = src('screens/lab/soundsystems/pagesBuild.tsx');

@@ -4,14 +4,17 @@
  *
  *   STAGE  the venue plot, pinned and live: tap a highlighted position to
  *          place the part in hand, tap a device then another to connect
- *          them, tap a cable to remove it.
+ *          them, tap a cable to remove it. Tap the same two again for a
+ *          SECOND cable where the far device has a free input and each cable
+ *          carries its own output (stagebox → in-ear transmitter, Aux 9 and
+ *          Aux 10 — owner 2026-10-21): two lanes, each with its tag plate.
  *   DOCK   PART — one key that is both the parts list and a lane: tap it to
  *          read the bin, ride it to flip through the parts while the plot
  *          shows where each may stand · OUTPUT (when the selected device's
  *          cable comes from the console side) — which console output that
  *          cable carries: a lane for the console's seventeen, a tap key for
  *          two to four, LOCKED when only one reaches it (WF-SS-02,
- *          2026-10-20) · CONSOLE (routing capstones) opens
+ *          2026-10-20); OUTPUT 1 and OUTPUT 2 when two cables come in · CONSOLE (routing capstones) opens
  *          the desk in a tray over the well while the plot stays live ·
  *          REMOVE and CLEAR appear only when they can do something.
  *   WELL   what is in hand, the last verdict, the selected device's card,
@@ -30,7 +33,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx } from '../kit/PagedLab';
 import { Body, Btn, Card, Eyebrow, Prompt, Row } from '../tuning/components/primitives';
 import { GEAR, gearSpec, isSource, LEVEL_LABEL } from '../../../features/soundsystems/gear';
-import { carriesOutputs, connect, consoleWalk, disconnect, EMPTY_SYSTEM, feedLink, linkCarries, outChoices, place, removePlaced, setLinkOut, SLOTS, slotAccepts, slotDef, trace, upstream, downstream, type ConsoleWalk } from '../../../features/soundsystems/system';
+import { carriesOutputs, connect, consoleWalk, disconnect, EMPTY_SYSTEM, feedLinks, linkCarries, outChoices, pairIndex, place, removePlaced, setLinkOut, SLOTS, slotAccepts, slotDef, trace, upstream, downstream, type ConsoleWalk } from '../../../features/soundsystems/system';
 import { isIemPair, OUT_UNSET, outLabel, outName, outTag, outUse } from '../../../features/soundsystems/outputs';
 import { CAPSTONES_IN_ORDER, capstoneConsole, CONSOLE_PRESET_NOTE, gradeCapstone, type Capstone } from '../../../features/soundsystems/capstones';
 import type { ConsoleState } from '../../../features/soundsystems/console';
@@ -40,7 +43,7 @@ import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { ChapterTag, GoalChips, KeyFact, ReqRow, useVisitGoals, VerdictLine } from './bits';
 import { GearGlyph } from './art/gearArt';
 import { CableLegend, PLOT_H, PLOT_W, VenueView } from './art/VenueView';
-import { placedToBeams, PLOT_BADGE } from './plot';
+import { placedToBeams, PLOT_BADGE, twinCableTag } from './plot';
 import { BusHears, ConsolePanel, DcaStrip, MatrixStrip, matrixHears, auxHears, mainHears, subgroupHears, SubgroupStrip, type ConsoleColumn } from './art/ConsolePanel';
 import { flipFader, SoundSystemsRackLayout, type SsPageDef, type SsRack } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
@@ -89,7 +92,8 @@ export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM) {
           setSystem(v.system);
           const a = system.placed.find((p) => p.id === selected)!;
           const b = system.placed.find((p) => p.id === id)!;
-          const pick = gearSpec(b.kind).radiates && carriesOutputs(v.system, v.link) ? ' Tap OUTPUT to choose the console output it carries.' : '';
+          const nth = pairIndex(v.system, v.link);
+          const pick = nth > 0 ? ` A second cable — tap OUTPUT ${nth + 1} to choose the console output it carries.` : gearSpec(b.kind).radiates && carriesOutputs(v.system, v.link) ? ' Tap OUTPUT to choose the console output it carries.' : '';
           setMsg({ text: `${gearSpec(a.kind).name} → ${gearSpec(b.kind).name}, at ${LEVEL_LABEL[v.link.level]}.${pick}`, ok: true });
           setSelected(id);
         } else {
@@ -108,16 +112,17 @@ export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM) {
     [selected, system],
   );
 
+  // Only the tapped cable goes — its twin between the same pair stays.
   const tapLink = useCallback(
     (l: Link) => {
-      setSystem((s) => disconnect(s, l.from, l.to));
+      setSystem((s) => disconnect(s, l.from, l.to, Math.max(0, pairIndex(s, l))));
       setMsg({ text: 'Cable removed.' });
     },
     [],
   );
 
   const setOut = useCallback((l: Link, out: ConsoleOut) => {
-    setSystem((s) => setLinkOut(s, l.from, l.to, out));
+    setSystem((s) => setLinkOut(s, l.from, l.to, out, Math.max(0, pairIndex(s, l))));
     setMsg({ text: `This cable now carries ${outName(out)}.`, ok: true });
   }, []);
 
@@ -149,9 +154,13 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
   const sel = b.selected ? b.system.placed.find((p) => p.id === b.selected) : undefined;
   const tags = useMemo(() => feedTags(b.walk), [b.walk]);
   const beams = useMemo(() => placedToBeams(b.system.placed, b.live, tags), [b.system.placed, b.live, tags]);
-  const selLink = sel ? feedLink(b.system, sel.id, b.walk) : undefined;
-  const output = selLink && sel ? outputParam(b, selLink, sel.kind) : undefined;
+  // Every cable into the selected device that carries a console output gets
+  // its own OUTPUT key — two for a stereo pair on two cables (OUTPUT 1, 2).
+  const selLinks = sel ? feedLinks(b.system, sel.id, b.walk) : [];
+  const selLink = selLinks[0];
+  const outputs = sel ? selLinks.map((l, i) => outputParam(b, l, sel.kind, selLinks.length > 1 ? i + 1 : 0)).filter((x): x is DockParam => !!x) : [];
   const carried = selLink ? carriedWord(linkCarries(b.system, selLink, b.walk)) : '';
+  const fedByEach = selLinks.length > 1 ? selLinks.map((l) => `${gearSpec(b.system.placed.find((p) => p.id === l.from)!.kind).name} · ${carriedWord(linkCarries(b.system, l, b.walk)) || OUT_UNSET}`).join(', ') : '';
   const inHand = b.part ? gearSpec(b.part) : null;
   const items = kinds.map((k) => ({ id: k }));
   const exhausted = (k: GearKind) => !gearSpec(k).many && b.system.placed.some((p) => p.kind === k);
@@ -168,7 +177,7 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
       empty: 'nothing in hand — tap to pick a part',
       blurb: (x) => (exhausted(x.id as GearKind) ? `${gearSpec(x.id as GearKind).name}: already in the build. Tap it on the plot to select it.` : `${gearSpec(x.id as GearKind).blurb} Stands at: ${SLOTS.filter((s) => slotAccepts(s.id, x.id as GearKind)).map((s) => s.label).slice(0, 4).join(', ')}${SLOTS.filter((s) => slotAccepts(s.id, x.id as GearKind)).length > 4 ? '…' : ''}.`),
     }),
-    ...(output ? [output] : []),
+    ...outputs,
     ...(extras.console ? [extras.console] : []),
     ...(sel ? [{ kind: 'action', id: 'remove', label: 'REMOVE', onPress: b.remove, tint: colors.red } as DockParam] : []),
     ...(b.system.placed.length ? [{ kind: 'action', id: 'clear', label: 'CLEAR', onPress: b.reset } as DockParam] : []),
@@ -179,7 +188,7 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
     { k: 'LIVE', v: `${b.trace.live.length}`, tint: b.trace.live.length ? colors.green : undefined, flex: 0.8 },
     extras.bezel ?? { k: 'SILENT', v: `${b.trace.silent.length}`, tint: b.trace.silent.length ? colors.orange : undefined, flex: 0.9 },
   ];
-  const unset = !!sel && gearSpec(sel.kind).radiates && !!selLink && b.walk.feeds.get(sel.id) === '*';
+  const unset = !!sel && ((gearSpec(sel.kind).radiates && !!selLink && b.walk.feeds.get(sel.id) === '*') || (selLinks.length > 1 && selLinks.some((l) => !l.out)));
   const prompt = b.part
     ? `Tap a highlighted position to place the ${gearSpec(b.part).name.toLowerCase()}.`
     : unset
@@ -209,7 +218,11 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
             <GearGlyph kind={sel.kind} size={44} label={gearSpec(sel.kind).name} />
             <View style={{ flex: 1, gap: 2 }}>
               <Eyebrow>{`${gearSpec(sel.kind).name.toUpperCase()} · ${slotDef(sel.slot).label.toUpperCase()}`}</Eyebrow>
-              <Text style={styles.small}>FED BY · {upstream(b.system, sel.id).map((p) => gearSpec(p.kind).name).join(', ') || 'nothing'}{carried ? ` · ${carried}` : ''}</Text>
+              {fedByEach ? (
+                <Text style={styles.small}>FED BY · {fedByEach} — two cables, one output each</Text>
+              ) : (
+                <Text style={styles.small}>FED BY · {upstream(b.system, sel.id).map((p) => gearSpec(p.kind).name).join(', ') || 'nothing'}{carried ? ` · ${carried}` : ''}</Text>
+              )}
               <Text style={styles.small}>FEEDS · {downstream(b.system, sel.id).map((p) => gearSpec(p.kind).name).join(', ') || 'nothing'}</Text>
               <Text style={[styles.small, { color: b.live.has(sel.id) ? colors.green : gearSpec(sel.kind).radiates ? colors.orange : colors.textMuted }]}>
                 {gearSpec(sel.kind).radiates ? (b.live.has(sel.id) ? '● LIVE — a source reaches it' : '○ SILENT — no complete path from a source') : b.trace.reached.has(sel.id) ? '● signal reaches it' : '○ no signal yet'}
@@ -247,6 +260,7 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
           onTapPlaced={b.tapPlaced}
           onTapLink={b.tapLink}
           linkA11y={(l) => cableWords(linkCarries(b.system, l, b.walk))}
+          cableTag={(l) => twinCableTag(b.system, l, b.walk)}
           a11y={`The venue plot. ${b.system.placed.length} device${b.system.placed.length === 1 ? '' : 's'} placed, ${b.system.links.length} cable${b.system.links.length === 1 ? '' : 's'}, ${b.live.size} loudspeaker${b.live.size === 1 ? '' : 's'} live.${b.part ? ` ${b.targets.length} positions accept the ${gearSpec(b.part).name.toLowerCase()}.` : ''}`}
         />
       );
@@ -294,20 +308,24 @@ function cableWords(c: ConsoleOut | 'all' | '*' | null): string | undefined {
 
 /** OUTPUT — which console output the cable INTO the selected device carries.
  *  Seventeen (straight from the console or a stagebox return) ride a lane; two
- *  to four are a tap key; one is LOCKED, with the reason (D75). */
-function outputParam(b: ReturnType<typeof useBuilder>, l: Link, kind: GearKind): DockParam | undefined {
+ *  to four are a tap key; one is LOCKED, with the reason (D75). With two
+ *  cables in (`n` = 1, 2) each gets its own key, OUTPUT 1 and OUTPUT 2, and
+ *  neither offers the output the other carries. */
+function outputParam(b: ReturnType<typeof useBuilder>, l: Link, kind: GearKind, n = 0): DockParam | undefined {
   const choices = outChoices(b.system, l, b.walk);
   if (choices.length === 0) return undefined;
   const from = b.system.placed.find((p) => p.id === l.from);
   const fromName = from ? gearSpec(from.kind).name.toLowerCase() : 'device';
   const chosen = l.out && choices.includes(l.out) ? l.out : null;
   const sink = !!gearSpec(kind).radiates;
+  const id = n > 1 ? `output${n}` : 'output';
+  const label = n ? `OUTPUT ${n}` : 'OUTPUT';
   if (choices.length === 1 && (!l.out || chosen)) {
     const only = choices[0];
     return {
       kind: 'options',
-      id: 'output',
-      label: 'OUTPUT',
+      id,
+      label,
       valueLabel: outTag(only),
       valueA11y: outName(only),
       options: [{ id: only, label: outLabel(only), blurb: outUse(only) }],
@@ -320,8 +338,8 @@ function outputParam(b: ReturnType<typeof useBuilder>, l: Link, kind: GearKind):
   if (choices.length <= 4) {
     return {
       kind: 'options',
-      id: 'output',
-      label: 'OUTPUT',
+      id,
+      label,
       valueLabel: chosen ? outTag(chosen) : OUT_UNSET,
       valueA11y: chosen ? outName(chosen) : 'no output chosen',
       options,
@@ -330,15 +348,15 @@ function outputParam(b: ReturnType<typeof useBuilder>, l: Link, kind: GearKind):
     };
   }
   const lane = flipFader({
-    id: 'output',
-    label: 'OUTPUT',
-    title: `CONSOLE OUTPUT — what the cable from the ${fromName} carries`,
+    id,
+    label,
+    title: n ? `CONSOLE OUTPUT — what cable ${n} from the ${fromName} carries` : `CONSOLE OUTPUT — what the cable from the ${fromName} carries`,
     items: choices.map((id) => ({ id })),
     selectedId: chosen ?? '',
     onSelect: (id) => b.setOut(l, id as ConsoleOut),
     name: (x) => outName(x.id as ConsoleOut),
     short: (x) => outTag(x.id as ConsoleOut),
-    empty: sink ? 'OUT ? — tap to choose the output' : 'all outputs pass — choose at each loudspeaker',
+    empty: sink || n ? 'OUT ? — tap to choose the output' : 'all outputs pass — choose at each loudspeaker',
     blurb: (x) => outUse(x.id as ConsoleOut),
   });
   // The lane binds to OUTPUT when it appears (the Tuning precedent,
@@ -367,7 +385,7 @@ function PageFreeBuild({ ctx }: { ctx: PageCtx }) {
       <GoalChips goals={goals} latched={latched} />
       <CableLegend levels={['mic', 'line', 'speaker', 'digital', 'wireless']} />
       <Text style={styles.status}>{r.status}</Text>
-      <KeyFact>A loudspeaker is LIVE only when an unbroken path of valid links runs from a source to it. A dim loudspeaker is a placed loudspeaker with no such path — the most common state of a real system at four in the afternoon. The engine refuses a link with its reason — most often the wrong level, a full input, or a loop — and the one hazardous refusal (speaker level into a line input) is drawn as a warning. An analog cable carries one console output; a multicore or a network link carries them all.</KeyFact>
+      <KeyFact>A loudspeaker is LIVE only when an unbroken path of valid links runs from a source to it. A dim loudspeaker is a placed loudspeaker with no such path — the most common state of a real system at four in the afternoon. The engine refuses a link with its reason — most often the wrong level, a full input, or a loop — and the one hazardous refusal (speaker level into a line input) is drawn as a warning. An analog cable carries one console output; a multicore or a network link carries them all. Tap the same two devices again for a second cable where the far one has a free input — a stereo in-ear feed is two cables from the stagebox to the transmitter, Aux 9 and Aux 10, each with its own OUTPUT key — never the same output twice.</KeyFact>
     </SoundSystemsRackLayout>
   );
 }
