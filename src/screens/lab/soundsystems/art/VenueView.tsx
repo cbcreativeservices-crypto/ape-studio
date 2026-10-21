@@ -141,13 +141,20 @@ const RISER_LANE_Y = 66;
 const LIP_LANE_Y = 105;
 /** The RISER label (x 180, baseline 64.5): no drop is run through it. */
 const RISER_LABEL = { x0: 152, x1: 208, y0: 52, y1: 67 };
+/** The BARRIER word (start at x 40, baseline 174, ≈ 51 units wide at
+ *  PLOT_FS): under the barrier line at the house-LEFT end. At the house-right
+ *  end the stage-left wall loom's inner lanes (LOOM_WALL_X − CABLE_GAP·k, as
+ *  many as there are runs to front of house) ran over it (owner list
+ *  2026-10-21). The house-left wall carries only the house-left loudspeaker
+ *  runs (four slots), x ≤ SR_WALL_X + 3·CABLE_GAP, so the word stays clear. */
+const BARRIER_LABEL = { x: AUD.left + 18, y: 174, x0: 36, x1: 96, y0: 163, y1: 176 };
 /** The plot's printed words (SL, LIP, RISER, BARRIER): a run never lies
  *  along one. */
 const LABEL_BOXES = [
   { x0: 310, x1: 336, y0: 14, y1: 27 },
   { x0: 92, x1: 130, y0: 113, y1: 126 },
   RISER_LABEL,
-  { x0: 268, x1: 336, y0: 163, y1: 176 },
+  BARRIER_LABEL,
 ];
 const alongLabel = (vertical: boolean, c: number, a: number, b: number) =>
   LABEL_BOXES.some((r) => (vertical ? c > r.x0 && c < r.x1 && Math.max(a, b) > r.y0 && Math.min(a, b) < r.y1 : c > r.y0 && c < r.y1 && Math.max(a, b) > r.x0 && Math.min(a, b) < r.x1));
@@ -742,7 +749,7 @@ export function VenueView(p: VenueViewProps) {
 
         {/* RISER sits under the riser's front edge: inside it, it would sit under the drum-riser positions. */}
         <PlotLabel x={180} y={64.5} fontSize={PLOT_FS} fill="#6a7186" fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={1.6}>RISER</PlotLabel>
-        <PlotLabel x={AUD.right - 4} y={174} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="end" letterSpacing={1}>BARRIER</PlotLabel>
+        <PlotLabel x={BARRIER_LABEL.x} y={BARRIER_LABEL.y} fontSize={PLOT_FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="start" letterSpacing={1}>BARRIER</PlotLabel>
 
         {/* cables */}
         {links.map((l) => {

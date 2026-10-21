@@ -459,27 +459,63 @@ const SPARE_LOOPS =
   'C81 135 84 133 88 133 A4 4 0 0 1 88 141 A4 4 0 0 1 88 133 C92 133 95 135 96 138';
 /** As found: the three monitor feeds lie bare and loose across the deck from
  *  their return jacks into each wedge's own rear input — VOX 2's over the
- *  deck between wedges 1 and 2, VOX 3's across the stair landing. */
+ *  deck between wedges 1 and 2, VOX 3's across the stair landing (and past
+ *  the stair quad box, never over it). */
 const J_MON = VOX_XS.map((x) => WEDGE_JACK(x));
 const AS_FOUND_MON = [
   `M${SEND_X[0]} ${JACK_OUT} V161 C45 170 70 173.5 92 173 C110 172.6 ${J_MON[0].x} 178 ${J_MON[0].x} ${J_MON[0].y}`,
   `M${SEND_X[1]} ${JACK_OUT} V165 C41.4 175 60 177 90 177 C120 177 136 176 146 164 C154 154 178 148 184 158 C188 166 186 176 196 176 C203 176 ${J_MON[1].x} 174 ${J_MON[1].x} ${J_MON[1].y}`,
-  `M${SEND_X[2]} ${JACK_OUT} V168 C37.8 178 60 180.5 100 180.5 C170 180.5 200 179 220 172 C240 164 256 162 266 170 C272 175 ${J_MON[2].x} 179 ${J_MON[2].x} ${J_MON[2].y}`,
+  `M${SEND_X[2]} ${JACK_OUT} V168 C37.8 178 60 180.5 100 180.5 C170 180.5 200 179 220 172 C240 164 252 168 258 176 C262 181 ${J_MON[2].x} 181 ${J_MON[2].x} ${J_MON[2].y}`,
 ] as const;
 const MON3_BADGE = { x: 160, y: 177 } as const;
 /**
- * WEDGE POWER (B-CI-01, lead 2026-10-21: the wedges are POWERED). The feeds
- * above are line-level XLR from the snake head's returns, so each wedge also
- * needs mains. The lip behind the wedges is the audio's lane, so the AC keeps
- * clear of it: a downstage quad box at the SL edge, fed from the SL wing, runs
- * one AC lead into wedge 3's SL side panel, and each wedge links its mains on
- * to the next through its side-panel link out — every AC run in the wedge
- * row, its own lane, never in the feed bundle and never crossing it. Where
- * the link crosses the stair walkway it goes under its own low-profile cover.
+ * WEDGE POWER (B-CI-01, lead 2026-10-21: the wedges are POWERED; owner
+ * 2026-10-21: each wedge's mains shown on its OWN lead — the common rig, and
+ * the clearer lesson — never linked wedge to wedge). The feeds above are
+ * line-level XLR from the snake head's returns, so each wedge also needs
+ * mains. The lip behind the wedges is the audio's lane, so the AC keeps
+ * upstage of it, every lead its own lane:
+ *  · a downstage quad box at the SL edge (WQUAD, fed from the SL wing) gives
+ *    wedge 3 its own lead into its SL side panel (the wedge's AC inlet);
+ *  · its second outlet feeds a SECOND quad box (WQUAD2) on deck between the
+ *    stair and wedge 3 — that feeder passes hard behind wedge 3, crossing its
+ *    XLR feed square;
+ *  · WQUAD2 gives wedge 2 and wedge 1 an outlet and a lead each: wedge 2's
+ *    in the wedge row, wedge 1's hard behind wedge 2 (crossing its feed
+ *    square) and up into the row SR of it. The two leads cross the stair
+ *    walkway under their own low-profile cover, apart from the audio's.
+ * Quad boxes: 4 outlets on the face toward the wedges (AC_PITCH apart), the
+ * feeder entering the far face through its gland; 0.14 × 0.44 m on deck.
  */
 const WEDGE_AC_Y = WEDGE_Y + 4.3;
 const WEDGE_HALF = 9.6;
-const WQUAD = { x: 316, y: WEDGE_AC_Y - 2.8 } as const;
+const AC_PITCH = 3.5;
+/** The power lane hard behind a wedge — upstage of every feed lane. */
+const AC_BEHIND_Y = WEDGE_AC_Y + AC_PITCH;
+/** The second box's feeder, behind wedge 3 (still upstage of its feed). */
+const AC_FEED_Y = WEDGE_AC_Y + 2 * AC_PITCH;
+const QUAD = { w: 4.6, h: 4 * AC_PITCH, plug: 2.2 } as const;
+/** Each box's four outlet slots (y). The SL box sits a slot lower, so it
+ *  stays clear of the WEDGES word above it; the stair box stays clear of
+ *  wedge 3's feed lane below it. */
+const WQUAD = { x: 327, slots: [WEDGE_AC_Y, AC_BEHIND_Y, AC_FEED_Y, AC_FEED_Y + AC_PITCH] } as const;
+const WQUAD2 = { x: 265.6, slots: [WEDGE_AC_Y - AC_PITCH, WEDGE_AC_Y, AC_BEHIND_Y, AC_FEED_Y] } as const;
+/** Wedge 1's lead comes up into the wedge row just SR of wedge 2. */
+const AC_RISE_X = VOX_XS[1] - WEDGE_HALF - 2.4;
+/** Each wedge's own mains lead, wedge 1 → 3: from its quad-box outlet to the
+ *  AC inlet on its SL side panel. */
+const WEDGE_MAINS = [
+  `M${WQUAD2.x - QUAD.plug} ${AC_BEHIND_Y} H${AC_RISE_X} V${WEDGE_AC_Y} H${VOX_XS[0] + WEDGE_HALF}`,
+  `M${WQUAD2.x - QUAD.plug} ${WEDGE_AC_Y} H${VOX_XS[1] + WEDGE_HALF}`,
+  `M${WQUAD.x - QUAD.plug} ${WEDGE_AC_Y} H${VOX_XS[2] + WEDGE_HALF}`,
+] as const;
+/** The plugs seated in the quad boxes' outlets: [box x, slot y]. */
+const QUAD_PLUGS = [
+  [WQUAD.x, WEDGE_AC_Y],
+  [WQUAD.x, AC_FEED_Y],
+  [WQUAD2.x, WEDGE_AC_Y],
+  [WQUAD2.x, AC_BEHIND_Y],
+] as const;
 
 /** A numbered hazard badge on the plot, matching the numbered call below —
  *  amber while the hazard stands, a green tick once it is dressed. */
@@ -506,7 +542,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       width={w}
       height={h}
       viewBox="0 0 360 205"
-      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 metre deck, audience at the bottom. Drum riser upstage centre with a drum sub-snake that fans out at the snake head into four XLR tails, one per input, keys stage left, guitar amp and player stage right, three singers facing the audience, each with a boom stand just downstage of them and a wedge further downstage aimed back at them, the downstage playing area, a stair at the downstage lip, the snake head downstage right with its trunk to FOH and a split to monitor world in the stage-left wing. The wedges are powered: a downstage quad box at the stage-left edge feeds mains to wedge 3, and each wedge links its mains on to the next along the wedge row, apart from the audio. Numbered badges mark the three hazards. Mic lines ${routeFixed ? 'taped up the stage-right edge and along the riser face, clear of the playing area' : 'webbed straight across the playing area'}; spare mic cable ${slackFixed ? 'coiled at the snake head with its end capped' : 'in loose loops on deck'}; line-level monitor feeds (XLR) ${monFixed ? 'taped along the downstage lip behind the wedges, with a low-profile cover and glow tape where the stair meets the deck' : 'bare across the deck'}.`}
+      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 metre deck, audience at the bottom. Drum riser upstage centre with a drum sub-snake that fans out at the snake head into four XLR tails, one per input, keys stage left, guitar amp and player stage right, three singers facing the audience, each with a boom stand just downstage of them and a wedge further downstage aimed back at them, the downstage playing area, a stair at the downstage lip, the snake head downstage right with its trunk to FOH and a split to monitor world in the stage-left wing. The wedges are powered, each on its own mains lead from its own quad-box outlet: a downstage quad box at the stage-left edge feeds wedge 3 and a second quad box beside the stair, which feeds wedges 2 and 1; the power leads keep upstage of the audio feeds, cross them square, and have their own cover at the stair. Numbered badges mark the three hazards. Mic lines ${routeFixed ? 'taped up the stage-right edge and along the riser face, clear of the playing area' : 'webbed straight across the playing area'}; spare mic cable ${slackFixed ? 'coiled at the snake head with its end capped' : 'in loose loops on deck'}; line-level monitor feeds (XLR) ${monFixed ? 'taped along the downstage lip behind the wedges, with a low-profile cover and glow tape where the stair meets the deck' : 'bare across the deck'}.`}
     >
       <Rect x={0} y={0} width={360} height={205} rx={10} fill="#0c0c10" />
       <StageDeck x={PLOT.x} y={PLOT.y} w={PLOT.w} h={PLOT.h} grid={PLOT.m} />
@@ -681,25 +717,48 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
         <Rect x={COIL.cx - 1.5} y={COIL_END.y1 - 0.4} width={3} height={2.4} rx={0.8} fill="#2a2c31" stroke="#9aa0a8" strokeWidth={0.4} />
       </SwapGroup>
 
-      {/* wedge power: the SL wing feeds a downstage quad box; one AC lead to
-          wedge 3, then each wedge's link out to the next, in the wedge row */}
-      <Path d={`M${edgeX + 8} ${WEDGE_AC_Y} H${WQUAD.x + 7}`} stroke={pwr} strokeWidth={1.8} strokeLinecap="round" />
-      <Rect x={WQUAD.x} y={WQUAD.y} width={7} height={5.6} rx={0.8} fill="#2a2c31" stroke={pwr} strokeWidth={0.6} />
-      <Rect x={STAIR.x - 4} y={WEDGE_AC_Y - 3} width={STAIR.w + 8} height={6} rx={1} fill="#1b1c20" stroke="#050506" strokeWidth={0.5} />
+      {/* wedge power: every wedge its OWN mains lead from its own quad-box
+          outlet (owner 2026-10-21) — never linked wedge to wedge. The SL wing
+          feeds the SL quad box (wedge 3's lead + the feeder to the second box
+          by the stair); the second box feeds wedges 2 and 1. All upstage of
+          the feed lanes, crossing each feed square. */}
+      <Path d={`M${edgeX + 8} ${AC_BEHIND_Y} H${WQUAD.x + QUAD.w}`} stroke={pwr} strokeWidth={1.8} strokeLinecap="round" />
+      {/* the power leads' own low-profile cover across the stair walkway */}
+      <Rect x={STAIR.x - 4} y={WEDGE_AC_Y - 3} width={STAIR.w + 6.4} height={AC_PITCH + 6} rx={1} fill="#1b1c20" stroke="#050506" strokeWidth={0.5} />
+      <JacketPath d={`M${WQUAD.x - QUAD.plug} ${AC_FEED_Y} H${WQUAD2.x + QUAD.w}`} color={pwr} width={1.8} shadow={false} />
+      {WEDGE_MAINS.map((d, i) => (
+        <JacketPath key={`ac${i}`} d={d} color={pwr} width={1.8} shadow={false} />
+      ))}
+      <Rect x={STAIR.x - 3} y={WEDGE_AC_Y - 1.8} width={STAIR.w + 4.4} height={AC_PITCH + 3.6} rx={0.8} fill="#e3b73a" stroke="#6b5520" strokeWidth={0.4} />
+      {/* the two quad boxes: four outlets on the face toward the wedges, the
+          feeder in through a gland on the far face */}
       {[
-        [WQUAD.x, VOX_XS[2] + WEDGE_HALF],
-        [VOX_XS[2] - WEDGE_HALF, VOX_XS[1] + WEDGE_HALF],
-        [VOX_XS[1] - WEDGE_HALF, VOX_XS[0] + WEDGE_HALF],
-      ].map(([x1, x2]) => (
-        <JacketPath key={`ac${x1}`} d={`M${x1} ${WEDGE_AC_Y} H${x2}`} color={pwr} width={1.8} shadow={false} />
+        { box: WQUAD, gy: AC_BEHIND_Y },
+        { box: WQUAD2, gy: AC_FEED_Y },
+      ].map(({ box: { x: bx, slots }, gy }) => (
+        <G key={`qb${bx}`}>
+          <Rect x={bx} y={slots[0] - AC_PITCH / 2} width={QUAD.w} height={QUAD.h} rx={0.8} fill="#2a2c31" stroke={pwr} strokeWidth={0.6} />
+          {slots.map((sy) => (
+            <Rect key={`qs${sy}`} x={bx + 0.7} y={sy - 1} width={1.8} height={2} rx={0.4} fill="#0d0e11" stroke="#4a4e56" strokeWidth={0.3} />
+          ))}
+          <Rect x={bx + QUAD.w - 0.3} y={gy - 1} width={1.3} height={2} rx={0.4} fill="#3a3c42" stroke="#0a0a0c" strokeWidth={0.3} />
+        </G>
       ))}
-      <Rect x={STAIR.x - 3} y={WEDGE_AC_Y - 1.8} width={STAIR.w + 6} height={3.6} rx={0.8} fill="#e3b73a" stroke="#6b5520" strokeWidth={0.4} />
-      {/* the AC connectors in use (wedge 1's link out stays empty) */}
-      {VOX_XS.flatMap((x, i) => (i === 0 ? [x + WEDGE_HALF] : [x - WEDGE_HALF, x + WEDGE_HALF])).map((x) => (
-        <Rect key={`acj${x}`} x={x - 0.9} y={WEDGE_AC_Y - 1.4} width={1.8} height={2.8} rx={0.4} fill="#0d0e11" stroke={pwr} strokeWidth={0.35} />
+      {QUAD_PLUGS.map(([bx, sy]) => (
+        <Rect key={`qp${bx}-${sy}`} x={bx - QUAD.plug} y={sy - 1.1} width={QUAD.plug + 0.5} height={2.2} rx={0.5} fill="#1d1f24" stroke={pwr} strokeWidth={0.4} />
       ))}
-      {[160, 218, 304].map((x) => (
-        <TapeStrip key={`act${x}`} x={x} y={WEDGE_AC_Y} len={4.6} />
+      {/* each wedge's AC inlet, on its SL side panel, its own lead seated */}
+      {VOX_XS.map((x) => (
+        <Rect key={`acj${x}`} x={x + WEDGE_HALF - 0.9} y={WEDGE_AC_Y - 1.4} width={1.8} height={2.8} rx={0.4} fill="#0d0e11" stroke={pwr} strokeWidth={0.35} />
+      ))}
+      {[
+        [310, WEDGE_AC_Y, 4.6],
+        [310, AC_FEED_Y, 4.6],
+        [278, AC_FEED_Y, 4.6],
+        [217, (WEDGE_AC_Y + AC_BEHIND_Y) / 2, AC_PITCH + 2.8],
+        [160, WEDGE_AC_Y, 4.6],
+      ].map(([x, y, len]) => (
+        <TapeStrip key={`act${x}-${y}`} x={x} y={y} len={len} />
       ))}
 
       {/* ③ MONITOR FEEDS — from the snake head's own return jacks (SR, the
@@ -1615,7 +1674,7 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
         <Text style={s.caption}>
           Training visualization — stage plot to scale (faint grid = 1 m), in the lab’s teaching colors (field cable
           colors vary): cyan = mic and line-level lines (the wedge feeds are line-level XLR into powered wedges) · grey = multicores (trunk to FOH, split to
-          MON, drum sub-snake — it fans out into one cyan XLR tail per input at the snake head) · red = AC power (quad boxes, and the wedges' mains: a downstage quad box, then wedge to wedge, apart from the audio) · grey strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair ·
+          MON, drum sub-snake — it fans out into one cyan XLR tail per input at the snake head) · red = AC power (quad boxes, and each wedge's own mains lead from its own quad-box outlet, apart from the audio and crossing it square) · grey strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair ·
           dashed = the way performers come up the stair · the spare mic line is coiled at the box with its end capped, not plugged into a return. The amp, keys and split lines were already dressed right.
         </Text>
         <View style={{ gap: 12 }}>
