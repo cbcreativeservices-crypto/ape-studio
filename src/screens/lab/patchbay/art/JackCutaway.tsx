@@ -22,6 +22,13 @@ import { useEffect, type ReactNode } from 'react';
  * the electrical threshold is the engine's CONTACT_OPEN_AT teaching constant,
  * the visible lift begins exactly THERE (never before — the picture must not
  * contradict the readout), and the panel carries a CONCEPTUAL MODEL badge.
+ *
+ * Two honesty notes under the body (wiring grade R3-PB-02, 2026-10-21):
+ * ENLARGED — the body is drawn ≈ 76 × 39 mm at the plug's 3.46 units/mm,
+ * larger than a real jack, so the parts are readable; and RING SPRING NOT
+ * SHOWN — a TRS jack also switches the ring, but a ring leaf drawn honestly
+ * would meet the passing tip first and open at a different depth than the
+ * single CONTACT_OPEN_AT readout, so it is named and left out instead.
  */
 import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
@@ -79,6 +86,9 @@ export const JACK_ASPECT = W / H;
 
 /** The honesty badge (a CONCEPTUAL MODEL) — on the page card and, for a rack
  *  page, silk-screened under the glass. */
+/** The two notes printed under the jack body (R3-PB-02). */
+export const JACK_NOTES = ['ENLARGED — DRAWN LARGER THAN A REAL JACK', 'RING SPRING NOT SHOWN — IT SWITCHES THE SAME WAY'] as const;
+
 export const JACK_BADGE = `CONCEPTUAL MODEL — this one opens at ${Math.round(CONTACT_OPEN_AT * 100)}% in; real jacks open partway, the exact point varies by design.`;
 
 /** W16 (2026-09-18): Android-only live region; silent on iOS. `insertion` is a DRAG,
@@ -114,7 +124,7 @@ export function JackCutawayDrawing({ insertion, reduceMotion, showConductors, w,
     ` L ${FINGER_X + 1.2} ${fy - 9.6} L ${CONTACT_X + 1} ${leafY + 1.6} Z`;
   const phase = useFlowPhase(true, reduceMotion);
 
-  const a11y = `Jack cutaway at ${Math.round(insertion * 100)} percent insertion. ` +
+  const a11y = `Jack cutaway, enlarged; the ring spring is not shown. At ${Math.round(insertion * 100)} percent insertion. ` +
     (open
       ? 'The plug has lifted the tip spring off the normal contact: the normal is broken and the source now rides the patch cord.'
       : 'The tip spring is resting on the normal contact: the normal path to the destination is intact.');
@@ -149,6 +159,11 @@ export function JackCutawayDrawing({ insertion, reduceMotion, showConductors, w,
             the anchor block, TIP SPRING below the leaf (it sat on it), and
             "← PLUG OUT" above the bushing (it ran across it). */}
         <SvgText x={146} y={44} fontSize={9} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={1.6}>INSIDE THE JACK — CUTAWAY</SvgText>
+        {/* the honesty notes, under the body and clear of the panel and the
+            plug's cord (R3-PB-02) */}
+        {JACK_NOTES.map((t, i) => (
+          <SvgText key={t} x={62} y={178 + i * 12} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={0.8}>{t}</SvgText>
+        ))}
 
         {/* SOURCE feed from the rear into the spring anchor block */}
         <FlowPath d={`M 326 61 L 298 61`} flowing phase={phase} reduceMotion={reduceMotion} color={PB.source} width={2.4} />

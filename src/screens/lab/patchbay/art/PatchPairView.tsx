@@ -68,6 +68,9 @@ const FACE_H = 66;
  *  the two drawings + gap are ONE fixed-aspect figure for FULL SCREEN
  *  (full-screen pass 2026-09-30): aspect = W ÷ (FACE_H + FACE_GAP + H). */
 const FACE_GAP = 6;
+/** The far plugs' handle back end (viewBox x): the plug + the seated
+ *  device panel end at PLUG_X + 30, clear of the labels at W − 87. */
+const PLUG_X = W - 130;
 export const PATCH_PAIR_ASPECT = W / (FACE_H + FACE_GAP + H);
 export const PATCH_PAIR_ASPECT_BARE = W / H;
 
@@ -156,12 +159,37 @@ function JackGlyph({ y, plugged, label }: { y: number; plugged: boolean; label: 
   );
 }
 
+/** A patch cord's drop from a face-on plug handle at (cx, cy) down past the
+ *  strip's bottom edge, on `side` (+1 right, −1 left) of the column. */
+export const cordDrop = (cx: number, cy: number, side: 1 | -1) =>
+  `M ${cx + side} ${cy + 2} C ${cx + 4 * side} ${cy + 10}, ${cx + 9 * side} ${cy + 14}, ${cx + 9 * side} ${FACE_H}`;
+
+/** A patch cord's FAR plug, SEATED in the jack of the gear it reaches: the
+ *  plug (handle + TRS shaft, gearArt's CordPlug) with its shaft entering a
+ *  device's panel, drawn in section — never a plug hanging in mid-air
+ *  (R3-PB-03 extra, 2026-10-21). (x, y) is the handle's back end; the panel
+ *  face sits on the shaft's sleeve, the tip hidden inside the device. */
+export const SEATED_PANEL_DX = 17; // panel face, from the handle's back end
+export const SEATED_PANEL_W = 13;
+function SeatedPlug({ x, y }: { x: number; y: number }) {
+  const px = x + SEATED_PANEL_DX;
+  return (
+    <G>
+      <CordPlug x={x} y={y} color={PB.cord} />
+      {/* the device's panel and body, in section: the shaft disappears into it */}
+      <Rect x={px} y={y - 9} width={SEATED_PANEL_W} height={18} rx={1.5} fill="#1d1e22" stroke="#5a5b63" strokeWidth={0.9} />
+      <Rect x={px} y={y - 9} width={2.4} height={18} fill="#3a3b41" />
+      <Rect x={px - 1.6} y={y - 4} width={1.6} height={8} fill="#2a2b31" stroke="#5a5b63" strokeWidth={0.6} />
+    </G>
+  );
+}
+
 /** The physical faceplate SLICE: two horizontal rows (sources over
  *  destinations, like a real bay), the featured VERTICAL PAIR as the column
  *  aligned with the schematic spine below, dim neighbor columns for context
  *  (design pass 2026-09-10 — the old strip drew the pair side-by-side and
  *  fought the lab's own "signal falls downhill" model). */
-function Faceplate({ topPlugged, bottomPlugged, w }: { topPlugged: boolean; bottomPlugged: boolean; w: number }) {
+export function PairFaceplate({ topPlugged, bottomPlugged, w }: { topPlugged: boolean; bottomPlugged: boolean; w: number }) {
   // A SLICE of a real 1U, 48-point bay at true scale (art grading
   // 2026-10-16: the old strip showed five columns between two rack screws, so
   // the jacks read oversized): the panel's 44.45 mm height fills the strip,
@@ -175,7 +203,7 @@ function Faceplate({ topPlugged, bottomPlugged, w }: { topPlugged: boolean; bott
   const ROW_BOT = 2 + 29.5 * MM;
   const RIGHT = 214; // the right break edge
   const cols = [-3, -2, -1, 1, 2, 3, 4].map((k) => CX + k * PITCH).filter((x) => x > 6 && x < RIGHT - 8);
-  const jack = (cx: number, cy: number, featured: boolean, plugged: boolean) => (
+  const jack = (cx: number, cy: number, featured: boolean, plugged: boolean, side: 1 | -1 = 1) => (
     <G key={`${cx}-${cy}`}>
       <Circle cx={cx} cy={cy} r={5.5 * MM} fill="#2a2b31" stroke={plugged ? PB.cord : featured ? '#6a6b73' : '#3a3b41'} strokeWidth={plugged ? 2 : 1.1} />
       <Circle cx={cx} cy={cy} r={3.2 * MM} fill="#08080a" />
@@ -183,8 +211,10 @@ function Faceplate({ topPlugged, bottomPlugged, w }: { topPlugged: boolean; bott
       {plugged ? (
         <G>
           {/* the cord hangs from the plug handle down past the panel's
-              bottom edge (it leaves the picture), just right of the jack below */}
-          <Path d={`M ${cx + 1} ${cy + 2} C ${cx + 4} ${cy + 10}, ${cx + 9} ${cy + 14}, ${cx + 9} ${FACE_H}`} stroke={PB.cord} strokeWidth={2.4} fill="none" strokeLinecap="round" />
+              bottom edge (it leaves the picture): the TOP cord drops just
+              right of the jack below, the BOTTOM cord leaves on the LEFT —
+              each cord its own lane when both are plugged (R3-PB-03) */}
+          <Path d={cordDrop(cx, cy, side)} stroke={PB.cord} strokeWidth={2.4} fill="none" strokeLinecap="round" />
           <Circle cx={cx} cy={cy} r={4.6 * MM} fill="#1d1e22" stroke={PB.cord} strokeWidth={1.4} />
           <Circle cx={cx} cy={cy} r={1.4 * MM} fill="#0c0c0e" stroke="#45464d" strokeWidth={0.6} />
         </G>
@@ -211,7 +241,7 @@ function Faceplate({ topPlugged, bottomPlugged, w }: { topPlugged: boolean; bott
         </G>
       ))}
       {jack(CX, ROW_TOP, true, topPlugged)}
-      {jack(CX, ROW_BOT, true, bottomPlugged)}
+      {jack(CX, ROW_BOT, true, bottomPlugged, -1)}
       <SvgText x={RIGHT + 10} y={FACE_H - 4} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={0.5}>FRONT PANEL (SLICE)</SvgText>
       <SvgText x={RIGHT + 10} y={ROW_TOP + 3} fontSize={9} fill={PB.source} fontFamily={fonts.oswaldMedium} letterSpacing={1}>TOP · SOURCES</SvgText>
       <SvgText x={RIGHT + 10} y={ROW_BOT + 3} fontSize={9} fill={PB.dest} fontFamily={fonts.oswaldMedium} letterSpacing={1}>BTM · DESTINATIONS</SvgText>
@@ -403,7 +433,7 @@ export function PatchPairDrawing({
 
   return (
       <View style={{ width: w, gap: (w * FACE_GAP) / W }}>
-      {!hideFaceplate ? <Faceplate topPlugged={state.topPlugged} bottomPlugged={state.bottomPlugged} w={w} /> : null}
+      {!hideFaceplate ? <PairFaceplate topPlugged={state.topPlugged} bottomPlugged={state.bottomPlugged} w={w} /> : null}
       <View style={{ width: w, height: (w * H) / W }}>
         {/* The Svg is the accessible image node; the tap overlays are its
             SIBLINGS so screen readers reach them (an accessible ancestor would
@@ -452,14 +482,14 @@ export function PatchPairDrawing({
           {state.topPlugged ? (
             <G>
               <FlowPath
-                d={`M ${CX + 11} ${TOP_Y} C ${CX + 60} ${TOP_Y - 4}, ${W - 130} ${TOP_Y - 26}, ${W - 118} ${TOP_Y - 28}`}
+                d={`M ${CX + 11} ${TOP_Y} C ${CX + 60} ${TOP_Y - 4}, ${PLUG_X - 12} ${TOP_Y - 26}, ${PLUG_X} ${TOP_Y - 28}`}
                 flowing={flow.topFeedsPatch && sourceLive}
                 phase={phase}
                 reduceMotion={reduceMotion}
                 color={PB.cord}
               />
-              {/* the cord's far plug, heading off to what it feeds (named beside it) */}
-              <CordPlug x={W - 118} y={TOP_Y - 28} color={PB.cord} />
+              {/* the cord's far plug, seated in what it feeds (named beside it) */}
+              <SeatedPlug x={PLUG_X} y={TOP_Y - 28} />
               <SvgText x={W - 87} y={TOP_Y - 31} fontSize={9} fill={PB.cord} fontFamily={fonts.oswaldMedium}>PATCH CORD →</SvgText>
               <SvgText x={W - 87} y={TOP_Y - 20} fontSize={9} fill={colors.textSecondary} fontFamily={fonts.oswaldMedium}>{trim(topPatchLabel, 18)}</SvgText>
             </G>
@@ -468,12 +498,12 @@ export function PatchPairDrawing({
           {/* BOTTOM patch cord bringing in an alternate signal */}
           {state.bottomPlugged ? (
             <G>
-              {/* the cord's far plug, in the alternate source (named beside it) */}
-              <CordPlug x={W - 118} y={BOT_Y + 14} color={PB.cord} />
+              {/* the cord's far plug, seated in the alternate source (named beside it) */}
+              <SeatedPlug x={PLUG_X} y={BOT_Y + 14} />
               <SvgText x={W - 87} y={BOT_Y + 11} fontSize={9} fill={colors.textSecondary} fontFamily={fonts.oswaldMedium}>{trim(bottomPatchLabel, 18)}</SvgText>
               <SvgText x={W - 87} y={BOT_Y + 22} fontSize={9} fill={PB.cord} fontFamily={fonts.oswaldMedium}>← PATCH CORD</SvgText>
               <FlowPath
-                d={`M ${W - 118} ${BOT_Y + 14} C ${W - 150} ${BOT_Y + 16}, ${CX + 50} ${BOT_Y + 6}, ${CX + 11} ${BOT_Y}`}
+                d={`M ${PLUG_X} ${BOT_Y + 14} C ${PLUG_X - 32} ${BOT_Y + 16}, ${CX + 50} ${BOT_Y + 6}, ${CX + 11} ${BOT_Y}`}
                 flowing={flow.bottomFeedsDestination}
                 phase={phase}
                 reduceMotion={reduceMotion}

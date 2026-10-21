@@ -109,7 +109,10 @@ export function StudioBayDrawing({ pairs, selected, onSelect, showNormals, plugs
                 {/* ¼-inch jacks face-on: the bushing's nut ring, the socket and
                     the sleeve contact inside; a plugged jack shows the patch
                     cord's plug handle end-on with its cord dropping away */}
-                {[{ y: ROW_TOP, on: !!plug.top }, { y: ROW_BOT, on: !!plug.bottom }].map(({ y, on }) => (
+                {/* the TOP cord drops just right of the jack below; the BOTTOM
+                    cord leaves on the LEFT, so with both plugged each cord
+                    keeps its own lane (R3-PB-03) */}
+                {[{ y: ROW_TOP, on: !!plug.top, side: 1 }, { y: ROW_BOT, on: !!plug.bottom, side: -1 }].map(({ y, on, side }) => (
                   <G key={y}>
                     <Circle cx={cx} cy={y} r={JACK_R} fill="#2a2b31" stroke={on ? PB.cord : isSel ? '#6a6b73' : '#3a3b41'} strokeWidth={on ? 2 : 1.3} />
                     <Circle cx={cx - 1.4} cy={y - 1.4} r={JACK_R - 1.6} fill="none" stroke="#ffffff" strokeWidth={0.7} opacity={0.12} />
@@ -118,7 +121,7 @@ export function StudioBayDrawing({ pairs, selected, onSelect, showNormals, plugs
                     {on ? (
                       <>
                         {/* the cord hangs from the handle down off the panel */}
-                        <Path d={`M ${cx + 1} ${y + 3} C ${cx + 5} ${y + 13}, ${cx + 12} ${y + 18}, ${cx + 12} ${PY + PANEL_H + 4}`} stroke={PB.cord} strokeWidth={2.6} fill="none" strokeLinecap="round" />
+                        <Path d={`M ${cx + side} ${y + 3} C ${cx + 5 * side} ${y + 13}, ${cx + 12 * side} ${y + 18}, ${cx + 12 * side} ${PY + PANEL_H + 4}`} stroke={PB.cord} strokeWidth={2.6} fill="none" strokeLinecap="round" />
                         <Circle cx={cx} cy={y} r={4.6 * MM} fill="#1d1e22" stroke={PB.cord} strokeWidth={1.6} />
                         <Circle cx={cx} cy={y} r={1.4 * MM} fill="#0c0c0e" stroke="#45464d" strokeWidth={0.6} />
                       </>

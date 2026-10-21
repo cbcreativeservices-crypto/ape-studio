@@ -99,7 +99,7 @@ export function pairBezel(state: PairState, sourceLabel: string, destLabel: stri
     flow.destinationHears === 'normal'
       ? sourceLive ? 'SOURCE' : 'IDLE'
       : flow.destinationHears === 'both'
-        ? 'BOTH'
+        ? 'CLASH' // two outputs tied into one input — never a healthy "both" (R3-PB-01)
         : flow.destinationHears === 'patch'
           ? 'PATCH'
           : 'NOTHING';
@@ -107,7 +107,7 @@ export function pairBezel(state: PairState, sourceLabel: string, destLabel: stri
     { k: 'TOP', v: state.topPlugged ? 'CORD' : 'EMPTY', tint: state.topPlugged ? PB.cord : colors.textSub },
     { k: 'BOTTOM', v: state.bottomPlugged ? 'CORD' : 'EMPTY', tint: state.bottomPlugged ? PB.cord : colors.textSub },
     { k: 'NORMAL', v: normal, tint: !flow.hasNormal ? colors.textSub : flow.normalActive ? PB.flow : hazard ? PB.hazard : PB.break },
-    { k: 'DEST HEARS', v: dest, tint: dest === 'NOTHING' ? (hazard ? PB.hazard : colors.textSub) : dest === 'PATCH' ? PB.cord : dest === 'IDLE' ? colors.textSub : PB.flow, flex: 1.2 },
+    { k: 'DEST HEARS', v: dest, tint: dest === 'CLASH' ? PB.hazard : dest === 'NOTHING' ? (hazard ? PB.hazard : colors.textSub) : dest === 'PATCH' ? PB.cord : dest === 'IDLE' ? colors.textSub : PB.flow, flex: 1.2 },
   ];
 }
 

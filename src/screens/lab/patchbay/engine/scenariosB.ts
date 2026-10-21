@@ -348,7 +348,7 @@ export const ASSESSMENT_ITEMS: AssessmentItem[] = [
     id: 'a6',
     eyebrow: 'FIND THE BROKEN NORMAL',
     question:
-      'Interface In 1 went silent mid-session. The bay is full-normal. One cord hangs from the TOP of pair 01 to an analyzer someone left connected. The fix?',
+      'On a full-normal bay, Interface In 1 went silent mid-session. One cord hangs from the TOP of its pair to an analyzer someone left connected. The fix?',
     options: [
       'Pull the forgotten top cord',
       'Replace the interface input',

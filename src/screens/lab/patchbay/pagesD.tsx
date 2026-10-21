@@ -103,8 +103,9 @@ function PageConductors({ ctx }: { ctx: PageCtx }) {
         <Body>
           TIP and RING carry the balanced signal pair; SLEEVE is the shield/ground. The plug you have been driving is a
           ¼-inch TRS patch plug, the kind this bay's jacks take. TT (bantam) is a separate, smaller family that packs the
-          same three conductors into a smaller frame; a TT plug does not fit a ¼-inch jack. The switching contacts you watched exist for the SIGNAL conductors — tip and ring — inside
-          real bays; the sleeve is typically bussed straight through, not switched.
+          same three conductors into a smaller frame; a TT plug does not fit a ¼-inch jack. The cutaway drew only the TIP spring. In real bays the RING has its own spring and normal contact
+          too, switched by the same plug; the drawing leaves it out so the tip spring is easy to see. The sleeve is most often
+          wired straight through, not switched.
         </Body>
       </Card>
       <UnderstandingCheck
