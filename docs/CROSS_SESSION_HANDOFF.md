@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 14:21 · ccode · 47f2e80f
+changed: Miking round 3 (owner go): steel cable from its body jack; VOL PEDAL cords on their jacks; steel THRU straight; Wurlitzer AUX OUT -> DI -> desk; guitar-plan DI XLR upstage TO STAGE BOX; drawn DI cord = tested cord
+affects other side: nothing (client lab art only)
+needs: nothing
+
+
 ### 2026-10-21 09:21 · ccode · 1c82c6c3
 changed: DJ screen 20: speaker-cable tag on two lines left of the top, clear of the sub at every size; TO TOP R beside its lead
 affects other side: nothing (client lab art only)
