@@ -63,7 +63,7 @@ export const L03_ENTRIES: L03Entry[] = [
     id: 'combo_xlr_trs',
     chip: 'COMBO XLR/TRS',
     leadIn:
-      'One receptacle, two electrical paths: XLR contacts in the center, a 1/4-inch jack in the surrounding bore — usually feeding different input stages. The host equipment defines what each path expects; the receptacle accepting a plug says nothing about whether that cable suits the job.',
+      'One receptacle, two electrical paths: a 1/4-inch jack in the center, the XLR contacts in the ring around it — usually feeding different input stages. The host equipment defines what each path expects; the receptacle accepting a plug says nothing about whether that cable suits the job.',
   },
 ];
 

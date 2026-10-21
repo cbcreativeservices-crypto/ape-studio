@@ -175,3 +175,10 @@ Every finding is fixed except those marked 👤 or "part". Waiting for the owner
 4. MK-01 XLR destinations: ccode's recommendation — keep as drawn (stage: upstage "TO STAGE BOX"; studio: "TO WALL PANEL").
 5. Patchbay contact at 87 %: **keep**.
 6. The seven layout picks (DJ screen 3 CH legends under the inputs; screen 4 MASTER OUT words 8 mm right; SS wedge tags "AUX1"; Gain XLR socket top-left; transformer wave capped at 2×; Cable Install hidden-line dashes; SS MUTE small box): **approved as drawn** ("approved with your recommendations").
+
+## Comp B batch-1 report (received 2026-10-21) — `docs/wiring/comp_b/COMP_B_WIRING_BATCH1_REPORT_2026_10_20.md`
+Comp B graded the pre-fix zip (all four cable labs B). ccode re-checked each row against today's code:
+- **Already fixed overnight:** B-CB-03 (USB-C roles, CB-R2-05), register CS-01/02/04, CI-01, PB-01/02/05, the cutaway mechanism note (PB-R2-04), coax key (CI-R2-01), PoE (CI-R2-03), TS adapter case (CS-R2-04).
+- **Fixed now (text):** B-CB-01 combo geometry (¼-inch in the centre, XLR contacts around it — 4 places); B-CB-02 "the amplifier's speaker output"; B-CB-04 XLR/RCA channels 'varies' (AES3 / S/PDIF are 2-ch); B-CB-05 shield stops electric-field noise, twist + balanced input reject magnetic hum (lesson 2); B-CS-01 combo "Locks: latch (on some models)"; B-CS-02 "2×TS-to-TRS Y lead"; B-PB-02 row convention hedged; B-PB-03 both bottom plugs broke their normals; B-PB-04 "1U ¼-inch bay holds 24 pairs"; B-CI-03 no speaker cable in the mic/line bundle.
+- **Open (drawings — owner):** B-PB-01 patch plugs drawn as TT on a ¼-inch bay; B-CI-01 wedge feeds from snake returns drawn as speaker cable, no AC to the wedges; B-CI-02 drum sub-snake on one XLR; B-CI-04 analog run ends short of the rack; B-CI-05 spare mic line parked on a return jack.
+- **Rule book notes 1–9:** to add when the owner signs the rule book off (TT vs ¼-inch, never tie two outputs, cable classes in bundles, C7 bi-amp = C, AES3id, wedge case under L3, half-normal break side, combo geometry, D70 cite).

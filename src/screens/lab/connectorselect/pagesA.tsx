@@ -55,7 +55,7 @@ export function BenchCard({ id, open, onToggle }: { id: ConnectorId; open: boole
           {factLine('MAY CARRY', rec.carried.map((c) => CARRIED_LABELS[c]).join(' · '))}
           {factLine('TYPICALLY FROM', rec.typicalSources.slice(0, 3).join(' · '))}
           {factLine('TYPICALLY INTO', rec.typicalDestinations.slice(0, 3).join(' · '))}
-          {factLine('RETENTION', rec.locking.method === 'none' || rec.locking.method === 'friction' ? 'Friction only — no lock' : `Locks: ${rec.locking.method.replace('_', '-')}`)}
+          {factLine('RETENTION', rec.locking.method === 'none' || rec.locking.method === 'friction' ? 'Friction only — no lock' : `Locks: ${rec.locking.method.replace('_', '-')}${rec.locking.someModels ? ' (on some models)' : ''}`)}
           {rec.constructionNote ? factLine('CABLE BEHIND IT', rec.constructionNote) : null}
           <View style={styles.mistakeBox}>
             <Text style={styles.mistakeEyebrow}>MOST COMMON MISTAKE</Text>

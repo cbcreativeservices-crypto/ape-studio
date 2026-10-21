@@ -99,7 +99,7 @@ export const WRONG_PATCH_CASES: WrongPatchCase[] = [
     ],
     correct: 0,
     explain:
-      'Patching runs SOURCE / OUTPUT → DESTINATION / INPUT. Two bottom-row jacks are two inputs: nothing in that cord is producing signal. Signal falls downhill — a patch must start at a top-row source.',
+      'Patching runs SOURCE / OUTPUT → DESTINATION / INPUT. Two bottom-row jacks are two inputs: nothing in that cord is producing signal. Signal falls downhill — a patch must start at a top-row source. And both bottom plugs broke their normals: Interface In 1 and Console Line 1 have lost their normal sources too.',
     wrong: [
       undefined,
       'The cord is fine. Check what KIND of jack each end is plugged into.',

@@ -35,7 +35,8 @@ function PageDirection(_: { ctx: PageCtx }) {
     <View style={{ gap: 12 }}>
       <Lead>
         A patchbay puts every important input and output of the studio on one panel. Before any routing tricks, learn the one
-        convention everything else stands on.
+        convention everything else stands on — on most bays, and on every bay in this lab. Some bays are wired the other way:
+        check the label.
       </Lead>
       <Card>
         <Eyebrow>TOP ROW = SOURCES · OUTPUTS</Eyebrow>

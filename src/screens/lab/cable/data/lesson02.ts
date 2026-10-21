@@ -103,7 +103,7 @@ export const CABLE_TERMS: AnatomyTerm[] = [
   {
     id: 'shield',
     label: 'SHIELD (BRAID / FOIL / DRAIN)',
-    def: 'A conductive layer wrapped around the conductors to intercept outside interference. A braid shield is woven wire; a foil shield is a thin metal film; a drain wire is a bare conductor running against a foil so the foil can be terminated cleanly. Cables may use braid, foil, or both.',
+    def: 'A conductive layer wrapped around the conductors that stops electric-field noise (low-frequency magnetic hum is rejected by the twist and the balanced input, not the shield). A braid shield is woven wire; a foil shield is a thin metal film; a drain wire is a bare conductor running against a foil so the foil can be terminated cleanly. Cables may use braid, foil, or both.',
   },
   {
     id: 'twisted_pair',
@@ -157,7 +157,7 @@ export const CROSS_SECTIONS: CrossSection[] = [
       { name: 'JACKET', role: 'Outer protection — and the printed identity of the cable.' },
       {
         name: 'SHIELD',
-        role: 'Braid, foil, or both, wrapped around everything inside; intercepts interference before it reaches the pair.',
+        role: 'Braid, foil, or both, wrapped around everything inside; stops electric-field noise before it reaches the pair; the twist rejects magnetic hum.',
       },
       { name: 'INSULATION', role: 'A color-coded coat on each of the two conductors.' },
       { name: 'TWISTED PAIR', role: 'Two conductors twisted together — the balanced pair that carries the signal.' },
@@ -264,7 +264,7 @@ export const L02_CHECKS: CheckSpec[] = [
     options: ['The jacket', 'The shield', 'The insulation', 'The strain relief'],
     correctIdx: 1,
     reveal:
-      'The shield — braid, foil, or both — is the conductive layer wrapped around the conductors to intercept interference. The jacket protects mechanically, insulation keeps conductors apart, and strain relief protects the termination.',
+      'The shield — braid, foil, or both — is the conductive layer wrapped around the conductors that stops electric-field noise (the twist and a balanced input reject magnetic hum). The jacket protects mechanically, insulation keeps conductors apart, and strain relief protects the termination.',
     wrongHint: 'Which layer is CONDUCTIVE and wraps around everything that carries signal?',
   },
   {

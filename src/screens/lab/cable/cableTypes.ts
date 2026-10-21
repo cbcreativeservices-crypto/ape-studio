@@ -178,6 +178,8 @@ export type Locking = {
   method: 'none' | 'friction' | 'latch' | 'twist_lock' | 'bayonet' | 'screw' | 'push_pull';
   /** How to CONFIRM it is locked (owner spec: speakON insert-and-twist check). */
   howToConfirm?: string;
+  /** The lock exists on some models only (e.g. combo receptacles): say so. */
+  someModels?: boolean;
 };
 
 /** A "do not confuse with" pairing and its proportionate consequence. */
