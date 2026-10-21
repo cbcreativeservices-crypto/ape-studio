@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 14:23 · ccode · 994225a0
+changed: DJ Systems Lab glossary popup: 'DJ Mixer' (the 2026-10-19 plan), live glossary row ab13a9ab
+affects other side: nothing (reads existing glossary row ab13a9ab; no DB change)
+needs: nothing
+
+
 ### 2026-10-21 14:22 · ccode · d3ddfd43
 changed: Merge dj-lab (Miking round 3) into next-store-build
 affects other side: nothing (client merge)
