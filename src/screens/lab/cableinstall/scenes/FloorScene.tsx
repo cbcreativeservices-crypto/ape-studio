@@ -92,7 +92,7 @@ const CRAFT_DECISIONS: CraftDecision[] = [
     prompt: '② The spare mic-cable length:',
     options: [
       { id: 'loops', label: 'LEAVE LOOSE LOOPS ON DECK', ok: false, short: 'Loose loops migrate into lanes and snag feet, stands and wheels.' },
-      { id: 'dressed', label: 'DRESS THE SLACK AT THE BOX', ok: true, short: 'Working slack lives coiled at the box — reachable, never underfoot.' },
+      { id: 'dressed', label: 'DRESS THE SLACK AT THE BOX', ok: true, short: 'Working slack lives coiled at the box with its end capped — reachable, never underfoot, and never plugged into a return.' },
     ],
   },
   {
@@ -437,8 +437,11 @@ const WEDGE_JACK = (x: number) => ({ x: x + WEDGE_JACK_DX, y: WEDGE_Y + WEDGE_JA
  *  edge — so the mixes visibly travel MON → split → snake → wedges. */
 const RET = { x: EDGE.split - LANE_GAP, topY: TOP_Y.split - LANE_GAP, slX: 333.4 + LANE_GAP, monY: MON.y + 4, snakeY: SNAKE.y + 4.4 } as const;
 const SPLIT_MON_Y = MON.y + 4 + LANE_GAP;
-/** The spare line's dressed coil hangs off the left-most return jack. */
+/** The spare line's dressed coil sits at the box, under the left-most
+ *  return jack but NOT in it (B-CI-05: a return is an output — a spare line
+ *  never parks on one); its free end leaves the coil's foot, capped. */
 const COIL = { cx: JACK_X[0], cy: 168, r: [4.5, 7.5] } as const;
+const COIL_END = { y0: COIL.cy + COIL.r[1], y1: COIL.cy + COIL.r[1] + 3.6 } as const;
 
 /** As found: the three vocal lines leave their input jacks and web
  *  straight across the playing area to the stands — loose, crossing, but
@@ -503,7 +506,7 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       width={w}
       height={h}
       viewBox="0 0 360 205"
-      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 metre deck, audience at the bottom. Drum riser upstage centre with a drum sub-snake that fans out at the snake head into four XLR tails, one per input, keys stage left, guitar amp and player stage right, three singers facing the audience, each with a boom stand just downstage of them and a wedge further downstage aimed back at them, the downstage playing area, a stair at the downstage lip, the snake head downstage right with its trunk to FOH and a split to monitor world in the stage-left wing. The wedges are powered: a downstage quad box at the stage-left edge feeds mains to wedge 3, and each wedge links its mains on to the next along the wedge row, apart from the audio. Numbered badges mark the three hazards. Mic lines ${routeFixed ? 'taped up the stage-right edge and along the riser face, clear of the playing area' : 'webbed straight across the playing area'}; spare mic cable ${slackFixed ? 'coiled at the snake head' : 'in loose loops on deck'}; line-level monitor feeds (XLR) ${monFixed ? 'taped along the downstage lip behind the wedges, with a low-profile cover and glow tape where the stair meets the deck' : 'bare across the deck'}.`}
+      accessibilityLabel={`Stage plot, training visualization: a 10 by 5 metre deck, audience at the bottom. Drum riser upstage centre with a drum sub-snake that fans out at the snake head into four XLR tails, one per input, keys stage left, guitar amp and player stage right, three singers facing the audience, each with a boom stand just downstage of them and a wedge further downstage aimed back at them, the downstage playing area, a stair at the downstage lip, the snake head downstage right with its trunk to FOH and a split to monitor world in the stage-left wing. The wedges are powered: a downstage quad box at the stage-left edge feeds mains to wedge 3, and each wedge links its mains on to the next along the wedge row, apart from the audio. Numbered badges mark the three hazards. Mic lines ${routeFixed ? 'taped up the stage-right edge and along the riser face, clear of the playing area' : 'webbed straight across the playing area'}; spare mic cable ${slackFixed ? 'coiled at the snake head with its end capped' : 'in loose loops on deck'}; line-level monitor feeds (XLR) ${monFixed ? 'taped along the downstage lip behind the wedges, with a low-profile cover and glow tape where the stair meets the deck' : 'bare across the deck'}.`}
     >
       <Rect x={0} y={0} width={360} height={205} rx={10} fill="#0c0c10" />
       <StageDeck x={PLOT.x} y={PLOT.y} w={PLOT.w} h={PLOT.h} grid={PLOT.m} />
@@ -667,11 +670,16 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
 
       {/* ② SLACK — one spare line lying in loose loops on deck (each loop
           is that one cable's own loop) pulls away; the spare length lands
-          coiled at the snake head, its tail on its own return jack */}
+          coiled at the snake head, its free end capped — plugged into
+          nothing (never onto a return, which is an output) */}
       <SwapPath d={SPARE_LOOPS} len={180} tint={mic} width={2} mode="bad" fixed={slackFixed} intro={60} />
       <SwapCircle cx={COIL.cx} cy={COIL.cy} r={COIL.r[0]} tint={mic} width={2} show={slackFixed} />
       <SwapCircle cx={COIL.cx} cy={COIL.cy} r={COIL.r[1]} tint={mic} width={2} show={slackFixed} delay={80} />
-      <SwapPath d={`M${COIL.cx} ${JACK_OUT} V${COIL.cy - COIL.r[1]}`} len={6} tint={mic} width={2} mode="good" fixed={slackFixed} delay={120} />
+      <SwapPath d={`M${COIL.cx} ${COIL_END.y0} V${COIL_END.y1}`} len={4} tint={mic} width={2} mode="good" fixed={slackFixed} delay={120} />
+      <SwapGroup show={slackFixed} delay={200}>
+        {/* the XLR's dust cap on the free end */}
+        <Rect x={COIL.cx - 1.5} y={COIL_END.y1 - 0.4} width={3} height={2.4} rx={0.8} fill="#2a2c31" stroke="#9aa0a8" strokeWidth={0.4} />
+      </SwapGroup>
 
       {/* wedge power: the SL wing feeds a downstage quad box; one AC lead to
           wedge 3, then each wedge's link out to the next, in the wedge row */}
@@ -1608,7 +1616,7 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
           Training visualization — stage plot to scale (faint grid = 1 m), in the lab’s teaching colors (field cable
           colors vary): cyan = mic and line-level lines (the wedge feeds are line-level XLR into powered wedges) · grey = multicores (trunk to FOH, split to
           MON, drum sub-snake — it fans out into one cyan XLR tail per input at the snake head) · red = AC power (quad boxes, and the wedges' mains: a downstage quad box, then wedge to wedge, apart from the audio) · grey strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair ·
-          dashed = the way performers come up the stair. The amp, keys and split lines were already dressed right.
+          dashed = the way performers come up the stair · the spare mic line is coiled at the box with its end capped, not plugged into a return. The amp, keys and split lines were already dressed right.
         </Text>
         <View style={{ gap: 12 }}>
           {CRAFT_DECISIONS.map((d, di) => {

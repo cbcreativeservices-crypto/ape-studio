@@ -72,3 +72,11 @@ test('B-CI-04: the representative analog run carries through the wall to the rac
   assert.ok(endX >= 276, `analog run ends at the rack (x ${endX})`);
   assert.doesNotMatch(INSPECT, /C220 210 224 200 224 190" len/);
 });
+
+test('B-CI-05: the spare line is coiled at the box with its end capped, never on a return jack', () => {
+  assert.doesNotMatch(stagePlan, /M\$\{COIL\.cx\} \$\{JACK_OUT\}/, 'no spare tail into a return (output) jack');
+  assert.match(stagePlan, /M\$\{COIL\.cx\} \$\{COIL_END\.y0\} V\$\{COIL_END\.y1\}/);
+  assert.match(stagePlan, /dust cap on the free end/);
+  assert.match(FLOOR, /coiled at the box with its end capped, not plugged into a return/);
+  assert.doesNotMatch(FLOOR, /hangs off the left-most return jack|its tail on its own return jack/);
+});
