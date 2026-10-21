@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 07:30 · ccode · 75444ca9
+changed: Wiring register: owner answers 2026-10-21 (wedge power individual, 4 drum tails, PHONES feed L−R, round-3 go)
+affects other side: nothing (docs only)
+needs: nothing
+
+
 ### 2026-10-19 10:12 · ccode · a36559dd
 changed: Session handoff 2026-10-19 (DJ lab, custom list, lab intro popups, cloud-session notes)
 affects other side: nothing (docs only)

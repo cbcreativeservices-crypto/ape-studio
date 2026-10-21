@@ -28,7 +28,8 @@ import { Text, View } from 'react-native';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Path, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { LOUDNESS_STOPS, levelColor } from '../../../features/tools/levelColor';
-import { PATH_MAIN, PATH_SIDECHAIN, toDb, type Frame, type Processed } from '../../../features/deesser/deEsserModel';
+import { PATH_MAIN, PATH_SIDECHAIN, PATH_SPLIT, toDb, type Frame, type Processed } from '../../../features/deesser/deEsserModel';
+import { bandLabel, pathLayout, type PathBox, type PathWire } from './pathLayout';
 import { DEESSER_GR_SCALE_DB, grDepthFrac } from '../../../features/lab/sliderMaps';
 
 const F = fonts.barlowMedium;
@@ -50,7 +51,6 @@ export const FRAME_H = 130;
 export const EQVS_H = 264;
 export const DETECTOR_H = 178;
 export const SPECTRUM_H = 140;
-export const PATH_H = 160;
 
 /** A figure's heading, drawn above it on the page (RN text, 10 pt). */
 export function Title({ children }: { children: string }) {
@@ -336,57 +336,54 @@ export function BandSpectrum({
 /** Signal-flow drawing: solid = audio (cyan main path, gold side-chain
  *  copy), dashed = control. One arrowhead shape, always rotated to the line.
  *  Boxes are 30 px tall; an invisible zone extends every box to ~46 px so
- *  the tap target meets 44 pt at phone width. */
-export function PathDiagram({ active, onSelect, mode, width, height }: Box & { active: string | null; onSelect: (id: string) => void; mode: 'broadband' | 'split' }) {
-  const H = PATH_H, BH = 30;
+ *  the tap target meets 44 pt at phone width. Geometry and topology come from
+ *  pathLayout (DE-R2-01): split-band draws the band split, the hiss band
+ *  alone through the gain element, and the sum back to the output. */
+export function PathDiagram({ active, onSelect, mode, freqHz, width, height }: Box & { active: string | null; onSelect: (id: string) => void; mode: 'broadband' | 'split'; freqHz: number }) {
+  const L = pathLayout(mode, freqHz);
+  const H = L.h;
   const cyan = colors.cyanBright, gold = colors.gold;
-  const box = (id: string, x: number, y: number, w: number, label: string, tone: string) => {
-    const on = active === id;
+  const tone = { muted: colors.textMuted, cyan, gold, orange: colors.orange } as const;
+  const box = (b: PathBox) => {
+    const on = active === b.id;
+    const c = b.row === 'main' ? cyan : gold;
+    const n = b.label.length, cy = b.y + b.h / 2;
     return (
-      <G key={id} onPress={() => onSelect(id)}>
-        <Rect x={x - 4} y={y - 8} width={w + 8} height={BH + 16} {...HIT} />
-        <Rect x={x} y={y} width={w} height={BH} rx={7} fill={on ? tone : '#141418'} stroke={tone} strokeWidth={on ? 2 : 1} />
-        <SvgText x={x + w / 2} y={y + 19} fontSize={LBL} fill={on ? '#000' : colors.textPrimary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{label.toUpperCase()}</SvgText>
+      <G key={b.id} onPress={() => onSelect(b.id)}>
+        <Rect x={b.x - 4} y={b.y - 8} width={b.w + 8} height={b.h + 16} {...HIT} />
+        <Rect x={b.x} y={b.y} width={b.w} height={b.h} rx={7} fill={on ? c : '#141418'} stroke={c} strokeWidth={on ? 2 : 1} />
+        {b.label.map((t, i) => (
+          <SvgText key={i} x={b.x + b.w / 2} y={cy + 4 + (i - (n - 1) / 2) * 12} fontSize={LBL} fill={on ? '#000' : colors.textPrimary} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{t.toUpperCase()}</SvgText>
+        ))}
       </G>
     );
   };
   const head = (x: number, y: number, deg: number, c: string) => <Path d={`M ${x} ${y} l -7 -3.5 l 0 7 z`} fill={c} transform={`rotate(${deg} ${x} ${y})`} />;
-  const arrow = (x1: number, y1: number, x2: number, y2: number, c: string) => (
-    <G>
-      <Line x1={x1} y1={y1} x2={x2} y2={y2} stroke={c} strokeWidth={1.5} />
-      {head(x2, y2, (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI, c)}
-    </G>
-  );
-  const main = PATH_MAIN, sc = PATH_SIDECHAIN;
-  const name = (id: string) => [...main, ...sc].find((b) => b.id === id)?.name ?? id;
+  const wire = (w: PathWire, i: number) => {
+    const c = w.kind === 'audio' ? cyan : gold;
+    const [x1, y1] = w.pts[w.pts.length - 2], [x2, y2] = w.pts[w.pts.length - 1];
+    return (
+      <G key={`w${i}`}>
+        <Polyline points={w.pts.map((p) => p.join(',')).join(' ')} fill="none" stroke={c} strokeWidth={1.5} strokeDasharray={w.kind === 'control' ? '3,3' : undefined} />
+        {head(x2, y2, (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI, c)}
+      </G>
+    );
+  };
+  const name = (id: string) => [...PATH_MAIN, ...PATH_SPLIT, ...PATH_SIDECHAIN].find((b) => b.id === id)?.name ?? id;
+  const sc = PATH_SIDECHAIN.map((b) => b.name).join(', then ');
+  const a11y = mode === 'split'
+    ? `Signal-flow diagram, split-band mode. Main path: ${name('in')}, then ${name('split')} into two bands. The rest of the voice goes straight to the ${name('sum')}; the hiss band, ${bandLabel(freqHz)}, goes through the ${name('gain')}, then to the ${name('sum')}, then ${name('out')}. A copy of the input feeds the side chain: ${sc}; the gain computer's control line sets the gain element on the hiss band only. Use the Next Block button to read each block.`
+    : `Signal-flow diagram, broadband mode. Main path: ${PATH_MAIN.map((b) => b.name).join(', then ')}; the gain element carries the whole voice. A copy of the input feeds the side chain: ${sc}; the gain computer's control line sets the gain element. Use the Next Block button to read each block.`;
   return (
-    <View accessible accessibilityRole="image" accessibilityLabel={`Signal-flow diagram. Main path: ${main.map((b) => b.name).join(', then ')}. A copy of the input feeds the side chain: ${sc.map((b) => b.name).join(', then ')}; the gain computer's control line sets the gain element. Use the Next Block button to read each block.`}>
+    <View accessible accessibilityRole="image" accessibilityLabel={a11y}>
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill={PANEL} stroke={colors.hairline} />
-        <SvgText x={12} y={15} fontSize={LBL} fill={colors.textMuted} fontFamily={F}>MAIN PATH · the voice</SvgText>
-        {/* main path — solid cyan */}
-        {box('in', 12, 24, 48, name('in'), cyan)}
-        {arrow(60, 39, 100, 39, cyan)}
-        <Circle cx={76} cy={39} r={2.6} fill={cyan} />
-        {box('gain', 100, 24, 110, mode === 'split' ? 'gain · hiss band' : 'gain · whole voice', cyan)}
-        {arrow(210, 39, 266, 39, cyan)}
-        {box('out', 266, 24, 60, name('out'), cyan)}
-        {/* side-chain tap from the junction: a COPY of the voice, so solid (audio) */}
-        {arrow(76, 42, 76, 104, gold)}
-        <SvgText x={82} y={68} fontSize={LBL} fill={gold} fontFamily={F}>copy of the voice</SvgText>
-        {/* control line back into the gain element: dashed (control, not audio) */}
-        <Polyline points="296,104 296,80 168,80 168,58" fill="none" stroke={gold} strokeWidth={1.5} strokeDasharray="3,3" />
-        {head(168, 54, -90, gold)}
-        <SvgText x={232} y={75} fontSize={LBL} fill={gold} textAnchor="middle" fontFamily={F}>control · turn down N dB</SvgText>
-        {/* side chain — solid gold */}
-        {box('bpf', 44, 104, 64, 'band-pass', gold)}
-        {arrow(108, 119, 122, 119, gold)}
-        {box('det', 122, 104, 56, 'detector', gold)}
-        {arrow(178, 119, 192, 119, gold)}
-        {box('thr', 192, 104, 60, 'threshold', gold)}
-        {arrow(252, 119, 266, 119, gold)}
-        {box('gc', 266, 104, 60, 'gain comp.', gold)}
-        <SvgText x={12} y={151} fontSize={LBL} fill={colors.textMuted} fontFamily={F}>SIDE CHAIN · what it listens to</SvgText>
+        {L.wires.map(wire)}
+        <Circle cx={L.junction[0]} cy={L.junction[1]} r={2.6} fill={cyan} />
+        {L.boxes.map(box)}
+        {L.texts.map((t, i) => (
+          <SvgText key={`t${i}`} x={t.x} y={t.y} fontSize={LBL} fill={tone[t.tone]} textAnchor={t.anchor} fontFamily={F}>{t.text}</SvgText>
+        ))}
       </Svg>
     </View>
   );
