@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 14:22 · ccode · d3ddfd43
+changed: Merge dj-lab (Miking round 3) into next-store-build
+affects other side: nothing (client merge)
+needs: nothing
+
+
 ### 2026-10-21 14:21 · ccode · 47f2e80f
 changed: Miking round 3 (owner go): steel cable from its body jack; VOL PEDAL cords on their jacks; steel THRU straight; Wurlitzer AUX OUT -> DI -> desk; guitar-plan DI XLR upstage TO STAGE BOX; drawn DI cord = tested cord
 affects other side: nothing (client lab art only)
