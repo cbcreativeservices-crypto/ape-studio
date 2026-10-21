@@ -602,7 +602,7 @@ export const STAGE5_TECHNICAL: StageDef = {
           fieldId: "signal_path",
           label: "Signal paths",
           kind: "table",
-          help: "One row per hop: what leaves where, at what level, and arrives where. Every destination that must receive audio, such as the recorder, the stream encoder or the monitors, should appear as an arrival.",
+          help: "One row per hop: what leaves where, at what level, and arrives where. Every destination that must receive audio, such as the recorder, the stream encoder or the monitors, should appear as an arrival. A guitar into its own pedals or amp is instrument level by design; only a straight run into a mic, console or stage-box input needs a DI.",
           required: false,
           columns: [
             {
@@ -1079,10 +1079,10 @@ export const STAGE5_TECHNICAL: StageDef = {
       severity: "attention",
       kind: "mismatch",
       title: "A level or format conflict in the signal path",
-      detail: "An instrument plugged straight into a microphone input, a speaker-level output wired into a console or recorder input, or an unbalanced jack on a long run to the stage box each work badly in a way that is blamed on something else. The DI that was missing is the usual cause.",
+      detail: "An instrument plugged straight into a mic, console or stage-box input (not its own pedals or amp, which are made for it), a speaker-level output wired into a console or recorder input, or an unbalanced jack on a long run to the stage box each work badly in a way that is blamed on something else. The DI that was missing is the usual cause.",
       fixHint: "Put a DI between instrument-level sources and the console, send speaker-level outputs only to loudspeakers (or through a DI or load box made for speaker level), match line outputs to line inputs, and check each row's leaving level against what the destination expects.",
       needsLogic: true,
-      logicIntent: "Fire when a signal_path row has sp_level instrument and neither sp_via nor sp_to mentions a DI, direct box or instrument input. Also fire when a signal_path row has sp_level speaker and sp_to names an input-side device (console, mixer, input, interface, preamp, recorder, stage box) with no DI or load box in sp_via or sp_to. Also fire when an input_list row has in_capture line or playback with in_connection ts, since that is an unbalanced source on what is usually a long run. Match words loosely; nudge only.",
+      logicIntent: "Fire when a signal_path row has sp_level instrument, sp_to names a mic, console or stage-box input (mic, console, mixer, desk, stage box, snake, channel, preamp, XLR), and neither sp_via nor sp_to mentions a DI, direct box or instrument input. Never fire when sp_to is an amp, pedal or effects unit, since those are made for instrument level. Also fire when a signal_path row has sp_level speaker and sp_to names an input-side device (console, mixer, input, interface, preamp, recorder, stage box) with no DI or load box in sp_via or sp_to. Also fire when an input_list row has in_capture line or playback with in_connection ts, since that is an unbalanced source on what is usually a long run. Match words loosely; nudge only.",
       learnMore: {
         route: "ConnectorSelectLab"
       }
@@ -1126,7 +1126,7 @@ export const STAGE5_TECHNICAL: StageDef = {
       severity: "attention",
       kind: "unrealistic",
       title: "More cue mixes promised than outputs to deliver them on",
-      detail: "Each independent cue mix needs its own output from the console. When there are more promises than outputs, somebody shares a mix they were told was theirs, and they find out at soundcheck.",
+      detail: "Each independent cue mix needs its own output from the console, and a stereo in-ear mix takes two outputs (or one stereo aux). When there are more promises than outputs, somebody shares a mix they were told was theirs, and they find out at soundcheck.",
       fixHint: "Reduce the number of independent mixes with the performers' agreement, mark rows as shared, or add outputs.",
       needsLogic: true,
       logicIntent: "Count cue_mixes rows whose cm_type is not shared or none, and fire when the count exceeds schedule.monitor_mixes_available. Do not fire when either is empty.",

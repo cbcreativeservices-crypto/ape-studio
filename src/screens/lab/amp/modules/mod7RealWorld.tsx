@@ -42,16 +42,21 @@ const misc = (id: string) => MISCONCEPTIONS.find((m) => m.id === id)!;
 /* ── gain structure chain ───────────────────────────────────────────────── */
 
 function GainChain({ levels, firstClip, starved, width, height }: { levels: Record<GainStage, number>; firstClip: GainStage | null; starved: GainStage | null; width: number; height: number }) {
-  const stages: { key: GainStage | 'out' | 'spk'; label: string }[] = [
-    { key: 'source', label: 'SOURCE' }, { key: 'mixer', label: 'MIXER / DSP' }, { key: 'amp', label: 'AMP INPUT' }, { key: 'out', label: 'OUTPUT STAGE' }, { key: 'spk', label: 'SPEAKER' },
+  // R3-AM-02 (wiring round 3): `levels.amp` is the OUTPUT against the rails
+  // (ampModel evaluateGainStructure), so its meter and its CLIPPING flag sit
+  // under the output stage. AMP INPUT is the input attenuator: it sets how
+  // hard the output is driven, it is never the stage that clips here.
+  const stages: { key: GainStage | 'out' | 'spk'; lines: string[] }[] = [
+    { key: 'source', lines: ['SOURCE'] }, { key: 'mixer', lines: ['MIXER / DSP'] }, { key: 'amp', lines: ['AMP INPUT'] }, { key: 'out', lines: ['AMP OUTPUT', '(rails)'] }, { key: 'spk', lines: ['SPEAKER'] },
   ];
+  const clipKey = firstClip === 'amp' ? 'out' : firstClip;
   const bw = 66, gap = 6, x0 = 3, y = 6, bh = 32;
   return (
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${CHAIN_W} ${CHAIN_H}`}>
       {stages.map((s, i) => {
         const x = x0 + i * (bw + gap);
-        const lvl = s.key === 'source' || s.key === 'mixer' || s.key === 'amp' ? levels[s.key] : null;
-        const clip = s.key === firstClip || (s.key === 'out' && firstClip === 'amp');
+        const lvl = s.key === 'source' || s.key === 'mixer' ? levels[s.key] : s.key === 'out' ? levels.amp : null;
+        const clip = s.key === clipKey;
         const starve = s.key === starved;
         const stroke = clip ? AMP_COLORS.fault : starve ? colors.gold : s.key === 'spk' ? AMP_COLORS.output : colors.steelBorder;
         return (
@@ -65,7 +70,7 @@ function GainChain({ levels, firstClip, starved, width, height }: { levels: Reco
             ) : (
               <>
                 <Rect x={x} y={y} width={bw} height={bh} rx={5} fill={clip ? '#241012' : '#151518'} stroke={stroke} strokeWidth={clip ? 1.6 : 1} />
-                <BoxLabel x={x + bw / 2} y={y + bh / 2 + 4} lines={[s.label]} fill={clip ? colors.red : colors.textSecondary} />
+                <BoxLabel x={x + bw / 2} y={y + bh / 2 + 4} lines={s.lines} fill={clip ? colors.red : colors.textSecondary} />
               </>
             )}
             {i < 4 ? <Line x1={x + bw + 1} y1={y + bh / 2} x2={x + bw + gap - 1} y2={y + bh / 2} stroke={clip ? AMP_COLORS.fault : AMP_COLORS.input} strokeWidth={1.5} /> : null}
@@ -143,14 +148,14 @@ export function Mod7RealWorld() {
   const gainRead = (
     <Text style={[styles.verdict, { color: gs.firstClip ? colors.red : gs.starved ? colors.gold : colors.green }]}>
       {gs.firstClip
-        ? `FIRST STAGE CLIPPING: ${gs.firstClip.toUpperCase()}`
+        ? `FIRST STAGE CLIPPING: ${gs.firstClip === 'amp' ? 'AMP OUTPUT (RAILS)' : gs.firstClip.toUpperCase()}`
         : gs.starved
           ? `${gs.starved.toUpperCase()} RUNNING STARVED — NOISE FLOOR RISES`
           : 'HEALTHY GAIN STRUCTURE'}
     </Text>
   );
   const pct = (v: number) => `${Math.round(v * 100)}%`;
-  const verdictShort = gs.firstClip ? `CLIP:${gs.firstClip === 'source' ? 'SRC' : gs.firstClip === 'mixer' ? 'MIX' : 'AMP'}` : gs.starved ? 'STARVED' : 'HEALTHY';
+  const verdictShort = gs.firstClip ? `CLIP:${gs.firstClip === 'source' ? 'SRC' : gs.firstClip === 'mixer' ? 'MIX' : 'OUT'}` : gs.starved ? 'STARVED' : 'HEALTHY';
 
   return (
     <AmpModuleSteps

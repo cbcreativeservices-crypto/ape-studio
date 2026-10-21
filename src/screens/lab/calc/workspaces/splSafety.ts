@@ -122,6 +122,38 @@ export function oshaNoLimit(L: number): string | null {
 export const OSHA_ACTION_ONLY_TEXT =
   'Between 80 and 90 dBA this time counts toward the hearing-conservation ACTION-LEVEL dose only. The permissible-exposure-limit (PEL) dose counts sound at 90 dBA or more, so this level alone never reaches the PEL.';
 
+/**
+ * A HOT MIC NEEDS A PAD, NOT NEGATIVE GAIN (R3-CA-02, wiring round 3; D53).
+ * A 40 mV/Pa mic at 130 dB SPL is already above a +4 dBu target, and the
+ * calculator printed a bare negative preamp gain. Most preamps cannot set
+ * less than 0 dB of gain, so the answer is a pad — said in words.
+ */
+export function micNeedsPad(micDbu: number, target: number, headroom: number, spl: number): string | null {
+  const required = target - micDbu;
+  if (!(required < 0)) return null;
+  return (
+    `At ${fmt(spl)} dB SPL this mic already puts out about ${fmt(micDbu)} dBu, which is ${fmt(-required)} dB above your ` +
+    `${fmt(target)} dBu target. That would take less than 0 dB of gain, and most preamps cannot go below 0 dB. ` +
+    `Switch in a pad on the mic or the preamp of about ${fmt(headroom - required)} dB (that also keeps your ${fmt(headroom)} dB of headroom), ` +
+    'or move the mic back from the source.'
+  );
+}
+/** The target is reachable with gain, but leaving the headroom is not: a pad again. */
+export function headroomNeedsPad(required: number, headroom: number): string | null {
+  const rec = required - headroom;
+  if (!(required >= 0 && rec < 0)) return null;
+  return (
+    `Leaving ${fmt(headroom)} dB of headroom would need the gain set ${fmt(-rec)} dB below 0 dB, and most preamps cannot go that low. ` +
+    `Set the preamp to its lowest gain and add a pad of about ${fmt(-rec)} dB, or accept less headroom.`
+  );
+}
+
+/** The limiter threshold trusts the amp's gain spec, which holds at one
+ *  input-attenuator setting (R3-CA-03, wiring round 3). */
+export const AMP_ATTENUATOR_NOTE =
+  'This assumes the amp’s input knobs (attenuators) sit where its gain spec was measured, which on most amps is fully up. ' +
+  'If they are turned down, the amp has less gain than the spec says, so measure the real gain again and redo the threshold.';
+
 /** Leq when every paired duration is 0 min — an average over no time. */
 const LEQ_NO_TIME =
   'The durations add up to 0 minutes, so there is no time to average the levels over and no Leq to give. Enter how long each level lasted — at least one interval longer than 0 minutes.';
@@ -892,9 +924,15 @@ const WS_MIC_GAIN: Workspace = {
         const p = paFromSpl(n(v.spl));
         const micDbu = 20 * Math.log10(((n(v.sens) / 1000) * p) / V_REF_DBU);
         const required = n(v.target) - micDbu;
+        // Below 0 dB of gain there is no preamp setting: a pad, in words (R3-CA-02).
+        const pad = micNeedsPad(micDbu, n(v.target), n(v.headroom), n(v.spl));
+        if (pad) return [{ label: 'NEEDS A PAD, NOT GAIN', text: pad, refusal: true }];
+        const padForHeadroom = headroomNeedsPad(required, n(v.headroom));
         return [
           { label: 'GAIN TO HIT TARGET (dB)', value: required, quantity: 'db' },
-          { label: `RECOMMENDED GAIN LEAVING ${fmt(n(v.headroom))} dB HEADROOM`, value: required - n(v.headroom), quantity: 'db' },
+          padForHeadroom
+            ? { label: `RECOMMENDED GAIN LEAVING ${fmt(n(v.headroom))} dB HEADROOM`, text: padForHeadroom }
+            : { label: `RECOMMENDED GAIN LEAVING ${fmt(n(v.headroom))} dB HEADROOM`, value: required - n(v.headroom), quantity: 'db' },
           {
             label: 'EXPECTED LEVELS',
             text: `Mic output ≈ ${fmt(micDbu)} dBu. At the recommended gain the average lands at ${fmt(n(v.target) - n(v.headroom))} dBu; peaks ${fmt(n(v.headroom))} dB above the entered SPL just reach the ${fmt(n(v.target))} dBu target.`,
@@ -905,10 +943,13 @@ const WS_MIC_GAIN: Workspace = {
         const p = paFromSpl(n(v.spl));
         const micDbu = 20 * Math.log10(((n(v.sens) / 1000) * p) / V_REF_DBU);
         const required = n(v.target) - micDbu;
+        const pad = micNeedsPad(micDbu, n(v.target), n(v.headroom), n(v.spl));
+        if (pad) return [pad];
+        const padForHeadroom = headroomNeedsPad(required, n(v.headroom));
         return [
           `Mic output at ${fmt(n(v.spl))} dB SPL: ${fmt(n(v.sens))} mV/Pa → ${fmt(micDbu)} dBu (see the voltage function for the working).`,
           `Gain = target − mic level = ${fmt(n(v.target))} − (${fmt(micDbu)}) = ${fmt(required)} dB.`,
-          `Leaving ${fmt(n(v.headroom))} dB for peaks: set ≈ ${fmt(required - n(v.headroom))} dB.`,
+          padForHeadroom ?? `Leaving ${fmt(n(v.headroom))} dB for peaks: set ≈ ${fmt(required - n(v.headroom))} dB.`,
         ];
       },
     },
@@ -1042,6 +1083,9 @@ const WS_LIMITER: Workspace = {
               `${fmt(n(v.ampGain))} dB of gain — keeps continuous voltage ${fmt(n(v.margin))} dB below the rating. ` +
               'Tune attack/release by driver type, and handle excursion separately.',
           },
+          // R3-CA-03 (wiring round 3): the amp's gain spec holds only at one
+          // input-attenuator setting; anywhere else the threshold is off.
+          { label: 'AMP INPUT KNOBS', text: AMP_ATTENUATOR_NOTE },
         ];
       },
       steps: (v) => {
@@ -1052,6 +1096,7 @@ const WS_LIMITER: Workspace = {
           `Max speaker voltage: √(${fmt(n(v.pwr))} × ${fmt(n(v.z))}) = ${fmt(volts)} V = ${fmt(spkDbu)} dBu.`,
           `Remove the amp’s gain to move to the processor output: ${fmt(spkDbu)} − ${fmt(n(v.ampGain))} = ${fmt(spkDbu - n(v.ampGain))} dBu.`,
           `Subtract the ${fmt(n(v.margin))} dB safety margin: threshold = ${fmt(thr)} dBu (${fmt(V_REF_DBU * Math.pow(10, thr / 20))} V).`,
+          AMP_ATTENUATOR_NOTE,
         ];
       },
     },

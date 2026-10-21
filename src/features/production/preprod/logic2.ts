@@ -165,10 +165,16 @@ registerRuleLogic({
   },
 
   'technical-level-format-conflict': (ctx) => {
+    // An instrument-level source wired straight into a mic, console or
+    // stage-box input (R3-PR-01, wiring round 3). A guitar into its pedals,
+    // effects or amp is instrument level by design and is never flagged; a
+    // DI or an instrument (hi-Z) input anywhere on the hop clears it.
     const instrumentWithoutDi = rows(ctx.get('technical', 'signal_path')).some((r) => {
       if (cell(r, 'sp_level') !== 'instrument') return false;
-      const chain = `${cell(r, 'sp_via')} ${cell(r, 'sp_to')}`;
-      return !mentions(chain, /\bdi\b|direct box|direct input|instrument input|hi-?z/);
+      const to = cell(r, 'sp_to');
+      if (mentions(`${cell(r, 'sp_via')} ${to}`, /\bdi\b|direct box|direct input|instrument input|hi-?z/)) return false;
+      if (mentions(to, /\bamps?\b|amplifier|\bcombo\b|pedal|effects?\b|\bfx\b|stomp|tuner/)) return false;
+      return mentions(to, /\bmic\b|microphone|console|mixer|desk|stage ?box|snake|channel|pre-?amp|xlr/);
     });
     if (instrumentWithoutDi) return true;
     // A speaker-level output wired into an input (PR-R2-03, wiring round 2):

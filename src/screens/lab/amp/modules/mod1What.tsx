@@ -20,12 +20,15 @@ import { rigStatusBezel, type RigPicture } from '../AmpRig';
 import { faderParam } from '../AmpRack';
 import { AmpModuleSteps } from '../steps';
 import { SpeakerCabinet } from '../ampSymbols';
+import { DBU_REF_V } from '../../calc/calcUnits';
 import {
   AMP_COLORS, Body, BoxLabel, Card, ControlSlider, DIAGRAM_FONT, FaultBanner, FigureDock, FormulaCard, HonestyBadge, LearnMore, SectionTitle, SegRow,
 } from '../kit';
 
 const GAIN = 1.5;
 const RAIL = 1.0;
+/** Pro nominal line level (dBu) for the applied comparison. */
+const LINE_NOMINAL_DBU = 4;
 
 /** Drawing units (legibility pass 2026-09-25: every label ≥ DIAGRAM_FONT,
  *  the SVG drawn at the width ExpandableFigure hands it, height = w / aspect). */
@@ -95,8 +98,10 @@ export function Mod1What() {
   const crossed = level > limitLevel;
 
   // Applied comparison: line out vs power amp into an 8 Ω resistive teaching load.
-  const lineVrms = sineVrms(1.0)!; // ~0.7 V line level peak 1 V
-  const linePower = resistivePower(lineVrms, 8)!; // ≈ 0.06 W
+  // R3-AM-01 (wiring round 3): pro nominal line level is +4 dBu, computed
+  // from the one shared dBu reference (≈ 1.23 V rms), never a hard-coded volt.
+  const lineVrms = Math.pow(10, LINE_NOMINAL_DBU / 20) * DBU_REF_V;
+  const linePower = resistivePower(lineVrms, 8)!; // ≈ 0.19 W into 8 Ω
   const ampVrms = sineVrms(20)!; // 20 V peak from the amplifier
   const ampPower = resistivePower(ampVrms, 8)!; // 25 W
 
@@ -217,7 +222,8 @@ export function Mod1What() {
                   <>
                     <Text style={styles.compareBig}>≈ {linePower.toFixed(2)} W</Text>
                     <Body>
-                      A line output swings about 1 V peak and is built to feed high-impedance inputs with almost no current.
+                      A pro line output sits at a nominal +{LINE_NOMINAL_DBU} dBu, about {lineVrms.toFixed(2)} V rms (its peaks can swing
+                      much higher), and it is built to feed high-impedance inputs with almost no current.
                       Into an 8 Ω speaker, P = Vrms²/R = {lineVrms.toFixed(2)}² ÷ 8 ≈ {linePower.toFixed(3)} W — and in practice the
                       output stage cannot even source that current cleanly. The cone barely moves.
                     </Body>
