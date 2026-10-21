@@ -18,7 +18,7 @@ import type { Wedge } from '../../../engine/model/types.ts';
 import { cabLayout } from './speakerModel.ts';
 import { bassHead } from './ampModel.ts';
 import { chairRowFacingStage, frontRowAt } from '../../../../../../features/lab/audienceChairsModel.ts';
-import { chairFoots, foot, kitPieceFoots, rectAround, rectOfCircle, wedgeFoot, type PlanFoot } from '../planFoot.ts';
+import { chairFoots, foot, kitPieceFoots, rectAround, rectOfCircle, wedgeFoot, type PlanCable, type PlanFoot } from '../planFoot.ts';
 import { cueFootprints, type CueRig } from '../monitoring/cueMix.ts';
 
 export type Backline = 'guitar' | 'bass' | 'steel';
@@ -30,9 +30,12 @@ export const DECK_EDGE_U = 2850;
  *  FRONT_ROW_GAP_MM clear of the deck's lip (owner 2026-10-15: an audience
  *  only where one fits — never chairs pressed against the stage). */
 export const BACKLINE_POS = {
-  guitar: { player: { u: 950, v: 560 }, pedals: { u: 1380, v: 560 }, di: { u: 560, v: 1050 } },
-  bass: { player: { u: 1050, v: 620 }, pedals: { u: 1480, v: 620 }, di: { u: 620, v: 1150 } },
-  steel: { player: { u: 950, v: 720 }, pedals: { u: 1300, v: 720 }, di: { u: 600, v: 1250 } },
+  // R2-MK-04 (2026-10-21): each DI moved to where its cables run clear — the
+  // guitar's and bass's beside the pedalboard's input end, the steel's
+  // between its keep-clear zone and the amp side (backlineCables).
+  guitar: { player: { u: 950, v: 560 }, pedals: { u: 1380, v: 560 }, di: { u: 1400, v: 1090 } },
+  bass: { player: { u: 1050, v: 620 }, pedals: { u: 1480, v: 620 }, di: { u: 1500, v: 1170 } },
+  steel: { player: { u: 950, v: 720 }, pedals: { u: 1300, v: 720 }, di: { u: 1200, v: -60 } },
   drums: { u: -350, v: -1550 },
   otherAmp: { u: -60, v: 1750 },
   audience: frontRowAt(DECK_EDGE_U),
@@ -108,7 +111,8 @@ export function backlineFoots(who: Backline, scene: BacklineScene, wedges: reado
     out.push(foot('pedals', 'pedalboard', { u0: P.pedals.u - 165, u1: P.pedals.u + 165, v0: P.pedals.v - 250, v1: P.pedals.v + 250 }, { group: g }));
   }
   out.push(foot('keepClear', 'keepClear', keepRect(who), { group: g, zone: true }));
-  out.push(foot('dibox', 'dibox', { u0: P.di.u - 70, u1: P.di.u + 70, v0: P.di.v - 42, v1: P.di.v + 42 }));
+  // The DI box stands turned a quarter (DI_TURN): 84 across u, 140 along v.
+  out.push(foot('dibox', 'dibox', { u0: P.di.u - 42, u1: P.di.u + 42, v0: P.di.v - 70, v1: P.di.v + 70 }));
   if (scene === 'stage') {
     out.push(...kitPieceFoots(KIT_AT));
     for (const w of wedges) if (w.glyph !== 'none') out.push(wedgeFoot(w));
@@ -120,6 +124,75 @@ export function backlineFoots(who: Backline, scene: BacklineScene, wedges: reado
   void rectAround;
   void rectOfCircle;
   return out;
+}
+
+/* ── R2-MK-04 (2026-10-21): THE CABLES, so the plan shows the lesson's point —
+ * a DI BEFORE the amp (its own electrical source), not the amp's direct out.
+ * GUITAR / BASS (the chain the lesson's signal path draws, DiPath): the
+ *   instrument (its tail jack) → the DI's INPUT; the DI's THRU → the
+ *   pedalboard's input (its +v end); the pedalboard's output (its −v end) →
+ *   upstage of the instrument's head → the amp's INPUT on its front panel
+ *   (the bass head's, on top of the cabinet); the DI's XLR → TO STAGE BOX
+ *   (upstage, off the plan) / TO WALL PANEL (studio, the far wall).
+ * STEEL ("a DI or splitter before the amp"): the steel's own run (pickup →
+ *   volume pedal, inside its keep-clear zone — the player's own, not drawn)
+ *   leaves the zone → the DI's INPUT; the THRU → the amp's INPUT; the XLR
+ *   upstage → TO STAGE BOX / the near wall's panel.
+ * Each cable its own lane: none crosses another, none runs through an object
+ * or the keep-clear zone (a cable that starts or ends at the pedalboard or the
+ * steel's run names the zone as its own end), none crosses the studio's
+ * headphone cords. The DI box is drawn turned a quarter: its two jacks on one
+ * end, its XLR (male) on the other. */
+export const DI_TURN: Record<Backline, number> = { guitar: Math.PI / 2, bass: Math.PI / 2, steel: -Math.PI / 2 };
+/** The DI's jacks (in, thru) and its XLR, on the plan (mm): the drawn box is
+ *  110 × 84 with the jacks 13 proud at one end, the XLR 15 at the other. */
+export function diJacks(who: Backline): { input: { u: number; v: number }; thru: { u: number; v: number }; xlr: { u: number; v: number } } {
+  const d = BACKLINE_POS[who].di;
+  // guitar / bass: the jacks toward −v (the pedalboard), the XLR toward +v;
+  // the steel: the jacks toward +v (its zone), the XLR toward −v.
+  return who === 'steel'
+    ? { input: { u: d.u + 18, v: d.v + 68 }, thru: { u: d.u - 18, v: d.v + 68 }, xlr: { u: d.u, v: d.v - 70 } }
+    : { input: { u: d.u - 18, v: d.v - 68 }, thru: { u: d.u + 18, v: d.v - 68 }, xlr: { u: d.u, v: d.v + 70 } };
+}
+/** The off-plan destination of the DI's XLR. */
+export const BACKLINE_XLR_TO: Record<BacklineScene, string> = { stage: 'TO STAGE BOX', studio: 'TO WALL PANEL' };
+/** The amp's INPUT on its front panel (the bass: the head's), at the panel's −v end. */
+export function ampInput(who: Backline): { u: number; v: number } {
+  if (who === 'bass') return { u: bassHead().x1, v: -300 };
+  if (who === 'steel') return { u: cabLayout('combo12').box.x1, v: 90 };
+  return { u: cabLayout('combo12').box.x1, v: -300 };
+}
+export function backlineCables(who: Backline, scene: BacklineScene): PlanCable[] {
+  const P = BACKLINE_POS[who];
+  const J = diJacks(who);
+  const A = ampInput(who);
+  const K = keepRect(who);
+  if (who === 'steel') {
+    const xlr =
+      scene === 'stage'
+        ? [J.xlr, { u: J.xlr.u, v: -500 }, { u: BACKLINE_BOX.stage.u0, v: -500 }]
+        : [J.xlr, { u: J.xlr.u, v: BACKLINE_ROOM.v0 }];
+    return [
+      { id: 'steelOut', kind: 'instrumentCable', pts: [{ u: J.input.u, v: K.v0 }, J.input], from: 'keepClear', to: 'dibox' },
+      { id: 'diThru', kind: 'instrumentCable', pts: [J.thru, { u: J.thru.u, v: A.v }, A], from: 'dibox', to: 'amp' },
+      { id: 'diXlr', kind: 'xlr', pts: xlr, from: 'dibox' },
+    ];
+  }
+  const bass = who === 'bass';
+  // the instrument's tail jack (PlanInstrumentEdge: the body's +v end, its face at u + 140)
+  const tail = { u: P.player.u + 140, v: P.player.v + (bass ? 350 : 327) };
+  const cordV = tail.v + 70;
+  const xlrV = J.xlr.v + (bass ? 60 : 90);
+  const xlr =
+    scene === 'stage'
+      ? [J.xlr, { u: J.xlr.u, v: xlrV }, { u: BACKLINE_BOX.stage.u0, v: xlrV }]
+      : [J.xlr, { u: J.xlr.u, v: xlrV }, { u: BACKLINE_ROOM.u1, v: xlrV }];
+  return [
+    { id: 'instrumentCord', kind: 'instrumentCable', pts: [tail, { u: tail.u, v: cordV }, { u: J.input.u, v: cordV }, J.input], from: 'instrument', to: 'dibox' },
+    { id: 'diThru', kind: 'instrumentCable', pts: [J.thru, { u: J.thru.u, v: K.v1 - 10 }], from: 'dibox', to: 'keepClear' },
+    { id: 'pedalsOut', kind: 'instrumentCable', pts: [{ u: P.pedals.u, v: K.v0 + 10 }, { u: P.pedals.u, v: A.v }, A], from: 'keepClear', to: 'amp' },
+    { id: 'diXlr', kind: 'xlr', pts: xlr, from: 'dibox' },
+  ];
 }
 
 /** Item ids on the plan and where each sits (taps and highlights). */

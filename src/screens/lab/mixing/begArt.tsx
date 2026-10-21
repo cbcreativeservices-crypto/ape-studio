@@ -1074,8 +1074,11 @@ export function DoubleRouteArt() {
   const sendY = ch.y + 5 + 6.5;
   return (
     <ArtFrame h={196} a11y="The lead channel reaches the mix bus twice: its main output, which the fader controls, and a forgotten utility send at full level straight into the same mix, which the fader does not control.">
-      <Wire pts={[{ x: ch.x + ch.w, y: sendY }, { x: 200, y: sendY }, { x: 200, y: 96 }, { x: mix.x + mix.w / 2 + 8, y: 96 }, { x: mix.x + mix.w / 2 + 8, y: mix.y }]} color={ART.red} width={1.8} />
-      <T x={130} y={sendY - 6} color={ART.red} ls={0.4}>
+      {/* R2-MX-01 (2026-10-21): the old send runs ABOVE the main lane into the
+          TOP of the MIX strip (its arrow showing), never crossing the main out;
+          its words start right of the LEAD strip. */}
+      <Wire pts={[{ x: ch.x + ch.w, y: sendY }, { x: mix.x + mix.w / 2 + 8, y: sendY }, { x: mix.x + mix.w / 2 + 8, y: mix.y }]} color={ART.red} width={1.8} />
+      <T x={ch.x + ch.w + 6} y={sendY - 6} anchor="start" color={ART.red} ls={0.4}>
         OLD SEND · FULL LEVEL · 2ND PATH
       </T>
       <Wire pts={[{ x: ch.x + ch.w / 2, y: ch.y + ch.h }, { x: ch.x + ch.w / 2, y: 184 }, { x: 240, y: 184 }, { x: 240, y: 52 }, { x: mix.x + mix.w / 2 - 8, y: 52 }, { x: mix.x + mix.w / 2 - 8, y: mix.y }]} color={ART.wire} width={1.6} />

@@ -231,7 +231,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A mic splitter feeds the PA and a recorder. What do you check?',
     options: ['Phantom power and grounding, with the makers', 'Nothing: a split is just two cables wired together', 'Only that the recorder’s inputs are not clipping'],
     correct: 'Phantom power and grounding, with the makers',
-    explain: 'Confirm phantom-power and grounding practice with the splitter and console makers; never improvise a split with unsafe parallel wiring.',
+    explain: 'Confirm phantom-power and grounding practice with the splitter and console makers; never improvise a split with unsafe parallel wiring. Usually only one side (the direct side) sends phantom; the isolated outputs do not pass it.',
     why: {
       'Nothing: a split is just two cables wired together': 'An improvised parallel split can be unsafe and noisy.',
       'Only that the recorder’s inputs are not clipping': 'Levels matter, but power and grounding come first.',

@@ -199,6 +199,24 @@ export function diCable(sc: GuitarScene, di: XZ): PlanCable {
   return { id: 'diCable', kind: 'instrumentCable', pts: [exit, { u: di.x, v: di.z - SIZES.di.hv }], from: 'space', to: 'di' };
 }
 
+/* R2-MK-03 (2026-10-21): the DI's XLR OUT is drawn too — not only its input
+ * cord — reusing the speaker plan's pattern (speakers/stagePlanModel diXlr):
+ * from the DI's far end (+v, the end away from its input) a short drop, then
+ * in its own lane to the plan's edge: TO STAGE BOX (stage, off the stage's
+ * side) / TO WALL PANEL (studio, the room's tie lines to the control room on
+ * the left wall). The jacks: the DI's balanced out → a mic input. */
+export const DI_XLR_JACKS: { di: 'diOut'; to: 'micIn' } = { di: 'diOut', to: 'micIn' };
+/** The off-plan destination's words (the MK-01 ruling's own words). */
+export const DI_XLR_TO: Record<GuitarPlanScene, string> = { stage: 'TO STAGE BOX', studio: 'TO WALL PANEL' };
+/** How far the XLR drops from the DI's end before it turns into its lane (mm). */
+export const DI_XLR_DROP = 160;
+export function diXlr(di: XZ, scene: GuitarPlanScene): PlanCable {
+  const out = { u: di.x, v: di.z + SIZES.di.hv };
+  const v = out.v + DI_XLR_DROP;
+  const endU = scene === 'stage' ? GUITAR_WIDE.u0 : GUITAR_ROOM.u0;
+  return { id: 'diXlr', kind: 'xlr', pts: [out, { u: di.x, v }, { u: endU, v }], from: 'di' };
+}
+
 /** Every object's footprint on the plan (mm). */
 export function guitarPlanFoots(sc: GuitarScene, parts: readonly { solid?: unknown; variants?: readonly string[] }[], objects: readonly PlanObject[], scene: GuitarPlanScene, wedges: readonly Wedge[]): PlanFoot[] {
   const F = planFrame(sc);
@@ -222,8 +240,8 @@ export function guitarPlanFoots(sc: GuitarScene, parts: readonly { solid?: unkno
   return out;
 }
 
-/** The plan's cables (the DI run outside the player's space). */
+/** The plan's cables: the DI's input run outside the player's space, and its XLR out (R2-MK-03). */
 export function guitarPlanCables(sc: GuitarScene, objects: readonly PlanObject[], scene: GuitarPlanScene): PlanCable[] {
   const di = objects.find((o) => o.kind === 'di' && shownIn(o, scene));
-  return di ? [diCable(sc, di.at)] : [];
+  return di ? [diCable(sc, di.at), diXlr(di.at, scene)] : [];
 }

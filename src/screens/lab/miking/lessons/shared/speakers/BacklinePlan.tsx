@@ -27,7 +27,7 @@ import type { Wedge } from '../../../engine/model/types.ts';
 import { cabLayout } from './speakerModel.ts';
 import { bassHead } from './ampModel.ts';
 import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../../features/lab/audienceChairs';
-import { BACKLINE_BOX, BACKLINE_POS, KIT_AT, OTHER_AMP, PA_AT, DECK_EDGE_U, backlineCue, inFrontRow, backlineFoots, backlineItems, keepRect, type Backline, type BacklineScene } from './backlinePlanModel.ts';
+import { BACKLINE_BOX, BACKLINE_POS, BACKLINE_XLR_TO, DI_TURN, KIT_AT, OTHER_AMP, PA_AT, DECK_EDGE_U, backlineCables, backlineCue, inFrontRow, backlineFoots, backlineItems, keepRect, type Backline, type BacklineScene } from './backlinePlanModel.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, planTurn, unionRect } from '../planFoot.ts';
@@ -46,6 +46,9 @@ const GREY = '#8a8f9c';
 const INK = '#08080a';
 const TOLEX = ['#3a3b41', '#1d1e22', '#0f1012'];
 const CHROME = ['#f2f4f8', '#9aa0ab', '#3a3d45'];
+/** The cables' look (the speaker plan's, StagePlan INSTR / XLR). */
+const INSTR = { color: '#2a2c32', w: 16, edge: '#5a5f69' } as const;
+const XLR = { color: '#666b75', w: 22, stripe: '#c3c7cf' } as const;
 function rr(u0: number, v0: number, u1: number, v1: number, r: number): SkPath {
   const p = make();
   p.addRRect(Skia.RRectXY(Skia.XYWHRect(Math.min(u0, u1), Math.min(v0, v1), Math.abs(u1 - u0), Math.abs(v1 - v0)), r, r));
@@ -401,6 +404,22 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
     return fs.length ? unionRect(fs) : null;
   };
   const cue = scene === 'studio' ? backlineCue(who) : null;
+  // R2-MK-04: the cables — instrument → DI → (pedals) → amp, the DI's XLR out.
+  const cables = useMemo(() => backlineCables(who, scene), [who, scene]);
+  const cablePaths = useMemo(
+    () =>
+      cables.map((k) => {
+        const p = make();
+        k.pts.forEach((q, i) => (i ? p.lineTo(q.u, q.v) : p.moveTo(q.u, q.v)));
+        return { k, p };
+      }),
+    [cables],
+  );
+  const xlrEnd = (() => {
+    const k = cables.find((q) => q.kind === 'xlr')!;
+    return k.pts[k.pts.length - 1];
+  })();
+  const xlrPlaces = T.places({ u0: xlrEnd.u - 12, u1: xlrEnd.u + 12, v0: xlrEnd.v - 12, v1: xlrEnd.v + 12 }, xf.s / ts);
   const labels: StaticLabel[] = [
     ...items
       .filter((i) => i.id !== 'room' || scene === 'studio')
@@ -413,6 +432,7 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
         return { id: i.id, text: shortOf(i.id), u: first.u, v: first.v, align: first.align, alts: i.id === 'audience' ? [] : places.slice(1), point: { u: i.u, v: i.v }, tone: i.id === 'amp' ? ('amber' as const) : i.id === 'pedals' ? ('muted' as const) : undefined };
       }),
     ...(cue ? cueLabels(cue).map((l) => ({ ...l, tone: 'illustrative' as const })) : []),
+    { id: 'diXlrTo', text: BACKLINE_XLR_TO[scene], u: xlrPlaces[0].u, v: xlrPlaces[0].v, align: xlrPlaces[0].align, alts: xlrPlaces.slice(1), point: xlrEnd, tone: 'illustrative' as const },
   ];
   const tap = (x: number, y: number) => {
     const { u, v } = T.unPt({ u: (x - xf.ox) / xf.s, v: (y - xf.oy) / xf.s });
@@ -448,6 +468,22 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
             <Path path={g.keep} style="stroke" strokeWidth={22} color={GREY} opacity={0.6}>
               <DashPathEffect intervals={[70, 50]} />
             </Path>
+            {/* The cables on the floor (under every object): instrument cables, the XLR. */}
+            {cablePaths.map(({ k, p }) =>
+              k.kind === 'xlr' ? (
+                <Group key={k.id}>
+                  <Path path={p} style="stroke" color={XLR.color} strokeWidth={XLR.w} strokeCap="butt" strokeJoin="round" />
+                  <Path path={p} style="stroke" color={XLR.stripe} strokeWidth={5} strokeCap="butt">
+                    <DashPathEffect intervals={[40, 40]} />
+                  </Path>
+                </Group>
+              ) : (
+                <Group key={k.id}>
+                  <Path path={p} style="stroke" strokeWidth={INSTR.w + 6} strokeCap="round" strokeJoin="round" color={INSTR.edge} />
+                  <Path path={p} style="stroke" strokeWidth={INSTR.w} strokeCap="round" strokeJoin="round" color={INSTR.color} />
+                </Group>
+              ),
+            )}
             {/* The drum kit (stage only): the shared five-piece kit, true size. */}
             {scene === 'stage' ? (
               <Group transform={[{ translateX: KIT_AT.u }, { translateY: KIT_AT.v }]}>
@@ -461,8 +497,8 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
             {/* THE amp (the miked one) and a bass head on top. */}
             <PlanAmpTop u0={c.box.x0} u1={c.box.x1} v0={c.box.z0} v1={c.box.z1} handle={who !== 'bass'} />
             {g.hd ? <PlanHeadTop u0={g.hd.x0} u1={g.hd.x1} v0={g.hd.z0} v1={g.hd.z1} /> : null}
-            {/* The DI box. */}
-            <Group transform={[{ translateX: P.di.u }, { translateY: P.di.v }]}>
+            {/* The DI box, turned a quarter: its jacks toward the instrument, its XLR toward the stage box. */}
+            <Group transform={[{ translateX: P.di.u }, { translateY: P.di.v }, { rotate: DI_TURN[who] }]}>
               <PlanDiBox />
             </Group>
             {/* Pedalboard (guitar / bass). */}
@@ -501,7 +537,7 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={34} color={AMBER} opacity={0.9} /> : null}
           </Group>
         </Canvas>
-        <StaticLabels labels={T.labels(labels)} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(T.foots(foots), T.cables(cue ? cueCables(cue) : []))} />
+        <StaticLabels labels={T.labels(labels)} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(T.foots(foots), T.cables([...cables, ...(cue ? cueCables(cue) : [])]))} />
       </View>
     </Pressable>
   );

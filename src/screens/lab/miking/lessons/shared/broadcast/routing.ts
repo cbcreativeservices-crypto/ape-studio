@@ -51,7 +51,7 @@ export const DESTINATIONS: Readonly<Record<DestId, { label: string; short: strin
   recorder: { label: 'the recorder', short: 'RECORDER', kind: 'feed', words: 'Each mic on its own track, plus the mix: for the edit and a backup.' },
   ifb: { label: 'an earpiece (IFB)', short: 'EARPIECE', kind: 'people', words: 'A talker’s earpiece: the program, with the producer’s cues when they talk.' },
   talkback: { label: 'talkback', short: 'TALKBACK', kind: 'people', words: 'The producer speaking to the talent and the crew — kept off the air.' },
-  pressBox: { label: 'the press feed box', short: 'PRESS FEED', kind: 'feed', words: 'A box that takes one line-level mix and gives each reporter an isolated mic-level output: a copy of the mix, not another mic.' },
+  pressBox: { label: 'the press feed box', short: 'PRESS FEED', kind: 'feed', words: 'A box that takes one line-level mix and gives each reporter an isolated output, usually mic level (many switch to line): a copy of the mix, not another mic.' },
   remoteReturn: { label: 'the remote guest’s return', short: 'RETURN', kind: 'people', words: 'What a remote guest hears: the program MINUS their own voice (mix-minus), or they hear themselves late.' },
 };
 

@@ -599,6 +599,7 @@ export const POWER_CASES: PowerCase[] = [
     lines: [
       'No powering required by the ribbon motor itself.',
       '(Active ribbon designs with built-in electronics exist — those DO need power.)',
+      'Leave phantom off while patching; check the mic’s manual (some ribbons can be harmed; active ribbons need it).',
     ],
   },
   {
