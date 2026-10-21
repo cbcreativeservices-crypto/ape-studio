@@ -45,7 +45,8 @@ describe('MA-R2-01 — a digital controller feeding a converter is not called wr
   it('the note names this lab’s analog controller and the digital-domain case', () => {
     const r = checkMonitorPath(['daw', 'monitorCtl', 'dac', 'active']);
     assert.equal(r.ok, false);
-    assert.ok(r.notes.some((n) => /analog monitor controller/.test(n) && /feeds a converter after it/.test(n)));
+    // R3-MA-01 (2026-10-21): "analog monitor controller" became "the controller is the analog kind".
+    assert.ok(r.notes.some((n) => /controller is the analog kind/.test(n) && /feeds a converter after it/.test(n)));
     assert.ok(!r.notes.some((n) => /is the wrong order/.test(n)));
   });
 });

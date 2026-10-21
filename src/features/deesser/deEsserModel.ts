@@ -201,7 +201,7 @@ export const PATH_SPLIT: Block[] = [
 ];
 
 export const PATH_SIDECHAIN: Block[] = [
-  { id: 'bpf', name: 'Band-pass filter', what: 'A copy of the input, filtered so only the hiss region remains. The de-esser listens here, not to the whole voice.' },
+  { id: 'bpf', name: 'Band-pass filter', what: 'A copy of the input, filtered so only the hiss region remains. The de-esser listens here, not to the whole voice. This lab’s de-esser listens through a band-pass; many offer a high-pass or a switch between the two.' },
   { id: 'det', name: 'Level detector', what: 'Measures how loud the filtered copy is, moment to moment.' },
   { id: 'thr', name: 'Threshold compare', what: 'Is the hiss level above the threshold? If not, do nothing.' },
   // NEW COPY (review 2026-09-02): names the ratio, which the model has but the copy never mentioned.

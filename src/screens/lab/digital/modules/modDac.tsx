@@ -579,7 +579,7 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
             correctIdx: 1,
             reveal:
               'Analog gain and the anti-aliasing filter must come BEFORE the ADC (nothing above Nyquist may reach the sampler), and the reconstruction filter comes right AFTER the DAC — before amplification.',
-            wrongHint: 'Two anchors: anti-aliasing is always immediately before the ADC; reconstruction is always immediately after the DAC.',
+            wrongHint: 'In the classic model drawn here, two anchors: anti-aliasing comes right before the ADC; reconstruction comes right after the DAC.',
           }}
         />
         <CheckQuestion

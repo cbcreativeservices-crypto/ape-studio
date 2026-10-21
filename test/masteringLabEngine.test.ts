@@ -137,7 +137,9 @@ describe('the monitoring path', () => {
   it('an EXTERNAL converter after the controller fails; the wording names the analog / digital controller cases', () => {
     const r = checkMonitorPath(['daw', 'monitorCtl', 'dac', 'active']);
     assert.equal(r.ok, false);
-    assert.ok(r.notes.some((n) => /analog monitor controller/.test(n) && /digital controller converts inside itself/.test(n)));
+    // R3-MA-01 (2026-10-21): reworded so it fits the graded converter-inside
+    // case and the USB-from-DAW drawing — "analog kind" + "converter built in".
+    assert.ok(r.notes.some((n) => /controller is the analog kind/.test(n) && /converter built in/.test(n)));
   });
   it('rejects the wrong pairings and the wrong order', () => {
     assert.equal(checkMonitorPath(['daw', 'dac', 'monitorCtl', 'amp', 'active']).ok, false, 'active monitors + external amp');

@@ -21,5 +21,5 @@ export const DIGITAL_MODULES: { id: DigitalModuleId; title: string; blurb: strin
   { id: 'adc', title: 'Analog-to-Digital Conversion', blurb: 'The full ADC pathway, block by block — plus the gain-staging exercise.' },
   { id: 'processing', title: 'Digital Processing & Formats', blurb: 'Integer vs floating point, and what "above 0 dBFS" really means inside a DAW.' },
   { id: 'dac', title: 'D-to-A Reconstruction', blurb: 'How numbers become a CONTINUOUS waveform — the staircase myth, corrected. Inter-sample peaks.' },
-  { id: 'errors', title: 'Errors & Limits', blurb: 'Myth vs reality, jitter, and clocking — the misconception-busting heart of the lab.' },
+  { id: 'errors', title: 'Errors & Limits', blurb: 'Myth vs reality, and jitter (timing errors in the sample clock) — the misconception-busting heart of the lab.' },
 ];

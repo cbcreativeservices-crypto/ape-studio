@@ -588,7 +588,7 @@ export function checkMonitorPath(chain: readonly PathDevice[]): { ok: boolean; g
   if (has('passive') && !has('amp')) notes.push('Passive monitors need a power amplifier before them.');
   if (has('active') && has('amp')) notes.push('Active monitors already contain their amplifiers — an external power amp in front of them is wrong (and risks damage).');
   if (has('dac') && idx('dac') < idx('daw')) notes.push('Conversion comes after playback, not before.');
-  if (has('monitorCtl') && has('dac') && idx('monitorCtl') < idx('dac')) notes.push('This lab’s controller is an analog monitor controller: it sits after the converter and sets the analog level to the speakers, so the converter goes first. (A digital controller converts inside itself, or works in the digital domain and feeds a converter after it — a different design from the one in this lab.)');
+  if (has('monitorCtl') && has('dac') && idx('monitorCtl') < idx('dac')) notes.push('When a separate converter is in the chain, the controller is the analog kind: it sits after the converter and sets the analog level to the speakers, so the converter goes first. (A controller with a converter built in takes USB straight from the DAW and needs no separate converter. A digital controller that feeds a converter after it is a different design from the one in this lab.)');
   if (has('amp') && has('monitorCtl') && idx('amp') < idx('monitorCtl')) notes.push('Level control belongs before the power amplifier.');
   // MA-01 (wiring 2026-10-20): a power amplifier amplifies an ANALOG signal,
   // so the D/A converter must come before it (and before analog active

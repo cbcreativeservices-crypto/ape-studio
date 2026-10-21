@@ -241,14 +241,14 @@ function PagePath({ ctx }: { ctx: PageCtx }) {
       />
       {reader}
       <Body>{split
-        ? 'The side chain’s band-pass filter is the smart part: it is NOT in the signal path. It only shapes what the detector hears, so the decision is made on the hiss alone. The band split in the main path is a different job: it decides which part of the voice the gain element may turn down. With no reduction, the two bands add back up to the voice as it came in.'
-        : 'The band-pass filter is the smart part: it is NOT in the signal path. It only shapes what the detector hears, so the decision is made on the hiss alone while the whole voice passes through untouched until the gain moves.'}</Body>
+        ? 'The side chain’s band-pass filter is the smart part: it is NOT in the signal path. It only shapes what the detector hears, so the decision is made on the hiss alone. The band split in the main path is a different job: it decides which part of the voice the gain element may turn down. With no reduction, the two bands add back up to the voice as it came in. This lab’s de-esser listens through a band-pass; many de-essers offer a high-pass instead, or a switch between the two.'
+        : 'The band-pass filter is the smart part: it is NOT in the signal path. It only shapes what the detector hears, so the decision is made on the hiss alone while the whole voice passes through untouched until the gain moves. This lab’s de-esser listens through a band-pass; many de-essers offer a high-pass instead, or a switch between the two.'}</Body>
       {/* NEW COPY: check rewritten with length-balanced options. */}
       <Check
-        question="Where does a de-esser's band-pass filter sit?"
-        options={['In the signal path, cutting the highs from the whole voice', 'In the side chain, shaping only what the detector listens to', 'After the gain element, cleaning up whatever is left over', 'Nowhere — a de-esser uses a high shelf, not a band-pass']}
+        question="In this lab's de-esser, where does the band-pass filter sit?"
+        options={['In the signal path, cutting the highs from the whole voice', 'In the side chain, shaping only what the detector listens to', 'After the gain element, cleaning up whatever is left over', 'Nowhere — the detector hears the whole voice, unfiltered']}
         correct={1}
-        explain="The filter is in the side chain: it decides, it does not process. The voice passes through the gain element untouched until the gain moves."
+        explain="The filter is in the side chain: it decides, it does not shape the voice. Without it, the detector would react to loud vowels as well as to hiss."
         onCorrect={() => touch(ctx)}
       />
     </View>
@@ -566,7 +566,7 @@ function PageConnections({ ctx }: { ctx: PageCtx }) {
       {/* NEW COPY: capstone retrieval — the one-sentence definition the whole lab builds. */}
       <Check
         question="Which description of a de-esser is right?"
-        options={['An EQ that cuts around 6 kHz whenever the voice gets loud', 'A compressor whose detector listens through a band-pass filter', 'A gate that opens only while an S sound is present', 'A limiter set to the level of the loudest S in the take']}
+        options={['An EQ that cuts around 6 kHz whenever the voice gets loud', 'A compressor whose detector listens through a hiss filter', 'A gate that opens only while an S sound is present', 'A limiter set to the level of the loudest S in the take']}
         correct={1}
         explain="It is a compressor's detector, threshold and gain computer with one addition: the detector listens to a filtered copy of the voice, so only hiss can trigger it."
         onCorrect={() => ctx.markDone()}

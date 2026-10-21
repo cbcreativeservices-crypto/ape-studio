@@ -200,7 +200,7 @@ const SPECTRUM_BLURBS: Record<SpectrumKey, string> = {
   cymbal: 'Nearly all the energy ABOVE 2 kHz: a jagged wash of high partials with an empty low end.',
   kick: 'A tall low bump near 60 Hz plus a small beater click around 3 kHz — weight below, definition above.',
   guitar: 'A comb of evenly spaced spikes: the harmonics of one played note, each a multiple of the fundamental.',
-  hum: 'Thin spikes at 60 Hz and its multiples — the electrical signature. If you see this, chase grounding and cables, not EQ.',
+  hum: 'Thin spikes at the mains frequency (60 Hz in North America, 50 Hz in most other countries) and its multiples — the electrical signature. If you see this, chase grounding and cables, not EQ.',
   feedback: 'One violently tall, narrow spike: a single frequency running away. Find it here, then pull that frequency down.',
   pinknoise: 'Equal energy per octave. This lab’s analyzer is FFT-style (equal-width bands), so pink noise reads as a straight downward slope; a 1/3-octave RTA shows it flat. The calibration reference.',
 };
@@ -214,7 +214,7 @@ const SPECTRUM_CAPTIONS: Record<SpectrumKey, string> = {
     'Kick drum: an LF MOUND around 50–80 Hz plus a small CLICK bump near 3 kHz (the beater). Two energy centers with a valley between — thump and attack are different frequencies.',
   guitar:
     'Guitar: a HARMONIC COMB — evenly spaced spikes at multiples of the ~196 Hz fundamental, each lower than the last. Spiky but ORDERLY = a pitched instrument.',
-  hum: 'Mains hum: NEEDLE spikes at exact multiples of the mains frequency (60, 120, 180, 240 Hz…). A steady FAMILY of thin spikes locked to the power grid — never just one.',
+  hum: 'Mains hum: NEEDLE spikes at exact multiples of the mains frequency (60, 120, 180, 240 Hz… here; 50, 100, 150 Hz… in most other countries). A steady FAMILY of thin spikes locked to the power grid — never just one.',
   feedback:
     'Feedback: ONE towering narrow spike (here near 1.7–1.8 kHz) and nothing else notable. A single spike that GROWS over time is the PA about to scream — act before it does.',
   pinknoise:
@@ -238,14 +238,14 @@ const CHECK_SPECTRUM_ID: CheckSpec = {
   ],
   correctIdx: 0,
   reveal:
-    'ONE towering narrow spike that grows over time is the feedback signature. Hum would be a FAMILY of spikes locked to 60/120/180 Hz; a kick click is broad and rhythm-locked; pink noise is a smooth ramp. Notch 1.7 kHz or change the mic/speaker geometry NOW.',
+    'ONE towering narrow spike that grows over time is the feedback signature. Hum would be a FAMILY of spikes locked to the mains frequency and its multiples (60/120/180 Hz here); a kick click is broad and rhythm-locked; pink noise is a smooth ramp. Notch 1.7 kHz or change the mic/speaker geometry NOW.',
   wrongHint: 'Count the spikes and watch the clock: how many are there, and is it growing?',
 };
 
 const CHECK_HUM_VS_FEEDBACK: CheckSpec = {
   question: 'Mains hum and feedback both draw thin spikes. Which pair of tells separates them?',
   options: [
-    'Hum = SEVERAL spikes at exact mains multiples (60, 120, 180 Hz…), steady; feedback = ONE spike anywhere in the band, growing',
+    'Hum = SEVERAL spikes at exact mains multiples (e.g. 60, 120, 180 Hz), steady; feedback = ONE spike anywhere in the band, growing',
     'Hum = one spike high in the band; feedback = many spikes down low',
     'Hum grows over time; feedback holds perfectly steady',
     'They look identical — only listening can separate them',
