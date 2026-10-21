@@ -636,8 +636,8 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ### 2026-10-21 08:43 · ccode · 1ddd7152
 changed: Signal Chain caption: shorter, one line with no cap (P14 ratchet: never ends in an ellipsis)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (client lab text/art only)
+needs: nothing
 
 
 ### 2026-10-21 08:28 · ccode · a88d7939

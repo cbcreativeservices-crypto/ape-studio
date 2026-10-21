@@ -38,6 +38,7 @@ import { LabChip } from '../../LabShell';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { requireVizDac } from '../skiaGate';
+import { CLOCKING_CARD, CLOCKING_CHECK } from './clockingCard';
 import { colors, fonts } from '../../../../theme/tokens';
 
 /** ⓘ help affordance for panels without a slider (sliders carry their own). */
@@ -536,6 +537,22 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
           weighed against that.
         </Text>
 
+        {/* ── Clocking — one master, the rest follow (owner go 2026-10-21) ── */}
+        <PanelCard>
+          <PanelHead title={CLOCKING_CARD.title} helpLabel="clocking" onHelp={() => help(CLOCKING_CARD.helpKey)} />
+          <Text style={dstyles.body}>{CLOCKING_CARD.intro}</Text>
+          {CLOCKING_CARD.ways.map((w) => (
+            <View key={w.label} style={local.clockWay}>
+              <Text style={dstyles.readout}>{w.label}</Text>
+              <Text style={dstyles.body}>{w.text}</Text>
+            </View>
+          ))}
+          <View style={local.clockWay}>
+            <Text style={dstyles.readout}>{CLOCKING_CARD.wrongLabel}</Text>
+            <Text style={dstyles.body}>{CLOCKING_CARD.wrong}</Text>
+          </View>
+        </PanelCard>
+
         {/* ── The charter panel ────────────────────────────────────────────── */}
         <PanelCard>
           <PanelHead title="MODULE 8 · MYTH vs REALITY" helpLabel="myths" onHelp={() => help('myths')} />
@@ -624,6 +641,7 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
             wrongHint: 'Recall the data-rate math above — every doubling of fs doubles the storage for the same minutes.',
           }}
         />
+        <CheckQuestion spec={CLOCKING_CHECK} />
         <LessonRow onPress={() => help()} />
       </View>
     </RackUnit>
@@ -643,6 +661,7 @@ const local = StyleSheet.create({
     marginTop: 4,
   },
   lessonRowText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
+  clockWay: { gap: 2 },
   riskRow: { borderRadius: 8, borderWidth: 1, paddingVertical: 8, paddingHorizontal: 10 },
   riskOn: { borderColor: 'rgba(255,75,58,.55)', backgroundColor: '#170f0e' },
   riskOff: { borderColor: 'rgba(55,224,95,.45)', backgroundColor: '#0e130f' },
