@@ -223,8 +223,13 @@ export const JACK_NAMES: Record<JackId, string> = {
  * socket is empty) and its far end is in THIS booth monitor's input — so the
  * cable holds both jacks (`jacksHeld`). The monitor then plays the headphone
  * feed: it follows the PHONES knob and the CUE buttons / cue mix, not the
- * BOOTH knob, and the stereo headphone signal goes into its one (mono) input
- * (the render sums it, `speakerFeed` → 'PHONES').
+ * BOOTH knob. DJ-R4-PHONES (owner 2026-10-21, "model it realistically"):
+ * the BOOTH lead is a balanced TRS lead into the monitor's balanced input, and
+ * a stereo headphone jack puts LEFT on the tip (hot) and RIGHT on the ring
+ * (cold) — so the monitor plays hot − cold = L − R: the centre (kick, bass,
+ * vocal) cancels and only the sides are left, thin and hollow; a mono source
+ * goes near silent (`speakerFeed` → 'PHONES'; the render's
+ * `phonesIntoBalancedInput`).
  */
 export const PHONES_MONITOR: Partial<Record<PlugId, JackId>> = { 'bth.trsL': 'boothL.in', 'bth.trsR': 'boothR.in' };
 
@@ -463,7 +468,7 @@ export function channelRoute(b: Booth, ch: ChannelId): ChannelRoute {
 
 export type SpeakerId = 'paL' | 'paR' | 'boothL' | 'boothR';
 /** 'PHONES': a BOOTH cable's mixer end moved to the PHONES jack (DJ-R3-PHONES)
- *  — the monitor hears the headphone feed, summed to its one input. */
+ *  — the monitor hears the headphone feed as L − R (DJ-R4-PHONES). */
 export type MixerOut = { out: 'MASTER' | 'BOOTH' | 'PHONES'; side: 'L' | 'R' } | null;
 
 /** Which mixer output feeds a speaker's input (and the speaker is live). */
@@ -504,7 +509,7 @@ export function plugCorrect(b: Booth, p: PlugId): boolean {
 export function wrongJob(p: PlugId, jack: JackId | null): string | null {
   if (!jack) return null;
   if (PHONES_MONITOR[p] && jack === 'mix.phones') {
-    return 'It plays — but the monitor now follows your HEADPHONE cue, not the booth mix: press CUE on the next track and the monitor plays it too. Its level is the PHONES knob, not BOOTH, and the headphones’ stereo signal goes into the monitor’s one (mono) input. Booth monitors belong on BOOTH OUT.';
+    return 'It fits, and it plays — but thin and hollow. The headphone jack is stereo: left on the tip, right on the ring. The monitor’s balanced input subtracts one from the other, so it plays left minus right. Anything in the middle (kick, bass, vocal) cancels out. Only the sides are left, and a mono track goes almost silent. It also follows your headphone cue and the PHONES knob, not BOOTH. Booth monitors belong on BOOTH OUT.';
   }
   if (p === 'phones' && jack.endsWith('.in')) {
     return 'It fits — but headphones are a listening device, not a source: nothing plays. The headphones belong in the mixer’s PHONES jack.';

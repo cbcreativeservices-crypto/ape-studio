@@ -16,7 +16,7 @@
 import { memo, useMemo } from 'react';
 import { BlurMask, Circle, Group, Line, LinearGradient, Path, RadialGradient, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { MIXER_REAR, MIXER_REAR_JACKS, PLAYER_REAR, PLAYER_REAR_JACKS } from '../geometry/boothGeometry';
-import { TT_REAR, TT_REAR_JACKS } from '../geometry/dressGeometry';
+import { INPUT_WORDS_ABOVE_DY, TT_REAR, TT_REAR_JACKS } from '../geometry/dressGeometry';
 import { INK } from './ink';
 import { IecInlet, RcaSocket, Rj45, Rocker, SlideSwitch, TrsSocket, UsbB, XlrSocket } from './parts';
 import { DinSocket } from './eventParts';
@@ -209,14 +209,21 @@ export type MixerRearExtras = { clock: 'OFF' | 1 | 2 };
  *  ADDITIVE (DJ-R2-09): `channelsBelow` prints CH 2 and CH 1 under their
  *  inputs instead of over them — for Screen 3, whose RCA leads all come DOWN
  *  into the inputs. Omitted = the panel exactly as before. */
+/** ADDITIVE (DJ-R4-LINE): `inputWordsAbove` prints PHONO / LINE over each
+ *  column's L socket (inside the CH bracket) instead of under its R socket —
+ *  for Screen 4, whose RCA leads come UP into the R sockets from below. */
 export const MIXER_CH_UNDER_Y = 81;
-export const MixerRear = memo(function MixerRear({ x, y, on, extras, masterWordsDx = 0, channelsBelow = false }: { x: number; y: number; on: boolean; extras?: MixerRearExtras; masterWordsDx?: number; channelsBelow?: boolean }) {
+export const MixerRear = memo(function MixerRear({ x, y, on, extras, masterWordsDx = 0, channelsBelow = false, inputWordsAbove = false }: { x: number; y: number; on: boolean; extras?: MixerRearExtras; masterWordsDx?: number; channelsBelow?: boolean; inputWordsAbove?: boolean }) {
   const J = MIXER_REAR_JACKS;
   const col = (k: 'ch2.phono' | 'ch2.line' | 'ch1.phono' | 'ch1.line') => (
     <Group key={k}>
       <RcaSocket cx={J[`${k}.L`].x} cy={J[`${k}.L`].y} d={11} ring={INK.rcaWhite} />
       <RcaSocket cx={J[`${k}.R`].x} cy={J[`${k}.R`].y} d={11} ring={INK.rcaRed} />
-      <Leg x={J[`${k}.R`].x} y={J[`${k}.R`].y + 13} t={k.endsWith('phono') ? 'PHONO' : 'LINE'} size={LEG_S} />
+      {inputWordsAbove ? (
+        <Leg x={J[`${k}.L`].x} y={J[`${k}.L`].y + INPUT_WORDS_ABOVE_DY} t={k.endsWith('phono') ? 'PHONO' : 'LINE'} size={LEG_S} />
+      ) : (
+        <Leg x={J[`${k}.R`].x} y={J[`${k}.R`].y + 13} t={k.endsWith('phono') ? 'PHONO' : 'LINE'} size={LEG_S} />
+      )}
     </Group>
   );
   const lr = (cx: number) => (

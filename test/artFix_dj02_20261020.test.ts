@@ -53,7 +53,8 @@ describe('DJ-02: the tray allows the physical fits and explains the wrong job', 
   });
   it('each is explained as the wrong job, in the owner’s words; the right moves are not', () => {
     // DJ-R3-PHONES: the booth move is now the mixer end in PHONES — it plays
-    assert.match(wrongJob('bth.trsL', 'mix.phones')!, /^It plays — but the monitor now follows your HEADPHONE cue/);
+    // DJ-R4-PHONES: it plays, thin — the balanced input subtracts the sides
+    assert.match(wrongJob('bth.trsL', 'mix.phones')!, /^It fits, and it plays — but thin and hollow\./);
     assert.match(wrongJob('bth.trsR', 'mix.phones')!, /Booth monitors belong on BOOTH OUT\.$/);
     for (const j of ['paL.in', 'paR.in', 'boothL.in', 'boothR.in'] as const) assert.match(wrongJob('phones', j)!, /^It fits — but headphones are a listening device, not a source: nothing plays/);
     for (const p of MAP_PLUGS) if (BUILT_PLUGS[p]) assert.equal(wrongJob(p, BUILT_PLUGS[p]), null, `${p} in its built jack`);

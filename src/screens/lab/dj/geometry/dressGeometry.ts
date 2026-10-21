@@ -398,7 +398,7 @@ export function speakerLit(b: Booth, last: BoothRender | null, k: SpeakerKey): b
   const r = last.rmsDb;
   const on = (db: number) => db > -90;
   if (f.out === 'MASTER') return on(f.side === 'L' ? r.masterL : r.masterR);
-  // DJ-R3-PHONES: fed from the PHONES jack, summed — lit while the headphone feed carries signal
+  // DJ-R3-PHONES: fed from the PHONES jack (heard as L − R, DJ-R4-PHONES) — lit while the headphone feed carries signal
   if (f.out === 'PHONES') return on(Math.max(r.phonesL, r.phonesR));
   if (!on(r.booth)) return false;
   const mL = on(r.masterL);
@@ -430,6 +430,29 @@ export const FRONT4: Box = { x: MAP.mixer.x, y: 676, w: 106, h: 18 };
 export const phonesJack4: Pt = { x: FRONT4.x + 26, y: FRONT4.y + 9 };
 /** Any jack on Screen 4's patch band (the headphone jack is on FRONT4). */
 export const jackPt4 = (j: JackId): Pt => (j === 'mix.phones' ? phonesJack4 : jackPt(j));
+
+/**
+ * DJ-R4-LINE (owner 2026-10-21): on Screen 4 the decks' RCA leads come UP
+ * into the R inputs from below, so the words PHONO / LINE, printed under the
+ * R socket, sat under the red lead. Screen 4 prints them ABOVE the L socket
+ * instead (art/RearPanels `inputWordsAbove`), inside the CH bracket — still
+ * next to their sockets, where no lead runs (the L leads come in from the
+ * side). Baseline `INPUT_WORDS_ABOVE_DY` mm from the L socket's centre (the
+ * 11 mm socket's rim is 5.5 mm up; the bracket's hairline is 13 mm up).
+ */
+export const INPUT_WORDS_ABOVE_DY = -7.4;
+export const INPUT_WORDS_SIZE = 3.4;
+/** The four words' boxes on Screen 4 (patch mm): generous widths (≈ 0.62 em
+ *  a letter), caps height ≈ 0.75 of the size. */
+export function inputWordBoxes4(): { k: string; box: Box }[] {
+  return (['ch2.phono', 'ch2.line', 'ch1.phono', 'ch1.line'] as const).map((k) => {
+    const t = k.endsWith('phono') ? 'PHONO' : 'LINE';
+    const w = t.length * INPUT_WORDS_SIZE * 0.62;
+    const c = MIXER_REAR_JACKS[`${k}.L`];
+    const base = MAP.mixer.y + c.y + INPUT_WORDS_ABOVE_DY;
+    return { k: `${k} ${t}`, box: { x: MAP.mixer.x + c.x - w / 2, y: base - INPUT_WORDS_SIZE * 0.75, w, h: INPUT_WORDS_SIZE * 0.75 + 0.3 } };
+  });
+}
 
 /* ── loose ends hang (round 3, grades screen 4 #4) ─────────────────────── */
 
@@ -479,7 +502,24 @@ const DRAPE_BTH_L = { dx: -20, over: 42 };
  *  between deck A's leads and the strip (patch mm). With deck A unpatched it
  *  hangs under its own socket as before. */
 export const DRAPE_MST_R = { dx: -23, from: 636, over: 26, boot: 676 } as const;
-const drapesMstR = (p: PlugId, plugs?: Partial<Record<PlugId, JackId | null>>): boolean => p === 'mst.xlrR' && !!plugs && !!(plugs['A.rcaL'] || plugs['A.rcaR']);
+/** DJ-R4-MSTL (owner 2026-10-21): a loose MASTER L while deck A's pair is
+ *  patched (a move into PA L's input freed it). Straight down, its XLR lay
+ *  across deck A's two leads under the mixer, and the only clear air under
+ *  them is the pocket MASTER R drapes into (between deck B's cord dropping at
+ *  x 505 and the mixer's cord dropping at x 539; the strip below). So the
+ *  cable leans gently left from its socket — a lazy S over the whole drop,
+ *  never steeper than about 37° — crosses deck A's leads almost upright and
+ *  hangs straight for its last mm, its plug pins-down in that pocket (patch
+ *  mm). When MASTER R is loose too, R keeps the pocket. */
+export const DRAPE_MST_L = { dx: -53, from: 572, over: 104, boot: 678 } as const;
+type Drape = { dx: number; from: number; over: number; boot: number };
+const deckAPatched = (plugs?: Partial<Record<PlugId, JackId | null>>): boolean => !!plugs && !!(plugs['A.rcaL'] || plugs['A.rcaR']);
+function drapeOf(p: PlugId, plugs?: Partial<Record<PlugId, JackId | null>>): Drape | null {
+  if (!deckAPatched(plugs)) return null;
+  if (p === 'mst.xlrR') return DRAPE_MST_R;
+  if (p === 'mst.xlrL' && plugs!['mst.xlrR']) return DRAPE_MST_L;
+  return null;
+}
 
 /**
  * A loose end as drawn (patch mm, dense): from its socket (or the headphone
@@ -488,8 +528,8 @@ const drapesMstR = (p: PlugId, plugs?: Partial<Record<PlugId, JackId | null>>): 
  */
 export function hang4(p: PlugId, plugs?: Partial<Record<PlugId, JackId | null>>): P2[] {
   const a = PLUGS[p].kind === 'phones' ? PHONES_BREAK : fixedEnd(p)!;
-  const drape = drapesMstR(p, plugs);
-  const y1 = drape ? DRAPE_MST_R.boot : hangEnd4(p, a);
+  const drape = drapeOf(p, plugs);
+  const y1 = drape ? drape.boot : hangEnd4(p, a);
   const L = y1 - a.y;
   const bow = BOW[p] ?? 1.2;
   const out: P2[] = [];
@@ -503,8 +543,8 @@ export function hang4(p: PlugId, plugs?: Partial<Record<PlugId, JackId | null>>)
       x += DRAPE_BTH_L.dx * u * u * (3 - 2 * u);
     }
     if (drape) {
-      const u = Math.max(0, Math.min(1, (y - DRAPE_MST_R.from) / DRAPE_MST_R.over));
-      x += DRAPE_MST_R.dx * u * u * (3 - 2 * u);
+      const u = Math.max(0, Math.min(1, (y - drape.from) / drape.over));
+      x += drape.dx * u * u * (3 - 2 * u);
     }
     out.push([x, y]);
   }
@@ -512,7 +552,8 @@ export function hang4(p: PlugId, plugs?: Partial<Record<PlugId, JackId | null>>)
 }
 
 /** The hanging plug's body (patch mm): from its boot down to its pins
- *  (`plugs`: the rest of the booth, for MASTER R's drape — DJ-R2-11). */
+ *  (`plugs`: the rest of the booth, for the MASTER drapes — DJ-R2-11,
+ *  DJ-R4-MSTL). */
 export function loosePlugBox4(p: PlugId, plugs?: Partial<Record<PlugId, JackId | null>>): Box {
   const h = hang4(p, plugs);
   const [x, y] = h[h.length - 1];

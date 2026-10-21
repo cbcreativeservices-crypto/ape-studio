@@ -480,12 +480,11 @@ export function renderBooth(b: Booth, t0: number, seconds: number, from?: Render
   rms.phonesR = rmsDbOf(pR, null);
 
   // The speakers hear whatever output is plugged into them.
-  // DJ-R3-PHONES: a booth monitor fed from the PHONES jack hears the
-  // headphone feed (PHONES knob, cue / cue mix), its stereo summed into the
-  // monitor's one input
-  const pMono = new Float32Array(n);
-  for (let i = 0; i < n; i++) pMono[i] = (pL[i] + pR[i]) / 2;
-  const outs = { MASTER: { L: mL, R: mR }, BOOTH: { L: bL, R: bR }, PHONES: { L: pMono, R: pMono } } as const;
+  // DJ-R3-PHONES / DJ-R4-PHONES: a booth monitor fed from the PHONES jack
+  // hears the headphone feed (PHONES knob, cue / cue mix) through its
+  // BALANCED input: tip (hot) = left, ring (cold) = right, so it plays L − R
+  const pDiff = phonesIntoBalancedInput(pL, pR);
+  const outs = { MASTER: { L: mL, R: mR }, BOOTH: { L: bL, R: bR }, PHONES: { L: pDiff, R: pDiff } } as const;
   const spk = (s: SpeakerId): Float32Array | null => {
     const f = speakerFeed(b, s);
     return f ? outs[f.out][f.side] : null;
@@ -533,6 +532,27 @@ export function renderBooth(b: Booth, t0: number, seconds: number, from?: Render
   const carry: RenderCarry = { t1: t0 + n / SR, dsp: dspAll, meters: ends, s2: s2out?.carry ?? null };
   const out = { t0, seconds: n / SR, playback: { l: playL, r: playR }, meter, hold, raw, clipped, busOver, rmsDb: rms as Record<Tap, number>, limiterDb, carry, s2: s2out?.report ?? null };
   return opts?.keep ? { ...out, kept: { busL, busR, cueL, cueR } } : out;
+}
+
+/**
+ * DJ-R4-PHONES (owner 2026-10-21, "model it realistically"): what a booth
+ * monitor hears when a BOOTH cable's mixer end is in the PHONES jack. The
+ * BOOTH lead is a balanced TRS lead (`PLUGS['bth.trsL'].kind === 'trs'`) and
+ * the monitor's input is balanced. A stereo headphone jack puts LEFT on the
+ * tip and RIGHT on the ring, so the lead's hot wire carries L and its cold
+ * wire carries R — and a balanced input plays hot − cold: L − R. Anything
+ * equal in both sides (centre-panned kick, bass, vocal; a mono source)
+ * cancels; only the sides are left — thin and hollow.
+ * Level: halved, (L − R) / 2, so it is never louder than the old summed feed
+ * ((L + R) / 2) on hard-panned content and its peak never passes the
+ * headphone feed's own peak, max(|L|, |R|). The listen gain and the
+ * protective limiter still follow it, as for every speaker.
+ */
+export function phonesIntoBalancedInput(pL: Float32Array, pR: Float32Array): Float32Array {
+  const n = Math.min(pL.length, pR.length);
+  const out = new Float32Array(n);
+  for (let i = 0; i < n; i++) out[i] = (pL[i] - pR[i]) / 2;
+  return out;
 }
 
 /** The channel a tap belongs to, for the drawing. */

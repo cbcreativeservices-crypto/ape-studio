@@ -59,7 +59,7 @@ describe('wiring round 2 — DJ copy', () => {
   it('DJ-R2-03 (replaced by DJ-R3-PHONES, owner 2026-10-21): the "two outputs joined" move is gone — the booth cable’s mixer end goes to PHONES', () => {
     const t = wrongJob('bth.trsL', 'mix.phones')!;
     assert.doesNotMatch(t, /joined two outputs/);
-    assert.match(t, /^It plays — but the monitor now follows your HEADPHONE cue/);
+    assert.match(t, /^It fits, and it plays — but thin and hollow\./); // DJ-R4-PHONES wording
     assert.equal(wrongJob('bth.trsR', 'mix.phones'), t);
   });
   it('DJ-R2-04: "many" powered speakers have a MIC/LINE switch, not every one', () => {

@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 07:45 · ccode · 8705abcf
+changed: Round 3 wiring fixes (owner go): Production level rule, cue outputs; Amp line level, rails meter; Calc crossover sum, negative gain, attenuator note
+affects other side: nothing (client lab text/art only)
+needs: nothing
+
+
 ### 2026-10-21 07:30 · ccode · 75444ca9
 changed: Wiring register: owner answers 2026-10-21 (wedge power individual, 4 drum tails, PHONES feed L−R, round-3 go)
 affects other side: nothing (docs only)

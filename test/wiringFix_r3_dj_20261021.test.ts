@@ -5,8 +5,9 @@
  *                 of BOOTH OUT (replaces "booth TRS far end into PHONES",
  *                 which joined two outputs of one mixer): the BOOTH cable's
  *                 MIXER end moves, its far end stays in its monitor, and the
- *                 monitor PLAYS the headphone feed (PHONES knob, CUE, summed
- *                 into its one input); Screen 4 draws it from the PHONES jack.
+ *                 monitor PLAYS the headphone feed (PHONES knob, CUE; heard
+ *                 as L − R since DJ-R4-PHONES, test/wiringFix_r4_dj_20261021);
+ *                 Screen 4 draws it from the PHONES jack.
  *   DJ-R3-ADAPTER Screen 20's unbalanced 20 m run is a jack lead with an XLR
  *                 adapter at the stage box (XLR-to-jack lead from MASTER OUT).
  */
@@ -66,7 +67,8 @@ describe('DJ-R3-PHONES — the model', () => {
   });
   it('the "two outputs joined" move and its wording are gone; the new wording is the owner-approved line', () => {
     const t = wrongJob('bth.trsL', 'mix.phones')!;
-    assert.equal(t, 'It plays — but the monitor now follows your HEADPHONE cue, not the booth mix: press CUE on the next track and the monitor plays it too. Its level is the PHONES knob, not BOOTH, and the headphones’ stereo signal goes into the monitor’s one (mono) input. Booth monitors belong on BOOTH OUT.');
+    // DJ-R4-PHONES (owner 2026-10-21, "model it realistically"): the line now says why it sounds thin — the balanced input subtracts the two sides
+    assert.equal(t, 'It fits, and it plays — but thin and hollow. The headphone jack is stereo: left on the tip, right on the ring. The monitor’s balanced input subtracts one from the other, so it plays left minus right. Anything in the middle (kick, bass, vocal) cancels out. Only the sides are left, and a mono track goes almost silent. It also follows your headphone cue and the PHONES knob, not BOOTH. Booth monitors belong on BOOTH OUT.');
     assert.equal(wrongJob('bth.trsR', 'mix.phones'), t);
     for (const f of ['model/djModel.ts', 'trays.tsx', 'art/SystemMap.tsx', 'geometry/mapGeometry.ts', 'geometry/dressGeometry.ts']) {
       assert.doesNotMatch(read(DJ + f), /joined two outputs|other end is in BOOTH OUT/, f);
@@ -98,28 +100,33 @@ describe('DJ-R3-PHONES — the render: the monitor plays the HEADPHONE cue', () 
   });
   it('press CUE on the next track (deck B, fader down): the monitor plays it too', () => {
     let b = moved();
+    // DJ-R4-PHONES: the monitor hears L − R, so cue deck B where it has side
+    // content (16 bars in: panned hats and shaker); at its kick-only intro the
+    // centre cancels and the monitor is all but silent (test/wiringFix_r4_dj)
+    b = { ...b, decks: { ...b.decks, B: { ...b.decks.B, posSec: 0.12 + 16 * (240 / 122) } } };
     b = setPlaying(b, 0, 'B', true);
     b = { ...b, ch: { ...b.ch, 2: { ...b.ch[2], fader: 0, cue: true } } };
     const r = renderBooth(b, 0, 1);
-    assert.ok(peak(r.playback.l) > 0.01, 'the cued track is in the booth monitor');
+    assert.ok(peak(r.playback.l) > 0.005, 'the cued track (its sides) is in the booth monitor');
     // and the crowd never hears it (fader down)
     const crowd = renderBooth({ ...b, perspective: 'CROWD' }, 0, 1);
     const solo = renderBooth({ ...b, perspective: 'CROWD', ch: { ...b.ch, 2: { ...b.ch[2], cue: false } } }, 0, 1);
     assert.equal(crowd.rmsDb.crowd.toFixed(3), solo.rmsDb.crowd.toFixed(3));
   });
-  it('it follows the PHONES knob, not BOOTH; it is mono (the stereo headphone feed summed)', () => {
+  it('it follows the PHONES knob, not BOOTH; it hears L − R (DJ-R4-PHONES: was the stereo feed summed)', () => {
     let b = moved();
     b = { ...b, mixer: { ...b.mixer, cueMix: 1 } }; // the headphones' MASTER side: the mix
     const r = renderBooth(b, 0, 1);
-    assert.ok(peak(r.playback.l) > 0.01);
+    assert.ok(peak(r.playback.l) > 0.001, 'the mix’s sides reach it');
     const noBooth = renderBooth({ ...b, mixer: { ...b.mixer, booth: 0 } }, 0, 1);
     assert.ok(Math.abs(peak(noBooth.playback.l) - peak(r.playback.l)) < 1e-6, 'the BOOTH knob does nothing to it');
     const noPhones = renderBooth({ ...b, mixer: { ...b.mixer, phones: 0 } }, 0, 1);
     assert.equal(peak(noPhones.playback.l), 0, 'the PHONES knob down: silent');
     const src = read(`${DJ}engine/djRender.ts`);
-    assert.match(src, /pMono\[i\] = \(pL\[i\] \+ pR\[i\]\) \/ 2;/);
-    assert.match(src, /PHONES: \{ L: pMono, R: pMono \}/);
-    assert.match(read(`${DJ}engine/djEventRender.ts`), /PHONES: \{ L: pMono, R: pMono \}/);
+    // DJ-R4-PHONES: the summed feed is gone; both renders share the L − R helper
+    assert.doesNotMatch(src, /pMono/);
+    assert.match(src, /PHONES: \{ L: pDiff, R: pDiff \}/);
+    assert.match(read(`${DJ}engine/djEventRender.ts`), /PHONES: \{ L: pDiff, R: pDiff \}/);
   });
   it('the map and the room light it from the headphone feed', () => {
     let b = moved();

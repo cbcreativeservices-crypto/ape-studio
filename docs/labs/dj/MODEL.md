@@ -124,8 +124,30 @@ speaker's combo input plays nothing. A BOOTH cable's MIXER end moved from
 BOOTH OUT to the PHONES jack (DJ-R3-PHONES, owner 2026-10-21; its far end
 stays in its booth monitor, `PHONES_MONITOR` / `jacksHeld`) PLAYS: that
 monitor hears the headphone feed — PHONES knob, CUE buttons and cue mix, not
-the BOOTH knob — its stereo summed into the monitor's one input
-(`speakerFeed` → 'PHONES'). The headphones come out (one plug per jack).
+the BOOTH knob (`speakerFeed` → 'PHONES'). The headphones come out (one plug
+per jack).
+
+How it sounds (DJ-R4-PHONES, owner 2026-10-21 "model it realistically"):
+the BOOTH lead is a balanced TRS lead and the monitor's input is balanced. A
+stereo headphone jack puts LEFT on the tip and RIGHT on the ring, so the
+lead's hot wire carries L, its cold wire carries R, and the monitor's
+balanced input plays hot − cold = **L − R** (`phonesIntoBalancedInput`, used
+by `renderBooth` and `renderEvent`). Centre-panned content (kick, bass,
+vocal, the claps) cancels; only the sides are left (panned hats, shaker,
+echoes): thin and hollow. A mono feed (L = R) is silent. With SPLIT CUE the
+ears differ (L = cue, R = master), so it plays cue − master. Level: (L − R)/2
+— never louder than the old summed feed on hard-panned content, its peak
+never past the headphone feed's own max(|L|, |R|); the listen gain and the
+protective limiter follow as for every speaker. (Were the lead TS, the
+monitor would hear the tip only — LEFT alone; this lab's BOOTH lead is TRS.)
+The `wrongJob` text says it in words: it fits and plays, but the balanced
+input subtracts one side from the other.
+
+Screen 4 art (round 4, 2026-10-21): a freed MASTER L with deck A patched
+drapes left into the one clear pocket under deck A's leads (`DRAPE_MST_L`, a
+lazy S over its whole drop; MASTER R keeps that pocket when it is loose too).
+The PHONO / LINE words print over each column's L socket (`inputWordsAbove`,
+`inputWordBoxes4`), off the RCA leads that come up into the R sockets.
 
 HOT-PATCH (`hotPatchSpeakers`): moving an audio cable while it is live is
 flagged too (never played) — a MASTER/BOOTH cable into or out of a live

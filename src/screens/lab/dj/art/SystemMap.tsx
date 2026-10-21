@@ -386,7 +386,9 @@ export const SystemMap = memo(function SystemMap({ booth, last, flow, thump = []
         <PlayerRear x={MAP.B.x} y={MAP.B.y} on={deviceLive(booth, 'playerB')} label="DECK B (REAR)" />
         {/* MASTER OUT (BAL) moved right along its bracket, off MASTER R's
             cable as it leaves upward to the speaker (DJ-R2-07) */}
-        <MixerRear x={MAP.mixer.x} y={MAP.mixer.y} on={deviceLive(booth, 'mixer')} masterWordsDx={MASTER_WORDS_DX4} />
+        {/* PHONO / LINE over the L sockets, off the RCA leads that come up
+            into the R sockets from below (DJ-R4-LINE) */}
+        <MixerRear x={MAP.mixer.x} y={MAP.mixer.y} on={deviceLive(booth, 'mixer')} masterWordsDx={MASTER_WORDS_DX4} inputWordsAbove />
         <PlayerRear x={MAP.A.x} y={MAP.A.y} on={deviceLive(booth, 'playerA')} label="DECK A (REAR)" />
         <MixerFront />
         <PowerStrip x={MAP.strip.x} y={MAP.strip.y} on used={used} mirrored />
