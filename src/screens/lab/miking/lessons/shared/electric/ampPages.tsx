@@ -588,7 +588,24 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
   function AmpSetting({ lesson, answers, onAnswered }: PageProps) {
     const items = lesson.setting.items;
     const byId = (id: string | null) => items.find((i) => i.id === id);
+    // On the signal path a steel's 'pedals' node is its VOLUME PEDAL only: the
+    // signal leaves the body's output jack and runs through that box; the pitch
+    // pedals and knee levers are mechanical (owner 2026-10-21). The keep-clear
+    // item (all of them) still names the zone on the plans.
+    const volumeOnPath = spec.chain.pedals === 'volume';
+    const pathById = (id: string | null) => {
+      const it = byId(id);
+      return it && volumeOnPath && id === 'pedals'
+        ? {
+            ...it,
+            label: 'the volume pedal',
+            short: 'VOL PEDAL', // ≤ 9 characters: the dock readout's short form keeps it whole
+            note: 'The cable leaves the output jack on the steel’s body, like any electric guitar, and runs through the volume pedal — a separate box on the floor — to the DI and the amp. The pitch pedals and knee levers only move rods to the changer: no signal goes through them.',
+          }
+        : it;
+    };
     const shortOf = (id: string) => byId(id)?.short ?? id.toUpperCase();
+    const pathShortOf = (id: string) => pathById(id)?.short ?? id.toUpperCase();
     const [cSel, setCSel] = useState<string | null>(null);
     const [cSeen, setCSeen] = useState<ReadonlySet<string>>(() => new Set());
     const [patch, setPatch] = useState<'cab' | 'desk'>('cab');
@@ -596,7 +613,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     const [sel, setSel] = useState<string | null>(null);
     const diLast = spec.chain.diAfter === 'pedals';
     const chainIds = ['player', ...(spec.chain.diBox && !diLast ? ['dibox'] : []), ...(spec.chain.pedals ? ['pedals'] : []), ...(spec.chain.diBox && diLast ? ['dibox'] : []), 'amp', 'cab', 'mic', 'desk', ...(spec.chain.ampDirect ? ['ampdi'] : [])];
-    const chainItems = chainIds.map((id) => byId(id)).filter((x): x is NonNullable<typeof x> => !!x);
+    const chainItems = chainIds.map((id) => pathById(id)).filter((x): x is NonNullable<typeof x> => !!x);
     const planIds = scene === 'stage' ? ['amp', 'player', 'pedals', 'dibox', 'wedge', ...lesson.live.wedges.slice(1).map((w) => w.id), 'drums', 'otherAmp', 'audience'] : ['amp', 'player', 'pedals', 'dibox', 'otherAmp', 'room'];
     const planItems = planIds.map((id) => byId(id) ?? (lesson.live.wedges.some((w) => w.id === id) ? { id, label: lesson.live.wedges.find((w) => w.id === id)!.label, short: lesson.live.wedges.find((w) => w.id === id)!.short, note: lesson.live.wedges.find((w) => w.id === id)!.note, tag: 'MONITOR' } : null)).filter((x): x is NonNullable<typeof x> => !!x);
     const pickC = (id: string) => {
@@ -605,7 +622,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     };
     const cIdx = Math.max(0, chainItems.findIndex((i) => i.id === cSel));
     const pIdx = Math.max(0, planItems.findIndex((i) => i.id === sel));
-    const cs = byId(cSel);
+    const cs = pathById(cSel);
     const ps = planItems.find((i) => i.id === sel);
     const verdict = patchVerdict('speakerOut', patch === 'cab' ? 'cabinet' : 'micIn');
     const steps: MikingStep[] = [
@@ -622,7 +639,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
               spec={spec.chain}
               highlight={cSel}
               onTap={pickC}
-              shortOf={shortOf}
+              shortOf={pathShortOf}
               badPatch={patch === 'desk'}
               accessibilityLabel={`The signal path. Top, the air path: ${chainItems.filter((i) => !['dibox', 'ampdi'].includes(i.id)).map((i) => i.label).join(', then ')}. Below, drawn apart: ${spec.chain.diBox ? (diLast ? 'a DI box after the volume pedal and before the amp, its output to the desk' : 'a DI box between the instrument and the amp, its output to the desk') : ''}${spec.chain.diBox && spec.chain.ampDirect ? '; and ' : ''}${spec.chain.ampDirect ? 'the amp’s own direct output to the desk' : ''} — separate electrical sources.${patch === 'desk' ? ' Shown struck out in red: a speaker output patched into the desk, which is never done.' : ''}${cs ? ` Highlighted: ${cs.label}.` : ''}`}
             />
