@@ -381,7 +381,9 @@ function FacilityScene({
         </ZoneIn>
         {/* representative runs (honest, terminating) — they install themselves */}
         <RunIn d="M36 196 C60 196 70 210 96 210 H140" len={140} color={CI_CLASS_TINTS.analog} delay={300} run={assembled} />
-        <RunIn d="M140 210 H196 C220 210 224 200 224 190" len={110} color={CI_CLASS_TINTS.analog} delay={340} run={assembled} />
+        {/* B-CI-04: the analog run carries on through the wall (above the
+            door, like the network run) and lands on the rack's side */}
+        <RunIn d="M140 210 H196 C220 210 224 200 224 190 C224 182 228 178 236 178 H276" len={160} color={CI_CLASS_TINTS.analog} delay={340} run={assembled} />
         <RunIn d="M32 25 H236 C250 25 252 40 252 60" len={250} color={CI_CLASS_TINTS.network} delay={280} run={assembled} />
         <RunIn d="M252 60 v40 l24 4" len={70} color={CI_CLASS_TINTS.network} delay={380} run={assembled} />
         <RunIn d="M352 228 v-140 l-14 -4" len={160} color={CI_CLASS_TINTS.power} delay={360} run={assembled} />

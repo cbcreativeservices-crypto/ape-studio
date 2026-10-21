@@ -59,3 +59,16 @@ test('B-CI-02: the drum sub-snake fans out into several XLR tails on their own i
   for (const i of [0, 1, 2]) assert.ok(FLOOR.includes(`M\${VOX_JACK[${i}]} \${JACK_IN}`), `as-found VOX ${i + 1} starts on its own input`);
   assert.match(FLOOR, /fans out into one cyan XLR tail per input/);
 });
+
+const INSPECT = readFileSync(new URL('../src/screens/lab/cableinstall/scenes/InspectScene.tsx', import.meta.url), 'utf8');
+
+test('B-CI-04: the representative analog run carries through the wall to the rack', () => {
+  const runs = [...INSPECT.matchAll(/<RunIn d="([^"]+)"[^>]*color=\{CI_CLASS_TINTS\.analog\}/g)].map((m) => m[1]);
+  assert.ok(runs.length >= 1);
+  const last = runs[runs.length - 1];
+  const nums = last.match(/-?[\d.]+/g)!.map(Number);
+  const endX = nums[nums.length - 1];
+  // the wall is x 254-259, the rack face starts at x 276
+  assert.ok(endX >= 276, `analog run ends at the rack (x ${endX})`);
+  assert.doesNotMatch(INSPECT, /C220 210 224 200 224 190" len/);
+});
