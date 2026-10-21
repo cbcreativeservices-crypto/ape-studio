@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 14:12 · ccode · c175674a
+changed: Merge dj-lab into next-store-build (owner go 2026-10-21): wiring A-grade rounds 1-4, rule book v1, DJ/Sound Systems/cable labs/Miking fixes, clocking card, Windows test fixes
+affects other side: nothing (client merge; the DJ lab glossary popup reads an existing glossary row, 8d561c7d, no DB change)
+needs: nothing
+
+
 ### 2026-10-21 14:08 · ccode · 3d874cfa
 changed: Merge dj-lab into next-store-build (owner go 2026-10-21): wiring A-grade rounds 1-4, rule book v1, DJ/Sound Systems/cable labs/Miking fixes, clocking card, Windows test fixes
 affects other side: nothing (merge; client only)
