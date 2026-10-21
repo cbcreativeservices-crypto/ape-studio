@@ -85,11 +85,11 @@ describe('Patchbay', () => {
     assert.match(s, /const tipXAt = \(insertion: number\) => 26 \+ insertion \* 122;/);
     assert.match(s, /const FINGER_REST_Y = 99;/);
     assert.match(s, /const FINGER_X = tipXAt\(CONTACT_OPEN_AT\) \+ 1 - 9 \* \(\(103 - FINGER_REST_Y\) \/ 11\) \*\* 2;/);
-    assert.match(s, /if \(rel >= -18 && rel <= -13\) return 96;/);
+    assert.match(s, /if \(rel >= -23 && rel <= -15\) return 96;/);
     const tipXAt = (i: number) => 26 + i * 122;
     const fingerX = tipXAt(CONTACT_OPEN_AT) + 1 - 9 * ((103 - 99) / 11) ** 2;
     const relFull = fingerX - tipXAt(1);
-    assert.ok(relFull >= -18 && relFull <= -13, `finger at tip-relative ${relFull.toFixed(2)} — must be in the neck groove (−18 … −13), not on the ring or sleeve`);
+    assert.ok(relFull >= -23 && relFull <= -15, `finger at tip-relative ${relFull.toFixed(2)} — must be in the neck groove (−23 … −15; ¼-inch plug, B-PB-01), not on the ring or sleeve`);
     assert.equal(contactsOpen(CONTACT_OPEN_AT - 0.01), false);
     assert.equal(contactsOpen(1), true);
   });

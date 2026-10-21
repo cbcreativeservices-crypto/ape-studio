@@ -134,11 +134,13 @@ export function resolvePair(s: PairState): PairFlow {
  * "conceptual model" badge. */
 
 /** Fraction of plug travel at which the teaching model opens the contact.
- *  0.87 (wiring grade PB-R2-01, 2026-10-20; was 0.6): the cutaway's tip spring
- *  sits where the plug's TIP neck groove lands at full insertion, so the nose
- *  can only reach it — and lift it — late in the travel, as in a real jack.
- *  (At 0.6 the finger had to sit far forward and ended on the sleeve.) */
-export const CONTACT_OPEN_AT = 0.87;
+ *  The cutaway's tip spring sits where the plug's TIP neck groove lands at
+ *  full insertion, so the nose can only reach it — and lift it — late in the
+ *  travel, as in a real jack. 0.87 (wiring grade PB-R2-01, 2026-10-20; was
+ *  0.6 — the finger had to sit far forward and ended on the sleeve); 0.85
+ *  (B-PB-01, 2026-10-21): re-derived for the ¼-inch TRS plug's longer tip,
+ *  so the spring's dimple rests mid-groove. */
+export const CONTACT_OPEN_AT = 0.85;
 
 /** Is the normal switching contact held open at this insertion depth (0–1)? */
 export function contactsOpen(insertion: number): boolean {

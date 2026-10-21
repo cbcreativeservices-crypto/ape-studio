@@ -101,8 +101,9 @@ function PageConductors({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>T · R · S</Eyebrow>
         <Body>
-          TIP and RING carry the balanced signal pair; SLEEVE is the shield/ground. A TT (bantam) plug packs the same three
-          into a smaller frame. The switching contacts you watched exist for the SIGNAL conductors — tip and ring — inside
+          TIP and RING carry the balanced signal pair; SLEEVE is the shield/ground. The plug you have been driving is a
+          ¼-inch TRS patch plug, the kind this bay's jacks take. TT (bantam) is a separate, smaller family that packs the
+          same three conductors into a smaller frame; a TT plug does not fit a ¼-inch jack. The switching contacts you watched exist for the SIGNAL conductors — tip and ring — inside
           real bays; the sleeve is typically bussed straight through, not switched.
         </Body>
       </Card>
