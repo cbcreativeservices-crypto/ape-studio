@@ -82,7 +82,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
     hotPlug: {
       policy: 'mute_first',
       rationale:
-        'Stop the signal — mute or power down the amplifier — before connecting or disconnecting. Breaking a driven loudspeaker line can arc across the contacts as they separate. Neutrik’s own speakON instructions carry the UL/CSA caution “NOT FOR INTERRUPTING CURRENT” — treat no speakON-style connector as rated to break a driven load.',
+        'Stop the signal — mute or power down the amplifier — before connecting or disconnecting. Breaking a driven loudspeaker line can arc across the contacts as they separate. The maker’s own speakON instructions carry the safety caution “NOT FOR INTERRUPTING CURRENT” — treat no speakON-style connector as rated to break a driven load.',
     },
     advantages: [
       'Positive twist-lock — will not pull out by accident',
@@ -228,7 +228,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
     hotPlug: {
       policy: 'mute_first',
       rationale:
-        'Stop the signal — mute or power down the amplifier — before connecting or disconnecting. Breaking a driven loudspeaker line can arc across the contacts as they separate. Neutrik’s own speakON instructions carry the UL/CSA caution “NOT FOR INTERRUPTING CURRENT” — treat no speakON-style connector as rated to break a driven load.',
+        'Stop the signal — mute or power down the amplifier — before connecting or disconnecting. Breaking a driven loudspeaker line can arc across the contacts as they separate. The maker’s own speakON instructions carry the safety caution “NOT FOR INTERRUPTING CURRENT” — treat no speakON-style connector as rated to break a driven load.',
     },
     advantages: [
       'Positive twist-lock with enclosed, touch-protected contacts',

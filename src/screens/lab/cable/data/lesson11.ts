@@ -598,7 +598,7 @@ const A_PICKS: ConnectionPick[] = [
         'spk_lead',
         'speakON-style loudspeaker lead',
         'correct',
-        'A speakON-style loudspeaker lead — two heavier unshielded conductors sized for the current, in a twist-locking, touch-protected shell. Insert, twist until it clicks, and confirm the lock with a gentle tug — with the line muted or powered down.',
+        'A speakON-style loudspeaker lead — two heavier unshielded conductors sized for the current, in a twist-locking, touch-protected shell. Insert, twist until it clicks, and confirm the lock with a gentle tug — with the line muted or powered down. Many amps use speakON/¼-inch combo outputs; older ones a plain ¼-inch TS jack. Whichever jack it is, the cable must be loudspeaker cable.',
       ),
       cable(
         'ts_inst',
@@ -710,7 +710,7 @@ const A_FAULTS: FaultStage = {
           label: 'The plugs will not fit the amplifier or the monitor',
           verdict: 'wrong',
           explain:
-            'They fit — older amplifiers and cabinets use exactly this 1/4-inch TS jack for loudspeaker connections, which is what makes this the classic wrong-cable trap. Fitting is never proof of correctness; the cable construction is the problem here.',
+            'They fit — many amps use speakON/¼-inch combo outputs, and older amps and cabinets a plain ¼-inch TS jack, so an instrument cable plugs right in. That is what makes this the classic wrong-cable trap. Fitting is never proof of correctness; the cable construction is the problem here.',
         },
         {
           id: 'why_hum',
@@ -931,21 +931,21 @@ const B_PICKS: ConnectionPick[] = [
       ),
       cable(
         'xlr_bal',
-        'Balanced XLR line cables',
+        'Balanced TRS-to-XLR line cables',
         'accepted',
-        'Equally correct where the monitors carry XLR inputs — the same balanced connection in a latching shell. Pick by the jacks on the equipment.',
+        'Equally correct where the monitors carry XLR inputs — a TRS plug at the interface’s line output, an XLR plug at the monitor: the same balanced connection. Pick by the jacks on the equipment.',
       ),
       cable(
         'rca_unbal',
-        'Unbalanced RCA cables',
+        'Unbalanced TS-to-RCA cables',
         'accepted',
-        'Also defensible where the monitors provide RCA inputs: it works, but unbalanced — keep the runs short and expect less interference rejection than the balanced choice gives you. That trade-off is the balanced-vs-unbalanced decision in one sentence.',
+        'Also defensible where the monitors provide RCA inputs: a TS plug at the interface’s line output (most interface outputs accept one — check the manual), an RCA plug at the monitor. It works, but unbalanced — keep the runs short and expect less interference rejection than the balanced choice gives you. That trade-off is the balanced-vs-unbalanced decision in one sentence.',
       ),
       cable(
         'spk_lead',
         'speakON-style loudspeaker lead',
         'wrong',
-        'You picked a speakON-style loudspeaker lead. Powered monitors take a LINE-LEVEL feed — no loudspeaker-level line ever reaches them, and a speakON lead does not mate with a line input. The correct choice is a balanced line cable (TRS or XLR), or RCA where that is what the monitor offers.',
+        'You picked a speakON-style loudspeaker lead. Powered monitors take a LINE-LEVEL feed — no loudspeaker-level line ever reaches them, and a speakON lead does not mate with a line input. The correct choice is a balanced TRS line cable (TRS-to-XLR where the monitor has XLR inputs), or TS-to-RCA where RCA is what the monitor offers.',
         'no_signal',
       ),
     ],

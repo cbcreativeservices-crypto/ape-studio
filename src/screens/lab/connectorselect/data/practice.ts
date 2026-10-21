@@ -130,7 +130,7 @@ export const SAFETY_RULES: readonly SafetyRule[] = [
   {
     id: 'no_ground_defeat',
     rule: 'Never defeat the AC safety ground to eliminate hum.',
-    why: 'The ground pin is what keeps a fault from energizing chassis and mic bodies. Hum has proper fixes; removing shock protection is not one of them.',
+    why: 'The ground pin bonds the chassis to earth, so a fault trips the breaker instead of leaving the chassis and mic bodies live. Hum has proper fixes; removing shock protection is not one of them.',
   },
   {
     id: 'adapters_dont_convert',

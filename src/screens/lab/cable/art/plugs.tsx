@@ -473,11 +473,33 @@ function ComboAnatomy() {
 function SpeakonSide() {
   const H = 120;
   const k = 2.6;
+  const cy = H / 2 + 4;
+  // R3-CB-S3: true scale — the same Ø8.5 mm 2-core speaker cable the cable
+  // sections draw (sections.tsx speaker_2c), not a 4.6 mm stand-in. The
+  // shared connector's strain-relief boot opens at Ø6.8 (sized for small
+  // leads), so a boot that fits Ø8.5 cable is drawn over it here: Ø9.5 at
+  // the mouth, widening to the shared boot's Ø12.4 where the body starts.
+  const od = 8.5;
+  const bootLen = 19;
+  const r0 = od / 2 + 0.5;
+  const r1 = 6.2;
+  const ribs = [1, 2, 3, 4, 5].map((i) => {
+    const x = (bootLen * i) / 6.2;
+    const r = r0 + ((r1 - r0) * x) / bootLen;
+    return `M${116 + x * k} ${cy - r * k} V${cy + r * k}`;
+  });
   return (
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={`0 0 ${W} ${H}`}>
       <Rect x={0} y={0} width={W} height={H} rx={8} fill={ART.bg} />
-      <Rect x={60} y={H / 2 + 4 - 4.6 * k * 0.5} width={60} height={4.6 * k} fill="#2b2d32" />
-      <Connector kind="speakon" x={116} y={H / 2 + 4} k={k} jacket="black" shadow={false} />
+      <Rect x={60} y={cy - od * k * 0.5} width={60} height={od * k} fill="#2b2d32" />
+      <Connector kind="speakon" x={116} y={cy} k={k} jacket="black" shadow={false} />
+      <Path
+        d={`M116 ${cy - r0 * k} L${116 + bootLen * k} ${cy - r1 * k} L${116 + bootLen * k} ${cy + r1 * k} L116 ${cy + r0 * k} Z`}
+        fill="#2e3035"
+        stroke="#0c0d0f"
+        strokeWidth={0.4 * k}
+      />
+      <Path d={ribs.join(' ')} stroke="#1a1b1f" strokeWidth={0.5 * k} />
       <Leader x1={116 + 55 * k} y1={16} x2={116 + 55 * k} y2={H / 2 + 4 - 16 * k + 1} />
       <Label x={116 + 55 * k} y={12} text="TWIST-LOCK COLLAR" anchor="middle" />
       <Label x={10} y={H - 8} text="cable connector, side-on" color={ART.sub} size={9.5} weight="regular" />

@@ -37,6 +37,12 @@ export type PlugComparison = {
   answer: InterchangeAnswer;
   /** Why the answer is what it is — derived from the records' fields. */
   why: string;
+  /**
+   * Set when the swap works in ONE direction only (R3-CB-02): a 110/120/75-ohm
+   * digital or data cable carries analog audio fine, but not the reverse. The
+   * answer stays 'no' (not interchangeable); this line keeps the "no" honest.
+   */
+  oneWay?: string;
   /** The technically honest result of choosing wrong — record-derived. */
   consequence: string;
 };
@@ -65,6 +71,7 @@ export const PLUG_COMPARISONS: PlugComparison[] = [
     answer: 'no',
     why:
       'Same connector, different cable: AES3 digital audio is specified for 110-ohm balanced digital cable, not analog microphone cable.',
+    oneWay: 'One way only: the digital cable can do the analog job, not the reverse.',
     consequence:
       'An analog mic cable on a long AES3 run can drop out intermittently or fail to lock at all — a reliability failure, not equipment damage.',
   },
@@ -78,6 +85,7 @@ export const PLUG_COMPARISONS: PlugComparison[] = [
     answer: 'no',
     why:
       'Lighting control (DMX512) specifies 120-ohm data cable, and what it carries is control data, not audio — the shared shell is a look-alike, not a kinship.',
+    oneWay: 'One way only: the 120-ohm data cable can do the analog mic job, not the reverse.',
     consequence:
       'Microphone cable in a DMX line invites flickering and erratic fixture behavior. Patching audio gear into a control line fails to work and can disrupt the control network — and if the audio line carries +48 V phantom power, it can damage lighting-control electronics. Verify what a line carries before connecting.',
   },
@@ -91,6 +99,7 @@ export const PLUG_COMPARISONS: PlugComparison[] = [
     answer: 'no',
     why:
       'S/PDIF is specified as a 75-ohm digital interface; ordinary analog interconnects are coaxial in form but not impedance-controlled.',
+    oneWay: 'One way only: the digital cable can do the analog job, not the reverse.',
     consequence:
       'Short analog cables often appear to work; longer or marginal runs drop out or fail to lock. A reliability failure, not damage — use a true 75-ohm cable for digital.',
   },

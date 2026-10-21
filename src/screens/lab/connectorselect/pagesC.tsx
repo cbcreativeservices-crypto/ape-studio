@@ -65,9 +65,17 @@ function ScenarioCard({ s, onSolved }: { s: Scenario; onSolved: () => void }) {
           />
           {picked === c.id ? (
             <View style={styles.trayEnds}>
-              <ConnectorPhoto id={c.a} size={44} single name={getConnector(c.a)?.displayName} />
-              <Text style={styles.trayLine} accessibilityElementsHidden importantForAccessibility="no">———</Text>
-              <ConnectorPhoto id={c.b} size={44} single name={getConnector(c.b)?.displayName} />
+              {/* R3-CS-01 (rule C2): end a plugs into the OUTPUT (an XLR
+                  reads FEMALE), end b into the INPUT (MALE) */}
+              <ConnectorPhoto id={c.a} size={44} end="into_output" name={getConnector(c.a)?.displayName} />
+              {c.via ? (
+                <Text style={styles.trayLine} accessibilityLabel={`through the ${c.via}`}>
+                  {`—— ${c.via.toUpperCase()} ——`}
+                </Text>
+              ) : (
+                <Text style={styles.trayLine} accessibilityElementsHidden importantForAccessibility="no">———</Text>
+              )}
+              <ConnectorPhoto id={c.b} size={44} end="into_input" name={getConnector(c.b)?.displayName} />
             </View>
           ) : null}
         </View>

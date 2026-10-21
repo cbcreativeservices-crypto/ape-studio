@@ -209,7 +209,7 @@ const DECLARES: readonly Declare[] = [
     cableQ: 'And so the cable must be…',
     cables: ['An insert cable: TRS to two plugs', 'One ordinary TRS line cable', 'A stereo headphone extension'],
     correctCable: 0,
-    verdict: 'COMPATIBLE — the insert cable splits send and return to the processor. A balanced source or plain line cable patched into an insert lands on a send/return pair instead of an input: the channel goes silent or routes wrongly. Which contact sends is equipment-defined: verify in the manual.',
+    verdict: 'COMPATIBLE — the insert cable splits send and return to the processor. A balanced source or plain line cable patched into an insert lands on a send/return pair instead of an input: the channel goes silent or routes wrongly. On most consoles tip = send, ring = return; some older large-format desks reverse it — check the manual.',
   },
 ];
 

@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 07:59 · ccode · 65207f8d
+changed: Patchbay round 3 (owner go): two-outputs CLASH, cutaway notes (enlarged, ring spring not shown), cords in their own lanes, full-normal wording
+affects other side: nothing (client lab text/art only)
+needs: nothing
+
+
 ### 2026-10-21 07:57 · ccode · b8f22c0f
 changed: Signal Chain R3-SC-01 (owner 2026-10-21): caption — one lane is the stereo pair, outboard patched at the rear
 affects other side: nothing (client lab text/art only)

@@ -59,7 +59,7 @@ export const JOB_MATRIX: readonly JobMatrixEntry[] = [
     jobs: [
       { id: 'balmono', label: 'Balanced MONO line signal', can: true, backs: ['line_level'], explain: 'Tip +, ring −, sleeve shield. One channel, noise-rejecting.' },
       { id: 'phones', label: 'Stereo headphones', can: true, backs: ['headphone_level'], explain: 'Tip left, ring right, sleeve common. Two channels, unbalanced.' },
-      { id: 'insert', label: 'Console insert send/return', can: true, backs: ['line_level'], explain: 'Send on one contact, return on the other — one jack, two directions. Which is which is equipment-defined: verify.' },
+      { id: 'insert', label: 'Console insert send/return', can: true, backs: ['line_level'], explain: 'Send on one contact, return on the other — one jack, two directions. On most consoles tip = send, ring = return; some older large-format desks reverse it — check the manual.' },
       { id: 'balstereo', label: 'Balanced stereo on one plug', can: false, explain: 'No. Three contacts cannot carry two balanced channels — that needs four signal contacts plus the shield (a 5-pin XLR, for example) or two cables.' },
     ],
   },
