@@ -56,6 +56,7 @@ import {
   micGainKnob,
   micSensDb,
   recGainDb,
+  recHoldsBoothOut,
   type EventRig,
 } from '../model/djEvent.ts';
 import { ROOM, monitorsDbaAt, powerSum, topsDbaAt } from '../model/djRoom.ts';
@@ -446,8 +447,13 @@ export function renderEvent(b: Booth, t0: number, seconds: number, prev: EventRe
   // cancels; see phonesIntoBalancedInput)
   const pDiff = phonesIntoBalancedInput(pL, pR);
   const outs = { MASTER: { L: mL, R: mR }, BOOTH: { L: bL, R: bR }, PHONES: { L: pDiff, R: pDiff } } as const;
+  // R3-DJ-01: the recorder's split lead in BOOTH OUT means the monitors'
+  // BOOTH cables are out of it (one plug per jack) — a monitor fed from
+  // BOOTH OUT is silent while BOOTH is the recording tap
+  const boothOutTaken = recHoldsBoothOut(ev);
   const spk = (s: SpeakerId): Float32Array | null => {
     const f = speakerFeed(b, s);
+    if (f && f.out === 'BOOTH' && boothOutTaken) return null;
     return f ? outs[f.out][f.side] : null;
   };
   let crowdL: Float32Array = z;

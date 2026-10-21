@@ -299,9 +299,21 @@ export const freshRec = (): RecState => ({ tap: 'NONE', gain: 0.5, armedAt: null
 /** What the recorder's input carries, in words. */
 export const REC_TAPS: Record<Exclude<RecTap, 'NONE'>, { label: string; blurb: string }> = {
   REC_OUT: { label: 'REC OUT', blurb: 'The mixer’s record output: a fixed-level copy of the mix taken before the MASTER knob — your MASTER moves never ride the take.' },
-  BOOTH: { label: 'BOOTH OUT', blurb: 'The booth output: it follows the BOOTH knob, so every booth move is in the take.' },
+  BOOTH: { label: 'BOOTH OUT', blurb: 'The booth output: it follows the BOOTH knob, so every booth move is in the take. BOOTH OUT now feeds the recorder, so the booth monitors are unplugged and silent — one plug per jack.' },
   LOOPBACK: { label: 'LOOPBACK', blurb: 'The computer recording what it plays itself. The players and the mic never pass through it.' },
 };
+
+/**
+ * R3-DJ-01 (owner 2026-10-21, "unplug the booth monitors"): the recorder's
+ * split lead on BOOTH OUT takes both BOOTH OUT jacks, so the booth monitors'
+ * BOOTH cables (bth.trsL / bth.trsR) cannot stay in them — one plug per jack
+ * (MODEL §8). While BOOTH is the recording tap those cables hang unplugged
+ * (Screen 21 draws them loose) and a monitor fed from BOOTH OUT is silent
+ * (renderEvent). Pick another tap and they go back in. A BOOTH cable whose
+ * mixer end is in the PHONES jack (DJ-R3-PHONES) is not in BOOTH OUT, so it
+ * keeps playing.
+ */
+export const recHoldsBoothOut = (ev: EventRig): boolean => ev.rec.tap === 'BOOTH';
 
 /* ── the hybrid rig (screen 22) ───────────────────────────────────────── */
 

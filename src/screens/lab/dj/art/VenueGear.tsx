@@ -12,6 +12,12 @@
  *                 driver behind its grille, the port slots, the castors.
  *   PowerAmp      a 2U rack power amplifier front (482 × 88) — what a
  *                 PASSIVE system needs between the processor and the boxes.
+ *   PowerAmpRear  the same amp from BEHIND (R3-DJ-02): its Speakon NL4
+ *                 outputs, XLR inputs, mains inlet and fan.
+ *   PassiveTopRear a passive top's BACK (365 × 600): no amplifier, no power,
+ *                 no LED — only the recessed cup with its NL4 INPUT and LINK.
+ *   SpeakerLead   the Speakon speaker lead (heavy, unshielded two-core) with
+ *                 an NL4FC connector seated at each end, true size.
  *   XoverPlot     the venue processor's crossover, plotted from the SAME
  *                 biquads the render uses (djEventRender.xoverResp) (tops above 100 Hz, the mono sub
  *                 below; without the crossover, their own natural roll-offs
@@ -22,7 +28,10 @@
 import { memo, useMemo } from 'react';
 import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Rect, RoundedRect, Skia, SweepGradient, vec } from '@shopify/react-native-skia';
 import { INK } from './ink';
-import { Knob, Led, Rocker, XlrSocket } from './parts';
+import { Cable, IecInlet, Knob, Led, Rocker, XlrSocket } from './parts';
+import { CableFlag } from './cables';
+import { SPEAKER_H, SPEAKER_W } from '../geometry/gearGeometry';
+import { AMP_REAR, NL4, PASSIVE_REAR } from '../geometry/eventGeometry';
 import { SceneText, useLabelMm } from './sceneText';
 import { xoverResp } from '../engine/djEventRender';
 import { XOVER_HZ } from '../model/djEvent';
@@ -193,6 +202,203 @@ export const PowerAmp = memo(function PowerAmp({ x, y, s = 1, on, signal }: { x:
       <Led cx={384} cy={34} r={3} on={on} colour={INK.green} />
       <Led cx={384} cy={50} r={3} on={on && signal} colour={INK.green} />
       <Rocker x={402} y={30} s={1.4} on={on} />
+    </Group>
+  );
+});
+
+/* ── Speakon NL4 (R3-DJ-02) ───────────────────────────────────────────── */
+
+/** An NL4MP chassis socket, face-on (true size): the D-size flange with its
+ *  two screws and latch slot, the round insert and its key. */
+export function Nl4Socket({ cx, cy }: { cx: number; cy: number }) {
+  const fw = NL4.flangeW;
+  const fh = NL4.flangeH;
+  const r = NL4.insertD / 2;
+  return (
+    <Group>
+      <RoundedRect x={cx - fw / 2} y={cy - fh / 2} width={fw} height={fh} r={2.6}>
+        <LinearGradient start={vec(cx - fw / 2, cy - fh / 2)} end={vec(cx + fw / 2, cy + fh / 2)} colors={['#4a4e55', '#2a2c31', '#17181b']} />
+      </RoundedRect>
+      <RoundedRect x={cx - fw / 2} y={cy - fh / 2} width={fw} height={fh} r={2.6} style="stroke" strokeWidth={0.5} color="rgba(255,255,255,0.14)" />
+      {[[cx - fw / 2 + 3, cy - fh / 2 + 3], [cx + fw / 2 - 3, cy + fh / 2 - 3]].map(([sx, sy]) => (
+        <Circle key={String(sx)} cx={sx} cy={sy} r={1.3} color="#8b9099" />
+      ))}
+      <RoundedRect x={cx - 4} y={cy - fh / 2 + 0.8} width={8} height={1.6} r={0.6} color="#08090a" />
+      <Circle cx={cx} cy={cy} r={r} color="#060607" />
+      <Circle cx={cx} cy={cy} r={r * 0.78}>
+        <RadialGradient c={vec(cx - r * 0.2, cy - r * 0.25)} r={r} colors={['#2c2e33', '#121315']} />
+      </Circle>
+      <Circle cx={cx} cy={cy} r={r * 0.3} color="#060607" />
+      <RoundedRect x={cx - 1.8} y={cy - r + 0.6} width={3.6} height={3.4} r={0.8} color="#060607" />
+    </Group>
+  );
+}
+
+/** An NL4FC cable connector seated in its socket, seen from its cable end
+ *  in the same slight perspective as parts.PlugFace: the locking body
+ *  (⌀ 30) with its grip ribs, its grey release latch, the boot (⌀ 15) the
+ *  cable leaves by. */
+export function Nl4PlugFace({ cx, cy }: { cx: number; cy: number }) {
+  const R = NL4.plugD / 2;
+  const boot = NL4.bootD / 2;
+  const depth = 4;
+  const nx = cx + depth * 0.55;
+  const ny = cy + depth * 0.75;
+  return (
+    <Group>
+      <Circle cx={cx + R * 0.45} cy={cy + R * 0.6} r={R * 1.06} color="rgba(0,0,0,0.75)">
+        <BlurMask blur={R * 0.35} style="normal" />
+      </Circle>
+      <Line p1={vec(cx, cy)} p2={vec(nx, ny)} strokeWidth={R * 2} strokeCap="round" color="#1a1b1f" />
+      <Circle cx={nx} cy={ny} r={R}>
+        <RadialGradient c={vec(nx - R * 0.3, ny - R * 0.35)} r={R * 1.3} colors={['#3e4147', '#1a1b1f', '#0b0b0d']} positions={[0, 0.55, 1]} />
+      </Circle>
+      {Array.from({ length: 16 }, (_, i) => {
+        const a = (i / 16) * Math.PI * 2;
+        return <Line key={i} p1={vec(nx + Math.cos(a) * R * 0.8, ny + Math.sin(a) * R * 0.8)} p2={vec(nx + Math.cos(a) * R * 0.97, ny + Math.sin(a) * R * 0.97)} color="rgba(255,255,255,0.10)" strokeWidth={0.8} />;
+      })}
+      <RoundedRect x={nx - 3.2} y={ny - R - 1.2} width={6.4} height={4.4} r={1.2}>
+        <LinearGradient start={vec(0, ny - R - 1.2)} end={vec(0, ny - R + 3.2)} colors={['#c3c7ce', '#6e737c']} />
+      </RoundedRect>
+      <Circle cx={nx} cy={ny} r={boot}>
+        <RadialGradient c={vec(nx - boot * 0.3, ny - boot * 0.35)} r={boot * 1.4} colors={['#34363c', '#0b0b0d']} />
+      </Circle>
+      <Circle cx={nx - R * 0.34} cy={ny - R * 0.38} r={R * 0.14} color="rgba(255,255,255,0.35)">
+        <BlurMask blur={R * 0.1} style="normal" />
+      </Circle>
+    </Group>
+  );
+}
+
+/** The Speakon speaker lead along pts (dense, mm): a heavy unshielded
+ *  two-core cable at its true diameter, an NL4FC seated at each end, and its
+ *  flag. */
+export function SpeakerLead({ pts, live, labelAt }: { pts: [number, number][]; live: boolean; labelAt?: [number, number] }) {
+  const path = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    p.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) p.lineTo(pts[i][0], pts[i][1]);
+    return p.detach();
+  }, [pts]);
+  const a = pts[0];
+  const b = pts[pts.length - 1];
+  return (
+    <Group>
+      <Cable pts={pts} path={path} style={{ colour: '#141518', width: NL4.cableD, pattern: 'plain' }} glow={live ? INK.blue : null} />
+      <Nl4PlugFace cx={a[0]} cy={a[1]} />
+      <Nl4PlugFace cx={b[0]} cy={b[1]} />
+      {labelAt ? <CableFlag x={labelAt[0]} y={labelAt[1]} text="SPEAKER CABLE · NL4" live={live} edge="#5c626b" /> : null}
+    </Group>
+  );
+}
+
+/* ── the power amp, from behind (R3-DJ-02) ────────────────────────────── */
+
+export const PowerAmpRear = memo(function PowerAmpRear({ x, y }: { x: number; y: number }) {
+  const R = AMP_REAR;
+  const fanR = R.fan.d / 2;
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }]}>
+      <RoundedRect x={4} y={7} width={AMP_W} height={AMP_H} r={4} color="rgba(0,0,0,0.65)">
+        <BlurMask blur={6} style="normal" />
+      </RoundedRect>
+      {/* the rack ears' backs, then the chassis between them */}
+      {[0, AMP_W - 22].map((ex) => (
+        <Rect key={ex} x={ex} y={0} width={22} height={AMP_H} color="#1f2125" />
+      ))}
+      <RoundedRect x={24} y={2} width={AMP_W - 48} height={AMP_H - 4} r={3}>
+        <LinearGradient start={vec(0, 2)} end={vec(0, AMP_H - 2)} colors={['#2c2f34', '#1a1b1f', '#111214']} />
+      </RoundedRect>
+      <RoundedRect x={24.6} y={2.6} width={AMP_W - 49.2} height={AMP_H - 5.2} r={2.6} style="stroke" strokeWidth={1} color={INK.bevel} />
+      {/* the fan behind its guard */}
+      <Circle cx={R.fan.x} cy={R.fan.y} r={fanR} color="#060607" />
+      {[0.92, 0.66, 0.4].map((k) => (
+        <Circle key={k} cx={R.fan.x} cy={R.fan.y} r={fanR * k} style="stroke" strokeWidth={1.4} color="#4a4e55" />
+      ))}
+      {[0, 1, 2, 3].map((i) => {
+        const a = (i / 4) * Math.PI;
+        return <Line key={i} p1={vec(R.fan.x - Math.cos(a) * fanR * 0.92, R.fan.y - Math.sin(a) * fanR * 0.92)} p2={vec(R.fan.x + Math.cos(a) * fanR * 0.92, R.fan.y + Math.sin(a) * fanR * 0.92)} color="#4a4e55" strokeWidth={1.2} />;
+      })}
+      <IecInlet x={R.ac.x - 12} y={R.ac.y - 8} s={1} />
+      <SceneText x={R.ac.x} y={R.ac.y - 16} size={LEG} text="AC IN" color={INK.print} face="label" align="center" />
+      {/* the outputs: Speakon only (a speaker lead, never a line cable) */}
+      <SceneText x={(R.outB.x + R.outA.x) / 2} y={14} size={LEG + 1} text="SPEAKER OUT" color={INK.amber} face="label" align="center" />
+      {([['outB', 'CH B'], ['outA', 'CH A']] as const).map(([k, t]) => (
+        <Group key={k}>
+          <Nl4Socket cx={R[k].x} cy={R[k].y} />
+          {/* beside the socket, off the lead that hangs down from its plug */}
+          <SceneText x={R[k].x - NL4.flangeW / 2 - 4} y={R[k].y + 1.5} size={LEG} text={t} color={INK.print} face="label" align="right" />
+        </Group>
+      ))}
+      {/* the inputs: balanced XLR, from the processor */}
+      <SceneText x={(R.inB.x + R.inA.x) / 2} y={14} size={LEG + 1} text="INPUT (BAL)" color={INK.amber} face="label" align="center" />
+      {([['inB', 'CH B'], ['inA', 'CH A']] as const).map(([k, t]) => (
+        <Group key={k}>
+          <XlrSocket cx={R[k].x} cy={R[k].y} d={19} male={false} />
+          <SceneText x={R[k].x} y={R[k].y + NL4.flangeH / 2 + 7} size={LEG} text={t} color={INK.print} face="label" align="center" />
+        </Group>
+      ))}
+      <SceneText x={418} y={50} size={LEG} text="MIN LOAD 4 OHMS" color={INK.print} face="label" align="center" />
+    </Group>
+  );
+});
+
+/* ── a passive top, from behind (R3-DJ-02) ────────────────────────────── */
+
+export const PassiveTopRear = memo(function PassiveTopRear({ x, y }: { x: number; y: number }) {
+  const W = SPEAKER_W;
+  const H = SPEAKER_H;
+  const taper = W * 0.035;
+  const shell = useMemo(() => {
+    const p = Skia.PathBuilder.Make();
+    const r = W * 0.05;
+    p.moveTo(r, 0);
+    p.lineTo(W - r, 0);
+    p.quadTo(W, 0, W, r);
+    p.lineTo(W - taper, H - r);
+    p.quadTo(W - taper, H, W - taper - r, H);
+    p.lineTo(taper + r, H);
+    p.quadTo(taper, H, taper, H - r);
+    p.lineTo(0, r);
+    p.quadTo(0, 0, r, 0);
+    p.close();
+    return p.detach();
+  }, [W, H, taper]);
+  const handle = { w: W * 0.36, h: 22 };
+  const c = PASSIVE_REAR.cup;
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }]}>
+      <Path path={shell} color="rgba(0,0,0,0.7)" transform={[{ translateX: 8 }, { translateY: 14 }]}>
+        <BlurMask blur={14} style="normal" />
+      </Path>
+      <Path path={shell}>
+        <LinearGradient start={vec(0, 0)} end={vec(W, H)} colors={['#2a2c31', '#1a1b1f', '#101113']} />
+      </Path>
+      <Path path={shell} style="stroke" strokeWidth={2} color={INK.bevel} />
+      {/* the carry handle cut into the top */}
+      <RoundedRect x={W / 2 - handle.w / 2} y={H * 0.025} width={handle.w} height={handle.h} r={handle.h / 2}>
+        <LinearGradient start={vec(0, H * 0.025)} end={vec(0, H * 0.025 + handle.h)} colors={['#020203', '#0d0e10', '#2a2c31']} positions={[0, 0.7, 1]} />
+      </RoundedRect>
+      {/* the back panel's screws */}
+      {[[30, 60], [W - 30, 60], [34, H - 40], [W - 34, H - 40]].map(([sx, sy]) => (
+        <Circle key={sx + "-" + sy} cx={sx} cy={sy} r={3} color="#5c626b" />
+      ))}
+      {/* the recessed connector cup: INPUT and LINK, and nothing else — no
+          amplifier, no mains, no power LED */}
+      <RoundedRect x={c.x} y={c.y} width={c.w} height={c.h} r={10}>
+        <LinearGradient start={vec(0, c.y)} end={vec(0, c.y + c.h)} colors={['#040405', '#0d0e10']} />
+      </RoundedRect>
+      <RoundedRect x={c.x} y={c.y} width={c.w} height={c.h} r={10} style="stroke" strokeWidth={1.2} color="rgba(255,255,255,0.10)" />
+      {([['input', 'INPUT'], ['link', 'LINK']] as const).map(([k, t]) => (
+        <Group key={k}>
+          <SceneText x={PASSIVE_REAR[k].x - NL4.flangeW / 2 - 4} y={PASSIVE_REAR[k].y + 1.5} size={LEG} text={t} color={INK.print} face="label" align="right" />
+          <Nl4Socket cx={PASSIVE_REAR[k].x} cy={PASSIVE_REAR[k].y} />
+        </Group>
+      ))}
+      {/* the rating plate */}
+      <RoundedRect x={W / 2 - 64} y={c.y + c.h + 18} width={128} height={34} r={3} color="#c9c4b2" />
+      <SceneText x={W / 2} y={c.y + c.h + 31} size={LEG + 1} text="PASSIVE · 8 OHMS" color="#24262b" face="label" align="center" />
+      <SceneText x={W / 2} y={c.y + c.h + 44} size={LEG} text="400 W (AES)" color="#24262b" face="label" align="center" />
     </Group>
   );
 });

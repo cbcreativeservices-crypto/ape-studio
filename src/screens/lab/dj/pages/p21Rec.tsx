@@ -30,8 +30,9 @@ import { Scene, type Callout } from '../art/Scene';
 import { MixerRear } from '../art/RearPanels';
 import { Recorder, REC, REC_H, REC_W, SplitLead, TakeLane } from '../art/RecorderGear';
 import { Laptop, LAPTOP_W } from '../art/gear';
+import { CableRun } from '../art/cables';
 import { MIXER_REAR, MIXER_REAR_JACKS, type Box } from '../geometry/boothGeometry';
-import { MIXER_REAR_EXTRA } from '../geometry/eventGeometry';
+import { BOOTH_LOOSE, BOOTH_SPLIT_JOG, LOOSE_TRS_LEN, MIXER_REAR_EXTRA, REC_BOOTH_FRAME, boothLooseHang } from '../geometry/eventGeometry';
 import { DjRack } from '../DjRack';
 import { Do, EvidenceCheck, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey, type Transport } from '../dock';
@@ -40,7 +41,7 @@ import { cueAtBar, useScreenSetup } from '../booth/setup';
 import { armTake, closeTake, getTake, takeOpen, useTake, writeChunk } from '../booth/takeStore';
 import { useTakePlayer } from '../booth/useTakePlayer';
 import { levelKnobGain, type Booth } from '../model/djModel';
-import { REC_TAPS, evOf, micGainPos, recGainDb, recGainPos, withMic, withRec, type RecTap } from '../model/djEvent';
+import { REC_TAPS, evOf, micGainPos, recGainDb, recGainPos, recHoldsBoothOut, withMic, withRec, type RecTap } from '../model/djEvent';
 import { announce, dbCell, EventListen, extPeak, musicOn, Row, TrayNote, useEventKit, useFreshReading, voiceCell, voiceIn, withFreshEvent } from './eventShared';
 import { PEAK_RED, peakDb } from './shared';
 import type { BoothRender } from '../engine/djRender';
@@ -61,17 +62,43 @@ const LOOK = 'You are looking at the back of the mixer and a handheld recorder, 
 
 const REC_AT = { x: 334, y: -14 };
 const LAP_AT = { x: 316, y: -60 };
-const frameFor = (tap: RecTap): Box => (tap === 'LOOPBACK' ? { x: -10, y: -70, w: 670, h: 380 } : { x: -14, y: -26, w: 432, h: 184 });
+const frameFor = (tap: RecTap): Box => (tap === 'LOOPBACK' ? { x: -10, y: -70, w: 670, h: 380 } : tap === 'BOOTH' ? REC_BOOTH_FRAME : { x: -14, y: -26, w: 432, h: 184 });
+/** R3-DJ-01: the strip the loose BOOTH cables hang in (no label sits on it). */
+const LOOSE_STRIP: Box = { x: BOOTH_LOOSE.R.x + BOOTH_LOOSE.lean - 8, y: REC_BOOTH_FRAME.y, w: BOOTH_LOOSE.L.x - BOOTH_LOOSE.R.x - BOOTH_LOOSE.lean + 16, h: BOOTH_LOOSE.L.boot + LOOSE_TRS_LEN + 4 - REC_BOOTH_FRAME.y };
+
+/**
+ * R3-DJ-01 (owner 2026-10-21): with BOOTH OUT as the tap, the recorder's
+ * split lead is in both BOOTH OUT jacks, so the booth monitors' BOOTH cables
+ * are out of them — one plug per jack. They hang loose beside the mixer,
+ * down from the monitors, each in its own lane, its plug pins-down; the
+ * monitors are silent (renderEvent). Another tap puts them back.
+ */
+function LooseBoothCables() {
+  return (
+    <Group>
+      {(['R', 'L'] as const).map((side) => {
+        const dense = boothLooseHang(side);
+        return (
+          <CableRun
+            key={side}
+            r={{ id: `bth.trs${side}`, kind: 'trs', colour: '#101113', pts: [dense[0], dense[dense.length - 1]], dense, plugged: false, live: false, noFixedPlug: true, label: `BOOTH ${side}`, dashed: side === 'R' }}
+          />
+        );
+      })}
+    </Group>
+  );
+}
 /** The gear's share of the glass; the take lane takes the rest. */
 const GEAR_SHARE = 0.56;
 
-function GearView({ booth, live, elapsed, clip }: { booth: Booth; live: boolean; elapsed: string; clip: boolean }) {
+export function GearView({ booth, live, elapsed, clip }: { booth: Booth; live: boolean; elapsed: string; clip: boolean }) {
   const ev = evOf(booth);
   const tap = ev.rec.tap;
   const E = MIXER_REAR_EXTRA;
   const J = MIXER_REAR_JACKS;
   const from: [{ x: number; y: number }, { x: number; y: number }] =
     tap === 'BOOTH' ? [{ x: J['booth.L'].x, y: J['booth.L'].y }, { x: J['booth.R'].x, y: J['booth.R'].y }] : [{ x: E['rec.L'].x, y: E['rec.L'].y }, { x: E['rec.R'].x, y: E['rec.R'].y }];
+  const boothTaken = recHoldsBoothOut(ev);
   const lineIn = { x: REC_AT.x + REC.lineIn.x, y: REC_AT.y + REC.lineIn.y };
   return (
     <Group>
@@ -81,9 +108,10 @@ function GearView({ booth, live, elapsed, clip }: { booth: Booth; live: boolean;
       ) : (
         <Group>
           <Recorder x={REC_AT.x} y={REC_AT.y} armed={ev.rec.armedAt != null} clip={clip} gain={recGainDb(ev.rec.gain)} elapsed={elapsed} />
-          {tap === 'REC_OUT' || tap === 'BOOTH' ? <SplitLead from={from} y0={136} to={lineIn} live={live} trs={tap === 'BOOTH'} /> : null}
+          {tap === 'REC_OUT' || tap === 'BOOTH' ? <SplitLead from={from} y0={136} to={lineIn} live={live} trs={tap === 'BOOTH'} jog={tap === 'BOOTH' ? BOOTH_SPLIT_JOG : undefined} /> : null}
         </Group>
       )}
+      {boothTaken ? <LooseBoothCables /> : null}
     </Group>
   );
 }
@@ -236,6 +264,7 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
       : [
           { id: 'ro', text: rec.tap === 'REC_OUT' ? 'REC OUT → RECORDER' : 'REC OUT', at: { x: (E['rec.L'].x + E['rec.R'].x) / 2, y: E['rec.L'].y - 6 }, dx: 30, dy: -16, tone: rec.tap === 'REC_OUT' ? 'green' : 'plain' },
           { id: 'bo', text: rec.tap === 'BOOTH' ? 'BOOTH OUT → RECORDER' : 'BOOTH OUT', at: { x: J['booth.L'].x, y: J['booth.L'].y - 12 }, dx: 0, dy: -22, tone: rec.tap === 'BOOTH' ? 'amber' : 'plain' },
+          ...(rec.tap === 'BOOTH' ? [{ id: 'bm', text: 'BOOTH MONITORS UNPLUGGED', lines: ['BOOTH MONITORS', 'UNPLUGGED'], at: { x: BOOTH_LOOSE.L.x, y: BOOTH_LOOSE.L.boot + LOOSE_TRS_LEN }, dx: 0, dy: 18, tone: 'amber' as const }] : []),
           { id: 'mo', text: 'MASTER → THE ROOM', at: { x: (J['master.L'].x + J['master.R'].x) / 2, y: J['master.L'].y - 12 }, dx: 0, dy: -22, tone: 'plain' },
           { id: 'rc', text: `RECORDER · INPUT ${recGainDb(rec.gain) >= 0 ? '+' : '−'}${Math.abs(recGainDb(rec.gain)).toFixed(0)} dB`, at: { x: REC_AT.x + REC_W / 2, y: REC_AT.y + REC_H }, dx: 0, dy: 16, tone: recClip ? 'red' : 'amber' },
         ];
@@ -252,8 +281,8 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
             fit={{ x: 0, y: 0, w, h: h * GEAR_SHARE }}
             aspect={false}
             focus={rec.tap === 'LOOPBACK' ? undefined : { x: REC_AT.x - 40, y: REC_AT.y + 40, w: 120, h: 80 }}
-            a11y={`${LOOK} Tap: ${rec.tap === 'NONE' ? 'nothing plugged in' : REC_TAPS[rec.tap as Exclude<RecTap, 'NONE'>].label}. ${take ? `The take is ${take.seconds.toFixed(1)} seconds${take.hasVoice ? ', with the voice in it' : ', with no voice in it'}.` : 'No take yet.'}`}
-            obstacles={[{ x: 0, y: 0, w: MIXER_REAR.w, h: MIXER_REAR.h }, ...(rec.tap === 'LOOPBACK' ? [] : [{ x: REC_AT.x - 12, y: REC_AT.y, w: REC_W + 18, h: REC_H }, { x: E['rec.L'].x - 8, y: E['rec.L'].y, w: REC_AT.x - E['rec.L'].x, h: 136 + 14 - E['rec.L'].y }])]}
+            a11y={`${LOOK} Tap: ${rec.tap === 'NONE' ? 'nothing plugged in' : REC_TAPS[rec.tap as Exclude<RecTap, 'NONE'>].label}.${rec.tap === 'BOOTH' ? ' The booth monitors’ two cables hang unplugged beside the mixer: BOOTH OUT holds the recorder’s lead, so the monitors are silent.' : ''} ${take ? `The take is ${take.seconds.toFixed(1)} seconds${take.hasVoice ? ', with the voice in it' : ', with no voice in it'}.` : 'No take yet.'}`}
+            obstacles={[{ x: 0, y: 0, w: MIXER_REAR.w, h: MIXER_REAR.h }, ...(rec.tap === 'BOOTH' ? [LOOSE_STRIP] : []), ...(rec.tap === 'LOOPBACK' ? [] : [{ x: REC_AT.x - 12, y: REC_AT.y, w: REC_W + 18, h: REC_H }, { x: E['rec.L'].x - 8, y: E['rec.L'].y, w: REC_AT.x - E['rec.L'].x, h: 136 + 14 - E['rec.L'].y }])]}
             callouts={callouts}
             screenOverlay={(sw, sh, _x, kz) => <TakeLane b={{ x: 12, y: sh * GEAR_SHARE + 2, w: sw - 24, h: sh * (1 - GEAR_SHARE) - 10 * Math.sqrt(Math.max(1, kz)) }} take={take} pos={player.pos} k={Math.sqrt(Math.max(1, kz))} recording={armed} />}
           >

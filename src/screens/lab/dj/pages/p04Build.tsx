@@ -298,7 +298,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>{LOOK}</Look>
-        <P>Each player’s AUDIO OUT goes to a mixer LINE input on an RCA pair (white left, red right); the mixer’s MASTER OUT feeds the PA (the crowd) and its BOOTH OUT the booth monitors (you) — on this lab’s mixer both on balanced cables, XLR and TRS, which cancel hum on long runs.</P>
+        <P>Each player’s AUDIO OUT goes to a mixer LINE input on an RCA pair (white left, red right); the mixer’s MASTER OUT feeds the PA (the crowd) and its BOOTH OUT the booth monitors (you) — on this lab’s mixer both on balanced lines: the input rejects hum picked up equally on both wires, which matters on long runs.</P>
         <P>The headphones plug into the mixer’s front, and every powered device needs its own power cord.</P>
         <Terms items={TERMS} />
       </Step>

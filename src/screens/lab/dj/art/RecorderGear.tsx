@@ -9,7 +9,8 @@
  *              jack on the left side and the INPUT gain wheel on the right.
  *   SplitLead  the lead from the mixer's REC OUT (two RCA legs, white and
  *              red, into one moulded Y) to the recorder's 3.5 mm LINE IN —
- *              ONE cable with two legs, each leg its own traceable line.
+ *              ONE cable with two legs, each leg its own traceable line,
+ *              each leg's plug drawn seated in its jack (R3-DJ-01).
  *   TakeLane   the take's waveform (min / max per column of the real
  *              capture), where the mic is in it, the playhead.
  */
@@ -17,7 +18,7 @@ import { memo, useMemo } from 'react';
 import { BlurMask, Circle, Group, Line, LinearGradient, Path, RadialGradient, Rect, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import { INK } from './ink';
-import { LedColumn, Led } from './parts';
+import { LedColumn, Led, PlugFace } from './parts';
 import { ColumnWave } from './waveDraw';
 import { SceneText, useLabelMm } from './sceneText';
 import { useExtTapDb } from './eventMotion';
@@ -126,22 +127,47 @@ function LineInLegend() {
   );
 }
 
-/** The split lead's two RCA legs (fixed at the mixer's REC OUT or BOOTH
- *  OUT) into one moulded Y, then one cable to the 3.5 mm plug. */
-export function SplitLead({ from, y0, to, live, trs }: { from: [{ x: number; y: number }, { x: number; y: number }]; y0: number; to: { x: number; y: number }; live: boolean; trs: boolean }) {
+/** The two legs' lanes into the Y (mm apart). */
+export const SPLIT_LANE_GAP = 5;
+
+/**
+ * The lane each leg drops in, and the height of its run into the Y
+ * (R3-DJ-01): a leg with `jog` leaves its plug SIDEWAYS to that lane before
+ * it drops (BOOTH L, whose straight drop would cross the BOOTH R plug under
+ * it); the leg whose lane is further from the Y runs LOWER, so the two legs
+ * never cross; each starts exactly at its own jack.
+ */
+export function splitLanes(from: readonly [{ x: number; y: number }, { x: number; y: number }], y0: number, jog?: readonly [number | null, number | null]): { x: number; y: number }[] {
+  const lx = from.map((f, i) => jog?.[i] ?? f.x);
+  const outer = lx[0] <= lx[1] ? 0 : 1;
+  return lx.map((x, i) => ({ x, y: i === outer ? y0 + SPLIT_LANE_GAP : y0 }));
+}
+
+/** The split lead's two legs (fixed at the mixer's REC OUT — RCA — or its
+ *  BOOTH OUT — 6.35 mm jacks) into one moulded Y, then one cable to the
+ *  3.5 mm plug. */
+export function SplitLead({ from, y0, to, live, trs, jog }: { from: [{ x: number; y: number }, { x: number; y: number }]; y0: number; to: { x: number; y: number }; live: boolean; trs: boolean; jog?: readonly [number | null, number | null] }) {
   const yX = { x: to.x - 34, y: y0 };
   const legs = useMemo(
-    () =>
-      from.map((f) => {
+    () => {
+      const lanes = splitLanes(from, y0, jog);
+      return from.map((f, i) => {
+        const { x: lx, y: ly } = lanes[i];
         const p = Skia.PathBuilder.Make();
         p.moveTo(f.x, f.y);
-        p.lineTo(f.x, y0 - 10);
-        p.quadTo(f.x, y0, f.x + 10, y0);
-        p.lineTo(yX.x - 8, y0);
+        if (Math.abs(lx - f.x) > 0.5) {
+          const sg = Math.sign(lx - f.x);
+          p.lineTo(lx - sg * 6, f.y);
+          p.quadTo(lx, f.y, lx, f.y + 6);
+        }
+        p.lineTo(lx, ly - 10);
+        p.quadTo(lx, ly, lx + 10, ly);
+        p.lineTo(yX.x - 8, ly);
         return p.detach();
-      }),
+      });
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [from[0].x, from[0].y, from[1].x, from[1].y, y0, yX.x],
+    [from[0].x, from[0].y, from[1].x, from[1].y, y0, yX.x, jog?.[0], jog?.[1]],
   );
   const tail = useMemo(() => {
     const p = Skia.PathBuilder.Make();
@@ -165,11 +191,16 @@ export function SplitLead({ from, y0, to, live, trs }: { from: [{ x: number; y: 
         </Group>
       ) : null}
       {legs.map((p, i) => (
-        <Group key={i} transform={[{ translateY: i * 5 }]}>
+        <Group key={i}>
           <Path path={p} style="stroke" strokeWidth={3.9} color="rgba(0,0,0,0.75)" strokeCap="round" />
           <Path path={p} style="stroke" strokeWidth={3.2} color={leg(i)} strokeCap="round" />
           <Path path={p} style="stroke" strokeWidth={0.7} color={INK.cableHi} strokeCap="round" transform={[{ translateY: -0.7 }]} />
         </Group>
+      ))}
+      {/* each leg's plug, seated in its jack: 6.35 mm jacks in BOOTH OUT,
+          white and red RCA in REC OUT */}
+      {from.map((f, i) => (
+        <PlugFace key={`p${i}`} cx={f.x} cy={f.y} kind={trs ? 'trs' : 'rca'} colour={trs ? '#101113' : i === 0 ? INK.rcaWhite : INK.rcaRed} />
       ))}
       <Path path={tail} style="stroke" strokeWidth={4.6} color="rgba(0,0,0,0.75)" strokeCap="round" />
       <Path path={tail} style="stroke" strokeWidth={3.8} color="#1a1b1f" strokeCap="round" />

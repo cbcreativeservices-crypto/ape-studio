@@ -458,6 +458,16 @@ monitors (±1.25, 1.3) aimed at the DJ; floor y 3.2 … 11, centre (0, 7)).
   XLR-to-jack lead from MASTER OUT, its TS jack in a jack-to-XLR adapter at
   the stage box; the TS jack ties pin 3 to pin 1) — a −50 dBFS
   hum in the venue's feed only (the booth and the headphones stay clean).
+- **Tops (SYSTEM view, R3-DJ-02, 2026-10-21):** POWERED draws the powered
+  top's front (its power LED lit). PASSIVE + AMP draws the passive top and
+  the power amp from BEHIND, where the connection is: a passive box has no
+  amplifier, mains or LED, only a recessed cup with two Speakon NL4 sockets
+  (INPUT, LINK). A Speakon speaker lead (heavy unshielded two-core, about
+  ⌀ 10; an NL4FC connector at each end, true size, `NL4`) runs from the
+  amp's CH A OUTPUT to the top's INPUT in its own lane
+  (`speakerLeadPts`), and the processor's line comes into the amp's CH A
+  INPUT on XLR. One channel is drawn; CH B (the other top) stands empty.
+  Rule book L3, L4, R1.
 
 ## 16. Recording (screen 21)
 
@@ -473,6 +483,18 @@ its voice marks where
 the mic's own part of the take is above −50 dBFS; PLAY THE TAKE plays the
 captured samples (the booth stops first) at the LISTEN level through the
 protective limiter.
+
+BOOTH OUT as the tap (R3-DJ-01, owner 2026-10-21 "unplug the booth
+monitors"): the recorder's split lead takes both BOOTH OUT jacks, so the
+booth monitors' BOOTH cables come out of them (one plug per jack, §8). While
+BOOTH is the tap (`recHoldsBoothOut`) any monitor fed from BOOTH OUT is
+silent in `renderEvent` (LISTEN → BOOTH plays nothing; the modelled level
+at the decks loses the monitors), Screen 21 draws the two cables hanging
+loose beside the mixer, plugs pins-down (`boothLooseHang`), and the tap's
+blurb says so. Another tap puts them back. A BOOTH cable whose mixer end is
+in PHONES is not in BOOTH OUT and keeps playing. The split lead's legs each
+show their plug seated in its jack; BOOTH L's leg leaves sideways into its
+own lane (`BOOTH_SPLIT_JOG`) so it never crosses BOOTH R's plug.
 
 ## 17. The hybrid rig (screen 22)
 

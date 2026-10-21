@@ -34,10 +34,11 @@ import { nioshDose } from '../../calc/workspaces/splSafety';
 import { Scene, type Callout } from '../art/Scene';
 import { HeatLegend, LEGEND_H, PlanView, PLAN_FRAME, planAt, planObstacles, type MapMode } from '../art/PlanView';
 import { MixerRear } from '../art/RearPanels';
-import { PowerAmp, SB_IN, SB_H, SB_W, StageBox, Subwoofer, XoverPlot, xoverResp, AMP_W, SUB_W } from '../art/VenueGear';
+import { PassiveTopRear, PowerAmpRear, SB_IN, SB_H, SB_W, SpeakerLead, StageBox, Subwoofer, XoverPlot, xoverResp, AMP_W, SUB_W } from '../art/VenueGear';
 import { PowerSpeaker, SPEAKER_W } from '../art/gear';
 import { CableRun } from '../art/cables';
 import { MIXER_REAR, MIXER_REAR_JACKS, type Box } from '../geometry/boothGeometry';
+import { AMP_REAR, NL4, SYS_AMP_AT, SYS_TOP_AT, speakerLeadPts } from '../geometry/eventGeometry';
 import { DjRack } from '../DjRack';
 import { Do, EvidenceCheck, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { stopKey, type Transport } from '../dock';
@@ -144,12 +145,41 @@ export function HandoffView({ booth }: { booth: Booth }) {
 
 const S_FRAME: Box = { x: -40, y: -140, w: 1180, h: 900 };
 
-function SystemView({ booth, live }: { booth: Booth; live: boolean }) {
+/** R3-DJ-02: the speaker lead's flag sits in the gap between the amp and
+ *  the top, on the lead. */
+const LEAD = speakerLeadPts();
+const LEAD_FLAG: [number, number] = [LEAD[Math.round(LEAD.length * 0.2)][0], 14];
+/** The processor's feed into the amp's CH A INPUT: a balanced XLR line (its
+ *  male plug in the amp's female socket) coming down from above the view. */
+const AMP_IN_A: [number, number][] = [
+  [SYS_AMP_AT.x + AMP_REAR.inA.x, SYS_AMP_AT.y + AMP_REAR.inA.y],
+  [SYS_AMP_AT.x + AMP_REAR.inA.x, SYS_AMP_AT.y - 60],
+];
+
+/**
+ * PASSIVE + AMP (R3-DJ-02, owner 2026-10-21): a passive top has no
+ * amplifier, no mains and no power LED, so it is NOT drawn as the powered
+ * front. Both boxes are seen from BEHIND, where the connection is: the power
+ * amp's Speakon CH A OUTPUT and the top's INPUT cup, joined by a Speakon
+ * speaker lead (heavy, unshielded two-core; an NL4FC at each end) — never a
+ * mic or line cable (rule book L3, L4, R1). The processor's line comes into
+ * the amp's CH A INPUT on XLR from above. One channel is drawn: CH B (the
+ * other top) stands empty here.
+ */
+export function SystemView({ booth, live }: { booth: Booth; live: boolean }) {
   const v = evOf(booth).venue;
   return (
     <Group>
-      {v.tops === 'PASSIVE' ? <PowerAmp x={0} y={-120} s={1} on signal={live} /> : null}
-      <PowerSpeaker x={40} y={60} s={1} on signal={live} />
+      {v.tops === 'PASSIVE' ? (
+        <Group>
+          <PowerAmpRear x={SYS_AMP_AT.x} y={SYS_AMP_AT.y} />
+          <CableRun r={{ id: 'ampInA', kind: 'xlr', colour: '#3d4046', pts: AMP_IN_A, plugged: true, live, label: 'FROM PROCESSOR' }} />
+          <PassiveTopRear x={SYS_TOP_AT.x} y={SYS_TOP_AT.y} />
+          <SpeakerLead pts={LEAD} live={live} labelAt={LEAD_FLAG} />
+        </Group>
+      ) : (
+        <PowerSpeaker x={SYS_TOP_AT.x} y={SYS_TOP_AT.y} s={1} on signal={live} />
+      )}
       <Subwoofer x={500} y={0} s={1} on={v.subs} />
     </Group>
   );
@@ -333,9 +363,9 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
     { x: mstX('R') - 7, y: LANE.over, w: 14, h: mst('R').y - LANE.over },
   ];
   const sysCallouts: Callout[] = [
-    { id: 'tp', text: v.tops === 'PASSIVE' ? 'PASSIVE TOP' : 'POWERED TOP', at: { x: 40 + SPEAKER_W / 2, y: 60 + 40 }, dx: 0, dy: -30, tone: 'plain' },
+    { id: 'tp', text: v.tops === 'PASSIVE' ? 'PASSIVE TOP (BACK)' : 'POWERED TOP', at: { x: SYS_TOP_AT.x + (v.tops === 'PASSIVE' ? SPEAKER_W * 0.22 : SPEAKER_W / 2), y: SYS_TOP_AT.y + 40 }, dx: 0, dy: -30, tone: 'plain' },
     { id: 'sb', text: v.subs ? '18-INCH SUB' : 'SUB (OFF)', at: { x: 500 + SUB_W / 2, y: 30 }, dx: 0, dy: -24, tone: 'plain' },
-    ...(v.tops === 'PASSIVE' ? [{ id: 'am', text: 'POWER AMP', at: { x: AMP_W / 2, y: -120 }, dx: 0, dy: -16, tone: 'plain' as const }] : []),
+    ...(v.tops === 'PASSIVE' ? [{ id: 'am', text: 'POWER AMP (BACK)', at: { x: SYS_AMP_AT.x + AMP_W / 2, y: SYS_AMP_AT.y }, dx: 0, dy: -16, tone: 'plain' as const }] : []),
   ];
 
   const fourth =
@@ -366,7 +396,8 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
               motion={motion}
               fit={{ x: 0, y: h * 0.5, w, h: h * 0.5 }}
               aspect={false}
-              a11y={`${LOOK.SYSTEM} The crossover is ${v.xover ? 'on' : 'off'}; at 100 hertz the sum is ${at100.toFixed(1)} dB.`}
+              a11y={`${LOOK.SYSTEM}${v.tops === 'PASSIVE' ? ' The passive top and its power amp are seen from the back: the processor’s line comes into the amp’s CH A input on XLR, and a Speakon speaker cable runs from the amp’s CH A output to the top’s INPUT. The top has no amplifier and no power light of its own.' : ''} The crossover is ${v.xover ? 'on' : 'off'}; at 100 hertz the sum is ${at100.toFixed(1)} dB.`}
+              obstacles={v.tops === 'PASSIVE' ? [{ x: Math.min(...LEAD.map((p) => p[0])) - NL4.plugD / 2, y: LEAD[0][1] - NL4.plugD / 2, w: NL4.plugD + 20, h: LEAD[LEAD.length - 1][1] - LEAD[0][1] + NL4.plugD }, { x: AMP_IN_A[0][0] - 12, y: S_FRAME.y, w: 24, h: AMP_IN_A[0][1] + 12 - S_FRAME.y }] : undefined}
               callouts={sysCallouts}
               screenOverlay={(sw, sh, _x, kz) => {
                 const kk = Math.sqrt(Math.max(1, kz));
