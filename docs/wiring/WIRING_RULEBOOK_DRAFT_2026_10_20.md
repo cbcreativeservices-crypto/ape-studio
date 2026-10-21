@@ -1,6 +1,6 @@
-# Wiring & Signal-Flow Rule Book — DRAFT v1 (2026-10-20)
+# Wiring & Signal-Flow Rule Book — APPROVED v1 (2026-10-21)
 
-**Status: DRAFT — owner answers recorded 2026-10-20 (below); final sign-off by the owner alone.** Nothing in the labs changes on the strength of this file until a rule is approved.
+**Status: APPROVED by the owner, 2026-10-21 ("the rule book is fully approved as is"), including Comp B's 9 additions (marked "Comp B, 2026-10-21").** The file name still says DRAFT so existing links keep working.
 
 **Purpose.** This is the single standard every lab visual is audited against for cables, connectors, routing, signal path and signal flow. A lab is grade **A** on wiring only when it breaks **no** rule here and shows nothing a working professional would question.
 
@@ -24,13 +24,14 @@
 | C4 | Unbalanced ¼" TS: tip = signal, sleeve = ground/shield. TS is unbalanced. An instrument cable is TS. | U | — |
 | C5 | Insert on one TRS jack (Y-cable): **tip = send, ring = return** on most consoles. A few (some older large-format desks) use the opposite. | C | Console manuals (e.g. Yamaha, Allen & Heath, Mackie) (verify per drawn desk) |
 | C6 | Stereo headphone TRS: tip = left, ring = right, sleeve = common. | U | — |
-| C7 | Speakon NL4: 1+ / 1− carry a full-range (or low band) channel; 2+ / 2− carry a second channel or high band in bi-amp. NL2 uses 1+ / 1−. | U | Neutrik NL4 datasheet |
+| C7 | Speakon NL4: 1+ / 1− carry a full-range (or low band) channel; 2+ / 2− carry a second channel or high band in bi-amp. NL2 uses 1+ / 1−. | U for 1+ / 1−; **C** for which band 2+ / 2− carries in bi-amp (equipment-dependent; Comp B, 2026-10-21) | Neutrik NL4 datasheet |
 | C8 | RCA (phono) connectors are unbalanced consumer connections (typically −10 dBV line, or phono-cartridge level from a turntable). | U | IEC 61938 / consumer practice |
-| C9 | AES3 digital audio: 110 Ω balanced, normally on XLR. S/PDIF coax: 75 Ω on RCA; S/PDIF optical on TOSLINK. Word clock: 75 Ω coax on BNC. An analog mic cable is not a correct AES3 cable over distance. | U | AES3; IEC 60958 |
+| C9 | AES3 digital audio: 110 Ω balanced, normally on XLR. S/PDIF coax: 75 Ω on RCA; S/PDIF optical on TOSLINK. Word clock: 75 Ω coax on BNC. AES3id: 75 Ω unbalanced on BNC (Comp B, 2026-10-21). An analog mic cable is not a correct AES3 cable over distance. | U | AES3; IEC 60958 |
 | C10 | MIDI 5-pin DIN: OUT → IN. THRU repeats IN. MIDI on 3.5 mm TRS: **Type A** (tip = DIN pin 5, ring = DIN pin 4) is the MMA standard. Type B exists and is not interchangeable. | U | MMA RP-054 (2018) (verify pin numbers) |
 | C11 | USB carries data (and power), not analog audio. USB between two devices needs one to be a host. | U | USB spec |
 | C12 | Dante/AES67 use Ethernet (Cat5e or better), at most 100 m of copper per run between switches. | U | Audinate; IEEE 802.3 |
-| C13 | Every plug drawn must fit the jack it is in: same family, size and gender. Nothing is drawn forced into a mismatched jack unless the lesson is about that error. | U | — |
+| C13 | Every plug drawn must fit the jack it is in: same family, size and gender. Nothing is drawn forced into a mismatched jack unless the lesson is about that error. Look-alike families: ¼-inch TRS and TT/bantam patch plugs are different families; neither fits the other's jack. (Teaching text only, not a test: long-frame B-gauge and standard A-gauge ¼-inch plugs have different tips; a standard plug can spread a B-gauge jack's springs (verify).) (Comp B, 2026-10-21) | U | — |
+| C14 | XLR/TRS combo jack: ¼-inch in the centre, XLR contacts around it; phantom reaches the XLR pins only. (Comp B, 2026-10-21) | C (phantom part) | Maker datasheets |
 
 ## 2. Signal levels and power on the line
 
@@ -38,7 +39,7 @@
 |---|---|---|---|
 | L1 | Signal levels, low to high: mic (about −60 to −40 dBu) → instrument (Hi-Z, varies) → line (pro +4 dBu ≈ 1.23 V; consumer −10 dBV ≈ 0.316 V) → speaker level (after a power amplifier, many volts). | U | Industry references (dBu ref 0.7746 V, D53) |
 | L2 | Speaker-level signal never goes into a line or mic input, and a line output never drives a passive speaker directly. | U | — |
-| L3 | A passive speaker needs a power amplifier between the mixer and the speaker. A powered (active) speaker takes line level, because its amplifier is built in. | U | — |
+| L3 | A passive speaker needs a power amplifier between the mixer and the speaker. A powered (active) speaker takes line level, because its amplifier is built in. Wedge case: a snake return or a console mix output is line level; it feeds a powered wedge or an amplifier, never a passive wedge directly. (Comp B, 2026-10-21) | U | — |
 | L4 | Speaker cables are heavy-gauge, unshielded two-conductor (or Speakon). An instrument cable is never used as a speaker cable. | U | — |
 | L5 | Phantom power (+48 V, P48) is supplied on pins 2 and 3 of a balanced mic input, relative to pin 1. It powers condensers and active DIs. | U | IEC 61938 |
 | L6 | Phantom is safe for balanced dynamic mics. It must not reach unbalanced gear. Switch it off before patching, especially near ribbon mics and with faulty cables. Turn the channel down before switching it on or off. | C (modern ribbons vary; say "check the mic") | IEC 61938; mic manufacturers |
@@ -56,6 +57,7 @@
 | F6 | Gain is set at the preamp so the channel has headroom at every later stage. Clipping at any stage cannot be undone by a later control. | U | — |
 | F7 | Stereo: left = odd/first, right = even/second. Pan law and summing are taught as stated values, not assumed. | C | — |
 | F8 | Polarity (an inversion) is not the same as phase (a time or frequency-dependent shift). Use the words exactly. | U | AES terminology |
+| F9 | Two outputs are never tied together into one input (Y-cable, two-feed patch). One output may feed several high-impedance inputs. (Comp B, 2026-10-21) | U | — |
 
 ## 4. Signal flow in a system (live and studio)
 
@@ -79,18 +81,20 @@
 | P4 | **Non-normal (open):** top and bottom are not connected; signal flows only through patch cords. | U | — |
 | P5 | Top row = outputs (sources), bottom row = inputs (destinations). | C (common, not universal: say so) | — |
 | P6 | Patch cords run from an output jack to an input jack. | U | — |
+| P7 | Which side of a half-normal pair breaks varies by bay (top-breaking bays exist): verify the bay. (Comp B, 2026-10-21) | C | — |
 
 ## 6. Cable routing and dressing in drawings
 
 | ID | Rule | Status | Source |
 |---|---|---|---|
-| R1 | Every cable is traceable along its own lane from the plug at its source to the plug at its destination. No cable ends in mid-air unless it is shown as unplugged (a loose end hangs under gravity). | H (D69) | owner D67–D70 |
+| R1 | Every cable is traceable along its own lane from the plug at its source to the plug at its destination. No cable ends in mid-air unless it is shown as unplugged (a loose end hangs under gravity). | H (D70; cite corrected, Comp B 2026-10-21) | owner D67–D70 |
 | R2 | Audio cables run apart from mains power cables. Where they must cross, they cross at right angles. | C (best practice) | Rane; AES installation practice |
 | R3 | No cable hangs by its connector: show a service loop or strain relief at the gear. | C | Best practice |
 | R4 | Walkway crossings are covered by a cable ramp or taped flat. | C | Venue safety practice |
 | R5 | Cable type matches the signal: mic cable for mic, speaker cable for speakers, 75 Ω for word clock/video, Cat5e+ for Dante, and so on. | U | — |
 | R6 | Drawings are at true scale and dimensions (D67). Connectors are drawn with the right gender and the right number of pins. Plugs are shown seated. | H | owner D67–D68 |
 | R7 | All controls sit in the bottom dock; the bezel is read-only (D67–D70). | H | owner |
+| R8 | Mic/line, loudspeaker, mains and data run as separate groups, in separate bundles and on separate supports where practical. Where groups must meet, they cross at 90° (R2). (Comp B, 2026-10-21) | C | Installation practice |
 
 ## 7. Power and grounding
 

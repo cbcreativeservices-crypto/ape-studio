@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 07:57 · ccode · b8f22c0f
+changed: Signal Chain R3-SC-01 (owner 2026-10-21): caption — one lane is the stereo pair, outboard patched at the rear
+affects other side: nothing (client lab text/art only)
+needs: nothing
+
+
 ### 2026-10-21 07:49 · ccode · a7411c5e
 changed: Round 3 wiring fixes (owner go): Mastering controller note, Digital classic-model hedges, Meter mains 50/60 Hz, De-esser detector-filter hedge
 affects other side: nothing (client lab text/art only)
