@@ -136,7 +136,7 @@ describe('2. the right term — and the right meaning — per lab', () => {
       MicLab: 'Microphone (Mic)',
       DigitalLab: 'Digital Audio',
       SignalChainLab: 'Signal Chain (Signal Path)',
-      DJSystemsLab: 'DJ (Disc Jockey)',
+      DJSystemsLab: 'DJ Mixer',
       CableInstallLab: 'Cable dressing',
       GainLabHome: 'Gain Staging',
       BeginningMixingLab: 'Mixing',

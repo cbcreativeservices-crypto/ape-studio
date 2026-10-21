@@ -528,14 +528,14 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     glossaryId: "c9f87f96-20eb-44a4-a8fe-5465e49816a2",
   },
   // DJ Systems Lab came from dj-lab after the 2026-10-19 rulings (merged 2026-10-21);
-  // live glossary row read 2026-10-21. Term choice is ccode's (owner may change it).
+  // live glossary row read 2026-10-21. Term "DJ Mixer" per the 2026-10-19 plan (SESSION_HANDOFF_2026-10-19).
   DJSystemsLab: {
     status: 'wired',
     lab: "DJ Systems Lab",
-    term: "DJ (Disc Jockey)",
+    term: "DJ Mixer",
     plainEnglish:
-      "A DJ, short for disc jockey, is someone who picks and plays recorded music for a crowd. They use special gear to blend one song into the next smoothly.",
-    glossaryId: "8d561c7d-d7f0-4c12-ab5f-5178fef2394c",
+      "A DJ mixer sits in the middle of the setup and blends two or more music sources. It has the faders, EQ, crossfader, and a headphone preview you use to mix one track into the next.",
+    glossaryId: "ab13a9ab-8847-4d93-94ca-b8488dae0f96",
   },
   // Owner 2026-10-19: the Calculator lab gets NO glossary popup.
   CalcLab: { status: 'none', lab: "Audio Calculator Laboratory", reason: "owner 2026-10-19: no glossary popup for the calculator lab" },
