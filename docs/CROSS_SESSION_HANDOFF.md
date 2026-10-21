@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 09:21 · ccode · 1c82c6c3
+changed: DJ screen 20: speaker-cable tag on two lines left of the top, clear of the sub at every size; TO TOP R beside its lead
+affects other side: nothing (client lab art only)
+needs: nothing
+
+
 ### 2026-10-21 09:12 · ccode · ad554761
 changed: Round 4 cable labs (owner go): inspection markers on real faults, as-found rack powered, amber trace, honest route lengths, patch cords clear of bushings, bi-amp HF wording
 affects other side: nothing (client lab art/text only)

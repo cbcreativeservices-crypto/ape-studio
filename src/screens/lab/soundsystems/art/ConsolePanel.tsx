@@ -14,6 +14,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedProps, useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, Defs, Line, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
+import { fitValue } from '../../../../theme/legibility';
 import { LOUDNESS_STOPS, levelColorForDb } from '../../../../features/tools/levelColor';
 import { faderDbToFrac, ScribbleStrip } from '../../kit/gear';
 import { useSettle } from '../../cableinstall/motion';
@@ -354,7 +355,7 @@ export function BusHears({ title, list, note, running = true }: { title: string;
                   <View style={styles.busBar}>
                     <View style={[styles.busFill, { width: `${Math.max(3, ((db + 60) / 66) * 100)}%`, backgroundColor: levelColorForDb(db, -60, 6) }]} />
                   </View>
-                  <Text style={styles.busDb}>{db > 0 ? '+' : ''}{Math.round(db)}</Text>
+                  <Text style={styles.busDb} {...fitValue(11)}>{db > 0 ? '+' : ''}{Math.round(db)}</Text>
                 </View>
               );
             })

@@ -31,7 +31,7 @@ import type { PageCtx } from '../kit/PagedLab';
 import { Body, Btn, Card, Eyebrow, Prompt, Row } from '../tuning/components/primitives';
 import { GEAR, gearSpec, isSource, LEVEL_LABEL } from '../../../features/soundsystems/gear';
 import { carriesOutputs, connect, consoleWalk, disconnect, EMPTY_SYSTEM, feedLink, linkCarries, outChoices, place, removePlaced, setLinkOut, SLOTS, slotAccepts, slotDef, trace, upstream, downstream, type ConsoleWalk } from '../../../features/soundsystems/system';
-import { OUT_UNSET, outLabel, outName, outTag, outUse } from '../../../features/soundsystems/outputs';
+import { isIemPair, OUT_UNSET, outLabel, outName, outTag, outUse } from '../../../features/soundsystems/outputs';
 import { CAPSTONES_IN_ORDER, capstoneConsole, CONSOLE_PRESET_NOTE, gradeCapstone, type Capstone } from '../../../features/soundsystems/capstones';
 import type { ConsoleState } from '../../../features/soundsystems/console';
 import { markCapstonePassed } from '../../../features/soundsystems/progress';
@@ -380,10 +380,13 @@ type RouteUi = {
   subgroups?: boolean;
   dcas?: boolean;
   matrices?: readonly { id: string; sources: readonly { id: string; label: string }[] }[];
-  hears: readonly { title: string; kind: 'aux' | 'main' | 'sub' | 'matrix'; id?: string }[];
+  /** `iem`: a readout shown only for one in-ear feed — 'mono' while the
+   *  pack is on a single output (Aux 8), 'stereo' once it is on the In-ears
+   *  L/R pair, Aux 9 + 10 (R4-SS-01). */
+  hears: readonly { title: string; kind: 'aux' | 'main' | 'sub' | 'matrix'; id?: string; iem?: 'mono' | 'stereo' }[];
 };
 
-const ROUTE_UI: Partial<Record<string, RouteUi>> = {
+export const ROUTE_UI: Partial<Record<string, RouteUi>> = {
   monitors: {
     columns: ['send:aux1', 'send:aux2', 'send:aux3', 'send:aux4'],
     hears: [
@@ -424,11 +427,22 @@ const ROUTE_UI: Partial<Record<string, RouteUi>> = {
     hears: [
       { title: 'AUX 1 · WEDGE 1 HEARS', kind: 'aux', id: 'aux1' },
       { title: 'AUX 6 · THE SUBS HEAR', kind: 'aux', id: 'aux6' },
-      { title: 'AUX 8 · THE IN-EARS HEAR', kind: 'aux', id: 'aux8' },
+      { title: 'AUX 8 · THE IN-EARS HEAR', kind: 'aux', id: 'aux8', iem: 'mono' },
+      { title: 'AUX 9 · IN-EARS L HEARS', kind: 'aux', id: 'aux9', iem: 'stereo' },
+      { title: 'AUX 10 · IN-EARS R HEARS', kind: 'aux', id: 'aux10', iem: 'stereo' },
       { title: 'MATRIX 4 · RECORDING HEARS', kind: 'matrix', id: 'mx-rec' },
     ],
   },
 };
+
+/** The "who hears" readouts a build shows: an in-ear pack on the stereo
+ *  In-ears L/R pair (Aux 9 + 10) gets one readout per side, so both sides of
+ *  the mix can be checked; any other pack (one output, or none yet) keeps the
+ *  Aux 8 readout (R4-SS-01). */
+export function hearsShown(hears: RouteUi['hears'], system: SoundSystem, walk: ConsoleWalk): RouteUi['hears'] {
+  const stereo = system.placed.some((p) => p.kind === 'iemPack' && isIemPair(walk.pairs.get(p.id)));
+  return hears.filter((h) => !h.iem || h.iem === (stereo ? 'stereo' : 'mono'));
+}
 
 function hearsList(cs: ConsoleState, h: RouteUi['hears'][number]) {
   switch (h.kind) {
@@ -479,7 +493,7 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
             {ui.matrices?.map((m) => (
               <MatrixStrip key={m.id} cs={cs} onChange={setCs} matrixId={m.id} sources={m.sources} />
             ))}
-            {ui.hears.map((h) => (
+            {hearsShown(ui.hears, b.system, b.walk).map((h) => (
               <BusHears key={h.title} title={h.title} list={hearsList(cs, h)} />
             ))}
             {routeReqs.length ? (

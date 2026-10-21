@@ -84,13 +84,18 @@ export function layoutToBeams(layout: readonly PlacedSpeaker[], opts: { flown?: 
  *    · an in-ear pack prints beside itself (feedTagPlace's kind).
  *  Any tag still on a cable lane is moved clear by VenueView's
  *  placeFeedTags, or sits on its keyline plate (R3-SS-04). */
-export function feedTagPlace(slot: SlotId, kind?: Placed['kind']): Pick<PlotBeam, 'feedDx' | 'feedDy' | 'feedAnchor'> {
+export function feedTagPlace(slot: SlotId, kind?: Placed['kind'], tag?: string): Pick<PlotBeam, 'feedDx' | 'feedDy' | 'feedAnchor'> {
   // An in-ear pack prints beside itself: below a stage position is the
   // wedge row, below the stage-left wing the main right box (SS-R2-13). In
   // the wing it sits up and left, in the pocket between the stagebox's
   // wedge lanes (x ≤ 296), the radio hop from the rack and the racks'
-  // speaker run at y 66 (R3-SS-04: it printed over the wedge lanes).
-  if (kind === 'iemPack') return slot === 'wingL' ? { feedDx: -6, feedDy: -10, feedAnchor: 'end' } : { feedDx: 12, feedDy: 4, feedAnchor: 'start' };
+  // speaker run at y 66 (R3-SS-04: it printed over the wedge lanes). The
+  // stereo pair's tag is too wide for that pocket on one line: it prints in
+  // two, "AUX" over "9+10", centred in the pocket below rack 3 (R4-SS-02).
+  if (kind === 'iemPack') {
+    if (slot !== 'wingL') return { feedDx: 12, feedDy: 4, feedAnchor: 'start' };
+    return tag?.includes('\n') ? { feedDx: -22, feedDy: -12, feedAnchor: 'middle' } : { feedDx: -6, feedDy: -10, feedAnchor: 'end' };
+  }
   if (slot === 'subL' || slot === 'subR') return { feedDy: -18 };
   if (slot === 'mainC') return { feedDx: -12, feedDy: 4, feedAnchor: 'end' };
   return {};
@@ -99,10 +104,13 @@ export function feedTagPlace(slot: SlotId, kind?: Placed['kind']): Pick<PlotBeam
 /** The four wedge positions stand 40 units apart on one row: their tags
  *  print without the space ("AUX1") so neighbours read as separate words
  *  (SS-R2-13). An in-ear pack's tag prints the same way ("AUX8",
- *  "AUX9+10") to fit its pocket in the wing (R3-SS-04). */
+ *  "AUX9+10") to fit its pocket in the wing (R3-SS-04); in the stage-left
+ *  wing the stereo pair's tag breaks into two lines, "AUX" over "9+10" —
+ *  on one line no spot there was clear of the lanes (R4-SS-02). */
 const WEDGE_ROW: readonly SlotId[] = ['mon1', 'mon2', 'mon3', 'mon4'];
 const compactTag = (tag: string) => tag.replace(/^AUX (\d)$/, 'AUX$1');
-const compactPackTag = (tag: string) => tag.replace(/^AUX (\d+(?:\+\d+)?)$/, 'AUX$1');
+const compactPackTag = (tag: string, slot: SlotId) =>
+  slot === 'wingL' && /^AUX \d+\+\d+$/.test(tag) ? tag.replace(/^AUX /, 'AUX\n') : tag.replace(/^AUX (\d+(?:\+\d+)?)$/, 'AUX$1');
 
 /** Beams for a BUILD-mode system: every radiating loudspeaker on the plot,
  *  aimed by its position — mains toed in, side fills across the stage, the
@@ -150,7 +158,10 @@ export function placedToBeams(placed: readonly Placed[], live: ReadonlySet<strin
         break;
     }
     const tag = feeds?.get(p.id);
-    if (tag && out.length > n) out[n] = { ...out[n], feed: WEDGE_ROW.includes(p.slot) ? compactTag(tag) : p.kind === 'iemPack' ? compactPackTag(tag) : tag, ...feedTagPlace(p.slot, p.kind) };
+    if (tag && out.length > n) {
+      const feed = WEDGE_ROW.includes(p.slot) ? compactTag(tag) : p.kind === 'iemPack' ? compactPackTag(tag, p.slot) : tag;
+      out[n] = { ...out[n], feed, ...feedTagPlace(p.slot, p.kind, feed) };
+    }
   }
   return out;
 }

@@ -4,7 +4,7 @@
  * wording or drawing comes back.
  *  - R3-SS-01 (owner: a dedicated in-ear pair): stereo in-ears pass ONLY on
  *    the In-ears L/R pair, Aux 9 + 10 — never on Aux 7, the lobby's
- *    announce feed (capstone 6 still teaches Announce on Aux 7).
+ *    announce feed (capstone 8, Matrices, still teaches Announce on Aux 7).
  *  - R3-SS-02 (owner: tighten): a delay takes its own side's main or MONO
  *    (never the front-fill matrix); a front fill its own side's main, MONO
  *    or Matrix 2; the feedback says why.
@@ -102,7 +102,7 @@ describe('R3-SS-01: a dedicated stereo in-ear pair; Announce stays on Aux 7', ()
     assert.match(b, /\("AUX 9\+10"\)/);
     assert.ok(src('screens/lab/soundsystems/art/diagrams.tsx').includes('label="AUX 1–4, 7–10 · PRE"'));
   });
-  it('capstone 6 (matrices) still teaches and passes Announce on Aux 7', () => {
+  it('capstone 8 (Matrices for mains, fills and lobby) still teaches and passes Announce on Aux 7', () => {
     const { s, cs } = referenceBuild('matrices');
     assert.deepEqual(grade('matrices', s, cs).unmet, []);
     assert.match(cap('matrices').requirements.find((r) => r.id === 'lobby')!.text, /the mic sent to Aux 7, the matrix taking Aux 7/);
@@ -197,10 +197,15 @@ describe('R3-SS-04: feed tags clear of the cable lanes, on a keyline plate', () 
     const v = src('screens/lab/soundsystems/art/VenueView.tsx');
     assert.match(v, /const plated = links\.length > 0;/);
     assert.match(v, /\{plated \? <Rect x=\{tag\.box\.x0\} y=\{tag\.box\.y0\}[^>]*fill="#0a0b0e"[^>]*stroke=\{beam\.color\}/);
-    assert.match(v, /<PlotLabel x=\{tag\.x\} y=\{tag\.y\}/);
-    // the stereo pack's wider tag is the known fallback case
-    const st = tagsFor(stereoFestival('aux9', 'aux10')).places;
-    assert.ok([...st].some(([b]) => b.feed === 'AUX9+10'));
+    assert.match(v, /<PlotLabel key=\{i\} x=\{tag\.x\} y=\{tag\.y \+ i \* TAG_LINE\}/);
+    // the stereo pack's tag has a clear spot too (R4-SS-02): "AUX" over
+    // "9+10", off every lane, between the wedge lanes and the radio hop
+    const { places, routes } = tagsFor(stereoFestival('aux9', 'aux10'));
+    const pack = [...places].find(([b]) => b.feed === 'AUX\n9+10');
+    assert.ok(pack, 'the stereo pack reads AUX over 9+10');
+    assert.equal(pack![1].clear, true);
+    assert.ok(!lanesOf(routes).some((seg) => segmentHitsBox(seg, pack![1].box)), 'the stereo pack tag on a lane');
+    assert.ok(pack![1].box.x0 > 296, 'right of the stagebox’s wedge lanes');
   });
   it('the BARRIER label move (eb7057df) is kept', () => {
     assert.match(src('screens/lab/soundsystems/art/VenueView.tsx'), /const BARRIER_LABEL = \{ x: AUD\.left \+ /);

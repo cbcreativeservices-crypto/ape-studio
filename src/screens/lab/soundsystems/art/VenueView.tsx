@@ -542,10 +542,15 @@ const ADV: Record<string, number> = { M: 0.66, W: 0.72, O: 0.55, Q: 0.55, D: 0.5
 export function tagWidth(text: string): number {
   return [...text].reduce((w, ch) => w + (ADV[ch] ?? 0.5) * PLOT_FS + 1, 0);
 }
+/** A tag may break into lines at '\n' (the stereo in-ear pack's "AUX" over
+ *  "9+10", R4-SS-02): each further line prints TAG_LINE lower, all on one
+ *  plate as wide as the widest line. */
+export const TAG_LINE = 12.5;
 function tagBox(text: string, x: number, y: number, anchor: Anchor): Box {
-  const w = tagWidth(text);
+  const lines = text.split('\n');
+  const w = Math.max(...lines.map(tagWidth));
   const x0 = anchor === 'start' ? x : anchor === 'end' ? x - w : x - w / 2;
-  return { x0: x0 - TAG_PAD, x1: x0 + w + TAG_PAD, y0: y - 10 - TAG_PAD, y1: y + TAG_PAD };
+  return { x0: x0 - TAG_PAD, x1: x0 + w + TAG_PAD, y0: y - 10 - TAG_PAD, y1: y + (lines.length - 1) * TAG_LINE + TAG_PAD };
 }
 const overlaps = (a: Box, b: Box) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
 const inset = (b: Box, d: number): Box => ({ x0: b.x0 + d, x1: b.x1 - d, y0: b.y0 + d, y1: b.y1 - d });
@@ -987,9 +992,11 @@ export function VenueView(p: VenueViewProps) {
               {beam?.feed && tag ? (
                 <>
                   {plated ? <Rect x={tag.box.x0} y={tag.box.y0} width={tag.box.x1 - tag.box.x0} height={tag.box.y1 - tag.box.y0} rx={3} fill="#0a0b0e" opacity={0.82} stroke={beam.color} strokeOpacity={0.6} strokeWidth={0.75} /> : null}
-                  <PlotLabel x={tag.x} y={tag.y} fontSize={PLOT_FS} fill={beam.color} fontFamily={fonts.oswaldSemiBold} textAnchor={tag.anchor} letterSpacing={1}>
-                    {beam.feed}
-                  </PlotLabel>
+                  {beam.feed.split('\n').map((line, i) => (
+                    <PlotLabel key={i} x={tag.x} y={tag.y + i * TAG_LINE} fontSize={PLOT_FS} fill={beam.color} fontFamily={fonts.oswaldSemiBold} textAnchor={tag.anchor} letterSpacing={1}>
+                      {line}
+                    </PlotLabel>
+                  ))}
                 </>
               ) : null}
               {beam?.delayMs != null ? (
