@@ -21,7 +21,7 @@ import type { ViewBox } from '../../../engine/model/types.ts';
 import { shapeBox } from '../../../engine/geometry/contentFrame.ts';
 import type { GuitarScene } from './guitarModel.ts';
 import { guitarPlayerPose } from './guitarPlayer.ts';
-import { foot, kitPieceFootsTurned, rectAround, rectOfCircle, rectOfPts, unionRect, wedgeFoot, type PlanCable, type PlanFoot, type PlanRect } from '../planFoot.ts';
+import { foot, kitPieceFootsTurned, rectAround, rectOfCircle, rectOfPts, unionRect, wedgeFoot, type PlanCable, type PlanFoot, type PlanPt, type PlanRect } from '../planFoot.ts';
 import { cueFootprints, type CueRig } from '../monitoring/cueMix.ts';
 import type { Wedge } from '../../../engine/model/types.ts';
 
@@ -192,11 +192,30 @@ export function guitarCue(sc: GuitarScene): CueRig {
 
 /** The DI cable's run outside the player's space (its start inside the
  *  space, at the tail jack, is the player's own). */
+/** R3-MK-06: the DI's input cord as DRAWN (StagePlan DiPlan): from the tail
+ *  jack, a cubic into the DI's −v end. One curve for the drawing and the model. */
+export function diCord(from: XZ, di: XZ): { p0: PlanPt; c1: PlanPt; c2: PlanPt; p3: PlanPt } {
+  return { p0: { u: from.x, v: from.z }, c1: { u: from.x - 120, v: from.z + 60 }, c2: { u: di.x + 80, v: di.z - 160 }, p3: { u: di.x, v: di.z - SIZES.di.hv } };
+}
 export function diCable(sc: GuitarScene, di: XZ): PlanCable {
   const F = planFrame(sc);
-  const t = (F.space.u0 - F.tailJack.x) / (di.x - F.tailJack.x);
-  const exit = { u: F.space.u0, v: F.tailJack.z + t * (di.z - SIZES.di.hv - F.tailJack.z) };
-  return { id: 'diCable', kind: 'instrumentCable', pts: [exit, { u: di.x, v: di.z - SIZES.di.hv }], from: 'space', to: 'di' };
+  const { p0, c1, c2, p3 } = diCord(F.tailJack, di);
+  const at = (t: number): PlanPt => {
+    const a = (1 - t) ** 3;
+    const b = 3 * (1 - t) ** 2 * t;
+    const c = 3 * (1 - t) * t * t;
+    const d = t ** 3;
+    return { u: a * p0.u + b * c1.u + c * c2.u + d * p3.u, v: a * p0.v + b * c1.v + c * c2.v + d * p3.v };
+  };
+  const pts = Array.from({ length: 41 }, (_, i) => at(i / 40));
+  // The run outside the player's space: from where the curve leaves it (u0).
+  const i = pts.findIndex((q) => q.u <= F.space.u0);
+  if (i <= 0) return { id: 'diCable', kind: 'instrumentCable', pts, from: 'space', to: 'di' };
+  const a = pts[i - 1];
+  const b = pts[i];
+  const t = (F.space.u0 - a.u) / (b.u - a.u);
+  const exit = { u: F.space.u0, v: a.v + t * (b.v - a.v) };
+  return { id: 'diCable', kind: 'instrumentCable', pts: [exit, ...pts.slice(i)], from: 'space', to: 'di' };
 }
 
 /* R2-MK-03 (2026-10-21): the DI's XLR OUT is drawn too — not only its input
@@ -210,11 +229,15 @@ export const DI_XLR_JACKS: { di: 'diOut'; to: 'micIn' } = { di: 'diOut', to: 'mi
 export const DI_XLR_TO: Record<GuitarPlanScene, string> = { stage: 'TO STAGE BOX', studio: 'TO WALL PANEL' };
 /** How far the XLR drops from the DI's end before it turns into its lane (mm). */
 export const DI_XLR_DROP = 160;
+/** R3-MK-05: on stage the XLR turns UPSTAGE (−v) in its own lane near the
+ *  side edge and ends at the plan's upstage edge — TO STAGE BOX, as on the
+ *  backline plans; the studio's runs to the left wall's panel. */
+export const DI_XLR_STAGE_U = GUITAR_WIDE.u0 + 40;
 export function diXlr(di: XZ, scene: GuitarPlanScene): PlanCable {
   const out = { u: di.x, v: di.z + SIZES.di.hv };
   const v = out.v + DI_XLR_DROP;
-  const endU = scene === 'stage' ? GUITAR_WIDE.u0 : GUITAR_ROOM.u0;
-  return { id: 'diXlr', kind: 'xlr', pts: [out, { u: di.x, v }, { u: endU, v }], from: 'di' };
+  if (scene === 'stage') return { id: 'diXlr', kind: 'xlr', pts: [out, { u: di.x, v }, { u: DI_XLR_STAGE_U, v }, { u: DI_XLR_STAGE_U, v: GUITAR_WIDE.v0 }], from: 'di' };
+  return { id: 'diXlr', kind: 'xlr', pts: [out, { u: di.x, v }, { u: GUITAR_ROOM.u0, v }], from: 'di' };
 }
 
 /** Every object's footprint on the plan (mm). */

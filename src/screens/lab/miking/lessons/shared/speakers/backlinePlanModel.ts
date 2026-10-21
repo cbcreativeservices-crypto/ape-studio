@@ -159,7 +159,9 @@ export const BACKLINE_XLR_TO: Record<BacklineScene, string> = { stage: 'TO STAGE
 /** The amp's INPUT on its front panel (the bass: the head's), at the panel's −v end. */
 export function ampInput(who: Backline): { u: number; v: number } {
   if (who === 'bass') return { u: bassHead().x1, v: -300 };
-  if (who === 'steel') return { u: cabLayout('combo12').box.x1, v: 90 };
+  // R3-MK-03: the steel's input level with the DI's THRU jack, so the THRU runs
+  // straight across to it — never doubling back beside the steel's own cord.
+  if (who === 'steel') return { u: cabLayout('combo12').box.x1, v: diJacks('steel').thru.v };
   return { u: cabLayout('combo12').box.x1, v: -300 };
 }
 export function backlineCables(who: Backline, scene: BacklineScene): PlanCable[] {
@@ -174,7 +176,7 @@ export function backlineCables(who: Backline, scene: BacklineScene): PlanCable[]
         : [J.xlr, { u: J.xlr.u, v: BACKLINE_ROOM.v0 }];
     return [
       { id: 'steelOut', kind: 'instrumentCable', pts: [{ u: J.input.u, v: K.v0 }, J.input], from: 'keepClear', to: 'dibox' },
-      { id: 'diThru', kind: 'instrumentCable', pts: [J.thru, { u: J.thru.u, v: A.v }, A], from: 'dibox', to: 'amp' },
+      { id: 'diThru', kind: 'instrumentCable', pts: [J.thru, A], from: 'dibox', to: 'amp' },
       { id: 'diXlr', kind: 'xlr', pts: xlr, from: 'dibox' },
     ];
   }

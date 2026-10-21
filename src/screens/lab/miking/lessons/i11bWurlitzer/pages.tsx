@@ -16,7 +16,9 @@ import { fmtLen } from '../../engine/model/units.ts';
 import { I11B_ZONES } from './geometry.ts';
 import { I11B_PLACE_START, I11B_WORKED } from './model.ts';
 
-const CHAIN = { pedals: null, rig: 'combo', diBox: false, ampDirect: true, icons: { player: 'keys', amp: 'keysAmp', cab: 'lidSpeakers' } } as const;
+// R3-MK-04: the AUX OUT is one unbalanced ¼ in jack — it reaches the desk through
+// the DI box (the lesson's DI item): AUX OUT → DI → desk, on the amp's lane.
+const CHAIN = { pedals: null, rig: 'combo', diBox: false, ampDirect: true, ampDirectDi: true, icons: { player: 'keys', amp: 'keysAmp', cab: 'lidSpeakers' } } as const;
 
 const AXES: AxisWords = {
   x: { label: 'TOWARD THE PLAYER', short: 'TOWARD', blurb: 'Toward the player, or back toward the lid (x). Distances are read from the grille.', fmt: (v) => `${fmtLen(Math.abs(v - C_BASS.x))} ${v >= C_BASS.x ? 'toward the player from' : 'behind'} the grille’s centre` },
