@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 15:07 · ccode · 57c60a2f
+changed: Merge dj-lab (stereo in-ears: two cables per pair) into next-store-build
+affects other side: nothing (client merge)
+needs: nothing
+
+
 ### 2026-10-21 15:07 · ccode · 253f9614
 changed: Sound Systems (owner 2026-10-21): two cables between the same pair (stage box -> in-ear transmitter on Aux 9 and Aux 10); reference stereo build fixed; processor -> transmitter flagged
 affects other side: nothing (client lab only)
