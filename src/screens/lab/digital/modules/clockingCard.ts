@@ -21,7 +21,7 @@ export const CLOCKING_CARD = {
   title: 'CLOCKING — ONE MASTER, THE REST FOLLOW',
   helpKey: 'clocking',
   intro:
-    'A digital device takes each sample on the tick of its clock. When devices pass digital audio to each other, their clocks must tick together. So a digital system has one clock master. Every other device follows that master, at the same sample rate. Most of the time the master is the main audio interface or a stand-alone clock box.',
+    'A digital device takes each sample on the tick of its clock. When devices pass digital audio to each other, their clocks must tick together (unless the input has a sample-rate converter built in). So a digital system has one clock master. Every other device follows that master, at the same sample rate. Most of the time the master is the main audio interface or a stand-alone clock box.',
   ways: [
     {
       label: 'WORD CLOCK',

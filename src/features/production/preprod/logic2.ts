@@ -173,7 +173,8 @@ registerRuleLogic({
       if (cell(r, 'sp_level') !== 'instrument') return false;
       const to = cell(r, 'sp_to');
       if (mentions(`${cell(r, 'sp_via')} ${to}`, /\bdi\b|direct box|direct input|instrument input|hi-?z/)) return false;
-      if (mentions(to, /\bamps?\b|amplifier|\bcombo\b|pedal|effects?\b|\bfx\b|stomp|tuner/)) return false;
+      // "pre-amp" is a mic input, not an amp (R4-PROD-01): the hyphen is a word break.
+      if (mentions(to, /(?<!pre-?)\bamps?\b|amplifier|\bcombo\b|pedal|effects?\b|\bfx\b|stomp|tuner/)) return false;
       return mentions(to, /\bmic\b|microphone|console|mixer|desk|stage ?box|snake|channel|pre-?amp|xlr/);
     });
     if (instrumentWithoutDi) return true;

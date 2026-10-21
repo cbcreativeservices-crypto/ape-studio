@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 08:48 · ccode · 30d89590
+changed: Tests (owner go 2026-10-21): normalise CRLF when reading source, so 22 test files pass on Windows checkouts
+affects other side: nothing (tests only)
+needs: nothing
+
+
 ### 2026-10-21 08:43 · ccode · 1ddd7152
 changed: Signal Chain caption: shorter, one line with no cap (P14 ratchet: never ends in an ellipsis)
 affects other side: nothing (client lab text/art only)
