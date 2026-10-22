@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-22 00:31 · ccode · 81d71f61
+changed: Docs: session handoff 2026-10-21, wiring audit closed, AGENTS.md rules (CRLF tests, rule book, log merge), scripts/merge-handoff-log.py
+affects other side: nothing (docs, rules, a merge helper script)
+needs: nothing
+
+
 ### 2026-10-21 23:52 · ccode · 3fe2aeaf
 changed: Test: wiringFix_r8_text reads source with CRLF normalised (Windows checkouts)
 affects other side: nothing (tests only)
