@@ -193,3 +193,6 @@ Comp B graded the pre-fix zip (all four cable labs B). ccode re-checked each row
 7. **Rule book:** shown again to the owner, with Comp B's 9 additions marked HOLD for sign-off.
 8. **Comp B:** the batch-1 report is in and applied. The 22-claim fact-check reply has not arrived on this computer.
 9. **Merge:** when optimal, merge `dj-lab` into the store branch, then pause.
+
+## Closed (owner, 2026-10-21, after round 8)
+Rounds 5–8: round 5 graded 40 findings → round 6 fixed all; round 7 graded 91 → round 8 fixed all (each pinned in `test/wiringFix_r6_*` / `test/wiringFix_r8_*`). Final suite 13,545 / 13,545 on `next-store-build`. The owner closed the wiring grading rounds; further factual checking goes through Comp B's full-app fact audit. Reports: `Downloads\2026-10-21_WIRING_ROUND{5,7}_*`, `ROUND6_FIXES`, `ROUND8_FIXES_FINAL`.

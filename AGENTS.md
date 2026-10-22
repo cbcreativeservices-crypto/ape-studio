@@ -36,4 +36,7 @@ Each one closes a bug class app-wide, and a ratchet test fails if you bypass it.
 - Never switch branches in ape-build-snap for a demo (CRLF `.gitignore` broke the OTA fingerprint 2026-10-15); use another worktree. Re-check both fingerprints before any OTA.
 - Line endings: normalise TEXT files only (.ts .tsx .js .cjs .json .md) — never binaries; never `git commit -a` after a tree-wide rewrite; never change shared git config (use `-c`). See APE_ENGINEERING_LESSONS 2026-10-08.
 - Large read-everything audits go to Comp B as a brief + exported files in Downloads (Comp B has no app/DB access). Agents: targeted tests while working, the full suite once at the end.
+- Tests that read source files normalise line endings: `readFileSync(p, 'utf8').replace(/\r\n/g, '\n')` (Windows checkouts are CRLF; a regex on `\n` passes in the cloud and fails here).
+- Wiring, cables and signal flow follow docs/wiring/WIRING_RULEBOOK_DRAFT_2026_10_20.md (APPROVED v1, 2026-10-21); owner rulings in docs/wiring/WIRING_FINDINGS_*. Each fix cites a rule ID and is pinned by a test. Grading rounds are closed unless the owner reopens them; agree the last round before any new campaign.
+- A `docs/CROSS_SESSION_HANDOFF.md` merge conflict: keep both sides' entries with `scripts/merge-handoff-log.py` (usage in the file).
 Run the tests with `node --test --test-timeout=120000 "test/**/*.test.ts"`. Never edit package.json scripts (fingerprint risk). Catalog: docs/bughunt/PATTERN_CATALOG_2026_10_02.md.
