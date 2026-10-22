@@ -69,8 +69,12 @@ const SECTIONS: { head: string; paras: string[] }[] = [
       'These credentials document the training you have completed and the knowledge you have demonstrated within the Academy.',
       // Owner H-A 2026-10-22: employers can verify only what is listed in the
       // Pro Registry, so the line names the listing step (same wording as the
-      // landing's certificate line). The no-membership promise is kept.
-      'List your credentials in the Pro Registry and employers can verify them online. Current membership is not required to keep your transcript in the registry.',
+      // landing's certificate line). Owner 2026-10-22: say plainly that an
+      // ongoing membership is not needed to stay listed, be found or be
+      // verified — true in the DB (directory_search / public_verify_* /
+      // set_registry_listing check age 18+, never membership).
+      'List your credentials in the Pro Registry and employers can verify them online.',
+      'An ongoing membership is not required. Your credentials stay in the registry, and employers can still find and verify them, whether or not you keep your membership.',
     ],
   },
 ];

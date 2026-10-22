@@ -13,13 +13,18 @@ const read = (p: string) => readFileSync(join(import.meta.dirname, '..', 'src', 
 describe('About sheet certificate line matches the approved wording', () => {
   const about = read('screens/about/AboutHomeSheet.tsx');
   it('names the Registry listing step', () => {
-    assert.match(about, /'List your credentials in the Pro Registry and employers can verify them online\. /);
+    assert.match(about, /'List your credentials in the Pro Registry and employers can verify them online\.'/);
     assert.match(read('lib/copy.ts'), /list them in the Pro Registry and employers can verify them online\./);
   });
   it('drops the blanket "verifiable for life" promise', () => {
     assert.doesNotMatch(about, /verifiable for life/);
   });
-  it('keeps the no-membership promise', () => {
-    assert.match(about, /Current membership is not required to keep your transcript in the registry\./);
+  // Owner 2026-10-22: membership is not needed to stay listed, be found or be
+  // verified (the DB registry/verify functions never check membership).
+  it('says plainly that an ongoing membership is not required to stay listed, found and verified', () => {
+    assert.match(
+      about,
+      /'An ongoing membership is not required\. Your credentials stay in the registry, and employers can still find and verify them, whether or not you keep your membership\.'/,
+    );
   });
 });
