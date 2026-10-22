@@ -634,6 +634,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 23:48 · ccode · b54fa00a
+changed: Round 8 (owner go): cable labs — RJ45 decoy, charge-only USB, definite failures, one-ended headset, TOSLINK and shield drawing, labels >= 9 pt, ALT SOURCE, named devices, 'on most bays', Cable Install scale and mains leads
+affects other side: nothing (client lab text/art only)
+needs: nothing
+
+
+### 2026-10-21 23:31 · ccode · cf84973d
+changed: Round 8 (owner go): keys plans draw their DI cables; labels stay off keep-clear outlines; press box outputs are male XLR; Clavinet Hi-Z input and DI mic-level output; Mixing send wires and 100 % wet return
+affects other side: nothing (client lab text/art only)
+needs: nothing
+
+
+### 2026-10-21 23:26 · ccode · 670f9779
+changed: Round 8 (owner go): end-fire front box delayed; tops and subs never share an amp channel; monitor and in-ear feeds from console auxes only; tie marks within one cable group; plus 8 more
+affects other side: nothing (client lab text/art only)
+needs: nothing
+
+
+### 2026-10-21 23:25 · ccode · a4f3d22c
+changed: Round 8 (owner go): Production sample-rate mismatch, Digital theoretical SNR, FX low-pass Q, Meter waterfall time direction, plus 32 more text fixes
+affects other side: nothing (client lab text/art only)
+needs: nothing
+
+
 ### 2026-10-21 22:38 · ccode · f0641366
 changed: Round 6 (owner go): cable labs — bi-amp HF damage conditional, labels >= 9 pt, right connector ends, patch cords clear of jacks, cutaway S label, true-scale outlet, honest route length, catwalk feed lands on the box
 affects other side: nothing (client lab text/art only)
