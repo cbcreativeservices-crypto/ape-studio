@@ -106,7 +106,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
       ],
       evidence: [
         { t: 'The CH 2 meter stayed dark while deck B played.', why: 'That points at the input. Here the CH 2 meter was live.' },
-        { t: 'Both MASTER meters moved, but PA R stayed silent.', why: 'That is a fault after the mixer. Here CH 2 never reached the MASTER.' },
+        { t: 'Both MASTER meters moved, but PA R stayed silent.', why: 'That points past the MASTER meters — the output stage or the cable. Here CH 2 never reached the MASTER.' },
       ],
       repair: [
         { t: 'Push CH 2’s TRIM up until it comes through.', why: 'TRIM is before the fader and the crossfader: a channel sent to the closed side stays silent at any gain.' },
@@ -125,7 +125,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
     subsystem: 'output',
     symptom: 'The music sounds thin and one-sided from the floor.',
     cause: 'The MASTER R cable had come out of PA R.',
-    evidence: 'Both MASTER meters were live, but only PA L was making sound — the missing side was after the mixer.',
+    evidence: 'PA L was making sound and PA R was silent — and at PA R’s input the MASTER R cable was hanging loose. The MASTER meters read before the output stage, so they could not prove the side left the mixer; the unplugged cable did.',
     repair: 'Turn the MASTER down, plug MASTER R back into PA R, bring the MASTER up again.',
     prevention: 'Dress and secure the output cables so a foot or a bag cannot pull them; check both sides in the line check.',
     probe: 'Both MASTER meters move — so which speaker is actually making sound?',
@@ -133,10 +133,10 @@ export const FAULTS: Record<FaultId, FaultDef> = {
     wrong: {
       cause: [
         { t: 'The track was mixed mostly in the left channel.', why: 'Then the MASTER R meter would read low. Both MASTER meters were live.' },
-        { t: 'The mixer’s MASTER R output had failed.', why: 'The MASTER R meter was live — the signal left the mixer and went missing after it.' },
+        { t: 'The mixer’s MASTER R output had failed.', why: 'The MASTER R cable was unplugged at PA R — plugging it back in brought the right side back. (A live MASTER R meter alone could not rule the output out: it reads before the output stage.)' },
       ],
       evidence: [
-        { t: 'The MASTER R meter stayed dark.', why: 'It was live: the missing side was after the mixer.' },
+        { t: 'The MASTER R meter stayed dark.', why: 'It was live — but it reads before the output stage. The proof was at PA R: its cable was unplugged.' },
         { t: 'CH 1 and CH 2 each played only one side.', why: 'The channel meters were normal; the loss came after the MASTER.' },
       ],
       repair: [

@@ -177,8 +177,8 @@ const SUB_LAYOUTS: Record<SubLayout, { name: string; beams: PlotBeam[]; placed: 
     name: 'End-fire array',
     placed: [{ slot: 'subC', kind: 'passiveSub' }, { slot: 'subC2', kind: 'passiveSub' }],
     beams: [subBeam('subC', { pattern: 'endfire', gain: 0.9, y: (slotDef('subC').y + slotDef('subC2').y) / 2 })],
-    orient: 'Two subs in a line front-to-back on the centre line, the rear box delayed by the time sound takes to reach the front one.',
-    what: 'Subs in a line front-to-back, each delayed by the time sound takes to reach the next, so the outputs add forward and cancel backward.',
+    orient: 'Two subs in a line front-to-back on the centre line, the FRONT box delayed by the time sound takes to travel from the rear box to it.',
+    what: 'Subs in a line front-to-back; each box further forward is delayed by the time sound takes to travel to it from the box behind, so the outputs arrive together going forward and out of step going backward.',
     cost: 'The most directional low end a ground stack can make; it needs depth in front of the stage and exact delays — the spacing sets the frequency where the rejection is deepest.',
     pattern: 'END-FIRE',
     rig: 'GROUND',
@@ -337,7 +337,7 @@ function PageMonitors({ ctx }: { ctx: PageCtx }) {
       <ChapterTag n={6}>STAGE MONITORS AND PERFORMER MIXES</ChapterTag>
       <Body>The stage from above: a wedge at the lip aimed back at its performer, a side fill at the stage-left wing firing across, a drum fill beside the riser, and a performer at centre wearing in-ears.</Body>
       <GoalChips goals={goals} latched={latched} />
-      <KeyFact>The audience hears one mix. Each performer needs a different one — more of themselves, less of the drummer, a click nobody else may hear. Monitoring is a second sound system pointed the other way, and its sends are normally PRE-FADER, so the house fader does not move a wedge. Each aux output feeds one wedge amplifier channel, one powered wedge or one in-ear transmitter; a stereo in-ear mix needs a stereo aux and a stereo transmitter.</KeyFact>
+      <KeyFact>The audience hears one mix. Each performer needs a different one — more of themselves, less of the drummer, a click nobody else may hear. Monitoring is a second sound system pointed the other way, and its sends are normally PRE-FADER, so the house fader does not move a wedge. Each aux is usually one performer’s mix — one or more wedges, or one in-ear transmitter; a stereo in-ear mix needs a stereo aux and a stereo transmitter.</KeyFact>
       <Card tone="warn">
         <Eyebrow>HEARING SAFETY — IN-EAR LEVELS</Eyebrow>
         <Body>Sealed in-ears remove the room, so a performer reaches for level to feel the band. The limiter on the bodypack is not optional, and the mix should be built so the performer is comfortable at a moderate setting. A wedge is loud in a room; an in-ear is loud in an ear canal.</Body>
@@ -379,7 +379,7 @@ function PageMonitorWorld({ ctx }: { ctx: PageCtx }) {
       label: 'SPLIT',
       valueLabel: mode === 'analog' ? 'Analog' : 'Digital',
       options: [
-        { id: 'analog', label: 'Analog split', blurb: 'A transformer-isolated splitter sends each microphone to both consoles; each has its own preamp and its own gain.' },
+        { id: 'analog', label: 'Analog split', blurb: 'A transformer-isolated splitter sends each microphone to both consoles; each has its own preamp and its own gain. Phantom power comes only from the console on the DIRECT side — the isolated outputs do not pass it.' },
         { id: 'digital', label: 'Digital gain sharing', blurb: 'One stagebox, one preamp per microphone, two consoles on the network — whoever owns the gain changes it for both, and gain compensation trims the other.' },
       ],
       selectedId: mode,
@@ -417,7 +417,7 @@ function PageMonitorWorld({ ctx }: { ctx: PageCtx }) {
       <GoalChips goals={goals} latched={latched} />
       <Card>
         <Eyebrow>ANALOG SPLIT</Eyebrow>
-        <Body>A transformer-isolated splitter sends each microphone to both consoles. Each console has its own preamp and its own gain — independent, but two preamps loading one microphone, and twice the cabling. A gain move at monitors is invisible at front of house.</Body>
+        <Body>A transformer-isolated splitter sends each microphone to both consoles. Each console has its own preamp and its own gain — independent, but two preamps loading one microphone, and twice the cabling. A gain move at monitors is invisible at front of house. Phantom power comes only from the console on the splitter’s DIRECT (hard-wired) side; the transformer-isolated outputs do not pass it, so phantom switched on at the isolated-side console never reaches the microphone.</Body>
       </Card>
       <Card>
         <Eyebrow>DIGITAL GAIN SHARING</Eyebrow>

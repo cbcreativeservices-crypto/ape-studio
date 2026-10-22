@@ -351,7 +351,7 @@ function PageGainStructure({ ctx }: { ctx: PageCtx }) {
       <ChainMeterKey />
       <Card>
         <Eyebrow>THE PROCEDURE</Eyebrow>
-        <Body>1 · Faders at unity, main at unity, processor and amplifier at their nominal marks. 2 · Set each PREAMP so the channel peaks around −18 dBFS (about +4 dBu on this lab’s console; the reference varies by console) on the loudest thing the source will do. 3 · Mix with the faders around unity — small moves. 4 · Set the amplifier inputs so the processor’s limiter engages before the amplifier clips. Gain-before-feedback is spent at the preamp too: every dB of gain you do not need is a dB closer to the ring.</Body>
+        <Body>1 · Faders at unity, main at unity, processor and amplifier at their nominal marks. 2 · Set each PREAMP so the channel averages around −18 dBFS (about +4 dBu on this lab’s console; the reference varies by console) on the loudest thing the source will do. 3 · Mix with the faders around unity — small moves. 4 · Set the amplifier inputs so the processor’s limiter engages before the amplifier clips. Gain-before-feedback is spent at the preamp too: every dB of gain you do not need is a dB closer to the ring.</Body>
       </Card>
       <DeeperRow>
         <LabLink route="GainLabHome" label="Gain Staging Lab" />

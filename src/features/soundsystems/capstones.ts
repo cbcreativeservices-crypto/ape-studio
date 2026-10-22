@@ -26,7 +26,7 @@ import {
 import { isSink, isSource } from './gear';
 import { auxPurpose, IEM_PAIR, isIemPair, outFamily, outTag } from './outputs';
 import { allSinksLive, ampsOverChannels, chainTo, consoleWalk, count, feedsThrough, inRole, inSlot, sinksThroughConsole, slotDef, trace, upstream, type ConsoleWalk, type Feed } from './system';
-import type { GearKind, Placed, SoundSystem } from './types';
+import type { ConsoleOut, GearKind, Placed, SoundSystem } from './types';
 
 export type Requirement = {
   id: string;
@@ -80,6 +80,16 @@ const allSourcesViaStagebox = (s: SoundSystem) => {
 const consoleFedByStagebox = (s: SoundSystem) => {
   const con = s.placed.find((p) => p.kind === 'console');
   return !!con && upstream(s, con.id).some((p) => p.kind === 'stagebox');
+};
+/** The console's outputs come back DOWN the network link and leave the
+ *  stagebox (round-8 grade R7-SS-10: the brief said so, a direct console →
+ *  processor run passed). Every cable out of the console goes to the
+ *  stagebox, and at least one does. */
+export const outputsViaStagebox = (s: SoundSystem) => {
+  const con = s.placed.find((p) => p.kind === 'console');
+  if (!con) return false;
+  const outs = s.links.filter((l) => l.from === con.id).map((l) => s.placed.find((p) => p.id === l.to)?.kind);
+  return outs.length > 0 && outs.every((k) => k === 'stagebox');
 };
 /** The subs are fed by their OWN link from the console or processor — not from a top. */
 const subsHaveDedicatedFeed = (s: SoundSystem) => {
@@ -147,7 +157,7 @@ const feedView = (s: SoundSystem): FeedView => {
 const sinksOf = (v: FeedView) => v.s.placed.filter((p) => isSink(p.kind));
 /** Every loudspeaker (and in-ear pack) gets an output that fits its
  *  position, and no amplifier passes more mixes than it has channels. */
-const allFeedsFit = (v: FeedView) => sinksOf(v).length > 0 && sinksOf(v).every((p) => feedFits(p, v.feed(p.id))) && ampsOverChannels(v.s, v.w).length === 0 && !iemTxFromProcessor(v.s);
+const allFeedsFit = (v: FeedView) => sinksOf(v).length > 0 && sinksOf(v).every((p) => feedFits(p, v.feed(p.id))) && ampsOverChannels(v.s, v.w).length === 0 && !iemTxFromProcessor(v.s) && !wedgeFromProcessor(v.s);
 
 /** An in-ear transmitter fed from the loudspeaker processor (owner
  *  2026-10-21: the old stereo reference ran In-ears R through it — wrong to a
@@ -156,6 +166,36 @@ export function iemTxFromProcessor(s: SoundSystem): boolean {
   const kind = (id: string) => s.placed.find((p) => p.id === id)?.kind;
   return s.links.some((l) => kind(l.from) === 'processor' && kind(l.to) === 'iemTx');
 }
+
+/** A monitor wedge fed through the loudspeaker processor (round-8 grade
+ *  R7-SS-11: the in-ear transmitter already failed this way while a wedge
+ *  passed). One rule for both: monitor feeds come from the console's aux
+ *  outputs (or their stagebox returns), never the house processor. Walks
+ *  every cable upstream of each wedge, stopping at the console. */
+export function wedgeFromProcessor(s: SoundSystem): boolean {
+  const kind = (id: string) => s.placed.find((p) => p.id === id)?.kind;
+  const wedges = s.placed.filter((p) => p.kind === 'wedge' || p.kind === 'poweredWedge');
+  return wedges.some((w) => {
+    const seen = new Set<string>([w.id]);
+    const queue = [w.id];
+    while (queue.length) {
+      const id = queue.shift()!;
+      for (const l of s.links) {
+        if (l.to !== id || seen.has(l.from)) continue;
+        const k = kind(l.from);
+        if (k === 'processor') return true;
+        if (k === 'console') continue;
+        seen.add(l.from);
+        queue.push(l.from);
+      }
+    }
+    return false;
+  });
+}
+
+/** The one plain line the FEEDS row shows for a wedge through the processor. */
+export const WEDGE_FROM_PROCESSOR_WHY =
+  'A wedge is fed through the loudspeaker processor — that carries the house mix with its EQ, delay and limiting for the PA, not the performer’s mix. Monitor feeds come from the console’s aux outputs: run each wedge (or its amplifier) from the console or a stagebox return, on its own aux.';
 
 /** The one plain line the FEEDS row shows for it. */
 export const IEM_FROM_PROCESSOR_WHY =
@@ -198,15 +238,23 @@ const feedsReq = (text: string, extra: (v: FeedView) => boolean = () => true): R
   }),
   why: (s) => {
     const over = ampsOverChannels(s)[0];
+    if (over?.topAndSub.length) return topAndSubWhy(over.topAndSub);
     if (over) return `An amplifier has two channels: one mix each. This one is asked to pass ${over.outs.length} (${over.outs.map(outTag).join(', ')}) — give the extra wedges or boxes an amplifier of their own.`;
     return misfitWhy(s);
   },
 });
 
+/** The plain reason when one amplifier would have to run a passive top and a
+ *  passive sub on one channel (round-8 grade R7-SS-02, rule S2). */
+export function topAndSubWhy(outs: readonly ConsoleOut[]): string {
+  return `One amplifier is driving a passive top and a passive sub from ${outs.map(outTag).join(' and ')} — on a two-channel amplifier that puts a top and a sub on one channel, with no crossover split between them. Tops and subs need their own amp channels after the processor’s crossover: give the subs an amplifier (or channels) of their own.`;
+}
+
 /** The plain reason a fill, a delay or an in-ear pack is on the wrong
  *  output, when one of them is (R3-SS-01/02). */
 function misfitWhy(s: SoundSystem): string | null {
   if (iemTxFromProcessor(s)) return IEM_FROM_PROCESSOR_WHY;
+  if (wedgeFromProcessor(s)) return WEDGE_FROM_PROCESSOR_WHY;
   const v = feedView(s);
   for (const p of sinksOf(v)) {
     const f = v.feed(p.id);
@@ -455,6 +503,7 @@ export const CAPSTONES: readonly Capstone[] = [
       req('stagebox', 'A digital stagebox on stage', 'build', (s) => count(s, 'stagebox') === 1),
       req('sources', 'At least four sources, EVERY one into the stagebox (none straight to the console)', 'build', (s) => sourceCount(s) >= 4 && allSourcesViaStagebox(s)),
       req('link', 'The console is fed by the stagebox over the network link', 'build', consoleFedByStagebox),
+      req('returns', 'The console’s outputs come back down the same link and leave the stagebox — no cable from the console to anything else', 'build', outputsViaStagebox),
       req('noSnake', 'No analog snake', 'build', (s) => count(s, 'snake') === 0),
       req('mains', 'A live main pair (and subs if you like)', 'build', (s) => anySpeakerIn(s, 'mainL') && anySpeakerIn(s, 'mainR') && live(s)),
       VIA_CONSOLE,

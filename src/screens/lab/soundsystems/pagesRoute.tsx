@@ -358,7 +358,7 @@ function PageMonitorMixes({ ctx }: { ctx: PageCtx }) {
       <Body>Four aux sends, one per wedge, on every channel. Wedge 1 is the singer’s: vocal and a little keys. Wedge 2 the guitarist’s: guitar, vocal, kick. Wedge 3 the bassist’s: bass, kick, vocal. Wedge 4 the drummer’s: kick, bass, vocal.</Body>
       <Prompt>Step each send up and set it PRE — or use ALL PRE at the top of a column. Watch the wedges fill.</Prompt>
       <GoalChips goals={goals} latched={latched} />
-      <KeyFact>Each aux is one performer’s world. The house engineer’s faders must not reach into it — which is what PRE means. Each aux output then feeds one wedge amplifier channel (or one powered wedge, or one in-ear transmitter).</KeyFact>
+      <KeyFact>Each aux is one performer’s world. The house engineer’s faders must not reach into it — which is what PRE means. Each aux is then usually one performer’s mix — one or more wedges, or one in-ear transmitter.</KeyFact>
     </SoundSystemsRackLayout>
   );
 }
@@ -540,7 +540,7 @@ function PageMatrices({ ctx }: { ctx: PageCtx }) {
   const mcSend = mc.sends.aux7;
   const takes = (m: typeof fills) => Object.keys(m.inputs).map((k) => k.toUpperCase().replace('AUX7', 'AUX 7')).join(' + ') || '—';
   const params: DockParam[] = [
-    dbFader({ id: 'mc7', label: 'MC → AUX 7', db: mcSend?.db ?? -90, min: -60, max: 6, onChange: (db) => setCs((s) => setSend(s, 'mc', 'aux7', { db, tap: mcSend?.tap ?? 'post' })), home: 0, level: true, of: 'announce mic to Aux 7' }),
+    dbFader({ id: 'mc7', label: 'MC → AUX 7', db: mcSend?.db ?? -90, min: -60, max: 6, onChange: (db) => setCs((s) => setSend(s, 'mc', 'aux7', { db, tap: mcSend?.tap ?? 'pre' })), home: 0, level: true, of: 'announce mic to Aux 7' }),
     {
       kind: 'group',
       id: 'matrix',
@@ -605,7 +605,7 @@ function PageMatrices({ ctx }: { ctx: PageCtx }) {
       <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
         <Eyebrow>THE LOBBY</Eyebrow>
-        <Body>The announce mic should arrive louder than everything else — it comes in twice: inside MAIN and by its own route on AUX 7.</Body>
+        <Body>The announce mic should arrive louder than everything else — it comes in twice: inside MAIN and by its own route on AUX 7. Its Aux 7 send is PRE-fader, like the monitor sends: a house fader ride on the announce channel does not change what the lobby hears, and the channel MUTE (above the PRE tap on this console) still closes it.</Body>
       </Card>
       <KeyFact>A matrix is the post-main tool. Whatever the house engineer does to the mix, the fills, the lobby and the recorder follow it — and each can still be shaped on its own. On a smaller console without matrices the same feeds come from spare aux outputs, at the cost of building each one channel by channel.</KeyFact>
     </SoundSystemsRackLayout>

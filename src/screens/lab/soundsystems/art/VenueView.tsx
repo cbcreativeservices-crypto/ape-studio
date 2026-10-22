@@ -224,19 +224,44 @@ function squarePath(pts: readonly Pt[], r = BEND): string {
   return `${d} L ${f1(z.x)} ${f1(z.y)}`;
 }
 
-/** Tape across parallel lanes, every `step` units wherever two or more ride
- *  together, kept clear of each lane's ends and bends. */
-function tieMarks(lanes: readonly { c: number; a: number; b: number }[], vertical: boolean, step = 34): string[] {
+/** The bundle a cable belongs to (rule book R8): mic/line, loudspeaker and
+ *  data run as separate groups, so tape only ever ties lanes of ONE group
+ *  (round-8 grade R7-SS-12: speaker, line and network lanes were taped into
+ *  one loom). */
+export type TieGroup = 'line' | 'speaker' | 'data';
+export function tieGroup(level: SignalLevel): TieGroup {
+  return level === 'speaker' ? 'speaker' : level === 'digital' ? 'data' : 'line';
+}
+export type TieLane = { c: number; a: number; b: number; g?: TieGroup };
+
+/** Tape across parallel lanes, every `step` units wherever two or more of
+ *  the SAME group ride side by side, kept clear of each lane's ends and
+ *  bends. At each mark the riding lanes are taken across in order; a tie
+ *  closes at a lane of another group, so tape never wraps a speaker run in
+ *  with a line or a data run, nor crosses one to reach its own kind. */
+export function tieMarks(lanes: readonly TieLane[], vertical: boolean, step = 34): string[] {
   if (lanes.length < 2) return [];
   const lo = Math.min(...lanes.map((l) => l.a));
   const hi = Math.max(...lanes.map((l) => l.b));
   const out: string[] = [];
-  for (let s = lo + step / 2; s < hi; s += step) {
-    const on = lanes.filter((l) => s > l.a + 7 && s < l.b - 7);
-    if (on.length < 2) continue;
-    const c0 = Math.min(...on.map((l) => l.c)) - 2.2;
-    const c1 = Math.max(...on.map((l) => l.c)) + 2.2;
+  const tie = (run: readonly TieLane[], s: number) => {
+    if (run.length < 2) return;
+    const c0 = Math.min(...run.map((l) => l.c)) - 2.2;
+    const c1 = Math.max(...run.map((l) => l.c)) + 2.2;
     out.push(vertical ? `M ${f1(c0)} ${f1(s)} L ${f1(c1)} ${f1(s)}` : `M ${f1(s)} ${f1(c0)} L ${f1(s)} ${f1(c1)}`);
+  };
+  for (let s = lo + step / 2; s < hi; s += step) {
+    const on = lanes.filter((l) => s > l.a + 7 && s < l.b - 7).sort((p, q) => p.c - q.c);
+    if (on.length < 2) continue;
+    let run: TieLane[] = [];
+    for (const l of on) {
+      if (run.length && (run[0].g ?? 'line') !== (l.g ?? 'line')) {
+        tie(run, s);
+        run = [];
+      }
+      run.push(l);
+    }
+    tie(run, s);
   }
   return out;
 }
@@ -370,8 +395,8 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
     let lastRow = -Infinity;
     const rTop = 6;
     const rMin = 5;
-    const vLanes: { c: number; a: number; b: number }[] = [];
-    const hLanes: { c: number; a: number; b: number }[] = [];
+    const vLanes: TieLane[] = [];
+    const hLanes: TieLane[] = [];
     for (const w of rows) {
       const t = xy(w.top.slot);
       const k = laneK.get(w)!;
@@ -393,8 +418,8 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
           ` L ${f1(endX + rd)} ${f1(y)} A ${f1(rd)} ${f1(rd)} 0 0 0 ${f1(endX)} ${f1(y + rd)} L ${f1(endX)} ${f1(foh.y)}`;
         paths.set(key(w.l), d);
         addLegs([...start, { x, y: rowY }, { x, y }, { x: endX, y }, { x: endX, y: foh.y }]);
-        vLanes.push({ c: x, a: rowY + rTop, b: y - rk });
-        hLanes.push({ c: y, a: endX + rd, b: x - rk });
+        vLanes.push({ c: x, a: rowY + rTop, b: y - rk, g: tieGroup(w.l.level) });
+        hLanes.push({ c: y, a: endX + rd, b: x - rk, g: tieGroup(w.l.level) });
       } else {
         const h = w.house!;
         const hp = xy(h.slot);
@@ -402,7 +427,7 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
         const pts: Pt[] = [...start, { x, y: rowY }, { x, y: exitY }, { x: hp.x, y: exitY }];
         paths.set(key(w.l), squarePath(pts, rTop));
         addLegs(pts);
-        vLanes.push({ c: x, a: rowY + rTop, b: exitY - rTop });
+        vLanes.push({ c: x, a: rowY + rTop, b: exitY - rTop, g: tieGroup(w.l.level) });
       }
     }
     ties.push(...tieMarks(vLanes, true), ...tieMarks(hLanes, false));
@@ -413,8 +438,8 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
     // Outer lane (top of the crossover, hard on the wall) to the longest run.
     const lanes = [...farWall].sort((p, q) => xy(q.house!.slot).y - xy(p.house!.slot).y || xy(q.top.slot).x - xy(p.top.slot).x);
     const rT = 6;
-    const vLanes: { c: number; a: number; b: number }[] = [];
-    const hLanes: { c: number; a: number; b: number }[] = [];
+    const vLanes: TieLane[] = [];
+    const hLanes: TieLane[] = [];
     lanes.forEach((w, k) => {
       const t = xy(w.top.slot);
       const h = w.house!;
@@ -426,8 +451,8 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
       const pts: Pt[] = [{ x: ux, y: t.y }, { x: ux, y: cy }, { x: wx, y: cy }, { x: wx, y: exitY }, { x: hp.x, y: exitY }];
       paths.set(key(w.l), squarePath(pts, rT));
       addLegs(pts);
-      hLanes.push({ c: cy, a: wx + rT, b: ux - rT });
-      vLanes.push({ c: wx, a: cy + rT, b: exitY - rT });
+      hLanes.push({ c: cy, a: wx + rT, b: ux - rT, g: tieGroup(w.l.level) });
+      vLanes.push({ c: wx, a: cy + rT, b: exitY - rT, g: tieGroup(w.l.level) });
     });
     ties.push(...tieMarks(vLanes, true), ...tieMarks(hLanes, false));
   }
@@ -438,8 +463,8 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
     // lane and the leftmost drop, so no two runs cross.
     const lanes = [...fohFar].sort((p, q) => xy(p.house!.slot).y - xy(q.house!.slot).y || xy(p.house!.slot).x - xy(q.house!.slot).x);
     const rT = 6;
-    const vLanes: { c: number; a: number; b: number }[] = [];
-    const hLanes: { c: number; a: number; b: number }[] = [];
+    const vLanes: TieLane[] = [];
+    const hLanes: TieLane[] = [];
     lanes.forEach((w, k) => {
       const h = w.house!;
       const hp = xy(h.slot);
@@ -452,8 +477,8 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
       const pts: Pt[] = [{ x: hp.x, y: exitY }, { x: wx, y: exitY }, { x: wx, y: by }, { x: dx, y: by }, { x: dx, y: foh.y }];
       paths.set(key(w.l), squarePath(pts, rT));
       addLegs(pts);
-      vLanes.push({ c: wx, a: exitY + rT, b: by - rT });
-      hLanes.push({ c: by, a: wx + rT, b: dx - rT });
+      vLanes.push({ c: wx, a: exitY + rT, b: by - rT, g: tieGroup(w.l.level) });
+      hLanes.push({ c: by, a: wx + rT, b: dx - rT, g: tieGroup(w.l.level) });
     });
     ties.push(...tieMarks(vLanes, true), ...tieMarks(hLanes, false));
   }
@@ -472,7 +497,7 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
     const below = runs.filter((r) => sy(r) >= base).sort((p, q) => sx(p) - sx(q));
     const order = [...above, ...below];
     const n = order.length;
-    const hLanes: { c: number; a: number; b: number }[] = [];
+    const hLanes: TieLane[] = [];
     order.forEach((r, i) => {
       const y = lip ? base - CABLE_GAP * (n - 1 - i) : base + CABLE_GAP * i;
       const s = xy(r.s.slot);
@@ -494,7 +519,7 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
       pts.push({ x: fx, y }, { x: fx, y: f.y });
       paths.set(key(r.l), squarePath(pts));
       addLegs(pts);
-      hLanes.push({ c: y, a: Math.min(xs, fx) + BEND, b: Math.max(xs, fx) - BEND });
+      hLanes.push({ c: y, a: Math.min(xs, fx) + BEND, b: Math.max(xs, fx) - BEND, g: tieGroup(r.l.level) });
     });
     ties.push(...tieMarks(hLanes, false));
   }
