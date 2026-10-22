@@ -808,7 +808,7 @@ function CourseCardView({
         <View style={{ alignItems: 'center' }}>
           <View style={{ width: cd.btnW }}>
             <GlassButton maxFontSizeMultiplier={HOME_MAX}
-              label={upsell ? '🔒 ACADEMY MODE' : 'COMING SOON'}
+              label={upsell ? '🔒 MEMBERSHIP' : 'COMING SOON'}
               tint="steel"
               height={50}
               fontSize={13}
@@ -1237,7 +1237,7 @@ function CourseCardView({
         {/* Tools tutorial line lives INSIDE the card, below the title (Booth
             2026-07-15) — blue, over the art. */}
         {isTools && upsell ? (
-          <Text style={styles.cardToolsSub} maxFontSizeMultiplier={HOME_MAX}>Learn how to use them with tutorials in Academy Mode</Text>
+          <Text style={styles.cardToolsSub} maxFontSizeMultiplier={HOME_MAX}>Learn how to use them with tutorials included in Academy membership</Text>
         ) : null}
       </View>
       <View>
@@ -1280,7 +1280,7 @@ function CourseCardView({
             // they see COMING SOON instead of the paywall path.
             <View style={{ width: cd.btnW }}>
               <GlassButton maxFontSizeMultiplier={HOME_MAX}
-                label={upsell ? '🔒 ACADEMY MODE' : 'COMING SOON'}
+                label={upsell ? '🔒 MEMBERSHIP' : 'COMING SOON'}
                 tint="steel"
                 height={50}
                 fontSize={13}

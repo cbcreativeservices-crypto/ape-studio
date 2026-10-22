@@ -21,10 +21,10 @@ export const pricingDeadlineActive = (now: Date = new Date()): boolean =>
   now.getTime() < CURRENT_PRICING_ENDS.getTime();
 
 export const COPY = {
-  lockCommonMistakes: 'Common Mistakes are available in academy mode.',
-  upgradePhrase: 'Upgrade from reference mode to full academy mode.',
+  lockCommonMistakes: 'Common Mistakes are included with Academy membership.',
+  upgradePhrase: 'Upgrade to Academy membership.',
   marketingLine:
-    'Use the free glossary as a reference tool. Upgrade from reference mode to full academy mode to unlock common mistakes, guided practice, audio tool tutorials, quizzes, topic trophies, progress tracking, and completion records.',
+    'Use the free glossary as a reference tool. Academy membership unlocks common mistakes, guided practice, audio tool tutorials, quizzes, topic trophies, progress tracking, and completion records.',
   // Body for the member-only UpgradeSheet popup (owner 2026-08-01). Kept separate
   // from marketingLine so the landing screen's copy is untouched.
   upgradeSheetBody:

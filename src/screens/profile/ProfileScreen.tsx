@@ -769,7 +769,7 @@ export function ProfileScreen() {
       ? 'ACADEMY MEMBER'
       : entitlement === 'lapsed'
         ? 'MEMBERSHIP LAPSED'
-        : 'REFERENCE MODE';
+        : 'FREE ACCESS';
   const statusColor = !tierKnown
     ? colors.textSubAlt
     : academy
