@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 23:52 · ccode · 71d44a7d
+changed: Merge dj-lab (round 8 test fix) into next-store-build
+affects other side: nothing (client merge)
+needs: nothing
+
+
 ### 2026-10-21 23:52 · ccode · 3fe2aeaf
 changed: Test: wiringFix_r8_text reads source with CRLF normalised (Windows checkouts)
 affects other side: nothing (tests only)
