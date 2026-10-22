@@ -41,7 +41,7 @@ const flagged = await import('../src/features/flags/flaggedStore.ts');
 const settle = async () => {
   for (let i = 0; i < 5; i++) await new Promise<void>((r) => setImmediate(r));
 };
-const read = (rel: string) => readFileSync(new URL(`../${rel}`, import.meta.url), 'utf8');
+const read = (rel: string) => readFileSync(new URL(`../${rel}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 const DASH = 'src/screens/dashboard/DashboardScreen.tsx';
 
 /* ── 1. Always present, never removed ─────────────────────────────────────── */
