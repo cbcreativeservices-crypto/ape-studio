@@ -33,7 +33,7 @@ import { WedgePlan, planIdsOf } from '../KitPlan';
 import type { BuiltGuitarModel, GuitarScene } from './guitarModel.ts';
 import { GuitarSceneArt } from './GuitarArt';
 import { KitTop } from '../kitScene/KitSceneArt';
-import { DI_XLR_TO, GUITAR_WIDE, diCable, diCord, KIT_TURN, kitOriginAt, SIZES, WALL, diXlr, guitarCue, guitarPlanFoots, planFrame, shownIn, stringsPlan, type GuitarPlanOpts, type PlanKind, type PlanObject } from './stagePlanModel.ts';
+import { DI_XLR_TO, GUITAR_WIDE, STAGE_EDGE, stageEdgeCables, diCable, diCord, KIT_TURN, kitOriginAt, SIZES, WALL, diXlr, guitarCue, guitarPlanFoots, planFrame, shownIn, stringsPlan, type GuitarPlanOpts, type PlanKind, type PlanObject } from './stagePlanModel.ts';
 import { clearOfFoots, labelPlaces, unionRect, type PlanFoot, type PlanPt } from '../planFoot.ts';
 import { cueCables, cueHub, cueLabels, type CueRig } from '../monitoring/cueMix.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
@@ -339,7 +339,7 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
               {scene === 'studio' ? <Path path={walls} style="stroke" strokeWidth={WALL.stroke} color="#2a2c32" /> : null}
               {scene === 'studio' && lit.has('room') ? <Path path={walls} style="stroke" strokeWidth={30} color={AMBER} opacity={0.8} /> : null}
               {scene === 'stage' ? (
-                <Line p1={vec(wide.u0 + 100, edgeZ)} p2={vec(wide.u1 - 100, edgeZ)} color={lit.has('audience') ? AMBER : '#7a7f8a'} strokeWidth={lit.has('audience') ? 22 : 12}>
+                <Line p1={vec(wide.u0 + STAGE_EDGE.inset, edgeZ)} p2={vec(wide.u1 - STAGE_EDGE.inset, edgeZ)} color={lit.has('audience') ? AMBER : '#7a7f8a'} strokeWidth={lit.has('audience') ? 22 : 12}>
                   <DashPathEffect intervals={[60, 40]} />
                 </Line>
               ) : null}
@@ -367,7 +367,7 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
             </Group>
           </Canvas>
         </Pressable>
-        <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, [...(cue ? cueCables(cue) : []), ...(xlr ? [xlr] : []), ...(diObj ? [diCable(sc, diObj.at)] : [])])} />
+        <StaticLabels labels={uniq} xf={xf} scale={textScale} w={w} h={h} clearOf={clearOfFoots(foots, [...(cue ? cueCables(cue) : []), ...(xlr ? [xlr] : []), ...(diObj ? [diCable(sc, diObj.at)] : []), ...(scene === 'stage' ? stageEdgeCables(edgeZ) : [])])} />
       </View>
     );
   }

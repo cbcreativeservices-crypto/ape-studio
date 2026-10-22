@@ -65,7 +65,7 @@ import type { ReactNode } from 'react';
 import { BlurMask, Circle, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { ElectricFront, buildElectric, electricExtent } from '../electric/ElectricArt';
 import { BASS, GUITAR, type ElectricSpec } from '../electric/electricSpec.ts';
-import { STEEL_ART, VOL_ART } from './signalChain.ts';
+import { HEAD_ART, KEYS_ART, STEEL_ART, VOL_ART } from './signalChain.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 type P2 = readonly [number, number];
@@ -220,15 +220,15 @@ function SteelIcon({ S }: { S: number }) {
 function KeyboardIcon({ S, kind }: { S: number; kind: 'rhodes' | 'wurli' }) {
   const rh = kind === 'rhodes';
   // Width × depth (mm); the depth is seen foreshortened (×0.55) from the player's eye.
-  const W = rh ? 988 : 1000;
-  const D = rh ? 563 : 460;
-  const f = 0.55;
+  const W = rh ? KEYS_ART.W : 1000;
+  const D = rh ? KEYS_ART.D : 460;
+  const f = KEYS_ART.f;
   const whites = rh ? 36 : 38;
-  const cheek = rh ? 71 : 50;
+  const cheek = rh ? KEYS_ART.cheek : 50;
   const kbW = W - 2 * cheek;
   const kw = kbW / whites;
   const keyD = 150 * f;
-  const front = 70; // the key fronts and the case's front rail, seen face-on
+  const front = KEYS_ART.front; // the key fronts and the case's front rail, seen face-on
   const depth = D * f;
   const k = fit(S, W, depth + front, 1.0, 0.9);
   const x0 = -W / 2;
@@ -285,6 +285,16 @@ function KeyboardIcon({ S, kind }: { S: number; kind: 'rhodes' | 'wurli' }) {
       <Path path={rr(x0, y0 + depth + front * 0.45, W, front * 0.55, 8)}>
         <LinearGradient start={vec(0, y0 + depth)} end={vec(0, y0 + depth + front)} colors={[...caseCols]} />
       </Path>
+      {rh ? (
+        // R6 (R5-MIK-01): the OUTPUT JACK on the case front, in the left end
+        // block — its cable (DiPath, signalChain keysJack) leaves from here.
+        <Group>
+          <Circle cx={x0 + KEYS_ART.cheek / 2} cy={y0 + depth + front * KEYS_ART.jackY} r={Math.max(16, 3.2 / k)}>
+            <RadialGradient c={vec(x0 + KEYS_ART.cheek / 2 - 4, y0 + depth + front * KEYS_ART.jackY - 4)} r={Math.max(20, 4 / k)} colors={[...CHROME]} />
+          </Circle>
+          <Circle cx={x0 + KEYS_ART.cheek / 2} cy={y0 + depth + front * KEYS_ART.jackY} r={Math.max(8, 1.6 / k)} color="#050506" />
+        </Group>
+      ) : null}
     </Group>
   );
 }
@@ -602,9 +612,9 @@ function ComboIcon({ S }: { S: number }) {
 /** The compact bass head, three-quarter view: a brushed front panel with its
  *  knobs, input and power switch; vents and a strap handle on top. */
 function HeadIcon({ S }: { S: number }) {
-  const W = 330;
-  const H = 75;
-  const dd = 250 * 0.45;
+  const W = HEAD_ART.W;
+  const H = HEAD_ART.H;
+  const dd = HEAD_ART.depth;
   const dx = dd * Math.cos(Math.PI / 6);
   const dy = -dd * Math.sin(Math.PI / 6);
   const k = fit(S, W + dx, H - dy + 14, 1.0, 0.85);

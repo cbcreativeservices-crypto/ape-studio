@@ -227,6 +227,13 @@ export function diCable(sc: GuitarScene, di: XZ): PlanCable {
 export const DI_XLR_JACKS: { di: 'diOut'; to: 'micIn' } = { di: 'diOut', to: 'micIn' };
 /** The off-plan destination's words (the MK-01 ruling's own words). */
 export const DI_XLR_TO: Record<GuitarPlanScene, string> = { stage: 'TO STAGE BOX', studio: 'TO WALL PANEL' };
+/** R6 MIK-04: the dashed audience edge as StagePlan draws it (inset 100 from
+ *  the wide plan's sides, up to 22 thick when lit) — two rails, one at each
+ *  side of its stroke, so the plan's words (clearOf) never sit on it. */
+export const STAGE_EDGE = { inset: 100, half: 11 } as const;
+export function stageEdgeCables(edgeZ: number): PlanCable[] {
+  return [-1, 1].map((sd) => ({ id: `stageEdge${sd}`, kind: 'edge', pts: [{ u: GUITAR_WIDE.u0 + STAGE_EDGE.inset, v: edgeZ + sd * STAGE_EDGE.half }, { u: GUITAR_WIDE.u1 - STAGE_EDGE.inset, v: edgeZ + sd * STAGE_EDGE.half }] }));
+}
 /** How far the XLR drops from the DI's end before it turns into its lane (mm). */
 export const DI_XLR_DROP = 160;
 /** R3-MK-05: on stage the XLR turns UPSTAGE (−v) in its own lane near the

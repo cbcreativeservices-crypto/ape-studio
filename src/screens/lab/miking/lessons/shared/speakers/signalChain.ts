@@ -166,6 +166,27 @@ export const STEEL_ART = { k: 1.25 / 940, dy: 0.46, jackU: 420, bodyBottom: -610
 export const volJack = (S: number, which: 'in' | 'out'): XY => ({ x: (which === 'in' ? VOL_ART.inX : VOL_ART.outX) * VOL_ART.k * S, y: (VOL_ART.dy + VOL_ART.jackY * VOL_ART.k) * S });
 export const steelJack = (S: number): XY => ({ x: STEEL_ART.jackU * STEEL_ART.k * S, y: (STEEL_ART.dy + STEEL_ART.bodyBottom * STEEL_ART.k) * S });
 
+/* R6 (2026-10-21, grade R5-MIK-01): the tine piano's OUTPUT JACK on its case
+ * front, in the left end block (KeyboardIcon 'rhodes': 988 wide, the top seen
+ * ×0.55 deep + a 70 front, k = S / 988). The keys → DI cord leaves from it. */
+export const KEYS_ART = { W: 988, D: 563, f: 0.55, front: 70, cheek: 71, jackY: 0.72 } as const;
+const keysK = () => Math.min(1 / KEYS_ART.W, 0.9 / (KEYS_ART.D * KEYS_ART.f + KEYS_ART.front));
+export const keysJack = (S: number): XY => {
+  const tall = KEYS_ART.D * KEYS_ART.f + KEYS_ART.front;
+  return { x: (-KEYS_ART.W / 2 + KEYS_ART.cheek / 2) * keysK() * S, y: (-tall / 2 + KEYS_ART.D * KEYS_ART.f + KEYS_ART.front * KEYS_ART.jackY) * keysK() * S };
+};
+/* R6 (MIK-03): the bass head's three-quarter drawing (HeadIcon): front 330 ×
+ * 75, its top/side 250 deep seen ×0.45 at 30°. The direct out's drop leaves
+ * from the FRONT's underside, left of the side face the speaker cable leaves. */
+export const HEAD_ART = { W: 330, H: 75, depth: 250 * 0.45 } as const;
+export const headFront = (S: number): { x1: number; bottom: number } => {
+  const dx = HEAD_ART.depth * Math.cos(Math.PI / 6);
+  const dy = HEAD_ART.depth * Math.sin(Math.PI / 6);
+  const tall = HEAD_ART.H + dy + 14;
+  const k = Math.min(1 / (HEAD_ART.W + dx), 0.85 / tall) * S;
+  return { x1: (-(HEAD_ART.W + dx) / 2 + HEAD_ART.W) * k, bottom: (tall / 2 - 7) * k };
+};
+
 /** Points along a drawn link (px). */
 export function sampleSeg(seg: PathSeg, n = 40): XY[] {
   if (seg.kind === 'line') return seg.pts;
@@ -203,7 +224,10 @@ export function diPathLayout(spec: ChainSpec, w: number, h: number, ts: number, 
   const amp = pos.amp;
   // The amp's drop to its direct out: clear of the amp's label, inside its body.
   const ampLabelHalf = labelW('amp') / 2;
-  const dropDx = Math.min(halfW.amp - 2, ampLabelHalf + 6);
+  // R6 MIK-03: a bass HEAD's drop leaves from its front's underside, well left
+  // of the side face its speaker cable leaves from (never on that cable).
+  const head = amp0.kind === 'head' ? headFront(S) : null;
+  const dropDx = Math.min(head ? head.x1 - S * 0.08 : halfW.amp - 2, ampLabelHalf + 6);
   if (spec.ampDirect) pos.ampdi = { x: amp.x + dropDx, y: lanes.amp };
   const speaker = merged ? { x: amp.x + COMBO_ART.spk.dx * kc, y: amp.y + (comboY0 + COMBO_ART.spk.dy) * kc, r: COMBO_ART.spk.r * kc } : null;
   if (speaker) pos.cab = { x: speaker.x, y: speaker.y };
@@ -222,7 +246,8 @@ export function diPathLayout(spec: ChainSpec, w: number, h: number, ts: number, 
   // A label wider than the body: nudge it left so the drop keeps 5 px clear.
   if (spec.ampDirect && ampLabelHalf + 5 > dropDx) label.amp = { ...label.amp, x: amp.x - (ampLabelHalf + 5 - dropDx) };
   // The direct out's words sit LEFT of its panel, on its lane (clear of the DI lane below at any height).
-  if (spec.ampDirect) label.ampdi = { x: pos.ampdi.x - S * 0.5 - 4 - labelW('ampdi') / 2, y: lanes.amp + 3 * ts };
+  // R6 MIK-02: with a DI box the THRU climbs past that side — the words go UNDER the panel instead.
+  if (spec.ampDirect) label.ampdi = spec.diBox ? { x: pos.ampdi.x, y: lanes.amp + S * AMPOUT_HALF_H + 12 * ts } : { x: pos.ampdi.x - S * 0.5 - 4 - labelW('ampdi') / 2, y: lanes.amp + 3 * ts };
   // The desk's label sits ABOVE it: its underside takes the electrical lanes.
   const desk = pos.desk;
   label.desk = { x: desk.x, y: desk.y - S * DESK_HALF_H - 10 * ts };
@@ -243,7 +268,7 @@ export function diPathLayout(spec: ChainSpec, w: number, h: number, ts: number, 
       return { l, seg: { kind: 'line', pts: [{ x: a.x + S * 0.5, y: a.y }, { x: vx, y: a.y }, { x: vx, y: deskIn }] } };
     }
     if (l.from === 'amp' && l.to === 'ampdi') {
-      return { l, seg: { kind: 'line', pts: [{ x: b.x, y: a.y }, { x: b.x, y: b.y - S * AMPOUT_HALF_H + 1 }] } };
+      return { l, seg: { kind: 'line', pts: [{ x: b.x, y: a.y + (head ? head.bottom : 0) }, { x: b.x, y: b.y - S * AMPOUT_HALF_H + 1 }] } };
     }
     if (l.from === 'ampdi' && l.to === 'dibox') {
       // R3-MK-04: the AUX OUT's lead, seated in the panel's jack, into the DI's input end.
@@ -266,14 +291,22 @@ export function diPathLayout(spec: ChainSpec, w: number, h: number, ts: number, 
       const p0 = { x: a.x + j.x, y: a.y + j.y };
       return { l, seg: { kind: 'cubic', p0, c1: { x: p0.x, y: p0.y + (b.y - p0.y) * 0.5 }, c2: { x: b.x - S * 0.8, y: b.y + S * 0.1 }, p3: { x: b.x - S * 0.5, y: b.y + S * 0.1 } }, over: true, plugs: [p0] };
     }
+    if (b.y > a.y && l.to === 'dibox' && byId(l.from).kind === 'keys') {
+      // R6 (R5-MIK-01): from the plug in the tine piano's OUTPUT JACK on its case front, down into the DI's input end.
+      const j = keysJack(S);
+      const p0 = { x: a.x + j.x, y: a.y + j.y };
+      return { l, seg: { kind: 'cubic', p0, c1: { x: p0.x, y: p0.y + (b.y - p0.y) * 0.5 }, c2: { x: b.x - S * 0.8, y: b.y + S * 0.1 }, p3: { x: b.x - S * 0.5, y: b.y + S * 0.1 } }, over: true, plugs: [p0] };
+    }
     if (b.y > a.y && l.to === 'dibox') {
       // Down into the DI box's input jack, at its far (left) end.
       return { l, seg: { kind: 'cubic', p0: { x: a.x, y: a.y + S * 0.5 }, c1: { x: a.x, y: a.y + S * 0.5 + (b.y - a.y) * 0.4 }, c2: { x: b.x - S * 0.8, y: b.y + S * 0.1 }, p3: { x: b.x - S * 0.5, y: b.y + S * 0.1 } } };
     }
     if (l.from === 'dibox' && l.kind === 'instrument') {
       // The DI's THRU, from the same end as its input, up to the next box.
+      // R6 MIK-02: it rises at once (staying right of the input cord, never
+      // crossing it) — the input's words sit above their drawing (below).
       const bx = b.x - halfW[l.to];
-      return { l, seg: { kind: 'cubic', p0: { x: a.x - S * 0.5, y: a.y }, c1: { x: a.x - S * 0.95, y: a.y - S * 0.15 }, c2: { x: bx - S * 0.45, y: b.y + S * 0.35 }, p3: { x: bx, y: b.y + S * 0.1 } } };
+      return { l, seg: { kind: 'cubic', p0: { x: a.x - S * 0.5, y: a.y }, c1: { x: a.x - S * 0.55, y: a.y - (a.y - b.y) * 0.45 }, c2: { x: bx - S * 0.45, y: b.y + S * 0.35 }, p3: { x: bx, y: b.y + S * 0.1 } } };
     }
     // Any other link between lanes (none in the lessons' chains today).
     return { l, seg: { kind: 'cubic', p0: { x: a.x, y: a.y + S * 0.5 }, c1: { x: a.x, y: (a.y + b.y) / 2 }, c2: { x: b.x, y: (a.y + b.y) / 2 }, p3: { x: b.x, y: b.y - S * 0.42 } } };
@@ -291,12 +324,18 @@ export function diPathLayout(spec: ChainSpec, w: number, h: number, ts: number, 
   const c2 = { x: desk.x - colW * 0.5, y: cy };
   const bad = { p0, c1, c2, p3, mid: { x: (p0.x + 3 * c1.x + 3 * c2.x + p3.x) / 8, y: crest }, labelY };
   const elY = Math.min(bottomRow, (spec.diBox ? lanes.di : lanes.amp) + S * 0.5 + 34 * ts);
-  const airY = Math.max(topRow, Math.min(lanes.air - S * 0.5 - 18 * ts, merged ? label.cab.y - 16 * ts : Infinity));
   // The cord that drops into the DI — from the instrument or (R3-MK-01) from
-  // whichever node feeds the DI, a steel's volume pedal: that node's words
-  // move right of the cord, where it crosses their row.
+  // whichever node feeds the DI, a steel's volume pedal.
   const cordLink = out.find((k) => k.l.to === 'dibox' && k.l.kind === 'instrument' && pos[k.l.from].y < pos.dibox.y);
-  if (cordLink?.seg) {
+  const thru = out.find((k) => k.l.from === 'dibox' && k.l.kind === 'instrument');
+  // R6 MIK-02: with a THRU, two cords run under the feeding node (its cord
+  // down, the THRU back up past it) — its words sit ABOVE its drawing, so no
+  // cord crosses them at any width; the AIR caption keeps above them.
+  const feedRow = cordLink?.seg && thru ? pos[cordLink.l.from].y - S * 0.5 - 4 * ts : null;
+  const airY = Math.max(topRow, Math.min(lanes.air - S * 0.5 - 18 * ts, merged ? label.cab.y - 16 * ts : Infinity, feedRow != null ? feedRow - 14 * ts : Infinity));
+  if (cordLink && feedRow != null) label[cordLink.l.from] = { x: pos[cordLink.l.from].x, y: feedRow };
+  else if (cordLink?.seg) {
+    // (no THRU) that node's words move right of the cord, where it crosses their row.
     const id = cordLink.l.from;
     const row = label[id].y;
     const pts = sampleSeg(cordLink.seg, 60).filter((p) => p.y >= row - 7 * ts - 2 && p.y <= row + 5 * ts + 2);

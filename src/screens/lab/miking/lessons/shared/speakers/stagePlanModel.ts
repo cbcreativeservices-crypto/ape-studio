@@ -158,6 +158,14 @@ export function diXlrEnd(scene: PlanScene): PlanPt {
 }
 /** The off-plan destination's words. */
 export const DI_XLR_TO: Record<PlanScene, string> = { stage: 'TO STAGE BOX', studio: 'TO WALL PANEL' };
+/** R6 MIK-05: the blue dashed line — the amp's sound reaching its player —
+ *  as StagePlan draws it (14 thick). Its band joins the footprints the plan's
+ *  words keep clear of (StagePlan's clearOf). Not a cable, not an item: it is
+ *  in neither spkCables nor spkFoots. */
+export const AMP_TO_PLAYER = { u0: CAB.box.x1 + 40, u1: POS.player.u - 300, v: 0, half: 8 } as const;
+export function ampToPlayerFoot(): PlanFoot {
+  return foot('ampToPlayer', 'air', { u0: AMP_TO_PLAYER.u0, u1: AMP_TO_PLAYER.u1, v0: AMP_TO_PLAYER.v - AMP_TO_PLAYER.half, v1: AMP_TO_PLAYER.v + AMP_TO_PLAYER.half });
+}
 /** Every cable the plan draws (the studio's headphone cables come from cueMix). */
 export function spkCables(scene: PlanScene): PlanCable[] {
   return [DI_CABLE, ...spkPathCables(scene)];
