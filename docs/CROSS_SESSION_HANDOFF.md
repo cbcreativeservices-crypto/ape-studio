@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-22 11:28 · ccode · 87d7b2e0
+changed: Landing + paywall redesign (owner approved 2026-10-22): membership offer card, plans and buy button above the fold, Annual first, plan-named gold buy button, account step stated up front, guests return to the paywall with their plan kept, Free vs. membership block, How do I cancel? help
+affects other side: nothing in the DB (client purchase-flow UI; IAP products unchanged)
+needs: nothing
+
+
 ### 2026-10-22 00:37 · ccode · 0fb4e270
 changed: Test: customListAlways reads source with CRLF normalised (CRLF ratchet)
 affects other side: nothing (tests only)
