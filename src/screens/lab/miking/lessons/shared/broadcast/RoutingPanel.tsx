@@ -13,7 +13,7 @@
  */
 import { useMemo } from 'react';
 import { View } from 'react-native';
-import { Canvas, Circle, DashPathEffect, Group, LinearGradient, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { Canvas, Circle, DashPathEffect, FillType, Group, LinearGradient, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
@@ -58,7 +58,7 @@ function rows(n: number, h: number): number[] {
  *                           belt receiver's plug
  *   talkback station        a sloped desk panel, push-to-talk key and a short
  *                           gooseneck mic
- *   press feed box          a box with twelve XLR outputs (two rows of six)
+ *   press feed box          a box with twelve male XLR outputs (two rows of six)
  *   laptop                  a 14-inch laptop, open, from the front
  *   playback (jingles)      a desk cart player: a display and two rows of keys
  */
@@ -69,16 +69,26 @@ function rr(p: SkPath, x: number, y: number, w: number, h: number, r: number) {
   p.addRRect(Skia.RRectXY(Skia.XYWHRect(x, y, w, h), r, r));
 }
 
-/** One XLR female socket face at (cx, cy), radius r: its shell and three pin holes. */
-function xlrFace(recess: SkPath, metal: SkPath, cx: number, cy: number, r: number) {
+/** One XLR MALE output face at (cx, cy), radius r (R7-MIK-03, 2026-10-21: a
+ *  press box's isolated outputs are male, the C2 rule — an output is male):
+ *  the metal shell as a RING (the metal path is filled even-odd, so the shell
+ *  shows a hole), the dark insulating insert inside it with the latch's
+ *  keyway at the top, and three metal pins standing in the insert — 1 and 2
+ *  across the top, 3 below, as seen looking at the pins. */
+function xlrMaleFace(recess: SkPath, metal: SkPath, cx: number, cy: number, r: number) {
   metal.addCircle(cx, cy, r);
-  recess.addCircle(cx, cy, r * 0.74);
-  // Pins 1, 2, 3 (looking into the socket): 1 and 2 across the top, 3 below.
+  metal.addCircle(cx, cy, r * 0.78);
+  recess.addCircle(cx, cy, r * 0.78);
+  // the keyway: a slot cut through the shell's top (even-odd: the slot
+  // over the ring reads as a gap, the dark insert shows through)
+  const key = Skia.XYWHRect(cx - r * 0.12, cy - r * 0.98, r * 0.24, r * 0.2);
+  recess.addRect(key);
+  metal.addRect(key);
   for (const [dx, dy] of [
-    [-0.32, -0.18],
-    [0.32, -0.18],
-    [0, 0.34],
-  ]) metal.addCircle(cx + dx * r, cy + dy * r, r * 0.13);
+    [-0.36, -0.2],
+    [0.36, -0.2],
+    [0, 0.38],
+  ]) metal.addCircle(cx + dx * r, cy + dy * r, r * 0.15);
 }
 
 function deviceArt(id: DestId | 'laptop' | 'talkback' | 'player'): DeviceLayers {
@@ -229,7 +239,9 @@ function deviceArt(id: DestId | 'laptop' | 'talkback' | 'player'): DeviceLayers 
     case 'pressBox': {
       // A press box: twelve isolated XLR outputs, two rows of six.
       rr(L.body, 2, 20, 100, 50, 5);
-      for (let k = 0; k < 12; k++) xlrFace(L.recess, L.metal, 12 + (k % 6) * 16, 33 + Math.floor(k / 6) * 22, 6.4);
+      for (let k = 0; k < 12; k++) xlrMaleFace(L.recess, L.metal, 12 + (k % 6) * 16, 33 + Math.floor(k / 6) * 22, 6.4);
+      // the shells are rings: the metal layer fills even-odd (shell − insert + pins)
+      L.metal.setFillType(FillType.EvenOdd);
       break;
     }
     case 'remoteReturn':

@@ -30,8 +30,9 @@ import { cabLayout } from '../speakers/speakerModel.ts';
 import { OTHER_AMP } from '../speakers/backlinePlanModel.ts';
 import { RHODES, WURLI } from './keysSpec.ts';
 import { W } from './wurliModel.ts';
+import { RHODES_TOP } from './keysGeometry.ts';
 import { chairRowFacingStage, frontRowAt } from '../../../../../../features/lab/audienceChairsModel.ts';
-import { chairFoots, foot, kitPieceFoots, wedgeFoot, type PlanFoot, type PlanRect } from '../planFoot.ts';
+import { chairFoots, foot, kitPieceFoots, wedgeFoot, type PlanCable, type PlanFoot, type PlanPt, type PlanRect } from '../planFoot.ts';
 import { cueFootprints, type CueRig } from '../monitoring/cueMix.ts';
 
 export type KeysRig = 'rhodes' | 'wurli';
@@ -47,13 +48,15 @@ export const KEYS_POS = {
     player: { u: 40, v: SIDE },
     /** On the floor under the front of the keybed, at the right foot. */
     pedal: { u: 250, v: SIDE + 110 },
-    di: { u: 150, v: SIDE + 720 },
+    /** R7-MIK-01: between the keyboard and the combo, its XLR end upstage. */
+    di: { u: 450, v: 450 },
     otherAmp: { u: -60, v: -820 },
   },
   wurli: {
     player: { u: -620, v: 0 },
     pedal: { u: -230, v: 100 },
-    di: { u: 250, v: -820 },
+    /** R7-MIK-01: beside the instrument's bass end, under its AUX OUT. */
+    di: { u: 182, v: -820 },
     otherAmp: { u: -1000, v: 1100 },
   },
   audience: frontRowAt(2850),
@@ -138,6 +141,76 @@ export function keysCue(rig: KeysRig): CueRig {
     : { room, wall: 'v0', hubAt: -1100, stations: [{ id: 'keyboardist', at: { u: -650, v: -760 }, head: P, facing: 0 }] };
 }
 
+/* ── R7-MIK-01 (2026-10-21): THE CABLES (the backlineCables pattern), so the
+ * plan shows the DI's job instead of a box with nothing plugged in.
+ * TINE PIANO (passive, one jack; "used with an amplifier, DI box, or
+ *   preamp"): the keyboard's jack (the name rail's bass end) → the DI's INPUT;
+ *   the DI's THRU → the combo's INPUT on its front panel; the DI's XLR
+ *   upstage → TO STAGE BOX (stage) / TO WALL PANEL (studio, the control-room
+ *   wall). The DI stands between the keyboard and the combo, turned with its
+ *   jacks downstage and its XLR upstage.
+ * REED PIANO (its own amp and speakers): the AUX OUT (under the case at the
+ *   bass end, beside the 200A's trim pot) → the DI's INPUT, the THRU unused;
+ *   the DI's XLR → TO STAGE BOX (upstage, between the wedge and the kit) /
+ *   TO WALL PANEL (the studio's near wall). The DI is turned with its jacks
+ *   toward the instrument, its XLR away.
+ * Each cable its own lane: none crosses another, none runs through an object
+ * or the player's keep-clear zone, none crosses the studio's headphone feed.
+ * The DI box is the backline's (PlanDiBox, 110 × 84, its two jacks 13 proud
+ * at one end, the XLR 15 at the other), at true size. */
+export const KEYS_DI_TURN: Record<KeysRig, number> = { rhodes: Math.PI, wurli: -Math.PI / 2 };
+/** The DI's footprint: its box (110 × 84) turned to KEYS_DI_TURN, with air. */
+export function keysDiRect(rig: KeysRig): PlanRect {
+  const d = KEYS_POS[rig].di;
+  return rig === 'rhodes' ? { u0: d.u - DI.hu, u1: d.u + DI.hu, v0: d.v - DI.hv, v1: d.v + DI.hv } : { u0: d.u - DI.hv, u1: d.u + DI.hv, v0: d.v - DI.hu, v1: d.v + DI.hu };
+}
+/** The DI's jacks (in, thru) and its XLR, on the plan (mm). */
+export function keysDiJacks(rig: KeysRig): { input: PlanPt; thru: PlanPt; xlr: PlanPt } {
+  const d = KEYS_POS[rig].di;
+  // tine piano: the jacks downstage (+u), the input on the keyboard's side
+  // (+v); reed piano: the jacks toward the instrument (+v), the XLR away.
+  return rig === 'rhodes'
+    ? { input: { u: d.u + 68, v: d.v + 18 }, thru: { u: d.u + 68, v: d.v - 18 }, xlr: { u: d.u - 70, v: d.v } }
+    : { input: { u: d.u + 18, v: d.v + 68 }, thru: { u: d.u - 18, v: d.v + 68 }, xlr: { u: d.u, v: d.v - 70 } };
+}
+/** Where the instrument's own output is (mm): the tine piano's jack on the
+ *  name rail's bass end (keysGeometry RHODES_TOP, turned into the plan: the
+ *  keys toward the player at −u, the bass end at −v); the reed piano's AUX
+ *  OUT under the case at the bass end. */
+export function keysOutJack(rig: KeysRig): PlanPt {
+  const k = keyboardDims(rig);
+  return rig === 'rhodes' ? { u: k.cu - RHODES_TOP.railV, v: k.cv + RHODES_TOP.jack } : { u: 200, v: k.cv - k.width / 2 + 70 };
+}
+/** The tine piano's combo INPUT, on its front panel at the keyboard's end. */
+export function keysAmpInput(): PlanPt {
+  const c = cabLayout('combo12');
+  return { u: c.box.x1, v: c.box.z1 - 70 };
+}
+/** The off-plan destination of the DI's XLR. */
+export const KEYS_XLR_TO: Record<KeysScene, string> = { stage: 'TO STAGE BOX', studio: 'TO WALL PANEL' };
+/** The lanes (mm): the tine piano's cord runs downstage of the keep-clear
+ *  zone; the reed piano's XLR crosses upstage between the wedge and the kit. */
+export const KEYS_LANE = { rhodesCordU: 600, rhodesThruU: 540, wurliXlrV: -1200 } as const;
+export function keysCables(rig: KeysRig, scene: KeysScene): PlanCable[] {
+  const J = keysDiJacks(rig);
+  const out = keysOutJack(rig);
+  if (rig === 'rhodes') {
+    const A = keysAmpInput();
+    const L = KEYS_LANE;
+    const xlr = scene === 'stage' ? [J.xlr, { u: KEYS_BOX.rhodes.stage.u0, v: J.xlr.v }] : [J.xlr, { u: keysRoom('rhodes').u0, v: J.xlr.v }];
+    return [
+      { id: 'keysOut', kind: 'instrumentCable', pts: [out, { u: L.rhodesCordU, v: out.v }, { u: L.rhodesCordU, v: J.input.v }, J.input], from: 'keyboard', to: 'dibox' },
+      { id: 'diThru', kind: 'instrumentCable', pts: [J.thru, { u: L.rhodesThruU, v: J.thru.v }, { u: L.rhodesThruU, v: A.v }, A], from: 'dibox', to: 'amp' },
+      { id: 'diXlr', kind: 'xlr', pts: xlr, from: 'dibox' },
+    ];
+  }
+  const xlr = scene === 'stage' ? [J.xlr, { u: J.xlr.u, v: KEYS_LANE.wurliXlrV }, { u: KEYS_BOX.wurli.stage.u0, v: KEYS_LANE.wurliXlrV }] : [J.xlr, { u: J.xlr.u, v: keysRoom('wurli').v0 }];
+  return [
+    { id: 'auxOut', kind: 'instrumentCable', pts: [out, J.input], from: 'amp', to: 'dibox' },
+    { id: 'diXlr', kind: 'xlr', pts: xlr, from: 'dibox' },
+  ];
+}
+
 /** Every object's footprint on the plan (mm). */
 export function keysFoots(rig: KeysRig, scene: KeysScene, wedges: readonly Wedge[]): PlanFoot[] {
   const P = KEYS_POS[rig];
@@ -155,7 +228,7 @@ export function keysFoots(rig: KeysRig, scene: KeysScene, wedges: readonly Wedge
   out.push(foot('bench', 'bench', { u0: P.player.u + BENCH.u0, u1: P.player.u + BENCH.u1, v0: P.player.v + BENCH.v0, v1: P.player.v + BENCH.v1 }, { group: g }));
   out.push(foot('pedal', 'pedal', { u0: P.pedal.u - PEDAL.hu, u1: P.pedal.u + PEDAL.hu, v0: P.pedal.v - PEDAL.hv, v1: P.pedal.v + PEDAL.hv }, { group: g }));
   out.push(foot('keepClear', 'keepClear', keysKeep(rig), { group: g, zone: true }));
-  out.push(foot('dibox', 'dibox', { u0: P.di.u - DI.hu, u1: P.di.u + DI.hu, v0: P.di.v - DI.hv, v1: P.di.v + DI.hv }));
+  out.push(foot('dibox', 'dibox', keysDiRect(rig)));
   out.push(foot('otherAmp', 'amp', { u0: P.otherAmp.u + OTHER_AMP.u0, u1: P.otherAmp.u + OTHER_AMP.u1, v0: P.otherAmp.v + OTHER_AMP.v0, v1: P.otherAmp.v + OTHER_AMP.v1 }));
   if (scene === 'stage') {
     out.push(...kitPieceFoots(KEYS_KIT_AT[rig]));

@@ -36,9 +36,12 @@ const TONE = { muted: colors.textMuted, illustrative: '#aab0bd', amber: '#ffc64d
  *  `clearOf` (the plans, owner 2026-10-15: no word on an object): true when a
  *  model rectangle (mm) holds no object — every label then sits clear of the
  *  objects, inside the glass (`h`), moving to free space with a leader when
- *  its own place is taken (labelLayout.fitLabels' level-of-detail layout). */
-export function StaticLabels({ labels, xf, scale, w, h, laidOut = false, clearOf }: { labels: (StaticLabel & { leader?: { u: number; v: number } })[]; xf: ViewXform; scale: number; w: number; h?: number; laidOut?: boolean; clearOf?: (u0: number, v0: number, u1: number, v1: number) => boolean }) {
-  const kept = laidOut ? labels : clearOf ? fitLabels(labels, xf, scale, w, undefined, undefined, { clearOf, minY: 2, maxY: h != null ? h - 2 : undefined, leaderClear: leaderClearOf(clearOf, xf) }) : fitLabels(labels, xf, scale, w);
+ *  its own place is taken (labelLayout.fitLabels' level-of-detail layout).
+ *  `clearOf.leaders` (R7-MIK-02): what a LEADER must keep clear of, when it
+ *  differs from the words — a leader may cross a zone's dashed outline (a
+ *  floor marking), the words may not (planFoot clearOfFoots). */
+export function StaticLabels({ labels, xf, scale, w, h, laidOut = false, clearOf }: { labels: (StaticLabel & { leader?: { u: number; v: number } })[]; xf: ViewXform; scale: number; w: number; h?: number; laidOut?: boolean; clearOf?: ((u0: number, v0: number, u1: number, v1: number) => boolean) & { leaders?: (u0: number, v0: number, u1: number, v1: number) => boolean } }) {
+  const kept = laidOut ? labels : clearOf ? fitLabels(labels, xf, scale, w, undefined, undefined, { clearOf, minY: 2, maxY: h != null ? h - 2 : undefined, leaderClear: leaderClearOf(clearOf.leaders ?? clearOf, xf) }) : fitLabels(labels, xf, scale, w);
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       {kept.map((l) => {

@@ -104,12 +104,31 @@ export function unionRect(fs: readonly PlanRect[]): PlanRect {
 /** True when the plan rect (mm) holds none of these footprints and no cable
  *  runs through it — the plans' labels use it (fitLabels `clearOf`) so no
  *  word sits on an object or on a cable (expert review 2026-10-15: HEADPHONE
- *  MIX and CONTROL ROOM were printed across the feed lanes). Zones (floor
- *  markings) do not block words. */
-export function clearOfFoots(fs: readonly PlanFoot[], cables: readonly PlanCable[] = []): (u0: number, v0: number, u1: number, v1: number) => boolean {
+ *  MIX and CONTROL ROOM were printed across the feed lanes). A zone (a floor
+ *  marking) may hold words, but never across its OUTLINE (R7-MIK-02,
+ *  2026-10-21: PEDAL and PLAYER sat on the dashed keep-clear line): each
+ *  zone's four edges block a word like a cable, padded by ZONE_EDGE_PAD (half
+ *  the dashed outline's stroke), so a word is fully inside or fully outside. */
+export const ZONE_EDGE_PAD = 12;
+export function zoneEdges(fs: readonly PlanRect[]): (readonly [PlanPt, PlanPt])[] {
+  return fs.flatMap((z) => {
+    const a = { u: z.u0, v: z.v0 };
+    const b = { u: z.u1, v: z.v0 };
+    const c = { u: z.u1, v: z.v1 };
+    const d = { u: z.u0, v: z.v1 };
+    return [[a, b] as const, [b, c] as const, [c, d] as const, [d, a] as const];
+  });
+}
+type RectTest = (u0: number, v0: number, u1: number, v1: number) => boolean;
+/** The words' test; `.leaders` is the leaders' (objects and cables only — a
+ *  leader may cross a zone's outline to reach a part inside it). */
+export function clearOfFoots(fs: readonly PlanFoot[], cables: readonly PlanCable[] = []): RectTest & { leaders: RectTest } {
   const solid = fs.filter((f) => !f.zone);
   const segs = cables.flatMap((k) => k.pts.slice(1).map((q, i) => [k.pts[i], q] as const));
-  return (u0, v0, u1, v1) => !solid.some((f) => u0 < f.u1 && f.u0 < u1 && v0 < f.v1 && f.v0 < v1) && !segs.some(([p, q]) => segmentHitsRect(p, q, { u0, u1, v0, v1 }));
+  const edges = zoneEdges(fs.filter((f) => f.zone));
+  const leaders: RectTest = (u0, v0, u1, v1) => !solid.some((f) => u0 < f.u1 && f.u0 < u1 && v0 < f.v1 && f.v0 < v1) && !segs.some(([p, q]) => segmentHitsRect(p, q, { u0, u1, v0, v1 }));
+  const words: RectTest = (u0, v0, u1, v1) => leaders(u0, v0, u1, v1) && !edges.some(([p, q]) => segmentHitsRect(p, q, { u0, u1, v0, v1 }, -ZONE_EDGE_PAD));
+  return Object.assign(words, { leaders });
 }
 
 /** Does the segment p→q pass through the rect's interior (shrunk by `inset`)? */

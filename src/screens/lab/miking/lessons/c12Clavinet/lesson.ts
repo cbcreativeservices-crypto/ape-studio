@@ -32,7 +32,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know the clavinet’s surroundings — the keyboardist, the pedals, the amp, the cables and the power — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['cv.set.1', 'cv.set.2', 'cv.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'Draw the whole signal path first. The clavinet’s output goes to a DI or a line input — never a mic input or phantom power. Keep cables, mains and a hot amp safe, and protect your hearing.',
+    takeaway: 'Draw the whole signal path first. The clavinet’s passive pickup goes to a DI or an instrument (Hi-Z) input — never a mic input or phantom power. Keep cables, mains and a hot amp safe, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -116,9 +116,9 @@ const scenarios: MikingScenario[] = [
     id: 'cv.set.1',
     page: 'setting',
     prompt: 'You want a direct signal from the clavinet. Where does its output go?',
-    options: ['A mic input with phantom power switched on, which gives it more level', 'A DI or a line or instrument input, never a mic input with phantom', 'Straight into the speaker cabinet, bypassing the amp'],
-    correct: 'A DI or a line or instrument input, never a mic input with phantom',
-    explain: 'Use a DI or a suitable line or instrument input, following the interface’s specifications. Never connect a mic input or phantom power to the clavinet’s output.',
+    options: ['A mic input with phantom power switched on, which gives it more level', 'A DI or an instrument (Hi-Z) input, never a mic input with phantom', 'Straight into the speaker cabinet, bypassing the amp'],
+    correct: 'A DI or an instrument (Hi-Z) input, never a mic input with phantom',
+    explain: 'Its pickup is passive: use a DI or an instrument (Hi-Z) input, following the interface’s specifications. Never connect a mic input or phantom power to the clavinet’s output.',
     why: {
       'A mic input with phantom power switched on, which gives it more level': 'Phantom power and a mic input do not belong on an instrument output.',
       'Straight into the speaker cabinet, bypassing the amp': 'A speaker needs an amplifier’s power; the clavinet’s output is a small signal.',
@@ -497,7 +497,7 @@ const orderTasks: OrderTask[] = [
     steps: [
       { text: 'Draw the signal path: clavinet, pedals, amp, speaker, mic, console', early: 'Start by knowing which parts of the chain exist.' },
       { text: 'Write down the switches, the pedal order and the amp settings', early: 'Document the source once you know the chain.' },
-      { text: 'Connect the direct path to a DI or line input — no mic input, no phantom', early: 'The direct path comes once the chain is known.' },
+      { text: 'Connect the direct path to a DI or an instrument (Hi-Z) input — no mic input, no phantom', early: 'The direct path comes once the chain is known.' },
       { text: 'Set the direct level with headroom for the hardest playing and boosts', early: 'Set its level once it is connected.' },
       { text: 'Mute the mic channel; place the close mic on one chosen speaker', early: 'Place the mic once the direct path is safe.' },
       { text: 'Set the mic gain on the loudest passages and effects', early: 'Gain is set once the mic is placed and connected.' },
@@ -507,7 +507,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'Each input gets the right connection and power (a DI or line input; phantom only where a mic needs it)', role: 'required', feedback: 'Say how each path connects: the clavinet’s output never gets a mic input or phantom.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'Each input gets the right connection and power (a DI or an instrument (Hi-Z) input; phantom only where a mic needs it)', role: 'required', feedback: 'Say how each path connects: the clavinet’s output never gets a mic input or phantom.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the right surface — or a labelled direct path', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, stand and cables are safe: off the grille, clear of a hot amp and the player’s feet', role: 'required', feedback: 'Safety and clearance are part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on an amp', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
@@ -522,7 +522,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A passive DI after the pedals, plus a close dynamic at the grille on the dust-cap line', ok: true, power: 'none', feedback: 'A suggested pairing: the effects in both, the amp in the mic — aligned in mono.' },
       { id: 'b', label: 'One close dynamic at the grille, between the centre and the edge', ok: true, power: 'none', feedback: 'A suggested single-mic start: the player’s amp sound.' },
       { id: 'c', label: 'A condenser 30 cm from the clavinet’s strings, with no amp', ok: false, power: 'phantom', feedback: 'The strings make almost no sound in the air: the clavinet needs its amp or a direct path.' },
-      { id: 'd', label: 'The clavinet’s output into a mic input with phantom on', ok: false, power: 'phantom', feedback: 'Never a mic input or phantom on the clavinet’s output: use a DI or line input.' },
+      { id: 'd', label: 'The clavinet’s output into a mic input with phantom on', ok: false, power: 'phantom', feedback: 'Never a mic input or phantom on the clavinet’s output: use a DI or an instrument (Hi-Z) input.' },
       { id: 'e', label: 'A close mic placed between two speakers of a 2×12 cabinet', ok: false, power: 'none', feedback: 'Between speakers it hears two sources at different distances. Choose one.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.mono', label: 'I will align the DI and the mic in mono', role: 'optional', feedback: 'A fair reason whenever two paths are blended.' }, BRAND_REASON, CLOSE_REASON],
@@ -607,7 +607,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Where must the clavinet’s output NOT be connected?',
     options: ['A mic input with phantom power', 'A DI box, before or after the pedals', 'The amplifier’s instrument input'],
     correct: 'A mic input with phantom power',
-    explain: 'The output goes to a DI or a line or instrument input — never a mic input or phantom power.',
+    explain: 'The passive pickup goes to a DI or an instrument (Hi-Z) input — never a mic input or phantom power.',
     why: {
       'A DI box, before or after the pedals': 'A DI is the right way to take a direct signal.',
       'The amplifier’s instrument input': 'That is the amp path the clavinet is made for.',
@@ -693,7 +693,7 @@ export const C12_LESSON: Lesson = {
       { id: 'wedge.band', label: 'the band’s monitor', short: 'BAND WEDGE', note: 'Beside the amp, facing another player: loud, and on the open side of the amp mic.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'band', label: 'the rest of the band', short: 'BAND', note: 'Loud, close by: its sound reaches every open mic. The direct path hears none of it.', prov: { kind: 'illustrative', reason: 'a generic band area' }, tag: 'SPILL', scene: 'stage' },
       { id: 'pa', label: 'the audience and the PA', short: 'AUDIENCE · PA', note: 'Live, the direct signal usually feeds the PA; the amp is miked when it is part of the sound.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
-      { id: 'di', label: 'a DI box', short: 'DI', note: 'Takes the direct signal — label it before or after the pedals — to a line or mic-level input on the console. Never a mic input or phantom straight on the clavinet’s output.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'DIRECT PATH', scene: 'studio' },
+      { id: 'di', label: 'a DI box', short: 'DI', note: 'Takes the direct signal — label it before or after the pedals — and sends its balanced mic-level output to a mic input on the console. Never a mic input or phantom straight on the clavinet’s output.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'DIRECT PATH', scene: 'studio' },
       { id: 'room', label: 'a room mic', short: 'ROOM MIC', note: 'Add room distance only when the room contributes something useful; each added mic adds spill and a timing check.', prov: { kind: 'illustrative', reason: 'a typical layout; the lesson gives no distance' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: the direct signal usually gives more gain before feedback and less spill. Mic the amp when it is part of the player’s sound — close, its null aimed at the loudest monitor, the amp’s volume under control.',
