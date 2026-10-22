@@ -739,7 +739,7 @@ const LOUDNESS_MODEL_BADGE =
 const LOUDNESS_MISTAKES = [
   'Mastering "as loud as possible" for streaming — the platform turns it back DOWN to its integrated target; you traded dynamics for nothing.',
   'Reading momentary jumps as "the mix got louder" — integrated barely moves; different window, different question.',
-  'Trusting sample peak at −0.1 dBFS — the reconstructed waveform can overshoot between samples, which is why specs demand −1 dBTP.',
+  'Trusting sample peak at −0.1 dBFS — the reconstructed waveform can overshoot between samples, which is why delivery specs set a true-peak ceiling (many platforms ask −1 dBTP; broadcast under ATSC A/85, −2).',
   'Confusing LRA (how DYNAMIC the program is) with loudness (how loud it is).',
 ];
 
@@ -768,7 +768,7 @@ const LOUDNESS_CHECKS: CheckSpec[] = [
     ],
     correctIdx: 1,
     reveal:
-      'Samples are dots; the DAC draws the smooth curve through them — and between two high samples that curve can swing higher than either. True-peak meters oversample to estimate the reconstructed curve. "No clipped samples" is not "no clipping": the overshoot distorts DACs and lossy codecs, which is exactly why delivery specs ask for a −1 dBTP ceiling.',
+      'Samples are dots; the DAC draws the smooth curve through them — and between two high samples that curve can swing higher than either. True-peak meters oversample to estimate the reconstructed curve. "No clipped samples" is not "no clipping": the overshoot distorts DACs and lossy codecs, which is exactly why delivery specs set a true-peak ceiling: many platforms ask −1 dBTP; broadcast (ATSC A/85) −2.',
     wrongHint: 'What does the DAC reconstruct BETWEEN two adjacent samples?',
   },
 ];
@@ -843,12 +843,12 @@ export function LoudnessModule(p: MeterModuleProps) {
             knob between tracks. Flip between SPEECH and MUSIC MIX in the SIGNAL tray: momentary
             dances, integrated barely breathes — different windows answering different questions.
           </Text>
-          <Text style={dstyles.eyebrow}>THE −1 dBTP CEILING — MIND THE GAP</Text>
+          <Text style={dstyles.eyebrow}>THE TRUE-PEAK CEILING — MIND THE GAP</Text>
           <Text style={dstyles.body}>
             Compare SAMPLE PK with TRUE PK on the bezel: the TP GAP readout is the overshoot the
             reconstructed waveform makes BETWEEN samples. A file whose samples never touch full scale
-            can still clip a DAC or a lossy encoder. Delivery specs park the true peak at −1 dBTP so
-            the reconstruction — and the codec after it — always has room.
+            can still clip a DAC or a lossy encoder. Many platforms ask for a true peak of −1 dBTP
+            (broadcast under ATSC A/85: −2) so the reconstruction — and the codec after it — always has room.
           </Text>
         </CollapsibleSection>
 

@@ -66,6 +66,14 @@ describe('R3-PR-01 — instrument level is flagged only straight into a mic, con
     assert.ok(fire(path({ sp_from: 'Bass', sp_level: 'instrument', sp_via: '', sp_to: 'Mic preamp ch 3' })).includes(LEVEL));
     assert.ok(!fire(path({ sp_from: 'Bass', sp_level: 'instrument', sp_via: '', sp_to: 'Bass amp' })).includes(LEVEL));
   });
+  it('R5-PROD-01: "Mic preamplifier", "preamplifier" and "pre amp" are mic inputs too; a real amp is still exempt', () => {
+    for (const to of ['Mic preamplifier', 'Preamplifier ch 2', 'pre amp 4', 'Mic pre amplifier', 'Mic pre-amplifier']) {
+      assert.ok(fire(path({ sp_from: 'Bass', sp_level: 'instrument', sp_via: '', sp_to: to })).includes(LEVEL), to);
+    }
+    for (const to of ['Bass amplifier', 'Guitar amps', 'Power amp']) {
+      assert.ok(!fire(path({ sp_from: 'Bass', sp_level: 'instrument', sp_via: '', sp_to: to })).includes(LEVEL), to);
+    }
+  });
   it('a guitar through a DI to the stage box is not flagged (one row or two hops)', () => {
     assert.ok(!fire(path({ sp_from: 'Guitar', sp_level: 'instrument', sp_via: 'DI', sp_to: 'Stage box input 7' })).includes(LEVEL));
     assert.ok(!fire(path(

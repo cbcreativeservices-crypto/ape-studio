@@ -438,7 +438,7 @@ const MYTHS: { myth: string; reality: string }[] = [
       // modQuant.tsx:122, which states it correctly. On a panel introduced
       // with "if one line of this lab survives in your memory, make it one of
       // these", the app was teaching two different things in three places.
-      '144 dB is 6 × 24 — the 6 dB-per-bit rule of thumb, and it describes DYNAMIC RANGE. The ~146 dB figure is 6.02·24 + 1.76: the theoretical SNR for a dithered full-scale sine, where the +1.76 dB comes from the sine’s crest factor, not from rounding. Analog noise, converter linearity and clocking set the real usable range (ENOB) well below theory — even excellent converters manage roughly 120 dB.',
+      '144 dB is 6 × 24 — the 6 dB-per-bit rule of thumb, and it describes DYNAMIC RANGE. The ~146 dB figure is 6.02·24 + 1.76: the theoretical SNR for an UNDITHERED full-scale sine (quantization noise only), where the +1.76 dB comes from the sine’s crest factor, not from rounding. TPDF dither adds about 4.8 dB of noise, so the dithered ideal is about 141 dB. Analog noise, converter linearity and clocking set the real usable range (ENOB) well below theory — even excellent converters manage roughly 120 dB.',
   },
   {
     myth: 'Record as hot as possible, right up to 0 dBFS, for maximum resolution.',

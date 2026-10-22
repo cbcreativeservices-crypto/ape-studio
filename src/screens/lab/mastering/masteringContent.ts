@@ -188,7 +188,7 @@ export const DESTINATIONS: readonly Destination[] = [
   {
     id: 'streaming', name: 'Streaming / digital distribution',
     brief: 'Client: "Releasing the EP through a distributor to all the usual services next month."',
-    confirm: ['The distributor\'s CURRENT file spec (format, bit depth, sample rate)', 'The services\' current loudness and true-peak guidance — verify today, not from memory', 'Track titles, ISRC codes and artwork from the client', 'Explicit / clean flags and alternate versions requested', 'Whether a high-resolution deliverable is wanted as well', 'No dither on the 24-bit deliverables — dither only where the bit depth is reduced'],
+    confirm: ['The distributor\'s CURRENT file spec (format, bit depth, sample rate)', 'The services\' current loudness and true-peak guidance — verify today, not from memory', 'Track titles, ISRC codes and artwork from the client', 'Explicit / clean flags and alternate versions requested', 'Whether a high-resolution deliverable is wanted as well', 'Most mastering engineers dither 24-bit files too: float to 24-bit is a reduction'],
     facts: ['Loudness is described in LUFS / LKFS per ITU-R BS.1770 across the industry.', 'Many services normalize playback loudness; the master\'s dynamics are unchanged by that.'],
     examples: ['A distributor may ask for 16-bit or 24-bit WAV at 44.1 kHz — an EXAMPLE; read the current spec sheet.', 'A true-peak ceiling around −1 dBTP is commonly quoted as an EXAMPLE of a safety margin; lossy delivery often uses −2 dBTP — confirm the destination\'s current spec.'],
   },

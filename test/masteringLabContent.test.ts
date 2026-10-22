@@ -108,12 +108,12 @@ describe('answer keys', () => {
     assert.match(by('l3').explain, /services differ on whether they turn quiet masters up/);
     assert.match(by('t7').explain, /the first one is information/);
   });
-  it('dither is the LAST process after sample-rate conversion; the streaming list says no dither on 24-bit; CD asks for ISRC + UPC/EAN', () => {
+  it('dither is the LAST process after sample-rate conversion; the streaming list says float → 24-bit is still a reduction (dither, hedged; R6); CD asks for ISRC + UPC/EAN', () => {
     const cd = DESTINATIONS.find((d) => d.id === 'cd')!;
     assert.ok(cd.facts.some((f) => /Convert the sample rate first \(48 → 44\.1 kHz\), then reduce to 16-bit with dither as the LAST process; dither once/.test(f)));
     assert.ok(cd.confirm.some((c) => /ISRC per track and the UPC\/EAN/.test(c)));
     const st = DESTINATIONS.find((d) => d.id === 'streaming')!;
-    assert.ok(st.confirm.some((c) => /No dither on the 24-bit deliverables/.test(c)));
+    assert.ok(st.confirm.some((c) => /Most mastering engineers dither 24-bit files too: float to 24-bit is a reduction/.test(c)));
     const vinyl = DESTINATIONS.find((d) => d.id === 'vinyl')!;
     assert.ok(vinyl.facts.some((f) => /Inner-groove distortion/.test(f)));
     const bc = DESTINATIONS.find((d) => d.id === 'broadcast')!;

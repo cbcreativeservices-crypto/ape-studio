@@ -59,7 +59,7 @@ function regionLabelFor(node: ChainNode): string {
 /** Source descriptor under the source column (owner wording). */
 export function sourceDesc(node: ChainNode): string {
   return node.region === 'low'
-    ? 'a quiet instrument/source'
+    ? 'a quiet mic'
     : node.region === 'healthy'
       ? 'a moderate source'
       : node.region === 'hot'
