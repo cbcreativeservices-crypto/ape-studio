@@ -417,7 +417,7 @@ const MYTHS: { myth: string; reality: string }[] = [
   {
     myth: 'Higher bit depth improves high-frequency response.',
     reality:
-      'Bit depth sets amplitude resolution — noise floor and dynamic range (≈ 6.02·N + 1.76 dB). Frequency response is set by sample rate. Time and amplitude are separate axes with separate settings.',
+      'Bit depth sets amplitude resolution — noise floor and theoretical SNR (≈ 6.02·N + 1.76 dB, undithered). Frequency response is set by sample rate. Time and amplitude are separate axes with separate settings.',
   },
   {
     myth: 'Higher sample rate gives more volume levels.',
@@ -526,7 +526,7 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
           helpKey="jitter"
           items={[
             { k: 'MATTERS AT', v: 'ADC / DAC conversion' },
-            { k: 'HARMLESS AT', v: 'buffered · reclocked playback' },
+            { k: 'REDUCED BY', v: 'buffered · reclocked playback' },
           ]}
         />
         <Text style={dstyles.caption}>
@@ -637,7 +637,7 @@ export function ErrorsModule({ width: _width, focused, help }: DigitalModuleProp
             ],
             correctIdx: 1,
             reveal:
-              'Match the format to the content: speech needs clean 20 kHz bandwidth and headroom (48k/24 mono is generous, and the data rate stays sane for hours of tape); music masters may justify 96k for processing margin. Blanket maximums just multiply storage without audible return.',
+              'Match the format to the content: speech stays clear with far less bandwidth than music, but wants headroom (48k/24 mono is generous, and the data rate stays sane for hours of tape); music masters may justify 96k for processing margin. Blanket maximums just multiply storage without audible return.',
             wrongHint: 'Recall the data-rate math above — every doubling of fs doubles the storage for the same minutes.',
           }}
         />

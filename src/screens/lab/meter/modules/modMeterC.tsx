@@ -974,8 +974,8 @@ const CASES: DetectiveCase[] = [
       ],
       correctIdx: 3,
       reveal:
-        'The pseudo-3D mountain range: frequency across, amplitude up, and TIME receding into the picture — each slice is the spectrum a moment later. Built to show how each frequency DECAYS.',
-      wrongHint: 'Three axes, drawn as a mountain range collapsing toward the back.',
+        'The pseudo-3D mountain range: frequency across, amplitude up, and TIME stepping toward you — the start (t = 0) stands at the back, and each slice nearer the front is the spectrum a moment later. Built to show how each frequency DECAYS.',
+      wrongHint: 'Three axes, drawn as a mountain range collapsing toward you.',
     },
     shows: {
       question: 'WHAT DOES IT SHOW?',
@@ -987,8 +987,8 @@ const CASES: DetectiveCase[] = [
       ],
       correctIdx: 1,
       reveal:
-        'Most of the range collapses quickly toward the back of the picture — but one narrow ridge around 250 Hz keeps standing, slicing deep into the time axis. One frequency refuses to die.',
-      wrongHint: 'Compare how far back into TIME each part of the mountain survives.',
+        'Most of the range collapses quickly, near the back of the picture — but one narrow ridge around 250 Hz keeps standing all the way toward the front, far along the time axis. One frequency refuses to die.',
+      wrongHint: 'Compare how far toward the front (later in TIME) each part of the mountain survives.',
     },
     problem: {
       question: 'WHAT PROBLEM DO YOU SEE?',

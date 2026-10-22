@@ -344,7 +344,7 @@ const FAULT_EXPLAIN: Record<FaultKey, string> = {
   // GN-01/GN-02 (2026-10-20): this lab models an analog-style channel where
   // the fader and bus each feed an amplifier with its own ceiling — say so;
   // and the model runs ONE channel, so there is no sum to blame at the bus.
-  fad: 'CHANNEL FADER TOO HOT — pushed so far up that the gain stage right after it overloads. In this lab every stage is an active stage with its own ceiling; a passive fader cannot clip by itself, and on a floating-point digital desk the overload shows up later, at the output.',
+  fad: 'CHANNEL FADER TOO HOT — pushed so far up that the FADER stage itself goes over its ceiling. In this lab every stage is an active stage with its own ceiling; on a real desk a passive fader cannot clip by itself (the amplifier after it would), and on a floating-point digital desk the overload shows up later, at the output.',
   bus: 'BUS GAIN TOO HOT — the bus stage lifts the signal over its ceiling. This lab runs one channel; on a real desk it is usually many channels summing together that push a bus over.',
 };
 

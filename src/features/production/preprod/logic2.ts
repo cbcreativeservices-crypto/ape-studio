@@ -471,7 +471,8 @@ registerActivityChecks({
         return (
           direct.length > 0 &&
           direct.every(
-            (r) => cell(r, 'in_capture') === 'di' && ['xlr', 'trs'].includes(cell(r, 'in_connection')),
+            // A DI box's output is XLR (R7-PROD-04) — TRS is not accepted here.
+            (r) => cell(r, 'in_capture') === 'di' && cell(r, 'in_connection') === 'xlr',
           )
         );
       },

@@ -49,7 +49,8 @@ describe('SC-03 — the display text matches the drawn rack', () => {
     assert.doesNotMatch(l, /Each pill/);
     assert.doesNotMatch(l, /GR meters below/);
     assert.doesNotMatch(l, /GR meters between modules/);
-    assert.match(l, /rack units on one patch cable/);
+    // R7-SC-02 (round 8): one cable per hop, not one cable for the rack.
+    assert.match(l, /rack units with one patch cable for each hop/);
   });
 });
 

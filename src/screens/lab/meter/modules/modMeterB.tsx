@@ -527,7 +527,7 @@ const FIELD_GUIDE: { title: string; helpKey: string; caption: string }[] = [
     title: 'ROOM RESONANCES',
     helpKey: 'room_ring',
     caption:
-      'Pick CLASSROOM. Every ridge collapses quickly — except 250 Hz, still standing far behind the front. That frequency is RINGING: the room stores and releases energy there long after everything else has died.',
+      'Pick CLASSROOM. Every ridge collapses quickly — except 250 Hz, still standing tall far toward the front. That frequency is RINGING: the room stores and releases energy there long after everything else has died.',
   },
   {
     title: 'SPEAKER PROBLEMS',
@@ -568,22 +568,22 @@ const FIELD_GUIDE: { title: string; helpKey: string; caption: string }[] = [
 ];
 
 const CHECK_Z_AXIS: CheckSpec = {
-  question: 'In the waterfall (CSD), what is the Z axis — the direction the ridges recede into the picture?',
+  question: 'In the waterfall (CSD), what is the Z axis — the direction the ridges step through the picture?',
   options: [
-    'TIME — each ridge behind the front is the spectrum a moment later',
+    'TIME — each ridge nearer the front is the spectrum a moment later',
     'Phase',
     'A second frequency axis for harmonics',
     'Stereo width',
   ],
   correctIdx: 0,
   reveal:
-    'X = frequency across, Y = amplitude up, Z = time receding. The front edge is "now"; the range behind it is history decaying. The mountain range collapsing IS decay.',
-  wrongHint: 'The front edge is "now" — what is everything behind it?',
+    'X = frequency across, Y = amplitude up, Z = time stepping toward you. The back edge is the start (t = 0); each slice nearer the front is later, and the front edge is the latest instant. The mountain range collapsing toward you IS decay.',
+  wrongHint: 'The back edge is the start (t = 0) — what is each slice in front of it?',
 };
 
 const CHECK_RIDGE_FIX: CheckSpec = {
   question:
-    'The classroom’s 250 Hz ridge stretches far behind while its neighbors die fast. What actually SHORTENS that ring?',
+    'The classroom’s 250 Hz ridge stretches far toward the front while its neighbors die fast. What actually SHORTENS that ring?',
   options: [
     'Acoustic treatment/damping — absorb the stored energy (EQ only changes the ridge’s LEVEL)',
     'An EQ cut at 250 Hz — less level means less ring time',
@@ -593,12 +593,12 @@ const CHECK_RIDGE_FIX: CheckSpec = {
   correctIdx: 0,
   reveal:
     'EQ moves the ridge up and down (level); the room keeps storing and releasing energy at 250 Hz for just as long. Only absorption — damping, treatment, bass trapping — shortens the DECAY. The waterfall shows both axes separately, which is exactly why it exists.',
-  wrongHint: 'Try the EQ lane in this module: the mountain gets taller or shorter — does it get LONGER or SHORTER into the picture?',
+  wrongHint: 'Try the EQ lane in this module: the mountain gets taller or shorter — does it reach FARTHER toward the front, or not?',
 };
 
 const WATERFALL_MISTAKES = [
   'EQ-cutting a ringing frequency and calling it fixed — the mountain gets SHORTER (level), not SHORTER-LIVED (decay).',
-  'Reading a TALLER ridge as a LONGER ring — height is level at time zero; length into the picture is decay time. Different axes.',
+  'Reading a TALLER ridge as a LONGER ring — height is level at time zero; how far it reaches toward the front is decay time. Different axes.',
   'Quoting one RT60 number for a room — decay is frequency-dependent: the classroom is fine at 1 kHz and ringing at 250 Hz.',
   'Blaming the room for a ridge that follows the SPEAKER around — a resonant driver or cabinet rings the same way: one slow ridge among fast neighbors.',
 ];

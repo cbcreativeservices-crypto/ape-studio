@@ -144,7 +144,7 @@ const eqConfig: FxLabConfig = {
         { label: 'PEAK (BELL)', value: EQ_BAND_TYPES.peak, blurb: 'Boost or cut a BAND around the frequency, leaving both sides alone — the surgical shape.' },
         { label: 'LOW SHELF', value: EQ_BAND_TYPES.lowShelf, blurb: 'Everything BELOW the frequency rises or falls together — a broad tilt of the low end.' },
         { label: 'HIGH SHELF', value: EQ_BAND_TYPES.highShelf, blurb: 'Everything ABOVE the frequency rises or falls together — air and sheen live here.' },
-        { label: 'HIGH-PASS', value: EQ_BAND_TYPES.highPass, blurb: 'REMOVES everything below the frequency. Not a cut — a cliff. The rumble-and-mud eraser.' },
+        { label: 'HIGH-PASS', value: EQ_BAND_TYPES.highPass, blurb: 'REMOVES everything below the frequency on a steady 12 dB-per-octave slope — not a set amount of cut. The rumble-and-mud eraser.' },
         { label: 'LOW-PASS', value: EQ_BAND_TYPES.lowPass, blurb: 'REMOVES everything above the frequency — darkness on demand; also what "telephone" sounds are made of.' },
       ],
       initial: EQ_BAND_TYPES.peak,
@@ -189,7 +189,9 @@ const eqConfig: FxLabConfig = {
   heroCaption: (v) => {
     const f = v[EQ_FREQ] >= 1000 ? `${v[EQ_FREQ] / 1000} kHz` : `${v[EQ_FREQ]} Hz`;
     if (v[EQ_TYPE] === EQ_BAND_TYPES.highPass || v[EQ_TYPE] === EQ_BAND_TYPES.lowPass) {
-      return `${v[EQ_TYPE] === EQ_BAND_TYPES.highPass ? 'High-pass' : 'Low-pass'} at ${f}. GAIN and Q don't apply to a pass filter — the slope is fixed; only the cutoff moves.`;
+      return v[EQ_TYPE] === EQ_BAND_TYPES.highPass
+        ? `High-pass at ${f}. GAIN and Q don't apply to the high-pass — the slope is fixed; only the cutoff moves.`
+        : `Low-pass at ${f}. GAIN doesn't apply to a pass filter, but on the low-pass Q shapes the corner — a high Q adds a bump just before the cutoff.`;
     }
     return (
       `${v[EQ_GAIN] > 0 ? '+' : ''}${v[EQ_GAIN]} dB at ${f}, Q ${v[EQ_Q]}. ` +
@@ -218,7 +220,7 @@ const eqConfig: FxLabConfig = {
       ],
       correctIdx: 1,
       reveal:
-        'Pass filters REMOVE everything past the cutoff at a fixed slope — there is no amount to set. GAIN and Q belong to bells and shelves.',
+        'Pass filters REMOVE everything past the cutoff at a fixed slope — there is no amount to set. GAIN belongs to bells and shelves. (On the low-pass, Q shapes the corner; on the high-pass it does nothing.)',
       wrongHint: 'Switch to HIGH-PASS and tap through the GAIN values — watch the curve.',
     },
   ],
@@ -691,8 +693,10 @@ const flangerConfig: FxLabConfig = {
   }),
   heroBadge: ANALYTIC,
   heroCaption: (v) =>
-    `Notches every ${Math.round(1 / (v[P.centerMs] / 1000))} Hz (spacing = 1/delay), sweeping between the ghosts. ` +
-    (Math.abs(v[P.modFeedback]) >= 0.7 ? 'High feedback sharpens the notches into rings.' : 'Evenly spaced — compare with the phaser.'),
+    v[P.modMix] >= 1
+      ? 'At 100% MIX there is no dry signal left to cancel against, so there are no deep notches — just a moving delay that wobbles the pitch (plus gentle ripples if FDBK is up). Set MIX to 50% for the deepest comb.'
+      : `Notches every ${Math.round(1 / (v[P.centerMs] / 1000))} Hz (spacing = 1/delay), sweeping between the ghosts. ` +
+        (Math.abs(v[P.modFeedback]) >= 0.7 ? 'High feedback sharpens the notches into rings.' : 'Evenly spaced — compare with the phaser.'),
   checks: [
     {
       question: 'What makes a flanger\u2019s notches different from a phaser\u2019s?',
@@ -926,7 +930,7 @@ const compConfig: FxLabConfig = {
       choices: [
         { label: '0.5 ms FAST', value: 0.5, blurb: 'Clamps instantly — transients are caught, but the attack of a drum dulls.' },
         { label: '5 ms', value: 5, blurb: 'Quick but not instant — most of the transient survives.' },
-        { label: '25 ms PUNCH', value: 25, blurb: 'The first 25 ms sneak through untouched — the hit stays, the tail is controlled. Punch.' },
+        { label: '25 ms PUNCH', value: 25, blurb: 'The clamp builds slowly (a 25 ms time constant), so most of the hit gets through before it bites — the tail is controlled. Punch.' },
         { label: '100 ms', value: 100, blurb: 'Slow — the compressor reacts to the body of the note, not the hit.' },
       ],
       initial: 5,
@@ -1011,8 +1015,8 @@ const compConfig: FxLabConfig = {
       ],
       correctIdx: 1,
       reveal:
-        'Attack is how long the compressor waits before clamping. 25 ms lets the hit sneak through untouched — punch — while the ring after it gets controlled. Fast attack dulls the hit itself.',
-      wrongHint: 'Open the ENV tray and A/B FAST against PUNCH on the click.',
+        'Attack sets how fast the compressor clamps — it is a time constant, not a wait. At 25 ms the gain reduction builds slowly, so most of the hit gets through — punch — while the ring after it gets controlled. Fast attack dulls the hit itself.',
+      wrongHint: 'Open the ATK/REL tray and A/B FAST against PUNCH on the click.',
     },
   ],
 };
@@ -1201,7 +1205,7 @@ const limiterConfig: FxLabConfig = {
   }),
   heroBadge: 'TRANSFER CURVE — ANALYTIC · GR METER — LIVE',
   heroCaption: (v) =>
-    `Output can NEVER exceed ${v[P.ceilingDb]} dB. Source at −20 dBFS → ${
+    `Sample peaks are held at ${v[P.ceilingDb]} dB (peaks between samples can still poke above — see ⓘ). Source at −20 dBFS → ${
       v[P.ceilingDb] < -20 ? `${Math.abs(v[P.ceilingDb] + 20)} dB of constant gain reduction (watch the meter)` : 'under the ceiling, untouched'
     }.`,
   pollGr: 'limiter',
@@ -1314,7 +1318,7 @@ const distConfig: FxLabConfig = {
       ? 'Top and bottom clip DIFFERENTLY (asymmetric) → even harmonics — the “warm” tube signature.'
       : 'Top and bottom clip the SAME (symmetric) → odd harmonics only — hollow/harsh.';
   },
-  note: 'Bitcrush and sample-rate reduction are in the engine (hear them via the lesson’s theory); their quantization visual lands with the analyzer view.',
+  note: 'Bitcrush and sample-rate reduction are in the engine, but this lab does not draw them — the lesson (ⓘ) explains how they work.',
   checks: [
     {
       question: 'Distortion makes a pure sine tone sound "rich". What was added?',
@@ -1326,7 +1330,7 @@ const distConfig: FxLabConfig = {
       correctIdx: 1,
       reveal:
         'Clipping bends the wave shape, and a bent shape IS new harmonics — multiples of the input frequency that were not there before. Distortion is a frequency-creating effect.',
-      wrongHint: 'Play the SINE source and watch the added partials in the display.',
+      wrongHint: 'Play the SINE source, raise DRIVE and watch its round tops bend flat — that bent shape IS the new harmonics. Then listen for the added buzz.',
     },
     {
       question: 'DRIVE and MIX both change how distorted it sounds. What does each actually do?',
@@ -1338,7 +1342,7 @@ const distConfig: FxLabConfig = {
       correctIdx: 0,
       reveal:
         'Drive is the sound: how hard you push into the curve decides how bent — how harmonic-rich — the wave gets. MIX is the blend: parallel distortion keeps the clean signal alongside the clipped one, so you dial in grit without losing the dry body.',
-      wrongHint: 'Raise DRIVE for more harmonics, then pull MIX toward dry — the loudness holds, the character doesn\u2019t.',
+      wrongHint: 'Raise DRIVE for more harmonics, then pull MIX toward dry — the clean body comes back and the grit sits underneath it.',
     },
   ],
 };
@@ -1422,7 +1426,9 @@ const phaseConfig: FxLabConfig = {
   }),
   heroBadge: 'LISSAJOUS + CORRELATION — ANALYTIC (440 Hz model)',
   heroCaption: (v) =>
-    v[PHASE_INV] > 0.5
+    v[PHASE_INV] > 0.5 && v[PHASE_DLY] > 0
+      ? `Flipped AND delayed ${v[PHASE_DLY]} ms: correlation is no longer a clean −1 — in mono some frequencies cancel and others add.`
+      : v[PHASE_INV] > 0.5
       ? 'Correlation −1: fold to mono and it CANCELS. A polarity flip is 180° at ALL frequencies.'
       : v[PHASE_DLY] > 0
         ? `A ${v[PHASE_DLY]} ms delay shifts phase MORE at higher frequencies — in mono that combs, and no polarity flip can fix it.`
