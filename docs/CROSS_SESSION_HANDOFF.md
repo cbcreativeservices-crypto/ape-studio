@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-22 16:48 · ccode · e60d44e1
+changed: About: say plainly an ongoing membership is not needed to stay listed and verified
+affects other side: app now PROMISES registry listing + employer search/verify never depend on membership — keep directory_search, public_verify_*, set_registry_listing free of any membership check
+needs: nothing
+
+
 ### 2026-10-22 12:21 · ccode · 2b8e2d56
 changed: About: certificate line names the Pro Registry listing step (owner H-A)
 affects other side: nothing (app copy only; rides the approval-day OTA)
