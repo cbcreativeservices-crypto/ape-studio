@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-22 12:21 · ccode · 2b8e2d56
+changed: About: certificate line names the Pro Registry listing step (owner H-A)
+affects other side: nothing (app copy only; rides the approval-day OTA)
+needs: nothing
+
+
 ### 2026-10-22 11:36 · ccode · dff54639
 changed: Copy: one name — 'Academy membership' replaces Reference/Academy Mode wording
 affects other side: nothing (app copy only; rides the approval-day OTA)
