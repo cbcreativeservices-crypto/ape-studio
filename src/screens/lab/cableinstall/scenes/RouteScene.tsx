@@ -111,7 +111,12 @@ const ROUTE_SEGS: Record<string, Record<string, CiArtSeg[]>> = {
     catwalk: [
       { d: 'M40 156 V148 H86 V84', len: 118 },
       { d: 'M86 84 V45 H250 V84', len: 242, hidden: true },
-      { d: 'M250 84 V92', len: 8 },
+      // R5-CI-01: the drop used to stop at (250, 92) — ON the fly frame's
+      // top, not on a connector. It now steps off the frame's left end
+      // (x 246, the frame spans 247–261), drops past it and lands on the
+      // top box's rear (input) panel at x 247, y 95.5 — where the other two
+      // feeds land (y 96 / 97.5)
+      { d: 'M250 84 V88 H246 V95.5 H247', len: 17 },
     ],
     'over-grid': [
       { d: 'M44 156 V144 H70 V84', len: 98 },

@@ -68,7 +68,9 @@ describe('R3-PB-03 one lane per cord', () => {
   it('studio bay: top cord at cx + 14, bottom cord at cx − 14 (opposite sides)', () => {
     const s = lab('art/StudioBayView.tsx');
     assert.match(s, /\{ y: ROW_TOP, on: !!plug\.top, side: 1 \}, \{ y: ROW_BOT, on: !!plug\.bottom, side: -1 \}/);
-    assert.match(s, /\$\{cx \+ 14 \* side\} \$\{PY \+ PANEL_H \+ 4\}/);
+    // round 6 (R5-PB-02) moved the path into bayCordDrop (same cx ± 14 lane)
+    assert.match(s, /L \$\{cx \+ BAY_CORD_DX \* side\} \$\{PY \+ PANEL_H \+ 4\}`;/);
+    assert.match(s, /<Path d=\{bayCordDrop\(cx, y, side\)\}/);
   });
 });
 

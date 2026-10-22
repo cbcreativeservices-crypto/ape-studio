@@ -168,7 +168,10 @@ describe('R4-PB-01 patch cords clear the jack below', () => {
     assert.ok(14 + 1.1 / 2 < neighbour - 1, 'outline clear of the next column');
   });
   it('studio bay: cord at cx ± 14, 2.6 wide, clears the bushing and stays inside the selection outline', () => {
-    assert.match(STUDIO, /\$\{cx \+ 14 \* side\} \$\{y \+ 18\}, \$\{cx \+ 14 \* side\} \$\{PY \+ PANEL_H \+ 4\}/);
+    // superseded geometry (R5-PB-02, round 6): the cord now lands on cx ± 14
+    // above the jack below — measured in wiringFix_r6_cablelabs_20261021
+    assert.match(STUDIO, /export const BAY_CORD_DX = 14;/);
+    assert.match(STUDIO, /L \$\{cx \+ BAY_CORD_DX \* side\} \$\{PY \+ PANEL_H \+ 4\}`;/);
     const MM = 1.95;
     const bushing = 5.5 * MM + 2 / 2;
     const sel = (18.4 * MM) / 2 - 1.5 - 1.4 / 2;
@@ -179,7 +182,9 @@ describe('R4-PB-01 patch cords clear the jack below', () => {
 
 describe('R4-CB-01 2-pole lead: damage needs a full-range feed', () => {
   it('says the HF section is at risk only if the lead comes from a full-range amp channel', () => {
-    assert.match(L05, /A 2-pole lead engages circuit 1 only: one driver section plays, the other stays silent\. There is no crossover inside the cabinet, so if that lead comes from a full-range amp channel, its HF section can be damaged\./);
+    // superseded wording (R5-CB-01, round 6): the damage is conditional on
+    // circuit 1 being the HF section — pinned in wiringFix_r6_cablelabs_20261021
+    assert.match(L05, /A 2-pole lead engages circuit 1 only: one driver section plays, the other stays silent\. There is no crossover inside the cabinet, so if circuit 1 is the HF section, a full-range feed down that lead can damage it/);
     assert.doesNotMatch(L05, /a full-range feed onto a high-frequency section can damage it/);
   });
   it('keeps the round-3 crossover wording', () => {

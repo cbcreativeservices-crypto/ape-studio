@@ -175,7 +175,7 @@ export const SCENARIOS: readonly Scenario[] = [
     choices: [
       { id: 'a', name: 'Headset on a TRRS plug (4 contacts) — for the call', a: 'trrs_35', b: 'trrs_35', verdict: 'correct', explain: 'The fourth contact IS the microphone path. Stereo down, mic back up, one plug — provided the headset’s wiring order (CTIA/OMTP) matches the jack.' },
       { id: 'b', name: 'Headphones on a TRS plug (3 contacts) — for the call', a: 'trs_35', b: 'trs_35', verdict: 'fits_but_verify', explain: 'It fits and music plays — but three contacts have no microphone path. Nothing failed; a capability is simply missing. Count the rings.' },
-      { id: 'c', name: 'TRS extension cable in the middle of a headset run', a: 'trs_35', b: 'trrs_35', verdict: 'wrong_construction', explain: 'The 3-contact extension is built without the fourth conductor, so it physically drops the headset’s mic path — a chain’s contact count is only as good as its weakest cable.' },
+      { id: 'c', name: 'TRS extension cable in the middle of a headset run', a: 'trs_35', b: 'trs_35', verdict: 'wrong_construction', explain: 'The 3-contact extension is built without the fourth conductor, so it physically drops the headset’s mic path — a chain’s contact count is only as good as its weakest cable.' },
       { id: 'd', name: '1/4-inch TRS headphone cable', a: 'trs_quarter', b: 'trs_quarter', verdict: 'no_fit', explain: 'The big brother does not fit the 3.5 mm jack without an adapter — and adapters never add a missing mic path.' },
     ],
   },
@@ -229,7 +229,7 @@ export const SCENARIOS: readonly Scenario[] = [
       { id: 'a', name: 'Ruggedized category cable with etherCON shells', a: 'ethercon_style', b: 'ethercon_style', verdict: 'correct', explain: 'Dozens of channels down four twisted pairs, in a shell that latches and shrugs off stage traffic. The cable must meet the system’s category specification.' },
       { id: 'b', name: 'Office patch cable from the IT drawer', a: 'ethernet_8p8c', b: 'ethernet_8p8c', verdict: 'fits_but_verify', explain: 'It fits and may pass — but an unlatched, light-duty cable of unknown category on the one link carrying EVERY channel of the show is a gamble. Verify category, then choose the rugged cable anyway.' },
       { id: 'c', name: 'XLR mic cable', a: 'xlr3', b: 'xlr3', verdict: 'no_fit', explain: 'The network port will not accept an XLR — this link is data, not an analog channel.' },
-      { id: 'd', name: 'The SAME cable into an office network switch', a: 'ethercon_style', b: 'ethernet_8p8c', verdict: 'protocol', explain: 'Some console↔stagebox links are real Ethernet; others are proprietary point-to-point protocols that only LOOK like it. Into the wrong network, nothing routes — check the system’s documentation, not the connector.' },
+      { id: 'd', name: 'The SAME cable into an office network switch', a: 'ethercon_style', b: 'ethercon_style', verdict: 'protocol', explain: 'Some console↔stagebox links are real Ethernet; others are proprietary point-to-point protocols that only LOOK like it. Into the wrong network, nothing routes — check the system’s documentation, not the connector.' },
     ],
     note: 'One data cable now does what a 48-channel copper snake did — which is exactly why its specification and condition matter more, not less.',
   },

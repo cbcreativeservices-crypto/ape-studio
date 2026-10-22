@@ -157,6 +157,9 @@ export const CI_ROUTE_SCENARIOS: CiRouteScenario[] = [
         id: 'catwalk',
         name: 'Riser + catwalk with J-hook run',
         path: 'Riser sleeve to the catwalk level, J-hook run along the catwalk, drop to the cluster point.',
+        // R5-CI-02: drawn 377 units (pathLen, to the top box's input)
+        // against over-grid's 290 → ×1.3; it used to stop on the fly frame
+        // at ×1.25 while the card said ×1.3
         relLength: 1.3,
         flags: [
           { ruleId: 'sup-purpose-built', dim: 'routing', cost: 0.4, positive: true, note: 'Purpose-installed supports the whole way, anchored to structure.' },
