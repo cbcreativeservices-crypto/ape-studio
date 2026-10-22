@@ -135,9 +135,14 @@ import { CenterLockTuner } from '../screens/tools/CenterLockTuner';
 import { AuthScreen } from '../screens/auth/AuthScreen';
 // Onboarding landing page (owner spec 2026-10-09): `#labpreview/OnboardingLanding`.
 import { OnboardingLandingScreen } from '../screens/onboarding/OnboardingLandingScreen';
+// Paywall (landing/paywall redesign 2026-10-22): `#labpreview/Paywall`, or
+// `#labpreview/Paywall/sample` for store-shaped sample prices (src/dev/paywallSample.ts).
+// Also the sibling the landing's SEE MEMBERSHIP PLANS opens inside the harness.
+import { PaywallScreen } from '../screens/commercial/PaywallScreen';
 
 const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   OnboardingLanding: OnboardingLandingScreen as ComponentType,
+  Paywall: PaywallScreen as ComponentType,
   RoomDesignLab: RoomDesignLabScreen as ComponentType,
   DeEsserLab: DeEsserLabScreen as ComponentType,
   SpeechLab: SpeechLabScreen as ComponentType,

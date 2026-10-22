@@ -45,7 +45,7 @@ export function UpgradeSheet({
       <View style={styles.backdrop} accessibilityViewIsModal>
         <Pressable style={{ flex: 1 }} onPress={onMemberOpen} accessibilityRole="button" accessibilityLabel="Dismiss" />
         <View style={[styles.sheet, { paddingBottom: 28 + insets.bottom }]}>
-          <Text style={styles.eyebrow}>ACADEMY MODE</Text>
+          <Text style={styles.eyebrow}>{COPY.membershipEyebrow}</Text>
           <Text style={styles.title} accessibilityLiveRegion="polite">
             {COPY.labPreviewMemberTitle}
           </Text>
@@ -67,8 +67,11 @@ export function UpgradeSheet({
     <View style={styles.backdrop} accessibilityViewIsModal>
       <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityRole="button" accessibilityLabel="Dismiss" />
       <View style={[styles.sheet, { paddingBottom: 28 + insets.bottom }]}>
-        <Text style={styles.eyebrow}>ACADEMY MODE</Text>
-        <Text style={styles.title}>{COPY.upgradePhrase}</Text>
+        {/* One name everywhere (owner H5, 2026-10-22): this sheet leads to the
+            plans, so it speaks the paywall's words — not the retired upgradePhrase
+            mode names, which the buyer never met anywhere else. */}
+        <Text style={styles.eyebrow}>{COPY.membershipEyebrow}</Text>
+        <Text style={styles.title}>{COPY.membershipTitle}</Text>
         {/* The allowance runs INLINE at the end of the first paragraph — the
             one that calls the glossary free (owner, governance R7).
 
@@ -100,7 +103,7 @@ export function UpgradeSheet({
             introductory deadline — live together on the plans screen. */}
 
         {onSeePlans && (
-          <GlassButton label="SEE PLANS" tint="gold" height={50} fontSize={14} onPress={onSeePlans} />
+          <GlassButton label={COPY.seeMembershipPlans} tint="gold" height={50} fontSize={14} onPress={onSeePlans} />
         )}
 
         {(onSignIn || onCreateAccount) && (

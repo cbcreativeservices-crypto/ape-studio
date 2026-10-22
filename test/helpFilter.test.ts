@@ -45,9 +45,18 @@ describe('a whole question finds its answer', () => {
   }
 
   it('⚠️ a topic the manual does NOT cover still finds nothing — that is a content gap', () => {
-    // "cancel" appears nowhere in the manual. A filter cannot reach an answer
-    // nobody wrote, and pretending otherwise would hide the real problem.
-    assert.equal(count(filterHelp('how do I cancel my membership')), 0);
+    // A filter cannot reach an answer nobody wrote, and pretending otherwise
+    // would hide the real problem.
+    assert.equal(count(filterHelp('how do I teleport my membership')), 0);
+  });
+
+  it('the cancel gap is closed by WRITING the answer (2026-10-22), not by the filter', () => {
+    // This used to be the content-gap example: "cancel" appeared nowhere in
+    // the manual. The landing/paywall compliance review added "How do I
+    // cancel?" (ROSCA / CA ARL simple cancellation; Google Play), so the same
+    // question now lands on exactly that entry.
+    const hit = filterHelp('how do I cancel my membership').flatMap((c) => c.entries.map((e) => (e as { id: string }).id));
+    assert.deepEqual(hit, ['acct-cancel']);
   });
 
   it('punctuation and case do not matter', () => {

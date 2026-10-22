@@ -71,8 +71,9 @@ export type RootStackParamList = {
   /** Anonymous glossary route (commercial browse path). `query` = a term to
    *  open on (deep link `/glossary/<slug>`, 2026-09-05). */
   PublicGlossary: { query?: string } | undefined;
-  /** CM7: academy upgrade paywall (UI only; store wiring pending ruling). */
-  Paywall: undefined;
+  /** CM7: academy membership paywall. `plan` pre-selects a plan — set only by
+   *  the guest sign-up return (owner H9/H-E, 2026-10-22); it never buys. */
+  Paywall: { plan?: import('../features/commercial/iapProducts').PlanId } | undefined;
   Main: NavigatorScreenParams<MainTabParamList> | undefined;
   // Root-level (bottom nav hidden — S7 is modal per the locked spec):
   Results: ResultsParams;

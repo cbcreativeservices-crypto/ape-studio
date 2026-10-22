@@ -32,7 +32,8 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BrandLogo } from '../../components/BrandLogo';
 import { StudioButton } from '../../components/StudioButton';
 import { TextField } from '../../components/TextField';
-import { confirmDialog, notify } from '../../lib/confirm';
+import { afterDialogCloses, confirmDialog, notify } from '../../lib/confirm';
+import { navigationRef } from '../../navigation/navigationRef';
 import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import { POPUP_MAX_W } from '../../theme/readingColumn';
@@ -80,6 +81,11 @@ type ResetFlag = typeof import('../../features/auth/passwordResetPending');
 const resetFlag = (): ResetFlag => require('../../features/auth/passwordResetPending') as ResetFlag;
 const markPasswordResetPending = () => resetFlag().markPasswordResetPending();
 const clearPasswordResetPending = () => resetFlag().clearPasswordResetPending();
+
+// The guest's held paywall plan (owner H9/H-E, 2026-10-22), loaded on first
+// use for the same reason: only a sign-in or Guest Mode needs it.
+type PaywallReturn = typeof import('../../features/onboarding/landingReturn');
+const paywallReturn = (): PaywallReturn => require('../../features/onboarding/landingReturn') as PaywallReturn;
 
 /** Android BACK while a request is in flight: hold it (see the busy hook below). */
 const swallowBack = () => true;
@@ -194,6 +200,18 @@ export function AuthScreen({ navigation }: Props) {
    * The normal reset always runs first, so if the resume fails for any reason
    * the user still lands on a correct screen — never a blank or a dead end. */
   const resume = () => {
+    // A GUEST WHO LEFT THE PAYWALL TO MAKE AN ACCOUNT goes back to it, with the
+    // plan they chose still selected (owner H9 + H-E, 2026-10-22 — from every
+    // paywall entry). It only pre-selects: the purchase waits for their own tap
+    // on the buy button. A pending deep link is left in place — the Paywall
+    // resumes it after the purchase (consumePendingLink in its welcome).
+    // After a dialog (device takeover, "Account created"): the modal screen is
+    // presented once that dialog has faded (pattern P5).
+    const plan = paywallReturn().takePaywallReturn();
+    if (plan) {
+      afterDialogCloses(() => navigationRef.navigate('Paywall', { plan }))();
+      return;
+    }
     const path = consumePendingLink();
     if (path) navigateToPath(path);
   };
@@ -354,6 +372,9 @@ export function AuthScreen({ navigation }: Props) {
       await AsyncStorage.setItem('ape:localUserId', '');
     });
     setEntitlement('anonymous');
+    // Still a guest: there is no account to buy with, so no return to the
+    // Paywall (and no landing return riding along with it).
+    paywallReturn().dropPaywallReturn();
     toHome();
     } catch {
       setError('Could not start Guest Mode. Please try again.');

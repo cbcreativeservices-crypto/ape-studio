@@ -1,16 +1,27 @@
 /**
- * PaywallScreen — academy upgrade paywall (CM7). LIVE (owner 2026-08-21): wired
- * to expo-iap via features/commercial/purchase.ts — CONTINUE starts the store
- * purchase, the server verifies the receipt (validate-purchase edge function)
+ * PaywallScreen — Academy membership paywall (CM7). LIVE (owner 2026-08-21): wired
+ * to expo-iap via features/commercial/purchase.ts — the gold buy button starts
+ * the store purchase, the server verifies the receipt (validate-purchase edge function)
  * and writes the entitlement, then refreshEntitlement reflects it. Restore
  * Purchases re-grants a prior buy. FAILS SAFE: no native module / un-deployed
  * edge function → nothing is granted and the UI explains; never a fake unlock.
- * The plan prices below are display copy mirroring public.products; the store is
- * the source of truth at purchase. Store product IDs: features/commercial/
- * iapProducts.ts. Owner setup: docs/APE_IAP_PLAN_2026_08_21.md.
+ * Prices come ONLY from the store (no hard-coded fallback figure since
+ * 2026-10-22). Store product IDs: features/commercial/iapProducts.ts. Owner
+ * setup: docs/APE_IAP_PLAN_2026_08_21.md.
+ *
+ * REDESIGN (owner decisions 2026-10-22, H1–H11 + compliance H-A/H-E): one
+ * name, "Academy membership"; the offer, the plans and the gold buy button sit
+ * above the fold at 375 × 812 — eyebrow → title → three ✓ lines → (guest: the
+ * account step, BEFORE the plans) → plans (Annual first and pre-selected,
+ * Lifetime "PAY ONCE", Monthly) → the dated note → the plan-specific
+ * disclosure → Terms · Privacy → BUY → Restore. The "Free vs. membership"
+ * block (the free-glossary claim WITH its weekly limits, R7) and the Registry
+ * paragraph sit below the buy button. Pinned by
+ * test/landingPaywallRedesign_20261022.test.ts.
  */
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlassButton } from '../../components/GlassButton';
@@ -19,6 +30,7 @@ import { confirmDialog, notify } from '../../lib/confirm';
 import { colors, fonts } from '../../theme/tokens';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useMemberGate } from '../../features/commercial/useTier';
+import { useGuestWording } from '../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../../features/commercial/tier';
 import { consumePendingLink } from '../../navigation/pendingLink';
 import { navigateToPath } from '../../navigation/linking';
@@ -34,38 +46,56 @@ import {
 } from '../../features/commercial/purchase';
 import { PLANS as IAP_PLANS, type PlanId } from '../../features/commercial/iapProducts';
 import { localizePlans, type PlanCopy } from '../../features/commercial/storePrices';
+import { buyLabel, planIdOf, purchaseDisclosure, storeNameFor } from '../../features/commercial/paywallCopy';
+import { fitValue } from '../../theme/legibility';
+import { useLatchedPress } from '../../lib/latch';
 import type { RootStackParamList } from '../../navigation/types';
 import { readingColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
-import { armLandingReturn, takeLandingReturn } from '../../features/onboarding/landingReturn';
+import { dropPaywallReturn, holdPaywallReturn, takeLandingReturn } from '../../features/onboarding/landingReturn';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Paywall'>;
 
 type Plan = PlanCopy;
-// FALLBACK copy only (Apple 3.1.2, 2026-10-15): once the store answers, each
-// plan shows the store's localized price instead — localizePlans() in
-// features/commercial/storePrices.ts. These USD strings show only when the
-// store fetch fails or returns nothing.
+// The plans BEFORE the store answers (Apple 3.1.2, 2026-10-15; no fallback
+// price since 2026-10-22). localizePlans() in features/commercial/storePrices.ts
+// fills in the store's localized price — and derives "SAVE n%" from the
+// store's own numbers, or shows no saving at all. Until then a card says its
+// price is loading / shown at checkout; it never guesses a figure (prices rise
+// on 1 January 2027, and a typed USD figure would then be false).
+//
+// ORDER (owner H4, 2026-10-22): Annual first AND pre-selected; Lifetime second,
+// "PAY ONCE" (a fact, where "BEST VALUE" was a judgement); Monthly last.
 const PLANS: Plan[] = [
+  { id: 'annual', name: 'Annual', price: '', sub: 'Billed yearly' },
   // Matches `public.products.name` exactly — the store listing and this card
   // must not name the same product two different things.
-  { id: 'lifetime', name: 'Lifetime Access', price: '$99.99', sub: 'One-time payment', badge: 'BEST VALUE' },
-  // $59.99/yr vs $9.99×12 = $119.88 → 50.0% saved (Booth 2026-07-11 #6).
-  { id: 'annual', name: 'Annual', price: '$59.99 / yr', sub: 'About $5/mo', badge: 'SAVE 50%' },
-  { id: 'monthly', name: 'Monthly', price: '$9.99 / mo', sub: 'Cancel anytime' },
+  { id: 'lifetime', name: 'Lifetime Access', price: '', sub: 'One-time payment', badge: 'PAY ONCE' },
+  { id: 'monthly', name: 'Monthly', price: '', sub: 'Cancel anytime' },
 ];
 
-export function PaywallScreen({ navigation }: Props) {
+export function PaywallScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const { refreshEntitlement, isMember, resolved, tierKnown, tierReadFailed, entitlement } = useEntitlement();
   const gate = useMemberGate();
-  const [selected, setSelected] = useState<Plan['id']>('annual');
+  // A KNOWN guest (useGuestWording — never decided from `resolved` alone): the
+  // account step is stated before the plans and the buy button says so.
+  const guestBuyer = useGuestWording().guest;
+  // Annual, unless a guest's sign-up return brought back the plan they chose
+  // (owner H9/H-E). The user's own choice is never re-defaulted afterwards.
+  const [selected, setSelected] = useState<Plan['id']>(() => planIdOf(route.params?.plan) ?? 'annual');
   const [busy, setBusy] = useState(false);
   // Whether in-app purchasing is usable in THIS build (native module present +
   // store connection). Assume true until init says otherwise.
   const [available, setAvailable] = useState(true);
-  // Plan cards: USD fallback until the store's localized prices arrive.
+  // Plan cards: no price until the store's localized prices arrive.
   const [plans, setPlans] = useState<Plan[]>(PLANS);
+  // Has the store answered? 'none' = it cannot (no store in this build) or
+  // returned nothing — the cards then say the price is shown at checkout.
+  const [priceState, setPriceState] = useState<'loading' | 'ready' | 'none'>('loading');
+  // Left for sign-up / sign-in with the plan held (H9). Coming BACK here without
+  // signing in drops that hold, so a later sign-in elsewhere does not reopen it.
+  const leftForAccount = useRef(false);
   /**
    * A purchase or restore is IN FLIGHT (2026-09-30 bug pass). `busy` swaps
    * CONTINUE for a spinner, but only after a re-render — two taps in the same
@@ -102,7 +132,8 @@ export function PaywallScreen({ navigation }: Props) {
       // of dropping them back wherever the paywall opened. `notify` runs its
       // callback on EVERY dismissal — button, scrim, BACK — so the destination
       // is honoured however the notice is closed.
-      notify('Welcome to Academy', 'Your Academy access is active. Enjoy!', () => {
+      // One name everywhere (owner H5 / R5, 2026-10-22): was "Welcome to Academy".
+      notify('Welcome, member', 'Your Academy membership is active. Enjoy!', () => {
         const pending = consumePendingLink();
         if (pending && navigateToPath(pending)) return;
         if (toLanding.current) {
@@ -176,11 +207,28 @@ export function PaywallScreen({ navigation }: Props) {
     }).then((ok) => {
       if (!alive) return;
       setAvailable(ok);
-      if (!ok) return;
+      if (!ok) {
+        // DEV + WEB PREVIEW ONLY: `#labpreview/Paywall/sample` feeds store-shaped
+        // sample answers through the same localizePlans, so the owner can review
+        // priced cards in the browser. Never on a phone or in a release build.
+        if (__DEV__ && Platform.OS === 'web') {
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const sample = (require('../../dev/paywallSample') as typeof import('../../dev/paywallSample')).devSampleStoreProducts();
+          if (sample) {
+            setPlans(localizePlans(PLANS, sample, IAP_PLANS));
+            setPriceState('ready');
+            return;
+          }
+        }
+        setPriceState('none');
+        return;
+      }
       // The buyer's own currency and locale, straight from the store. Empty on
-      // failure → the fallback copy stays.
+      // failure → the cards say the price is shown at checkout.
       void loadStoreProducts().then((products) => {
-        if (alive) setPlans(localizePlans(PLANS, products, IAP_PLANS));
+        if (!alive) return;
+        setPlans(localizePlans(PLANS, products, IAP_PLANS));
+        setPriceState(products.length ? 'ready' : 'none');
       });
     });
     return () => {
@@ -259,11 +307,15 @@ export function PaywallScreen({ navigation }: Props) {
         // Corrected 2026-10-01 (owner ruling): lab work from THIS session is
         // written to the account signed into in the same session
         // (features/lab/sessionCarry); study progress still is not.
-        'Membership is attached to your account, so you need one before you can buy. Creating it takes a moment; lab work from this session comes with you, but study progress done without an account does not transfer.',
+        'Membership is attached to your account, so you need one before you can buy. Creating it takes a moment; lab work from this session comes with you, but study progress done without an account does not transfer. You’ll come back here with your plan still selected.',
         'Create account',
         () => {
-          // Keep the way back to the landing page for the purchase after sign-up.
-          if (toLanding.current) armLandingReturn();
+          // Back HERE after sign-up, plan kept (owner H9/H-E, from every paywall
+          // entry) — and on to the landing page after the purchase, when that
+          // is where this Paywall was opened from. Nothing is bought until
+          // they tap the buy button again.
+          holdPaywallReturn(selected as PlanId, !!toLanding.current);
+          leftForAccount.current = true;
           (navigation as any).navigate('Auth');
         },
         { cancelText: 'Not now' },
@@ -315,7 +367,12 @@ export function PaywallScreen({ navigation }: Props) {
         'Sign in to restore',
         'A previous purchase is restored to the account it was bought with, so sign in or create your account first — then try Restore again.',
         'Sign in',
-        () => (navigation as any).navigate('Auth'),
+        () => {
+          // Back here after signing in, to try Restore again (same hold as buy).
+          holdPaywallReturn(selected as PlanId, !!toLanding.current);
+          leftForAccount.current = true;
+          (navigation as any).navigate('Auth');
+        },
         { cancelText: 'Not now' },
       );
       return;
@@ -427,6 +484,29 @@ export function PaywallScreen({ navigation }: Props) {
 
   const showManage = resolved && (entitlement === 'academy' || entitlement === 'lapsed');
 
+  // Came back from sign-in WITHOUT signing in (RETURN / BACK on Auth): drop the
+  // held plan, so a later sign-in from elsewhere does not reopen the Paywall.
+  // A successful sign-in resets the stack instead, so this never runs for it.
+  useEffect(
+    () =>
+      navigation.addListener('focus', () => {
+        if (!leftForAccount.current) return;
+        leftForAccount.current = false;
+        dropPaywallReturn();
+      }),
+    [navigation],
+  );
+
+  // House latch (src/lib/latch.ts) on both money buttons: a same-frame double
+  // tap runs once. The `inFlight` ref inside each handler still spans the whole
+  // store round-trip, which a latch released in `finally` cannot.
+  const onBuyPress = useLatchedPress(onContinue);
+  const onRestorePress = useLatchedPress(onRestore);
+
+  // The selected plan drives the buy button and the disclosure above it.
+  const current = plans.find((p) => p.id === selected) ?? plans[0];
+  const store = storeNameFor(Platform.OS);
+
   // MEMBERS GET THEIR OWN PAGE (owner 2026-09-30: "for members they should
   // get their own page - not the free user upsale"). Settings › Manage
   // membership lands here; no plan cards, prices or CONTINUE — just their
@@ -458,7 +538,7 @@ export function PaywallScreen({ navigation }: Props) {
             </Text>
           </View>
           <GlassButton label="MANAGE SUBSCRIPTION" tint="blue" height={54} fontSize={15} onPress={onManage} />
-          <Pressable onPress={busy ? undefined : onRestore} accessibilityRole="button" hitSlop={8}>
+          <Pressable onPress={busy ? undefined : onRestorePress} accessibilityRole="button" hitSlop={8}>
             <Text style={styles.restore}>Restore purchases</Text>
           </Pressable>
           <View style={styles.policyRow}>
@@ -499,7 +579,7 @@ export function PaywallScreen({ navigation }: Props) {
           <Text style={styles.body}>
             {gate === 'unconfirmed' || tierReadFailed ? MEMBERSHIP_NOT_CONFIRMED : 'Checking your account…'}
           </Text>
-          <Pressable onPress={busy ? undefined : onRestore} accessibilityRole="button" hitSlop={8}>
+          <Pressable onPress={busy ? undefined : onRestorePress} accessibilityRole="button" hitSlop={8}>
             <Text style={styles.restore}>Restore purchases</Text>
           </Pressable>
         </ScrollView>
@@ -519,103 +599,52 @@ export function PaywallScreen({ navigation }: Props) {
         <Text style={styles.closeGlyph}>✕</Text>
       </Pressable>
 
-      {/* Root-stack screen, no tab bar beneath — and the control that ends up
-          under the home indicator here is the Apple-required Restore link. */}
-      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 16 }]}>
-        <Text style={styles.eyebrow}>ACADEMY MODE</Text>
-        <Text style={styles.title}>{COPY.paywallTitle}</Text>
-        {/* The allowance runs INLINE at the end of the first paragraph — the
-            one that calls the glossary free (owner, governance R7).
-
-            It was a separate muted BLOCK first. That read correctly but cost a
-            margin above, a margin below and its own two lines, pushing the plan
-            cards further below the fold — on a PURCHASE screen, where the owner
-            called it out: "too much vertical spacing … requiring more
-            scrolling". Tuning the ratio between those margins was optimising a
-            local detail while making the screen worse globally.
-
-            Nested inside the paragraph it keeps the muted colour that marks it
-            as a qualifier rather than a sales line, is as tight to the claim as
-            text can be, and costs only the line it wraps onto. The ratified
-            string is still split at its own '\n\n' and `bodyNext` is back to
-            exactly the blank line that break used to draw. */}
-        {COPY.paywallBody.split('\n\n').map((para, i) => (
-          <Text key={i} style={[styles.body, i > 0 && styles.bodyNext]}>
-            {para}
-            {i === 0 ? (
-              <Text style={styles.allowance}>
-                {' ' + COPY.glossaryFreeAllowance + ' ' + COPY.calcFreeAllowance}
-              </Text>
-            ) : null}
-          </Text>
-        ))}
-
-        <View style={styles.plans}>
-          {plans.map((p) => {
-            const active = selected === p.id;
-            return (
-              <Pressable
-                key={p.id}
-                onPress={() => setSelected(p.id)}
-                accessibilityRole="radio"
-                accessibilityState={{ checked: active }}
-                aria-checked={active}
-                // Screen readers heard "radio button" ×3 with no plan/price (E2-04).
-                accessibilityLabel={`${p.name}${p.badge ? `, ${p.badge}` : ''}, ${p.price}, ${p.sub}`}
-                style={[styles.plan, active && styles.planActive]}
-              >
-                <View style={styles.planHead}>
-                  <Text style={styles.planName}>{p.name}</Text>
-                  {p.badge && <Text style={styles.planBadge}>{p.badge}</Text>}
-                </View>
-                <Text style={styles.planPrice}>{p.price}</Text>
-                {/* Annual's sub is the savings cue → green; others muted. */}
-                <Text style={[styles.planSub, p.id === 'annual' && !!p.badge && styles.planSubSave]}>{p.sub}</Text>
-                {/* Per-card end-of-year deadline consolidated to ONE note under
-                    the plans (owner 2026-08-21) — was repeated on all 3 tiers. */}
-                <View style={[styles.radio, active && styles.radioOn]}>
-                  {active && <View style={styles.radioDot} />}
-                </View>
-              </Pressable>
-            );
-          })}
+      {/* Root-stack screen, no tab bar beneath. Everything that qualifies the
+          PURCHASE sits above the buy button; only the free-vs-membership
+          explainer and the Registry paragraph sit below it. */}
+      <ScrollView contentContainerStyle={[styles.scroll, styles.offer, { paddingBottom: insets.bottom + 28 }]}>
+        <Text style={styles.eyebrow}>{COPY.membershipEyebrow}</Text>
+        <Text style={styles.title} accessibilityRole="header">
+          {COPY.membershipTitle}
+        </Text>
+        {/* The same three ✓ lines as the landing card (continuity). */}
+        <View style={styles.points}>
+          {COPY.membershipPoints.map((line) => (
+            <View key={line} style={styles.pointRow}>
+              <Text style={styles.pointCheck}>✓</Text>
+              <Text style={styles.pointText}>{line}</Text>
+            </View>
+          ))}
         </View>
 
-        {/* Pricing-honesty promise at the decision point (owner 2026-08-21),
-            echoing the onboarding "Commitment". The check + hairline divider make
-            it read as a commitment, not a stray line. */}
-        <View style={styles.promiseRow}>
-          <Text style={styles.promiseCheck}>✓</Text>
-          <Text style={styles.valueLine}>One membership. Not a series of extra charges.</Text>
-        </View>
-        {/* Second promise (owner 2026-09-19, after watching an enrol on device):
-            the first line says there are no extra charges, but a member choosing
-            topics and certificates is choosing things that LOOK priced, and
-            nothing told them otherwise. Say it about the thing they are actually
-            doing — enrolling — not in the abstract. */}
-        <View style={styles.promiseRow}>
-          <Text style={styles.promiseCheck}>✓</Text>
-          <Text style={styles.valueLine}>
-            Every topic, certificate and lab is included. Enroll in as many as you like — choosing more never costs more.
-          </Text>
+        {/* The account step, BEFORE the plans (Apple 5.1.1(v)) — a known guest
+            only. After sign-up they come straight back here, plan kept. */}
+        {guestBuyer ? (
+          <View style={styles.guestNote}>
+            <Text style={styles.guestNoteText}>{COPY.guestAccountStep}</Text>
+          </View>
+        ) : null}
+
+        <View style={styles.plans} accessibilityRole="radiogroup">
+          {plans.map((p) => (
+            <PlanCard key={p.id} plan={p} active={selected === p.id} priceState={priceState} onPress={() => setSelected(p.id)} />
+          ))}
         </View>
 
         {/* The ONE place the pricing deadline appears (Booth 2026-07-18; owner
-            2026-08-21). It HIDES ITSELF once the date passes — a note claiming
-            a deadline that has gone is worse than no note, and relying on
-            someone remembering to delete prose on 1 January is how the previous
-            wording would have gone false. See CURRENT_PRICING_ENDS. */}
-        {pricingDeadlineActive() ? <Text style={styles.betaNote}>{COPY.pricingNote}</Text> : null}
+            2026-08-21; H11 2026-10-22: one line under the plans). It HIDES
+            ITSELF once the date passes — see CURRENT_PRICING_ENDS. */}
+        {pricingDeadlineActive() ? <Text style={styles.deadline}>{COPY.pricingNote}</Text> : null}
 
-        {/* One consolidated renewal/legal line (owner 2026-08-21 — merged the
-            two near-duplicate app-store notes). MOVED ABOVE the buy button
-            2026-09-13 (string unchanged): the auto-renewal disclosure must be
-            visible BEFORE the purchase control (Apple 3.1.2 / Play subs). */}
-        <Text style={styles.legal}>
-          Secure in-app purchase. Subscriptions renew automatically unless cancelled at least 24 hours before the
-          period ends — manage or cancel anytime in your app-store settings.
+        {/* POINT-OF-PURCHASE DISCLOSURE — directly above the buy button, for the
+            plan that button buys (compliance row 6, 2026-10-22): title, length,
+            the store's price per period, renews until cancelled, how to cancel
+            in the store's settings; Lifetime = one payment, never renews.
+            13 pt in textSub — never fainter than the deadline note. */}
+        <Text style={styles.disclosure} accessibilityLiveRegion="polite">
+          {purchaseDisclosure(selected, current?.storePrice, store)}
         </Text>
-        {/* Terms/Privacy beside the purchase decision (store checklist). */}
+        {/* Terms (EULA) / Privacy beside the purchase decision (store checklist). */}
         <View style={styles.policyRow}>
           <Pressable onPress={() => openPolicy('terms')} accessibilityRole="link" hitSlop={8}>
             {/* Ratified by the owner 2026-09-14 */}
@@ -633,15 +662,17 @@ export function PaywallScreen({ navigation }: Props) {
           </View>
         ) : (
           <GlassButton
-            label="CONTINUE"
-            // Glossary blue (Booth 2026-07-11 #2) — matches UPGRADE TO ACADEMY.
-            tint="blue"
-            height={54}
-            fontSize={15}
-            onPress={onContinue}
+            // Names the plan, and the amount once the STORE has answered (H5/R6).
+            label={buyLabel(selected, current?.storePrice, guestBuyer)}
+            // GOLD (owner H6, 2026-10-22): the gold landing button → the amber
+            // selected plan → the gold buy button. One colour to the purchase.
+            tint="gold"
+            height={56}
+            fontSize={16}
+            onPress={onBuyPress}
           />
         )}
-        <Pressable onPress={busy ? undefined : onRestore} accessibilityRole="button" hitSlop={8}>
+        <Pressable onPress={busy ? undefined : onRestorePress} accessibilityRole="button" hitSlop={8}>
           <Text style={styles.restore}>Restore purchases</Text>
         </Pressable>
         {showManage && (
@@ -650,8 +681,94 @@ export function PaywallScreen({ navigation }: Props) {
             <Text style={styles.manage}>Manage or cancel a subscription</Text>
           </Pressable>
         )}
+
+        {/* FREE VS. MEMBERSHIP (owner H10, 2026-10-22) — below the buy button.
+            ⛔ Governance R7: the free-glossary claim and BOTH weekly limits move
+            TOGETHER — the allowance runs inline, muted, in the claim's own
+            paragraph, so no free claim is ever shown without its limit. */}
+        <View style={styles.compare}>
+          <Text style={styles.compareEyebrow}>{COPY.freeVsMembership}</Text>
+          <View style={styles.compareRow}>
+            <View style={[styles.compareRail, styles.compareRailFree]} />
+            <View style={styles.compareCol}>
+              <Text style={[styles.compareHead, styles.compareHeadFree]}>FREE</Text>
+              <Text style={styles.compareBody}>
+                {COPY.freeGlossaryClaim}
+                <Text style={styles.allowance}>{' ' + COPY.glossaryFreeAllowance + ' ' + COPY.calcFreeAllowance}</Text>
+              </Text>
+            </View>
+          </View>
+          <View style={styles.compareRow}>
+            <View style={styles.compareRail} />
+            <View style={styles.compareCol}>
+              <Text style={styles.compareHead}>{COPY.membershipEyebrow}</Text>
+              <Text style={styles.compareBody}>{COPY.membershipUnlocks}</Text>
+              <Text style={[styles.compareBody, styles.registry]}>{COPY.registryProfile}</Text>
+            </View>
+          </View>
+        </View>
       </ScrollView>
     </View>
+  );
+}
+
+/**
+ * One plan as a recessed glass display (R11 — the house rack idiom): an
+ * illuminated radio lamp, the plan's name and its billing line, and the
+ * billed amount as the most prominent figure (Apple 3.1.2). The badge sits on
+ * the card's top edge like a panel tab. No price until the store answers.
+ */
+function PlanCard({
+  plan,
+  active,
+  priceState,
+  onPress,
+}: {
+  plan: Plan;
+  active: boolean;
+  priceState: 'loading' | 'ready' | 'none';
+  onPress: () => void;
+}) {
+  const waiting = !plan.price;
+  const priceText = waiting ? (priceState === 'loading' ? 'Loading price…' : 'Price shown at checkout') : plan.price;
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="radio"
+      accessibilityState={{ checked: active }}
+      aria-checked={active}
+      // Screen readers heard "radio button" ×3 with no plan/price (E2-04).
+      accessibilityLabel={`${plan.name}${plan.badge ? `, ${plan.badge}` : ''}, ${priceText}, ${plan.sub}`}
+      style={styles.planOuter}
+    >
+      <LinearGradient
+        colors={active ? ['#241a09', '#140e05'] : ['#0d0e10', '#17181c']}
+        style={[styles.plan, active && styles.planActive]}
+      >
+        <View style={[styles.lamp, active && styles.lampOn]}>{active ? <View style={styles.lampDot} /> : null}</View>
+        <View style={styles.planText}>
+          <Text style={[styles.planName, active && styles.planNameOn]}>{plan.name}</Text>
+          {/* Annual's derived saving → its billing line reads green. */}
+          <Text style={[styles.planSub, plan.id === 'annual' && !!plan.badge && styles.planSubSave]}>{plan.sub}</Text>
+        </View>
+        {/* The amount is a VALUE: one line, shrinks to fit, never "…" (fitValue).
+            The waiting words are not a value — they may wrap to two lines. */}
+        {waiting ? (
+          <Text style={styles.planPriceWaiting} numberOfLines={2}>
+            {priceText}
+          </Text>
+        ) : (
+          <Text style={styles.planPrice} {...fitValue(21)}>
+            {priceText}
+          </Text>
+        )}
+      </LinearGradient>
+      {plan.badge ? (
+        <View style={[styles.badgeTab, active && styles.badgeTabOn]} pointerEvents="none">
+          <Text style={styles.badgeText}>{plan.badge}</Text>
+        </View>
+      ) : null}
+    </Pressable>
   );
 }
 
@@ -660,20 +777,32 @@ const styles = StyleSheet.create({
   close: { position: 'absolute', top: 0, right: 0, zIndex: 2, padding: 16, marginTop: 8 },
   closeGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSub },
   scroll: { padding: 20, paddingTop: 8, gap: 14, ...readingColumn },
+  // The offer face packs tighter so the plans and the buy button sit above the
+  // fold at 375 × 812 (design review R2: buy button bottom ≤ 700 pt).
+  offer: { gap: 10 },
   eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 2.4, color: colors.amber },
   title: { fontFamily: fonts.oswaldMedium, fontSize: 24, lineHeight: 29, color: colors.textPrimary },
   body: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary },
   allowance: { color: colors.textMuted },
-  // 6 above against the paragraph break's 2x below: proximity is what says
-  // this line belongs to the CLAIM, not to the paragraph after it (owner, seen
-  // on the Pixel — at 10 it read as floating between the two). The break below
-  // stays exactly one lineHeight, so the ratified paragraph rhythm is untouched.
-  // Reinstates the blank line the single <Text> drew for '\n\n' (= one lineHeight).
-  bodyNext: { marginTop: 22 },
 
-  plans: { gap: 12, marginTop: 6 },
-  // Pricing-honesty promise (owner 2026-08-21): a check + hairline divider so it
-  // reads as a commitment at the decision point.
+  // The three ✓ lines.
+  points: { gap: 4, marginTop: -2 },
+  pointRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  pointCheck: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, lineHeight: 19, color: colors.greenBright, width: 12 },
+  pointText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 19, color: colors.textSecondary },
+
+  // The guest's account step — an inset note, not an alarm.
+  guestNote: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#33363e',
+    backgroundColor: '#14161b',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  guestNoteText: { fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18, color: colors.textSecondary },
+
+  // Member-face promise line (owner 2026-08-21): a check + hairline divider.
   promiseRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -684,7 +813,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#1e1e1e',
   },
-  promiseCheck: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: '#5bff85' },
+  promiseCheck: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.greenBright },
   valueLine: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 14,
@@ -693,62 +822,84 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     textAlign: 'center',
   },
-  // Single consolidated pricing/deadline note (Booth 2026-07-18).
-  betaNote: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.amberLabel },
+
+  // ── plan displays ──
+  plans: { gap: 12, marginTop: 6 },
+  planOuter: { borderRadius: 11 },
   plan: {
-    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    minHeight: 62,
+    borderRadius: 11,
     borderWidth: 1.5,
-    borderColor: '#2c2c2c',
-    backgroundColor: '#151515',
-    padding: 16,
-    paddingRight: 44,
+    borderColor: '#2a2b30',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    // a recessed bezel: the dark top edge of a display set into the panel
+    borderTopColor: '#060607',
   },
-  planActive: { borderColor: colors.amber, backgroundColor: '#1a1409' },
-  planHead: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  planName: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 0.5, color: colors.textPrimary },
-  planBadge: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 10,
-    letterSpacing: 1,
-    color: '#5bff85',
-    borderWidth: 1,
-    borderColor: 'rgba(55,224,95,.5)',
-    borderRadius: 4,
-    paddingVertical: 2,
-    paddingHorizontal: 5,
-  },
-  planPrice: { fontFamily: fonts.oswaldBold, fontSize: 20, color: colors.amber, marginTop: 4 },
-  planSub: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub, marginTop: 2 },
-  // Annual savings cue — green (value signal at a glance).
-  planSubSave: { color: '#5bff85' },
-  radio: {
-    position: 'absolute',
-    right: 16,
-    top: 18,
+  planActive: { borderColor: colors.amber, borderTopColor: colors.amber },
+  lamp: {
     width: 22,
     height: 22,
     borderRadius: 11,
     borderWidth: 2,
-    borderColor: '#4a4a4a',
+    borderColor: '#4a4b52',
+    backgroundColor: '#0a0a0b',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  radioOn: { borderColor: colors.amber },
-  radioDot: { width: 11, height: 11, borderRadius: 6, backgroundColor: colors.amber },
+  // The lit lamp: an amber LED with its own glow.
+  lampOn: {
+    borderColor: colors.amber,
+    shadowColor: colors.amberDeep,
+    shadowOpacity: 0.85,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 0 },
+  },
+  lampDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#ffd35e' },
+  planText: { flex: 1, minWidth: 0 },
+  planName: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 0.5, color: colors.textSecondary },
+  planNameOn: { color: colors.textPrimary },
+  planSub: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub, marginTop: 1 },
+  planSubSave: { color: colors.greenBright },
+  // The billed amount — the most prominent price element (Apple 3.1.2).
+  planPrice: { fontFamily: fonts.oswaldBold, fontSize: 21, color: colors.amber, maxWidth: '52%', textAlign: 'right' },
+  planPriceWaiting: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 16, color: colors.textSub, maxWidth: '36%', textAlign: 'right' },
+  // The badge as a tab set into the card's top edge.
+  badgeTab: {
+    position: 'absolute',
+    top: -9,
+    right: 14,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(55,224,95,.55)',
+    backgroundColor: colors.screenBg,
+    paddingVertical: 1.5,
+    paddingHorizontal: 6,
+  },
+  badgeTabOn: { borderColor: colors.greenBright },
+  badgeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: colors.greenBright },
 
-  busyWrap: { height: 54, alignItems: 'center', justifyContent: 'center' },
-  // Terms/Privacy pair above the buy button — same quiet weight as `legal` so
-  // it reads as disclosure, not as a competing action.
+  // Single consolidated pricing/deadline note (Booth 2026-07-18).
+  deadline: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.amberLabel, textAlign: 'center' },
+  // The renewal disclosure: ≥ 13 pt in textSub (compliance row 6).
+  disclosure: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub, textAlign: 'center' },
+
+  busyWrap: { height: 56, alignItems: 'center', justifyContent: 'center' },
+  // Terms/Privacy pair above the buy button — quiet, so it reads as disclosure,
+  // not as a competing action.
   policyRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    marginTop: -6,
+    marginTop: -4,
   },
   policyLink: {
     fontFamily: fonts.barlowSemiBold,
-    fontSize: 12,
+    fontSize: 12.5,
     color: colors.textSub,
     textDecorationLine: 'underline',
     paddingVertical: 4,
@@ -769,12 +920,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 6,
   },
-  legal: {
-    fontFamily: fonts.barlowRegular,
-    fontSize: 11,
-    lineHeight: 15,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginTop: 4,
+
+  // ── free vs. membership (below the buy button) ──
+  compare: {
+    marginTop: 14,
+    paddingTop: 18,
+    borderTopWidth: 1,
+    borderTopColor: colors.hairlineDim,
+    gap: 14,
   },
+  compareEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 2.4, color: colors.amberLabel },
+  compareRow: { flexDirection: 'row', gap: 12 },
+  // A thin lit rail beside each column: green for free, amber for membership.
+  compareRail: { width: 2, borderRadius: 1, backgroundColor: colors.amberLabel },
+  compareRailFree: { backgroundColor: colors.green },
+  compareCol: { flex: 1, gap: 4 },
+  compareHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.6, color: colors.amber },
+  compareHeadFree: { color: colors.greenBright },
+  compareBody: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
+  registry: { marginTop: 6, color: colors.textSub },
 });

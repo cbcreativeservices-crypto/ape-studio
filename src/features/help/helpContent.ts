@@ -83,6 +83,15 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         jump: { label: 'See membership', route: 'Paywall' },
       },
       {
+        // Added 2026-10-22 (compliance review: ROSCA / CA ARL "simple
+        // cancellation", Google Play's cancellation-info duty). The manual had
+        // no answer to this — the filter note below used to admit the gap.
+        id: 'acct-cancel',
+        q: 'How do I cancel?',
+        a: 'Cancel your Monthly or Annual Academy membership any time in your App Store or Google Play subscription settings, at least 24 hours before it renews. You keep your membership until the end of the time you have paid for. Lifetime is a one-time payment and never renews, so there is nothing to cancel. Deleting your Academy account does not cancel a store subscription — cancel it first.',
+        jump: { label: 'Manage membership', route: 'Paywall' },
+      },
+      {
         id: 'acct-code',
         q: 'I have an access or promo code.',
         a: 'Redeem it in Settings under MEMBERSHIP — it works for any signed-in account. Type the code exactly as it was given to you, including the dashes (-).',
@@ -313,9 +322,10 @@ const STOP_WORDS = new Set([
  * narrow.
  *
  * ⚠️ This does NOT fix a content gap, and it must not be mistaken for one.
- * The manual has no entry about CANCELLING a membership, so "how do I cancel"
- * still finds nothing — correctly. A filter can only reach answers that were
- * written. Missing topics are a writing job, not a search job.
+ * A filter can only reach answers that were written; missing topics are a
+ * writing job, not a search job. (The example here used to be "how do I
+ * cancel", which found nothing because nobody had written it — the
+ * 'acct-cancel' entry was written on 2026-10-22, and now it lands.)
  *
  * It is still a keyword FILTER, not a search engine — no stemming, no
  * synonyms, no ranking. The UI now says "filter" and stops promising

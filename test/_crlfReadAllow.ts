@@ -269,7 +269,6 @@ export const CRLF_READ_ALLOW: readonly string[] = [
   'stageReadStep_20261019.test.ts',
   'startHereDecisions_20261004.test.ts',
   'startHereOwnerAnswers.test.ts',
-  'storeReadiness_20261015.test.ts',
   'studyBugPass20260930.test.ts',
   'studyEvening1_20261002.test.ts',
   'studyEvening2_20261002.test.ts',

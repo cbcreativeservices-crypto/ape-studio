@@ -30,11 +30,61 @@ export const COPY = {
   upgradeSheetBody:
     'Continue using the glossary for free, or unlock the complete Academy experience.\n\n' +
     'Gain access to guided learning, common mistakes, pro audio advanced learning labs, progress tracking, achievements, certificates, and verified completion records.',
-  // Paywall-screen header copy (user request 2026-07-23) — added, not reworded,
-  // so the shared upgradePhrase/marketingLine used elsewhere stay untouched.
-  paywallTitle: 'Upgrade from Reference Mode to Full Academy Mode',
-  paywallBody:
-    'The free glossary is your professional audio reference. Upgrade to Academy Mode to unlock guided learning, study tools, quizzes, progress tracking, and the ability to earn verified Academy certificates.\n\n' +
+  /*
+   * ── LANDING + PAYWALL REDESIGN (owner decisions 2026-10-22, H1–H11 + H-A/H-E;
+   *    docs: Downloads/2026-10-22_LANDING_PAYWALL_DESIGN_REVIEW.md §7 and
+   *    2026-10-22_PAYWALL_COMPLIANCE_REVIEW.md "Owner decisions"). ──────────────
+   *
+   * ONE NAME EVERYWHERE: "Academy membership". The old paywall header
+   * ("Upgrade from Reference Mode to Full Academy Mode") and its "Upgrade to
+   * Academy Mode" paragraph are RETIRED from the purchase surfaces (H5): the
+   * buyer never met "Reference Mode" anywhere else. Pinned by
+   * test/landingPaywallRedesign_20261022.test.ts.
+   *
+   * ⛔ NO PRICE IN THIS FILE. Prices come from the store (storePrices.ts) and
+   * rise on CURRENT_PRICING_ENDS — a figure typed here would go false that day.
+   */
+  membershipEyebrow: 'ACADEMY MEMBERSHIP',
+  /** Landing CTA (H5) — honest about the next screen: plans, not a charge. */
+  seeMembershipPlans: 'SEE MEMBERSHIP PLANS',
+  /** Paywall title (H5). */
+  membershipTitle: 'Unlock the whole Academy',
+  /**
+   * The three ✓ lines on the landing card AND the paywall (continuity). Lines
+   * 1 and 3 are ratified strings reused verbatim. Line 2 is H-A (2026-10-22):
+   * the unconditional "employers can check online" was not true for everyone —
+   * verification answers only for members who list in the Pro Registry (18+).
+   */
+  membershipPoints: [
+    'Every topic, certificate and lab is included.',
+    'Earn certificates — list them in the Pro Registry and employers can verify them online.',
+    'No add-ons. No extra fees.',
+  ] as readonly string[],
+  /** H3: the SHAPE of the pricing on the landing — never a price. */
+  membershipShape: 'Monthly, yearly, or pay once for lifetime.',
+  /** H5 / R8: the free path's caption. True: Start Here is free for everyone, guests included. */
+  startHereCaption: 'A short beginner lab. No account needed.',
+  /** H1: HOME demoted to a footer link. */
+  skipToHome: 'Skip to Home',
+  /** H2: Explore Topics + Enroll merged into one button. */
+  topicsAndCertificates: 'TOPICS & CERTIFICATES',
+  /** Compliance (Apple 5.1.1(v)): the account step is stated BEFORE the plans, guests only. */
+  guestAccountStep: 'You’ll create a free account to finish — your plan stays selected.',
+  /** The guest's buy button (R3 / review notes §2a). */
+  createAccountToContinue: 'CREATE ACCOUNT TO CONTINUE',
+  /** H10: the "Free vs. membership" block below the buy button. */
+  freeVsMembership: 'FREE VS. MEMBERSHIP',
+  /** The ratified free-glossary claim (was paywallBody ¶1, sentence 1), VERBATIM.
+   *  ⛔ R7: it never renders without glossaryFreeAllowance + calcFreeAllowance
+   *  right after it. */
+  freeGlossaryClaim: 'The free glossary is your professional audio reference.',
+  /** paywallBody ¶1 sentence 2 with the one product name in place of
+   *  "Upgrade to Academy Mode" (H5). */
+  membershipUnlocks:
+    'Academy membership unlocks guided learning, study tools, quizzes, progress tracking, and the ability to earn Academy certificates. Enroll in as many as you like — choosing more never costs more.',
+  /** Was paywallBody ¶2 — ratified, VERBATIM. It is the CONDITIONAL form of the
+   *  verification claim ("Create an optional profile…"). */
+  registryProfile:
     'Create an optional profile in the Pro Audio Training Academy Professional Registry. As you earn certificates, your profile becomes a verified graduate record that employers can validate online and you can share on résumés, job applications, portfolios, and professional networking profiles.',
   // The free tier's glossary allowance (owner 2026-09-13, governance R7).
   // ADDED, not reworded — marketingLine, upgradeSheetBody and paywallBody each
@@ -138,8 +188,9 @@ export const COPY = {
    */
   enrollFreeLine: 'Certificates, programs and topics are part of the membership — only Pro Audio Safety and DAW Fundamentals open without one.',
   membershipCoversLine: 'One membership covers them all. Choosing more never costs more.',
-  // Introductory lifetime offer (Booth 2026-07-15).
-  lifetimePrice: '$99.99',
+  // Introductory lifetime offer (Booth 2026-07-15). (`lifetimePrice: '$99.99'`
+  // was deleted 2026-10-22 — no consumer, and a hard-coded USD figure must not
+  // be wired back onto the landing: H3, prices come from the store.)
   lifetimeOffer: `One payment for lifetime academy access. Current pricing runs to ${CURRENT_PRICING_ENDS_LABEL}.`,
   /**
    * The ONE pricing note on the purchase screen (owner ruling 2026-09-22:
@@ -164,7 +215,12 @@ export const COPY = {
    *  4. The last sentence did not parse: "Lock in now early low priced
    *     subscriptions or the lifetime academy membership fee."
    */
-  pricingNote: `These prices are available until ${CURRENT_PRICING_ENDS_LABEL}. The lifetime membership is a one-time payment.`,
+  //  5. (2026-10-22, H11) ONE line under the plans. Its second sentence ("The
+  //     lifetime membership is a one-time payment.") moved to where it is
+  //     needed: the Lifetime card's "One-time payment" and the plan-specific
+  //     disclosure above the buy button. The date only stays honest if the
+  //     prices really rise that day (owner H-B: they do — set in the stores).
+  pricingNote: `These prices are available until ${CURRENT_PRICING_ENDS_LABEL}.`,
   /** Short deadline line for an individual plan tier. */
   introDeadline: `Current price — until ${CURRENT_PRICING_ENDS_LABEL}`,
 } as const;

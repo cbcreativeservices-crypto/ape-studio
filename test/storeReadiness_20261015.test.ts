@@ -57,12 +57,18 @@ test('the saving badge is dropped when it cannot be derived from the store', () 
   assert.equal(onlyAnnual.find((p) => p.id === 'monthly')!.price, '$9.99 / mo');
 });
 
-test('the paywall renders the localized plans and keeps the renewal disclosure above CONTINUE', () => {
-  const src = readFileSync('src/screens/commercial/PaywallScreen.tsx', 'utf8');
+// RE-POINTED 2026-10-22 (landing/paywall redesign; compliance review §3): the
+// buy button is no longer label="CONTINUE" — it names the plan (buyLabel) and
+// the renewal disclosure is plan-specific (purchaseDisclosure). The guard is
+// the same: the renewal disclosure renders BEFORE the purchase control.
+test('the paywall renders the localized plans and keeps the renewal disclosure above the buy button', () => {
+  const src = readFileSync('src/screens/commercial/PaywallScreen.tsx', 'utf8').replace(/\r\n/g, '\n');
   assert.match(src, /setPlans\(localizePlans\(PLANS, products, IAP_PLANS\)\)/);
   assert.match(src, /\{plans\.map\(\(p\) =>/);
   assert.ok(!/\{PLANS\.map\(/.test(src));
-  assert.ok(src.indexOf('Subscriptions renew automatically') < src.indexOf('label="CONTINUE"'));
+  const disclosure = src.indexOf('{purchaseDisclosure(selected');
+  const buy = src.indexOf('label={buyLabel(selected');
+  assert.ok(disclosure > 0 && buy > 0 && disclosure < buy, 'the renewal disclosure must render above the buy button');
 });
 
 test('the delete-account confirm says the store subscription is not cancelled', () => {

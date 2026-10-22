@@ -19,7 +19,19 @@
  */
 import type { PlanId } from './iapProducts';
 
-export type PlanCopy = { id: PlanId; name: string; price: string; sub: string; badge?: string };
+export type PlanCopy = {
+  id: PlanId;
+  name: string;
+  /** The card's price line. Empty until the store answers (2026-10-22: no
+   *  hard-coded fallback price — prices rise on 1 January 2027). */
+  price: string;
+  sub: string;
+  badge?: string;
+  /** The STORE's own localized `displayPrice`, bare (no period). Set ONLY by
+   *  localizePlans from a store answer, so the buy button and the disclosure
+   *  can never be built from a fallback figure. */
+  storePrice?: string;
+};
 
 /** The few fields we read from an expo-iap (OpenIAP) product. */
 type StoreProduct = {
@@ -73,10 +85,11 @@ export function localizePlans(
   return fallback.map((plan) => {
     const p = product(plan.id);
     if (!p) return plan;
-    const price = `${String(p.displayPrice).trim()}${PERIOD[plan.id]}`;
+    const storePrice = String(p.displayPrice).trim();
+    const price = `${storePrice}${PERIOD[plan.id]}`;
     if (plan.id === 'annual') {
-      return { ...plan, price, sub: 'Billed yearly', badge: savePct ? `SAVE ${savePct}%` : undefined };
+      return { ...plan, price, storePrice, sub: 'Billed yearly', badge: savePct ? `SAVE ${savePct}%` : undefined };
     }
-    return { ...plan, price };
+    return { ...plan, price, storePrice };
   });
 }
