@@ -14,7 +14,7 @@ import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
 const ROOT = join(import.meta.dirname, '..');
-const read = (rel: string) => readFileSync(join(ROOT, rel), 'utf8');
+const read = (rel: string) => readFileSync(join(ROOT, rel), 'utf8').replace(/\r\n/g, '\n');
 
 const STAGE2 = read('src/features/production/postprod/stage2.data.ts');
 const STAGE3 = read('src/features/production/postprod/stage3.data.ts');
