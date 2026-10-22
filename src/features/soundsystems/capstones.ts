@@ -159,7 +159,7 @@ export function iemTxFromProcessor(s: SoundSystem): boolean {
 
 /** The one plain line the FEEDS row shows for it. */
 export const IEM_FROM_PROCESSOR_WHY =
-  'The in-ear transmitter is fed from the loudspeaker processor — that carries the house mix with its EQ, delay and limiting for the PA, not the performer’s in-ear mix. Feed it from the stagebox: Aux 9 and Aux 10 on two cables.';
+  'The in-ear transmitter is fed from the loudspeaker processor — that carries the house mix with its EQ, delay and limiting for the PA, not the performer’s in-ear mix. Feed it from the stagebox: Aux 8 on one cable, or for stereo Aux 9 and Aux 10 on two cables.';
 /** Stereo: MAIN L into the left main, MAIN R into the right — mono to both is not stereo. */
 const stereoLR = (v: FeedView) => {
   const l = inSlot(v.s, 'mainL');

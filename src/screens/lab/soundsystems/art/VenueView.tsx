@@ -536,6 +536,23 @@ export function routeCables(placed: readonly Placed[], links: readonly Link[]): 
     const d = paths.get(`${l.to}-${l.from}`);
     if (d) paths.set(k, d);
   }
+  // R5-SS-02: two cables between one pair lie in OUTPUT order — the later
+  // output (AUX 10) on the lane routed first, the earlier (AUX 9) on its
+  // twin's — whichever was plugged first, so their plates (placeCableTags)
+  // can read AUX 9, AUX 10 with leaders that never cross. Both lanes join
+  // the same two devices, so only which cable takes which lane changes.
+  const pairs = new Map<string, Link[]>();
+  for (const l of links) pairs.set(`${l.from}-${l.to}`, [...(pairs.get(`${l.from}-${l.to}`) ?? []), l]);
+  for (const [, ls] of pairs) {
+    if (ls.length !== 2 || !ls[0].out || !ls[1].out) continue;
+    const [a, b] = ls;
+    const da = paths.get(key(a));
+    const db = paths.get(key(b));
+    if (da && db && twinOrder(a.out!, b.out!) < 0) {
+      paths.set(key(a), db);
+      paths.set(key(b), da);
+    }
+  }
   return { paths, keys, ties, merged };
 }
 
@@ -713,7 +730,13 @@ export type CableTagPlace = TagPlace & { text: string; leader?: { x0: number; y0
  *  between other runs and racks (the stagebox → rack feeds), the plate
  *  stands off in the nearest clear spot with a leader to a dot on its own
  *  cable — the leader crossing as few other runs as it can — so a plate
- *  never sits on a cable it does not name. Keyed by the cable's key. */
+ *  never sits on a cable it does not name. Keyed by the cable's key.
+ *  R5-SS-02: twins between one pair read in OUTPUT order (AUX 9, then
+ *  AUX 10): the later output's plate is placed first (nearest its cable),
+ *  then the earlier one's BEFORE it — above it, or left of it on the same
+ *  line (routeCables lays the twins in output order so this is reachable;
+ *  only if no such spot exists does it fall back to any clear spot). A
+ *  leader's dot never lands where another run crosses. */
 export function placeCableTags(tagged: readonly (readonly [Link, string])[], placed: readonly Placed[], routes: CableRoutes, feedTags: Iterable<TagPlace>): Map<string, CableTagPlace> {
   const out = new Map<string, CableTagPlace>();
   const glyphs: Box[] = placed.map((x) => {
@@ -723,64 +746,74 @@ export function placeCableTags(tagged: readonly (readonly [Link, string])[], pla
   const words: Box[] = [...LABEL_BOXES, SR_BOX];
   const taken: Box[] = [...feedTags].map((t) => inset(t.box, 1));
   const lanes = [...routes.paths].filter(([k]) => !routes.merged.has(k)).flatMap(([, d]) => pathSegments(d));
-  for (const [l, text] of tagged) {
+  // R5-SS-02: twins latest output first (a stable sort: other cables keep theirs)
+  const pairOf = (l: Link) => `${l.from}>${l.to}`;
+  const ordered = [...tagged].sort((a, b) => (pairOf(a[0]) === pairOf(b[0]) ? twinOrder(b[1], a[1]) : 0));
+  const prevOfPair = new Map<string, Box>();
+  for (const [l, text] of ordered) {
     const k = routes.keys.get(l);
     const d = k ? routes.paths.get(k) : undefined;
     if (!k || !d) continue;
     const own = pathSegments(d);
-    const free = (box: Box) =>
+    const prev = prevOfPair.get(pairOf(l));
+    // the earlier output reads before its sibling: above it, or left of it on its line
+    const readsBefore = (box: Box) => !prev || box.y1 <= prev.y0 + 1 || (box.y0 < prev.y1 && box.y1 > prev.y0 && box.x1 <= prev.x0 - 3);
+    const clearOf = (box: Box) =>
       box.x0 >= 4 && box.x1 <= PLOT_W - 4 && box.y0 >= 4 && box.y1 <= PLOT_H - 4 && !lanes.some((sg) => segmentHitsBox(sg, box)) && !taken.some((o) => overlaps(o, box)) && !glyphs.some((g) => overlaps(g, box)) && !words.some((w) => overlaps(w, box));
+    const inOrder = (box: Box) => readsBefore(box) && clearOf(box);
     // Straight legs, longest first; spots along each from its middle out.
     const legs = own
       .filter(([ax, ay, bx, by]) => Math.abs(ax - bx) < 0.05 || Math.abs(ay - by) < 0.05)
       .map((sg) => ({ sg, len: Math.hypot(sg[2] - sg[0], sg[3] - sg[1]) }))
       .filter((x) => x.len >= 8)
       .sort((p, q) => q.len - p.len);
-    let place: TagPlace | null = null;
     const GAP = 1.6 + TAG_PAD;
-    for (const { sg } of legs) {
-      const [ax, ay, bx, by] = sg;
-      const vertical = Math.abs(ax - bx) < 0.05;
-      for (const t of [0.5, 0.35, 0.65, 0.2, 0.8]) {
-        const px = ax + (bx - ax) * t;
-        const py = ay + (by - ay) * t;
-        const spots: [number, number, Anchor][] = vertical
-          ? [
-              [px - GAP, py + 5, 'end'],
-              [px + GAP, py + 5, 'start'],
-            ]
-          : [
-              [px, py - GAP, 'middle'],
-              [px, py + GAP + 10, 'middle'],
-            ];
-        for (const [x, y, anchor] of spots) {
-          const box = tagBox(text, x, y, anchor);
-          if (free(box)) {
-            place = { x, y, anchor, box, clear: true };
-            break;
+    const spotFor = (free: (b: Box) => boolean): { place: TagPlace; leader?: CableTagPlace['leader'] } | null => {
+      for (const { sg } of legs) {
+        const [ax, ay, bx, by] = sg;
+        const vertical = Math.abs(ax - bx) < 0.05;
+        for (const t of [0.5, 0.35, 0.65, 0.2, 0.8]) {
+          const px = ax + (bx - ax) * t;
+          const py = ay + (by - ay) * t;
+          const spots: [number, number, Anchor][] = vertical
+            ? [
+                [px - GAP, py + 5, 'end'],
+                [px + GAP, py + 5, 'start'],
+              ]
+            : [
+                [px, py - GAP, 'middle'],
+                [px, py + GAP + 10, 'middle'],
+              ];
+          for (const [x, y, anchor] of spots) {
+            const box = tagBox(text, x, y, anchor);
+            if (free(box)) return { place: { x, y, anchor, box, clear: true } };
           }
         }
-        if (place) break;
       }
-      if (place) break;
-    }
-    let leader: CableTagPlace['leader'];
-    if (!place) {
-      const call = calloutSpot(text, own, lanes, free, glyphs, taken, [...out.values()].flatMap((t) => (t.leader ? [t.leader] : [])));
-      if (call) {
-        place = call.place;
-        leader = call.leader;
-      } else {
-        const [ax, ay, bx, by] = (legs[0]?.sg ?? own[0]) as [number, number, number, number];
-        const x = (ax + bx) / 2;
-        const y = (ay + by) / 2 + 5;
-        place = { x, y, anchor: 'middle', box: tagBox(text, x, y, 'middle'), clear: false };
-      }
+      return calloutSpot(text, own, lanes, free, glyphs, taken, [...out.values()].flatMap((t) => (t.leader ? [t.leader] : [])));
+    };
+    const found = spotFor(inOrder) ?? (prev ? spotFor(clearOf) : null);
+    let place: TagPlace;
+    const leader = found?.leader;
+    if (found) place = found.place;
+    else {
+      const [ax, ay, bx, by] = (legs[0]?.sg ?? own[0]) as [number, number, number, number];
+      const x = (ax + bx) / 2;
+      const y = (ay + by) / 2 + 5;
+      place = { x, y, anchor: 'middle', box: tagBox(text, x, y, 'middle'), clear: false };
     }
     out.set(k, { ...place, text, leader });
     taken.push(inset(place.box, 1));
+    prevOfPair.set(pairOf(l), place.box);
   }
   return out;
+}
+
+/** R5-SS-02: two twins' tags in output order — AUX 9 before AUX 10 (the
+ *  numbers compared as numbers), an unchosen "OUT ?" last. */
+export function twinOrder(a: string, b: string): number {
+  const q = (t: string) => (t.includes('?') ? 1 : 0);
+  return q(a) - q(b) || a.localeCompare(b, 'en', { numeric: true });
 }
 
 /** The nearest clear spot for a cable tag that cannot sit beside its cable,
@@ -817,7 +850,8 @@ function calloutSpot(
     for (let i = 0; i <= n; i++) {
       const tx = sg[0] + ((sg[2] - sg[0]) * i) / n;
       const ty = sg[1] + ((sg[3] - sg[1]) * i) / n;
-      if (!glyphs.some((g) => tx > g.x0 - 1 && tx < g.x1 + 1 && ty > g.y0 - 1 && ty < g.y1 + 1)) dots.push([tx, ty]);
+      // R5-SS-02: never under a device, nor where another run crosses (the dot names ONE cable)
+      if (!glyphs.some((g) => tx > g.x0 - 1 && tx < g.x1 + 1 && ty > g.y0 - 1 && ty < g.y1 + 1) && !others.some((o) => segmentHitsBox(o, { x0: tx - 1.5, x1: tx + 1.5, y0: ty - 1.5, y1: ty + 1.5 }))) dots.push([tx, ty]);
     }
   }
   const crossesLeader = (x0: number, y0: number, x1: number, y1: number) =>
@@ -826,8 +860,8 @@ function calloutSpot(
       return d(x0, y0, x1, y1, q.x0, q.y0) * d(x0, y0, x1, y1, q.x1, q.y1) < 0 && d(q.x0, q.y0, q.x1, q.y1, x0, y0) * d(q.x0, q.y0, q.x1, q.y1, x1, y1) < 0;
     });
   let best: { score: number; place: TagPlace; leader: NonNullable<CableTagPlace['leader']> } | null = null;
-  for (let bx0 = Math.max(4, Math.min(...xs) - R); bx0 + w <= Math.min(PLOT_W - 4, Math.max(...xs) + R); bx0 += 2) {
-    for (let by0 = Math.max(4, Math.min(...ys) - R); by0 + h <= Math.min(PLOT_H - 4, Math.max(...ys) + R); by0 += 2) {
+  for (let bx0 = Math.max(4, Math.min(...xs) - R - w); bx0 + w <= Math.min(PLOT_W - 4, Math.max(...xs) + R); bx0 += 2) {
+    for (let by0 = Math.max(4, Math.min(...ys) - R - h); by0 + h <= Math.min(PLOT_H - 4, Math.max(...ys) + R); by0 += 2) {
       const box = { x0: bx0, x1: bx0 + w, y0: by0, y1: by0 + h };
       if (!free(box)) continue;
       const cx = (box.x0 + box.x1) / 2;
@@ -838,7 +872,7 @@ function calloutSpot(
         const ey = Math.min(Math.max(ty, box.y0), box.y1);
         const len = Math.hypot(tx - ex, ty - ey);
         if (len > R) continue;
-        if (plates.some((pb) => segmentHitsBox([ex, ey, tx, ty], inset(pb, 1))) || glyphs.some((g) => segmentHitsBox([ex, ey, tx, ty], inset(g, 2.5))) || crossesLeader(ex, ey, tx, ty)) continue;
+        if (plates.some((pb) => segmentHitsBox([ex, ey, tx, ty], pb)) || glyphs.some((g) => segmentHitsBox([ex, ey, tx, ty], inset(g, 2.5))) || crossesLeader(ex, ey, tx, ty)) continue;
         const score = len + 6 * crossings(ex, ey, tx, ty);
         if (!best || score < best.score) {
           const x = box.x0 + TAG_PAD;
