@@ -147,7 +147,7 @@ export const CI_RULES: CiRule[] = [
     category: 'mechanical',
     authorityClass: 'professional_practice',
     severity: 'major',
-    studentText: 'Where inappropriate, never pull a cable by its connector.',
+    studentText: 'Never pull a cable by its connector. Pull on the cable itself, or on a pulling grip made for the job.',
     whyText:
       'Termination joints are the weakest mechanical point of most assemblies. Pulling on them stresses solder/crimp joints and strain reliefs invisibly, creating the intermittent faults that take longest to find.',
     sourceRefs: ['mfr_cable', 'bicsi_itsimm'],

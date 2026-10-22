@@ -75,7 +75,14 @@ function ScenarioCard({ s, onSolved }: { s: Scenario; onSolved: () => void }) {
               ) : (
                 <Text style={styles.trayLine} accessibilityElementsHidden importantForAccessibility="no">———</Text>
               )}
-              <ConnectorPhoto id={c.b} size={44} end="into_input" name={getConnector(c.b)?.displayName} />
+              {/* R7-CS-04: a cord built into a headset has ONE plug */}
+              {c.fixedTo ? (
+                <Text style={styles.trayLine} accessibilityLabel={`fixed into the ${c.fixedTo}`}>
+                  {c.fixedTo.toUpperCase()}
+                </Text>
+              ) : (
+                <ConnectorPhoto id={c.b} size={44} end="into_input" name={getConnector(c.b)?.displayName} />
+              )}
             </View>
           ) : null}
         </View>

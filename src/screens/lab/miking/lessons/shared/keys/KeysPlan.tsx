@@ -35,11 +35,11 @@ import { ChairsTop, chairRowFacingStage, makeChairsTop } from '../../../../../..
 import { FigureHead, headAbove } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 import { KitTop } from '../kitScene/KitSceneArt';
-import { PlanAmpTop, PlanPaStack } from '../speakers/BacklinePlan';
+import { PlanAmpTop, PlanDiBox, PlanPaStack } from '../speakers/BacklinePlan';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, planTurn, unionRect } from '../planFoot.ts';
-import { BENCH, CHAIR_ROW, DECK_EDGE_U, DI, inAisle, KEYS_BOX, KEYS_KIT_AT, KEYS_POS, OTHER_AMP, PEDAL, SHOULDERS, keyboardDims, keysCue, keysFoots, keysItemFootIds, keysItems, keysKeep, keysPaAt, keysRoomDrawn, keysWedgeAt, type KeysRig, type KeysScene } from './keysPlanModel.ts';
+import { BENCH, CHAIR_ROW, DECK_EDGE_U, inAisle, KEYS_BOX, KEYS_DI_TURN, KEYS_XLR_TO, keysCables, KEYS_KIT_AT, KEYS_POS, OTHER_AMP, PEDAL, SHOULDERS, keyboardDims, keysCue, keysFoots, keysItemFootIds, keysItems, keysKeep, keysPaAt, keysRoomDrawn, keysWedgeAt, type KeysRig, type KeysScene } from './keysPlanModel.ts';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
 
@@ -47,6 +47,9 @@ type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
 const AMBER = '#ffc64d';
 const GREY = '#8a8f9c';
+/** The cables' look (the backline plans', BacklinePlan INSTR / XLR). */
+const INSTR = { color: '#2a2c32', w: 16, edge: '#5a5f69' } as const;
+const XLR = { color: '#666b75', w: 22, stripe: '#c3c7cf' } as const;
 function rr(u0: number, v0: number, u1: number, v1: number, r: number): SkPath {
   const p = make();
   p.addRRect(Skia.RRectXY(Skia.XYWHRect(Math.min(u0, u1), Math.min(v0, v1), Math.abs(u1 - u0), Math.abs(v1 - v0)), r, r));
@@ -102,7 +105,6 @@ function build(rig: KeysRig) {
   const K = keysKeep(rig);
   const keep = rr(K.u0, K.v0, K.u1, K.v1, 60);
   const pedal = rr(-PEDAL.hu, -PEDAL.hv, PEDAL.hu, PEDAL.hv, 14);
-  const di = rr(-DI.hu, -DI.hv, DI.hu, DI.hv, 10);
   // The audience: one row of true-size empty chairs facing the stage (−u) —
   // an audience is its chairs, never heads (owner 2026-10-10) — with a centre
   // aisle (2026-10-15).
@@ -111,7 +113,7 @@ function build(rig: KeysRig) {
   const deck = rr(B.stage.u0, B.stage.v0, DECK_EDGE_U, B.stage.v1, 0);
   const R = keysRoomDrawn(rig);
   const room = rr(R.u0, R.v0, R.u1, R.v1, 40);
-  return { amp, ampFront, handle, kb, ovals, shoulders, headTop, bench, keep, pedal, di, chairs, deck, room };
+  return { amp, ampFront, handle, kb, ovals, shoulders, headTop, bench, keep, pedal, chairs, deck, room };
 }
 
 export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, accessibilityLabel }: { w: number; h: number; rig: KeysRig; scene: KeysScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string }) {
@@ -139,6 +141,45 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
     return fs.length ? unionRect(fs) : null;
   };
   const cue = scene === 'studio' ? keysCue(rig) : null;
+  // R7-MIK-01: the cables — keyboard → DI → combo (tine) / AUX OUT → DI (reed), the DI's XLR out.
+  const cables = useMemo(() => keysCables(rig, scene), [rig, scene]);
+  const cablePaths = useMemo(
+    () =>
+      cables.map((k) => {
+        const p = Skia.Path.Make();
+        k.pts.forEach((q, i) => (i ? p.lineTo(q.u, q.v) : p.moveTo(q.u, q.v)));
+        return { k, p };
+      }),
+    [cables],
+  );
+  // The XLR's destination is named beside its LAST 240 mm (not on the wall or
+  // the plan's edge it ends at).
+  const { xlrEnd, xlrTail } = (() => {
+    const k = cables.find((q) => q.kind === 'xlr')!;
+    const e = k.pts[k.pts.length - 1];
+    const p = k.pts[k.pts.length - 2];
+    const L = Math.hypot(e.u - p.u, e.v - p.v) || 1;
+    const t = Math.min(1, 240 / L);
+    const q = { u: e.u + (p.u - e.u) * t, v: e.v + (p.v - e.v) * t };
+    return { xlrEnd: e, xlrTail: { u0: Math.min(e.u, q.u) - 12, u1: Math.max(e.u, q.u) + 12, v0: Math.min(e.v, q.v) - 12, v1: Math.max(e.v, q.v) + 12 } };
+  })();
+  const xlrPlaces = T.places(xlrTail, xf.s / ts);
+  const outJack = cables[0].pts[0];
+  const cableArt = cablePaths.map(({ k, p }) =>
+    k.kind === 'xlr' ? (
+      <Group key={k.id}>
+        <Path path={p} style="stroke" color={XLR.color} strokeWidth={XLR.w} strokeCap="butt" strokeJoin="round" />
+        <Path path={p} style="stroke" color={XLR.stripe} strokeWidth={5} strokeCap="butt">
+          <DashPathEffect intervals={[40, 40]} />
+        </Path>
+      </Group>
+    ) : (
+      <Group key={k.id}>
+        <Path path={p} style="stroke" strokeWidth={INSTR.w + 6} strokeCap="round" strokeJoin="round" color={INSTR.edge} />
+        <Path path={p} style="stroke" strokeWidth={INSTR.w} strokeCap="round" strokeJoin="round" color={INSTR.color} />
+      </Group>
+    ),
+  );
   const labels: StaticLabel[] = [
     ...items.map((i) => {
       const own = footOf(i.id);
@@ -147,6 +188,7 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
       return { id: i.id, text: shortOf(i.id), u: first.u, v: first.v, align: first.align, alts: i.id === 'audience' ? [] : places.slice(1), point: { u: i.u, v: i.v }, tone: i.id === 'amp' ? ('amber' as const) : i.id === 'pedal' ? ('muted' as const) : undefined };
     }),
     ...(cue ? cueLabels(cue).map((l) => ({ ...l, tone: 'illustrative' as const })) : []),
+    { id: 'diXlrTo', text: KEYS_XLR_TO[scene], u: xlrPlaces[0].u, v: xlrPlaces[0].v, align: xlrPlaces[0].align, alts: xlrPlaces.slice(1), point: xlrEnd, tone: 'illustrative' as const },
   ];
   const tap = (x: number, y: number) => {
     const { u, v } = T.unPt({ u: (x - xf.ox) / xf.s, v: (y - xf.oy) / xf.s });
@@ -208,6 +250,8 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
                 <Path path={g.handle!} color="#0a0a0c" />
               </>
             ) : null}
+            {/* R7-MIK-01: the reed piano's cables on the floor, its AUX OUT under the case */}
+            {rig === 'wurli' ? cableArt : null}
             {/* the sustain pedal, on the floor: under the front of the tine piano's
                 keybed, so the keyboard is drawn over it (its heel end shows) */}
             <Group transform={[{ translateX: P.pedal.u }, { translateY: P.pedal.v }]}>
@@ -231,11 +275,18 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
             <Path path={g.kb.lines} style="stroke" strokeWidth={4} color="#7d796f" opacity={0.7} />
             <Path path={g.kb.blacks} color="#0d0d10" />
             {rig === 'wurli' ? <Path path={g.ovals} color="#16110e" /> : null}
-            {/* the DI box */}
-            <Group transform={[{ translateX: P.di.u }, { translateY: P.di.v }]}>
-              <Path path={g.di}>
-                <LinearGradient start={vec(-60, -45)} end={vec(60, 45)} colors={['#f2f4f8', '#9aa0ab', '#3a3d45']} />
-              </Path>
+            {/* R7-MIK-01: the tine piano's cables — its cord plugged into the
+                jack on the name rail (seen from above, over the lid's corner) */}
+            {rig === 'rhodes' ? (
+              <>
+                {cableArt}
+                <Circle cx={outJack.u} cy={outJack.v} r={13} color="#c3c7cf" />
+                <Circle cx={outJack.u} cy={outJack.v} r={13} style="stroke" strokeWidth={3} color="#08080a" />
+              </>
+            ) : null}
+            {/* the DI box (the backline's), turned: its jacks toward the instrument, its XLR toward the stage box */}
+            <Group transform={[{ translateX: P.di.u }, { translateY: P.di.v }, { rotate: KEYS_DI_TURN[rig] }]}>
+              <PlanDiBox />
             </Group>
             {/* the player on the bench */}
             <Group transform={[{ translateX: P.player.u }, { translateY: P.player.v }]}>
@@ -273,7 +324,7 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={34} color={AMBER} opacity={0.9} /> : null}
           </Group>
         </Canvas>
-        <StaticLabels labels={T.labels(labels)} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(T.foots(foots), T.cables(cue ? cueCables(cue) : []))} />
+        <StaticLabels labels={T.labels(labels)} xf={xf} scale={ts} w={w} h={h} clearOf={clearOfFoots(T.foots(foots), T.cables([...cables, ...(cue ? cueCables(cue) : [])]))} />
       </View>
     </Pressable>
   );

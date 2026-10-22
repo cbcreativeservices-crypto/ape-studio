@@ -49,6 +49,10 @@ export type CableChoice = {
    *  `a ——  VIA  —— b` so a TS-in / XLR-out DI is never shown as one
    *  TS-to-XLR cable (R3-CS-S3). */
   via?: string;
+  /** The cord is built into this device at its far end (a headset or a
+   *  pair of headphones): the tray draws ONE plug, then the device name —
+   *  never a second plug (R7-CS-04). `b` then repeats `a`. */
+  fixedTo?: string;
   verdict: 'correct' | ProblemKind;
   /** Overrides the FINAL four-question row values where the problem kind's
    *  default mapping would claim something the verified records deny
@@ -107,7 +111,7 @@ export const SCENARIOS: readonly Scenario[] = [
     to: { device: 'DI box → mixer', port: 'DI instrument in · DI XLR out → mic input' },
     choices: [
       { id: 'a', name: 'TS instrument cable to the DI + XLR mic cable to the mixer', a: 'ts_quarter', b: 'xlr3', via: 'DI box', verdict: 'correct', explain: 'Exactly the DI’s job: a short unbalanced instrument cable into the DI, then a balanced XLR run to the mixer. High-impedance signal travels short; balanced signal travels far.' },
-      { id: 'b', name: 'One long TS instrument cable straight to a mixer line input', a: 'ts_quarter', b: 'ts_quarter', verdict: 'fits_but_verify', explain: 'It fits and may pass sound — but a long unbalanced high-impedance run collects noise and loses top end, and a line input is not an instrument input. This is what the DI exists to fix.' },
+      { id: 'b', name: 'One long TS instrument cable straight to a mixer line input', a: 'ts_quarter', b: 'ts_quarter', verdict: 'wrong_level', explain: 'It fits, but it is the wrong level: a line input is not an instrument input, so the guitar sounds thin and weak. A long unbalanced high-impedance run also picks up noise and loses top end. This is what the DI exists to fix.' },
       { id: 'c', name: '1/4-inch speaker cable to the DI', a: 'ts_speaker_legacy', b: 'ts_speaker_legacy', verdict: 'wrong_construction', explain: 'Identical plug, wrong cable: unshielded speaker cable on an instrument run hums and buzzes. The jacket printing — not the plug — tells you which you are holding.' },
       { id: 'd', name: 'XLR mic cable straight from the guitar', a: 'xlr3', b: 'xlr3', verdict: 'no_fit', explain: 'The guitar has no XLR output. Fit fails first.' },
     ],
@@ -173,8 +177,8 @@ export const SCENARIOS: readonly Scenario[] = [
     from: { device: 'Laptop', port: 'Headset jack (3.5 mm TRRS)' },
     to: { device: 'On your head', port: 'Ears — and maybe a microphone' },
     choices: [
-      { id: 'a', name: 'Headset on a TRRS plug (4 contacts) — for the call', a: 'trrs_35', b: 'trrs_35', verdict: 'correct', explain: 'The fourth contact IS the microphone path. Stereo down, mic back up, one plug — provided the headset’s wiring order (CTIA/OMTP) matches the jack.' },
-      { id: 'b', name: 'Headphones on a TRS plug (3 contacts) — for the call', a: 'trs_35', b: 'trs_35', verdict: 'fits_but_verify', explain: 'It fits and music plays — but three contacts have no microphone path. Nothing failed; a capability is simply missing. Count the rings.' },
+      { id: 'a', name: 'Headset on a TRRS plug (4 contacts) — for the call', a: 'trrs_35', b: 'trrs_35', fixedTo: 'headset', verdict: 'correct', explain: 'The fourth contact IS the microphone path. Stereo down, mic back up, one plug — provided the headset’s wiring order (CTIA/OMTP) matches the jack.' },
+      { id: 'b', name: 'Headphones on a TRS plug (3 contacts) — for the call', a: 'trs_35', b: 'trs_35', fixedTo: 'headphones', verdict: 'wrong_construction', explain: 'It fits and music plays — but headphones built with three contacts have no microphone path, so the call hears nothing from you. Count the rings.' },
       { id: 'c', name: 'TRS extension cable in the middle of a headset run', a: 'trs_35', b: 'trs_35', verdict: 'wrong_construction', explain: 'The 3-contact extension is built without the fourth conductor, so it physically drops the headset’s mic path — a chain’s contact count is only as good as its weakest cable.' },
       { id: 'd', name: '1/4-inch TRS headphone cable', a: 'trs_quarter', b: 'trs_quarter', verdict: 'no_fit', explain: 'The big brother does not fit the 3.5 mm jack without an adapter — and adapters never add a missing mic path.' },
     ],
@@ -214,7 +218,7 @@ export const SCENARIOS: readonly Scenario[] = [
     to: { device: 'Audio interface', port: 'USB-C port' },
     choices: [
       { id: 'a', name: 'The interface’s own USB-C data cable', a: 'usb_c', b: 'usb_c', verdict: 'correct', explain: 'A cable KNOWN to carry data at the needed rate — audio is data here, and the manufacturer shipped a cable that carries it.' },
-      { id: 'b', name: 'A charge-only USB-C cable from a phone charger', a: 'usb_c', b: 'usb_c', verdict: 'fits_but_verify', explain: 'Identical plugs — but some USB-C cables are wired for power with minimal data. The interface may not even appear. All USB-C cables are NOT the same; verify the cable’s capability.' },
+      { id: 'b', name: 'A charge-only USB-C cable from a phone charger', a: 'usb_c', b: 'usb_c', verdict: 'fits_but_verify', explain: 'Identical plugs — but some USB-C cables are wired for power only, with no data wires. The interface may not even appear. All USB-C cables are NOT the same; verify the cable’s capability.' },
       { id: 'c', name: 'USB-A to USB-B printer-style cable', a: 'usb_a', b: 'usb_b', verdict: 'no_fit', explain: 'Neither end matches this laptop or this interface. USB’s shapes exist to stop wrong topologies.' },
       { id: 'd', name: 'HDMI cable', a: 'hdmi', b: 'hdmi', verdict: 'no_fit', explain: 'HDMI and USB do not mate — different connectors for different protocols.' },
     ],

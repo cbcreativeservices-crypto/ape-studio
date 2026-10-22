@@ -115,7 +115,7 @@ export const STAGE7_FINISH: StageDef = {
           fieldId: "measured_true_peak",
           label: "Measured maximum true peak",
           kind: "number",
-          help: "True peak, not sample peak. The difference appears after encoding, which is where a compliant file stops being compliant.",
+          help: "True peak, not sample peak. Peaks between samples are already in the master, and encoding can push them higher — which is where a compliant file stops being compliant.",
           unit: "dBTP",
           required: true
         },
@@ -704,6 +704,6 @@ export const STAGE7_FINISH: StageDef = {
       ]
     },
     passWhen: "The measured integrated loudness is within tolerance of the target and the true peak is at or below the ceiling; the measurement is taken from the exported deliverable rather than the session; the correction is no longer compression or limiting while the loudness range stays flattened; every processing row has a stated purpose and a level-matched comparison; dither is decided rather than left unconsidered; the deliverable has been played through in full; the encoded version has been compared with the master; a creative review has happened; speech accessibility has been checked; the caption timing is verified against the final master; and the series has been compared across the set.",
-    debrief: "The file was three decibels too loud and over the ceiling, and the instinct — more limiting — is what got it there. Six decibels of limiting and a broadband compressor had already squeezed the loudness range down to 2 LU, which on speech means nothing can be emphasised any more, and the platform was going to turn the whole thing down by three decibels anyway. The fix was gain, downward, which costs nothing and gives the dynamics back. Two of the other faults would have survived every meter in the room: captions timed against a cut that no longer exists, and an episode in a series that had never been compared with the episodes around it. And notice the measurement itself was of the session, not the file — so even the numbers everyone was reacting to were not the numbers the client would get."
+    debrief: "The file was three decibels too loud and over the ceiling, and the instinct — more limiting — is what got it there. Six decibels of limiting and a broadband compressor had already squeezed the loudness range down to 2 LU, which on speech means nothing can be emphasised any more, and the platform was going to turn the whole thing down by three decibels anyway. The fix was to back off the limiting and compression — that is what gives the dynamics back — and then set the level with plain gain, downward, which costs nothing. Two of the other faults would have survived every meter in the room: captions timed against a cut that no longer exists, and an episode in a series that had never been compared with the episodes around it. And notice the measurement itself was of the session, not the file — so even the numbers everyone was reacting to were not the numbers the client would get."
   }
 };

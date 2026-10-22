@@ -74,9 +74,13 @@ export const RACK_TEXT = 9.2;
 type Paint = { face: string; faceHi: string; mgr: string; zinc: string; jack: string };
 const RackPaintCtx = createContext<Paint>({ face: '#1c1d22', faceHi: '#1c1d22', mgr: '#141419', zinc: '#80868f', jack: '#0b0b0d' });
 
-export function RackPaints({ uid, children }: { uid: string; children: ReactNode }) {
+/** R7-CI-03: false inside a thumbnail — silkscreen is not drawn there. */
+const SilkCtx = createContext(true);
+
+export function RackPaints({ uid, children, noText = false }: { uid: string; children: ReactNode; noText?: boolean }) {
   const p: Paint = { face: `url(#${uid}f)`, faceHi: `url(#${uid}h)`, mgr: `url(#${uid}m)`, zinc: `url(#${uid}z)`, jack: `url(#${uid}j)` };
   return (
+    <SilkCtx.Provider value={!noText}>
     <RackPaintCtx.Provider value={p}>
       <Defs>
         <LinearGradient id={`${uid}f`} x1="0" y1="0" x2="0" y2="1">
@@ -105,6 +109,7 @@ export function RackPaints({ uid, children }: { uid: string; children: ReactNode
       </Defs>
       {children}
     </RackPaintCtx.Provider>
+    </SilkCtx.Provider>
   );
 }
 
@@ -112,6 +117,8 @@ const usePaint = () => useContext(RackPaintCtx);
 
 /** Silkscreen on a rear panel (printed, always present; ≥ 9 pt inline). */
 export function Silk({ x, y, text, anchor = 'start', color = '#8f939c' }: { x: number; y: number; text: string; anchor?: 'start' | 'middle' | 'end'; color?: string }) {
+  const show = useContext(SilkCtx);
+  if (!show) return null;
   return (
     <SvgText x={x} y={y} fontFamily={fonts.oswaldMedium} fontSize={RACK_TEXT} fill={color} textAnchor={anchor} letterSpacing={0.5}>
       {text}

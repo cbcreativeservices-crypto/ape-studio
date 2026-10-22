@@ -20,3 +20,10 @@
 - `capstones.ts`: common FEEDS check on all ten (monitor positions and the IEM bodypack: monitor/IEM aux only, never main; mainL: mainL or mono; mainR: mainR or mono; mainC: mono; sub: main, aux6 or mtx1; fill/delay: main or matrix) + per-capstone checks (stereo L/R on different sides where stereo; 2.1 sub on aux6 or mtx1; wedges on different auxes; matrices: fills MTX 2, subs MTX 1; festival IEM on aux8; subs per the existing console checks).
 - BUILD UI (`pagesBuild.tsx`): OUTPUT key in the dock after PART — flipFader lane for the 15 console/return choices, `kind:'options'` tap key for 2–4, `locked:'<reason>'` for one; prompts name OUTPUT; the inspect card reads "FED BY · … · AUX 2" or "OUT ?"; bezel unchanged. Plot tags show the feed ("AUX 2", "MAIN L", "OUT ?"); shorten where they clash (per-scene check at 3×, D67–D70).
 - Tests: update the ten reference builds with explicit outputs; new `test/consoleOutputs_20261020.test.ts`.
+
+## Round 8 (2026-10-21, round-7 grading) — `test/wiringFix_r8_ssdj_20261021.test.ts`
+- **Amp channels by output + band (R7-SS-02, rule S2).** A passive top and a passive sub on the same output are two amp channels (the crossover comes before the amplifiers). One 2-channel amp driving L/R tops AND L/R subs needs four and fails the FEEDS row with `topAndSubWhy` ("Tops and subs need their own amp channels after the processor's crossover"). All ten reference builds were already wired that way and still pass.
+- **One monitor rule (R7-SS-11).** A wedge fed through the house processor fails like an in-ear transmitter does (`wedgeFromProcessor`, `WEDGE_FROM_PROCESSOR_WHY`): monitor feeds come from the console's aux outputs or their stagebox returns.
+- **Network returns (R7-SS-10).** The brief is enforced: a RETURNS row — every cable out of the console goes to the stagebox.
+- **Aux 7 is PRE (R7-SS-07)** on the diagram, the MATRICES page default and the reference build; the page says why (a house fader ride does not move the lobby; the channel MUTE still closes it).
+- **Tie marks (R7-SS-12, rule book R8)** tape lanes of one group only — mic/line, loudspeaker, data — and never cross another group's lane.

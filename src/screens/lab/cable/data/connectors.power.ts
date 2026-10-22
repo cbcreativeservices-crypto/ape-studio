@@ -108,7 +108,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     ],
     commonMistakes: [
       'Removing, bending back, or adapting away the ground pin so a three-prong plug fits a two-slot outlet — never acceptable; the earth pin is what keeps a fault from energizing the equipment chassis',
-      'Using a ground-lift (“cheater”) adapter to cure hum — never acceptable; hum is solved on the signal side (isolation transformers, proper grounding practice), never by defeating the safety earth',
+      'Using a ground-lift (“cheater”) adapter to cure hum — never acceptable; never defeat the safety earth. The safe hum fixes: a DI or isolator ground-lift switch (pin 1 at the DI only), an isolation transformer, balanced connections, and powering the gear from the same circuit',
       'Keeping a damaged cord in service because “it still works” — cracked jackets, exposed conductors and heat-marked plugs leave service immediately',
       'Unplugging by pulling the cord instead of gripping the plug body — cord-yanking is how strain reliefs fail and conductors pull loose inside the plug; grip the plug itself, every time',
       'Building or using a male-to-male mains cable for any purpose — the free end carries live, exposed pins the instant the other end is plugged in',

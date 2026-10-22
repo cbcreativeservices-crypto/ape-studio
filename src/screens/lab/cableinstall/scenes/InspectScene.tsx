@@ -22,6 +22,7 @@ import { CheckQuestion } from '../../foundations/bits';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CiSection, FindProgress, RuleFeedback, announceComplete } from '../bits';
+import { pathLen } from '../pathLen';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { CeilingCut, ConcreteCut, DuctSide, JacketPath, LadderTraySide } from '../svgArt';
 import {
@@ -143,7 +144,11 @@ function ZoneIn({ children, delay, reduce }: { children: ReactNode; delay: numbe
 
 /** A representative run that installs itself as the scene assembles — a
  *  shaded jacket, never a flat stroke. */
-function RunIn({ d, len, color, delay, run }: { d: string; len: number; color: string; delay: number; run: boolean }) {
+/** R7-CI-01: the reveal length is never shorter than the MEASURED path (a
+ *  hand-typed len shorter than its path left the run stopping short of its
+ *  plug, in mid-air): `len` is only a floor. */
+function RunIn({ d, len: typed, color, delay, run }: { d: string; len: number; color: string; delay: number; run: boolean }) {
+  const len = useMemo(() => Math.max(typed, pathLen(d)), [typed, d]);
   const { progress } = useDrawIn(len, { run, delay });
   return <JacketPath d={d} color={color} width={2.4} pv={progress} len={len} />;
 }
@@ -295,11 +300,15 @@ function FindCounter({ found, required, total }: { found: number; required: numb
  *  its body running out to the cord's start (229.2, 216.6). */
 export const OUTLET = { x: 229.8, y: 213.8, w: 2.2, h: 4 } as const;
 export const OUTLET_PLUG = { x: 229.2, y: 215.4, w: 2.4, h: 2.4 } as const;
+/** R7-CI-02: the sleeve through the rated wall (x 254–259) round the mic run
+ *  (y 178) and the AC cord (y 180.4), each 2.4 wide; its label sits on clear
+ *  wall-side space above the runs, ≥ 9 pt at the 328-pt inline width. */
+export const WALL_SLEEVE = { x: 251.6, y: 175.2, w: 9.8, h: 7.6, labelX: 249, labelY: 170, labelU: 10.5 } as const;
 const AC_BUNDLE_D = 'M229.2 216.6 C223.4 216.6 220.4 214 220.4 209 V187 C220.4 183 223 180.4 228 180.4 H276';
 
 /** The combined facility — every environment of the lab in one honest
  *  section view (training visualization; defect markers number the finds). */
-function FacilityScene({
+export function FacilityScene({
   w,
   defects,
   states,
@@ -417,7 +426,21 @@ function FacilityScene({
           <Rect x={OUTLET.x + 1.29} y={OUTLET.y + 0.75} width={0.16} height={0.5} fill="#2a2926" />
           <Rect x={OUTLET_PLUG.x} y={OUTLET_PLUG.y} width={OUTLET_PLUG.w} height={OUTLET_PLUG.h} rx={0.4} fill="#1b1c20" stroke="#55585f" strokeWidth={0.2} />
         </ZoneIn>
+        {/* R7-CI-02: where the AC cord and the mic run pass the RATED wall
+            they go through a metal sleeve, sealed with firestop at both
+            faces and named on the wall side (WALL_SLEEVE) */}
+        <ZoneIn delay={250} reduce={m.reduce}>
+          <Rect x={WALL_SLEEVE.x} y={WALL_SLEEVE.y} width={WALL_SLEEVE.w} height={WALL_SLEEVE.h} rx={0.6} fill="#5b5f67" stroke="#c9ccd2" strokeWidth={0.5} />
+        </ZoneIn>
         <RunIn d={AC_BUNDLE_D} len={110} color={CI_CLASS_TINTS.power} delay={360} run={assembled} />
+        <ZoneIn delay={420} reduce={m.reduce}>
+          <Rect x={WALL_SLEEVE.x - 0.4} y={WALL_SLEEVE.y - 0.4} width={1.6} height={WALL_SLEEVE.h + 0.8} rx={0.4} fill="#d2452f" />
+          <Rect x={WALL_SLEEVE.x + WALL_SLEEVE.w - 1.2} y={WALL_SLEEVE.y - 0.4} width={1.6} height={WALL_SLEEVE.h + 0.8} rx={0.4} fill="#d2452f" />
+          <Line x1={WALL_SLEEVE.labelX + 1} y1={WALL_SLEEVE.labelY + 1.5} x2={WALL_SLEEVE.x + 0.4} y2={WALL_SLEEVE.y + 0.6} stroke="#8d9199" strokeWidth={0.6} />
+          <SvgText x={WALL_SLEEVE.labelX} y={WALL_SLEEVE.labelY} textAnchor="end" fontFamily={fonts.oswaldSemiBold} fontSize={WALL_SLEEVE.labelU} letterSpacing={0.6} fill="#b9bdc6">
+            FIRESTOPPED SLEEVE
+          </SvgText>
+        </ZoneIn>
         <ZoneIn delay={250} reduce={m.reduce}>
           {/* the ramp's lid, over the run in its channel */}
           <Rect x={132} y={223.4} width={36} height={1.8} rx={0.6} fill="#e3b73a" />

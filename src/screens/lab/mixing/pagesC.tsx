@@ -213,7 +213,7 @@ function PageReverbDelay({ ctx }: { ctx: PageCtx }) {
       <Lead>Reverb and delay answer the DEPTH question: what is close, what is far, what shares a room? The fastest way to a coherent mix: one shared space, fed by sends.</Lead>
       <Card>
         <Eyebrow>THE DEPTH VOCABULARY</Eyebrow>
-        <Body>DRY/WET is how much room rides along. PRE-DELAY is the gap before the room answers — longer keeps the source up front. DECAY is how long the room hangs on. Short ambience places; long ambience romanticises. Delays locked to the tempo disappear into the groove; unlocked ones float on top.</Body>
+        <Body>DRY/WET is how much room rides along. On a send-fed return, set the reverb 100 % wet; the send sets how much room. PRE-DELAY is the gap before the room answers — longer keeps the source up front. DECAY is how long the room hangs on. Short ambience places; long ambience romanticises. Delays locked to the tempo disappear into the groove; unlocked ones float on top.</Body>
       </Card>
       <Card>
         <Eyebrow>ONE ROOM GLUES THE BAND</Eyebrow>

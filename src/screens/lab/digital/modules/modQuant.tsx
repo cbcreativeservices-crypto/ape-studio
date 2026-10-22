@@ -123,11 +123,11 @@ const BIT_BLURBS: Record<number, string> = {
 };
 
 const CHECK_BITDEPTH: CheckSpec = {
-  question: 'A converter stores 8 bits per sample. How many amplitude levels does it have, and what is its THEORETICAL dynamic range (6.02·N + 1.76 dB)?',
+  question: 'A converter stores 8 bits per sample. How many amplitude levels does it have, and what is its THEORETICAL SNR (6.02·N + 1.76 dB, undithered)?',
   options: ['256 levels · ≈ 49.9 dB', '65,536 levels · ≈ 96 dB', '8 levels · ≈ 8 dB', '256 levels · ≈ 96 dB'],
   correctIdx: 0,
   reveal: 'Levels = 2⁸ = 256, and 6.02×8 + 1.76 ≈ 49.9 dB — theoretical. Real converters land below their formula number (analog noise, linearity), and remember: bits set AMPLITUDE resolution, never frequency response.',
-  wrongHint: 'Levels = 2ᴺ, and each bit is worth ≈ 6 dB of dynamic range.',
+  wrongHint: 'Levels = 2ᴺ, and each bit is worth ≈ 6 dB of theoretical SNR.',
 };
 
 const CHECK_DITHER: CheckSpec = {
@@ -228,7 +228,7 @@ export function QuantModule(p: DigitalModuleProps) {
         bezel: [
           { k: 'BITS', v: `${bits}-bit`, helpKey: 'bit_depth' },
           { k: 'LEVELS', v: fmtGroup(levels), helpKey: 'quant_levels' },
-          { k: 'TH. DR', v: `≈${drTheory.toFixed(1)} dB`, helpKey: 'bit_depth' },
+          { k: 'TH. SNR', v: `≈${drTheory.toFixed(1)} dB`, helpKey: 'bit_depth' },
           { k: 'PEAK', v: fmtDb(levelDb, 0), helpKey: 'quant_error' },
         ],
         render: (w, h) =>

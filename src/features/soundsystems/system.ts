@@ -574,24 +574,45 @@ export function carriesOutputs(system: SoundSystem, l: Link, walk: ConsoleWalk =
   return [...(walk.arriving.get(l.from) ?? [])].some((o) => o !== '*');
 }
 
-/** Amplifiers asked to pass more distinct console outputs to their
- *  loudspeakers than they have channels (SS-R2-01), with what each carries.
+/** The band an amplifier channel drives (round-8 grade R7-SS-02, rule S2):
+ *  a passive SUB takes the processor's low band, any other cabinet the top
+ *  band. In an active system the crossover comes BEFORE the amplifiers, so a
+ *  top and a sub on the same console output are two amp channels — never one
+ *  channel paralleling both. */
+const ampBand = (k: GearKind | undefined): 'sub' | 'top' => (k === 'passiveSub' ? 'sub' : 'top');
+
+/** The mixes one amplifier passes to its loudspeakers: each distinct
+ *  (console output, band) is one amp channel. */
+function ampMixes(system: SoundSystem, ampId: string, kindOf: ReadonlyMap<string, GearKind>, walk: ConsoleWalk): Map<string, { out: ConsoleOut; band: 'sub' | 'top' }> {
+  const mixes = new Map<string, { out: ConsoleOut; band: 'sub' | 'top' }>();
+  for (const l of system.links) {
+    if (l.from !== ampId) continue;
+    // A cable passing several outputs on reads OUT ? at its loudspeaker
+    // already; only single outputs count as the mixes the amp passes.
+    const c = carriedBy(l, kindOf, walk.arriving);
+    const only = c.size === 1 ? [...c][0] : '*';
+    if (only === '*') continue;
+    const band = ampBand(kindOf.get(l.to));
+    mixes.set(`${only}:${band}`, { out: only, band });
+  }
+  return mixes;
+}
+
+/** Amplifiers asked to pass more mixes to their loudspeakers than they have
+ *  channels (SS-R2-01), with the distinct outputs and the channels needed.
  *  One cable INTO an amp may carry every output (owner decision 1); what
- *  counts is how many different mixes leave it. */
-export function ampsOverChannels(system: SoundSystem, walk: ConsoleWalk = consoleWalk(system)): { id: string; outs: ConsoleOut[] }[] {
+ *  counts is how many different mixes leave it — and a passive top and a
+ *  passive sub on the same output are two (R7-SS-02). `topAndSub` lists the
+ *  outputs this amp sends to a passive top AND a passive sub. */
+export function ampsOverChannels(system: SoundSystem, walk: ConsoleWalk = consoleWalk(system)): { id: string; outs: ConsoleOut[]; channels: number; topAndSub: ConsoleOut[] }[] {
   const kindOf = new Map(system.placed.map((p) => [p.id, p.kind]));
-  const over: { id: string; outs: ConsoleOut[] }[] = [];
+  const over: { id: string; outs: ConsoleOut[]; channels: number; topAndSub: ConsoleOut[] }[] = [];
   for (const amp of system.placed.filter((p) => p.kind === 'amp')) {
-    const outs = new Set<ConsoleOut>();
-    for (const l of system.links) {
-      if (l.from !== amp.id) continue;
-      // A cable passing several outputs on reads OUT ? at its loudspeaker
-      // already; only single outputs count as the mixes the amp passes.
-      const c = carriedBy(l, kindOf, walk.arriving);
-      const only = c.size === 1 ? [...c][0] : '*';
-      if (only !== '*') outs.add(only);
-    }
-    if (outs.size > AMP_CHANNELS) over.push({ id: amp.id, outs: CONSOLE_OUTS.filter((o) => outs.has(o)) });
+    const mixes = ampMixes(system, amp.id, kindOf, walk);
+    if (mixes.size <= AMP_CHANNELS) continue;
+    const outs = new Set([...mixes.values()].map((m) => m.out));
+    const topAndSub = CONSOLE_OUTS.filter((o) => mixes.has(`${o}:sub`) && mixes.has(`${o}:top`));
+    over.push({ id: amp.id, outs: CONSOLE_OUTS.filter((o) => outs.has(o)), channels: mixes.size, topAndSub });
   }
   return over;
 }

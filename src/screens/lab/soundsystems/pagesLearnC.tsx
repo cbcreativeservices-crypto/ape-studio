@@ -181,7 +181,7 @@ function PageCoverage({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>READ THE PLOT</Eyebrow>
         <Body>A loudspeaker’s coverage angle is the width it serves within 6 dB of on-axis; outside that edge the level keeps falling, fast — nothing leaks sideways at a level that matters. Narrow coverage throws further and overlaps less; wide coverage fills a wide room and paints the side walls. Aiming inward tightens the overlap into the middle of the floor; aiming straight spreads it. Height and tilt — the vertical pattern — do the same job front-to-back, and are why flown or high-mounted mains need front fills: the near field beneath them is outside the vertical pattern.</Body>
       </Card>
-      <KeyFact>Near field, far field, overlap, comb filtering, interference between loudspeakers — every one of them is geometry first. A microphone should never stand in a loudspeaker’s coverage; a listener should always stand in exactly one loudspeaker’s, or in two that have been aligned.</KeyFact>
+      <KeyFact>Near field, far field, overlap, comb filtering, interference between loudspeakers — every one of them is geometry first. A microphone should never stand in the mains’ coverage; a listener should always stand in exactly one loudspeaker’s, or in two that have been aligned.</KeyFact>
       <DeeperRow>
         <LabLink route="SpeakerLab" label="Speaker Placement & Coverage — the full lab" />
         <LabLink route="WaveLab" label="Wave Physics — interference" />

@@ -282,8 +282,8 @@ function PageProcessorChain({ ctx }: { ctx: PageCtx }) {
   // the dock's switch (it was a button between the drawings).
   const vocal = view === 'vocal';
   const viewed = vocal
-    ? { state: vocalState, sourceLabel: 'VOCAL OUT', destLabel: 'CONSOLE IN 2', topPatchLabel: '① SEND ▸ COMP IN', bottomPatchLabel: '② RETURN ◂ COMP OUT', sourceLive: true }
-    : { state: compState, sourceLabel: 'COMPRESSOR OUT', destLabel: 'COMPRESSOR IN', topPatchLabel: '② RETURN ▸ CONSOLE IN 2', bottomPatchLabel: '① SEND ◂ VOCAL OUT', sourceLive: inserted };
+    ? { state: vocalState, sourceLabel: 'VOCAL OUT', destLabel: 'CONSOLE IN 2', topPatchLabel: '① SEND ▸ COMP IN', bottomPatchLabel: '② RETURN ◂ COMP', sourceLive: true }
+    : { state: compState, sourceLabel: 'COMPRESSOR OUT', destLabel: 'COMPRESSOR IN', topPatchLabel: '② RETURN ▸ CH 2', bottomPatchLabel: '① SEND ◂ VOCAL OUT', sourceLive: inserted };
   return (
     <PatchbayRack
       rack={{
@@ -391,8 +391,8 @@ function PageWrongPatch({ ctx }: { ctx: PageCtx }) {
               state={c.render.state}
               sourceLabel={c.render.sourceLabel}
               destLabel={c.render.destLabel}
-              topPatchLabel="LEFT BY SOMEONE"
-              bottomPatchLabel="LEFT BY SOMEONE"
+              topPatchLabel="METER"
+              bottomPatchLabel="DRUM MACHINE"
               reduceMotion={ctx.reduceMotion}
               hideFaceplate
             />

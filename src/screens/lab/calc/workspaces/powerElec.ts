@@ -527,7 +527,7 @@ const COMPLEXZ: Workspace = {
     '1/(2π√(LC)) ≈ 1.59 kHz.',
   mistakes: [
     'Adding reactances to resistance arithmetically — they combine in quadrature: |Z| = √(R² + X²), not R + X.',
-    'Forgetting the sign: inductive reactance leads (+), capacitive lags (−); the NET reactance is XL − XC.',
+    'Forgetting the sign: inductive reactance is + (voltage leads current), capacitive is − (voltage lags current); the NET reactance is XL − XC.',
     'Reading a phase angle without its meaning — positive = inductive (current lags), negative = capacitive (current leads).',
   ],
   warnings:

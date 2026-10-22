@@ -49,6 +49,11 @@ export const ART = {
   good: '#4fdc86',
 };
 
+/** R7-CB-01: card-figure labels in viewBox units — ≥ 9 pt on a 340-unit
+ *  figure at the 302-pt card width (360-pt phone less gutters and padding). */
+export const CARD_LABEL_U = 10.5;
+export const CARD_INLINE_W = 360 - 2 * 16 - 2 * 13;
+
 /** Label text — Oswald, never below 9.5 viewBox units (≥ 9 pt after fit). */
 export function Label({
   x,

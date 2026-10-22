@@ -302,6 +302,14 @@ function Pair({ cx, cy, r = 7, gap, color }: { cx: number; cy: number; r?: numbe
   );
 }
 
+/** R7-CS-05: TOSLINK core radius — cladding is r 24, the core ~98 % of it. */
+export const OPTICAL_CORE_R = 23.5;
+/** R7-CS-06: the multi-conductor cable's shielded pairs (centre offsets),
+ *  each in a foil ring of MULTI_FOIL_R, and its two power conductors (r 6). */
+export const MULTI_PAIRS: readonly (readonly [number, number])[] = [[0, 18], [-15.6, -9], [15.6, -9]];
+export const MULTI_FOIL_R = 13.5;
+export const MULTI_POWER: readonly (readonly [number, number])[] = [[-19.5, 11.5], [19.5, 11.5]];
+
 /** `width`: the inline size (the page sets it beside the photograph);
  *  `controls`: the page's construction picker + layer readout, docked under
  *  the section in FULL SCREEN (full-screen pass 2026-09-30). */
@@ -372,20 +380,27 @@ export function CrossSectionView({ kind, width = 120, a11y, controls }: { kind: 
         { r: 38, fill: '#3a3f46' },
         { r: 24, fill: '#9fd7ff' },
       ];
-      inner = <Circle cx={C} cy={C} r={6} fill="#ffffff" />;
+      // R7-CS-05: a TOSLINK plastic fibre is ~980 µm of core inside ~1000 µm
+      // of cladding — the core fills the cladding (OPTICAL_CORE_R / 24).
+      inner = <Circle cx={C} cy={C} r={OPTICAL_CORE_R} fill="#f4fbff" stroke="#9fd7ff" strokeWidth={0.4} />;
       break;
     case 'multiconductor':
       rings = [
         { r: 52, fill: '#2c2f34' },
         { r: 44, fill: INK.shield },
       ];
+      // R7-CS-06: "shielded pairs" — each pair inside its own foil ring
+      // (MULTI_PAIRS), the power conductors in the gaps between them
       inner = (
         <G>
-          <Pair cx={C - 16} cy={C - 14} r={6} gap={13} />
-          <Pair cx={C + 16} cy={C - 14} r={6} gap={13} />
-          <Pair cx={C} cy={C + 6} r={6} gap={13} />
-          <Insulated cx={C - 18} cy={C + 20} r={7} color="#c23a3a" />
-          <Insulated cx={C + 18} cy={C + 20} r={7} color="#2a2a2e" />
+          {MULTI_PAIRS.map(([dx, dy], i) => (
+            <G key={i}>
+              <Circle cx={C + dx} cy={C + dy} r={MULTI_FOIL_R} fill="#1b1d21" stroke="#cfd5dc" strokeWidth={1.4} />
+              <Pair cx={C + dx} cy={C + dy} r={6} gap={13} />
+            </G>
+          ))}
+          <Insulated cx={C + MULTI_POWER[0][0]} cy={C + MULTI_POWER[0][1]} r={6} color="#c23a3a" />
+          <Insulated cx={C + MULTI_POWER[1][0]} cy={C + MULTI_POWER[1][1]} r={6} color="#2a2a2e" />
         </G>
       );
       break;

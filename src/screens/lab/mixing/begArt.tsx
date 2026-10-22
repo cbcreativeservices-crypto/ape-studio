@@ -909,7 +909,10 @@ export function TermsArt({ focus }: { focus: TermKind | null }) {
   const audio = col('subgroup', ART.wire);
   const busC = lit('bus') ? ART.amber : audio;
   const pins = [-10, 0, 10];
-  const sendY = chs[0].y + 5 + 6.5;
+  // R7-MIX-01: the sends leave at the SEND knob — below the strip's VCA tape
+  // row (Strip: the VCA row 15 tall from y + 5, then the send knob's centre
+  // 6.5 into its 15 row), as advArt's Strip lays it out.
+  const sendY = chs[0].y + 5 + 15 + 6.5;
   const ctlY = 30;
   const label: Record<TermKind, string> = {
     bus: 'BUS — ANY PATH THAT CARRIES AUDIO ON',

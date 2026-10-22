@@ -415,7 +415,7 @@ export const WHICH_TOOL: readonly WhichToolCase[] = [
   },
   {
     id: 'broadcast',
-    situation: 'A broadcast truck needs the house mix plus a bit more vocal and a lot less of the audience mics.',
+    situation: 'A broadcast truck needs the house mix plus a bit more vocal and the audience mics the PA never carries.',
     correct: 'matrix',
     why: 'A MATRIX starts from the finished main mix and adds or removes buses — the standard broadcast, recording and overflow feed. On larger shows a split feeds a separate broadcast console instead.',
     wrong: {

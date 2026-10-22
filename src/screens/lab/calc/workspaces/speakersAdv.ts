@@ -62,7 +62,7 @@ const CROSSOVER: Workspace = {
     '0.51 mH. Second-order Butterworth: C ≈ 5.63 µF, L ≈ 0.72 mH.',
   mistakes: [
     'Designing against the nominal impedance while the driver’s real impedance swings with frequency — a Zobel/impedance-flattening network is often needed first.',
-    'Forgetting that a second-order tweeter needs its polarity reversed: wired in phase, the sum drops into a deep notch at the crossover frequency. Even reversed, a Butterworth pair sums about 3 dB high there; a flat sum needs a second-order Linkwitz-Riley (Q = 0.5).',
+    'Forgetting that a second-order tweeter needs its polarity reversed: wired with normal polarity, the sum drops into a deep notch at the crossover frequency. Even reversed, a Butterworth pair sums about 3 dB high there; a flat sum needs a second-order Linkwitz-Riley (Q = 0.5).',
     'Treating a driver as a resistor — these idealized values are a starting point; real crossovers are tuned by measurement.',
   ],
   warnings:
@@ -113,7 +113,7 @@ const CROSSOVER: Workspace = {
       plainFormula:
         'The capacitor equals 0.1125 divided by the frequency times the impedance; the inductor equals 0.2251 times the impedance divided by the frequency.',
       explain:
-        'A second-order Butterworth (12 dB/octave) crossover — steeper than first-order, using a capacitor and inductor per filter at a Q of 0.707. Each filter on its own is maximally flat, but the two do not add up flat. Wired in phase, they cancel in a deep notch at the crossover frequency, so the tweeter is wired with reversed polarity. Even then, a Butterworth pair sums about 3 dB high at the crossover. For a flat summed response, most designers use a second-order Linkwitz-Riley crossover (Q = 0.5, different part values) with the tweeter reversed.',
+        'A second-order Butterworth (12 dB/octave) crossover — steeper than first-order, using a capacitor and inductor per filter at a Q of 0.707. Each filter on its own is maximally flat, but the two do not add up flat. Wired with normal polarity, they cancel in a deep notch at the crossover frequency, so the tweeter is wired with reversed polarity. Even then, a Butterworth pair sums about 3 dB high at the crossover. For a flat summed response, most designers use a second-order Linkwitz-Riley crossover (Q = 0.5, different part values) with the tweeter reversed.',
       keySymbols: ['/', '·', 'R', 'f'],
       note: 'Butterworth (Q = 0.707) alignment. Reverse the tweeter’s polarity or the sum notches at the crossover; reversed, it sums about +3 dB there. A flat sum needs Linkwitz-Riley (Q = 0.5).',
       compute: (v) => {
@@ -130,7 +130,7 @@ const CROSSOVER: Workspace = {
         return [
           `C = 0.1125 ÷ (${fmt(f)} × ${fmt(R)}) = ${fmt((K2C / (f * R)) * 1e6)} µF.`,
           `L = 0.2251 × ${fmt(R)} ÷ ${fmt(f)} = ${fmt(((K2L * R) / f) * 1e3)} mH.`,
-          `Each filter uses one L and one C. Reverse the tweeter’s polarity (in phase, the sum notches at ${fmt(f)} Hz); even reversed, this Butterworth pair sums about +3 dB at ${fmt(f)} Hz.`,
+          `Each filter uses one L and one C. Reverse the tweeter’s polarity (with normal polarity, the sum notches at ${fmt(f)} Hz); even reversed, this Butterworth pair sums about +3 dB at ${fmt(f)} Hz.`,
         ];
       },
     },

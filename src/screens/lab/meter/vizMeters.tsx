@@ -519,7 +519,7 @@ export function PeakMeterView(p: {
   /** Wall-seconds one phase-clock loop represents (live ballistics scale). */
   loopSeconds?: number;
   /** ADDITIVE (Start Here, 2026-09-29): a beginner's view — the scale in
-   *  dBFS only; no PEAK PROGRAM / OVER / L-R / CREST legends. The OVER lamp
+   *  dBFS only; no SAMPLE PEAK / OVER / L-R / CREST legends. The OVER lamp
    *  itself still lights. */
   plain?: boolean;
 }) {
@@ -815,7 +815,7 @@ export function PeakMeterView(p: {
         <>
       {/* x clears the corner screw (12·ts ± 3.6·ts) — it sat on the "P". */}
       <Lbl x={20 * ts} y={6 * ts} w={140} align="left" size={8} font={fonts.oswaldSemiBold} ls={1}>
-        PEAK PROGRAM
+        SAMPLE PEAK
       </Lbl>
       <Lbl x={w / 2 - 26} y={11 * ts} w={52} size={7.5} color="#f4d9d5" ls={1.5}>
         OVER
@@ -1622,8 +1622,10 @@ export function LoudnessView(p: {
         S
       </Lbl>
       {targetLufs != null ? (
-        <Lbl x={mX - 6 * ts} y={yL(targetLufs) - 13 * ts} w={90} align="left" size={9} color={AMBER}>
-          {`TARGET ${targetLufs < 0 ? '−' + Math.abs(targetLufs) : targetLufs}`}
+        // Platforms differ (R7-MTR-03): never one "TARGET". Two lines keep the
+        // label inside the bar column, clear of the centre readout.
+        <Lbl x={mX - 6 * ts} y={yL(targetLufs) - 25 * ts} w={84} align="left" size={9} color={AMBER}>
+          {`STREAMING\n≈ ${targetLufs < 0 ? '−' + Math.abs(targetLufs) : targetLufs} (varies)`}
         </Lbl>
       ) : null}
       {/* Integrated LUFS — the headline number, enlarged up top. */}

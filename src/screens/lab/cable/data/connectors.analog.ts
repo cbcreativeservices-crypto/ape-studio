@@ -287,12 +287,12 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
         carried: ['line_level'],
         contacts: [
           { label: 'Tip', role: 'Send (commonly — verify)', ink: 'signalPos', note: 'Tip-send is common, not universal.' },
-          { label: 'Ring', role: 'Return (commonly — verify)', ink: 'signalPos', note: 'Some equipment reverses send and return.' },
+          { label: 'Ring', role: 'Return (commonly — verify)', ink: 'signalPos', note: 'Some equipment, such as some older large-format desks, reverses send and return.' },
           { label: 'Sleeve', role: 'Shield / reference', ink: 'shield' },
         ],
         confidence: 'equipment-dependent',
         verifyAgainst:
-          'The console’s documentation. Tip-send/ring-return is common, but manufacturers differ; a reversed insert cable leaves the channel silent or the processor out of the path.',
+          'The console’s documentation. Tip-send/ring-return is used on most consoles, but some (such as some older large-format desks) use the opposite; a reversed insert cable leaves the channel silent or the processor out of the path.',
       },
     ],
     balanced: 'either',

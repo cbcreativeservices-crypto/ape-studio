@@ -34,9 +34,10 @@ const WS_DISTDELAY: Workspace = {
     'samples is telling you a time; a time is telling you a distance. Fluency here is what lets ' +
     'you move between a tape measure, a delay knob, and a sample counter without hesitation.',
   example:
-    'A delay tower sits 30 m behind the main PA at 20 °C. c ≈ 343 m/s, so t = 30 ÷ 343 ≈ 87.5 ms ' +
-    '— dial roughly that into the tower so its arrival lands with the mains. At 48 kHz that is ' +
-    '0.0874 × 48000 ≈ 4196 samples; a DSP that only accepts whole samples is at most half a ' +
+    'A delay tower sits 30 m behind the main PA at 20 °C. c ≈ 343.2 m/s, so t = 30 ÷ 343.2 ≈ 87.4 ms ' +
+    '— dial that in, plus about 5–10 ms more, so the mains arrive first and the sound still ' +
+    'seems to come from the stage. At 48 kHz the 87.4 ms is ' +
+    '0.08741 × 48000 ≈ 4196 samples; a DSP that only accepts whole samples is at most half a ' +
     'sample (~10 µs, ~3.6 mm) from perfect.',
   mistakes: [
     'Forgetting temperature: between a 10 °C load-in and a 30 °C show, 30 m of throw shifts by more than 1.5 ms — enough to smear an alignment done in the morning.',

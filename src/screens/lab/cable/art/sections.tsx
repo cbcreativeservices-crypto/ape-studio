@@ -23,7 +23,7 @@ import { View } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, Ellipse, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import type { CableSectionId } from '../cableTypes';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
-import { ART, BraidRing, CopperEnd, InsulatedEnd, Label, Leader, ScaleBar, useArtUid } from './kit';
+import { ART, BraidRing, CARD_LABEL_U, CopperEnd, InsulatedEnd, Label, Leader, ScaleBar, useArtUid } from './kit';
 import { shade, tint } from './kit2';
 
 /** Extra constructions used by the look-alike comparisons (Lesson 4). */
@@ -681,7 +681,7 @@ function SectionSvg({ id, revealed, names, uid, w, h }: { id: CableSectionId; re
   // cable (no two labels ever touch) and points at it on a leader.
   const labels: ReactNode[] = [];
   const placed: { row: 0 | 1; x0: number; x1: number }[] = [];
-  const textW = (t: string) => t.length * 5.3 + 4;
+  const textW = (t: string) => t.length * 5.6 + 4;
   for (let i = 0; i < Math.min(revealed, names.length); i++) {
     const a = anchors[i];
     const text = `${i + 1} ${names[i]}`;
@@ -691,7 +691,7 @@ function SectionSvg({ id, revealed, names, uid, w, h }: { id: CableSectionId; re
       labels.push(
         <G key={i}>
           <Leader x1={xcx + 64} y1={xcy + 56} x2={xcx + 36} y2={xcy + 31} />
-          <Label x={xcx + 66} y={xcy + 62} text={text} color={i === hl ? ART.hi : ART.label} />
+          <Label x={xcx + 66} y={xcy + 62} text={text} size={CARD_LABEL_U} color={i === hl ? ART.hi : ART.label} />
         </G>,
       );
       continue;
@@ -723,7 +723,7 @@ function SectionSvg({ id, revealed, names, uid, w, h }: { id: CableSectionId; re
     labels.push(
       <G key={i}>
         <Leader x1={lx} y1={above ? ly + 3 : ly - 11} x2={a.x} y2={tipY} />
-        <Label x={lx} y={ly} text={text} anchor="middle" color={i === hl ? ART.hi : ART.label} />
+        <Label x={lx} y={ly} text={text} anchor="middle" size={CARD_LABEL_U} color={i === hl ? ART.hi : ART.label} />
       </G>,
     );
   }
@@ -735,7 +735,7 @@ function SectionSvg({ id, revealed, names, uid, w, h }: { id: CableSectionId; re
       {body}
       <BreakEnd x={SX0} cy={SCY} r={(spec.od / 2) * K} />
       {labels}
-      <Label x={8} y={VB_H - 8} text="CUT END" color={ART.sub} size={9.5} />
+      <Label x={8} y={VB_H - 8} text="CUT END" color={ART.sub} size={CARD_LABEL_U} />
       <ScaleBar x={70} y={VB_H - 11} k={K} mm={2} />
       <Defs>
         {Array.from(new Set(gradColours)).map((c) => (

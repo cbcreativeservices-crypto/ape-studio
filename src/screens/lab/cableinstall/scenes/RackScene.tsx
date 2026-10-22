@@ -913,7 +913,7 @@ const AS_FOUND_SW_AC_D = `M${SWITCH.iecX + 7.5} ${SWITCH.iecY + 15.2} C${SWITCH.
  *  above the hauled AC run (lane y 349) into its inlet plug's boot. */
 const AS_FOUND_PDU_FEED_D = `M298 ${PDU.y + 18.5} H273.6`;
 
-const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; found?: ReadonlySet<string> }) {
+const BadCables = memo(function BadCables({ enter, found, noText = false }: { enter: boolean; found?: ReadonlySet<string>; noText?: boolean }) {
   /** Inspector's red strain marks are ANNOTATIONS: they appear only once the
    *  learner has documented that defect — the cable geometry carries it first. */
   const flag = (id: string) => !!found && found.has(id);
@@ -982,12 +982,18 @@ const BadCables = memo(function BadCables({ enter, found }: { enter: boolean; fo
         <Line x1={P22 - 3.2} y1={33.5} x2={P22 - 1.2} y2={33.5} stroke="#eceae3" strokeWidth={1.4} />
         <Rect x={P22 - 30.1} y={30} width={28} height={9} rx={0.8} fill="rgba(0,0,0,0.45)" />
         <Rect x={P22 - 31} y={29} width={28} height={9} rx={0.8} fill="#eceae3" stroke="#8d8a80" strokeWidth={0.35} />
-        <SvgText x={P22 - 17} y={36.2} fontFamily={fonts.mono} fontSize={RACK_TEXT} fill="#17181b" textAnchor="middle">
-          N-012
-        </SvgText>
-        <SvgText x={P22} y={PATCH.stripY + 6.7} fontFamily={fonts.mono} fontSize={RACK_TEXT} fill="#17181b" textAnchor="middle">
-          N-007
-        </SvgText>
+        {/* R7-CI-03: a thumbnail drops the words (they would print ~3 pt);
+            the blank flag and strip still read as labels */}
+        {!noText ? (
+          <>
+            <SvgText x={P22 - 17} y={36.2} fontFamily={fonts.mono} fontSize={RACK_TEXT} fill="#17181b" textAnchor="middle">
+              N-012
+            </SvgText>
+            <SvgText x={P22} y={PATCH.stripY + 6.7} fontFamily={fonts.mono} fontSize={RACK_TEXT} fill="#17181b" textAnchor="middle">
+              N-007
+            </SvgText>
+          </>
+        ) : null}
       </SvgIn>
       <DrawPath d={`M58 29 C44 60 70 110 ${DSP_JACK_XS[1]} ${DSP.jackY}`} len={100} color={A} width={3.2} enter={enter} delay={at(380)} />
       <SvgIn enter={enter} delay={at(520)}>
@@ -1629,7 +1635,7 @@ type CSel = { jack: number; ok: boolean } | null;
  * Gradient ids are per root (useUid → RackPaints), so the two <Svg> roots on
  * screen at once cannot collide.
  */
-function RackSvg({
+export function RackSvg({
   w,
   mode,
   enter = false,
@@ -1642,9 +1648,12 @@ function RackSvg({
   flowOn = false,
   cSel,
   wrongGen = 0,
+  thumb = false,
 }: {
   w: number;
   mode: 'bad' | 'dress';
+  /** R7-CI-03: a small thumbnail — no text drawn (it would print ~3 pt). */
+  thumb?: boolean;
   enter?: boolean;
   install?: boolean;
   found?: ReadonlySet<string>;
@@ -1661,12 +1670,12 @@ function RackSvg({
   const uid = useUid();
   return (
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${VB_W} ${VB_H}`}>
-      <RackPaints uid={uid}>
+      <RackPaints uid={uid} noText={thumb}>
       <Chassis dress={dress} enter={enter} />
       {dress ? (
         <Looms assigns={assigns ?? {}} wrongIds={wrongIds} dim={!!cSel?.ok} install={install} flowOn={flowOn} />
       ) : (
-        <BadCables enter={enter} found={found} />
+        <BadCables enter={enter} found={found} noText={thumb} />
       )}
       {!dress && found ? <DefectMarkers found={found} lastFound={lastFound ?? null} pulse={pulse} /> : null}
       {/* mounted for the whole of Phase C (cSel is passed, possibly null) so the
@@ -2402,7 +2411,7 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
                   {/* the BEFORE rack cross-fades in underneath as the contrast
                       lands; it renders STATIC — no second animating rack */}
                   <Appear delay={CI_MOTION.base} style={styles.beforeRow}>
-                    <RackSvg w={beforeW} mode="bad" />
+                    <RackSvg w={beforeW} mode="bad" thumb />
                     <View style={{ flex: 1, gap: 4 }}>
                       <Text style={styles.beforeHead}>THE SAME JOB, BEFORE</Text>
                       <Text style={styles.beforeBody}>

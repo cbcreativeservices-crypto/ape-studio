@@ -293,7 +293,7 @@ export function AmpModuleScreen() {
           title={endState ? LAB_TITLE.toUpperCase() : mod.title.toUpperCase()}
           subtitle={endState ? 'What’s left' : `Module ${mod.num} of ${AMP_MODULES.length}${done ? ' · completed' : ''}`}
           right={
-            <AccuracyNote compact detail="This lab MODELS amplifier behaviour on your phone — the numbers and curves are teaching tools, not bench measurements, and any level it plays goes through an UNCALIBRATED output. For real amplifier work use proper test gear." />
+            <AccuracyNote compact detail="This lab MODELS amplifier behaviour on your phone — the numbers and curves are teaching tools, not bench measurements. For real amplifier work use proper test gear." />
           }
         />
         <LabNavBar nav={nav} />

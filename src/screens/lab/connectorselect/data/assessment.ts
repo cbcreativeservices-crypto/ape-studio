@@ -180,7 +180,7 @@ export const ASSESSMENT_BANK: readonly AsmtQuestion[] = [
     q: 'A 1/4-inch cable passes every continuity test. Can you now trust it on an amplifier-to-speaker run?',
     options: ['No — continuity cannot see the construction', 'Yes — all paths pass, the cable is good', 'Yes, as long as both plugs are metal-bodied', 'No cable with TS plugs can drive a speaker'],
     correct: 0,
-    explain: 'The tester proves the paths exist, not what they are built from. Read the jacket: instrument cable on speaker duty heats and fails.',
+    explain: 'The tester proves the paths exist, not what they are built from. Read the jacket: instrument cable on speaker duty can heat and fail.',
     wrong: [undefined, 'The tester passes BOTH constructions identically — it is blind to gauge and shielding.', 'Plug bodies say nothing about the conductors inside the jacket.', 'Genuine speaker cable with TS plugs exists (the legacy connection) — the construction, not the plug, decides.'],
   },
   // ── safety ────────────────────────────────────────────────────────────────

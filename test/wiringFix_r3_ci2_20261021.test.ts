@@ -246,8 +246,8 @@ test('S3 extras: keys → DI lead, backstage starts, SNAKE HEAD label, key + cap
   // SNAKE HEAD on two lines, ending well short of wedge 1 (x 120 − 9.6)
   assert.doesNotMatch(FLOOR, /text="SNAKE HEAD"/);
   for (const t of ['SNAKE', 'HEAD']) {
-    const m = FLOOR.match(new RegExp(`<PlanLabel x=\\{([\\d.]+)\\} y=\\{[\\d.]+\\} text="${t}" anchor="start" size=\\{9\\} />`))!;
-    const end = Number(m[1]) + 9 * 0.45 + t.length * 9 * 0.62;
+    const m = FLOOR.match(new RegExp(`<PlanLabel x=\\{([\\d.]+)\\} y=\\{[\\d.]+\\} text="${t}" anchor="start" size=\\{10\\} />`))!; // R7-CI-04: 10 units renders >= 9 pt
+    const end = Number(m[1]) + 10 * 0.45 + t.length * 10 * 0.62;
     assert.ok(end < 120 - 9.6 - 4, `${t} ends at ${end.toFixed(1)}`);
   }
   // the key names the MON returns; the caption owns the wide cables

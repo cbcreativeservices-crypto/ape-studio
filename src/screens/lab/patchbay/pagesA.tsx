@@ -125,8 +125,11 @@ function PageThru({ ctx }: { ctx: PageCtx }) {
             // The top cord's far-end label is honest about the dead end until the
             // route is actually completed (cognition pass 2026-09-10 — the picture
             // must never claim a connection the status denies).
-            topPatchLabel={routed ? 'TO BOTTOM JACK' : 'FAR END NOT CONNECTED'}
-            bottomPatchLabel={routed ? 'FROM TOP JACK' : 'YOUR CABLE'}
+            // R7-PB-01/02/03: routed = ONE cord looping top → bottom; labels
+            // fit the 18-character trim; a lone bottom cord brings an ALT SOURCE
+            topPatchLabel={routed ? 'TOP TO BOTTOM' : 'NOT PLUGGED IN'}
+            bottomPatchLabel={routed ? 'TOP TO BOTTOM' : 'ALT SOURCE'}
+            loopCord
             onToggleJack={toggle}
             reduceMotion={ctx.reduceMotion}
           />

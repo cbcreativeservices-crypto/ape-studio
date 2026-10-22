@@ -66,8 +66,10 @@ export const CONNECTOR_INK_LABELS: Record<ConnectorInk, string> = {
   lineHot: 'Line / hot',
   dcPos: 'DC +',
   dcNeg: 'DC − / return',
-  dataA: 'Data pair A',
-  dataB: 'Data pair B',
+  // R7-CB-03: generic lane names — gigabit Ethernet calls its four pairs
+  // A–D (1000BASE-T), so "pair A / B" would misname the RJ45 pins
+  dataA: 'Data lane 1',
+  dataB: 'Data lane 2',
   clock: 'Clock / sync',
   optical: 'Optical path',
   speakerPos: 'Loudspeaker +',

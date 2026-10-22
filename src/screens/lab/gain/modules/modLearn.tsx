@@ -286,7 +286,7 @@ const LOWHIGH_CHECK: CheckSpec = {
   options: [
     'Nothing — a healthy final level means a healthy chain',
     'The noise floor came up with the late gain — hiss you can never remove',
-    'The signal is now out of phase',
+    'The signal is now polarity inverted',
   ],
   correctIdx: 1,
   reveal:

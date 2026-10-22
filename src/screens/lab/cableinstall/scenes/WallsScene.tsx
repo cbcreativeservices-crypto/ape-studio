@@ -350,6 +350,10 @@ function DoorCrossing({ relieved, active }: { relieved: boolean; active: boolean
  * edge; bushed (k=0) it straightens into a gentle radius on a spring while the
  * green bushing ring settles in — the whole before/after in one motion.
  */
+/** R7-CI-08: the bushed run's cover — an entrance fitting under the grommet
+ *  (centre 151, 77, r 5.5), a 6.8-wide drop over the run (x 154, y 86–150)
+ *  and a tee into the baseboard raceway's top (y 151). */
+export const EDGE_DROP = { x: 150.6, w: 6.8, top: 84, bottom: 151 } as const;
 const EDGE_KINK = [150.3, 77.2, 151, 78, 151, 79.6] as const;
 const EDGE_BUSH = [152.6, 77.6, 154, 80.5, 154, 86] as const;
 
@@ -378,6 +382,15 @@ function EdgeExit({ bushed, active }: { bushed: boolean; active: boolean }) {
         <APath d={edgeD(rest)} stroke={lighten(shade('#4fd0e0', 0.25), 0.5)} strokeWidth={0.7} fill="none" strokeLinecap="round" opacity={0.8} animatedProps={sheen} />
       </G>
       <APath d="M146 71 L151 77 L157 73" stroke="#ff5a48" strokeWidth={1.6} fill="none" opacity={rest} animatedProps={stress} />
+      {/* R7-CI-08: fixed, the run does not hang exposed down the wall — it
+          goes from the grommet into an entrance fitting and down a surface
+          raceway drop (EDGE_DROP) into a tee on the baseboard raceway */}
+      <G opacity={1 - rest}>
+        <Rect x={EDGE_DROP.x} y={EDGE_DROP.top} width={EDGE_DROP.w} height={EDGE_DROP.bottom - EDGE_DROP.top} rx={0.8} fill="#d9d7d0" stroke="#8d8a80" strokeWidth={0.5} />
+        <Line x1={EDGE_DROP.x + EDGE_DROP.w / 2} y1={EDGE_DROP.top + 1} x2={EDGE_DROP.x + EDGE_DROP.w / 2} y2={EDGE_DROP.bottom - 1} stroke="#b0ada4" strokeWidth={0.45} />
+        <Rect x={EDGE_DROP.x - 1} y={EDGE_DROP.top - 1.5} width={EDGE_DROP.w + 2} height={4.5} rx={1} fill="#e4e2db" stroke="#8d8a80" strokeWidth={0.5} />
+        <Rect x={EDGE_DROP.x - 1.6} y={EDGE_DROP.bottom - 3} width={EDGE_DROP.w + 3.2} height={6} rx={1} fill="#e4e2db" stroke="#8d8a80" strokeWidth={0.5} />
+      </G>
       {/* the rubber grommet: black ring, lit rim */}
       <ACircle cx={151} cy={77} r={5.5 * (1 - rest)} fill="none" stroke="#141518" strokeWidth={2.6} opacity={1 - rest} animatedProps={bush} />
       <ACircle cx={151} cy={77} r={5.5 * (1 - rest)} fill="none" stroke={colors.green} strokeWidth={0.8} opacity={0.6 * (1 - rest)} animatedProps={bushHi} />
@@ -386,7 +399,7 @@ function EdgeExit({ bushed, active }: { bushed: boolean; active: boolean }) {
 }
 
 /* ── the room elevation ─────────────────────────────────────────────────── */
-function RoomSvg({
+export function RoomSvg({
   w,
   xray,
   routePick,

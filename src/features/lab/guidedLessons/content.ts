@@ -618,11 +618,11 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'alone; the chain teaches how they INTERACT: what each module feeds the next changes what ' +
       'the next one does.',
     controls: [
-      { key: 'display', name: 'What the display shows', definition: "The diagram is the actual signal path, Source → … → Output, drawn as nine rack units on one patch cable. The MODULES key in the dock switches each unit in or out (a bypassed unit stays in place, dimmed); each dynamics unit's own GR lights and number show what it is doing to the level." },
+      { key: 'display', name: 'What the display shows', definition: "The diagram is the actual signal path, Source → … → Output, drawn as nine rack units with one patch cable for each hop from unit to unit. The MODULES key in the dock switches each unit in or out (a bypassed unit stays in place, dimmed); each dynamics unit's own GR lights and number show what it is doing to the level." },
       { key: 'module_toggle', name: 'Module enable/bypass', definition: 'Each module can be switched in or out of the chain. A bypassed module still occupies its slot — the chain order is this rack’s fixed order, not a universal studio order.' },
       { key: 'chain_order', name: 'Chain order', definition: 'This rack’s fixed order (it runs COMP before GATE; on most consoles you would gate first). EQ before compression changes what the compressor reacts to; a limiter anywhere but last can no longer hold the output under its ceiling.' },
       { key: 'gain_staging', name: 'Gain staging', definition: 'The level each stage hands the next. Run stages too hot and the final limiter over-works and squashes — watch the live GR reading on each dynamics unit.' },
-      { key: 'gain_reduction', name: 'Gain-reduction meters', definition: 'The LIVE, measured dB each dynamics module (compressor / gate / limiter) is pulling the signal down by RIGHT NOW — real engine readings, not drawings. Comparing them across the chain shows how each stage feeds the next: a hot compressor makes the limiter work harder.' },
+      { key: 'gain_reduction', name: 'Gain-reduction meters', definition: 'The LIVE, measured dB each dynamics module (compressor / gate / limiter) is pulling the signal down by RIGHT NOW — real engine readings, not drawings. Comparing them across the chain shows how each stage feeds the next: a hot EQ boost makes the limiter work harder.' },
     ],
     commonMistakes: [
       'Not understanding EQ→comp vs comp→EQ — EQ BEFORE compression changes what the compressor reacts to (boost lows → it pumps on bass); EQ after shapes the already-compressed tone.',
@@ -819,7 +819,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'LFO destination mix-ups — the SAME LFO is vibrato on pitch, wobble on cutoff, tremolo on amp; if the effect sounds wrong, check the routing before the rate.',
       'LFO rate into audio range — past ~20 Hz modulation stops sounding like movement and starts creating sidebands (that’s FM territory, a different lab).',
       'Resonance masking the real cutoff — high resonance rings at the cutoff so hard it reads as "the sound"; set it to 0 first, place the cutoff, then add resonance.',
-      'Sequencer without envelope retrigger — steps that only retune (no new envelope) smear into a glide; the per-step retrigger is what articulates notes.',
+      'Sequencer without envelope retrigger — steps that only retune (no new envelope) run together legato, with no new attack; the per-step retrigger is what articulates notes.',
       'Ignoring gain staging into the output stage — a full-resonance peak drives the saturating output stage harder (audible grit); that is analog-style behavior, not a bug.',
     ],
     proTips: [
@@ -1034,7 +1034,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'nyquist', name: 'Nyquist frequency', definition: 'Half the sample rate — the highest frequency the sampled data can represent. Approach it and samples-per-cycle approaches 2; pass it and the samples describe a DIFFERENT, lower frequency (an alias).' },
       { key: 'aliasing', name: 'Aliasing', definition: 'When the input exceeds Nyquist, the sample points fit a lower-frequency sinusoid exactly — the alias, folded around Nyquist: f_alias = |f − nearest multiple of fs|. The lab plays the input AND the predicted alias so you hear the fold.' },
       { key: 'aa_filter', name: 'Anti-aliasing filter', definition: 'A low-pass BEFORE the sampler that removes content above Nyquist so it can never fold down. Off: aliases land in-band, permanently. On: highs near Nyquist are attenuated, and everything above is gone before measurement.' },
-      { key: 'bit_depth', name: 'Bit depth', definition: 'How many binary digits store each measurement: N bits = 2ᴺ levels (16-bit = 65,536). It sets amplitude resolution and theoretical dynamic range (≈ 6.02·N + 1.76 dB) — it has nothing to do with frequency response.' },
+      { key: 'bit_depth', name: 'Bit depth', definition: 'How many binary digits store each measurement: N bits = 2ᴺ levels (16-bit = 65,536). It sets amplitude resolution and theoretical SNR (≈ 6.02·N + 1.76 dB, undithered) — it has nothing to do with frequency response.' },
       { key: 'quant_levels', name: 'Quantization levels', definition: 'The horizontal rungs the sampled voltage must round to. At 3 bits (8 levels) the rounding is visible and audible; at 24 bits (16.7 million) the steps are far below any analog noise floor.' },
       { key: 'quant_error', name: 'Quantization error', definition: 'Original sample value − stored value: the small rounding residue. ERROR-ONLY view isolates it. With healthy signals it behaves like noise; with tiny undithered signals it becomes correlated distortion — the reason dither exists.' },
       { key: 'dither', name: 'Dither', definition: 'A controlled trace of noise added before reducing bit depth. It LINEARIZES quantization: the correlated error becomes a benign noise floor, and low-level detail survives statistically over time — at the cost of that small added noise. It is not "extra resolution" magic.' },
@@ -1052,7 +1052,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'spectral_images', name: 'Spectral images', definition: 'Sampling creates copies of the audio spectrum around every multiple of the sample rate. The reconstruction filter\'s whole job is removing those images so only the baseband remains.' },
       { key: 'oversampling', name: 'Oversampling', definition: 'Running the converter at a multiple of the base rate pushes the spectral images far from the audio band, so a gentle, well-behaved analog filter finishes the job. It relaxes the filter — it does not add information beyond the original band.' },
       { key: 'isp', name: 'Inter-sample peaks', definition: 'Two samples can sit below 0 dBFS while the reconstructed waveform between them rises ABOVE it. Sample meters say "no clip"; the DAC or a downstream encoder can still overload. This is why true-peak meters oversample.' },
-      { key: 'jitter', name: 'Clock & jitter', definition: 'Jitter is timing deviation of the sampling instants — not value rounding. Its audibility depends on magnitude, spectrum, signal content and converter design; buffered/reclocked playback can remove it entirely. Beware sweeping cable-audiophile claims.' },
+      { key: 'jitter', name: 'Clock & jitter', definition: 'Jitter is timing deviation of the sampling instants — not value rounding. Its audibility depends on magnitude, spectrum, signal content and converter design; buffered/reclocked playback can remove the jitter of the incoming link, though the converter’s own clock still has a little. Beware sweeping cable-audiophile claims.' },
       { key: 'clocking', name: 'Clocking', definition: 'A digital system has one clock master. Every other device follows it, at the same sample rate. A device follows by word clock (75 Ω coax, BNC), by the clock inside an AES3 or S/PDIF stream, or by the network clock (PTP) in Dante or AES67. Two masters, or a wrong rate, usually means clicks, pops or dropouts.' },
       { key: 'data_rate', name: 'Data rate & storage', definition: 'Rate = sample rate × bit depth × channels. 48 kHz × 24-bit × 2 = 2.304 Mbit/s ≈ 17.3 MB/min. The full calculator (with storage planning) lives in the Calculator Laboratory.' },
       { key: 'myths', name: 'Myth vs reality', definition: 'The permanent misconception panel: stair steps, "more samples = smoother", bit depth vs frequency, 144 dB from 24 bits, float un-clipping recordings, hot-to-0 dBFS recording. Each myth paired with what is actually true.' },
@@ -1069,9 +1069,9 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     proTips: [
       'Anchor everything to two numbers: samples per cycle (fs ÷ f) for time, and levels (2ᴺ) for amplitude — every myth in this lab dies against one of those two.',
-      'Track with peaks around −18 to −10 dBFS: converter noise is far below you, and no transient ever reaches the cliff.',
+      'Track with peaks around −18 to −10 dBFS: converter noise is far below you, and most transients stay well clear of the cliff.',
     ],
-    formula: 'Nyquist = fs/2 · alias = |f − n·fs| (nearest n) · levels = 2ᴺ · DR ≈ 6.02·N + 1.76 dB (theoretical) · data rate = fs × N × channels.',
+    formula: 'Nyquist = fs/2 · alias = |f − n·fs| (nearest n) · levels = 2ᴺ · SNR ≈ 6.02·N + 1.76 dB (theoretical, undithered) · data rate = fs × N × channels.',
   },
 
   // ─────────────── WAVE PHYSICS LABORATORY (Pillar C, 2026-07-29) ───────────
@@ -1147,7 +1147,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'waveform_read', name: 'Reading a waveform', definition: 'Height = amplitude, symmetry = polarity balance, flat tops = clipping, flat line = silence, sharp spikes = transients. One glance tells you level, dynamics and damage before you press play.' },
       { key: 'dc_offset', name: 'DC offset', definition: 'The whole waveform riding above or below the center line — a constant voltage that steals headroom and thumps on edits. The picture: silence that isn\'t drawn AT zero.' },
       { key: 'transients', name: 'Transients', definition: 'The tall, thin spikes at the start of drum hits and plucks — huge peak, almost no average energy. They are why peak meters and your ears disagree.' },
-      { key: 'clipping_view', name: 'Clipping on the waveform', definition: 'Peaks sliced flat at full scale. Analog clipping rounds; digital clipping shears. Once the top of the wave is gone, no fader brings it back.' },
+      { key: 'clipping_view', name: 'Clipping on the waveform', definition: 'Peaks sliced flat at full scale. Analog clipping often rounds; digital clipping shears. Once the top of the wave is gone, no fader brings it back.' },
       { key: 'dynamic_range_view', name: 'Dynamic range in the picture', definition: 'The distance between the loudest peaks and the quiet detail. A healthy take breathes; an over-compressed one is a solid brick of ink.' },
       { key: 'peak_meter', name: 'Peak meter', definition: 'Tracks the instantaneous maximum, sample by sample — the "will it clip?" meter. It says nothing about loudness: a snare crack and a sine at the same peak read identically here and sound wildly different.' },
       { key: 'peak_hold', name: 'Peak hold & OVER lamp', definition: 'The floating bar that lingers at the highest recent peak, and the latch that trips at full scale. Hold lets you mix without staring; the OVER lamp is the tattletale that something already hit the ceiling.' },
@@ -1165,7 +1165,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'spectrogram_patterns', name: 'Spectrogram patterns', definition: 'Speech = stacked formant bands with pitch striations. Birdsong = rising/falling thin chirps. Cymbal = bright HF wash fading right. Feedback = one horizontal line getting brighter. Whistle = a single thin steady line. White noise = uniform confetti.' },
       { key: 'waterfall_axes', name: 'Waterfall axes (CSD)', definition: 'Frequency across, level up, TIME stepping TOWARD you: the loud start (t = 0) stands tall at the back, and each slice in front of it is the spectrum a moment later. The front edge is the latest instant — the range decaying toward you IS the decay.' },
       { key: 'waterfall_decay', name: 'Reading decay', definition: 'A healthy room/speaker collapses evenly — the whole range settles together. Anything still standing tall while its neighbors are gone is RINGING: a room mode, a resonant driver, a high-Q filter.' },
-      { key: 'room_ring', name: 'Room resonances in the waterfall', definition: 'One frequency\'s ridge stretches far back while everything nearby has died: that frequency is ringing — the room (or cabinet) stores and releases energy there. EQ can tame its level; only treatment/damping shortens its decay.' },
+      { key: 'room_ring', name: 'Room resonances in the waterfall', definition: 'One frequency\'s ridge stretches far toward the front while everything nearby has died: that frequency is ringing — the room (or cabinet) stores and releases energy there. EQ can tame its level; only treatment/damping shortens its decay.' },
       { key: 'damping', name: 'Damping materials', definition: 'Slide concrete → curtains → carpet → panels and watch the mountain\'s tail shorten — highs first (porous absorption), lows last (they need thickness). The waterfall shows what the RT60 number only summarizes.' },
       { key: 'eq_ridge', name: 'EQ in the waterfall', definition: 'Boost 250 Hz and its mountain grows TALLER — but decay stays the same length: EQ changes level, not ring time. A high-Q boost adds a narrow ridge that also RINGS — the filter itself stores energy. That is why surgical boosts can sound "resonant".' },
       { key: 'reverb_tails', name: 'Reverb tails compared', definition: 'Room = short, warm slope. Plate = long, bright, even sheet. Hall = long with lows outlasting highs. Spring = narrow bouncy ridges. You can identify the reverb type from the waterfall before you ever hear it.' },

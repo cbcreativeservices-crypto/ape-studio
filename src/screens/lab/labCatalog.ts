@@ -226,7 +226,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     labs: [
       { name: 'Digital Audio Systems', blurb: 'Sampling, Nyquist, aliasing, bit depth, quantization, dither, A/D and D/A conversion.', route: 'DigitalLab', key: 'af_digital_audio', member: true },
       { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab', key: 'af_visual_analysis', member: true },
-      { name: 'Signal Chain Builder', blurb: 'This rack’s fixed order: Generator → EQ → Comp → Gate → FX → Reverb → Limiter → Output.', route: 'SignalChainLab', key: 'af_signal_chain', member: true },
+      { name: 'Signal Chain Builder', blurb: 'This rack’s fixed order: Generator → EQ → Comp → Gate → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output.', route: 'SignalChainLab', key: 'af_signal_chain', member: true },
       { name: 'Signal Detective', blurb: 'Identify the meter, read the display, spot the problem, prescribe the fix.', route: 'MeterModule', params: { id: 'detective' }, key: 'af_signal_detective', member: true },
       // FLAGSHIP (owner spec 2026-08-15): connectors, cables, selection,
       // inspection, virtual tester, system challenges, safety-gated final.
@@ -348,7 +348,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     labs: [
       { name: 'Compression', blurb: 'Threshold, ratio, attack/release, envelope.', route: 'CompressionLab' },
       { name: 'Gate / Expander', blurb: 'Downward expansion, range, hold, chatter.', route: 'GateLab' },
-      { name: 'Limiter', blurb: 'Brickwall ceiling, true-peak, loudness.', route: 'LimiterLab' },
+      { name: 'Limiter', blurb: 'Brickwall ceiling, release, gain reduction (GR).', route: 'LimiterLab' },
       // LIVE V1 (owner brief 2026-09-02): the family hub opens with the De-Esser
       // & Sibilance Control lab; the other processors are listed as planned.
       { name: 'Smart Processors Lab', blurb: 'Processors that listen, decide and act — V1: the De-Esser & Sibilance Control lab.', route: 'SmartProcessorsLab' },
