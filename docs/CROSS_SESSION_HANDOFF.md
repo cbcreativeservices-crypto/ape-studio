@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 23:49 · ccode · d52f060e
+changed: Merge dj-lab (round 8: all round-7 findings) into next-store-build
+affects other side: nothing (client merge)
+needs: nothing
+
+
 ### 2026-10-21 23:48 · ccode · b54fa00a
 changed: Round 8 (owner go): cable labs — RJ45 decoy, charge-only USB, definite failures, one-ended headset, TOSLINK and shield drawing, labels >= 9 pt, ALT SOURCE, named devices, 'on most bays', Cable Install scale and mains leads
 affects other side: nothing (client lab text/art only)
