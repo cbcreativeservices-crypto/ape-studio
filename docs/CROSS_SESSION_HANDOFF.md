@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-22 00:34 · ccode · d65d16ba
+changed: Merge dj-lab (docs, rules, CRLF ratchet, log-merge script) into next-store-build
+affects other side: nothing (client merge)
+needs: nothing
+
+
 ### 2026-10-22 00:34 · ccode · c483f3e9
 changed: Ratchet: tests that read source must normalise CRLF (Windows checkouts); 324 older files allowlisted, shrink-only
 affects other side: nothing (tests only)
