@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 21:58 · ccode · fc416dec
+changed: Owner approvals: 6 judgment calls and new wording approved; phone testing after store approvals
+affects other side: nothing (docs only)
+needs: nothing
+
+
 ### 2026-10-21 15:07 · ccode · 253f9614
 changed: Sound Systems (owner 2026-10-21): two cables between the same pair (stage box -> in-ear transmitter on Aux 9 and Aux 10); reference stereo build fixed; processor -> transmitter flagged
 affects other side: nothing (client lab only)
