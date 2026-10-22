@@ -7,3 +7,8 @@
 5. **Digital clock card:** add one lesson card on clock master / word clock (75 Ω BNC) / AES3 and S/PDIF. Copy marked for owner review.
 6. **Judgment calls:** take ccode's recommendation (more accurate / better for learning) and list each one in the handoff, to reverse if the owner disagrees.
 Also approved earlier today: steel C04 VOL PEDAL fix; rule book APPROVED v1 with Comp B's 9 additions.
+
+## Later the same day (owner)
+- Stereo in-ears: two cables allowed between the same pair (stage box → in-ear transmitter on Aux 9 and Aux 10); reference stereo build fixed. Built and merged.
+- The 6 judgment calls and the new wording listed in the handoff (`Downloads\2026-10-21_DJ_LAB_WIRING_RUN_HANDOFF.md`): **approved**.
+- Phone testing happens after the store approvals are in.
