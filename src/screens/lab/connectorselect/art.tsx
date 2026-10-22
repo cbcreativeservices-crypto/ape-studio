@@ -79,6 +79,12 @@ const HIT_ZONES: readonly { id: string; x: number; w: number }[] = [
 
 const EXPLODED_W = 360;
 const EXPLODED_H = 150;
+/** The narrowest inline width these figures get: a 360-pt phone, less the
+ *  page gutters (2 × 16) and the Card's padding + border (2 × 13). */
+export const CS_INLINE_W = 360 - 2 * 16 - 2 * 13;
+/** Label units, so every label renders ≥ 9 pt at CS_INLINE_W (R5-CS-01:
+ *  10 units in the 360 viewBox / 9 in the 340 tester drew 8.4–8.8 pt). */
+export const EXPLODED_LABEL_PT = 11;
 
 /** A horizontal cylinder segment lit from above: body, highlight band, core shadow. */
 function Cyl({ x0, x1, r, fill, stroke, sw = 0.8, hiOp = 0.45 }: { x0: number; x1: number; r: number; fill: string; stroke: string; sw?: number; hiOp?: number }) {
@@ -134,7 +140,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
           <Circle cx={27} cy={CY} r={3.2 * MM} fill="#000" />
           <Path d={`M ${27 - nutR * 0.8} ${CY - nutR * 0.35} L ${27 - nutR * 0.3} ${CY - nutR * 0.85}`} stroke="#ffffff" strokeWidth={0.8} opacity={0.35} />
         </G>
-        <SvgText x={27} y={134} fill={hi('jack') ?? '#7d8590'} fontSize={10} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>JACK</SvgText>
+        <SvgText x={27} y={134} fill={hi('jack') ?? '#7d8590'} fontSize={EXPLODED_LABEL_PT} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>JACK</SvgText>
 
         {/* contacts: tip (ball + neck), insulator, ring, insulator, sleeve */}
         <G onPress={() => onSelect('contacts')}>
@@ -146,7 +152,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
           <Cyl x0={x(SHAFT.ring)} x1={x(SHAFT.ins2)} r={R_SHAFT} fill="#141518" stroke="#000" hiOp={0.12} />
           <Cyl x0={x(SHAFT.ins2)} x1={x(SHAFT.sleeve)} r={R_SHAFT} fill={INK.metal} stroke={hi('contacts') ?? INK.metalDark} sw={sw('contacts')} />
         </G>
-        <SvgText x={(X_TIP + X_BARREL) / 2} y={58} fill={hi('contacts') ?? '#7d8590'} fontSize={10} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>CONTACTS</SvgText>
+        <SvgText x={(X_TIP + X_BARREL) / 2} y={58} fill={hi('contacts') ?? '#7d8590'} fontSize={EXPLODED_LABEL_PT} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>CONTACTS</SvgText>
 
         {/* plug handle: nose cone, barrel with grip grooves */}
         <G onPress={() => onSelect('plug')}>
@@ -156,7 +162,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
             <Line key={f} x1={X_BARREL + (X_BOOT - X_BARREL) * f} y1={CY - R_BARREL + 0.8} x2={X_BARREL + (X_BOOT - X_BARREL) * f} y2={CY + R_BARREL - 0.8} stroke="#15171a" strokeWidth={1.2} />
           ))}
         </G>
-        <SvgText x={(X_BARREL + X_BOOT) / 2} y={104} fill={hi('plug') ?? '#7d8590'} fontSize={10} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>PLUG</SvgText>
+        <SvgText x={(X_BARREL + X_BOOT) / 2} y={104} fill={hi('plug') ?? '#7d8590'} fontSize={EXPLODED_LABEL_PT} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>PLUG</SvgText>
 
         {/* strain-relief boot: ribbed, tapering from Ø10 to the cable */}
         <G onPress={() => onSelect('relief')}>
@@ -168,7 +174,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
           })}
           <Path d={`M ${X_BOOT + 1} ${CY - 5 * MM + 1.6} L ${X_JACKET - 1} ${CY - R_CABLE + 0.9}`} stroke="#ffffff" strokeWidth={0.8} opacity={0.18} />
         </G>
-        <SvgText x={(X_BOOT + X_JACKET) / 2} y={58} fill={hi('relief') ?? '#7d8590'} fontSize={10} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>RELIEF</SvgText>
+        <SvgText x={(X_BOOT + X_JACKET) / 2} y={58} fill={hi('relief') ?? '#7d8590'} fontSize={EXPLODED_LABEL_PT} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>RELIEF</SvgText>
 
         {/* jacket */}
         <G onPress={() => onSelect('jacket')}>
@@ -176,7 +182,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
           {/* the cut end of the jacket, a ring seen a little end-on */}
           <Path d={`M ${X_SHIELD} ${CY - R_CABLE} Q ${X_SHIELD + 1.8} ${CY} ${X_SHIELD} ${CY + R_CABLE}`} fill="none" stroke="#164a9e" strokeWidth={1} />
         </G>
-        <SvgText x={(X_JACKET + X_SHIELD) / 2} y={104} fill={hi('jacket') ?? '#7d8590'} fontSize={10} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>JACKET</SvgText>
+        <SvgText x={(X_JACKET + X_SHIELD) / 2} y={104} fill={hi('jacket') ?? '#7d8590'} fontSize={EXPLODED_LABEL_PT} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>JACKET</SvgText>
 
         {/* braided shield: a woven sleeve, combed open at its end */}
         <G onPress={() => onSelect('shield')}>
@@ -188,7 +194,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
             <Path key={k} d={`M ${X_INSUL - 6} ${CY + k * 1.1} Q ${X_INSUL - 3} ${CY + k * 2.2} ${X_INSUL - 0.5} ${CY + k * 3.4}`} fill="none" stroke={INK.shield} strokeWidth={0.6} />
           ))}
         </G>
-        <SvgText x={(X_SHIELD + X_INSUL) / 2} y={58} fill={hi('shield') ?? '#7d8590'} fontSize={10} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>SHIELD</SvgText>
+        <SvgText x={(X_SHIELD + X_INSUL) / 2} y={58} fill={hi('shield') ?? '#7d8590'} fontSize={EXPLODED_LABEL_PT} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>SHIELD</SvgText>
 
         {/* insulation: the twisted pair (two coloured insulated conductors) */}
         <G onPress={() => onSelect('insulation')}>
@@ -197,7 +203,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
           <Path d={wire(0)} fill="none" stroke={hi('insulation') ?? '#a05f18'} strokeWidth={R_WIRE * 2 + (selected === 'insulation' ? 1.4 : 0.6)} strokeLinecap="round" />
           <Path d={wire(0)} fill="none" stroke={INK.insul} strokeWidth={R_WIRE * 2} strokeLinecap="round" />
         </G>
-        <SvgText x={301} y={104} fill={hi('insulation') ?? '#7d8590'} fontSize={10} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>INSUL.</SvgText>
+        <SvgText x={301} y={104} fill={hi('insulation') ?? '#7d8590'} fontSize={EXPLODED_LABEL_PT} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>INSUL.</SvgText>
 
         {/* conductors: bare stranded copper, the two ends splayed for soldering */}
         <G onPress={() => onSelect('conductors')}>
@@ -219,7 +225,7 @@ export function ExplodedCable({ selected, onSelect, controls }: { selected: stri
             it sat nine units from SHIELD and read "SHIELD CONDUCTORS"). Every
             label carries the house face — without fontFamily the web drew
             them in the browser's serif. */}
-        <SvgText x={357} y={120} fill={hi('conductors') ?? '#7d8590'} fontSize={10} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>CONDUCTORS</SvgText>
+        <SvgText x={357} y={120} fill={hi('conductors') ?? '#7d8590'} fontSize={EXPLODED_LABEL_PT} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>CONDUCTORS</SvgText>
 
         {/* full-height invisible tap zones on top — the real touch targets */}
         {HIT_ZONES.map((z) => (
@@ -432,6 +438,7 @@ export function Lamp({ state, pulse }: { state: 'lit' | 'dark' | 'flicker'; puls
 
 const FACE_W = 340;
 const FACE_H = 72;
+export const TESTER_LABEL_PT = 10.5;
 
 /**
  * TesterFace — the continuity tester's face as ONE drawing: the lamp, the
@@ -439,7 +446,7 @@ const FACE_H = 72;
  * zooms (D35, full-screen pass 2026-09-30). Rendered through
  * ExpandableFigure; the page docks its END A / END B keys and the FLEX ·
  * INSPECT · RESEAT actions under it (`controls`) so the whole bench works
- * in full screen. Text ≥ 9 in a 340-wide viewBox.
+ * in full screen. Labels TESTER_LABEL_PT units: ≥ 9 pt at CS_INLINE_W.
  */
 export function TesterFace({ state, pulse, a, b, word, controls }: {
   state: 'lit' | 'dark' | 'flicker';
@@ -461,7 +468,7 @@ export function TesterFace({ state, pulse, a, b, word, controls }: {
     <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
     <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" viewBox={`0 0 ${FACE_W} ${FACE_H}`} width={w} height={h}>
       <Rect x={0} y={0} width={FACE_W} height={FACE_H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
-      <SvgText x={10} y={14} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1.4}>CONTINUITY TESTER</SvgText>
+      <SvgText x={10} y={14} fontSize={TESTER_LABEL_PT} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1.4}>CONTINUITY TESTER</SvgText>
       {/* the lamp: a panel indicator (art fix 2026-10-16: was a flat disc) —
           a knurled chrome bezel, a domed lens lit from inside, its glow on
           the panel when it conducts */}
@@ -482,15 +489,15 @@ export function TesterFace({ state, pulse, a, b, word, controls }: {
       <Circle cx={40} cy={42} r={16.2} fill="none" stroke="#2a2d33" strokeWidth={1.6} strokeDasharray="1.1 1.1" />
       <Circle cx={40} cy={42} r={14} fill={`url(#tfl${uid})`} stroke="#0c0d0f" strokeWidth={1.5} opacity={state === 'flicker' && pulse ? 0.45 : 1} />
       <Path d="M 31.5 38 A 9.5 9.5 0 0 1 37 32.6" fill="none" stroke="#ffffff" strokeWidth={1.6} opacity={0.55} strokeLinecap="round" />
-      <SvgText x={40} y={68} fontSize={9} fill={wordColor} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={1}>{ready ? word : 'LAMP'}</SvgText>
+      <SvgText x={40} y={68} fontSize={TESTER_LABEL_PT} fill={wordColor} textAnchor="middle" fontFamily={fonts.oswaldMedium} letterSpacing={1}>{ready ? word : 'LAMP'}</SvgText>
       {/* the two probes: END A → lamp → END B */}
-      <SvgText x={80} y={32} fontSize={9} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} letterSpacing={1.4}>END A</SvgText>
+      <SvgText x={80} y={32} fontSize={TESTER_LABEL_PT} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} letterSpacing={1.4}>END A</SvgText>
       <SvgText x={80} y={48} fontSize={12} fill={a ? colors.textPrimary : colors.textMuted} fontFamily={fonts.oswaldMedium}>{a ?? '—'}</SvgText>
       <Line x1={178} y1={42} x2={200} y2={42} stroke={ready ? wordColor : '#3a3b41'} strokeWidth={2} strokeLinecap="round" />
       <Path d="M 196 37 L 202 42 L 196 47" fill="none" stroke={ready ? wordColor : '#3a3b41'} strokeWidth={2} strokeLinecap="round" />
-      <SvgText x={212} y={32} fontSize={9} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} letterSpacing={1.4}>END B</SvgText>
+      <SvgText x={212} y={32} fontSize={TESTER_LABEL_PT} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} letterSpacing={1.4}>END B</SvgText>
       <SvgText x={212} y={48} fontSize={12} fill={b ? colors.textPrimary : colors.textMuted} fontFamily={fonts.oswaldMedium}>{b ?? '—'}</SvgText>
-      <SvgText x={80} y={66} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1}>{ready ? `PATH A→B: ${word}` : 'PICK A + B'}</SvgText>
+      <SvgText x={80} y={66} fontSize={TESTER_LABEL_PT} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1}>{ready ? `PATH A→B: ${word}` : 'PICK A + B'}</SvgText>
     </Svg>
     </View>
     )} />

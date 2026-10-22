@@ -23,9 +23,16 @@ import { View } from 'react-native';
 import Svg, { G, Line, Path, Rect } from 'react-native-svg';
 import { CONNECTOR_INKS } from '../connectorInks';
 import type { TesterCable } from '../data/testerCables';
-import { ART, Label } from './kit';
+import { ART, Label, Leader } from './kit';
 
 const W = 340;
+/** R5-CB-02: a cable with a flex fault gets its own band under the opened
+ *  jacket for the CRACKED JOINT label (the label used to sit on the jacket's
+ *  dashed outline): the band's height, and the label's baseline under the
+ *  jacket's bottom edge. A leader runs up to the crack. */
+export const CRACK_BAND = 14;
+export const CRACK_LABEL_DY = 13;
+const hasFlaky = (m: TraceModel) => m.wires.some((w) => w.flaky);
 
 /* ── balanced vs unbalanced ───────────────────────────────────────────────── */
 
@@ -262,7 +269,8 @@ export function WiringTrace({ cable, width, progress, named = true }: { cable: T
   const n = m.a.length;
   const rowH = network ? 13 : 24;
   const top = 34;
-  const H = top + n * rowH + (network ? 44 : 30);
+  const jacketBottom = top + n * rowH + 4;
+  const H = top + n * rowH + (network ? 44 : 30) + (hasFlaky(m) ? CRACK_BAND : 0);
   const xa = 66; // END A contact
   const xb = W - 66; // END B contact
   const c0 = 92;
@@ -310,7 +318,16 @@ export function WiringTrace({ cable, width, progress, named = true }: { cable: T
             <Rect x={xb - 24} y={y1 - 4} width={9} height={8} fill={ART.bg} />
             <Path d={`M${xb - 24} ${y1 - 0.8} C${xb - 21} ${y1 - 2}, ${xb - 18} ${y1 + 0.4}, ${xb - 15} ${y1 - 0.6}`} stroke={ART.copper} strokeWidth={0.7} fill="none" />
             <Path d={`M${xb - 24} ${y1 + 1} C${xb - 21} ${y1 + 2.4}, ${xb - 18} ${y1 - 0.2}, ${xb - 15} ${y1 + 1.2}`} stroke={ART.copper} strokeWidth={0.6} fill="none" />
-            {named ? <Label x={xb - 20} y={y1 + 16} text="CRACKED JOINT — breaks when flexed" anchor="end" size={10} color={ART.hi} weight="semibold" /> : null}
+            {/* R5-CB-02: the name sits in its own band UNDER the jacket
+                (its baseline used to land on the dashed bottom edge), ending
+                under the crack, with a leader up to it — right of the
+                jacket's end (c1), so the leader never crosses the outline */}
+            {named ? (
+              <G>
+                <Leader x1={xb - 19.5} y1={jacketBottom + CRACK_LABEL_DY - 8} x2={xb - 19.5} y2={y1 + 2.2} color={ART.hi} />
+                <Label x={xb - 15} y={jacketBottom + CRACK_LABEL_DY} text="CRACKED JOINT — breaks when flexed" anchor="end" size={10} color={ART.hi} weight="semibold" />
+              </G>
+            ) : null}
           </G>
         ) : null}
       </G>,
@@ -357,7 +374,7 @@ export function WiringTrace({ cable, width, progress, named = true }: { cable: T
         <Label x={10} y={16} text={`END A · ${endA ?? ''}`} size={10} color={ART.sub} />
         <Label x={W - 10} y={16} text={`END B · ${endB ?? ''}`} anchor="end" size={10} color={ART.sub} />
         {/* the jacket, opened along its length */}
-        <Rect x={c0} y={top - 4} width={c1 - c0} height={n * rowH + 8} rx={10} fill="#111215" stroke="#3a3c42" strokeWidth={1} strokeDasharray="5 3" />
+        <Rect x={c0} y={top - 4} width={c1 - c0} height={jacketBottom - (top - 4)} rx={10} fill="#111215" stroke="#3a3c42" strokeWidth={1} strokeDasharray="5 3" />
         {/* contact blocks at each end */}
         <Rect x={xa - 6} y={top - 2} width={12} height={n * rowH + 4} rx={3} fill="#1f2125" stroke="#3a3c42" />
         <Rect x={xb - 6} y={top - 2} width={12} height={n * rowH + 4} rx={3} fill="#1f2125" stroke="#3a3c42" />
@@ -385,5 +402,5 @@ export function WiringTrace({ cable, width, progress, named = true }: { cable: T
 export function traceAspect(cable: TesterCable): number {
   const m = traceModel(cable);
   const rowH = m.a.length >= 8 ? 13 : 24;
-  return W / (34 + m.a.length * rowH + (m.a.length >= 8 ? 44 : 30));
+  return W / (34 + m.a.length * rowH + (m.a.length >= 8 ? 44 : 30) + (hasFlaky(m) ? CRACK_BAND : 0));
 }

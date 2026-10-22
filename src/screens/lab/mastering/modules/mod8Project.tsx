@@ -149,7 +149,7 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
               </Card>
               <SectionTitle>THE DELIVERY PLAN</SectionTitle>
               <Card>
-                <Point title="Digital distribution first">Confirm the distributor's current file spec and the services' current loudness / true-peak guidance; deliver masters plus the instrumentals, named to the agreed convention, with ISRCs and titles. No dither on the 24-bit deliverables.</Point>
+                <Point title="Digital distribution first">Confirm the distributor's current file spec and the services' current loudness / true-peak guidance; deliver masters plus the instrumentals, named to the agreed convention, with ISRCs and titles. Dither the 24-bit files too: float to 24-bit is still a reduction. Most mastering engineers do, though it matters far less than at 16-bit.</Point>
                 <Point title="CD a month later">Red Book: sample-rate conversion 48 → 44.1 kHz first, dither to 16-bit as the very last step; the plant's accepted master format (often a DDP image — confirm); an ISRC per track and the UPC/EAN; CD-Text if wanted; the approved gaps and order.</Point>
                 <Point title={'Vinyl "maybe"'}>Ask the cutting engineer before promising anything: side lengths, whether a less limited pre-master is preferred, bass centring, and which song sits at the inner groove.</Point>
                 <Point title="Document it">A delivery note with what was sent where, and the measured numbers.</Point>

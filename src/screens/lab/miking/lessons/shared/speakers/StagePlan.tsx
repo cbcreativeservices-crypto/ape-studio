@@ -31,7 +31,7 @@ import { WedgePlan } from '../KitPlan';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, planTurn, unionRect } from '../planFoot.ts';
-import { AMP_INPUT, CAB, CHAIR_ROW, DECK_EDGE_U, DI_CABLE, DI_XLR_TO, diXlr, diXlrEnd, GUITAR_JACK, guitarCordDrawn, inAisle, KIT_AT, LESLIE_TOP, ORGAN, ORGAN_SPACE, PA_AT, PLAN_BOX, PLAYER_SPACE_R, POS, ROOM_DRAWN, planItems, spkCue, spkPathCables, spkFoots, spkItemFootIds, type PlanScene } from './stagePlanModel.ts';
+import { AMP_INPUT, AMP_TO_PLAYER, ampToPlayerFoot, CAB, CHAIR_ROW, DECK_EDGE_U, DI_CABLE, DI_XLR_TO, diXlr, diXlrEnd, GUITAR_JACK, guitarCordDrawn, inAisle, KIT_AT, LESLIE_TOP, ORGAN, ORGAN_SPACE, PA_AT, PLAN_BOX, PLAYER_SPACE_R, POS, ROOM_DRAWN, planItems, spkCue, spkPathCables, spkFoots, spkItemFootIds, type PlanScene } from './stagePlanModel.ts';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
 
@@ -147,7 +147,8 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
   // plan's footprints) — just outside its own object (below, right, left,
   // above), else in free space with a leader back to it. The audience is
   // named in its aisle.
-  const foots = useMemo(() => spkFoots(scene, wedges), [scene, wedges]);
+  // R6 MIK-05: plus the blue amp → player line's band (no word on it).
+  const foots = useMemo(() => [...spkFoots(scene, wedges), ampToPlayerFoot()], [scene, wedges]);
   const footOf = (id: string) => {
     const ids = id === 'drums' ? foots.filter((f) => f.group === 'kit').map((f) => f.id) : spkItemFootIds(id, wedges);
     const fs = foots.filter((f) => ids.includes(f.id));
@@ -335,7 +336,7 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
             {/* Studio: each performer's headphone mix (no wedges in a studio). */}
             {cue ? <CueMixPlan rig={cue} /> : null}
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={30} color={AMBER} /> : null}
-            <Line p1={vec(CAB.box.x1 + 40, 0)} p2={vec(POS.player.u - 300, 0)} color={BLUE} strokeWidth={14} opacity={0.5}>
+            <Line p1={vec(AMP_TO_PLAYER.u0, AMP_TO_PLAYER.v)} p2={vec(AMP_TO_PLAYER.u1, AMP_TO_PLAYER.v)} color={BLUE} strokeWidth={14} opacity={0.5}>
               <DashPathEffect intervals={[60, 40]} />
             </Line>
           </Group>

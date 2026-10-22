@@ -445,11 +445,11 @@ export const RACK_SCENARIOS: RackScenario[] = [
   {
     id: 'rk-parallel', title: 'Rack 1',
     readout: [
-      ['Load per channel', 'three 8 Ω cabinets in parallel'], ['Mode', 'Stereo'], ['Speaker cable', '12 AWG speaker cable'],
+      ['Load per channel', 'three 8 Ω cabinets in parallel'], ['Mode', 'Stereo, amplifier rated to 4 Ω'], ['Speaker cable', '12 AWG speaker cable'],
       ['Ventilation', 'Front and rear clear'], ['Input', '−6 dB below mixer clip'], ['Front panel', 'CLIP dark · PROTECT dark'], ['Power sequence', 'Amps last on, first off'],
     ].map(([label, value]) => ({ label, value })),
     answer: 'load-below',
-    explain: 'Three 8 Ω cabinets in parallel is 8 ÷ 3 ≈ 2.7 Ω — below a typical 4 Ω stereo minimum. Nothing is lit yet because the show is quiet; the first loud passage will pull current the amplifier is not rated for.',
+    explain: 'Three 8 Ω cabinets in parallel is 8 ÷ 3 ≈ 2.7 Ω — below the 4 Ω this amplifier is rated to in stereo. Nothing is lit yet because the show is quiet; the first loud passage will pull current the amplifier is not rated for.',
   },
   {
     id: 'rk-bridge', title: 'Rack 2',

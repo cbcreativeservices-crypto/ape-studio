@@ -38,6 +38,12 @@ const X0 = 29.7 * MM; // first column center from the panel's left edge
 const BREAK_X = X0 + 7.5 * STEP; // the torn edge, half a pitch past pair 8
 const JACK_R = 5.5 * MM;
 
+/** A plugged jack's cord at (cx, y), on `side` of the column (R5-PB-02). */
+export const BAY_CORD_DX = 14;
+export const BAY_CORD_SETTLE_DY = 16;
+export const bayCordDrop = (cx: number, y: number, side: number) =>
+  `M ${cx + side} ${y + 3} C ${cx + 5 * side} ${y + 10}, ${cx + BAY_CORD_DX * side} ${y + 9}, ${cx + BAY_CORD_DX * side} ${y + BAY_CORD_SETTLE_DY} L ${cx + BAY_CORD_DX * side} ${PY + PANEL_H + 4}`;
+
 /** The panel outline: square left end (the rack ear), torn right edge. */
 function breakPanelPath(): string {
   const bottom = PY + PANEL_H;
@@ -124,8 +130,14 @@ export function StudioBayDrawing({ pairs, selected, onSelect, showNormals, plugs
                             at cx ± 14 the 2.6-wide cord (inner edge 12.7)
                             clears the jack below (JACK_R 10.7 + stroke → 11.7)
                             and stays inside the selection outline (15.7) —
-                            at cx ± 12 it grazed the bushing (R4-PB-01) */}
-                        <Path d={`M ${cx + side} ${y + 3} C ${cx + 5 * side} ${y + 13}, ${cx + 14 * side} ${y + 18}, ${cx + 14 * side} ${PY + PANEL_H + 4}`} stroke={PB.cord} strokeWidth={2.6} fill="none" strokeLinecap="round" />
+                            at cx ± 12 it grazed the bushing (R4-PB-01).
+                            R5-PB-02: the curve now LANDS on cx ± 14 at
+                            y + BAY_CORD_SETTLE_DY, above the jack below
+                            (33.2 lower), and drops straight — the old curve
+                            only reached cx ± 14 at the panel's bottom edge
+                            and passed 11.83 from the lower jack's centre
+                            (13.03 needed) */}
+                        <Path d={bayCordDrop(cx, y, side)} stroke={PB.cord} strokeWidth={2.6} fill="none" strokeLinecap="round" />
                         <Circle cx={cx} cy={y} r={4.6 * MM} fill="#1d1e22" stroke={PB.cord} strokeWidth={1.6} />
                         <Circle cx={cx} cy={y} r={1.4 * MM} fill="#0c0c0e" stroke="#45464d" strokeWidth={0.6} />
                       </>

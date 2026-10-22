@@ -571,7 +571,7 @@ const BITDEPTH: Workspace = {
     'as the physics limit, not a spec you will measure.',
   glossary: ['Bit Depth', 'Dynamic Range', 'Quantization', 'Dither', 'Signal-to-Noise Ratio'],
   fields: [
-    { key: 'bits', name: 'BIT DEPTH', quantity: 'number', nonNegative: true, placeholder: '24', help: 'Bits per sample — common PCM depths are 16, 24 and 32.', warn: { test: (x) => x <= 0 || x > 64, msg: 'Bit depth should be a positive number of bits (common values: 16, 24, 32).' } },
+    { key: 'bits', name: 'BIT DEPTH', quantity: 'number', nonNegative: true, integer: true, placeholder: '24', help: 'Bits per sample — common PCM depths are 16, 24 and 32.', warn: { test: (x) => x <= 0 || x > 64, msg: 'Bit depth should be a positive number of bits (common values: 16, 24, 32).' } },
     { key: 'dr', name: 'TARGET DYNAMIC RANGE', quantity: 'db', nonNegative: true, placeholder: '96', help: 'A dynamic range in dB you want to find the required bit depth for.', warn: { test: (x) => x <= 0, msg: 'Dynamic range must be positive.' } },
   ],
   functions: [

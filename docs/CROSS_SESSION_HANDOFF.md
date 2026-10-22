@@ -634,6 +634,36 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 22:38 · ccode · f0641366
+changed: Round 6 (owner go): cable labs — bi-amp HF damage conditional, labels >= 9 pt, right connector ends, patch cords clear of jacks, cutaway S label, true-scale outlet, honest route length, catwalk feed lands on the box
+affects other side: nothing (client lab text/art only)
+needs: nothing
+
+
+### 2026-10-21 22:36 · ccode · 7187e7f5
+changed: Round 6 (owner go): Rhodes cord from a jack on the keys; DI THRU and labels clear at every size; bass-head DI apart from the speaker cable; stage-plan label clashes; Mixing LOOP lane and RHYTHM BUS tape
+affects other side: nothing (client lab text/art only)
+needs: nothing
+
+
+### 2026-10-21 22:29 · ccode · 31cab430
+changed: Round 6 (owner go): DJ passive amp gets FROM PROCESSOR R into CH B; in-ear hint names mono Aux 8; AUX 9 / AUX 10 plates in order
+affects other side: nothing (client lab text/art only)
+needs: nothing
+
+
+### 2026-10-21 22:20 · ccode · fbc393d9
+changed: Round 6 (owner go): Digital undithered SNR, Calculator divider example, amp 4-ohm rating, 24-bit dither, -1/-2 dBTP, plus 13 wording fixes
+affects other side: nothing (client lab text/art only)
+needs: nothing
+
+
+### 2026-10-21 21:58 · ccode · fc416dec
+changed: Owner approvals: 6 judgment calls and new wording approved; phone testing after store approvals
+affects other side: nothing (docs only)
+needs: nothing
+
+
 ### 2026-10-21 15:07 · ccode · 57c60a2f
 changed: Merge dj-lab (stereo in-ears: two cables per pair) into next-store-build
 affects other side: nothing (client merge)

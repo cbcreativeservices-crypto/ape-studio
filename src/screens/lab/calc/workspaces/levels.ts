@@ -58,8 +58,8 @@ const WS_LEVEL: Workspace = {
     'dBFS CANNOT be converted to dBu or dBV here: the mapping depends entirely on the ' +
     'converter’s alignment reference (e.g. −18 dBFS = +4 dBu is one common calibration, not a ' +
     'law), so this tool deliberately refuses to pretend otherwise. Likewise dBm is POWER ' +
-    'referenced (1 mW) and needs the load impedance to become a voltage. Both belong to the ' +
-    'Tier-2 "Analog Alignment" workspace.',
+    'referenced (1 mW) and needs the load impedance to become a voltage, so this tool does not ' +
+    'convert it either.',
   glossary: ['Decibel', 'dBu', 'dBV', 'dBFS', 'Gain', 'Voltage'],
   fields: [
     { key: 'dbu', name: 'LEVEL (dBu)', quantity: 'db', signed: true, placeholder: '4', help: 'Level referenced to 0.7746 V RMS (√0.6 V, often rounded to 0.775 V) — the professional line-level scale.' },
@@ -558,8 +558,9 @@ const WS_ELECTRONICS: Workspace = {
     'loads a pickup, why long cable + high output impedance dulls the top end, and what the ' +
     '"−3 dB point" on a spec sheet physically is.',
   example:
-    'A 10 kΩ output feeding a divider of R1 = 10 kΩ over R2 = 10 kΩ halves the voltage ' +
-    '(−6 dB). A 1 µF coupling cap into that 10 kΩ input makes an RC high-pass with ' +
+    'A low-impedance source (an output of a few ohms) feeding a divider of R1 = 10 kΩ over ' +
+    'R2 = 10 kΩ halves the voltage (−6 dB). A 1 µF coupling cap into a stage with a true ' +
+    '10 kΩ input makes an RC high-pass with ' +
     'fc = 1/(2π × 10000 × 1×10⁻⁶) ≈ 15.9 Hz — safely below the audio band, which is exactly ' +
     'why 1 µF is such a common coupling value.',
   mistakes: [

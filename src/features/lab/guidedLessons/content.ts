@@ -437,7 +437,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'display', name: 'What the display shows', definition: "A goniometer plots left against right and then ROTATES the picture 45°, so mono stands upright instead of lying on the diagonal. The correlation reads +1 (mono-safe) down to −1 (cancels in mono). A polarity flip or inter-channel delay shows up here as tilt or spread." },
       { key: 'invert_polarity', name: 'Polarity (invert)', definition: 'Flips the whole waveform upside-down — 180° at EVERY frequency. Against its original it cancels completely in mono.' },
       { key: 'delay_one_channel', name: 'Delay one channel', definition: 'Delays one channel by a few ms — a frequency-dependent PHASE shift (not a simple flip). In mono this combs, and no polarity flip can fix it.', range: '0 – 10 ms' },
-      { key: 'mono_fold', name: 'Mono-fold', definition: 'Sums L+R to mono — the acid test. Anything out of phase cancels or combs here, which is exactly what a mono listener hears.' },
+      { key: 'mono_fold', name: 'Mono-fold', definition: 'Sums L+R to mono — the acid test. Anything with inverted polarity cancels and anything delayed combs here, which is exactly what a mono listener hears.' },
     ],
     commonMistakes: [
       'Confusing polarity with phase — polarity flips the whole waveform (the "Ø" button); phase is a frequency-dependent shift. Not interchangeable.',
@@ -613,7 +613,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     tier: 'T3',
     tagline: 'Effects interact — order matters.',
     whatItIs:
-      'The capstone: a full processing chain — Source → EQ → Compressor → Gate → Distortion → ' +
+      'The capstone: a full processing chain in this rack’s fixed order — Source → EQ → Compressor → Gate → Distortion → ' +
       'Modulation → Delay → Reverb → Stereo → Limiter → Output. Single labs teach each effect ' +
       'alone; the chain teaches how they INTERACT: what each module feeds the next changes what ' +
       'the next one does.',
@@ -807,7 +807,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'sequencer', name: 'Step sequencer', definition: '8 steps of semitone offsets; each active step retunes the VCO and retriggers the envelope. A rest step releases. Rate sets the tempo — the melody is a control signal too.' },
       { key: 'vca', name: 'VCA (amplifier)', definition: 'The output amplifier — it sets the voice’s LOUDNESS over time. The envelope (ADSR) always drives it, so the VCA is what makes a note fade in and out.' },
       { key: 'out', name: 'Output', definition: 'The end of the voice: VCO → VCF → VCA → OUT. A gentle saturation stage here adds analog-style warmth and keeps peaks in check before the sound leaves.' },
-      { key: 'patch_drone', name: 'Patch · Raw Drone', definition: 'The starting point: VCO → wide-open VCF → VCA, nothing modulating anything. An unshaped, steady tone — the blank canvas every other patch carves from by adding a routing.' },
+      { key: 'patch_drone', name: 'Patch · Raw Drone', definition: 'The starting point: VCO → wide-open VCF → VCA, nothing modulating anything except the envelope on the VCA. An unshaped, steady tone — the blank canvas every other patch carves from by adding a routing.' },
       { key: 'patch_bass', name: 'Patch · Acid Bass', definition: 'Envelope → cutoff with a fast decay, driven by the sequencer: every note snaps open bright and slams shut. The signature “squelch” is the FILTER envelope, not the oscillator — proof that timbre is shaped after the VCO.' },
       { key: 'patch_wobble', name: 'Patch · Wobble', definition: 'LFO → cutoff: the filter sweeps rhythmically while the pitch holds still — movement without melody. The classic dubstep wobble is just one LFO on one destination.' },
       { key: 'patch_vibrato', name: 'Patch · Vibrato Lead', definition: 'LFO → pitch at low depth: a gentle, singing wobble in the note itself. It’s the SAME LFO as the wobble patch, only re-routed to pitch instead of cutoff — one modulator, a different destination.' },
@@ -1152,7 +1152,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'peak_meter', name: 'Peak meter', definition: 'Tracks the instantaneous maximum, sample by sample — the "will it clip?" meter. It says nothing about loudness: a snare crack and a sine at the same peak read identically here and sound wildly different.' },
       { key: 'peak_hold', name: 'Peak hold & OVER lamp', definition: 'The floating bar that lingers at the highest recent peak, and the latch that trips at full scale. Hold lets you mix without staring; the OVER lamp is the tattletale that something already hit the ceiling.' },
       { key: 'vu_meter', name: 'The classic VU', definition: 'A mechanical needle with ~300 ms of inertia — it physically CANNOT reach a transient before it\'s over. That "flaw" is the feature: it ignores peaks and reads average level, which tracks perceived loudness. 0 VU = nominal operating level, not clipping.' },
-      { key: 'ballistics', name: 'Meter ballistics', definition: 'How fast a meter attacks and releases. Peak meters: microseconds up, slow fall for readability. VU: ~300 ms both ways. Loudness meters: defined windows (400 ms / 3 s). Same signal, three different stories — by design.' },
+      { key: 'ballistics', name: 'Meter ballistics', definition: 'How fast a meter attacks and releases. Sample-peak meters: microseconds up; quasi-peak meters (PPM) integrate over about 5–10 ms; both fall slowly for readability. VU: ~300 ms both ways. Loudness meters: defined windows (400 ms / 3 s). Same signal, three different stories — by design.' },
       { key: 'rms_vs_peak', name: 'Peak vs RMS (crest factor)', definition: 'A snare peaks at −6 dBFS with an RMS near −30: crest factor ~24 dB. A sustained organ peaks at −6 with RMS −9: crest 3 dB. Same peak, ~20 dB apart in loudness — the single most important metering lesson.' },
       { key: 'lufs', name: 'LUFS', definition: 'Loudness Units relative to Full Scale — a perception-weighted average (K-weighted) that broadcast and streaming platforms use to match program loudness. Unlike dBFS, two programs at the same LUFS should FEEL equally loud.' },
       { key: 'integrated', name: 'Integrated loudness', definition: 'One number for the whole program — gated so silence doesn\'t drag it down. Streaming targets (e.g. −14 LUFS) and broadcast specs (−23/−24) are integrated values.' },

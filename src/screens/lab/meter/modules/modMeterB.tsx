@@ -258,7 +258,7 @@ const CHECK_HUM_VS_FEEDBACK: CheckSpec = {
 
 const SPECTRUM_MISTAKES = [
   'Calling a single towering spike "hum" — hum is a FAMILY of spikes at exact mains multiples; feedback is ONE spike, usually growing.',
-  'Expecting a good mix to read FLAT — program material naturally tilts down toward pink (≈ −3 dB/oct); flat-to-the-right energy sounds harsh.',
+  'Expecting a good mix to read FLAT — program material naturally tilts down toward pink (≈ −3 dB/oct on this FFT display); flat-to-the-right energy sounds harsh.',
   'Chasing every wiggle — an analyzer dances constantly; read the SHAPE (where the energy centers, smooth vs spiky), not individual bins.',
   'Forgetting the frequency axis is LOGARITHMIC — each equal step is an octave, not a fixed number of Hz.',
 ];

@@ -158,6 +158,15 @@ const AMP_IN_A: [number, number][] = [
   [SYS_AMP_AT.x + AMP_REAR.inA.x, SYS_AMP_AT.y + AMP_REAR.inA.y],
   [SYS_AMP_AT.x + AMP_REAR.inA.x, S_FRAME.y - AMP_LEAD_RUN_OFF],
 ];
+/** R5-DJ-01: the processor's right-hand feed into CH B INPUT — a second
+ *  balanced XLR (its male plug seated in the amp's female socket), rising
+ *  straight up in its own lane between CH A's speaker plug and CH A's XLR,
+ *  left of the INPUT (BAL) legend (stereo amp: one input per channel — the
+ *  processor's L into A, its R into B). */
+export const AMP_IN_B: [number, number][] = [
+  [SYS_AMP_AT.x + AMP_REAR.inB.x, SYS_AMP_AT.y + AMP_REAR.inB.y],
+  [SYS_AMP_AT.x + AMP_REAR.inB.x, S_FRAME.y - AMP_LEAD_RUN_OFF],
+];
 /** R4-DJ-02: the mains lead's lane — just under the amp's chassis (its
  *  bottom edge at y + 88). */
 export const AMP_MAINS_LANE_Y = SYS_AMP_AT.y + AMP_H + 8;
@@ -209,6 +218,7 @@ export function sysObstacles(tops: 'POWERED' | 'PASSIVE'): Box[] | undefined {
   return [
     { x: Math.min(...LEAD.map((p) => p[0])) - NL4.plugD / 2, y: LEAD[0][1] - NL4.plugD / 2, w: NL4.plugD + 20, h: LEAD[LEAD.length - 1][1] - LEAD[0][1] + NL4.plugD },
     up(AMP_IN_A, 12),
+    up(AMP_IN_B, 12),
     up(AMP_OUT_B, NL4.plugD / 2),
     // the mains lead: its plug and drop, then its run out to the left
     { x: ac[0] - 15, y: ac[1] - 11, w: 30, h: AMP_MAINS_LANE_Y + 4 - (ac[1] - 11) },
@@ -235,7 +245,8 @@ export const sysObstaclesAt = (s: number, k: number): Box[] => {
  * the amp's CH A INPUT on XLR from above. R4-DJ-02: the amp is powered — its
  * mains lead (IEC C13 seated in AC IN) drops and leaves the frame to the
  * left, under the chassis, in its own lane — and CH B drives the other top:
- * its Speakon lead rises out of the frame, called out "TO TOP R".
+ * its Speakon lead rises out of the frame, called out "TO TOP R". R5-DJ-01:
+ * CH B is fed too — the processor's R line on its own XLR into CH B INPUT.
  */
 export function SystemView({ booth, live }: { booth: Booth; live: boolean }) {
   const v = evOf(booth).venue;
@@ -246,6 +257,7 @@ export function SystemView({ booth, live }: { booth: Booth; live: boolean }) {
           <PowerAmpRear x={SYS_AMP_AT.x} y={SYS_AMP_AT.y} />
           <CableRun r={{ id: 'ampAc', kind: 'iec', colour: '#16171a', pts: AMP_AC, plugged: true, live: true, label: 'MAINS', farKind: 'mains' }} />
           <CableRun r={{ id: 'ampInA', kind: 'xlr', colour: '#3d4046', pts: AMP_IN_A, plugged: true, live, label: 'FROM PROCESSOR' }} />
+          <CableRun r={{ id: 'ampInB', kind: 'xlr', colour: '#3d4046', pts: AMP_IN_B, plugged: true, live, label: 'FROM PROCESSOR R' }} />
           <SpeakerLead pts={AMP_OUT_B} live={live} />
           <PassiveTopRear x={SYS_TOP_AT.x} y={SYS_TOP_AT.y} />
           <SpeakerLead pts={LEAD} live={live} />
@@ -466,7 +478,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
               motion={motion}
               fit={{ x: 0, y: h * 0.5, w, h: h * 0.5 }}
               aspect={false}
-              a11y={`${LOOK.SYSTEM}${v.tops === 'PASSIVE' ? ' The passive top and its power amp are seen from the back: the processor’s line comes into the amp’s CH A input on XLR, and a Speakon speaker cable runs from the amp’s CH A output to the top’s INPUT. The amp’s CH B output feeds the other top, TOP R, on its own Speakon lead out of view, and the amp’s mains lead is plugged into its AC IN. The top has no amplifier and no power light of its own.' : ''} The crossover is ${v.xover ? 'on' : 'off'}; at 100 hertz the sum is ${at100.toFixed(1)} dB.`}
+              a11y={`${LOOK.SYSTEM}${v.tops === 'PASSIVE' ? ' The passive top and its power amp are seen from the back: the processor’s line comes into the amp’s CH A input on XLR, and a Speakon speaker cable runs from the amp’s CH A output to the top’s INPUT. The processor’s right-hand line comes into the amp’s CH B input on a second XLR. The amp’s CH B output feeds the other top, TOP R, on its own Speakon lead out of view, and the amp’s mains lead is plugged into its AC IN. The top has no amplifier and no power light of its own.' : ''} The crossover is ${v.xover ? 'on' : 'off'}; at 100 hertz the sum is ${at100.toFixed(1)} dB.`}
               obstacles={sysObstacles(v.tops)}
               obstaclesAt={v.tops === 'PASSIVE' ? sysObstaclesAt : undefined}
               soft={v.tops === 'PASSIVE' ? SYS_SOFT : undefined}

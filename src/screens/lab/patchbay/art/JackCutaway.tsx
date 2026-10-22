@@ -81,6 +81,22 @@ function leafTipY(insertion: number): number {
   return 104 - (lift * (292 - CONTACT_X)) / (292 - FINGER_X);
 }
 
+/** The front panel in section (x 38–44, cut above y 80 and below y 124) and
+ *  the jack's bushing through it (x 42–62, y 80–124); the jack body starts
+ *  at x 62. */
+export const PANEL_X0 = 38;
+export const BUSHING = { x0: 42, x1: 62, y0: 80, y1: 124 } as const;
+/** Where the "S" (sleeve) label sits at an insertion (R5-PB-03): under the
+ *  sleeve, left of the panel, while it clears it; past that (≈ 76 % in) in
+ *  the pocket below the bushing — x 53, between the panel (44) and the jack
+ *  body (62) — with its leader rising to the sleeve (x 53 is on the sleeve
+ *  from ≈ 71 % to 100 %). `leaderTo` is the leader's lower end. */
+export function sLabelAt(insertion: number): { x: number; y: number; leaderTo: number; pocket: boolean } {
+  const out = Math.max(24, tipXAt(insertion) - 85);
+  if (out + 3.5 < PANEL_X0 - 0.5) return { x: out, y: 128, leaderTo: 120, pocket: false };
+  return { x: 53, y: 142, leaderTo: 133, pocket: true };
+}
+
 /** The cutaway's aspect (viewBox W ÷ H) — the rack glass fits it with StageFit. */
 export const JACK_ASPECT = W / H;
 
@@ -231,8 +247,19 @@ export function JackCutawayDrawing({ insertion, reduceMotion, showConductors, w,
                 <Line x1={tipX - 9} y1={116} x2={tipX - 9} y2={120} stroke={PB.cord} strokeWidth={1} />
                 <SvgText x={tipX - 41} y={128} fontSize={9} fill="#c8a24a" textAnchor="middle" fontFamily={fonts.oswaldMedium}>R</SvgText>
                 <Line x1={tipX - 41} y1={116} x2={tipX - 41} y2={120} stroke="#c8a24a" strokeWidth={1} />
-                <SvgText x={Math.max(24, tipX - 85)} y={128} fontSize={9} fill="#9a9ca4" textAnchor="middle" fontFamily={fonts.oswaldMedium}>S</SvgText>
-                <Line x1={Math.max(24, tipX - 85)} y1={116} x2={Math.max(24, tipX - 85)} y2={120} stroke="#9a9ca4" strokeWidth={1} />
+                {/* S (R5-PB-03): on the sleeve left of the panel while it
+                    is out there; once that spot would touch the panel the
+                    label drops into the clear pocket UNDER the bushing,
+                    right of the panel, with a leader up to the sleeve */}
+                {(() => {
+                  const s = sLabelAt(insertion);
+                  return (
+                    <G>
+                      <SvgText x={s.x} y={s.y} fontSize={9} fill="#9a9ca4" textAnchor="middle" fontFamily={fonts.oswaldMedium}>S</SvgText>
+                      <Line x1={s.x} y1={116} x2={s.x} y2={s.leaderTo} stroke="#9a9ca4" strokeWidth={1} />
+                    </G>
+                  );
+                })()}
               </G>
             ) : null}
           <Path d={`M ${tipX - 110 - 140} 84.5 L ${tipX - 114} 84.5 Q ${tipX - 110} 84.5 ${tipX - 110} 89 L ${tipX - 110} 117 Q ${tipX - 110} 121.5 ${tipX - 114} 121.5 L ${tipX - 110 - 140} 121.5 Z`} fill="#1d1e22" stroke={PB.cord} strokeWidth={1.2} />

@@ -72,6 +72,14 @@ const FACE_GAP = 6;
  *  device panel end at PLUG_X + 30, clear of the labels at W − 87. */
 const PLUG_X = W - 130;
 export const PATCH_PAIR_ASPECT = W / (FACE_H + FACE_GAP + H);
+/** The page figure's padding (styles.wrap) and the narrowest inline drawing
+ *  width it gives: a 360-pt phone less the page gutters (2 × 16), this
+ *  card's padding and border (R5-PB-04). */
+export const PAIR_WRAP_PAD = 8;
+export const PAIR_INLINE_W = 360 - 2 * 16 - 2 * (PAIR_WRAP_PAD + 1);
+/** Small-label units: ≥ 9 pt at PAIR_INLINE_W in the 340 viewBox (9 units
+ *  drew 8.5–8.9 pt on a phone — R5-PB-04). */
+export const PAIR_LABEL_PT = 10;
 export const PATCH_PAIR_ASPECT_BARE = W / H;
 
 /** One flowing/idle line along an SVG path. Marching dashes while `flowing`
@@ -129,7 +137,7 @@ function DeviceBox({ y, label, sub, accent, end }: { y: number; label: string; s
       <SvgText x={144} y={y + 13} fontSize={11} fill={colors.textPrimary} fontFamily={fonts.oswaldMedium}>
         {trim(label)}
       </SvgText>
-      <SvgText x={144} y={y + 25} fontSize={9} fill={accent} fontFamily={fonts.oswaldMedium} letterSpacing={1}>
+      <SvgText x={144} y={y + 25} fontSize={PAIR_LABEL_PT} fill={accent} fontFamily={fonts.oswaldMedium} letterSpacing={1}>
         {sub}
       </SvgText>
     </G>
@@ -152,7 +160,7 @@ function JackGlyph({ y, plugged, label }: { y: number; plugged: boolean; label: 
           <Circle cx={CX} cy={y} r={3} fill="#0c0c0e" stroke="#45464d" strokeWidth={0.7} />
         </G>
       ) : null}
-      <SvgText x={CX - 22} y={y + 3.5} fontSize={9} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={1}>
+      <SvgText x={CX - 22} y={y + 3.5} fontSize={PAIR_LABEL_PT} fill={colors.textMuted} textAnchor="end" fontFamily={fonts.oswaldMedium} letterSpacing={1}>
         {label}
       </SvgText>
     </G>
@@ -163,10 +171,16 @@ function JackGlyph({ y, plugged, label }: { y: number; plugged: boolean; label: 
  *  strip's bottom edge, on `side` (+1 right, −1 left) of the column. At
  *  cx ± 11 the 2.4-wide cord (inner edge 9.8) clears the jack below it
  *  (bushing 5.5 mm = 7.67 + its 2-unit plugged stroke → 8.67); at cx ± 9 it
- *  grazed that bushing (R4-PB-01). */
+ *  grazed that bushing (R4-PB-01). R5-PB-01: the old single curve only
+ *  REACHED cx ± 11 at the strip's bottom edge, so beside the jack below it
+ *  still ran 9.17 from that jack's centre (9.87 needed: 7.67 + 1 stroke +
+ *  1.2 half-cord). The curve now lands on cx ± 11 at cy + CORD_SETTLE_DY —
+ *  above the jack below's top (its centre is 23.7 lower) — and drops
+ *  straight from there. */
 export const CORD_DROP_DX = 11;
+export const CORD_SETTLE_DY = 12;
 export const cordDrop = (cx: number, cy: number, side: 1 | -1) =>
-  `M ${cx + side} ${cy + 2} C ${cx + 4 * side} ${cy + 10}, ${cx + CORD_DROP_DX * side} ${cy + 14}, ${cx + CORD_DROP_DX * side} ${FACE_H}`;
+  `M ${cx + side} ${cy + 2} C ${cx + 4 * side} ${cy + 8}, ${cx + CORD_DROP_DX * side} ${cy + 7}, ${cx + CORD_DROP_DX * side} ${cy + CORD_SETTLE_DY} L ${cx + CORD_DROP_DX * side} ${FACE_H}`;
 /** The featured column's outline half-width: wide enough that the cord at
  *  cx + 11 runs inside it, clear of its stroke (R4-PB-01). */
 export const FEATURED_HALF_W = 14;
@@ -249,9 +263,9 @@ export function PairFaceplate({ topPlugged, bottomPlugged, w }: { topPlugged: bo
       ))}
       {jack(CX, ROW_TOP, true, topPlugged)}
       {jack(CX, ROW_BOT, true, bottomPlugged, -1)}
-      <SvgText x={RIGHT + 10} y={FACE_H - 4} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={0.5}>FRONT PANEL (SLICE)</SvgText>
-      <SvgText x={RIGHT + 10} y={ROW_TOP + 3} fontSize={9} fill={PB.source} fontFamily={fonts.oswaldMedium} letterSpacing={1}>TOP · SOURCES</SvgText>
-      <SvgText x={RIGHT + 10} y={ROW_BOT + 3} fontSize={9} fill={PB.dest} fontFamily={fonts.oswaldMedium} letterSpacing={1}>BTM · DESTINATIONS</SvgText>
+      <SvgText x={RIGHT + 10} y={FACE_H - 4} fontSize={PAIR_LABEL_PT} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={0.5}>FRONT PANEL (SLICE)</SvgText>
+      <SvgText x={RIGHT + 10} y={ROW_TOP + 3} fontSize={PAIR_LABEL_PT} fill={PB.source} fontFamily={fonts.oswaldMedium} letterSpacing={1}>TOP · SOURCES</SvgText>
+      <SvgText x={RIGHT + 10} y={ROW_BOT + 3} fontSize={PAIR_LABEL_PT} fill={PB.dest} fontFamily={fonts.oswaldMedium} letterSpacing={1}>BTM · DESTINATIONS</SvgText>
     </Svg>
   );
 }
@@ -453,13 +467,13 @@ export function PatchPairDrawing({
           {/* The internal normal zone between the jacks */}
           {state.config === 'thru' ? (
             <G>
-              <SvgText x={CX + 16} y={midY - 2} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1}>NO INTERNAL</SvgText>
-              <SvgText x={CX + 16} y={midY + 10} fontSize={9} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1}>CONNECTION</SvgText>
+              <SvgText x={CX + 16} y={midY - 2} fontSize={PAIR_LABEL_PT} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1}>NO INTERNAL</SvgText>
+              <SvgText x={CX + 16} y={midY + 10} fontSize={PAIR_LABEL_PT} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1}>CONNECTION</SvgText>
             </G>
           ) : flow.normalActive ? (
             <G>
               <FlowPath d={`M ${CX} ${TOP_Y + 11} L ${CX} ${BOT_Y - 11}`} flowing={sourceLive} phase={phase} reduceMotion={reduceMotion} />
-              <SvgText x={CX + 16} y={midY + 3} fontSize={9} fill={sourceLive ? PB.flow : colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1}>NORMAL</SvgText>
+              <SvgText x={CX + 16} y={midY + 3} fontSize={PAIR_LABEL_PT} fill={sourceLive ? PB.flow : colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={1}>NORMAL</SvgText>
             </G>
           ) : (
             <G>
@@ -468,7 +482,7 @@ export function PatchPairDrawing({
               <Line x1={CX} y1={midY + 12} x2={CX} y2={BOT_Y - 11} stroke={PB.idle} strokeWidth={2} />
               <Line x1={CX - 7} y1={midY - 7} x2={CX + 7} y2={midY + 7} stroke={breakColor} strokeWidth={2.6} strokeLinecap="round" />
               <Line x1={CX - 7} y1={midY + 7} x2={CX + 7} y2={midY - 7} stroke={breakColor} strokeWidth={2.6} strokeLinecap="round" />
-              <SvgText x={CX + 16} y={midY + 3} fontSize={9} fill={breakColor} fontFamily={fonts.oswaldMedium} letterSpacing={1}>NORMAL BROKEN</SvgText>
+              <SvgText x={CX + 16} y={midY + 3} fontSize={PAIR_LABEL_PT} fill={breakColor} fontFamily={fonts.oswaldMedium} letterSpacing={1}>NORMAL BROKEN</SvgText>
             </G>
           )}
 
@@ -497,8 +511,8 @@ export function PatchPairDrawing({
               />
               {/* the cord's far plug, seated in what it feeds (named beside it) */}
               <SeatedPlug x={PLUG_X} y={TOP_Y - 28} />
-              <SvgText x={W - 87} y={TOP_Y - 31} fontSize={9} fill={PB.cord} fontFamily={fonts.oswaldMedium}>PATCH CORD →</SvgText>
-              <SvgText x={W - 87} y={TOP_Y - 20} fontSize={9} fill={colors.textSecondary} fontFamily={fonts.oswaldMedium}>{trim(topPatchLabel, 18)}</SvgText>
+              <SvgText x={W - 87} y={TOP_Y - 31} fontSize={PAIR_LABEL_PT} fill={PB.cord} fontFamily={fonts.oswaldMedium}>PATCH CORD →</SvgText>
+              <SvgText x={W - 87} y={TOP_Y - 20} fontSize={PAIR_LABEL_PT} fill={colors.textSecondary} fontFamily={fonts.oswaldMedium}>{trim(topPatchLabel, 18)}</SvgText>
             </G>
           ) : null}
 
@@ -507,8 +521,8 @@ export function PatchPairDrawing({
             <G>
               {/* the cord's far plug, seated in the alternate source (named beside it) */}
               <SeatedPlug x={PLUG_X} y={BOT_Y + 14} />
-              <SvgText x={W - 87} y={BOT_Y + 11} fontSize={9} fill={colors.textSecondary} fontFamily={fonts.oswaldMedium}>{trim(bottomPatchLabel, 18)}</SvgText>
-              <SvgText x={W - 87} y={BOT_Y + 22} fontSize={9} fill={PB.cord} fontFamily={fonts.oswaldMedium}>← PATCH CORD</SvgText>
+              <SvgText x={W - 87} y={BOT_Y + 11} fontSize={PAIR_LABEL_PT} fill={colors.textSecondary} fontFamily={fonts.oswaldMedium}>{trim(bottomPatchLabel, 18)}</SvgText>
+              <SvgText x={W - 87} y={BOT_Y + 22} fontSize={PAIR_LABEL_PT} fill={PB.cord} fontFamily={fonts.oswaldMedium}>← PATCH CORD</SvgText>
               <FlowPath
                 d={`M ${PLUG_X} ${BOT_Y + 14} C ${PLUG_X - 32} ${BOT_Y + 16}, ${CX + 50} ${BOT_Y + 6}, ${CX + 11} ${BOT_Y}`}
                 flowing={flow.bottomFeedsDestination}
@@ -609,7 +623,7 @@ export function PatchPairView({
 }
 
 const styles = StyleSheet.create({
-  wrap: { width: '100%', gap: 6, borderRadius: 12, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#0d0d10', padding: 10 },
+  wrap: { width: '100%', gap: 6, borderRadius: 12, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#0d0d10', padding: PAIR_WRAP_PAD },
   /** The tap band must scale with the art. `top` is a percentage of a
    *  width-scaled container (the Svg carries `aspectRatio: W/H`), so a FIXED
    *  52 pt height drifted off the jack centre as the render got wider — past

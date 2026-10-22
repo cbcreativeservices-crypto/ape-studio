@@ -474,8 +474,14 @@ monitors (±1.25, 1.3) aimed at the DJ; floor y 3.2 … 11, centre (0, 7)).
   running beside no audio lead. The speaker lead's tag is two lines
   ("SPEAKER CABLE" / "NL4", 9.5 pt) LEFT of the top, tied to the lead by a
   hairline ending in a dot on the lead, clear of the sub, the top, the amp
-  and the mains at 360×290, 390×330 and 820×600 (wiringFix_r6_dj). Rule
-  book L3, L4, R1, R2, R8.
+  and the mains at 360×290, 390×330 and 820×600 (wiringFix_r6_dj).
+  R5-DJ-01 (2026-10-21): CH B's INPUT is fed too — the processor's R line
+  on a second XLR ("FROM PROCESSOR R", `AMP_IN_B`), male plug seated in
+  the amp's female socket, rising straight out of the frame in its own
+  lane between CH A's speaker plug and CH A's XLR, left of the INPUT (BAL)
+  legend and clear of every lead and label at 360×290, 390×330 and 820×600
+  (wiringFix_r6_djss). A stereo amp takes one input per channel: the
+  processor's L into CH A, its R into CH B. Rule book L3, L4, R1, R2, R8.
 
 ## 16. Recording (screen 21)
 

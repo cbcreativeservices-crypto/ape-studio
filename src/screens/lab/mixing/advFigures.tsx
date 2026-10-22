@@ -35,7 +35,9 @@ export function RoutingMapArt() {
   const busY = 176;
   const busH = 100;
   const bw = 46;
-  const busCx = { fx: 32, rhythm: 87, music: 211.5, vocal: 294.5 } as const;
+  // R6 MIX-02: the rhythm bus sits a little right and wider (66) — RHYTHM BUS
+  // fits its tape (62) whole, 4 pt clear of the FX return.
+  const busCx = { fx: 32, rhythm: 92, music: 211.5, vocal: 294.5 } as const;
   // Group buses are drawn wide enough for "… BUS" on their tape (review
   // 2026-10-16: a beginner could not tell a bus strip from a channel).
   const bus = (cx: number, w = bw) => ({ x: cx - w / 2, y: busY, w, h: busH });
@@ -81,7 +83,7 @@ export function RoutingMapArt() {
         SENDS
       </T>
       <Strip {...bus(busCx.fx)} name="FX RTN" db={-6} cap="ret" pan={null} />
-      <Strip {...bus(busCx.rhythm, 58)} name="RHYTHM BUS" db={0} cap="bus" pan={null} inserts={[null]} />
+      <Strip {...bus(busCx.rhythm, 66)} name="RHYTHM BUS" db={0} cap="bus" pan={null} inserts={[null]} />
       <Strip {...bus(busCx.music, 58)} name="MUSIC BUS" db={0} cap="bus" pan={null} inserts={[null]} />
       <Strip {...bus(busCx.vocal, 58)} name="VOCAL BUS" db={0} cap="bus" pan={null} inserts={[null]} />
       <Strip {...mix} name="MIX BUS" db={0} cap="master" pan={null} inserts={[null]} />
@@ -205,6 +207,9 @@ export type AuxFocus = 'returns' | 'cue' | 'sidechain' | 'solosafe' | 'feedback'
 const BLUE = '#5b8fe0';
 const GREEN = '#3fae7a';
 const PURPLE = '#9a7ae0';
+/** R6 MIX-01: the feedback loop's lane (x): left of the SOLO SAFE words
+ *  (right-aligned at the VERB strip's x − 4, ≈ 50 wide), right of the LEAD strip. */
+export const LOOP_X = 128;
 
 export function AuxArt({ opened }: { opened: ReadonlySet<string> }) {
   const lead = { x: 12, y: 30, w: 46, h: 176 };
@@ -248,11 +253,12 @@ export function AuxArt({ opened }: { opened: ReadonlySet<string> }) {
       <Wire pts={[{ x: lead.x + lead.w / 2, y: lead.y + lead.h }, { x: lead.x + lead.w / 2, y: 222 }, { x: 258, y: 222 }, { x: 258, y: 186 }, { x: mix.x, y: 186 }]} color={none ? ART.wire : dimC} />
       {has('feedback') ? (
         <G>
-          {/* the loop nobody should patch: the return fed back into its own send */}
-          <Wire pts={[{ x: verb.x + verb.w / 2, y: verb.y + verb.h }, { x: verb.x + verb.w / 2, y: 214 }, { x: 178, y: 214 }, { x: 178, y: aux2Y + 8 }, { x: verb.x + 8, y: aux2Y + 8 }]} color={ART.red} dashed width={1.6} />
-          <Line x1={172} y1={150} x2={184} y2={162} stroke={ART.red} strokeWidth={2} />
-          <Line x1={184} y1={150} x2={172} y2={162} stroke={ART.red} strokeWidth={2} />
-          <T x={150} y={176} color={ART.red} anchor="middle">
+          {/* the loop nobody should patch: the return fed back into its own send.
+              R6 MIX-01: its lane runs at LOOP_X, left of the SOLO SAFE words. */}
+          <Wire pts={[{ x: verb.x + verb.w / 2, y: verb.y + verb.h }, { x: verb.x + verb.w / 2, y: 214 }, { x: LOOP_X, y: 214 }, { x: LOOP_X, y: aux2Y + 8 }, { x: verb.x + 8, y: aux2Y + 8 }]} color={ART.red} dashed width={1.6} />
+          <Line x1={LOOP_X - 6} y1={150} x2={LOOP_X + 6} y2={162} stroke={ART.red} strokeWidth={2} />
+          <Line x1={LOOP_X + 6} y1={150} x2={LOOP_X - 6} y2={162} stroke={ART.red} strokeWidth={2} />
+          <T x={LOOP_X - 24} y={176} color={ART.red} anchor="middle">
             LOOP
           </T>
         </G>

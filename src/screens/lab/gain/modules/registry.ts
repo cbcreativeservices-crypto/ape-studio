@@ -34,7 +34,7 @@ export const GAIN_MODULES: GainModuleDef[] = [
   { id: 'follow', title: 'Follow the Signal', blurb: 'A bad decision early in the chain follows the signal downstream.', section: 'learn' },
   { id: 'lowhigh', title: 'Too Low vs. Too High', blurb: 'Two ways to get it wrong — and how each one hurts.', section: 'learn' },
   { id: 'fadervsgain', title: 'Gain vs. Fader', blurb: 'Why pulling the fader down cannot undo upstream clipping.', section: 'learn' },
-  { id: 'multistage', title: 'Multiple Gain Stages', blurb: 'A rack of real devices — clip LEDs outside, Signal X-Ray to see inside every box.', section: 'explore' },
+  { id: 'multistage', title: 'Multiple Gain Stages', blurb: 'A channel strip as a chain of stages — clip LEDs outside, Signal X-Ray to see inside each one.', section: 'explore' },
   { id: 'freeplay', title: 'Free Practice', blurb: 'Even the source is yours — feed the rig anything, nothing is graded.', section: 'explore' },
   { id: 'troubleshoot', title: 'Troubleshooting Challenge', blurb: 'Only the master is visible — and it’s clipping. Inspect stage by stage and find it.', section: 'challenge' },
 ];

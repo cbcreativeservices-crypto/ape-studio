@@ -290,6 +290,11 @@ function FindCounter({ found, required, total }: { found: number; required: numb
 /** ins-11's AC cord: out of the receptacle plug (229.2, 216.6), tight
  *  against the mic run's inside (x 220.4 beside 218, y 180.4 under 178 —
  *  2.4 apart, each 2.4 wide: touching), through the wall to the rack. */
+/** ins-11's wall receptacle at this section's true scale, ≈ 2.2 × 4 units
+ *  (R5-CI-03; it was drawn 7.4 × 14), and the plug seated in its lower face,
+ *  its body running out to the cord's start (229.2, 216.6). */
+export const OUTLET = { x: 229.8, y: 213.8, w: 2.2, h: 4 } as const;
+export const OUTLET_PLUG = { x: 229.2, y: 215.4, w: 2.4, h: 2.4 } as const;
 const AC_BUNDLE_D = 'M229.2 216.6 C223.4 216.6 220.4 214 220.4 209 V187 C220.4 183 223 180.4 228 180.4 H276';
 
 /** The combined facility — every environment of the lab in one honest
@@ -401,14 +406,16 @@ function FacilityScene({
             mic line up the wall and on through it to the rack (touching, one
             bundle: the fault the finding names, drawn where its marker sits) */}
         <ZoneIn delay={250} reduce={m.reduce}>
-          <Rect x={230} y={207} width={7.4} height={14} rx={1} fill="#c9c4b8" stroke="#4a4740" strokeWidth={0.4} />
-          {[210.4, 216.6].map((y) => (
-            <G key={y}>
-              <Rect x={232.2} y={y - 1.3} width={0.7} height={2.2} fill="#2a2926" />
-              <Rect x={234.5} y={y - 1.3} width={0.7} height={2.2} fill="#2a2926" />
-            </G>
-          ))}
-          <Rect x={229.2} y={214.6} width={6} height={4} rx={0.8} fill="#1b1c20" stroke="#55585f" strokeWidth={0.3} />
+          {/* R5-CI-03: a duplex receptacle at TRUE scale (it was drawn
+              7.4 × 14 — about 0.4 × 0.8 m): plate OUTLET.w × OUTLET.h, the
+              upper face empty, the cord's plug seated in the lower face —
+              its body overhanging the plate's left edge toward the cord,
+              which leaves it at (229.2, 216.6) */}
+          <Rect x={OUTLET.x} y={OUTLET.y} width={OUTLET.w} height={OUTLET.h} rx={0.3} fill="#c9c4b8" stroke="#4a4740" strokeWidth={0.2} />
+          <Rect x={OUTLET.x + 0.5} y={OUTLET.y + 0.55} width={1.2} height={0.9} rx={0.2} fill="#b3ad9f" />
+          <Rect x={OUTLET.x + 0.75} y={OUTLET.y + 0.75} width={0.16} height={0.5} fill="#2a2926" />
+          <Rect x={OUTLET.x + 1.29} y={OUTLET.y + 0.75} width={0.16} height={0.5} fill="#2a2926" />
+          <Rect x={OUTLET_PLUG.x} y={OUTLET_PLUG.y} width={OUTLET_PLUG.w} height={OUTLET_PLUG.h} rx={0.4} fill="#1b1c20" stroke="#55585f" strokeWidth={0.2} />
         </ZoneIn>
         <RunIn d={AC_BUNDLE_D} len={110} color={CI_CLASS_TINTS.power} delay={360} run={assembled} />
         <ZoneIn delay={250} reduce={m.reduce}>

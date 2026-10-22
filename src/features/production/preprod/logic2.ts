@@ -173,9 +173,11 @@ registerRuleLogic({
       if (cell(r, 'sp_level') !== 'instrument') return false;
       const to = cell(r, 'sp_to');
       if (mentions(`${cell(r, 'sp_via')} ${to}`, /\bdi\b|direct box|direct input|instrument input|hi-?z/)) return false;
-      // "pre-amp" is a mic input, not an amp (R4-PROD-01): the hyphen is a word break.
-      if (mentions(to, /(?<!pre-?)\bamps?\b|amplifier|\bcombo\b|pedal|effects?\b|\bfx\b|stomp|tuner/)) return false;
-      return mentions(to, /\bmic\b|microphone|console|mixer|desk|stage ?box|snake|channel|pre-?amp|xlr/);
+      // "pre-amp" / "pre amp" / "preamplifier" is a mic input, not an amp
+      // (R4-PROD-01, R5-PROD-01): the hyphen or space is a word break, so the
+      // amp exemption must look past it too.
+      if (mentions(to, /(?<!pre[- ]?)\bamp(?:s|lifiers?)?\b|\bcombo\b|pedal|effects?\b|\bfx\b|stomp|tuner/)) return false;
+      return mentions(to, /\bmic\b|microphone|console|mixer|desk|stage ?box|snake|channel|pre[- ]?amp|xlr/);
     });
     if (instrumentWithoutDi) return true;
     // A speaker-level output wired into an input (PR-R2-03, wiring round 2):

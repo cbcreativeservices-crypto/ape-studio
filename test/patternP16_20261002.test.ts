@@ -88,7 +88,6 @@ describe('P16 R1 — every calculator field declares a sign class', () => {
 // ── R2: counts are whole, ranges are enforced ───────────────────────────────
 /** Count-named fields that are deliberately NOT integer. Shrink-only. */
 const INTEGER_EXEMPT: Record<string, string> = {
-  'bitdepth.bits': 'dynamic range FOR N bits — an effective bit count (ENOB 15.5) is a real input',
   'cable.awg': 'a fraction is rounded to the nearest whole gauge, as the field help says (0–40 enforced by nearestAwg)',
   'distdelay.smp': 'samples → time: a fractional-sample delay is a real quantity',
   'latency.smp': 'samples → time: a fractional-sample delay is a real quantity',

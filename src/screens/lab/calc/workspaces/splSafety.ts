@@ -871,7 +871,7 @@ const WS_MIC_GAIN: Workspace = {
     'load impedance. This workspace models the spec-sheet number at 1 Pa (≈ 94 dB SPL; exactly 93.98 dB SPL).',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Gain Staging', 'Headroom', 'Preamplifier'],
   fields: [
-    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Millivolts out per pascal (1 Pa ≈ 94 dB SPL). Dynamics ≈ 1–3 mV/Pa; condensers ≈ 8–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity & Output.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
+    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Millivolts out per pascal (1 Pa ≈ 94 dB SPL). Dynamics ≈ 1–3 mV/Pa; condensers ≈ 8–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity Converter.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
     { key: 'spl', name: 'SOURCE SPL AT THE MIC', quantity: 'spl', signed: true, placeholder: '94', help: 'The sound pressure level arriving at the capsule.' },
     { key: 'target', name: 'TARGET LEVEL', quantity: 'db', signed: true, placeholder: '4', help: 'The output level you want after the preamp, in dBu (+4 dBu = pro line level).' },
     // nonNegative (full-app run 2, 2026-10-01): a −12 dB "headroom" ADDED 12 dB
@@ -1002,7 +1002,7 @@ const WS_LIMITER: Workspace = {
     'voltage gain sits between them — skip that step and the "protection" is fiction.',
   example:
     'A 500 W / 8 Ω speaker: Vmax = √(500 × 8) ≈ 63.2 V ≈ 38.2 dBu at the speaker. Through an ' +
-    'amp with 32 dB of voltage gain, the processor sees clip at 38.2 − 32 = 6.2 dBu; with a ' +
+    'amp with 32 dB of voltage gain, the speaker’s rated level sits at 38.2 − 32 = 6.2 dBu at the processor; with a ' +
     '3 dB safety margin the RMS threshold starts at ≈ +3.2 dBu.',
   mistakes: [
     'Setting one limiter for both thermal and excursion protection — they need different time constants (slow RMS vs fast peak) and often different frequency ranges.',
