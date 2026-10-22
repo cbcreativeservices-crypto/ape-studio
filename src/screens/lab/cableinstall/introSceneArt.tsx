@@ -32,6 +32,8 @@ import {
 
 const VW = 360;
 const VH = 200;
+/** R7-CI-11: the tray and its two runs start at the section's cut edge. */
+export const TRAY_RUN_X0 = 0;
 
 /** One run's install timing: when it starts and how long it takes to land. */
 type RunSpec = { delay: number; dur: number };
@@ -94,8 +96,11 @@ export function IntroSceneArt({ w, run, reduce }: { w: number; run: boolean; red
   // cable its own traceable line, dressed as a pro would): over the rack's
   // top edge, each turns down concentrically onto its OWN patch jack — the
   // lower (inner) lane onto jack 1, the upper lane onto jack 2.
+  // R7-CI-11: both runs come in along the tray from BEYOND the section's
+  // cut edge (x 0) — they used to start at x 40, in mid-air inside the tray.
   const trayRunA = useMemo(
     () => [
+      { x: TRAY_RUN_X0, y: 32.5 },
       { x: 40, y: 32.5 },
       { x: 150, y: 32.5 },
       { x: 262, y: 32.5 },
@@ -107,6 +112,7 @@ export function IntroSceneArt({ w, run, reduce }: { w: number; run: boolean; red
   );
   const trayRunB = useMemo(
     () => [
+      { x: TRAY_RUN_X0, y: 41 },
       { x: 40, y: 41 },
       { x: 150, y: 41 },
       { x: 258, y: 41 },
@@ -182,7 +188,8 @@ export function IntroSceneArt({ w, run, reduce }: { w: number; run: boolean; red
 
         {/* ── pathway: tray, J-hooks, conduit riser, raceway ── */}
         <Group opacity={fPathway}>
-          <CableTray x={30} y={28} w={240} h={16} kind="ladder" />
+          {/* the tray runs on past the cut edge (x 0), the runs in it */}
+          <CableTray x={TRAY_RUN_X0} y={28} w={270 - TRAY_RUN_X0} h={16} kind="ladder" />
           <JHook x={284} y={44} s={0.5} />
           <JHook x={310} y={44} s={0.5} />
           {/* Conduit riser — from the raceway UP to the tray only. A

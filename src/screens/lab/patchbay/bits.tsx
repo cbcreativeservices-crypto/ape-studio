@@ -11,7 +11,7 @@ import type { BreakSide, NormalConfig, PairState } from './engine/patchbay';
 
 /** The lab's central mantra (spec, final section) — repeated on purpose. */
 export const MANTRA =
-  'Top is the source. Bottom is the destination. A normal is the path that exists when you do nothing. Patching changes that path.';
+  'On most bays, top is the source and bottom is the destination. A normal is the path that exists when you do nothing. Patching changes that path.';
 
 export function MantraCard() {
   return (

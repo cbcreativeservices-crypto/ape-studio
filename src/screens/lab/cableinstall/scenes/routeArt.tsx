@@ -289,6 +289,9 @@ function LineArraySide({ x, y, m }: { x: number; y: number; m: number }) {
   );
 }
 
+/** R7-CI-06: the AMP ROOM word's centre (≈ 51.6 units wide at 10.5). */
+export const AMP_ROOM_LABEL_X = 40;
+
 export function ClusterSection({ xray, tint }: { xray: boolean; tint: string }) {
   return (
     <Frame>
@@ -335,7 +338,9 @@ export function ClusterSection({ xray, tint }: { xray: boolean; tint: string }) 
         <Callout x={140} y={65.5} text="SUPPLY DUCT" size={9.5} color="#101114" bg={null} />
       </X>
 
-      <Room x={52} y={100} text="AMP ROOM" />
+      {/* R7-CI-06: centred on the clear wall space x 10–69 (route B rises
+          at x 70, A at 86, C at 80) — at x 52 route B ran through the word */}
+      <Room x={AMP_ROOM_LABEL_X} y={100} text="AMP ROOM" />
       <Room x={130} y={112} text="HALL" />
       <Room x={300} y={112} text="CLUSTER" />
       <ScaleBar x={14} y={209} m={M} metres={2} color="#8d9199" />

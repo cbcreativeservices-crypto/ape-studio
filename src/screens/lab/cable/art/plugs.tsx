@@ -27,7 +27,7 @@ import { Pressable, View } from 'react-native';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { Connector } from '../../cableinstall/svgArt';
 import type { ConnectorId } from '../cableTypes';
-import { ART, Label, Leader, ScaleBar, useArtUid } from './kit';
+import { ART, CARD_LABEL_U, Label, Leader, ScaleBar, useArtUid } from './kit';
 
 /* ── shared paint ─────────────────────────────────────────────────────────── */
 
@@ -375,12 +375,12 @@ function zoneLabels(kind: PlugKind, x: number, y: number, k: number): ReactNode[
     const above = i % 2 === 1 || named.length <= 2 ? i % 2 === 1 : false;
     const ly = above ? y - z.r * k - 18 : y + z.r * k + 24;
     // keep the word inside the figure: slide it in, the leader still lands
-    const half = z.name.length * 2.9 + 2;
+    const half = z.name.length * 3.05 + 2;
     const tx = Math.min(W - 6 - half, Math.max(6 + half, cx));
     out.push(
       <G key={z.name}>
         <Leader x1={tx} y1={above ? ly + 3 : ly - 11} x2={cx} y2={above ? y - z.r * k : y + z.r * k} />
-        <Label x={tx} y={ly} text={z.name} anchor="middle" />
+        <Label x={tx} y={ly} text={z.name} anchor="middle" size={CARD_LABEL_U} />
       </G>,
     );
   });
@@ -634,11 +634,15 @@ const NEMA_CONTACTS = [
   { key: 'round', match: /round|earth|ground/i, name: 'ROUND PIN' },
 ] as const;
 
+export const NEMA_FACE_H = 204;
+
 /** The NA wall plug's face. `selected` = the record's contact label in
  *  focus; tapping a contact calls onSelect with that label. */
 export function NemaPlugFace({ width, labels, selected, onSelect }: { width: number; labels: string[]; selected: number; onSelect: (i: number) => void }) {
   const uid = useArtUid();
-  const H = 196;
+  // R7-CB-02: 8 units taller (was 196) so the caption row clears the
+  // moulded body's bottom edge (cy + 19 mm = 183.4)
+  const H = NEMA_FACE_H;
   const k = 4.6;
   const cx = 150;
   const cy = 96;

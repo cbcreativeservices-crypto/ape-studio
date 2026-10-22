@@ -181,6 +181,28 @@ export const CORD_DROP_DX = 11;
 export const CORD_SETTLE_DY = 12;
 export const cordDrop = (cx: number, cy: number, side: 1 | -1) =>
   `M ${cx + side} ${cy + 2} C ${cx + 4 * side} ${cy + 8}, ${cx + CORD_DROP_DX * side} ${cy + 7}, ${cx + CORD_DROP_DX * side} ${cy + CORD_SETTLE_DY} L ${cx + CORD_DROP_DX * side} ${FACE_H}`;
+/** R7-PB-02: one short cord from the top plug to the bottom plug. It drops
+ *  on the right exactly like a top cord (clear of the jack below), sags in a
+ *  U under the bottom jack (lowest point LOOP_SAG_Y, inside the strip) and
+ *  rises on the left into the bottom plug — one lane, plug to plug. */
+export const LOOP_SAG_Y = 62;
+export const faceLoop = (cx: number, yTop: number, yBot: number) => {
+  const d = CORD_DROP_DX;
+  const turn = yBot + CORD_SETTLE_DY + 2;
+  const c = LOOP_SAG_Y + (LOOP_SAG_Y - turn) / 3;
+  return (
+    `M ${cx + 1} ${yTop + 2} C ${cx + 4} ${yTop + 8}, ${cx + d} ${yTop + 7}, ${cx + d} ${yTop + CORD_SETTLE_DY} L ${cx + d} ${turn} ` +
+    `C ${cx + d} ${c}, ${cx - d} ${c}, ${cx - d} ${turn} L ${cx - d} ${yBot + CORD_SETTLE_DY} ` +
+    `C ${cx - d} ${yBot + 7}, ${cx - 4} ${yBot + 8}, ${cx - 1} ${yBot + 2}`
+  );
+};
+/** The schematic's looped cord: out of the top jack, round to the right
+ *  (furthest x LOOP_REACH_X, clear of the NO INTERNAL CONNECTION words) and
+ *  back into the bottom jack. */
+export const LOOP_CTRL_DX = 140;
+export const schemLoop = (cx: number, yTop: number, yBot: number) =>
+  `M ${cx + 11} ${yTop} C ${cx + LOOP_CTRL_DX} ${yTop - 6}, ${cx + LOOP_CTRL_DX} ${yBot + 6}, ${cx + 11} ${yBot}`;
+
 /** The featured column's outline half-width: wide enough that the cord at
  *  cx + 11 runs inside it, clear of its stroke (R4-PB-01). */
 export const FEATURED_HALF_W = 14;
@@ -210,7 +232,7 @@ function SeatedPlug({ x, y }: { x: number; y: number }) {
  *  aligned with the schematic spine below, dim neighbor columns for context
  *  (design pass 2026-09-10 — the old strip drew the pair side-by-side and
  *  fought the lab's own "signal falls downhill" model). */
-export function PairFaceplate({ topPlugged, bottomPlugged, w }: { topPlugged: boolean; bottomPlugged: boolean; w: number }) {
+export function PairFaceplate({ topPlugged, bottomPlugged, w, loop }: { topPlugged: boolean; bottomPlugged: boolean; w: number; loop?: boolean }) {
   // A SLICE of a real 1U, 48-point bay at true scale (art grading
   // 2026-10-16: the old strip showed five columns between two rack screws, so
   // the jacks read oversized): the panel's 44.45 mm height fills the strip,
@@ -224,6 +246,8 @@ export function PairFaceplate({ topPlugged, bottomPlugged, w }: { topPlugged: bo
   const ROW_BOT = 2 + 29.5 * MM;
   const RIGHT = 214; // the right break edge
   const cols = [-3, -2, -1, 1, 2, 3, 4].map((k) => CX + k * PITCH).filter((x) => x > 6 && x < RIGHT - 8);
+  // R7-PB-02: ONE cord looping from the top jack into the bottom jack
+  const looped = !!loop && topPlugged && bottomPlugged;
   const jack = (cx: number, cy: number, featured: boolean, plugged: boolean, side: 1 | -1 = 1) => (
     <G key={`${cx}-${cy}`}>
       <Circle cx={cx} cy={cy} r={5.5 * MM} fill="#2a2b31" stroke={plugged ? PB.cord : featured ? '#6a6b73' : '#3a3b41'} strokeWidth={plugged ? 2 : 1.1} />
@@ -235,7 +259,7 @@ export function PairFaceplate({ topPlugged, bottomPlugged, w }: { topPlugged: bo
               bottom edge (it leaves the picture): the TOP cord drops just
               right of the jack below, the BOTTOM cord leaves on the LEFT —
               each cord its own lane when both are plugged (R3-PB-03) */}
-          <Path d={cordDrop(cx, cy, side)} stroke={PB.cord} strokeWidth={2.4} fill="none" strokeLinecap="round" />
+          {!looped ? <Path d={cordDrop(cx, cy, side)} stroke={PB.cord} strokeWidth={2.4} fill="none" strokeLinecap="round" /> : null}
           <Circle cx={cx} cy={cy} r={4.6 * MM} fill="#1d1e22" stroke={PB.cord} strokeWidth={1.4} />
           <Circle cx={cx} cy={cy} r={1.4 * MM} fill="#0c0c0e" stroke="#45464d" strokeWidth={0.6} />
         </G>
@@ -261,6 +285,7 @@ export function PairFaceplate({ topPlugged, bottomPlugged, w }: { topPlugged: bo
           {jack(x, ROW_BOT, false, false)}
         </G>
       ))}
+      {looped ? <Path d={faceLoop(CX, ROW_TOP, ROW_BOT)} stroke={PB.cord} strokeWidth={2.4} fill="none" strokeLinecap="round" /> : null}
       {jack(CX, ROW_TOP, true, topPlugged)}
       {jack(CX, ROW_BOT, true, bottomPlugged, -1)}
       <SvgText x={RIGHT + 10} y={FACE_H - 4} fontSize={PAIR_LABEL_PT} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={0.5}>FRONT PANEL (SLICE)</SvgText>
@@ -399,6 +424,10 @@ export type PatchPairViewProps = {
   controls?: ReactNode;
   /** Title in the full-screen bar (default PATCH PAIR). */
   fsTitle?: string;
+  /** R7-PB-02: with BOTH jacks plugged, the two plugs are the ends of ONE
+   *  cord (a thru pair routed top → bottom): drawn as one looping cord, its
+   *  label from topPatchLabel. */
+  loopCord?: boolean;
 };
 
 export type PatchPairDrawingProps = Omit<PatchPairViewProps, 'caption' | 'controls' | 'fsTitle'> & {
@@ -412,8 +441,9 @@ export type PatchPairDrawingProps = Omit<PatchPairViewProps, 'caption' | 'contro
  *  — for the Rack Unit's glass (and inside PatchPairView's figure). */
 export function PatchPairDrawing({
   w, glass, state, sourceLabel, destLabel, topPatchLabel = 'PATCH DESTINATION', bottomPatchLabel = 'ALTERNATE SOURCE',
-  onToggleJack, reduceMotion, hideFaceplate, sourceLive = true,
+  onToggleJack, reduceMotion, hideFaceplate, sourceLive = true, loopCord,
 }: PatchPairDrawingProps) {
+  const looped = !!loopCord && state.topPlugged && state.bottomPlugged;
   const { H, TOP_Y, BOT_Y, SRC_Y, DEST_Y } = glass ? GEO_GLASS : GEO_PAGE;
   const { flow, status, hazard } = pairStatus(state, sourceLabel, destLabel, sourceLive);
   const anythingFlowing = ((flow.normalActive || flow.topFeedsPatch) && sourceLive) || flow.bottomFeedsDestination;
@@ -454,7 +484,7 @@ export function PatchPairDrawing({
 
   return (
       <View style={{ width: w, gap: (w * FACE_GAP) / W }}>
-      {!hideFaceplate ? <PairFaceplate topPlugged={state.topPlugged} bottomPlugged={state.bottomPlugged} w={w} /> : null}
+      {!hideFaceplate ? <PairFaceplate topPlugged={state.topPlugged} bottomPlugged={state.bottomPlugged} w={w} loop={loopCord} /> : null}
       <View style={{ width: w, height: (w * H) / W }}>
         {/* The Svg is the accessible image node; the tap overlays are its
             SIBLINGS so screen readers reach them (an accessible ancestor would
@@ -499,8 +529,17 @@ export function PatchPairDrawing({
             </>
           ) : null}
 
+          {/* R7-PB-02: ONE cord from the top jack looping into the bottom jack */}
+          {looped ? (
+            <G>
+              <FlowPath d={schemLoop(CX, TOP_Y, BOT_Y)} flowing={flow.topFeedsPatch && sourceLive} phase={phase} reduceMotion={reduceMotion} color={PB.cord} />
+              <SvgText x={W - 87} y={midY - 2} fontSize={PAIR_LABEL_PT} fill={PB.cord} fontFamily={fonts.oswaldMedium}>ONE CORD</SvgText>
+              <SvgText x={W - 87} y={midY + 10} fontSize={PAIR_LABEL_PT} fill={colors.textSecondary} fontFamily={fonts.oswaldMedium}>{trim(topPatchLabel, 18)}</SvgText>
+            </G>
+          ) : null}
+
           {/* TOP patch cord out to its destination */}
-          {state.topPlugged ? (
+          {state.topPlugged && !looped ? (
             <G>
               <FlowPath
                 d={`M ${CX + 11} ${TOP_Y} C ${CX + 60} ${TOP_Y - 4}, ${PLUG_X - 12} ${TOP_Y - 26}, ${PLUG_X} ${TOP_Y - 28}`}
@@ -517,7 +556,7 @@ export function PatchPairDrawing({
           ) : null}
 
           {/* BOTTOM patch cord bringing in an alternate signal */}
-          {state.bottomPlugged ? (
+          {state.bottomPlugged && !looped ? (
             <G>
               {/* the cord's far plug, seated in the alternate source (named beside it) */}
               <SeatedPlug x={PLUG_X} y={BOT_Y + 14} />

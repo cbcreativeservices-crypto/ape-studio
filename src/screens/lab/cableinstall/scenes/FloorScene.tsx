@@ -520,6 +520,17 @@ const QUAD_PLUGS = [
   [WQUAD2.x, AC_BEHIND_Y],
 ] as const;
 
+/** R7-CI-12: the upstage quad boxes' leads. Amp: from the inlet on its SL
+ *  side panel (x 62) to a plug in the SR box's top outlet (box 62–69 ×
+ *  69.2–74.8). Keys: from the inlet on its rear panel (the downstage edge,
+ *  y 60) at its SR end, down clear of the KEYS · DI words and across into a
+ *  plug on the SL box's SR face (box 325–332 × 77.2–82.8, fed on its far
+ *  face). Rects are [x, y, w, h]. */
+const UP_MAINS = [
+  { id: 'amp', d: 'M62.9 35 H65.5 V67.2', inlet: [61.1, 33.6, 1.8, 2.8], plug: [64.4, 66.9, 2.2, 2.7] },
+  { id: 'keys', d: 'M264.4 60.9 V80 H322.8', inlet: [263, 59.1, 2.8, 1.8], plug: [322.8, 78.9, 2.7, 2.2] },
+] as const;
+
 /** A numbered hazard badge on the plot, matching the numbered call below —
  *  amber while the hazard stands, a green tick once it is dressed. */
 function HazardBadge({ x, y, n, fixed }: { x: number; y: number; n: number; fixed: boolean }) {
@@ -532,7 +543,7 @@ function HazardBadge({ x, y, n, fixed }: { x: number; y: number; n: number; fixe
   );
 }
 
-function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFixed: boolean; slackFixed: boolean; monFixed: boolean }) {
+export function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFixed: boolean; slackFixed: boolean; monFixed: boolean }) {
   const h = Math.round(w * (205 / 360));
   const mic = CI_CLASS_TINTS.analog;
   const pwr = CI_CLASS_TINTS.power;
@@ -592,13 +603,23 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
       <GtrAmpTop x={40} y={30} />
       <MicStandTop x={51} y={50} boom={0} reach={5} />
       <PerformerTop x={86} y={60} m={PLOT.m} />
-      <PlanLabel x={66} y={39} text="GTR AMP" anchor="start" size={9.6} />
+      <PlanLabel x={69} y={39} text="GTR AMP" anchor="start" size={9.6} />
 
       {/* power: quad boxes fed from the wings, crossing the audio at 90° */}
       <Path d={`M${PLOT.x} 72 H62`} stroke={pwr} strokeWidth={1.8} strokeLinecap="round" />
       <Rect x={62} y={69.2} width={7} height={5.6} rx={0.8} fill="#2a2c31" stroke={pwr} strokeWidth={0.6} />
       <Path d={`M${edgeX + 8} 80 H332`} stroke={pwr} strokeWidth={1.8} strokeLinecap="round" />
       <Rect x={325} y={77.2} width={7} height={5.6} rx={0.8} fill="#2a2c31" stroke={pwr} strokeWidth={0.6} />
+      {/* R7-CI-12: the boxes feed something — the amp's mains lead into the
+          SR box (its top outlet), the keyboard's into the SL box (its SR
+          face); each lead from the gear's inlet to a plug seated in the box */}
+      {UP_MAINS.map((u) => (
+        <G key={u.id}>
+          <JacketPath d={u.d} color={pwr} width={1.6} shadow={false} />
+          <Rect x={u.inlet[0]} y={u.inlet[1]} width={u.inlet[2]} height={u.inlet[3]} rx={0.4} fill="#0d0e11" stroke={pwr} strokeWidth={0.35} />
+          <Rect x={u.plug[0]} y={u.plug[1]} width={u.plug[2]} height={u.plug[3]} rx={0.5} fill="#1d1f24" stroke={pwr} strokeWidth={0.4} />
+        </G>
+      ))}
 
       {/* snake head DSR: its trunk leaves off the SR side and runs down the
           wing to FOH — never over the downstage lip into the audience. Drawn
@@ -661,8 +682,9 @@ function StagePlan({ w, routeFixed, slackFixed, monFixed }: { w: number; routeFi
 
       {/* label above the monitor-send lanes, on two lines so it ends well
           clear of wedge 1 (wiring grade 2026-10-21: one line ran into it) */}
-      <PlanLabel x={59.6} y={160} text="SNAKE" anchor="start" size={9} />
-      <PlanLabel x={59.6} y={168.8} text="HEAD" anchor="start" size={9} />
+      {/* R7-CI-04: 10 units (9 drew 8.2 pt at the 328-pt inline width) */}
+      <PlanLabel x={59.6} y={160} text="SNAKE" anchor="start" size={10} />
+      <PlanLabel x={59.6} y={169.6} text="HEAD" anchor="start" size={10} />
       <PlanLabel x={14} y={201} text="TO FOH" anchor="start" size={9.6} />
       <ConsoleTop x={MON.x} y={MON.y} w={18} h={14} />
       <PlanLabel x={MON.x + 9} y={MON.y - 4} text="MON" size={9.6} />
@@ -995,7 +1017,19 @@ function FohPlan({ w, pick }: { w: number; pick: number | null }) {
 }
 
 /* ── backstage plan (C) ─────────────────────────────────────────────────── */
-function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
+/** R7-CI-05: backstage words off the hazard-striped lane (its edges run
+ *  (52,10)→(200,204) and (100,10)→(268,204)): [x, baseline y]. LOAD-IN and
+ *  FORKLIFT PATH beside the lane with a leader in; MAT beside its mat; RATED +
+ *  MARKED under the protector's SR end, left of the lane. */
+export const BACKSTAGE_LABELS = {
+  loadIn: [196, 98],
+  forklift: [196, 111],
+  laneLeader: [194, 94, 146, 94],
+  mat: [218, 143],
+  rated: [188, 201],
+} as const;
+
+export function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
   const h = Math.round(w * (210 / 360));
   return (
     <Svg {...SVG_A11Y}
@@ -1012,8 +1046,11 @@ function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
       <HazardEdge x1={52} y1={10} x2={200} y2={204} />
       <HazardEdge x1={100} y1={10} x2={268} y2={204} />
       <PlanLabel x={76} y={23} text="DOCK" />
-      <PlanLabel x={160} y={96} text="LOAD-IN" />
-      <PlanLabel x={160} y={109} text="FORKLIFT PATH" />
+      {/* R7-CI-05: the lane is too narrow for its name — the words sit on
+          clear floor beside it, a leader into the lane (BACKSTAGE_LABELS) */}
+      <Line x1={BACKSTAGE_LABELS.laneLeader[0]} y1={BACKSTAGE_LABELS.laneLeader[1]} x2={BACKSTAGE_LABELS.laneLeader[2]} y2={BACKSTAGE_LABELS.laneLeader[3]} stroke="#8d9199" strokeWidth={0.7} />
+      <PlanLabel x={BACKSTAGE_LABELS.loadIn[0]} y={BACKSTAGE_LABELS.loadIn[1]} text="LOAD-IN" anchor="start" />
+      <PlanLabel x={BACKSTAGE_LABELS.forklift[0]} y={BACKSTAGE_LABELS.forklift[1]} text="FORKLIFT PATH" anchor="start" />
       <G transform="rotate(49 150 57)">
         <ForkliftTop x={136} y={51} />
       </G>
@@ -1041,7 +1078,7 @@ function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
       {/* a rubber mat thrown over the run — not a protector */}
       <Rect x={172} y={134} width={30} height={12} rx={1} fill="#141518" stroke="#3a3c42" strokeWidth={0.6} />
       <Path d={[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => `M${174 + i * 3.2} 136 l1.6 1.6 l-1.6 1.6 l1.6 1.6 l-1.6 1.6 l1.6 1.6`).join('')} stroke="#26282d" strokeWidth={0.5} fill="none" />
-      <PlanLabel x={187} y={130} text="MAT" />
+      <PlanLabel x={BACKSTAGE_LABELS.mat[0]} y={BACKSTAGE_LABELS.mat[1]} text="MAT" anchor="start" />
       {/* ROUTE B — one marked, vehicle-rated crossing (teal) */}
       <RoutePath d="M42 106 H48 V184 H300" len={346} tint={ROUTE_TINTS[1]} width={2.8} phase={phaseFor(1, pick)} index={1} />
       {/* the protector spans the WHOLE roll lane (its edges cross route B (y 184) at
@@ -1049,7 +1086,7 @@ function BackstagePlan({ w, pick }: { w: number; pick: number | null }) {
       <RampTop x={174} y={170} w={78} h={16} />
       <Line x1={172} y1={168} x2={172} y2={190} stroke={CI_CLASS_TINTS.speaker} strokeWidth={1.4} strokeDasharray="3,3" />
       <Line x1={254} y1={168} x2={254} y2={190} stroke={CI_CLASS_TINTS.speaker} strokeWidth={1.4} strokeDasharray="3,3" />
-      <PlanLabel x={224} y={201} text="RATED + MARKED" />
+      <PlanLabel x={BACKSTAGE_LABELS.rated[0]} y={BACKSTAGE_LABELS.rated[1]} text="RATED + MARKED" anchor="end" />
       {/* ROUTE C — long perimeter behind the cases (purple) */}
       <RoutePath d="M42 94 H48 V30 H292 V174 H300" len={486} tint={ROUTE_TINTS[2]} width={2.6} phase={phaseFor(2, pick)} index={2} />
       {/* a case rolls the load-in path once — and finds the mat crossing */}

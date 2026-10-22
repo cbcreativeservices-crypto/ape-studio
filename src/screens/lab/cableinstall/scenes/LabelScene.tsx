@@ -93,7 +93,11 @@ const SW_Y = 112;
 const START_X = [PP2_X, PP2_X, PP2_X, SW_PORT_X[3]];
 const W_Y = [62, 70, 78, 86]; // sleeve lane y
 const S_Y = [54, 70, 86, 102]; // stage-box jack y
-const PERM_B = [1, 3, 0, 2]; // cable i → sleeve lane (crossings by design)
+// R7-CI-09: the crossings (the lesson) all happen BEFORE the sleeve — each
+// run enters the sleeve already in its stage-jack order, so after the sleeve
+// the four only fan out (no crossing) and each has a straight stretch long
+// enough for a printed stage-end flag.
+const PERM_B = [2, 0, 3, 1]; // cable i → sleeve lane (crossings by design, = PERM_C)
 const PERM_C = [2, 0, 3, 1]; // cable i → stage jack (N-004 → row 2, the etherCON)
 const STAGE_JACK_X = [272, 326] as const; // the box's two jack columns
 const RUN_END_X = 268; // runs end inside the jack's flange, on the jack
@@ -106,12 +110,18 @@ const SLEEVE = { x: 206, w: 20, y: 56, h: 36, wallX: 210, wallW: 12 } as const;
  * through one point, so any one cable can still be followed end to end.
  * No lane change happens inside the sleeve, under a flag or under a badge.
  */
-const PW_X = [180, 186, 192, 198]; // start → sleeve lane change, per cable
-const WS_X = [232, 237, 242, 247]; // sleeve → stage-jack lane change, per cable
+// R7-CI-09: run 3 drops out of 74 before run 1 lands on 78, so no two runs
+// ever lie side by side 4 apart (they did with the new lanes)
+const PW_X = [192, 186, 180, 198]; // start → sleeve lane change, per cable
+const WS_X = [231, 231, 231, 231]; // sleeve → stage-jack fan-out (order kept: no crossing)
 /** Label flags: on each run just past its rack-end port, and just short of
  *  each stage jack — never over a lane change, so a flag never hides a cable. */
 const FLAG_P_X = 124;
-const FLAG_S_X = 254;
+const FLAG_S_X = 235.5;
+/** R7-CI-09: the stage-end flag prints its ID too: FLAG_S_W wide, between the
+ *  fan-out and the stage box's left edge (BOX_X). */
+const FLAG_S_W = 28;
+const BOX_X = 265;
 /** The physical cable numbers, on each run past its rack-end flag. */
 const BADGE_X = 168;
 function cablePath(i: number): string {
@@ -267,7 +277,7 @@ function PanelEthercon({ x, y }: { x: number; y: number }) {
   );
 }
 
-function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: boolean }) {
+export function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: boolean }) {
   const m = useCiMotion();
   const h = Math.round((w * 150) / 360);
   const veil = useVeil(found, 0.74);
@@ -324,8 +334,8 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
       <Rect x={SLEEVE.x + SLEEVE.w - 1.6} y={SLEEVE.y - 2} width={3.2} height={SLEEVE.h + 4} rx={0.8} fill="#4a4c52" stroke="#0a0a0c" strokeWidth={0.4} />
       {/* stage box: steel box, two columns of XLR-female inputs; the left
           column's second row is the etherCON NET A, named beside it */}
-      <Rect x={256} y={40} width={88} height={68} rx={2.4} fill="#2b2d33" stroke="#0a0a0c" strokeWidth={0.8} />
-      <Rect x={258} y={42} width={84} height={3} fill="rgba(255,255,255,0.08)" />
+      <Rect x={BOX_X} y={40} width={344 - BOX_X} height={68} rx={2.4} fill="#2b2d33" stroke="#0a0a0c" strokeWidth={0.8} />
+      <Rect x={BOX_X + 2} y={42} width={340 - BOX_X} height={3} fill="rgba(255,255,255,0.08)" />
       {S_Y.map((y, row) =>
         STAGE_JACK_X.map((x, col) =>
           col === 0 && row === PERM_C[NET_CABLE] ? <PanelEthercon key={`${x}-${y}`} x={x} y={y} /> : <PanelXlr key={`${x}-${y}`} x={x} y={y} />,
@@ -355,7 +365,11 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
                     {CABLE_FLAGS[i]}
                   </SvgText>
                 </LabelFlag>
-                <LabelFlag x={FLAG_S_X} y={s - 9} w={9} h={6} tint={tint} delay={i * 80 + 45} reduce={m.reduce} />
+                <LabelFlag x={FLAG_S_X} y={s - 13} w={FLAG_S_W} h={12} tint={tint} delay={i * 80 + 45} reduce={m.reduce}>
+                  <SvgText x={FLAG_S_X + FLAG_S_W / 2} y={s - 3.6} fontSize={10} fontFamily={fonts.oswaldMedium} fill="#17181b" textAnchor="middle">
+                    {CABLE_FLAGS[i]}
+                  </SvgText>
+                </LabelFlag>
               </G>
             );
           })
@@ -373,7 +387,11 @@ function SystemArt({ w, labeled, found }: { w: number; labeled: boolean; found: 
               {CABLE_FLAGS[TARGET_CABLE]}
             </SvgText>
           </LabelFlag>
-          <LabelFlag x={FLAG_S_X} y={S_Y[PERM_C[TARGET_CABLE]] - 9} w={9} h={6} tint={TRACE_TINT} delay={560} reduce={m.reduce} />
+          <LabelFlag x={FLAG_S_X} y={S_Y[PERM_C[TARGET_CABLE]] - 13} w={FLAG_S_W} h={12} tint={TRACE_TINT} delay={560} reduce={m.reduce}>
+            <SvgText x={FLAG_S_X + FLAG_S_W / 2} y={S_Y[PERM_C[TARGET_CABLE]] - 3.6} fontSize={10} fontFamily={fonts.oswaldMedium} fill="#17181b" textAnchor="middle">
+              {CABLE_FLAGS[TARGET_CABLE]}
+            </SvgText>
+          </LabelFlag>
         </>
       ) : null}
       {/* node names */}

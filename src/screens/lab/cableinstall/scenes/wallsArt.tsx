@@ -87,9 +87,17 @@ export function StudBody({ x }: { x: number }) {
   );
 }
 
+/** R7-CI-07: the rack at true size — a 42U rack is ≈ 0.6 m × 1.93 m, so
+ *  RACK_FRONT.w × .h = 35 × 112 units at WALL_M (it was drawn 54 wide,
+ *  0.93 m: wider than the door). Its right side stays at x 70, where the
+ *  three routes leave it. */
+export const RACK_FRONT = { x: 35, w: 35, h: 112 } as const;
+
 /** A floor-standing 42U rack seen from the front (≈ 0.6 m × 1.93 m). */
 export function RackFront() {
   const id = useUid();
+  const { x, w, h } = RACK_FRONT;
+  const top = FLOOR_Y - h;
   return (
     <G>
       <Defs>
@@ -99,9 +107,10 @@ export function RackFront() {
           <Stop offset="1" stopColor="#1a1b1f" />
         </LinearGradient>
       </Defs>
-      <Rect x={16} y={58} width={54} height={FLOOR_Y - 58} rx={1.2} fill={`url(#${id}r)`} stroke="#0a0a0c" strokeWidth={0.7} />
-      <Rect x={16} y={58} width={54} height={4} fill="#34363d" />
-      <Rect x={22} y={63} width={42} height={FLOOR_Y - 68} fill="#0c0c0f" />
+      <Rect x={x} y={top} width={w} height={h} rx={1.2} fill={`url(#${id}r)`} stroke="#0a0a0c" strokeWidth={0.7} />
+      <Rect x={x} y={top} width={w} height={4} fill="#34363d" />
+      {/* the 19-inch opening between the rails (≈ 0.48 m) */}
+      <Rect x={x + 3.5} y={top + 5} width={w - 7} height={h - 10} fill="#0c0c0f" />
       {/* the kit: 1U / 2U faces with status LEDs */}
       {[
         [66, 3.4],
@@ -113,13 +122,13 @@ export function RackFront() {
         [124, 7],
         [140, 3.4],
         [146, 5.2],
-      ].map(([y, h], i) => (
+      ].map(([y, ht], i) => (
         <G key={i}>
-          <Rect x={22.6} y={y} width={40.8} height={h} rx={0.4} fill={i % 3 === 1 ? '#23252a' : '#2b2d33'} stroke="#101114" strokeWidth={0.3} />
-          <Circle cx={60.6} cy={y + h / 2} r={0.55} fill={i % 2 ? '#37d97b' : '#ffc64d'} />
+          <Rect x={x + 4} y={y} width={w - 8} height={ht} rx={0.4} fill={i % 3 === 1 ? '#23252a' : '#2b2d33'} stroke="#101114" strokeWidth={0.3} />
+          <Circle cx={x + w - 6.2} cy={y + ht / 2} r={0.55} fill={i % 2 ? '#37d97b' : '#ffc64d'} />
         </G>
       ))}
-      <Rect x={16} y={FLOOR_Y - 3} width={54} height={3} fill="#101114" />
+      <Rect x={x} y={FLOOR_Y - 3} width={w} height={3} fill="#101114" />
     </G>
   );
 }

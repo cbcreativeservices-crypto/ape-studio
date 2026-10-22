@@ -165,7 +165,7 @@ export const FAULTS: readonly FaultCase[] = [
     inspect: 'The jacket printing reads “INSTRUMENT CABLE — 1 × 24 AWG shielded”. This is not speaker cable. (Ring and sleeve read joined at both ends — that is the TS plug’s one long sleeve spanning both positions, not a fault.)',
     options: ['Wrong cable TYPE despite correct connectors', 'Open conductor', 'Short between tip and ring', 'The cable is fine for the job'],
     correct: 0,
-    explain: 'Every straight path lights — the tester passes it completely. A continuity test cannot tell instrument cable from speaker cable; only the jacket and construction can. On amplifier duty this cable heats and fails.',
+    explain: 'Every straight path lights — the tester passes it completely. A continuity test cannot tell instrument cable from speaker cable; only the jacket and construction can. On amplifier duty this cable can heat and fail.',
   },
   {
     id: 'not_seated',

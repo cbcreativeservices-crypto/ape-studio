@@ -23,7 +23,7 @@ import { View } from 'react-native';
 import Svg, { G, Line, Path, Rect } from 'react-native-svg';
 import { CONNECTOR_INKS } from '../connectorInks';
 import type { TesterCable } from '../data/testerCables';
-import { ART, Label, Leader } from './kit';
+import { ART, CARD_LABEL_U, Label, Leader } from './kit';
 
 const W = 340;
 /** R5-CB-02: a cable with a flex fault gets its own band under the opened
@@ -325,7 +325,7 @@ export function WiringTrace({ cable, width, progress, named = true }: { cable: T
             {named ? (
               <G>
                 <Leader x1={xb - 19.5} y1={jacketBottom + CRACK_LABEL_DY - 8} x2={xb - 19.5} y2={y1 + 2.2} color={ART.hi} />
-                <Label x={xb - 15} y={jacketBottom + CRACK_LABEL_DY} text="CRACKED JOINT — breaks when flexed" anchor="end" size={10} color={ART.hi} weight="semibold" />
+                <Label x={xb - 15} y={jacketBottom + CRACK_LABEL_DY} text="CRACKED JOINT — breaks when flexed" anchor="end" size={CARD_LABEL_U} color={ART.hi} weight="semibold" />
               </G>
             ) : null}
           </G>
@@ -337,7 +337,7 @@ export function WiringTrace({ cable, width, progress, named = true }: { cable: T
   const crossed = m.wires.filter((w) => w.crossed);
   if (crossed.length >= 2 && !network && named) {
     // above the jacket's dashed top edge (top − 4), clear of it and of the wires
-    parts.push(<Label key="xl" x={(xa + xb) / 2} y={top - 9} text="CROSSED" anchor="middle" size={10} color="#ff7a68" weight="semibold" />);
+    parts.push(<Label key="xl" x={(xa + xb) / 2} y={top - 9} text="CROSSED" anchor="middle" size={CARD_LABEL_U} color="#ff7a68" weight="semibold" />);
   }
   m.broken.forEach((i) => {
     const ink = wireInk(i);
@@ -351,7 +351,7 @@ export function WiringTrace({ cable, width, progress, named = true }: { cable: T
         <Path d={`M${gap1} ${y} L${xb} ${y}`} stroke={dark(ink.color) ? '#8a8d94' : '#050506'} strokeWidth={4.2} />
         <Path d={`M${gap1} ${y} L${xb} ${y}`} stroke={ink.color} strokeWidth={2.8} />
         <Path d={`M${gap0} ${y} l3 -3 M${gap0} ${y} l3 3 M${gap1} ${y} l-3 -3 M${gap1} ${y} l-3 3`} stroke={ART.copper} strokeWidth={1} />
-        {named ? <Label x={(gap0 + gap1) / 2} y={y - 6} text="OPEN" anchor="middle" size={10} color="#ff7a68" weight="semibold" /> : null}
+        {named ? <Label x={(gap0 + gap1) / 2} y={y - 6} text="OPEN" anchor="middle" size={CARD_LABEL_U} color="#ff7a68" weight="semibold" /> : null}
       </G>,
     );
   });
@@ -371,8 +371,8 @@ export function WiringTrace({ cable, width, progress, named = true }: { cable: T
     <View style={{ width, height: (H * width) / W }} accessible accessibilityRole="image" accessibilityLabel={`Wiring inside ${cable.label}, as measured.`}>
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={(H * width) / W} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill={ART.bg} />
-        <Label x={10} y={16} text={`END A · ${endA ?? ''}`} size={10} color={ART.sub} />
-        <Label x={W - 10} y={16} text={`END B · ${endB ?? ''}`} anchor="end" size={10} color={ART.sub} />
+        <Label x={10} y={16} text={`END A · ${endA ?? ''}`} size={CARD_LABEL_U} color={ART.sub} />
+        <Label x={W - 10} y={16} text={`END B · ${endB ?? ''}`} anchor="end" size={CARD_LABEL_U} color={ART.sub} />
         {/* the jacket, opened along its length */}
         <Rect x={c0} y={top - 4} width={c1 - c0} height={jacketBottom - (top - 4)} rx={10} fill="#111215" stroke="#3a3c42" strokeWidth={1} strokeDasharray="5 3" />
         {/* contact blocks at each end */}
@@ -382,17 +382,17 @@ export function WiringTrace({ cable, width, progress, named = true }: { cable: T
         {m.a.map((name, i) => (
           <G key={`la${i}`}>
             <Rect x={xa - 3} y={yOf(i) - 3} width={6} height={6} rx={1} fill={ART.gold} />
-            <Label x={xa - 10} y={yOf(i) + 3.5} text={short(name)} anchor="end" size={10} color={pairBad(i) ? '#ff9a8a' : ART.label} />
+            <Label x={xa - 10} y={yOf(i) + 3.5} text={short(name)} anchor="end" size={CARD_LABEL_U} color={pairBad(i) ? '#ff9a8a' : ART.label} />
           </G>
         ))}
         {m.b.map((name, i) => (
           <G key={`lb${i}`}>
             <Rect x={xb - 3} y={yOf(i) - 3} width={6} height={6} rx={1} fill={ART.gold} />
-            <Label x={xb + 10} y={yOf(i) + 3.5} text={short(name)} size={10} color={ART.label} />
+            <Label x={xb + 10} y={yOf(i) + 3.5} text={short(name)} size={CARD_LABEL_U} color={ART.label} />
           </G>
         ))}
-        {network ? <Label x={W / 2} y={H - 23} text={named && m.badPairs.length ? 'X marks = wires twisted together · red = the wrong pair' : 'X marks = the two wires twisted together as a pair'} anchor="middle" size={10} color={ART.sub} weight="regular" /> : null}
-        <Label x={W / 2} y={H - 9} text="inside the cable — conductors spread apart to trace each one" anchor="middle" size={10} color={ART.muted} weight="regular" />
+        {network ? <Label x={W / 2} y={H - 23} text={named && m.badPairs.length ? 'X marks = wires twisted together · red = the wrong pair' : 'X marks = the two wires twisted together as a pair'} anchor="middle" size={CARD_LABEL_U} color={ART.sub} weight="regular" /> : null}
+        <Label x={W / 2} y={H - 9} text="inside the cable — conductors spread apart to trace each one" anchor="middle" size={CARD_LABEL_U} color={ART.muted} weight="regular" />
       </Svg>
     </View>
   );

@@ -109,7 +109,7 @@ export const JOB_MATRIX: readonly JobMatrixEntry[] = [
       { id: 'ethernet', label: 'Ethernet networking', can: true, backs: ['network_audio', 'control_data'], explain: 'The native job: standard network traffic over category cable.' },
       { id: 'netaudio', label: 'Networked audio (Dante-style systems)', can: true, backs: ['network_audio'], explain: 'Audio-over-IP rides real Ethernet — many channels down one category cable.' },
       { id: 'proprietary', label: 'Proprietary digital snakes', can: true, backs: ['network_audio'], explain: 'Some digital snakes use the same connector but are NOT Ethernet — plugging them into a network switch does nothing useful. The connector fitting proves nothing.' },
-      { id: 'analog', label: 'Analog microphone signal', can: false, explain: 'No. An 8P8C jack on a stagebox is a data port. An analog mic needs an analog input — the fact that neither will fit the other is the system protecting you.' },
+      { id: 'mains', label: 'Mains (wall-outlet) power', can: false, explain: 'No. The thin category wires and small contacts are built for data and low-voltage DC (Power over Ethernet). Mains power never goes on an RJ45 or etherCON.' },
     ],
   },
   {

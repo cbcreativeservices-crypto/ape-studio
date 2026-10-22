@@ -69,7 +69,7 @@ export const CARRIED_CATEGORIES: CarriedCategory[] = [
   {
     id: 'ac_mains',
     label: 'AC MAINS POWER',
-    blurb: 'Wall power. It runs the equipment, it is dangerous to handle carelessly, and it never shares a connector with signal.',
+    blurb: 'Wall power. It runs the equipment, it is dangerous to handle carelessly, and in this lab it never shares a connector with signal.',
   },
   {
     id: 'hybrid_power_data',
