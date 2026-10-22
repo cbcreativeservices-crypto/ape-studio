@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-21 22:38 · ccode · dad9c3ec
+changed: Merge dj-lab (round 6: 40 grade fixes) into next-store-build
+affects other side: nothing (client merge)
+needs: nothing
+
+
 ### 2026-10-21 22:38 · ccode · f0641366
 changed: Round 6 (owner go): cable labs — bi-amp HF damage conditional, labels >= 9 pt, right connector ends, patch cords clear of jacks, cutaway S label, true-scale outlet, honest route length, catwalk feed lands on the box
 affects other side: nothing (client lab text/art only)
