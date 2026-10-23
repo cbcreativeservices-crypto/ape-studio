@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 01:36 · ccode · 9d001fd6
+changed: Intro video: the owner's final onboarding video (2026-10-23), replaced in place
+affects other side: nothing (bundled asset; rides the approval-day OTA — the H2 hold is cleared once merged)
+needs: nothing
+
+
 ### 2026-10-23 00:03 · ccode · 8ce9035c
 changed: One registry name on screen (Pro Registry) + Limiter popup = glossary text
 affects other side: nothing (app copy; Limiter popup now equals glossary plain_english 7f621dc4)
