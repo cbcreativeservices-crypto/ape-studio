@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 10:41 · ccode · f8ea7625
+changed: Advanced Tuner: roomier preset menus + piano HOW TO TUNE popup (owner 2026-10-23)
+affects other side: nothing backend (Advanced Tuner layout + piano guide copy).
+needs: nothing
+
+
 ### 2026-10-23 10:25 · ccode · cc58e08e
 changed: RTA owner pass: band cursor, CAPTURE key, corner colour wheel, level-coloured frames (2026-10-23)
 affects other side: nothing backend (RTA screen + shared bezel optional frame prop).
