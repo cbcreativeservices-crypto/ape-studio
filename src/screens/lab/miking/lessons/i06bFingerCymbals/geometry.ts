@@ -138,7 +138,7 @@ export const FC_MODEL: InstrumentModel = {
   envelopes,
   variants: [
     { id: 'orchestral', label: 'HELD STILL', blurb: 'One cymbal held flat, the other dropped edge-first into it — a classical way of playing, with the player standing still.' },
-    { id: 'dance', label: 'DANCE', blurb: 'A pair on the thumb and a finger of each hand, played in rhythm while dancing — the traditional way. The source moves.' },
+    { id: 'dance', label: 'DANCE', blurb: 'A pair on the thumb and a finger of each hand, played in rhythm while dancing — a common traditional way. The source moves.' },
   ],
   defaultVariant: 'orchestral',
   views: {

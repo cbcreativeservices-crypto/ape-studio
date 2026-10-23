@@ -29,7 +29,7 @@ import { SceneText } from '../art/sceneText';
 import { useBoothKit } from './shared';
 
 const TERMS = [
-  { term: 'Load', def: 'Put a track onto a deck. Depending on the player, loading onto a playing deck stops it, jumps straight into the new track, or is refused by a load-lock setting — on air, any of those is a disaster. Load only onto the deck the crowd is not hearing.' },
+  { term: 'Load', def: 'Put a track onto a deck. Depending on the player, loading onto a playing deck stops it or jumps straight into the new track — on air, either is a disaster (some players have a load-lock that refuses it). Load only onto the deck the crowd is not hearing.' },
   { term: 'Transport CUE', def: 'The player’s CUE button: a place in the track you come back to. Paused, it sets the point; playing, it jumps back there and stops. On most players you can also HOLD CUE to hear from the cue point — let go and it snaps back; press PLAY while holding to let it run. Not the same as the mixer’s headphone CUE.' },
   { term: 'On air', def: 'A deck the audience is hearing right now: playing, with its channel fader up and the crossfader letting it through.' },
   { term: 'Jog wheel', def: 'Turn it while paused to move through the track finely; push or drag its outer ring while playing to nudge the track a little. In VINYL mode, pressing the top plate grabs the track like a record — never rest your hand on it.' },
@@ -44,7 +44,7 @@ function matchable(b: Booth, t: TrackId): { ok: boolean; why: string } {
   if (t === A.track) return { ok: false, why: `${TRACKS[t].title} is the track already playing on deck A — choose a different one.` };
   const p = pitchFor(TRACKS[t].bpm, playedBpm(TRACKS[A.track].bpm, A.pitch));
   if (Math.abs(p) <= PITCH_RANGE_PCT) return { ok: true, why: `${TRACKS[t].title} (${TRACKS[t].bpm} BPM) sits ${Math.abs(p).toFixed(1)} % from deck A’s ${TRACKS[A.track].bpm} — inside the ±8 % tempo fader.` };
-  return { ok: false, why: `${TRACKS[t].title} is ${TRACKS[t].bpm} BPM, ${Math.abs(p).toFixed(0)} % away from deck A’s ${TRACKS[A.track].bpm}: the tempo fader only reaches ±8 %, so it cannot be matched. Read the BPM in the crate before you load.` };
+  return { ok: false, why: `${TRACKS[t].title} is ${TRACKS[t].bpm} BPM, ${Math.abs(p).toFixed(0)} % away from deck A’s ${TRACKS[A.track].bpm}: this lab’s tempo fader only reaches ±8 %, so it cannot be matched. Read the BPM in the crate before you load.` };
 }
 
 /** The OTHER deck's on-air state, at the glass edge (learning review p05 #2):

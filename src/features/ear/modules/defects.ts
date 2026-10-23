@@ -88,7 +88,7 @@ const DEFECTS: Defect[] = [
   },
   {
     key: 'ground', label: 'Ground loop (emulation)', confusableWith: ['hum'],
-    truth: 'Ground-loop buzz (emulation) — rectification doubles the mains tone and stacks even harmonics.',
+    truth: 'Ground-loop buzz (emulation) — this drill doubles the mains tone and stacks even harmonics; real loops vary.',
     solo: (rng) => groundLoop(1.6, mains(rng)),
     onBed: (b, rng, mix) => addUnder(b, groundLoop(b.length / SR, mains(rng)), mix),
   },

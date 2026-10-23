@@ -907,7 +907,7 @@ export const STAGE2_DELIVER: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "A destination is chosen but no loudness requirement is recorded",
-      detail: "Most publishing destinations have a loudness and peak requirement, and the requirements are not the same. A master that meets one can be rejected or automatically altered by another. There is no universal figure to fall back on.",
+      detail: "Most publishing destinations have a loudness and peak requirement or target, and they are not the same. A master that meets one can be rejected or automatically altered by another. There is no universal figure to fall back on.",
       fixHint: "Obtain the specification from each destination and copy its loudness and peak requirements, with units, into the row for each deliverable. Record where you found them.",
       needsLogic: true,
       logicIntent: "Fire when at least one platform other than live_venue or internal is selected in stage 1 and every spec_table row has an empty loudness_requirement, or when spec rows exist with loudness values but loudness_spec_source is empty. Treat a live venue as exempt when it is the only destination. Never suggest a value."
@@ -968,7 +968,7 @@ export const STAGE2_DELIVER: StageDef = {
       severity: "attention",
       kind: "mismatch",
       title: "The session sample rate fights the deliverables",
-      detail: "Delivering at a higher rate than you recorded adds nothing but conversion time, and a deliverable that must sync to picture has a rate the video side has already decided. Both are settled before the first take or not at all.",
+      detail: "Delivering at a higher rate than you recorded adds nothing but conversion time, and a deliverable that must sync to picture has a rate the video side has already decided. Settle both before the first take; fixing them later means a rate conversion, and a sync error can slip in.",
       fixHint: "Set the session rate against the deliverables before the first take. When a deliverable syncs to picture, get the rate from the video side and record it in the sync details.",
       needsLogic: true,
       logicIntent: "Fire when any spec_table row's sample rate is higher than session_sample_rate. Also fire when timecode_required is yes and timecode_notes is empty. Do not fire on plain downward conversion, which is routine, and do not hardcode which rate belongs to which destination."

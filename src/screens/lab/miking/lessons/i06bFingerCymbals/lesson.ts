@@ -147,7 +147,7 @@ const scenarios: MikingScenario[] = [
     explain: 'How the edges meet, the force and the pair change the attack before the mic does. Then compare a safe angle or distance at matched level — off-axis response varies, so listen.',
     why: {
       'A larger condenser, which will make the attack softer': 'Diaphragm size is not a tone control. Start with the source.',
-      'Lower gain, so the harshness goes away': 'Gain changes the level, not the balance: it stays harsh, only quieter.',
+      'Lower gain, so the harshness goes away': 'Gain changes the level, not the balance: unless the input is clipping, it stays harsh, only quieter.',
     },
   },
   {
@@ -267,7 +267,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A cymbal send in the monitor eats into the feedback margin. The player usually hears the cymbals acoustically; send only what they need.',
     why: {
       'Yes, loud, so the player hears each stroke': 'A loud send raises the feedback risk — and the player is right beside the cymbals.',
-      'Yes — monitors stop finger cymbals feeding back': 'Monitors are where feedback starts, not a cure for it.',
+      'Yes — monitors stop finger cymbals feeding back': 'Monitors are a common place for feedback to start, not a cure for it.',
     },
   },
   {
@@ -328,7 +328,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A second pair sounds higher. Can you say thicker cymbals always ring higher?',
     options: ['No — compare these pairs; makers and alloys differ', 'Yes — thickness sets the pitch in each pair', 'Yes, as long as both pairs are exactly the same size'],
     correct: 'No — compare these pairs; makers and alloys differ',
-    explain: 'One maker describes its thick pair as higher than its thin pair; that does not make a rule across makers, alloys, sizes or players. Compare the real pairs.',
+    explain: 'Like for like, a thicker plate rings higher, and one maker describes its thick pair that way; that does not make a rule across makers, alloys, sizes or players. Compare the real pairs.',
     why: {
       'Yes — thickness sets the pitch in each pair': 'Size, alloy, shape and the player all play a part; compare the real pairs.',
       'Yes, as long as both pairs are exactly the same size': 'Even at one size, alloys and shapes differ between makers.',
@@ -478,7 +478,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'The level, as the distance changes',
     explain: 'Nearer is louder at the mic: a moving source changes level along its route.',
     why: {
-      'The cymbals’ pitch, up and down': 'Distance changes the level at the mic, not the pitch.',
+      'The cymbals’ pitch, up and down': 'Distance changes the level at the mic; a walking dancer barely shifts the pitch.',
       'Only the room, not the cymbals': 'The direct sound changes too, with the distance.',
     },
   },

@@ -80,7 +80,7 @@ export const F02_COPY: Partial<LessonCopy> = foleyCopy({
     },
   },
   before: [
-    { title: 'DEFINE THE ACTION FIRST', text: 'Watch the picture or rehearse the cue: a sleeve against the torso, leather flexing, a coat flap, bedclothes — or a whole worn garment? Note the start and stop, the energy and the shot. Use the whole item for leather and full jackets, and move it precisely — never just crumple it.' },
+    { title: 'DEFINE THE ACTION FIRST', text: 'Watch the picture or rehearse the cue: a sleeve against the torso, leather flexing, a coat flap, bedclothes — or a whole worn garment? Note the start and stop, the energy and the shot. Use the whole item for leather and full jackets, and move it precisely — crumple it only when the picture does.' },
     { title: 'LISTEN TO THE ROOM', text: 'Cloth is quiet, so inspect the room before turning up gain: ventilation, hum, traffic, floor and stand vibration, breath, jewellery and other clothes. Record a short quiet baseline.' },
     { title: 'CLEAR OF THE WHOLE GESTURE', text: 'Rehearse the largest gesture before recording. The garment never brushes the mic, mount, cable or stand; the stand is secure, its cable clear of walking paths; a shock mount and strain relief keep thumps out.' },
     { title: 'CARE WITH CLOTH AND PEOPLE', text: 'Never drape cloth over a hot light, an electrical fixture or a mic connector; fasten nothing to a person without their agreement; overhead rigging beyond an ordinary stand is for qualified people with an approved mount; never strike, pull or snag the mic for a louder effect.' },
@@ -120,7 +120,7 @@ export const F02_COPY: Partial<LessonCopy> = foleyCopy({
     B: { typeId: 'ldcRoom', zone: 'f02.room' },
     learn: [
       'For a spacious interior, one idea is a close mic and another farther back for the room — each recorded on its own channel, compared alone, then together over the whole action. For an exterior scene, one mic often avoids printing the studio room.',
-      'The two hear every move at different times, so some pitches cancel in a mono sum — and a moving garment makes any one time alignment true only for one moment. Choose a balance for the whole action; move or rebalance before trying polarity.',
+      'The two hear every move at different times, so some frequencies cancel in a mono sum — and a moving garment makes any one time alignment true only for one moment. Choose a balance for the whole action; move or rebalance before trying polarity.',
     ],
     warn: 'This simplified graph treats the fabric as one point and both mics as hearing the same sound. The garment moves, so the delay changes as it moves, and the room mic hears more reflections. Read the notch POSITIONS and treat their depths as illustrative.',
   },

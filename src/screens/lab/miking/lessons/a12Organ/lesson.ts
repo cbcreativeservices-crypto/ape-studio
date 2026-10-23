@@ -84,7 +84,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A stop is labelled 16′. What does that tell you for sure?',
     options: ['Its pitch: the pipes may be shorter than 16 ft', 'Each one of its pipes is exactly 16 feet long', 'It is the loudest stop that the whole organ has'],
     correct: 'Its pitch: the pipes may be shorter than 16 ft',
-    explain: 'The label names the pitch of an open pipe of that length. A stopped pipe sounds an octave lower than an open one of the same length, so a stopped 16′ stop is only about 8 ft long. Verify the real low range by ear.',
+    explain: 'The label names the pitch of an open pipe of that length. A stopped pipe sounds an octave lower than an open one of the same length, so the longest pipe of a stopped 16′ stop is only about 8 ft long. Verify the real low range by ear.',
     why: {
       'Each one of its pipes is exactly 16 feet long': 'Only the lowest open pipe would be near that; stopped pipes are about half as long.',
       'It is the loudest stop that the whole organ has': 'The label is about pitch, not loudness.',

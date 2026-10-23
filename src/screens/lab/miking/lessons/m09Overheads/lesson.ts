@@ -58,7 +58,7 @@ const pages: LessonPages = {
     title: 'Two overheads',
     goal: 'Measure two overheads to the snare, see what equal snare distance lines up — and what it does not — and compare the common stereo pairs.',
     credit: { scenarios: ['oh.two.1', 'oh.two.2', 'oh.two.3', 'oh.two.4'], interactive: 'snareMatched', note: 'Move a mic so the snare distances differ, bring them level again, and look at the kick as a source; then answer the four checks.' },
-    takeaway: 'Equal snare distance lines up the snare — nothing else. A coincident pair adds no time difference of its own; a spaced pair adds width and arrival differences. Polarity flips the sign; it never removes a delay. Listen in mono.',
+    takeaway: 'Equal snare distance lines up the snare, and only what sits the same distance from both mics. A coincident pair adds no time difference of its own; a spaced pair adds width and arrival differences. Polarity flips the sign; it never removes a delay. Listen in mono.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -294,7 +294,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Stereo techniques suit a stereo system. In a mono PA a single overhead may be simpler, and a spaced pair summed to mono can colour the kit.',
     why: {
       'Yes: a spaced pair sounds wider in mono too': 'Summed to mono there is no width — and a spaced pair’s arrival differences can colour the sound.',
-      'Yes, if the pair is panned hard left and right': 'A mono PA sums the pan positions back together, so panning changes nothing there.',
+      'Yes, if the pair is panned hard left and right': 'A mono PA sums the pan positions back together, so panning cannot undo the pair’s arrival differences there.',
     },
   },
   {

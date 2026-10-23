@@ -294,7 +294,7 @@ export const E09_SETUPS: EnsembleSetup[] = withWords([
     variants: ['room'],
     singles: singles(VOCAL_MIC),
     mics: 'A directional vocal dynamic close to the singer.',
-    start: 'Within about 10 cm of the lips; the gobo behind the singer, so the band reaches the mic from its back.',
+    start: 'Within about 10 cm of the lips, the singer facing the band across the gobo, so the band reaches the mic from its back.',
     line: 'Less drum and amp spill in the vocal — but a scratch vocal full of spill is hard to keep as the final one. Keep eye contact and a cue mix.',
     roles: 'To the recording and the cue mix.',
     core: true,

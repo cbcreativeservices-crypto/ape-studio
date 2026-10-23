@@ -176,7 +176,7 @@ export const CI_SOURCES: CableLabSource[] = [
     organization: 'Cable manufacturer',
     document: 'Installed-cable datasheet / installation specification (bend radius, pull tension, temperature, use)',
     sourceType: 'manufacturer',
-    notes: 'The governing numbers for a SPECIFIC cable always come from its manufacturer documentation.',
+    notes: 'The governing numbers for a SPECIFIC cable come from its manufacturer documentation, unless a code, standard or job spec sets a tighter limit.',
   },
   {
     id: 'mfr_support',
@@ -196,7 +196,7 @@ export const CI_SOURCES: CableLabSource[] = [
     organization: 'U.S. Federal (UFGS)',
     document: 'Unified Facilities Guide Specifications — division 27 communications sections',
     sourceType: 'professional_reference',
-    jurisdiction: 'US federal projects',
+    jurisdiction: 'US military and some other US federal projects',
   },
 ];
 

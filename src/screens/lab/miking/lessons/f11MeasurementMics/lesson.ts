@@ -42,7 +42,7 @@ const pages: LessonPages = {
     title: 'Build the chain',
     goal: 'Build a measurement chain link by link — capsule, power, input, its own record — see a wrong join refused and why, and match the mic’s field response to the task.',
     credit: { scenarios: ['mm.mic.1', 'mm.mic.2', 'mm.mic.3', 'mm.rec.1'], interactive: 'chainBuilt', note: 'Build a chain that passes its question in BUILD THE CHAIN, and answer the four checks (one reaches back to the sound field).' },
-    takeaway: 'The power path follows the capsule: a polarization supply for an externally polarized capsule, a constant-current input for a prepolarized one, phantom only through the approved unit. A dBFS number is not a sound level, and a sensitivity belongs to its own chain.',
+    takeaway: 'The power path follows the capsule: a polarization supply for an externally polarized capsule, a constant-current input for a prepolarized one, or phantom only where its maker approves it. A dBFS number is not a sound level, and a sensitivity belongs to its own chain.',
   },
   placement: {
     title: 'Placement Studio',
@@ -253,7 +253,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You stand 40 cm behind the capsule during a reading. What changes?',
     options: ['Your body reflects a late copy of the sound into it', 'Nothing: the capsule faces the loudspeaker, not you', 'Only the lows, which your body absorbs entirely'],
     correct: 'Your body reflects a late copy of the sound into it',
-    explain: 'A person near the capsule is a reflecting surface: a copy of the sound arrives a little later and mixes with the direct sound, raising some pitches and cutting others. The closer you stand, the stronger it is.',
+    explain: 'A person near the capsule is a reflecting surface: a copy of the sound arrives a little later and mixes with the direct sound, raising some frequencies and cutting others. The closer you stand, the stronger it is.',
     why: {
       'Nothing: the capsule faces the loudspeaker, not you': 'A measurement mic hears round itself: a reflection from behind still reaches it.',
       'Only the lows, which your body absorbs entirely': 'A body reflects and scatters the mids and highs most; the lows pass round it.',
@@ -535,8 +535,8 @@ const diagnostic: DiagnosticItem[] = [
     id: 'mm.q.2',
     covers: 'sound',
     prompt: 'Why does the field response matter most in the highs?',
-    options: ['The capsule nears a wavelength in size', 'The calibrator only checks the highs', 'The lows bend round the person measuring'],
-    correct: 'The capsule nears a wavelength in size',
+    options: ['The capsule is a big part of a wavelength', 'The calibrator only checks the highs', 'The lows bend round the person measuring'],
+    correct: 'The capsule is a big part of a wavelength',
     explain: 'At 10 kHz a wavelength is about 3.4 cm: the capsule disturbs the field it measures.',
     why: {
       'The calibrator only checks the highs': 'The usual calibrator tone is 1 kHz — a mid frequency.',

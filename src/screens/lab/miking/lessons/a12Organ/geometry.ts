@@ -177,6 +177,6 @@ export const A12_WEDGES: Wedge[] = ([1, -1] as const).map((s) => ({
   lift: (PA.h0 + PA.h1) / 2,
   faces: v3(1, 0, -0.25 * s),
   glyph: 'none' as const,
-  note: s > 0 ? 'Up on the arch, behind and above a spot mic that faces the organ — a pattern’s rejection can be aimed toward it.' : 'The same on the other side: one mic’s null cannot face both at once. Level and routing do the rest.',
+  note: s > 0 ? 'Up on the arch, behind and above a spot mic that faces the organ — a pattern’s rejection can be aimed toward it.' : 'The same on the other side: one mic’s null can seldom face both at once. Level and routing do the rest.',
   prov: ill('a typical position for a church’s PA: a drawing default'),
 }));

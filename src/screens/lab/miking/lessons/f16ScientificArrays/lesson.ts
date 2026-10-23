@@ -482,7 +482,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'b50', label: 'Matched pair, 50 cm baseline, one recorder, origin logged', ok: true, power: 'phantom', feedback: 'One clock, matched elements, the geometry written: an honest arrival order.' },
       { id: 'b100', label: 'Matched pair, 1 m baseline, one recorder, origin logged', ok: true, power: 'phantom', feedback: 'A wider baseline: larger differences, the same honest claim.' },
-      { id: 'two', label: 'One mic on each of two phones, started together by hand', ok: false, power: 'none', feedback: 'Two clocks drift: the order cannot be trusted.' },
+      { id: 'two', label: 'One mic on each of two phones, started together by hand', ok: false, power: 'none', feedback: 'Two clocks drift, and a hand start is off by more than the sound’s own difference: the order cannot be trusted.' },
     ],
     reasons: [
       R('clock', 'Both elements on one synchronized clock', 'required', 'The time difference must be the sound’s.'),
@@ -566,7 +566,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'Both channels sampled on one clock; independent recorders drift.',
     why: {
       'The same colour of cable': 'Cables do not set the timing.',
-      'Two recorders at once': 'Two recorders are two clocks.',
+      'Two recorders at once': 'Two unlocked recorders are two clocks.',
     },
   },
   {
@@ -627,7 +627,7 @@ export const F16_LESSON: Lesson = {
       { title: 'Mirror', text: 'Behind the array, at the side point’s mirror, the pair hears exactly the same.' },
     ],
     attack: 'The arrival order shows which side was earlier.',
-    body: 'A unique direction needs more elements off the line.',
+    body: 'A unique direction needs more elements off the line — and one off the plane to tell up from down.',
     head: { diameterMm: 12.7, rods: 0, label: '1/2 in capsule', strikeSrc: 'GRAS-FF' },
   },
   setting: {

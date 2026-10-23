@@ -22,8 +22,8 @@ export const SOUND_SYSTEMS_CHECK: readonly UnderstandingQuestion[] = [
   {
     id: 'speaker-into-line',
     prompt: 'A cable from a power amplifier’s output is connected to a powered loudspeaker’s line input. What happens?',
-    options: ['The input is damaged — speaker level is far beyond what a line input tolerates', 'It works, a little loud', 'Nothing plays, but nothing is harmed', 'The amplifier goes quiet to protect it'],
-    correct: 'The input is damaged — speaker level is far beyond what a line input tolerates',
+    options: ['The input can be damaged — speaker level is far beyond what a line input tolerates', 'It works, a little loud', 'Nothing plays, but nothing is harmed', 'The amplifier goes quiet to protect it'],
+    correct: 'The input can be damaged — speaker level is far beyond what a line input tolerates',
     explanation: 'Speaker level is tens of volts. A line input expects a volt or two. This is the one connection the lab refuses outright.',
   },
   {
@@ -64,8 +64,8 @@ export const SOUND_SYSTEMS_CHECK: readonly UnderstandingQuestion[] = [
   {
     id: 'underpowered',
     prompt: 'Why is an UNDERPOWERED amplifier not the safe choice for a loudspeaker?',
-    options: ['Reaching level means driving it into clipping, which is what usually damages high-frequency drivers', 'A small amplifier cannot make sound at all', 'It uses more electricity', 'Its output is always at speaker level'],
-    correct: 'Reaching level means driving it into clipping, which is what usually damages high-frequency drivers',
+    options: ['Reaching level means driving it into clipping, which can overheat drivers, tweeters most of all', 'A small amplifier cannot make sound at all', 'It uses more electricity', 'Its output is always at speaker level'],
+    correct: 'Reaching level means driving it into clipping, which can overheat drivers, tweeters most of all',
     explanation: 'A clipped amplifier delivers flattened, high-frequency-rich waveforms that heat tweeters. Clean headroom is the protection.',
   },
   {
@@ -108,7 +108,7 @@ export const SOUND_SYSTEMS_CHECK: readonly UnderstandingQuestion[] = [
     prompt: 'A channel is dead. Where does a professional START looking?',
     options: ['At the source, and forward station by station until the reading changes', 'At the loudspeaker, and backward', 'By replacing the amplifier', 'By recalling a different scene'],
     correct: 'At the source, and forward station by station until the reading changes',
-    explanation: 'The first station whose reading is not healthy is the fault, or where it became visible. Walking forward finds it in the fewest steps; swapping boxes is guessing.',
+    explanation: 'The first station whose reading is not healthy is the fault, or where it became visible. Walking forward is steady and skips nothing; swapping boxes is guessing.',
   },
 ];
 

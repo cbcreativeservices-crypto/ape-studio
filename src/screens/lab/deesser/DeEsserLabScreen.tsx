@@ -267,7 +267,7 @@ function PageThreshold({ ctx }: { ctx: PageCtx }) {
   const count = <Text style={styles.read}>{overSib} of {SIB.length} sibilants above threshold · {overOther} other sounds crossing</Text>;
   return (
     <View style={{ gap: 12 }}>
-      <Lead>The threshold is the level the hiss must reach before anything happens. Above it, the de-esser turns down; below it, it is not even there.</Lead>
+      <Lead>The threshold is the level the hiss must reach before anything happens. Above it, the de-esser turns down; below it, it does nothing (in this hard-knee model).</Lead>
       <Prompt>Drag the threshold up until nothing crosses, then down until the gaps cross. Find the band where only orange labels sit above the line.</Prompt>
       {thr}
       <ExpandableFigure
@@ -568,7 +568,7 @@ function PageConnections({ ctx }: { ctx: PageCtx }) {
         question="Which description of a de-esser is right?"
         options={['An EQ that cuts around 6 kHz whenever the voice gets loud', 'A compressor whose detector listens through a hiss filter', 'A gate that opens only while an S sound is present', 'A limiter set to the level of the loudest S in the take']}
         correct={1}
-        explain="It is a compressor's detector, threshold and gain computer with one addition: the detector listens to a filtered copy of the voice, so only hiss can trigger it."
+        explain="It is a compressor's detector, threshold and gain computer with one addition: the detector listens to a filtered copy of the voice, so mostly hiss triggers it."
         onCorrect={() => ctx.markDone()}
       />
     </View>

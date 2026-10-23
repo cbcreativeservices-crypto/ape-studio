@@ -116,7 +116,7 @@ export const GUIDE: MixingGuide = {
         "source": "Sitar (long-necked plucked lute) / santoor (hammered dulcimer)",
         "cut": "HPF 120–150 Hz; −2 dB at 250–400 Hz",
         "boost": "+2 dB at 3–5 kHz (jawari buzz / hammer attack)",
-        "notes": "Sitar sympathetic strings live above 5 kHz — protect them"
+        "notes": "Sitar sympathetic-string shimmer lives above 5 kHz — protect it"
       },
       {
         "source": "Strings section",

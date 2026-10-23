@@ -31,7 +31,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "808 / sub bass:",
-      "text": "a tuned, long-decay bass drum that functions as both kick and bassline; the defining sound of trap.",
+      "text": "a tuned, long-decay bass drum that often plays the bassline and can also act as the kick; the defining sound of trap.",
       "bullet": true
     },
     {
@@ -75,7 +75,7 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal",
         "cut": "HPF 80–100 Hz; −2 to −4 dB at 200–350 Hz; narrow cuts on resonances",
         "boost": "+2 to +3 dB at 3–5 kHz; +1 to +2 dB shelf at 10–12 kHz",
-        "notes": "Ear is most sensitive at 2.5–5 kHz; de-ess after the presence boost"
+        "notes": "Ear is most sensitive at about 2.5–5 kHz; de-ess before or after the presence boost, then check the S sounds"
       },
       {
         "source": "Kick",
@@ -117,7 +117,7 @@ export const GUIDE: MixingGuide = {
         "source": "Live: handheld vocal mic",
         "cut": "Notch feedback rings (often 2–4 kHz); −3 dB at 150–250 Hz for proximity effect",
         "boost": "+2 dB at 3–4 kHz",
-        "notes": "Rappers cup and eat the mic; expect heavy proximity boost"
+        "notes": "Many rappers cup and eat the mic; expect heavy proximity boost"
       }
     ],
     "notes": []
@@ -183,7 +183,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "De-essers are essential: rap is closer to speech, so sibilants and plosives stand out more than in sung music. Many top engineers run two de-essers (one before and one after the presence boost) plus a multiband or dynamic EQ dipping 200–400 Hz on the vocal. Commercial rap vocals are often processed through many stages — sometimes dozens of compressors on one lead vocal. Gates are rarely needed in the studio; live, an expander on the hype-man mic helps when they are not talking."
+        "text": "De-essers are essential: rap is closer to speech, so sibilants (S sounds) stand out more than in sung music. Many top engineers run two de-essers (one before and one after the presence boost) plus a multiband or dynamic EQ dipping 200–400 Hz on the vocal. Commercial rap vocals are often processed through many stages — sometimes several compressors in series on one lead vocal. Gates are rarely needed in the studio; live, an expander on the hype-man mic helps when they are not talking."
       }
     ]
   },
@@ -246,7 +246,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Hip-hop and trap masters commonly land at −9 to −7 LUFS-I, true peak around −1 to 0 dBTP. Most streaming services normalize to about −14 LUFS, so loud masters are turned down; a master at −9 with punchy transients often beats a −6 master after normalization. The genre tolerates a short-term dynamic range of only about 5–7 dB."
+      "text": "Hip-hop and trap masters commonly land at −9 to −7 LUFS-I, true peak often near −1 to 0 dBTP, though streaming guides advise −1 dBTP, or −2 dBTP for masters this loud. Most streaming services normalize to about −14 LUFS, so loud masters are turned down; a master at −9 with punchy transients often beats a −6 master after normalization. The genre tolerates a short-term dynamic range of only about 5–7 dB."
     }
   ],
   "liveStudio": {

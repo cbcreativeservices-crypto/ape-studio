@@ -70,7 +70,7 @@ export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
       valueLabel: board === 'oct' ? '1/1 OCT' : '1/3 OCT',
       options: [
         { id: 'oct', label: '1-OCTAVE · 10 BANDS', blurb: 'One fader per octave — broad strokes only. Quick to read, too coarse to fix a narrow problem.' },
-        { id: 'third', label: '1/3-OCTAVE · 31 BANDS', blurb: 'Three faders per octave — the live-sound standard, fine enough to notch a feedback frequency.' },
+        { id: 'third', label: '1/3-OCTAVE · 31 BANDS', blurb: 'Three faders per octave — the live-sound standard, fine enough to pull down a feedback region (a parametric notch is narrower).' },
       ],
       selectedId: board,
       onSelect: (id) => setBoard(id as 'oct' | 'third'),

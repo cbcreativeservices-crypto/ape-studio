@@ -14,7 +14,7 @@ export const TUBA_MODEL: InstrumentModel = lowBrassModel(SPEC, {
   views: TUBA_VIEWS,
   variantWords: {
     up: { label: 'BELL UP', blurb: 'The bell points up, beside the player’s head — the usual orchestral tuba.', phrase: 'the bell up' },
-    front: { label: 'BELL FRONT', blurb: 'The bell turns to face the audience — the form made for recording studios. (Older military tubas pointed back; a sousaphone wraps round the player.)', phrase: 'the bell to the front' },
+    front: { label: 'BELL FRONT', blurb: 'The bell turns to face the audience — a form first made for early recording studios. (Older military tubas pointed back; a sousaphone wraps round the player.)', phrase: 'the bell to the front' },
   },
   words: {
     bell: 'The flared end of the tube — about 44 cm across here. Nearly all of the sound leaves from its opening: no mic goes in it or right over it.',

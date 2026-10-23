@@ -263,7 +263,7 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open DECKS and play deck A. Deck A is on air — never touch its tempo; you match B to A. Deck B waits at bar 1: start it on the ONE of one of A’s phrases (PLAY B when A PHRASE turns 1 / 8 — it flashes on bar 8 as a count-in).</Do>
+        <Do>Open DECKS and play deck A. Deck A is on air — leave its tempo alone; you match B to A. Deck B waits at bar 1: start it on the ONE of one of A’s phrases (PLAY B when A PHRASE turns 1 / 8 — it flashes on bar 8 as a count-in).</Do>
         <P>Missed it? Pause B, open JOG B → CUE B BACK TO BAR 1, and try on the next phrase. Then slow deck B: move TEMPO B toward − (away from you on the player) until its BPM reads like A’s.</P>
         <P>The waveforms show each track’s real kicks under its grid; the PHASE strip shows where B’s beat sits against A’s. Centre and green is together.</P>
       </Step>
@@ -273,7 +273,7 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
         <Note>In a big room the PA reaches you late — about 3 ms for every metre. Match against your headphones and the booth monitors, never against the sound coming back off the floor.</Note>
       </Step>
       <Step n={4}>
-        <Do>Match the tempo to within 0.1 BPM, line the beats up to within a sixteenth of a beat, and start deck B on a phrase.</Do>
+        <Do>Match the tempo to within 0.1 BPM, line the beats up to within a sixteenth of a beat (the lab’s pass mark — on a real system, until you hear no flam), and start deck B on a phrase.</Do>
         {startMsg ? <Note tone={phraseStart ? 'try' : 'safety'}>{startMsg}</Note> : null}
         <P>Then try the blend: bring B’s fader up (JOG B → CH2 FADER) as the next phrase begins. Where you start is a musical choice — the start of a phrase is a strong suggested starting point.</P>
         <GoalChips goals={goals.slice(0, 3)} latched={latched.slice(0, 3)} />

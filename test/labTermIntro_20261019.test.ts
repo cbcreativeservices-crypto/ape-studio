@@ -205,10 +205,10 @@ describe('2. the right term — and the right meaning — per lab', () => {
     assert.equal(wired('EqLab')?.plainEnglish, 'An equalizer boosts or cuts chosen frequencies. It shapes the tone of a sound.');
     assert.equal(
       wired('LimiterLab')?.plainEnglish,
-      'A limiter is an extreme compressor with an infinite ratio. You set a threshold, and any signal above it is absolutely stopped from going higher. This protects against surprise clipping. Limiters are essential on the master bus and for safety on inputs. Used right, they are invisible. Used wrong, they squash the sound.',
+      'A limiter is an extreme compressor with a very high ratio, from about 10:1 up to infinite. You set a threshold, and signal above it is held at or near that level. This protects against surprise clipping. Limiters are common on the master bus and for safety on inputs. Used right, they are invisible. Used wrong, they squash the sound.',
     );
     // A real em dash, as stored — not a replacement character.
-    assert.match(wired('ModularLab')?.plainEnglish ?? '', /Nothing is fixed and nothing is saved \u2014 that is the appeal\.$/);
+    assert.match(wired('ModularLab')?.plainEnglish ?? '', /On most hardware modulars nothing is fixed and nothing is saved \u2014 that is the appeal\.$/);
     for (const e of Object.values(L.LAB_TERM_ENTRIES)) {
       if (e.status !== 'wired') continue;
       assert.ok(e.plainEnglish.trim().length > 30, `${e.lab}: empty text`);

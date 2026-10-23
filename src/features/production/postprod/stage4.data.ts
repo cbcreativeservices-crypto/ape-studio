@@ -336,7 +336,7 @@ export const STAGE4_EDIT: StageDef = {
       notices: [
         {
           kind: "safety",
-          text: "Judge restoration at a normal listening level, and take breaks. Repeated close listening to the same damaged passage at high level is the most common way that people working in audio lose hearing, and it does not feel loud while it is happening."
+          text: "Judge restoration at a normal listening level, and take breaks. Repeated close listening to the same damaged passage at high level is a common way for people working in audio to lose hearing, and it does not feel loud while it is happening."
         }
       ],
       fields: [
@@ -600,7 +600,7 @@ export const STAGE4_EDIT: StageDef = {
       severity: "info",
       kind: "unrealistic",
       title: "Heavy repair on a problem nobody would notice",
-      detail: "A problem recorded as audible only when listening for it is being repaired or re-recorded. In context, under a mix, the repair will be more audible than the fault was.",
+      detail: "A problem recorded as audible only when listening for it is being repaired or re-recorded. In context, under a mix, the repair is often more audible than the fault was.",
       fixHint: "Try leaving it, or editing around it, and judge in the full mix rather than soloed.",
       needsLogic: true,
       logicIntent: "Fire for each problem_list row where pb_severity is subtle and pb_action is repair, rerecord or adr."

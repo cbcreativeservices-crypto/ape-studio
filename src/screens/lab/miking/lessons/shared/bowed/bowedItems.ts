@@ -46,7 +46,7 @@ export const superNull = (id: string, page: SourcePageId, target: string): Mikin
   correct: 'Toward the rear, off to one side of the axis (near 125°)',
   explain: 'A supercardioid’s deepest rejection is off the rear axis (near 125°); straight behind it has a small rear lobe. Aim by the actual pattern — and a real null is shallower than the drawing.',
   why: {
-    'Directly behind the mic, on its rear axis, as far from its front as it gets': 'Only a cardioid rejects most straight behind. A supercardioid has a small rear lobe there.',
+    'Directly behind the mic, on its rear axis, as far from its front as it gets': 'A cardioid rejects most straight behind; a supercardioid has a small rear lobe there.',
     'Beside the mic, square to its front (90°)': 'At 90° the pickup is still fair. The rejection deepens toward the rear, off the axis.',
   },
 });
@@ -135,7 +135,7 @@ export const hollowSymptom = (id: string): Symptom => ({
   firstChecks: 'Solo each; sum in mono; rebalance and move a mic; then check polarity or timing.',
   options: ['Solo each, sum in mono, move or rebalance — then polarity', 'Flip one polarity switch and leave it that way', 'Boost the low end on both channels until the body comes back'],
   correct: 'Solo each, sum in mono, move or rebalance — then polarity',
-  explain: 'Different arrival times (and a pickup’s own electronics) make some pitches cancel. Hear each alone and in mono, move or rebalance first; a polarity switch cannot align every frequency.',
+  explain: 'Different arrival times (and a pickup’s own electronics) make some frequencies cancel. Hear each alone and in mono, move or rebalance first; a polarity switch cannot align every frequency.',
   why: {
     'Flip one polarity switch and leave it that way': 'Polarity is a check, not a cure: it cannot remove a delay.',
     'Boost the low end on both channels until the body comes back': 'EQ cannot undo a cancellation between paths. Fix the combination first.',

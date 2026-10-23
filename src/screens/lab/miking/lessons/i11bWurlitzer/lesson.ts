@@ -199,7 +199,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The number is a start, measured from a grille. Choose the grille by ear, and check clearance: the lid, the keys’ travel, the hands, the forearms and the pedal foot.',
     why: {
       'Only the distance — the rest is detail': 'Without the right grille and clearance the number places nothing well.',
-      'The instrument’s brand and model, for its exact spot': 'Grille positions vary even within one model; find them on the real instrument.',
+      'The instrument’s brand and model, for its exact spot': 'Grille positions differ between models and versions; find them on the real instrument.',
     },
   },
   {
@@ -429,7 +429,7 @@ const symptoms: Symptom[] = [
     correct: 'Hear each grille and the auxiliary output separately',
     explain: 'Find where the weakness lives: if it is in the auxiliary output too, it is the instrument. If only at one grille, try the other, or another spot.',
     why: {
-      'Boost the weak range with EQ on the keyboard’s channel': 'EQ cannot fix a weak note in the instrument; find the cause first.',
+      'Boost the weak range with EQ on the keyboard’s channel': 'EQ can only mask a weak note in the instrument; find the cause first.',
       'Swap to a bigger mic straight away': 'Check the source first, then change one thing at a time.',
     },
   },

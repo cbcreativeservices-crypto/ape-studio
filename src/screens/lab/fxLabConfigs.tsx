@@ -144,8 +144,8 @@ const eqConfig: FxLabConfig = {
         { label: 'PEAK (BELL)', value: EQ_BAND_TYPES.peak, blurb: 'Boost or cut a BAND around the frequency, leaving both sides alone — the surgical shape.' },
         { label: 'LOW SHELF', value: EQ_BAND_TYPES.lowShelf, blurb: 'Everything BELOW the frequency rises or falls together — a broad tilt of the low end.' },
         { label: 'HIGH SHELF', value: EQ_BAND_TYPES.highShelf, blurb: 'Everything ABOVE the frequency rises or falls together — air and sheen live here.' },
-        { label: 'HIGH-PASS', value: EQ_BAND_TYPES.highPass, blurb: 'REMOVES everything below the frequency on a steady 12 dB-per-octave slope — not a set amount of cut. The rumble-and-mud eraser.' },
-        { label: 'LOW-PASS', value: EQ_BAND_TYPES.lowPass, blurb: 'REMOVES everything above the frequency — darkness on demand; also what "telephone" sounds are made of.' },
+        { label: 'HIGH-PASS', value: EQ_BAND_TYPES.highPass, blurb: 'CUTS everything below the frequency on a steady 12 dB-per-octave slope — not a set amount of cut. The rumble-and-mud eraser.' },
+        { label: 'LOW-PASS', value: EQ_BAND_TYPES.lowPass, blurb: 'CUTS everything above the frequency on a steady slope — darkness on demand; add a high-pass and you get the "telephone" sound.' },
       ],
       initial: EQ_BAND_TYPES.peak,
     },
@@ -208,7 +208,7 @@ const eqConfig: FxLabConfig = {
       ],
       correctIdx: 0,
       reveal:
-        'A narrow (high-Q) cut removes just the hum frequency and leaves the neighboring bass alone. The shelf and the high-pass both take real bass with them.',
+        'A narrow (high-Q) cut takes out just the hum frequency (its overtones may need notches too) and leaves the neighboring bass alone. The shelf and the high-pass both take real bass with them.',
       wrongHint: 'Set Q to 8 NARROW and watch how little of the curve moves.',
     },
     {
@@ -220,7 +220,7 @@ const eqConfig: FxLabConfig = {
       ],
       correctIdx: 1,
       reveal:
-        'Pass filters REMOVE everything past the cutoff at a fixed slope — there is no amount to set. GAIN belongs to bells and shelves. (On the low-pass, Q shapes the corner; on the high-pass it does nothing.)',
+        'Pass filters CUT everything past the cutoff at a set slope — there is no amount to set. In this lab GAIN belongs to bells and shelves. (On the low-pass, Q shapes the corner; on the high-pass it does nothing.)',
       wrongHint: 'Switch to HIGH-PASS and tap through the GAIN values — watch the curve.',
     },
   ],
@@ -1029,7 +1029,7 @@ const gateConfig: FxLabConfig = {
   title: 'GATE LAB',
   subtitle: 'Threshold · Hold · Release · Chatter',
   intro:
-    'A gate mutes what falls BELOW the threshold — the cliff in the curve below. With the ' +
+    'A gate turns down what falls BELOW the threshold — the cliff in the curve below. With the ' +
     'click source you hear it open on every hit and close in the silence between.',
   // NEW COPY 2026-10-16 (grading fix) — owner review.
   exploreCaption:
@@ -1143,7 +1143,7 @@ const limiterConfig: FxLabConfig = {
   title: 'LIMITER LAB',
   subtitle: 'Brickwall · Ceiling · GR',
   intro:
-    'A limiter is a compressor with an infinite ratio: NOTHING passes the ceiling — the flat ' +
+    'A limiter is a compressor with a very high (here infinite) ratio: the ceiling caps the output — the flat ' +
     'shelf in the curve. The live GR meter shows exactly how hard you are hitting it.',
   // NEW COPY 2026-10-16 (grading fix) — owner review.
   exploreCaption:
@@ -1220,7 +1220,7 @@ const limiterConfig: FxLabConfig = {
       ],
       correctIdx: 0,
       reveal:
-        'At ∞:1 the transfer curve goes flat at the ceiling: input can rise all it wants, output stays. That is the safety-net job — which is why it sits LAST in the chain.',
+        'At ∞:1 the transfer curve goes flat at the ceiling: input can rise all it wants, output stays. That is the safety-net job — which is why it most often sits LAST in the chain.',
       wrongHint: 'Look at the transfer curve above the ceiling — it is horizontal.',
     },
     {
@@ -1247,7 +1247,7 @@ const distConfig: FxLabConfig = {
   subtitle: 'Clipping · Odd vs Even · Aliasing',
   intro:
     'Distortion reshapes the wave — and the SHAPE decides the harmonics. Symmetric clipping ' +
-    '(same on top and bottom) makes only ODD harmonics; the tube’s asymmetry adds EVEN ones. ' +
+    '(same on top and bottom) makes only ODD harmonics; an asymmetric stage (like many single-ended tube stages) adds EVEN ones. ' +
     'Watch the wave change below.',
   exploreCaption: 'Sine source: what you hear as “grit” is the new harmonic series of the reshaped wave.',
   sources: [srcSine(220), SRC_PINK],
@@ -1315,7 +1315,7 @@ const distConfig: FxLabConfig = {
     if (v[P.distType] === 0 && peak < 0)
       return `DRIVE +${Math.round(v[P.driveDb])} dB lifts the −20 dBFS sine to ${Math.round(peak)} dBFS — still under the 0 dBFS ceiling, so the hard clipper has nothing to cut yet: so far DRIVE is just gain. Push past +20 dB to flatten the tops.`;
     return v[P.distType] === 2
-      ? 'Top and bottom clip DIFFERENTLY (asymmetric) → even harmonics — the “warm” tube signature.'
+      ? 'Top and bottom clip DIFFERENTLY (asymmetric) → even harmonics join the odd ones — the “warm” sound of many tube stages.'
       : 'Top and bottom clip the SAME (symmetric) → odd harmonics only — hollow/harsh.';
   },
   note: 'Bitcrush and sample-rate reduction are in the engine, but this lab does not draw them — the lesson (ⓘ) explains how they work.',
@@ -1455,7 +1455,7 @@ const phaseConfig: FxLabConfig = {
       ],
       correctIdx: 0,
       reveal:
-        'The Ø button multiplies by −1 — every frequency flips at once, no time involved. Phase shift is per-frequency timing offset. The button fixes a wiring problem; it cannot fix an alignment problem.',
+        'The Ø button multiplies by −1 — every frequency flips at once, no time involved. Phase shift is per-frequency timing offset. The button fixes a polarity problem (a miswired cable, two mics facing each other); it cannot fix an alignment problem.',
       wrongHint: 'The lab\u2019s intro names the distinction — and the DELAY control is the phase side.',
     },
   ],

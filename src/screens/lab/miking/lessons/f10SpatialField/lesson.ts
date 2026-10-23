@@ -104,7 +104,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Time and level differences between the ears, and the outer ears’ shaping, carry direction. A binaural head keeps those cues; a fixed head keeps one point of view.',
     why: {
       'Only the left ear hears it, while the right is shaded': 'The far ear still hears it — later and quieter, shaded by the head.',
-      'Both ears hear it at the same time and level': 'That is a sound straight ahead or behind, not one to the side.',
+      'Both ears hear it at the same time and level': 'That is a sound on the centre line — ahead, behind or above — not one to the side.',
     },
   },
   {
@@ -173,7 +173,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What are the four raw tracks of a first-order Ambisonic mic?',
     options: ['A-format capsules, to convert before use', 'Front-left, front-right, rear-left, rear-right', 'Four mono copies of the same sound field'],
     correct: 'A-format capsules, to convert before use',
-    explain: 'They are the four capsules’ own signals (A-format). The mic’s own converter makes the field from them; only then is it turned and rendered.',
+    explain: 'On most such mics they are the four capsules’ own signals (A-format). The mic’s own converter makes the field from them; only then is it turned and rendered.',
     why: {
       'Front-left, front-right, rear-left, rear-right': 'They are not speaker channels: playing them as such gives a wrong picture.',
       'Four mono copies of the same sound field': 'Each capsule hears its own direction; they only mean something together.',
@@ -597,7 +597,7 @@ export const F10_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'Spatial pickup records a place as a listener there would hear it — sounds in front, at the sides and behind — for headphones, a surround speaker layout or a scene that can be turned and rendered later.', src: 'LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'Field recording, ambience for film and games, immersive and virtual-reality sound, broadcasts of events: a binaural head, a four-capsule Ambisonic mic, a surround array, a Double M/S rig.', src: 'LESSON' },
     { title: 'THE DELIVERABLE FIRST', text: 'Each method solves a different delivery problem. Decide what the listener will hear it on — and where they are — before the mic goes up.', src: 'LESSON' },
-    { title: 'WHAT IT IS NOT', text: 'No spatial array isolates one distant source, and none is a calibrated measurement. Record a close mic beside it when a source must be clear. Experimentation is encouraged — walk, listen, and use your ears and the place.', src: 'LESSON' },
+    { title: 'WHAT IT IS NOT', text: 'No spatial array cleanly isolates one distant source, and none is a calibrated measurement. Record a close mic beside it when a source must be clear. Experimentation is encouraged — walk, listen, and use your ears and the place.', src: 'LESSON' },
   ],
   sound: {
     stages: [

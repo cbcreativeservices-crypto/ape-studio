@@ -533,7 +533,7 @@ function PageWiring({ ctx }: { ctx: PageCtx }) {
         ))}
         <CableLegend levels={['mic', 'line', 'speaker', 'digital', 'wireless']} />
       </Card>
-      <KeyFact>Five signal levels travel on cables (sound in the air and radio links are the other two the lab tracks), and a connector’s shape never tells you which one it carries. Speaker level into a line or mic input damages the input. Mic level into a line input is 40–60 dB too quiet — a whisper you will chase with gain and noise. Line level into a passive loudspeaker moves no cone you can hear. Most refusals in BUILD mode are one of these three sentences; the rest are housekeeping — a full input, a loop, a link that already exists, or a device with no signal output.</KeyFact>
+      <KeyFact>Five signal levels travel on cables (sound in the air and radio links are the other two the lab tracks), and a connector’s shape never tells you which one it carries. Speaker level into a line or mic input can damage the input. Mic level into a line input is 40–60 dB too quiet — a whisper you will chase with gain and noise. Line level into a passive loudspeaker barely moves the cone — a faint sound at best. Most refusals in BUILD mode are one of these three sentences; the rest are housekeeping — a full input, a loop, a link that already exists, or a device with no signal output.</KeyFact>
       <Card>
         <Eyebrow>THE REST OF THE CHAPTER LIVES IN THE CABLE LABS</Eyebrow>
         <Body>Balanced and unbalanced signals, XLR/TRS/TS/speakON/Ethernet, correct amplifier-to-loudspeaker wiring, clocking and sample rate, cable routing and strain relief, signal cables kept apart from power, ground loops and isolation, redundancy, labelling and documentation.</Body>
@@ -683,7 +683,7 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
       <Card tone="math">
         <Eyebrow>THE ARITHMETIC · FROM THE CALCULATOR</Eyebrow>
         <Text style={styles.path}>Ztot = 1 ÷ Σ(1/Zi)</Text>
-        <Body>A passive loudspeaker is a load. Parallel cabinets share the amplifier’s voltage and each draws its own current; the total impedance is always below the lowest cabinet, and the amplifier must deliver the sum of the currents. Bridging joins two channels into one with twice the voltage swing — and DOUBLES the minimum impedance (typically 8 Ω), so a bridged 4 Ω load is the classic mistake.</Body>
+        <Body>A passive loudspeaker is a load. Parallel cabinets share the amplifier’s voltage and each draws its own current; the total impedance is always below the lowest cabinet, and the amplifier must deliver the sum of the currents. Bridging joins two channels into one with twice the voltage swing — and DOUBLES the minimum impedance (twice the per-channel minimum, often 8 Ω), so a load below the bridged minimum is the classic mistake.</Body>
         <Body>This amplifier’s ratings — {AMP.at8} W at 8 Ω, {AMP.at4} W at 4 Ω, {AMP.bridged8} W bridged at 8 Ω, {AMP.minOhms} Ω minimum — are an example. Read YOUR amplifier’s table; never assume the ratio.</Body>
       </Card>
       <DeeperRow>

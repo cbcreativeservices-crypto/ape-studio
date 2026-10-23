@@ -66,7 +66,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why two hosts’ open mics can make a voice sound hollow, how the arrival-time difference places comb notches, and why each host stays on their own channel.',
     credit: { scenarios: ['b1.two.1', 'b1.two.2', 'b1.two.3', 'b1.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Each voice reaches the other host’s mic later and lower: the sum cancels some pitches. Close mics, rears toward each other, unused mics muted, each on its own channel; polarity flips the sign and never removes a delay.',
+    takeaway: 'Each voice reaches the other host’s mic later and lower: the sum cancels some frequencies. Close mics, rears toward each other, unused mics muted, each on its own channel; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -107,9 +107,9 @@ const scenarios: MikingScenario[] = [
     id: 'b1.snd.2',
     page: 'sound',
     prompt: 'Why can a hard desk under the mouth colour a host’s voice at the mic?',
-    options: ['It sends a later copy that cancels some pitches', 'It soaks up the voice’s low end on the way down', 'It turns the mic’s pattern into an omni'],
-    correct: 'It sends a later copy that cancels some pitches',
-    explain: 'The voice reaches the mic straight and, a little later, off the desk. Added together, some pitches cancel — a comb. A mic nearer the mouth and higher off the desk hears the bounce later and weaker.',
+    options: ['It sends a later copy that cancels some frequencies', 'It soaks up the voice’s low end on the way down', 'It turns the mic’s pattern into an omni'],
+    correct: 'It sends a later copy that cancels some frequencies',
+    explain: 'The voice reaches the mic straight and, a little later, off the desk. Added together, some frequencies cancel — a comb. A mic nearer the mouth and higher off the desk hears the bounce later and weaker.',
     why: {
       'It soaks up the voice’s low end on the way down': 'A hard desk reflects; it does not soak up the lows. The problem is the second, later copy.',
       'It turns the mic’s pattern into an omni': 'A surface nearby does not change the mic’s pattern; it adds a reflection.',
@@ -121,7 +121,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two hosts, both mics open. Why can one voice sound hollow in the mix?',
     options: ['It reaches both mics, the far one later', 'The far mic reverses that voice’s polarity', 'Two open mics make that voice twice as loud'],
     correct: 'It reaches both mics, the far one later',
-    explain: 'Each voice reaches its own mic first and the other host’s mic a little later. Summed, some pitches cancel. Close mics, rears toward each other, and muting a mic no one uses keep it small.',
+    explain: 'Each voice reaches its own mic first and the other host’s mic a little later. Summed, some frequencies cancel. Close mics, rears toward each other, and muting a mic no one uses keep it small.',
     why: {
       'The far mic reverses that voice’s polarity': 'Distance delays a sound; it does not flip its sign.',
       'Two open mics make that voice twice as loud': 'The far copy is lower and later: it colours the sound more than it adds level.',
@@ -315,7 +315,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The host’s voice sounds hollow with both mics open. Why?',
     options: ['It reaches the second host’s mic later', 'The second mic reverses its polarity', 'The closer mic is louder, so it cancels'],
     correct: 'It reaches the second host’s mic later',
-    explain: 'The host’s voice reaches their own mic first and the second host’s mic later. Summed, some pitches arrive out of step and cancel — a comb.',
+    explain: 'The host’s voice reaches their own mic first and the second host’s mic later. Summed, some frequencies arrive out of step and cancel — a comb.',
     why: {
       'The second mic reverses its polarity': 'Distance delays a sound; it does not flip its sign.',
       'The closer mic is louder, so it cancels': 'A level difference changes how deep the notches are; the delay makes them.',
@@ -376,7 +376,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A mic sits low over a hard desk, the voice sounds hollow. A first idea to try?',
     options: ['Raise the mic off the desk, nearer the mouth', 'Boost the treble to bring back the lost clarity', 'Turn the mic’s pattern to omni'],
     correct: 'Raise the mic off the desk, nearer the mouth',
-    explain: 'Nearer the mouth and farther from the desk, the desk’s copy arrives later and weaker. A soft cloth on the desk is another idea. EQ cannot put back a cancelled pitch.',
+    explain: 'Nearer the mouth and farther from the desk, the desk’s copy arrives later and weaker. A soft cloth on the desk is another idea. EQ cannot put back a cancelled frequency.',
     why: {
       'Boost the treble to bring back the lost clarity': 'A comb is cancellation between two copies: EQ cannot fill its notches.',
       'Turn the mic’s pattern to omni': 'An omni hears the desk’s bounce at least as well.',
@@ -523,9 +523,9 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'sound',
     prompt: 'A mic sits low over a hard desk. What does the desk add at the mic?',
-    options: ['A later copy of the voice that cancels some pitches', 'Nothing: a desk below the mouth is out of the way', 'More low end, because the desk resonates with the voice'],
-    correct: 'A later copy of the voice that cancels some pitches',
-    explain: 'The voice reaches the mic straight and off the desk, a little later: some pitches cancel. Nearer the mouth and higher off the desk, the bounce matters less.',
+    options: ['A later copy of the voice that cancels some frequencies', 'Nothing: a desk below the mouth is out of the way', 'More low end, because the desk resonates with the voice'],
+    correct: 'A later copy of the voice that cancels some frequencies',
+    explain: 'The voice reaches the mic straight and off the desk, a little later: some frequencies cancel. Nearer the mouth and higher off the desk, the bounce matters less.',
     why: {
       'Nothing: a desk below the mouth is out of the way': 'A hard desk reflects the voice up into the mic.',
       'More low end, because the desk resonates with the voice': 'The main effect is the reflection’s later copy, not a resonance.',

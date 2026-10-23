@@ -195,7 +195,7 @@ export const E05_MODEL = ensembleModel({
 
 /** A floor monitor in front of the choir, facing it: where a stage often puts one. */
 export const E05_WEDGES: Wedge[] = [
-  { id: 'mon', label: 'a floor monitor in front of the choir, facing it', short: 'MONITOR', p: v3(-AREA_X, 0, 1700), lift: 300, faces: v3(0, 0, -1), note: 'On the floor in front of the choir, facing the singers, below and in front of the area mic: its rejection can be tilted toward it. It carries the piano, never the choir’s own mics.', prov: ill('a typical position: a drawing default') },
+  { id: 'mon', label: 'a floor monitor in front of the choir, facing it', short: 'MONITOR', p: v3(-AREA_X, 0, 1700), lift: 300, faces: v3(0, 0, -1), note: 'On the floor in front of the choir, facing the singers, below and in front of the area mic: its rejection can be tilted toward it. It carries the piano, and little or none of the choir’s own mics.', prov: ill('a typical position: a drawing default') },
 ];
 
 /* ── STARTING SETUPS ── */

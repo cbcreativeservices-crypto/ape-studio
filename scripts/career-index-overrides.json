@@ -74,11 +74,6 @@
   "Hyperacusis Specialist",
   "Clinical Vocal-Fold Imaging Specialist",
   "Hearing Rehabilitation Specialist",
-  "Environmental Noise Analyst",
-  "Transportation Noise Analyst",
-  "Highway Noise Specialist",
-  "Airport Noise Specialist",
-  "Airport Noise Compliance Officer",
   "Nondestructive Testing Specialist — Ultrasonic",
   "Ultrasonic Testing Technician",
   "Acoustic Emission Testing Specialist",
@@ -115,7 +110,8 @@
   "Maritime Patrol Acoustic Operator",
   "Naval Acoustics Engineer",
   "Underwater Acoustics Engineer — Defense",
-  "Acoustic Sensor Engineer — Defense"
+  "Acoustic Sensor Engineer — Defense",
+  "Mass-Notification Audio Designer"
  ],
  "_pe_rule": "Every title ending in 'Engineer' or 'Consultant' inside the Architectural Acoustics family: offering engineering services to the public commonly needs a PE licence.",
  "professionalEngineerFamilies": [
@@ -210,7 +206,75 @@
   "Clinical Vocal-Fold Imaging Specialist": "Graduate clinical training and jurisdictional licensure/credentialing commonly required",
   "Artist Discovery Specialist": "Varies: portfolio/experience, certificate, associate, or bachelor's pathway",
   "Sonar Systems Engineer": "Bachelor's degree common; portfolio/certification may supplement",
-  "Sonar Signal-Processing Engineer": "Bachelor's degree common; portfolio/certification may supplement"
+  "Sonar Signal-Processing Engineer": "Bachelor's degree common; portfolio/certification may supplement",
+  "Public-Address Systems Engineer": "Varies: portfolio/experience, certificate, associate, or bachelor's pathway",
+  "Ultrasound Equipment Service Engineer": "Varies: portfolio/experience, certificate, associate, or bachelor's pathway",
+  "Dante Systems Engineer": "Varies: portfolio/experience, certificate, associate, or bachelor's pathway",
+  "Live Production Network Engineer": "Varies: portfolio/experience, certificate, associate, or bachelor's pathway",
+  "Sound-System Alignment Engineer": "Varies: portfolio/experience, certificate, associate, or bachelor's pathway",
+  "Loudspeaker System Optimization Engineer": "Varies: portfolio/experience, certificate, associate, or bachelor's pathway",
+  "Broadcast Monitor Calibration Engineer": "Varies: portfolio/experience, certificate, associate, or bachelor's pathway",
+  "Audio Systems Designer — Installed": "Varies: portfolio/experience, certificate, associate, or bachelor's pathway",
+  "Paging Systems Designer": "Varies: portfolio/experience, certificate, associate, or bachelor's pathway",
+  "Mass-Notification Audio Designer": "Technical training and field experience; fire-alarm design certification or licensing is often required",
+  "Car Audio System Designer": "Hands-on training, certificate/associate degree, apprenticeship, or experience",
+  "Game Audio Programmer": "Bachelor's degree common; portfolio/certification may supplement",
+  "Audio Engine Programmer": "Bachelor's degree common; portfolio/certification may supplement",
+  "Audio Tools Programmer": "Bachelor's degree common; portfolio/certification may supplement",
+  "Auditory Neuroscientist": "Bachelor's to doctorate, depending on research responsibility",
+  "Psychoacoustician": "Bachelor's to doctorate, depending on research responsibility",
+  "Bioacoustician": "Bachelor's to doctorate, depending on research responsibility",
+  "Acoustic Oceanographer": "Bachelor's to doctorate, depending on research responsibility",
+  "Medical Ultrasound Physicist": "Graduate degree in medical physics; clinical roles add a residency and board certification",
+  "Audiology Educator": "Graduate degree commonly expected (clinical doctorate or PhD in audiology or hearing science); licensure often required for clinical teaching",
+  "Forensic Voice Comparison Analyst": "Graduate degree commonly expected (phonetics, speech science or signal processing); casework training and experience",
+  "Speaker Recognition Analyst": "Graduate degree commonly expected (phonetics, speech science or signal processing); casework training and experience",
+  "Research Professor — Acoustics": "Doctorate (PhD) usually required; research publications and grant record matter",
+  "Busker — Music": "Portfolio, credits, craft training, and professional network",
+  "Orchestra Conductor": "Bachelor's degree common (often in music); top posts often want advanced conducting study and assistant-conductor experience",
+  "Symphony Conductor": "Bachelor's degree common (often in music); top posts often want advanced conducting study and assistant-conductor experience",
+  "Opera Conductor": "Bachelor's degree common (often in music); top posts often want advanced conducting study and assistant-conductor experience",
+  "Ballet Conductor": "Bachelor's degree common (often in music); top posts often want advanced conducting study and assistant-conductor experience",
+  "Music Therapy Program Director": "Board-certified music-therapist credential and substantial clinical experience commonly expected; graduate degree or management training may help",
+  "Music Therapy Clinical Supervisor": "Board-certified music-therapist credential and substantial clinical experience commonly expected; graduate degree or management training may help",
+  "Music Therapy Internship Director": "Board-certified music-therapist credential and substantial clinical experience commonly expected; graduate degree or management training may help",
+  "Adjunct Music Instructor": "Master's degree commonly expected for college posts; strong performance or teaching record also matters",
+  "Music Conservatory Instructor": "An advanced music degree or a strong professional performance record is commonly expected; pre-college divisions vary",
+  "Speech-Language Pathology Assistant": "Associate SLPA program or bachelor's in communication sciences, plus supervised fieldwork; state rules vary",
+  "Tinnitus Specialist — Audiology": "Clinical doctorate and jurisdictional licensure typically required",
+  "Hearing Instrument Specialist": "Training or a supervised apprenticeship, then a licensing exam; rules vary by state or country",
+  "Hearing-Aid Specialist": "Training or a supervised apprenticeship, then a licensing exam; rules vary by state or country",
+  "Hearing-Aid Fitting Specialist": "Training or a supervised apprenticeship, then a licensing exam; rules vary by state or country",
+  "Hearing-Device Verification Specialist": "Usually a licensed audiologist or hearing-aid dispenser with added device-fitting training",
+  "Occupational Hearing-Conservationist": "Short certification course (US: CAOHC) plus on-the-job training",
+  "Point-of-Care Ultrasound Specialist": "Most are licensed clinicians who add ultrasound training and credentialing",
+  "Nondestructive Testing Specialist — Ultrasonic": "Classroom training and supervised hours toward NDT Level I–III certification",
+  "Acoustic Emission Testing Specialist": "Classroom training and supervised hours toward NDT Level I–III certification",
+  "Defense Audio Intelligence Analyst": "Military or defense-employer training; eligibility, medical, and security requirements may apply",
+  "Occupational Noise Compliance Officer": "Agency training plus a related degree or experience; some jurisdictions certify or register these officers",
+  "Environmental Noise Compliance Officer": "Agency training plus a related degree or experience; some jurisdictions certify or register these officers",
+  "Community Noise Officer": "Agency training plus a related degree or experience; some jurisdictions certify or register these officers",
+  "Environmental Noise Inspector": "Agency training plus a related degree or experience; some jurisdictions certify or register these officers",
+  "Noise Code Enforcement Officer": "Agency training plus a related degree or experience; some jurisdictions certify or register these officers",
+  "Rigging Coordinator": "Substantial rigging experience and training; rigging certification often expected",
+  "Entertainment Electrician": "Electrical apprenticeship or trade training; an electrician's licence or entertainment-electrician certification is often required",
+  "Touring Electrician": "Electrical apprenticeship or trade training; an electrician's licence or entertainment-electrician certification is often required",
+  "Electrical Safety Coordinator — Production": "Electrical apprenticeship or trade training; an electrician's licence or entertainment-electrician certification is often required",
+  "Music Teacher": "Bachelor's degree (often in music education) and a state teaching license for public-school posts; private teaching varies",
+  "Elementary Music Teacher": "Bachelor's degree (often in music education) and a state teaching license for public-school posts; private teaching varies",
+  "Secondary Music Teacher": "Bachelor's degree (often in music education) and a state teaching license for public-school posts; private teaching varies",
+  "K–12 Music Educator": "Bachelor's degree (often in music education) and a state teaching license for public-school posts; private teaching varies",
+  "General Music Teacher": "Bachelor's degree (often in music education) and a state teaching license for public-school posts; private teaching varies",
+  "Instrumental Music Teacher": "Bachelor's degree (often in music education) and a state teaching license for public-school posts; private teaching varies",
+  "Vocal Music Teacher": "Bachelor's degree (often in music education) and a state teaching license for public-school posts; private teaching varies",
+  "Music Technology Teacher": "Bachelor's degree (often in music education) and a state teaching license for public-school posts; private teaching varies",
+  "Soundproofing Contractor": "Construction trade experience; many jurisdictions require a contractor licence",
+  "Studio Construction Contractor": "Construction trade experience; many jurisdictions require a contractor licence",
+  "Environmental Noise Analyst": "Bachelor's degree common; portfolio/certification may supplement",
+  "Transportation Noise Analyst": "Bachelor's degree common; portfolio/certification may supplement",
+  "Highway Noise Specialist": "Bachelor's degree common; portfolio/certification may supplement",
+  "Airport Noise Specialist": "Bachelor's degree common; portfolio/certification may supplement",
+  "Airport Noise Compliance Officer": "Bachelor's degree common; portfolio/certification may supplement"
  },
  "_craft_rule": "In these craft families a degree is neither common nor expected for the working roles; the workbook's 'Bachelor's degree common' is a spreadsheet default from title class. Rows whose preparation is that default are re-tabled: technician/operator/assistant/stagehand rows to hands-on training, everything else to the 'varies' pathway.",
  "craftFamilies": [
@@ -220,7 +284,13 @@
   "Recording Studios & Music Production",
   "Manufacturing, Quality, Calibration & Repair",
   "Stagecraft, Rigging, Power & Production Support",
-  "DJ, Club & Event Performance Technology"
+  "DJ, Club & Event Performance Technology",
+  "Film, Television & Post-Production Audio",
+  "Broadcast, Radio, Sports & Streaming",
+  "Podcast, Audiobook, Voice & Spoken-Word Production",
+  "Music for Picture, Scoring & Editorial",
+  "Audio Archiving, Preservation & Restoration",
+  "Accessible Media & Audio Description"
  ],
  "orientation": {
   "_rule_audiologist": "every title containing 'Audiologist' → Clinical / therapeutic",
@@ -260,7 +330,15 @@
   "Pronunciation Consultant — Recording": "Education / coaching",
   "Pronunciation Consultant": "Education / coaching",
   "Talent Scout — Music": "Business / editorial / operations",
-  "DJ Equipment Sales Specialist": "Business / editorial / operations"
+  "DJ Equipment Sales Specialist": "Business / editorial / operations",
+  "Hearing Instrument Specialist": "Clinical / therapeutic",
+  "Hearing-Aid Specialist": "Clinical / therapeutic",
+  "Hearing-Aid Fitting Specialist": "Clinical / therapeutic",
+  "Tinnitus Specialist — Audiology": "Clinical / therapeutic",
+  "Point-of-Care Ultrasound Specialist": "Clinical / therapeutic",
+  "Assistant Music Supervisor": "Business / editorial / operations",
+  "Score Arranger": "Creative / performance",
+  "Score Orchestrator": "Creative / performance"
  },
  "titleClass": {
   "Headphone Repair Technician": "Operational/creative role",
@@ -278,7 +356,8 @@
   "Headphone Tuning Engineer": "Technical/creative specialty",
   "Audio Description Writer": "Established industry role",
   "Headphone Sales Specialist": "Business/legal/adjacent role",
-  "Telecom Listening-Test Coordinator": "Operational/creative role"
+  "Telecom Listening-Test Coordinator": "Operational/creative role",
+  "Deepfake Voice Detection Analyst": "Technical/creative specialty"
  },
  "_tier_rule": "A row the workbook itself calls 'Closely related / supporting' or 'Audio-dependent allied work' cannot also be 'Direct audio occupation' (audio-core). Such rows are shown as audio-specialized.",
  "demoteCoreWhenRelationshipIn": [
@@ -313,7 +392,14 @@
   "Audio Production Company Owner": "Self-employed business owner",
   "Audio Company Founder": "Self-employed business owner",
   "Audio Product Owner": "Staff roles common; consulting/contract options vary",
-  "Artist Discovery Specialist": "Staff, freelance, or project-based depending on sector"
+  "Artist Discovery Specialist": "Staff, freelance, or project-based depending on sector",
+  "Auditory Neuroscientist": "Staff roles common; consulting/contract options vary",
+  "Psychoacoustician": "Staff roles common; consulting/contract options vary",
+  "Bioacoustician": "Staff roles common; consulting/contract options vary",
+  "Acoustic Oceanographer": "Staff roles common; consulting/contract options vary",
+  "Postdoctoral Researcher — Acoustics": "Fixed-term research appointments, usually at universities or labs",
+  "Street Performer — Music": "Self-employed; local permits often required",
+  "Busker — Music": "Self-employed; local permits often required"
  },
  "_removeTitles_about": "Titles dropped from the Career Finder entirely (owner content call 2026-09-11). Not real standalone occupations: task-not-a-job, technique-not-a-title, informal slang, or a constructed dupe already covered elsewhere. Build drops any career record whose title matches exactly.",
  "removeTitles": [
@@ -326,7 +412,11 @@
  "status": {
   "Hearing Instrument Specialist": "Regulated/credentialed title",
   "Hearing-Aid Specialist": "Regulated/credentialed title",
-  "Hearing-Aid Fitting Specialist": "Regulated/credentialed title"
+  "Hearing-Aid Fitting Specialist": "Regulated/credentialed title",
+  "QLab Programmer": "Established specialty or employer title",
+  "Atmos Re-Recording Mixer": "Established specialty or employer title",
+  "Audio Grant Writer": "Established specialty or employer title",
+  "Broadcast Technician": "Established occupation or industry role"
  },
  "_professionalEngineer_about": "Per-title PE flag for acousticians the family suffix rule misses (hand-set 2026-09-20 in careerIndex.json; moved here 2026-10-22 so a rebuild keeps it).",
  "professionalEngineer": [
@@ -339,6 +429,177 @@
  "removeAlternates": {
   "Audiologist": [
    "hearing specialist"
+  ]
+ },
+ "_regulatedVariesOk_about": "Licensed titles allowed to keep the generic 'Varies' preparation line (the build fails on any other). Empty: every licensed title now names its route.",
+ "regulatedVariesOk": {},
+ "_workModelRules_about": "Fact audit round 3 (2026-10-22): the workbook fills 'Typical work model' from title class, so freelance, per-show and touring crafts read 'Staff roles common'. Each rule: one family, a title regex, the value it replaces (from) and the corrected value (to). Only rows still carrying `from` change; a rule that changes nothing fails the build.",
+ "workModelRules": [
+  {
+   "family": "Recording Studios & Music Production",
+   "match": "(Recording|Studio|Tracking) Engineer$|Recording Specialist$",
+   "exclude": "^(Assistant|Second)\\b",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Often freelance/contract; staff roles also exist",
+   "_why": "Studio recording engineers mostly work freelance or per project; assistants are the studio-staff roles."
+  },
+  {
+   "family": "Mixing & Mastering",
+   "match": "Mixing Specialist$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Often freelance/contract; staff roles also exist",
+   "_why": "Same as the mix engineers (Round 2)."
+  },
+  {
+   "family": "Live Sound, Touring & Festivals",
+   "match": "^(Front-of-House|Monitor|Concert Audio|System Optimization|System Tuning) Engineer$|^(PA|Loudspeaker System|Stage Audio|Stage Patch|Wireless Microphone|Audio Utility) Technician$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Project, venue, tour, or contract work common",
+   "_why": "Show and tour crew: hired per show, tour or season."
+  },
+  {
+   "family": "Theatre, Worship, Venues & Show Control",
+   "match": "^(Theatre Audio|Orchestra-Pit Audio) Engineer$|^Radio-Microphone Technician",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Project, venue, tour, or contract work common",
+   "_why": "Theatre sound crew are hired per production."
+  },
+  {
+   "family": "Theatre, Worship, Venues & Show Control",
+   "match": "^Show-Control (Engineer|Technician)$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Staff, freelance, or project-based depending on sector",
+   "_why": "Theme-park staff posts and per-project show programming both common."
+  },
+  {
+   "family": "Film, Television & Post-Production Audio",
+   "match": "^(Scoring Engineer|Utility Sound Technician|Sound Department Coordinator \\u2014 Production)$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Often freelance/contract; staff roles also exist",
+   "_why": "Production-sound crew and scoring engineers are hired per project."
+  },
+  {
+   "family": "Film, Television & Post-Production Audio",
+   "match": "^(Final Mix Engineer \\u2014 Picture|Localization Audio Engineer|Foreign-Language Dubbing Engineer|Sound Restoration Engineer \\u2014 Film/TV)$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Staff, freelance, or project-based depending on sector",
+   "_why": "Matches the Re-Recording Mixer / dubbing titles in this family."
+  },
+  {
+   "family": "Broadcast, Radio, Sports & Streaming",
+   "match": "^(Broadcast Audio Engineer|Television Audio Engineer|Remote Production Audio Engineer|REMI Audio Engineer|Outside-Broadcast Audio Engineer|Mobile Unit Audio Engineer|Field Audio Engineer \\u2014 Broadcast|Sports Submix Engineer|EFP Audio Technician|ENG Audio Technician|Crowd Microphone Technician|Broadcast RF Technician|Broadcast Frequency Coordinator|Broadcast Intercom Engineer|Streaming Audio Engineer|Webcast Audio Technician)$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Staff, freelance, or project-based depending on sector",
+   "_why": "Event, sports and field broadcast audio is widely freelance or per-diem; station engineering roles stay staff."
+  },
+  {
+   "family": "Podcast, Audiobook, Voice & Spoken-Word Production",
+   "match": "Engineer$|^(Remote Podcast Recording Specialist|Dialogue Cleanup Specialist|Audiobook QC Specialist|Oral-History Recording Technician)$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Staff, freelance, or project-based depending on sector",
+   "_why": "Podcast, audiobook and voice sessions are often freelance or per project."
+  },
+  {
+   "family": "DJ, Club & Event Performance Technology",
+   "match": "^(DJ Technician|DJ Playback Technician|DJ Stage Manager|DJ Production Manager)$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Project, venue, tour, or contract work common",
+   "_why": "Event crew hired per event or tour."
+  },
+  {
+   "family": "Music for Picture, Scoring & Editorial",
+   "match": "^Scoring Music Preparation Specialist$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Often freelance/contract; staff roles also exist",
+   "_why": "Music preparation (copying) is mostly freelance."
+  },
+  {
+   "family": "Music for Picture, Scoring & Editorial",
+   "match": "^(Score Technical Engineer|Score Mastering Engineer|Music Stem and Deliverables Engineer|Music Coordinator \\u2014 Screen)$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Staff, freelance, or project-based depending on sector",
+   "_why": "Per-project scoring work."
+  },
+  {
+   "family": "Stagecraft, Rigging, Power & Production Support",
+   "match": "^(Motor Technician \\u2014 Entertainment|Hoist Technician|Deck Audio Technician|Backline Technician|Guitar Technician|Keyboard Technician|Drum Technician|Stage Manager \\u2014 Audio-Intensive Production|Production Stage Manager|Technical Production Manager|Crowd and Site Audio Coordinator|Cable-Ramp and Floor-Routing Technician|Production Communications Coordinator|Production Safety Manager \\u2014 Entertainment)$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Project, venue, tour, or contract work common",
+   "_why": "Touring and production crew hired per show, tour or season."
+  },
+  {
+   "family": "Musical Instrument Building, Tuning & Repair",
+   "match": "Piano Technician$|^Harpsichord Technician$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Often freelance/contract; staff roles also exist",
+   "_why": "Most piano technicians are self-employed or independent contractors."
+  },
+  {
+   "family": "Audio Measurement, System Tuning & Instrumentation",
+   "match": "^(Sound-System Measurement Technician|Sound-System Alignment Engineer|Loudspeaker System Optimization Engineer)$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Project, venue, tour, or contract work common",
+   "_why": "Live system techs, as in Live Sound."
+  },
+  {
+   "family": "Audio Measurement, System Tuning & Instrumentation",
+   "match": "^(Cinema Sound Calibration Technician|Room Measurement Specialist|Listening-Room Calibration Specialist|Reference-Monitor Calibration Specialist)$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Staff, freelance, or project-based depending on sector",
+   "_why": "Often independent calibrators or contractors."
+  },
+  {
+   "family": "Manufacturing, Quality, Calibration & Repair",
+   "match": "^Studio Maintenance Engineer$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Staff, freelance, or project-based depending on sector",
+   "_why": "Many studio maintenance engineers freelance across several studios."
+  },
+  {
+   "family": "Forensic, Surveillance, Security & Public-Safety Audio",
+   "match": "^Legal Deposition Audio Technician$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Staff, freelance, or project-based depending on sector",
+   "_why": "Deposition work is commonly contracted per job."
+  },
+  {
+   "family": "Technical Standards, Regulation, Law & Rights",
+   "match": "^Frequency Coordinator$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Staff, freelance, or project-based depending on sector",
+   "_why": "Event RF coordination is widely freelance."
+  },
+  {
+   "family": "Consumer, Home, Vehicle & Personal Audio",
+   "match": "^Home Theater Calibration Specialist$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Staff, freelance, or project-based depending on sector",
+   "_why": "Many calibrators are independent."
+  },
+  {
+   "family": "Phonetics, Linguistics & Speech Science",
+   "match": "^(Language Documentation Specialist \\u2014 Audio|Endangered-Language Recording Specialist)$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Staff, freelance, or project-based depending on sector",
+   "_why": "Grant-funded project work is common."
+  },
+  {
+   "family": "Field Recording, Sound Libraries & Sonic Heritage",
+   "match": "^Passive Acoustic Monitoring Field Technician$",
+   "from": "Staff roles common; consulting/contract options vary",
+   "to": "Staff, freelance, or project-based depending on sector",
+   "_why": "Seasonal and contract field posts are common."
+  }
+ ],
+ "_mergeInto_about": "Duplicate titles merged (owner ruling, fact audit round 3 2026-10-22): the duplicate is dropped and its name and alternates move to the kept entry's 'also called' list. 'Sound Utility' = Utility Sound Technician; 'Dubbing Mixer' = the UK name for the Re-Recording Mixer (already its alternate).",
+ "mergeInto": {
+  "Sound Utility": "Utility Sound Technician",
+  "Dubbing Mixer": "Re-Recording Mixer"
+ },
+ "_removeFamilySources_about": "Family sources that do not support the family (fact audit 2026-10-22): the NDT society covers industrial testing, which lives in the Scientific family, not medical ultrasound.",
+ "removeFamilySources": {
+  "Medical Ultrasound & Therapeutic Acoustics": [
+   "American Society for Nondestructive Testing"
   ]
  }
 }

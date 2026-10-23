@@ -96,7 +96,7 @@ export function useKeepOutStep({ words, onDone }: { words: KeepOutWords; onDone:
       : hit === 'zone'
         ? 'Inside the exclusion zone: no mic, no stand, no cable, no hand while the fan runs — and never reach through the guard for a “cleaner” take. If a position cannot be reached from outside, leave it out.'
         : hit === 'airflow'
-          ? 'In the airflow: the capsule reads the wind on it, not the fan — and a windscreen only hides how much. Move beside the stream.'
+          ? 'In the airflow: the capsule reads wind noise on top of the fan — a windscreen cuts it but cannot remove it. Move beside the stream.'
           : 'Clear of the zone and beside the airflow: a position you can reach, log and repeat.';
   return {
     key: 'keepout',

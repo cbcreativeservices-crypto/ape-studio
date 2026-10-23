@@ -38,7 +38,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for maracas by its properties — pattern, power, size and how it handles brief peaks — not by its brand.',
     credit: { scenarios: ['mar.mic.1', 'mar.mic.peak', 'mar.mic.power', 'mar.mic.aim', 'mar.rec.1'], note: 'Answer the five checks (one reaches back to how the maracas sound).' },
-    takeaway: 'Condensers and dynamics can all work; the pattern and the placement decide the room, the neighbours and the speakers in the channel. Aim at the heads, not the handles.',
+    takeaway: 'Condensers and dynamics can all work; the pattern and the placement decide how much of the room, the neighbours and the speakers reach the channel. Aim at the heads, not the handles.',
   },
   placement: {
     title: 'Placement Studio',
@@ -159,7 +159,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Proximity effect and handling sound grow very close; neither is a reason to aim at the handles. Distance first.',
     why: {
       'Yes — the handles are quieter, so the thump goes': 'Aimed at the handles, the mic misses the heads — the sound you want.',
-      'Yes, and boost the treble to bring the seeds back': 'EQ cannot bring back heads the mic is not aimed at.',
+      'Yes, and boost the treble to bring the seeds back': 'EQ can only partly bring back heads the mic is not aimed at.',
     },
   },
   {
@@ -207,7 +207,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Compare a single centred mic first: two channels add setup, spill and interaction between the mics.',
     why: {
       'Whenever there are two maracas in the part': 'Two maracas often sit well in one mic.',
-      'When the pair is too quiet for one mic’s gain': 'A second mic does not fix a quiet source; gain or a louder pair does.',
+      'When the pair is too quiet for one mic’s gain': 'A second mic does not fix a quiet source; gain may on a quiet stage, a louder pair on a loud one.',
     },
   },
   {

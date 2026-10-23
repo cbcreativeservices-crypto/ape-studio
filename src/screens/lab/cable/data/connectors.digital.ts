@@ -76,7 +76,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
         'USB is designed for connection and removal while powered — devices enumerate when plugged in. Close or stop audio software gracefully before unplugging an audio interface to avoid dropouts and driver errors, and eject storage devices before removal.',
     },
     advantages: [
-      'Universally available host port on computers and hubs',
+      'Host port on most computers and hubs (some newer laptops have only USB-C)',
       'Power and data on one cable — many audio devices need no separate supply',
       'Hot-pluggable by design',
       'Backward compatibility across USB generations at the connector level',
@@ -443,7 +443,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
     safety: {
       level: 'signal',
       cautions: [
-        'USB-C Power Delivery can negotiate substantial DC power (up to 240 W under the current specification, with cables rated for it). The negotiation happens automatically and higher power flows only through rated, e-marked cables — but a visibly damaged high-power cable should be retired, not reused.',
+        'USB-C Power Delivery can negotiate substantial DC power (up to 240 W under the current specification, with cables rated for it). The negotiation happens automatically and power above 60 W flows only through rated, e-marked cables — but a visibly damaged high-power cable should be retired, not reused.',
       ],
     },
     glossary: [],
@@ -547,7 +547,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
         otherName: 'Telephone modular plugs (RJ11/RJ12, 6-position)',
         why: 'The narrower telephone plug can physically enter an 8P8C jack.',
         consequence:
-          'No working connection, and the narrow plug can bend the jack’s outer contacts, leaving intermittent faults for the next proper cable. Keep telephone cords away from network jacks. Note also that a telephone cord may be live: analog phone lines carry roughly 48 V DC and up to ~90 V AC while ringing — enough to feel and enough to matter to equipment. An old wall jack is not automatically “just signal” because it fits the shape; identify unknown building jacks before patching into them.',
+          'No working connection, and the narrow plug can bend the jack’s outer contacts, leaving intermittent faults for the next proper cable. Keep telephone cords away from network jacks. Note also that a telephone cord may be live: analog phone lines carry roughly 48 V DC and about 90 V AC or more while ringing — enough to feel and enough to matter to equipment. An old wall jack is not automatically “just signal” because it fits the shape; identify unknown building jacks before patching into them.',
       },
       {
         otherName: 'A different protocol on the same connector (e.g. a digital-snake port vs an office LAN port)',
@@ -863,11 +863,11 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
       'Carries multichannel digital audio (protocol-dependent) through a thin, light cable',
     ],
     limitations: [
-      'The port does not identify the protocol: optical S/PDIF (stereo) and ADAT (multichannel) use the same connector and fiber but are different, incompatible formats — both devices must be set to the same one',
+      'The port does not identify the protocol: optical S/PDIF (stereo, or packed surround) and ADAT (multichannel) use the same connector and fiber but are different, incompatible formats — both devices must be set to the same one',
       'Fragile compared with copper: tight bends, kinks, and crushing damage the fiber invisibly',
       'End-faces must stay clean and unscratched; dust caps exist for a reason',
       'Practical run lengths are shorter than balanced copper or network runs (cable- and equipment-dependent)',
-      'No power can be carried — this is signal only, by physics',
+      'No electrical power can be carried — there is no wire in it, so it is signal only',
     ],
     commonMistakes: [
       'Connecting an ADAT output to a device expecting optical S/PDIF (or vice versa) and getting silence — or, on some equipment, noise — same plug, different protocol; set both ends to match',
@@ -948,7 +948,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
             role: 'Three shielded high-speed pairs — video with embedded audio',
             ink: 'dataA',
           },
-          { label: 'TMDS clock', role: 'Clock pair pacing the three data pairs', ink: 'clock' },
+          { label: 'TMDS clock', role: 'Clock pair pacing the three data pairs (a fourth data lane in HDMI 2.1 FRL mode)', ink: 'clock' },
           {
             label: 'DDC',
             role: 'Display Data Channel — the source reads the display’s identity and capabilities here',
@@ -1067,7 +1067,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
         contacts: [
           {
             label: '4',
-            role: 'Current-loop source (+5 V through the transmitter’s resistor)',
+            role: 'Current-loop source (+5 V, or +3.3 V on newer gear, through the transmitter’s resistor)',
             ink: 'dcPos',
           },
           {

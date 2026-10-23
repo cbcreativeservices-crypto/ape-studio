@@ -77,7 +77,7 @@
   },
   {
     "term": "Tube Microphone",
-    "body": "Tube mics can't run on standard 48V phantom power - the valve needs its own heater and plate voltages, so it ships with a dedicated power supply and cable."
+    "body": "Most tube mics can't run on standard 48V phantom power - the valve needs its own heater and plate voltages, so they ship with their own supply. A few can."
   },
   {
     "term": "T phase",
@@ -129,7 +129,7 @@
   },
   {
     "term": "Middle pickup",
-    "body": "Flip a three-pickup guitar to an 'in-between' switch setting and two coils combine to cancel hum and produce a hollow, quacky tone neither pickup makes alone."
+    "body": "Flip a three-pickup guitar to an 'in-between' switch setting and two pickups blend into a hollow, quacky tone; on many, a reversed middle pickup cancels hum."
   },
   {
     "term": "Orchestra seating",
@@ -565,7 +565,7 @@
   },
   {
     "term": "Alnico Magnet",
-    "body": "Alnico speaker magnets - aluminum, nickel and cobalt - give up a little magnetism under hard use, and that gentle compression is the vintage sound people chase."
+    "body": "Alnico speaker magnets - aluminum, nickel and cobalt - can briefly lose a little pull under hard use; many players hear that soft squash as the vintage sound."
   },
   {
     "term": "anvil",
@@ -745,7 +745,7 @@
   },
   {
     "term": "Floating slab track",
-    "body": "Some subway tracks sit on a concrete raft that itself rests on springs, so the whole slab bounces slowly and trains never shake the buildings above."
+    "body": "Some subway tracks sit on a concrete raft that itself rests on springs, so the whole slab bounces slowly and trains barely shake the buildings above."
   },
   {
     "term": "House to half",
@@ -913,7 +913,7 @@
   },
   {
     "term": "Deep sound channel axis",
-    "body": "Sound near the deep sound channel's axis, where ocean sound speed bottoms out, stays trapped and can travel thousands of kilometers - how whales call so far."
+    "body": "Near the deep sound channel's axis, where ocean sound speed bottoms out, sound stays trapped and can travel thousands of km - which may help whale calls carry."
   },
   {
     "term": "Inside-start disc",
@@ -1005,7 +1005,7 @@
   },
   {
     "term": "wax cylinder",
-    "body": "Wax cylinders are so soft that a single careless playback can permanently wear away the very sound you're trying to hear - archives transfer them untouched."
+    "body": "Wax cylinders are so soft that one careless playback can wear away the very sound you're trying to hear - some archives now scan them with light instead."
   },
   {
     "term": "Throat reflection",
@@ -1173,7 +1173,7 @@
   },
   {
     "term": "Phase-distortion synthesis",
-    "body": "Casio invented an entirely new synthesis method in 1984 for one reason: to sound like Yamaha's FM synths without infringing Yamaha's FM patent."
+    "body": "Casio brought out phase-distortion synthesis in 1984, a low-cost route to bright digital tones; it is often said to have been a way around Yamaha's FM patent."
   },
   {
     "term": "Frequency-selective kick–bass ducking",
@@ -1202,10 +1202,6 @@
   {
     "term": "klystron",
     "body": "The klystron microwave tube takes its name from the Greek for waves breaking on a shore - a poetic image for how it bunches electrons into pulses."
-  },
-  {
-    "term": "x-copy",
-    "body": "An x-copy isn't just any duplicate - in tape archiving it means recording the copy at the same magnetic flux level as the original, to preserve its character."
   },
   {
     "term": "Subsonic acoustic intensity",
@@ -1373,7 +1369,7 @@
   },
   {
     "term": "Tom rim mount",
-    "body": "A rim mount holds a tom by its metal hoop instead of drilling into the shell, so it rings longer and more openly - like holding a wine glass by the stem."
+    "body": "A rim mount holds a tom by its hoop or tuning hardware, not by drilling the shell, so it rings longer and more openly - like holding a wine glass by the stem."
   },
   {
     "term": "Paleolithic flute",
@@ -1469,7 +1465,7 @@
   },
   {
     "term": "Emergency track",
-    "body": "Every DJ keeps one dependable, crowd-pleasing record on standby - not for taste, but to rescue a thinning floor or cover a technical mishap."
+    "body": "Most working DJs keep one dependable, crowd-pleasing record on standby - not for taste, but to rescue a thinning floor or cover a technical mishap."
   },
   {
     "term": "Cave reverberation",
@@ -1585,7 +1581,7 @@
   },
   {
     "term": "Externalization",
-    "body": "On headphones, sound normally seems to sit inside your skull - externalization is when reflection cues instead push it out into the room around you."
+    "body": "On headphones, sound normally seems to sit inside your skull - externalization is when cues like room echoes and ear-shape filtering push it out into the room."
   },
   {
     "term": "Tape sticking",
@@ -1597,7 +1593,7 @@
   },
   {
     "term": "Supersonic bullet crack",
-    "body": "A bullet outrunning sound trails its own sonic boom - the crack of that shockwave actually reaches a nearby mic before the gunshot's muzzle blast does."
+    "body": "A bullet outrunning sound trails its own sonic boom - for a mic beside the bullet's path, that crack often arrives before the gunshot's muzzle blast."
   },
   {
     "term": "Groove-centerline extraction",
@@ -1605,7 +1601,7 @@
   },
   {
     "term": "Perceptual evaluation of audio quality",
-    "body": "A piece of software can score how bad an audio glitch sounds to human ears closely enough to stand in for an actual listening panel - no volunteers required."
+    "body": "Software can estimate how bad an audio glitch sounds to human ears - a quick stand-in for a listening panel, though formal tests still use real listeners."
   },
   {
     "term": "Drawer slide",
@@ -1717,7 +1713,7 @@
   },
   {
     "term": "Junk case",
-    "body": "Every touring rig has one road case nobody labels - the junk case, holding whatever spare cable, tape and hardware doesn't belong anywhere else."
+    "body": "Most touring rigs have a junk case: the road case holding whatever spare cable, tape and hardware doesn't belong anywhere else."
   },
   {
     "term": "Auditory neuropathy spectrum disorder",
@@ -2132,10 +2128,6 @@
     "body": "Press a piano's sustain pedal and it doesn't just free the note you played - every undamped string in the instrument lifts at once and rings in sympathy."
   },
   {
-    "term": "rock crusher",
-    "body": "Rock crusher: musicians' slang for the accordion, one of several irreverent nicknames the instrument has picked up over the years."
-  },
-  {
     "term": "coarticulation",
     "body": "Because your mouth is always sliding toward the next sound, no phoneme has one fixed shape - each is subtly colored by whatever comes right before and after it."
   },
@@ -2173,7 +2165,7 @@
   },
   {
     "term": "microphone fingerprint",
-    "body": "Every microphone leaves quirky, tiny flaws in tone and self-noise unique enough that investigators can match a recording back to the exact device that made it."
+    "body": "Microphones leave tiny quirks in tone and self-noise; in lab tests, investigators can sometimes trace a recording to the model, or even the unit, that made it."
   },
   {
     "term": "Brass projection",
@@ -2389,7 +2381,7 @@
   },
   {
     "term": "Zwicker tone",
-    "body": "Play noise with a gap cut from its spectrum, then switch it off - many listeners hear a faint ghost pitch at exactly the missing frequency: the Zwicker tone."
+    "body": "Play noise with a gap cut from its spectrum, then switch it off - many listeners hear a faint ghost pitch inside the missing gap: the Zwicker tone."
   },
   {
     "term": "Futz track",
@@ -2497,7 +2489,7 @@
   },
   {
     "term": "Lectoring",
-    "body": "In Poland and much of Eastern Europe, films aren't dubbed - one flat-voiced narrator reads every translated line over the still-audible original, no lip sync."
+    "body": "On Polish TV and in parts of Eastern Europe, many films aren't dubbed - one flat-voiced narrator reads every translated line over the still-audible original."
   },
   {
     "term": "Temporal masking analysis",
@@ -2588,10 +2580,6 @@
     "body": "Sound entering the ear doesn't hit one spot - it starts a traveling wave along the cochlea, each point tuned to its own pitch like a built-in piano."
   },
   {
-    "term": "F-wrench",
-    "body": "F-wrench: shop slang for a vernier caliper, so called simply because its sliding jaw traces the shape of the letter F."
-  },
-  {
     "term": "Cajón tapa miking",
     "body": "The tapa is a cajon's thin front face, hiding a set of guitar-string snares just behind it - mic it close and you catch both the slap and their hidden buzz."
   },
@@ -2633,7 +2621,7 @@
   },
   {
     "term": "Cooked driver",
-    "body": "A 'cooked' driver is a speaker whose voice coil overheated until its wire or glue melted - an underpowered amp clipping hard causes it as often as too much."
+    "body": "A 'cooked' driver is a speaker whose voice coil overheated until its wire or glue melted - too much power can do it, but so can a small amp clipping hard."
   },
   {
     "term": "Gadulka sympathetic ring",
@@ -2697,7 +2685,7 @@
   },
   {
     "term": "Esraj/dilruba sympathetic ring",
-    "body": "Under the esraj and dilruba's bowed strings sit dozens of sympathetic strings tuned to the raga - they hum on their own, haloing each note."
+    "body": "Under the esraj and dilruba's bowed strings sit a dozen or more sympathetic strings tuned to the raga - they hum on their own, haloing each note."
   },
   {
     "term": "Nonlinear resonance",
@@ -2721,7 +2709,7 @@
   },
   {
     "term": "Auditory Negative Afterimage",
-    "body": "Like staring at a bright light leaves a dark afterimage, silencing noise with a spectral gap can leave a faint phantom tone at exactly the missing frequency."
+    "body": "Like staring at a bright light leaves a dark afterimage, silencing noise with a spectral gap can leave a faint phantom tone inside the missing gap."
   },
   {
     "term": "Curtain music",
@@ -2769,7 +2757,7 @@
   },
   {
     "term": "Check one two",
-    "body": "Why do engineers always say check one two? Those two words pack a hard plosive and a hissy sibilant, so one phrase tests a mic's whole range."
+    "body": "Why do engineers say check one two? Those two words pack a hard plosive and a hissy sibilant, so one quick phrase gives a fast first test of a mic."
   },
   {
     "term": "Plunger mute",
@@ -2857,7 +2845,7 @@
   },
   {
     "term": "double compression detection",
-    "body": "Squeeze an MP3 twice and the two compression patterns overlap oddly - proof a file was reopened and re-saved, not straight off the recorder."
+    "body": "Squeeze an MP3 twice and the two compression patterns overlap oddly - strong evidence a file was reopened and re-saved, not straight off the recorder."
   },
   {
     "term": "Standby switch",
@@ -2901,7 +2889,7 @@
   },
   {
     "term": "Fixed-Frequency EQ",
-    "body": "On vintage consoles and channel strips, an EQ band's frequency was fixed at the factory - you could dial in how much, but never where."
+    "body": "On many vintage consoles and channel strips, an EQ band's frequency was fixed at the factory - you could dial in how much, but not where."
   },
   {
     "term": "Effort synchrony",
@@ -3069,7 +3057,7 @@
   },
   {
     "term": "Scalloping loss",
-    "body": "Land a tone exactly between two FFT bins instead of on one and its measured level droops - up to about 3.92 dB lost to bad luck in frequency."
+    "body": "Land a tone exactly between two FFT bins instead of on one and its measured level droops - with no window, up to about 3.92 dB; most windows lose less."
   },
   {
     "term": "Rotary speaker",
@@ -3093,7 +3081,7 @@
   },
   {
     "term": "Didgeridoo drone",
-    "body": "A didgeridoo's drone never stops for breath - players use circular breathing to keep one continuous humming tone going indefinitely."
+    "body": "A skilled didgeridoo player's drone needn't stop for breath - circular breathing keeps one continuous humming tone going for as long as they like."
   },
   {
     "term": "chunky",
@@ -3137,7 +3125,7 @@
   },
   {
     "term": "Hidden hearing damage",
-    "body": "You can pass a hearing test and still be damaged: hidden hearing damage severs nerve links in the ear that a standard quiet-tone audiogram can't detect."
+    "body": "You can pass a hearing test and still be damaged: noise can sever nerve links in the ear that a standard audiogram can't detect. Research in people is ongoing."
   },
   {
     "term": "Speed-error signature",
@@ -3297,7 +3285,7 @@
   },
   {
     "term": "forró",
-    "body": "Forro, Brazil's northeastern dance music, is built on just three instruments: accordion, a low double-headed drum called zabumba, and a triangle."
+    "body": "Traditional forro, Brazil's northeastern dance music, is built on just three instruments: accordion, a low double-headed drum called zabumba, and a triangle."
   },
   {
     "term": "spatial auditory display",
@@ -3361,7 +3349,7 @@
   },
   {
     "term": "Fall-off/doink",
-    "body": "A jazz brass note can end with a fall-off, a long downward smear, or its quick cousin a doink - the pitch just trails off downward instead of stopping clean."
+    "body": "A jazz brass note can end with a fall-off: a downward smear where the pitch trails away instead of stopping clean. Its opposite, the doit, swoops up."
   },
   {
     "term": "Wow and Flutter",
@@ -3445,7 +3433,7 @@
   },
   {
     "term": "Paper-base tape",
-    "body": "Before plastic, magnetic tape was recorded onto strips of paper - a fragile 1930s and 40s format that can tear if handled like modern tape."
+    "body": "Some early magnetic tape was made on strips of paper - a fragile 1930s and 40s format, used alongside early plastic tape, that tears if handled roughly."
   },
   {
     "term": "jit",
@@ -3509,7 +3497,7 @@
   },
   {
     "term": "Time difference of arrival",
-    "body": "Two microphones set a little apart hear the same sound at very slightly different instants - that tiny time gap alone is enough to calculate its direction."
+    "body": "Two mics set a little apart hear the same sound at very slightly different instants - that tiny gap gives its angle, though front and back can be confused."
   },
   {
     "term": "Tab curtain",
@@ -3637,7 +3625,7 @@
   },
   {
     "term": "Ghost light",
-    "body": "Every dark theatre keeps one bare bulb burning on stage: the ghost light. A safety practice wrapped in a superstition about keeping the ghosts company."
+    "body": "Most dark theatres keep one bare bulb burning on stage: the ghost light. A safety practice wrapped in a superstition about keeping the ghosts company."
   },
   {
     "term": "Auditory filter model",
@@ -3693,7 +3681,7 @@
   },
   {
     "term": "Dead wedge",
-    "body": "A \"dead wedge\" is live-sound slang for the angled floor monitor that's gone silent on a performer - the culprit is usually a muted aux send, not a blown driver."
+    "body": "A \"dead wedge\" is live-sound slang for a floor monitor that's gone silent on a performer - check simple things like a muted send or cable before the driver."
   },
   {
     "term": "Bridle",
@@ -3741,7 +3729,7 @@
   },
   {
     "term": "Region of dominance",
-    "body": "Not every harmonic matters equally for pitch - a middle band near 500 Hz to 2 kHz dominates, so pitch tracks it even when other partials drift."
+    "body": "Not every harmonic matters equally for pitch - for most sounds the 3rd to 5th harmonics dominate, so pitch tracks them even when other partials drift."
   },
   {
     "term": "Real cepstrum",
@@ -3937,7 +3925,7 @@
   },
   {
     "term": "oronym",
-    "body": "'Ice cream' and 'I scream' can sound nearly identical spoken aloud - an oronym, proof that speech has no real gaps between its words."
+    "body": "'Ice cream' and 'I scream' can sound nearly identical spoken aloud - an oronym, a sign that speech often has no real gaps between its words."
   },
   {
     "term": "Paila",
@@ -3953,7 +3941,7 @@
   },
   {
     "term": "Center cluster",
-    "body": "A center cluster hangs every PA speaker together above the stage, so the sound is perceived as coming from the performer beneath it, not from off to the sides."
+    "body": "A center cluster hangs the main PA speakers together above the stage, so the sound seems to come from the performer beneath it, not from off to the sides."
   },
   {
     "term": "Desk du jour",
@@ -3969,7 +3957,7 @@
   },
   {
     "term": "Blauert Band",
-    "body": "Boost certain frequency bands and a sound seems to jump above or behind you, whatever its true position - Blauert mapped these direction-biasing bands by ear."
+    "body": "Boost certain narrow frequency bands and a sound can seem to jump above or behind you, even from in front - Blauert mapped these direction-biasing bands by ear."
   },
   {
     "term": "thermophone",
@@ -4077,7 +4065,7 @@
   },
   {
     "term": "Control-voltage-to-MIDI interface",
-    "body": "Old synths speak in control voltage, one volt per octave; a CV-to-MIDI box reads it and outputs MIDI notes, letting analog gear drive digital rigs."
+    "body": "Old synths speak in control voltage, most often one volt per octave; a CV-to-MIDI box reads it and outputs MIDI notes, letting analog gear drive digital rigs."
   },
   {
     "term": "Air-button hiss",
@@ -4141,7 +4129,7 @@
   },
   {
     "term": "upfader",
-    "body": "The vertical channel fader on a DJ mixer is called an upfader - a name borrowed straight from stage-lighting terminology, not DJ culture at all."
+    "body": "The vertical channel fader on a DJ mixer is called an upfader - it sets each deck's level, while the crossfader blends between the decks."
   },
   {
     "term": "Diffuse Field",
@@ -4361,7 +4349,7 @@
   },
   {
     "term": "Localized Scare Speaker",
-    "body": "Haunted attractions plant one speaker at the exact spot a scare should come from - listeners always localize to the nearest source, so the trick just works."
+    "body": "Haunted attractions plant one speaker at the exact spot a scare should come from - we hear a sound where it reaches us first, so the trick usually works."
   },
   {
     "term": "Paralinguistic transfer",

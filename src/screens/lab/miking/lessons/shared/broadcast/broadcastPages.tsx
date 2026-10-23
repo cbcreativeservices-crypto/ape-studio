@@ -416,7 +416,7 @@ export function useReflectStep(spec: ReflectSpec): MikingStep {
         </Card>
         <CombStrip w={300} h={86} dtMs={R.exists ? R.dtMs : 0} gA={gA} gB={gB} a11y={`A simplified graph of the direct sound plus its reflection, 100 hertz to 20 kilohertz: ${R.exists ? `dips start near ${hz(R.firstNotchHz)}.` : 'flat — no reflection reaches the mic.'}`} />
         {tried.size >= Math.min(2, spec.places.length) ? <Note tone="ok">{spec.words.done}</Note> : null}
-        <Body>Real desks and stands absorb and scatter some of the sound, and a voice is not one point: read where the first dip falls, not its depth. Move the mic or the surface first; EQ cannot pull a cancelled pitch back.</Body>
+        <Body>Real desks and stands absorb and scatter some of the sound, and a voice is not one point: read where the first dip falls, not its depth. Move the mic or the surface first; EQ cannot pull a cancelled frequency back.</Body>
       </>
     ),
   };

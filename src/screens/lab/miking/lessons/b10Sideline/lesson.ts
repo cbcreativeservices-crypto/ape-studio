@@ -64,7 +64,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why two open interview mics can make a voice sound hollow, how the arrival-time difference places comb notches, and why each mic stays on its own channel.',
     credit: { scenarios: ['b10.two.1', 'b10.two.2', 'b10.two.3', 'b10.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Each voice reaches the other mic later and lower: the sum cancels some pitches. A mic each close to its own mouth, the unused one down, each on its own channel — and never a body mic and a handheld open on one person by accident.',
+    takeaway: 'Each voice reaches the other mic later and lower: the sum cancels some frequencies. A mic each close to its own mouth, the unused one down, each on its own channel — and never a body mic and a handheld open on one person by accident.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -217,7 +217,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A headset steadies the reporter’s questions at one distance; the guest still needs a handheld, a body mic or a boom.',
     why: {
       'Nothing: the headset hears both of them clearly': 'The guest is far from the reporter’s mouth corner: distant and crowd-heavy.',
-      'The crowd: the headset cancels it': 'The crowd has its own mics; a headset does not cancel it.',
+      'The crowd: the headset cancels it': 'The crowd has its own mics; even a noise-cancelling headset only lowers it.',
     },
   },
   {
@@ -250,7 +250,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The guest wears an approved body mic and also answers into the handheld, both open. What can happen?',
     options: ['The two copies of one voice comb', 'The voice gets twice as clear', 'The body mic switches off by itself'],
     correct: 'The two copies of one voice comb',
-    explain: 'One voice at two distances arrives twice, a little apart: summed, some pitches cancel. Choose one, or make a deliberate transition between them.',
+    explain: 'One voice at two distances arrives twice, a little apart: summed, some frequencies cancel. Choose one, or make a deliberate transition between them.',
     why: {
       'The voice gets twice as clear': 'Two copies at different delays sound hollower, not clearer.',
       'The body mic switches off by itself': 'Nothing switches by itself: choose the mic on purpose.',
@@ -311,7 +311,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'With two handhelds open, the reporter’s voice sounds hollow. Why?',
     options: ['It reaches the guest’s mic later', 'The guest’s mic reverses its polarity', 'The closer mic is louder, so it cancels'],
     correct: 'It reaches the guest’s mic later',
-    explain: 'The reporter’s voice reaches their own mic first and the guest’s later. Summed, some pitches arrive out of step and cancel — a comb.',
+    explain: 'The reporter’s voice reaches their own mic first and the guest’s later. Summed, some frequencies arrive out of step and cancel — a comb.',
     why: {
       'The guest’s mic reverses its polarity': 'Distance delays a sound; it does not flip its sign.',
       'The closer mic is louder, so it cancels': 'A level difference changes how deep the notches are; the delay makes them.',
@@ -382,8 +382,8 @@ const scenarios: MikingScenario[] = [
     id: 'b10.mix.2',
     page: 'practice',
     prompt: 'The radio mic drops out at one interview mark. Who decides a new frequency?',
-    options: ['The venue’s radio coordinator', 'You, on the receiver straight away', 'The guest’s team, on the day'],
-    correct: 'The venue’s radio coordinator',
+    options: ['The event’s radio coordinator', 'You, on the receiver straight away', 'The guest’s team, on the day'],
+    correct: 'The event’s radio coordinator',
     explain: 'The radio coordinator owns the frequencies. Walk the marks and the route, listen for dropouts, and use the cabled fallback while it is fixed.',
     why: {
       'You, on the receiver straight away': 'Changing a frequency alone can collide with other systems.',

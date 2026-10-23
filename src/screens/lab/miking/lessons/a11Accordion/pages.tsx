@@ -239,7 +239,7 @@ const SPEC: FreeReedSpec = {
     ],
     seqLooking: 'One reed cut open · its cell in the reed block, the plate and its slot',
     useWhere: useBellows,
-    shapesNote: 'A real accordion reed is tapered and weighted at its tip, so its numbers differ — the picture shows which parts move. Each note has its own reed (and a register can add more, tuned together).',
+    shapesNote: 'A real accordion reed is tapered, and low reeds carry a weight at the tip, so its numbers differ — the picture shows which parts move. Each note has its own pair of reeds, one for push and one for pull (and a register can add more, tuned together).',
     silentNote: 'This lab never plays a sound and draws no frequency curve: how a real accordion sounds depends on the instrument, its registers, the player and the room. The pictures show where the sound comes from and where it leaves.',
   },
   hand: HAND,

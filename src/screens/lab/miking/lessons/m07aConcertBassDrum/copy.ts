@@ -21,7 +21,7 @@ export const CBD_COPY: LessonCopy = {
     figureLabel: 'Side view of a 36 by 16 inch concert bass drum, cut open, hanging on its pivots in a tilting stand on locking casters: the playing head on the right where the player stands with a large felt mallet, the far head on the left.',
     partsBadge: 'A 36 × 16 in concert bass drum, cut open · tap a part to name it',
     partsLooking: { side: 'Side view · the drum cut open · the player at the right', top: 'Top view · the drum cut open · the conductor below' },
-    partsIdle: 'The mallet strikes the playing head; the far head, the air inside and the shell ring with it. The stand holds it at the angle the crew set — and only the crew moves it.',
+    partsIdle: 'The mallet strikes the playing head; the far head, the air inside and the shell ring with it. The stand holds it at the angle the player or crew set — and only they move it.',
     variantNotes: {},
   },
   sound: {
@@ -61,7 +61,7 @@ export const CBD_COPY: LessonCopy = {
     studioIdle: 'No monitors. The main pair over the conductor hears the whole orchestra — the bass drum’s low end included — and the hall is part of the sound.',
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'Which head is played, which mallets, rolls, how the drum should bloom — and where both hands go to damp either head. Watch the full passage, the loudest hit included.' },
-      { title: 'NEVER MOVE THE DRUM', text: 'Do not unlock, tilt, rotate or lift the drum to suit a mic. Its stand locks on its casters and its angle is set with locking bolts; a falling bass drum can injure someone. The percussion crew alone moves it, following the stand’s own manual.' },
+      { title: 'NEVER MOVE THE DRUM', text: 'Do not unlock, tilt, rotate or lift the drum to suit a mic. Its stand locks on its casters and its angle is set with locking bolts; a falling bass drum can injure someone. Only the player or the percussion crew moves it, following the stand’s own manual.' },
       { title: 'LISTEN TO THE MAIN PICKUP', text: 'In an orchestra the main pickup often carries the drum’s low end already; a spot mostly adds definition. Listen first, and decide how many channels the music needs.' },
     ],
     plan: {

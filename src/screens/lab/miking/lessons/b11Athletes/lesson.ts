@@ -65,7 +65,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a chest mic and a headset open on the same voice sound hollow, how the arrival-time difference places comb notches, and why one of them is chosen for the program.',
     credit: { scenarios: ['b11.two.1', 'b11.two.2', 'b11.two.3', 'b11.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'One voice into two open mics arrives twice: the sum cancels some pitches. Choose one mic for the program, or switch on purpose; polarity flips the sign and never removes a delay.',
+    takeaway: 'One voice into two open mics arrives twice: the sum cancels some frequencies. Choose one mic for the program, or switch on purpose; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -117,7 +117,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A coach’s chest mic and broadcast headset are both open. Why can the voice sound hollow?',
     options: ['It reaches both mics, at two times', 'The headset reverses the chest mic', 'Two mics make the voice twice as loud'],
     correct: 'It reaches both mics, at two times',
-    explain: 'The voice reaches the headset first and the chest mic a little later. Summed, some pitches cancel — choose one, or switch on purpose.',
+    explain: 'The voice reaches the headset first and the chest mic a little later. Summed, some frequencies cancel — choose one, or switch on purpose.',
     why: {
       'The headset reverses the chest mic': 'Distance delays a sound; it does not flip its sign.',
       'Two mics make the voice twice as loud': 'The second copy is later: it colours the voice more than it adds level.',
@@ -204,7 +204,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Opened on purpose, then muted again',
     explain: 'The event’s approved announcement mic goes to the PA, opened for the announcement and muted after it. A split to the broadcast needs explicit permission.',
     why: {
-      'Left open so nothing is missed': 'Left open, it would carry private talk and feed the PA back.',
+      'Left open so nothing is missed': 'Left open, it would carry private talk and risk feeding the PA back.',
       'Opened by the program when it wants': 'The official and the event control it, on their approved route.',
     },
   },
@@ -276,7 +276,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Close capsule, opened only to announce',
     explain: 'Close and opened on purpose: the fewest open mics, the PA as far into the rejection as the mouth allows. Avoid uncontrolled feedback.',
     why: {
-      'Left open through play in case of anything': 'An open mic feeds the PA back and carries private talk.',
+      'Left open through play in case of anything': 'An open mic risks PA feedback and carries private talk.',
       'Turned up to be heard over the crowd': 'More gain brings feedback closer; the PA’s level is set by the PA.',
     },
   },
@@ -311,7 +311,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The coach’s chest mic and headset are both open. Why does the voice sound hollow?',
     options: ['It reaches the chest mic later', 'The chest mic reverses its polarity', 'The headset is louder, so it cancels'],
     correct: 'It reaches the chest mic later',
-    explain: 'The voice reaches the headset first and the chest mic later. Summed, some pitches cancel — a comb.',
+    explain: 'The voice reaches the headset first and the chest mic later. Summed, some frequencies cancel — a comb.',
     why: {
       'The chest mic reverses its polarity': 'Distance delays a sound; it does not flip its sign.',
       'The headset is louder, so it cancels': 'A level difference changes how deep the notches are; the delay makes them.',
@@ -363,7 +363,7 @@ const scenarios: MikingScenario[] = [
     explain: 'No mount: use the approved perimeter mic, a boom outside play or a post-event interview — labelled as a different perspective.',
     why: {
       'Fit it anyway, but somewhere a little less visible': 'No approval, no mount — hidden or not.',
-      'Move the mic onto the athlete’s helmet': 'Never on protective equipment.',
+      'Move the mic onto the athlete’s helmet': 'Not on protective equipment without approval — and here approval was withdrawn.',
     },
   },
   {
@@ -382,8 +382,8 @@ const scenarios: MikingScenario[] = [
     id: 'b11.mix.2',
     page: 'practice',
     prompt: 'Who plans the frequencies for the body mics, the intercom and the officials’ systems?',
-    options: ['The venue’s radio coordinator, for all', 'Each crew separately, for its own system only', 'The first to switch on gets the clearest one'],
-    correct: 'The venue’s radio coordinator, for all',
+    options: ['The event’s radio coordinator, for all', 'Each crew separately, for its own system only', 'The first to switch on gets the clearest one'],
+    correct: 'The event’s radio coordinator, for all',
     explain: 'One coordinator assigns and monitors frequencies and the antenna plan for the whole venue — broadcast, intercom, IFB and the officials’ systems.',
     why: {
       'Each crew separately, for its own system only': 'Separate plans collide; the venue coordinates them all.',
@@ -465,7 +465,7 @@ const orderTasks: OrderTask[] = [
     steps: [
       { text: 'Get the rules, the team’s and the person’s approval, the reviewer', early: 'Approval comes before anything else.' },
       { text: 'Agree the place, the pack’s place, the destination, who removes it', early: 'Agree the details once there is approval.' },
-      { text: 'Fit the mic with an authorized person, clear of protective gear', early: 'Fit only what is agreed.' },
+      { text: 'Fit the mic with an authorized person, clear of protective gear unless approved', early: 'Fit only what is agreed.' },
       { text: 'Strain relief, slack, the pack retained, the antenna straight', early: 'Secure the chain once the mic is fitted.' },
       { text: 'Set the transmitter’s gain for the loudest moment', early: 'Gain comes once the chain is secure.' },
       { text: 'Test safe movement; listen at the real destination', early: 'Test once the gain is set.' },
@@ -498,7 +498,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'The event’s announcement headset, opened to announce, muted after', ok: true, power: 'pack', feedback: 'A suggested start: opened on purpose — check the PA against its pattern.' },
       { id: 'b', label: 'The approved announcement mic split to the PA and the program', ok: true, power: 'none', feedback: 'A suggested start with permission for the split — check the route and the mute.' },
       { id: 'c', label: 'The officials’ private circuit routed into the program', ok: false, power: 'none', feedback: 'Never open the private circuit into the program by assumption.' },
-      { id: 'd', label: 'The announcement mic left open through play', ok: false, power: 'none', feedback: 'Left open it carries private talk and feeds the PA back.' },
+      { id: 'd', label: 'The announcement mic left open through play', ok: false, power: 'none', feedback: 'Left open it carries private talk and can feed the PA back.' },
       { id: 'e', label: 'A crew member walks on to swap a failing pack', ok: false, power: 'pack', feedback: 'Never into play: mute it and use the tested spare outside play.' },
     ],
     reasons: [docReason('the lips'), clearReason('the field and the official’s own equipment'), { id: 'r.route', label: 'The PA, the program and the private circuit are traced as separate routes', role: 'required', feedback: 'Say how each route is checked.' }, { id: 'r.mute', label: 'The mic is opened on purpose and muted again', role: 'optional', feedback: 'A fair announcement reason.' }, BRAND_REASON('official'), { id: 'r.private', label: 'The private circuit adds drama to the program', role: 'wrong', feedback: 'The private circuit is never the program’s by assumption.' }],
@@ -524,7 +524,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The chest stays while the head turns: the voice’s distance and angle to the mic change.',
     why: {
       'Nothing: the mic is on the coach’s body': 'On the body, but not on the head: the mouth moves.',
-      'The mic turns with the head to follow it': 'Only a headset boom turns with the head.',
+      'The mic turns with the head to follow it': 'Only a head-worn mic, like a headset boom, turns with the head.',
     },
   },
   {

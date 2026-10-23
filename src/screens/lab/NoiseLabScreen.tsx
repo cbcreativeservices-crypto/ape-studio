@@ -78,12 +78,12 @@ const COLORS: { key: NoiseColor; label: string; mode: number; slope: number }[] 
  *  name-the-colour skill had nothing to hang on. NEW COPY — owner review. */
 const COLOR_CHARACTER: Record<NoiseColor, string> = {
   white: 'Equal energy per Hz — sounds bright because every higher octave holds twice the bandwidth. The untilted reference.',
-  pink: 'Equal energy per OCTAVE — matches how we hear. The mixing and measurement reference.',
+  pink: 'Equal energy per OCTAVE — roughly matches how we hear. The mixing and measurement reference.',
   brown: 'Energy doubling toward the bottom — rumble, surf, distant thunder.',
   // Plain RPDF/TPDF dither is FLAT (white). Only NOISE-SHAPED dither is
     // high-frequency weighted — and the Digital lab teaches exactly that
     // (digital/vizQuant.tsx:386), so this line contradicted it.
-    blue: 'Energy rising toward the top — a thin, airy hiss. The sound of NOISE-SHAPED dither; plain TPDF dither is flat, like white.',
+    blue: 'Energy rising toward the top — a thin, airy hiss. NOISE-SHAPED dither also pushes its hiss toward the top; plain TPDF dither is flat, like white.',
   violet: 'Steeply rising — nearly all the energy at the very top. Hiss, distilled.',
 };
 
@@ -381,7 +381,7 @@ export function NoiseLabScreen() {
       />
       <CheckQuestion
         spec={{
-          question: 'You want the reference noise that sounds equally loud in every octave. Which colour?',
+          question: 'You want the reference noise that holds equal energy in every octave. Which colour?',
           options: ['Pink', 'White', 'Violet'],
           correctIdx: 0,
           reveal:

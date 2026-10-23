@@ -720,7 +720,7 @@ const ALIGN_CHECK: CheckSpec = {
   ],
   correctIdx: 1,
   reveal:
-    'A tape measures DISTANCE; alignment is about TIME. Amp and DSP latency add milliseconds no ' +
+    'A tape measures DISTANCE; alignment is about TIME. DSP latency and filter delay add milliseconds no ' +
     'tape can see — so you verify by measurement: watch the null close in HEAT, then drag the ' +
     'listener to check that the fix holds at more than one seat.',
   wrongHint: 'What does a tape measure fundamentally not know about the signal chain?',
@@ -1080,7 +1080,7 @@ export function CardioidSubModule(p: WaveModuleProps) {
             file="subwoofer.webp"
             h={150}
             accessibilityLabel="subwoofer loudspeaker"
-            caption="A subwoofer — a large driver in a ported cabinet for low frequencies. Two of them, one delayed and flipped in polarity, cancel behind the stack and add in front: a cardioid pattern. The free-field heat map below is that two-sub pattern."
+            caption="A subwoofer — a large driver in a cabinet (often ported) for low frequencies. Two of them, one delayed and flipped in polarity, cancel behind the stack and add in front: a cardioid pattern. The free-field heat map below is that two-sub pattern."
           />
         </PanelCard>
       }
@@ -1136,7 +1136,7 @@ const STEER_CHECK: CheckSpec = {
   correctIdx: 1,
   reveal:
     'A linear delay gradient across the array tilts its wavefront: Δt = d·sin θ / c per box. The ' +
-    'boxes never move — DSP steers the beam. Over-steer past ~40° and grating lobes spray energy ' +
+    'boxes never move — DSP steers the beam. Over-steer (past ~40° in this array) and grating lobes spray energy ' +
     'where you never asked (try it and watch HEAT).',
   wrongHint: 'The whole point of this module: the energy moves, the boxes do not.',
 };
@@ -1553,8 +1553,8 @@ export function EchoModule(p: WaveModuleProps) {
             A room gives you both at once. The nearest surface answers within a few
             milliseconds and fuses with the direct sound — you hear it as tone and size, not as a
             repeat. A distant hard wall answers late enough to arrive as a separate event, and that
-            is the echo. Drag the listener: the gap to the first reflection crosses ~50 ms and its
-            verdict flips, while the far-wall return changes far less. Pack those same late
+            is the echo. Drag the listener: when a late reflection’s gap crosses ~50 ms its verdict flips,
+            while the nearest surface keeps answering within a few milliseconds. Pack those same late
             reflections close together and you have reverberation instead (Module 15).
           </Text>
         </PanelCard>
@@ -1721,7 +1721,7 @@ export function ReverbModule(p: WaveModuleProps) {
           />
           <Badge text="ABSORPTION SLIDER = HOW MANY WALLS SWAP CONCRETE → FIBERGLASS · SABINE MODEL WITH A DISCLOSED 3 m CEILING" />
           <Text style={dstyles.caption}>
-            Reverberation is not one thing — it is the buildup: the direct sound, then discrete early reflections (spatial cues), thickening into the dense late field the model’s image sources only begin to sketch. Note how fiberglass shortens 2 kHz far more than 125 Hz: porous absorption barely touches the lows.
+            Reverberation is not one thing — it is the buildup: the direct sound, then discrete early reflections (spatial cues), thickening into the dense late field the model’s image sources only begin to sketch. Note how fiberglass shortens 2 kHz far more than 125 Hz: thin porous absorption barely touches the lows.
           </Text>
         </PanelCard>
       }

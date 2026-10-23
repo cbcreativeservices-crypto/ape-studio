@@ -56,7 +56,7 @@ const pages: LessonPages = {
     title: 'Wind, levels and live',
     goal: 'Protect the mic from wind before reaching for a filter, set levels for the loudest likely event, keep a field log — and know why a live feed is a different job.',
     credit: { scenarios: ['amb.ctx.1', 'amb.ctx.2', 'amb.ctx.3', 'amb.rec.3'], interactive: 'windTried', note: 'Try the wind layers at more than one site, and answer the four checks.' },
-    takeaway: 'Protection first: foam for sheltered air, fur and a basket for open ground. A filter cannot rescue a buffeted take. Headroom for the loudest event, a log of what really happened — and no open ambience mic near a PA without a plan.',
+    takeaway: 'Protection first: foam for sheltered air, fur and a basket for open ground. A filter rarely rescues a buffeted take. Headroom for the loudest event, a log of what really happened — and no open ambience mic near a PA without a plan.',
   },
   twoMic: {
     title: 'A pair and its image',
@@ -327,7 +327,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Spaced omnis sound wide and open. Folded to mono, what do you listen for?',
     options: ['A comb from their time difference', 'The Side cancelling to silence', 'Nothing: two omnis sum as one clean mic'],
     correct: 'A comb from their time difference',
-    explain: 'A source off to one side reaches the two omnis at different times; summed, some pitches cancel. Compare each channel too — two spaced mics are not one omni.',
+    explain: 'A source off to one side reaches the two omnis at different times; summed, some frequencies cancel. Compare each channel too — two spaced mics are not one omni.',
     why: {
       'The Side cancelling to silence': 'That is M/S. Spaced omnis have no Side: their difference is time.',
       'Nothing: two omnis sum as one clean mic': 'Their time difference stays in the sum as a comb.',
@@ -426,7 +426,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'The spacing and the time difference between the capsules; compare each channel alone, and a coincident pair for a mono delivery.',
     options: ['The spacing and the mono fold-down', 'The battery charge in the recorder', 'The height of the tripod legs'],
     correct: 'The spacing and the mono fold-down',
-    explain: 'Spaced capsules hear a side source at different times; summed, some pitches cancel. For a mono destination a coincident pair or M/S holds better.',
+    explain: 'Spaced capsules hear a side source at different times; summed, some frequencies cancel. For a mono destination a coincident pair or M/S holds better.',
     why: {
       'The battery charge in the recorder': 'A battery does not cause a comb in the mono sum.',
       'The height of the tripod legs': 'Height is not the cause: the time between the capsules is.',
@@ -474,7 +474,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'The position and the permission: move farther, aim away, or check privacy rules before using it.',
     options: ['Where it is, and permission', 'A louder recording level', 'A wider stereo pair set up'],
     correct: 'Where it is, and permission',
-    explain: 'Identifiable speech needs permission under the place’s rules. Move or aim away, or check permissions before keeping or publishing it.',
+    explain: 'Identifiable speech may need permission, under local law or the place’s rules. Move or aim away, or check permissions before keeping or publishing it.',
     why: {
       'A louder recording level': 'Louder makes the speech clearer, not less of a problem.',
       'A wider stereo pair set up': 'Width does not make speech less intelligible.',

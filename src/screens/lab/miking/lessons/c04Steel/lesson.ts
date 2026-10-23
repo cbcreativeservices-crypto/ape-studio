@@ -206,7 +206,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Does a condenser cause feedback just because it is more sensitive?',
     options: ['Yes, since its higher output reaches the PA first', 'Only when it sits closer to the grille than a dynamic', 'Not by itself — compare at the same useful level'],
     correct: 'Not by itself — compare at the same useful level',
-    explain: 'At the same reproduced level, pattern, placement and monitors decide feedback; the gain is simply set lower for a more sensitive mic.',
+    explain: 'At the same reproduced level, pattern, placement, the mic’s tone and monitors decide feedback; the gain is simply set lower for a more sensitive mic.',
     why: {
       'Yes, since its higher output reaches the PA first': 'The gain is set for the same useful level.',
       'Only when it sits closer to the grille than a dynamic': 'Closer usually HELPS gain before feedback.',
@@ -269,7 +269,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Close and directional hears more of the steel and less of the stage; low and stable stays out of the player’s reach and cannot tip into the speaker.',
     why: {
       'A low stand makes the amp sound warmer in the room': 'The stand does not change the amp’s sound in the room.',
-      'Because a taller stand would pick up the knee levers moving nearby': 'The knee levers make no sound; the reason is isolation and safety.',
+      'Because a taller stand would pick up the knee levers moving nearby': 'The knee levers make little sound a mic there would hear; the reason is isolation and safety.',
     },
   },
   {
@@ -676,7 +676,7 @@ export const C04_LESSON: Lesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'The pedal steel: strings over a neck on legs, played seated with a steel bar, with floor pedals and knee levers that change chosen strings’ pitch. The lap steel: a simpler instrument across the knees, played with a bar, usually without pedals. Here both are electric: a pickup feeds an amp.', src: 'SGF-MAP / LESSON L6-L7' },
     { title: 'WHERE YOU MEET IT', text: 'Country, western swing, gospel, Hawaiian, blues and rock — on stage and in the studio, through an amp the player brings.', src: 'LESSON L4' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'Gliding melodies, swelling chords and bends no fretted guitar can make: the bar slides, the pedals and knee levers move notes within a chord, and the volume pedal swells the sound.', src: 'LESSON L7' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'Gliding melodies, swelling chords and bends a fretted guitar can rarely make: the bar slides, the pedals and knee levers move notes within a chord, and the volume pedal swells the sound.', src: 'LESSON L7' },
     { title: 'ITS PARTS', text: 'The neck or necks and their strings, the changer at the bridge end, the pickup, the bar, the pedals and their rods, the knee levers and the volume pedal. The sound you mic comes from the amp’s speaker.', src: 'SGF-MAP' },
   ],
   sound: {

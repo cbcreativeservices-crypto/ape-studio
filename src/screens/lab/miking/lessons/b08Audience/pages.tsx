@@ -128,7 +128,7 @@ const METHODS: Method[] = [
   { id: 'zones', label: 'Two audience zones', short: 'TWO ZONES', gives: 'Distinct left and right crowd positions with similar coverage and a named channel map, raised at the stage’s corners or in front of sections.', limit: 'Not a coherent stereo pair: unequal local events, timing and PA pickup can wander the image and colour the mono sum.', mics: [ZONE_L, ZONE_R] },
   { id: 'xy', label: 'A coincident XY pair', short: 'XY', gives: 'Two angled cardioids at one stable place, taking in the useful width of the audience.', limit: 'A predictable mono sum and a stable centre — less spacious than a spaced pair; a central place may hear more PA than crowd.', mics: [XY] },
   { id: 'spaced', label: 'A near-coincident or spaced pair', short: 'SPACED', gives: 'A near-coincident pair adds width with some mono compatibility; spaced omnis bring diffuse hall energy and low end.', limit: 'Time differences comb when summed to mono: check the downmix — a spaced pair is not guaranteed mono-safe.', mics: B08_SETUPS[2].mics, scene: B08_SETUPS[2].scene, box: B08_SETUPS[2].box, noCloseUp: true },
-  { id: 'immersive', label: 'A surround or Ambisonic mic', short: 'IMMERSIVE', gives: 'A purpose-built five-capsule surround mic, or a four-capsule Ambisonic mic, when a surround or immersive deliverable is asked for.', limit: 'Two different signal formats. Keep the orientation, the channel identity, the mount and the maker’s conversion — and check the stereo fold-down by ear.', mics: [], note: 'The next step shows both, with their fronts and channel labels.' },
+  { id: 'immersive', label: 'A surround or Ambisonic mic', short: 'IMMERSIVE', gives: 'A purpose-built surround mic (most often five channels), or a first-order Ambisonic mic with four capsules, when a surround or immersive deliverable is asked for.', limit: 'Two different signal formats. Keep the orientation, the channel identity, the mount and the maker’s conversion — and check the stereo fold-down by ear.', mics: [], note: 'The next step shows both, with their fronts and channel labels.' },
 ];
 
 function B08Microphone(p: PageProps) {
@@ -259,7 +259,7 @@ function B08TwoMic(p: PageProps) {
     onInteractive: p.onInteractive,
     done: p.interactiveDone.has('polarityVsDelay'),
     prediction: p.lesson.predictions.twoMic,
-    intro: 'Walk a laugh across the front of the section (WALK): the two zone mics hear it at different times. Flip B’s POLARITY both ways and watch which readouts change.',
+    intro: 'Walk a laugh across the front of the section (WALK): the two zone mics hear it at different times. Flip mic B’s POLARITY both ways and watch which readouts change.',
   });
   const pair = usePairZonesStep({ onDone: () => undefined, words: { looking: 'The studio audience from above · a pair or two zones', prompt: 'Change METHOD and SOURCE: where do the two capsules hear the same sound at the same moment?', done: 'Two zone mics are not a stereo pair: a sound at one side reaches them milliseconds apart, and the mono sum combs. A coincident pair hears it at the same moment.' } });
   return <PageSteps steps={[overlap, pair, checkStep(p, 'twoMic')]} />;

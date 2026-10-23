@@ -63,7 +63,7 @@ describe('L6A — F09 reads a shotgun to its capsule', () => {
     const text = learnerStrings(F09).join('\n');
     assert.doesNotMatch(text, /front of the mic|mic’s FRONT|mic’s front\b/);
     const C = copyOf(F09);
-    assert.match(C.placement.learn.separate, /The tip of a shotgun is about 20 cm nearer the mouth than its capsule\./);
+    assert.match(C.placement.learn.separate, /On the shotgun drawn here, the tip is about 20 cm nearer the mouth than the capsule\./);
     assert.equal((text.match(/about 20 cm nearer the mouth/g) ?? []).length, 1, 'one line');
     assert.match(F09.accuracyDetail, /measured from the lips to the mic’s capsule/);
     const q = F09.scenarios.find((s) => s.id === 'loc.snd.1') as MikingScenario;

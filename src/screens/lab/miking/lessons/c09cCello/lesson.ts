@@ -57,7 +57,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a close and a farther mic on one cello can sound thin together, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: ['vc.two.1', 'vc.two.2', 'vc.two.3', 'vc.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics at different distances hear the cello at different times: some pitches cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Judge the pair in mono, at matched levels.',
+    takeaway: 'Two mics at different distances hear the cello at different times: some frequencies cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Judge the pair in mono, at matched levels.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -101,7 +101,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The strings pull the top of the bridge side to side; it rocks on its feet. One foot drives the top in and out; the other sits over the soundpost, which links the top to the back.',
     why: {
       'The f-holes, which the vibrating strings blow their air into': 'The f-holes let the air inside breathe in and out; the strings do not blow into them.',
-      'The tailpiece, which shakes the end of the body': 'The tailpiece only anchors the strings. The bridge is what drives the top.',
+      'The tailpiece, which shakes the end of the body': 'The tailpiece mainly anchors the strings. The bridge is what drives the top.',
     },
   },
   {
@@ -231,7 +231,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Where does a cello miniature’s clip attach?',
     options: ['On the bridge itself, where the strings’ vibration is the strongest', 'Inside an f-hole, pressed against its edge', 'On the two outer strings below the bridge — not on the bridge'],
     correct: 'On the two outer strings below the bridge — not on the bridge',
-    explain: 'A clip made for the cello grips the outer strings between the bridge and the tailpiece, and the gooseneck brings the capsule to its spot. Clamping the bridge can damp it — and a valuable cello needs the player’s agreement first.',
+    explain: 'Most clips made for the cello grip the strings, or the tailpiece, between the bridge and the tailpiece, and the gooseneck brings the capsule to its spot. Clamping the bridge can damp it — and a valuable cello needs the player’s agreement first.',
     why: {
       'On the bridge itself, where the strings’ vibration is the strongest': 'Hardware on the bridge can damp its vibration and risk the instrument. The clip grips the strings below it.',
       'Inside an f-hole, pressed against its edge': 'Nothing presses the f-hole edges or the varnish. Use the clip made for the cello.',
@@ -290,12 +290,12 @@ const scenarios: MikingScenario[] = [
     id: 'vc.two.1',
     page: 'twoMic',
     prompt: 'Why can a close and a farther mic on one cello sound thin together?',
-    options: ['The farther mic inverts the sound on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum', 'The sound reaches them at different times, so some pitches cancel'],
-    correct: 'The sound reaches them at different times, so some pitches cancel',
-    explain: 'The farther mic hears each note a little later. Summed, some pitches arrive out of step and cancel — a comb of notches. Move or rebalance first, then check polarity at matched levels.',
+    options: ['The farther mic inverts the sound on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum', 'The sound reaches them at different times, so some frequencies cancel'],
+    correct: 'The sound reaches them at different times, so some frequencies cancel',
+    explain: 'The farther mic hears each note a little later. Summed, some frequencies arrive out of step and cancel — a comb of notches. Move or rebalance first, then check polarity at matched levels.',
     why: {
       'The farther mic inverts the sound on its way there, so it cancels': 'Distance delays a sound; it does not flip its sign.',
-      'Two mics on one source cancel each other’s low end in the sum': 'Cancellation depends on the delay and the levels: some pitches dip, others add.',
+      'Two mics on one source cancel each other’s low end in the sum': 'Cancellation depends on the delay and the levels: some frequencies dip, others add.',
     },
   },
   polarityDelay('vc.two.2'),

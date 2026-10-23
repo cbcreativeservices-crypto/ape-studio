@@ -39,7 +39,7 @@ export const hollowVoiceSymptom = (id: string): Symptom => ({
   firstChecks: 'Solo each; sum in mono; is one of them needed at all? Then move or rebalance; check polarity last.',
   options: ['Solo each, sum in mono; mute or move one', 'Flip one polarity switch and leave it that way', 'Boost the low end on both channels to fill it in'],
   correct: 'Solo each, sum in mono; mute or move one',
-  explain: 'One voice reaching two open mics at different times makes some pitches cancel. Hear each alone and in mono; often the answer is one mic open, not two. A polarity switch cannot line up every pitch.',
+  explain: 'One voice reaching two open mics at different times makes some frequencies cancel. Hear each alone and in mono; often the answer is one mic open, not two. A polarity switch cannot line up every frequency.',
   why: {
     'Flip one polarity switch and leave it that way': 'Polarity is a check, not a cure: it cannot remove a delay.',
     'Boost the low end on both channels to fill it in': 'EQ cannot undo a cancellation between two paths. Fix the combination first.',

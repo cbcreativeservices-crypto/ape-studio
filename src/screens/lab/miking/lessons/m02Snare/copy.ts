@@ -51,7 +51,7 @@ export const SNARE_COPY: LessonCopy = {
     silentNote: 'This lab never plays a sound and draws no frequency curve for the drum: how a real snare sounds depends on the drum, the heads, the wires, the tuning, the stick and the player. The pictures show where the sound comes from and where it leaves.',
   },
   setting: {
-    kitA11y: 'The drum kit from above: the snare at the player’s left knee, ringed in amber, the hi-hat behind it, two rack toms over the kick, the floor tom on the right, the cymbals above, and the throne.',
+    kitA11y: 'The drum kit from above: the snare between the player’s knees, toward the left, ringed in amber, the hi-hat beside it, two rack toms over the kick, the floor tom on the right, the cymbals above, and the throne.',
     kitLanding: 'Tap anything around the snare — or step through ITEM — to see what it means for a snare mic. There is nothing to answer yet.',
     kitIdle: 'The snare sits between the player’s knees, its near half under the sticks. Everything around it is either the player’s space or a loud neighbour — the hi-hat most of all.',
     leftHanded: 'Many left-handed players set the kit up mirrored — the hi-hat on the right, the floor tom on the left.',

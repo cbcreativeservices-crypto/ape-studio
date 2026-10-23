@@ -129,7 +129,7 @@ export const B09_COPY: Partial<LessonCopy> = {
     B: { typeId: 'bcHeadsetBoom', pattern: 'cardioid', zone: 'b9.analyst' },
     learn: [
       'Each commentator has their own mic, but each mic also hears the other — later and much lower. In the mix, one voice arrives twice: through its own mic first, through the partner’s a little later.',
-      'Listen to each channel alone while the other speaks, then both open in MONO. A hollow, thin sound means some pitches cancel: set both booms close, check which side each boom sits, or pull down the mic of whoever is not speaking. A polarity switch only tests the idea — it never removes a delay.',
+      'Listen to each channel alone while the other speaks, then both open in MONO. A hollow, thin sound means some frequencies cancel: set both booms close, check which side each boom sits, or pull down the mic of whoever is not speaking. A polarity switch only tests the idea — it never removes a delay.',
     ],
     warn: 'This simplified graph treats each mouth as one point and both mics as hearing the same sound. Real mics in a real booth hear different mixes of voice and room, and commentators move — read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative. Judge by ear, in mono.',
   },

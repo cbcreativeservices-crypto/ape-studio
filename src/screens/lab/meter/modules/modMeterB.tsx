@@ -196,7 +196,7 @@ const SPECTRUM_KEYS = Object.keys(SPECTRUM_LABELS) as SpectrumKey[];
 /** Tray blurbs (owner 2026-08-28): what each pattern looks like on the analyzer
  *  and why you would recognise it — readable inside the open tray. */
 const SPECTRUM_BLURBS: Record<SpectrumKey, string> = {
-  speech: 'Energy bunched between roughly 200 Hz and 3 kHz — the vocal formants — with almost nothing above 4 kHz.',
+  speech: 'Energy bunched between roughly 200 Hz and 3 kHz — the vocal formants — with much less above 4 kHz (mostly S and T sounds).',
   cymbal: 'Nearly all the energy ABOVE 2 kHz: a jagged wash of high partials with an empty low end.',
   kick: 'A tall low bump near 60 Hz plus a small beater click around 3 kHz — weight below, definition above.',
   guitar: 'A comb of evenly spaced spikes: the harmonics of one played note, each a multiple of the fundamental.',
@@ -213,8 +213,8 @@ const SPECTRUM_CAPTIONS: Record<SpectrumKey, string> = {
   kick:
     'Kick drum: an LF MOUND around 50–80 Hz plus a small CLICK bump near 3 kHz (the beater). Two energy centers with a valley between — thump and attack are different frequencies.',
   guitar:
-    'Guitar: a HARMONIC COMB — evenly spaced spikes at multiples of the ~196 Hz fundamental, each lower than the last. Spiky but ORDERLY = a pitched instrument.',
-  hum: 'Mains hum: NEEDLE spikes at exact multiples of the mains frequency (60, 120, 180, 240 Hz… here; 50, 100, 150 Hz… in most other countries). A steady FAMILY of thin spikes locked to the power grid — never just one.',
+    'Guitar: a HARMONIC COMB — evenly spaced spikes at multiples of the ~196 Hz fundamental, mostly getting lower as they go up. Spiky but ORDERLY = a pitched instrument.',
+  hum: 'Mains hum: NEEDLE spikes at exact multiples of the mains frequency (60, 120, 180, 240 Hz… here; 50, 100, 150 Hz… in most other countries). A steady FAMILY of thin spikes locked to the power grid — rarely just one.',
   feedback:
     'Feedback: ONE towering narrow spike (here near 1.7–1.8 kHz) and nothing else notable. A single spike that GROWS over time is the PA about to scream — act before it does.',
   pinknoise:
@@ -386,13 +386,13 @@ const CHECK_WHISTLE_VS_FEEDBACK: CheckSpec = {
   ],
   correctIdx: 0,
   reveal:
-    'A steady thin line is a stable tone — a whistle, a synth, a flute: part of the sound. A line that GROWS is a loop feeding itself: feedback. The display tells you the frequency to notch and the trend tells you how long you have.',
+    'A steady thin line is usually a stable tone — a whistle, a synth, a flute: part of the sound. A line that GROWS is a loop feeding itself: feedback. The display tells you the frequency to notch and the trend tells you how long you have.',
   wrongHint: 'Stable level = source. Growing level = a loop feeding itself.',
 };
 
 const SPECTROGRAM_MISTAKES = [
   'Reading it like a waveform — on a spectrogram UP means HIGH-PITCHED, not loud; loudness is the COLOR. This is the #1 error.',
-  'Calling every bright thin line "feedback" — check whether it GROWS. A steady line is just a tone (whistle, synth, mains whine).',
+  'Calling every bright thin line "feedback" — check whether it GROWS. A steady line is usually just a tone (whistle, synth, mains whine).',
   'Expecting a drum hit to be tall — a transient is a thin VERTICAL stripe (all frequencies at one instant), not a peak.',
   'Comparing colors across different apps — the level→color mapping is relative to each display’s own scale.',
 ];
@@ -592,12 +592,12 @@ const CHECK_RIDGE_FIX: CheckSpec = {
   ],
   correctIdx: 0,
   reveal:
-    'EQ moves the ridge up and down (level); the room keeps storing and releasing energy at 250 Hz for just as long. Only absorption — damping, treatment, bass trapping — shortens the DECAY. The waterfall shows both axes separately, which is exactly why it exists.',
+    'EQ mostly moves the ridge up and down (level); across the room it keeps storing and releasing energy at 250 Hz. Only absorption — damping, treatment, bass trapping — shortens the DECAY for every seat. The waterfall shows both axes separately, which is exactly why it exists.',
   wrongHint: 'Try the EQ lane in this module: the mountain gets taller or shorter — does it reach FARTHER toward the front, or not?',
 };
 
 const WATERFALL_MISTAKES = [
-  'EQ-cutting a ringing frequency and calling it fixed — the mountain gets SHORTER (level), not SHORTER-LIVED (decay).',
+  'EQ-cutting a ringing frequency and calling it fixed — across the room, the mountain gets SHORTER (level), not SHORTER-LIVED (decay).',
   'Reading a TALLER ridge as a LONGER ring — height is level at time zero; how far it reaches toward the front is decay time. Different axes.',
   'Quoting one RT60 number for a room — decay is frequency-dependent: the classroom is fine at 1 kHz and ringing at 250 Hz.',
   'Blaming the room for a ridge that follows the SPEAKER around — a resonant driver or cabinet rings the same way: one slow ridge among fast neighbors.',
@@ -881,7 +881,7 @@ export function WaterfallModule(p: MeterModuleProps) {
 
         <MythReality
           myth="EQ-cutting a ringing frequency shortens its decay."
-          reality="EQ changes LEVEL; only damping/treatment shortens RING TIME — the waterfall shows both axes separately."
+          reality="EQ mostly changes LEVEL; only damping/treatment shortens RING TIME room-wide — the waterfall shows both axes separately."
         />
 
         <CommonMistakes items={WATERFALL_MISTAKES} />

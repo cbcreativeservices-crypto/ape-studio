@@ -83,7 +83,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 10,
     "title": "K-pop",
     "line": "Every member’s voice identifiable and on top of a hard, bright, fully produced track, with the low end punching underneath",
-    "origin": "South Korea (Seoul); modern form from Seo Taiji and Boys (1992) and the agency “idol” system of SM, YG and JYP from the mid-1990s; global “Hallyu” (Korean pop-culture) wave from the 2010s"
+    "origin": "South Korea (Seoul); modern form from Seo Taiji and Boys (1992) and the agency “idol” system of SM, YG and JYP from the mid-1990s; “Hallyu” (Korean pop-culture) wave across Asia from the late 1990s, going global in the 2010s"
   },
   {
     "id": "alternative-indie-rock",
@@ -110,7 +110,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "id": "afrobeats",
     "num": 14,
     "title": "Afrobeats",
-    "line": "The percussion groove (rimshot, shakers, clave (a 2-bar rhythm key) pattern) bright and forward, with the lead vocal hook riding on it",
+    "line": "The percussion groove (rimshot, shakers, clave (a one- or two-bar rhythm key) pattern) bright and forward, with the lead vocal hook riding on it",
     "origin": "Lagos, Accra and the London diaspora, 2000s–2010s; the umbrella term “Afrobeats” was popularized by UK DJ Abrantee around 2011. Related to, but not the same as, Fela Kuti’s 1970s Afrobeat"
   },
   {

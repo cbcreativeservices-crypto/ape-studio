@@ -583,8 +583,8 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
         options: ['SWITCH OFF → CONNECT → THEN POWER UP', 'CONNECT UNDER LOAD — IT IS BUILT FOR THAT', 'PULL IT BY THE CORD WHEN DONE'],
         correct: 'SWITCH OFF → CONNECT → THEN POWER UP',
         explain:
-          'Ordinary appliance couplers are not certified to be connected or disconnected under load. Switch the equipment off, connect, then power up — a fault shows itself at switch-on rather than at full load. And unplug by gripping the plug body, never by pulling the cord.',
-        hint: 'Ordinary couplers carry a specific limitation about LOAD.',
+          'Making or breaking a coupler while it carries current can arc and pit the contacts. Switch the equipment off, connect, then power up — a fault shows itself at switch-on rather than at full load. And unplug by gripping the plug body, never by pulling the cord.',
+        hint: 'What happens at the contacts if a plug is made or broken under LOAD?',
       },
     ],
   },
@@ -601,7 +601,7 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
         options: ['LOW-VOLTAGE DC POWER', 'AC MAINS POWER', 'POWER + DATA TOGETHER', 'CONTROL DATA'],
         correct: 'LOW-VOLTAGE DC POWER',
         explain:
-          'Low-voltage DC for a small device — where voltage, polarity and current capacity must all match the device. The danger here is to equipment, not to people.',
+          'Low-voltage DC for a small device — where voltage, polarity and current capacity must all match the device. The danger here is mainly to equipment, not to people.',
         hint: 'Small device, external supply — what kind of power reaches the equipment jack?',
       },
       {

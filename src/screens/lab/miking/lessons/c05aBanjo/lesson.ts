@@ -149,7 +149,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A figure-8 ribbon can smooth a banjo’s attack. What must you check before using one live?',
     options: ['That the banjo has a resonator, or it will not work', 'Nothing: a ribbon rejects the other sources on a stage', 'Where the monitors are: a figure-8 hears its back as well'],
     correct: 'Where the monitors are: a figure-8 hears its back as well',
-    explain: 'A figure-8 picks up equally from the rear. With floor monitors behind it, it can be unsuitable — rule it out for exactly that reason.',
+    explain: 'A figure-8 picks up equally from the rear. With floor monitors behind it, it is often unsuitable — check where they are first.',
     why: {
       'That the banjo has a resonator, or it will not work': 'The back of the banjo is not the issue; the back of the MIC is.',
       'Nothing: a ribbon rejects the other sources on a stage': 'A figure-8 rejects only at its sides; its back hears as well as its front.',
@@ -177,7 +177,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A view aimed mainly at the neck, or too close to the picking, misses the head. Bring more of the head and pot in.',
     why: {
       'Move closer in to the strings, out along the neck': 'That adds more of what is already too much.',
-      'Turn the channel up until it sounds fuller': 'Louder is not fuller: the balance comes from where the mic is.',
+      'Turn the channel up until it sounds fuller': 'Louder only seems fuller: the balance comes from where the mic is.',
     },
   },
   {
@@ -249,7 +249,7 @@ const symptoms: Symptom[] = [
     explain: 'A view mostly of the strings and fingers misses the head. Change the view first.',
     why: {
       'Move closer in to the strings, out along the neck': 'That adds more of what is already too much.',
-      'Turn the channel up until the banjo sounds full': 'Louder is not fuller: the balance comes from where the mic is.',
+      'Turn the channel up until the banjo sounds full': 'Louder only seems fuller: the balance comes from where the mic is.',
     },
   },
   {
@@ -361,7 +361,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'More sound leaves behind the pot, into the player',
     explain: 'Without a resonator, the back of the head radiates straight into the player, whose body colours it.',
     why: {
-      'The head stops vibrating altogether, so it goes quiet': 'The head vibrates the same; where the sound goes changes.',
+      'The head stops vibrating altogether, so it goes quiet': 'The head vibrates much the same; mostly, where the sound goes changes.',
       'The strings sound an octave lower than with a resonator': 'Pitch is set by the strings. The back changes where sound goes.',
     },
   },
@@ -396,7 +396,7 @@ export const C05A_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A string instrument whose top is a drumhead: a thin membrane stretched over a round pot. Five strings press a light bridge onto the head, and the head radiates the sound. A resonator bowl behind the pot throws sound forward; an open back does not.', src: 'DEERING' },
+    { title: 'WHAT IT IS', text: 'A string instrument whose top is a drumhead: a thin membrane stretched over a round pot. Its strings (five on most banjos) press a light bridge onto the head, and the head radiates the sound. A resonator bowl behind the pot throws sound forward; an open back does not.', src: 'DEERING' },
     { title: 'WHERE YOU MEET IT', text: 'Bluegrass, old-time and folk music, and beyond — on stage, often in a band sharing one or two mics, and in the studio.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Fast rolls with fingerpicks, or the gentler clawhammer stroke on an open back; bright, cutting fills. Ask how they play, whether they use a mute, and whether they step in to a shared mic.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'This lab draws a head about 28 cm (11 in) across, a 67 cm (26¼ in) long string from bridge to nut, and the short fifth string about 50 cm long.', src: 'LESSON' },

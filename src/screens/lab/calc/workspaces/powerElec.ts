@@ -419,8 +419,8 @@ const RACK: Workspace = {
   section: 'electronics',
   reportPrefix: 'RACK',
   intro:
-    'Every watt a rack draws that isn’t leaving as sound leaves as heat. Enter the total device ' +
-    'wattage and read the mains current it pulls, the heat it dumps in BTU/hr, and the airflow ' +
+    'Every watt a rack draws that isn’t sent down speaker cables ends up as heat. Enter the total device ' +
+    'wattage (a safe high guess for amp racks) and read the mains current it pulls, the heat it dumps in BTU/hr, and the airflow ' +
     'needed to hold a chosen temperature rise.',
   whyItMatters:
     'Racks trip breakers and cook gear when nobody added up the load. This sizes the circuit ' +
@@ -457,7 +457,7 @@ const RACK: Workspace = {
       plainFormula:
         'The mains current equals the power over the voltage; the heat output equals the wattage times 3.4121 BTU per hour; and the cooling airflow equals the heat output divided by 1.08 times the temperature rise.',
       explain:
-        'Every watt a rack draws that doesn’t leave as sound leaves as heat. From the total device wattage this gives the mains current it pulls, the heat it dumps in BTU per hour, and the airflow (CFM) needed to hold a chosen temperature rise — sizing the circuit, the AC load, and the fans before something trips or cooks.',
+        'Every watt a rack draws that isn’t sent down speaker cables ends up as heat, so total wattage is a safe high guess for amp racks. From the total device wattage this gives the mains current it pulls, the heat it dumps in BTU per hour, and the airflow (CFM) needed to hold a chosen temperature rise — sizing the circuit, the AC load, and the fans before something trips or cooks.',
       keySymbols: ['Δ', '·', '/'],
       compute: (v) => {
         const W = n(v.watts);
@@ -485,7 +485,7 @@ const RACK: Workspace = {
       formula: 'P_safe = 0.8 · I_breaker · V',
       plainFormula: 'The safe continuous power equals 0.8 times the breaker’s current rating times the voltage.',
       explain:
-        'The 80% rule for continuous loads: keep a circuit’s ongoing draw under 80% of its breaker rating so it doesn’t nuisance-trip. This turns a breaker’s amp rating and the mains voltage into the safe continuous wattage — and the absolute maximum for reference.',
+        'The 80% rule for continuous loads (US NEC, 3 hours or more): keep a circuit’s ongoing draw under 80% of its breaker rating so the breaker and wiring don’t overheat or trip. This turns a breaker’s amp rating and the mains voltage into the safe continuous wattage — and the absolute maximum for reference.',
       keySymbols: ['·'],
       note: 'The 80% rule for continuous loads keeps the breaker from nuisance-tripping.',
       compute: (v) => {

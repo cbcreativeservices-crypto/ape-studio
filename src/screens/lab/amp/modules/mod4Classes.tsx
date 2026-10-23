@@ -84,7 +84,7 @@ export const CLASS_FACTS: Record<AmpClass, ClassFacts> = {
     efficiency: 'Ideal switch theoretically lossless; practical designs roughly 85–95% at high output, lower at low output',
     heat: 'Low to moderate — never zero',
     limitation: 'Output filter, switching artifacts, EMI, implementation quality',
-    use: 'Portable, touring subwoofers, installation, most modern power amplifiers',
+    use: 'Portable, touring subwoofers, installation, most modern pro power amplifiers',
     audio: 'Yes',
   },
 };
@@ -325,7 +325,7 @@ export function Mod4Classes() {
 
               <LearnMore title="CLASS G AND CLASS H — THE ADVANCED EXTENSION">
                 <Body>
-                  Both are Class AB output stages with smarter power supplies. Class G switches between two or more rail
+                  Both are usually Class AB output stages with smarter power supplies. In the common naming, Class G switches between two or more rail
                   voltages so quiet passages run from low rails (less dissipation) and peaks from high rails. Class H
                   modulates the rail voltage continuously to track the signal. Neither changes the output stage’s conduction —
                   they attack the wasted voltage across the devices.

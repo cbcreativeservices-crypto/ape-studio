@@ -63,7 +63,7 @@ const pages: LessonPages = {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
     credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
-    takeaway: 'Check the physical cause first — aim, distance, the instrument itself, the room, the signal paths, levels and polarity — before reaching for EQ. A rattle is the player’s to diagnose, never a miking fix.',
+    takeaway: 'Check the physical cause first — aim, distance, the instrument itself, the room, the signal paths, levels and polarity — before reaching for EQ. A rattle in the sitar itself is the player’s to diagnose; one from a stand, clip or cable is yours.',
   },
   practice: {
     title: 'Practice',
@@ -193,7 +193,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Low toward the bridge and body carries most of the sitar. The high mic adds string character and shimmer — keep it only when that contribution is clear and the pair holds up in mono.',
     why: {
       'The high mic is the louder one, so it should be faded in last': 'Level is set by gain and faders. The reason is what each mic contributes.',
-      'Two mics on a sitar cancel out, so one is the only real choice': 'A pair can work; it combs only at some pitches. Add it for a purpose and check in mono.',
+      'Two mics on a sitar cancel out, so one is the only real choice': 'A pair can work; it combs only at some frequencies. Add it for a purpose and check in mono.',
     },
   },
   {
@@ -274,7 +274,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the mic aimed right at the bridge, very close? Aim off it or move back — keeping the jawari character the player intends.',
     options: ['Ask the player to adjust the bridge so it buzzes less', 'Cut the high frequencies hard until the buzz is gone', 'Aim off the bridge or move back, keeping the intended buzz'],
     correct: 'Aim off the bridge or move back, keeping the intended buzz',
-    explain: 'Close on the bridge, its buzz dominates. Change the aim or distance; the buzz itself is part of the instrument, set by the player.',
+    explain: 'Close on the bridge, its buzz dominates. Change the aim or distance; the buzz itself is part of the instrument, set by the player and their bridge maker.',
     why: {
       'Ask the player to adjust the bridge so it buzzes less': 'The bridge is the player’s instrument and sound. Never ask for it to be changed for a mic.',
       'Cut the high frequencies hard until the buzz is gone': 'EQ dulls the whole sitar. Fix the position first.',
@@ -387,7 +387,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The sitar has a bright, buzzing edge from its main bridge. Whose is it?',
     options: ['The engineer’s: added by the mic, so it can be removed', 'The player’s: set in the instrument, part of the sound', 'The room’s: a reflection that appears only on stage'],
     correct: 'The player’s: set in the instrument, part of the sound',
-    explain: 'The strings graze the broad bridge’s curved top — the jawari sound, set by the player. A close mic hears more of it; aim and distance balance it, the bridge is never touched.',
+    explain: 'The strings graze the broad bridge’s curved top — the jawari sound, set by the player and their bridge maker. A close mic hears more of it; aim and distance balance it, the bridge is never touched.',
     why: {
       'The engineer’s: added by the mic, so it can be removed': 'The buzz is made by the instrument. The mic only hears more or less of it.',
       'The room’s: a reflection that appears only on stage': 'The buzz is at the bridge, in any room. Listen acoustically to confirm.',

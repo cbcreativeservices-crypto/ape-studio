@@ -55,7 +55,7 @@ const parts: Part[] = [
   { id: 'ac.grille', label: 'treble grille', short: 'grille', role: 'The pierced grille on the front of the treble side: the treble reeds’ sound comes out here. Never tape or cover it.', prov: ACC_SRC.bothSides },
   { id: 'ac.keys', label: 'treble keyboard', short: 'keys', role: 'A piano keyboard — 41 keys on a full-size instrument — played by the right hand: the melody. Its keys click a little as they move.', prov: { kind: 'sourced', src: 'S-ACC', quote: 'A full-size accordion has 41 treble keys and 120–140 buttons for the bass.' } },
   { id: 'ac.bellows', label: 'bellows', short: 'bellows', role: 'The folded bellows between the two sides: the left arm pulls and pushes it, moving air through the reeds. It is the air source — not a place to point a mic into.', prov: ACC_SRC.bellows },
-  { id: 'ac.bassSide', label: 'bass side and buttons', short: 'bass side', role: 'The bass box on the player’s left: 120 or more bass buttons and the larger air button under the left hand’s strap, and the bass sound outlets. It moves with the bellows.', prov: ACC_SRC.airButton },
+  { id: 'ac.bassSide', label: 'bass side and buttons', short: 'bass side', role: 'The bass box on the player’s left: up to 120 bass buttons and the larger air button under the left hand’s strap, and the bass sound outlets. It moves with the bellows.', prov: ACC_SRC.airButton },
   { id: 'ac.strap', label: 'shoulder straps', short: 'straps', role: 'The straps that hold the instrument on the chest. Never compress or load a strap with a mic or cable without the player’s agreement.', prov: ill('drawn over the shoulders (a drawing default)') },
   ...VARIANTS.map(bassPart),
   {

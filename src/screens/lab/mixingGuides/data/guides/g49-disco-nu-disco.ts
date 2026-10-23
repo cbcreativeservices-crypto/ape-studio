@@ -162,7 +162,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "3:1–4:1 (FET into opto)",
         "attackRelease": "3–10 ms / 60–150 ms or program",
         "gainReduction": "3–6 dB",
-        "notes": "Classic chain is FET or optical; famous falsetto disco vocals used a FET at 4:1"
+        "notes": "Classic chain is FET or optical; many disco vocals went through a FET at about 4:1"
       },
       {
         "source": "Bass",

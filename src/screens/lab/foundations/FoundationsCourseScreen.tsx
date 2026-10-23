@@ -1670,7 +1670,7 @@ function M13Stage({ viz, w, h, focused }: { viz: VizModule; w: number; h: number
 // ─── M14 — Graduation: the playground IS the module ─────────────────────────
 
 const M14_RECAP = [
-  '1 · Sound is moving air',
+  '1 · Sound is a pressure wave in air',
   '2 · Speaker · air · graph — one event, three views',
   '3 · Compression & rarefaction around the resting line',
   '4 · Amplitude — the SIZE of the vibration',
@@ -1750,7 +1750,7 @@ const STEPS: Step[] = [
     tag: 'MODULE 1',
     title: 'WHAT IS SOUND?',
     paras: [
-      'Sound is moving air. Not electricity. Not a waveform. Not a speaker. Not a graph.',
+      'Sound is a pressure wave, usually in air. Not electricity. Not a waveform. Not a speaker. Not a graph.',
       'Air molecules repeatedly squeeze together (compression) and spread apart (rarefaction). Those pressure changes travel outward until they reach your ears.',
       'Watch the particles: each one only rocks back and forth around its home. The PATTERN of squeezes is what travels — the air itself stays put.',
     ],
@@ -1843,7 +1843,7 @@ const STEPS: Step[] = [
       ],
       correctIdx: 1,
       reveal:
-        'Pitch follows the RATE — cycles per second (Hz). Vibrating farther makes it LOUDER (that was Module 4). Two properties, two knobs: size = amplitude = loudness, rate = frequency = pitch.',
+        'Pitch follows the RATE — cycles per second (Hz). Vibrating farther makes it LOUDER (that was Module 4). Two properties, two knobs: size = amplitude (mostly loudness), rate = frequency (pitch).',
       wrongHint: 'Which module was about the SIZE of the vibration? This one is about something else.',
     },
   },
@@ -1867,7 +1867,7 @@ const STEPS: Step[] = [
       correctIdx: 1,
       wrongHint: 'Look at the ear marker on the stage: the whole wave never enters it — only the pressure at that one spot, moment by moment.',
       reveal:
-        'The ear never needs the whole wave — it sits at one point and rides the pressure swings as they PASS (Module 3’s microphone picture). The wave’s size in space and the ear’s size have nothing to do with each other.',
+        'The ear never needs the whole wave — it sits at one point and rides the pressure swings as they PASS (Module 3’s microphone picture). The wave does not have to fit inside the ear for you to hear it.',
     },
   },
   {
@@ -1965,7 +1965,7 @@ const STEPS: Step[] = [
     title: 'HARMONICS',
     paras: [
       'Why don’t a piano and a trumpet playing the same note sound the same? Same pitch, same loudness — different CHARACTER. The answer is harmonics.',
-      'Real vibrating things don’t make one sine — they make a family: the fundamental plus whole-number multiples (2×, 3×, 4×…), each a pure sine with its own strength.',
+      'Most pitched sounds don’t make one sine — they make a family: the fundamental plus whole-number multiples (2×, 3×, 4×…), each a pure sine with its own strength.',
       'Build it yourself: stack layers and listen. The pitch NEVER moves — H2 at 440 lives inside 220’s family — only the character thickens. Timbre is a recipe.',
     ],
     Rack: M11Rack,
@@ -1983,7 +1983,7 @@ const STEPS: Step[] = [
     tag: 'MODULE 12',
     title: 'THE FOURIER PRINCIPLE',
     paras: [
-      'Module 11 built complex tones out of sines in harmonic relationships. Fourier’s theorem is the breathtaking reverse: any repeating pattern — however jagged — can have its harmonics taken apart into plain sines. Not approximately. Exactly.',
+      'Module 11 built complex tones out of sines in harmonic relationships. Fourier’s theorem is the breathtaking reverse: any repeating pattern — however jagged — can have its harmonics taken apart into plain sines. Exactly — though sharp corners need an endless list of them.',
       'That means every sound has two complete descriptions: the waveform (pressure over time) and the SPECTRUM (which sines, how strong, and how they line up in time). Same information, two views.',
       'Ride UNMIX to pull this wave apart into its ingredient list. The analyzers and spectrograms in the app’s measuring tools do this same job live, on real sound from the mic.',
     ],
@@ -2058,7 +2058,7 @@ const STEPS: Step[] = [
         ],
         correctIdx: 0,
         reveal:
-          'SIZE of the vibration is loudness (Module 4); RATE of the vibration is pitch (Module 5). Two independent knobs — you proved it on the stage when one lane moved without the other.',
+          'SIZE of the vibration mostly sets loudness (Module 4); RATE of the vibration is pitch (Module 5). Two independent knobs — you proved it on the stage when one lane moved without the other.',
         wrongHint: 'Modules 4 and 5 were a deliberate contrast pair: AMP changed one thing, FREQ the other. Which was which?',
       },
       {
@@ -2078,7 +2078,7 @@ const STEPS: Step[] = [
         ],
         correctIdx: 1,
         reveal:
-          'Harmonics are the RECIPE (Modules 11–12): they set the sound’s character while the fundamental keeps the pitch. The analyzer told you the same story in reverse — one tone, many sine ingredients.',
+          'Harmonics are the RECIPE (Modules 11–12): they set the sound’s character while the repeat rate (220 times a second) keeps the pitch. The analyzer told you the same story in reverse — one tone, many sine ingredients.',
         wrongHint: 'In Module 11 you rode H2 and H3 up and down. Did the bezel’s F0 ever leave 220 Hz?',
       },
     ],

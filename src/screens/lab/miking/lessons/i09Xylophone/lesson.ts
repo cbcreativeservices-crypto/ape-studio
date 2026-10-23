@@ -337,7 +337,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the mallet appropriate? Is the mic too near a struck bar? Confirm a permitted mallet, then compare a safe higher or off-axis position.',
     options: ['The mallet with the player, then a higher or off-axis view', 'Cut the treble with EQ until the click is gone', 'Ask for a harder mallet so the pitch cuts through'],
     correct: 'The mallet with the player, then a higher or off-axis view',
-    explain: 'Source first (safely), then the view. EQ cannot add the pitch a too-close mic misses.',
+    explain: 'Source first (safely), then the view. EQ cannot fully fix the balance a too-close mic gets wrong.',
     why: {
       'Cut the treble with EQ until the click is gone': 'EQ dulls the whole instrument. Find the cause first.',
       'Ask for a harder mallet so the pitch cuts through': 'Harder adds click — and can harm the bars.',

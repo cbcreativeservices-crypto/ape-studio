@@ -233,7 +233,7 @@ function PageSamePlug({ ctx }: { ctx: PageCtx }) {
           undefined,
           'The contact count is identical for all three jobs — that is exactly why the plug can’t tell you.',
           'Construction matters for the CABLE question, but it doesn’t reveal the jack’s job.',
-          'TRS jacks are friction-fit either way — seating feel carries no signal information.',
+          'Most TRS jacks are friction-fit either way — seating feel carries no signal information.',
         ]}
         onCorrect={() => setCheckOk(true)}
       />

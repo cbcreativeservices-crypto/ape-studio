@@ -98,7 +98,7 @@ export function Mod7Release({ onAnswered }: ModuleProps) {
               <SectionTitle>KEY IDEAS</SectionTitle>
               <Card>
                 <Body>• Streaming, CD, vinyl, broadcast/picture and alternate versions each have their own current requirements.</Body>
-                <Body>• Facts (Red Book, BS.1770, what R128 and A/85 specify) stay fixed; example numbers are verified against the spec of the day.</Body>
+                <Body>• Facts (Red Book, BS.1770, what R128 and A/85 specify) change rarely — check the current revision; example numbers are verified against the spec of the day.</Body>
                 <Body>• Sample-rate conversion first, dither to 16-bit as the very last step, once.</Body>
                 <Body>• Metadata and documentation are part of the delivery.</Body>
               </Card>

@@ -25,7 +25,7 @@ const pages: LessonPages = {
     title: 'Starting setups',
     goal: 'See real setups drawn on the stations — one main mic, a main pair, the pair with two supports, a pair over the marimba; for two rows, area mics. Then what to settle before any mic goes up.',
     credit: { scenarios: ['pe.set.1', 'pe.set.2', 'pe.hear'], interactive: 'setupsSeen', note: 'Look at every main setup on the drawing, and answer the three checks.' },
-    takeaway: 'Rehearse the balance acoustically first; make a stage plot with every station, change and walking route. Start with one main pickup; add at most two supports, each for a named problem.',
+    takeaway: 'Rehearse the balance acoustically first; make a stage plot with every station, change and walking route. Start with one main pickup; add as few supports as you can, each for a named problem.',
   },
   microphone: {
     title: 'Choose the microphones',
@@ -61,7 +61,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Put a percussion setup in order, choose and justify a setup for two briefs, and say what earns a support.',
     credit: { scenarios: ['pe.prac.order', 'pe.prac.gain', 'pe.prac.setup1', 'pe.prac.setup2', 'pe.prac.3', 'pe.need', 'pe.hole', 'pe.mix.1'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The worksheet is optional.' },
-    takeaway: 'Rehearse the balance, plot the stage and the movement, set gain on the strongest accent, establish one main pickup, add at most two supports for named problems — and keep the essential parts audible from the quietest moment to the loudest.',
+    takeaway: 'Rehearse the balance, plot the stage and the movement, set gain on the strongest accent, establish one main pickup, add as few supports as you can, each for a named problem — and keep the essential parts audible from the quietest moment to the loudest.',
   },
 };
 
@@ -75,7 +75,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The rest of the keyboard’s range',
     explain: 'A long keyboard is an extended source: a close mic favours the bars nearest it. Play low, middle and high registers at comparable dynamics and move the mics until no bars disappear.',
     why: {
-      'Nothing: the marimba is one source': 'It is over two metres long: each end is a different distance from the mic.',
+      'Nothing: the marimba is one source': 'A concert marimba can be over two metres long: each end is a different distance from the mic.',
       'Only the player’s mallet noise': 'It hears the notes too — mostly those nearest it.',
     },
   },
@@ -257,7 +257,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The pair and the support sound hollow together. First change?',
     options: ['The support’s position, angle or level', 'Invert the support and keep it so', 'Delay the support to the nearest capsule'],
     correct: 'The support’s position, angle or level',
-    explain: 'Compare the main pickup alone, the support alone and both. Change position, angle or support level first; polarity changes the sign, not arbitrary arrival times.',
+    explain: 'Compare the main pickup alone, the support alone and both. Change position, angle or support level first; a delay fits one player at most. Polarity changes the sign, not arbitrary arrival times.',
     why: {
       'Invert the support and keep it so': 'An inversion is a test of one relationship, not a fix for timing.',
       'Delay the support to the nearest capsule': 'Every instrument has its own path difference; one delay fits one at most.',
@@ -481,7 +481,7 @@ export const E12_LESSON: EnsembleLesson = {
   id: 'E12',
   labId: 'ensembles',
   title: 'Percussion Ensembles',
-  subtitle: 'Stations of drums, mallets and small percussion: one main pickup first, at most two supports, the movement covered',
+  subtitle: 'Stations of drums, mallets and small percussion: one main pickup first, as few supports as possible, the movement covered',
   noun: { one: 'percussion ensemble', many: 'percussion ensembles' },
   model: E12_MODEL,
   micTypeIds: ['arrCard', 'arrOmni', 'arrFig8', 'hdDynCard', 'hdDynHyper', 'mlSdc', 'mlDynCard'],
@@ -502,7 +502,7 @@ export const E12_LESSON: EnsembleLesson = {
         { text: 'Make a stage plot; check every path and stand', early: 'Plot the stations and the movement before mics.' },
         { text: 'Set gain and monitoring conservatively; rehearse the balance', early: 'Gain once the mics are safely placed.' },
         { text: 'Establish one main pickup; check it in mono', early: 'The main pickup comes before any support.' },
-        { text: 'Add at most two supports, each for a named problem', early: 'Supports come after the main picture.' },
+        { text: 'Add as few supports as you can, each for a named problem', early: 'Supports come after the main picture.' },
       ],
       explain: 'Know the music, plot the stage and the movement, set conservative gain, establish one main pickup — and only then add a support for a stated reason.',
     },
@@ -545,7 +545,7 @@ export const E12_LESSON: EnsembleLesson = {
   },
   unknowns: [
     { text: 'The stations are drawing defaults: congas, a 4.3-octave marimba and a small-percussion table on a shallow arc about 4 m wide; the larger group in two rows. The instruments’ sizes are their own lessons’ (the congas’ 30 in height, the marimba’s and vibraphone’s frames).', dims: [] },
-    { text: 'The station mic over the table (60 cm out, in front and above) and the area mics’ directions are drawing defaults; the area mics’ 1.25 m follows the 1–1.5 m section-support rule.', dims: [] },
+    { text: 'The station mic over the table (60 cm out, in front and above) and the area mics’ directions are drawing defaults; the area mics’ 1.25 m sits in the usual 1–1.5 m starting range for a section support.', dims: [] },
     { text: 'One player moving between stations is taught in words; the lab does not draw the walking path.', dims: [] },
   ],
   live: { wedges: E12_WEDGES },

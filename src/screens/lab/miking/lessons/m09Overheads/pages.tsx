@@ -62,7 +62,7 @@ export function M09Sound({ lesson, answers, onAnswered, onInteractive, interacti
           <Card>
             <Point title="ATTACK">{lesson.sound.attack}</Point>
             <Point title="BODY">{lesson.sound.body}</Point>
-            <Point title="WHAT AN OVERHEAD HEARS">The cymbals hang closest, so they arrive first and loudest; the snare a little later; the kick last and weakest. Each source keeps its own distance — and its own arrival time — at every mic.</Point>
+            <Point title="WHAT AN OVERHEAD HEARS">The cymbals usually hang closest, so they tend to arrive first and loudest; the snare a little later; the kick last and weakest. Each source keeps its own distance — and its own arrival time — at every mic.</Point>
           </Card>
           <Note>This lab never plays a sound and draws no frequency curve for the kit: how a real kit sounds depends on the drums, the cymbals, the tuning, the room and the player. The pictures show where the sound comes from and when it arrives.</Note>
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'sound')} answers={answers} onAnswered={onAnswered} />

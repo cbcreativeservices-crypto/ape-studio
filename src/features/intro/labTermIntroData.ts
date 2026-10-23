@@ -92,7 +92,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Digital Audio Systems",
     term: "Digital Audio",
     plainEnglish:
-      "Digital audio is sound stored as a stream of numbers. To create it, the sound is measured many times per second and each measurement is saved as a number. Once stored this way, the audio can be copied, edited, and moved with no added noise or quality loss, which was a problem with older analog tape. This makes it the foundation of modern recording and live sound systems.",
+      "Digital audio is sound stored as a stream of numbers. To create it, the sound is measured many times per second and each measurement is saved as a number. Once stored this way, the audio can be copied and moved with no added noise or quality loss, which was a problem with older analog tape. It is also easy to edit. This makes it the foundation of modern recording and live sound systems.",
     glossaryId: "e9071a60-cd10-4b1c-a41f-3f033ce9c421",
   },
   MeterLab: {
@@ -148,7 +148,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Patchbay Signal Flow & Normalling",
     term: "Patch bay",
     plainEnglish:
-      "A patch bay brings the inputs and outputs of all your gear onto one row of jacks. Instead of crawling behind racks to re-cable, you re-route signals by moving short patch cables on the front. The tricky part is 'normalling,' which sets what each jack does when nothing is plugged in. A normalled point passes a default connection straight through until you insert a cable. A non-normalled point connects nothing until you patch it. Good labeling and a logical layout make even a complex studio fast to use.",
+      "A patch bay brings the inputs and outputs of all your gear onto rows of jacks in one panel. Instead of crawling behind racks to re-cable, you re-route signals by moving short patch cables on the front. The tricky part is 'normalling,' which sets what each jack does when nothing is plugged in. A normalled point passes a default connection straight through until a patch breaks it (on a half-normalled point, only a plug in the input jack does). A non-normalled point connects nothing until you patch it. Good labeling and a logical layout make even a complex studio fast to use.",
     glossaryId: "ecebd487-9163-4e3b-88cd-d7c2ffb280ab",
   },
   GainLabHome: {
@@ -252,7 +252,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Limiter",
     term: "Limiter",
     plainEnglish:
-      "A limiter is an extreme compressor with an infinite ratio. You set a threshold, and any signal above it is absolutely stopped from going higher. This protects against surprise clipping. Limiters are essential on the master bus and for safety on inputs. Used right, they are invisible. Used wrong, they squash the sound.",
+      "A limiter is an extreme compressor with a very high ratio, from about 10:1 up to infinite. You set a threshold, and signal above it is held at or near that level. This protects against surprise clipping. Limiters are common on the master bus and for safety on inputs. Used right, they are invisible. Used wrong, they squash the sound.",
     glossaryId: "7f621dc4-6d04-4c29-bc61-e6352f8afcd8",
   },
   SmartProcessorsLab: {
@@ -356,7 +356,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Modular Synth",
     term: "Modular synthesizer",
     plainEnglish:
-      "A modular synth is built from separate boxes you wire together. Patch cables decide how the sound flows. Every patch builds a new instrument. Nothing is fixed and nothing is saved — that is the appeal.",
+      "A modular synth is built from separate boxes you wire together. Patch cables decide how the sound flows. Every patch builds a new instrument. On most hardware modulars nothing is fixed and nothing is saved — that is the appeal.",
     glossaryId: "d72bd8a0-4b38-5114-b86a-b5a38677b9a1",
   },
   EnvelopeLab: {

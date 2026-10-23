@@ -66,7 +66,7 @@ export function HarmonicsModule({ help }: CymaticsModuleProps) {
   }, []);
   const ladders: Ladder[] = [
     { id: 'string', name: 'String', what: 'a solid string under tension', ratios: [1, 2, 3, 4, 5, 6], harmonic: true, note: 'Modes at f, 2f, 3f… — a harmonic series. This is why a plucked string has a clear pitch.' },
-    { id: 'pipe', name: 'Air column (open)', what: 'air in an open pipe', ratios: [1, 2, 3, 4, 5, 6], harmonic: true, note: 'Also harmonic. A pipe closed at one end keeps only the odd members: f, 3f, 5f.' },
+    { id: 'pipe', name: 'Air column (open)', what: 'air in an open pipe', ratios: [1, 2, 3, 4, 5, 6], harmonic: true, note: 'Also harmonic. A cylindrical pipe closed at one end keeps only the odd members: f, 3f, 5f.' },
     { id: 'membrane', name: 'Circular membrane', what: 'a stretched membrane (drumhead)', ratios: [1, 1.594, 2.136, 2.296, 2.653, 2.918], harmonic: false, note: 'Bessel-function modes: 1 : 1.59 : 2.14 : 2.30 : 2.65 : 2.92 — not integers. A drum has a vaguer pitch for exactly this reason.' },
     { id: 'plate', name: 'Free metal plate', what: 'a thin solid plate, edges free', ratios: plateRatios, harmonic: false, note: 'Inharmonic and spread out. These are the Chladni modes — the ratios come straight from this lab’s plate model.' },
   ];

@@ -471,7 +471,7 @@ function PageCue({ ctx }: { ctx: PageCtx }) {
       <Step n={3}>
         <P>Ride BLEND (the cue ↔ master knob) from CUE to MASTER and back. Then turn SPLIT on: deck B in your left ear, the room’s mix in your right, each in mono. Some DJs love split cue; others prefer the blend — a suggested starting point, not a rule.</P>
         <Note>In a big room the PA reaches you late — about 3 ms for every metre. Match the next track against your headphones and the booth monitors, never against the sound coming back off the floor.</Note>
-        <Note tone="safety">Headphones are the loudest thing in a DJ’s day. Start PHONES low, bring it up slowly, and lift one cup off when you can. Turning the headphones up to beat a loud booth is how ears get hurt — turn the BOOTH down instead.</Note>
+        <Note tone="safety">Headphones are often the loudest thing in a DJ’s day. Start PHONES low, bring it up slowly, and lift one cup off when you can. Turning the headphones up to beat a loud booth is how ears get hurt — turn the BOOTH down instead.</Note>
       </Step>
       <Step n={4}>
         <Do>Prepare deck B privately (cued, fader down), hear it as PHONES, bring CH2 up and back down, try split cue, and make the booth 6 dB quieter without touching MASTER — read BOOTH on the drawing; the crowd hears no change.</Do>

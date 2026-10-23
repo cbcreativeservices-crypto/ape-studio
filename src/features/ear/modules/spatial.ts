@@ -101,7 +101,7 @@ export const M6_STEREO: EarModule = {
         question: 'Which clip is wider?',
         answers: [{ label: 'A' }, { label: 'B' }],
         correct: wideFirst ? 0 : 1,
-        reveal: 'Same scene, different mid/side ratio — width is just the side channel’s level.',
+        reveal: 'Same scene, different mid/side ratio — here, width is set by the side level against the mid.',
         seeIt: {
           kind: 'gonio',
           clips: [0, 1],

@@ -147,7 +147,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The beater and the playing spot, then the mic’s angle',
     explain: 'Beater mass and where the bar is struck change the attack before the mic does. Then compare a safer off-axis or a slightly wider view, at matched level.',
     why: {
-      'A bigger condenser, which will soften the attack of each stroke': 'Diaphragm size is not a tone control. Start with the source, then angle and distance.',
+      'A bigger condenser, which will soften the attack of each stroke': 'Diaphragm size alone is not a reliable tone control. Start with the source, then angle and distance.',
       'Lower gain, so the sharpness goes away': 'Gain changes the level, not the balance: the sharpness stays, only quieter.',
     },
   },

@@ -443,7 +443,7 @@ function PageSoundcheck({ ctx }: { ctx: PageCtx }) {
       wellTop={
         <>
           <Text style={[styles.wedgeState, ring && { color: colors.red }]}>{w.name.toUpperCase()} · {ring ? `RINGING at ~2.5 kHz — ${-margin} dB over` : `${margin} dB of margin`}</Text>
-          <VerdictLine ok={done} warn={!done && rang}>{done ? 'Every wedge is loud enough and none rings. Now the band can play — soundcheck order: drums, bass, guitars, keys, vocals, then all together.' : rang ? 'A wedge rang. Geometry first: move it into the null before you reach for a notch.' : 'Bring the sends up and listen for the ring.'}</VerdictLine>
+          <VerdictLine ok={done} warn={!done && rang}>{done ? 'Every wedge is loud enough and none rings. Now the band can play — a common soundcheck order: drums, bass, guitars, keys, vocals, then all together.' : rang ? 'A wedge rang. Geometry first: move it into the null before you reach for a notch.' : 'Bring the sends up and listen for the ring.'}</VerdictLine>
         </>
       }
     >

@@ -179,7 +179,7 @@ function PageCoverage({ ctx }: { ctx: PageCtx }) {
       <GoalChips goals={goals} latched={latched} />
       <Card>
         <Eyebrow>READ THE PLOT</Eyebrow>
-        <Body>A loudspeaker’s coverage angle is the width it serves within 6 dB of on-axis; outside that edge the level keeps falling, fast — nothing leaks sideways at a level that matters. Narrow coverage throws further and overlaps less; wide coverage fills a wide room and paints the side walls. Aiming inward tightens the overlap into the middle of the floor; aiming straight spreads it. Height and tilt — the vertical pattern — do the same job front-to-back, and are why flown or high-mounted mains need front fills: the near field beneath them is outside the vertical pattern.</Body>
+        <Body>A loudspeaker’s coverage angle is the width it serves within 6 dB of on-axis; outside that edge the mids and highs keep falling, fast (the lows still spread wide). Narrow coverage throws further and overlaps less; wide coverage fills a wide room and paints the side walls. Aiming inward tightens the overlap into the middle of the floor; aiming straight spreads it. Height and tilt — the vertical pattern — do the same job front-to-back, and are why flown or high-mounted mains need front fills: the near field beneath them is outside the vertical pattern.</Body>
       </Card>
       <KeyFact>Near field, far field, overlap, comb filtering, interference between loudspeakers — every one of them is geometry first. A microphone should never stand in the mains’ coverage; a listener should always stand in exactly one loudspeaker’s, or in two that have been aligned.</KeyFact>
       <DeeperRow>
@@ -478,7 +478,7 @@ function PageFeedback({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>THE ORDER OF OPERATIONS</Eyebrow>
         <Body>1 · Placement: the wedge in the microphone’s null — directly behind a cardioid; about 110–125° off axis for a super- or hypercardioid, whose rear has a small live lobe — and the mains in front of the microphones, never behind. 2 · Polar pattern and technique: a tighter pattern and a closer mouth both raise the ratio of voice to loop. 3 · Stage volume: a quieter stage needs quieter wedges. 4 · Level: the send at what the performer needs, not more. 5 · Identify the ringing frequency on the analyser and apply a NARROW cut. 6 · Automatic feedback suppressors, if used, as a safety net — not a substitute for the first four.</Body>
       </Card>
-      <KeyFact>Feedback is a loop, and it takes off at the one frequency where the gain around the loop passes unity. Gain-before-feedback is how much level you can add before that happens — spent first by geometry, then by level, and only last by an equaliser.</KeyFact>
+      <KeyFact>Feedback is a loop, and it takes off at the first frequency where the gain around the loop passes unity, in phase. Gain-before-feedback is how much level you can add before that happens — spent first by geometry, then by level, and only last by an equaliser.</KeyFact>
       <Card tone="warn">
         <Eyebrow>WHEN IT HAPPENS DURING A PERFORMANCE</Eyebrow>
         <Body>Pull the offending send or channel down first — a hand on the fader beats a search for the frequency. Mute unused microphones as a habit. Then find the frequency and notch it while the room is quiet. Excessive graphic EQ to “fix” feedback leaves a wedge that sounds hollow and still rings somewhere else.</Body>
@@ -583,7 +583,7 @@ function PageMethod({ ctx }: { ctx: PageCtx }) {
       <ReadingKey />
       <Prompt>Run the walk and watch where the reading changes.</Prompt>
       <GoalChips goals={goals} latched={latched} />
-      <KeyFact>The amateur swaps the amplifier. The professional starts where the symptom leaves doubt, walks forward reading each station, and stops at the first reading that changes. That station is the fault — or the place it became visible. Probe forward, never backward: re-probe a station if you must, but never jump toward the loudspeaker on a hunch. The bench grades the walk as well as the answer.</KeyFact>
+      <KeyFact>The amateur swaps the amplifier. The professional starts where the symptom leaves doubt, walks forward reading each station, and stops at the first reading that changes. That station is the fault — or the place it became visible. On this bench, probe forward, never backward: re-probe a station if you must, but never jump toward the loudspeaker on a hunch. The bench grades the walk as well as the answer.</KeyFact>
       <Card>
         <Eyebrow>WHAT A PROBE IS</Eyebrow>
         <Body>A meter, an LED, a pair of headphones, a cable tester, a swap to a known-good part — whatever answers “is the signal healthy HERE?” for that station. Reading it is the skill; owning it is the kit.</Body>

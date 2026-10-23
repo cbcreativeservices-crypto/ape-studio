@@ -24,8 +24,8 @@ import { ANAT_ASPECT, AnatomyStage, DrumTopStage, STAR_ORDER, TOP_ASPECT, type D
 import { MODEL_BADGE, syncOf, useStrike, type ChapterProps } from './shared';
 
 const LUG_OPTIONS: { key: LugCount; label: string; short: string; blurb: string }[] = [
-  { key: 6, label: '6 lugs (a 10"–12" tom)', short: '6 LUGS', blurb: 'Three opposite pairs: 1 → 4 → 2 → 5 → 3 → 6.' },
-  { key: 8, label: '8 lugs (a 13"–16" tom, many kicks)', short: '8 LUGS', blurb: 'Four pairs, skipping round the star: 1 → 5 → 3 → 7 → 2 → 6 → 4 → 8.' },
+  { key: 6, label: '6 lugs (a 10"–13" tom)', short: '6 LUGS', blurb: 'Three opposite pairs: 1 → 4 → 2 → 5 → 3 → 6.' },
+  { key: 8, label: '8 lugs (a 14"–16" floor tom, some kicks)', short: '8 LUGS', blurb: 'Four pairs, skipping round the star: 1 → 5 → 3 → 7 → 2 → 6 → 4 → 8.' },
   { key: 10, label: '10 lugs (a 14" snare)', short: '10 LUGS', blurb: 'Five pairs: 1 → 6 → 3 → 8 → 5 → 10 → 7 → 2 → 9 → 4.' },
 ];
 

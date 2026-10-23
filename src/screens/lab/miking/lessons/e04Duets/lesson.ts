@@ -34,7 +34,7 @@ const pages: LessonPages = {
     title: 'Starting setups',
     goal: 'See real setups drawn on the singers — one cardioid or omni with the duet on a semicircle, a handheld each, a figure-8 between two singers, two cardioids back to back, a pair at a quartet’s centre, a cardioid each at 3:1 and at a distance that misses it. Then what to settle first.',
     credit: { scenarios: ['du.set.1', 'du.31', 'du.hear'], interactive: 'setupsSeen', note: 'Look at every main setup on the drawing, and answer the three checks.' },
-    takeaway: 'Decide first: one blended ensemble, or separately controllable voices. One mic or a pair keeps the blend; a mic each gives control and costs stands, bleed and phase. Separate mics go at least three times their distance to their singers apart.',
+    takeaway: 'Decide first: one blended ensemble, or separately controllable voices. One mic or a pair keeps the blend; a mic each gives control and costs stands, bleed and phase. Separate mics usually go at least three times their distance to their singers apart.',
   },
   microphone: {
     title: 'Choose the microphones',
@@ -573,7 +573,7 @@ export const E04_LESSON: EnsembleLesson = {
       begin: 'After our research, this is where we suggest you begin with a duet in a good room: one mic at their mouth height, the two singers on a semicircle in front, each mouth the same distance away — a place to start and rehearse, not a rule.',
       clearance: 'The stand’s base clear of both singers’ feet, its boom running away from them; the cable dressed flat, out of their moves.',
       height: 'At the singers’ mouth height, so both mouths meet its front at the same distance; a little higher, angled down, keeps it out of the breath. A pair for a group sits a little above the mouths.',
-      forward: 'In the middle, each mouth about the same distance away — 40 cm in this drawing; nearer one singer, that voice gets louder and bassier. 15 cm (6 in) closer is a clear jump.',
+      forward: 'In the middle, each mouth about the same distance away — 40 cm in this drawing; nearer one singer, that voice gets louder and, at a directional mic, bassier. 15 cm (6 in) closer is a clear jump.',
       aim: 'Its front between the two singers: a cardioid hears the semicircle in front, an omni all round, a figure-8 its front and back. Turn or angle it only while listening to both.',
     },
     learnZones: [

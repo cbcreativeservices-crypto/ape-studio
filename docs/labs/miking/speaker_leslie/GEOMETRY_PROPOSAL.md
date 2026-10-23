@@ -34,7 +34,7 @@ r = R_surround − 10 (drawing default).
 |---|---|---|---|---|
 | 1×12 (Marshall MX112) | 500 × 470 × 290 | one 12 in | centred on the baffle | MAR-MX112 |
 | 4×12 (Marshall 1960A, angled) | 770 × 755 × 365 | four 12 in | 2 × 2 grid, centres at ±190 (z) and ±185 (y) from the baffle centre; upper half of the baffle angled back (angle UNKNOWN, drawing default 8°) | MAR-1960A |
-| Bass 4×10 + horn (Ampeg SVT-410HLF) | 762 × 609.6 × 482.6 | four 10 in + 1 horn | 2 × 2 grid ±170 / ±150; horn between the top pair (drawing default) | AMP-410 |
+| Bass 4×10 + horn (Ampeg SVT-410HLF) | 609.6 × 762 × 482.6 (W × H × D, corrected 2026-10-22) | four 10 in + 1 horn | 2 × 2 grid ±170 / ±150; horn between the top pair (drawing default) | AMP-410 |
 | Open-back option | any of the above with the back removed in the drawing: back panel UNKNOWN for these models | | state flag `openBack` | lesson omits; Mills rear-mic note |
 
 ### A4. Starting-point zones (each verified)

@@ -59,7 +59,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Top bass / reese",
-        "cut": "HPF 80–120 Hz; dip −2 to −3 dB around kick punch (100–200 Hz)",
+        "cut": "HPF 80–120 Hz; dip −2 to −3 dB where it overlaps the kick’s upper body (100–200 Hz)",
         "boost": "Grit at 1–3 kHz to taste",
         "notes": "Separate distortion from sub so the sub stays clean"
       },
@@ -269,7 +269,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Tune the kick to the key and make sure its tail doesn’t fight the bass note — mismatched pitch is the main cause of muddy big-room drops.",
+      "text": "Tune the kick to the key and make sure its tail doesn’t fight the bass note — mismatched pitch is a common cause of muddy big-room drops.",
       "bullet": true
     },
     {

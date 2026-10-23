@@ -58,7 +58,7 @@ export const MATERIAL_BLURBS: Record<MaterialKey, string> = {
   glass: 'Hard like concrete for mids and highs, but the pane FLEXES at low frequencies and eats a little bass.',
   drywall: 'A light wall that vibrates: absorbs some LOWS, reflects the mids and highs — the opposite of foam.',
   curtain: 'Soft and porous: eats mids and highs, but the lows sail straight through the fabric.',
-  carpet: 'Thin porous absorption — good above 500 Hz, useless for bass. Why a carpeted room can still boom.',
+  carpet: 'Thin porous absorption — good above about 1 kHz, useless for bass. Why a carpeted room can still boom.',
   foam: 'The studio wedge: superb above 1 kHz, weak below 250 Hz. Treats echo and sizzle, NOT boom.',
   fiberglass: 'The serious absorber — thick enough to eat mids AND much of the low end. What real treatment is made of.',
   audience: 'People are excellent absorbers — soft, thick, and scattering. A full house darkens and dries the whole room.',

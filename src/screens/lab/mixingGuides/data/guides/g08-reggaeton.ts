@@ -200,7 +200,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Avoid overcompressing drums: dembow depends on short, crisp tails. On live vocals, an expander (threshold around −55 to −60 dBFS, 4 dB range) cuts stage noise from IEM-less, running artists. De-ess at 5–8 kHz for 3–5 dB; Spanish “s” sounds are frequent. Mastering commonly uses soft clipping plus 3–5 dB of limiting."
+        "text": "Avoid overcompressing drums: dembow depends on short, crisp tails. On live vocals, an expander (about 4 dB range, threshold just under the singer’s quietest line) cuts stage noise from IEM-less, running artists. De-ess at 5–8 kHz for 3–5 dB; Spanish “s” sounds are frequent. Mastering commonly uses soft clipping plus 3–5 dB of limiting."
       }
     ]
   },

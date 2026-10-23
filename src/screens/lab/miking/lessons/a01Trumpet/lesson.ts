@@ -62,7 +62,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a close mic and a farther room mic on one horn can sound thin together, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: ['tp.two.1', 'tp.two.2', 'tp.two.3', 'tp.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics at different distances hear the horn at different times: some pitches cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Judge the pair in mono, at matched levels.',
+    takeaway: 'Two mics at different distances hear the horn at different times: some frequencies cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Judge the pair in mono, at matched levels.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -286,7 +286,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A close trumpet mic and a room mic about 3 m away sound thin together. Why?',
     options: ['The sound reaches them at different times', 'The room mic flips the sound’s polarity', 'The close mic is louder, so it cancels'],
     correct: 'The sound reaches them at different times',
-    explain: 'The room mic hears each note later. Summed, some pitches arrive out of step and cancel — a comb of notches. Move or rebalance first, then check polarity at matched levels.',
+    explain: 'The room mic hears each note later. Summed, some frequencies arrive out of step and cancel — a comb of notches. Move or rebalance first, then check polarity at matched levels.',
     why: {
       'The room mic flips the sound’s polarity': 'Distance delays a sound; it does not flip its sign.',
       'The close mic is louder, so it cancels': 'A level difference changes the notches’ depth; the delay makes them.',
@@ -439,7 +439,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what decides the note a trumpet plays?', options: ['How hard the lips buzz', 'The tube’s air column', 'The bell alone'], after: 'Now STEP through (or PLAY ONCE) and watch the lips, the tube and the bell.' },
+  sound: { prompt: 'Before you step through: what sets the notes a trumpet can play?', options: ['How hard the lips buzz', 'The tube’s air column', 'The bell alone'], after: 'Now STEP through (or PLAY ONCE) and watch the lips, the tube and the bell.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you swing the mic from on the bell’s axis to well off to one side. What changes?', options: ['A brighter sound', 'A softer top', 'It depends on this horn'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the player. Where will a supercardioid aimed at the bell reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

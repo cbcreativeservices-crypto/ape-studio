@@ -130,7 +130,7 @@ const SPEC: MetalSpec = {
     partsBadge: 'Bar chimes on a stand, face-on · tap a part to name it',
     partsLooking: () => 'From the audience · the row face-on, the player behind',
     partsNote: 'A wooden rail, and graduated metal bars on filaments. Switch ROWS to see a double row.',
-    partsWarn: 'The instrument and its stand are the player’s: never clip a mic to the rail or the stand, and never touch moving bars or the player’s hand.',
+    partsWarn: 'The instrument and its stand are the player’s: do not clip a mic to the rail or the stand without asking the player, and never touch moving bars or the player’s hand.',
     variantKey: 'ROWS',
   },
   sound: {
@@ -143,7 +143,7 @@ const SPEC: MetalSpec = {
       { k: 'BARS', at: ['AT REST', 'IN TURN', 'RINGING', 'RINGING'], flex: 1 },
       { k: 'SOUND', at: ['—', 'STRIKES', 'OVERLAP', 'ALONG ROW'], flex: 1.1 },
     ],
-    after: () => 'The bars ring on, the earlier ones fading first, until they die away — or the player or a damper stops them. That ending is part of the music: no gate should cut it.',
+    after: () => 'The bars ring on until they die away — or the player or a damper stops them. That ending is part of the music: no gate should cut it.',
     silentNote: 'This lab never plays a sound and draws no frequency curve: how real bar chimes sound depends on the row, the metal, the mount and the player. The pictures show where the sound comes from and where it leaves.',
     variantKey: 'ROWS',
     shapes: {

@@ -120,7 +120,7 @@ export function useBaselineStep({ words, baseline, centre, side, third }: { word
           </Point>
           <Point title="ONE CLOCK">Both elements on one synchronized recorder. Two recorders started by hand drift and start apart — the time between their tracks is not the sound’s.</Point>
         </Card>
-        {withThird ? <Note tone="ok">{`A third element off the line breaks the mirror: here the order is ${order}. A source in front reaches it last; one behind reaches it first.`}</Note> : <Note>Turn on THIRD to add an element behind the origin, off the line.</Note>}
+        {withThird ? <Note tone="ok">{`A third element off the line breaks the mirror: here the order is ${order}. A source in front reaches it later than its mirror behind would.`}</Note> : <Note>Turn on THIRD to add an element behind the origin, off the line.</Note>}
       </>
     ),
   };

@@ -256,9 +256,9 @@ const WS_PHASE: Workspace = {
     'is a harmless 18° at 100 Hz and a full cancellation at 1 kHz. Thinking in Δt first and ' +
     'degrees second keeps you out of that trap.',
   example:
-    'Snare top and bottom mics differ by 0.3 ms. At 200 Hz (shell fundamental) that is ' +
+    'Snare top and bottom mics, after the usual polarity flip on the bottom, still differ by 0.3 ms. At 200 Hz (shell fundamental) that is ' +
     '360 × 200 × 0.0003 = 21.6° — nearly aligned. At 1.67 kHz it reaches 180° and the pair ' +
-    'cancels; that is the hollow midrange you hear before you flip polarity or nudge the mic. ' +
+    'cancels; that is the hollow midrange you hear until you nudge the mic or delay one channel. ' +
     'The 180° frequency of any delay is simply 1/(2Δt).',
   mistakes: [
     'Treating "360°" as perfectly aligned: 360° at one frequency is a whole cycle late — identical waveform there, but every OTHER frequency is at some other angle, so the combined sound is still comb-filtered.',
@@ -867,7 +867,7 @@ const WS_FFT: Workspace = {
       name: 'TARGET RESOLUTION Δf',
       quantity: 'frequency',
       placeholder: '5',
-      help: 'The bin spacing you need — e.g. the gap between two notes you must separate.',
+      help: 'The bin spacing you need — to separate two notes, about a half to a third of the gap between them.',
     },
   ],
   functions: [
@@ -911,7 +911,7 @@ const WS_FFT: Workspace = {
       formula: 'N = sr / Δf',
       plainFormula: 'The FFT size equals the sample rate divided by the target bin spacing.',
       explain:
-        'The reverse: the FFT length needed to resolve two frequencies a target distance apart. FFTs want powers of two, so it rounds up — buying finer bins at the cost of a longer window. Check that the sound you are analyzing lasts at least that long.',
+        'The reverse: the FFT length that gives a target bin spacing (to split two close tones, plan on two or three bins between them). Most FFT tools use powers of two, so it rounds up — buying finer bins at the cost of a longer window. Check that the sound you are analyzing lasts at least that long.',
       keySymbols: ['/', 'Δ'],
       compute: (v) => {
         const sr = n(v.sr);

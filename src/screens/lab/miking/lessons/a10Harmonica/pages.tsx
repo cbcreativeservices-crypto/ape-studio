@@ -169,8 +169,8 @@ const BASE: Omit<HandSpec, 'axes' | 'worked' | 'place' | 'learnZones'> = {
     useExtra: usePaths,
   },
   mic: {
-    intro: 'No brand and no special “harmonica mic” is required for a stand. Choose by what the job needs: the pattern, the power it needs, its impedance, its size and how it mounts. A directional stand mic helps on a stage; an omni can suit a quiet room. A dedicated harp mic is a different tool — an omni made to be cupped, feeding a high-impedance amp input.',
-    mountLine: (m) => (m.id === 'harpBullet' ? 'Mount: in the player’s hands, cupped with the harmonica — never on a stand; its cable to the amp’s input' : 'Mount: a stand of its own, just beyond the hands, never able to swing into the face'),
+    intro: 'No brand and no special “harmonica mic” is required for a stand. Choose by what the job needs: the pattern, the power it needs, its impedance, its size and how it mounts. A directional stand mic helps on a stage; an omni can suit a quiet room. A dedicated harp mic is a different tool — most often an omni made to be cupped, feeding a high-impedance amp input.',
+    mountLine: (m) => (m.id === 'harpBullet' ? 'Mount: in the player’s hands, cupped with the harmonica, not on a stand; its cable to the amp’s input' : 'Mount: a stand of its own, just beyond the hands, never able to swing into the face'),
   },
   aimWords: { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the side).' },
   outside: 'clear of the player',
@@ -186,7 +186,7 @@ const BASE: Omit<HandSpec, 'axes' | 'worked' | 'place' | 'learnZones'> = {
     learn: [
       { title: 'STUDIO', text: 'A stand mic just beyond the hands; step back for a more integrated sound if the room is good, closer for detail. Compare several positions over whole phrases at matched level.' },
       { title: 'LIVE · THE STAND MIC', text: 'A directional mic as close as the hands allow, its null toward the loudest wedge. A cardioid hears less of the stage; it does not hear nothing.' },
-      { title: 'LIVE · THE CUPPED HARP MIC', text: 'An omni with no null: keep it away from, and never pointed into, the amp or the PA. Set the system so nothing rings even at the mic’s top volume. Do not use a narrow EQ notch instead of safe geometry or lower gain.' },
+      { title: 'LIVE · THE CUPPED HARP MIC', text: 'Usually an omni with no null: keep it away from, and never pointed into, the amp or the PA. Set the system so nothing rings even at the mic’s top volume. Do not use a narrow EQ notch instead of safe geometry or lower gain.' },
       { title: 'THE AMP ON STAGE', text: 'Set its loudness for the player’s tone and a safe stage level; add its speaker mic to the PA only as much as needed. Place it so the player hears it without it pointing at the cupped mic.' },
     ],
   },

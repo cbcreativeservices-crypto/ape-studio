@@ -22,7 +22,7 @@ export const SPL_LEARN: ToolLearnContent = {
     {
       head: 'PEAK VS RMS',
       body:
-        'Peak is the single highest instantaneous excursion of the signal; RMS is the average energy over a short window, and it tracks much closer to how loud something feels. A snare hit can post a very high Peak while barely moving the RMS value, and steady pink noise can do the opposite. The gap between them is the crest factor, and it tells you about the character of the signal, not just its level. Read both: Peak protects equipment and headroom, RMS relates to loudness and exposure.',
+        'Peak is the single highest instantaneous excursion of the signal; RMS is the average energy over a short window, and it tracks much closer to how loud something feels. A snare hit can post a very high Peak while barely moving the RMS value, and a steady sine tone can do the opposite. The gap between them is the crest factor, and it tells you about the character of the signal, not just its level. Read both: Peak protects equipment and headroom, RMS relates to loudness and exposure.',
     },
     {
       head: 'WEIGHTING AND RESPONSE',

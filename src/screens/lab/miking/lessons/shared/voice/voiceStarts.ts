@@ -36,7 +36,7 @@ export function closeRow(o: RowOpts): VoiceZoneSpec {
     aimTol: 15,
     ...pick(o),
     start: o.start ?? { d: [150, 155, 160, 145, 170, 180] },
-    tendency: o.tendency ?? 'A clear, direct voice with little of the room. Closer tends to bring more low end (the proximity effect), more breath and more pops; farther, a little more room and a steadier level.',
+    tendency: o.tendency ?? 'A clear, direct voice with little of the room. Closer tends to bring more low end on a directional pattern (the proximity effect), more breath and more pops; farther, a little more room and a steadier level.',
     checks: o.checks ?? ['The screen clear of the lips and the nose, at least 10 cm from the mic', 'The singer’s quietest line and loudest note at this distance', 'Pops on P and B, and harsh S sounds'],
   };
 }

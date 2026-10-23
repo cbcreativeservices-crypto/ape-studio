@@ -262,7 +262,7 @@ const SPEC: HandSpec = {
     learn: [
       { title: 'STUDIO', text: 'Compare one shared mic with one per drum before deciding more channels are needed. A coincident pair or a room mic can add space when the room and the music want it. Ask the player about the balance between the drums.' },
       { title: 'LIVE', text: 'The fewest mics that give the balance, close enough for useful pickup, and only the monitor level the player needs. If the stage is too loud for the quiet strokes, talk about the stage balance — more gain is not the answer.' },
-      { title: 'WHAT TO SEND', text: 'A room mic is a capture-only channel live, not a PA or monitor feed. Let the system operator route the PA, wedges and recording separately.' },
+      { title: 'WHAT TO SEND', text: 'Live, a room mic is most often a capture-only channel, not a PA or monitor feed. Let the system operator route the PA, wedges and recording separately.' },
     ],
   },
   two: {

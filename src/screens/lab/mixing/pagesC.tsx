@@ -366,7 +366,7 @@ function PagePrePost({ ctx }: { ctx: PageCtx }) {
         correct={1}
         explain="Pre-fader means the copy is tapped BEFORE the fader — the cue feed never hears mix moves. That is the whole point: the engineer can mix freely without yanking the singer’s reference around."
         wrong={[
-          'That is what a POST-fader feed would do — and why cues are not fed post.',
+          'That is what a POST-fader feed would do — and why cues are rarely fed post.',
           undefined,
           'Nothing was muted — the fader moved 4 dB, and the pre tap never sees the fader at all.',
           'The cue in this rig is the pre send itself; the reverb is a different, post-fed destination.',

@@ -79,7 +79,7 @@ export const ASSESSMENT_BANK: readonly AsmtQuestion[] = [
     options: ['Balanced TRS-to-XLR cable', 'TS instrument cable + adapter', 'Speaker cable + adapter', 'TOSLINK optical cable'],
     correct: 0,
     explain: 'Balanced out to balanced in wants a balanced cable — different plugs, same shielded-pair construction.',
-    wrong: [undefined, 'A TS plug grounds the inverting leg: it works, but the noise rejection is gone.', 'Powered monitors take line level on shielded cable — speaker cable is the wrong construction.', 'Both ports are analog; optical fits neither.'],
+    wrong: [undefined, 'A TS plug grounds the inverting leg: it usually works, but the noise rejection is gone.', 'Powered monitors take line level on shielded cable — speaker cable is the wrong construction.', 'Both ports are analog; optical fits neither.'],
   },
   {
     id: 'sel_passive',
@@ -89,7 +89,7 @@ export const ASSESSMENT_BANK: readonly AsmtQuestion[] = [
     options: ['speakON speaker cable', 'XLR microphone cable', '1/4-inch instrument cable', 'Category network cable'],
     correct: 0,
     explain: 'Amplifier POWER needs heavy unshielded speaker conductors in a locking connector — exactly what speakON is.',
-    wrong: [undefined, 'Mic cable is small shielded pair for tiny signals — amplifier current does not belong on it.', 'The most damaging swap in live audio: the small conductor heats and can fail at power.', 'Data cable has no business on a power run — and fits neither end.'],
+    wrong: [undefined, 'Mic cable is small shielded pair for tiny signals — amplifier current does not belong on it.', 'One of the most damaging swaps in live audio: the small conductor heats and can fail at power.', 'Data cable has no business on a power run — and fits neither end.'],
   },
   {
     id: 'sel_spdif',
@@ -220,7 +220,7 @@ export const ASSESSMENT_BANK: readonly AsmtQuestion[] = [
     options: ['Mute the channel first, then swap', 'Swap fast — speed beats muting', 'Turn phantom up so the new mic is ready', 'Unplug at the mixer end instead'],
     correct: 0,
     explain: 'Mute first: the connection pop never reaches the PA. With phantom on a condenser, switch it off and pause before unplugging.',
-    wrong: [undefined, 'However fast, the contacts still bridge — the pop happens at any speed.', 'Phantom power is a switch, not a level — there is nothing to turn “up.” The mic either needs +48 V or it does not, and muting the channel is what protects the PA during the swap.', 'Unplugging a live line pops from either end — mute is what prevents it.'],
+    wrong: [undefined, 'However fast, the contacts still bridge — the pop happens at any speed.', 'Phantom power is a switch, not a level — there is nothing to turn “up.” The mic either needs phantom or it does not, and muting the channel is what protects the PA during the swap.', 'Unplugging a live line pops from either end — mute is what prevents it.'],
   },
 ];
 

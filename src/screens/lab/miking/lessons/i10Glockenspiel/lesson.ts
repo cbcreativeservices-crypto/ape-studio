@@ -27,7 +27,7 @@ const pages: LessonPages = {
     title: 'Meet the glockenspiel',
     goal: 'Get to know the glockenspiel — what it is, where you meet it, what it does in the music, and its parts — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'Small steel bars in two rows that ring bright and long. Models differ: on a frame with tubes and a damper pedal, or in a case on a table, damped by hand. Never assume all bells are the same.',
+    takeaway: 'Small metal bars, often steel, in two rows that ring bright and long. Models differ: on a frame with tubes and a damper pedal, or in a case on a table, damped by hand. Never assume all bells are the same.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -378,7 +378,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'One condenser about 45–60 cm from the bars, above and a little toward the audience', ok: true, power: 'phantom', feedback: 'One safe, higher view: often enough for a delicate solo.' },
       { id: 'b', label: 'A near-coincident pair over the played span, outside the mallet arc', ok: true, power: 'phantom', feedback: 'A stable picture and a reliable mono sum; keep the width honest.' },
       { id: 'c', label: 'One condenser 10 cm above the middle bars', ok: false, power: 'phantom', feedback: 'Inside the mallets’ path.' },
-      { id: 'd', label: 'A clamp on the frame’s gas spring', ok: false, power: 'none', feedback: 'Never touch the gas spring; nothing mounts on the instrument.' },
+      { id: 'd', label: 'A clamp on the frame’s gas spring', ok: false, power: 'none', feedback: 'Never touch the gas spring; mount nothing on the instrument unless its maker made the mount.' },
       { id: 'e', label: 'A spaced pair 2 m apart for a huge image', ok: false, power: 'phantom', feedback: 'An exaggerated width for a small instrument — and a hollow mono sum.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.decay', label: 'The full decay is kept: no gate, the damping is the player’s', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, CLOSE_REASON],

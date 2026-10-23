@@ -154,7 +154,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
               <DrumStatus playing={sn.playing} pending={sn.pending} failed={sn.failed} rendering={sn.status === 'rendering'} idle="stopped · ride STRAINER or BOTTOM, then ▶ STRIKE; try a soft STROKE" label="the snare" />
               <Card>
                 <Point title="Sensitivity">The wires only rattle while the snare-side head moves them past the strainer's threshold. A tight strainer loses the ghost notes and, wound hard, chokes the whole drum; a loose one buzzes at everything, including the toms.</Point>
-                <Point title="The snare-side head">It is 2–3 mil — a sixteenth of a turn moves it. Even it like any head, tight, commonly well above the batter, and let the snare beds do their job. Move BOTTOM (the snare-side head) and hear the wire response and the body change.</Point>
+                <Point title="The snare-side head">It is usually 2–3 mil — a sixteenth of a turn moves it. Even it like any head, tight, commonly well above the batter, and let the snare beds do their job. Move BOTTOM (the snare-side head) and hear the wire response and the body change.</Point>
               </Card>
               <WhyCard title="MORE · batter, and separating the sounds">
                 <Body>The batter sets stick feel, the pitch and how much the drum rings: higher is crisper and more articulate, lower is fatter with more body. Head overtones ring at pitch; wire buzz is noise, shaped by the snare-side head; hardware noise (a loose strainer, a rattling butt plate) is a repair, not a tuning. Throw the strainer off (STRAINER to 0) to hear the heads alone.</Body>

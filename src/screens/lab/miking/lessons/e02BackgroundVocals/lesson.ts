@@ -143,7 +143,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A supercardioid hears less from the sides; its rejection sits off its rear, about 126° off the front — place the wedge there, from the real polar plot.',
     why: {
       'It makes the singer louder in the mix than the band': 'Level comes from distance and gain; the pattern changes what else it hears.',
-      'It has no proximity effect up close': 'Directional mics all gain low end up close, supercardioids included.',
+      'It has no proximity effect up close': 'Most directional mics gain low end up close, supercardioids included.',
     },
   },
   {
@@ -190,7 +190,7 @@ const scenarios: MikingScenario[] = [
     correct: 'That singer stands closest to the mic',
     explain: 'Closest means loudest — and, at a directional mic, more low end from the proximity effect. Match the distances, or that singer steps back.',
     why: {
-      'The mic has been switched over to omni': 'An omni has no proximity boost; closeness is the cause.',
+      'The mic has been switched over to omni': 'An omni has little or no proximity boost; closeness is the cause.',
       'That singer sings the lowest part': 'A low part is not boomy by itself; closeness adds the boom.',
     },
   },
@@ -566,7 +566,7 @@ export const E02_LESSON: EnsembleLesson = {
       begin: 'After our research, this is where we suggest you begin when singers share a mic: one large condenser at their mouth height, every mouth about the same distance from it — a place to start and rehearse, not a rule. For a row of singers, the group mic sits a little above their heads instead.',
       clearance: 'The stand’s base clear of the singers’ feet and their way in and out; its cable dressed flat, out of the moves.',
       height: 'A shared mic sits at the singers’ mouth height, so every mouth meets its front at the same distance; a little higher, angled down, keeps it out of the breath. A group mic over a row sits a little above the heads, aimed down at the middle singer.',
-      forward: 'In the middle of the group, each mouth about the same distance away — 40 cm in this drawing; set the real distance in rehearsal and mark the floor. Nearer one singer, that voice gets louder and bassier.',
+      forward: 'In the middle of the group, each mouth about the same distance away — 40 cm in this drawing; set the real distance in rehearsal and mark the floor. Nearer one singer, that voice gets louder and, at a directional mic, bassier.',
       aim: 'Its front toward the middle singer: a cardioid hears the singers round its front, an omni every side. Move the mic or the singers — not just the angle — to change the balance.',
     },
     learnZones: [

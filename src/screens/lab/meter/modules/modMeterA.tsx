@@ -737,7 +737,7 @@ const LOUDNESS_MODEL_BADGE =
   'SIMPLIFIED BS.1770-STYLE TEACHING MODEL — not a compliance meter (ITU-R BS.1770-5 measurement needs real DSP)';
 
 const LOUDNESS_MISTAKES = [
-  'Mastering "as loud as possible" for streaming — the platform turns it back DOWN to its integrated target; you traded dynamics for nothing.',
+  'Mastering "as loud as possible" for streaming — most platforms turn it back DOWN to their integrated target; you traded dynamics for nothing.',
   'Reading momentary jumps as "the mix got louder" — integrated barely moves; different window, different question.',
   'Trusting sample peak at −0.1 dBFS — the reconstructed waveform can overshoot between samples, which is why delivery specs set a true-peak ceiling (many platforms ask −1 dBTP; broadcast under ATSC A/85, −2).',
   'Confusing LRA (how DYNAMIC the program is) with loudness (how loud it is).',

@@ -64,7 +64,7 @@ export const C05A_COPY = stringsCopy({
     looking: 'From above · mic at the neck junction',
     points: [
       { title: 'CLOSE OR SHARED', text: 'A close mic gives more gain before feedback; a bluegrass band sharing one or two mics needs choreography, restrained monitors and a kind room.' },
-      { title: 'A FIGURE-8 RIBBON', text: 'One idea to try: smooth a banjo’s attack with a figure-8 ribbon — and rule it out when there are floor monitors, because a figure-8 hears its back as loudly as its front.' },
+      { title: 'A FIGURE-8 RIBBON', text: 'One idea to try: smooth a banjo’s attack with a figure-8 ribbon — and check where the floor monitors are first, because a figure-8 hears its back as loudly as its front.' },
       { title: 'LOUD UP CLOSE', text: 'A banjo can be very loud close in: one reading was about 105 dB near one. One reading, not a rule — measure, and protect hearing.' },
       { title: 'THE PICKUP', text: 'A pickup is a separate electrical path. If blending it with a mic, compare each alone and together in mono.' },
     ],

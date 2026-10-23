@@ -135,11 +135,11 @@ const scenarios: MikingScenario[] = [
     id: 'sn.set.3',
     page: 'setting',
     prompt: 'On a typical right-handed kit, where is the hi-hat relative to the snare?',
-    options: ['Just behind and above it, to the player’s left', 'In front of it, out toward the audience side', 'Below it, down beside the snare stand on the floor'],
-    correct: 'Just behind and above it, to the player’s left',
-    explain: 'The hi-hat sits close, a little behind and above the snare on the player’s left — which is why it is the loudest neighbour a snare mic hears, and why a top mic usually comes in from the front, between the hi-hat and the rack tom.',
+    options: ['Just beside and above it, to the player’s left', 'In front of it, out toward the audience side', 'Below it, down beside the snare stand on the floor'],
+    correct: 'Just beside and above it, to the player’s left',
+    explain: 'The hi-hat sits close, beside and a little above the snare on the player’s left — which is why it is the neighbour a snare mic hears most, and why a top mic usually comes in from the front, between the hi-hat and the rack tom.',
     why: {
-      'In front of it, out toward the audience side': 'The audience side, in front of the snare, is usually where a top mic comes in. The hi-hat is behind and to the left.',
+      'In front of it, out toward the audience side': 'The audience side, in front of the snare, is usually where a top mic comes in. The hi-hat is beside it, to the left.',
       'Below it, down beside the snare stand on the floor': 'Its pedal is on the floor, but its cymbals sit above the snare, just behind it.',
     },
   },
@@ -708,7 +708,7 @@ export const M02_LESSON: Lesson = {
   setting: {
     items: [
       { id: 'snare', label: 'the snare drum (on its stand)', short: 'SNARE', note: 'Between the player’s knees, on its own stand, drawn flat. Ringed in amber: the drum this lesson mics.', prov: { kind: 'sourced', src: 'YMH-TCS', quote: 'TMS-1455 14"×5.5"' }, tag: 'THE DRUM', scene: 'all' },
-      { id: 'hihat', label: 'hi-hat', short: 'HI-HAT', note: 'Just behind and above the snare, to the player’s left — the loudest neighbour a snare mic hears. Its cymbals open and close, and air bursts out of their edges: keep a mic clear of both.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'hihat', label: 'hi-hat', short: 'HI-HAT', note: 'Just beside and above the snare, to the player’s left on most kits — the neighbour a snare mic hears most. Its cymbals open and close, and air bursts out of their edges: keep a mic clear of both.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit' },
       { id: 'throne', label: 'drum throne (the player’s seat)', short: 'THRONE', note: 'The player sits behind the snare. Their hands and sticks work over its near half — the sticks’ path — so no mic, stand or cable goes there.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'toms', label: 'two rack toms', short: 'RACK TOMS', note: 'Up and to the snare’s right, over the kick. A top mic’s stand usually comes in between the small tom and the hi-hat.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'MIC PATH', scene: 'kit', planIds: ['tom1', 'tom2'] },
       { id: 'cymbals', label: 'crash and ride cymbals', short: 'CYMBALS', note: 'A crash above, just in front of the snare; another crash and the ride across the kit. Loud, and they swing when struck: a top mic’s stand passes under the near crash.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['crash1', 'crash2', 'ride'] },

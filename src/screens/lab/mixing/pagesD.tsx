@@ -145,7 +145,7 @@ function PageCheckFinish({ ctx }: { ctx: PageCtx }) {
         question="After three hours of mixing, everything sounds dull, so you reach for a big treble boost. The finishing habit says:"
         options={['Boost — trust exactly what you hear right now', 'Break first — tired ears are the most likely broken part', 'Boost, but on the mix bus so it is done efficiently', 'Switch over to headphones and boost it there instead']}
         correct={1}
-        explain="Listening fatigue dulls high-frequency perception specifically — the mix probably did not get darker; your ears did. Come back fresh, THEN judge. Half of finishing discipline is knowing when not to decide."
+        explain="Long, loud listening dulls your hearing most in the upper mids and highs — the mix probably did not get darker; your ears did. Come back fresh, THEN judge. Half of finishing discipline is knowing when not to decide."
         wrong={[
           'Right now is exactly when your judgment is least trustworthy — ask why everything went dull at once.',
           undefined,
@@ -213,7 +213,7 @@ function PageExport({ ctx }: { ctx: PageCtx }) {
         correct={1}
         explain="A truncated tail almost always means the export selection ended early — the last fifteen seconds were outside the range. It is one of the most common export bugs, and the END-check exists precisely for it."
         wrong={[
-          'Corruption usually refuses to play at all — a file that plays fine and then stops points at a setting, not damage.',
+          'A corrupt file often will not open at all — one that plays fine, then stops at the same point every time, usually points at a setting, not damage.',
           undefined,
           'Trailing SILENCE can be normal — a tail that CUTS is not. Listen to how it ends.',
           'Mastering polishes what exists. It cannot invent the missing fifteen seconds.',

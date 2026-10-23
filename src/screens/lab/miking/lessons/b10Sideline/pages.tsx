@@ -142,7 +142,7 @@ const B10Setting = makeBroadcastSetting({
       },
       points: [
         { title: 'CHECK THE DESTINATION', text: 'Verify the speech channel at the actual program or stream, not only on a camera meter. The reporter’s cues and return are separate from the program.' },
-        { title: 'RADIO', text: 'The venue’s radio coordinator owns the frequencies. Walk the approved route and the interview marks listening for dropouts; keep a tested cabled mic or another channel as the fallback.' },
+        { title: 'RADIO', text: 'The event’s radio coordinator assigns the frequencies. Walk the approved route and the interview marks listening for dropouts; keep a tested cabled mic or another channel as the fallback.' },
       ],
     }),
 });

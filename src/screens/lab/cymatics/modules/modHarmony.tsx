@@ -420,7 +420,7 @@ export function HarmonyModule({ help, focused }: CymaticsModuleProps) {
       <Text style={P.body}>
         Musical harmony is about <Text style={P.strong}>ratios</Text> between frequencies, not about any one frequency. Two tones at a small-integer
         ratio line up again and again; detune them slightly and they drift in and out of step — you hear that as <Text style={P.strong}>beats</Text>.
-        Ratios draw stable figures and sound consonant; plate modes are a different subject (they are inharmonic), so the two are never mixed here.
+        Simple ratios draw stable figures and, with rich tones, sound consonant; plate modes are a different subject (they are inharmonic), so the two are never mixed here.
       </Text>
       <Text style={P.caption}>
         {!tone.engineReady

@@ -201,7 +201,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'On stage, does a condenser cause more feedback simply because it is more sensitive?',
     options: ['Not by itself — compare mics at the same useful level', 'Yes, since its higher output reaches the PA first', 'Only when it sits closer to the grille than a dynamic'],
     correct: 'Not by itself — compare mics at the same useful level',
-    explain: 'Sensitivity alone does not decide feedback: at the same reproduced level, the pattern, the placement and the monitors decide it. The gain is simply set lower for a more sensitive mic.',
+    explain: 'Sensitivity alone does not decide feedback: at the same reproduced level, the pattern, the placement, the mic’s tone and the monitors decide it. The gain is simply set lower for a more sensitive mic.',
     why: {
       'Yes, since its higher output reaches the PA first': 'The gain is set for the same useful level, so the higher output is simply turned down at the desk.',
       'Only when it sits closer to the grille than a dynamic': 'Closer to the source usually HELPS gain before feedback. Pattern and monitors matter more.',
@@ -663,7 +663,7 @@ export const SPK_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A loudspeaker in a box. The amplifier drives a paper cone that pushes the air. A mic on a cabinet hears that air — the speaker, the box and the room — not the instrument’s electrical signal.', src: 'LESSON' },
+    { title: 'WHAT IT IS', text: 'A loudspeaker in a box. The amplifier drives a cone, most often paper, that pushes the air. A mic on a cabinet hears that air — the speaker, the box and the room — not the instrument’s electrical signal.', src: 'LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'Guitar and bass amps, amplified harmonica and electric pianos, and organs played through a rotary cabinet (the Leslie) — on stage and in the studio. Those lessons all send you here for the speaker itself.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'The speaker and its box are part of the instrument’s sound: a guitarist’s tone is the amp AND the speaker. In a rotary cabinet the turning horn and drum make the sound swirl — the motion is part of the performance.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'A 12 in speaker is about 31 cm across. A 1×12 cabinet is about 50 cm wide, a 4×12 about 77 cm and a 4×10 bass cabinet about 76 cm; the rotary cabinet drawn here is about 74 × 52 × 104 cm. This lab draws one of each.', src: 'MAR-MX112 / MAR-1960A / AMP-410 / HAM-122H / CEL-V30' },

@@ -166,7 +166,7 @@ export const GUIDE: MixingGuide = {
       // NEW COPY — owner review (2026-10-16): the caution the owner asked for, explained rather than silently fixed.
       {
         "label": "Caution — don’t low-cut the piano:",
-        "text": "The most common mistake with salsa is to high-pass the piano the way you would in pop or rock, often at 100–180 Hz. In most salsa the piano often switches from its montuno to doubling the bass: in the mambos (horn-led instrumental sections), breaks and unison lines it plays the bass line with the bassist, in octaves or unison. Cut the piano’s lows and those lines go thin instead of full and fat, the way they are meant to sound. What we suggest instead: keep the piano’s low end, with at most a rumble filter below its lowest note; live, send the piano to the subwoofers with the bass; manage the bass and piano low end with balance and the arrangement (voicings, who plays what, talked over with the band), not with a filter; and if the mix is muddy, the piano is rarely the cause: an electric or stage piano on a DI brings no mud at all, and an acoustic piano only does when its mics are pushed hard into the subs and pick up the stage with it — then keep the mics close and the sub send moderate rather than cutting the piano’s low end. Look for the mud elsewhere first — horn and vocal mics, the tumba’s ring, stage wash — and make small, careful cuts there. The same holds in son (Cuban roots song style), mambo (1940s–50s Cuban big-band dance style), cha-cha-chá, timba (modern Cuban dance music) and Latin jazz, wherever the piano switches to doubling the bass. Use your ears and the room. Talk with the keyboardist first, or know their music."
+        "text": "The most common mistake with salsa is to high-pass the piano the way you would in pop or rock, often at 100–180 Hz. In most salsa the piano often switches from its montuno to doubling the bass: in the mambos (horn-led instrumental sections), breaks and unison lines it plays the bass line with the bassist, in octaves or unison. Cut the piano’s lows and those lines go thin instead of full and fat, the way they are meant to sound. What we suggest instead: keep the piano’s low end, with at most a rumble filter below its lowest note; live, send the piano to the subwoofers with the bass; manage the bass and piano low end with balance and the arrangement (voicings, who plays what, talked over with the band), not with a filter; and if the mix is muddy, the piano is rarely the cause: an electric or stage piano on a DI brings no stage bleed, though its left hand still adds low end, and an acoustic piano only does when its mics are pushed hard into the subs and pick up the stage with it — then keep the mics close and the sub send moderate rather than cutting the piano’s low end. Look for the mud elsewhere first — horn and vocal mics, the tumba’s ring, stage wash — and make small, careful cuts there. The same holds in son (Cuban roots song style), mambo (1940s–50s Cuban big-band dance style), cha-cha-chá, timba (modern Cuban dance music) and Latin jazz, wherever the piano switches to doubling the bass. Use your ears and the room. Talk with the keyboardist first, or know their music."
       }
     ]
   },
@@ -290,7 +290,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Salsa clubs and dance halls typically run 94–100 dBA LAeq-15 at FOH, festivals and arenas 98–102 dBA, with C-weighted levels around 110–118 dBC. Because there is no kick and the low end is bass, piano and tumba (the lowest conga), sub energy is moderate; a C-minus-A gap of more than about 15–18 dB suggests too much sub for this style, and a gap of 20 dB or more is a hearing-risk flag. Hard-floored halls get harsh fast at 2–4 kHz. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes, so long dance nights favor the lower end of the range."
+      "text": "Salsa clubs and dance halls typically run 94–100 dBA LAeq-15 at FOH, festivals and arenas 98–102 dBA, with C-weighted levels around 110–118 dBC. Because there is usually no kick and the low end is bass, piano and tumba (the lowest conga), sub energy is moderate; a C-minus-A gap of more than about 15–18 dB suggests too much sub for this style, and a gap of 20 dB or more is a hearing-risk flag. Hard-floored halls get harsh fast at 2–4 kHz. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes, so long dance nights favor the lower end of the range."
     },
     {
       "label": "Studio / streaming:",
@@ -306,7 +306,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Low end",
-        "live": "No kick; bass, piano and tumba (the lowest conga) carry it. Send the piano to the subs with the bass; high-pass the parts that carry no low line (horns, vocals, bells, shakers)",
+        "live": "Usually no kick; bass, piano and tumba (the lowest conga) carry it. Send the piano to the subs with the bass; high-pass the parts that carry no low line (horns, vocals, bells, shakers)",
         "studio": "Balance bass and piano as one line; fine-tune bass vs tumba with EQ carving"
       },
       {

@@ -18,9 +18,9 @@ export type SafetyRow = { id: string; title: string; text: string };
 
 export const SPORTS_SAFETY: Readonly<Record<'approval' | 'play' | 'protective' | 'animals' | 'lightning' | 'weather' | 'electrics' | 'hearing' | 'feedback' | 'withdraw', SafetyRow>> = {
   approval: { id: 'approval', title: 'APPROVAL FIRST', text: 'Get approval for every position, mount, cable route and body fit — from the event, the venue and the rights holder. A credential does not approve a mount, and a rule still applies even if someone at the venue likes the spot.' },
-  play: { id: 'play', title: 'NEVER INTO PLAY', text: 'No mic, stand, cable or operator in the playing area, the run-off, a medical route, a bench area or an exit. A stoppage does not open the field to crew.' },
+  play: { id: 'play', title: 'KEEP OUT OF PLAY', text: 'No mic, stand, cable or operator in the playing area, the run-off, a medical route, a bench area or an exit, unless the event approves that one spot (a goal or net mic). A stoppage does not open the field to crew.' },
   protective: { id: 'protective', title: 'PROTECTIVE EQUIPMENT', text: 'Never alter padding, nets, glass, boards or anyone’s protective equipment to fit a mic.' },
-  animals: { id: 'animals', title: 'ANIMALS', text: 'No mic on a horse, its tack or its rider.' },
+  animals: { id: 'animals', title: 'ANIMALS', text: 'No mic on a horse, its tack or its rider unless the event, the rider and the vet approve a system made for it.' },
   lightning: { id: 'lightning', title: 'LIGHTNING', text: `If you hear thunder or see lightning, stop and get into a safe shelter at once — a substantial building or a hard-topped vehicle. Dugouts and open rain shelters are not safe. Leave the equipment. Wait ${LIGHTNING.waitMin} minutes after the last thunder before going back out, and only under the event’s plan.` },
   weather: { id: 'weather', title: 'WIND AND RAIN', text: 'A windscreen is not waterproofing, and a rain cover meant for between takes is not for recording. Check every component’s ratings; keep connectors protected and out of water and traffic.' },
   electrics: { id: 'electrics', title: 'WET-AREA ELECTRICS', text: 'Temporary power and connections near water, ice or rain are set up and approved by a qualified person — never improvised.' },

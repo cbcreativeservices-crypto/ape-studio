@@ -124,9 +124,9 @@ export const CABINETS: Record<CabKind, CabSpec> = {
     kind: 'bass410',
     label: 'Bass cabinet, 4 × 10 in + horn',
     short: 'BASS 4×10',
-    w: { mm: 30 * IN, prov: src('AMP-410', 'DIMENSIONS (H x W x D) 24" x 30" x 19"') },
-    h: { mm: 24 * IN, prov: src('AMP-410', 'DIMENSIONS (H x W x D) 24" x 30" x 19"') },
-    d: { mm: 19 * IN, prov: src('AMP-410', 'DIMENSIONS (H x W x D) 24" x 30" x 19"') },
+    w: { mm: 24 * IN, prov: src('AMP-410', 'DIMENSIONS (W x H x D) 24" x 30" x 19"') },
+    h: { mm: 30 * IN, prov: src('AMP-410', 'DIMENSIONS (W x H x D) 24" x 30" x 19"') },
+    d: { mm: 19 * IN, prov: src('AMP-410', 'DIMENSIONS (W x H x D) 24" x 30" x 19"') },
     drivers: [
       { y: 150, z: 170, nominal: 10 },
       { y: 150, z: -170, nominal: 10 },

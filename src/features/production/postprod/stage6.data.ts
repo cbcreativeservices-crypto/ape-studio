@@ -103,7 +103,7 @@ export const STAGE6_MIX: StageDef = {
           fieldId: "delay_compensation",
           label: "Is delay compensation confirmed working",
           kind: "choice",
-          help: "Uncompensated latency on a parallel path is heard as a thin or hollow sound rather than as a delay, which is why it gets mixed around instead of fixed.",
+          help: "A few milliseconds of uncompensated latency on a parallel path is heard as a thin or hollow sound rather than as a delay, which is why it gets mixed around instead of fixed.",
           options: [
             { value: "yes", label: "Yes" },
             { value: "unknown", label: "Not checked" },
@@ -363,7 +363,7 @@ export const STAGE6_MIX: StageDef = {
           fieldId: "fold_down_checked",
           label: "Fold-down and compatibility checked",
           kind: "multiChoice",
-          help: "Most listeners will not hear the format you mixed in. What they hear is the fold-down.",
+          help: "Many listeners will not hear the format you mixed in. What they hear is the fold-down.",
           options: [
             { value: "stereo_fold", label: "Stereo fold-down" },
             { value: "mono", label: "Mono compatibility" },
@@ -659,7 +659,7 @@ export const STAGE6_MIX: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "A multichannel mix nobody has folded down",
-      detail: "The mix is in a format most listeners will not hear directly, and the fold-down has not been checked. Centre-channel speech that vanishes into a stereo downmix is the classic result.",
+      detail: "The mix is in a format most listeners will not hear directly, and the fold-down has not been checked. Centre-channel speech buried under the folded-in music and effects is the classic result.",
       fixHint: "Check the stereo fold-down and mono, listening specifically to whether the speech survives.",
       needsLogic: true,
       logicIntent: "Fire when mix_format is 5_1, 7_1, immersive or binaural, and fold_down_checked is empty."

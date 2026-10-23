@@ -118,8 +118,8 @@ const scenarios: MikingScenario[] = [
     id: 'ra.set.1',
     page: 'setting',
     prompt: 'A colleague suggests a starter pistol for a quick, loud impulse. What do you say?',
-    options: ['Refuse: explosive or firearm-like sources are out', 'Fine, if everyone in the room wears hearing protection', 'Fine outdoors, if the room’s doors are left wide open'],
-    correct: 'Refuse: explosive or firearm-like sources are out',
+    options: ['Refuse: no explosive or firearm-like sources here', 'Fine, if everyone in the room wears hearing protection', 'Fine outdoors, if the room’s doors are left wide open'],
+    correct: 'Refuse: no explosive or firearm-like sources here',
     explain: 'No explosive or firearm-like sources in this lab. A controlled sweep or interrupted noise from a test system is repeatable and safe at modest levels.',
     why: {
       'Fine, if everyone in the room wears hearing protection': 'Protection does not make an explosive source acceptable here: use a controlled test signal.',

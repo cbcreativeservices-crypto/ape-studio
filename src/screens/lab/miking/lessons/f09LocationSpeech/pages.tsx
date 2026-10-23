@@ -338,7 +338,7 @@ const F09Setting = makeVoiceSetting({
     title: 'Each mic on its own channel',
     points: [
       { title: 'LABELLED, SEPARATE TRACKS', text: 'Keep each useful mic — boom, body mic, plant, camera reference — on its own labelled channel, with notes on noise and the shot. A boom and a body mic are two perspectives to choose between or blend on purpose, not the two sides of a stereo picture.' },
-      { title: 'SOLO, THEN TOGETHER IN MONO', text: 'Listen to each alone, then to any blend in mono: a hollow, thin sound means some pitches cancel between two mics at different distances. Favour the channel that serves the scene; polarity is a test, not a cure for a delay.' },
+      { title: 'SOLO, THEN TOGETHER IN MONO', text: 'Listen to each alone, then to any blend in mono: a hollow, thin sound means some frequencies cancel between two mics at different distances. Favour the channel that serves the scene; polarity is a test, not a cure for a delay.' },
       { title: 'LIVE: SEPARATE PATHS', text: 'Live, check what goes to the stream, the recorder and the local PA as separate paths, so an ambience or backup mic never feeds a loudspeaker by accident. Fewest open mics: each one adds room and lowers the margin before feedback.' },
     ],
     note: 'Record a separate room tone for editing — it smooths the cuts, but it cannot bring back a lost word.',

@@ -42,7 +42,7 @@ export const C01_COPY: LessonCopy = {
     partsLooking: { side: 'Front view · the guitar and the player', top: 'From above · the guitar edge-on' },
     partsIdle: 'The strings drive the bridge; the bridge drives the top; the top and the air in the body make most of the sound — the next page shows how.',
     variantNotes: {
-      twelve: 'TWELVE-STRING: six pairs (courses), so twelve strings over the same kind of body. Its neck still meets the body at the 14th fret.',
+      twelve: 'TWELVE-STRING: six pairs (courses), so twelve strings over the same kind of body. On this one the neck still meets the body at the 14th fret.',
       nylon: 'NYLON: on this classical body the neck meets the body at the 12th fret — so here the 12th fret and the neck joint are the same place. On the steel-string bodies they are not.',
     },
   },
@@ -144,7 +144,7 @@ export const C01_COPY: LessonCopy = {
         { title: 'PICKUP OR MIC', text: 'A pickup is a separate electrical path, not a microphone. On a loud stage it may give more level before feedback; a mic adds the air round the guitar. Compare each alone, then together in mono.' },
         { title: 'MOVEMENT', text: 'A player may shift several centimetres between sitting, standing, singing and the loud passages. Mark a comfortable position, and test the whole performance.' },
       ],
-      body: 'With a wedge in front, a pattern’s rejection is a tool to aim. With a singing player, the voice reaches the guitar mic from its front: no null helps there — plan the balance of the two mics instead.',
+      body: 'With a wedge in front, a pattern’s rejection is a tool to aim. With a singing player, the voice reaches most guitar mics from the front, where a cardioid’s null cannot help (a figure-8’s side null can) — plan the balance of the two mics too.',
       warn: 'No guitar-mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. If it starts, lower the level first, then change the geometry. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },

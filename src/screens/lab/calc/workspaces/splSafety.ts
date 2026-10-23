@@ -320,8 +320,8 @@ const WS_SPL_ADD: Workspace = {
   section: 'spl',
   intro:
     'Decibels are logarithms, so levels never add arithmetically. This workspace converts ' +
-    'levels back to energy ratios, sums the energy, and converts back — the only honest way ' +
-    'to combine sources.',
+    'levels back to energy ratios, sums the energy, and converts back — the right way ' +
+    'to combine independent (uncorrelated) sources.',
   whyItMatters:
     'It answers the daily questions: what do two subs actually buy me, does the fourth box ' +
     'matter, and why did muting that quiet channel change nothing on the meter. Energy summing ' +
@@ -358,7 +358,7 @@ const WS_SPL_ADD: Workspace = {
       plainFormula:
         'The combined level equals ten times the base-ten log of the sum of each level converted to an energy ratio (ten raised to the level over ten).',
       explain:
-        'Decibels are logarithms, so levels never add arithmetically. This converts each level back to an energy ratio, sums the energy, and converts back — the only honest way to combine sources. It shows how much the total sits above the loudest single source.',
+        'Decibels are logarithms, so levels never add arithmetically. This converts each level back to an energy ratio, sums the energy, and converts back — the right way to combine independent (uncorrelated) sources. It shows how much the total sits above the loudest single source.',
       keySymbols: ['·', 'log₁₀', 'Σ', 'x²', 'x₁'],
       compute: (v) => {
         const ls = arr(v.levels);
@@ -461,7 +461,7 @@ const WS_SPL_ADD: Workspace = {
       plainFormula:
         'The combined level equals ten times the base-ten log of the sum of the two sources’ energy ratios.',
       explain:
-        'Energy-sums two levels and checks which dominates. When one source is more than about 10 dB below the other, it adds under half a dB — muting it is inaudible on a meter. Within 10 dB, both matter. It is why removing a quiet channel often changes nothing.',
+        'Energy-sums two levels and checks which dominates. When one source is more than about 10 dB below the other, it adds under half a dB — muting it barely moves the meter. Within 10 dB, both matter. It is why removing a quiet channel often barely changes the total level.',
       keySymbols: ['·', 'log₁₀', 'x²'],
       compute: (v) => {
         const la = n(v.la);
@@ -470,7 +470,7 @@ const WS_SPL_ADD: Workspace = {
         const diff = Math.abs(la - lb);
         const verdict =
           diff > 10
-            ? `The quieter source is ${fmt(diff)} dB down — it adds only ${fmt(tot - Math.max(la, lb))} dB (<0.5 dB). The louder source dominates; muting the quiet one is inaudible on a meter.`
+            ? `The quieter source is ${fmt(diff)} dB down — it adds only ${fmt(tot - Math.max(la, lb))} dB (<0.5 dB). The louder source dominates; muting the quiet one barely moves the meter.`
             : `The sources are within ${fmt(diff)} dB of each other, so both matter: the quieter one adds ${fmt(tot - Math.max(la, lb))} dB to the louder.`;
         return [
           { label: 'COMBINED LEVEL', value: tot, quantity: 'spl' },

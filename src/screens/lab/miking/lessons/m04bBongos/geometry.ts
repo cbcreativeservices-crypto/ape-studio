@@ -38,7 +38,7 @@ export const LEGS = {
 };
 
 const ROLE = {
-  macho: 'The smaller drum, the higher register — on the player’s left here. Rawhide, played with the fingers and hands.',
+  macho: 'The smaller drum, the higher register — on the player’s left here. Usually rawhide, played with the fingers and hands.',
   hembra: 'The larger drum, the lower register — on the player’s right here.',
 } as const;
 const SHELL_ROLE = 'A short wooden shell, open at the bottom. The open lower ends and the player’s legs or stand shape part of the sound.';

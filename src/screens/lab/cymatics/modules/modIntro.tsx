@@ -62,7 +62,7 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
 
       <Text style={P.h}>VIBRATION MOVES THINGS</Text>
       <Text style={P.body}>
-        Drive a thin plate with a tone and the plate flexes at that frequency. Sand, powder or salt on top cannot stay where the surface is
+        Drive a thin plate with a tone and the plate flexes at that frequency. Sand or salt on top cannot stay where the surface is
         leaping — it is thrown off the moving regions and comes to rest where the plate is still. Liquids ripple; membranes bulge; strings
         bow. The material changes, the physics does not.
       </Text>
@@ -111,11 +111,11 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
         width={width}
         aspect={1 / 0.66}
         title="PHASE VIEW"
-        badge="PHASE VIEW · AMBER RISES WHILE BLUE FALLS"
+        badge="PHASE VIEW · AMBER RISES WHILE VIOLET FALLS"
         render={(w, h) => (
           <View style={{ width: w, height: h, borderRadius: 10, overflow: 'hidden' }}>
             <PlateDemo width={w} height={h} spec={spec} hz={f1} view="phase" running={focused} />
-            <FigBadge text="PHASE VIEW · AMBER RISES WHILE BLUE FALLS" />
+            <FigBadge text="PHASE VIEW · AMBER RISES WHILE VIOLET FALLS" />
           </View>
         )}
       />

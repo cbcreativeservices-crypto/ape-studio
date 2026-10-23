@@ -22,7 +22,7 @@ export const WAVE_MODULES: { id: WaveModuleId; num: string; title: string; blurb
   { id: 'coverage', num: '9', title: 'Loudspeaker Coverage', blurb: 'Directivity narrows with frequency — aim the pattern, not the cabinet.' },
   { id: 'linearray', num: '10', title: 'Line Array Laboratory', blurb: 'Splay, box count and height shape coverage — coupling lows, beaming highs.' },
   { id: 'delayalign', num: '11', title: 'Delay Alignment', blurb: 'Sub + main: watch the null vanish as the wavefronts align.' },
-  { id: 'cardioidsub', num: '12', title: 'Cardioid Subwoofer', blurb: 'Two subs, one delay: energy forward, cancellation behind.' },
+  { id: 'cardioidsub', num: '12', title: 'Cardioid Subwoofer', blurb: 'Two subs, one delay, one polarity flip: energy forward, cancellation behind.' },
   { id: 'beamsteer', num: '13', title: 'Beam Steering', blurb: 'DSP delays tilt the beam without moving the box.' },
   { id: 'echo', num: '14', title: 'Echo Laboratory', blurb: 'Discrete echoes vs fused reflections — the ~50 ms threshold.' },
   { id: 'reverb', num: '15', title: 'Reverberation Laboratory', blurb: 'Direct → early → late → diffuse: reverb as a buildup, not a thing.' },

@@ -208,7 +208,7 @@ const FOLLOW_CHECK: CheckSpec = {
   options: ['Fix the distortion it caused', 'Lower the level, not the distortion', 'Do nothing at all downstream'],
   correctIdx: 1,
   reveal:
-    'A later stage can only change LEVEL. Once a stage clips, the distortion is part of the signal and travels downstream — you have to fix it at the stage where it happened.',
+    'Turning a later stage down only changes LEVEL. Once a stage clips, the distortion is part of the signal and travels downstream — you have to fix it at the stage where it happened.',
   wrongHint: 'Downstream controls move level up and down — they can’t un-clip a signal.',
 };
 
@@ -285,7 +285,7 @@ const LOWHIGH_CHECK: CheckSpec = {
   question: 'You compensated for a starved first stage with big gain later. The output meter now reads healthy — so what’s wrong?',
   options: [
     'Nothing — a healthy final level means a healthy chain',
-    'The noise floor came up with the late gain — hiss you can never remove',
+    'The noise floor came up with the late gain — hiss you can’t cleanly remove',
     'The signal is now polarity inverted',
   ],
   correctIdx: 1,
@@ -344,8 +344,8 @@ export function LowHighModule(_p: GainModuleComponentProps) {
       label: 'SCENARIO',
       valueLabel: scenarioId === 'low' ? 'LOW' : scenarioId === 'high' ? 'HIGH' : scenarioId === 'bal' ? 'BAL' : '—',
       options: [
-        { id: 'low', label: 'TOO LOW EARLY', blurb: 'A starved first stage: every later stage must boost, and each boost lifts the noise floor with it — hiss you can never remove.' },
-        { id: 'high', label: 'TOO HIGH EARLY', blurb: 'A slammed first stage clips immediately — and no later stage can un-clip it. Distortion is forever.' },
+        { id: 'low', label: 'TOO LOW EARLY', blurb: 'A starved first stage: every later stage must boost, and each boost lifts the noise floor with it — hiss you can’t cleanly remove.' },
+        { id: 'high', label: 'TOO HIGH EARLY', blurb: 'A slammed first stage clips immediately — and no later stage can un-clip it. No fader move undoes it.' },
         { id: 'bal', label: 'BALANCED', blurb: 'Healthy level at EVERY stage: headroom above, noise floor far below, all the way down the chain. This is the goal.' },
       ],
       selectedId: scenarioId,

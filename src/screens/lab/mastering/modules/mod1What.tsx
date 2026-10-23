@@ -136,7 +136,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
                     Measured: THE MIX <Text style={{ color: lufsTint(mix.lufs) }}>{mix.lufs.toFixed(1)} LUFS</Text>, PLR {mix.plr.toFixed(1)} dB · LOUDER <Text style={{ color: lufsTint(loud.lufs) }}>{loud.lufs.toFixed(1)} LUFS</Text>, PLR {loud.plr.toFixed(1)} dB, max gain reduction {loud.maxGrDb.toFixed(1)} dB.
                     {matched ? ` LOUDER is played at ${Math.min(0, Math.min(mix.lufs, loud.lufs) - loud.lufs).toFixed(1)} dB so both sit at ${Math.min(mix.lufs, loud.lufs).toFixed(1)} LUFS.` : ' Unmatched: the louder version will read fuller and brighter simply because it is louder.'}
                   </Text>
-                  <Body>TRUE PK reads over 0 dBTP here on purpose: this is a sample-peak limiter with no look-ahead. A release limiter reads true peak (oversampled) and leaves margin for the encoder — Modules 6 and 7.</Body>
+                  <Body>TRUE PK reads over 0 dBTP here on purpose: this is a sample-peak limiter with no look-ahead. A limiter for a release master is usually set to read true peak (oversampled) and leaves margin for the encoder — Modules 6 and 7.</Body>
                 </Card>
               ) : null}
               <Card>

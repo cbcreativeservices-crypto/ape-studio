@@ -296,7 +296,7 @@ const A_PICKS: ConnectionPick[] = [
       travels(
         'digital_audio',
         'wrong',
-        'You picked DIGITAL AUDIO — the point-to-point formats like AES3 or S/PDIF. A stage box trunk carries MANY channels as NETWORKED AUDIO: audio on a computer network, where the protocol, not the connector, decides compatibility.',
+        'You picked DIGITAL AUDIO — the point-to-point formats like AES3 or S/PDIF. This stage box trunk carries MANY channels as NETWORKED AUDIO: audio on a computer network, where the protocol, not the connector, decides compatibility.',
         'no_signal',
       ),
       travels(

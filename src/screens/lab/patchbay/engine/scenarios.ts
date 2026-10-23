@@ -221,7 +221,7 @@ export const DETECTIVE_CASES: DetectiveCase[] = [
     question: 'What configuration is this pair?',
     answer: 'full',
     explain:
-      'A default path existed, and the TOP insertion broke it. That is the full-normal signature — either front jack opens the normal.',
+      'A default path existed, and the TOP insertion broke it. Of these three choices, that is the full-normal signature — either front jack opens the normal.',
     wrong: [
       undefined,
       'Think back to your own tap experiment: on that configuration, what happens to the destination when you patch the TOP? Compare with Test 2.',

@@ -282,7 +282,7 @@ export const ROUTING_TOOLS: readonly RoutingTool[] = [
     remoteControl: false,
     mixesBuses: false,
     use: 'An independent copy of chosen channels at chosen levels: monitor mixes (pre-fader) and effects sends (post-fader).',
-    notFor: 'Group level control of the main mix — turning an aux master down changes nothing in the house.',
+    notFor: 'Group level control of the main mix — turning a monitor aux master down changes nothing in the house.',
   },
   {
     id: 'subgroup',
@@ -303,7 +303,7 @@ export const ROUTING_TOOLS: readonly RoutingTool[] = [
     isCopy: false,
     remoteControl: true,
     mixesBuses: false,
-    use: 'One fader that remotely controls the level of many channels — no audio passes through it, so post-fader sends follow it and pre-fader sends do not. Its MUTE silences everything leaving those channels.',
+    use: 'One fader that remotely controls the level of many channels — no audio passes through it, so post-fader sends follow it and pre-fader sends do not. On most consoles its MUTE silences those channels and their sends.',
     notFor: 'Group processing — there is no audio in a DCA to insert a compressor on.',
   },
   {
@@ -363,7 +363,7 @@ export const WHICH_TOOL: readonly WhichToolCase[] = [
     why: 'A PRE-FADER aux send is an independent copy: its level is set on the send, and the channel fader does not touch it.',
     wrong: {
       subgroup: 'A subgroup feeds the main mix — moving it changes the house, not the wedge.',
-      matrix: 'A matrix mixes whole buses; a monitor mix is built from individual channels.',
+      matrix: 'A matrix usually mixes whole buses; a monitor mix is built from individual channels.',
     },
   },
   {
@@ -392,7 +392,7 @@ export const WHICH_TOOL: readonly WhichToolCase[] = [
     correct: 'aux',
     why: 'An AUX-FED SUB: a post-fader send from just those channels, so the sub feed follows the mix but carries nothing the low end does not need.',
     wrong: {
-      matrix: 'A matrix mixes BUSES, so it can only choose channels if some bus already carries just those channels — that bus is the aux. (A matrix is then a fine place to deliver that aux to the sub output with its own level.)',
+      matrix: 'A matrix mostly mixes BUSES, so on most consoles it can only choose channels if some bus already carries just those channels — that bus is the aux. (A matrix is then a fine place to deliver that aux to the sub output with its own level.)',
       main: 'The main mix carries every channel, vocals included, to the subs.',
     },
   },

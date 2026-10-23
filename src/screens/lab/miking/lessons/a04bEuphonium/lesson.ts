@@ -57,7 +57,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a spot and a farther mic on one euphonium can sound hollow together, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: ['eu.two.1', 'eu.two.2', 'eu.two.3', 'eu.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics at different distances hear the euphonium at different times: some pitches cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Judge the pair in mono, at matched levels.',
+    takeaway: 'Two mics at different distances hear the euphonium at different times: some frequencies cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Judge the pair in mono, at matched levels.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -276,12 +276,12 @@ const scenarios: MikingScenario[] = [
     id: 'eu.two.1',
     page: 'twoMic',
     prompt: 'Why can a spot and a farther mic on one euphonium sound hollow together?',
-    options: ['The sound reaches them at different times, so some pitches cancel', 'The farther mic inverts the sound on its way there, so it cancels', 'Two mics on one euphonium cancel each other’s low end in the sum'],
-    correct: 'The sound reaches them at different times, so some pitches cancel',
-    explain: 'The farther mic hears each note a little later. Summed, some pitches arrive out of step and cancel — a comb of notches. Move or rebalance first, then check polarity at matched levels.',
+    options: ['They hear it at different times, so some frequencies cancel', 'The farther mic inverts the sound on its way there, so it cancels', 'Two mics on one euphonium cancel each other’s low end in the sum'],
+    correct: 'They hear it at different times, so some frequencies cancel',
+    explain: 'The farther mic hears each note a little later. Summed, some frequencies arrive out of step and cancel — a comb of notches. Move or rebalance first, then check polarity at matched levels.',
     why: {
       'The farther mic inverts the sound on its way there, so it cancels': 'Distance delays a sound; it does not flip its sign.',
-      'Two mics on one euphonium cancel each other’s low end in the sum': 'Cancellation depends on the delay and the levels: some pitches dip, others add.',
+      'Two mics on one euphonium cancel each other’s low end in the sum': 'Cancellation depends on the delay and the levels: some frequencies dip, others add.',
     },
   },
   polarityDelay('eu.two.2'),
@@ -358,7 +358,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'A high-pass corner or a room cancellation: bypass the filter, play the actual written low phrase, then move the mic or the player.',
     options: ['Bypass the filter, test the low phrase, move the mic', 'Boost the lowest frequencies on the channel first', 'Swap to the largest mic you have, for its bigger diaphragm'],
     correct: 'Bypass the filter, test the low phrase, move the mic',
-    explain: 'A filter set from the word “euphonium”, or a room that cancels the low notes, can thin the bottom. Find which before reaching for EQ.',
+    explain: 'A filter set from the word “euphonium”, or a room that cancels some low frequencies, can thin the bottom. Find which before reaching for EQ.',
     why: {
       'Boost the lowest frequencies on the channel first': 'EQ cannot fully put back what a filter or a cancellation removed.',
       'Swap to the largest mic you have, for its bigger diaphragm': 'A larger diaphragm is no promise of low end. The filter and the room come first.',
@@ -373,7 +373,7 @@ const symptoms: Symptom[] = [
     explain: 'Players rise, tilt and breathe. Stop, let the player hold the euphonium safely, move the boom, and recheck the whole movement.',
     why: {
       'Ask the player to keep the bell perfectly still': 'Movement is part of playing. The mic gives way, not the player.',
-      'Lower the mic so it hangs just inside the bell': 'Never into the bell — and it would be hit even more easily there.',
+      'Lower the mic so it hangs just inside the bell': 'Not inside the bell — it would be hit even more easily there.',
     },
   },
   distortSymptom('eu.sym.distort'),

@@ -337,7 +337,7 @@ export const STAGE2_MEDIA: StageDef = {
       kind: "missing",
       title: "The copy has not been verified",
       detail: "No verification method is recorded, so the working media is assumed good rather than known good.",
-      fixHint: "At minimum, compare file counts and sizes and play the start and end of each file. A checksum is better and usually automatic.",
+      fixHint: "At minimum, compare file counts and sizes and play the start and end of each file. A checksum is better, and most offload tools run one for you.",
       needsLogic: true,
       logicIntent: "Fire when verify_method is empty or contains only none, or when verify_coverage is none."
     },
@@ -358,7 +358,7 @@ export const STAGE2_MEDIA: StageDef = {
       severity: "attention",
       kind: "unsafe",
       title: "Dragged copy with no read-back",
-      detail: "The media was copied in a file browser, which reports success as soon as the last byte is queued rather than when it is confirmed written. Without a checksum or a read-back, a silent failure looks exactly like a success.",
+      detail: "The media was copied in a file browser, which can report success before every byte is safely on the drive, and does not read the copy back. Without a checksum or a read-back, a silent failure looks exactly like a success.",
       fixHint: "Run a checksum comparison now, or re-copy with a verifying offload tool while the originals are still there.",
       needsLogic: true,
       logicIntent: "Fire when copy_procedure is drag or unknown and verify_method contains neither checksum nor app_verify."
@@ -413,7 +413,7 @@ export const STAGE2_MEDIA: StageDef = {
       severity: "attention",
       kind: "conflict",
       title: "The material is not all at one sample rate",
-      detail: "Files at different sample rates are present. Dropped into a session unconverted, the odd ones out play at the wrong speed and pitch — which is obvious on speech and easy to miss on an ambience bed.",
+      detail: "Files at different sample rates are present. Dropped unconverted into a session that does not resample them, the odd ones out play at the wrong speed and pitch — which is obvious on speech and easy to miss on an ambience bed.",
       fixHint: "Decide the session rate, convert once on ingest, and keep the originals. Record the decision so nobody converts a second time.",
       needsLogic: true,
       logicIntent: "Fire when media_inventory contains more than one distinct mi_rate among audio rows, ignoring na, AND conversion_policy is undecided or empty."

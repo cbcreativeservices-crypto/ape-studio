@@ -16,7 +16,7 @@ const pages: LessonPages = {
     title: 'Meet the mandolin',
     goal: 'Get to know the mandolin — A-style and F-style, oval hole and f-holes — what it is, where you meet it, its job in the music, and its parts, before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'Eight strings in four pairs drive a floating bridge on a carved top. The outline (A or F) and the opening (oval or f-holes) are separate things — name both.',
+    takeaway: 'Eight strings in four pairs drive a floating bridge on an arched top. The outline (A or F) and the opening (oval or f-holes) are separate things — name both.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -164,7 +164,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Close to the pick and the bridge magnifies the transient. A blend at the junction, or a little more distance, rounds it.',
     why: {
       'Move closer in to the bridge to catch more of the chop': 'That adds more of the harsh pick.',
-      'Cut the treble hard until the chop softens': 'EQ cannot fix an unbalanced local view. Move first.',
+      'Cut the treble hard until the chop softens': 'EQ cannot fully fix an unbalanced local view. Move first.',
     },
   },
   {
@@ -271,7 +271,7 @@ const symptoms: Symptom[] = [
     correct: 'Include more of the top and body; check the low notes',
     explain: 'A view of the strings or one small region misses the body. Broaden it.',
     why: {
-      'Turn the channel up until the notes sound fuller': 'Louder is not fuller: the balance comes from where the mic is.',
+      'Turn the channel up until the notes sound fuller': 'Louder only seems fuller: the balance comes from where the mic is.',
       'Add a second mic aimed at the strings near the nut': 'That adds more strings. Fix the one view first.',
     },
   },
@@ -288,7 +288,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Instrument dynamic aimed at the neck junction, clear of the picking arc', ok: true, power: 'none', feedback: 'A robust close option at a suggested target.' },
       { id: 'c', label: 'Clip-on mini on a clip whose range fits this body, between joint and opening', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the player — with the owner’s OK.' },
       { id: 'd', label: 'Clip the mini to the scroll, aimed back at the f-holes', ok: false, power: 'phantom', feedback: 'The scroll is fragile carved wood, not a mount.' },
-      { id: 'e', label: 'Small omni 1 m out front, to hear the whole band’s blend', ok: false, power: 'phantom', feedback: 'On a stage with wedges an omni that far out hears everything but the mandolin.' },
+      { id: 'e', label: 'Small omni 1 m out front, to hear the whole band’s blend', ok: false, power: 'phantom', feedback: 'On a stage with wedges an omni that far out hears more wedge and band than mandolin.' },
     ],
     reasons: [DOC_REASON, clearReason('the picking arc, the fretting hand and the player’s turn'), POWER_REASON, { id: 'r.null', label: 'Aiming its rejection toward the wedge helps against feedback', role: 'optional', feedback: 'A fair live reason — though no position alone prevents feedback.' }, brandReason(MANDO), LOUD_REASON],
     explain: 'More than one setup passes this brief. What passes is the reasoning: a sensible starting point from its named point, clearance from the player, power that matches the mic.',
@@ -395,7 +395,7 @@ export const C05B_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A small, bright string instrument with eight steel strings in four pairs over a carved top. A floating bridge drives the top. A-style bodies are teardrops, often with an oval hole; F-style bodies have a scroll and points, often with f-holes.', src: 'EASTMAN' },
+    { title: 'WHAT IT IS', text: 'A small, bright string instrument with eight steel strings in four pairs over an arched top, most often carved. A floating bridge drives the top. A-style bodies are teardrops, often with an oval hole; F-style bodies have a scroll and points, often with f-holes.', src: 'EASTMAN' },
     { title: 'WHERE YOU MEET IT', text: 'Bluegrass, folk, country and classical music, on stage — often round a shared mic — and in the studio.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'The percussive offbeat chop, tremolo melodies, fast single-note leads. Ask which they will play, and at what level.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'This lab draws a mandolin about 66 cm (26 in) long and 26 cm (10 in) across the body, about 4.5 cm deep (drawn sizes for the depth and string length).', src: 'MET-A4' },

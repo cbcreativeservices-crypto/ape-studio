@@ -275,7 +275,7 @@ function PageGainStaging({ ctx }: { ctx: PageCtx }) {
       <Lead>Healthy levels are not about one magic number. They are about HEADROOM — space between your peaks and the ceiling — and about not letting loudness lie to you.</Lead>
       <Card tone="math">
         <Eyebrow>WHY HEADROOM</Eyebrow>
-        <Body>Digital zero is a hard ceiling: anything past it is clipped, permanently. And peaks GANG UP — two identical −6 dB peaks landing together can reach {sum.toFixed(1)} dB. Eight tracks each “safely” hot leave a mix bus with nowhere to live. Peaks comfortably below zero on every track is the whole rule.</Body>
+        <Body>Digital zero is a hard ceiling at the output and in a fixed-point file: anything past it there is clipped, permanently. And peaks GANG UP — two identical −6 dB peaks landing together can reach {sum.toFixed(1)} dB. Eight tracks each “safely” hot leave a mix bus with nowhere to live. Peaks comfortably below zero on every track is the whole rule.</Body>
         <HeadroomArt measured={pb.measured} />
         <Body>Left: the worst case, identical peaks landing at once. Right: the two mixes below, measured as they play — B’s bar sits 3 dB higher with nothing else changed.</Body>
       </Card>

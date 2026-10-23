@@ -249,7 +249,7 @@ export const GUIDE: MixingGuide = {
         "effect": "Chorus / pitch-shift spread",
         "appliedTo": "Choir return",
         "setting": "Light chorus or ±8–10 cents detune",
-        "amount": "Subtle; can add width and a few dB of headroom before feedback"
+        "amount": "Subtle; adds width, but not gain before feedback"
       },
       {
         "effect": "rotating speaker (real or modeled)",

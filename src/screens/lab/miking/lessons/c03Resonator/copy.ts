@@ -82,7 +82,7 @@ export const C03_COPY = stringsCopy({
     B: 'close.round',
     learn: [
       'A second view — a closer cone view plus a farther overall view, or the neck and strings plus the coverplate — is a choice for a defined purpose. Record one reliable mic first.',
-      'When it goes in: listen to each alone, then combined at matched levels, and in mono. Different path lengths cancel some pitches; reposition and rebalance before assuming a polarity switch is the cure. A pickup alongside the mic needs the same check.',
+      'When it goes in: listen to each alone, then combined at matched levels, and in mono. Different path lengths cancel some frequencies; reposition and rebalance before assuming a polarity switch is the cure. A pickup alongside the mic needs the same check.',
     ],
   },
   practice: { prefix: 'rs', mixedIntro: 'Three cards from earlier pages, mixed: a reference point, a pattern’s null, and polarity versus delay.' },

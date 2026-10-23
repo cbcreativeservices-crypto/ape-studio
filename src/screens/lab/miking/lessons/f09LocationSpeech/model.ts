@@ -126,7 +126,7 @@ export const F09_ZONES: DocumentedZone[] = [
     requires: { variant: 'set', micTypeIds: ['locCamCap'], mount: 'surface' },
     start: flat({ x: CAMERA_BOX.min.x + 20 + CAM_CAPSULE_MM, y: CAMERA_BOX.min.y - 20, z: 0 }),
     tendency: 'The voice from where the camera stands: much more of the room and the noise, and the voice weaker against them. Directional pickup does not make up for the distance.',
-    checks: ['Intelligibility against the boom or the lav', 'Camera motors, handling and the operator’s own voice', 'The level: never raise gain instead of moving a mic closer'],
+    checks: ['Intelligibility against the boom or the lav', 'Camera motors, handling and the operator’s own voice', 'The level: move a mic closer before raising gain'],
   },
   /* ── OUTDOORS ── */
   voiceZone(F09_MODEL, FRAME_V, { ...boomSpec('loc.boom.out', 'outdoor', ['locBoomFurCap'], BOOM_FUR), checks: ['The power line: at least 3 m (10 ft) from the pole and the mic', 'Wind on the fur; rain is not kept out', 'The top of the frame and the head turns'] }, MIC_TYPES),

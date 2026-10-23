@@ -15,7 +15,7 @@ function parts(s: EggState): Part[] {
   const out: Part[] = [];
   s.eggs.forEach((e, i) => {
     const tag = s.eggs.length > 1 ? (e.side === 'R' ? ' (right hand)' : ' (left hand)') : '';
-    out.push({ id: `egg.shell${i}.${s.id}`, label: `egg shell${tag}`, short: 'egg', role: 'A small closed plastic shell with no handle, held in the palm or the fingers. The whole shell sounds when the fill inside strikes it.', moving: true, prov: PROV, solid: { kind: 'capsule', a: v3(e.c.x - (HL - R), e.c.y, e.c.z), b: v3(e.c.x + (HL - R), e.c.y, e.c.z), r: R } });
+    out.push({ id: `egg.shell${i}.${s.id}`, label: `egg shell${tag}`, short: 'egg', role: 'A small closed shell, most often plastic, with no handle, held in the palm or the fingers. The whole shell sounds when the fill inside strikes it.', moving: true, prov: PROV, solid: { kind: 'capsule', a: v3(e.c.x - (HL - R), e.c.y, e.c.z), b: v3(e.c.x + (HL - R), e.c.y, e.c.z), r: R } });
   });
   out.push({ id: `egg.fill.${s.id}`, label: 'fill (grains inside)', short: 'fill', role: 'The loose grains inside. They lag each change of direction and strike the shell: the attack; and roll along it: the wash.', prov: ill('the fill is drawn as beads; the amount and material vary by model') });
   out.push({ id: `egg.grip.${s.id}`, label: 'the grip (palm and fingers)', short: 'grip', role: 'The hand round the egg. A palm cupped over the shell can partly shield and damp it — so the grip changes what a mic hears.', prov: ill('a palm cup covering part of the shell (proposal)') });

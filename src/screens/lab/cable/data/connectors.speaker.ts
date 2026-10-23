@@ -610,7 +610,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
 
   {
     id: 'ts_speaker_legacy',
-    displayName: '1/4-inch TS (legacy loudspeaker use)',
+    displayName: '1/4-inch TS (loudspeaker use: instrument amps, older PA)',
     aliases: ['Speaker jack lead (informal)', 'Phone plug (loudspeaker use)', 'TS speaker cable'],
     category: 'loudspeaker',
     tier: 'core',

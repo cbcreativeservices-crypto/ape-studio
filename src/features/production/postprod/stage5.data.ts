@@ -311,7 +311,7 @@ export const STAGE5_BUILD: StageDef = {
           showWhen: { field: "correction_decision", notEquals: ["none_needed", "prohibited"] },
           label: "Key and scale used",
           kind: "text",
-          help: "The most common cause of obviously wrong tuning is the right tool set to the wrong scale.",
+          help: "A common cause of obviously wrong tuning is the right tool set to the wrong scale.",
           onlyFor: ["music", "live"],
           placeholder: "e.g. D minor, natural"
         },
@@ -520,7 +520,7 @@ export const STAGE5_BUILD: StageDef = {
       severity: "attention",
       kind: "unrealistic",
       title: "Heavy correction with nothing protected",
-      detail: "Correction is set heavy or fully quantised and nothing is listed as being preserved. By default these tools flatten vibrato, shift formants, pull breaths and consonants towards notes they were never on, and remove the timing variation that made the part feel played.",
+      detail: "Correction is set heavy or fully quantised and nothing is listed as being preserved. At these settings the tools often flatten vibrato, shift formants, pull breaths and consonants towards notes they were never on, and remove the timing variation that made the part feel played.",
       fixHint: "Exclude unpitched sounds, preserve formants, leave vibrato and deliberate expression alone, and correct individual moments rather than whole parts.",
       needsLogic: true,
       logicIntent: "Fire when correction_amount is heavy or quantised AND correction_guards is empty."
@@ -531,7 +531,7 @@ export const STAGE5_BUILD: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "Pitch correction with no key and scale recorded",
-      detail: "The most common cause of obviously wrong tuning is the right tool aimed at the wrong scale, which pulls notes confidently to the wrong places.",
+      detail: "A common cause of obviously wrong tuning is the right tool aimed at the wrong scale, which pulls notes confidently to the wrong places.",
       fixHint: "Record the key and scale, and check it against a section where the harmony moves rather than the opening bar.",
       needsLogic: true,
       logicIntent: "Fire when correction_scope includes pitch and correction_target is empty.",
@@ -543,7 +543,7 @@ export const STAGE5_BUILD: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "Correction applied without hearing it against the original",
-      detail: "Correction is being judged without a level-matched comparison to the performance it replaced. Corrected material is usually a little louder and always a little tidier, and both of those read as better on their own.",
+      detail: "Correction is being judged without a level-matched comparison to the performance it replaced. Corrected material is often a little louder and a little tidier, and both of those read as better on their own.",
       fixHint: "Match the levels, switch between the two in context, and specifically listen for what has gone rather than for what has improved.",
       needsLogic: true,
       logicIntent: "Fire when correction_scope is non-empty and correction_compared is no or soloed."

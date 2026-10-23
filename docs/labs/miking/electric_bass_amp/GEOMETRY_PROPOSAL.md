@@ -8,7 +8,7 @@ Status: PROPOSAL. Sources: `electric_bass_amp/SOURCES.md`. Reuses the **SPEAKER 
 
 | Item | Value (mm) | Class |
 |---|---|---|
-| `cab.bass.410hlf` outer | W 762 × H 609.6 × D 482.6 | SOURCED AMP-410 |
+| `cab.bass.410hlf` outer | W 609.6 × H 762 × D 482.6 | SOURCED AMP-410 |
 | Woofer centres | (y, z) = (±150, ±170) from the baffle centre | drawing default (speaker module) |
 | 10-in woofer | R_cone 117.9, R_dust 42, R_surround 107 | drawing default = CEL-V30 values × 10/12 (UNKNOWN) |
 | Horn | centre (y −235, z 0) i.e. above the top pair; mouth 100 × 60 | drawing default |

@@ -369,7 +369,7 @@ const symptoms: Symptom[] = [
     options: ['The path, labels and geometry', 'More gain on the left-hand side', 'A longer, thicker cable run'],
     correct: 'The path, labels and geometry',
     explain: 'Check the source path, the labels, the capsule angle and the pair’s geometry before committing.',
-    why: { 'More gain on the left-hand side': 'Level cannot fix a wrong angle or label.', 'A longer, thicker cable run': 'A cable does not change the image.' },
+    why: { 'More gain on the left-hand side': 'Level cannot fix a wrong angle or label.', 'A longer, thicker cable run': 'A longer or thicker cable does not change the image.' },
   },
   {
     id: 'f05.sym.mask',

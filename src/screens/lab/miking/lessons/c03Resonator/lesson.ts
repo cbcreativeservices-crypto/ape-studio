@@ -164,7 +164,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A flat-top’s sound-hole picture does not transfer literally: the cone radiates through the coverplate and the ports. Listen round the instrument, then begin at the coverplate and upper body.',
     why: {
       'Resonators are much too loud to be miked with a stand at all': 'They are miked with stands all the time; the reference point is the coverplate.',
-      'Its sound leaves only from the back, toward the player': 'Most of it leaves through the coverplate and the ports, toward the listener.',
+      'Its sound leaves only from the back, toward the player': 'Most of it leaves through the coverplate and the ports, out of the instrument’s face.',
     },
   },
   {
@@ -247,7 +247,7 @@ const symptoms: Symptom[] = [
     correct: 'Include more of the off-centre coverplate, or move back',
     explain: 'A view of the strings and neck misses the cone. Change the view first.',
     why: {
-      'Turn the channel up until the thin sound feels full again': 'Louder is not fuller: the balance comes from where the mic is.',
+      'Turn the channel up until the thin sound feels full again': 'Louder only seems fuller: the balance comes from where the mic is.',
       'Add a second mic aimed at the strings near the neck': 'That adds more of what is already too much. Fix the one mic first.',
     },
   },
@@ -398,7 +398,7 @@ export const C03_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A guitar whose strings drive a bridge on a thin metal cone — one cone, or three — under a perforated metal coverplate. The cone radiates like a loudspeaker, giving a bright, metallic, cutting voice. It is still a string instrument: the strings start it.', src: 'NAT-TECH' },
     { title: 'WHERE YOU MEET IT', text: 'Bluegrass, blues, country and roots music, on stage and in the studio — the square-neck kind played face up in the lap with a steel bar, the round-neck kind upright, fretted or with a slide.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Slide melodies and fills that cut through a band, rolls and chords. Ask how it will be played — bar or fingers, picks, how loud — and how the player moves or turns.', src: 'LESSON' },
-    { title: 'ITS SIZE', text: 'This lab draws a single 9.5 in (24 cm) cone under the coverplate, in a guitar-sized body (the dreadnought’s drawing: resonator bodies vary).', src: 'NAT-TECH' },
+    { title: 'ITS SIZE', text: 'This lab draws a single 9.5 in (24 cm) cone under the coverplate, in a guitar-sized body (the dreadnought’s drawing: resonator bodies and cones vary).', src: 'NAT-TECH' },
   ],
   sound: {
     stages: [

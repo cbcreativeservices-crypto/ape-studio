@@ -279,7 +279,7 @@ export function readCone(driver: Driver, f: number): ConeRead {
     why = 'Below the suspension resonance the cone is stiffness-controlled. For a given drive it moves about the same amount, but the output falls about 12 dB per octave. A sealed box adds an air spring, which raises the system resonance above f_s and stiffens this region further.';
   } else if (r <= 1.4) {
     stage = 'resonance';
-    why = `At f_s ≈ ${driver.fs} Hz the moving mass and the suspension exchange energy freely: the cone travels furthest here for the least drive (Q_ts ${driver.qts}). Above it the cone becomes mass-controlled.`;
+    why = `At f_s ≈ ${driver.fs} Hz the moving mass and the suspension exchange energy freely: the cone moves fastest here for the least drive (Q_ts ${driver.qts}). Above it the cone becomes mass-controlled.`;
     label = 'CALCULATED';
   } else if (b < 0.35 && ka < 1.2) {
     stage = 'piston';

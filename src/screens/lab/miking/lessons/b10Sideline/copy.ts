@@ -122,7 +122,7 @@ export const B10_COPY: Partial<LessonCopy> = {
     looking: 'The guest at the sideline · the PA high beyond the camera',
     prompt: 'The PA stays where the venue needs it. Turn or tilt the handheld (AIM), or change its PATTERN, until the PA sits in the rejection — while the mic still points at the guest’s mouth.',
     activityDone: 'done — the PA sat in a null by your aim or pattern',
-    cardioidReveal: 'What you just saw: a cardioid rejects most directly behind it. Held below the mouth and aimed up at it, its rear points down and out toward the camera — where the PA is decides how much it hears. An omni rejects nothing.',
+    cardioidReveal: 'What you just saw: a cardioid rejects most directly behind it. Held below the mouth and aimed up at it, its rear points down and out toward the camera — where the PA is decides how much it hears. An omni rejects almost nothing.',
     shieldNote: 'The two people, the camera and the stadium reflect the PA’s sound too, and the free-field pattern cannot show that. Listen at the actual program, with the venue live.',
     learn: {
       ...BASE.context!.learn,
@@ -138,7 +138,7 @@ export const B10_COPY: Partial<LessonCopy> = {
     B: { typeId: 'bcFlagCard', pattern: 'cardioid', zone: 'b10.reporter' },
     learn: [
       'The reporter and the guest each hold their own mic, but each mic also hears the other voice — later and lower. In the mix, one voice arrives twice.',
-      'Listen to each channel alone, then both open in MONO. A hollow sound means some pitches cancel: keep each mic close to its own mouth and pull down the one not in use. The same happens with a body mic and a handheld open on one person. A polarity switch only tests the idea — it never removes a delay.',
+      'Listen to each channel alone, then both open in MONO. A hollow sound means some frequencies cancel: keep each mic close to its own mouth and pull down the one not in use. The same happens with a body mic and a handheld open on one person. A polarity switch only tests the idea — it never removes a delay.',
     ],
     warn: 'This simplified graph treats each mouth as one point and both mics as hearing the same sound. Real mics outdoors hear different mixes of voice, wind and crowd, and people move — read the notch POSITIONS and treat their depths as illustrative. Judge by ear, in mono.',
   },

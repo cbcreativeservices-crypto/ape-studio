@@ -160,7 +160,7 @@ export const L06_STRIPS: L06Strip[] = [
     id: 'midi_concept',
     title: 'MIDI — INSTRUCTIONS, NOT AUDIO',
     paras: [
-      'No sound ever travels down a MIDI cable. It carries instructions — which note, how hard, which knob moved — and the receiving instrument turns them into sound through its own audio outputs.',
+      'No live sound travels down a MIDI cable. It carries instructions — which note, how hard, which knob moved — and the receiving instrument turns them into sound through its own audio outputs.',
       'Direction is strict: data flows from an OUT (or THRU) port into an IN port — OUT→IN, always. THRU retransmits a copy of what arrived at IN for daisy-chaining, and two-way communication takes two cables. OUT-to-OUT or IN-to-IN does nothing — and harms nothing.',
       'A 5-pin DIN connector does not automatically mean MIDI: the same shell served older audio interconnects, sync systems, and accessory ports on vintage equipment — some carrying voltage on pins MIDI leaves unused. Identify an unlabeled port from the manual before patching it.',
     ],
@@ -203,12 +203,12 @@ export const L06_CHECKS: CheckSpec[] = [
     options: [
       'T568B is the standard; T568A terminations are defective',
       'Both schemes are valid, so any combination of ends is correct',
-      'Both schemes are valid — but both ends of one cable must follow the same scheme',
+      'Both schemes are valid — but both ends of a patch cable must follow the same scheme',
       'T568A is reserved for audio networks',
     ],
     correctIdx: 2,
     reveal:
-      'T568A and T568B are equally valid. Mixing them on one cable builds a crossover — modern auto-sensing equipment may tolerate it, but it is a mislabeled, inconsistent termination that will confuse later troubleshooting.',
+      'T568A and T568B are equally valid. Mixing them on one cable builds a crossover — modern auto-sensing equipment may tolerate it, but unless it is marked as a crossover, it is an inconsistent termination that will confuse later troubleshooting.',
     wrongHint: 'Neither scheme is “the wrong one.” The problem is consistency between the two ends.',
   },
   {
@@ -221,7 +221,7 @@ export const L06_CHECKS: CheckSpec[] = [
     ],
     correctIdx: 2,
     reveal:
-      'MIDI carries no audio — ever. It is a one-way loop of instructions flowing OUT→IN; the receiving instrument makes the sound through its own audio outputs.',
+      'MIDI carries no live audio. It is a one-way stream of instructions flowing OUT→IN; the receiving instrument makes the sound through its own audio outputs.',
     wrongHint: 'Connect a MIDI OUT toward an amplifier and you get silence — what does that say about the cable’s contents?',
   },
 ];

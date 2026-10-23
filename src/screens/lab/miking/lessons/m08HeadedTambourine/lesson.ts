@@ -20,7 +20,7 @@ const pages: LessonPages = {
     title: 'Meet the headed tambourine',
     goal: 'Get to know the headed tambourine — what it is, where you meet it, what it does in the music, its parts and how it is played — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A drum and a set of jingles in one instrument: a skin head on a wooden frame, with pairs of metal jingles round it. Held and struck, shaken, or mounted — and it moves while it plays.',
+    takeaway: 'A drum and a set of jingles in one instrument: a head of skin or plastic on a wood or plastic frame, with pairs of metal jingles round it. Held and struck, shaken, or mounted — and it moves while it plays.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -218,7 +218,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A held tambourine that swings toward the mic on one stroke and away on the next changes level a lot. Place for the whole arc; a sideways motion can be steadier — if the player chooses it.',
     why: {
       'The jingles wearing out after a few strokes': 'Jingles do not wear out in a phrase; the distance to the mic is changing.',
-      'The mic’s pattern changing between beats': 'A mic’s pattern is fixed; the instrument’s position is what changes.',
+      'The mic’s pattern changing between beats': 'A mic’s pattern does not change from stroke to stroke; the instrument’s position is what changes.',
     },
   },
   {
@@ -442,7 +442,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The head is a membrane, like a drum; the jingles are metal idiophones. The headless tambourine and the jingles have their own lesson in Lab 2.',
     why: {
       'A drum and a small cymbal on a stand': 'The metal parts are pairs of small jingles in slots round the frame, not a cymbal.',
-      'A shaker and a woodblock in one frame': 'It is a skin head and metal jingles on a wooden frame.',
+      'A shaker and a woodblock in one frame': 'It is a head and metal jingles on a frame, most often wood.',
     },
   },
   {
@@ -514,7 +514,7 @@ export const M08_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A frame drum and a set of jingles in one: a skin head on one face of a wooden frame, with pairs of thin metal jingles loose on pins in slots round it — here, a staggered double row. (The headless tambourine and the jingles on their own come in Lab 2.)', src: 'YMH-CPCAT' },
+    { title: 'WHAT IT IS', text: 'A frame drum and a set of jingles in one: a head (skin or plastic) on one face of a frame, most often wood, with pairs of thin metal jingles loose on pins in slots round it — here, a staggered double row. (The headless tambourine and the jingles on their own come in Lab 2.)', src: 'YMH-CPCAT' },
     { title: 'WHERE YOU MEET IT', text: 'In orchestras and concert bands, in percussion sections and on band stages — recorded close or in a room, and amplified live. It is often one of several instruments a percussionist moves between.', src: 'LESSON-TAMB' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Fingertip strikes, loud accents, shakes, thumb or finger rolls, knee-and-fist rhythms. Striking favours the head; shaking favours the jingles — and the player’s hold, often about 45°, blends the two.', src: 'PAS-ROD' },
     { title: 'ITS SIZE', text: 'Concert tambourines are often about 10 in across. This lab draws a 10 in tambourine with a skin head and a staggered double row of jingles.', src: 'YMH-CPCAT' },

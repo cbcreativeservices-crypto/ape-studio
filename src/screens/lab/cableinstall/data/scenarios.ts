@@ -606,7 +606,7 @@ export const CI_QUIZ_BANK: CiQuizItem[] = [
       'Fiber can\'t be bent — abandon the route',
     ],
     correctIdx: 0,
-    reveal: 'Bend limits belong to the specific cable. "Check the specification" IS the skill — there is no universal ratio.',
+    reveal: 'Bend limits belong to the specific cable. "Check the specification" IS the skill — standards give defaults for some types, but no one ratio fits every cable.',
     ruleId: 'mech-bend-radius',
   },
   {
@@ -632,7 +632,7 @@ export const CI_QUIZ_BANK: CiQuizItem[] = [
       'Drape it over the duct — it\'s only temporary-ish',
     ],
     correctIdx: 0,
-    reveal: 'Other systems are never cable supports — life-safety systems least of all. Purpose-built supports exist for exactly this.',
+    reveal: 'Other systems are not cable supports outside a few narrow code exceptions — life-safety systems never. Purpose-built supports exist for exactly this.',
     ruleId: 'sup-purpose-built',
   },
   {
@@ -736,7 +736,7 @@ export const CI_QUIZ_BANK: CiQuizItem[] = [
       'Remove the amp\'s fans for clearance',
     ],
     correctIdx: 0,
-    reveal: 'Thermal requirements come from the equipment manufacturer; rack standards require preserving the cooling plan. Neat ≠ correct.',
+    reveal: 'Thermal requirements come from the equipment manufacturer; good rack practice keeps the cooling plan intact. Neat ≠ correct.',
     ruleId: 'rack-airflow',
   },
   {

@@ -83,7 +83,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The middle swings strongly in its lowest bending shape',
     explain: 'An unclamped bar’s lowest shape swings at its middle (and most at its ends) and stays put at two points about a fifth of the way in — a strike there drives the ring strongly.',
     why: {
-      'The middle is where the wood is at its very thickest': 'A clave is a uniform rod; the shape of its bending is the reason.',
+      'The middle is where the wood is at its very thickest': 'Most claves are about as thick in the middle as at the ends; the shape of its bending is the reason.',
       'The middle is farthest from the player’s supporting fingers': 'The fingers support it near its still points; between them, the middle is where it swings most.',
     },
   },

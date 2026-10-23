@@ -78,7 +78,7 @@ const WS_BPM: Workspace = {
     'dotted 8th is 500 × 0.5 × 1.5 = 375 ms — THE classic U2 delay: play straight 8ths and the ' +
     'repeats fill in the syncopation for you.',
   mistakes: [
-    'Setting delays in round numbers (250, 300, 400 ms) instead of tempo divisions — close-but-off repeats smear the groove instead of reinforcing it.',
+    'Setting delays in round numbers (250, 300, 400 ms) that miss the song’s tempo divisions — close-but-off repeats smear the groove instead of reinforcing it.',
     'Forgetting dotted vs triplet: a dotted 8th (×1.5) and a triplet quarter (×2/3 of a quarter — three in the space of a half) feel completely different against the same straight 8ths.',
     'Assuming the tap tempo captured the grid exactly — a few taps can land 1–2 BPM off; check against the session tempo or a longer measured interval.',
   ],
@@ -157,7 +157,7 @@ const WS_BPM: Workspace = {
       formula: 'BPM = 60000 / ms',
       plainFormula: 'The tempo equals 60000 divided by the beat interval in milliseconds.',
       explain:
-        'The reverse: turns a tapped or measured beat interval back into a tempo. Sessions run on whole (or half) BPM values, so it also gives the nearest whole tempo — useful for matching a loop or a tapped feel to the session grid.',
+        'The reverse: turns a tapped or measured beat interval back into a tempo. Most sessions run on whole (or half) BPM values, so it also gives the nearest whole tempo — useful for matching a loop or a tapped feel to the session grid.',
       keySymbols: ['/'],
       note: 'Reverse solve: turn a tapped or measured beat interval back into tempo.',
       compute: (v) => {
@@ -172,7 +172,7 @@ const WS_BPM: Workspace = {
         const ms = n(v.interval) * 1000;
         return [
           `BPM = 60000 ÷ ${fmt(ms)} ms = ${fmt(60000 / ms)} BPM.`,
-          `Sessions run on whole (or half) BPM values — the nearest whole tempo is ${fmtInt(60000 / ms)} BPM.`,
+          `Most sessions run on whole (or half) BPM values — the nearest whole tempo is ${fmtInt(60000 / ms)} BPM.`,
         ];
       },
     },
@@ -696,7 +696,7 @@ const WS_ROOMMODES: Workspace = {
   warnings:
     'Axial modes only — tangential and oblique modes (weaker but real) are in the Advanced ' +
     'tier roadmap. Mode presence ≠ audibility: level depends on source/listener position and ' +
-    'surface absorption. Modes are treatable (bass traps, placement), not EQ-able — formal room ' +
+    'surface absorption. Treat modes with bass traps and placement; EQ can trim a peak at one seat but cannot fill a null — formal room ' +
     'measurement is the domain of ISO 3382.',
   glossary: ['Room Mode', 'Standing wave', 'Frequency', 'Wavelength'],
   fields: [
@@ -721,7 +721,7 @@ const WS_ROOMMODES: Workspace = {
       plainFormula:
         'Each modal frequency equals the mode number times the speed of sound, divided by twice the room dimension.',
       explain:
-        'Between every pair of parallel surfaces, frequencies whose half-wavelengths divide the distance evenly form standing waves — room modes. This lists the axial modes for a room’s length, width, and height, flagging near-coincident modes that stack. Below a few hundred hertz the room is the biggest EQ in the chain; modes are treatable, not EQ-able.',
+        'Between every pair of parallel surfaces, frequencies whose half-wavelengths divide the distance evenly form standing waves — room modes. This lists the axial modes for a room’s length, width, and height, flagging near-coincident modes that stack. Below a few hundred hertz the room is the biggest EQ in the chain; treat modes first — EQ can trim a peak at one seat but cannot fill a null.',
       keySymbols: ['f', '·', 'c', '/'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));

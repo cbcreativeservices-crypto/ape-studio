@@ -456,7 +456,7 @@ const symptoms: Symptom[] = [
     correct: 'Solo each, sum in mono, move a mic, then compare polarity',
     explain: 'Judge the full performance; polarity is one comparison, not a cure.',
     why: {
-      'Invert the second mic, since a second mic is usually inverted': 'No mic is “usually inverted”. Compare BOTH states at matched level, in mono, after moving the mics.',
+      'Invert the second mic, since a second mic is usually inverted': 'A second mic is not inverted by default. Compare BOTH states at matched level, in mono, after moving the mics.',
       'Turn both channels up together until the sound fills out': 'More level does not fix a cancellation; it makes the thin sound louder.',
     },
   },
@@ -519,7 +519,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'One compact dynamic between the heads, just above them, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point for a pair: a full sound with good attack, on one channel.' },
       { id: 'b', label: 'A slim condenser over each drum, starting about 15–60 cm from its head', ok: true, power: 'phantom', feedback: 'A suggested starting point; in a quiet room, distance can balance the strokes, and phantom is available.' },
       { id: 'c', label: 'A clip-on condenser at each drum’s far rim, with the player’s OK', ok: true, power: 'phantom', feedback: 'Independent control in little space; it needs the phantom power this input has.' },
-      { id: 'd', label: 'A mic slid under each drum’s open end, to catch the bass', ok: false, power: 'none', feedback: 'On the floor the open ends rest on it: nothing goes under, and the open end is never blocked.' },
+      { id: 'd', label: 'A mic slid under each drum’s open end, to catch the bass', ok: false, power: 'none', feedback: 'On the floor the open ends rest on it: nothing goes under, and nothing is added to block them.' },
       { id: 'e', label: 'A mic over the player’s side of the heads, where the hands land', ok: false, power: 'none', feedback: 'That is inside the hand path: the mic or stand would be struck.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a quiet room, a little distance can balance the strokes', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, BASS_REASON],

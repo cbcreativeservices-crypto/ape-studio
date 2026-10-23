@@ -287,7 +287,7 @@ const symptoms: Symptom[] = [
     correct: 'Ask if it is intended, then aim off the bridge or step back',
     explain: 'The buzz is part of the veena. If the mic exaggerates it, change the aim or distance; the bridge itself is never adjusted for a mic.',
     why: {
-      'Ask the player to adjust the bridge so that it buzzes less': 'The bridge is the player’s instrument and sound. Never ask for it to change for a mic.',
+      'Ask the player to adjust the bridge so that it buzzes less': 'The bridge is the player’s instrument and sound. Do not ask for it to change to suit a mic.',
       'Cut the high frequencies hard until the buzz is gone': 'EQ dulls the whole veena. Fix the aim first.',
     },
   },

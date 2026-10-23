@@ -372,7 +372,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the axis on the target? Is the range what you think? Is the dish element at its focus?',
     options: ['Check the aim, the range and the focus', 'Boost the low end to restore the body', 'Turn the gain up until it sounds close'],
     correct: 'Check the aim, the range and the focus',
-    explain: 'Off the axis, too far, or off the focus: each loses the high-frequency detail first. Fix the placement; gain raises the background too.',
+    explain: 'Off the axis or off the focus loses the high-frequency detail first; too far loses the action under the background. Fix the placement; gain raises the background too.',
     why: {
       'Boost the low end to restore the body': 'EQ cannot restore what the placement lost.',
       'Turn the gain up until it sounds close': 'Gain raises the background with the target.',

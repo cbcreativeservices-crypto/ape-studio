@@ -99,7 +99,7 @@ export function contextChecks(p: string, n: Noun): MikingScenario[] {
       correct: 'Toward the rear, off to one side of the axis',
       explain: 'A supercardioid’s deepest rejection is off the rear axis (near 125°); straight behind it has a small rear lobe. Aim by the actual pattern.',
       why: {
-        'Directly behind the mic, right on its rear axis': 'Only a cardioid rejects most straight behind. A supercardioid has a small rear lobe there.',
+        'Directly behind the mic, right on its rear axis': 'A cardioid rejects most straight behind; a supercardioid has a small rear lobe there.',
         'Beside the mic, square to the front of it': 'At 90° the pickup is still fair. The rejection deepens toward the rear, off the axis.',
       },
     },
@@ -113,12 +113,12 @@ export function twoMicChecks(p: string, n: Noun): MikingScenario[] {
       id: `${p}.two.1`,
       page: 'twoMic',
       prompt: `Two mics on one ${n.one} sound hollow together in mono. Why?`,
-      options: [`The ${n.one} reaches them at different times, so some pitches cancel`, 'One of the two mics must be faulty, so it should be swapped for another', `Two mics on one ${n.one} cancel each other out completely`],
-      correct: `The ${n.one} reaches them at different times, so some pitches cancel`,
-      explain: `Each mic hears the ${n.one} from its own distance. Summed, the time difference makes a comb: some pitches add, some cancel — hollow. Move or rebalance a mic, then listen again.`,
+      options: [`The ${n.one} arrives at different times, so some frequencies cancel`, 'One of the two mics must be faulty, so it should be swapped for another', `Two mics on one ${n.one} cancel each other out completely`],
+      correct: `The ${n.one} arrives at different times, so some frequencies cancel`,
+      explain: `Each mic hears the ${n.one} from its own distance. Summed, the time difference makes a comb: some frequencies add, some cancel — hollow. Move or rebalance a mic, then listen again.`,
       why: {
         'One of the two mics must be faulty, so it should be swapped for another': 'Two good mics at different distances do this. It is timing, not a fault.',
-        [`Two mics on one ${n.one} cancel each other out completely`]: 'They cancel only at some pitches (the comb’s notches), not completely.',
+        [`Two mics on one ${n.one} cancel each other out completely`]: 'They cancel only at some frequencies (the comb’s notches), not completely.',
       },
     },
     {

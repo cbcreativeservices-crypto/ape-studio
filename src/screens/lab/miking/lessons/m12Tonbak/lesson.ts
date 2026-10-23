@@ -179,7 +179,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Close in, the sound gets thicker. Is that always proximity effect?',
     options: ['Not necessarily — the target, the body and the room matter too', 'Yes, extra bass up close is the mic’s proximity effect in each case', 'Yes, unless the mic you are using happens to be a condenser'],
     correct: 'Not necessarily — the target, the body and the room matter too',
-    explain: 'A directional mic can lift its lows close to a source, but it depends on the mic and the source; an omni has no such effect. A different target or the room can also thicken the sound.',
+    explain: 'A directional mic can lift its lows close to a source, but it depends on the mic and the source; a pressure omni has little or none. A different target or the room can also thicken the sound.',
     why: {
       'Yes, extra bass up close is the mic’s proximity effect in each case': 'Other parts of the drum and the room can change the bass too; and a pressure omni has no proximity effect.',
       'Yes, unless the mic you are using happens to be a condenser': 'Proximity effect depends on the pattern (pressure-gradient), not on whether the mic is a condenser.',
@@ -458,7 +458,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Test the support level, polarity and position, in mono, with several strokes and normal movement.',
     options: ['Support level, polarity and position — in mono, with movement', 'Turn both channels up until the combined sound fills out', 'Invert the opening mic and keep it that way from now on'],
     correct: 'Support level, polarity and position — in mono, with movement',
-    explain: 'Check several gestures and ordinary movement in mono; keep the second mic only if the gain survives.',
+    explain: 'Check several gestures and ordinary movement in mono; keep the second mic only if it adds body and you keep your margin before feedback.',
     why: {
       'Turn both channels up until the combined sound fills out': 'More level does not fix a cancellation.',
       'Invert the opening mic and keep it that way from now on': 'No polarity is correct by rule; compare both states.',
@@ -575,7 +575,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'A stroke drives each shape by how much the head moves where it lands: near the middle, mostly the low ring-shaped ones; at the edge, many higher ones too.',
     why: {
       'The middle of the skin is thicker than the edge': 'The skin is one piece; the difference is which vibration shapes the stroke reaches.',
-      'It pushes air out of the bottom faster than the edge': 'The air at the opening is part of the body sound; the depth comes from the head’s low shapes.',
+      'It pushes air out of the bottom faster than the edge': 'The air at the opening adds to the low body; the depth starts with the head’s low shapes.',
     },
   },
   {
@@ -644,7 +644,7 @@ export const M12_LESSON: Lesson = {
     stages: [
       { title: 'A stroke lands', text: 'The fingers or hand strike the head. Near the middle: the deep sound. At the edge: the bright sound.' },
       { title: 'The head moves', text: 'The head moves in the shapes the stroke can reach from where it landed — drawn here much larger than it really moves.' },
-      { title: 'The air inside moves', text: 'The moving head pushes and pulls the air inside the bowl; through the narrow neck some air and sound reach the open lower end. As the head moves in, the air just outside it thins while air is pushed out of the opening: a mic at the head and a mic at the opening hear opposite pushes.' },
+      { title: 'The air inside moves', text: 'The moving head pushes and pulls the air inside the bowl; through the narrow neck some air and sound reach the open lower end. At the lowest pitches, as the head moves in, the air just outside it thins while air is pushed out of the opening: a mic at the head and a mic at the opening hear opposite pushes.' },
       { title: 'Sound leaves', text: 'Most of the sound leaves the head, toward the player’s right and up; some leaves the open lower end. The bowl and the air inside shape how it rings.' },
     ],
     attack: 'The start of each stroke: the hand’s brief contact with the head. A mic close to where the stroke lands tends to hear more of it — and more contact and finger sound.',

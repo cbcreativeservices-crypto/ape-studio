@@ -27,7 +27,7 @@ const pages: LessonPages = {
     title: 'How they make their sound',
     goal: 'See how a stroke becomes sound in a tom — the stick, both heads, the air inside — and how the drums’ sizes set their pitch order.',
     credit: { scenarios: ['tm.snd.1', 'tm.snd.2', 'tm.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'The attack starts where the stick meets the batter head; both heads and the air ring on as the body — often a clear pitch. Bigger toms ring lower. A mic hears more of what it is closer to and faces: tendencies, and drums vary.',
+    takeaway: 'The attack starts where the stick meets the batter head; both heads and the air ring on as the body — often a clear pitch. Bigger toms usually ring lower. A mic hears more of what it is closer to and faces: tendencies, and drums vary.',
   },
   setting: {
     title: 'Where they sit',
@@ -151,7 +151,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The attack starts where the stick meets the batter head, so a mic above it tends to hear more of it; the bottom head carries more of the ring downward.',
     why: {
       'The ring leaving through the bottom head': 'That leaves downward, from the resonant head: a bottom mic hears more of it.',
-      'The air leaking out between the lugs': 'The shell is closed; the heads move the air. Above, it is the batter head’s attack.',
+      'The air leaking out between the lugs': 'The shell has only a small vent hole; the heads move the air. Above, it is the batter head’s attack.',
     },
   },
   {
@@ -294,7 +294,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The cymbals hang above the toms, behind a downward mic',
     explain: 'Rack toms usually sit under crash or ride cymbals: a mic aimed down at the head has its rear pointing up toward them.',
     why: {
-      'The cymbals are mounted on the same holder as the toms': 'They stand on their own boom stands; what matters is that they hang above.',
+      'The cymbals are mounted on the same holder as the toms': 'Some do; how they are mounted does not matter — what matters is that they hang above.',
       'The cymbals sit below the toms, in front of the mic': 'Cymbals hang above the drums, not below them.',
     },
   },
@@ -533,7 +533,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'One dynamic between the two rack toms, 2.5 to 7.5 cm above them, the floor tom left to the overheads', ok: true, power: 'none', feedback: 'A suggested shared position, powered by what this input can supply.' },
       { id: 'c', label: 'A rim condenser on the floor tom for detail', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'Three tom mics, one per drum, on the one spare channel', ok: false, power: 'none', feedback: 'Three mics need three channels. One channel means none, or a shared mic.' },
-      { id: 'e', label: 'Remove the floor tom’s bottom head so a mic can go inside', ok: false, power: 'none', feedback: 'That changes the drum. Never take a head off to suit a mic plan — it is the player’s call.' },
+      { id: 'e', label: 'Remove the floor tom’s bottom head so a mic can go inside', ok: false, power: 'none', feedback: 'That changes the drum. Do not take a head off yourself to suit a mic plan — it is the player’s call.' },
     ],
     reasons: [{ ...DOC_REASON, label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads and the room are part of the kit sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, NAME_REASON],
     explain: 'Two plans pass: no tom mics, or one shared mic. What passes is the reasoning: start from the overheads, keep clear, and power what this input can supply.',
@@ -677,7 +677,7 @@ export const M03_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT THEY ARE', text: 'Toms are the kit’s drums tuned from high to low: two rack toms on a holder over the kick, and a floor tom standing on its own legs at the player’s right. Each has a batter head on top, struck with sticks, and a resonant head below — no wires.', src: 'S-REC' },
+    { title: 'WHAT THEY ARE', text: 'Toms are the kit’s drums tuned from high to low: here, two rack toms on a holder over the kick, and a floor tom standing on its own legs at the player’s right. Each has a batter head on top, struck with sticks, and a resonant head below — no wires.', src: 'S-REC' },
     { title: 'WHERE YOU MEET THEM', text: 'In most drum kits, on stage and in the studio — though some styles leave them to the overhead mics. This lesson covers studio recording and live sound.', src: 'DPA-TOMS' },
     { title: 'WHAT THEY DO IN THE MUSIC', text: 'Fills and accents, tuned from high to low between the snare and the kick. Ask the player: should the toms blend into a natural kit picture, or stand out with their own channels?', src: 'S-REC' },
     { title: 'THEIR SIZES', text: 'A common 5-piece kit pairs a 10 × 7 in and a 12 × 8 in rack tom with a 16 in floor tom (16 × 16 in here; some are 15 in deep). This lab draws that kit.', src: 'YMH-TC' },
@@ -705,16 +705,16 @@ export const M03_LESSON: Lesson = {
     items: [
       { id: 'toms', label: 'the toms (rack pair and floor tom)', short: 'TOMS', note: 'Ringed in amber: the 10 in and 12 in rack toms over the kick, and the 16 in floor tom at the player’s right. The drums this lesson mics.', prov: { kind: 'sourced', src: 'YMH-TC', quote: 'TMT-1007, TMT-1208; TAMA 16"x16" Floor Tom' }, tag: 'THE DRUMS', scene: 'all', planIds: ['tom2', 'tom1', 'floor'] },
       { id: 'cymbals', label: 'crash and ride cymbals', short: 'CYMBALS', note: 'A crash over each rack tom and the ride over the floor tom: the loudest neighbours a tom mic hears — and they swing when struck, so mics keep clear of them.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['crash2', 'crash1', 'ride'] },
-      { id: 'kick', label: 'kick drum (and the tom holder on it)', short: 'KICK', note: 'The rack toms’ holder stands on the kick’s shell. A boom reaching over the rack toms passes above the kick — and the holder takes room there.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'BOOM PATH', scene: 'kit', planIds: ['kick', 'pedal'] },
+      { id: 'kick', label: 'kick drum (and the tom holder on it)', short: 'KICK', note: 'The rack toms’ holder stands on the kick’s shell here. A boom reaching over the rack toms passes above the kick — and the holder takes room there.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'BOOM PATH', scene: 'kit', planIds: ['kick', 'pedal'] },
       { id: 'throne', label: 'drum throne (the player’s seat)', short: 'THRONE', note: 'The player sits behind the kit; fills sweep the sticks across every tom, and the right leg sits right beside the floor tom.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'snare', label: 'snare and hi-hat', short: 'SNARE · HI-HAT', note: 'Across the kit on the player’s left: loud neighbours a rack-tom mic can hear.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit' }, tag: 'SPILL', scene: 'kit', planIds: ['snare', 'hihat'] },
       { id: 'fill', label: 'the drummer’s fill (monitor)', short: 'DRUM FILL', note: 'A floor monitor beside the throne so the drummer can hear the band — loud, close to the floor tom.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'downstage', label: 'a downstage wedge (another player’s monitor)', short: 'WEDGE', note: 'Out on the audience side, facing back toward the stage.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
-      { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'Live, the audience already hears the acoustic toms; the PA adds what the room needs.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
-      { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a studio there are no wedges on the floor; the overheads and the room may already carry the toms.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
+      { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'Live, the audience hears the acoustic toms too; in a small room the PA adds what the room needs, in a big one it carries most of them.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
+      { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In most studios there are no wedges on the floor; the overheads and the room may already carry the toms.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: monitors feed the players, the PA faces the audience, and the cymbals are loud. Stage spill and the gain available before feedback push toward close, aimed pickup — with as few open mics as the music needs.',
-    studio: 'STUDIO: no wedges on the floor, repeated trials are practical when the drummer stops, and the overheads or the room may already carry the toms.',
+    studio: 'STUDIO: usually no wedges on the floor, repeated trials are practical when the drummer stops, and the overheads or the room may already carry the toms.',
   },
   diagnostic,
   practice: {

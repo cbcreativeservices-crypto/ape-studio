@@ -298,7 +298,7 @@ export const freshRec = (): RecState => ({ tap: 'NONE', gain: 0.5, armedAt: null
 
 /** What the recorder's input carries, in words. */
 export const REC_TAPS: Record<Exclude<RecTap, 'NONE'>, { label: string; blurb: string }> = {
-  REC_OUT: { label: 'REC OUT', blurb: 'The mixer’s record output: a fixed-level copy of the mix taken before the MASTER knob — your MASTER moves never ride the take.' },
+  REC_OUT: { label: 'REC OUT', blurb: 'The mixer’s record output: here, as on most club mixers, a fixed-level copy of the mix taken before the MASTER knob — your MASTER moves do not ride the take.' },
   BOOTH: { label: 'BOOTH OUT', blurb: 'The booth output: it follows the BOOTH knob, so every booth move is in the take. BOOTH OUT now feeds the recorder, so the booth monitors are unplugged and silent — one plug per jack.' },
   LOOPBACK: { label: 'LOOPBACK', blurb: 'The computer recording what it plays itself. The players and the mic never pass through it.' },
 };

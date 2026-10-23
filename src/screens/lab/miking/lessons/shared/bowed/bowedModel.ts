@@ -256,7 +256,7 @@ export function bowedModel(P: Posture, o: BowedModelOpts): InstrumentModel {
     id: 'bw.player',
     label: 'the player',
     short: 'player',
-    role: P.kind === 'seated' ? 'The cellist sits behind the instrument, its back against the chest, knees beside the lower bouts.' : P.kind === 'standing' ? 'The bassist stands behind the instrument, its back resting against the body.' : 'The player holds the instrument between the jaw and the shoulder, and moves with the music.',
+    role: P.kind === 'seated' ? 'The cellist sits behind the instrument, its back against the chest, knees beside the lower bouts.' : P.kind === 'standing' ? 'Here the bassist stands behind the instrument, its back resting against the body.' : 'The player holds the instrument between the jaw and the shoulder, and moves with the music.',
     prov: PLAYER,
     solid: cap(pl.pelvis, pl.neck, 150),
   });

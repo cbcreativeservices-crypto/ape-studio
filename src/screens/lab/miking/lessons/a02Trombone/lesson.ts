@@ -65,7 +65,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a close mic and a farther mic on one trombone can sound thin together, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: ['tb.two.1', 'tb.two.2', 'tb.two.3', 'tb.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics at different distances hear the horn at different times: some pitches cancel in the sum — listen to the lowest notes. Move or rebalance first; polarity flips the sign and never removes a delay. Judge the pair in mono, at matched levels.',
+    takeaway: 'Two mics at different distances hear the horn at different times: some frequencies cancel in the sum — listen to the lowest notes. Move or rebalance first; polarity flips the sign and never removes a delay. Judge the pair in mono, at matched levels.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -104,10 +104,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tb.snd.2',
     page: 'sound',
-    prompt: 'Compared with a trumpet, how does a trombone spread its low notes?',
-    options: ['More evenly all round, even behind the player', 'Only forward, in a narrow beam from the bell', 'Mostly down along the slide toward the floor'],
-    correct: 'More evenly all round, even behind the player',
-    explain: 'A trombone’s lows spread out nearly evenly in every direction — more so than a trumpet’s. So every open mic on a stage hears them; from about 1 kHz up, the bell beams the sound forward.',
+    prompt: 'How does a trombone spread its low notes?',
+    options: ['Nearly all round, even behind the player', 'Only forward, in a narrow beam from the bell', 'Mostly down along the slide toward the floor'],
+    correct: 'Nearly all round, even behind the player',
+    explain: 'A trombone’s lows spread out nearly evenly in every direction, as a trumpet’s do. So every open mic on a stage hears them; from about 1 kHz up, the bell beams the sound forward.',
     why: {
       'Only forward, in a narrow beam from the bell': 'That is the highs. The lows spread round.',
       'Mostly down along the slide toward the floor': 'The sound leaves the bell, not the slide; the lows spread all round it.',
@@ -290,7 +290,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A close trombone mic and a mic about 3 m away sound thin together. Why?',
     options: ['The sound reaches them at different times', 'The far mic flips the sound’s polarity', 'The close mic is louder, so it cancels'],
     correct: 'The sound reaches them at different times',
-    explain: 'The far mic hears each note later. Summed, some pitches arrive out of step and cancel — a comb of notches, which can thin the lowest notes. Move or rebalance first, then check polarity at matched levels.',
+    explain: 'The far mic hears each note later. Summed, some frequencies arrive out of step and cancel — a comb of notches, which can thin the lowest notes. Move or rebalance first, then check polarity at matched levels.',
     why: {
       'The far mic flips the sound’s polarity': 'Distance delays a sound; it does not flip its sign.',
       'The close mic is louder, so it cancels': 'A level difference changes the notches’ depth; the delay makes them.',
@@ -555,7 +555,7 @@ export const A02_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'The trombone is a brass instrument with a slide instead of valves: the lips buzz into a cup mouthpiece, and the right hand moves the slide out to make the tube longer — seven positions, from 1st (closed) to 7th (out at arm’s length). The bass trombone has the same 2.7 m tube, a wider bore, a larger bell and valves for its lowest notes.', src: 'Y-TBN-MECH' },
+    { title: 'WHAT IT IS', text: 'The trombone is a brass instrument that changes pitch mainly with a slide, not valves: the lips buzz into a cup mouthpiece, and the right hand moves the slide out to make the tube longer — seven positions, from 1st (closed) to 7th (out at arm’s length). The bass trombone has the same 2.7 m tube, a wider bore, a larger bell and valves for its lowest notes.', src: 'Y-TBN-MECH' },
     { title: 'WHERE YOU MEET IT', text: 'Jazz and big bands, horn sections in funk, soul, ska and Latin music, orchestras and brass bands, studio sessions and solos. This lesson covers one trombone: a studio overdub, a live solo, and a spot in a section.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Tenor: a bright, round or blended voice, from smooth lines to big accents. Bass: the foundation under the section — the low notes must keep their weight. Ask what the part needs, and watch the slide: the player must reach every position freely.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'A tenor trombone’s bell is about 20 cm across; a bass trombone’s about 24 cm. The slide reaches past the bell even when closed, and about 56 cm farther at 7th position. The lowest note of the tenor’s usual range is around 82 Hz; the bass goes lower with its valves. This lab draws both horns about that size, played standing.', src: 'Y-YSL354' },

@@ -20,7 +20,7 @@ const pages: LessonPages = {
     title: 'Meet the cajón',
     goal: 'Get to know the cajón — what it is, where you meet it, what it does in the music, where its port is and how the player sits on it — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A wooden box the player sits on and strikes: the plate and the box sound, the wires add a buzz, the port lets out the low end. Find THIS cajón’s port first.',
+    takeaway: 'A wooden box the player sits on and strikes: the plate and the box sound, on most cajóns wires add a buzz, the port lets out the low end. Find THIS cajón’s port first.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -323,7 +323,7 @@ const symptoms: Symptom[] = [
     correct: 'The balance and the mono sum; then position and polarity',
     explain: 'Listen to the centre stroke and the balance; try relative position and polarity as a conditional test.',
     why: {
-      'A big low-end boost on the front channel’s EQ to fill it out': 'A cancellation cannot be boosted back.',
+      'A big low-end boost on the front channel’s EQ to fill it out': 'A boost cannot really undo a cancellation.',
       'Ask the player to hit the centre much harder': 'The strokes are the music.',
     },
   },

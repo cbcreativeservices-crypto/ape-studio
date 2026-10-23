@@ -189,7 +189,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
       },
       headroom: {
         ok: outLevel >= 0.5 && outLevel <= 0.85,
-        why: outLevel < 0.5 ? `Output is only ${Math.round(outLevel * 100)}% of full — the target is 50–85% so peaks have room without wasting the amplifier.` : outLevel > 0.85 ? `Output at ${Math.round(outLevel * 100)}% leaves no headroom for peaks — back off toward 50–85%.` : `Output at ${Math.round(outLevel * 100)}% — healthy headroom.`,
+        why: outLevel < 0.5 ? `Output is only ${Math.round(outLevel * 100)}% of full — this lab’s target is 50–85% so peaks have room without wasting the amplifier.` : outLevel > 0.85 ? `Output at ${Math.round(outLevel * 100)}% leaves no headroom for peaks — back off toward 50–85%.` : `Output at ${Math.round(outLevel * 100)}% — healthy headroom.`,
       },
       mode: {
         ok: !(chMode === 'bridge' && chLoad < 8) && !(chSupply === 'sagging' && chMode === 'bridge'),

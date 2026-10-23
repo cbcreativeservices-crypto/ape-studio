@@ -70,7 +70,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a boom and a safety lav summed on one talker can sound hollow, how the arrival-time difference places comb notches, and why one is chosen for the program.',
     credit: { scenarios: ['b4.two.1', 'b4.two.2', 'b4.two.3', 'b4.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'The lav hears the voice first, the boom later: summed, some pitches cancel. Choose the intended feed and keep the other on its own track; polarity flips the sign and never removes a delay.',
+    takeaway: 'The lav hears the voice first, the boom later: summed, some frequencies cancel. Choose the intended feed and keep the other on its own track; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -149,7 +149,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Outdoors, an overhead power line runs near where the boom would go. What then?',
     options: ['Keep the pole down; ask the site’s qualified people', 'Raise it slowly and watch the line closely all along', 'Use a short pole so it reaches less high'],
     correct: 'Keep the pole down; ask the site’s qualified people',
-    explain: 'Never hold or raise a conductive pole near overhead power lines. If you are unsure of the clearance, the pole stays down.',
+    explain: 'Never hold or raise any pole near overhead power lines. If you are unsure of the clearance, the pole stays down.',
     why: {
       'Raise it slowly and watch the line closely all along': 'Care does not make the clearance safe: keep the pole down.',
       'Use a short pole so it reaches less high': 'Any pole raised near a line is a risk; ask the qualified people.',
@@ -283,7 +283,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Check its place and pattern with the operator',
     explain: 'A boom near a public PA hears it too. Agree its working place, pattern and level with the system’s operator; keep the fewest mics open.',
     why: {
-      'Turn the boom up so its voice beats the PA’s sound': 'More gain feeds the PA’s sound back round the loop.',
+      'Turn the boom up so its voice beats the PA’s sound': 'More gain lifts the PA’s sound in the boom as much as the voice.',
       'Aim it at the PA so it hears the room': 'The boom is for the talker; aim the rejection at the PA instead.',
     },
   },
@@ -329,7 +329,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The boom and the lav summed on one talker sound hollow. Why?',
     options: ['The voice reaches the lav first, the boom later', 'The boom reverses the voice’s polarity', 'The lav is closer, so it simply cancels the boom'],
     correct: 'The voice reaches the lav first, the boom later',
-    explain: 'Two arrival times of one voice, summed: some pitches arrive out of step and cancel — a comb.',
+    explain: 'Two arrival times of one voice, summed: some frequencies arrive out of step and cancel — a comb.',
     why: {
       'The boom reverses the voice’s polarity': 'Distance delays a sound; it does not flip its sign.',
       'The lav is closer, so it simply cancels the boom': 'A level difference changes how deep the notches are; the delay makes them.',
@@ -369,7 +369,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Automatic gain raises the background in the pauses. A tested manual setting, with headroom, and a check on headphones and playback.',
     why: {
       'Talk more quietly so the camera gains up a little less': 'Quieter speech makes the automatic gain push harder.',
-      'Add noise reduction to the track afterwards': 'Processing cannot cleanly remove a pumping background.',
+      'Add noise reduction to the track afterwards': 'Processing rarely removes a pumping background cleanly.',
     },
   },
   {
@@ -378,7 +378,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What would justify a second mic on the talker besides the boom?',
     options: ['A tested fallback, on its own track', 'A fuller voice from two mics summed', 'More level than the boom alone gives'],
     correct: 'A tested fallback, on its own track',
-    explain: 'A safety lav earns its place on its own track, chosen only if the boom fails. Two mics summed on one voice comb.',
+    explain: 'A safety lav earns its place on its own track, chosen only if the boom fails. Two mics summed on one voice usually comb.',
     why: {
       'A fuller voice from two mics summed': 'Two copies of one voice usually sound hollower.',
       'More level than the boom alone gives': 'Level comes from gain and closeness, not from another mic.',
@@ -392,7 +392,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Bring it closer, to the frame’s edge',
     explain: 'Closeness decides the voice against the room. Go as close as the frame allows; a longer tube does not reach farther.',
     why: {
-      'Swap to a longer shotgun, same place': 'A longer tube narrows the highs; it does not bring the voice closer.',
+      'Swap to a longer shotgun, same place': 'A longer tube keeps the pickup narrow lower down; it does not bring the voice closer.',
       'Raise the gain until the voice is up front': 'Gain raises the room as much as the voice.',
     },
   },
@@ -577,7 +577,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Outdoors, near overhead power lines. The boom pole?',
     options: ['Stays down unless the clearance is sure', 'Goes up slowly, angled away from the lines', 'Up, if it is a carbon pole'],
     correct: 'Stays down unless the clearance is sure',
-    explain: 'Never hold or raise a conductive pole near overhead power lines; if you are unsure, the pole stays down and the site’s qualified people decide.',
+    explain: 'Never hold or raise any pole near overhead power lines; if you are unsure, the pole stays down and the site’s qualified people decide.',
     why: {
       'Goes up slowly, angled away from the lines': 'Slowly is not safe if the clearance is unknown.',
       'Up, if it is a carbon pole': 'Carbon conducts too: the pole stays down.',
@@ -592,7 +592,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'Summed, the two arrival times comb. Choose the intended channel; keep the other ready as the fallback.',
     why: {
       'Both of them, summed at an even level': 'Even levels make the deepest comb.',
-      'The lav, with the boom tucked under it': 'Tucked under or not, a second open mic on one voice still combs.',
+      'The lav, with the boom tucked under it': 'Tucked under or not, a second open mic on one voice still combs, if less deeply.',
     },
   },
   hearingDiag('q.6', W),

@@ -85,7 +85,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why can a mandolin or fiddle dominate a guitar’s mic?',
     options: ['Its bright highs carry along its axis', 'It is the loudest instrument in the group, by far', 'It radiates mostly into the floor'],
     correct: 'Its bright highs carry along its axis',
-    explain: 'High-frequency sources like a mandolin or fiddle project bright highs in a narrow beam; keep them off a neighbour mic’s axis.',
+    explain: 'High-frequency sources like a mandolin or fiddle throw their bright highs more one way than another; keep that side off a neighbour mic’s axis.',
     why: {
       'It is the loudest instrument in the group, by far': 'It need not be loud; its brightness is what cuts through.',
       'It radiates mostly into the floor': 'Not a mandolin or fiddle. Only the upright bass sends much into the floor, through its endpin — and even the bass sounds mostly from its body.',
@@ -272,7 +272,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Do not assume a polarity switch or a digital delay fixes poor geometry; check with all mics on, in mono.',
     why: {
       'That the delay between them is gone': 'A polarity flip never moves an arrival in time.',
-      'That each note now sums well in mono': 'A comb filter’s notches fall on some notes and not others; one flip suits some, not all.',
+      'That each note now sums well in mono': 'A comb filter’s notches fall on some frequencies and not others; one flip suits some, not all.',
     },
   },
   {
@@ -479,9 +479,9 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setups',
     critical: true,
     prompt: 'You need to move a mic stand during the set. What do you do?',
-    options: ['Stop the group first, then move it', 'Reach in between the songs quickly', 'Slide it while they keep playing'],
-    correct: 'Stop the group first, then move it',
-    explain: 'Never place a stand where a performer, a bow, a case or a stagehand can strike it — and stop the group before moving equipment.',
+    options: ['Wait for a break or a stop, then move it', 'Reach in between the songs quickly', 'Slide it while they keep playing'],
+    correct: 'Wait for a break or a stop, then move it',
+    explain: 'Never place a stand where a performer, a bow, a case or a stagehand can strike it — and wait for a break or stop the group before moving equipment.',
     why: { 'Reach in between the songs quickly': 'A quick reach near bows and hands is how accidents happen.', 'Slide it while they keep playing': 'A moving stand near a bow or a hand is a hazard.' },
   },
 ];
@@ -537,7 +537,7 @@ export const E08_LESSON: EnsembleLesson = {
       { id: 'seating', label: 'the seating and each player’s angle', short: 'SEATING', note: 'Move a loud instrument farther, raise a quiet one, rotate a directional source — before EQ or compression. Mark chairs, stands and mic bases so a second take returns to the same geometry.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Physical arrangement is part of the mix (L6); Mark chairs, stands, and microphone bases (L16)' }, tag: 'BALANCE', scene: 'all' },
       { id: 'bright', label: 'the bright instruments', short: 'BRIGHT', note: 'Keep a mandolin, fiddle or cymbal from dominating a guitar or vocal mic: out of its direct line, or a little farther away.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Keep high-frequency sources such as mandolin, violin, or cymbals from dominating a guitar or vocal microphone (L16)' }, tag: 'SPILL', scene: 'all' },
       { id: 'floor', label: 'the floor and the bass', short: 'FLOOR', note: 'An upright bass excites room modes and floor vibration: isolate the stands from the floor.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Low instruments and upright bass often need more attention to room modes and floor vibration (L16)' }, tag: 'NOISE', scene: 'all' },
-      { id: 'stands', label: 'bows, hands, cases and walkways', short: 'KEEP CLEAR', note: 'Never place a stand where a performer, a bow, a case or a stagehand can strike it — and stop the group before moving equipment.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Never place a microphone stand where a performer, bow, instrument case, or stagehand can strike it (L38)' }, tag: 'KEEP CLEAR', scene: 'all' },
+      { id: 'stands', label: 'bows, hands, cases and walkways', short: 'KEEP CLEAR', note: 'Never place a stand where a performer, a bow, a case or a stagehand can strike it — and wait for a break or stop the group before moving equipment.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Never place a microphone stand where a performer, bow, instrument case, or stagehand can strike it (L38)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'pa', label: 'the PA and the wedges', short: 'PA', note: 'Close directional mics, pickups or DIs for gain; a stereo pair only where the PA is stereo, the group small and the pair close enough. Monitors in each mic’s real null.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Use a stereo pair only when the PA is stereo, the group is small enough for useful coverage (L37)' }, tag: 'FEEDBACK', scene: 'stage' },
       { id: 'pickup', label: 'pickups and DI boxes', short: 'DI', note: 'A pickup or DI often gives the stable live foundation, with a mic blended for detail — each path useful alone before they are blended.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'a pickup or DI often provides the stable foundation (L39)' }, tag: 'ROLES', scene: 'stage' },
       { id: 'noise', label: 'chairs, pages and the room', short: 'NOISE', note: 'Listen for chair noise, page turns, foot movement, ventilation and the room’s reflections when you set the gain.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Monitor chair noise, page turns, foot movement, HVAC, and room reflections (L34)' }, tag: 'LISTEN', scene: 'studio' },
@@ -559,7 +559,7 @@ export const E08_LESSON: EnsembleLesson = {
   },
   unknowns: [
     { text: 'The seating is a drawing default: the players on an arc 1.5 m round a point 0.7 m in front of the band’s front line, the guitarist in the same place in the duo and the trio, a wedge 1 m in front of the guitarist.', dims: [] },
-    { text: 'The pair sits at the arc’s centre 1.3 m up (inside the published 30 cm–2 m band for a small string group; the height is a drawing default), on a boom stand from the audience side.', dims: [] },
+    { text: 'The pair sits at the arc’s centre 1.3 m up (a drawing default; a pair for a small string group often sits about 30 cm–2 m from the players), on a boom stand from the audience side.', dims: [] },
     { text: 'The spots borrow their distances from the instrument lessons (guitar 22.5 cm, mandolin 35 cm, fiddle 30 cm, bass 22 cm).', dims: [] },
   ],
   live: { wedges: E08_WEDGES },
@@ -584,7 +584,7 @@ export const E08_LESSON: EnsembleLesson = {
       { title: 'SEAT THEM', text: 'About the same distance from where the main pair will go; a loud instrument farther, a quiet one nearer; bright instruments off their neighbours’ mics.' },
       { title: 'MARK IT', text: 'Mark the chairs, stands and mic bases so a second take or the interval returns to the same geometry.' },
     ],
-    safety: 'Never place a stand where a performer, a bow, a case or a stagehand can strike it; stop the group before moving equipment. Keep cables secured and walkways clear. Protect your hearing; never chase feedback.',
+    safety: 'Never place a stand where a performer, a bow, a case or a stagehand can strike it; wait for a break or stop the group before moving equipment. Keep cables secured and walkways clear. Protect your hearing; never chase feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a small group: one pair where the players are about equally far from it — a place to start and compare, not a rule.',
       clearance: 'The boom stand reaches in from the audience side, its base clear of the players’ feet, the bows and the walkway; its cable dressed flat.',

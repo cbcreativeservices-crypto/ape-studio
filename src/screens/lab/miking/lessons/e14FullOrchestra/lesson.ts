@@ -421,7 +421,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'In the modern layout, where are the cellos as the conductor faces them?',
     options: ['Right, the basses behind', 'Left, beside the violins', 'Centre, behind the winds'],
     correct: 'Right, the basses behind',
-    explain: 'High to low, left to right: the cellos on the outside right, the basses behind them.',
+    explain: 'High to low, left to right: most often the cellos on the outside right, the basses behind them.',
     why: { 'Left, beside the violins': 'That is the other layout, with the violins facing each other.', 'Centre, behind the winds': 'Behind the winds sit the brass and percussion.' },
   },
   {

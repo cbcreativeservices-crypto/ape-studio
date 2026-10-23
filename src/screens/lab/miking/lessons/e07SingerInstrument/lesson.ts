@@ -209,7 +209,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Some rejection at the side — check it, not a guarantee',
     explain: 'A figure-8 rejects its sides, but the null is narrow and angle-dependent, and it hears front and back. The guitar is a large source near the mic: check the real pattern by ear.',
     why: {
-      'Silence from the guitar: a figure-8’s side is deaf': 'A null is deep only on paper and only at one exact angle.',
+      'Silence from the guitar: a figure-8’s side is deaf': 'A real null is shallower than on paper and changes with pitch: less guitar, not silence.',
       'More of the guitar, since a figure-8 hears on both its sides': 'It hears front and back; its sides are where it rejects.',
     },
   },
@@ -316,7 +316,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The vocal and guitar mics, each fine alone, sound thin together in mono. Why?',
     options: ['Each hears the other source a little later', 'The guitar mic reverses the polarity of the voice', 'The vocal mic is louder, so it cancels the guitar'],
     correct: 'Each hears the other source a little later',
-    explain: 'Bleed — the same sound in both mics: the guitar mic hears the voice later than the vocal mic does, and the vocal mic hears the guitar later than the guitar mic does. Summed, some pitches cancel — a comb.',
+    explain: 'Bleed — the same sound in both mics: the guitar mic hears the voice later than the vocal mic does, and the vocal mic hears the guitar later than the guitar mic does. Summed, some frequencies cancel — a comb.',
     why: {
       'The guitar mic reverses the polarity of the voice': 'Distance delays a sound; it does not flip its sign.',
       'The vocal mic is louder, so it cancels the guitar': 'A level difference changes the notches’ depth; the delay makes them.',
@@ -332,7 +332,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Each alone, then polarity and timing in mono',
     explain: 'Blend only after each path works alone; then compare polarity and timing in mono — a pickup’s path arrives at a different time from the mic’s.',
     why: {
-      'More of both, so the hollow fills itself in': 'Level cannot undo a cancellation between the paths.',
+      'More of both, so the hollow fills itself in': 'Raising both keeps the same cancellation between the paths.',
       'A different pickup, since the first is wrong': 'The pickup may be fine: the combination needs checking first.',
     },
   },
@@ -395,7 +395,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Bleed (the same sound in both mics) and the timing difference. Change the spacing or angle, turn one down, and check mono before processing.',
     options: ['Change spacing or angle; check mono first', 'Flip one mic’s polarity and leave it like that', 'Add low end to both until it fills out'],
     correct: 'Change spacing or angle; check mono first',
-    explain: 'Each mic hears the other source late; summed, some pitches cancel. Move or rebalance first — a polarity switch cannot align every pitch.',
+    explain: 'Each mic hears the other source late; summed, some frequencies cancel. Move or rebalance first — a polarity switch cannot align every frequency.',
     why: {
       'Flip one mic’s polarity and leave it like that': 'Polarity is a check, not a cure: it cannot remove a delay.',
       'Add low end to both until it fills out': 'EQ cannot undo a cancellation between paths.',

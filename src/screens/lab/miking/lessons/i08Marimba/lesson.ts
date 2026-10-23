@@ -62,7 +62,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'Compare the published pairs — spaced about 61 cm apart, or grilles together at 135° — and a wider spaced pair, by what a bar at each end does to them.',
     credit: { scenarios: ['mr.two.1', 'mr.two.2', 'mr.two.3', 'mr.two.4'], interactive: 'pairCompared', note: 'Look at the spaced pair and the coincident pair with an end bar as the source, then answer the four checks.' },
-    takeaway: 'On a five-octave keyboard a 61 cm spaced pair may be too narrow: test the real range. Grilles together, no bar has a time difference; spaced, the end bars do. Listen to each mic alone, both together, and in mono.',
+    takeaway: 'On a five-octave keyboard a 61 cm spaced pair may be too narrow: test the real range. Grilles together, the bars have almost no time difference; spaced, the end bars do. Listen to each mic alone, both together, and in mono.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -280,7 +280,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Compare the published pairs and a wider room view',
     explain: 'For a wide solo, compare the spaced and the coincident pair — and in a good room a moderately distant stereo pair — at matched level, in mono too.',
     why: {
-      'Boost the weak end on the desk until it is even': 'EQ cannot add notes the mic does not hear well.',
+      'Boost the weak end on the desk until it is even': 'EQ can lift the weak end, but it lifts the spill and room there too.',
       'Ask the player to keep the solo in the middle octaves': 'The music sets the range; the mics cover it.',
     },
   },
@@ -467,7 +467,7 @@ const words: MalletWords = {
     stages: [
       { title: 'The mallet lands', text: 'A yarn-wrapped mallet lands on the middle of a wooden bar. That contact is the ATTACK — the mallet and the touch shape it, from round to articulate.' },
       { title: 'The bar bends and rings', text: 'The bar bends — the middle down, both ends up — and springs back: its lowest shape, drawn far larger than it moves. Two still points a little in from each end carry the cord, so the bar rings freely.' },
-      { title: 'The air in the pipe rings with it', text: 'Under the bar hangs its pipe, open at the top and closed at the bottom, a quarter wavelength long for this note. Its air rings with the bar and helps the note develop. Under the lowest notes, boxes do the same job in less height.' },
+      { title: 'The air in the pipe rings with it', text: 'Under the bar hangs its pipe, open at the top and closed at the bottom, about a quarter wavelength long for this note. Its air rings with the bar and helps the note develop. Under the lowest notes, boxes do the same job in less height.' },
       { title: 'Sound leaves — up and out', text: 'Sound leaves the bar and the pipe’s mouth, up and out around the keyboard. Rolls — fast repeated strokes — make long notes from short ones.' },
     ],
     cells: [
@@ -634,7 +634,7 @@ export const I08_LESSON: MalletLesson = {
   id: 'I08',
   labId: 'percussion',
   title: 'Marimba',
-  subtitle: 'Wooden bars over pipes, five octaves wide: one mic, or a spaced or coincident pair',
+  subtitle: 'Wooden bars over pipes, often four to five octaves wide: one mic, or a spaced or coincident pair',
   noun: { one: 'marimba', many: 'marimbas' },
   model: MARIMBA_MODEL,
   micTypeIds: ['mlSdc', 'mlDynCard'],

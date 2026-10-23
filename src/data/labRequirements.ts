@@ -68,7 +68,7 @@ const LESSON_WHY: Record<string, string> = {
   mk_M01: 'The kick is the foundation of a recorded kit, and where its microphone sits decides how much punch and how much boom you get.',
   mk_M02: 'The snare sits right beside the hi-hat, so placing its microphone is a balance between the drum and what leaks in.',
   mk_M03: 'Toms ring under the cymbals, and their microphones have to catch the drum without filling up with crash.',
-  mk_M09: 'The overheads are the picture of the whole kit that every close microphone is added to.',
+  mk_M09: 'In many mixes, the overheads are the picture of the whole kit that the close microphones are added to.',
   mk_M10: 'Room microphones decide how big the kit sounds, and how much of the room comes with it.',
   mk_M11: 'A full kit is a plan — how many microphones, where the bleed goes, and whether it all holds up in mono.',
   // Cymbals
@@ -79,7 +79,7 @@ const LESSON_WHY: Record<string, string> = {
   mk_I01e: 'A china is harsh and loud, and where its microphone sits decides whether it cuts through or hurts.',
   // Guitars, bass, keys, strings
   mk_C01: 'Acoustic guitar is one of the most-recorded sources there is, and small moves along the body change it completely.',
-  mk_C02: 'Electric guitar on a record is the amplifier’s speaker as the microphone hears it.',
+  mk_C02: 'Most electric guitar on a record is the amplifier’s speaker as the microphone hears it.',
   mk_C08: 'Electric bass is usually captured with a microphone and a direct signal together, and the two have to agree.',
   mk_SPK: 'Guitar and bass cabinets and the rotating speaker cabinet are miked from outside, with rules of their own.',
   mk_C11: 'Piano is a large source with many workable answers, and the lid, the strings and the soundboard all change what you get.',
@@ -91,7 +91,7 @@ const LESSON_WHY: Record<string, string> = {
   mk_A02: 'Trombone has a moving slide in front of it, and the microphone has to stay out of its path.',
   mk_A05b: 'Alto saxophone sounds from its keys as well as its bell, so aiming only at the bell misses half the instrument.',
   mk_A05c: 'Tenor saxophone needs the same balance between bell and keys over a lower, bigger body.',
-  mk_A06: 'Flute sounds from the mouthpiece and the open holes, not from an end, and breath noise comes with a close microphone.',
+  mk_A06: 'Flute sounds mostly from the mouthpiece and the open holes, and from the far end only on its lowest notes; breath noise comes with a close microphone.',
   mk_A08a: 'Clarinet sounds mostly from its finger holes, not its bell — the most common miking mistake on the instrument.',
   // Voice and ensembles
   mk_E01: 'The lead vocal is the most important microphone in most sessions and shows, and distance from the lips decides its sound.',
@@ -121,7 +121,7 @@ const LESSON_WHY: Record<string, string> = {
   mk_F15: 'Machinery and product sound is measured over whole operating cycles from repeatable positions, from a safe boundary.',
   mk_F16: 'Scientific arrays depend on a marked origin, one shared clock and the right spacing, or they report positions that are not real.',
   // Broadcast and speech
-  mk_B01: 'Hosts on a desk microphone, each on their own channel, are the heart of every radio and podcast studio.',
+  mk_B01: 'Hosts on a desk microphone, each on their own channel, are the heart of most radio and podcast studios.',
   mk_B05: 'Lavaliers and headsets are fitted, hidden and positioned on the wearer, and a few centimetres change the voice completely.',
   mk_B06: 'Panels, lecterns and press conferences need every voice heard with the fewest open microphones.',
   mk_B07: 'Voiceover and narration are recorded close and controlled, and a guest’s return feed must never contain their own voice.',
@@ -177,7 +177,7 @@ const ADVANCED_MIXING_ALL: LabRequirement[] = [
   { key: 'mxa_bus', why: 'Mix-bus processing changes everything at once, so it has to be done on purpose.' },
   { key: 'mxa_qc', why: 'Translation and quality control are how a mix is proven to work away from your own speakers.' },
   { key: 'mxa_stems', why: 'Stems and alternate mixes are routine deliverables that have to match the main mix.' },
-  { key: 'mxa_null', why: 'Stems that do not add back up to the mix are a failed delivery, and the null test proves it.' },
+  { key: 'mxa_null', why: 'Stems should add back up to the mix, and the null test shows how close they come.' },
   { key: 'mxa_deliver', why: 'Professional delivery means the right files, names, levels and documentation, every time.' },
   { key: 'mxa_diagnose', why: 'Diagnosing a mix you did not make — what is wrong and why — is daily work.' },
   { key: 'mxa_final', why: 'The final repair puts the advanced process together on one real mix.' },
@@ -200,7 +200,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   // ── Certificates ────────────────────────────────────────────────────────
   'cert-adr-and-voice-recording-v3': [
     { key: 'tr_speech', why: 'ADR is judged on whether the replaced line still sounds like speech, so you need to know how the voice makes its sounds.' },
-    { key: 'tr_smart_processors', why: 'Close-miked replacement dialogue needs de-essing before anyone will accept it.' },
+    { key: 'tr_smart_processors', why: 'Close-miked replacement dialogue often needs de-essing before anyone will accept it.' },
     ...mk('B07', 'F09'),
   ],
   'cert-ai-voice-and-speech-synthesis-v3': [
@@ -243,7 +243,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     ...mk('F06', 'F07'),
   ],
   'cert-broadcast-engineer-v3': [
-    { key: 'tr_compression', why: 'The air chain is compression — threshold, ratio and release decide how the station sounds.' },
+    { key: 'tr_compression', why: 'The air chain is built around compression and limiting — threshold, ratio and release shape how the station sounds.' },
     { key: 'tr_limiter', why: 'Broadcast is delivered to a hard ceiling and a loudness target.' },
     ...mk('B01'),
   ],
@@ -334,7 +334,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   'cert-forensic-audio-v3': [
     { key: 'tr_speech', why: 'Forensic work is almost always about recovering speech, so speech production is the subject.' },
     { key: 'tr_eq', why: 'Enhancement is filtering — and knowing when a filter is removing evidence along with the noise.' },
-    { key: 'ear_defect', why: 'Dropouts, clicks and discontinuities are the first signs of an edit, and you have to hear them.' },
+    { key: 'ear_defect', why: 'Dropouts, clicks and discontinuities can be signs of an edit, though they have other causes too, and you have to hear them.' },
   ],
   'cert-gain-staging-and-signal-flow-v3': [
     ...beg('mxb_terms', 'mxb_sends'),
@@ -354,17 +354,17 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'cert-immersive-audio-production-v3': [
     { key: 'tr_stereo', why: 'An immersive mix still has to hold up folded down to stereo and mono.' },
-    { key: 'tr_binaural', why: 'Most listeners will hear your immersive mix binaurally, on headphones.' },
+    { key: 'tr_binaural', why: 'For streamed music, most listeners will hear your immersive mix binaurally, on headphones.' },
   ],
   'cert-instrument-recognition-percussion-v3': [
     { key: 'tr_envelope', why: 'Percussion is identified by its attack and decay far more than by its pitch.' },
   ],
   'cert-instrument-recognition-winds-and-brass-v3': [
     { key: 'tr_envelope', why: 'Wind and brass articulation lives in the attack and in how the note is released.' },
-    { key: 'tr_harmonic', why: 'What separates an oboe from a trumpet is its harmonic spectrum.' },
+    { key: 'tr_harmonic', why: 'Much of what separates an oboe from a trumpet is its harmonic spectrum.' },
   ],
   'cert-instrument-sound-identification-v3': [
-    { key: 'tr_harmonic', why: 'Timbre is harmonic content, and this is where you see it.' },
+    { key: 'tr_harmonic', why: 'Timbre is largely harmonic content, and this is where you see it.' },
     { key: 'tr_envelope', why: 'Two instruments with a similar spectrum are still told apart by their envelopes.' },
   ],
   'cert-live-mixing-specialist-v3': [
@@ -412,7 +412,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_mic_select', why: 'Reading the specification sheet and choosing on it is the whole certificate.' },
   ],
   'cert-mix-bus-and-automation-v3': [
-    { key: 'tr_compression', why: 'Bus processing is compression applied to a whole group at once.' },
+    { key: 'tr_compression', why: 'Bus processing is most often compression applied to a whole group at once.' },
     { key: 'tr_limiter', why: 'Mix-bus loudness decisions need the ceiling understood.' },
     ...beg('mxb_auto'),
     ...adv('mxa_groups', 'mxa_aux', 'mxa_parallel', 'mxa_bus', 'mxa_motion'),
@@ -450,7 +450,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   'cert-pa-loudspeaker-systems-v3': [
     { key: 'tr_sound_systems', why: 'Deploying, wiring and tuning a PA in a real venue is two of this certificate’s three topics.' },
     { key: 'tr_phase', why: 'Boxes that overlap in coverage combine by phase, not by wishful thinking.' },
-    { key: 'tr_eq', why: 'System tuning is filtering the rig to the room.' },
+    { key: 'tr_eq', why: 'System tuning is largely filtering the rig to the room, once aim and delay are set.' },
   ],
   'cert-plugin-and-processing-power-user-v3': [
     ...adv('mxa_parallel', 'mxa_bus'),
@@ -490,8 +490,8 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'cert-sound-design-with-synthesis-v3': [
     { key: 'tr_oscillator', why: 'Synthesis starts with what the oscillator is actually producing.' },
-    { key: 'tr_modular', why: 'Oscillator, filter, amplifier, LFO and envelope is the signal flow behind every synthesiser.' },
-    { key: 'tr_fm', why: 'FM is the technique most often used and least often understood.' },
+    { key: 'tr_modular', why: 'Oscillator, filter, amplifier, LFO and envelope is the signal flow behind most synthesisers.' },
+    { key: 'tr_fm', why: 'FM is a widely used technique and one of the least understood.' },
   ],
   /**
    * ⛔ OWNER OVERRULE, 2026-09-20, and the glossary backs it: eleven Cymatics /
@@ -542,7 +542,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   'cert-time-based-and-creative-fx-v3': [
     { key: 'tr_reverb', why: 'Reverb is one of the two named topics of this certificate.' },
     { key: 'tr_delay', why: 'Delay is the other, and chorus and flanging below are built from it.' },
-    { key: 'tr_chorus', why: 'Chorus is a modulated delay — the first of the three comb-filter effects.' },
+    { key: 'tr_chorus', why: 'Chorus is a modulated delay — the first of the three sweeping-notch effects.' },
     { key: 'tr_flanger', why: 'Flanging is the same idea at a shorter delay, and it sounds nothing like chorus.' },
     { key: 'tr_phaser', why: 'Phasing uses all-pass stages instead of delay, and the difference matters in a mix.' },
     { key: 'ear_delay', why: 'Setting a delay to the song means hearing its time, not reading it.' },
@@ -562,14 +562,14 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_phase', why: 'Out-of-phase bass will not cut — mono compatibility is a physical limit here, not a preference.' },
   ],
   'cert-vocal-mixing-specialist-v3': [
-    { key: 'tr_smart_processors', why: 'De-essing is the one process every vocal mix needs and most people set wrong.' },
+    { key: 'tr_smart_processors', why: 'De-essing is a process most vocal mixes need and most people set wrong.' },
     { key: 'tr_compression', why: 'A vocal sits in a mix because of what the compressor is doing to its envelope.' },
     { key: 'tr_reverb', why: 'Where the vocal sits in space is a reverb decision.' },
   ],
   'cert-vocal-recording-and-production-v3': [
     { key: 'tr_mic_select', why: 'The vocal microphone choice shapes everything downstream.' },
     { key: 'tr_smart_processors', why: 'Sibilance starts in the mouth, the microphone can make it worse, and it is dealt with here.' },
-    { key: 'tr_autotune', why: 'Tuning a vocal is an expected deliverable, and it has to be done on purpose.' },
+    { key: 'tr_autotune', why: 'In most pop work, tuning a vocal is an expected deliverable, and it has to be done on purpose.' },
     ...mk('E01', 'E02', 'E03'),
   ],
   'cert-vr-ar-spatial-sound-v3': [
@@ -592,7 +592,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_speech', why: 'Voice is the output AI audio is most often asked for, and the hardest to judge.' },
   ],
   'prog-analog-and-vintage-audio-engineering-v3': [
-    { key: 'tr_tube', why: 'Vintage audio is tube audio — start with how the tube amplifies.' },
+    { key: 'tr_tube', why: 'Much vintage audio is tube audio — start with how the tube amplifies.' },
     { key: 'tr_amp', why: 'Classes, loading and transformers are the rest of the analog signal path.' },
   ],
   'prog-applied-and-physical-acoustics-science-v3': [
@@ -632,7 +632,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   'prog-broadcast-podcast-and-streaming-audio-v3': [
     { key: 'tr_speech', why: 'Everything in this program is carried by the voice.' },
     { key: 'tr_eq', why: 'Broadcast tonal shaping is filtering with a house sound to hit.' },
-    { key: 'tr_compression', why: 'The air chain is compression.' },
+    { key: 'tr_compression', why: 'The air chain is built around compression and limiting.' },
     { key: 'tr_limiter', why: 'Every one of these outputs is delivered to a loudness target.' },
     ...mk('B01', 'B07'),
   ],
@@ -644,7 +644,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'prog-concert-and-festival-production-v3': [
     { key: 'tr_sound_systems', why: 'A concert rig is designed, wired, tuned and fault-found on a deadline.' },
-    { key: 'tr_eq', why: 'Tuning a rig to a venue is filtering it.' },
+    { key: 'tr_eq', why: 'Tuning a rig to a venue is largely filtering it, once aim and delay are set.' },
     { key: 'tr_phase', why: 'Sub-to-top alignment decides whether the low end works at all.' },
     { key: 'ear_frequency', why: 'Finding a feeding-back frequency by ear, fast, is daily work on a show.' },
     ...beg('mxb_sends'),
@@ -659,7 +659,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'prog-electronic-music-production-and-synthesis-v3': [
     { key: 'tr_oscillator', why: 'Every sound in this program starts at an oscillator.' },
-    { key: 'tr_modular', why: 'Oscillator, filter, amplifier, LFO and envelope is the patch behind every synthesiser you will use.' },
+    { key: 'tr_modular', why: 'Oscillator, filter, amplifier, LFO and envelope is the patch behind most synthesisers you will use.' },
     { key: 'tr_eq', why: 'Synthesised parts are fitted together with frequency decisions.' },
     { key: 'tr_compression', why: 'Electronic music is built on deliberate dynamics control.' },
     ...beg('mxb_static', 'mxb_pan', 'mxb_eq', 'mxb_comp', 'mxb_space', 'mxb_auto', 'mxb_export'),
@@ -676,7 +676,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   'prog-forensic-and-investigative-audio-v3': [
     { key: 'tr_speech', why: 'The evidence is nearly always speech.' },
     { key: 'tr_eq', why: 'Enhancement is filtering, and it has to be justifiable.' },
-    { key: 'ear_defect', why: 'Dropouts, clicks and discontinuities are the first signs of an edit, and you have to hear them.' },
+    { key: 'ear_defect', why: 'Dropouts, clicks and discontinuities can be signs of an edit, though they have other causes too, and you have to hear them.' },
   ],
   'prog-game-and-interactive-audio-v3': [
     { key: 'tr_binaural', why: 'Interactive audio places objects around the player’s head.' },
@@ -686,14 +686,14 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   'prog-hearing-science-and-psychoacoustics-v3': [
     { key: 'tr_speech', why: 'Speech perception is central to this program.' },
     { key: 'tr_envelope', why: 'Attack, decay and resonance identification is one of its named topics.' },
-    { key: 'tr_harmonic', why: 'Instrument recognition is one of its topics, and timbre is harmonic content.' },
+    { key: 'tr_harmonic', why: 'Instrument recognition is one of its topics, and timbre is largely harmonic content.' },
     { key: 'ear_frequency', why: 'Pitch and frequency perception are easier to reason about once you have tested your own ears on them.' },
     { key: 'ear_loudness', why: 'Loudness perception is easier to trust once you have measured how small a level change you can actually hear.' },
   ],
   'prog-immersive-and-spatial-audio-v3': [
     { key: 'tr_binaural', why: 'Most immersive listening happens on headphones, binaurally.' },
     { key: 'tr_stereo', why: 'Immersive mixes are still checked folded to stereo and mono.' },
-    { key: 'tr_reverb', why: 'Spatial audio is largely a reverb and early-reflection problem.' },
+    { key: 'tr_reverb', why: 'Spatial audio starts with direction cues; reverb and early reflections add the distance and the room.' },
     ...mk('F10'),
   ],
   'prog-live-sound-engineering-v3': [

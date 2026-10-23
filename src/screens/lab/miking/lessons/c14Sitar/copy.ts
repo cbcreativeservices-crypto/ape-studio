@@ -29,7 +29,7 @@ const base = stringsCopy({
   strikerPhrase: 'mizrab',
   soundReveal: 'The strings move very little air on their own: the bridge rocking the BOARD makes most of the sound — and on a sitar with sympathetic strings, they keep a shimmer ringing after the note.',
   soundAfter: 'Then the strings, the board and the gourd’s air keep ringing together — the BODY of the note — and the sympathetic strings that match it ring on.',
-  shapesNote2: 'This is an ideal string between rigid ends. A real sitar string grazes the broad, curved top of its bridge as it swings, which adds brightness and buzz the ideal string does not have — the jawari sound, set by the player, never by a mic.',
+  shapesNote2: 'This is an ideal string between rigid ends. A real sitar string grazes the broad, curved top of its bridge as it swings, which adds brightness and buzz the ideal string does not have — the jawari sound, set by the player and their bridge maker, never by a mic.',
   coupledNote: 'The board bows in and out round the bridge over the gourd’s air — a simplified picture of the lowest motion. A close mic hears the part of the board, the bridge or the neck it faces most.',
   setting: {
     kitA11y: 'The sitar player from above, seated on a rug: the gourd on the left foot, the neck rising to the left past the shoulder; the tabla player beside, a tanpura player behind.',

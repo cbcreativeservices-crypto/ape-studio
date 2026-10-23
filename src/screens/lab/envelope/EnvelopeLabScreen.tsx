@@ -184,7 +184,7 @@ function PageGallery({ ctx }: { ctx: PageCtx }) {
         <>
           <SpeechChart />
           <Card>
-            <Body>Spoken language is a sequence of changing transients and sustained sounds: consonants are short bursts and stops, vowels are the sustained parts. Each syllable has its own small envelope, with near-silence between many of them — which is why speech needs its onsets intact to stay intelligible.</Body>
+            <Body>Spoken language is a sequence of changing transients and sustained sounds: many consonants are short bursts and stops, vowels are the sustained parts. Each syllable has its own small envelope, with near-silence between many of them — which is why speech needs its onsets intact to stay intelligible.</Body>
             <Body>Notice the gaps: a listener separates words by those near-silences and the sharp onsets that follow them. Squash or smear the onsets — a fast, heavy compressor, a boomy room — and the words run together.</Body>{/* NEW COPY */}
             <Text style={styles.read}>{SPEECH_SYLLABLES.map((s) => s.label).join(' · ')} — {SPEECH_SYLLABLES.length} syllable envelopes</Text>
           </Card>
@@ -228,7 +228,7 @@ function SpeechChart() {
 
 const WHY: [string, string][] = [
   ['Percussion', 'a drum IS its transient — remove the onset and a snare becomes a burst of noise with no hit'],
-  ['Speech intelligibility', 'consonants are transients; when they are lost or smeared, words blur together'],
+  ['Speech intelligibility', 'many consonants are transients; when they are lost or smeared, words blur together'],
   ['Instrument identification', 'the first tens of milliseconds tell you piano vs guitar more than the sustained tone does'],
   ['Compression', 'a compressor’s attack time decides whether the transient passes through or gets flattened'],
   ['Limiters', 'peak limiters exist because transients are where the peaks are'],
@@ -344,7 +344,7 @@ function PageDuration({ ctx }: { ctx: PageCtx }) {
           <Body>Tap an example to place it on the timeline. Typical values — real sounds vary.</Body>
         )}
         {/* NEW COPY */}
-        <Body>Why duration matters: the shorter a sound, the less time any processor has to react — an impulse is over before a slow compressor notices it, which is why limiters look ahead. The longer a sound, the more its body, not its onset, sets what a meter reads as its level.</Body>
+        <Body>Why duration matters: the shorter a sound, the less time any processor has to react — an impulse is over before a slow compressor notices it, which is why many digital limiters look ahead. The longer a sound, the more its body, not its onset, sets what a meter reads as its level.</Body>
       </Card>
     </View>
   );
@@ -381,7 +381,7 @@ function PagePeakAverage({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>COMPUTED FROM THE DRAWN WAVEFORM · RELATIVE TO ITS PEAK</Eyebrow>
         {crestRead}
-        <Body>{id === 'snare' ? 'The percussive sound spends almost all its time far below its peak: a big crest factor. A peak meter reads it as loud; an average meter barely moves.' : 'The sustained sound sits near its peak most of the time: a small crest factor. Peak and average meters nearly agree.'}</Body>
+        <Body>{id === 'snare' ? 'The percussive sound spends almost all its time far below its peak: a big crest factor. A peak meter reads it high; an average meter barely moves.' : 'The sustained sound sits near its peak most of the time: a small crest factor. Peak and average meters nearly agree.'}</Body>
       </Card>
       <Card>
         <Eyebrow>WORKED EXAMPLE · FOUR DIFFERENT SPANS</Eyebrow>
@@ -414,7 +414,7 @@ function PageScope({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>WAVE PROPAGATION · THE WAVE PHYSICS LAB</Eyebrow>
         <Body>How sound travels through a medium and meets the environment: speed of sound, distance, reflection, absorption, diffraction, refraction, coverage.</Body>
       </Card>
-      <Body>ADSR does not describe propagation. A snare’s envelope is the same whether you stand at one metre or twenty — what changes with distance and the room is propagation, and that is the next lab’s subject.</Body>
+      <Body>ADSR does not describe propagation. A snare’s envelope at the source is the same whether you stand at one metre or twenty — what changes with distance and the room is propagation, and that is the next lab’s subject.</Body>
       <Body>The classic mix-up: a long reverb tail is NOT a long release. Release is the source stopping; the tail is the room still returning energy after it has.</Body>{/* NEW COPY */}
       {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : null}
     </View>
@@ -463,7 +463,7 @@ const CHECKS: { q: string; options: string[]; correct: number; explain: string }
     q: 'Does ADSR describe how sound travels through a room?',
     options: ['Only for percussive sounds, where the room matters most', 'Yes — the release stage is the room’s decay, which is why long halls sound sustained', 'No — ADSR describes the source over time; travel through space is propagation', 'Only outdoors, where there are no reflections to shape it'], // NEW COPY (rebalanced)
     correct: 2,
-    explain: 'ADSR, transients and duration describe the sound at its source. The room’s decay is reverberation — propagation, the Wave Physics lab’s subject. A snare’s release is the same in any room.', // NEW COPY
+    explain: 'ADSR, transients and duration describe the sound at its source. The room’s decay is reverberation — propagation, the Wave Physics lab’s subject. A snare’s release at the source is the same in any room.', // NEW COPY
   },
 ];
 

@@ -75,7 +75,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     limitations: [
       'Smaller contacts than 1/4-inch; worn or dirty jacks cause intermittents',
       'A patch point tells you nothing about what is wired behind it — the bay label and wiring chart do',
-      'Normalled bays pass signal with no cable inserted; patching changes routing, it does not simply "add" a connection',
+      'Normalled bays pass signal with no cable inserted; a plug in the bottom (input) jack breaks that path, while on a half-normalled bay a plug in the top jack only takes a copy',
     ],
     commonMistakes: [
       'Assuming a TT plug and a 1/4-inch plug are the same connector at different ages — they are different sizes',
@@ -170,7 +170,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     commonMistakes: [
       'Treating every 1/4-inch jack as the same job — a patch point, an instrument input, and an insert jack all use the same shell',
       'Using a standard TRS plug in an older long-frame bay because it "sort of fits"',
-      'Forgetting that inserting a cable into a normalled point interrupts the built-in signal path',
+      'Forgetting that a plug in a normalled point can break the built-in signal path (on a half-normalled bay, only the bottom jack does)',
     ],
     notInterchangeableWith: [
       {
@@ -255,7 +255,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
       {
         otherName: 'DB25 wired to a different audio convention (or the AES3 digital variant)',
         why: 'The identical shell carries at least two distinct professional audio pinout families plus legacy variations; the connector mates regardless.',
-        consequence: 'Channels land on the wrong pins: no signal, or the wrong channels appear — a routing failure, not equipment damage.',
+        consequence: 'Channels land on the wrong pins: no signal, or the wrong channels appear. If a digital (AES3) DB25 lands on analog inputs, expect loud noise — keep monitors down.',
       },
       {
         otherName: 'Computer-heritage DB25 data cable (printer/serial)',
@@ -780,7 +780,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     safety: {
       level: 'speaker',
       cautions: [
-        'Amplifier outputs on high-power systems reach and can exceed 100 V — a genuine electric-shock hazard, which is why amplifier manufacturers mark output terminals with the lightning-flash symbol and require covers over them. Never touch exposed speaker wiring or connector contacts while amplifiers are on; make and break speaker-level multiway connections with the amps muted or off.',
+        'Amplifier outputs on high-power systems reach and can exceed 100 V — a genuine electric-shock hazard, which is why amplifier manufacturers mark output terminals with the lightning-flash symbol, and many supply covers for them. Never touch exposed speaker wiring or connector contacts while amplifiers are on; make and break speaker-level multiway connections with the amps muted or off.',
         'Loudspeaker connectors and cabling are never substituted with mains connectors or mains thinking — different system, different rules.',
       ],
     },
@@ -1044,7 +1044,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
         'Feeder connection and disconnection is strictly qualified-person work under site electrical procedures, including connection order and lockout. There is no beginner version of this task.',
     },
     advantages: [
-      'Carries service-level current that no multi-pin connector format handles',
+      'Carries service-level current that most multi-pin connector formats are not built for',
       'Single-conductor-per-connector format lets qualified crews build large services cable by cable',
     ],
     limitations: [

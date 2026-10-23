@@ -226,7 +226,7 @@ function PageLaptop({ ctx }: { ctx: PageCtx }) {
         <Note>This lab simulates the laptop, its USB and the interface — it does not touch a real device. The software you use has its own audio setup page; its numbers are the ones that count.</Note>
       </Step>
       <Step n={3}>
-        <P>Try bigger buffers: the dropouts stop, and LATENCY grows — at 2048 a jog move is heard about 44 ms late. Then pick STEMS LIVE as the workload: the load jumps and the dropouts come back.</P>
+        <P>Try bigger buffers: the dropouts stop, and LATENCY grows — at 2048 a jog move is heard over 40 ms late. Then pick STEMS LIVE as the workload: the load jumps and the dropouts come back.</P>
         <P>Open RIG and unplug the CONTROLLER: the music plays on — that cable never carried audio. Plug it back in. Unplug the MIXER’s USB: the device vanishes from the list and both channels go silent.</P>
       </Step>
       <Step n={4}>

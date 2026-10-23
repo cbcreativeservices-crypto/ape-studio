@@ -55,7 +55,7 @@ describe('r2_soundsystems', () => {
       .link('amp', 'w1', 'aux1').link('amp', 'w2', 'aux2').link('amp', 'w3', 'aux3').link('amp', 'w4', 'aux4').link('con', 'l', 'mainL').link('con', 'r', 'mainR');
     assert.deepEqual(unmet('monitors', b.s, r.cs), ['feeds']);
     assert.equal(sys.ampsOverChannels(b.s)[0].outs.length, 4);
-    assert.match(cap('monitors').requirements.find((q) => q.id === 'feeds')!.why!(b.s, r.cs) ?? '', /An amplifier has two channels: one mix each/);
+    assert.match(cap('monitors').requirements.find((q) => q.id === 'feeds')!.why!(b.s, r.cs) ?? '', /This lab’s amplifier has two channels: one mix each/);
     // two amps, two mixes each, pass
     const b2 = new Build();
     b2.put('m1', 'vocalMic', 'stageC').put('m2', 'instrumentMic', 'riserC').put('d1', 'di', 'stageL').put('d2', 'di', 'stageR').put('con', 'console', 'foh')

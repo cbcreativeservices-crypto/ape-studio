@@ -125,7 +125,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A vehicle pass needs a permitted, closed route, a driver, a safety lead and a plan that keeps everyone outside the envelope. Here it is a paper plan only.',
     why: {
       'Ask a friend to drive past the stand': 'Never stage a vehicle pass yourself: it needs a closed route and professional control.',
-      'Use a quiet public road early in the day': 'A public road is never the site: a stand or a cone is not traffic control.',
+      'Use a quiet public road early in the day': 'An open public road is never the site: a stand or a cone is not traffic control.',
     },
   },
   {
@@ -509,13 +509,13 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A fixed omni behind the line, headroom for the peak', ok: true, power: 'phantom', feedback: 'A fair plan: steady coverage, with headroom for the loudest moment.' },
       { id: 'c', label: 'A stand at the route’s edge for a closer sound', ok: false, power: 'phantom', feedback: 'Inside the envelope and the stopping room: never.' },
       { id: 'd', label: 'A boom held over the route as the car passes', ok: false, power: 'phantom', feedback: 'No boom over a route with a moving vehicle without qualified production control.' },
-      { id: 'e', label: 'Ask the driver to speed up for a bigger shift', ok: false, power: 'phantom', feedback: 'Never ask a driver to change speed for a mic.' },
+      { id: 'e', label: 'Ask the driver to speed up for a bigger shift', ok: false, power: 'phantom', feedback: 'Never ask the driver for a new speed on the spot: the safety lead sets speeds in the plan.' },
     ],
     reasons: [
       { id: 'r.line', label: 'All crew and mics stay behind the setback line', role: 'required', feedback: 'Say where the people and the mics stand.' },
       { id: 'r.lead', label: 'The safety lead approves the plan and the stop signal', role: 'required', feedback: 'A vehicle session has a safety lead and a stop signal.' },
       { id: 'r.ears', label: 'Hearing protection that keeps awareness', role: 'optional', feedback: 'A fair reason near a loud vehicle.' },
-      { id: 'r.speed', label: 'A faster pass gives a better shift', role: 'wrong', feedback: 'Never ask a driver to change speed for a mic.' },
+      { id: 'r.speed', label: 'A faster pass gives a better shift', role: 'wrong', feedback: 'Never ask the driver for a new speed on the spot: the safety lead sets speeds in the plan.' },
     ],
     explain: 'Two plans pass. What passes is the reasoning: everyone behind the line, a safety lead and a stop signal, headroom for the loudest moment — and the pass left to the professionals.',
   },
@@ -575,7 +575,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['A paper plan only', 'A quick road test', 'A friend driving by'],
     correct: 'A paper plan only',
     explain: 'A vehicle session needs a closed, permitted route and professional control: here it is planned on paper only.',
-    why: { 'A quick road test': 'Never on a public road, however quick.', 'A friend driving by': 'Never staged by you, on any road.' },
+    why: { 'A quick road test': 'Never on an open public road, however quick.', 'A friend driving by': 'Never staged by you, on any road.' },
   },
   {
     id: 'pb.q.6',

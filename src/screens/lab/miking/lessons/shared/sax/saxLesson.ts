@@ -122,7 +122,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       title: 'Two microphones',
       goal: `See why a close and a farther mic on one ${s} can sound hollow together, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.`,
       credit: { scenarios: [id('two.1'), id('two.2'), id('two.3'), id('two.4')], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-      takeaway: 'Two mics at different distances hear the horn at different times: some pitches cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Judge the pair in mono, at matched levels.',
+      takeaway: 'Two mics at different distances hear the horn at different times: some frequencies cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Judge the pair in mono, at matched levels.',
     },
     troubleshoot: {
       title: 'Troubleshoot',
@@ -280,7 +280,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       correct: 'Yes — its deepest rejection lies near 125°, off the rear axis',
       explain: 'A supercardioid’s deepest rejection sits on a cone about 125° off the front — toward the rear but off the axis; straight behind it hears a little. A real null is shallower than the drawing, and least deep in the lows.',
       why: {
-        'No — a directional mic rejects most of all directly at its back': 'Only a cardioid rejects most straight behind. A supercardioid has a small rear lobe there.',
+        'No — a directional mic rejects most of all directly at its back': 'A cardioid rejects most straight behind; a supercardioid has a small rear lobe there.',
         'No — it rejects most at its sides, 90° off the front axis': 'At 90° a supercardioid still hears a fair amount. The rejection deepens toward the rear, near 125°.',
       },
     }),
@@ -543,7 +543,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       correct: 'Through the bell, the only open end',
       explain: 'With every key closed the air column runs the whole length, and the lowest note leaves through the bell.',
       why: {
-        'Through the octave vent near the top': 'The octave vent is closed for the lowest note — it opens only for the second register.',
+        'Through the octave vent near the top': 'The octave vent is closed for the lowest note — it opens for the second register and most notes above it.',
         'Evenly through all the closed holes': 'A closed hole is sealed by its pad; nothing leaves there.',
       },
     },
@@ -668,7 +668,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       B: { typeId: c.use.twoBType, pattern: 'cardioid', zone: c.use.twoB },
       learn: [
         'A second mic — a room mic, or a farther stand mic beside a close one or a clip — is a choice for a reason, not a requirement. Hear each mic alone first: each should work on its own.',
-        'When the pair goes in: hear it in MONO at the intended levels. Move or rebalance a mic first; check both polarity states at matched levels only after that — a polarity switch cannot line up every pitch.',
+        'When the pair goes in: hear it in MONO at the intended levels. Move or rebalance a mic first; check both polarity states at matched levels only after that — a polarity switch cannot line up every frequency.',
       ],
       warn: 'This simplified graph treats the horn as one point and both mics as hearing the same sound. Real mics at different distances hear different mixes of holes, bell and room, so read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative. Judge by ear, in mono, at matched levels.',
     },

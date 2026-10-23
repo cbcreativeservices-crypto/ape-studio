@@ -238,7 +238,7 @@ export const M12_POLARITY: EarModule = {
         reveal:
           level === 1
             ? 'One sum had a copy polarity-flipped — identical signals cancel COMPLETELY, so that clip is digital silence (not a playback fault). Level intentionally not re-matched here: the drop IS the lesson.' // NEW COPY
-            : `The flipped sum loses its low end (copies ${offsetMs} ms apart${mismatchDb ? ', 3 dB mismatched' : ''}) — hollow, not silent. A lone flip on ONE signal is inaudible; the SUM is where polarity bites.`,
+            : `The flipped sum loses its low end (copies ${offsetMs} ms apart${mismatchDb ? ', 3 dB mismatched' : ''}) — hollow, not silent. A lone flip on ONE signal is rarely audible; the SUM is where polarity bites.`,
         seeIt: {
           kind: 'spectrum',
           clips: [0, 1],

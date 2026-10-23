@@ -161,7 +161,7 @@ export function TrayButton({ label, onPress, tint = 'amber', disabled }: { label
 
 /** The hearing rule (safety review 6 merged with audio review 16). */
 export const SAFETY_LEVEL_NOTE =
-  'Set your monitoring level with an SPL meter, not by feel. Calibrate one speaker at a time with pink noise: about 79–85 dB SPL (C-weighted, slow) per speaker at the listening position, the lower end for a small room — and work at about 75–80 dB C-weighted for long sessions in a small room, with 85 only briefly. 85 dB(A) for eight hours is the occupational limit and every +3 dB halves the safe time, so mix lower than that and take a 10–15-minute quiet break every hour. Hearing damage is cumulative and permanent — turn down before you chase bass by turning up.';
+  'Set your monitoring level with an SPL meter, not by feel. Calibrate one speaker at a time with pink noise: about 79–85 dB SPL (C-weighted, slow) per speaker at the listening position, the lower end for a small room — and work at about 75–80 dB C-weighted for long sessions in a small room, with 85 only briefly. 85 dB(A) for eight hours is the NIOSH recommended limit and every +3 dB halves the safe time, so mix lower than that and take a 10–15-minute quiet break every hour. Hearing damage is cumulative and permanent — turn down before you chase bass by turning up.';
 
 /** The one-line pointer for modules that do not carry the whole note. */
 export const SAFETY_LEVEL_POINTER = 'Hearing first: calibrate with an SPL meter (about 75–80 dB C for long sessions in a small room, 85 only briefly) and take a quiet break every hour — the full note is in MONITORING SETUP.';

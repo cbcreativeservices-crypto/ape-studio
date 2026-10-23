@@ -78,7 +78,7 @@ function underZone(id: string, v: 'upright' | 'inverted'): DocumentedZone {
   const b = v === 'upright' ? BAND.underU : BAND.underI;
   return {
     id,
-    label: v === 'upright' ? 'Underneath, below the lip' : 'Underneath, below the cup',
+    label: v === 'upright' ? 'Underneath, below the valley' : 'Underneath, below the cup',
     band: v === 'upright'
       ? 'Start about 8–15 cm (3–6 in) under the plate’s lowest point — the valley — on the side away from the player, aimed up: below its downward travel.'
       : 'Start about 8–15 cm (3–6 in) under the plate’s lowest point — the turned-down cup — on the side away from the player, aimed up: below its downward travel.',

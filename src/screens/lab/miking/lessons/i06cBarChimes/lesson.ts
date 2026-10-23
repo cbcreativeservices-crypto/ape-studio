@@ -147,7 +147,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A faster or stronger sweep, or a striker, changes the source before the mic does. Then compare a safe mic view at matched level.',
     why: {
       'A bigger condenser, which will soften the strike of each bar': 'Diaphragm size is not a tone control. Start with the source.',
-      'Lower gain until the harshness goes away': 'Gain changes the level, not the balance: it stays harsh, only quieter.',
+      'Lower gain until the harshness goes away': 'Gain changes the level, not the balance: unless the input is clipping, it stays harsh, only quieter.',
     },
   },
   {
@@ -442,7 +442,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'A straight row on one rail, swept by hand',
     explain: 'A mark tree’s graduated bars hang in a straight row from one rail and are swept by the hand; wind chimes hang in a circle. A bell tree is nested bells.',
     why: {
-      'They are made of wood rather than metal': 'Bar chimes are metal bars on a wooden rail.',
+      'They are made of wood rather than metal': 'Bar chimes are metal bars, most often on a wooden rail.',
       'They hang in a circle and move in the wind': 'That describes wind chimes.',
     },
   },

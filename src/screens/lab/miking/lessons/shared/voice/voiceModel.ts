@@ -24,7 +24,7 @@ export const VOICE_PART_WORDS = {
   folds: { label: 'vocal folds (in the throat)', short: 'vocal folds', role: 'Two small folds in the voice box, low in the throat. Breath from the lungs sets them buzzing: that buzz is the raw sound, before the throat and the mouth shape it.' },
   head: { label: 'head and face', short: 'head', role: 'The throat, the mouth and the nose shape the buzz into vowels and words. The head moves as the singer sings — leave the mic room, and never let a mic or a screen touch the face.' },
   chest: { label: 'chest', short: 'chest', role: 'The breath comes from the lungs here, and the chest vibrates as the singer sings — but a mic hears the voice from the mouth. Aiming at the chest is an idea to try deliberately, not a fix for a low voice.' },
-  phones: { label: 'closed-back headphones', short: 'headphones', role: 'In the studio the singer hears the track on closed-back headphones, the loudspeakers off — so the mic hears the voice, not the track. Never set headphones down on or next to a live mic.' },
+  phones: { label: 'closed-back headphones', short: 'headphones', role: 'In most studio sessions the singer hears the track on closed-back headphones, the loudspeakers off — so the mic hears the voice, not the track. Never set headphones down on or next to a live mic.' },
 } as const;
 
 export type StandingVoiceOpts = {

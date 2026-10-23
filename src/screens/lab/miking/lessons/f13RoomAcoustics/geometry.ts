@@ -44,7 +44,7 @@ const PARTS: Part[] = [
     id: 'src',
     label: 'the omni test source',
     short: 'test source',
-    role: 'A twelve-sided loudspeaker ball on a stand at a performer position: it sends sound out broadly, much as a performer would — so the room, not one loudspeaker’s aim, shapes the result.',
+    role: 'A twelve-sided loudspeaker ball on a stand at a performer position: it sends sound out about evenly in all directions, as the test method asks — so the room, not one loudspeaker’s aim, shapes the result.',
     variants: ['room'],
     solid: { kind: 'capsule', a: { x: 0, y: 0, z: 0 }, b: { x: 0, y: F13_FLOOR, z: 0 }, r: SRC_R + 20 },
     prov: ROOM,

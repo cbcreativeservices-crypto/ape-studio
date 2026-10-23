@@ -37,7 +37,7 @@ export const C01_WEDGES: Wedge[] = [
     p: STEEL.fit.mouth,
     lift: 0,
     faces: { x: 0, y: 0, z: 1 },
-    note: 'Just above and behind the guitar mic’s front: in the front half of any pattern aimed at the guitar, so no null reaches it. Plan the balance instead.',
+    note: 'Just above and behind the guitar mic’s front: in the front half of most patterns aimed at the guitar, so a cardioid’s null does not reach it; a figure-8’s side null can. Plan the balance too.',
     prov: stage,
     glyph: 'none',
   },

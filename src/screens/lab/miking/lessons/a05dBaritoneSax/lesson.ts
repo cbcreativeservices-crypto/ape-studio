@@ -41,7 +41,7 @@ export const A05D_LESSON: Lesson = buildSaxLesson({
     explain: 'The baritone’s holes are spread along a much longer body, so one close capsule at the bell hears fewer of them. It still gives a steady, isolated sound; a stand mic a little farther off takes in more of the horn.',
     why: {
       'The baritone’s bell is too wide for a clip to grip': 'Clips are made for baritone bells. The issue is coverage: the holes are spread far apart.',
-      'A clip cuts off the baritone’s low notes by its design': 'A clip does not cut lows by itself — though a wireless pack’s low cut can.',
+      'A clip cuts off the baritone’s low notes by its design': 'Most clip mics do not cut lows by design — though a wireless pack’s low cut can.',
     },
   },
   mic4: {

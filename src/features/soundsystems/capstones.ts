@@ -239,7 +239,7 @@ const feedsReq = (text: string, extra: (v: FeedView) => boolean = () => true): R
   why: (s) => {
     const over = ampsOverChannels(s)[0];
     if (over?.topAndSub.length) return topAndSubWhy(over.topAndSub);
-    if (over) return `An amplifier has two channels: one mix each. This one is asked to pass ${over.outs.length} (${over.outs.map(outTag).join(', ')}) — give the extra wedges or boxes an amplifier of their own.`;
+    if (over) return `This lab’s amplifier has two channels: one mix each. This one is asked to pass ${over.outs.length} (${over.outs.map(outTag).join(', ')}) — give the extra wedges or boxes an amplifier of their own.`;
     return misfitWhy(s);
   },
 });

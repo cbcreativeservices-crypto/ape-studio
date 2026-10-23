@@ -24,9 +24,9 @@ function tomParts(key: string, d: PlacedDrum, name: string, listIn: readonly str
     { id: `${key}.batter`, label: `${name} batter head`, short: 'batter', role: 'The top head, struck by the sticks. The attack starts here.', moving: true, clearance: D.headClear, prov: size, listIn: [...listIn], solid: S.batter },
     { id: `${key}.reso`, label: `${name} resonant head`, short: 'bottom head', role: 'The bottom head. The air inside drives it: it carries much of the drum’s ring and low end — no wires, unlike a snare.', moving: true, clearance: D.resoClear, prov: size, listIn: [...listIn], variants: resoVariants, solid: S.reso! },
     { id: `${key}.shell`, label: `${name} shell`, short: 'shell', role: 'The shell between the heads, usually wood. With the air inside, it couples the two heads.', prov: d.spec.tShell.prov, listIn: [...listIn], solid: S.shell },
-    { id: `${key}.hoop`, label: `${name} hoop (the rim)`, short: 'rim', role: 'The metal hoop holding the batter head — the rim the starting points read from. Rim hits strike it.', prov: d.spec.hoop.t.prov, listIn: [...listIn], solid: S.hoopTop },
+    { id: `${key}.hoop`, label: `${name} hoop (the rim)`, short: 'rim', role: 'The hoop, usually metal, holding the batter head — the rim the starting points read from. Rim hits strike it.', prov: d.spec.hoop.t.prov, listIn: [...listIn], solid: S.hoopTop },
     { id: `${key}.hoopBottom`, label: `${name} bottom hoop`, short: 'bottom rim', role: 'The hoop holding the resonant head.', prov: d.spec.hoop.t.prov, listIn: [], variants: resoVariants, solid: S.hoopBottom! },
-    { id: `${key}.lugs`, label: `${name} lugs and rods`, short: 'lugs', role: 'The tension rods and lugs that tune each head. A mic between two lugs is not a starting point.', prov: d.spec.rods.n.prov, listIn: [...listIn], solid: S.lugs },
+    { id: `${key}.lugs`, label: `${name} lugs and rods`, short: 'lugs', role: 'The tension rods and lugs that tune each head. A mic aimed at the shell between two lugs is not a starting point.', prov: d.spec.rods.n.prov, listIn: [...listIn], solid: S.lugs },
   ];
 }
 

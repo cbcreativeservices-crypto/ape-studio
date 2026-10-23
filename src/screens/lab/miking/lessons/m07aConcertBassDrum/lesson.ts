@@ -18,7 +18,7 @@ const pages: LessonPages = {
     title: 'Meet the concert bass drum',
     goal: 'Get to know the concert bass drum — what it is, where you meet it, what it does in the music, and its parts — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A large two-headed drum hanging in a tilting stand, its heads facing sideways. The player strikes and damps; the crew sets and locks the stand — nobody moves it for a mic.',
+    takeaway: 'A large two-headed drum hanging in a tilting stand, its heads facing sideways. The player strikes and damps; the player or crew sets and locks the stand — nobody moves it for a mic.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -116,7 +116,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The bass drum’s angle looks awkward for your mic. What do you do?',
     options: ['Move the mic; the drum stays as the crew set and locked it', 'Loosen the wing bolts and tilt the drum to suit the mic', 'Roll the stand a little closer, then lock the brakes again'],
     correct: 'Move the mic; the drum stays as the crew set and locked it',
-    explain: 'Never unlock, tilt, rotate or lift the drum for a mic. The stand’s brakes and pivot bolts are set by the percussion crew, following its manual — a falling bass drum can injure someone.',
+    explain: 'Never unlock, tilt, rotate or lift the drum for a mic. The stand’s brakes and pivot bolts are set by the player or the percussion crew, following its manual — a falling bass drum can injure someone.',
     why: {
       'Loosen the wing bolts and tilt the drum to suit the mic': 'Never adjust the stand: only the crew does that, following its manual. Move the mic instead.',
       'Roll the stand a little closer, then lock the brakes again': 'Moving the stand is the crew’s job, not the engineer’s. Move the mic.',
@@ -301,7 +301,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No fixed rule: compare both states in mono, at matched level',
     explain: 'A fixed automatic reversal for the far head is unjustified. Check both spots together, then against the main pickup; remove the far-head mic if it adds little.',
     why: {
-      'Yes — a far-head mic is wired the wrong way round by nature': 'Nothing is “wrong” by nature: positions and arrival times decide the sum. Compare both states.',
+      'Yes — a far-head mic is wired the wrong way round by nature': 'It is not wired wrong: facing the far head it often hears the thump opposite, but positions and arrival times also decide the sum. Compare both states.',
       'Yes, and delay it too, so both mics line up exactly in time again': 'One source in a hall cannot line up at every frequency and every reflection; judge by ear.',
     },
   },
@@ -378,7 +378,7 @@ const symptoms: Symptom[] = [
 ];
 
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the playing head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is measured from.' };
-const STAND_REASON: SetupReason = { id: 'r.stand', label: 'The drum and its stand stay exactly as the crew set them', role: 'required', feedback: 'The drum never moves for a mic.' };
+const STAND_REASON: SetupReason = { id: 'r.stand', label: 'The drum and its stand stay exactly as the player and crew set them', role: 'required', feedback: 'You never move the drum for a mic; only the player and crew may.' };
 const LOW_REASON: SetupReason = { id: 'r.low', label: 'It will give the most low end of any position', role: 'wrong', feedback: 'No position always gives the most low end — and the main pickup carries much of it.' };
 
 const setupTasks: SetupTask[] = [
@@ -405,7 +405,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Small dynamic about 45 cm from the playing head, looking diagonally down', ok: true, power: 'none', feedback: 'The suggested starting point; check its gain before feedback with the operator.' },
       { id: 'c', label: 'Small condenser at the 45 cm spot', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A room mic two metres away to catch the whole drum', ok: false, power: 'none', feedback: 'On a loud amplified stage a far mic hears more bleed and gives less gain before feedback.' },
-      { id: 'e', label: 'Tilt the drum toward the audience so it needs no mic', ok: false, power: 'none', feedback: 'The drum is not moved for sound; that is the player’s and crew’s call, under the stand’s manual.' },
+      { id: 'e', label: 'Tilt the drum toward the audience so it needs no mic', ok: false, power: 'none', feedback: 'You do not move the drum yourself; that is the player’s and crew’s call, under the stand’s manual.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, STAND_REASON, BRAND_REASON, LOW_REASON],
     explain: 'Two playing-side positions pass. What passes is the reasoning: a starting point from the playing head, clear of the player, the drum left as set, and powered by what this input can supply.',
@@ -439,7 +439,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Who may unlock, tilt or move the drum in its stand?',
     options: ['The percussion crew, following the stand’s manual', 'The sound engineer, whenever a mic needs a bit more room', 'Anyone, once all four casters are unlocked'],
     correct: 'The percussion crew, following the stand’s manual',
-    explain: 'The stand’s brakes and pivot bolts are set by the crew following its manual (two people to lift). The engineer moves the mic, never the drum.',
+    explain: 'The stand’s brakes and pivot bolts are set by the player or crew following its manual (two people to lift). The engineer moves the mic, never the drum.',
     why: {
       'The sound engineer, whenever a mic needs a bit more room': 'Never: move the mic, not the drum.',
       'Anyone, once all four casters are unlocked': 'Unlocking is itself the crew’s job; a falling drum can injure someone.',
@@ -580,6 +580,6 @@ export const M07A_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. In an orchestra the main pickup often carries the bass drum’s low end already; when a spot helps, every drum, player and hall is different: move the mic, experiment, and trust your ears and the room. The drum and its stand never move for a mic. The lab is silent and draws a simplified picture: a 36 × 16 in drum, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. In an orchestra the main pickup often carries the bass drum’s low end already; when a spot helps, every drum, player and hall is different: move the mic, experiment, and trust your ears and the room. You never move the drum or its stand for a mic; only the player and crew may change them. The lab is silent and draws a simplified picture: a 36 × 16 in drum, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: CBD_COPY,
 };

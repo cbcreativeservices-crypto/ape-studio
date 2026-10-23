@@ -150,7 +150,7 @@ export const CI_CABLE_TYPES: CiCableType[] = [
     tint: CI_CLASS_TINTS.control,
     signal: 'RF / video / digital audio (word clock, AES3-id, antenna feeds)',
     use: 'both',
-    concerns: ['Impedance depends on geometry — kinks are permanent damage', 'Bend limits per spec', 'Connector quality dominates performance'],
+    concerns: ['Impedance depends on geometry — kinks are permanent damage', 'Bend limits per spec', 'Poor connectors are a leading cause of faults'],
   },
   {
     id: 'control',
@@ -174,7 +174,7 @@ export const CI_CABLE_TYPES: CiCableType[] = [
     tint: CI_CLASS_TINTS.analog,
     signal: 'Portable multichannel audio trunk',
     use: 'temporary',
-    concerns: ['Heavy — protect from traffic & casters', 'Coil and deploy properly (over-under for appropriate flexible cable)', 'Fan-out/connector strain'],
+    concerns: ['Heavy — protect from traffic & casters', 'Coil and deploy properly (over-under for single flexible cables; big snakes usually go on a reel)', 'Fan-out/connector strain'],
   },
   {
     id: 'tacfiber',

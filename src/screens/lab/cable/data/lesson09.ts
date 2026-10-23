@@ -68,7 +68,7 @@ export const HANDLING_PRACTICES: HandlingPractice[] = [
     label: 'KEEP IT DRY',
     title: 'Dry connections, unless the assembly is rated',
     copy:
-      'Keep connections dry unless the exact assembly is rated for the environment. Never handle energized power connections with wet hands, in rain, or in standing water — and outdoors, power belongs on GFCI-protected circuits with rated cords and connectors.',
+      'Keep connections dry unless the exact assembly is rated for the environment. Never handle energized power connections with wet hands, in rain, or in standing water — and outdoors, power belongs on GFCI- or RCD-protected circuits with rated cords and connectors.',
   },
   {
     // STANDARD PRACTICE: the both-ends labeling habit is textbook rigging

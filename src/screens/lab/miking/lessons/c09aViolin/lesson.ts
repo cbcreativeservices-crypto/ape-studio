@@ -58,7 +58,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a close and a farther mic on one violin can sound thin together, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: ['vn.two.1', 'vn.two.2', 'vn.two.3', 'vn.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics at different distances hear the violin at different times: some pitches cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Judge the pair in mono, at matched levels.',
+    takeaway: 'Two mics at different distances hear the violin at different times: some frequencies cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Judge the pair in mono, at matched levels.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -222,7 +222,7 @@ const scenarios: MikingScenario[] = [
     correct: 'More bow articulation and detail; less of the room',
     explain: 'Closer tends to bring more of the bow and the strings, more separation, and less room. Too close, the scratch can take over — and a directional mic adds low end (proximity effect).',
     why: {
-      'Only the level rises; the tone stays exactly the same': 'Distance changes the balance too: more bow, less room, more proximity effect.',
+      'Only the level rises; the tone stays exactly the same': 'Distance changes the balance too: more bow, less room, and more proximity effect on a directional mic.',
       'Less low end, because the mic is now nearer the strings': 'A directional mic moved closer tends to gain low end, not lose it.',
     },
   },
@@ -291,12 +291,12 @@ const scenarios: MikingScenario[] = [
     id: 'vn.two.1',
     page: 'twoMic',
     prompt: 'Why can a close spot mic and a farther mic on one violin sound thin together?',
-    options: ['The farther mic inverts the sound on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum', 'The sound reaches them at different times, so some pitches cancel'],
-    correct: 'The sound reaches them at different times, so some pitches cancel',
-    explain: 'The farther mic hears each note a little later. Summed, some pitches arrive out of step and cancel — a comb of notches. Move or rebalance first, then check polarity at matched levels.',
+    options: ['The farther mic inverts the sound on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum', 'The sound reaches them at different times, so some frequencies cancel'],
+    correct: 'The sound reaches them at different times, so some frequencies cancel',
+    explain: 'The farther mic hears each note a little later. Summed, some frequencies arrive out of step and cancel — a comb of notches. Move or rebalance first, then check polarity at matched levels.',
     why: {
       'The farther mic inverts the sound on its way there, so it cancels': 'Distance delays a sound; it does not flip its sign.',
-      'Two mics on one source cancel each other’s low end in the sum': 'Cancellation depends on the delay and the levels: some pitches dip, others add.',
+      'Two mics on one source cancel each other’s low end in the sum': 'Cancellation depends on the delay and the levels: some frequencies dip, others add.',
     },
   },
   polarityDelay('vn.two.2'),
@@ -460,7 +460,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What is the difference between a violin and a fiddle?',
     options: ['A fiddle has five strings and no f-holes', 'A fiddle is held on the right shoulder, not the left', 'None in the instrument — only the music it plays'],
     correct: 'None in the instrument — only the music it plays',
-    explain: 'Violin and fiddle are the same instrument named in different musical settings; the mic follows the music and the setting.',
+    explain: 'Violin and fiddle are the same instrument named in different musical settings, though some fiddlers set it up a little differently; the mic follows the music and the setting.',
     why: {
       'A fiddle has five strings and no f-holes': 'A fiddle is a violin: four strings, two f-holes.',
       'A fiddle is held on the right shoulder, not the left': 'Most fiddlers hold it like violinists, under the chin on the left.',

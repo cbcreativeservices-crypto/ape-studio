@@ -48,7 +48,7 @@ Rules and shared keys: `acoustic_guitar/SOURCES.md` §0. Speaker family: `speake
 
 | Fact | Value | Source | Confidence |
 |---|---|---|---|
-| SVT-410HLF outer box | 762 × 609.6 × 482.6 mm | AMP-410 (speaker_leslie) | High |
+| SVT-410HLF outer box | 609.6 (W) × 762 (H) × 482.6 (D) mm — corrected 2026-10-22: W 24 in × H 30 in | AMP-410 (speaker_leslie) | High |
 | Drivers | four 10 in + horn | AMP-410 | High |
 | Driver/horn layout | UNKNOWN → speaker-module drawing default (2×2 at ±170 z / ±150 y; horn between the top pair) | — | — |
 | 10-in speaker sizes | UNKNOWN (no 10-in datasheet read) → drawing default: scale the CEL-V30 12-in by 10/12 | — | — |

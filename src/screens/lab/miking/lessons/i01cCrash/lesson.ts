@@ -117,7 +117,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'On the shared kit, what is under the 16 in crash?',
     options: ['The 10 in rack tom', 'The floor tom on its legs', 'The kick drum’s pedal'],
     correct: 'The 10 in rack tom',
-    explain: 'Each crash hangs over a rack tom: a crash mic aimed down hears the tom, and the tom mic hears the crash.',
+    explain: 'A crash often hangs over a rack tom: a crash mic aimed down hears the tom, and the tom mic hears the crash.',
     why: {
       'The floor tom on its legs': 'The floor tom is under the ride, on the other side.',
       'The kick drum’s pedal': 'The pedal is on the floor in the middle. Under the crash is a rack tom.',
@@ -240,7 +240,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Studio, good room; the overheads carry the crashes well. What could justify no crash mic at all?',
     options: ['The overheads already carry them — fewer open mics', 'A crash mic would stop the overheads from working properly', 'Studio cymbals are recorded with a single mic only'],
     correct: 'The overheads already carry them — fewer open mics',
-    explain: 'The crashes hang closest to the overheads, which usually carry them well. A close mic adds focus only when they do not.',
+    explain: 'The crashes hang closest to the overheads, which usually carry them well. A close mic adds focus mostly when they do not, or when a loud stage needs isolation.',
     why: {
       'A crash mic would stop the overheads from working properly': 'The overheads still work. A close mic is a choice for what it adds.',
       'Studio cymbals are recorded with a single mic only': 'Studios use one mic or many. The question is what the music needs.',
@@ -417,7 +417,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What usually hangs under a crash on a kit?',
     options: ['A rack tom', 'The kick pedal', 'The throne'],
     correct: 'A rack tom',
-    explain: 'Each crash hangs over a rack tom: they hear each other.',
+    explain: 'A crash often hangs over a rack tom: they hear each other.',
     why: {
       'The kick pedal': 'The pedal is on the floor in the middle.',
       'The throne': 'The throne is behind the kit, the player’s seat.',
@@ -445,7 +445,7 @@ export const I01C_LESSON: CymbalLesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A cymbal for accents, struck on its edge with a glancing blow that lets it open up at once. It sits loose on its felts, on a boom stand, and swings after each hit.', src: 'ZIL-L11' },
+    { title: 'WHAT IT IS', text: 'A cymbal for accents, struck on its edge with a glancing blow that lets it open up at once. It sits loose on its felts, most often on a boom stand, and swings after each hit.', src: 'ZIL-L11' },
     { title: 'WHERE YOU MEET IT', text: 'On nearly every drum kit — often one on each side, high over the rack toms — on stage and in the studio.', src: 'ZIL-L11' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Accents and peaks: the big moments. Crashes run from thin and light (fast, short) to thick and heavy (louder, longer). Ask the player how they should sit — and whether the overheads already carry them.', src: 'ZIL-L11' },
     { title: 'ITS SIZE', text: 'The most popular crashes run from 16 to 18 in (40.6–45.7 cm); both are drawn here, on the shared kit.', src: 'ZIL-L11' },

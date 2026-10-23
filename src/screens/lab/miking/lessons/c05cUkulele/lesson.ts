@@ -16,7 +16,7 @@ const pages: LessonPages = {
     title: 'Meet the ukulele',
     goal: 'Get to know the ukulele — soprano, concert, tenor and baritone — what it is, where you meet it, its job in the music, and its parts, before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'Four nylon strings drive a bridge on a small top; the top and the small body’s air make the sound. The sizes differ in more than size — do not assume they behave alike.',
+    takeaway: 'Four strings, most often nylon or another synthetic, drive a bridge on a small top; the top and the small body’s air make the sound. The sizes differ in more than size — do not assume they behave alike.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -34,7 +34,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for the ukulele by its properties — pattern, power, size and mount — not by its brand.',
     credit: { scenarios: [`${P}.mic.1`, `${P}.mic.2`, `${P}.mic.3`, `${P}.mic.4`, `${P}.rec.1`], note: 'Answer the five checks (one reaches back to how the ukulele sounds).' },
-    takeaway: 'An omni suits a quiet, good room; a cardioid isolates; a clip-on moves with the player if its range fits the body. A condenser does not guarantee a sound. A mic’s maximum SPL is not a hearing limit.',
+    takeaway: 'An omni suits a quiet, good room; a cardioid rejects some of what is behind it; a clip-on moves with the player if its range fits the body. A condenser does not guarantee a sound. A mic’s maximum SPL is not a hearing limit.',
   },
   placement: {
     title: 'Placement Studio',
@@ -259,7 +259,7 @@ const symptoms: Symptom[] = [
     correct: 'Include the bridge and top, and more of the body',
     explain: 'A view mostly of the strings misses the body. Broaden it.',
     why: {
-      'Turn the channel up until the sound feels full': 'Louder is not fuller: the balance comes from where the mic is.',
+      'Turn the channel up until the sound feels full': 'Louder only seems fuller: the balance comes from where the mic is.',
       'Add a second mic on the strings, up near the nut': 'That adds more strings. Fix the one view first.',
     },
   },
@@ -324,7 +324,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'At the 12th fret — the middle of the open string',
     explain: 'This soprano’s neck joins at the 12th fret. Other sizes join at different places: use the actual instrument.',
     why: {
-      'At the 14th fret, like a steel-string guitar': 'That is a steel-string dreadnought. This soprano joins at the 12th.',
+      'At the 14th fret, like a steel-string guitar': 'That is typical of steel-string guitars. This soprano joins at the 12th.',
       'At the sound hole, where the fingerboard ends': 'The neck joins the body at the 12th fret, short of the hole.',
     },
   },
@@ -395,7 +395,7 @@ export const C05C_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A small four-string instrument with nylon strings, a wooden body and a round sound hole. The strings drive a bridge on the top; the top and the small body make the sound.', src: 'LESSON' },
+    { title: 'WHAT IT IS', text: 'A small four-string instrument, most often with nylon-type strings, a wooden body and a round sound hole. The strings drive a bridge on the top; the top and the small body make the sound.', src: 'LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'Pop, folk and Hawaiian music, solo or with a singer — often the player sings too. This lesson covers studio recording and live sound.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Strummed rhythm, picked melodies and chord-melody. Ask about fingertips or a pick, a strap, singing and movement.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'This lab draws a soprano: a 34.5 cm (13.6 in) string length and a body about 24 cm long (drawn sizes). Concert, tenor and baritone ukuleles are larger, with longer strings — and the baritone often tuned differently.', src: 'MET-UKE' },

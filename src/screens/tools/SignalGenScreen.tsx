@@ -95,12 +95,12 @@ const sliderToFreq = (v: number) => Math.round(FREQ_SLIDER_MIN * Math.pow(FREQ_S
 const SIGNALS: { key: GenModeName; label: string; blurb: string }[] = [
   { key: 'sine', label: 'SINE', blurb: 'One pure frequency at the dial — the reference tone for level checks and ear training.' },
   { key: 'white', label: 'WHITE', blurb: 'Equal energy per Hz. The top octaves dominate (each octave holds twice the frequencies) — bright, hissy.' },
-  { key: 'pink', label: 'PINK', blurb: 'Equal energy per OCTAVE — matches how hearing and RTAs divide the spectrum. THE measurement and tuning noise.' },
+  { key: 'pink', label: 'PINK', blurb: 'Equal energy per OCTAVE — matches how hearing and RTAs divide the spectrum. The most common measuring and tuning noise.' },
   { key: 'brown', label: 'BROWN', blurb: 'Energy falling 6 dB per octave — deep rumble, like distant surf. All weight, no sizzle.' },
   { key: 'blue', label: 'BLUE', blurb: 'Pink’s mirror: energy RISING per octave. Thin and airy — mostly a dither/testing curiosity.' },
   { key: 'violet', label: 'VIOLET', blurb: 'Brown’s mirror, rising 6 dB per octave — almost pure sizzle. The extreme end of the noise family.' },
   { key: 'sweepLin', label: 'SWEEP LIN', blurb: 'A tone gliding at constant Hz per second — it races through the bass and crawls through the highs.' },
-  { key: 'sweepLog', label: 'SWEEP LOG', blurb: 'A tone gliding at constant OCTAVES per second — equal time in every octave. The sweep that sounds even, and the one measurement uses.' },
+  { key: 'sweepLog', label: 'SWEEP LOG', blurb: 'A tone gliding at constant OCTAVES per second — equal time in every octave. The sweep that sounds even, and the one most measurement uses.' },
   { key: 'click', label: 'CLICK', blurb: 'A dry metronome tick — sharp transients with silence between, for timing, echoes and latency checks.' },
   { key: 'burst', label: 'BURST', blurb: 'Short tone bursts with gaps — level in bursts, silence between: meter ballistics and gating made audible.' },
 ];
@@ -774,7 +774,7 @@ export function SignalGenScreen({ navigation }: Props) {
           <Text style={styles.title}>{tool.name.toUpperCase()}</Text>
           <Text style={styles.subtitle}>{tool.subtitle ?? 'Test-Signal Source'}</Text>
         </View>
-        <AccuracyNote compact detail="Test tones play through your phone’s uncalibrated speaker/output — the frequency is exact, the LEVEL is not. For calibrated output use dedicated signal-generation gear." />
+        <AccuracyNote compact detail="Test tones play through your phone’s uncalibrated speaker/output — the frequency is very close, the LEVEL is not. For calibrated output use dedicated signal-generation gear." />
       </View>
 
       {!ready ? (
@@ -924,7 +924,7 @@ export function SignalGenScreen({ navigation }: Props) {
           </Pressable>
 
           <Text style={styles.caption}>
-            LEVEL moves in 3 dB steps · −60…0 dBFS · default −20 · above {capDb} dBFS requires the safety confirm
+            LEVEL moves in 3 dB steps from −60 to 0 dBFS · default −20 (its own stop) · above {capDb} dBFS requires the safety confirm
           </Text>
 
           {/* Required warnings (spec Tool 6) — fixed, at the BOTTOM of the

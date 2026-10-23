@@ -265,7 +265,7 @@ function PageGroupsDeep({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card tone="note">
         <Eyebrow>WHEN EACH TOOL WINS</Eyebrow>
-        <Body>SUBGROUP: shared processing — the summed audio passes the bus inserts, then one fader trims the processed result (drive INTO those inserts is set by the channel faders feeding it). VCA/DCA: one fader for many channels with NO summed path — perfect for level control that must not touch processing (and it also scales the channels’ post-fader sends, which a subgroup fader does not). CONTROL GROUP: linked controls for editing convenience. Advanced mixes use all three, on purpose.</Body>
+        <Body>SUBGROUP: shared processing — the summed audio passes the bus inserts, then one fader trims the processed result (drive INTO those inserts is set by the channel faders feeding it). VCA/DCA: one fader for many channels with NO summed path — perfect for level control that must not touch each channel’s own processing (though it does change the drive into a bus compressor downstream, and it also scales the channels’ post-fader sends, which a subgroup fader does not). CONTROL GROUP: linked controls for editing convenience. Advanced mixes use all three, on purpose.</Body>
       </Card>
       <UnderstandingCheck
         question="You pull a VCA down 6 dB versus pulling a drum subgroup’s fader down 6 dB. One difference that matters:"

@@ -139,7 +139,7 @@ export const B03_COPY: Partial<LessonCopy> = {
     B: { typeId: 'locLav', pattern: 'omni', zone: 'b3.guestLav' },
     learn: [
       'A mic each avoids a rushed handoff: the reporter’s handheld at their mouth, a lav on the guest. But each mic also hears the other voice — later and lower — so in the mix one voice arrives twice.',
-      'Listen to each channel alone, then both open in MONO. A hollow sound means some pitches cancel: keep each mic close to its own mouth and pull down the one not in use. A polarity switch only tests the idea — it never removes a delay.',
+      'Listen to each channel alone, then both open in MONO. A hollow sound means some frequencies cancel: keep each mic close to its own mouth and pull down the one not in use. A polarity switch only tests the idea — it never removes a delay.',
     ],
     warn: 'This simplified graph treats each mouth as one point and both mics as hearing the same sound. Real mics outdoors hear different mixes of voice, wind and street, and people move — read the notch POSITIONS and treat their depths as illustrative. Judge by ear, in mono.',
   },

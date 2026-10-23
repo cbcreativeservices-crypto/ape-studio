@@ -127,7 +127,7 @@ export const overHeads = (p: string, page: SourcePageId, who = 'the singers'): M
   correct: 'In front of the mouths, put up by the venue',
   explain: `Hang it a little in front of the singers’ mouths, aimed at the back row — not over their heads — and only with the venue’s approved rigging and crew. Signal cable is not a suspension.`,
   why: {
-    [`Straight over ${who}, tied on by you`]: 'Never over the heads, and never your own tie: rigging is the venue’s qualified crew’s job.',
+    [`Straight over ${who}, tied on by you`]: 'Not over the heads unless the venue’s qualified crew rigs it, and never your own tie.',
     'From a lighting bar above them, on its own cable': 'Signal cable is not suspension hardware, and a lighting bar is the venue’s to rig.',
   },
 });

@@ -176,7 +176,7 @@ export const FAULTS: readonly FaultCase[] = [
     inspect: 'The connector is resting in the tester HALF-INSERTED — the latch never clicked.',
     options: ['Connector not fully inserted / locked', 'Open conductor on every pin', 'Shield disconnected', 'The cable is dead — bin it'],
     correct: 0,
-    explain: 'Everything reads dead — then you seat the connector until the latch clicks and every path passes. The most common “bad cable” is a connection nobody pushed home. Check seating before blaming copper.',
+    explain: 'Everything reads dead — then you seat the connector until the latch clicks and every path passes. A very common “bad cable” is a connection nobody pushed home. Check seating before blaming copper.',
   },
 ];
 

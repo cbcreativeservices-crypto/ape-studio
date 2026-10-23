@@ -235,7 +235,7 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
         options: [
           { id: 'tweeter', label: 'Tweeter height (all speakers)', blurb: 'The acoustic centre of each monitor. Most makers design for the tweeter at or just above ear height.' },
           { id: 'ears', label: 'Seated ear height', blurb: 'Where your ears are when you sit to mix — measure it; typical seated ear height is 1.1–1.3 m.' },
-          ...(SUB ? [{ id: 'sub', label: 'Subwoofer driver height', blurb: 'A sub usually sits on the floor; its height barely matters below 80 Hz.' }] : []),
+          ...(SUB ? [{ id: 'sub', label: 'Subwoofer driver height', blurb: 'A sub usually sits on the floor; below 80 Hz its height barely matters for aiming (it still changes which height modes it drives).' }] : []),
         ],
         selectedId: heightTarget,
         onSelect: (id) => setHeightTarget(id as HeightTarget),
@@ -292,7 +292,7 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
           {subGain ? (
             <Text style={styles.line}>
               {subGain.count > 0
-                ? `SUB boundary gain (ESTIMATED): within λ/4 of ${subGain.count} boundar${subGain.count === 1 ? 'y' : 'ies'} (${subGain.names.join(', ')}) → about +6 dB per boundary below ~190 Hz. A floor sub gets gain from its boundaries, not a notch.`
+                ? `SUB boundary gain (ESTIMATED): within λ/4 of ${subGain.count} boundar${subGain.count === 1 ? 'y' : 'ies'} (${subGain.names.join(', ')}) → up to about +6 dB per boundary below ~190 Hz. A floor sub gets gain from its boundaries, not a notch.`
                 : 'SUB away from every boundary: no boundary gain, and the middle of the room drives the first modes weakly (ESTIMATED).'}
             </Text>
           ) : null}
@@ -335,7 +335,7 @@ function SetupTray({ ctx }: { ctx: RoomLabCtx }) {
     <View style={{ gap: 10 }}>
       <TrayHeading>CONFIGURATION</TrayHeading>
       <Chips items={CONFIGS} value={design.monitoring.config} onPick={(id) => update((d) => applyConfig(d, id))} />
-      <Caption>Stereo + sub adds a subwoofer you can drag anywhere; multichannel adds a centre and two surrounds. The sub's position changes which room modes it drives — try it in a corner and in the middle and compare. Two subs in mirrored positions even the bass out; or do the sub crawl: play a bass loop with the sub at the seat and crawl the floor for the evenest spot, then put the sub there.</Caption>
+      <Caption>Stereo + sub adds a subwoofer you can drag anywhere; multichannel adds a centre and two surrounds. The sub's position changes which room modes it drives — try it in a corner and in the middle and compare. Two subs in mirrored positions often even the bass out; or do the sub crawl: play a bass loop with the sub at the seat and crawl the floor for the evenest spot, then put the sub there.</Caption>
       <Caption>Set the sub's crossover, polarity and phase/delay by measuring at the seat — the wrong polarity makes a hole at the crossover frequency.</Caption>
       <Caption>ITU-R BS.775: centre 0°, L/R ±30°, surrounds ±100–120°, all equidistant from the ears or delay-aligned. The surrounds spawn on that circle; the readouts above flag an angle or a distance that drifts.</Caption>
       <Caption>After calibrating, leave the monitors' own gain alone and set level at the monitor controller; red clip lights on a monitor mean turn down, not treat the room.</Caption>

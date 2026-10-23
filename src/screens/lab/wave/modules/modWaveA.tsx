@@ -453,7 +453,7 @@ const ABSORB_MATS: MaterialKey[] = [
 ];
 
 const ABSORB_MISTAKES = [
-  'Thinking thicker/denser absorbs everything — absorption is FREQUENCY-DEPENDENT; porous absorbers work highs, not lows.',
+  'Thinking thicker/denser absorbs everything — absorption is FREQUENCY-DEPENDENT; thin porous absorbers work highs, not lows.',
   'Trying to absorb bass with thin foam — lows need thick/tuned membrane/Helmholtz absorbers or distance from the boundary.',
   'Confusing absorption (reduces reflections inside) with soundproofing/isolation (stops transmission).',
   'Over-absorbing → a dead, unnatural room.',
@@ -615,7 +615,7 @@ export function AbsorptionModule(p: WaveModuleProps) {
 // MODULE 3 — DIFFUSION LABORATORY (§9.3)
 
 const DIFFUSION_MISTAKES = [
-  'Thinking diffusion absorbs/removes energy — it SCATTERS and PRESERVES it.',
+  'Thinking diffusion absorbs/removes energy — it SCATTERS it and keeps most of it.',
   'Confusing diffusion with absorption (scatter vs remove).',
   'Placing diffusers too close to the listener — the scattered field needs distance to form.',
   'Expecting a diffuser to work BELOW its design frequency — well depth sets the low limit.',
@@ -933,7 +933,7 @@ export function RefractionModule(p: WaveModuleProps) {
 // MODULE 5 — DIFFRACTION LABORATORY (§9.5)
 
 const DIFFRACTION_MISTAKES = [
-  'Thinking a barrier fully blocks sound — lows WRAP AROUND; only highs are shadowed.',
+  'Thinking a barrier fully blocks sound — lows WRAP AROUND; the highs are shadowed most.',
   'Weak wavelength intuition — long wavelengths diffract around objects near/smaller than the wavelength.',
   'Expecting a small object to block bass.',
   'Believing a "shadow zone" is silence — it is attenuation, mostly of highs.',

@@ -136,7 +136,7 @@ describe('the cabinets and the 12 in speaker', () => {
   it('outer sizes are the makers’; the speaker’s are the datasheet’s', () => {
     assert.deepEqual([sm.CABINETS['1x12'].w.mm, sm.CABINETS['1x12'].h.mm, sm.CABINETS['1x12'].d.mm], [500, 470, 290]);
     assert.deepEqual([sm.CABINETS['4x12'].w.mm, sm.CABINETS['4x12'].h.mm, sm.CABINETS['4x12'].d.mm], [770, 755, 365]);
-    assert.ok(near(sm.CABINETS.bass410.w.mm, 762) && near(sm.CABINETS.bass410.h.mm, 609.6) && near(sm.CABINETS.bass410.d.mm, 482.6));
+    assert.ok(near(sm.CABINETS.bass410.w.mm, 609.6) && near(sm.CABINETS.bass410.h.mm, 762) && near(sm.CABINETS.bass410.d.mm, 482.6));
     assert.deepEqual([sm.SPEAKER_12.dNom.mm, sm.SPEAKER_12.dFrame.mm, sm.SPEAKER_12.dCut.mm, sm.SPEAKER_12.holes.mm], [305, 309, 283, 4]);
     assert.ok(sm.SPEAKER_12.rDust.placeholder && sm.SPEAKER_12.rSurroundIn.placeholder, 'dust cap and surround are drawing defaults');
   });

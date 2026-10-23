@@ -2154,7 +2154,8 @@ export function SplMeterScreen({ navigation }: Props) {
                 <CollapsibleSection title="CONTROL-ROOM MONITORING · dB SPL (C-WEIGHTED)" startOpen={false} onHelp={() => help('control_room')}>
                   <Text style={styles.roomLegendBody}>
                     In STUDIO mode the gauge stays GREEN across the whole monitoring range and lights a
-                    glowing GOLD sweet-spot band at 79–85 dB(C) — the calibrated mixing level. The
+                    glowing GOLD sweet-spot band at 79–85 dB(C) — the monitor calibration levels (pink noise at −20 dBFS, one
+                    speaker, C-weighted slow), not a target for the music itself. The
                     room-size ticks sit at 79 (small rooms, under ~1,500 ft³ / 42 m³, and most critical
                     balance / music mixing), 82 (medium) and 85 (large) — the Holman / SMPTE-THX
                     references. Lower levels are common too: 70–75 for general editing and long

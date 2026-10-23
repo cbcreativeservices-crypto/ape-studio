@@ -1931,7 +1931,7 @@ export function placementConflicts(d: RoomDesign, a: Analysis): Conflict[] {
       const b = a.bounds;
       const midX = Math.abs(s.x - (b.minX + b.maxX) / 2) < b.width * 0.15;
       const midY = Math.abs(s.y - (b.minY + b.maxY) / 2) < b.length * 0.15;
-      if (midX && midY) out.push({ tier: 'ESTIMATED', text: 'The subwoofer sits near the middle of the room, where the first modes have nulls: it drives them weakly and the bass will be uneven. Near a wall or corner it couples to every mode — then move the listener to even it out.' });
+      if (midX && midY) out.push({ tier: 'ESTIMATED', text: 'The subwoofer sits near the middle of the room, where the first modes have nulls: it drives them weakly and the bass will be uneven. In a corner it couples to every mode, and near a wall to most — then move the listener to even it out.' });
     }
   }
   if (a.stereo && a.stereo.listenerRear < 0.6) out.push({ tier: 'CALCULATED', text: `The listener is ${fmtLen(a.stereo.listenerRear, u, { small: true })} from the rear wall — inside the strongest pressure zone of the length modes and the rear reflection.` });

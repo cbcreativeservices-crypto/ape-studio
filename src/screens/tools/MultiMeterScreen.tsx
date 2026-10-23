@@ -1746,7 +1746,8 @@ export function MultiMeterScreen({ navigation }: Props) {
         )}
 
         <Text style={styles.reminder}>
-          Every level here is A/C-weighted (dBA/dBC) from your phone’s uncalibrated mic — RELATIVE
+          The main level is A/C-weighted (dBA/dBC) and peak, RMS and hold are unweighted (Z), all from
+          your phone’s uncalibrated mic — RELATIVE
           and approximate, not a calibrated SPL meter. Microphone position and the phone mic's
           response strongly affect every panel.
         </Text>

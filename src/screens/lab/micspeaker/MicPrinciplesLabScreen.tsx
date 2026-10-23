@@ -65,8 +65,8 @@ const PATTERNS: { key: string; label: string; a: number; b: number; blurb: strin
   { key: 'omni', label: 'OMNI', a: 1, b: 0, blurb: 'Hears equally in every direction — no rejection anywhere. Natural sound, zero feedback protection.' },
   { key: 'cardioid', label: 'CARDIOID', a: 0.5, b: 0.5, blurb: 'The heart shape: full sensitivity in front, dead at the REAR. The live-vocal standard — point the null at the monitor.' },
   { key: 'super', label: 'SUPER', a: 0.37, b: 0.63, blurb: 'Tighter in front than cardioid, but the null moves to ~127° and a small rear lobe appears — aim monitors at the null, not the tail.' },
-  { key: 'hyper', label: 'HYPER', a: 0.25, b: 0.75, blurb: 'Tighter still, with a bigger rear lobe — maximum side rejection, but it hears a little of what is directly behind.' },
-  { key: 'fig8', label: 'FIGURE-8', a: 0, b: 1, blurb: 'Front and back equally, sides completely DEAD — the ribbon-mic pattern, and one half of mid-side.' },
+  { key: 'hyper', label: 'HYPER', a: 0.25, b: 0.75, blurb: 'Tighter still, with a bigger rear lobe — the best side rejection of the cardioid family, but it hears a little of what is directly behind.' },
+  { key: 'fig8', label: 'FIGURE-8', a: 0, b: 1, blurb: 'Front and back equally, sides completely DEAD — the pattern of most ribbon mics, and one half of mid-side.' },
 ];
 
 function gainAt(a: number, b: number, deg: number): number {
@@ -296,7 +296,7 @@ const STEREO_TECHS: {
     from: 'TIME',
     plain: 'Two mics set well apart, both aimed straight ahead.',
     use: 'Reach for it when you want a big, wide, open room — an orchestra, a piano, an ensemble.',
-    mono: 'Risky. Wide spacing means one mic can be pushing while the other pulls, so summing can thin the low end.',
+    mono: 'Risky. Wide spacing means a sound reaches the two mics at different times, so summing can comb-filter it and leave it hollow.',
     note: 'Two spaced omnis facing forward. The channels differ almost entirely in arrival TIME. Widest image of the four, and the least predictable when folded down.',
   },
   {
@@ -317,7 +317,7 @@ const MISTAKES: { kind: 'correct' | 'grille' | 'cup' | 'away' | 'far' | 'switch'
   { kind: 'away', title: '❌ Pointing away', note: 'The most sensitive axis misses the mouth — thin, quiet, off-axis sound.' },
   { kind: 'far', title: '❌ Too far away', note: 'Level drops and the room takes over — distant, roomy, feedback-prone.' },
   { kind: 'switch', title: '❌ Covering the switch', note: 'A hand over the switch can mute the mic mid-sentence (wired or wireless).' },
-  { kind: 'antenna', title: '❌ Blocking the antenna', note: 'On wireless mics, a hand over the transmitter antenna causes dropouts.' },
+  { kind: 'antenna', title: '❌ Blocking the antenna', note: 'On wireless mics, a hand over the transmitter antenna can cause dropouts.' },
 ];
 
 // ── Small shared bits ────────────────────────────────────────────────────────
@@ -867,7 +867,7 @@ function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionPr
       <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('proximity')}>
         <Text style={styles.caption}>
           Radio-voice warmth IS this effect, used on purpose. It is also why a singer who swallows
-          the mic turns muddy — and why the high-pass filter exists on every channel strip.
+          the mic turns muddy — and why most channel strips have a high-pass filter.
         </Text>
       </CollapsibleSection>
       <CheckQuestion spec={PROX_CHECK} />
@@ -1054,7 +1054,7 @@ function PopSection({ viz, focused, help, wellTop, wellBottom }: SectionProps) {
       <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('pop_filter')}>
         <Text style={styles.caption}>{m.note}</Text>
         <Text style={styles.caption}>
-          “P” and “B” fire a jet of air, not just sound. The fix is always the same idea: break up
+          “P” and “B” fire a jet of air, not just sound. Most fixes share one idea: break up
           the MOVING AIR before it hits the diaphragm while letting the sound wave through.
         </Text>
       </CollapsibleSection>
@@ -1249,7 +1249,7 @@ function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
           ],
           correctIdx: 1,
           reveal:
-            'AB makes stereo from TIME differences, and summed to one speaker those become phase cancellation — the low end thins. XY differs only in level, so it folds down clean; MS collapses to the MID mic alone, which is why it is the one-take safety choice.',
+            'AB makes stereo from TIME differences, and summed to one speaker those become comb filtering — the sound goes hollow and phasey. XY differs only in level, so it folds down clean; MS collapses to the MID mic alone, which is why it is the one-take safety choice.',
           wrongHint: 'Read each technique’s IN MONO line — one of the three is built entirely from arrival-time differences.',
         }}
       />

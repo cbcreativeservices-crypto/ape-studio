@@ -142,7 +142,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The bowl’s air, breathing in and out through the rose',
     explain: 'The air inside the bowl moves through the rosettes — a big part of the bloom. Close to the main rose, a mic hears more of it, and some notes can bloom or hum.',
     why: {
-      'The left hand’s slides, out at the end of the neck': 'That is toward the neck. At the rose, the bowl’s air dominates.',
+      'The left hand’s slides, out at the end of the neck': 'That is toward the neck. At the rose, a mic hears more of the bowl’s air.',
       'The pegs turning, up at the far end of the pegbox': 'The pegbox is far from the rose and makes little sound of its own.',
     },
   },
@@ -275,7 +275,7 @@ const symptoms: Symptom[] = [
     correct: 'Turn toward more of the face, keeping the clearance',
     explain: 'A view mostly of the strings and neck lacks the face and the bowl’s air. Include more of the face, then judge the whole phrase.',
     why: {
-      'Turn the oud channel up until it sounds full': 'Louder is not fuller: the balance comes from where the mic is.',
+      'Turn the oud channel up until it sounds full': 'Louder only seems fuller: the balance comes from where the mic is.',
       'Add a second mic pointed straight into the main rose': 'Fix the one mic first; a second brings its own combining problems — and the rose can boom.',
     },
   },

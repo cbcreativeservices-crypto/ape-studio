@@ -167,7 +167,7 @@ const SCENES = [
       'moves — it only grows brighter as the loop gain builds. The program material scrolls past underneath; the ' +
       'ring sits still. Read its height off the frequency axis and you have the offending frequency — 2.4 kHz in ' +
       'this example — before you ever touch an EQ.',
-    note: 'A held synth note also draws a horizontal line — but notes step with the music. Feedback never moves.',
+    note: 'A held synth note also draws a horizontal line — but notes step with the music. Feedback holds still unless a mic or person moves.',
   },
   {
     key: 'fft',

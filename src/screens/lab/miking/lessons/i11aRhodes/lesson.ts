@@ -401,7 +401,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What does the direct signal NOT include, compared with the amp mic?',
     options: ['The amp’s speaker, its cabinet and the room', 'The tine’s attack and the player’s touch on the keys', 'The notes the player chooses'],
     correct: 'The amp’s speaker, its cabinet and the room',
-    explain: 'The direct signal is taken before the amp’s speaker: it carries the pickups’ signal, the touch and the notes, but not the speaker, the cabinet or the room — the part the mic is there to capture.',
+    explain: 'The direct signal is taken before the amp: it carries the pickups’ signal, the touch and the notes, but not the amp’s tone, the speaker, the cabinet or the room — the part the mic is there to capture.',
     why: {
       'The tine’s attack and the player’s touch on the keys': 'Those are in the pickups’ signal, so the direct feed has them.',
       'The notes the player chooses': 'The notes are in every feed. What the direct signal lacks is the speaker and the room.',

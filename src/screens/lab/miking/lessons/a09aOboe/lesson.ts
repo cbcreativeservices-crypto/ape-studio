@@ -59,7 +59,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a close spot and the main pair on one oboe can sound hollow together, and what the polarity switch does and does not change.',
     credit: { scenarios: ['ob.two.1', 'ob.two.2', 'ob.two.3', 'ob.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics at different distances hear the oboe at different times: some pitches cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Judge in mono, at matched levels.',
+    takeaway: 'Two mics at different distances hear the oboe at different times: some frequencies cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Judge in mono, at matched levels.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -255,12 +255,12 @@ const scenarios: MikingScenario[] = [
     id: 'ob.two.1',
     page: 'twoMic',
     prompt: 'An oboe spot and the main pair sound hollow together. Why?',
-    options: ['The main pair inverts the oboe’s sound on its way to it, so it cancels', 'Two mics on one oboe cancel its low notes between them', 'The sound reaches them at different times, so pitches cancel'],
-    correct: 'The sound reaches them at different times, so pitches cancel',
-    explain: 'The farther mic hears each note a little later; summed, some pitches arrive out of step and dip — a comb. Move or rebalance first, then check polarity at matched levels.',
+    options: ['The main pair inverts the oboe’s sound on its way to it, so it cancels', 'Two mics on one oboe cancel its low end between them', 'The sound reaches them at different times, so frequencies cancel'],
+    correct: 'The sound reaches them at different times, so frequencies cancel',
+    explain: 'The farther mic hears each note a little later; summed, some frequencies arrive out of step and dip — a comb. Move or rebalance first, then check polarity at matched levels.',
     why: {
       'The main pair inverts the oboe’s sound on its way to it, so it cancels': 'Distance delays a sound; it does not flip its sign.',
-      'Two mics on one oboe cancel its low notes between them': 'Cancellation depends on the delay and the levels: some pitches dip, others add.',
+      'Two mics on one oboe cancel its low end between them': 'Cancellation depends on the delay and the levels: some frequencies dip, others add.',
     },
   },
   polarityDelay('ob.two.2'),
@@ -565,7 +565,7 @@ export const A09A_LESSON: WindLesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'A woodwind with a double reed — two thin blades of cane — on a narrow conical wooden tube with small tone holes, a dense keywork and a small flared bell. Octave keys lift its fingerings an octave.', src: 'Y-OB-MECH2' },
     { title: 'WHERE YOU MEET IT', text: 'Orchestras, wind bands and chamber groups, film scores and studio sessions; the English horn and the oboe d’amore are its larger relatives and take the same approach. This lesson covers one oboe: a studio solo, a loud stage and a spot in a section.', src: 'DPA-OB' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'It carries focused, singing melodies — the orchestra tunes to it — and its tone cuts through. Ask what the music needs: a natural orchestral colour, an intimate solo, or a separated line over a band.', src: 'LESSON' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'It carries focused, singing melodies — most orchestras tune to it — and its tone cuts through. Ask what the music needs: a natural orchestral colour, an intimate solo, or a separated line over a band.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'About 55 cm without its reed, the bell about 6 cm across. Its lowest note, B♭3, is about 233 Hz. This lab draws an oboe about that size, held 40° out from the body — seated, or standing.', src: 'MET-OB' },
   ],
   sound: {

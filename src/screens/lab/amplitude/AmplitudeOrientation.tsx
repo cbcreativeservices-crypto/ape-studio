@@ -922,7 +922,7 @@ export function AmplitudeColorBody({
         <VizCard
           title="LEVEL METER"
           caption="Peak vs RMS — same signal"
-          a11y="Level meter example: two meters for one signal — PEAK reads higher and hotter, RMS (average) reads lower and cooler"
+          a11y="Level meter example: two meters for one signal — PEAK reads higher and hotter, RMS (a kind of average) reads lower and cooler"
         >
           <LevelMeterCard />
         </VizCard>

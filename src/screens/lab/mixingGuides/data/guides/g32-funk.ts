@@ -283,7 +283,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern funk and pop-funk masters land around −10 to −8 LUFS-I, revival records −13 to −11, true peak −1 dBTP (−2 dBTP if louder than −14 LUFS). Services normalize to about −14, so extra loudness only costs snap. Keep a peak-to-loudness ratio of about 9–12 dB (at −2 dBTP that means a master at about −11 LUFS-I or quieter)."
+      "text": "Modern funk and pop-funk masters land around −10 to −8 LUFS-I, revival records −13 to −11, true peak −1 dBTP (−2 dBTP if louder than −14 LUFS). Services normalize to about −14, so extra loudness only costs snap. For more snap, keep a peak-to-loudness ratio of about 9–12 dB (at −2 dBTP that means a master at about −11 LUFS-I or quieter, below the loud modern range)."
     }
   ],
   "liveStudio": {

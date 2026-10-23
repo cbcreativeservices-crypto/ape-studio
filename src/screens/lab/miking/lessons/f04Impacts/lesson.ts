@@ -189,7 +189,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A strong impact still distorts with the preamp gain turned right down. The mic has a pad switch. A fair next check?',
     options: ['The mic’s pad: the mic itself may overload', 'Pull the channel fader down until it is clean', 'Leave it, and repair the clipping after the take'],
     correct: 'The mic’s pad: the mic itself may overload',
-    explain: 'With the gain already down, the overload may be in the mic’s own electronics. Its pad (if it has one) lowers the level before them — and before the preamp. Check the mic, the preamp and the recorder in turn; a fader after the overload cannot undo clipping.',
+    explain: 'With the gain already down, the overload may be in the mic’s own electronics. On most mics the pad (if there is one) lowers the level before them — and before the preamp. Check the mic, the preamp and the recorder in turn; a fader after the overload cannot undo clipping.',
     why: {
       'Pull the channel fader down until it is clean': 'The fader comes after the overload: it only makes the clipped sound quieter.',
       'Leave it, and repair the clipping after the take': 'Clipping cannot be undone later. Find the stage that overloads before the next take.',

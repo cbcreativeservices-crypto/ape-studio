@@ -31,7 +31,7 @@ const BASE = standingVoiceCopy({
   studio: {
     id: 'b5.ctx.studio',
     prompt: 'A recorded studio interview, no loudspeakers, a close shot. What is a fair first mic for the presenter?',
-    note: 'In a quiet studio with no PA there is nothing to reject: a clean, centred lav that fits the picture is a good start — or a headset, a hidden lav or a boom, each for a reason. Switch to LIVE for the PA exercise.',
+    note: 'In a quiet studio there is no PA to reject: a clean, centred lav that fits the picture is a good start — or a headset, a hidden lav or a boom, each for a reason. Switch to LIVE for the PA exercise.',
   },
   contextPoints: [
     { title: 'STUDIO', text: 'No PA: a natural voice, low clothing noise and the picture come first — a visible lav, a hidden one, a headset or a boom can all work.' },
@@ -131,7 +131,7 @@ export const B05_COPY: Partial<LessonCopy> = {
     B: { typeId: 'bcGoose', pattern: 'cardioid', zone: 'b5.lectern' },
     learn: [
       'A presenter at a lectern with a headset on: both mics hear the same voice — the headset first, the lectern a little later. Open together, the sum combs.',
-      'Listen to each alone, then together in MONO. A hollow, thin sound means some pitches cancel: mute the one not in use. A polarity switch only tests the idea — it never removes a delay.',
+      'Listen to each alone, then together in MONO. A hollow, thin sound means some frequencies cancel: mute the one not in use. A polarity switch only tests the idea — it never removes a delay.',
     ],
     warn: 'This simplified graph treats the mouth as one point and both mics as hearing the same sound. Real mics at different places hear different mixes of voice and room — read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative. Judge by ear, in mono.',
   },

@@ -59,7 +59,7 @@ export const SAMPLER_STOPS: SamplerStop[] = [
   {
     id: 'calc',
     label: 'Sound level over distance',
-    blurb: 'Predict how loud a 90 dB speaker is as you move away (≈84 dB at 2 m, ≈78 dB at 4 m).',
+    blurb: 'Predict how loud a speaker reading 90 dB at 1 m is as you move away (≈84 dB at 2 m, ≈78 dB at 4 m).',
     accent: colors.amber,
     route: { name: 'CalcWorkspace', params: { id: 'spldist' } },
     recap: 'That prediction assumes open air with no reflections. Want to see what a real room does?',
@@ -77,7 +77,7 @@ export const SAMPLER_STOPS: SamplerStop[] = [
   {
     id: 'splmeter',
     label: 'Measure real sound',
-    blurb: 'Turn your phone into a live sound-level meter and read your own space.',
+    blurb: 'Turn your phone into a rough live sound-level meter and read your own space.',
     accent: colors.green,
     route: { name: 'SplMeter' },
     recap: 'You measured the real world. Curious who does this for a living?',

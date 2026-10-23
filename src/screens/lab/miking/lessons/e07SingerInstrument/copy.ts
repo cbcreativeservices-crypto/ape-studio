@@ -118,7 +118,7 @@ export const E07_COPY: Partial<LessonCopy> = {
     B: { typeId: 'sdcCard', pattern: 'cardioid', zone: 'sg.fret12.guitar' },
     learn: [
       'Here the two mics are on two sources — but each hears both. The guitar mic hears the voice a little later than the vocal mic does; summed, that delayed copy of the voice combs the vocal sound (and the guitar does the same the other way).',
-      'So: hear each mic alone, then the pair in MONO at the intended levels. Change the spacing or an angle first, or turn one down; check polarity at matched levels only after that — a polarity switch cannot line up every pitch.',
+      'So: hear each mic alone, then the pair in MONO at the intended levels. Change the spacing or an angle first, or turn one down; check polarity at matched levels only after that — a polarity switch cannot line up every frequency.',
     ],
     warn: 'This simplified graph treats the chosen source as one point heard by both mics. Read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative — real bleed is quieter than the source it leaks from. Judge by ear, in mono, at matched levels.',
   },

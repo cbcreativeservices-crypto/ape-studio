@@ -209,7 +209,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
         otherName: '1/4-inch TRS',
         why: 'A TS plug seats in a TRS jack and shorts the ring contact to the sleeve.',
         consequence:
-          'Into a balanced input this usually passes signal but gives up the noise rejection. Into a stereo jack it shorts one channel to ground: that side of the program is missing, and the shorted output is working into a dead short — poor practice even when nothing fails.',
+          'Into a balanced input this usually passes signal but gives up the noise rejection. Into a stereo output jack it shorts one channel to ground: that side of the program is missing, and the shorted output is working into a dead short — poor practice even when nothing fails.',
       },
     ],
     inspectionPoints: [
@@ -299,7 +299,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
     channels: 'varies',
     locking: {
       method: 'friction',
-      howToConfirm: 'A firm push to a positive stop; there is no lock. On insert jacks, a half-seated plug lands on the wrong contacts on purpose in some designs — seat it fully.',
+      howToConfirm: 'A firm push to a positive stop; there is no lock. On insert jacks, a half-seated plug touches the wrong contacts (some engineers do this on purpose to tap the send) — for a normal insert, seat it fully.',
     },
     hotPlug: {
       policy: 'mute_first',

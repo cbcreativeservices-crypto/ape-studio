@@ -67,7 +67,9 @@ STATUS = ['Established occupation or industry role', 'Established specialty or e
 WORK_MODEL = ['Staff roles common; consulting/contract options vary', 'Staff, freelance, or project-based depending on sector', 'Often freelance/contract; staff roles also exist', 'Project, venue, tour, or contract work common',
               # Not in the workbook; used only by scripts/career-index-overrides.json `workModel`
               # (fact audit 2026-10-22). Appended, so the workbook codes 0-3 never move.
-              'Staff roles at a government patent office', 'Full-time uniformed military service', 'Self-employed business owner']
+              'Staff roles at a government patent office', 'Full-time uniformed military service', 'Self-employed business owner',
+              # Fact audit round 3 (2026-10-22): postdoctoral posts; buskers / street performers.
+              'Fixed-term research appointments, usually at universities or labs', 'Self-employed; local permits often required']
 
 def code(table, value, what):
     v = (value or '').strip()
@@ -122,6 +124,17 @@ def main():
             'count': 0,
         }
     fam_ids = list(families.keys())
+
+    # Drop a family data source that does not support the family (fact audit 2026-10-22,
+    # e.g. an industrial-testing body listed on a medical-only family). The source must be
+    # present, so a workbook change fails loudly instead of silently doing nothing.
+    _ov_early = json.load(io.open(os.path.join(ROOT, 'scripts', 'career-index-overrides.json'), encoding='utf-8'))
+    for fam, drop in _ov_early.get('removeFamilySources', {}).items():
+        if fam.startswith('_'): continue
+        if fam not in families: sys.exit(f'removeFamilySources names an unknown family: {fam!r}')
+        for s in drop:
+            if s not in families[fam]['sources']: sys.exit(f'removeFamilySources: {fam!r} has no source {s!r}')
+            families[fam]['sources'].remove(s)
 
     # master list
     rows = list(wb['Career Master List'].iter_rows(values_only=True))
@@ -205,6 +218,20 @@ def main():
     # per-title tier / work-model corrections (A audit)
     for title, t in ov.get('tier', {}).items():
         for c in each(title): c['tier'] = code(TIER, t, 'tier')
+    # Rule-level work-model corrections (fact audit round 3, 2026-10-22). The workbook
+    # fills "Typical work model" from TITLE CLASS, so freelance, per-show and touring
+    # crafts (recording engineers, A1s, stage and backline techs, podcast engineers …)
+    # read "Staff roles common". Each rule names ONE family, a title regex and the
+    # value it replaces (`from`); only rows still carrying `from` change, and a rule
+    # that changes nothing fails the build (a renamed title would otherwise slip by).
+    # Runs BEFORE the per-title `workModel` overrides below, so those still win.
+    for rule in ov.get('workModelRules', []):
+        if rule.get('family') not in families: sys.exit(f'workModelRules: unknown family {rule.get("family")!r}')
+        fi, frm, to = fam_ids.index(rule['family']), code(WORK_MODEL, rule['from'], 'work model'), code(WORK_MODEL, rule['to'], 'work model')
+        pat, exc = re.compile(rule['match']), (re.compile(rule['exclude']) if rule.get('exclude') else None)
+        hit = [c for c in careers if c['f'] == fi and pat.search(c['t']) and not (exc and exc.search(c['t'])) and c['wm'] == frm]
+        if not hit: sys.exit(f'workModelRules: rule {rule["match"]!r} in {rule["family"]!r} changed nothing')
+        for c in hit: c['wm'] = to
     for title, wm in ov.get('workModel', {}).items():
         for c in each(title): c['wm'] = code(WORK_MODEL, wm, 'work model')
     # ── fact-audit hooks (Comp B return, 2026-10-22) ──
@@ -224,6 +251,15 @@ def main():
                 c['alt'].remove(n)
             if not c['alt']: c.pop('alt')
 
+    # Licensed-role preparation guard (fact audit round 3, 2026-10-22). A title flagged
+    # licensed/credentialed must not carry the generic "Varies: portfolio/experience,
+    # certificate, associate …" line: that template comes from title class and told
+    # learners a portfolio could stand in for a licence. Give such a title a per-title
+    # `preparation`, or list it in `regulatedVariesOk` with the reason it is still true.
+    _ok = set(ov.get('regulatedVariesOk', {})) - {k for k in ov.get('regulatedVariesOk', {}) if k.startswith('_')}
+    _bad = sorted({c['t'] for c in careers if c.get('reg') and c['prep'] == VARIES and c['t'] not in _ok})
+    if _bad: sys.exit(f'licensed titles with the generic Varies preparation: {_bad}')
+
     demote = {RELATIONSHIP.index(r) for r in ov['demoteCoreWhenRelationshipIn']}
     demoted = 0
     for c in careers:
@@ -242,6 +278,25 @@ def main():
     # was incremented per career on the way in and is SERIALIZED into
     # careerFamilies.json. Dropping rows without decrementing would leave four
     # families each reporting one career more than the index actually contains.
+    # ── merge duplicate titles (fact audit round 3, 2026-10-22) ────────────────
+    # `mergeInto` maps a duplicate title to the entry that stays (the better-filled
+    # one, same family). The duplicate's own name and its alternates move to the
+    # kept entry's "also called" list (case-insensitive, no repeats), then the
+    # duplicate row is dropped and its family tally corrected, as removeTitles does.
+    for dup, keep in ov.get('mergeInto', {}).items():
+        if dup.startswith('_'): continue
+        d_rows, k_rows = each(dup), each(keep)
+        if len(d_rows) != 1 or len(k_rows) != 1: sys.exit(f'mergeInto: {dup!r} -> {keep!r} must each exist exactly once')
+        d, k = d_rows[0], k_rows[0]
+        if d['f'] != k['f']: sys.exit(f'mergeInto: {dup!r} and {keep!r} are in different families')
+        alts = k.setdefault('alt', [])
+        for n in [dup] + d.get('alt', []):
+            if n.lower() != keep.lower() and n.lower() not in {a.lower() for a in alts}:
+                alts.append(n.lower() if n == dup else n)
+        families[fam_ids[d['f']]]['count'] -= 1
+        careers = [c for c in careers if c is not d]
+        by_title.pop(dup, None)
+
     _drop = set(ov.get('removeTitles', []))
     if _drop:
         _before = len(careers)

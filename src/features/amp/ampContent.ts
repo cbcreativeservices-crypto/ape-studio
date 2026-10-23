@@ -90,7 +90,7 @@ export const MISCONCEPTIONS: Misconception[] = [
   {
     id: 'd-is-digital', moduleId: 'classd', verdict: 'false',
     statement: 'Class D means digital.',
-    correction: 'The D is just the next letter — Class D is a switching topology, usually driven by analog modulation.',
+    correction: 'The D is just the next letter — Class D is a switching topology, classically driven by analog modulation.',
     detail: 'It is appealing because switching waveforms look binary. But a classic Class D amplifier compares the analog audio with a carrier and switches accordingly — no sampling, no numbers. Some products add digital control, which is an implementation choice, not the class definition.',
   },
   {
@@ -108,7 +108,7 @@ export const MISCONCEPTIONS: Misconception[] = [
   {
     id: 'watts-loudness', moduleId: 'realworld', verdict: 'false',
     statement: 'Twice the amplifier power means twice the loudness.',
-    correction: 'Twice the power is about +3 dB — a clearly audible step, but far from “twice as loud.”',
+    correction: 'Twice the power is about +3 dB — a small but noticeable step, but far from “twice as loud.”',
     detail: 'Level scales with 10·log10(P2/P1), so ×2 power ≈ +3 dB and ×10 power = +10 dB. Perceived loudness also depends on speaker sensitivity, distance, frequency content, and the room.',
   },
   {
@@ -371,7 +371,7 @@ export const AMP_CHECKS: AmpCheck[] = [
     q: 'Why is an instrument cable wrong for speaker connections?',
     options: ['The connector is the wrong shape for a speaker jack', 'Its thin conductor and shield are not built for speaker current', 'It only passes digital audio signals', 'It reverses the polarity of the signal'],
     correct: 1,
-    explain: 'Instrument cable is shielded, high-capacitance, thin-core signal wire. Speaker runs need low-resistance conductors sized for amps of current.',
+    explain: 'Instrument cable is shielded, thin-core signal wire. Speaker runs need low-resistance conductors sized for amps of current.',
   },
   // Module 8 pool extras (scored only)
   {
@@ -597,7 +597,7 @@ export const APP_SCENARIOS: AppScenario[] = [
     id: 'ap-sub', title: 'Touring subwoofer amplifier',
     brief: 'Thousands of watts into low-impedance loads, night after night, in a road rack.',
     accepted: ['D'],
-    reasoning: { D: 'At kilowatt levels, efficiency decides weight, rack heat and mains draw — modern touring amplifiers are switching designs with switch-mode supplies for exactly this reason.' },
+    reasoning: { D: 'At kilowatt levels, efficiency decides weight, rack heat and mains draw — most modern touring amplifiers are switching designs with switch-mode supplies for this reason.' },
     rejected: { A: 'The heat would be measured in kilowatts.', AB: 'Historically used, but its heat and weight at this power are why the industry moved on.', C: 'Not an audio amplifier.', TUBE: 'Impractical at this power and impedance.' },
   },
   {
@@ -696,7 +696,7 @@ export const FAULT_COPY: Record<FaultId, { title: string; detected: string; acti
   'output-clipping': {
     title: 'OUTPUT CLIPPING',
     detected: 'The requested output exceeds the supply rails.',
-    action: 'Waveform peaks are flattened at the rail voltage.',
+    action: 'Waveform peaks are flattened near the rail voltage.',
     check: 'Reduce drive into the amplifier or raise system headroom. Sustained clipping stresses loudspeakers.',
   },
   'upstream-clipping': {

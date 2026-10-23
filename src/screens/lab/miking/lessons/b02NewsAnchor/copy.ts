@@ -33,7 +33,7 @@ const BASE = standingVoiceCopy({
     note: 'With no PA, a lav each — centred, on separate labelled channels — is a place to begin; a boom just outside the frame can carry the program with the lavs as fallbacks. Switch to PUBLIC for the PA exercise.',
   },
   contextPoints: [
-    { title: 'NEWS SET', text: 'A normal news set may not put the anchor in any local loudspeaker: the lavs, a boom outside the frame or a desk mic can all work, each for a reason.' },
+    { title: 'NEWS SET', text: 'Most news sets do not put the anchor in any local loudspeaker: the lavs, a boom outside the frame or a desk mic can all work, each for a reason.' },
     { title: 'PUBLIC INTERVIEW', text: 'With an audience and a PA, every open mic hears the loudspeakers: closer mics, the fewest open, and a pattern’s rejection toward the PA where the mic has one.' },
     { title: 'A CHANNEL EACH', text: 'Separate, labelled channels for the anchor and the guest; mute the unused one as the format permits.' },
     { title: 'THE FALLBACK', text: 'A tested second mic, checked on its own, with a clear cue for switching — never two unverified mics summed.' },

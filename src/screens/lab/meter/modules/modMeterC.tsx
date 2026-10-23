@@ -116,7 +116,7 @@ const CHECK_PHASE_PA: CheckSpec = {
   correctIdx: 1,
   reveal:
     '−1 means the right channel is the polarity-opposite of the left: every push in L is a pull in R. ' +
-    'Sum them and they subtract — the mix collapses toward silence. That is why you read this meter ' +
+    'Sum them and they subtract — at equal levels the mix collapses toward silence. That is why you read this meter ' +
     'BEFORE the mono bus (or a phone speaker) bites.',
   wrongHint: 'At −1, what is R doing at the exact instant L pushes forward?',
 };
@@ -608,7 +608,7 @@ export function ScopeModule(p: MeterModuleProps) {
         <Text style={dstyles.caption}>
           {xy
             ? 'Left drives X, right drives Y: a thin 45° line = MONO (L and R identical). The OPPOSITE diagonal = anti-phase — the mono-death picture. A cloud between them is real stereo. A studio goniometer rotates this plot 45°, so there mono stands upright instead. Riding WIDTH or PHASE switches X-Y mode on.'
-            : 'Reading flat-tops: when the trace slams into a ceiling and flattens, clipping is happening RIGHT THERE — whatever the meters further down the chain claim.'}
+            : 'Reading flat-tops: when the trace slams into a ceiling and flattens, the signal has clipped RIGHT THERE or earlier — whatever the meters further down the chain claim.'}
         </Text>
 
         <CollapsibleSection title="THE RAWEST VIEW">
@@ -622,7 +622,7 @@ export function ScopeModule(p: MeterModuleProps) {
 
         <MythReality
           myth="If no meter shows red, nothing is clipping anywhere in the chain."
-          reality="Meters read the point where they are inserted. The scope shows the waveform itself — flat-tops mean clipping is happening at THIS point in the chain, even when a meter later in the path (after a pad or trim) reads a polite level."
+          reality="Meters read the point where they are inserted. The scope shows the waveform itself — flat-tops mean the signal has clipped at THIS point or earlier in the chain, even when a meter later in the path (after a pad or trim) reads a polite level."
         />
         <CheckQuestion spec={CHECK_SCOPE_SQUARE} />
         <CheckQuestion spec={CHECK_LISSAJOUS_LINE} />
@@ -904,7 +904,7 @@ const CASES: DetectiveCase[] = [
       ],
       correctIdx: 3,
       reveal:
-        'Cure the electrical cause first: break the ground loop (one ground path, proper balanced connections, reroute cables away from power). Notch filters at the mains frequency and its multiples (60/120/180 Hz here; 50/100/150 Hz in most other countries) are the mop-up for whatever tiny residue remains — not the primary fix.',
+        'Cure the electrical cause first: break the ground loop (one ground path, proper balanced connections, reroute cables away from power — never by lifting the mains safety earth). Notch filters at the mains frequency and its multiples (60/120/180 Hz here; 50/100/150 Hz in most other countries) are the mop-up for whatever tiny residue remains — not the primary fix.',
       wrongHint: 'The hum enters through the WIRING. Where does the real fix live?',
     },
   },
@@ -1013,7 +1013,7 @@ const CASES: DetectiveCase[] = [
       ],
       correctIdx: 2,
       reveal:
-        'The classic trap: EQ shapes LEVEL, but the ridge is a TIME problem — cut 250 Hz and the ring is quieter yet rings exactly as long. Only absorbing the stored energy (tuned traps, thick porous absorption) shortens the decay. Watch the ridge on this display shrink as treatment goes in.',
+        'The classic trap: EQ shapes LEVEL, but the ridge is a TIME problem — cut 250 Hz and the ring is quieter, yet across the room it rings about as long. Only absorbing the stored energy (tuned traps, thick porous absorption) shortens the decay everywhere. Watch the ridge on this display shrink as treatment goes in.',
       wrongHint: 'Can an equalizer change how LONG a room stores energy?',
     },
   },

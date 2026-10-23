@@ -82,7 +82,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A mic is placed in front of a clavinet’s amp. What does it actually hear?',
     options: ['The clavinet’s strings, carried through the air and the amp’s grille', 'The pickups directly, picked up by their magnetism', 'The speaker, turning the clavinet’s signal back into sound'],
     correct: 'The speaker, turning the clavinet’s signal back into sound',
-    explain: 'The strings make almost no sound in the air; the pickups make a signal. Only a speaker turns that signal back into sound — and that is all a mic can hear.',
+    explain: 'The strings make almost no sound in the air; the pickups make a signal. Only a speaker turns that signal back into sound — and that is mostly what a mic in front of it hears.',
     why: {
       'The clavinet’s strings, carried through the air and the amp’s grille': 'The strings are in the clavinet, not the amp. The amp’s speaker reproduces their signal.',
       'The pickups directly, picked up by their magnetism': 'A mic responds to sound in the air, not to a magnetic field.',
@@ -277,7 +277,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A cardioid rejects most directly behind (180°). A supercardioid’s deepest rejection is off the rear axis, near 125°. Aim by the actual pattern.',
     why: {
       'Off to one side of the rear, near 125°': 'That is a supercardioid. A cardioid rejects most straight behind.',
-      'Beside the mic, square to its front': 'At 90° a cardioid still picks up half as much as on axis.',
+      'Beside the mic, square to its front': 'At 90° a cardioid is only about 6 dB down from on axis.',
     },
   },
   {
@@ -334,10 +334,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'A DI track and the amp mic sound thin together in mono. What is a likely cause?',
     options: ['The DI track carries the room’s reflections', 'The DI is wired in reverse polarity by design', 'The mic’s signal arrives later than the DI’s'],
     correct: 'The mic’s signal arrives later than the DI’s',
-    explain: 'The direct signal is instant; the mic hears the speaker a little later. Adjust the distance, the track delay or the blend first; then test polarity.',
+    explain: 'The direct signal arrives almost at once; the mic hears the speaker a little later. Adjust the distance, the track delay or the blend first; then test polarity.',
     why: {
       'The DI track carries the room’s reflections': 'A direct track has no room in it: that is the mic’s.',
-      'The DI is wired in reverse polarity by design': 'A DI is not reversed by design; the timing is the usual cause.',
+      'The DI is wired in reverse polarity by design': 'A DI is not reversed by design, though some amps are; check the timing first.',
     },
   },
   {
@@ -349,7 +349,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A close and a room mic are two perspectives, not a stereo pair. Panning does not change the mono sum — check it either way.',
     why: {
       'Hard apart: a close mic and a room mic on one amp make a stereo pair': 'Two perspectives on one speaker are not automatically a stereo pair.',
-      'Hard apart, so that they cannot comb in mono': 'Panning does not change the mono sum.',
+      'Hard apart, so that they cannot comb in mono': 'Panning does not remove the combing in the mono sum.',
     },
   },
   {
@@ -436,7 +436,7 @@ const symptoms: Symptom[] = [
     explain: 'At the centre, on axis, tends to be brightest. Move toward the edge, or turn the mic off axis, one change at a time.',
     why: {
       'Cut the treble on the channel until it is dull enough to sit right': 'EQ hides the cause. Move the mic first.',
-      'Turn the amp down until the brightness goes': 'Level is not tone. Change the position.',
+      'Turn the amp down until the brightness goes': 'Turning down changes level more than tone. Change the position.',
     },
   },
   {
@@ -460,13 +460,13 @@ const symptoms: Symptom[] = [
     explain: 'The mic arrives later than the DI. Align the timing first; a polarity flip does not fix every frequency.',
     why: {
       'Flip the mic’s polarity and leave it that way for good': 'Polarity does not remove a delay.',
-      'Pan the DI and the mic hard apart, so they cannot meet in mono': 'Panning does not change the mono sum.',
+      'Pan the DI and the mic hard apart, so they cannot meet in mono': 'Panning does not remove the combing in the mono sum.',
     },
   },
   {
     id: 'cv.sym.hum',
     observation: 'Hum appears in the direct path',
-    firstChecks: 'Power, a cable, the DI or modified wiring: stop and isolate safely; use a qualified technician.',
+    firstChecks: 'Power, a cable, the DI or modified wiring: try the DI’s ground lift and a known-good cable; if power or wiring may be unsafe, stop, isolate safely and use a qualified technician.',
     options: ['Stop, isolate safely, and get a qualified diagnosis', 'Open the clavinet and check its wiring while it is on', 'Turn the gain up so the music covers the hum'],
     correct: 'Stop, isolate safely, and get a qualified diagnosis',
     explain: 'Swap one cable or the DI at a time with power handled safely; unsafe power or modified wiring is a technician’s job.',
@@ -497,7 +497,7 @@ const orderTasks: OrderTask[] = [
     steps: [
       { text: 'Draw the signal path: clavinet, pedals, amp, speaker, mic, console', early: 'Start by knowing which parts of the chain exist.' },
       { text: 'Write down the switches, the pedal order and the amp settings', early: 'Document the source once you know the chain.' },
-      { text: 'Connect the direct path to a DI or an instrument (Hi-Z) input — no mic input, no phantom', early: 'The direct path comes once the chain is known.' },
+      { text: 'Connect the clavinet’s output to a DI or an instrument (Hi-Z) input — not straight to a mic input or phantom', early: 'The direct path comes once the chain is known.' },
       { text: 'Set the direct level with headroom for the hardest playing and boosts', early: 'Set its level once it is connected.' },
       { text: 'Mute the mic channel; place the close mic on one chosen speaker', early: 'Place the mic once the direct path is safe.' },
       { text: 'Set the mic gain on the loudest passages and effects', early: 'Gain is set once the mic is placed and connected.' },
@@ -507,7 +507,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'Each input gets the right connection and power (a DI or an instrument (Hi-Z) input; phantom only where a mic needs it)', role: 'required', feedback: 'Say how each path connects: the clavinet’s output never gets a mic input or phantom.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'Each input gets the right connection and power (a DI or an instrument (Hi-Z) input; phantom only where a mic or an active DI needs it)', role: 'required', feedback: 'Say how each path connects: the clavinet’s output never gets a mic input or phantom.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the right surface — or a labelled direct path', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, stand and cables are safe: off the grille, clear of a hot amp and the player’s feet', role: 'required', feedback: 'Safety and clearance are part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on an amp', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
@@ -571,7 +571,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Where are the clavinet’s pickups?',
     options: ['At the end of the strings away from the anvil', 'Under each key, right where the player presses it down', 'Inside the amplifier, beside the speaker'],
     correct: 'At the end of the strings away from the anvil',
-    explain: 'The tangent presses each string onto an anvil at one end; magnetic pickups sit at the other end.',
+    explain: 'The tangent presses each string onto an anvil, which becomes one end of its ringing length; magnetic pickups sit toward the other end.',
     why: {
       'Under each key, right where the player presses it down': 'The keys move the tangents; the pickups sit toward the strings’ far end, one above the strings and one below.',
       'Inside the amplifier, beside the speaker': 'The pickups are in the clavinet; the amp only amplifies.',

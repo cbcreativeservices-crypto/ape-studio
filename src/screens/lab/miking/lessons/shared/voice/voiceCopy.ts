@@ -141,7 +141,7 @@ export function standingVoiceCopy(o: StandingVoiceCopyOpts): Partial<LessonCopy>
       B: { typeId: 'vocDynCard', pattern: 'cardioid', pose: o.pairB },
       learn: [
         'Two mics on one singer — two mics side by side to compare, or a second mic to blend — hear the voice at slightly different times. A comparison is made one mic at a time, at matched distance and level; a blend is a choice for a reason, not a requirement.',
-        'When two go in together: hear each alone, then the pair in MONO at the intended levels. Move or rebalance a mic first; check both polarity states at matched levels only after that — a polarity switch cannot line up every pitch.',
+        'When two go in together: hear each alone, then the pair in MONO at the intended levels. Move or rebalance a mic first; check both polarity states at matched levels only after that — a polarity switch cannot line up every frequency.',
       ],
       warn: 'This simplified graph treats the mouth as one point and both mics as hearing the same sound. Real mics at different distances and angles hear different mixes of voice and room, so read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative. Judge by ear, in mono, at matched levels.',
     },

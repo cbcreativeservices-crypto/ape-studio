@@ -612,7 +612,7 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
           question="A small private event: no reliable internet, and you would rather not depend on a laptop. Which system fits best?"
           options={['A standalone system with tracks on a USB stick (and a spare stick)', 'A laptop playing from a streaming service', 'Two turntables with no records', 'A controller with no computer']}
           correct={0}
-          explain="A standalone unit plays from local media with no laptop and no internet. A tested spare stick covers a failed one. A streaming service may need a connection, and a controller needs its computer."
+          explain="A standalone unit plays from local media with no laptop and no internet. A tested spare stick covers a failed one. A streaming service may need a connection, and most controllers need their computer."
           wrong={[undefined, 'A streaming service may need a working connection — the one thing you do not have.', 'Turntables need records to play.', 'Most controllers do nothing without their computer and software.']}
           onCorrect={() => setC2(true)}
         />

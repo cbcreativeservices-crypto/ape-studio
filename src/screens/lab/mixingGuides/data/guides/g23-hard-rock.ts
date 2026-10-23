@@ -329,7 +329,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Never scoop guitar mids—it makes the riff vanish in a full band and on phones.",
+      "text": "Avoid scooping guitar mids—it makes the riff vanish in a full band and on phones.",
       "bullet": true
     },
     {

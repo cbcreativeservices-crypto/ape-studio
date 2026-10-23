@@ -64,13 +64,13 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim a desk gooseneck so its rejection faces a public interview’s PA — and know why a news set and a public interview call for different checks.',
     credit: { scenarios: ['b2.ctx.1', 'b2.ctx.2', 'b2.ctx.studio', 'b2.rec.3'], interactive: 'wedgeInNull', note: 'PUBLIC: aim the gooseneck (or change its pattern) until the PA sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'A news set may not reinforce the anchor; a public interview can — then every open mic hears the PA. Closer mics, the fewest open, and the rejection toward the loudspeaker.',
+    takeaway: 'A news set usually does not reinforce the anchor; a public interview can — then every open mic hears the PA. Closer mics, the fewest open, and the rejection toward the loudspeaker.',
   },
   twoMic: {
     title: 'Two microphones',
     goal: 'See why a boom and a lav summed on the anchor can sound hollow, how the arrival-time difference places comb notches, and why one is chosen for the program.',
     credit: { scenarios: ['b2.two.1', 'b2.two.2', 'b2.two.3', 'b2.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'The lav hears the voice first, the boom later: summed, some pitches cancel. Use the intended channel, keep a tested fallback on its own track; polarity flips the sign and never removes a delay.',
+    takeaway: 'The lav hears the voice first, the boom later: summed, some frequencies cancel. Use the intended channel, keep a tested fallback on its own track; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -102,7 +102,7 @@ const scenarios: MikingScenario[] = [
     correct: 'It stays put; the mouth turns away from it',
     explain: 'A lav is on the chest. The head turns about its centre, so the mouth moves off the lav’s line — a centred lav changes alike for a turn either way.',
     why: {
-      'It turns with the anchor’s head toward the guest': 'Only a headset turns with the head. A lav moves with the chest.',
+      'It turns with the anchor’s head toward the guest': 'Only a head-worn mic, like a headset, turns with the head. A chest lav moves with the chest.',
       'It comes closer to the mouth as the head turns': 'The mouth swings sideways, away from the middle of the chest.',
     },
   },
@@ -110,9 +110,9 @@ const scenarios: MikingScenario[] = [
     id: 'b2.snd.2',
     page: 'sound',
     prompt: 'A raised gooseneck over a hard desk. What does the desk add?',
-    options: ['A later copy that cancels some pitches', 'More low end, because the desk resonates', 'Nothing, since the desk is below the mouth'],
-    correct: 'A later copy that cancels some pitches',
-    explain: 'The voice reaches the mic straight and, a little later, off the desk. Summed, some pitches cancel. Nearer the mouth and higher off the desk, the copy is later and weaker.',
+    options: ['A later copy that cancels some frequencies', 'More low end, because the desk resonates', 'Nothing, since the desk is below the mouth'],
+    correct: 'A later copy that cancels some frequencies',
+    explain: 'The voice reaches the mic straight and, a little later, off the desk. Summed, some frequencies cancel. Nearer the mouth and higher off the desk, the copy is later and weaker.',
     why: {
       'More low end, because the desk resonates': 'The main effect is the reflection’s later copy, not a resonance.',
       'Nothing, since the desk is below the mouth': 'A hard desk reflects the voice up into a raised mic.',
@@ -269,7 +269,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Why can a raised desk mic sound hollow?',
     options: ['The desk sends a later copy of the voice', 'The desk soaks up the voice’s high end', 'The anchor talks more quietly when it is near'],
     correct: 'The desk sends a later copy of the voice',
-    explain: 'The direct voice and its later copy off the desk add up: some pitches cancel. A boundary mic on the desk hears the two arrive together.',
+    explain: 'The direct voice and its later copy off the desk add up: some frequencies cancel. A boundary mic on the desk hears the two arrive together.',
     why: {
       'The desk soaks up the voice’s high end': 'A hard desk reflects; the problem is the later copy.',
       'The anchor talks more quietly when it is near': 'The anchor’s voice does not change; the reflection does the colouring.',
@@ -317,7 +317,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · The anchor reads down. Which mic keeps its distance to the mouth?',
     options: ['None of these — the mouth moves', 'The fixed boom above the camera’s frame', 'The gooseneck on the desk'],
     correct: 'None of these — the mouth moves',
-    explain: 'A lav, a boom and a desk mic all stay where they are while the head tips: each one’s distance and angle change. Only a headset moves with the head.',
+    explain: 'A lav, a boom and a desk mic all stay where they are while the head tips: each one’s distance and angle change. Only a head-worn mic, like a headset, moves with the head.',
     why: {
       'The fixed boom above the camera’s frame': 'It is fixed: the mouth tips away from it.',
       'The gooseneck on the desk': 'It stays on the desk: the mouth tips toward or away from it.',
@@ -329,7 +329,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The boom and the lav summed on the anchor sound hollow. Why?',
     options: ['The voice reaches the lav first, the boom later', 'The boom reverses the voice’s polarity', 'The lav is louder, so it simply cancels the boom'],
     correct: 'The voice reaches the lav first, the boom later',
-    explain: 'Two arrival times of one voice, summed: some pitches arrive out of step and cancel — a comb.',
+    explain: 'Two arrival times of one voice, summed: some frequencies arrive out of step and cancel — a comb.',
     why: {
       'The boom reverses the voice’s polarity': 'Distance delays a sound; it does not flip its sign.',
       'The lav is louder, so it simply cancels the boom': 'A level difference changes how deep the notches are; the delay makes them.',
@@ -444,7 +444,7 @@ const symptoms: Symptom[] = [
     correct: 'Raise it toward the mouth, off the desk',
     explain: 'Low over a hard desk, the bounce arrives soon and strong. Raised toward the mouth, the copy is later and weaker; a purpose-built boundary mic on the desk is another answer.',
     why: {
-      'Boost the treble to bring back the clarity': 'EQ cannot fill the cancelled pitches.',
+      'Boost the treble to bring back the clarity': 'EQ cannot fill the cancelled frequencies.',
       'Lay a second mic flat on the desk beside it': 'Two mics on one voice comb in the sum.',
     },
   },
@@ -526,7 +526,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: the anchor turns to the guest. Which mic keeps its distance to the mouth?', options: ['The lav', 'The fixed boom', 'None of them'], after: 'Now STEP through (or PLAY ONCE), then turn the head, switch the shot, try the desk and open both lavs.' },
-  microphone: { prompt: 'Before you choose: which mic hears no clothing at all?', options: ['A visible lav', 'A boom outside the frame', 'A hidden lav'], after: 'Now choose each TYPE and see where it starts.' },
+  microphone: { prompt: 'Before you choose: which mic has no clothing touching it?', options: ['A visible lav', 'A boom outside the frame', 'A hidden lav'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you hide the lav under one layer of the shirt. What changes?', options: ['It can dull and rub', 'Nothing at all', 'It depends on the shirt'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is at the stage’s front corner. Where will a supercardioid gooseneck reject it best?', options: ['Straight in front', 'Off to the rear, about 125°', 'At its side'], after: 'Now turn or tilt the gooseneck with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip the lav’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
@@ -541,7 +541,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'The mouth tips down; the lav stays put',
     explain: 'The lav moves with the chest. As the head tips, the mouth and its axis move: the distance and the angle change.',
     why: {
-      'The lav tips down with the head, on aim': 'Only a headset moves with the head.',
+      'The lav tips down with the head, on aim': 'Only a head-worn mic, like a headset, moves with the head.',
       'Nothing: the lav is fixed to the shirt': 'The lav is fixed — the mouth is not.',
     },
   },
@@ -589,10 +589,10 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The boom and the anchor’s lav. The program gets…',
     options: ['One; the other on its own track', 'Both, summed at an even level', 'The lav, with the boom tucked under it'],
     correct: 'One; the other on its own track',
-    explain: 'Summed, the two arrival times comb. Choose the intended channel and keep the other as the tested fallback.',
+    explain: 'Summed live as they are, the two arrival times comb. Choose the intended channel and keep the other as the tested fallback.',
     why: {
       'Both, summed at an even level': 'Even levels make the deepest comb.',
-      'The lav, with the boom tucked under it': 'Tucked under or not, a second open mic on one voice still combs.',
+      'The lav, with the boom tucked under it': 'Tucked under or not, a second open mic on one voice still combs, if less deeply.',
     },
   },
   hearingDiag('q.6', W),

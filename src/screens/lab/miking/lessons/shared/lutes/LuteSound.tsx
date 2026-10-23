@@ -726,7 +726,7 @@ export function makeLuteSoundPage(built: BuiltLute) {
             <Landing looking={`One string · shape ${shapeN}`} prompt={`Step through SHAPE, then try each ${C.sound.striker} point. Which shapes does a pluck in the exact middle leave still?`} />
             <Card>
               <Point title={`SHAPE ${shapeN} · ${shapeN === 1 ? 'STILL ONLY AT THE ENDS' : `${shapeN - 1} STILL POINT${shapeN - 1 === 1 ? '' : 'S'}`}`}>
-                {`A plucked string vibrates in several shapes at once; this is one of them. ${shapeN === 1 ? 'It is the lowest — the note you name.' : `Its pitch is exactly ${shapeN} times the lowest — a whole number, which is why a string sounds clearly “pitched”.`} Under the ${C.sound.strikerPhrase} (${pick.label.toLowerCase()}) the string moves ${sharePct} % of this shape’s peak, so the pluck ${share < 0.05 ? `does not set this shape moving at all: the ${C.sound.strikerPhrase} is on a still point` : share < 0.4 ? 'sets it moving only a little' : 'sets it moving strongly'}.${shapeN > 1 && share >= 0.05 ? ` On this ideal string it starts at about ${Math.round(Math.abs(rel) * 100)} % of the lowest shape’s size.` : ''}`}
+                {`A plucked string vibrates in several shapes at once; this is one of them. ${shapeN === 1 ? 'It is the lowest — the note you name.' : `Its pitch is very nearly ${shapeN} times the lowest — close to a whole number, which is why a string sounds clearly “pitched”.`} Under the ${C.sound.strikerPhrase} (${pick.label.toLowerCase()}) the string moves ${sharePct} % of this shape’s peak, so the pluck ${share < 0.05 ? `does not set this shape moving at all: the ${C.sound.strikerPhrase} is on a still point` : share < 0.4 ? 'sets it moving only a little' : 'sets it moving strongly'}.${shapeN > 1 && share >= 0.05 ? ` On this ideal string it starts at about ${Math.round(Math.abs(rel) * 100)} % of the lowest shape’s size.` : ''}`}
               </Point>
             </Card>
             {C.sound.shapesNotes.map((x) => (
@@ -757,11 +757,11 @@ export function makeLuteSoundPage(built: BuiltLute) {
                   <Card>
                     <Point title={pair ? `IN STEP · PLAYED ${pair.n} ↔ SYMPATHETIC ${pair.m}` : 'NOTHING IN STEP'}>
                       {pair
-                        ? `The sympathetic string is never plucked. The bridge passes it the played string’s motion, and it builds up only where one of its own shapes sits at the same pitch as one of the played note’s. Here ${pairs.length} pair${pairs.length === 1 ? '' : 's'} of the first ${SHAPES_SHOWN} line${pairs.length === 1 ? 's' : ''} up${pairs.some((q) => q.n === 1 && q.m === 1) ? ' — including both lowest shapes, so it answers most readily' : ''}.`
+                        ? `The sympathetic string is mostly not plucked. The bridge passes it the played string’s motion, and it builds up only where one of its own shapes sits at the same pitch as one of the played note’s. Here ${pairs.length} pair${pairs.length === 1 ? '' : 's'} of the first ${SHAPES_SHOWN} line${pairs.length === 1 ? 's' : ''} up${pairs.some((q) => q.n === 1 && q.m === 1) ? ' — including both lowest shapes, so it answers most readily' : ''}.`
                         : 'None of the first shapes line up: pushed out of step with itself, the sympathetic string barely moves. Play a note that matches its tuning, and it rings on.'}
                     </Point>
                   </Card>
-                  <Note>This is why the sympathetic strings shimmer after some notes and stay quiet after others: the player tunes them for the music. A mic toward the neck hears more of that shimmer — if this sitar has sympathetic strings at all.</Note>
+                  <Note>This is why the sympathetic strings shimmer after some notes and stay quiet after others: the player tunes them for the music.</Note>
                 </>
               ),
             },

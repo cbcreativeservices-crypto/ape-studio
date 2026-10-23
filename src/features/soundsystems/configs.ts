@@ -120,7 +120,7 @@ export const OUTPUT_CONFIGS: readonly OutputConfig[] = [
     name: 'Stereo mains with mono subwoofers',
     layout: [TOP_L, TOP_R, { slot: 'subL', feed: 'SUB', kind: 'sub' }, { slot: 'subR', feed: 'SUB', kind: 'sub' }],
     what: 'The tops are stereo; both subs receive the SAME mono sub feed.',
-    when: 'The standard club and touring layout. Low frequencies are not localised, so stereo subs buy nothing and cost cancellation.',
+    when: 'A common club and touring layout. Low frequencies are hard to place by ear, so stereo subs buy little and cost cancellation.',
     changes: 'Two sub positions, one signal: they add down the centre line and interfere off to the sides — the power alley and its valleys. The trade for easy rigging; a centre cluster or an arrayed layout evens it out.',
   },
   {
@@ -165,7 +165,7 @@ export const OUTPUT_CONFIGS: readonly OutputConfig[] = [
   },
   {
     id: 'feeds',
-    name: 'Lobby, recording, broadcast and overflow feeds',
+    name: 'Lobby, recording and broadcast feeds',
     layout: [TOP_L, TOP_R],
     extraFeeds: ['LOBBY', 'REC', 'BCAST'],
     what: 'Outputs that never reach the room: matrix mixes built from the main mix and re-balanced for a lobby, a recorder, a broadcast truck, an overflow space.',
@@ -279,7 +279,7 @@ export const SYSTEM_TYPES: readonly SystemType[] = [
     layout: [{ slot: 'mainL', feed: 'L', kind: 'top', aimDeg: 10, coverDeg: 110 }, { slot: 'mainR', feed: 'R', kind: 'top', aimDeg: -10, coverDeg: 110 }, { slot: 'subL', feed: 'SUB', kind: 'sub' }, { slot: 'subR', feed: 'SUB', kind: 'sub' }, { slot: 'subC', feed: 'SUB', kind: 'sub' }, { slot: 'frontFillL', feed: 'FILL', kind: 'fill', aimDeg: 0, coverDeg: 90 }, { slot: 'frontFillR', feed: 'FILL', kind: 'fill', aimDeg: 0, coverDeg: 90 }],
     chain: ['Stagebox and splits', 'FOH console · monitor console', 'MAIN → networked amplifiers with processing → flown arrays, sub arrays, fills, delays', 'Monitor console → wedges, side fills, in-ears'],
     when: 'Arenas and festivals: the array’s narrow vertical coverage throws sound to the back without wasting it on the ceiling.',
-    notWhen: 'A short throw, or a room too low to fly a line long enough to control — four boxes are a stack, not an array.',
+    notWhen: 'A short throw, or a room too low to fly a line long enough to control — a very short line, like four boxes, gives little control in the low mids.',
     scale: 'Roughly 1,000 upward for large-format; compact arrays serve rooms from a few hundred',
   },
   {
@@ -320,6 +320,6 @@ export const VENUE_CASES: readonly VenueCase[] = [
   { id: 'v-church', venue: 'A 1,200-seat sanctuary with a balcony: sermon on Sunday, orchestra at Christmas.', correct: 'church', why: 'Speech first: an LCR main system for localisation, delays and under-balcony fills so every seat hears a direct source in a reverberant room.' },
   { id: 'v-corp', venue: 'A product launch: eight wireless microphones, video, a livestream, 400 in a ballroom.', correct: 'corporate', why: 'Automatic mixing across many microphones, playback, delayed loudspeakers for the deep room, and matrix feeds for the stream.' },
   { id: 'v-park', venue: 'A park concert for 5,000 on a field 120 m deep.', correct: 'outdoor', why: 'Nothing comes back off walls, so level is carried by delay towers; the mains and subs are aimed and the delays set to distance.' },
-  { id: 'v-arena', venue: 'An arena tour: 12,000 seats and a 60 m throw to the back.', correct: 'line-array', why: 'Only a line array’s controlled vertical coverage keeps level at the back without a ceiling full of sound.' },
+  { id: 'v-arena', venue: 'An arena tour: 12,000 seats and a 60 m throw to the back.', correct: 'line-array', why: 'A line array’s controlled vertical coverage is the usual way to keep level at the back without a ceiling full of sound.' },
   { id: 'v-terminal', venue: 'An airport terminal: paging and background music over a very long, low space.', correct: 'distributed', why: 'Many small loudspeakers, each near its listeners, on a constant-voltage line — direction and impact are not wanted, evenness is.' },
 ];

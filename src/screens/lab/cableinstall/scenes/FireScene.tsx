@@ -835,7 +835,7 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
         {plenumPairDone ? (
           <LessonCard
             head="CEILING CAVITY ≠ AUTOMATICALLY PLENUM"
-            body="Whether a ceiling space handles environmental air is a fact of the building’s design — some cavities move air through the open space, most carry it in ducts, and the requirements differ. Identify the space from the project documents before selecting cable; assuming in either direction produces a wrong installation."
+            body="Whether a ceiling space handles environmental air is a fact of the building’s design — some cavities move air through the open space, others carry it in ducts, and the requirements differ. Identify the space from the project documents before selecting cable; assuming in either direction produces a wrong installation."
           />
         ) : null}
       </CiSection>

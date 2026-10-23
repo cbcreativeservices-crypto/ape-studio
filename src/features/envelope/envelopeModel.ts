@@ -242,7 +242,7 @@ export const PRESETS: SoundPreset[] = [
     id: 'trumpet', name: 'Trumpet', kind: 'sustained',
     adsr: { attackMs: 60, decayMs: 80, sustain: 0.9, releaseMs: 120, holdMs: 900, attackShape: 'linear', decayShape: 'linear' },
     bullets: ['Medium attack (tongue and breath)', 'Continuous sustain', 'Controlled release'],
-    notice: 'Notice the sound sits near its peak almost the whole time: this is what makes peak and average meters agree.', // NEW COPY
+    notice: 'Notice the sound sits near its peak almost the whole time: that is why peak and average meters nearly agree.', // NEW COPY
   },
   {
     id: 'cymbal', name: 'Cymbal', kind: 'percussive',

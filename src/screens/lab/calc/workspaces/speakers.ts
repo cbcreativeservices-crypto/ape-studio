@@ -48,7 +48,7 @@ const WS_SPEAKERPOWER: Workspace = {
     'That is 131 − 97 = 34 dB above 1 W: P = 10^(34/10) ≈ 2500 W. One box cannot do that — ' +
     'which is exactly the answer this workspace exists to give you before load-in, not after.',
   mistakes: [
-    'Buying double the amplifier power expecting double the loudness — 2× power is +3 dB, a just-noticeable step; "twice as loud" needs roughly +10 dB (10× power).',
+    'Buying double the amplifier power expecting double the loudness — 2× power is +3 dB, a small but clearly audible step; "twice as loud" needs roughly +10 dB (10× power).',
     'Ignoring power compression: voice coils heat up and real boxes give back 2–4 dB less than the cold-spec math at full tilt.',
     'Quoting the 1 m sensitivity spec at FOH distance — a 97 dB/W/m box is doing 71 dB at 20 m on 1 watt.',
     'Treating the multi-speaker +10·log10(N) bonus as guaranteed — it assumes uncorrelated sources; coupled/arrayed boxes behave differently.',

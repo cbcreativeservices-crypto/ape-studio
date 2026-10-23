@@ -102,9 +102,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'A mic is clamped rigidly to a basket’s backstop. What can it pick up?',
     options: ['The structure’s rattles as well as the air', 'Only the air, as a clamp blocks vibration', 'Nothing until the ball hits the rim'],
     correct: 'The structure’s rattles as well as the air',
-    explain: 'A rigid clamp passes the structure’s rattles and impacts straight to the mic. A compatible suspension or an independent support keeps them out.',
+    explain: 'A rigid clamp passes the structure’s rattles and impacts straight to the mic. A compatible suspension or an independent support keeps most of them out.',
     why: {
-      'Only the air, as a clamp blocks vibration': 'A rigid clamp carries vibration; isolation blocks it.',
+      'Only the air, as a clamp blocks vibration': 'A rigid clamp carries vibration; isolation blocks most of it.',
       'Nothing until the ball hits the rim': 'It hears the air and the structure all the time.',
     },
   },

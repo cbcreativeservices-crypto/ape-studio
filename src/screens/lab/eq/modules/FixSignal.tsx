@@ -54,7 +54,7 @@ const SCENARIOS: Scenario[] = [
     name: 'HONKY GUITAR',
     story: 'The acoustic guitar sounds boxy and honky, like it’s in a cardboard tube.',
     hidden: { f: 800, g: 7, q: 1.4 },
-    moral: '“Boxy/honky” points at the 400–1000 Hz low-mids.',
+    moral: '“Boxy/honky” usually points at the 400–1000 Hz mids.',
   },
   {
     name: 'SIBILANT VOCAL',

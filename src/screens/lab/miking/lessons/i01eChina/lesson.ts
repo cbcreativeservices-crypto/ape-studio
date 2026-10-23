@@ -103,10 +103,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ch.snd.3',
     page: 'sound',
-    prompt: 'Upright, where does a jazz player ride a large China?',
+    prompt: 'Upright, where might a jazz player ride a large China?',
     options: ['The side of the shoulder, about an inch above the valley', 'The very centre of the cup, with the stick’s shoulder', 'Underneath the lip, reaching up from below the plate'],
     correct: 'The side of the shoulder, about an inch above the valley',
-    explain: 'Where the shoulder comes down into the valley, about an inch above it: the side of the shoulder rides with a controlled sound.',
+    explain: 'One jazz drummer rides where the shoulder comes down into the valley, about an inch above it: the side of the shoulder rides with a controlled sound.',
     why: {
       'The very centre of the cup, with the stick’s shoulder': 'The cup gives hard accents. Riding is done on the shoulder, or lightly out at the edge.',
       'Underneath the lip, reaching up from below the plate': 'The stick plays the top face. The shoulder, above the valley, is the ride spot.',
@@ -178,12 +178,12 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ch.place.2',
     page: 'placement',
-    prompt: 'You turn the China over. Where does an under-mic’s starting point move?',
-    options: ['Lower: below the cup, now its lowest point', 'Higher: the plate moves up when turned over', 'Nowhere: the lowest point does not change'],
+    prompt: 'You turn the China over. Measured from its rim, where does an under-mic’s starting point move?',
+    options: ['Lower: below the cup, now its lowest point', 'Higher: the cup now points up above the rim', 'Nowhere: the lowest point does not change'],
     correct: 'Lower: below the cup, now its lowest point',
     explain: 'Upright, the valley is lowest; turned over, the cup hangs lower still. Start below whichever is lowest, clear of the swing.',
     why: {
-      'Higher: the plate moves up when turned over': 'The cup now hangs down: the lowest point is lower.',
+      'Higher: the cup now points up above the rim': 'The cup now hangs down: the lowest point is lower.',
       'Nowhere: the lowest point does not change': 'Turning the plate over moves its lowest point — the cup now.',
     },
   },

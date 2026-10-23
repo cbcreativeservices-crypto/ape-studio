@@ -275,7 +275,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A garment mic at 1.25 m and a room mic at 3 m sound hollow together. Why?',
     options: ['They hear each move at different times', 'The room mic reverses the cloth’s polarity', 'The garment mic is louder, so the two cancel'],
     correct: 'They hear each move at different times',
-    explain: 'The room mic hears each move later. Summed, some pitches arrive out of step and cancel. Move or rebalance first; check polarity at matched levels as a diagnostic.',
+    explain: 'The room mic hears each move later. Summed, some frequencies arrive out of step and cancel. Move or rebalance first; check polarity at matched levels as a diagnostic.',
     why: {
       'The room mic reverses the cloth’s polarity': 'Both face the same garment; the difference is when the sound arrives.',
       'The garment mic is louder, so the two cancel': 'Level alone does not cancel; the arrival-time difference makes the notches.',
@@ -334,7 +334,7 @@ const symptoms: Symptom[] = [
     explain: 'A swatch or a small move gives a thin sound. Use the whole jacket, perform the move fully, then try a position that hears more of the garment.',
     why: {
       'Boost the low end on the channel until the swish has a body': 'EQ cannot add the weight of a garment that was not performed.',
-      'Move the mic right onto the fold': 'Closer narrows to the friction point — even less body.',
+      'Move the mic right onto the fold': 'Closer narrows to the friction point — even less of the whole garment.',
     },
   },
   {

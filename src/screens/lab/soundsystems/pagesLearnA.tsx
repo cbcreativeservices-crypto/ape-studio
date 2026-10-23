@@ -498,7 +498,7 @@ function PageRoutingMap({ ctx }: { ctx: PageCtx }) {
     <View style={{ gap: 12 }}>
       <ChapterTag n={4}>MIXER ROUTING AND BUSSING</ChapterTag>
       <Lead>
-        Six tools on every full-size console, and four of them are confused with each other daily. The confusion ends when you ask two questions of each: does audio pass THROUGH it, and does it SUM channels or COPY them?
+        Six tools on most full-size consoles, and four of them are confused with each other daily. The confusion ends when you ask two questions of each: does audio pass THROUGH it, and does it SUM channels or COPY them?
       </Lead>
       <GoalChips goals={goals} latched={latched} />
       {ROUTING_TOOLS.map((t) => {

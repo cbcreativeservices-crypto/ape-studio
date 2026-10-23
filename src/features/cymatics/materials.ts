@@ -42,7 +42,7 @@ export const MATERIALS: readonly Material[] = [
   { id: 'aluminum', label: 'Aluminum', E: 69, rho: 2700, nu: 0.33, Q: 800, blurb: 'The classic Chladni plate: light, stiff, rings clearly.', face: '#b9bec4', edge: '#7d848c', texture: 'brushed' },
   { id: 'steel', label: 'Steel', E: 200, rho: 7850, nu: 0.30, Q: 1000, blurb: 'Three times stiffer than aluminum but three times denser — modes land close to aluminum’s.', face: '#9aa0a8', edge: '#5f666e', texture: 'brushed' },
   { id: 'brass', label: 'Brass', E: 100, rho: 8500, nu: 0.34, Q: 600, blurb: 'Dense and moderately stiff: lower resonances than aluminum at the same size.', face: '#c8a85a', edge: '#8a6f2e', texture: 'polished' },
-  { id: 'copper', label: 'Copper', E: 117, rho: 8960, nu: 0.34, Q: 500, blurb: 'Densest of the metals here — every mode drops in pitch.', face: '#c47d5a', edge: '#7e4a30', texture: 'polished' },
+  { id: 'copper', label: 'Copper', E: 117, rho: 8960, nu: 0.34, Q: 500, blurb: 'Densest of the metals here, but stiffer than brass — its modes sit close to brass, well below aluminum.', face: '#c47d5a', edge: '#7e4a30', texture: 'polished' },
   { id: 'acrylic', label: 'Acrylic', E: 3.2, rho: 1180, nu: 0.37, Q: 40, blurb: 'Flexible and heavily damped: patterns are blurry and resonances broad.', face: '#d6e3ee', edge: '#8fa3b3', texture: 'glass' },
   { id: 'glass', label: 'Glass', E: 70, rho: 2500, nu: 0.22, Q: 700, blurb: 'As stiff as aluminum, slightly lighter, low Poisson ratio.', face: '#cfe7ea', edge: '#79a9ae', texture: 'glass' },
   { id: 'plywood', label: 'Plywood', E: 10, rho: 600, nu: 0.30, Q: 60, blurb: 'Cross-laminated plies average out the grain: treated as quasi-isotropic.', face: '#c9a877', edge: '#8c6f45', texture: 'matte' },

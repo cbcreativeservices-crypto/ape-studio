@@ -56,7 +56,7 @@ const harmonicaParts: Part[] = [
     id: 'hm.head',
     label: 'player’s head',
     short: 'head',
-    role: 'The player’s face and lips at the holes. Never close to the mouth with a stand mic — a stand that can swing into the face is never acceptable.',
+    role: 'The player’s face and lips at the holes. A stand mic is usually set a short way off the mouth — a stand that can swing into the face is never acceptable.',
     solid: { kind: 'capsule', a: v3(BODY.headC.x, BODY.headC.y - 60, BODY.headC.z), b: v3(BODY.headC.x - 10, BODY.headC.y + 40, BODY.headC.z), r: 92 },
     listIn: [],
     prov: BODY.prov,
@@ -91,7 +91,7 @@ const harmonicaParts: Part[] = [
   },
   { id: 'hm.cover', label: 'cover plates', short: 'covers', role: 'Metal covers over the reed plates, open at the back and the ends: the sound leaves through them. Some designs close the sides so all of it goes back toward a cupped mic.', listIn: ['acoustic'], prov: { kind: 'sourced', src: 'HOH-ROCKET', quote: 'Cover plates without side vents direct all the sound towards the microphone' } },
   { id: 'hm.comb', label: 'comb', short: 'comb', role: 'The body between the plates, cut into ten channels — one behind each hole.', listIn: ['acoustic'], prov: HARMONICA.holes.prov },
-  { id: 'hm.reeds', label: 'reed plates and reeds', short: 'reeds', role: 'Two plates of brass reeds, twenty reeds in all: in each channel one reed sounds when you blow and one when you draw. The reeds are the sound source.', listIn: ['acoustic'], prov: HARMONICA.reeds.prov },
+  { id: 'hm.reeds', label: 'reed plates and reeds', short: 'reeds', role: 'Two plates of reeds (usually brass), twenty reeds in all: in each channel one reed sounds when you blow and one when you draw. The reeds are the sound source.', listIn: ['acoustic'], prov: HARMONICA.reeds.prov },
   { id: 'hm.holes', label: 'holes 1–10', short: 'holes', role: 'Ten holes along the mouth side, low notes at hole 1 (the player’s left) to high at hole 10. The player changes harmonicas to change key.', listIn: ['acoustic'], prov: HARMONICA.holes.prov },
   { id: 'hm.hands', label: 'the hands (the hand chamber)', short: 'hands', role: 'The hands round the back of the harmonica make a chamber the sound passes through. Opening and closing it changes the tone — part of the player’s sound, so record how they hold it.', listIn: ['acoustic'], prov: { kind: 'trial', src: 'LESSON-HM', note: 'the hand chamber is part of the sound (lesson L31); its envelope is a drawing default' } },
 ];

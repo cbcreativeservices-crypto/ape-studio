@@ -33,7 +33,7 @@ const SPEC = ensembleHandSpec({
     prompt: 'The floor monitor stays in front of the choir, facing the singers, below the area mic. Tilt the mic (AIM) or change its PATTERN until the monitor sits in its rejection — and keep its front on the middle rows.',
     label: 'the choir on risers with a cardioid area mic in front of its left half and a floor monitor below it,',
     learn: [
-      { title: 'LIVE', text: 'Begin with the fewest open choir mics that cover the group, in front and a little above, aimed at the singers. Keep monitors low, in the mics’ rejection from their real polar plots, and never send the choir mics into the choir’s monitor. Mute and unmute to compare the natural choir with the reinforced one.' },
+      { title: 'LIVE', text: 'Begin with the fewest open choir mics that cover the group, in front and a little above, aimed at the singers. Keep monitors low, in the mics’ rejection from their real polar plots, and send little or none of the choir mics to the choir’s monitor. Mute and unmute to compare the natural choir with the reinforced one.' },
       { title: 'A RECORDING', text: 'The simplest credible stereo setup first, moved in small steps and judged on loudspeakers; spots only where the pair cannot carry a section; ambience only if the room needs it.' },
       { title: 'A SMALL ROOM', text: 'A small or lively room may need little or no reinforcement: a choir that already carries needs less PA than expected.' },
     ],

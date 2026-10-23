@@ -28,13 +28,13 @@ const pages: LessonPages = {
     title: 'Meet the voice',
     goal: 'Get to know the voice as a rapper uses it — where its sound is made, how it is shaped into fast consonants, and where it leaves — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'Breath sets the vocal folds buzzing; the throat, the tongue, the teeth and the lips shape it into words; it leaves through the mouth — with a puff of air on every P and B.',
+    takeaway: 'Breath sets the vocal folds buzzing; the throat, the tongue, the teeth and the lips shape it into words; it leaves mostly through the mouth — with a puff of air on every P and B.',
   },
   sound: {
     title: 'Where the voice comes from',
     goal: 'See how breath becomes a voice and where it leaves — and what fast, consonant-heavy delivery sends out with it: repeated puffs of air and sharp hiss along the mouth’s axis.',
     credit: { scenarios: ['rp.snd.1', 'rp.snd.2', 'rp.snd.3'], note: 'Answer the three checks.' },
-    takeaway: 'The voice leaves through the mouth, so every distance is read from the lips. A fast verse sends puff after puff and hiss after hiss straight out along the mouth’s axis — a screen, a grille, a little angle or a little distance keeps them off a capsule.',
+    takeaway: 'The voice leaves mostly through the mouth, so every distance is read from the lips. A fast verse sends puff after puff and hiss after hiss straight out along the mouth’s axis — a screen, a grille, a little angle or a little distance keeps them off a capsule.',
   },
   setting: {
     title: 'Before any mic',
@@ -64,7 +64,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why two mics on one voice can sound thin together, how the arrival-time difference places comb notches, and why a doubled or layered take checks mono before it is widened.',
     credit: { scenarios: ['rp.two.1', 'rp.two.2', 'rp.two.3', 'rp.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics at different distances hear the voice at different times: some pitches cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Check layered takes in mono.',
+    takeaway: 'Two mics at different distances hear the voice at different times: some frequencies cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Check layered takes in mono.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -105,7 +105,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Where does the sound of a rapper’s voice leave the body?',
     options: ['Through the open mouth', 'Through the chest and the throat', 'Through the top of the head'],
     correct: 'Through the open mouth',
-    explain: 'The folds’ buzz is shaped by the throat, the tongue, the teeth and the lips and leaves through the mouth — so every starting point is measured from the lips.',
+    explain: 'The folds’ buzz is shaped by the throat, the tongue, the teeth and the lips and leaves mostly through the mouth — so every starting point is measured from the lips.',
     why: {
       'Through the chest and the throat': 'The chest and throat vibrate as the performer raps, but a mic hears the voice from the mouth.',
       'Through the top of the head': 'The head vibrates a little; the voice a mic hears leaves through the mouth.',
@@ -299,7 +299,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two mics on one rapper, 10 cm and 25 cm from the lips, sound hollow together. Why?',
     options: ['The voice reaches them at different times', 'The farther mic reverses the polarity of the voice', 'The closer mic is louder, so it cancels'],
     correct: 'The voice reaches them at different times',
-    explain: 'The farther mic hears each word later. Summed, some pitches arrive out of step and cancel — a comb of notches. Move or rebalance first, then check polarity at matched levels.',
+    explain: 'The farther mic hears each word later. Summed, some frequencies arrive out of step and cancel — a comb of notches. Move or rebalance first, then check polarity at matched levels.',
     why: {
       'The farther mic reverses the polarity of the voice': 'Distance delays a sound; it does not flip its sign.',
       'The closer mic is louder, so it cancels': 'A level difference changes the notches’ depth; the delay makes them.',
@@ -499,7 +499,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Where in the body is the raw sound of a voice made?',
     options: ['At the vocal folds, low in the throat', 'In the chest, just behind the breastbone', 'At the lips, as the mouth opens'],
     correct: 'At the vocal folds, low in the throat',
-    explain: 'Breath sets the vocal folds buzzing in the voice box; the throat, the tongue, the teeth and the lips shape the buzz into words, and it leaves through the mouth.',
+    explain: 'Breath sets the vocal folds buzzing in the voice box; the throat, the tongue, the teeth and the lips shape the buzz into words, and it leaves mostly through the mouth.',
     why: {
       'In the chest, just behind the breastbone': 'The chest supplies the breath and vibrates a little; the buzz is made at the folds.',
       'At the lips, as the mouth opens': 'The lips shape the consonants and let the sound out; the raw buzz is made lower down.',

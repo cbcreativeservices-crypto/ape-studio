@@ -83,7 +83,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'bb.meet.2',
     page: 'meet',
-    prompt: 'Where is a big band’s guitar heard from?',
+    prompt: 'Where is a big band’s electric guitar heard from?',
     options: ['The loudspeaker of its amplifier', 'The guitar’s body, like an acoustic', 'The pickup inside its strings'],
     correct: 'The loudspeaker of its amplifier',
     explain: 'An electric guitar is heard from its amp’s speaker. Mic the speaker; a direct feed is a separate electrical comparison.',
@@ -280,7 +280,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The spot and the pair sound hollow together. What is a polarity flip for?',
     options: ['A diagnostic, judged by ear', 'The fix that aligns the two mics', 'A rule for each support mic'],
     correct: 'A diagnostic, judged by ear',
-    explain: 'A polarity reversal is a diagnostic: it changes the sign, not the arrival time. Lower or move the support first; one delay cannot align every moving player.',
+    explain: 'A polarity reversal changes the sign, not the arrival time: use it as a test, and keep it only if the sum sounds fuller. Lower or move the support first; one delay cannot align every moving player.',
     why: {
       'The fix that aligns the two mics': 'It changes the sign; the time difference stays.',
       'A rule for each support mic': 'No such rule: each pair of mics is judged by ear.',
@@ -397,7 +397,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'bb.prac.setup1',
     page: 'practice',
-    brief: 'BRIEF 1 · A concert in a good hall, recorded; the band balances itself well. Phantom power on every input.',
+    brief: 'BRIEF 1 · A concert in a good hall, recorded; the band balances itself well. Phantom power on every input; check each ribbon’s manual first.',
     setups: [
       { id: 'a', label: 'A main pair about 2.5 m in front, elevated, plus piano and bass support', ok: true, power: 'phantom', feedback: 'A concert perspective with selective detail from the rhythm section.' },
       { id: 'b', label: 'The pair, plus a mic for every two horns, raised under it', ok: true, power: 'phantom', feedback: 'Fair: some section control under the main view.' },

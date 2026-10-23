@@ -84,7 +84,7 @@ export const I11A_SPEC: KeysPagesSpec = {
   chain: CHAIN,
   backs: ['open', 'closed'],
   notes: {
-    mech: 'A simplified picture of one note. Real tines differ in length from note to note, and the tine moves far less than drawn. If one note clanks or sounds wrong, it is the instrument — a technician’s job, never a mic move or a pickup adjustment.',
+    mech: 'A simplified picture of one note. Real tines differ in length from note to note, and the tine moves far less than drawn. If one note clanks or sounds wrong, it is the instrument — a technician’s job (which may mean a pickup adjustment), never a mic move or a fix you make yourself.',
     mechCheck: 'The tine is a struck, vibrating solid — like the other instruments in this lab — but its useful sound is the amplified one: you mic the speaker, and hear the whole chain of instrument, effects, amp and cabinet.',
     spots: 'Close in, the spot on the cone shapes the sound: the centre tends to sound brighter, the edge warmer. On a tine piano’s amp, compare them at the same distance on chords and on single notes.',
     beam: 'The amp drawn here has a 12 in speaker. Off its axis, the highs fall away first — so a mic aimed across the cone hears a darker balance.',

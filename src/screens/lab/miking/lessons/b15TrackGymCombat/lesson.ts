@@ -247,7 +247,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The canvas and the frame rumble through the ring mic, though the air sounds fine. Next?',
     options: ['Try an independently supported mic', 'Turn the whole ring channel down a long way', 'Add a gate so the rumble stops'],
     correct: 'Try an independently supported mic',
-    explain: 'Rumble that persists beside useful airborne action is structure-borne. Try an independent airborne position; deliberate contact sensing is a separate, different path.',
+    explain: 'Rumble that persists beside useful airborne action is most likely structure-borne. Try an independent airborne position; deliberate contact sensing is a separate, different path.',
     why: {
       'Turn the whole ring channel down a long way': 'Lowering it loses the action along with the rumble.',
       'Add a gate so the rumble stops': 'A gate opens on the action and lets the rumble through with it.',
@@ -283,9 +283,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Where does a ringside mic stand?',
     options: ['At an assigned ringside position', 'On the apron, by a neutral corner', 'Under the bottom rope, out of sight'],
     correct: 'At an assigned ringside position',
-    explain: 'On an independent stand at an assigned position, aimed through a permitted path — the apron, the corners, the steps and the ropes stay untouched.',
+    explain: 'On an independent stand at an assigned position, aimed through a permitted path — the apron, the corners, the steps and the ropes stay untouched unless the event’s plan puts a mic there.',
     why: {
-      'On the apron, by a neutral corner': 'The apron and the corners are not audio space.',
+      'On the apron, by a neutral corner': 'The apron and the corners are not audio space unless the event’s plan says so.',
       'Under the bottom rope, out of sight': 'Nothing goes through or under the ropes.',
     },
   },

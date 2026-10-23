@@ -24,7 +24,7 @@ const pages: LessonPages = {
     title: 'Meet the double bass',
     goal: 'Get to know the upright (double) bass — what it is, where you meet it, what it does in the music, and its parts — before any microphone. This lesson is the plucked bass; the bowed bass has its own.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'The fingers pull the strings and let go; the bridge carries their vibration into the large hollow body. The bassist stands behind it, and the bass is heavy, valuable and easy to knock over.',
+    takeaway: 'The fingers pull the strings and let go; the bridge carries their vibration into the large hollow body. The bassist stands (or sits on a tall stool) behind it, and the bass is heavy, valuable and easy to knock over.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -60,7 +60,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a close and a farther mic on one bass can lose body together, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: [`${P}.two.1`, `${P}.two.2`, `${P}.two.3`, `${P}.two.4`], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics at different distances hear the bass at different times: some pitches cancel — and on a bass the lows thin first. Move or rebalance first; polarity flips the sign and never removes a delay.',
+    takeaway: 'Two mics at different distances hear the bass at different times: some frequencies cancel — and on a bass the lows thin first. Move or rebalance first; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -303,12 +303,12 @@ const scenarios: MikingScenario[] = [
     id: `${P}.two.1`,
     page: 'twoMic',
     prompt: 'A close and a far mic on the bass: the body disappears in the sum. Why?',
-    options: ['The far mic inverts the sound on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum, whatever the delay', 'They hear each note at different times, so some pitches cancel'],
-    correct: 'They hear each note at different times, so some pitches cancel',
-    explain: 'The farther mic hears each note later; some pitches arrive out of step and cancel. Listen to each alone and in mono, move or rebalance, then compare polarity and timing.',
+    options: ['The far mic inverts the sound on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum, whatever the delay', 'They hear each note at different times, so some frequencies cancel'],
+    correct: 'They hear each note at different times, so some frequencies cancel',
+    explain: 'The farther mic hears each note later; some frequencies arrive out of step and cancel. Listen to each alone and in mono, move or rebalance, then compare polarity and timing.',
     why: {
       'The far mic inverts the sound on its way there, so it cancels': 'Distance delays a sound; it does not flip its sign.',
-      'Two mics on one source cancel each other’s low end in the sum, whatever the delay': 'It depends on the delay and the levels: some pitches dip, others add.',
+      'Two mics on one source cancel each other’s low end in the sum, whatever the delay': 'It depends on the delay and the levels: some frequencies dip, others add.',
     },
   },
   polarityDelay(`${P}.two.2`),
@@ -483,7 +483,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Which part should never have a mic or clip clamped to it?',
     options: ['The bridge', 'The two outer strings below the bridge', 'A stable stand in front of the bass'],
     correct: 'The bridge',
-    explain: 'Clipping the bridge can inhibit its vibration. A clip made for the bass grips the strings below it instead.',
+    explain: 'Clipping the bridge can inhibit its vibration. A clip made for the bass grips the strings below it instead; pickups made to fit the bridge wings are a different case.',
     why: {
       'The two outer strings below the bridge': 'That is where a bass clip is made to attach — with the owner’s agreement.',
       'A stable stand in front of the bass': 'A stand in front is fine, placed so it cannot tip onto the bass.',

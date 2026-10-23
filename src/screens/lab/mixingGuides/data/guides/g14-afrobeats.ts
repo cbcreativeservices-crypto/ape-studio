@@ -18,7 +18,7 @@ export const GUIDE: MixingGuide = {
     "origin": "Lagos, Accra and the London diaspora, 2000s–2010s; the umbrella term “Afrobeats” was popularized by UK DJ Abrantee around 2011. Related to, but not the same as, Fela Kuti’s 1970s Afrobeat",
     "tempo": "100–115 BPM (median around 108–110; mellow Ghanaian and R&B-leaning cuts 93–100)",
     "ensemble": "Solo artist + tracks (most common); touring headliners carry 6–10 piece bands plus percussion section, horns, BVs and sometimes a choir",
-    "priority": "The percussion groove (rimshot, shakers, clave (a 2-bar rhythm key) pattern) bright and forward, with the lead vocal hook riding on it",
+    "priority": "The percussion groove (rimshot, shakers, clave (a one- or two-bar rhythm key) pattern) bright and forward, with the lead vocal hook riding on it",
     "liveSpl": "96–102 dBA LAeq-15 min; roughly 115–124 dBC in clubs and arenas",
     "studioLoudness": "Masters commonly −10 to −7 LUFS-I; streaming normalizes to about −14"
   },
@@ -103,7 +103,7 @@ export const GUIDE: MixingGuide = {
         "source": "Snare / rimshot",
         "cut": "HPF 150–200 Hz; −2–3 dB at 400–800 Hz (box)",
         "boost": "+2–3 dB at 2.5–5 kHz; shelf +2 dB at 10 kHz",
-        "notes": "Carries the clave (a 2-bar rhythm key) figure; must cut through on phones"
+        "notes": "Carries the clave (a one- or two-bar rhythm key) figure; must cut through on phones"
       },
       {
         "source": "Claps / snaps",
@@ -261,7 +261,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Hard-tune pitch correction (effect)",
         "appliedTo": "Lead and BVs",
-        "setting": "Fast retune (5–20 ms) when the artist uses it as a sound",
+        "setting": "Very fast retune (about 0–20 ms) when the artist uses it as a sound",
         "amount": "As produced"
       }
     ],
@@ -290,7 +290,7 @@ export const GUIDE: MixingGuide = {
     "rows": [
       {
         "area": "Percussion",
-        "live": "8–10 live players plus stems; manage bleed, group by type, keep the clave (a 2-bar rhythm key) figure clear",
+        "live": "8–10 live players plus stems; manage bleed, group by type, keep the clave (a one- or two-bar rhythm key) figure clear",
         "studio": "Programmed loops layered and placed precisely; very forward"
       },
       {
@@ -328,7 +328,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "Learn the clave (a 2-bar rhythm key) figure in the song first; if it is not obvious in your mix, the groove is lost.",
+      "text": "Learn the clave (a one- or two-bar rhythm key) figure in the song first; if it is not obvious in your mix, the groove is lost.",
       "bullet": true
     },
     {

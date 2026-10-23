@@ -32,7 +32,7 @@ const SLOPE_BLURBS: Record<number, string> = {
   6: 'One pole — the gentlest tilt there is. Barely a filter: a tone control.',
   12: 'Two poles — the workhorse. Enough to clean rumble without sounding processed.',
   18: 'Three poles — noticeably firmer; the classic crossover slope of many PA systems.',
-  24: 'Four poles — a real wall. Standard for subwoofer crossovers, where overlap causes trouble.',
+  24: 'Four poles — a real wall. Common on crossovers, subwoofer crossovers included, where overlap causes trouble.',
   36: 'Six poles — surgical. Very steep, and the phase shift near the corner grows with it.',
   48: 'Eight poles — a cliff. Maximum separation, maximum phase cost: nothing is free.',
 };

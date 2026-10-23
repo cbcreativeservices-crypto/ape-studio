@@ -292,7 +292,7 @@ const RFLINK: Workspace = {
       plainFormula:
         'The free-space path loss in dB equals twenty times the base-ten log of the distance, plus twenty times the base-ten log of the frequency, minus ' + FSPL_K_TXT + '.',
       explain:
-        'Free-space (Friis) path loss — how much a radio signal weakens over a distance at a given frequency. Both distance and frequency raise the loss, so higher bands lose more per metre; ' + FSPL_K_TXT + ' is the constant that makes it work with distance in metres and frequency in hertz. Walls and bodies add more on top.',
+        'Free-space (Friis) path loss — how much a radio signal weakens over a distance at a given frequency. Both distance and frequency raise the loss, so a higher band loses more over the same path; ' + FSPL_K_TXT + ' is the constant that makes it work with distance in metres and frequency in hertz. Walls and bodies add more on top.',
       keySymbols: ['·', 'log₁₀', '−', 'f'],
       compute: (v) => {
         const f = n(v.freqMHz) * 1e6;
@@ -347,7 +347,7 @@ const RFLINK: Workspace = {
         return [
           `FSPL at ${fmt(n(v.dist))} m / ${fmt(n(v.freqMHz))} MHz = ${fmt(fspl)} dB.`,
           `Prx = ${fmt(n(v.ptx))} + ${fmt(n(v.gtx))} + ${fmt(n(v.grx))} − ${fmt(fspl)} = ${fmt(prx)} dBm.`,
-          `Margin = ${fmt(prx)} − (${fmt(n(v.rxsens))}) = ${fmt(margin)} dB. ${margin < 10 ? 'Under ~10 dB is risky — add gain or shorten the path.' : 'Comfortable margin for a moving performer.'}`,
+          `Margin = ${fmt(prx)} − (${fmt(n(v.rxsens))}) = ${fmt(margin)} dB. ${margin < 10 ? 'Under ~10 dB is risky — add gain or shorten the path.' : 'Workable free-space margin — a body can soak up 8–20 dB, so more is safer for a moving performer.'}`,
         ];
       },
     },

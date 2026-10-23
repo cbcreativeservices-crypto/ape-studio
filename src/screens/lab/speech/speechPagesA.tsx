@@ -209,7 +209,7 @@ export function PageVowels({ ctx }: { ctx: PageCtx }) {
   );
   return (
     <View style={{ gap: 12 }}>
-      <Lead>A vowel is a tongue position. Where the tongue sits sets which harmonics the mouth boosts — the formants — and that is what you hear as A, E, I, O or U.</Lead>
+      <Lead>A vowel is mostly a tongue position. Where the tongue sits sets which harmonics the mouth boosts — the formants — and that is what you hear as A, E, I, O or U.</Lead>
       {picker}
       <VowelChart v={v} controls={picker} />
       {/* In full screen the formant readout leads the dock (parity pass 2026-09-26). */}

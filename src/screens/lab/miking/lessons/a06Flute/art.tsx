@@ -83,7 +83,7 @@ const art = windLessonArt({
     notesNote: 'A simplified fingering on the keyed flute: real fingerings vent and cross-finger, and the third octave uses special fingerings not drawn here. A simple-system flute’s holes sit in other places — the first-open-hole idea is the same.',
     pipeNote: 'The flute is close to the ideal pipe open at both ends: it sounds every multiple, and a little more breath jumps it up an octave. Compare a pipe closed at one end — the clarinet’s kind — with PIPE.',
     silentNote: 'This lab never plays a sound and draws no frequency curve for the flute: how a real flute sounds depends on the instrument, the head joint, the player and the room. The pictures show where the sound is made and where the sound and the air leave.',
-    reveal: 'The embouchure hole radiates for every note; the first open hole carries much of the rest — the foot only when every hole is closed.',
+    reveal: 'The embouchure hole radiates for every note; the first open hole carries much of the rest — the foot mainly when every hole is closed.',
   },
   setting: {
     before: [

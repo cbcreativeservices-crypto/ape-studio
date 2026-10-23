@@ -48,7 +48,7 @@ const pages: LessonPages = {
   },
   microphone: {
     title: 'Choose the microphone',
-    goal: 'Choose an interview mic by how it will be used — one rugged handheld moved between two people, or a mic each — and its pattern by the noise around it, without expecting a dynamic or an omni to pick out a voice.',
+    goal: 'Choose an interview mic by how it will be used — one rugged handheld moved between two people, or a mic each — and its pattern by the noise around it, without expecting an omni, or any mic held far off, to pick out a voice.',
     credit: { scenarios: ['b3.mic.1', 'b3.mic.2', 'b3.mic.3', 'b3.mic.4', 'b3.rec.1'], note: 'Answer the five checks (one reaches back to the two voices).' },
     takeaway: 'An omni forgives aim and hears every side; a directional handheld favours the voice only when its front is on the mouth, close. A mic each avoids the handoff and adds channels to route. No pattern makes up for distance.',
   },
@@ -68,7 +68,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why the reporter’s handheld and the guest’s lav, both open, comb in the mix — the other voice arriving later in each — and why the unused one is pulled down.',
     credit: { scenarios: ['b3.two.1', 'b3.two.2', 'b3.two.3', 'b3.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Each voice reaches both open mics at two times: some pitches cancel. Keep each mic close to its own mouth, pull down the one not in use, and check in mono — polarity never removes a delay.',
+    takeaway: 'Each voice reaches both open mics at two times: some frequencies cancel. Keep each mic close to its own mouth, pull down the one not in use, and check in mono — polarity never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -316,7 +316,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The reporter’s handheld and the guest’s lav are both open. Why does the guest sound hollow?',
     options: ['It reaches the handheld later, too', 'The lav reverses the guest’s polarity', 'The handheld is louder, so it cancels'],
     correct: 'It reaches the handheld later, too',
-    explain: 'The lav is close; the reporter’s handheld is farther. One voice, two arrival times: summed, some pitches cancel.',
+    explain: 'The lav is close; the reporter’s handheld is farther. One voice, two arrival times: summed, some frequencies cancel.',
     why: {
       'The lav reverses the guest’s polarity': 'Distance delays a sound; it does not flip its sign.',
       'The handheld is louder, so it cancels': 'Level changes the notches’ depth; the delay makes them.',
@@ -356,7 +356,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Set gain with the loudest likely speech or reaction, leaving headroom at the transmitter, the receiver, the preamp and the recorder. A later compressor or an automatic level cannot repair an overloaded input.',
     why: {
       'A compressor added afterwards to fix it': 'A compressor after the input cannot undo the clipping.',
-      'The automatic level switched on': 'An automatic level does not rescue an overloaded input.',
+      'The automatic level switched on': 'An automatic level cannot save a mic or input that is already overloaded.',
     },
   },
   {
@@ -512,7 +512,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: one omni sits midway between two people. Whose voice will it favour?', options: ['The guest’s', 'The reporter’s', 'Neither'], after: 'Now STEP through (or PLAY ONCE), then slide the mic between them.' },
-  microphone: { prompt: 'Before you move anything: does a dynamic mic pick out one voice from a crowd?', options: ['Yes', 'No', 'Only when held close'], after: 'Now choose each TYPE and see where it starts.' },
+  microphone: { prompt: 'Before you move anything: does a dynamic mic, by itself, pick out one voice from a crowd?', options: ['Yes', 'No', 'Only when held close'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: the omni moves from the shared place to 20 cm from the guest. What changes?', options: ['More of the guest, less of the street', 'More of the street', 'It depends on this street'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The loudspeaker is beyond the reporter. Where will a cardioid held at the guest’s mouth reject it best?', options: ['Straight behind the mic', 'In front of the mic', 'At the mic’s sides'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip the lav’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },

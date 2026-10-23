@@ -40,7 +40,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
       'Magnitude response requires a reference signal to compare against.',
       'Transfer function shows system change; RTA shows whatever arrived.',
       'A flat RTA does not mean a tuned system.',
-      'RTA alone is never a system-tuning method.',
+      'RTA alone is not a complete system-tuning method.',
     ],
     relatedTools: ['rta', 'signalgen'],
   },
@@ -82,7 +82,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
     num: 3,
     title: 'Why Delay Matters',
     intro:
-      'Sound is slow. Electricity through an analyzer is effectively instant, but the acoustic copy of the signal has to physically travel from the loudspeaker to the microphone. Professional dual-channel analysis lives or dies on compensating for that travel time, which is why every serious analyzer has a delay finder. This module explains the idea, even though delay finding stays tutorial-only in this toolset.',
+      'Sound is slow. The acoustic copy of the signal has to physically travel from the loudspeaker to the microphone, and digital gear in the path adds its own delay on top. Professional dual-channel analysis lives or dies on compensating for that total delay, which is why every serious analyzer has a delay finder. This module explains the idea, even though delay finding stays tutorial-only in this toolset.',
     sections: [
       {
         head: 'SOUND IS SLOW',
@@ -136,7 +136,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
     keyPoints: [
       'An impulse response is the room’s reply to a single sharp excitation.',
       'Read it in arrival order: direct sound, early reflections, late decay, noise floor.',
-      'Milliseconds between spikes convert directly to distances in the room.',
+      'Milliseconds between spikes convert to extra path length: about 34 cm per millisecond.',
       'The slope of the late decay is where RT60 estimates come from.',
       'Everything below the noise floor is invisible — the floor sets the measurement limit.',
     ],
@@ -163,7 +163,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
       },
       {
         head: 'DECAY IS FREQUENCY-DEPENDENT',
-        body: 'A single RT60 number is a summary, not the room. Decay time varies by frequency band — low frequencies commonly ring far longer than highs, because absorption is frequency-dependent. Professional practice reports decay per octave band from 125 Hz to 4 kHz, and treats any one-number answer as marketing.',
+        body: 'A single RT60 number is a summary, not the room. Decay time varies by frequency band — low frequencies commonly ring far longer than highs, because absorption is frequency-dependent. Professional practice reports decay per octave band from 125 Hz to 4 kHz, and treats a one-number value (often the 500 Hz–1 kHz average) as a summary of the mids only.',
       },
       {
         head: 'WHEN NOISE INVALIDATES THE RESULT',
@@ -184,7 +184,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
     num: 6,
     title: 'Spectrogram Interpretation',
     intro:
-      'A spectrogram is the only common display that shows when each frequency happened — time on one axis, frequency on the other, level as color. That third dimension makes it powerful and easy to misread in equal measure. This module covers the reading rules professionals apply before drawing any conclusion from the picture.',
+      'A spectrogram is the most common display that shows when each frequency happened — time on one axis, frequency on the other, level as color. That third dimension makes it powerful and easy to misread in equal measure. This module covers the reading rules professionals apply before drawing any conclusion from the picture.',
     sections: [
       {
         head: 'THE THREE AXES',

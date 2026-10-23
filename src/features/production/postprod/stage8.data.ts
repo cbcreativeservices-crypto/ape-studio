@@ -128,7 +128,7 @@ export const STAGE8_DELIVER: StageDef = {
           fieldId: "revision_reqc",
           label: "After revisions, what was re-checked",
           kind: "multiChoice",
-          help: "A revision invalidates the checks that came before it, including the ones that passed.",
+          help: "A revision can invalidate the checks that came before it, including the ones that passed.",
           options: [
             { value: "affected_deliverables", label: "Which deliverables are affected" },
             { value: "stems", label: "Dependent stems re-printed" },
@@ -453,7 +453,7 @@ export const STAGE8_DELIVER: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "Revisions made and nothing re-checked",
-      detail: "Work has been done since the last quality pass and none of it has been re-verified. A revision invalidates the checks that came before it, including the ones that passed — loudness, stems, captions and all.",
+      detail: "Work has been done since the last quality pass and none of it has been re-verified. A revision can invalidate the checks that came before it, including the ones that passed — loudness, stems, captions and all.",
       fixHint: "Re-measure loudness, re-print any dependent stems, re-run quality control on the changed material, and re-check caption timing.",
       needsLogic: true,
       logicIntent: "Fire when notes_log contains completed rows and revision_reqc is empty."
@@ -486,7 +486,7 @@ export const STAGE8_DELIVER: StageDef = {
       severity: "blocker",
       kind: "mismatch",
       title: "A deliverable does not match the specification",
-      detail: "A file's sample rate, bit depth or channel count disagrees with what the brief recorded as required. This is the single most common reason a delivery is rejected, and it is entirely mechanical to prevent.",
+      detail: "A file's sample rate, bit depth or channel count disagrees with what the brief recorded as required. This is one of the most common reasons a delivery is rejected, and it is entirely mechanical to prevent.",
       fixHint: "Check every row against the specification before uploading anything. Where a row is deliberately different, say so in its notes.",
       needsLogic: true,
       logicIntent: "Fire when any deliverables row's dl_rate, dl_depth or dl_channels disagrees with brief.target_sample_rate, brief.target_bit_depth or brief.channel_config, ignoring rows whose format is text and ignoring brief values that are unknown."

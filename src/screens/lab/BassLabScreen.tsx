@@ -552,7 +552,7 @@ export function BassLabScreen() {
             {engineReady
               ? additiveReady
                 ? mode === 'fretted'
-                  ? ` The model is an idealized plucked string, harmonic amplitudes ≈ 1/n, output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
+                  ? ` The model is a simplified string tone, harmonic amplitudes ≈ 1/n (a real pluck falls off faster), output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
                   : ` The model is the single exact harmonic ${node.n} of the open ${str.label} string, output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
                 : ' This dev build predates the v3 additive engine — the model is a pure sine at the target pitch.'
               : ''}

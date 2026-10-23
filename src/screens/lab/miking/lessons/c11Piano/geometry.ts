@@ -50,7 +50,7 @@ function grandParts(g: GrandGeom, pre: 'gp' | 'bg', variants: VariantId[], lids:
     { id: `${pre}.hammers`, label: 'hammers (the hammer line)', short: 'hammers', role: 'Felt hammers under the strings, thrown up by the keys. The dashed line is where they strike: starting points are measured back from it.', moving: true, prov: dflt, variants: V },
     { id: `${pre}.pins`, label: 'tuning pins and pin block', short: 'tuning pins', role: 'Where the strings are anchored and tuned, in front of the hammers. A tuner’s territory — nothing rests on it.', prov: dflt, variants: V, solid: box(keyBack, -60, -g.hw + 60, -140, g.caseBottom, g.hw - 60) },
     { id: `${pre}.desk`, label: 'music desk', short: 'desk', role: 'The music stand over the pin block. The pianist reads here: keep stands and mics out of their sight line.', prov: dflt, variants: V, solid: box(g.desk.x0 - 25, g.desk.y0, -g.desk.hw, g.desk.x1 + 8, g.desk.y1, g.desk.hw) },
-    { id: `${pre}.keys`, label: 'keys', short: 'keys', role: '88 keys: 52 white, 36 black. Each key throws a hammer at its strings and lifts that note’s damper.', moving: true, prov: { kind: 'trial', src: 'MET-BECH', note: 'the octave span (164 mm) sets the keyboard’s width' }, variants: V, solid: box(g.xKey, KEY_TOP_Y - 20, KEYS_Z0, keyBack, g.caseBottom, -KEYS_Z0) },
+    { id: `${pre}.keys`, label: 'keys', short: 'keys', role: '88 keys: 52 white, 36 black. Each key throws a hammer at its strings and, on most notes, lifts that note’s damper.', moving: true, prov: { kind: 'trial', src: 'MET-BECH', note: 'the octave span (164 mm) sets the keyboard’s width' }, variants: V, solid: box(g.xKey, KEY_TOP_Y - 20, KEYS_Z0, keyBack, g.caseBottom, -KEYS_Z0) },
     { id: `${pre}.cheekBass`, label: 'cheek', short: 'cheek', role: 'The case beside the keys.', prov: dflt, variants: V, listIn: [], solid: box(g.xKey, -60, -g.hw, -140, g.caseBottom, KEYS_Z0) },
     { id: `${pre}.cheekTreble`, label: 'cheek', short: 'cheek', role: 'The case beside the keys.', prov: dflt, variants: V, listIn: [], solid: box(g.xKey, -60, -KEYS_Z0, -140, g.caseBottom, g.hw) },
   );
@@ -67,7 +67,7 @@ function grandParts(g: GrandGeom, pre: 'gp' | 'bg', variants: VariantId[], lids:
       variants: [v],
       solid: { kind: 'prism', pts: g.lidPlan, y0: g.rimTop - GRAND_DIMS.lidT.mm, y1: g.rimTop, hinge: { y: g.rimTop, z: -g.hw, deg: LID_DEG[lid] } },
     });
-    if (st) out.push({ id: `${pre}.stick.${v}`, label: lid === 'short' ? 'short stick' : 'lid stick (full)', short: 'stick', role: 'The prop that holds the lid. Set by someone who knows the piano; never adjust it, or reach under the lid, to place a mic.', prov: dflt, variants: [v], solid: { kind: 'capsule', a: st.a, b: st.b, r: 14 } });
+    if (st) out.push({ id: `${pre}.stick.${v}`, label: lid === 'short' ? 'short stick' : 'lid stick (full)', short: 'stick', role: 'The prop that holds the lid. Set by someone who knows the piano; never adjust it to place a mic, or reach under a lid that is not safely propped.', prov: dflt, variants: [v], solid: { kind: 'capsule', a: st.a, b: st.b, r: 14 } });
   }
   g.legs.forEach((l, i) =>
     out.push({ id: `${pre}.leg${i}`, label: 'legs', short: 'legs', role: 'Three legs on casters.', prov: dflt, variants: V, listIn: i === 0 ? undefined : [], solid: { kind: 'capsule', a: { x: l.x, y: g.caseBottom, z: l.z }, b: { x: l.x, y: FLOOR_Y - 40, z: l.z }, r: GRAND_DIMS.legR.mm } }),

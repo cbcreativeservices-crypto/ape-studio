@@ -78,7 +78,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You hear plenty of low sound through the dish. What does that show?',
     options: ['Low sound can reach the element directly', 'The bowl gathers the bass as well as it can', 'The dish is focused for the low notes'],
     correct: 'Low sound can reach the element directly',
-    explain: 'Hearing bass at the element is not dish gain: low sound reaches it directly. The bowl gathers only what is shorter in wavelength than the dish is wide.',
+    explain: 'Hearing bass at the element is not dish gain: low sound reaches it directly. The bowl mostly gathers what is shorter in wavelength than the dish is wide.',
     why: {
       'The bowl gathers the bass as well as it can': 'A practical dish is too small to gather long wavelengths.',
       'The dish is focused for the low notes': 'Focus helps the high frequencies; the low ones arrive directly either way.',

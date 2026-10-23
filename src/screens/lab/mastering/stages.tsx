@@ -789,7 +789,7 @@ export const PLAYBACK_SYSTEMS: readonly PlaybackSystem[] = [
   { id: 'mains', name: 'Main monitors (treated room)', bands: [], note: 'The reference: full range, the room under control. Decisions are made here.' },
   { id: 'phones', name: 'Headphones', bands: [{ type: 'peak', freq: 3000, q: 1.2, gainDb: 2 }, { type: 'lowShelf', freq: 100, q: 0.7, gainDb: 1.5 }], note: 'Detail and no room — but bass and image are judged differently on them. A check.' },
   { id: 'small', name: 'Small speaker', bands: [{ type: 'highPass', freq: 150, q: 0.7, gainDb: 0 }, { type: 'peak', freq: 2500, q: 1, gainDb: 3 }], note: 'Little below 150 Hz; the mids carry everything. Does the kick still exist as a pattern?' },
-  { id: 'phone', name: 'Phone speaker (mono)', bands: [{ type: 'highPass', freq: 400, q: 0.8, gainDb: 0 }, { type: 'peak', freq: 3500, q: 1, gainDb: 4 }], note: 'Mono and no low end. Width disappears; anything that only lived in the sides goes with it.', mono: true },
+  { id: 'phone', name: 'Phone speaker (mono)', bands: [{ type: 'highPass', freq: 400, q: 0.8, gainDb: 0 }, { type: 'peak', freq: 3500, q: 1, gainDb: 4 }], note: 'Mono and almost no low end. Width disappears; anything that only lived in the sides goes with it.', mono: true },
   { id: 'car', name: 'Car', bands: [{ type: 'lowShelf', freq: 120, q: 0.7, gainDb: 5 }, { type: 'highShelf', freq: 6000, q: 0.7, gainDb: -3 }], note: 'Bass-heavy, dull, noisy. Vocals and top end have to survive the road noise.' },
 ];
 

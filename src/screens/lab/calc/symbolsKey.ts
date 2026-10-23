@@ -162,7 +162,7 @@ export const SYMBOL_GROUPS: SymbolGroup[] = [
       {
         symbol: '0.707',
         name: '1/√2',
-        meaning: 'A sine wave’s RMS is 0.707 × its peak; a −3 dB point is ×0.707 in amplitude; a filter’s cutoff is defined where the response falls to 0.707.',
+        meaning: 'A sine wave’s RMS is 0.707 × its peak; a −3 dB point is ×0.707 in amplitude; a filter’s cutoff is usually defined where the response falls to 0.707.',
         example: '10 V peak sine → 7.07 V RMS',
         glossaryTerm: 'RMS (Root Mean Square)',
       },

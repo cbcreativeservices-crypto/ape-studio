@@ -33,7 +33,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Bass:",
-      "text": "a passive four-string with flatwounds, plucked near the neck, tone rolled off. Aston “Family Man” Barrett used 18-inch and 4x15 cabinets for depth; synth bass appears in later UK styles.",
+      "text": "a passive four-string with flatwounds, plucked near the neck, tone rolled off. Aston “Family Man” Barrett used big bass cabinets for depth; synth bass appears in later UK styles.",
       "bullet": true
     },
     {

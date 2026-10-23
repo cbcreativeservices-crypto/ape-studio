@@ -18,9 +18,9 @@ import { lanePos, laneVal } from './rackLayout';
 const STAGE_BLURB: Record<GainStageId, string> = {
   source: '',
   preamp: 'The one control that adds gain to a mic-level signal. Set here, once, for the source — starved, and every later stage amplifies its hiss; cranked, and every later stage inherits its clipping.',
-  fader: 'The channel’s level in the mix. Near unity when the preamp is right; a fader far from 0 is a preamp set wrong.',
+  fader: 'The channel’s level in the mix. Near unity when the preamp is right; a fader far from 0 often means a preamp set wrong.',
   main: 'The main bus level. Unity: it passes what the channels sum to.',
-  procIn: 'The processor’s input trim. Nominal +4 dBu in; anything else is making up for a mistake upstream.',
+  procIn: 'The processor’s input trim. Nominal +4 dBu in; anything else usually makes up for a mistake upstream.',
   procOut: 'The processor’s output trim, feeding the amplifier. Unity — the limiter is set here, from the cabinet’s ratings.',
   amp: 'The amplifier’s input attenuator. Set so the amplifier is the LAST stage to clip — around −18 here, a little below the −16 at which it would clip together with a console that clips at +20.',
   speaker: '',

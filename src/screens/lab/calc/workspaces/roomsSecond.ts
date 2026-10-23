@@ -131,7 +131,7 @@ const SCHROEDER: Workspace = {
   mistakes: [
     'Trying to EQ away a "room mode" above the Schroeder frequency — up there the modes overlap and move with position; broadband treatment wins, not a notch.',
     'Forgetting Schroeder rises as the room shrinks — a bedroom studio is modal well into the low mids.',
-    'Reading f_s as exact; it is a soft transition band roughly one-third octave wide, not a single line.',
+    'Reading f_s as exact; it marks the middle of a gradual transition band, not a single line.',
   ],
   warnings:
     'Statistical-acoustics estimate: f_s = 2000·√(RT60 / V) (metric, V in m³). It marks the centre ' +
@@ -239,7 +239,7 @@ const BOUNDARY: Workspace = {
       plainFormula:
         'Cancellations fall at odd multiples of the speed of sound over four times the boundary distance; reinforcements fall at whole multiples of the speed of sound over twice the distance.',
       explain:
-        'A speaker near a wall, floor, or console hears its own reflection, and the two comb-filter. The first, deepest cancellation is set purely by the driver-to-boundary distance. You cannot EQ a true cancellation back — the energy is gone — so you move the speaker or treat the boundary.',
+        'A speaker near a wall, floor, or console hears its own reflection, and the two comb-filter. The first, deepest cancellation is set purely by the driver-to-boundary distance. You cannot EQ a true cancellation back — a boost feeds the reflection too — so you move the speaker or treat the boundary.',
       keySymbols: ['−', '·', 'c', '/'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
@@ -319,7 +319,7 @@ const REFLECTION: Workspace = {
     'A mic 0.30 m from a source with a desk reflection travelling 0.75 m total: Δd = 0.45 m, ' +
     'Δt ≈ 1.31 ms. Comb teeth every c/Δd ≈ 762 Hz, first notch at half that ≈ 381 Hz.',
   mistakes: [
-    'Assuming a distant reflection is harmless — a long path difference makes the comb FINER (more notches per octave), not weaker.',
+    'Assuming a distant reflection is harmless — a long path difference makes the comb FINER (more notches per octave), and only shallower if the reflection arrives much quieter.',
     'Forgetting that level matters too: a reflection much quieter than the direct sound makes shallow teeth; equal levels make total nulls.',
     'Measuring straight-line distance instead of the actual reflected path (source → surface → listener).',
   ],

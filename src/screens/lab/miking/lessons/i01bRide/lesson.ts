@@ -348,7 +348,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A small dynamic over the bow on the far side, aimed at the bow', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
       { id: 'c', label: 'A small condenser a foot or two above, for all the cymbals', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A small condenser under the ride, aimed up', ok: false, power: 'phantom', feedback: 'A fair position — but this condenser needs phantom power, and this input has none.' },
-      { id: 'e', label: 'A mic hanging from the ride’s wing nut by its cable', ok: false, power: 'none', feedback: 'Never on the cymbal or its mount: it swings and is struck. Use a stand.' },
+      { id: 'e', label: 'A mic hanging from the ride’s wing nut by its cable', ok: false, power: 'none', feedback: 'Never on the cymbal or its wing nut: they swing and are struck. Use a stand.' },
     ],
     reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the ride’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
     explain: 'Two plans pass: no ride mic, or a dynamic spot. What passes is the reasoning: start from the overheads, keep clear, and power what this input can supply.',
@@ -385,7 +385,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'A cymbal needs to move freely; over-tightening chokes it and can crack it. That freedom is also why it swings.',
     why: {
       'So the player can lift it off between songs': 'It stays on its stand. It is loose so the cymbal can ring and move.',
-      'So a mic can be clamped under the wing nut': 'Nothing is clamped to the cymbal’s mount. It is loose so the cymbal can move.',
+      'So a mic can be clamped under the wing nut': 'Nothing is clamped to the wing nut or the cymbal. It is loose so the cymbal can move.',
     },
   },
   {
@@ -443,7 +443,7 @@ export const I01B_LESSON: CymbalLesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A large cymbal on a boom stand, played for time: the stick’s tip on its bow and its bell, the shoulder of the stick crashing its edge. It sits on its sleeve between two felts, able to move.', src: 'ZIL-L11' },
+    { title: 'WHAT IT IS', text: 'A large cymbal on a stand, often a boom, played for time: the stick’s tip on its bow and its bell, the shoulder of the stick crashing its edge. It sits on its sleeve between two felts, able to move.', src: 'ZIL-L11' },
     { title: 'WHERE YOU MEET IT', text: 'On nearly every drum kit, over the floor tom on the player’s right (a right-handed layout), on stage and in the studio.', src: 'ZIL-L11' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'It keeps time — a clear ping over a wash — and gives bright accents on the bell. Ask the player how it should sit: defined, or washy, or left to the overheads.', src: 'ZIL-FAQ' },
     { title: 'ITS SIZE', text: 'A 20 in (50.8 cm) ride is common and is drawn here, its edge plane about a metre above the floor.', src: 'ZIL-K' },

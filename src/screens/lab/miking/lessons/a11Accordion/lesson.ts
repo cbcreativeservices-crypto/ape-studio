@@ -441,7 +441,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'The instrument’s own built-in mics, routed as the player asks', ok: true, power: 'none', feedback: 'A practical live choice that moves with the player — compare its tone and noise if you can.' },
       { id: 'b', label: 'A small dynamic on a stand about 45 cm in front, its null toward the wedge', ok: true, power: 'none', feedback: 'Fair if the player stays near it; check the bass side’s travel and the wedge.' },
-      { id: 'c', label: 'A miniature condenser on a mount, on this input', ok: false, power: 'phantom', feedback: 'It needs phantom power, which this input does not have.' },
+      { id: 'c', label: 'A miniature condenser on a mount, on this input', ok: false, power: 'phantom', feedback: 'This one needs phantom power, which this input does not have.' },
       { id: 'd', label: 'A stand mic just clear of the closed bellows', ok: false, power: 'none', feedback: 'The bass side would reach it on every pull.' },
       { id: 'e', label: 'An omni in front, all mics left open', ok: false, power: 'none', feedback: 'An omni and open mics invite spill and feedback on a loud stage.' },
     ],

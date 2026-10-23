@@ -39,7 +39,7 @@ export const M09_COPY: Partial<LessonCopy> = {
     studioIdle: 'No monitors. The room is part of what overheads hear: higher and wider tends to bring in more of it.',
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'Have the drummer play grooves and fills at the level of the show — every cymbal, the hi-hat foot, snare accents and tom fills. Listen to the balance in the room. Then decide what the overheads are for: the main picture of the kit, mostly the cymbals, or something between.' },
-      { title: 'WORK WITH THE KIT AS IT IS', text: 'The balance between drums and cymbals starts with the player and the kit. Change tuning, cymbals or playing only with the player. A pair cannot rebalance what it already hears together.' },
+      { title: 'WORK WITH THE KIT AS IT IS', text: 'The balance between drums and cymbals starts with the player and the kit. Change tuning, cymbals or playing only with the player. Moving the pair shifts the balance a little, but it cannot fix one loud cymbal on its own.' },
       { title: 'NOTHING OVER THE PLAYER', text: 'Overheads hang above a moving player. Use stands and counterweights made for the load, the base outside the kit, and keep everything out of the sticks’ reach and the cymbals’ swing. Hanging a mic from a venue’s structure is for the venue’s qualified people to approve.' },
     ],
   },
@@ -50,7 +50,7 @@ export const M09_COPY: Partial<LessonCopy> = {
     workedClear: 'Clear of the sticks’ reach, the cymbals’ swing and the ceiling, with the boom stand’s base outside the kit. Clearance comes first, and the drummer stops before a real mic moves.',
     blocked: { studio: ' Move the mic out of the sticks’ reach or the cymbal’s swing — the number is never a reason to crowd the player.', live: ' Move the mic out of the sticks’ reach or the cymbal’s swing — the number is never a reason to crowd the player.' },
     reveal: 'Higher tends to bring in more cymbals and more of the room; lower, more of the drums. Kits and rooms vary, so “it depends” is fair too — check by ear.',
-    typeNotes: { ohLdc: 'A side-address mic hears out of the face of its body: aim the face at the kit. It is heavier — counterweight the boom.' },
+    typeNotes: { ohLdc: 'A side-address mic hears out of the face of its body: aim the face at the kit. Most are heavier than a pencil mic — counterweight the boom.' },
     note: 'Clearance comes first: stop the drummer before moving a real mic, keep every boom counterweighted, and keep the boom stand’s base outside the kit.',
     availableLead: 'Starting points for this mic',
     learn: {
@@ -153,7 +153,7 @@ export const M09_SHAPES: ShapesWords = {
   prompt: 'Step through SHAPE, then move the STICK between bell, bow and edge. Which spot drives the shapes least?',
   notes: [
     'A shape is set moving only as much as the plate moves where the stick lands in that shape. Near the held centre — the bell — these shapes barely move, so a stroke there drives them less; on the bow and toward the edge, much more.',
-    'This is a flat disc. A real cymbal is domed, has a bell, is lathed and is thinner at the edge, so its pitches differ — and hit hard, its ringing builds into a wash no simple plate model follows. What carries over is the pattern: still lines across the plate, the edge moving most.',
+    'This is a flat disc. A real cymbal is domed and has a bell, and most are lathed and thinner at the edge, so its pitches differ — and hit hard, its ringing builds into a wash no simple plate model follows. What carries over is the pattern: still lines across the plate, the edge moving most.',
   ],
   areas: {
     bell: { label: 'BELL', blurb: 'The raised centre, near the felts that hold the cymbal.' },

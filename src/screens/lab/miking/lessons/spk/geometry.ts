@@ -42,7 +42,7 @@ function partsFor(kind: CabKind): Part[] {
   const spec = CABINETS[kind];
   const boxSolid = { kind: 'box' as const, min: { x: c.box.x0, y: c.box.y0, z: c.box.z0 }, max: { x: c.box.x1, y: c.box.y1, z: c.box.z1 } };
   const parts: Part[] = [
-    { id: 'spk.cabinet', label: 'cabinet', short: 'cabinet', role: 'The wooden box. It holds the speaker and shapes how much of the back of the cone is heard.', solid: boxSolid, clearance: { mm: 5, prov: ill('keep the mic off the cabinet and its cloth: 5 mm is the lab’s margin (no source gives one)') }, prov: spec.w.prov },
+    { id: 'spk.cabinet', label: 'cabinet', short: 'cabinet', role: 'The box, most often wood. It holds the speaker and shapes how much of the back of the cone is heard.', solid: boxSolid, clearance: { mm: 5, prov: ill('keep the mic off the cabinet and its cloth: 5 mm is the lab’s margin (no source gives one)') }, prov: spec.w.prov },
     { id: 'spk.grille', label: 'grille cloth', short: 'grille', role: 'Woven cloth stretched in front of the baffle. It protects the speaker and hides it — mark where the speaker is before you place a mic, and never press a mic against the cloth.', prov: GRILLE_X.prov },
     { id: 'spk.baffle', label: 'baffle', short: 'baffle', role: 'The front board the speakers are mounted to, each one behind a round cut-out.', prov: ill('panel thickness is a drawing default') },
     { id: 'spk.cone', label: 'cone', short: 'cone', role: 'The paper cone. The voice coil drives it back and forth, and it pushes the air: this is what the mic hears.', prov: SPEAKER_12.dCut.prov },

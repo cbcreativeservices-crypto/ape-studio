@@ -161,7 +161,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The bass is low and wide; the kick and the piano’s low notes share its range — so it is often the first line to need a support.',
     why: {
       'It radiates only upward': 'It radiates round, and into the floor through its endpin.',
-      'Its strings are quieter than they look': 'Level is not the issue; masking is.',
+      'Its strings are quieter than they look': 'Not the strings: the louder drums and piano share its range and mask it.',
     },
   },
   {
@@ -288,7 +288,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'jz.prac.gain',
     page: 'practice',
-    prompt: 'How do you set the gain for a combo?',
+    prompt: 'How do you set the main pair’s gain for a combo?',
     options: ['On the loudest horn and drum peaks', 'On the bass alone, as it is quietest', 'On the piano’s softest solo passage'],
     correct: 'On the loudest horn and drum peaks',
     explain: 'At a full-group peak, set gain for the loudest horn and drum events and leave headroom — then check the quiet solo too.',
@@ -379,7 +379,7 @@ const symptoms: Symptom[] = [
     options: ['Test the pair and supports in mono', 'Widen the pair to fix the image', 'Pan the supports hard left and right'],
     correct: 'Test the pair and supports in mono',
     explain: 'Find which combination cancels, then move or rebalance it.',
-    why: { 'Widen the pair to fix the image': 'Wider usually makes mono worse.', 'Pan the supports hard left and right': 'Panning does not change what cancels in mono.' },
+    why: { 'Widen the pair to fix the image': 'Widening does not fix what cancels; on a spaced pair it makes mono worse.', 'Pan the supports hard left and right': 'Panning does not change what cancels in mono.' },
   },
   {
     id: 'jz.s.ring',

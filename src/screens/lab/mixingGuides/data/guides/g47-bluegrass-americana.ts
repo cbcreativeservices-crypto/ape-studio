@@ -15,7 +15,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "Bluegrass breakdowns 120–160 BPM in cut time (fast instrumentals 170+ BPM in cut feel); waltzes and gospel numbers 80–110 BPM; Americana songs 70–130 BPM",
     "ensemble": "Bluegrass: 4–6 acoustic players (guitar, mandolin, banjo, fiddle, upright bass, often dobro), 2–4 singers. Americana: duo to 6-piece with drums, electric guitar, pedal steel, keys",
     "priority": "Vocal harmony and lyric intelligibility over a clear, uncluttered acoustic ensemble that still sounds like real wood and strings",
-    "liveSpl": "Bluegrass/listening rooms 85–92 dBA Leq (LAeq-15 min), ~100–105 dBC; Americana with drums 92–98 dBA; festival main stages 90–96 dBA",
+    "liveSpl": "Bluegrass/listening rooms 85–92 dBA Leq (LAeq-15 min), only a few dB higher in dBC; Americana with drums 92–98 dBA; festival main stages 90–96 dBA",
     "studioLoudness": "Bluegrass and acoustic masters commonly −14 to −11 LUFS-I; Americana band records −11 to −9; streaming normalizes to about −14"
   },
   "purpose": [
@@ -258,7 +258,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Acoustic bluegrass sounds best around 85–92 dBA LAeq-15 at FOH (one major acoustic tour averaged roughly 85–97 dB SPL); C-weighted levels around 100–105 dBC, with a small C–A gap since there is little sub content. Americana with drums runs 92–98 dBA, rarely above 100. Sub-woofers are often not needed for bluegrass; high-pass the subs or leave them off. Big bluegrass festivals use delay towers to keep average levels moderate across a big field. Use windscreens on condensers outdoors. Gain before feedback is usually the limit; IEMs and pickups-to-wedges (mics to FOH) help."
+      "text": "Acoustic bluegrass sounds best around 85–92 dBA LAeq-15 at FOH (one major acoustic tour averaged roughly 85–97 dB SPL); C-weighted levels sit only a few dB higher, since there is little sub content. Americana with drums runs 92–98 dBA, rarely above 100. Sub-woofers are often not needed for bluegrass; high-pass the subs or leave them off. Big bluegrass festivals use delay towers to keep average levels moderate across a big field. Use windscreens on condensers outdoors. Gain before feedback is usually the limit; IEMs and pickups-to-wedges (mics to FOH) help."
     },
     {
       "label": "Studio / streaming:",

@@ -242,7 +242,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Reverb tails must not blur the kick: high-pass every return and duck it with the kick."
+        "text": "Reverb tails must not blur the kick: high-pass most returns and often duck them with the kick."
       }
     ]
   },
@@ -315,7 +315,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Avoid harsh hats and over-bright mixes; listeners hear 2–5 kHz most at volume.",
+      "text": "Avoid harsh hats and over-bright mixes; the ear is most sensitive around 2–5 kHz, so harshness there tires a loud crowd fast.",
       "bullet": true
     },
     {

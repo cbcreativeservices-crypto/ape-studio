@@ -20,13 +20,16 @@ const inFamily = (name: string) => index.careers.filter((c) => index.families[c.
 const titled = (t: string) => index.careers.find((c) => c.t === t);
 
 describe('career index', () => {
-  it('has 1,898 titles across the same 42 families the app hand-authors, in the same order', () => {
+  it('has 1,896 titles across the same 42 families the app hand-authors, in the same order', () => {
     // 1902 -> 1898 (owner content ruling 2026-09-11, applied 2026-09-13): four
     // title-reality items were dropped outright via the overrides' `removeTitles`
     // — AC-0024, AC-0132, AC-0187, AC-0235. The count is pinned deliberately, so
     // a title silently appearing or vanishing from the workbook fails loudly;
     // when the workbook legitimately changes, change this number WITH it.
-    assert.equal(index.careers.length, 1898);
+    // 1898 -> 1896 (fact audit round 3, 2026-10-22): the duplicates Sound Utility
+    // and Dubbing Mixer merged into Utility Sound Technician and Re-Recording
+    // Mixer via the overrides' `mergeInto`.
+    assert.equal(index.careers.length, 1896);
     assert.deepEqual(index.families, FAMILIES.map((f) => f.name));
     assert.deepEqual(meta.map((m) => m.id), FAMILIES.map((f) => f.id));
   });

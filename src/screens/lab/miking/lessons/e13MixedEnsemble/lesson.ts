@@ -23,7 +23,7 @@ const pages: LessonPages = {
     title: 'Starting setups',
     goal: 'See real setups drawn on the stage — an X/Y, a 17 cm and a spaced pair in front of a chamber group, a featured spot, a support; at orchestra size, the pair over the podium and the three-omni tree with its outriggers. Then what to settle before any mic goes up.',
     credit: { scenarios: ['mix.set.1', 'mix.rig', 'mix.hear'], interactive: 'setupsSeen', note: 'Look at every main setup on the drawing, and answer the three checks.' },
-    takeaway: 'Start with one main array alone if the room and the music allow it; add at most two supports at first, each for a reason. Agree the balance with the players before any spot gain; keep sightlines, breathing, bowing, slides and pedals clear.',
+    takeaway: 'Start with one main array alone if the room and the music allow it; add as few supports as you can, each for a reason. Agree the balance with the players before any spot gain; keep sightlines, breathing, bowing, slides and pedals clear.',
   },
   microphone: {
     title: 'Choose the microphones',
@@ -59,7 +59,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Put a main-array setup in order, choose and justify a setup for two briefs, and say when a spot is worth it.',
     credit: { scenarios: ['mix.prac.order', 'mix.prac.gain', 'mix.prac.setup1', 'mix.prac.setup2', 'mix.prac.3', 'mix.hole', 'mix.tree', 'mix.need'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional.' },
-    takeaway: 'Agree the balance, check stands and cables, set gain on the peaks, build the sound with one main array, add at most two supports for stated reasons, and keep capture and reinforcement roles clear.',
+    takeaway: 'Agree the balance, check stands and cables, set gain on the peaks, build the sound with one main array, add as few supports as you can for stated reasons, and keep capture and reinforcement roles clear.',
   },
 };
 
@@ -74,7 +74,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The soundboard radiates under the lid, and the open lid throws much of it toward the open side — usually the hall. Lid height changes the balance before any mic does.',
     why: {
       'Straight down into the floor beneath it': 'Some goes down, but the lid sends much of it out to the side.',
-      'Back toward the pianist only': 'The pianist hears it, but the open side carries most of it.',
+      'Back toward the pianist only': 'The pianist hears it, but the open side carries much of it.',
     },
   },
   {
@@ -150,7 +150,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The lid reflects the soundboard’s sound toward its open side: a main array often hears the piano well from there.',
     why: {
       'Straight up into the air, away from the lid': 'The lid is above the strings; it turns the sound sideways.',
-      'Under the piano, onto the floor': 'Some goes down, but most leaves on the open side.',
+      'Under the piano, onto the floor': 'Some goes down, but much of it leaves on the open side.',
     },
   },
   {
@@ -199,7 +199,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Give every mic a role. An ambience or main recording pair need not feed the PA or the wedges; reinforcement comes from close, aimed mics.',
     why: {
       'Send it: it sounds the most natural of them all': 'Natural for a recording, but a distant pair in the PA hears the PA back.',
-      'Send it, but only into the wedges': 'Wedges are where feedback starts; a distant pair is the last thing to send there.',
+      'Send it, but only into the wedges': 'Wedges are often where feedback starts; a distant pair is the last thing to send there.',
     },
   },
   {
@@ -439,7 +439,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'How many supports might you add at first, and why?',
     options: ['At most two, each with a reason', 'One for each player, to be safe', 'None: a pair is enough'],
     correct: 'At most two, each with a reason',
-    explain: 'Start with the main array; add at most two supports at first, each for a musical reason you can state.',
+    explain: 'Start with the main array; add as few supports as you can, each for a musical reason you can state.',
     why: { 'One for each player, to be safe': 'Many supports add overlap without a reason.', 'None: a pair is enough': 'Sometimes a line needs help; a stated reason earns a support.' },
   },
   riggingDiag('mix'),
@@ -471,7 +471,7 @@ export const E13_LESSON: EnsembleLesson = {
         { text: 'Check stands, cables and the players’ movement', early: 'Safety and movement come before sound.' },
         { text: 'Set conservative gain on the expected peaks', early: 'Gain comes once the mics are safely up.' },
         { text: 'Build the sound with one main array; check mono', early: 'The main array comes before any support.' },
-        { text: 'Add at most two supports, each with a reason', early: 'Supports come after the main picture, for stated needs.' },
+        { text: 'Add as few supports as you can, each with a reason', early: 'Supports come after the main picture, for stated needs.' },
       ],
       explain: 'Plan with the players, check the safety of every stand and cable, set conservative gain, build the sound with one main array — and only then add a support for a stated reason.',
     },
@@ -502,15 +502,15 @@ export const E13_LESSON: EnsembleLesson = {
       { id: 'amps', label: 'any amplified instrument', short: 'AMP', note: 'Agree the amplifier’s level and orientation before placing nearby mics; a direct signal is a supplementary channel.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'agree on the amplifier level and orientation before placing nearby microphones (L75)' }, tag: 'SPILL', scene: 'all' },
       { id: 'rig', label: 'anything over the players', short: 'RIGGING', note: 'A tree’s span and forward reach need safe support: manufacturer-rated hardware and qualified venue personnel for anything suspended.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'Use manufacturer-rated mounting equipment and qualified venue personnel (L49)' }, tag: 'VENUE ONLY', scene: 'all' },
       { id: 'pa', label: 'the PA and the monitors', short: 'PA', note: 'Use the mics’ real polar diagrams to place monitors; recheck after any move. Only the monitor level and sources the performers need.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'Use the actual polar diagrams to position monitors (L86)' }, tag: 'FEEDBACK', scene: 'stage' },
-      { id: 'split', label: 'the split and shared preamps', short: 'SPLIT', note: 'A shared digital preamp’s gain change reaches every feed on it; agree who controls gain and phantom power.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'Shared digital preamp gain changes affect all dependent feeds (L88)' }, tag: 'ROLES', scene: 'stage' },
+      { id: 'split', label: 'the split and shared preamps', short: 'SPLIT', note: 'A shared digital preamp’s gain change reaches every feed on it, unless the other desks offset it; agree who controls gain and phantom power.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'Shared digital preamp gain changes affect all dependent feeds (L88)' }, tag: 'ROLES', scene: 'stage' },
       { id: 'room', label: 'the room’s own sound', short: 'AMBIENCE', note: 'Separate ambience mics only after a usable direct image, brought in from silence.', prov: { kind: 'sourced', src: 'LESSON-MIXED', quote: 'add separate ambience microphones only after establishing a usable direct ensemble image (L77)' }, tag: 'LATER', scene: 'studio' },
     ],
     stage: 'LIVE: find out what already reaches the audience clearly. A quiet chamber event may need little reinforcement; a big room or loud accompaniment, close directional support. Give each mic a role — capture, PA, or both — and avoid uncontrolled feedback.',
-    studio: 'A RECORDING: build the sound with a main array alone first; compare positions at matched level; add at most two supports for stated reasons; ambience later, from silence.',
+    studio: 'A RECORDING: build the sound with a main array alone first; compare positions at matched level; add as few supports as you can for stated reasons; ambience later, from silence.',
   },
   diagnostic,
   practice: {
-    task: 'With the musicians’ intended balance agreed, check stands and cables, set conservative gain, build the sound with one main array, add at most two supports with stated reasons, and adapt for reinforcement without provoking feedback. With their agreement, log what you tried below.',
+    task: 'With the musicians’ intended balance agreed, check stands and cables, set conservative gain, build the sound with one main array, add as few supports as you can with stated reasons, and adapt for reinforcement without provoking feedback. With their agreement, log what you tried below.',
     fields: [
       { id: 'ens', label: 'The ensemble and its seating', kind: 'text' },
       { id: 'goal', label: 'What it is for', kind: 'choice', choices: ['recording', 'reinforcement', 'both'] },

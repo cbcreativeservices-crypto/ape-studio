@@ -22,7 +22,7 @@ export const TAMB_COPY: LessonCopy = {
     figureLabel: 'Side view of a 10 inch headed tambourine seen edge-on, held at about 45 degrees with its head facing up and toward the mic: the wooden frame, the skin head on its front face, and two staggered rows of jingle pairs in slots round the frame.',
     partsBadge: 'A 10 in headed tambourine · tap a part to name it',
     partsLooking: { side: 'Side view · the tambourine edge-on', top: 'Top view · the head from above' },
-    partsIdle: 'A skin head on a wooden frame, with pairs of metal jingles round it — a drum and a set of jingles in one instrument. The next page shows how each part sounds.',
+    partsIdle: 'A head of skin or plastic on a frame of wood or plastic, with pairs of metal jingles round it — a drum and a set of jingles in one instrument. The next page shows how each part sounds.',
     variantNotes: {
       shaken: 'SHAKEN: the same hold, swung side to side or rolled by thumb or finger. The jingles lead — and in a shake the frame moves, so its distance to a fixed mic changes.',
       mounted: 'MOUNTED: flat on a compatible mount, struck with sticks. The instrument stays put — but the mount can add noises of its own, and only a mount made for it is used.',

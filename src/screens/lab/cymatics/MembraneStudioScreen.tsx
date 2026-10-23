@@ -269,7 +269,7 @@ function MembraneStudio() {
   // ── dock ─────────────────────────────────────────────────────────────────
   const modeOptions = isSpeaker
     ? [
-        { id: 'fs', hz: driver.fs, label: `${formatHz(driver.fs)} · resonance f_s`, blurb: 'The suspension resonance: the cone travels furthest here for the least drive.' },
+        { id: 'fs', hz: driver.fs, label: `${formatHz(driver.fs)} · resonance f_s`, blurb: 'The suspension resonance: mass and suspension spring balance here, so the cone moves most easily.' },
         { id: 'piston', hz: driver.fs * 3, label: `${formatHz(driver.fs * 3)} · piston band`, blurb: 'Mass-controlled: the whole cone moves as one and excursion falls as 1/f² while the output stays flat.' },
         { id: 'ka1', hz: 343 / (Math.PI * (driver.diameterMm / 1000)), label: `${formatHz(343 / (Math.PI * (driver.diameterMm / 1000)))} · ka = 1`, blurb: 'The wavelength equals the cone circumference: above this the driver begins to beam.' },
         { id: 'edge', hz: driver.breakupHz * 0.45, label: `${formatHz(driver.breakupHz * 0.45)} · edge flexing`, blurb: 'The surround and outer cone stop following the coil rigidly — the centre leads the rim.' },
@@ -348,7 +348,7 @@ function MembraneStudio() {
           <Text style={styles.trayBlurb}>
             {spec.kettle
               ? 'The bowl’s air loads the head: the (1,1), (2,1), (3,1)… modes slide toward 1 : 1.5 : 2 : 2.5 — near-harmonic, so the ear hears a pitch (Rossing’s measurements; Approximated).'
-              : 'A bare head’s modes sit at 1 : 1.59 : 2.14 : 2.30 : 2.65 — not integers, so a drum has no clear pitch.'}
+              : 'A bare head’s modes sit at 1 : 1.59 : 2.14 : 2.30 : 2.65 — not integers, so a bare head has no clear pitch.'}
           </Text>
         </View>
       ),
@@ -482,7 +482,7 @@ function MembraneStudio() {
         labId="cymatics"
         title="MEMBRANE & LOUDSPEAKER STUDIO"
         subtitle="Cymatics Lab: Sound Made Visible"
-        intro="A drumhead is a membrane: it has no stiffness of its own, only tension, so its modes are the exact Bessel patterns — and their frequencies are NOT a harmonic series, which is why a drum has no clear pitch and a timpani (with its kettle) does. A loudspeaker cone is the opposite bargain: a stiff shell asked to move as one piston until, at its breakup frequency, it stops obeying."
+        intro="A drumhead is a membrane: it has almost no stiffness of its own, only tension, so its modes follow the Bessel patterns — and their frequencies are NOT a harmonic series, which is why a bare drumhead has no clear pitch and a timpani (with its kettle) does. A loudspeaker cone is the opposite bargain: a stiff shell asked to move as one piston until, at its breakup frequency, it stops obeying."
         exploreCaption="Tune the head, move the mallet, sweep the modes. Then show the loudspeaker and sweep from its resonance up through breakup."
         headerAction={
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -581,14 +581,14 @@ function MembraneStudio() {
 
         {!isSpeaker ? (
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>TUNING — WHY A DRUM HAS NO PITCH{spec.kettle ? ' AND A TIMPANI DOES' : ''}</Text>
+            <Text style={styles.cardTitle}>TUNING — WHY A BARE HEAD HAS NO CLEAR PITCH{spec.kettle ? ' AND A TIMPANI DOES' : ''}</Text>
             <Text style={styles.body}>
               {head.label}, Ø {spec.diameterMm} mm at {(spec.tensionNpm / 1000).toFixed(1)} kN/m: fundamental (0,1) at {formatHz(f01)} · {nearestNote(f01).label}.
             </Text>
             <Text style={styles.body}>
               Mode ratios to {ratioBase ? ratioBase.label.split(' · ')[0] : '—'}:{' '}
               {ratioBase ? modes.filter((m) => m.s === 1 || m.n === 0).slice(0, 6).map((m) => (m.hz / ratioBase.hz).toFixed(2)).join(' : ') : '—'}
-              {spec.kettle ? ' — near 1 : 1.5 : 2 : 2.5, a harmonic series missing its fundamental, so the ear supplies a pitch.' : ' — not 1 : 2 : 3 : 4. A bare membrane is inharmonic.'}
+              {spec.kettle ? ' — near 1 : 1.5 : 2 : 2.5, close to a harmonic series, so the ear hears a clear pitch.' : ' — not 1 : 2 : 3 : 4. A bare membrane is inharmonic.'}
             </Text>
             <Text style={styles.readK}>
               (0,1) {formatHz(f01)} · (1,1) {ref11 ? formatHz(ref11.hz) : '—'} · Q ≈ {Math.round(Q)}

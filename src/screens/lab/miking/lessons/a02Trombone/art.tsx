@@ -54,7 +54,7 @@ export const A02_ART: LessonArt = {
       fallback: 'tenor',
       bands: {
         tenor: {
-          low: 'Low down a trombone spreads its sound nearly all round — far more evenly than a trumpet: up to about 400 Hz it stays within about half its loudest level in every direction, even behind the player.',
+          low: 'Low down a trombone spreads its sound nearly all round, as a trumpet does: up to about 400 Hz it stays within about 3 dB of its loudest level in every direction, even behind the player.',
           mid: 'From about 500 Hz the front starts to win.',
           high: 'From about 1 kHz up, the sound gathers strongly along the bell’s axis — the bell works like a megaphone for the higher notes.',
         },

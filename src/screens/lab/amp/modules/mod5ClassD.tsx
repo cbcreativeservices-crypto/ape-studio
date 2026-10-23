@@ -224,7 +224,7 @@ export function Mod5ClassD() {
               <Card tone="accent">
                 <Body>
                   {view === 'raw'
-                    ? `Only two levels exist here: +rail and −rail. The audio is hidden in the WIDTHS: the high side is on ≈${Math.round(dutyAtTrough * 100)}% of each period at the trough and ≈${Math.round(dutyAtPeak * 100)}% at the peak. Averaged over the whole cycle the duty is ${Math.round(sim.meanDuty * 100)}% at any level — silence is 50% too — so the average carries nothing; the SWING of the widths is the audio.`
+                    ? `Only two levels exist here: +rail and −rail. The audio is hidden in the WIDTHS: the high side is on ≈${Math.round(dutyAtTrough * 100)}% of each period at the trough and ≈${Math.round(dutyAtPeak * 100)}% at the peak. Averaged over a whole audio cycle the duty is ${Math.round(sim.meanDuty * 100)}% at any level — silence is 50% too — so that long average carries no audio; the short-term average, swinging with the widths, is the audio.`
                     : view === 'filter'
                       ? 'The low-pass filter averages the pulses. Where pulses are wide the average is high; where narrow, low. The bright trace is what the loudspeaker gets.'
                       : 'What remains after the filter: the audio waveform, following the input. This — never the raw switching — is what reaches the loudspeaker.'}

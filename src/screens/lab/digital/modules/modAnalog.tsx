@@ -360,7 +360,7 @@ export function AnalogModule(p: DigitalModuleProps) {
 
         <MythReality
           myth="A microphone converts sound into digital data — ones and zeros come out of the mic."
-          reality="A microphone creates a continuously varying voltage that mirrors air pressure. Everything on this screen is analog; numbers only appear when a converter measures this voltage — that story starts in Module 2."
+          reality="A microphone capsule creates a continuously varying voltage that mirrors air pressure. Everything on this screen is analog; numbers only appear when a converter measures this voltage — that story starts in Module 2."
         />
         <CheckQuestion spec={ANALOG_CHECK} />
         <LessonRow onPress={() => p.help()} />

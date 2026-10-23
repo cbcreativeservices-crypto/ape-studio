@@ -500,7 +500,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A directional on a selected landing, plus a wider stereo view', ok: true, power: 'phantom', feedback: 'A suggested start: selected landings and the round’s rhythm, both from outside the arena.' },
       { id: 'b', label: 'A wider mono or stereo view only, from the perimeter', ok: true, power: 'phantom', feedback: 'A suggested start when soft footing or distance masks the detail.' },
       { id: 'c', label: 'A small mic on a fence’s rail for the touches', ok: false, power: 'phantom', feedback: 'Nothing that changes a fence; an approved remote plant belongs in the technical plan.' },
-      { id: 'd', label: 'A clip mic on the horse’s bridle', ok: false, power: 'phantom', feedback: 'Never a mic on a horse, its tack or its rider.' },
+      { id: 'd', label: 'A clip mic on the horse’s bridle', ok: false, power: 'phantom', feedback: 'Never a mic on a horse or its tack.' },
       { id: 'e', label: 'A stand by the in-gate for the best angle', ok: false, power: 'phantom', feedback: 'Equipment never blocks a gate.' },
     ],
     reasons: [
@@ -547,7 +547,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What does a passing source’s pitch tell you in a walking practice?',
     options: ['Nothing about its speed', 'Exactly how fast it walked', 'The pattern of the mic'],
     correct: 'Nothing about its speed',
-    explain: 'A walk is not a speed measurement; pitch changes can come from the source, reflections and off-axis tone.',
+    explain: 'A walk is not a speed measurement: its pitch shift is tiny, and pitch changes also come from the source, reflections and off-axis tone.',
     why: { 'Exactly how fast it walked': 'A walk in a practice room is not a speed measurement.', 'The pattern of the mic': 'Pitch does not reveal the pattern.' },
   },
   {
@@ -557,7 +557,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Is a mic on a horse’s bridle an option when a plant is refused?',
     options: ['No: nothing on a horse or its tack', 'Yes, if it is small and very light', 'Only with the rider’s consent'],
     correct: 'No: nothing on a horse or its tack',
-    explain: 'No mic on a horse, its tack or its rider; rider consent alone does not establish access.',
+    explain: 'No mic on a horse or its tack; a rider mic needs the organizer’s approval — rider consent alone does not establish access.',
     why: { 'Yes, if it is small and very light': 'Size does not matter: nothing goes on the horse.', 'Only with the rider’s consent': 'A rider’s consent does not make the horse or its tack a mount.' },
   },
   {
@@ -616,7 +616,7 @@ export const B16_LESSON: Lesson = {
     items: [
       { id: 'pass', label: 'the nearest pass', short: 'NEAREST PASS', note: 'The loudest, windiest moment, with grit or spray: give it input margin at every stage, from a protected permitted place — never approach to test it.', prov: { kind: 'illustrative', reason: 'the lesson L67–L69, L90' }, tag: 'PEAKS', scene: 'all' },
       { id: 'barrier', label: 'barriers, fences and obstacles', short: 'BARRIERS', note: 'They screen the path, reflect sound and carry vibration. Nothing projects through a safety barrier, and nothing changes a fence.', prov: { kind: 'illustrative', reason: 'the lesson L73–L75, L128' }, tag: 'IN THE WAY', scene: 'all' },
-      { id: 'animals', label: 'horses', short: 'HORSES', note: 'No mic on a horse, its tack or its rider; no flash, loud test tones or abrupt movement nearby. Follow the stewards.', prov: { kind: 'illustrative', reason: 'the lesson L133–L134' }, tag: 'WELFARE', scene: 'all' },
+      { id: 'animals', label: 'horses', short: 'HORSES', note: 'No mic on a horse or its tack, and none on a rider without the organizer’s approval; no flash, loud test tones or abrupt movement nearby. Follow the stewards.', prov: { kind: 'illustrative', reason: 'the lesson L133–L134' }, tag: 'WELFARE', scene: 'all' },
       { id: 'water', label: 'water, splash and wet decks', short: 'WATER', note: 'Splash can overload a mic or wet its protection; the deck’s officiating systems come first. Wet-area electrics are a qualified person’s review.', prov: { kind: 'illustrative', reason: 'the lesson L167–L169, L238' }, tag: 'WET', scene: 'all' },
       { id: 'pa', label: 'commentary loudspeakers and music', short: 'PA · MUSIC', note: 'A loudspeaker on the axis is heard with the action; a supplied music feed stays separately controllable, its delay known.', prov: { kind: 'illustrative', reason: 'the lesson L71, L137' }, tag: 'SPILL', scene: 'all' },
       { id: 'weather', label: 'wind, rain, heat and dust', short: 'WEATHER', note: 'A windscreen is not waterproofing; a rain cover meant for between takes is not for recording. Check each component’s limits.', prov: { kind: 'illustrative', reason: 'the lesson L217–L218' }, tag: 'WIND', scene: 'all' },

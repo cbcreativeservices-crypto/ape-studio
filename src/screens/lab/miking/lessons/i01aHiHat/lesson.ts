@@ -93,7 +93,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Where does much of a hi-hat’s sound spread, compared with a crash hanging above it?',
     options: ['Out sideways, from between the two cymbals’ edges', 'Straight up only, toward a mic hanging above the kit', 'Down through the stand and into the floor'],
     correct: 'Out sideways, from between the two cymbals’ edges',
-    explain: 'Cymbals radiate above and below; a hi-hat pair also spreads a lot of its sound out horizontally, from between the edges — one reason an overhead hears it well, and a mic level with the edges hears the air as it closes.',
+    explain: 'Cymbals radiate above and below; a hi-hat pair also spreads a lot of its sound out horizontally, from between the edges. An overhead hears its top face well, and a mic level with the edges hears the air as it closes.',
     why: {
       'Straight up only, toward a mic hanging above the kit': 'Up, yes — but also down, and a lot sideways from between the edges.',
       'Down through the stand and into the floor': 'The stand carries a little vibration; the sound leaves the plates into the air.',
@@ -394,10 +394,10 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Are the two cymbals of a hi-hat usually identical?',
     options: ['Rarely: often a lighter one on top, a heavier below', 'Yes: the pair is cast as one matched cymbal', 'No: the bottom one is the smaller of the two'],
     correct: 'Rarely: often a lighter one on top, a heavier below',
-    explain: 'The two usually differ in thickness and weight — commonly the heavier one at the bottom. Same diameter, different cymbals.',
+    explain: 'The two usually differ in thickness and weight — commonly the heavier one at the bottom. Usually the same diameter, but different cymbals.',
     why: {
       'Yes: the pair is cast as one matched cymbal': 'They are sold as a pair but usually differ — often a lighter top and a heavier bottom.',
-      'No: the bottom one is the smaller of the two': 'They share a diameter; they differ in weight and thickness.',
+      'No: the bottom one is the smaller of the two': 'Most pairs share a diameter; they differ in weight and thickness.',
     },
   },
   {

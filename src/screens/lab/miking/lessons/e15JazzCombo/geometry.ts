@@ -181,7 +181,7 @@ export const E15_SETUPS: EnsembleSetup[] = [
     mics: 'Two matched cardioid small condensers, capsules together, 90° apart, on one tall stand.',
     start: 'About 1.5–3 m (5–10 ft) in front of the group and 2–2.5 m (6.5–8 ft) up, aimed at its middle.',
     line: 'The players’ own balance and the room, with a dependable mono sum. Where they stand sets the balance — a drummer or a horn can dominate, and live, the gain before feedback is limited.',
-    roles: 'To the recording; to the PA only in an unusually quiet, controlled room — never the wedges.',
+    roles: 'To the recording; to the PA only in an unusually quiet, controlled room — kept out of the wedges by default.',
     core: true,
     view: 'plan',
   },

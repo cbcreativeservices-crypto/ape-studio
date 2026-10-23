@@ -209,7 +209,7 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
             : r.zone === 'RIGHT'
               ? 'RIGHT: peaks around −18…−10 dBFS. Healthy SNR, real headroom for surprises — the modern converter sweet spot.'
               : r.analogClip || r.digitalOver
-                ? 'TOO HIGH: the peaks are flattened — analog saturation rounds them, digital full scale shears them. Either way, that information is gone forever. No plugin, no float format, nothing downstream can rebuild it.'
+                ? 'TOO HIGH: the peaks are flattened — analog saturation rounds them, digital full scale shears them. Either way, that information is gone forever. No float format can bring it back, and repair plugins can only guess at it.'
                 : 'TOO HIGH: peaks are hot. A transient louder than expected will clip — in this lab’s model analog first (rounded), then digital full scale (flat-topped).'}
         </Text>
 

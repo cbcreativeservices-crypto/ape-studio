@@ -185,7 +185,7 @@ export const HAT_CYM: CymbalExtra = {
     maxMs: 4,
   },
   bodyTitle: 'WHERE IT GOES',
-  bodyNote: 'Up, down and out of the sides of the pair: a hi-hat spreads much of its sound horizontally, so an overhead hears it well — and a mic level with the edges hears the air as the pair closes.',
+  bodyNote: 'Up, down and out of the sides of the pair: a hi-hat spreads much of its sound horizontally. An overhead hears its top face well — and a mic level with the edges hears the air as the pair closes.',
   links: [CYM_LINKS.overheads, CYM_LINKS.kit],
 };
 

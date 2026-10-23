@@ -379,7 +379,7 @@ function PageRec({ ctx }: { ctx: PageCtx }) {
           task="record about 10 s from BOOTH OUT, move the BOOTH level by 3 dB or more while it records, then STOP and play the take back — and find the jump in it."
           met={boothTake.current === 'done' && heardThisTake}
           progress={boothTake.current === 'recording' ? 'Recording from BOOTH OUT — now move the BOOTH (MASTER is not it).' : boothTake.current === 'moved' ? 'The booth move is in the take — STOP, then PLAY THE TAKE.' : null}
-          explain="BOOTH OUT follows the BOOTH knob, so every booth move is in the file — the jump is there in the waveform. REC OUT is taken before the knobs: that is why it is the tap for a recording."
+          explain="BOOTH OUT follows the BOOTH knob, so every booth move is in the file — the jump is there in the waveform. Here, as on most mixers, REC OUT is taken before the MASTER and BOOTH knobs: that is why it is the tap for a recording."
           onMet={() => setCheck(true)}
         />
         <FaultCard

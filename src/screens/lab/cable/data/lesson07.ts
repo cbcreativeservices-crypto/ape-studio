@@ -136,7 +136,7 @@ export const NEVER_ITEMS: string[] = [
   // mains_wall.safety.cautions ("Never defeat polarization or grounding";
   // GFCI required in damp/outdoor locations) + keying-protection claims.
   // Derived phrasing — flagged for owner review.
-  'Bypassing any built-in protection — polarization, grounding, connector keying — or powering a damp or outdoor location without the GFCI protection it requires.',
+  'Bypassing any built-in protection — polarization, grounding, connector keying — or powering a damp or outdoor location without the GFCI (RCD) protection it requires.',
   // powercon_xx.commonMistakes ("a loudspeaker connector is never used for
   // mains, and a mains connector is never used for loudspeakers")
   'Using a signal or loudspeaker connector for mains power, or a mains connector for loudspeakers — in either direction.',

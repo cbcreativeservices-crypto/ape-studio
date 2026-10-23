@@ -267,7 +267,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A well-secured mount may pass vibration; an unstable clamp may buzz or shift. Distinguish ring from mount buzz before processing.',
     why: {
       'Yes — a cowbell rings with a buzz on hard hits': 'The bell rings; a buzz is usually loose hardware.',
-      'Yes — and a gate will remove it cleanly': 'The buzz rides on every hit; fix the mount.',
+      'Yes — and a gate will remove it cleanly': 'The buzz comes with the hits, so a gate opens for it too; fix the mount.',
     },
   },
   polarityKeepsDelay(W),
@@ -347,7 +347,7 @@ const symptoms: Symptom[] = [
     correct: 'The bell’s distance and angle against the louder source',
     explain: 'Move or aim the spot — or the bell — for better separation; maybe the overhead already suffices.',
     why: {
-      'An EQ cut on the snare’s crack in the bell spot': 'EQ cannot separate sources in one spot.',
+      'An EQ cut on the snare’s crack in the bell spot': 'EQ cannot cleanly separate sources that share a range in one mic.',
       'More gain on the spot until the bell comes through': 'Gain raises the spill with the bell.',
     },
   },

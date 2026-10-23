@@ -60,7 +60,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a piccolo spot and the main pair can sound hollow together, and what the polarity switch does and does not change.',
     credit: { scenarios: ['pc.two.1', 'pc.two.2', 'pc.two.3', 'pc.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'A spot and the main pair hear the piccolo at different times: some pitches cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Multiple close mics are seldom needed.',
+    takeaway: 'A spot and the main pair hear the piccolo at different times: some frequencies cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Multiple close mics are seldom needed.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -186,7 +186,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A useful comparison to begin with',
     explain: 'The flute-family positions are suggested for variants too, but they were not measured on a piccolo. Copy the relationship — between the lip plate and the first keys, off the jet — and test the whole phrase.',
     why: {
-      'A measured optimum for the piccolo itself': 'It is the flute’s figure, transferred; no piccolo-specific measurement exists.',
+      'A measured optimum for the piccolo itself': 'It is the flute’s figure, transferred; we found no measurement made on a piccolo.',
       'Too close to work at all on a piccolo': 'It works as a start; listen for breath and keys and adjust.',
     },
   },
@@ -269,7 +269,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A piccolo spot and the main pair sound hollow together. Why?',
     options: ['The main pair inverts the piccolo’s sound', 'They hear each note at different times', 'The piccolo is too high for two mics'],
     correct: 'They hear each note at different times',
-    explain: 'The main pair hears each note a little later; summed, some pitches arrive out of step and dip — a comb. Move or rebalance first, then check polarity at matched levels.',
+    explain: 'The main pair hears each note a little later; summed, some frequencies arrive out of step and dip — a comb. Move or rebalance first, then check polarity at matched levels.',
     why: {
       'The main pair inverts the piccolo’s sound': 'Distance delays a sound; it does not flip its sign.',
       'The piccolo is too high for two mics': 'Pitch is not the problem; the arrival-time difference is.',

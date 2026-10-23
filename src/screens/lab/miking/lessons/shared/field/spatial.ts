@@ -217,7 +217,7 @@ export const ROUTES: Readonly<Record<Capture, Readonly<Record<Destination, { how
     headphones: { how: 'render', words: 'Convert A to B with the mic’s own converter, then a binaural renderer — it can turn with the listener’s head.' },
     surround5: { how: 'render', words: 'Convert, then decode to the five-speaker layout with a decoder set for it.' },
     stereo: { how: 'render', words: 'Convert, then decode to stereo. Raw A-format is not stereo: never play the four tracks as channels.' },
-    mono: { how: 'render', words: 'The W channel (or a decoded mono) — check it; never sum the four raw capsule tracks.' },
+    mono: { how: 'render', words: 'The W channel (or a decoded mono) — check it; a plain sum of the four raw capsule tracks is only a rough, uncorrected W.' },
   },
   dms: {
     headphones: { how: 'render', words: 'Decode to front and rear, then a binaural renderer, or a stereo decode for a plain headphone mix.' },
@@ -229,7 +229,7 @@ export const ROUTES: Readonly<Record<Capture, Readonly<Record<Destination, { how
     headphones: { how: 'render', words: 'Through a binaural renderer of the five-speaker layout — or monitor it on speakers.' },
     surround5: { how: 'native', words: 'Made for it: one mic per loudspeaker, mapped L, C, R, Ls, Rs. Read the channel map.' },
     stereo: { how: 'downmix', words: 'A downmix of five spaced mics: listen for colour from the different arrival times.' },
-    mono: { how: 'downmix', words: 'The hardest test for spaced mics: their arrival times differ, so some pitches cancel. Check it by ear.' },
+    mono: { how: 'downmix', words: 'The hardest test for spaced mics: their arrival times differ, so some frequencies cancel. Check it by ear.' },
   },
 };
 

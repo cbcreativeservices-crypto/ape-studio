@@ -97,7 +97,7 @@ export const GUIDE: MixingGuide = {
         "source": "Electric guitar (amp)",
         "cut": "HPF 70–100 Hz; −2–3 dB at 200–300 Hz; dip 3–5 kHz if fizzy",
         "boost": "+1–3 dB at 800 Hz–1.5 kHz (body/sing); gentle LPF 10–12 kHz",
-        "notes": "Never scoop the mids; tone comes from the amp, so EQ lightly"
+        "notes": "Avoid a broad mid scoop; tone comes from the amp, so EQ lightly"
       },
       {
         "source": "Amplified harmonica",
@@ -271,7 +271,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The vocal is the storyteller and sits clearly on top, about 2–4 dB above the band by perceived level; during solos the lead instrument takes that place. Voices range from hoarse Delta shouting to smooth soul-blues; capture grit and chest tone, avoid hyped air. Pitch correction is basically off-limits: blue notes, bends between minor and major thirds and slides into pitches are intentional. Doubles are rare; backing vocals are gospel-style responses tucked behind. Many classic records kept the live vocal or comped from two takes (Stevie Ray Vaughan sang each song twice). Live, use a dynamic or hypercardioid mic, HPF, light compression and a touch of slap; control amp bleed with EQ and a gentle expander rather than more gain. Harp players on the vocal mic should stay about 2 in away and back off when the PA is hot."
+      "text": "The vocal is the storyteller and sits clearly on top, about 2–4 dB above the band by perceived level; during solos the lead instrument takes that place. Voices range from hoarse Delta shouting to smooth soul-blues; capture grit and chest tone, avoid hyped air. Pitch correction is basically off-limits: blue notes, bends between minor and major thirds and slides into pitches are intentional. Doubles are rare; backing vocals are gospel-style responses tucked behind. Many classic records kept the live vocal or comped from two takes. Live, use a dynamic or hypercardioid mic, HPF, light compression and a touch of slap; control amp bleed with EQ and a gentle expander rather than more gain. Harp players on the vocal mic should stay about 2 in away and back off when the PA is hot."
     }
   ],
   "loudness": [

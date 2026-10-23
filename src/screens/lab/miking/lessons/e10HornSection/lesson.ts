@@ -19,7 +19,7 @@ const pages: LessonPages = {
     title: 'Meet it — where the sound comes from',
     goal: 'Meet a horn section — trumpet, saxophone, trombones, a tuba — on a stage and round one mic in a studio, and see where each instrument’s sound leaves it.',
     credit: { scenarios: ['hs.meet.1', 'hs.meet.2', 'hs.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
-    takeaway: 'Brass speaks from the bell and is strongly directional: on its axis brighter, off it softer. A saxophone speaks from its open tone holes as well as its bell, so a bell-only mic hears part of it. A section is several of these at once — and the players make the balance.',
+    takeaway: 'Brass speaks from the bell, and its highs are strongly directional: on its axis brighter, off it softer. A saxophone speaks from its open tone holes as well as its bell, so a bell-only mic hears part of it. A section is several of these at once — and the players make the balance.',
   },
   setups: {
     title: 'Starting setups',
@@ -246,7 +246,7 @@ const scenarios: MikingScenario[] = [
     explain: 'If the room is good and the section already balances, a distant pair may be the most natural choice. Isolation is a musical decision, not an automatic improvement.',
     why: {
       'A close mic on each player first': 'That gives control, but loses the blend you already have.',
-      'Gobos round each player first': 'Screens are for overdubs or heavy editing; they can spoil sightlines.',
+      'Gobos round each player first': 'Screens help when each player needs a separate track, for fixes or heavy editing; they can spoil sightlines.',
     },
   },
   {
@@ -488,7 +488,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['About the same distance from it', 'As close to it as each one can get', 'In a straight row behind it'],
     correct: 'About the same distance from it',
     explain: 'Arrange the players at about an equal distance from the section mic, stronger ones a little farther back if needed.',
-    why: { 'As close to it as each one can get': 'Crowding it favours whoever is nearest.', 'In a straight row behind it': 'Behind the mic is where it hears least.' },
+    why: { 'As close to it as each one can get': 'Crowding it favours whoever is nearest.', 'In a straight row behind it': 'Behind a cardioid is where it hears least.' },
   },
   {
     id: 'hs.q.5',
@@ -552,9 +552,9 @@ export const E10_LESSON: EnsembleLesson = {
   ],
   sound: {
     stages: [
-      { title: 'Brass from the bell', text: 'Trumpet and trombone send their sound out of the bell, strongly directional: brightest on its axis, softer off it and farther away.' },
+      { title: 'Brass from the bell', text: 'Trumpet and trombone send their sound out of the bell, the highs strongly directional: brightest on its axis, softer off it and farther away.' },
       { title: 'The sax from its whole body', text: 'A saxophone radiates from its open tone holes along the body and from the bell; the larger the sax, the more distance one mic needs to hear it all.' },
-      { title: 'Low brass, big and low', text: 'A tuba’s bell points up and its low notes are powerful: distance and headroom, and a shared mic can give a more coherent low-brass sound.' },
+      { title: 'Low brass, big and low', text: 'A tuba’s bell usually points up and its low notes are powerful: distance and headroom, and a shared mic can give a more coherent low-brass sound.' },
     ],
     attack: 'Tonguing and valve or key attacks reach a close mic first and clearest; a section mic hears them softened by distance and the room.',
     body: 'The section’s sustained sound blended in the room. A section mic hears the blend; a close mic, one player — with its neighbours behind it. Tendencies, not guarantees.',

@@ -79,7 +79,7 @@ export const B01_COPY: Partial<LessonCopy> = {
     workedZone: { studio: 'b1.dyn', twoHosts: 'b1.dyn', live: 'b1.close' },
     workedAim: 'Aim it at the mouth — the lab counts it while the mic points within about {tol}° of the lips. The host speaks into its end.',
     workedClear: 'Clear of the host: the mic, its windscreen and the arm keep off the face, out of the line to the laptop’s screen, and away from the hands on the desk. Clearance comes first, before any number.',
-    reveal: 'Closer tends to bring more bass, breath and pops and less of the room; farther, more room and more of the other host; a little above the mouth’s line, softer pops. Hosts and rooms vary, so “it depends on this host” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Closer tends to bring more bass (on a directional mic), breath and pops and less of the room; farther, more room and more of the other host; a little above the mouth’s line, softer pops. Hosts and rooms vary, so “it depends on this host” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
       bcDynArm: 'Ideas to try with the broadcast dynamic: speak into its END; start about 10–15 cm away, then move a little closer and farther with the host sitting naturally, comparing at matched loudness.',
       bcDynSuper: 'Ideas to try with a supercardioid: its rear lobe means a loudspeaker behind it goes well to one side of its rear — check the actual pattern.',
@@ -130,7 +130,7 @@ export const B01_COPY: Partial<LessonCopy> = {
     B: { typeId: 'bcDynArm', pattern: 'cardioid', zone: 'b1.hostB' },
     learn: [
       'Each host has their own mic, but each mic also hears the other host — later and lower. In the mix, one voice arrives twice: through its own mic first, through the other a little later.',
-      'Listen to each channel alone, then the mix in MONO with both open. A hollow, thin sound means some pitches cancel: move a mic closer to its own host, turn its rear to the other, or mute the mic no one is using. A polarity switch only tests the idea — it never removes a delay.',
+      'Listen to each channel alone, then the mix in MONO with both open. A hollow, thin sound means some frequencies cancel: move a mic closer to its own host, turn its rear to the other, or mute the mic no one is using. A polarity switch only tests the idea — it never removes a delay.',
     ],
     warn: 'This simplified graph treats each mouth as one point and both mics as hearing the same sound. Real mics hear different mixes of voice and room, and hosts move — read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative. Judge by ear, in mono.',
   },

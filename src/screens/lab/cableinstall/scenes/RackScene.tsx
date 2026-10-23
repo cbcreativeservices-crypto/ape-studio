@@ -1711,7 +1711,7 @@ const D_OPTIONS: { title: string; body: string; verdict: string; ok: boolean }[]
   {
     title: 'FORCE IT',
     body: 'Leave everything connected and muscle the switch out past the dressed looms — cable flexes, it will be fine.',
-    verdict: 'Cable does not stretch — terminations and connectors tear, invisibly. Forcing gear past the dressing damages the exact cables that still work.',
+    verdict: 'Cable has almost no give — terminations and connectors tear, often unseen. Forcing gear past the dressing damages the exact cables that still work.',
     ok: false,
   },
 ];

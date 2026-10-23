@@ -64,7 +64,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a host’s and a guest’s open mics can make a voice sound hollow, how the arrival-time difference places comb notches, and why each stays on their own channel.',
     credit: { scenarios: ['b7.two.1', 'b7.two.2', 'b7.two.3', 'b7.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Each voice reaches the other mic later and lower: the sum cancels some pitches. A mic each, close, the unused one muted; polarity flips the sign and never removes a delay.',
+    takeaway: 'Each voice reaches the other mic later and lower: the sum cancels some frequencies. A mic each, close, the unused one muted; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -104,9 +104,9 @@ const scenarios: MikingScenario[] = [
     id: 'b7.snd.2',
     page: 'sound',
     prompt: 'Why can a hard script stand close to the mouth colour the voice at the mic?',
-    options: ['It sends a later copy that cancels some pitches', 'It soaks up the voice’s high end like a soft panel', 'It turns the voice into a hiss above the stand'],
-    correct: 'It sends a later copy that cancels some pitches',
-    explain: 'The voice reaches the mic straight and, a little later, off the stand: some pitches cancel. Tilt the stand, keep the mic close, or put it above the script.',
+    options: ['It sends a later copy that cancels some frequencies', 'It soaks up the voice’s high end like a soft panel', 'It turns the voice into a hiss above the stand'],
+    correct: 'It sends a later copy that cancels some frequencies',
+    explain: 'The voice reaches the mic straight and, a little later, off the stand: some frequencies cancel. Tilt the stand, keep the mic close, or put it above the script.',
     why: {
       'It soaks up the voice’s high end like a soft panel': 'A hard stand reflects rather than absorbs; the problem is the second copy.',
       'It turns the voice into a hiss above the stand': 'A reflection does not change the voice into a hiss; it adds a later copy.',
@@ -312,7 +312,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'With both desk mics open, the host sounds hollow. Why?',
     options: ['Their voice reaches the guest’s mic later', 'The guest’s mic reverses the host’s polarity', 'The host’s own mic is far too close to them'],
     correct: 'Their voice reaches the guest’s mic later',
-    explain: 'The host reaches their own mic first and the guest’s mic later. Summed, some pitches cancel — a comb.',
+    explain: 'The host reaches their own mic first and the guest’s mic later. Summed, some frequencies cancel — a comb.',
     why: {
       'The guest’s mic reverses the host’s polarity': 'Distance delays a sound; it does not flip its sign.',
       'The host’s own mic is far too close to them': 'Close placement adds bass, not a comb. The comb comes from the second, later copy.',
@@ -373,7 +373,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The narration sounds hollow; a hard script stand sits right in front of the mic. A first idea to try?',
     options: ['Tilt the stand, or raise the mic above it', 'Boost the treble so the words come back', 'Move the reader a step farther back from the mic'],
     correct: 'Tilt the stand, or raise the mic above it',
-    explain: 'The stand’s later copy cancels some pitches. Send it away from the mic, or put the mic above the script; EQ cannot fill the notches.',
+    explain: 'The stand’s later copy cancels some frequencies. Send it away from the mic, or put the mic above the script; EQ cannot fill the notches.',
     why: {
       'Boost the treble so the words come back': 'A comb is cancellation between two copies: EQ cannot undo it.',
       'Move the reader a step farther back from the mic': 'Farther, the reflection matters more against the direct voice.',
@@ -532,8 +532,8 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'sound',
     prompt: 'What does a hard script stand near the mouth add at the mic?',
-    options: ['A later copy that cancels some pitches', 'Extra low end from the stand’s metal', 'Nothing, because the paper on it is soft'],
-    correct: 'A later copy that cancels some pitches',
+    options: ['A later copy that cancels some frequencies', 'Extra low end from the stand’s metal', 'Nothing, because the paper on it is soft'],
+    correct: 'A later copy that cancels some frequencies',
     explain: 'A reflection off the stand reaches the mic later: a comb. Tilt it or put the mic above the script.',
     why: {
       'Extra low end from the stand’s metal': 'The main effect is the reflection’s later copy.',

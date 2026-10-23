@@ -281,7 +281,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             ) : (
               <Note>{`The instrument makes a small electrical signal; the amplifier turns it into the power that moves a speaker cone; the cone pushes the air; the mic hears the air. The grille cloth hides the speaker — find it before you place a mic.`}</Note>
             )}
-            {spec.rig === 'bass' ? <Note>In a cabinet with several speakers, close in a mic hears mostly the one it faces, and the middle of the grille may fall between two of them. Ask which speaker is active, and mark it from outside with the amp off or muted.</Note> : <Note>The combo’s speaker sits off-centre, under the controls: the middle of the grille is not the middle of the speaker. Find the speaker itself.</Note>}
+            {spec.rig === 'bass' ? <Note>In a cabinet with several speakers, close in a mic hears mostly the one it faces, and the middle of the grille may fall between two of them. Ask which speaker the player likes best, and mark it from outside with the amp off or muted.</Note> : <Note>The combo’s speaker sits off-centre, under the controls: the middle of the grille is not the middle of the speaker. Find the speaker itself.</Note>}
             <Note tone="warn">Never open an amp’s chassis or change its speaker wiring to place a mic: the inside is hot and carries dangerous voltages.</Note>
           </>
         ),
@@ -457,7 +457,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
               <Point title="THE PICKUP SENSES ITS OWN SPOT">{`A pickup is a magnet wound with fine wire: the steel string moving over it makes a small electrical signal. It senses only the string above it — so a shape with a still point right over the pickup is hardly sensed at all.`}</Point>
             </Card>
             {st.spec.pickups.length > 1 ? <Note>{`Near the bridge, the note itself moves the string very little, while the higher harmonics still move it well: a bridge pickup tends to sound brighter and thinner, a neck pickup rounder. ${hSeen.size >= 3 && puSeen.size >= 2 ? 'You have just seen why.' : ''}`}</Note> : null}
-            {st.steel ? <Note>{`The bar is a movable fret: the string sounds only between the bar and the bridge — the shorter, the higher (at half the length, the octave). A pedal or knee lever pulls a string tighter at the changer, raising its pitch; one whole tone up needs about a quarter more tension.`}</Note> : null}
+            {st.steel ? <Note>{`The bar is a movable fret: the string sounds only between the bar and the bridge — the shorter, the higher (at half the length, the octave). Most pedals and some knee levers pull a string tighter at the changer, raising its pitch, while other levers lower one; one whole tone up needs about a quarter more tension.`}</Note> : null}
             {predicted != null && hSeen.size >= 3 ? <Note tone="ok">{`You predicted “${predicted}”. The string itself is very quiet — the pickup turns its motion into a small signal, and the amp and speaker make the sound you will mic.`}</Note> : null}
             <Note>A real string runs slightly sharp of these exact harmonics, and a real pickup senses a short stretch of string, not one point — the picture is simplified. Nothing here makes a sound.</Note>
           </>
@@ -933,7 +933,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
           <>
             <Body>What you just did, in words. After our research, each blue zone is where we suggest you begin, measured from the grille in front of the speaker that is really sounding. They are starting points, not rules: move from there and listen — there is no single right answer, and every speaker, amp and player is different.</Body>
             <Body>Change one thing at a time. Keep the distance and slide across the cone — centre, dust-cap edge, toward the edge — or keep the spot and move away from the grille, or keep both and change only the angle. A mic farther back hears more of the cabinet and the room, and more of the stage. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.</Body>
-            <Body>Compare at matched level, on the same passage — louder always sounds “better” at first. Then write down where you ended: the speaker, the spot, the distance, the angle, and the player’s settings.</Body>
+            <Body>Compare at matched level, on the same passage — louder almost always sounds “better” at first. Then write down where you ended: the speaker, the spot, the distance, the angle, and the player’s settings.</Body>
             <Note tone="warn">Clearance comes first: off the grille cloth, the stand steady, the cable away from the player and the walkway, nothing against the amp’s vents.</Note>
           </>
         ),

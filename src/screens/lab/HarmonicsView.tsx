@@ -2046,7 +2046,7 @@ export function HarmonicsView({
                 {GEN_LEVEL_DB} dBFS) while analyzing the microphone. Real harmonic distortion from
                 the speaker and mic lines up with the markers — that is the lesson.
                 {!feedbackAllowed
-                  ? ' The tone stays muted for feedback safety until you switch on the override above (use headphones, or the built-in mic will hear the speaker).'
+                  ? ' The tone stays muted for feedback safety until you switch on the override above. This lesson needs the mic to hear the speaker, so keep the volume low.'
                   : ''}
               </Text>
               {liveFlags.map((f) => (

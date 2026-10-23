@@ -218,7 +218,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
               ) : null}
               <Card>
                 <Point title="The faceplate on the glass">The limiter at the settings the shown version used: INPUT is DRIVE (0 dB for QUIETER), CEILING {CEILING} dBFS, RELEASE 80 ms; GR lights to the deepest gain reduction.</Point>
-                <Point title="This lab's limiter, honestly">A miniature: a plain sample-peak clamp with no look-ahead, which is why TRUE PK can read over the ceiling. Real mastering limiters use look-ahead and true-peak detection (oversampling) — that is what holds a −1 dBTP ceiling in practice.</Point>
+                <Point title="This lab's limiter, honestly">A miniature: a plain sample-peak clamp with no look-ahead. It watches only the samples, which is why TRUE PK can read over the ceiling. Most mastering limiters add look-ahead and true-peak detection (oversampling), often as a mode you switch on — that is what holds a −1 dBTP ceiling in practice.</Point>
                 <Point title="There is no fixed target in this lab">The correct loudness depends on the content and the destination. A dense rock mix and a solo piano piece do not share a number; destinations publish their requirements and change them. The lab shows you the trade; the spec sheet of the day gives you the number.</Point>
               </Card>
             </>

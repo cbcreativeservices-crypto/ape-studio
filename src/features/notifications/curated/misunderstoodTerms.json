@@ -49,7 +49,7 @@
   },
   {
     "term": "Streaming mastering",
-    "body": "Common belief: mastering louder than a streaming target makes a track stand out. Actually the service turns it back down, so you only lose dynamics for nothing."
+    "body": "Common belief: mastering louder than a streaming target makes a track stand out. Most services turn it back down unless listeners opt out, so you lose dynamics."
   },
   {
     "term": "dBC",
@@ -345,7 +345,7 @@
   },
   {
     "term": "Buffer-size tradeoffs",
-    "body": "Common belief: a higher sample rate fixes latency. Actually buffer size is the real lever — bigger buffers cut dropouts but add delay between in and out."
+    "body": "Common belief: a higher sample rate fixes latency. It helps only a little; buffer size is the main lever - bigger buffers cut dropouts but add delay."
   },
   {
     "term": "Frequency weighting",
@@ -473,11 +473,11 @@
   },
   {
     "term": "Large-Diaphragm Microphone (LD Mic)",
-    "body": "Common belief: a large-diaphragm mic's presence peak is always flattering. Actually the 4-5 kHz boost can be excessive, and distance changes the tone too."
+    "body": "Common belief: a large-diaphragm mic's presence peak is always flattering. Actually its upper-mid lift varies by model and can be too much; distance matters."
   },
   {
     "term": "Call Screener",
-    "body": "It's tempting to think an approved caller goes straight to air. In fact a screener only queues them — the host decides, and can't stop what's said live."
+    "body": "It's tempting to think an approved caller goes straight to air. In fact a screener only queues them; the host decides, and a broadcast delay can cut a remark."
   },
   {
     "term": "Outer-ear filtering",
@@ -485,7 +485,7 @@
   },
   {
     "term": "Octave-band analysis",
-    "body": "It's tempting to think octave-band levels add up arithmetically. In fact they combine on an energy basis — mixing octave with third-octave data isn't valid."
+    "body": "It's tempting to think octave-band levels add up arithmetically. In fact they add by energy: three third-octave levels make one octave. Don't mix them up."
   },
   {
     "term": "Rotary knob",
@@ -509,11 +509,11 @@
   },
   {
     "term": "Object trim",
-    "body": "Myth: an object's trim and a renderer's Trim controls do the same job. Actually object trim offsets one sound's level, while renderer Trim cuts whole groups."
+    "body": "Myth: an object's trim and a renderer's Trim controls do the same job. Renderer Trim sets speaker-group levels in downmixes; object settings work per sound."
   },
   {
     "term": "Parallel upward compression",
-    "body": "Studio myth: parallel compression lowers the loud peaks. Actually blending in a squashed copy raises the quiet parts — peaks stay untouched."
+    "body": "Studio myth: parallel compression lowers the loud peaks. Actually blending in a squashed copy lifts the quiet parts most; the peaks rise only a little."
   },
   {
     "term": "Integer PCM",
@@ -521,7 +521,7 @@
   },
   {
     "term": "Loudness Penalty",
-    "body": "Myth: a loud master impresses listeners on streaming. Actually the platform turns it down to its target — you traded dynamics for nothing."
+    "body": "Myth: a loud master impresses listeners on streaming. Most platforms turn it down to their target unless listeners opt out, so you traded dynamics for little."
   },
   {
     "term": "Germanium diode",
@@ -533,7 +533,7 @@
   },
   {
     "term": "Analog gain",
-    "body": "The channel fader is what sets a clean recording level? Not quite — that's analog gain's job, applied before conversion; the fader just adjusts monitoring."
+    "body": "The channel fader sets a clean recording level? Not quite - analog gain does, before conversion. The fader often just sets the mix, unless you record post-fade."
   },
   {
     "term": "Carbon Microphone",
@@ -625,7 +625,7 @@
   },
   {
     "term": "Compression nonlinearity",
-    "body": "Myth: distortion from a compression driver at high volume is the amplifier's fault. Actually it's the compressed air in the throat itself turning nonlinear."
+    "body": "Myth: distortion from a compression driver at high volume is always the amplifier's fault. Often it's the compressed air in the throat itself turning nonlinear."
   },
   {
     "term": "Digital audio receiver",
@@ -725,7 +725,7 @@
   },
   {
     "term": "Redlining",
-    "body": "Common belief: redlining a channel is only a problem once the master bus clips too. On digital gear, that channel itself already risks hard clipping at 0 dBFS."
+    "body": "Common belief: redlining a channel only matters once the master bus clips. On fixed-point gear the channel itself can clip at 0 dBFS; float mixers clip later."
   },
   {
     "term": "all-pass network",
@@ -861,7 +861,7 @@
   },
   {
     "term": "DVD-Audio",
-    "body": "Popular belief: DVD-Audio discs play in any DVD-Video player. Actually it's a separate hi-res music format that consumer players rarely supported widely."
+    "body": "Popular belief: DVD-Audio discs play in hi-res in any DVD-Video player. Actually hi-res needs a DVD-Audio player; many discs add a lesser track for others."
   },
   {
     "term": "Declip reconstruction",
@@ -877,7 +877,7 @@
   },
   {
     "term": "Constant-voltage amplifier",
-    "body": "Myth: a 'constant-voltage amplifier' is the same as a 70V PA distribution system. Actually those are separate systems sharing one name."
+    "body": "Myth: a 'constant-voltage amplifier' is unrelated to a 70V PA line. Actually it's the amp that drives the 70V or 100V line; 'constant voltage' names the system."
   },
   {
     "term": "Bloom reverb",
@@ -941,7 +941,7 @@
   },
   {
     "term": "Linkwitz–Riley filter",
-    "body": "Myth: Linkwitz-Riley and Butterworth crossovers act alike at crossover. Actually Butterworth is down 3 dB and out of phase there; LR is down 6 dB and in phase."
+    "body": "Myth: Linkwitz-Riley and Butterworth crossovers act alike at crossover. Actually Butterworth is down 3 dB there, so the sum bumps; LR is down 6 dB, sums flat."
   },
   {
     "term": "Coloration",
@@ -1061,7 +1061,7 @@
   },
   {
     "term": "Balanced T-pad",
-    "body": "Any attenuator pad matches impedance at both ends? Not quite — only a true T-pad or H-pad does that; a simple L-pad does not."
+    "body": "Any attenuator pad matches impedance at both ends? Not quite — T, H, pi and bridged-T pads do; a simple L-pad matches only one side."
   },
   {
     "term": "flat flexible loudspeaker",
@@ -1069,7 +1069,7 @@
   },
   {
     "term": "Bessel crossover",
-    "body": "Myth: a Bessel crossover rolls off more steeply than others. Actually it's more gradual — Bessel trades roll-off steepness for accurate, linear-phase timing."
+    "body": "Myth: a Bessel crossover rolls off more steeply than others. Actually it's more gradual - Bessel trades steepness for near-constant delay, near linear phase."
   },
   {
     "term": "PET felt wall panel",
@@ -1097,7 +1097,7 @@
   },
   {
     "term": "Plenum",
-    "body": "The myth: a plenum is just empty space above a ceiling. Actually it's part of the air-distribution system, and needs plenum-rated cable when carrying airflow."
+    "body": "The myth: a plenum is just empty space above a ceiling. Actually it's part of the air system, and cable there must be plenum-rated or run in metal conduit."
   },
   {
     "term": "Kick batter head",
@@ -1201,7 +1201,7 @@
   },
   {
     "term": "Filter response plot",
-    "body": "Myth: a filter's response plot is just its boost-and-cut curve. Actually every magnitude change on that plot comes with a phase shift too, often unshown."
+    "body": "Myth: a filter's response plot is just its boost-and-cut curve. Actually in most filters every level change comes with a phase shift too, often unshown."
   },
   {
     "term": "Ambient",
@@ -1321,7 +1321,7 @@
   },
   {
     "term": "Reflected Sound",
-    "body": "Popular belief: room reflections can be fixed with EQ afterward. Actually they're a time-domain comb-filter problem; only moving the mic or source fixes it."
+    "body": "Popular belief: room reflections can be fixed with EQ afterward. Actually they cause comb filtering in time; move the mic or source, or treat the room."
   },
   {
     "term": "Shimmer",
@@ -1365,7 +1365,7 @@
   },
   {
     "term": "Post-fader send option",
-    "body": "The myth: a post-fader send is tapped after panning too. Actually it's taken before pan — moving the pan control never changes a post-fader send's level."
+    "body": "The myth: a post-fader send is tapped after panning too. On most mono aux sends it's taken before pan, so pan won't change it; stereo sends often follow pan."
   },
   {
     "term": "Pad Switch",
@@ -1397,7 +1397,7 @@
   },
   {
     "term": "CS",
-    "body": "Commonly assumed: stage-left and stage-right are read from the audience's view - but all stage positions are named from the performer's own point of view."
+    "body": "Commonly assumed: stage-left and stage-right are read from the audience's view - but they are named from the performer's. House left and right are the crowd's."
   },
   {
     "term": "Filter saturation",
@@ -1405,7 +1405,7 @@
   },
   {
     "term": "Compressor ratio",
-    "body": "Myth: the ratio alone determines how much gain reduction a compressor applies. Actually threshold sets that; ratio only sets the squeeze once triggered."
+    "body": "Myth: the ratio alone sets how much gain reduction a compressor applies. Actually it depends on how far the signal goes over the threshold, then on the ratio."
   },
   {
     "term": "Faceted panel",
@@ -1421,7 +1421,7 @@
   },
   {
     "term": "Input impedance select (mic loading)",
-    "body": "Common belief: an active condenser's tone shifts with preamp impedance loading like a ribbon's does. Actually only passive dynamics and ribbons react."
+    "body": "Common belief: an active condenser's tone shifts with preamp loading like a ribbon's does. Actually it barely reacts; passive dynamics and ribbons react most."
   },
   {
     "term": "Meter peak-clear/reset",
@@ -1541,7 +1541,7 @@
   },
   {
     "term": "Bearing noise",
-    "body": "Myth: a rumble or whine in a turntable or fan is electrical. Worn bearings grind mechanically - and ignored long enough, they seize the motor."
+    "body": "Myth: a rumble or whine in a turntable or fan is always electrical. Often it's worn bearings grinding - and ignored long enough, they seize the motor."
   },
   {
     "term": "Gain-structure faults",
@@ -1597,7 +1597,7 @@
   },
   {
     "term": "Button microphone",
-    "body": "The myth: a button microphone means a modern small condenser. Actually the name comes from the noisy carbon-button element, not today's mini condensers."
+    "body": "The myth: 'button mic' always meant a modern small condenser. The name first came from the noisy carbon-button element; today it also names tiny hidden lavs."
   },
   {
     "term": "Optical pickup",
@@ -1637,7 +1637,7 @@
   },
   {
     "term": "AFL & PFL (monitor bus modes)",
-    "body": "Myth: soloing a channel always reflects its fader level. Actually PFL solos pre-fader at full signal level, while only AFL reflects the fader."
+    "body": "Myth: soloing a channel always reflects its fader level. Actually PFL listens before the fader, so it ignores it; AFL and solo-in-place follow the fader."
   },
   {
     "term": "high-resolution audio",
@@ -1737,7 +1737,7 @@
   },
   {
     "term": "Analog Summing",
-    "body": "Myth: analog summing inherently sounds better than digital. Actually DAWs sum with error below audibility - real differences trace to converters, not math."
+    "body": "Myth: analog summing inherently sounds better than digital. Actually DAWs sum with error below audibility; real differences are analog color and converters."
   },
   {
     "term": "Mastering compressor",
@@ -1757,7 +1757,7 @@
   },
   {
     "term": "Thunderbolt audio",
-    "body": "Myth: any USB-C cable carries Thunderbolt's full bandwidth. Actually only certified Thunderbolt cables carry the protocol, despite an identical connector."
+    "body": "Myth: any USB-C cable carries Thunderbolt's full bandwidth. Only cables rated for it, like Thunderbolt or full-speed USB4 cables, do - the plug looks the same."
   },
   {
     "term": "Inherent dynamic range",
@@ -2221,7 +2221,7 @@
   },
   {
     "term": "LUFS (Loudness Units Full Scale)",
-    "body": "The myth: LUFS and dBFS measure the same thing. Actually dBFS is sample peak; LUFS is K-weighted perceived loudness, two entirely different numbers."
+    "body": "The myth: LUFS and dBFS measure the same thing. Actually dBFS is level against full scale, often a sample peak; LUFS is K-weighted perceived loudness."
   },
   {
     "term": "More everything",
@@ -2229,7 +2229,7 @@
   },
   {
     "term": "Mechanical VU meter",
-    "body": "Myth: a VU meter shows true peak levels. Actually its slow ballistics show average level, hiding brief transient peaks entirely."
+    "body": "Myth: a VU meter shows true peak levels. Actually its slow ballistics show average level, so brief transient peaks read far lower than they really are."
   },
   {
     "term": "Soft saturation",
@@ -2301,7 +2301,7 @@
   },
   {
     "term": "Phantom power transformer",
-    "body": "Myth: any mic transformer can safely pass 48V phantom power. Actually not every transformer is rated for that DC — the wrong one risks core saturation."
+    "body": "Myth: phantom power can never upset a mic transformer. Balanced phantom cancels in the winding, but a fault or imbalance can push DC through and saturate it."
   },
   {
     "term": "Sound Wave",
@@ -2373,7 +2373,7 @@
   },
   {
     "term": "Bus compression",
-    "body": "The myth: heavy bus compression added late fixes a mix's glue. Actually deep ratios or a late add cause pumping; it works best set gently and early."
+    "body": "The myth: heavy bus compression added late fixes a mix's glue. Actually deep ratios or fast times can cause pumping; most set it gently, and many add it early."
   },
   {
     "term": "Frequency Weighting C",
@@ -2381,11 +2381,11 @@
   },
   {
     "term": "Bus assign",
-    "body": "Myth: sending a channel to both a subgroup and the main mix is harmless. Actually it sums the signal twice, making it louder or phasey."
+    "body": "Myth: sending a channel to both a subgroup and the main mix is harmless. If the subgroup also feeds the main, the signal sums twice: louder or phasey."
   },
   {
     "term": "Commercial loudness control",
-    "body": "Myth: mixing an ad hot gets it on air louder. Every spot is measured and normalized to the program's loudness target - that's why ads no longer jump out."
+    "body": "Myth: mixing an ad hot gets it on air louder. In many countries, rules make spots match the program's loudness target - so ads jump out far less now."
   },
   {
     "term": "Acoustic Calibration",
@@ -2481,7 +2481,7 @@
   },
   {
     "term": "12-string jangle (chorus)",
-    "body": "Commonly assumed: a 12-string needs a chorus pedal for its shimmer — but the octave-paired strings already chorus themselves; a pedal just muddies it."
+    "body": "Commonly assumed: a 12-string needs a chorus pedal for its shimmer — but the octave-paired strings already chorus themselves; a pedal often just muddies it."
   },
   {
     "term": "Program loudness",
@@ -2585,7 +2585,7 @@
   },
   {
     "term": "Input Trim",
-    "body": "The myth: input trim is for big level changes. It's a fine calibration control -- large adjustments belong on the main gain, not the trim."
+    "body": "The myth: input trim is for big level changes. Where a desk has a separate trim, it's a fine control after main gain; on many desks, 'Trim' is the main gain."
   },
   {
     "term": "Noise correlation",
@@ -2705,7 +2705,7 @@
   },
   {
     "term": "Current loop",
-    "body": "Studio myth: old MIDI's current-loop signaling plugs straight into USB or 5V logic. Actually the two signaling schemes aren't compatible without an interface."
+    "body": "Studio myth: 5-pin MIDI's current-loop signaling plugs straight into USB or 5V logic. Actually the two signaling schemes aren't compatible without an interface."
   },
   {
     "term": "Glue items",
@@ -2761,7 +2761,7 @@
   },
   {
     "term": "Gold sputtering",
-    "body": "Myth: a condenser mic's diaphragm is solid metal. Actually it's thin plastic film with a gold coating only nanometers thick, just enough to conduct."
+    "body": "Myth: a condenser mic's diaphragm is solid metal. Most are thin plastic film with a gold coating nanometers thick; measurement mics often use thin metal."
   },
   {
     "term": "K-14",
@@ -2821,7 +2821,7 @@
   },
   {
     "term": "Mic Pad",
-    "body": "Myth: padding a mic then adding back the same gain is harmless. Actually it restores level but raises the noise floor for no real benefit."
+    "body": "Myth: padding a mic then adding back the same gain is harmless. If the source wasn't overloading, it restores level but raises the noise floor for no gain."
   },
   {
     "term": "Compression / Compressor",
@@ -2873,7 +2873,7 @@
   },
   {
     "term": "Dry circuit",
-    "body": "Myth: any metal contact works for a low-level switching circuit. Dry circuits carry too little voltage to break surface films -- they need gold contacts."
+    "body": "Myth: any metal contact works for a low-level switching circuit. Dry circuits carry too little voltage to break surface films -- most use gold contacts."
   },
   {
     "term": "Monitor level",
@@ -3077,7 +3077,7 @@
   },
   {
     "term": "Peak level versus RMS level",
-    "body": "Myth: two signals with the same peak reading are equally loud. Loudness tracks average (RMS) energy, so the denser signal always sounds louder."
+    "body": "Myth: two signals with the same peak reading are equally loud. Loudness tracks average (RMS) energy more than peaks, so the denser signal usually sounds louder."
   },
   {
     "term": "Broadcast limiter",
@@ -3101,7 +3101,7 @@
   },
   {
     "term": "Mirrored console",
-    "body": "Myth: a mirrored backup console copies every setting automatically. Actually input gain, phantom power, and pad must still be set separately on each desk."
+    "body": "Myth: a mirrored backup console copies every setting by itself. It depends on how stage boxes are shared; gain, phantom and pad may need checking on each desk."
   },
   {
     "term": "DAC",
@@ -3129,7 +3129,7 @@
   },
   {
     "term": "Check the front row",
-    "body": "Myth: the mix position tells you what the whole room hears. The front row sits in the harshest, loudest seats - walk there and check before doors."
+    "body": "Myth: the mix position tells you what the whole room hears. The front rows are often the harshest, loudest or least-covered seats - walk there before doors."
   },
   {
     "term": "Pain threshold",
@@ -3245,7 +3245,7 @@
   },
   {
     "term": "Riding the gain",
-    "body": "The myth: riding the gain means moving the fader. Actually it's adjusting input trim in real time, which changes the signal feeding everything downstream."
+    "body": "Myth: riding the gain only ever means the fader. Usually it does, moved by hand to hold level; some ride the input trim, which changes everything downstream."
   },
   {
     "term": "Monitoring level",
@@ -3481,7 +3481,7 @@
   },
   {
     "term": "Ceiling",
-    "body": "Myth: lowering a limiter's ceiling makes the track quieter. Actually input gain sets loudness - the ceiling only caps how high peaks can reach."
+    "body": "Myth: the limiter's ceiling is the loudness control. Input gain or threshold sets how hard it pushes; the ceiling caps peaks, so lowering it drops output a bit."
   },
   {
     "term": "Wire recording",
@@ -3513,7 +3513,7 @@
   },
   {
     "term": "SPL Metering",
-    "body": "It's tempting to think a phone SPL app is fine for compliance checks. In fact only a calibrated meter is reliable — one peak reading understates exposure."
+    "body": "It's tempting to think a phone SPL app is fine for compliance. That needs a calibrated meter or dosimeter, and exposure is a time average, not one reading."
   },
   {
     "term": "Straight mute",
@@ -3709,7 +3709,7 @@
   },
   {
     "term": "Microphone preamplifier",
-    "body": "Widely believed: phantom power is safe for any condenser mic. Many ribbon mics can be damaged by 48V, especially if patched in while it's live."
+    "body": "Widely believed: phantom power is safe for any mic. Some ribbons, mainly older ones, can be damaged by 48V, especially via a bad cable or patching while live."
   },
   {
     "term": "Alignment delay",
@@ -3741,7 +3741,7 @@
   },
   {
     "term": "Diaphragm size versus behavior",
-    "body": "Myth: a larger mic diaphragm is simply the better choice. Actually large diaphragms turn directional off-axis at high frequency; small ones stay uniform."
+    "body": "Myth: a larger mic diaphragm is simply the better choice. Actually large diaphragms turn directional off-axis at high frequency; small ones stay even higher up."
   },
   {
     "term": "Approximate Round-Trip Buffer Latency",
@@ -3781,7 +3781,7 @@
   },
   {
     "term": "Dead note",
-    "body": "Myth: a dead note and a ghost note are the same thing. Actually a ghost note is quiet but still pitched, while a dead note is a muted, pitchless thud."
+    "body": "Myth: dead notes and ghost notes always differ. Many players use both names for a muted, pitchless thud; others mean a very quiet note that keeps its pitch."
   },
   {
     "term": "Compliance verification",
@@ -3885,7 +3885,7 @@
   },
   {
     "term": "Harmonic balance (2nd/3rd order)",
-    "body": "Myth: distortion is distortion. Second-order harmonics read sweet and musical; third-order reads harsh and edgy - the mix of the two is the character."
+    "body": "Myth: distortion is distortion. Second-order harmonics tend to sound sweet; odd orders sound edgier, the higher the harsher. The mix is the character."
   },
   {
     "term": "Bass saturation",
@@ -3893,7 +3893,7 @@
   },
   {
     "term": "Signal-to-distortion ratio",
-    "body": "Common belief: signal-to-distortion ratio is signal-to-noise ratio. Actually it weighs harmonic and intermod content, not noise, and drops as level rises."
+    "body": "Common belief: signal-to-distortion ratio is signal-to-noise ratio. Actually it counts harmonic and intermod content, not noise; it drops nearing overload."
   },
   {
     "term": "Beamwidth plot",
@@ -4129,7 +4129,7 @@
   },
   {
     "term": "Tip-ring-sleeve",
-    "body": "Common belief: every TRS jack carries a balanced mono signal. Actually TRS just as often carries unbalanced stereo — tip left, ring right."
+    "body": "Common belief: every TRS jack carries a balanced mono signal. Actually TRS also carries unbalanced stereo (tip left, ring right) or an insert send and return."
   },
   {
     "term": "On-Axis Response",

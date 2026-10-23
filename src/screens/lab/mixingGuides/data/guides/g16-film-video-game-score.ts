@@ -69,12 +69,12 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Score has the widest dynamic range of any commercial music—from a solo flute at pianissimo (very soft) to 100-piece tutti (full ensemble) with taiko (big Japanese drums) is easily 30–40 dB acoustically. In film the dub stage controls the final dynamics, so the score mixer should preserve range and deliver stems with headroom rather than limiting them; a squashed stem forces the re-recording mixer to fight it. Games need moderated dynamics because players hear the music for hours on TV speakers; aim for a loudness range of 10–15 LU on mobile and under about 20 LU on console."
+      "text": "Score has one of the widest dynamic ranges of any commercial music—from a solo flute at pianissimo (very soft) to 100-piece tutti (full ensemble) with taiko (big Japanese drums) is easily 30–40 dB acoustically. In film the dub stage controls the final dynamics, so the score mixer should preserve range and deliver stems with headroom rather than limiting them; a squashed stem forces the re-recording mixer to fight it. Games need moderated dynamics because players hear the music for hours on TV speakers; aim for a loudness range of 10–15 LU on mobile and under about 20 LU on console."
     }
   ],
   "balance": [
     {
-      "text": "For the soundtrack album: melody (horns, high strings or choir carrying the theme) first, then rhythm engine (string ostinato (repeated figure), percussion), then harmony beds (low brass, pads), then color (harp, celeste, risers). Under dialogue the theme drops to the background and the score lives in the lows, high strings and sides. Low end: decide who owns the sub—synth bass and sub hits usually sit 30–60 Hz, timpani and bass drum 60–100 Hz, celli and basses 80–250 Hz. Sidechain the orchestra’s lows (0–300 Hz band of a multiband compressor) to big hits so they don’t stack. In surround, follow the film mixer’s rule of not building the mix in the middle: keep the center channel mostly clear for dialogue, put the orchestra’s main image across left and right, and use the surrounds for room and reverb, never primary instruments."
+      "text": "For the soundtrack album: melody (horns, high strings or choir carrying the theme) first, then rhythm engine (string ostinato (repeated figure), percussion), then harmony beds (low brass, pads), then color (harp, celeste, risers). Under dialogue the theme drops to the background and the score lives in the lows, high strings and sides. Low end: decide who owns the sub—synth bass and sub hits usually sit 30–60 Hz, timpani and bass drum 60–100 Hz, celli and basses 80–250 Hz. Sidechain the orchestra’s lows (0–300 Hz band of a multiband compressor) to big hits so they don’t stack. In surround, follow the film mixer’s rule of not building the mix in the middle: keep the center channel mostly clear for dialogue, put the orchestra’s main image across left and right, and use the surrounds mostly for room and reverb, rarely for primary instruments."
     }
   ],
   "eq": {
@@ -268,7 +268,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Most score vocals are choir or wordless soloists. Treat choir as an orchestral section: tree or pair plus section spots, light compression, shared hall. Solo voices sit inside the orchestra rather than on top, typically with a long pre-delayed reverb for a “distant” effect; pitch correction is rare and should be inaudible. The critical “vocal” in film is dialogue, which belongs to the re-recording mixer—your job is to avoid competing with it: thin the score in 1–4 kHz during speech and keep music out of the center channel (some broadcasters forbid music there). In live-to-picture shows, dialogue and effects come from playback stems; engineers often push extra dialogue level to the front of the audience to counter the acoustic orchestra, and ride each line because source levels vary."
+      "text": "Most score vocals are choir or wordless soloists. Treat choir as an orchestral section: tree or pair plus section spots, light compression, shared hall. Solo voices sit inside the orchestra rather than on top, typically with a long pre-delayed reverb for a “distant” effect; pitch correction is rare and should be inaudible. The critical “vocal” in film is dialogue, which belongs to the re-recording mixer—your job is to avoid competing with it: thin the score in 1–4 kHz during speech and keep music mostly out of the center channel. In live-to-picture shows, dialogue and effects come from playback stems; engineers often push extra dialogue level to the front of the audience to counter the acoustic orchestra, and ride each line because source levels vary."
     }
   ],
   "loudness": [

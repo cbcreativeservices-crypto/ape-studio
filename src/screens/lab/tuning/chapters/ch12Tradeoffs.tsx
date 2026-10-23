@@ -34,7 +34,7 @@ const PRO: [string, string][] = [
   ['Pitch correction', 'a correction target is a tuning choice — equal-tempered by default, but not the only option'],
   ['Synthesizer tuning tables', 'many synths and software instruments load alternative scales per note'],
   ['Software instruments and sample libraries', 'samples carry the tuning they were recorded in; retuning changes ratios, not just pitch'],
-  ['Choir and ensemble recording', 'singers and strings drift toward pure thirds and fifths against a fixed-pitch accompaniment — a real mixing consideration'],
+  ['Choir and ensemble recording', 'singers and strings may lean toward pure thirds and fifths against a fixed-pitch accompaniment — a real mixing consideration'],
   ['Historical instruments', 'period keyboards are often tuned in meantone or well temperaments; keys sound different on purpose'],
   ['MIDI and per-note pitch control', 'MIDI Tuning Standard and per-note pitch bend make non-equal tunings playable'],
   ['Piano tuning', 'acoustic pianos may use octave stretch because string inharmonicity affects perceived octave alignment'],

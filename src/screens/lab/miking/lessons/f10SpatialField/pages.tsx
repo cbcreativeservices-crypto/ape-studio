@@ -842,14 +842,14 @@ function CompactUnit({ px }: { px: number }) {
 type PlaceZone = { id: string; label: string; band: string; tendency: string; x: [number, number]; z: [number, number]; h: [number, number] };
 const PLACE_ZONES: Record<'plaza' | 'event', PlaceZone[]> = {
   plaza: [
-    { id: 'listen', label: 'Where a standing listener would be', band: 'At the listener’s point, the ears about 1.55–1.8 m up, the front to the scene front.', tendency: 'The square as a listener hears it: the singer ahead, the walker crossing, the wall behind.', x: [-800, 1200], z: [-1000, 1000], h: [1550, 1800] },
+    { id: 'listen', label: 'Where a standing listener would be', band: 'At the listener’s point, the ears about 1.5–1.8 m up, the front to the scene front.', tendency: 'The square as a listener hears it: the singer ahead, the walker crossing, the wall behind.', x: [-800, 1200], z: [-1000, 1000], h: [1500, 1800] },
     { id: 'seated', label: 'A seated listener’s height', band: 'The same place, the ears about 1.1–1.3 m up.', tendency: 'A seated point of view: what is near counts for more.', x: [-800, 1200], z: [-1000, 1000], h: [1100, 1300] },
-    { id: 'closer', label: 'Closer to the singer, past the footpath', band: 'An idea to try: about 1–2 m from the singer, beyond the footpath, ears at standing height.', tendency: 'More of the singer and less of the square — the walker passes behind.', x: [3900, 4900], z: [-900, 900], h: [1550, 1800] },
+    { id: 'closer', label: 'Closer to the singer, past the footpath', band: 'An idea to try: about 1–2 m from the singer, beyond the footpath, ears at standing height.', tendency: 'More of the singer and less of the square — the walker passes behind.', x: [3900, 4900], z: [-900, 900], h: [1500, 1800] },
   ],
   event: [
-    { id: 'listen', label: 'In the audience, between the PA loudspeakers', band: 'At the audience’s listening point, about 1.55–1.8 m up, centred between the PAs.', tendency: 'The event as the audience hears it: the PA, the crowd and the place.', x: [-800, 1500], z: [-1200, 1200], h: [1550, 1800] },
+    { id: 'listen', label: 'In the audience, between the PA loudspeakers', band: 'At the audience’s listening point, about 1.5–1.8 m up, centred between the PAs.', tendency: 'The event as the audience hears it: the PA, the crowd and the place.', x: [-800, 1500], z: [-1200, 1200], h: [1500, 1800] },
     { id: 'seated', label: 'A seated audience’s height', band: 'The same place, the ears about 1.1–1.3 m up.', tendency: 'A seated point of view: the people around count for more.', x: [-800, 1500], z: [-1200, 1200], h: [1100, 1300] },
-    { id: 'back', label: 'Farther back in the audience', band: 'An idea to try: 2–3.5 m farther back, still centred.', tendency: 'More of the crowd and the space, the stage farther away.', x: [-3500, -2000], z: [-1200, 1200], h: [1550, 1800] },
+    { id: 'back', label: 'Farther back in the audience', band: 'An idea to try: 2–3.5 m farther back, still centred.', tendency: 'More of the crowd and the space, the stage farther away.', x: [-3500, -2000], z: [-1200, 1200], h: [1500, 1800] },
   ],
 };
 

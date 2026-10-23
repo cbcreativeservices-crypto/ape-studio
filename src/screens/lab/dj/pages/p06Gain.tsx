@@ -34,7 +34,7 @@ import { anyClip, peakCell, peakDb, useBoothKit } from './shared';
 const TERMS = [
   { term: 'Trim (gain)', def: 'How much of the incoming signal the channel takes in. Set it once for each track — in your headphones, with that channel’s fader down — so the fader is left for the mix.' },
   { term: 'Average level', def: 'Where a meter sits most of the time: what your ears judge as loudness. Peaks are not loudness — a loud master reaches the same peak as a quiet one but sounds several dB louder.' },
-  { term: 'Headroom', def: 'The space between the loudest peaks and the top of the scale, where a stage clips (flattens the tops of the waveform: harsh, and turning a later stage down only makes the damage quieter).' },
+  { term: 'Headroom', def: 'The space between your normal level and the top of the scale, where a stage clips (flattens the tops of the waveform: harsh, and turning a later stage down only makes the damage quieter). The loudest peaks must fit inside it.' },
   { term: 'dBFS', def: 'Decibels relative to digital full scale. 0 dBFS is the top of a digital stage; everything below is a negative number. This lab’s meters read dBFS.' },
 ] as const;
 

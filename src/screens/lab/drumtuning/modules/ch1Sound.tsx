@@ -275,7 +275,7 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
               ]} />
               <SectionTitle>SAY IT BEFORE YOU READ IT</SectionTitle>
               <RecallCard q="What does turning ONE rod change besides that lug's pitch?" a="The head's balance: an uneven head makes two slightly different notes at once, and they beat as a warble." />
-              <RecallCard q="Why is tuning to a note optional?" a="A head's overtones are not in simple ratios, so there is no single note to find; the goal is a useful resonant sound." />
+              <RecallCard q="Why is tuning to a note optional?" a="A head's overtones are not in simple ratios, so its note is less clean than a string's; the goal is a useful resonant sound." />
               <RecallCard q="Name the four things a tuner listens for." a="Pitch, overtones, sustain and pitch bend." />
               <SectionTitle>KEY IDEAS</SectionTitle>
               <Card>

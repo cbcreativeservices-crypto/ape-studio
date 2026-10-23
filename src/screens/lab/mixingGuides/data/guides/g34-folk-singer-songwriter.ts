@@ -324,7 +324,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "Always get a DI from the guitar even if the player wants only a mic; it saves you when feedback starts.",
+      "text": "If the guitar has a pickup, always get a DI from it even if the player wants only a mic; it saves you when feedback starts.",
       "bullet": true
     },
     {

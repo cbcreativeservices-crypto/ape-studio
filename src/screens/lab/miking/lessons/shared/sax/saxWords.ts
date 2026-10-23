@@ -7,7 +7,7 @@
 export function saxBefore(noun: string): { title: string; text: string }[] {
   return [
     { title: 'ASK THE PLAYER FIRST', text: `Standing or seated, and how do they move? Which notes and dynamics does the part use — the lowest, the highest, the loudest accent? What sound do they want: natural and blended, warm, or a bright, direct lead? Hear the ${noun} unamplified first, from where the audience sits and from where a mic would go.` },
-    { title: 'WORK WITH THE HORN AS IT IS', text: 'The saxophone is the player’s, and its keys, rods and pads are delicate. Ask before touching it; nothing clamps to the keys, rods, guards or the neck cork. A clip goes only on the bell rim, made for that bell, fitted with the player — and the player puts it on and takes it off.' },
+    { title: 'WORK WITH THE HORN AS IT IS', text: 'The saxophone is the player’s, and its keys, rods and pads are delicate. Ask before touching it; nothing clamps to the keys, rods, guards or the neck cork. Most clips go on the bell rim, made for that bell, fitted with the player — and the player puts it on and takes it off.' },
   ];
 }
 

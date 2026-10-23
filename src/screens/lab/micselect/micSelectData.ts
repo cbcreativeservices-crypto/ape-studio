@@ -88,7 +88,7 @@ export const MIC_TYPES: MicTypeCard[] = [
       'Tiny to full-size capsules',
       'Low power demands (bias / battery / phantom)',
       'Quality ranges from consumer to excellent',
-      'The engine inside most miniature mics',
+      'The engine inside most pro miniature mics',
     ],
     apps: 'Lavaliers, headsets, older phones, measurement capsules, many studio mics.',
     limitation: 'Quality varies enormously by design — "electret" alone tells you little.',
@@ -133,7 +133,7 @@ export const MIC_TYPES: MicTypeCard[] = [
       'Very consistent off-axis response',
       'Precise transient capture',
       'Compact and easy to aim',
-      'The standard for stereo pairs',
+      'The most common choice for stereo pairs',
     ],
     apps: 'Acoustic instruments, drum overheads, choir, orchestra, stereo arrays.',
     limitation: 'Self-noise typically runs higher than a comparable large-diaphragm design.',
@@ -203,7 +203,7 @@ export const MIC_TYPES: MicTypeCard[] = [
     name: 'Measurement',
     kind: 'measurement',
     klass: 'form',
-    what: 'A small omni (electret) capsule engineered for FLAT response and stable calibration — accuracy, not flattery.',
+    what: 'A small omni condenser capsule (often an electret) engineered for FLAT response and stable calibration — accuracy, not flattery.',
     traits: [
       'Flat, documented response',
       'Omnidirectional by design',
@@ -221,7 +221,7 @@ export const MIC_TYPES: MicTypeCard[] = [
     what: 'A transducer that senses VIBRATION of a surface directly — it does not listen to the air at all.',
     traits: [
       'Extreme isolation from the room',
-      'Immune to acoustic feedback paths',
+      'Far less prone to acoustic feedback',
       'Hears only what it touches',
       'Tiny and hideable',
     ],
@@ -271,7 +271,7 @@ export const CHARACTERISTICS: Characteristic[] = [
     name: 'Maximum SPL',
     why: [
       'How much acoustic level the mic accepts before exceeding its specified distortion limit.',
-      'A kick drum or guitar cabinet up close can exceed 140 dB SPL — the spec decides, not the label.',
+      'A kick drum up close can peak above 140 dB SPL, and a loud guitar cab is not far behind — the spec decides, not the label.',
     ],
   },
   {
@@ -321,7 +321,7 @@ export const CHARACTERISTICS: Characteristic[] = [
     key: 'offaxis',
     name: 'Off-axis response',
     why: [
-      'What the mic sounds like from the sides and rear. Bleed always arrives off-axis — the QUESTION is whether it arrives colored or natural.',
+      'What the mic sounds like from the sides and rear. Bleed mostly arrives off-axis — the QUESTION is whether it arrives colored or natural.',
     ],
   },
   {
@@ -691,7 +691,7 @@ export const JOB_GROUPS: JobGroup[] = [
       { key: 'podcast', name: 'Podcast', ratings: [['Room rejection', 4], ['Ease of use', 4], ['Tonal detail', 3], ['Self-noise', 3]], note: 'Untreated rooms favor directional mics worked close.' },
       { key: 'interview', name: 'Interview', ratings: [['Ruggedness', 4], ['Handling noise', 4], ['Wind tolerance', 4], ['Tonal detail', 3]], note: 'Field conditions: a mic that forgives handling, weather, and hurry.' },
       { key: 'lectern', name: 'Lectern', ratings: [['Feedback rejection', 5], ['LF rolloff', 4], ['Discreet size', 4], ['Tonal detail', 2]], note: 'A slim directional capsule with the rumble rolled off before it starts.' },
-      { key: 'theater', name: 'Theater', ratings: [['Invisibility', 5], ['Gain-before-feedback', 5], ['Sweat/wear tolerance', 4], ['Tonal detail', 3]], note: 'Headworn or hidden lavalier — the audience must never see it.' },
+      { key: 'theater', name: 'Theater', ratings: [['Invisibility', 5], ['Gain-before-feedback', 5], ['Sweat/wear tolerance', 4], ['Tonal detail', 3]], note: 'Headworn or hidden lavalier — most shows keep it out of sight.' },
       { key: 'broadcast', name: 'Broadcast', ratings: [['Speech intelligibility', 5], ['Consistency', 5], ['Self-noise', 4], ['Max SPL', 2]], note: 'A voiced, repeatable speech response, hour after hour.' },
     ],
   },
@@ -723,7 +723,7 @@ export const JOB_GROUPS: JobGroup[] = [
       { key: 'stage', name: 'Stage', ratings: [['Feedback rejection', 5], ['Ruggedness', 5], ['Bleed control', 4], ['Tonal detail', 3]], note: 'Reinforcement first: pattern and toughness over refinement.' },
       { key: 'measure', name: 'Measurement', ratings: [['Flat response', 5], ['Calibration', 5], ['Omni pattern', 5], ['Voicing', 1]], note: 'Accuracy is the entire job — flattery is disqualifying.' },
       { key: 'ambience', name: 'Ambience', ratings: [['Self-noise', 5], ['Stereo imaging', 4], ['Extended response', 4], ['Max SPL', 1]], note: 'The room IS the source — the mic must be quieter than it.' },
-      { key: 'field', name: 'Field recording', ratings: [['Self-noise', 5], ['Wind protection', 5], ['Environmental toughness', 4], ['Power flexibility', 3]], note: 'Nature is quiet and the weather is real; batteries beat phantom miles from power.' },
+      { key: 'field', name: 'Field recording', ratings: [['Self-noise', 5], ['Wind protection', 5], ['Environmental toughness', 4], ['Power flexibility', 3]], note: 'Nature is quiet and the weather is real; far from power, low-draw mics save the recorder’s battery.' },
     ],
   },
 ];

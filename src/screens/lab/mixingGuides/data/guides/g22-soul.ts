@@ -82,7 +82,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Typical hierarchy, loudest to quietest: lead vocal; snare and bass; kick; horns (pushed up for hits and solos); backing vocals; keys and guitar; tambourine/percussion; strings; reverb returns. The bass is a lead voice in soul—let it be slightly louder and more melodic than in rock, owning roughly 60–250 Hz with clear upper-mid definition, while the kick is a short, round thump around 60–90 Hz that sits under it. Neo-soul runs a deeper sub, but the bass line must still read on small speakers. Modern mixes center vocal, kick, snare and bass; horns go slightly off-center or split across, backing vocals wide, keys and guitar opposite. For a retro sound, consider bold, static panning: classic Motown stereo mixes such as “I Heard It Through the Grapevine” (1968) put drums on one side and bass, keys and strings on the other, and modern retro-soul records use drums-left/bass-right layouts too. Check every retro mix in mono."
+      "text": "Typical hierarchy, loudest to quietest: lead vocal; snare and bass; kick; horns (pushed up for hits and solos); backing vocals; keys and guitar; tambourine/percussion; strings; reverb returns. The bass is a lead voice in soul—let it be slightly louder and more melodic than in rock, owning roughly 60–250 Hz with clear upper-mid definition, while the kick is a short, round thump around 60–90 Hz that sits under it. Neo-soul runs a deeper sub, but the bass line must still read on small speakers. Modern mixes center vocal, kick, snare and bass; horns go slightly off-center or split across, backing vocals wide, keys and guitar opposite. For a retro sound, consider bold, static panning: some classic Motown stereo mixes put drums on one side and bass, keys and strings on the other, and modern retro-soul records use drums-left/bass-right layouts too. Check every retro mix in mono."
     }
   ],
   "eq": {
@@ -347,7 +347,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "For retro-soul, filter rather than boost: high-cut around 6–10 kHz and low-cut 80–100 Hz create the vintage frame.",
+      "text": "For retro-soul, filter rather than boost: high-cut around 6–10 kHz and low-cut 80–100 Hz on most tracks (not kick and bass) create the vintage frame.",
       "bullet": true
     },
     {

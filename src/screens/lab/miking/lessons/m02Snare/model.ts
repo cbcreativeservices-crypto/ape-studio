@@ -170,7 +170,7 @@ export const SNARE_ZONES: DocumentedZone[] = [
   {
     id: 'top.cond',
     label: 'Condenser on the rim, angled at the head',
-    band: 'Start the condenser’s head about 4–7.5 cm (1.5–3 in) above the drumhead, angled toward it — never flat to it.',
+    band: 'Start the condenser’s head about 4–7.5 cm (1.5–3 in) above the drumhead, usually angled toward it rather than flat to it.',
     kind: 'trial',
     src: 'EW-DM20',
     quote: 'It is suggested that the microphone head be positioned between 1.5 inches and 3 inches above the drumhead. (Keep in mind that the microphone head should never be placed parallel to the drumhead…)',

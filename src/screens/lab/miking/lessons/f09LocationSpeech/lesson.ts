@@ -63,7 +63,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a boom and a body mic on the same voice can sound hollow together, how their arrival-time difference places comb notches, and why each stays on its own channel.',
     credit: { scenarios: ['loc.two.1', 'loc.two.2', 'loc.two.3', 'loc.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics at different distances hear the voice at different times: some pitches cancel in the sum. Keep separate channels, favour the one that serves the scene; polarity flips the sign and never removes a delay.',
+    takeaway: 'Two mics at different distances hear the voice at different times: some frequencies cancel in the sum. Keep separate channels, favour the one that serves the scene; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -175,7 +175,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · What limits how close a boom can come on a set?',
     options: ['The top edge of the camera’s frame', 'The length of the boom operator’s arms', 'The loudest word the talker says'],
     correct: 'The top edge of the camera’s frame',
-    explain: 'The boom stays just above the frame — no mic, pole or shadow in the shot. A wider shot moves that edge up, and the boom with it.',
+    explain: 'The boom usually stays just above the frame — no mic, pole or shadow in the shot. A wider shot moves that edge up, and the boom with it.',
     why: {
       'The length of the boom operator’s arms': 'The pole gives the reach; the frame decides how close the mic may come.',
       'The loudest word the talker says': 'Level is set with gain. The frame decides the distance.',
@@ -320,7 +320,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The boom and the body mic sound hollow when blended. Why?',
     options: ['The voice reaches them at different times', 'The body mic reverses the voice’s polarity', 'The closer mic is louder, so it cancels'],
     correct: 'The voice reaches them at different times',
-    explain: 'The body mic is nearer the mouth, so it hears each word first; the boom a little later. Summed, some pitches arrive out of step and cancel — a comb of notches. Favour one channel or rebalance first.',
+    explain: 'The body mic is nearer the mouth, so it hears each word first; the boom a little later. Summed, some frequencies arrive out of step and cancel — a comb of notches. Favour one channel, or delay the body mic to the boom, then rebalance.',
     why: {
       'The body mic reverses the voice’s polarity': 'Distance delays a sound; it does not flip its sign.',
       'The closer mic is louder, so it cancels': 'A level difference changes the notches’ depth; the delay makes them.',
@@ -436,7 +436,7 @@ const symptoms: Symptom[] = [
     correct: 'Rehearse the turns; re-aim the boom with the head',
     explain: 'The voice’s highs go ahead of the mouth. A boom that stays put ends up off the axis; rehearse and follow the head — or have a body mic for those moments.',
     why: {
-      'Boost the treble on the boom track afterwards to match': 'EQ cannot put back what an off-axis mic missed — and it raises the hiss.',
+      'Boost the treble on the boom track afterwards to match': 'EQ can only partly put back what an off-axis mic missed — and it raises the hiss.',
       'Ask the talker to keep facing the camera': 'The blocking is the scene. Follow it.',
     },
   },

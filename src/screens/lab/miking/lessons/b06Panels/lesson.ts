@@ -65,7 +65,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a lectern mic and a headset on the same presenter comb when both are open, how the arrival-time difference places the notches, and why one is muted at a time.',
     credit: { scenarios: ['b6.two.1', 'b6.two.2', 'b6.two.3', 'b6.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'One voice in two open mics arrives twice: some pitches cancel and the open-mic count rises. Plan the handoff — one open at a time; polarity flips the sign and never removes a delay.',
+    takeaway: 'One voice in two open mics arrives twice: some frequencies cancel and the open-mic count rises. Plan the handoff — one open at a time; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -147,7 +147,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Match the input to the port: a mic-level output into a mic input. Do not send phantom power into a feed nobody has verified.',
     why: {
       'For line level, so that it cannot be too loud': 'A mic-level feed into a line input is far too quiet; noise comes up with it.',
-      'For mic level, with phantom power on': 'Phantom power into an unverified feed port is not safe for the box. Off unless its guidance says otherwise.',
+      'For mic level, with phantom power on': 'Phantom power into an unverified feed port can harm some boxes. Off unless its guidance says otherwise.',
     },
   },
   {
@@ -168,7 +168,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Two panel mics are open, one panelist speaks. What reaches the mix twice?',
     options: ['That panelist’s voice, the far copy later', 'Nothing, because each mic has its own talker', 'Only the room, and not a voice'],
     correct: 'That panelist’s voice, the far copy later',
-    explain: 'The speaker reaches their own mic first and the neighbour’s later; summed, some pitches cancel.',
+    explain: 'The speaker reaches their own mic first and the neighbour’s later; summed, some frequencies cancel.',
     why: {
       'Nothing, because each mic has its own talker': 'Each mic also hears the neighbours.',
       'Only the room, and not a voice': 'A voice a metre away reaches the mic clearly.',
@@ -313,7 +313,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The presenter wears a headset and stands at the lectern, both mics open. Why does the voice sound hollow?',
     options: ['It reaches the lectern mic later than the headset', 'The headset reverses the polarity of the presenter’s voice', 'The lectern mic is louder, so it cancels'],
     correct: 'It reaches the lectern mic later than the headset',
-    explain: 'The headset is close; the lectern mic is farther. One voice, two arrival times: summed, some pitches cancel.',
+    explain: 'The headset is close; the lectern mic is farther. One voice, two arrival times: summed, some frequencies cancel.',
     why: {
       'The headset reverses the polarity of the presenter’s voice': 'Distance delays a sound; it does not flip its sign.',
       'The lectern mic is louder, so it cancels': 'Level changes the notches’ depth; the delay makes them.',
@@ -377,7 +377,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Automatic mixers choose or share gain and have hold, off-attenuation and priority settings that vary by model. Rehearse interruptions and listen for clipped first syllables.',
     why: {
       'The panelists’ chairs and the table height': 'Furniture does not clip a first syllable; a gate or an automatic mixer can.',
-      'The PA’s level in the room at that moment': 'The PA’s level does not decide when a channel opens; the automatic mixer’s settings do.',
+      'The PA’s level in the room at that moment': 'The automatic mixer’s settings, more than the PA’s level, decide when a channel opens.',
     },
   },
   {

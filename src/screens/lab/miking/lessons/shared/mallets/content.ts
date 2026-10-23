@@ -239,7 +239,7 @@ export function weakEndSymptom(w: MW): Symptom {
     correct: 'The range the mic covers: height, angle, the pair’s balance',
     explain: 'A single close point favours the bars nearest it. Play the real passage from end to end, then move or re-aim — or use a pair — before EQ.',
     why: {
-      'Boost that end of the range with EQ until it matches the rest': 'EQ cannot give back notes the mic does not hear well: fix the coverage first.',
+      'Boost that end of the range with EQ until it matches the rest': 'EQ can only partly give back notes the mic hears poorly: fix the coverage first.',
       [`Ask the ${w.player} to play that end of the keyboard harder`]: 'The player plays the music; move the mic to cover the part.',
     },
   };

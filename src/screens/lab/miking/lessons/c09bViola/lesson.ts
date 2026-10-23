@@ -58,7 +58,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why two mics on one viola can sound thin together, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: ['va.two.1', 'va.two.2', 'va.two.3', 'va.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics at different distances hear the viola at different times: some pitches cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay.',
+    takeaway: 'Two mics at different distances hear the viola at different times: some frequencies cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -174,7 +174,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Mounted close, a narrow-pattern miniature hears one region. It follows the player, but the region it faces decides the colour.',
     why: {
       'It hears the whole room, so the aim makes no difference to the sound': 'Close up and directional, it hears mostly one region of the viola.',
-      'Its clip turns it into a pickup, which ignores the aim': 'A miniature is still a microphone hearing airborne sound; a pickup is a different, electrical path.',
+      'Its clip turns it into a pickup, which ignores the aim': 'A miniature is still a microphone hearing airborne sound; a pickup senses the viola’s own vibration instead.',
     },
   },
   {
@@ -301,12 +301,12 @@ const scenarios: MikingScenario[] = [
     id: 'va.two.1',
     page: 'twoMic',
     prompt: 'Why can two mics on one viola sound hollow together?',
-    options: ['The farther mic inverts the sound on its way there, so it cancels', 'They hear each note at different times, so some pitches cancel', 'Two mics on one source cancel each other’s low end in the sum'],
-    correct: 'They hear each note at different times, so some pitches cancel',
+    options: ['The farther mic inverts the sound on its way there, so it cancels', 'They hear each note at different times, so some frequencies cancel', 'Two mics on one source cancel each other’s low end in the sum'],
+    correct: 'They hear each note at different times, so some frequencies cancel',
     explain: 'Different arrival times make a comb of notches. Move or rebalance first, then check polarity at matched levels.',
     why: {
       'The farther mic inverts the sound on its way there, so it cancels': 'Distance delays a sound; it does not flip its sign.',
-      'Two mics on one source cancel each other’s low end in the sum': 'Some pitches dip and others add: it depends on the delay and the levels.',
+      'Two mics on one source cancel each other’s low end in the sum': 'Some frequencies dip and others add: it depends on the delay and the levels.',
     },
   },
   polarityDelay('va.two.2'),

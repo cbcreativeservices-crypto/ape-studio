@@ -268,7 +268,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Vocal capture",
         "live": "Body lavs and headsets, line-by-line pickups, one mic open at a time",
-        "studio": "Large-diaphragm studio mics close on every singer, ensembles mic’d individually with gobos"
+        "studio": "Large-diaphragm studio mics close on every singer, ensembles in small groups or one by one, with gobos"
       },
       {
         "area": "Session",
@@ -309,7 +309,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Never leave two close mics open in dialogue; cross-fade between actors.",
+      "text": "Avoid leaving two close mics open in dialogue; cross-fade between actors unless both speak at once.",
       "bullet": true
     },
     {

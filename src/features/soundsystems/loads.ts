@@ -73,13 +73,13 @@ export function loadVerdict(totalOhms: number, ampMinOhms: number): LoadVerdict 
 export function loadVerdictCopy(v: LoadVerdict, totalOhms: number, ampMinOhms: number): string {
   switch (v) {
     case 'open':
-      return 'No loudspeaker connected — the amplifier sees an open circuit. Nothing plays; nothing is harmed.';
+      return 'No loudspeaker connected — the amplifier sees an open circuit. Nothing plays; a solid-state amplifier is not harmed.';
     case 'unsafe':
       return `${fmtOhms(totalOhms)} is BELOW this amplifier’s ${ampMinOhms} Ω minimum. It will current-limit, run into protection, or overheat. Re-wire the cabinets or use more amplifier channels.`;
     case 'marginal':
-      return `${fmtOhms(totalOhms)} is exactly the ${ampMinOhms} Ω minimum — nominally. A cabinet’s nominal impedance is not its minimum: an 8 Ω box dips to 5–6 Ω at some frequencies, so this load spends part of the music below the amplifier’s limit. Legal on paper; run it with the limiter set and the fans clear.`;
+      return `${fmtOhms(totalOhms)} is exactly the ${ampMinOhms} Ω minimum — nominally. A cabinet’s nominal impedance is not its minimum: an 8 Ω box often dips to about 5–6 Ω at some frequencies, so this load spends part of the music below the amplifier’s limit. Legal on paper; run it with the limiter set and the fans clear.`;
     default:
-      return `${fmtOhms(totalOhms)} is above the ${ampMinOhms} Ω minimum — a safe load for this amplifier. A higher load is always safe; it just draws less power.`;
+      return `${fmtOhms(totalOhms)} is above the ${ampMinOhms} Ω minimum — a safe load for this amplifier. For a solid-state amplifier like this one, a higher load is safe; it just draws less power.`;
   }
 }
 

@@ -50,7 +50,7 @@ export const PA_C = v3(2200, -1800, -2600);
 export const B11_VARIANTS: Variant[] = [
   { id: 'coach', label: 'COACH', blurb: 'A coach at the sideline: an approved chest mic or a broadcast headset — their own team headset is a separate system — and a perimeter boom outside play if a mount is refused.', phrase: 'on a coach at the sideline' },
   { id: 'official', label: 'OFFICIAL', blurb: 'An official with an announcement headset, opened on purpose to the PA; the officials’ private circuit stays closed.', phrase: 'on an official' },
-  { id: 'athlete', label: 'ATHLETE', blurb: 'An athlete in contact kit, where the event approves a mount: a body mic at the approved place only — protective equipment is never touched.', phrase: 'on an athlete, where approved' },
+  { id: 'athlete', label: 'ATHLETE', blurb: 'An athlete in contact kit, where the event approves a mount: a body mic at the approved place only — protective equipment only if that is the approved place.', phrase: 'on an athlete, where approved' },
 ];
 
 export const B11_VIEWS: Record<'coach' | 'official' | 'athlete', { side: ViewBox; top: ViewBox }> = {

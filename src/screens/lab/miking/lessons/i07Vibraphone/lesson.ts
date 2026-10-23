@@ -30,7 +30,7 @@ const pages: LessonPages = {
     title: 'How it makes its sound',
     goal: 'See how a mallet stroke becomes a ringing note — the bar’s shapes, the tube under it, the fans — and where the sound leaves.',
     credit: { scenarios: ['vb.snd.1', 'vb.snd.2', 'vb.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'The bar rings about two still points the cord passes through; the tube under it — a quarter wavelength long — rings with it; the fans open and close the tube for the pulsing; the pedal decides how long notes last.',
+    takeaway: 'The bar rings about two still points the cord passes through; the tube under it — about a quarter wavelength long — rings with it; the fans open and close the tube for the pulsing; the pedal decides how long notes last.',
   },
   setting: {
     title: 'Where it sits',
@@ -220,7 +220,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Shift the height or angle in small steps, playing the range',
     explain: 'A single close point can make one register over-prominent. Move in small, safe steps with the real phrase — or add a second mic if the range needs it.',
     why: {
-      'Boost the low notes on the desk with EQ until they sound even again': 'EQ cannot give back notes the mic does not hear well. Fix the coverage first.',
+      'Boost the low notes on the desk with EQ until they sound even again': 'EQ can only partly give back notes the mic hears poorly. Fix the coverage first.',
       'Ask the player to play the low notes a little harder': 'The player plays the music; the mic is moved to cover it.',
     },
   },
@@ -364,7 +364,7 @@ const symptoms: Symptom[] = [
     explain: 'A noise you hear in the room is mechanical. Find the loose part or the stand that touches; a motor fault belongs with a qualified technician — never open its housing.',
     why: {
       'Cut the low end with EQ until the hum disappears from the channel': 'EQ hides it and thins the instrument. Find the source.',
-      'Open the motor housing to find what is loose': 'The motor is mains-powered: a fault belongs with a qualified technician.',
+      'Open the motor housing to find what is loose': 'The motor and its power supply are electrical: a fault belongs with a qualified technician.',
     },
   },
   {

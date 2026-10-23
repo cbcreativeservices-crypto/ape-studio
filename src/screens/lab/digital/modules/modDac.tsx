@@ -190,7 +190,7 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
       label: 'OS RATE',
       valueLabel: `${os}×`,
       valueA11y: `oversampling ${os} times`,
-      options: OS_CHOICES.map((c) => ({ id: String(c), label: `${c}× — output at ${c * 48} kHz`, blurb: c === 1 ? 'No oversampling: the first image sits just above the audio band.' : `The first image moves to ${c * 48} kHz, so the analog filter can be gentler.` })),
+      options: OS_CHOICES.map((c) => ({ id: String(c), label: `${c}× — output at ${c * 48} kHz`, blurb: c === 1 ? 'No oversampling: the first image sits just above the audio band.' : `The first image moves up around ${c * 48} kHz, so the analog filter can be gentler.` })),
       selectedId: String(os),
       onSelect: (id) => setOs(Number(id) as 1 | 2 | 4 | 8),
       sticky: true,
@@ -299,8 +299,9 @@ export function DacModule({ width, focused, help }: DigitalModuleProps) {
           {viz ? <viz.DacChainStrip width={vw} running={focused} /> : <VizUnavailableCard />}
           <Text style={dstyles.caption}>
             PCM data is clocked into the DAC element, whose held output is the stepped intermediate —
-            then the reconstruction filter turns steps into the smooth analog waveform. The
-            step→smooth handoff happens at the filter block, nowhere else.
+            then the reconstruction filter turns steps into the smooth analog waveform. In this
+            classic model the step→smooth handoff happens at the filter block; an oversampling DAC
+            does most of the smoothing earlier, in a digital filter.
           </Text>
         </PanelCard>
 

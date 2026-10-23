@@ -446,7 +446,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Small dynamic 2.5–5 cm from the grille, at the dust cap’s edge', ok: true, power: 'none', feedback: 'On the real speaker, at a dependable first spot; a dynamic needs no phantom.' },
       { id: 'b', label: 'Small dynamic at the same distance, a little toward the cone’s edge', ok: true, power: 'none', feedback: 'A softer top end; fair if the player’s tone is bright.' },
-      { id: 'c', label: 'The amp’s speaker output patched into the desk', ok: false, power: 'none', feedback: 'Never: a speaker output goes to a speaker only. Mic the speaker.' },
+      { id: 'c', label: 'The amp’s speaker output patched into the desk', ok: false, power: 'none', feedback: 'Never straight into a desk input: a speaker output is far too strong for it. Mic the speaker.' },
       { id: 'd', label: 'Small condenser in front of the speaker', ok: false, power: 'phantom', feedback: 'This input has no phantom, and this condenser needs it.' },
       { id: 'e', label: 'The harp mic straight into a desk mic input, no checks', ok: false, power: 'none', feedback: 'A high-impedance harp mic may need a matching transformer — check first. And the brief asks for the amp’s sound.' },
     ],

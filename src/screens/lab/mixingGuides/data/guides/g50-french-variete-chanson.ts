@@ -19,7 +19,7 @@ export const GUIDE: MixingGuide = {
   "expects": "The audience treats the text as the point: the French public expects to understand the lyrics, because the songs follow the rhythms of the language and are valued for their writing.",
   "glance": {
     "origin": "France (Paris above all), with Belgium, Switzerland and Québec; roots in 1830s cafés-concerts (music cafés) and Montmartre cabarets, the 1950s Left Bank singer-songwriters (Brassens, Brel, Ferré, Barbara), 1960s yé-yé (1960s French teen pop) and TV variété, to today’s French pop (Stromae, Angèle, Clara Luciani)",
-    "tempo": "60–130 BPM (ballads 60–80; valse musette (accordion waltz) in 3/4 at 140–180 BPM; modern variété-pop 95–125)",
+    "tempo": "Mostly 60–130 BPM (ballads 60–80; valse musette (accordion waltz) in 3/4 at 140–180 BPM; modern variété-pop 95–125)",
     "ensemble": "From solo voice + piano or guitar, to a 3–5 piece chanson band (piano, accordion, double bass, guitar, light drums), to a 7–12 piece variété touring band with backing vocals, strings or brass",
     "priority": "The lead vocal and every word of the French text — clear, natural, and in front",
     "liveSpl": "Theatre/concert-hall chanson 85–92 dBA LAeq-15; variété arena shows 95–100 dBA; French law caps public venues at 102 dBA / 118 dBC LAeq-15",

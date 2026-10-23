@@ -29,7 +29,7 @@ export function standLegs(d: (typeof DRUMS)[number]): { top: Vec3; foot: Vec3 }[
 }
 
 const HEAD_ROLE = {
-  conga: 'The higher-pitched of the pair, on the player’s left here. Rawhide, struck with the hands: open tones, slaps, bass and muted strokes.',
+  conga: 'The higher-pitched of the pair, on the player’s left here. Usually rawhide (some are synthetic), struck with the hands: open tones, slaps, bass and muted strokes.',
   tumba: 'The larger, lower drum of the pair, on the player’s right here. Same strokes, a deeper voice.',
 } as const;
 const SHELL_ROLE = 'A tall wooden shell built from staves, open at the bottom. The open lower end lets out a deeper, boomier part of the sound.';

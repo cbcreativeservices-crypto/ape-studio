@@ -124,7 +124,7 @@ const S3_PERM: { id: string; label: string; good: boolean; short: string }[] = [
 const S4_OPTS: { id: string; label: string; good: boolean; short: string }[] = [
   { id: 'bushing', label: 'Install a bushing / grommet on the opening', good: true, short: 'A finished edge before the cable — pennies now instead of a re-pull later.' },
   { id: 'tape', label: 'Wrap the edge in tape and move on', good: false, short: 'Tape creeps, dries and quits. The raw edge is still there, abrading with every micro-movement.' },
-  { id: 'leave', label: 'Leave it — the jacket looks fine today', good: false, short: 'Edge damage is cumulative and invisible until failure. Today\'s "fine" is next year\'s intermittent.' },
+  { id: 'leave', label: 'Leave it — the jacket looks fine today', good: false, short: 'Edge damage is cumulative and often hidden until failure. Today\'s "fine" is next year\'s intermittent.' },
 ];
 
 /* ── the room elevation (training visualization) ────────────────────────── */
@@ -663,7 +663,7 @@ export function WallsScene({ width, completed, onComplete, openSources }: CiModu
         {xray ? (
           <Appear>
             <Text style={styles.xrayNote}>
-              X-ray shows geometry — studs and hidden runs. It cannot show a fire rating; only the drawings can. Remember
+              X-ray shows geometry — studs and hidden runs. It cannot show a fire rating; the drawings can, and so can fire-wall markings above the ceiling. Remember
               that for scenario 2.
             </Text>
           </Appear>

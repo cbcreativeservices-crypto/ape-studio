@@ -15,9 +15,9 @@ export const GUIDE: MixingGuide = {
   "title": "K-pop",
   "expects": "On record they expect a dense, glossy, hyper-polished mix where every member gets a recognizable moment; live, the record’s impact plus real voices and their own fandom chanting back.",
   "glance": {
-    "origin": "South Korea (Seoul); modern form from Seo Taiji and Boys (1992) and the agency “idol” system of SM, YG and JYP from the mid-1990s; global “Hallyu” (Korean pop-culture) wave from the 2010s",
+    "origin": "South Korea (Seoul); modern form from Seo Taiji and Boys (1992) and the agency “idol” system of SM, YG and JYP from the mid-1990s; “Hallyu” (Korean pop-culture) wave across Asia from the late 1990s, going global in the 2010s",
     "tempo": "95–130 BPM for most title tracks (ballads 60–80; hip-hop cuts 80–100 half-time; EDM and dance-break sections 120–140)",
-    "ensemble": "Idol group of 4–13 vocalists/rappers on headset or handheld wireless, plus playback tracks; larger tours add a 4–6 piece live band and 10–20 dancers",
+    "ensemble": "Idol group of usually 4–13 vocalists/rappers on headset or handheld wireless, plus playback tracks; larger tours add a 4–6 piece live band and 10–20 dancers",
     "priority": "Every member’s voice identifiable and on top of a hard, bright, fully produced track, with the low end punching underneath",
     "liveSpl": "Arena/stadium 100–106 dBA LAeq-15; peaks to 108–109 dBA and roughly 125–130 dBC on large tours; crowd screams alone can exceed 100 dBA",
     "studioLoudness": "Title-track masters commonly −8 to −5 LUFS-I (B-sides and ballads −10 to −8); streaming normalizes to about −14"
@@ -290,7 +290,7 @@ export const GUIDE: MixingGuide = {
     "rows": [
       {
         "area": "Vocals",
-        "live": "4–13 wireless/headset mics, constant movement, huge level swings; ride by member and line",
+        "live": "Often 4–13 wireless/headset mics, constant movement, huge level swings; ride by member and line",
         "studio": "Line-by-line comps, tuning, timing edits, serial compression"
       },
       {

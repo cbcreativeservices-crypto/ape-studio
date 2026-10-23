@@ -54,7 +54,7 @@ const TERMS = [
   { term: 'House left', def: 'Which speaker is LEFT is the venue’s call. In live sound it is usually HOUSE LEFT — the crowd’s left, your RIGHT as you face them. Ask the engineer; many club systems run mono. (This lab draws PA L at house left.)' },
   { term: 'Balanced line', def: 'Two signal wires and a shield; the input takes the difference between them, so hum picked up equally on both cancels. That is why long runs to a venue are usually XLR.' },
   { term: 'Crossover', def: 'Splits the music by frequency: the tops get the part above the crossover point (100 Hz here), the subs the part below. Bass is usually sent to the subs in MONO.' },
-  { term: 'Coverage angle', def: 'A speaker’s nominal angle is where it is 6 dB down from straight ahead — a 90° top is −6 dB at 45° each side. Outside that, the level falls away fast. Subs spread almost evenly all round.' },
+  { term: 'Coverage angle', def: 'A speaker’s nominal angle is where it is 6 dB down from straight ahead — a 90° top is −6 dB at 45° each side. Outside that, the level falls away fast. A single sub spreads almost evenly all round.' },
 ] as const;
 
 export const GOALS_PA = ['Hand off DJ L and DJ R, balanced', 'Raise the room by the engineer’s gain', 'Crossover on: flat where tops meet subs', 'Tops placed: no hole, decks out of the beam', '4-hour dose at the decks ≤ 100 %', 'On your own: tops behind you, dose ≤ 100 %', 'Find the hum on the floor', 'Pass the check'] as const;

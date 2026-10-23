@@ -19,7 +19,7 @@ const pages: LessonPages = {
     title: 'Meet the timbales',
     goal: 'Get to know a pair of timbales — what they are, where you meet them, what they do in the music, and their parts — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'Two shallow, single-headed drums with metal shells (brass here) on a stand, played with sticks on the heads, the rims and the shells — often with a bell on a bracket. Ask which surfaces the part uses.',
+    takeaway: 'Two shallow, single-headed drums, most with metal shells (brass here), on a stand, played with sticks on the heads, the rims and the shells — often with a bell on a bracket. Ask which surfaces the part uses.',
   },
   sound: {
     title: 'How they make their sound',
@@ -283,7 +283,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tb.rec.3',
     page: 'context',
-    prompt: 'FROM EARLIER · Which part of the timbale sound is a solid-body metal sound, not the head?',
+    prompt: 'FROM EARLIER · On metal-shell timbales, which part of the sound is a solid-body metal sound, not the head?',
     options: ['The cáscara on the shell, and the rim', 'The open tone of the 15 in head', 'The air leaving the open lower end'],
     correct: 'The cáscara on the shell, and the rim',
     explain: 'The head is the membrane; the shell and the rim are solid-body contributions — and the bell is a separate instrument altogether.',

@@ -116,7 +116,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The best-sounding spot is right against a side wall. How do you mount the mic there?',
     options: ['On a floor stand, clear of the wall and the walkway', 'Taped to the wall itself, so the stand is out of the way', 'Hung from the ceiling grid, if a cable tie will reach'],
     correct: 'On a floor stand, clear of the wall and the walkway',
-    explain: 'Floor stands only, clear of exits, walkways, cases and players. Fixing a mic to a wall, the ceiling or a grid is for the venue to approve, with qualified people.',
+    explain: 'Use a floor stand, clear of exits, walkways, cases and players. Fixing a mic to a wall, the ceiling or a grid is for the venue to approve, with qualified people.',
     why: {
       'Taped to the wall itself, so the stand is out of the way': 'Nothing is fixed to a wall without the venue’s approval and qualified people; a floor stand does the job.',
       'Hung from the ceiling grid, if a cable tie will reach': 'Rigging from a ceiling or a grid is for the venue’s qualified people to approve — not a cable tie.',
@@ -519,7 +519,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A low omni pair about 1 m in front of the kick, checked in mono', ok: true, power: 'phantom', feedback: 'An integrated, kick-rich room picture; the mono check covers the pair.' },
       { id: 'b', label: 'One large condenser 1–2 m in front of the kit, facing it', ok: true, power: 'phantom', feedback: 'A mono room-and-kit picture with more kick; simple and mono-safe.' },
       { id: 'c', label: 'A coincident pair farther out, facing the kit, compared with a mono spot', ok: true, power: 'phantom', feedback: 'Width with a stable mono sum inside the pair — then the blend with the close mics.' },
-      { id: 'd', label: 'Two mics taped to the side walls, as far apart as the room allows', ok: false, power: 'phantom', feedback: 'Nothing is fixed to the walls; and the widest pair is not automatically the best.' },
+      { id: 'd', label: 'Two mics taped to the side walls, as far apart as the room allows', ok: false, power: 'phantom', feedback: 'Nothing is fixed to the walls without the owner’s yes; and the widest pair is not automatically the best.' },
       { id: 'e', label: 'A mic in the doorway, where the room sounds most open', ok: false, power: 'phantom', feedback: 'A doorway is an exit and a walkway: keep it clear.' },
     ],
     reasons: [DOC, CLEAR, { id: 'r.mono', label: 'It is checked with the other mics, in stereo and in mono', role: 'required', feedback: 'Say how it will be checked with the overheads and close mics.' }, { id: 'r.track', label: 'It is kept on its own track for later decisions', role: 'optional', feedback: 'A fair studio reason.' }, BRAND, FAR],

@@ -60,7 +60,7 @@ const PARTS: { key: TubePart; label: string; note: string; pentodeOnly?: boolean
   { key: 'envelope', label: 'GLASS', note: 'Step 1 — the container. The glass envelope seals the vacuum in and the air out. Break the seal and the tube dies — oxygen would burn the hot cathode instantly.' },
   { key: 'vacuum', label: 'VACUUM', note: 'The nothing that makes it work: with no air molecules in the way, electrons fly freely from cathode to plate. No vacuum, no tube.' },
   { key: 'heater', label: 'HEATER', note: 'Step 2 — the heat. A resistance wire that glows to warm the cathode. It is the reason tubes need warm-up time (and why they glow).' },
-  { key: 'cathode', label: 'CATHODE', note: 'Step 3 — the electron source: a coated sleeve around the heater that BOILS OFF electrons when hot (thermionic emission).' },
+  { key: 'cathode', label: 'CATHODE', note: 'Step 3 — the electron source: in most tubes, a coated sleeve around the heater that BOILS OFF electrons when hot (thermionic emission).' },
   { key: 'plate', label: 'PLATE', note: 'Step 4 — the collector. The anode box, held at high positive voltage, attracts the electron stream — with just these parts you have a working DIODE.' },
   { key: 'grid', label: 'CONTROL GRID', note: 'Step 5 — the valve (TRIODE). A sparse spiral of wire whose small negative voltage gates the whole electron stream — the heart of amplification.' },
   { key: 'screen', label: 'SCREEN GRID', note: 'Step 6 — the accelerator (TETRODE). A second, positive grid that pulls electrons along and shields the control grid from the plate — faster, more stable gain.', pentodeOnly: true },
@@ -476,8 +476,8 @@ function AmplifySection(p: SectionProps) {
         <Text style={styles.caption}>
           That plate current, pulled through a resistor, becomes a LARGE copy of the input — flipped
           upside-down, because MORE grid signal means MORE current means the plate voltage DROPS.
-          Every tube mic preamp, guitar amp, compressor and broadcast console ever made is this one
-          picture, repeated.
+          Most tube mic preamps, guitar amps, compressors and broadcast consoles repeat this one
+          picture, with other stages (like the cathode follower) mixed in.
         </Text>
       </SectionWell>
     </RackUnit>

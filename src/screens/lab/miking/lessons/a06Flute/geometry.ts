@@ -85,8 +85,8 @@ const WORDS = (design: FluteDesign): WindPartWords => ({
       design === 'simple'
         ? 'A conical wooden body with six open finger holes — the fingers cover them directly — and perhaps a few small keys.'
         : design === 'wooden'
-          ? 'The body: a grenadilla tube with the modern keywork — padded cups and five open-hole rings over tone holes sized like a metal flute’s.'
-          : 'The body: the tone holes under padded cups and five open-hole rings, worked by both hands. Which hole is open first sets the note.',
+          ? 'The body: a grenadilla tube with the modern keywork — padded cups, often with five open-hole rings, over tone holes sized like a metal flute’s.'
+          : 'The body: the tone holes under padded cups (often five with open-hole rings), worked by both hands. Which hole is open first sets the note.',
     foot: 'The foot joint, under the right little finger: the lowest keys, and the open end — where the lowest notes, every hole closed, also leave.',
   },
   keys:

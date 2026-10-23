@@ -97,7 +97,7 @@ function useTools() {
       prompt: 'Move the mic: raised toward the mouth, low over the desk, level — and nearer or farther. Watch the bounce and where the first dip falls.',
       surface: 'the desk',
       subject: 'an anchor at a desk with a desk mic',
-      done: 'A raised mic hears the desk’s copy later and weaker than one low over it. A boundary mic is the other answer: lying on the desk, its element is so close to the surface that the bounce arrives with the direct sound — it hears the desk’s papers and the room instead. Move the mic, the papers or the person; EQ cannot pull a cancelled pitch back.',
+      done: 'A raised mic hears the desk’s copy later and weaker than one low over it. A boundary mic is the other answer: lying on the desk, its element is so close to the surface that the bounce arrives with the direct sound — it hears the desk’s papers and the room instead. Move the mic, the papers or the person; EQ cannot pull a cancelled frequency back.',
     },
   });
   const mics = useOpenMicStep({
@@ -120,7 +120,7 @@ function useTools() {
       subject: 'an anchor and a guest at a desk, a lav each',
       looking: 'From above · the anchor and the guest, a lav each · rays from the one speaking',
       prompt: 'Choose WHO SPEAKS, then which lavs are OPEN. Read how much of each voice reaches the other lav, and what the second copy does.',
-      done: 'Each voice reaches the other’s lav too — farther away, so lower, but later: with both open the program hears it twice and some pitches cancel. An omni lav has no rear to turn away; closeness and muting the unused channel keep it small.',
+      done: 'Each voice reaches the other’s lav too — farther away, so lower, but later: with both open the program hears it twice and some frequencies cancel. An omni lav has no rear to turn away; closeness and muting the unused channel keep it small.',
     },
   });
   return [turn, frame, desk, mics];

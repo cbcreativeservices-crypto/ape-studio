@@ -23,7 +23,7 @@ const pages: LessonPages = {
     title: 'Meet the gong',
     goal: 'Get to know the gong — which kind you have (an orchestral tam-tam or a bossed gong), where you meet it, what it does in the music, and its parts — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A large bronze plate hanging freely on cords in a frame, struck with a soft mallet. A tam-tam has no boss and blooms; a bossed gong is struck on its raised centre for a more pitch-centred sound. Identify it first.',
+    takeaway: 'A metal plate, most often bronze, hanging freely on cords in a frame, struck with a soft mallet. A tam-tam has no boss and blooms; a bossed gong is struck on its raised centre for a more pitch-centred sound. Identify it first.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -268,7 +268,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A mic that is useful in the house may feed little or no gong to the player’s wedge; every extra open mic and send increases spill and feedback risk.',
     why: {
       'Yes, loud, so the player hears each stroke': 'The player is beside the gong; a loud send raises the feedback risk.',
-      'Yes — the wedge stops the gong from feeding back': 'Monitors are where feedback starts, not a cure for it.',
+      'Yes — the wedge stops the gong from feeding back': 'Monitors are a common place for feedback to start, not a cure for it.',
     },
   },
   {
@@ -329,7 +329,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You want a stereo image that stays solid in mono. Which pair do you try first?',
     options: ['A coincident pair, the capsules together', 'A widely spaced pair, far apart', 'Two mics on either face of the gong'],
     correct: 'A coincident pair, the capsules together',
-    explain: 'A coincident (XY) pair hears the gong at almost the same time in both mics, so its mono sum stays stable; a spaced pair can comb in mono.',
+    explain: 'A coincident pair, such as XY, hears the gong at almost the same time in both mics, so its mono sum stays stable; a spaced pair can comb in mono.',
     why: {
       'A widely spaced pair, far apart': 'Spacing adds time differences that can comb-filter in mono.',
       'Two mics on either face of the gong': 'The faces do not sound the same, and the paths differ: an experiment, not a mono-safe pair.',

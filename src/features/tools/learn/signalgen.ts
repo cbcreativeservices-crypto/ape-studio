@@ -19,7 +19,7 @@ export const SIGNALGEN_LEARN: ToolLearnContent = {
     {
       head: 'SINE TONES AND SWEEPS',
       body:
-        'A sine wave is a single frequency with no harmonics — the purest possible stimulus, which is exactly why it is used for oscillator demonstrations, distortion and crossover checks, and hunting resonances one frequency at a time. A sweep moves that sine through a range instead of holding it still. A linear sweep advances at a constant number of Hz per second, so it lingers in the treble and races through the bass — useful for watching individual resonances ring. A logarithmic sweep spends equal time per octave, matching how hearing and loudspeaker specifications are organized, which is why log sweeps are the standard excitation for loudspeaker testing and impulse-response measurement.',
+        'A sine wave is a single frequency with no harmonics — the purest possible stimulus, which is exactly why it is used for oscillator demonstrations, distortion and crossover checks, and hunting resonances one frequency at a time. A sweep moves that sine through a range instead of holding it still. A linear sweep advances at a constant number of Hz per second, so it lingers in the treble and races through the bass — useful for watching individual resonances ring. A logarithmic sweep spends equal time per octave, matching how hearing and loudspeaker specifications are organized, which is why log sweeps are the most common excitation for loudspeaker testing and impulse-response measurement.',
     },
     {
       head: 'THE NOISE FAMILY',

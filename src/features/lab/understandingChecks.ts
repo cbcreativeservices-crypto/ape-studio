@@ -49,7 +49,7 @@ const COMPRESSION: readonly Q[] = [
     prompt: 'You want a drum’s initial hit to come through before the compressor clamps down on the ring after it. Which change does that?',
     options: ['A slower attack, such as 25 ms', 'The fastest attack, such as 0.5 ms', 'A higher ratio', 'More makeup gain'],
     correct: 'A slower attack, such as 25 ms',
-    explanation: 'Attack is how long the compressor waits before it clamps. A slower attack lets the first few milliseconds — the hit — pass untouched, then controls what follows. A very fast attack dulls the hit itself.',
+    explanation: 'Attack sets how fast the compressor clamps once the signal crosses the threshold. A slower attack lets most of the first few milliseconds — the hit — through, then controls what follows. A very fast attack dulls the hit itself.',
   },
   {
     id: 'makeup',
@@ -242,7 +242,7 @@ const DELAY: readonly Q[] = [
       'Whether the repeats bounce between left and right',
     ],
     correct: 'How much of each echo is fed back to make the next one — so how long the trail lasts',
-    explanation: 'At 75% feedback each repeat is 75% of the one before, so the trail fades slowly. Spacing never changes with feedback — that is TIME. Near 100% the repeats run away.',
+    explanation: 'At 75% feedback each repeat is 75% of the one before, so the trail fades slowly. Spacing never changes with feedback — that is TIME. Near 100% the repeats barely fade; past it they build up and run away.',
   },
   {
     id: 'slapback',
@@ -484,7 +484,7 @@ const DISTORTION: readonly Q[] = [
       'Nothing — oversampling only affects the display',
     ],
     correct: 'Aliasing — harmonics above the Nyquist limit fold back as harsh, out-of-tune tones',
-    explanation: 'Distortion creates harmonics that can reach past half the sample rate. Without oversampling they fold back to unrelated frequencies. Oversampling processes at a higher rate and filters them out.',
+    explanation: 'Distortion creates harmonics that can reach past half the sample rate. Without oversampling they fold back to unrelated frequencies. Oversampling processes at a higher rate and filters out most of them first.',
   },
   {
     id: 'parallel',
@@ -637,7 +637,7 @@ const NOISE: readonly Q[] = [
       'It is the only colour a microphone can measure',
     ],
     correct: 'Equal energy per octave matches how we hear, so it sounds balanced',
-    explanation: 'Hearing divides the spectrum into octaves, not equal slices of hertz. Pink noise puts the same energy in each octave, so it sounds even from bottom to top.',
+    explanation: 'Hearing works on a roughly log scale, closer to octaves than to equal slices of hertz. Pink noise puts the same energy in each octave, so it sounds even from bottom to top.',
   },
 ];
 
@@ -760,12 +760,12 @@ const STEREO: readonly Q[] = [
     id: 'bass-mono',
     prompt: 'Why make the bass mono below roughly 100–150 Hz?',
     options: [
-      'Wide low frequencies are phasey and unstable; mono lows stay solid on every system',
+      'Wide low frequencies can be phasey and unstable; mono lows stay solid on most systems',
       'Bass is louder in stereo',
       'Mono bass adds reverb',
       'Stereo bass cannot be recorded',
     ],
-    correct: 'Wide low frequencies are phasey and unstable; mono lows stay solid on every system',
+    correct: 'Wide low frequencies can be phasey and unstable; mono lows stay solid on most systems',
     explanation: 'A bass-mono control (this lab offers 120 Hz) collapses everything below its frequency to mono. Treat the frequency as a suggested starting point and listen.',
   },
   {
@@ -925,12 +925,12 @@ const CYMATICS: readonly Q[] = [
     id: 'damping',
     prompt: 'What does more DAMPING do to a plate’s resonance?',
     options: [
-      'Broadens it and lowers its peak, without moving its frequency',
+      'Broadens it and lowers its peak, with almost no change to its frequency',
       'Moves it to a higher frequency',
       'Moves it to a lower frequency',
       'Removes the nodal lines entirely',
     ],
-    correct: 'Broadens it and lowers its peak, without moving its frequency',
+    correct: 'Broadens it and lowers its peak, with almost no change to its frequency',
     explanation: 'Lightly damped metals give sharp figures that need exact frequencies; heavily damped acrylic or wood gives blurrier figures across a wider band.',
   },
 ];
@@ -1041,7 +1041,7 @@ const MODULAR: readonly Q[] = [
       'The envelope is switched off',
     ],
     correct: 'A sine has no harmonics above the fundamental for the low-pass filter to remove',
-    explanation: 'Subtractive synthesis starts bright and carves harmonics away. A sine has nothing to carve, so the filter can only make it quieter. A saw gives the filter the most to work with.',
+    explanation: 'Subtractive synthesis starts bright and carves harmonics away. A sine has nothing to carve, so the filter can only change its level. A saw gives the filter the most to work with.',
   },
   {
     id: 'lfo-destinations',
@@ -1090,7 +1090,7 @@ const FM: readonly Q[] = [
       'Only the overall volume',
     ],
     correct: 'How many sidebands are strong — the brightness',
-    explanation: 'The index sets how much energy spreads into sidebands. Spacing comes from the modulator frequency (the ratio), and the pitch anchor stays at the carrier.',
+    explanation: 'The index sets how much energy spreads into sidebands. Spacing comes from the modulator frequency (the ratio), and the carrier and ratio together set the pitch.',
   },
   {
     id: 'non-integer',
@@ -1102,7 +1102,7 @@ const FM: readonly Q[] = [
       'Nothing changes',
     ],
     correct: 'The sidebands land between harmonics — a bell-like, metallic tone with an unclear pitch',
-    explanation: 'Whole-number ratios put the sidebands on a harmonic series (pitched, brassy or organ-like). Other ratios scatter them between harmonics — inharmonic, like a bell.',
+    explanation: 'Whole-number and other simple ratios put the sidebands on a harmonic series (pitched, brassy or organ-like). Odd ratios like 1.41 scatter them between harmonics — inharmonic, like a bell.',
   },
   {
     id: 'index-zero',
@@ -1362,7 +1362,7 @@ const EQ: readonly Q[] = [
     prompt: 'Which filter shape removes rumble below a chosen frequency and leaves everything above it alone?',
     options: ['High-pass', 'Low-pass', 'High shelf', 'Peak (bell) boost'],
     correct: 'High-pass',
-    explanation: 'A high-pass filter passes the highs and removes everything below its cutoff, at a fixed slope. It is the standard rumble-and-mud eraser. A low-pass does the opposite.',
+    explanation: 'A high-pass filter passes the highs and cuts the lows below its cutoff, more the further down you go, at its set slope. It is the standard rumble-and-mud eraser. A low-pass does the opposite.',
   },
   {
     id: 'graphic-vs-parametric',

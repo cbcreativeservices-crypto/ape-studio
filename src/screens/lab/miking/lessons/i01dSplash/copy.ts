@@ -31,7 +31,7 @@ export const SPLASH_COPY: Partial<LessonCopy> = {
     partsBadge: 'Switch MOUNT for the arm or on top of the crash · tap a part to name it',
     partsLooking: { side: 'Side view · the splash and its mount', top: 'Top view · the splash from above' },
     partsIdle: 'A small, thin cymbal for short accents. Tap the splash, its arm and clamp — or switch MOUNT to see one stacked on top of a crash.',
-    variantNotes: { piggy: 'ON THE CRASH: an 8 in splash turned over on top of the 18 in crash, a felt between, one rod. The two move as one. A third way, a STACK (two or three plates bolted together), is said in words here, not drawn.' },
+    variantNotes: { piggy: 'ON THE CRASH: an 8 in splash turned over on top of the 18 in crash, a felt between, one rod. The two move as one. A third way, a STACK (two or three plates set tight together on one rod), is said in words here, not drawn.' },
   },
   setting: {
     kitA11y: 'The drum kit from above: the splash drawn in its place and ringed in amber — on its arm over the 10 in tom, or on top of the 18 in crash; the drums, cymbals and throne around it.',

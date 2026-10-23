@@ -12,7 +12,7 @@ export const GUIDE: MixingGuide = {
   "expects": "They expect relentless drive, a guitar wall, a cracking snare and a singer they can shout along with.",
   "glance": {
     "origin": "New York and London, 1975–80 (Ramones, Sex Pistols, The Clash); US hardcore from 1979–81 (DC, Southern California); pop-punk from the Bay Area and SoCal scenes into the 1990s mainstream; emo-pop and the Warped Tour era 1995–2010s",
-    "tempo": "140–200 BPM (classic punk 150–180; skate punk and hardcore 180–240+; pop-punk choruses often 160–200 with half-time breakdowns)",
+    "tempo": "Mostly 140–200 BPM (classic punk 150–180; skate punk and hardcore 180–240+; pop-punk choruses often 160–200 with half-time breakdowns)",
     "ensemble": "3–5 piece: drums, bass, 1–2 electric guitars, lead vocal, with band members singing backing and gang vocals",
     "priority": "A tight, driving drums-guitars wall with the lead vocal and its hooks always intelligible on top",
     "liveSpl": "98–104 dBA Leq (LAeq-15 min) in clubs; roughly 112–122 dBC; common safe-listening guidance and many festivals cap at 100 dBA LAeq-15",

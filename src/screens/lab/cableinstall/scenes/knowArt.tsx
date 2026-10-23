@@ -208,7 +208,7 @@ export const SECTION: Record<CiCableClass, Spec> = {
       { text: 'FOAM DIELECTRIC', at: [1.4, 0.9] },
       { text: 'CENTER CONDUCTOR', at: [0.3, 0.2] },
     ],
-    note: 'RG-6 — 75 Ω; GEOMETRY SETS THE IMPEDANCE',
+    note: 'RG-6 — 75 Ω; GEOMETRY + DIELECTRIC SET THE IMPEDANCE',
   },
   control: {
     od: 5.8,

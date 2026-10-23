@@ -300,12 +300,12 @@ const scenarios: MikingScenario[] = [
     id: 'ag.two.1',
     page: 'twoMic',
     prompt: 'A neck-side mic and a bridge-side mic sound hollow together in mono. Why?',
-    options: ['One of the two mics must be faulty, so it should be swapped for another', 'Two mics on one guitar cancel each other out completely', 'The guitar reaches them at different times, so some pitches cancel'],
-    correct: 'The guitar reaches them at different times, so some pitches cancel',
-    explain: 'Each mic hears the guitar from its own distance. Summed, the time difference makes a comb: some pitches add, some cancel — hollow. Move or rebalance a mic, then listen again.',
+    options: ['One of the two mics must be faulty, so it should be swapped for another', 'Two mics on one guitar cancel each other out completely', 'The guitar reaches them at different times, so some frequencies cancel'],
+    correct: 'The guitar reaches them at different times, so some frequencies cancel',
+    explain: 'Each mic hears the guitar from its own distance. Summed, the time difference makes a comb: some frequencies add, some cancel — hollow. Move or rebalance a mic, then listen again.',
     why: {
       'One of the two mics must be faulty, so it should be swapped for another': 'Two good mics at different distances do this. It is timing, not a fault.',
-      'Two mics on one guitar cancel each other out completely': 'They cancel only at some pitches (the comb’s notches), not completely.',
+      'Two mics on one guitar cancel each other out completely': 'They cancel only at some frequencies (the comb’s notches), not completely.',
     },
   },
   {
@@ -427,7 +427,7 @@ const symptoms: Symptom[] = [
     correct: 'Move toward the upper bout or the hole, a little at a time',
     explain: 'A view mostly of the strings and neck lacks the body. Include more of the top, then judge in the mix.',
     why: {
-      'Turn the guitar channel up until it sounds full': 'Louder is not fuller: the balance comes from where the mic is.',
+      'Turn the guitar channel up until it sounds full': 'Louder only seems fuller: the balance comes from where the mic is.',
       'Add a second mic aimed straight into the sound hole to fill it out': 'Fix the one mic first; a second brings its own combining problems.',
     },
   },
@@ -553,10 +553,10 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.1',
     covers: 'instrument',
-    prompt: 'On a steel-string dreadnought, where does the neck meet the body?',
+    prompt: 'On this steel-string dreadnought, where does the neck meet the body?',
     options: ['At the 14th fret — the 12th is out on the neck', 'At the 12th fret, the same as a classical guitar', 'At the sound hole, where the fingerboard ends'],
     correct: 'At the 14th fret — the 12th is out on the neck',
-    explain: 'These steel-string bodies join at the 14th fret; a classical body joins at the 12th. So “the 12th fret” and “the neck joint” are different places on a dreadnought.',
+    explain: 'These steel-string bodies join at the 14th fret; a classical body joins at the 12th. So “the 12th fret” and “the neck joint” are different places on these guitars.',
     why: {
       'At the 12th fret, the same as a classical guitar': 'That is the classical body. This steel-string dreadnought joins at the 14th.',
       'At the sound hole, where the fingerboard ends': 'The fingerboard runs on over the body toward the hole; the neck itself joins at the 14th fret.',

@@ -65,7 +65,7 @@ export const ROSTER: readonly ConnectorId[] = BENCH_GROUPS.flatMap((g) => [...g.
 /** Connectors whose card carries an extra headline flag (rendered as a
  *  prominent banner, not buried in prose). */
 export const CARD_FLAGS: Partial<Record<ConnectorId, string>> = {
-  midi_din5: 'MIDI DATA — NOT AUDIO. A MIDI cable carries musical instructions (which note, how hard, which knob), never recorded sound.',
+  midi_din5: 'MIDI DATA — NOT AUDIO. A MIDI cable carries musical instructions (which note, how hard, which knob), never an audio signal.',
   hdmi: 'ARC / eARC: on equipped ports, HDMI can also RETURN audio from a TV back down the same cable — a port capability, not a cable guarantee.',
   usb_c: 'Capabilities vary by device AND by cable. Two USB-C cables can look identical and support different data rates, power levels and video modes.',
 };

@@ -324,7 +324,7 @@ const WS_OHMS: Workspace = {
   intro:
     'The four electrical quantities of every amp-to-speaker connection, each solvable from any ' +
     'two of the others: P = V²/Z = V·I = I²·Z. Plus the RMS · peak · peak-to-peak triangle, ' +
-    'because every one of these formulas assumes RMS and every oscilloscope shows peaks.',
+    'because every one of these formulas assumes RMS and a scope trace is read in peaks.',
   whyItMatters:
     'This is how you size an amplifier, check whether a cable run or a load will cook, and read ' +
     'a spec sheet honestly. "100 W into 8 Ω" is really a statement about ~28 V RMS and ~3.5 A — ' +
@@ -567,7 +567,7 @@ const WS_ELECTRONICS: Workspace = {
     'Expecting parallel resistors to add — the combined value is always LESS than the smallest branch (two 8 Ω speakers in parallel are 4 Ω, not 16 Ω).',
     'Trusting the unloaded divider formula when the next stage’s input impedance is comparable to R2 — the load sits in parallel with R2 and pulls the output lower.',
     'Mixing µF and farads (or mH and henries) in reactance formulas — 1 µF is 0.000001 F; slipping a factor of a million is the classic reactance blunder.',
-    'Forgetting reactance is frequency-dependent — a capacitor is nearly a wire at 20 kHz and nearly open at 20 Hz; quoting one Xc without its frequency is meaningless.',
+    'Forgetting reactance is frequency-dependent — the same capacitor can be nearly a wire at 20 kHz and nearly open at 20 Hz; quoting one Xc without its frequency is meaningless.',
     'Reading the RC cutoff as a brick wall — fc is only the −3 dB point; a first-order filter still passes plenty just beyond it, rolling off at a gentle 6 dB per octave.',
   ],
   warnings:

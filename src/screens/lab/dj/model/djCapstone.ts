@@ -69,7 +69,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
     where: 'Open MIXER and read CH 2’s row from the left.',
     wrong: {
       cause: [
-        { t: 'CH 2’s fader was down.', why: 'The channel meter reads BEFORE the fader: with the fader down it still moves. Here the meter itself was dark.' },
+        { t: 'CH 2’s fader was down.', why: 'On this mixer, as on most, the channel meter reads BEFORE the fader: with the fader down it still moves. Here the meter itself was dark.' },
         { t: 'Deck B’s cables had come out of the mixer.', why: 'That would darken the meter too — but the cables were in, and the channel came back the moment its input was right.' },
       ],
       evidence: [

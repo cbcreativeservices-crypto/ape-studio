@@ -116,7 +116,7 @@ const PATH_OPTS: { id: string; label: string; good: boolean; short: string }[] =
     id: 'tray',
     label: 'Tray across its span, then J-hooks on to the wall sleeve',
     good: true,
-    short: 'Tray where it exists, purpose-built hooks beyond — every foot supported from structure.',
+    short: 'Tray where it exists, purpose-built hooks beyond — the whole run supported from structure.',
   },
   {
     id: 'tiles',
@@ -1160,8 +1160,8 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
       <Text style={styles.tintNote}>
         Training visualization — colors identify systems and classes here (sprinkler red, existing runs cyan/green, your
         bundle violet); actual field colors vary, and cable diameters are exaggerated so they read. Drawn to scale otherwise
-        (1 m bar). If a ceiling cavity is a return-air plenum, cable run in it must be listed for that space (or be in a
-        raceway) where the code is adopted — confirm with the plans and the AHJ.
+        (1 m bar). If a ceiling cavity is a return-air plenum, cable run in it must be listed for that space (or run in a raceway the code allows
+        there, such as metal conduit) where the code is adopted — confirm with the plans and the AHJ.
       </Text>
     </View>
   );

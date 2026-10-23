@@ -45,9 +45,9 @@ const pages: LessonPages = {
   },
   context: {
     title: 'Studio or live',
-    goal: 'Route each channel to the PA, the monitors, the recording and the broadcast — and know why live plans use fewer open mics.',
+    goal: 'Route each channel to the PA, the monitors, the recording and the broadcast — and know why many live plans use fewer open mics.',
     credit: { scenarios: ['kt.ctx.1', 'kt.ctx.2', 'kt.ctx.studio', 'kt.rec.3'], interactive: 'routing', note: 'LIVE: route the room pair to the recording only, with kick and snare in the PA. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'A studio may keep every channel on its own track; live, open mics hear the PA and the monitors, so use the channels the audience needs and keep room feeds out of the PA and wedges.',
+    takeaway: 'A studio may keep every channel on its own track; live, open mics hear the PA and the monitors, so use the channels the audience needs and usually keep room feeds out of the PA and wedges.',
   },
   twoMic: {
     title: 'Close mic and overhead',
@@ -309,7 +309,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A comb: notches where the delay is half a period',
     explain: 'Two arrivals summed make a comb: the first notch where the delay is half a period (about 185 Hz for 2.7 ms), then odd multiples.',
     why: {
-      'Nothing — two mics on one drum simply add up to more level': 'They add only where the arrivals are in step; between, they cancel.',
+      'Nothing — two mics on one drum simply add up to more level': 'They add most where the arrivals are in step and cancel most where they are out of step.',
       'Only a level change, louder by a few decibels': 'The level rises at some frequencies and falls at others: a comb.',
     },
   },
@@ -403,7 +403,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Live, where does the room pair usually go?',
     options: ['The recording or broadcast feed, not the PA', 'The PA, to make the kit sound bigger', 'The drummer’s own monitor mix, so they can hear the room'],
     correct: 'The recording or broadcast feed, not the PA',
-    explain: 'A room feed is usually a recording or broadcast choice, kept out of the PA and the wedge mixes.',
+    explain: 'A room feed is usually a recording or broadcast choice, most often kept out of the PA and the wedge mixes.',
     why: {
       'The PA, to make the kit sound bigger': 'In the PA a distant mic costs gain before feedback.',
       'The drummer’s own monitor mix, so they can hear the room': 'A distant open mic in a loud wedge is a feedback risk.',
@@ -494,7 +494,7 @@ const orderTasks: OrderTask[] = [
     steps: [
       { text: 'Hear the passage at show level; write the target picture', early: 'Start with the music and the target.' },
       { text: 'Set one safe whole-kit mic or pair; note what is underrepresented', early: 'Set the picture once you know the target.' },
-      { text: 'Label every channel; mute the outputs; switch phantom where needed', early: 'Power and labels come once the mics are set and cabled — with the outputs muted first.' },
+      { text: 'Label every channel; mute the outputs; switch phantom where needed', early: 'Power and labels come once the mics are set and cabled — with the outputs muted first, and again for any mic added later.' },
       { text: 'Set gain and pads on the loudest hits, rimshots and crashes included', early: 'Gain is set once everything is powered.' },
       { text: 'Add the kick, then each spot only for a stated need, checked in mono', early: 'Spots come after the picture and safe levels.' },
       { text: 'Trace the PA, monitor, record and broadcast routing with the operator', early: 'Route once the channels exist and work.' },
@@ -666,7 +666,7 @@ export const M11_LESSON: Lesson = {
       { id: 'room', label: 'the studio room', short: 'ROOM', tag: 'OPTIONAL', note: 'A good room can add to the kit as its own channels; a poor one argues for closer pickup. A shared room adds other players’ bleed.', scene: 'studio', prov: { kind: 'illustrative', reason: 'a typical room' } },
     ],
     stage: 'A stage adds monitors on the floor and a PA facing the audience: every open drum mic hears them.',
-    studio: 'A studio has no monitors on the floor; separate tracks keep later decisions open.',
+    studio: 'Most studios have no monitors on the floor; separate tracks keep later decisions open.',
   },
   diagnostic,
   practice: {

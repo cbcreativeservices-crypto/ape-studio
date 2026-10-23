@@ -171,7 +171,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A mic placed from a single short stroke may miss the opposite end of a long scrape. Ask for the real sequence.',
     why: {
       'Nothing — one stroke shows the whole part well': 'Long strokes and returns travel farther.',
-      'The short stroke will be too loud on the take': 'Short strokes tend to be the quieter ones.',
+      'The short stroke will be too loud on the take': 'Length does not set the level; pressure and speed do.',
     },
   },
   {
@@ -536,7 +536,7 @@ export const I05D_LESSON: SpLesson = {
   ],
   live: { wedges: standingWedges('the güiro') },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every güiro, scraper, stroke and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a güiro held across the player’s front, its ridges drawn wider apart than real, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every güiro, scraper, stroke and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a güiro held across the player’s front, its ridges drawn evenly spaced (real spacing varies), mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   copy: GU_COPY,
   sp: {
     strikeTitle: 'Scrape to sound',

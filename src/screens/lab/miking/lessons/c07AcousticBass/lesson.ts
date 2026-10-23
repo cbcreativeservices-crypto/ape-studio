@@ -210,7 +210,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'In the studio one low note booms and another almost vanishes. What is a likely cause to check first?',
     options: ['The bass is broken and should go to a repairer', 'The mic is too good at hearing low notes overall', 'A room resonance at those pitches, or the mic’s spot'],
     correct: 'A room resonance at those pitches, or the mic’s spot',
-    explain: 'Rooms build up some low pitches and cancel others at particular spots. Move the player or the mic and compare before reaching for EQ.',
+    explain: 'Rooms build up some low frequencies and cancel others at particular spots. Move the player or the mic and compare before reaching for EQ.',
     why: {
       'The bass is broken and should go to a repairer': 'Check the room and the position first; an uneven low end is usually the room.',
       'The mic is too good at hearing low notes overall': 'A good mic shows the room’s unevenness; the cause is where it and the bass sit.',
@@ -222,7 +222,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Why can a pattern’s rejection disappoint on a bass?',
     options: ['A bass makes no sound behind the mic at all', 'Real patterns often reject least at low frequencies', 'Patterns only work on instruments with strings'],
     correct: 'Real patterns often reject least at low frequencies',
-    explain: 'A real mic’s rejection is weakest in the low end — exactly where a bass and a wedge carrying it are loudest. Use the null to aim, not to promise silence.',
+    explain: 'Many real mics reject least in the low end — exactly where a bass and a wedge carrying it are loudest. Use the null to aim, not to promise silence.',
     why: {
       'A bass makes no sound behind the mic at all': 'Sound reaches the mic from everywhere; the issue is how little a real null rejects low notes.',
       'Patterns only work on instruments with strings': 'Patterns work the same on any source; they reject least in the low end.',
@@ -259,7 +259,7 @@ const symptoms: Symptom[] = [
     correct: 'Include more of the top, or back up a little',
     explain: 'A view mostly of the strings and neck lacks the body. Include more of the top, then judge in the mix.',
     why: {
-      'Turn the bass channel up until it sounds full': 'Louder is not fuller: the balance comes from where the mic is.',
+      'Turn the bass channel up until it sounds full': 'Louder only seems fuller: the balance comes from where the mic is.',
       'Add a second mic aimed straight into the sound hole': 'Fix the one mic first; a second brings its own combining problems.',
     },
   },
@@ -271,7 +271,7 @@ const symptoms: Symptom[] = [
     correct: 'Check the mic, room, any filter and the monitors first',
     explain: 'A high-pass filter, a small monitor or headphones, or a room null can all hide a low note that the bass is making. Find which before boosting.',
     why: {
-      'Boost the sub-bass on the channel until you hear it': 'Boosting to make up for monitoring limits overloads the real system. Check the chain first.',
+      'Boost the sub-bass on the channel until you hear it': 'Boosting to make up for monitoring limits can overload the real system. Check the chain first.',
       'Ask the player to stop using the lowest string at all': 'The part is the player’s. Fix the chain, not the music.',
     },
   },
@@ -302,7 +302,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Instrument dynamic about 30 cm from the treble side of the upper bout', ok: true, power: 'none', feedback: 'A borrowed starting point worth trying; it needs no phantom.' },
       { id: 'c', label: 'Small condenser at the neck joint, cardioid', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'Clip-on mini between the neck joint and the hole', ok: false, power: 'phantom', feedback: 'This miniature condenser needs phantom power, which this input does not have.' },
-      { id: 'e', label: 'Instrument dynamic pressed against the top under the bridge', ok: false, power: 'none', feedback: 'Never press a mic on the instrument: it rattles, damps the top and can mark the finish.' },
+      { id: 'e', label: 'Instrument dynamic pressed against the top under the bridge', ok: false, power: 'none', feedback: 'Do not press a mic against the top: it rattles, damps the top and can mark the finish.' },
     ],
     reasons: [DOC_REASON, clearReason('both hands, the long neck and the player’s view'), POWER_REASON, { id: 'r.room', label: 'I will move the mic or the player if one low note booms in this room', role: 'optional', feedback: 'A fair studio reason: rooms are uneven in the low end.' }, brandReason(BASS), LOUD_REASON],
     explain: 'Two positions pass. What passes is the reasoning: a sensible starting point, clear of the player, powered by what this input can supply.',
@@ -395,7 +395,7 @@ export const C07_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A bass guitar with a hollow wooden body and a thin top, played horizontally like a guitar — not the upright double bass, and not a solid-body electric bass through an amp. Four heavy strings drive a bridge on the top; many also carry a pickup.', src: 'LESSON' },
+    { title: 'WHAT IT IS', text: 'A bass guitar with a hollow wooden body and a thin top, played horizontally like a guitar — not the upright double bass, and not a solid-body electric bass through an amp. Most have four heavy strings, which drive a bridge on the top; many also carry a pickup.', src: 'LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'Acoustic duos and bands, folk and unplugged sets, on stage and in the studio — often next to a guitar and a voice. This lesson covers studio recording and live sound.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'The low end and the pulse: roots, walking lines, sometimes slaps or taps on the body. Ask whether the part uses the lowest notes — on a standard tuning the open low string is E, about 41 Hz.', src: 'PHYS-ET' },
     { title: 'ITS SIZE', text: 'This lab draws a full-scale bass: a 34 in (86 cm) string length, the neck meeting a cutaway body at the 17th fret, a body about 51 cm long and 41 cm wide (drawn sizes). Smaller travel-size basses exist with much shorter strings.', src: 'MAR-BC16E' },

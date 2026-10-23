@@ -258,7 +258,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "A typical arena or stadium pop show runs about 95–100 dBA LAeq over 15 minutes at FOH, and some shows peak higher when the crowd sings along. A soundcheck in the low 90s can rise past 110 dB with a packed, singing house. Low end usually measures 105–115 dBC LCeq. Keep the sub energy controlled so the vocal stays clear. A widely used safe-listening limit for venues is 100 dBA LAeq-15 min, and local rules differ in averaging time (for example, 1 minute vs. 60 minutes), so learn the local rule before the show. Offer earplugs, keep the loudest seats away from subs, and remember that many pop audiences include children and teenagers."
+      "text": "A typical arena or stadium pop show runs about 95–100 dBA LAeq over 15 minutes at FOH, and some shows peak higher when the crowd sings along. A packed, singing house can push the level several dB above the soundcheck level. Low end usually measures 105–115 dBC LCeq. Keep the sub energy controlled so the vocal stays clear. A widely used safe-listening limit for venues is 100 dBA LAeq-15 min, and local rules differ in averaging time (for example, 1 minute vs. 60 minutes), so learn the local rule before the show. Offer earplugs, keep the loudest seats away from subs, and remember that many pop audiences include children and teenagers."
     },
     {
       "label": "Studio / streaming:",

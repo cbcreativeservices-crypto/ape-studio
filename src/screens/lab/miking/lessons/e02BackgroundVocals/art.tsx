@@ -37,7 +37,7 @@ const SPEC = ensembleHandSpec({
     learn: [
       { title: 'LIVE', text: 'Enough voice over the band with margin before feedback: close, directional handhelds, matched, 3:1 apart, each wedge where its pattern rejects most, the fewest open mics. Mute and unmute to hear what the group gives without the PA.' },
       { title: 'THE STUDIO', text: 'A matched, repeatable stack — the same mic, distance, screen and position for each part — or one shared mic or an omni circle in a quiet, flattering room. Doubles are separate takes; a stereo pair does not make one.' },
-      { title: 'MOVING SINGERS', text: 'Rehearse shared-mic moves and handoffs; never pass a live handheld. A headset steadies the distance for a singer who must move — each one’s position, windscreen and monitor checked.' },
+      { title: 'MOVING SINGERS', text: 'Rehearse shared-mic moves and handoffs; most crews mute a handheld before it is passed. A headset steadies the distance for a singer who must move — each one’s position, windscreen and monitor checked.' },
     ],
   },
   two: {

@@ -58,7 +58,7 @@ const LOUDNORM: Workspace = {
     'pushes your true peak past a safe ceiling.',
   whyItMatters:
     'Master too loud and the platform turns you DOWN (and your dynamics were crushed for nothing); ' +
-    'too quiet and you’re turned up but sit weak next to others. Normalization is level, not tone — ' +
+    'too quiet and some platforms turn you up, often only as far as your peaks allow, while others leave you sitting weak. Normalization is level, not tone — ' +
     'the goal is to land on target with peaks under the ceiling so no limiter fires on playback.',
   example:
     'A master at −9 LUFS aimed at Spotify’s −14 LUFS needs −5 dB of gain. A −0.5 dBTP true peak then ' +
@@ -140,7 +140,7 @@ const LOUDTP: Workspace = {
     'At 48 kHz the momentary (400 ms) window is 19,200 samples and the short-term (3 s) window is ' +
     '144,000. A section 6 LU louder than another sounds about 2^(6/10) ≈ 1.5× as loud.',
   mistakes: [
-    'Trusting a sample-peak meter for delivery — inter-sample peaks can ride up to ~3 dB higher; only a true-peak (oversampled) meter catches them.',
+    'Trusting a sample-peak meter for delivery — inter-sample peaks often ride up to about 3 dB higher (more on rare hot material); only a true-peak (oversampled) meter catches them.',
     'Treating momentary, short-term, and integrated readings as one number — they use different windows and gating and answer different questions.',
     'Assuming +6 dB is "twice as loud" — the rough psychoacoustic doubling is about +10 LU, not +6.',
   ],

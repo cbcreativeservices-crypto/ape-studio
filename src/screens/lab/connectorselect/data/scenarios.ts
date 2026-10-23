@@ -92,7 +92,7 @@ export const SCENARIOS: readonly Scenario[] = [
   {
     id: 's02_condenser',
     title: 'Condenser microphone → mixer (phantom power)',
-    brief: 'A condenser mic needs the same mixer input — and it needs +48 V phantom power to work at all.',
+    brief: 'A condenser mic needs the same mixer input — and this one needs +48 V phantom power to work at all.',
     from: { device: 'Condenser microphone', port: 'XLR output' },
     to: { device: 'Mixer', port: 'Channel 2 mic input · +48 V available' },
     choices: [

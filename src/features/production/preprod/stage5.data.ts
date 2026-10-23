@@ -602,7 +602,7 @@ export const STAGE5_TECHNICAL: StageDef = {
           fieldId: "signal_path",
           label: "Signal paths",
           kind: "table",
-          help: "One row per hop: what leaves where, at what level, and arrives where. Every destination that must receive audio, such as the recorder, the stream encoder or the monitors, should appear as an arrival. A guitar into its own pedals or amp is instrument level by design; only a straight run into a mic, console or stage-box input needs a DI.",
+          help: "One row per hop: what leaves where, at what level, and arrives where. Every destination that must receive audio, such as the recorder, the stream encoder or the monitors, should appear as an arrival. A guitar into its own pedals or amp is instrument level by design; a straight run into a mic, console or stage-box input usually needs a DI, unless it is a short run into an instrument (Hi-Z) input.",
           required: false,
           columns: [
             {
@@ -716,7 +716,7 @@ export const STAGE5_TECHNICAL: StageDef = {
           fieldId: "gain_owner",
           label: "Who sets input gain, and when?",
           kind: "text",
-          help: "On most productions gain is set once, during line check, by a named person, and then left alone. If that is not the plan, write what the plan is.",
+          help: "On most productions gain is set once, at line check or soundcheck, by a named person, and then left alone. If that is not the plan, write what the plan is.",
           required: false
         }
       ]
@@ -1146,7 +1146,7 @@ export const STAGE5_TECHNICAL: StageDef = {
       severity: "attention",
       kind: "mismatch",
       title: "The clock or sample rate is not settled",
-      detail: "Several digital devices with no agreed clock produce clicks, dropouts or drift, and a device left at the wrong sample rate records at the wrong speed. Both are silent until playback.",
+      detail: "Several digital devices with no agreed clock produce clicks, dropouts or drift, and a device left at the wrong sample rate may fail to lock, or give files that play at the wrong speed in the session. Both are easy to miss until playback.",
       fixHint: "Name the clock master, set every device to the session rate from stage 2, and confirm each one before the day.",
       needsLogic: true,
       logicIntent: "Fire when recorder_count is several_free; when recorder_count is several_clocked and clock_master is unknown or empty; or when deliver.session_sample_rate is set and device_rates_checked is no. Do not fire on a single recorder with device_rates_checked yes or empty.",

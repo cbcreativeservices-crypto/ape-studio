@@ -20,7 +20,7 @@ import type { GVariant, GuitarScene, ZoneSpec } from '../shared/guitars/guitarMo
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 
 export const C05C_VARIANTS: GVariant[] = [
-  { id: 'soprano', label: 'SOPRANO', blurb: 'The smallest common ukulele: four nylon strings over a short neck that meets the body at the 12th fret.', phrase: 'a soprano ukulele', spec: UKE_SOPRANO, posture: 'seated' },
+  { id: 'soprano', label: 'SOPRANO', blurb: 'The smallest common ukulele: four nylon strings over a short neck that most often meets the body at the 12th fret.', phrase: 'a soprano ukulele', spec: UKE_SOPRANO, posture: 'seated' },
 ];
 
 const STAND = ['sdcCard', 'instDynCard'];

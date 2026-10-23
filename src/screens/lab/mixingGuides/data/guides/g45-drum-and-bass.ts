@@ -74,7 +74,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Loudest to quietest in a drop: sub and snare (roughly equal impact), kick, mid/Reese bass, vocal or hook, hats and ride, pads, FX returns. Some producers aim for sub peaks around −7 to −5 dBFS and kick around −18 to −12 dBFS after limiting. The D&B kick is short and high-passed (40–85 Hz) so the sub owns 30–90 Hz while the kick owns attack at 2–5 kHz plus a small thump. Sidechain sub and mid-bass to kick and snare for 3–6 dB of ducking. Sub, kick, snare and vocal stay center and mono below 100–150 Hz; mid-bass widens above 200–300 Hz; hats, percussion and pads are panned or widened. Liquid pushes vocals and pianos forward; in neurofunk the mid-bass sits almost level with the snare."
+      "text": "Loudest to quietest in a drop: sub and snare (roughly equal impact), kick, mid/Reese bass, vocal or hook, hats and ride, pads, FX returns. The D&B kick is short and high-passed (40–85 Hz) so the sub owns 30–90 Hz while the kick owns attack at 2–5 kHz plus a small thump. Sidechain sub and mid-bass to kick and snare for 3–6 dB of ducking. Sub, kick, snare and vocal stay center and mono below 100–150 Hz; mid-bass widens above 200–300 Hz; hats, percussion and pads are panned or widened. Liquid pushes vocals and pianos forward; in neurofunk the mid-bass sits almost level with the snare."
     }
   ],
   "eq": {

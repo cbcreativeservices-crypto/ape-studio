@@ -331,7 +331,7 @@ const SECTIONS: Record<string, SecDef> = {
   tbn: { id: 'tbn', label: 'trombones and tuba', short: 'TROMBONES · TUBA', family: 'brass', radiates: 'Trombone bells point forward over the slides; the tuba’s bell points up.' },
   timp: { id: 'timp', label: 'timpani', short: 'TIMPANI', family: 'percussion', radiates: 'From the heads, up and out — loud peaks from the back of the stage.' },
   perc: { id: 'perc', label: 'percussion', short: 'PERCUSSION', family: 'percussion', radiates: 'From each instrument struck: the bass drum’s heads, the snare, the cymbals — sharp, loud attacks.' },
-  harp: { id: 'harp', label: 'harp', short: 'HARP', family: 'strings', radiates: 'From the soundboard under the strings, angled toward the player: quiet against the orchestra.' },
+  harp: { id: 'harp', label: 'harp', short: 'HARP', family: 'strings', radiates: 'From the soundboard under the strings: quiet against the orchestra.' },
   kbd: { id: 'kbd', label: 'celesta', short: 'CELESTA', family: 'keys', radiates: 'From a small case: a quiet instrument that can need its own support.' },
 };
 

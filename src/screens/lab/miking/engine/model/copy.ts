@@ -336,7 +336,7 @@ export const NEUTRAL_COPY: LessonCopy = {
     kitA11y: 'The drum kit from above.',
     kitLanding: 'Tap anything around the drum — or step through ITEM. There is nothing to answer yet.',
     kitIdle: 'Everything around the drum is either the player’s space or a loud neighbour.',
-    leftHanded: 'Left-handed players set the kit up mirrored.',
+    leftHanded: 'Many left-handed players set the kit up mirrored.',
     stageA11y: 'The kit on a stage, from above.',
     studioA11y: 'The kit in a studio room, from above.',
     stageIdle: 'Floor monitors feed the players; the PA faces the audience.',

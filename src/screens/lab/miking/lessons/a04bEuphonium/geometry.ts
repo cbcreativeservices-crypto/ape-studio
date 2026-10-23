@@ -19,9 +19,9 @@ export const EUPH_MODEL: InstrumentModel = lowBrassModel(SPEC, {
     front: { label: 'BELL FRONT', blurb: 'A bell-front model: the bell turns to face the audience, made for forward projection.', phrase: 'the bell to the front' },
   },
   words: {
-    bell: 'The flared end of the tube — 30 cm across. Nearly all of the sound leaves from its opening: no mic goes in it, or very close over it.',
+    bell: 'The flared end of the tube — 30 cm across. Nearly all of the sound leaves from its opening: no mic goes in it, and most stand mics stay back from it.',
     body: { label: 'body and bows', short: 'body', role: 'A widening (conical) tube with a large bell, folded into a body that rests on the lap. The air inside vibrates; the metal gives off very little sound.' },
-    valves: 'Three valves on top under the right hand and a fourth at the side under the left — a compensating model adds tubing to keep the low notes in tune. Keep mounts and cables clear of every valve hand.',
+    valves: 'Here, three valves on top under the right hand and a fourth at the side under the left; others put all four on top. A compensating model adds tubing to keep the low notes in tune. Keep mounts and cables clear of every valve hand.',
     leadpipe: 'Where the player’s lips buzz into the mouthpiece; the leadpipe carries the air into the valves. Nothing goes near the face.',
     slides: 'Tuning slides stick out of the body; the player pulls them to tune and to empty water. No clamp or cable here.',
     player: 'The euphonium player sits facing the audience, the instrument on the lap — and may stand. Their arms, both valve hands and the bell’s movement come first.',

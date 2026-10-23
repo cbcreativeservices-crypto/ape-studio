@@ -113,7 +113,7 @@ const LEVELS_CAP: SceneCaption = {
 const SWEEP_INTRO =
   '"Log" is short for logarithmic: the tone spends equal time in every OCTAVE (each doubling of frequency), the way we hear pitch — so the lows get as much of the pass as the highs. A linear sweep instead races through the lows and lingers on the highs.';
 const LEVELS_INTRO =
-  'Why the limit: the generator can produce full-scale energy at any frequency, and a hot tone straight into monitors or headphones can damage HEARING and blow SPEAKERS in an instant. So output opens at a safe −20 dBFS and is capped at −12 dBFS.';
+  'Why the limit: the generator can produce full-scale energy at any frequency, and a hot tone straight into monitors or headphones can damage HEARING and blow SPEAKERS in an instant. So output opens at a lower −20 dBFS and is capped at −12 dBFS. How loud that is still depends on the gain after it.';
 
 // Chart metric-mark colours (owner 2026-08-05: graphs must have visible marks).
 const GRID_C = '#33343d';

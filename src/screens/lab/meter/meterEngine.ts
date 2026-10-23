@@ -40,7 +40,7 @@ export const SIGNAL_BLURBS: Record<SignalKey, string> = {
   pinknoise: 'Equal energy per OCTAVE — the calibration reference. As steady as white noise but darker: on the VU it is the stillest needle you will see. On an FFT/log-frequency analyzer it reads as a gentle -3 dB/octave downward slope (and flat only on a constant-Q / fractional-octave RTA).',
   snare: 'A sharp crack with a short rattle: a huge peak over a tiny average — the highest crest factor of the drums.',
   organ: 'Held, sustained chords at nearly constant level. Peak and average sit close together — the opposite of drums.',
-  sine: 'One single frequency — the purest signal there is. Peak sits exactly 3 dB above RMS.',
+  sine: 'One single frequency — the purest signal there is. Peak sits about 3 dB above RMS.',
   square: 'Odd harmonics stacked on a sine: flat tops and fast edges. RMS nearly equals peak — the densest waveform a meter can see.',
   triangle: 'Odd harmonics too, but fading fast up the series — sounds soft, measures gentle.',
   saw: 'Every harmonic in the series, falling gently — the bright, buzzy synth staple.',
@@ -683,7 +683,7 @@ export const EQ_FILTERS: {
     label: '1 kHz shelf',
     hz: 1000,
     kind: 'shelf',
-    blurb: 'Not a bump at all: everything above 1 kHz moves together, by the same amount. A tilt, not a target — the tool for "too dull" or "too bright".',
+    blurb: 'Not a bump at all: everything well above 1 kHz moves together, by the same amount. A tilt, not a target — the tool for "too dull" or "too bright".',
   },
 ];
 

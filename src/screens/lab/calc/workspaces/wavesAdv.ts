@@ -28,7 +28,7 @@ const ALIGN: Workspace = {
     'until aligned.',
   mistakes: [
     'Delaying the wrong source — you delay the CLOSER (earlier) source to wait for the farther one, never the other way.',
-    'Aligning by ear at one frequency and ignoring the rest — a fixed delay fixes time everywhere, but polarity and crossover phase still need checking.',
+    'Aligning by ear at one frequency and ignoring the rest — a fixed delay fixes timing at every frequency (for one spot), but polarity and crossover phase still need checking.',
     'Forgetting temperature — the speed of sound (and therefore the right delay) shifts with air temperature.',
   ],
   warnings:
@@ -97,7 +97,7 @@ const ALIGN: Workspace = {
         return [
           `Wavelength at ${fmt(n(v.freq))} Hz = ${fmt(c)} ÷ ${fmt(n(v.freq))} = ${fmt(wl)} m.`,
           `Phase = 360 × ${fmt(n(v.offset))} ÷ ${fmt(wl)} = ${fmt(phase)}° (${fmt(n(v.offset) / wl)} wavelengths).`,
-          near < 45 ? `Close to in-phase — sources reinforce here.` : near > 135 ? `Close to 180° — sources cancel here until aligned.` : `Partially out of phase — a comb dip sits near this frequency.`,
+          near < 45 ? `Close to in-phase — sources reinforce here.` : near > 135 ? `Close to 180° — sources cancel here until aligned.` : `Partially out of phase — the sources partly cancel here.`,
         ];
       },
     },
@@ -137,8 +137,8 @@ const IMD: Workspace = {
     'intermodulation products, including the third-order tones that land close to the originals.',
   whyItMatters:
     'Unlike harmonic distortion, IMD products are usually NOT musically related to the source, so ' +
-    'they sound harsh and "wrong." The third-order products (2f₁−f₂ and 2f₂−f₁) are the worst: they ' +
-    'fall right next to the original tones, where you can’t filter them away.',
+    'they sound harsh and "wrong." The third-order products (2f₁−f₂ and 2f₂−f₁) are often the worst: with close tones they ' +
+    'fall right next to the originals, where you can’t filter them away.',
   example:
     'Tones at 19 kHz and 20 kHz through a nonlinearity: the difference tone is 1 kHz — audible in the ' +
     'midrange from two nearly-inaudible highs. Third-order 2·19−20 = 18 kHz and 2·20−19 = 21 kHz sit ' +
@@ -146,7 +146,7 @@ const IMD: Workspace = {
   mistakes: [
     'Confusing IMD with harmonic distortion — harmonics are integer multiples (musical); IMD sums/differences usually are not (harsh).',
     'Assuming high-frequency intermod is harmless — the DIFFERENCE tone can land in the most audible midrange.',
-    'Trying to filter third-order products — 2f₁−f₂ and 2f₂−f₁ sit so close to the source tones that no practical filter separates them.',
+    'Trying to filter third-order products — with close tones, 2f₁−f₂ and 2f₂−f₁ sit so close to them that no practical filter separates them.',
   ],
   warnings:
     'Frequency-only model: products at |m·f₁ ± n·f₂|; order = |m|+|n|. Whether each product is ' +
@@ -166,7 +166,7 @@ const IMD: Workspace = {
       plainFormula:
         'Second-order tones appear at the sum and difference of the two frequencies; third-order tones appear at twice one frequency plus or minus the other.',
       explain:
-        'A nonlinearity mixes two tones into new tones at their sums and differences. The second-order products are the simple sum and difference; the third-order products (twice one tone, minus the other) are the worst, because they land right beside the originals where no filter can remove them. This locates the frequencies, not their levels.',
+        'A nonlinearity mixes two tones into new tones at their sums and differences. The second-order products are the simple sum and difference; the third-order products (twice one tone, minus the other) are often the worst, because with close tones they land right beside the originals where no filter can remove them. This locates the frequencies, not their levels.',
       keySymbols: ['±', 'x₁', 'f'],
       compute: (v) => {
         const f1 = n(v.f1);
@@ -202,7 +202,7 @@ const IMD: Workspace = {
         return [
           `Difference f₂−f₁ = ${fmt(Math.abs(f2 - f1))} Hz; sum f₁+f₂ = ${fmt(f1 + f2)} Hz (2nd order).`,
           `Third order: 2f₁−f₂ = ${fmt(Math.abs(2 * f1 - f2))} Hz and 2f₂−f₁ = ${fmt(Math.abs(2 * f2 - f1))} Hz.`,
-          `The third-order pair sits closest to the original tones — the hardest IMD to filter and the most telling of a stressed stage.`,
+          `With close tones, the third-order pair sits closest to the originals — the hardest IMD to filter and the most telling of a stressed stage.`,
         ];
       },
     },

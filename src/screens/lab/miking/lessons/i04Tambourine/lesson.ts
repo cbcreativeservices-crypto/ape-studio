@@ -147,7 +147,7 @@ const scenarios: MikingScenario[] = [
     explain: 'If it sounds piercing, compare distance, angle, room and playing method first; a dynamic or a ribbon (safely supported) can soften it.',
     why: {
       'A brighter condenser, closer, so the jingles are cleaner': 'Closer and brighter makes the edge stronger.',
-      'Turn the gain down until the jingles stop sounding harsh': 'Gain changes the level, not the balance.',
+      'Turn the gain down until the jingles stop sounding harsh': 'Gain changes the level, not the balance — unless the harshness is the input clipping.',
     },
   },
   slowMeter(W),
@@ -326,7 +326,7 @@ const symptoms: Symptom[] = [
     explain: 'A farther or angled mic softens the direct jingles but adds room and spill — a creative choice, not a fixed cure.',
     why: {
       'A deep treble cut on the channel EQ to tame it': 'EQ comes after the physical choices — and dulls everything.',
-      'Turn the gain down until it is gentler': 'Gain changes level, not brightness.',
+      'Turn the gain down until it is gentler': 'Gain changes level, not tone: quieter can seem gentler, but the piercing part is still there.',
     },
   },
   {

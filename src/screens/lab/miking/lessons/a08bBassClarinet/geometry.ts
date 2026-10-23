@@ -74,7 +74,7 @@ export const WORDS: WindPartWords = {
   keys: 'About two dozen keys and seven covered holes along the body. As the player fingers each note, the first open hole moves — and much of the sound leaves there, blended with the bell.',
   exciter: { label: 'mouthpiece and reed', short: 'reed', role: 'The single reed on the mouthpiece. Close to it, a mic hears the reed, the breath and the tonguing.' },
   hands: 'Both hands on the keys — the left high, the right low, the thumbs behind on more keys. Nothing may sit in their way.',
-  player: 'The bass clarinettist, seated, the instrument between the knees on its peg.',
+  player: 'The bass clarinettist, seated, the instrument in front on its floor peg.',
   head: 'The player’s head, the mouthpiece at the lips. Keep a boom clear of the face and the neck of the instrument.',
 };
 

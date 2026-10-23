@@ -63,7 +63,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why two mics on one voice can sound thin together, how the arrival-time difference places comb notches, and why a fair comparison of two mics is made one at a time at matched distance and level.',
     credit: { scenarios: ['lv.two.1', 'lv.two.2', 'lv.two.3', 'lv.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics at different distances hear the voice at different times: some pitches cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Compare mics one at a time, matched.',
+    takeaway: 'Two mics at different distances hear the voice at different times: some frequencies cancel in the sum. Move or rebalance first; polarity flips the sign and never removes a delay. Compare mics one at a time, matched.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -297,7 +297,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two vocal mics, one 15 cm and one 25 cm from the lips, sound thin together. Why?',
     options: ['The voice reaches them at different times', 'The farther mic reverses the polarity of the voice', 'The closer mic is louder, so it cancels'],
     correct: 'The voice reaches them at different times',
-    explain: 'The farther mic hears each sound later. Summed, some pitches arrive out of step and cancel — a comb of notches. Move or rebalance first, then check polarity at matched levels.',
+    explain: 'The farther mic hears each sound later. Summed, some frequencies arrive out of step and cancel — a comb of notches. Move or rebalance first, then check polarity at matched levels.',
     why: {
       'The farther mic reverses the polarity of the voice': 'Distance delays a sound; it does not flip its sign.',
       'The closer mic is louder, so it cancels': 'A level difference changes the notches’ depth; the delay makes them.',
@@ -464,7 +464,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A supercardioid handheld, the wedge well to one side of its rear', ok: true, power: 'none', feedback: 'A suggested starting point if the wedge can sit near its null — check the pattern.' },
       { id: 'c', label: 'A studio condenser 30 cm away for a natural sound', ok: false, power: 'phantom', feedback: 'At 30 cm on a loud stage it hears the band and the wedge almost as much as the voice.' },
       { id: 'd', label: 'A handheld the singer cups to keep the sound in', ok: false, power: 'none', feedback: 'Cupping changes the pattern and brings feedback closer. Keep the grille open.' },
-      { id: 'e', label: 'An omni handheld so the singer can move anywhere', ok: false, power: 'none', feedback: 'An omni rejects nothing: on a loud stage it hears the wedge and the band as much as the voice.' },
+      { id: 'e', label: 'An omni handheld so the singer can move anywhere', ok: false, power: 'none', feedback: 'An omni hears all sides alike: on a loud stage it picks up far more of the wedge and the band than a cardioid.' },
     ],
     reasons: [docReason('the lips'), clearReason('the singer’s face, hands and feet, and the cable path'), { id: 'r.dyn', label: 'A dynamic needs no phantom power and takes a loud voice close up', role: 'optional', feedback: 'A fair live reason.' }, { id: 'r.null', label: 'The pattern’s rejection faces the wedge', role: 'required', feedback: 'Say where the wedge sits against the pattern.' }, BRAND_REASON('voice'), { id: 'r.loudest', label: 'Turn it up until the voice is louder than the drums', role: 'wrong', feedback: 'More gain raises the stage in that mic too, and brings feedback closer.' }],
     explain: 'Two setups pass. What passes is the reasoning: a close start measured from the lips, the wedge placed against the actual pattern, clearance for a moving singer, and no cupping.',
@@ -575,7 +575,7 @@ export const E01_LESSON: Lesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'The voice is an instrument you cannot see: breath from the lungs sets two small vocal folds in the throat buzzing, and the throat, the tongue and the mouth shape that buzz into vowels and words. Almost all of it leaves through the open mouth — on m, n and ng through the nose instead.', src: 'LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'The lead vocal of every style — pop, rock, soul, jazz, classical, rap — in the studio and on stage. Intimate, breathy, belted, shouted or whispered: each asks something different of the mic.', src: 'LESSON' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'It carries the words and the melody, often the most important sound in the mix. Its range is huge: from a whisper to a belt that can top 135 dB right at the lips — and the singer moves.', src: 'DPA-VOICE' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'It carries the words and the melody, often the most important sound in the mix. Its range is huge: from a whisper to a belt that can reach about 135 dB right at the lips — and the singer moves.', src: 'DPA-VOICE' },
     { title: 'EVERY VOICE IS DIFFERENT', text: 'A low male voice, a high female voice, a mixed voice or falsetto each have their own balance and level — but none of that is a rule for choosing a mic. Hear the singer’s actual delivery first.', src: 'LESSON' },
   ],
   sound: {

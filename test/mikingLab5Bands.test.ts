@@ -73,7 +73,7 @@ describe('the stage-plot presets (frame S, said from the audience)', () => {
   it('the amps are Lab 4’s cabinets on the floor; an electric player’s sound leaves from the amp’s speaker', () => {
     const combo = ampGeom('combo');
     const bass = ampGeom('bassRig');
-    assert.ok(Math.abs(combo.w - 24.5 * 25.4) < 0.5 && Math.abs(bass.h - 24 * 25.4) < 0.5, 'the cabinets’ published sizes');
+    assert.ok(Math.abs(combo.w - 24.5 * 25.4) < 0.5 && Math.abs(bass.h - 30 * 25.4) < 0.5, 'the cabinets’ published sizes');
     assert.ok(combo.speaker.up > 50 && combo.speaker.up < combo.h, 'the combo’s speaker inside its box');
     for (const id of IDS) {
       const s = seatingOf(id);

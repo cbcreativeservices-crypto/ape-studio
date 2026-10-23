@@ -154,7 +154,7 @@ export function useFeedsStep(spec: FeedsSpec): MikingStep {
       ? [opt('key', 'MIC KEY', s.key, [{ id: 'onAir', label: 'On air', blurb: KEY_WORDS.onAir }, { id: 'cough', label: 'Cough', blurb: KEY_WORDS.cough }, { id: 'talkback', label: 'Talkback', blurb: KEY_WORDS.talkback }] as const, (v) => set({ key: v }))]
       : []),
     ...(spec.controls.includes('ret')
-      ? [opt('ret', 'RETURN', s.ret, [{ id: 'mixMinus', label: 'Mix-minus', blurb: 'The program without the commentators’ own voices: they hear themselves directly, never late.' }, { id: 'full', label: 'Full mix', blurb: 'The whole program comes back, their own voices included — late, through the chain.' }] as const, (v) => set({ ret: v }))]
+      ? [opt('ret', 'RETURN', s.ret, [{ id: 'mixMinus', label: 'Mix-minus', blurb: 'The program without the commentators’ own voices: their own mics come back to them locally, never late.' }, { id: 'full', label: 'Full mix', blurb: 'The whole program comes back, their own voices included — late, through the chain.' }] as const, (v) => set({ ret: v }))]
       : []),
     ...(spec.controls.includes('crowd') && spec.feed.crowd
       ? [opt('crowd', 'CROWD', s.crowd, [{ id: 'own', label: 'Separate', blurb: 'The crowd bed on its own channel into the program, added on purpose.' }, { id: 'none', label: 'Not routed', blurb: 'The crowd mics are not in the program: only what the commentary mics happen to hear.' }] as const, (v) => set({ crowd: v }))]

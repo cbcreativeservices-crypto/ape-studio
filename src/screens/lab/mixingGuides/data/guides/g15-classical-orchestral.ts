@@ -64,7 +64,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "The standard American seating places violins I and II to the conductor’s left, then violas and cellos toward the right, with basses behind them on the right. European or “antiphonal” seating splits violins I left and II right, with basses at the back left. Woodwinds sit center behind the strings (flutes and oboes in front, clarinets and bassoons behind), horns usually left or center, trumpets and trombones farther back, and timpani and percussion upstage. The composer’s orchestration, not the engineer, sets the balance. Melody passes between sections, tuttis (full-orchestra passages) fill the space, and quiet passages may be one instrument. Chamber music works the same way on a smaller scale: a string quartet sits in a semicircle (violin I, violin II, viola, cello from left to right) and every player gets the same weight."
+      "text": "The standard American seating places violins I and II to the conductor’s left, then violas and cellos toward the right, with basses behind them on the right. European or “antiphonal” seating splits violins I left and II right, with basses at the back left. Woodwinds sit center behind the strings (flutes and oboes in front, clarinets and bassoons behind), horns usually left or center, trumpets and trombones farther back, and timpani and percussion upstage. The composer’s orchestration, not the engineer, sets the balance. Melody passes between sections, tuttis (full-orchestra passages) fill the space, and quiet passages may be one instrument. Chamber music works the same way on a smaller scale: a string quartet sits in a semicircle (most often violin I, violin II, viola, cello from left to right; some swap the viola and cello) and every player gets the same weight."
     }
   ],
   "dynamics": [
@@ -111,7 +111,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Woodwind spots",
-        "cut": "HPF 100–150 Hz (bassoon 50–60 Hz); −2 dB at 3–5 kHz if key or breath noise",
+        "cut": "HPF 100–150 Hz (bassoon and bass clarinet about 40–50 Hz); −2 dB at 3–5 kHz if key or breath noise",
         "boost": "+1 dB at 1–2 kHz for presence if needed",
         "notes": "Most likely spots to need help coming forward"
       },
@@ -345,7 +345,7 @@ export const GUIDE: MixingGuide = {
     "Vienna Philharmonic / Georg Solti, Wagner Das Rheingold, 1958",
     "Minnesota Orchestra / Osmo Vänskä, Sibelius Symphonies Nos. 2 & 5, 2011",
     "Boston Symphony Orchestra / Andris Nelsons, Shostakovich Symphony No. 10, 2015",
-    "Emerson String Quartet, Beethoven The Late String Quartets, 1996",
+    "Emerson String Quartet, Beethoven The String Quartets, 1997",
     "San Francisco Symphony / Michael Tilson Thomas, Mahler Symphony No. 5, 2005"
   ],
   "empty": []

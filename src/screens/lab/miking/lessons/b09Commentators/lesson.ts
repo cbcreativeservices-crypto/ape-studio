@@ -63,7 +63,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why two commentators’ open mics can make a voice sound hollow, how the arrival-time difference places comb notches, and why each voice stays on its own channel.',
     credit: { scenarios: ['b9.two.1', 'b9.two.2', 'b9.two.3', 'b9.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Each voice reaches the partner’s mic later and much lower: the sum cancels some pitches. Close booms, each on its own labelled channel, checked alone and in mono; polarity flips the sign and never removes a delay.',
+    takeaway: 'Each voice reaches the partner’s mic later and much lower: the sum cancels some frequencies. Close booms, each on its own labelled channel, checked alone and in mono; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -115,7 +115,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two commentators, both mics open. Why can one voice sound hollow in the mix?',
     options: ['It reaches both mics, the far one later', 'The far mic reverses that voice’s polarity', 'Two open mics make that voice twice as loud'],
     correct: 'It reaches both mics, the far one later',
-    explain: 'Each voice reaches its own mic first and the partner’s mic a little later. Summed, some pitches cancel. Close booms and pulling down the mic of whoever is silent keep it small.',
+    explain: 'Each voice reaches its own mic first and the partner’s mic a little later. Summed, some frequencies cancel. Close booms and pulling down the mic of whoever is silent keep it small.',
     why: {
       'The far mic reverses that voice’s polarity': 'Distance delays a sound; it does not flip its sign.',
       'Two open mics make that voice twice as loud': 'The far copy is much lower and later: it colours the sound more than it adds level.',
@@ -140,7 +140,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A commentator hears their own voice come back late in the headphones. What is the return doing?',
     options: ['Sending the whole program, their voice included', 'Sending only the producer’s cues, with no program at all', 'Sending them the crowd mics on their own'],
     correct: 'Sending the whole program, their voice included',
-    explain: 'Their return should be the program minus their own voice (mix-minus), with the producer’s cues; they hear themselves directly. Otherwise their own voice comes back late through the chain.',
+    explain: 'Their return should be the program minus their own voice (mix-minus), with the producer’s cues; they hear themselves directly, or through a no-delay local feed. Otherwise their own voice comes back late through the chain.',
     why: {
       'Sending only the producer’s cues, with no program at all': 'Cues alone carry no late copy of their voice.',
       'Sending them the crowd mics on their own': 'The crowd is not their own voice; the late copy comes from the program.',
@@ -320,7 +320,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The commentator’s voice sounds hollow with both mics open. Why?',
     options: ['It reaches the analyst’s mic later', 'The analyst’s mic reverses its polarity', 'The closer mic is louder, so it cancels'],
     correct: 'It reaches the analyst’s mic later',
-    explain: 'The voice reaches its own mic first and the analyst’s later. Summed, some pitches arrive out of step and cancel — a comb.',
+    explain: 'The voice reaches its own mic first and the analyst’s later. Summed, some frequencies arrive out of step and cancel — a comb.',
     why: {
       'The analyst’s mic reverses its polarity': 'Distance delays a sound; it does not flip its sign.',
       'The closer mic is louder, so it cancels': 'A level difference changes how deep the notches are; the delay makes them.',

@@ -532,7 +532,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const POWER_REASON: SetupReason = { id: 'r.power', label: 'Every mic and DI gets the power it needs (phantom, or none)', role: 'required', feedback: 'Say how each source is powered.' };
+const POWER_REASON: SetupReason = { id: 'r.power', label: 'Every mic and DI gets the power it needs (phantom, a battery, or none)', role: 'required', feedback: 'Say how each source is powered.' };
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'The mic is at a suggested starting point on one woofer, measured from the grille', role: 'required', feedback: 'Say where it begins and what it is measured from.' };
 const LABEL_REASON: SetupReason = { id: 'r.label', label: 'The DI and the mic are labelled as separate sources and checked in mono', role: 'required', feedback: 'Name each source for what it carries, and judge the blend in mono.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most bassists use', role: 'wrong', feedback: 'A brand is not part of passing.' };
@@ -677,7 +677,7 @@ export const C08_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A four- or five-string electric bass — fretted, or fretless with a smooth fingerboard — and the rig it plays through: a head (the amplifier) on a cabinet of woofers, often with a small horn. The mic hears the cabinet; a DI takes the electrical signal.', src: 'LESSON L4-L7' },
     { title: 'WHERE YOU MEET IT', text: 'Nearly every band, on stage and in the studio. Live, the bass often reaches the PA through a DI, with a cabinet mic added for its character.', src: 'S-RHYTHM' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'The low end and the groove, locked with the kick drum: fingerstyle, pick, slap and pop, fretless slides. The player’s tone is the bass, the pedals, the head AND the cabinet.', src: 'LESSON L7' },
-    { title: 'ITS RANGE AND SIZE', text: 'The open low E is about 41 Hz, a five-string’s low B about 31 Hz. A common 4 × 10 cabinet is about 76 cm wide, 61 cm tall and 48 cm deep.', src: 'PHYS-ET / AMP-410' },
+    { title: 'ITS RANGE AND SIZE', text: 'The open low E is about 41 Hz, a five-string’s low B about 31 Hz. A common 4 × 10 cabinet is about 61 cm wide, 76 cm tall and 48 cm deep.', src: 'PHYS-ET / AMP-410' },
   ],
   sound: {
     stages: [

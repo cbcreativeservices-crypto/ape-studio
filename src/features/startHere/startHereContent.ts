@@ -81,7 +81,7 @@ export const STARTER_TERMS: readonly StarterTerm[] = [
   { id: 'noise', term: 'Noise', group: 'hearing', def: 'A sound that is irregular or complex and is not heard as a clear tone — like hiss, wind or rain.', note: 'In audio work, “noise” also means any unwanted sound or signal, such as hum or hiss.', glossary: 'Noise' },
 
   // ── Signals and equipment ──
-  { id: 'audio', term: 'Audio', group: 'equipment', def: 'Sound that equipment has turned into a signal, so it can be carried, changed, recorded or played back.', note: 'Once a speaker turns the signal back into vibration in the air, what you hear is sound again.', glossary: 'Audio' },
+  { id: 'audio', term: 'Audio', group: 'equipment', def: 'Sound turned into a signal by equipment, or a signal that equipment made (like a test tone), so it can be carried, changed, recorded or played back.', note: 'Once a speaker turns the signal back into vibration in the air, what you hear is sound again.', glossary: 'Audio' },
   { id: 'audioSignal', term: 'Audio signal', group: 'equipment', def: 'An electrical or digital copy of a sound that equipment can carry or process.', note: 'You cannot hear an audio signal directly — it has to reach a speaker or headphones first.', glossary: 'Audio Signal' },
   { id: 'microphone', term: 'Microphone', group: 'equipment', def: 'A device that converts sound into an audio signal.', glossary: 'Microphone (Mic)' },
   { id: 'speaker', term: 'Speaker', group: 'equipment', def: 'A device that converts an audio signal into sound.', note: 'Its full name is loudspeaker. Headphones are small speakers worn on the ears.', glossary: 'Loudspeaker (Speaker)' },
@@ -405,7 +405,7 @@ export type StartSection = {
 };
 
 const TONE_NOTE =
-  'The motion is a slowed-down model: a real speaker cone moves tens to thousands of times a second — far too fast to see.';
+  'The motion is a slowed-down model: a real speaker cone moves tens to many thousands of times a second — far too fast to see.';
 
 export const SECTIONS: readonly StartSection[] = [
   {
@@ -662,7 +662,7 @@ export const SECTIONS: readonly StartSection[] = [
         paras: [
           'A meter shows a level that keeps changing. Levels are counted in decibels (dB). A decibel number always compares a level with a reference point.',
           'On this digital meter the reference is the top of the scale, 0 dB — the most the signal can reach. Normal levels are below it, so they read as minus numbers, like −18. (Engineers call this dBFS: decibels relative to full scale.)',
-          'A digital signal cannot go above 0 dBFS. Push it past the top and the peaks are cut off — clipping — which sounds harsh and cannot be undone afterwards. Leave room below 0.',
+          'In most digital gear a signal cannot go above 0 dBFS. Push it past the top and the peaks are cut off — clipping — which sounds harsh and cannot be undone afterwards. Leave room below 0.',
           'Two handy rules: 6 dB more means about twice the signal’s amplitude, and about 10 dB more usually sounds roughly twice as loud.',
           'An SPL meter measures sound in the air instead, in dB SPL: there, 0 is about the quietest sound young ears can hear (at around 1,000 Hz), and bigger numbers are louder. A phone’s microphone is not a calibrated instrument — for real measurements such as safety limits or system tuning, use a calibrated sound level meter.',
           'A meter gives you useful information, but it does not replace listening. Speech and a steady tone can reach the same peak number and still sound different in loudness.',

@@ -48,7 +48,7 @@ const TERMS = [
   { term: 'Audio connection', def: 'Carries the sound itself: the drum machine’s OUT L / R into a mixer channel. Without it the crowd hears nothing, whatever the clock does.' },
   { term: 'MIDI control', def: 'Messages, not sound: notes, knob moves, start and stop. A MIDI cable can carry them; it never carries audio.' },
   { term: 'Clock / sync', def: 'MIDI clock is 24 ticks a beat from a leader, so a follower plays the leader’s tempo. It sets the tempo, not where bar 1 is — the START does that. Some software and devices sync over a network instead, the same idea.' },
-  { term: 'TRS-MIDI', def: 'MIDI on a 3.5 mm jack. There are two wirings (type A and type B): a lead of the wrong type fits but delivers nothing. Check which your device uses.' },
+  { term: 'TRS-MIDI', def: 'MIDI on a 3.5 mm jack. Most gear uses one of two wirings (type A or type B): a lead of the wrong type fits but delivers nothing. Check which your device uses.' },
 ] as const;
 
 export const GOALS_HYBRID = ['Clock in: the drum machine follows deck A', 'Its bar 1 on deck A’s one', 'Its audio in the room', 'Move deck A’s tempo: it follows', 'On your own: armed start, still on the one', 'Fix the ignored clock', 'Pass the check'] as const;
@@ -388,7 +388,7 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
           }}
           fixed={arrives && dm.sync === 'EXT' && dm.clockSrc !== 'OFF'}
           hints={['Read the callout at the drum machine’s MIDI IN: does any clock arrive?', 'The lead is a TRS-MIDI of type B; this drum machine uses type A. The plug fits — the wiring does not.', 'Open CLOCK and use a type A lead, or a 5-pin MIDI lead into the DIN input.']}
-          why="MIDI on a 3.5 mm jack comes in two wirings. The wrong one fits perfectly and delivers nothing — just as a USB lead between two USB devices does (they need a host). When a follower will not follow, check what actually ARRIVES before touching the tempo."
+          why="MIDI on a 3.5 mm jack comes in more than one wiring, most often type A or B. The wrong one fits perfectly and delivers nothing — just as a USB lead between two USB devices does (they need a host). When a follower will not follow, check what actually ARRIVES before touching the tempo."
           onFixed={() => setFaultFixed(true)}
         />
         <GoalChips goals={goals.slice(4)} latched={latched.slice(4)} />

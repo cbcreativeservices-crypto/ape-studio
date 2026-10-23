@@ -135,7 +135,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No — never play calls or use lures',
     explain: 'No recorded calls, playback, lures or attractants. Wait, or come back at another time.',
     why: {
-      'Yes — but only quietly, from far off': 'Playback at any level disturbs the animal.',
+      'Yes — but only quietly, from far off': 'Even quiet playback can disturb the animal, and many sites ban it.',
       'Yes — if it is a common species': 'The rule is the same for every species.',
     },
   },
@@ -422,7 +422,7 @@ const symptoms: Symptom[] = [
     options: ['Protection and a sheltered spot', 'A high-pass filter on its own, and go', 'Moving nearer the animal'],
     correct: 'Protection and a sheltered spot',
     explain: 'Protect the capsule first; a filter may remove a real low call. A dish is a large surface in the wind too.',
-    why: { 'A high-pass filter on its own, and go': 'It can take a real low call with the rumble.', 'Moving nearer the animal': 'Never close the distance to an animal.' },
+    why: { 'A high-pass filter on its own, and go': 'It can take a real low call with the rumble.', 'Moving nearer the animal': 'Moving closer does not stop wind, and it may disturb the animal.' },
   },
   {
     id: 'wl.sym.lost',
@@ -488,7 +488,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A dish from outside the ring, aimed by sweeping on headphones', ok: true, power: 'phantom', feedback: 'A suggested starting point: a localized high call at a fixed direction — the dish’s best case.' },
       { id: 'b', label: 'A shotgun in a basket from outside the ring, aimed at the call', ok: true, power: 'phantom', feedback: 'A fair choice: compact and easy to aim — some off-axis help in the highs.' },
       { id: 'c', label: 'A dish set up inside the ring for more level', ok: false, power: 'phantom', feedback: 'The ring is never crossed for a cleaner take.' },
-      { id: 'd', label: 'A shotgun and recorded calls to keep it singing', ok: false, power: 'phantom', feedback: 'No playback, calls or lures — ever.' },
+      { id: 'd', label: 'A shotgun and recorded calls to keep it singing', ok: false, power: 'phantom', feedback: 'No playback, calls or lures in this lab — many sites ban them.' },
       { id: 'e', label: 'A dish on the trail, the best line of sight', ok: false, power: 'phantom', feedback: 'Trails stay clear of tripods and dishes.' },
     ],
     reasons: [
@@ -504,7 +504,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A flock crossing open grassland in a breeze, for a nature documentary.',
     setups: [
-      { id: 'a', label: 'A shotgun in fur and a basket, re-aimed smoothly, feet planted', ok: true, power: 'phantom', feedback: 'A suggested starting point: a shotgun copes with fast, wide movement.' },
+      { id: 'a', label: 'A shotgun in fur and a basket, re-aimed smoothly, feet planted', ok: true, power: 'phantom', feedback: 'A suggested starting point: re-aimed smoothly, a shotgun can follow fast, wide movement.' },
       { id: 'b', label: 'A wide stereo pair in fur and baskets, plus notes on the flight', ok: true, power: 'phantom', feedback: 'A fair choice: steady coverage of the group with its place.' },
       { id: 'c', label: 'A dish held on the middle of the field', ok: false, power: 'phantom', feedback: 'A narrow dish loses fast, wide movement.' },
       { id: 'd', label: 'A shotgun in bare foam, a filter for the wind', ok: false, power: 'phantom', feedback: 'Foam is not enough in the open; a filter cannot rescue buffeting.' },
@@ -537,7 +537,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['You are too close: back away', 'It is curious: keep on going', 'It is calm: move closer'],
     correct: 'You are too close: back away',
     explain: 'If an animal reacts to your presence, you are too close: back away.',
-    why: { 'It is curious: keep on going': 'A reaction means too close.', 'It is calm: move closer': 'Never close the distance to an animal.' },
+    why: { 'It is curious: keep on going': 'A reaction means too close.', 'It is calm: move closer': 'A reaction means too close; closing in disturbs it more.' },
   },
   {
     id: 'wl.q.2',

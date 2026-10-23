@@ -119,11 +119,11 @@ const scenarios: MikingScenario[] = [
     id: 'sy.set.1',
     page: 'setting',
     prompt: 'Where does the measurement mic’s signal go?',
-    options: ['To the analyzer’s input only', 'To a console channel on the PA', 'To the monitors, to hear it'],
+    options: ['To the analyzer’s input only', 'To a console channel in the PA mix', 'To the monitors, to hear it'],
     correct: 'To the analyzer’s input only',
     explain: 'The mic path must never return to the live PA: a measurement mic in the PA is feedback waiting to happen and changes the very thing it measures.',
     why: {
-      'To a console channel on the PA': 'Never into the PA: route it to the analyzer input, with the route to the amplifiers unambiguous.',
+      'To a console channel in the PA mix': 'Never into the PA mix: route it to the analyzer input, with the route to the amplifiers unambiguous.',
       'To the monitors, to hear it': 'The mic is not a listening feed: it goes to the measurement input only.',
     },
   },
@@ -304,7 +304,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The paths to B are different lengths: an alignment chosen at one mic can change at another seat. Compare another seat before you settle.',
     why: {
       'They stay lined up there too': 'Alignment holds where the path difference is the same — rarely at the next seat.',
-      'The fill goes silent': 'Its level is unchanged: what changes is the time between the two arrivals.',
+      'The fill goes silent': 'The fill still plays: what changes is the time between the two arrivals.',
     },
   },
   {
@@ -361,7 +361,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A dip at the chair moves when you lean forward. What is it most likely?',
     options: ['A reflection’s cancellation', 'A fault inside the monitor itself', 'The analyzer’s smoothing'],
     correct: 'A reflection’s cancellation',
-    explain: 'A dip that moves with a small change in position is a path difference — the desk, the floor, a wall — not the loudspeaker.',
+    explain: 'A dip that moves with a small change in position is most likely a path difference — the desk, the floor, a wall — not a loudspeaker fault.',
     why: {
       'A fault inside the monitor itself': 'A monitor fault does not move with your head.',
       'The analyzer’s smoothing': 'Smoothing changes how the trace looks everywhere, not at one position.',
@@ -536,11 +536,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Where may the measurement mic’s signal go?',
-    options: ['The analyzer input only', 'A console channel on the PA', 'Wherever is easiest to patch'],
+    options: ['The analyzer input only', 'A console channel in the PA mix', 'Wherever is easiest to patch'],
     correct: 'The analyzer input only',
     explain: 'The measurement mic must never return to the live PA.',
     why: {
-      'A console channel on the PA': 'Never into the PA: it feeds back and changes what it measures.',
+      'A console channel in the PA mix': 'Never into the PA mix: it feeds back and changes what it measures.',
       'Wherever is easiest to patch': 'The route is chosen and checked: analyzer only.',
     },
   },
@@ -623,7 +623,7 @@ export const F14_LESSON: Lesson = {
   ],
   sound: {
     stages: [
-      { title: 'Direct', text: 'The sound straight from each loudspeaker: the nearest arrives first, the loudest is not always the first.' },
+      { title: 'Direct', text: 'The sound straight from each loudspeaker: with no delay set, the nearest arrives first; the loudest is not always the first.' },
       { title: 'Boundaries', text: 'The floor’s bounce close behind the direct sound, the walls’ later: different at every seat.' },
       { title: 'Overlap', text: 'Where two loudspeakers reach one seat, their arrivals a few milliseconds apart.' },
     ],

@@ -144,7 +144,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The live crowd sounds thin. Someone suggests adding recorded cheers. In factual live coverage?',
     options: ['Leave them out: it is not the event', 'Add them quietly under the real crowd', 'Use them only at the big moments'],
     correct: 'Leave them out: it is not the event',
-    explain: 'Never add invented cheers or unrelated audience reactions to factual live coverage. Improve the real pickup: the viewpoint, a justified spot, the balance.',
+    explain: 'Factual live coverage does not add invented cheers or unrelated reactions unless the broadcaster openly says so. Improve the real pickup: the viewpoint, a justified spot, the balance.',
     why: {
       'Add them quietly under the real crowd': 'Quiet or not, it presents a reaction that did not happen.',
       'Use them only at the big moments': 'Those are the moments viewers trust most.',
@@ -279,7 +279,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Broadcast ambience does not enter a loudspeaker loop by default; any reinforcement is reviewed by the venue engineer at a safe level — never a feedback test.',
     why: {
       'It should, to lift the room’s energy': 'A crowd mic in the PA risks a loop and is not its job.',
-      'Only during the quietest moments': 'Quiet moments are when a loop is easiest to start.',
+      'Only during the quietest moments': 'In quiet moments gain often gets pushed up — that is when a loop starts most easily.',
     },
   },
   {
@@ -364,7 +364,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A known-good mono version',
     explain: 'Use the verified mono or stereo fallback, and say which version failed; do not present one failed side of a pair as a stereo mix.',
     why: {
-      'The one side, panned to centre': 'One side of a pair is a lopsided picture, not a verified version.',
+      'The one side, panned to centre': 'One side of a pair is an off-axis, untested picture, not a verified version.',
       'Nothing until the pair is fixed': 'The bed has to continue; that is what the fallback is for.',
     },
   },
@@ -401,7 +401,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Overlap, polarity, arrival differences, the decoder settings?',
     options: ['Reduce redundant feeds first', 'Boost the lows on the mix bus', 'Delay the whole audience bed'],
     correct: 'Reduce redundant feeds first',
-    explain: 'Reduce redundant feeds and restore the known-good mapping; check the decoder and the polarity before anything else.',
+    explain: 'Reduce redundant feeds and restore the known-good mapping; check the decoder and the polarity in that same first pass.',
     why: {
       'Boost the lows on the mix bus': 'EQ cannot undo a comb between feeds.',
       'Delay the whole audience bed': 'That fits one point and moves the room away from the picture.',
@@ -491,16 +491,16 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Two commentary inputs, four action sectors, a main ambience and two spots', ok: true, power: 'phantom', feedback: 'A suggested start: the extensive layout — where each extra input fills a gap the minimal one lacks, and an operator watches the sums.' },
       { id: 'b', label: 'The minimal layout plus one audience spot for a named gap', ok: true, power: 'phantom', feedback: 'A suggested start: grow the minimal layout only where listening found a gap.' },
-      { id: 'c', label: 'A mic on every row of seats for the fullest crowd', ok: false, power: 'phantom', feedback: 'Mics everywhere add overlap and single points of failure, not coverage.' },
+      { id: 'c', label: 'A mic on every row of seats for the fullest crowd', ok: false, power: 'phantom', feedback: 'Mics everywhere add overlap, spill and more parts that can fail, not coverage.' },
       { id: 'd', label: 'The four capsule tracks sent straight to four loudspeakers', ok: false, power: 'phantom', feedback: 'Capsule tracks need their conversion; they are not speaker feeds.' },
-      { id: 'e', label: 'A main array hung by the crew from the roof truss', ok: false, power: 'phantom', feedback: 'Overhead rigging is an engineered installation by qualified venue staff — never improvised.' },
+      { id: 'e', label: 'A main array hung by the crew from the roof truss', ok: false, power: 'phantom', feedback: 'Overhead rigging is an engineered installation by qualified riggers with venue approval — never improvised.' },
     ],
     reasons: [
       { id: 'r.gap', label: 'Every extra input fills a gap you can name', role: 'required', feedback: 'Say what each extra input covers.' },
       { id: 'r.survive', label: 'A surviving subset is planned for every loss', role: 'required', feedback: 'Say what survives each failure.' },
       { id: 'r.outputs', label: 'Stereo, mono and every downmix are heard', role: 'optional', feedback: 'A fair reason.' },
       BRAND_REASON('arena'),
-      { id: 'r.cheers', label: 'Recorded cheers can fill a quiet bowl', role: 'wrong', feedback: 'Never add invented cheers to factual live coverage.' },
+      { id: 'r.cheers', label: 'Recorded cheers can fill a quiet bowl', role: 'wrong', feedback: 'Invented cheers do not belong in factual live coverage unless the broadcaster openly says so.' },
     ],
     explain: 'Two setups pass. What passes is the reasoning: each input earning its place, a surviving subset for every loss, and every output heard.',
   },
@@ -518,7 +518,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.1',
     covers: 'meet',
-    prompt: 'What comes first in a complete sports picture?',
+    prompt: 'Under the commentary, what comes first in a complete sports picture?',
     options: ['A stable audience viewpoint', 'The closest action detail', 'The highest channel count'],
     correct: 'A stable audience viewpoint',
     explain: 'The viewpoint first; then the action that deserves detail, each role separately controllable.',
@@ -569,7 +569,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['Each can be balanced alone', 'It halves the feedback risk', 'The rules ask for three'],
     correct: 'Each can be balanced alone',
     explain: 'Separate feeds let each be balanced, muted or replaced on its own — and a failure in one does not take the others down.',
-    why: { 'It halves the feedback risk': 'Feedback is about routing, not fader count.', 'The rules ask for three': 'It is a production choice, not a rule.' },
+    why: { 'It halves the feedback risk': 'Feedback depends on what is open into the PA, not on how the faders are split.', 'The rules ask for three': 'It is a production choice, not a rule.' },
   },
 ];
 

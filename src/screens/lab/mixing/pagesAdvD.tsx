@@ -109,7 +109,7 @@ function PageTranslation({ ctx }: { ctx: PageCtx }) {
         question="A client demands the mix “hit −8 LUFS because streaming”. The professionally honest answer:"
         options={['Comply — platform numbers are hard requirements for mixes', 'Explain that platforms normalize playback — deliver dynamics, plus a loud reference if they insist', 'Refuse to discuss loudness targets with clients at all', 'Quietly deliver whatever loudness you personally prefer']}
         correct={1}
-        explain="On normalized playback, streaming services turn masters down to their own loudness — a crushed −8 LUFS master plays at the SAME volume as a dynamic one, minus the life. Measurement informs; it does not conduct."
+        explain="On normalized playback, streaming services turn masters down to their own loudness — a crushed −8 LUFS master plays at about the SAME volume as a dynamic one near the target, minus the life. Measurement informs; it does not conduct."
         wrong={[
           'Check what the platforms actually do to delivered masters before treating a number as a spec.',
           undefined,

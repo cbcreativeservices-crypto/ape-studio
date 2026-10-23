@@ -192,7 +192,7 @@ function PageAdvDynamics({ ctx }: { ctx: PageCtx }) {
     { id: 'serial', name: 'Serial compression', blurb: 'Two gentle stages instead of one working hard — each catches what the other missed, neither audibly grabbing.' },
     { id: 'multiband', name: 'Multiband compression', blurb: 'Compression per frequency band — tame a boomy low end without touching the mids. Powerful, and easy to overuse.' },
     { id: 'expansion', name: 'Expansion & gating', blurb: 'The mirror tool: make quiet quieter. Tighten bleed, deepen the space between hits.' },
-    { id: 'transient', name: 'Transient shaping', blurb: 'Attack and sustain as direct handles, no threshold — sharpen a snare or soften a pluck regardless of level.' },
+    { id: 'transient', name: 'Transient shaping', blurb: 'Attack and sustain as direct handles, usually no threshold — sharpen a snare or soften a pluck at almost any level.' },
     { id: 'deess', name: 'Advanced de-essing', blurb: 'Frequency-conscious dynamics for the S band. The De-Esser lab is the deep dive.' },
   ] as const;
   const [seen, setSeen] = useState<Set<string>>(new Set());
@@ -223,7 +223,7 @@ function PageAdvDynamics({ ctx }: { ctx: PageCtx }) {
         question="Why do engineers often prefer two compressors doing 3 dB each over one doing 6 dB?"
         options={['Two plugins always sound better than one plugin', 'Each stage works gently inside its comfortable range, so neither is audibly grabbing', 'It uses the computer more efficiently', 'The second one fixes the first one’s mistakes automatically']}
         correct={1}
-        explain="Serial staging keeps every gain-reduction element in its polite zone. Same total control, none of the pumping a single hard-working stage betrays."
+        explain="Serial staging keeps every gain-reduction element in its polite zone. Same total control, far less of the pumping a single hard-working stage betrays."
         wrong={[
           'Count is not quality — ask what each stage is being asked to do.',
           undefined,

@@ -139,7 +139,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The upturned bell and the open holes both radiate, and their balance changes with the note — so a mic aims at the blend.',
     why: {
       'The reed, back toward the player': 'The reed starts the sound; it leaves from the bell and the open holes.',
-      'The neck, where it curves to the lips': 'The neck carries the air column; it has no open holes to let the sound out.',
+      'The neck, where it curves to the lips': 'The neck carries the air column; it has no tone holes, and little sound leaves it.',
     },
   },
   {
@@ -187,7 +187,7 @@ const scenarios: MikingScenario[] = [
     explain: 'In front and a little to the side, aimed into the space between the lower keys and the bell, the mic hears both parts of the blend — then move in or out by ear.',
     why: {
       'Straight down the bell’s throat, from above': 'Down the throat it hears mostly the bell and the lowest notes.',
-      'At the curved neck, near the player’s mouth': 'The neck has no holes; the sound leaves lower down.',
+      'At the curved neck, near the player’s mouth': 'The neck has no tone holes; the sound leaves lower down.',
     },
   },
   {
@@ -405,7 +405,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'A floor peg under the bow',
     explain: 'A metal peg from the bow to the floor carries the weight; the instrument stands between the knees.',
     why: {
-      'A seat strap under the bell': 'A seat strap is the bassoon’s way.',
+      'A seat strap under the bell': 'A seat strap is the usual bassoon way.',
       'The player’s knees alone': 'The knees steady it; the peg carries it.',
     },
   },

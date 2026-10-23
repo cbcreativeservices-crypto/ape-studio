@@ -92,7 +92,7 @@ export const B11_COPY: Partial<LessonCopy> = {
     note: 'Approval and clearance come first: the approved place only, nothing on protective equipment, the cable without a loop that can catch, nobody in play.',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on a person in sport — once it is approved — measured from the lips to the front of the mic. They are starting points, not rules: no chest position or mouth offset fits every uniform, body and mic. Experimentation is encouraged, inside the approval.',
-      separate: 'Distance and the angle off the mouth’s axis are separate variables: change one at a time, with safe, representative movement each time. Distances are measured to the mic’s FRONT — a shotgun’s to its capsule, about 20 cm behind the tip — and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m; no millimetre claim is made.',
+      separate: 'Distance and the angle off the mouth’s axis are separate variables: change one at a time, with safe, representative movement each time. Distances are measured to the mic’s FRONT — a shotgun’s to its capsule, here about 20 cm behind the tip — and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m; no millimetre claim is made.',
       clearance: 'Clearance comes first: the approved place, nothing on protective equipment, the cable and the pack secured.',
       tendencies: 'A chest mic tends to sound fuller and to change in tone and level with head turns; a headset boom keeps one distance and hears more breath; a perimeter mic hears more of the field and the crowd. These are tendencies, and people vary.',
     },
@@ -134,7 +134,7 @@ export const B11_COPY: Partial<LessonCopy> = {
     A: { typeId: 'locLav', pattern: 'omni', zone: 'b11.lav' },
     B: { typeId: 'bcHeadsetBoom', pattern: 'cardioid', zone: 'b11.headset' },
     learn: [
-      'Not a setup to aim for: a chest mic and a headset open on the same voice. The voice reaches the headset first and the chest mic a little later — summed, some pitches cancel.',
+      'Not a setup to aim for: a chest mic and a headset open on the same voice. The voice reaches the headset first and the chest mic a little later — summed, some frequencies cancel.',
       'Choose one mic for the program, or switch between them on purpose. Listen to each alone, then both in MONO, and hear what the delay does. A polarity switch only tests the idea — it never removes a delay.',
     ],
     warn: 'This simplified graph treats the mouth as one point and both mics as hearing the same sound. A chest mic hears a different voice from a capsule at the mouth, and people move — read the notch POSITIONS and treat their depths as illustrative.',
@@ -144,7 +144,7 @@ export const B11_COPY: Partial<LessonCopy> = {
     instrument: 'the wearer',
     startIntro: INTRO,
     startNew: 'Good — NEXT takes you through the wearer, the approval and the kit first. You can change how you started here at any time.',
-    otherRef: 'Every starting point here is measured from the lips — where the voice leaves — to the front of the mic: a body mic’s cap, a headset capsule’s foam, a shotgun’s capsule, about 20 cm behind its tip.',
+    otherRef: 'Every starting point here is measured from the lips — where the voice leaves — to the front of the mic: a body mic’s cap, a headset capsule’s foam, a shotgun’s capsule, here about 20 cm behind its tip.',
     clipMount: 'Mount: a clip at the approved place, a headset boom from over the ear, or a pole held outside play',
     standMount: 'Mount: never a stand in the field or a route',
     observation: 'Only with approval and the person’s agreement, in safe movement. Write tendencies in words — what you heard, not a promised result.',

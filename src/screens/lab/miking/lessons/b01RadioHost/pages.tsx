@@ -89,7 +89,7 @@ function useTools(): ReturnType<typeof useTurnStep>[] {
       subject: 'two hosts across a desk, each with a mic',
       looking: 'From above · two hosts, a mic each · rays from the one speaking',
       prompt: 'Choose WHO SPEAKS, then which mics are OPEN. Read how much of each voice reaches the other mic, and what the second copy does.',
-      done: 'Each voice also reaches the other host’s mic — farther away and off the back of its pattern, so lower, but later. With both mics open the mix hears that voice twice and some pitches cancel. Close mics, rears toward each other, and muting a mic nobody is using keep it small; no rule makes it zero.',
+      done: 'Each voice also reaches the other host’s mic — farther away and off the back of its pattern, so lower, but later. With both mics open the mix hears that voice twice and some frequencies cancel. Close mics, rears toward each other, and muting a mic nobody is using keep it small; no rule makes it zero.',
     },
   });
   return [turn, desk, mics];

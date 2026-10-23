@@ -8,7 +8,7 @@
  *
  * ENGINE ZONES (the MICROPHONES page draws each type here; the two-mic page
  * starts from them):
- *   sp.head    the binaural head at the listener's point, ears 1.55–1.8 m up
+ *   sp.head    the binaural head at the listener's point, ears 1.5–1.8 m up
  *              (standing), face to the scene front — the worked example;
  *   sp.seated  the same at a seated listener's height (1.1–1.3 m);
  *   sp.foa     the Ambisonic mic at the listener's point, front mark forward;
@@ -44,7 +44,7 @@ function atListener(o: { id: string; label: string; band: string; type: string; 
     bandProv: MEYER,
     refSurface: 'ground',
     side: 'either',
-    distance: o.seated ? { min: 1100, max: 1300 } : { min: 1550, max: 1800 },
+    distance: o.seated ? { min: 1100, max: 1300 } : { min: 1500, max: 1800 },
     aim: { maxOffAxis: 15, dir: FRONT, prov: ill('the face or front mark toward the scene front, within 15° (the lab’s tolerance)') },
     box: AT_LISTENER,
     requires: { micTypeIds: [o.type] },
@@ -137,7 +137,7 @@ export const F10_ZONES: DocumentedZone[] = [
     requires: { variant: 'event', micTypeIds: ['vocHeadset'], mount: 'clip' },
     start: { p: HS, ...aimOf(sub(EVENT.perfMouth, HS)) },
     tendency: 'The performer’s voice steady and close whatever they do — what the PA and the stream need; the spatial mic is the audience’s view.',
-    checks: ['The capsule where its maker says', 'The pack and the cable secured', 'Its own path: never the spatial mic into the PA'],
+    checks: ['The capsule where its maker says', 'The pack and the cable secured', 'Its own path: the spatial mic kept out of the PA unless feedback is planned for'],
   },
 ];
 

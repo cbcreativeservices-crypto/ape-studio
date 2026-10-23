@@ -68,7 +68,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a headset and a lectern mic open on the same voice can sound hollow, how the arrival-time difference places comb notches, and why one of them is muted.',
     credit: { scenarios: ['b5.two.1', 'b5.two.2', 'b5.two.3', 'b5.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'One voice into two open mics arrives twice: the sum cancels some pitches. Mute the one not in use; keep a backup on its own track; polarity flips the sign and never removes a delay.',
+    takeaway: 'One voice into two open mics arrives twice: the sum cancels some frequencies. Mute the one not in use; keep a backup on its own track; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -100,7 +100,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The mouth moves off it; it stays put',
     explain: 'A lav is fixed to the clothes on the chest. The head turns about its centre, so the mouth swings away from the lav’s line — a little farther and well off the mouth’s axis.',
     why: {
-      'It turns with the head and keeps aim': 'Only a headset turns with the head. A lav moves with the chest.',
+      'It turns with the head and keeps aim': 'Only a head-worn mic, like a headset, turns with the head. A chest lav moves with the chest.',
       'Nearer to the mouth as it turns': 'The mouth swings sideways, away from the middle of the chest.',
     },
   },
@@ -291,7 +291,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Where should the PA sit for a directional headset’s most rejection?',
     options: ['Behind the capsule, past the cheek', 'Straight in front of the presenter', 'Anywhere — a headset is too close to care'],
     correct: 'Behind the capsule, past the cheek',
-    explain: 'A cardioid rejects most behind it. Aimed in at the lips from beside the mouth, its rear points out past the cheek — so the PA on that side sits nearest the rejection.',
+    explain: 'A cardioid rejects most straight behind it; a tighter pattern, a little off to the rear sides. Aimed in at the lips from beside the mouth, its rear points out past the cheek — so the PA on that side sits nearest the rejection.',
     why: {
       'Straight in front of the presenter': 'In front is near the capsule’s pickup, not its rear.',
       'Anywhere — a headset is too close to care': 'Closeness helps a lot, but the pattern still decides how much PA it hears.',
@@ -327,7 +327,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Headset and lectern mic both open on the presenter. Why can it sound hollow?',
     options: ['One voice arrives twice, a little apart in time', 'The lectern mic flips the voice’s polarity', 'Two mics make the voice too loud to hear'],
     correct: 'One voice arrives twice, a little apart in time',
-    explain: 'The headset hears the voice first and the lectern mic a little later. Summed, some pitches arrive out of step and cancel — a comb.',
+    explain: 'The headset hears the voice first and the lectern mic a little later. Summed, some frequencies arrive out of step and cancel — a comb.',
     why: {
       'The lectern mic flips the voice’s polarity': 'Distance delays a sound; it does not flip its sign.',
       'Two mics make the voice too loud to hear': 'The second copy colours the sound more than it adds level.',
@@ -418,7 +418,7 @@ const symptoms: Symptom[] = [
     correct: 'Lift the capsule off the cloth; reroute the cable',
     explain: 'Rubbing is contact: give the capsule a little space from the cloth (a mount made for it), keep the cable off moving seams, and secure it in more than one place.',
     why: {
-      'Add noise reduction to the presenter’s channel later': 'Processing cannot cleanly remove a rub that is mixed with the voice.',
+      'Add noise reduction to the presenter’s channel later': 'Processing seldom removes a rub mixed with the voice cleanly.',
       'Clip the lav a little lower down on the shirt': 'Lower is farther from the mouth — and the cloth can rub there too.',
     },
   },
@@ -539,7 +539,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'The mouth tips down; the lav stays put',
     explain: 'The lav moves with the chest. As the head tips down, the mouth moves and its axis tips down: the distance and the angle change.',
     why: {
-      'It tips down with the head and keeps aim': 'Only a headset moves with the head.',
+      'It tips down with the head and keeps aim': 'Only a head-worn mic, like a headset, moves with the head.',
       'Nothing changes: it is fixed to the shirt': 'The lav is fixed — the mouth is not. Its distance and angle change.',
     },
   },

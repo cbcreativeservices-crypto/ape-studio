@@ -199,7 +199,7 @@ export function useTimingStep({ words, prediction, onDone }: { words: TimingWord
           <Point title={on ? (right ? 'ON THE RIGHT ARRIVAL' : 'ON THE WRONG ARRIVAL') : 'THE DELAY'}>{verdict}</Point>
           <Point title="WHERE THE REFERENCE IS TAKEN">{`Before the processor, its latency is part of the path and of the delay (here ${(arrivalMs(dist(FILL, seatPoint(VENUE.rows[1], -900))) + EXAMPLE_DSP_MS).toFixed(2)} ms to the fill’s arrival); after it, only the acoustic path (${arrivalMs(dist(FILL, seatPoint(VENUE.rows[1], -900))).toFixed(2)} ms). Neither is wrong: they answer different questions — name the tap.`}</Point>
         </Card>
-        {pick.trap ? <Note tone="warn">A delay finder takes the strongest arrival. With the left main still on, that is the main, not the fill you are measuring: mute what you are not measuring, and check the arrivals by eye.</Note> : <Note>Re-check the delay every time the mic moves or a path changes.</Note>}
+        {pick.trap ? <Note tone="warn">Most delay finders take the strongest arrival. With the left main still on, that is the main, not the fill you are measuring: mute what you are not measuring, and check the arrivals by eye.</Note> : <Note>Re-check the delay every time the mic moves or a path changes.</Note>}
       </>
     ),
   };

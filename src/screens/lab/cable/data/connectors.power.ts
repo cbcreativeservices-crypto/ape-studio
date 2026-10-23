@@ -223,7 +223,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     hotPlug: {
       policy: 'de_energize_first',
       rationale:
-        'Ordinary appliance couplers are not certified to be connected or disconnected under load — that capability is a separate IEC 60320 classification (coupler with breaking capacity) these cordsets do not carry. Separating one while the equipment draws current can arc across the contacts: switch the equipment off first, every time.',
+        'Treat an appliance coupler as a connector, not a switch. Separating one while the equipment draws current can arc across the contacts: switch the equipment off first, every time.',
     },
     advantages: [
       'Detachable, replaceable cordset — a damaged cord is replaced whole, never repaired inline',

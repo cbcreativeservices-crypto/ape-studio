@@ -61,7 +61,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a bass spot and a main pair (or a close and a room mic) can thin the low notes together, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: [`${P}.two.1`, `${P}.two.2`, `${P}.two.3`, `${P}.two.4`], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics at different distances hear the bass at different times: some pitches cancel — and on a bass the lows thin first. Move or rebalance first; polarity flips the sign and never removes a delay.',
+    takeaway: 'Two mics at different distances hear the bass at different times: some frequencies cancel — and on a bass the lows thin first. Move or rebalance first; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -174,7 +174,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why might a miniature on the strings below the bridge suit a bowed bass?',
     options: ['It moves with the bass, below the bridge where the bow does not play', 'Its clip stops it from hearing the rest of the orchestra and the hall around it', 'It needs no phantom power, so a plain line input will do'],
     correct: 'It moves with the bass, below the bridge where the bow does not play',
-    explain: 'A clip made for the bass grips the two outer strings below the bridge — on the tailpiece side, away from the bow — and carries the capsule with the instrument. Its view is more local.',
+    explain: 'A clip made for the bass usually grips the strings below the bridge — on the tailpiece side, away from the bow — and carries the capsule with the instrument. Its view is more local.',
     why: {
       'Its clip stops it from hearing the rest of the orchestra and the hall around it': 'A clip is a mount, not a pattern: the mic still hears its neighbours.',
       'It needs no phantom power, so a plain line input will do': 'This miniature condenser needs phantom power, through its adapter.',
@@ -200,7 +200,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A separate electrical path for level; its tone depends on its design',
     explain: 'A pickup can carry level on a loud stage; its tone, its response to the bow and the preamp it needs depend on its design. Keep it on its own channel and compare it with the mic.',
     why: {
-      'A second microphone that hears only the bow': 'A pickup senses the vibration; it is not a microphone.',
+      'A second microphone that hears only the bow': 'Most pickups sense the body’s vibration, not the air — and none hears only the bow.',
       'Nothing: a pickup only responds to plucked notes, so it stays silent while the bow plays': 'Pickups respond to bowing too — check how this one sounds.',
     },
   },
@@ -304,12 +304,12 @@ const scenarios: MikingScenario[] = [
     id: `${P}.two.1`,
     page: 'twoMic',
     prompt: 'A bass spot and the main pair: the low notes thin out in the mix. Why?',
-    options: ['The main pair inverts the bass on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum', 'They hear each note at different times, so some pitches cancel'],
-    correct: 'They hear each note at different times, so some pitches cancel',
-    explain: 'The main pair is farther and hears each note later; some pitches arrive out of step and cancel. Solo each, sum in mono, move or rebalance the spot, then test polarity or timing.',
+    options: ['The main pair inverts the bass on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum', 'They hear each note at different times, so some frequencies cancel'],
+    correct: 'They hear each note at different times, so some frequencies cancel',
+    explain: 'The main pair is farther and hears each note later; some frequencies arrive out of step and cancel. Solo each, sum in mono, move or rebalance the spot, then test polarity or timing.',
     why: {
       'The main pair inverts the bass on its way there, so it cancels': 'Distance delays a sound; it does not flip its sign.',
-      'Two mics on one source cancel each other’s low end in the sum': 'It depends on the delay and the levels: some pitches dip, others add.',
+      'Two mics on one source cancel each other’s low end in the sum': 'It depends on the delay and the levels: some frequencies dip, others add.',
     },
   },
   polarityDelay(`${P}.two.2`),
@@ -484,7 +484,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Which part should never have a mic or clip clamped to it?',
     options: ['The two outer strings below the bridge', 'A stable stand in front of the bass', 'The bridge'],
     correct: 'The bridge',
-    explain: 'Clamping the bridge can impede its vibration. A clip made for the bass grips the strings below it instead.',
+    explain: 'Clamping the bridge can impede its vibration. A clip made for the bass usually grips the strings below it instead.',
     why: {
       'The two outer strings below the bridge': 'That is where a bass clip is made to attach — with the owner’s agreement.',
       'A stable stand in front of the bass': 'A stand in front is fine, outside the bow’s path.',
@@ -583,7 +583,7 @@ export const C06B_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'The upright (double) bass, played with a bow (arco) — the same instrument as the plucked lesson, a second way of playing it. Four strings — E, A, D, G — over a tall bridge; the bow’s horsehair, rosined, grips the strings.', src: 'DPA-DB' },
+    { title: 'WHAT IT IS', text: 'The upright (double) bass, played with a bow (arco) — the same instrument as the plucked lesson, a second way of playing it. Most have four strings — E, A, D, G — over a tall bridge; the bow’s horsehair, rosined, grips the strings.', src: 'DPA-DB' },
     { title: 'WHERE YOU MEET IT', text: 'The orchestra above all — a section of basses — and chamber music, solo recitals, film sessions, and bowed passages in jazz and folk. This lesson covers one bowed bass and a section spot.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'It sustains the foundation: long notes, quiet entrances, crescendos, string crossings. The mic must carry the low body, the pitch and just enough of the bow — across the whole dynamic range.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'This lab draws a large bass — about 1.16 m of body and nearly 2 m tall — on its endpin, with a bow whose hair is about 49 cm long. Its lowest open string, the E, is about 41 Hz.', src: 'MET-EBERLE' },

@@ -19,8 +19,8 @@
  * Heuristics implemented (owner spec §7):
  *  - mains hum        — narrow spikes at 50/60 Hz + harmonics vs their
  *                       spectral neighborhood; reports WHICH family
- *  - 120 Hz harmonic  — the rectified-supply signature (120 Hz spike that
- *                       dominates any 60 Hz fundamental)
+ *  - 100/120 Hz harmonic — the rectified-supply signature (spike at twice the mains, that
+ *                       dominates the 50 or 60 Hz fundamental)
  *  - pink-noise-like  — broadband spectral slope ≈ −3 dB/oct over
  *                       100 Hz–10 kHz (least-squares fit + R² gate)
  *  - clipping         — meter clip-run delta or clipped waveform buckets
@@ -35,6 +35,7 @@
 export type DetectionId =
   | 'hum_50'
   | 'hum_60'
+  | 'hum_100'
   | 'hum_120'
   | 'pink_noise'
   | 'clipping'
@@ -279,6 +280,18 @@ export function analyze(input: DetectInput, state: DetectState): { raw: Detectio
         label: '120 Hz HARMONIC',
         detail: '120 Hz spike dominating any 60 Hz fundamental — a rectified power-supply signature',
         severity: s120 >= DETECT.humRedDb ? 'red' : 'amber',
+      });
+    }
+    // Same signature on 50 Hz power: full-wave rectification puts the buzz at
+    // 100 Hz (fact audit 2026-10-22 — the detector was 60 Hz-only).
+    const s100 = harmonicSpikeDb(spec, hzPerBin, 100);
+    const s50 = harmonicSpikeDb(spec, hzPerBin, 50);
+    if (s100 != null && (s50 == null || s100 >= s50 + 6)) {
+      raw.push({
+        id: 'hum_100',
+        label: '100 Hz HARMONIC',
+        detail: '100 Hz spike dominating any 50 Hz fundamental — a rectified power-supply signature',
+        severity: s100 >= DETECT.humRedDb ? 'red' : 'amber',
       });
     }
 

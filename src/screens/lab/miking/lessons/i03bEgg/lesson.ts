@@ -156,7 +156,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Is an omni a good choice for an egg spot on a loud monitored stage?',
     options: ['Generally not: it hears the monitors and band as well', 'Yes: it covers the moving hands from all directions', 'Yes, if it is placed closer than a cardioid would be'],
     correct: 'Generally not: it hears the monitors and band as well',
-    explain: 'An omni gives broad coverage and hears every loudspeaker equally — generally unsuitable for a loud monitored stage. In a quiet room it can be fine.',
+    explain: 'An omni gives broad coverage and hears the loudspeakers from every side — generally unsuitable for a loud monitored stage. In a quiet room it can be fine.',
     why: {
       'Yes: it covers the moving hands from all directions': 'It covers the hands — and the wedges and the band just as well.',
       'Yes, if it is placed closer than a cardioid would be': 'Closer helps a little, but an omni still has no rejection to aim at the monitors.',
@@ -231,7 +231,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A weak egg in a loud setting cannot be rescued by its spot: the spot raises everything it hears. Move the source, choose a louder egg, or lower the stage level.',
     why: {
       'Brings the egg forward, with nothing else in the mix changing': 'The channel also carries the cymbals and monitors; they rise with it.',
-      'Makes the egg louder on stage for the player': 'The channel level does not change the acoustic egg; it raises what the mic hears.',
+      'Makes the egg louder on stage for the player': 'The channel level does not change the acoustic egg; it raises everything the mic picks up, spill included.',
     },
   },
   {

@@ -92,8 +92,8 @@ const scenarios: MikingScenario[] = [
     id: 'dj.set.3',
     page: 'setting',
     prompt: 'The djembe rests flat on the floor. Can you put a mic under its opening?',
-    options: ['No — on the floor the opening is closed; don’t prop it up for a mic', 'Yes — tip the drum onto a block or a book so a small mic fits underneath', 'Yes — a thin mic can slide under the foot’s edge'],
-    correct: 'No — on the floor the opening is closed; don’t prop it up for a mic',
+    options: ['No — on the floor the opening is closed; don’t tip it on a block for a mic', 'Yes — tip the drum onto a block or a book so a small mic fits underneath', 'Yes — a thin mic can slide under the foot’s edge'],
+    correct: 'No — on the floor the opening is closed; don’t tip it on a block for a mic',
     explain: 'Do not place a mic under a drum resting on the floor, alter how the player supports it, or prop it precariously. If there is no safe, repeatable lower position, keep one well-placed top mic.',
     why: {
       'Yes — tip the drum onto a block or a book so a small mic fits underneath': 'Never prop the player’s drum precariously for a mic. Ask how they support it.',
@@ -130,7 +130,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What mostly sets the pitch of a djembe’s deep bass note?',
     options: ['The size and shape of the shell, not the skin’s tension', 'How tightly the ropes pull the goat skin over the top of the bowl', 'How hard the player strikes the head'],
     correct: 'The size and shape of the shell, not the skin’s tension',
-    explain: 'The bass is the air in the bowl resonating through the waist and the open foot: its pitch is set by the shell’s size and shape, independent of the skin’s tension — and much of it leaves through the bottom.',
+    explain: 'The bass is the air in the bowl resonating through the waist and the open foot: its pitch is set mostly by the shell’s size and shape, much less by the skin’s tension — and much of it leaves through the bottom.',
     why: {
       'How tightly the ropes pull the goat skin over the top of the bowl': 'Tension sets the head’s tones and slaps; the bass note is set by the shell.',
       'How hard the player strikes the head': 'Harder makes it louder, not lower or higher. The shell sets the bass pitch.',
@@ -274,7 +274,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Solo studio performance, a good room. What could justify a farther top mic?',
     options: ['More of the whole drum and the room, when the room is worth it', 'A farther mic makes the djembe sound louder and fuller in the recording', 'Distance removes the room from the sound'],
     correct: 'More of the whole drum and the room, when the room is worth it',
-    explain: 'A stable position farther from the head includes more of the entire drum and the room. The room and other musicians become part of the pickup.',
+    explain: 'A stable position farther from the head includes more of the entire drum and the room. The room, and any other sound in it, becomes part of the pickup.',
     why: {
       'A farther mic makes the djembe sound louder and fuller in the recording': 'Farther means less direct sound; distance is for balance, not level.',
       'Distance removes the room from the sound': 'The reverse: the farther the mic, the more room it hears.',
@@ -432,11 +432,11 @@ const symptoms: Symptom[] = [
     id: 's.vanish',
     observation: 'The bass vanishes when the two mics combine',
     firstChecks: 'Does each channel alone have body?',
-    options: ['Each channel alone; then reposition and compare polarity', 'Invert the low mic, since it sits below the drum', 'Turn the low mic up until the bass returns to the mix'],
+    options: ['Each channel alone; then reposition and compare polarity', 'Invert the low mic for good, since it sits below the drum', 'Turn the low mic up until the bass returns to the mix'],
     correct: 'Each channel alone; then reposition and compare polarity',
     explain: 'Reposition or aim, then compare polarity at actual levels in mono. No mandatory inversion.',
     why: {
-      'Invert the low mic, since it sits below the drum': 'Flipping is a common first thing to try, never a rule: compare both states at matched level.',
+      'Invert the low mic for good, since it sits below the drum': 'Flipping is a common first thing to try, never a rule: compare both states at matched level.',
       'Turn the low mic up until the bass returns to the mix': 'More level does not fix a cancellation.',
     },
   },
@@ -560,9 +560,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What do the ropes on a djembe do?',
     options: ['Pull the head tight: they tune it', 'Hold the carved foot onto the bowl', 'Mute the bass for a dry sound'],
     correct: 'Pull the head tight: they tune it',
-    explain: 'Ropes laced between two rings pull the head tight — the tuning. Clamp nothing to them.',
+    explain: 'Ropes laced between two rings pull the head tight — the tuning. Clamp nothing to them unless the clip is made for it and the owner agrees.',
     why: {
-      'Hold the carved foot onto the bowl': 'The shell is carved in one piece; the ropes tune the head.',
+      'Hold the carved foot onto the bowl': 'This shell is carved in one piece; the ropes tune the head.',
       'Mute the bass for a dry sound': 'The ropes tension the head; they do not mute it.',
     },
   },
@@ -650,7 +650,7 @@ export const M05_LESSON: HandLesson = {
       { title: 'Sound leaves the drum', text: 'Sound leaves from the head — the slaps and tones — and around the foot, where the opening meets the floor. The air in the bowl sets the deep bass note.', ported: 'Sound leaves from the head — the slaps and tones — and out of the open foot, where a lot of the bass resonates. The air in the bowl sets the deep bass note.' },
     ],
     attack: 'The start of the sound: the hand on the head. A mic close above the head and facing it tends to hear more of the slaps and tones — and can exaggerate contact if it is very close.',
-    body: 'The deep bass: the air in the bowl resonating through the waist and the open foot. Its pitch is set by the shell’s size and shape, not the skin’s tension, and a lot of it leaves out of the bottom. Tendencies to check by ear.',
+    body: 'The deep bass: the air in the bowl resonating through the waist and the open foot. Its pitch is set mostly by the shell’s size and shape, much less by the skin’s tension, and a lot of it leaves out of the bottom. Tendencies to check by ear.',
     head: { diameterMm: D.headD.mm, rods: 0, label: '12½ in goat-skin head, seen from above', strikeSrc: 'WP-DJEMBE' },
   },
   setting: {
@@ -723,7 +723,7 @@ export const M05_LESSON: HandLesson = {
       intro: 'Switch STROKE and watch which of the head’s shapes the spot drives. The bars are physics; the strokes are the player’s.',
       badge: 'A simplified head · where the hand lands, drawn at a typical spot · bars = how strongly that spot drives each shape',
       items: [
-        { id: 'bass', label: 'BASS', short: 'BASS', frac: 0.12, tool: 'palm', text: 'The palm and flat fingers near the centre. The deep note itself is the air in the bowl, set by the shell’s size and shape — not the skin’s tension.' },
+        { id: 'bass', label: 'BASS', short: 'BASS', frac: 0.12, tool: 'palm', text: 'The palm and flat fingers near the centre. The deep note itself is the air in the bowl, set mostly by the shell’s size and shape, much less by the skin’s tension.' },
         { id: 'tone', label: 'TONE', short: 'TONE', frac: 0.82, tool: 'fingers', text: 'Closer to the edge, with most of the fingers and the edge of the palm on the skin: a ringing open tone.' },
         { id: 'slap', label: 'SLAP', short: 'SLAP', frac: 0.82, tool: 'tips', text: 'Closer to the edge, with only the edge of the palm and the fingertips: a sharp, cutting slap.' },
       ],

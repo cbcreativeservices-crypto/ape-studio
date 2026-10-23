@@ -118,7 +118,7 @@ export const B07_COPY: Partial<LessonCopy> = {
     prompt: 'If the monitor had to stay on, where would its sound be rejected most? Turn or tilt the MIC (AIM), or change its PATTERN, until the monitor sits in the rejection — while the mic still points at the mouth.',
     activityDone: 'done — the monitor sat in a null by your aim or pattern',
     cardioidReveal: 'What you just saw: a cardioid rejects most straight behind (180°). The monitor is off to the side on the desk, so turning the mic helps only so far — which is why the talent hears the program on headphones and the monitor stays off while the mics are open.',
-    shieldNote: 'The desk and the people reflect the monitor’s sound too, and the free-field pattern cannot show that. A designed echo-control system is the only reason to leave a loudspeaker on near an open mic.',
+    shieldNote: 'The desk and the people reflect the monitor’s sound too, and the free-field pattern cannot show that. Leave a loudspeaker on near an open mic only in a system designed for it, such as echo control.',
     learn: {
       ...BASE.context!.learn,
       body: 'A pattern’s rejection is a tool to aim; a loudspeaker switched off, and headphones, do more. Mute or lower the mics nobody is using.',
@@ -132,7 +132,7 @@ export const B07_COPY: Partial<LessonCopy> = {
     B: { typeId: 'bcDynArm', pattern: 'cardioid', zone: 'b7.guest' },
     learn: [
       'The host and the guest each have their own mic, and each mic also hears the other voice — later and lower. With both open, one voice arrives twice in the program.',
-      'Listen to each channel alone, then the program in MONO. A hollow sound means some pitches cancel: bring each mic close to its own talker, turn its rear to the other, and mute the one not in use. A polarity switch only tests the idea — it never removes a delay.',
+      'Listen to each channel alone, then the program in MONO. A hollow sound means some frequencies cancel: bring each mic close to its own talker, turn its rear to the other, and mute the one not in use. A polarity switch only tests the idea — it never removes a delay.',
     ],
     warn: 'This simplified graph treats each mouth as one point and both mics as hearing the same sound. Read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative. Judge by ear, in mono.',
   },

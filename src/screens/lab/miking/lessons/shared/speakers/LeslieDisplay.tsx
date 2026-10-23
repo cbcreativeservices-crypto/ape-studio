@@ -973,7 +973,7 @@ export function LeslieDisplay({ w, h, rig, view, mics = [], accessibilityLabel, 
           { id: 'woofer', text: 'WOOFER, FACING DOWN', short: 'WOOFER', u: W2 + 10, v: WOOF_Y - 70, align: 'left', tone: 'muted' },
           { id: 'xo', text: `CROSSOVER ${CROSSOVER_HZ} Hz · AMP`, short: `${CROSSOVER_HZ} Hz · AMP`, u: W2 + 10, v: SHELF_Y + 50, align: 'left', tone: 'muted', leader: { u: -W2 + WALL + 160, v: SHELF_Y + WALL + 60 } },
           { id: 'drum', text: 'LOW ROTOR (DRUM)', short: 'LOW ROTOR', u: W2 + 10, v: DRUM_Y, align: 'left', tone: 'blue' },
-          { id: 'never', text: 'INSIDE VIEW · ONLY A TECHNICIAN OPENS IT', short: 'INSIDE VIEW · KEEP IT CLOSED', u: 0, v: -H - 30, align: 'center', tone: 'illustrative' },
+          { id: 'never', text: 'INSIDE VIEW · ONLY A TECHNICIAN OPENS IT', short: 'INSIDE VIEW · TECHNICIAN ONLY', u: 0, v: -H - 30, align: 'center', tone: 'illustrative' },
         ]
       : [
           { id: 'ul', text: 'UPPER LOUVERS', short: 'UPPER', u: W2 + 10, v: (LESLIE.upperLouvers.y0 + LESLIE.upperLouvers.y1) / 2, align: 'left', tone: 'amber' },

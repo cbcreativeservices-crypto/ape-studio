@@ -341,7 +341,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Never run blanket 12-tone auto-tune on makam (Turkish melodic mode) melodies.",
+      "text": "Avoid blanket 12-tone auto-tune on makam (Turkish melodic mode) melodies unless the artist wants that effect.",
       "bullet": true
     },
     {

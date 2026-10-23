@@ -461,8 +461,8 @@ export const STAGE7_FINISH: StageDef = {
       severity: "blocker",
       kind: "mismatch",
       title: "True peak above the permitted ceiling",
-      detail: "The measured true peak exceeds the maximum in the specification. This is the most common single cause of a delivery rejection, and it gets worse rather than better through encoding.",
-      fixHint: "Lower the ceiling on the limiter, or take overall gain off and re-measure. Check the encoded version too — encoding raises true peak.",
+      detail: "The measured true peak exceeds the maximum in the specification. This is a common cause of a delivery rejection, and encoding usually makes it worse rather than better.",
+      fixHint: "Lower the ceiling on the limiter, or take overall gain off and re-measure. Check the encoded version too — encoding usually raises true peak.",
       needsLogic: true,
       logicIntent: "Fire when both brief.true_peak_max and measured_true_peak are numbers and the measurement is greater than the ceiling."
     },
@@ -560,7 +560,7 @@ export const STAGE7_FINISH: StageDef = {
       severity: "blocker",
       kind: "missing",
       title: "Nobody has listened to the deliverable all the way through",
-      detail: "Automated checks assist quality control; they do not replace it. Every fault that matters most here — a wrong version, a missing element, an edit that reads badly, an ending that truncates — passes every automated test there is.",
+      detail: "Automated checks assist quality control; they do not replace it. Many of the faults that matter most here — a wrong version, a missing element, an edit that reads badly, an ending that truncates — can pass every automated test.",
       fixHint: "Play the exported file from start to finish without stopping, and do it before delivery rather than after somebody else does.",
       needsLogic: true,
       logicIntent: "Fire when full_playback_review is no, partial or session."
@@ -604,7 +604,7 @@ export const STAGE7_FINISH: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "The encoded version has not been compared with the master",
-      detail: "Encoding alters transients, high frequencies, stereo image and true peak. A master that sits exactly on its ceiling will exceed it once encoded, and nobody checks the file the listener actually receives.",
+      detail: "Encoding alters transients, high frequencies, stereo image and true peak. A master that sits exactly on its ceiling will often exceed it once encoded, and the file the listener actually receives has not been checked.",
       fixHint: "Encode as the platform will, and compare it with the master at matched level. Re-measure true peak on the encoded file.",
       needsLogic: true,
       logicIntent: "Fire when encoded_check is no."

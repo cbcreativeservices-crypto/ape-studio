@@ -158,7 +158,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'When could an omni be a reasonable choice for a shaker spot?',
     options: ['A quiet, good-sounding room where isolation matters little', 'A loud stage, so that the moving shaker is heard from all sides', 'Not on percussion, because an omni has no front to aim'],
     correct: 'A quiet, good-sounding room where isolation matters little',
-    explain: 'An omni gives a broad pickup and an even off-axis tone — and hears the room and every loudspeaker equally. On a loud stage that usually means spill and feedback.',
+    explain: 'An omni gives a broad pickup and a fairly even off-axis tone — and hears the room and the loudspeakers from every side. On a loud stage that usually means spill and feedback.',
     why: {
       'A loud stage, so that the moving shaker is heard from all sides': 'An omni hears the monitors and the band from all sides too: on a loud stage it usually feeds back sooner.',
       'Not on percussion, because an omni has no front to aim': 'Too strong: in a quiet, good room an omni can sound natural and even.',
@@ -197,7 +197,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Shaken toward and away, the forward stroke comes closer. Centre or widen the working area, move the mic back a little — or try side to side if the player chooses it.',
     why: {
       'The fill wears down after a few strokes and goes quiet': 'The fill does not wear out in a phrase; the distance to the mic is changing.',
-      'The mic’s pattern changing from one stroke to the next': 'A mic’s pattern is fixed; the instrument’s position is what changes.',
+      'The mic’s pattern changing from one stroke to the next': 'A mic’s pattern does not change from stroke to stroke; the instrument’s position is what changes.',
     },
   },
   {
@@ -466,7 +466,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'Nearer means louder at the mic; a shaker moving toward and away makes alternate strokes jump in level.',
     why: {
       'Nothing — the mic hears the same': 'Distance changes level; a moving shaker changes it every stroke.',
-      'The pitch of the shaker changes': 'The distance changes the level, not a pitch.',
+      'The pitch of the shaker changes': 'The distance changes the level; any pitch shift from the motion is far too small to hear.',
     },
   },
   {

@@ -735,7 +735,7 @@ export function FoundationsPlaygroundScreen() {
             ],
             correctIdx: 1,
             reveal:
-              'A pure sine has ONE partial. A low-pass at 2 kHz only removes energy ABOVE 2 kHz — and there is none. Filters change a sound only when something lives on the far side of the cutoff. Try the same filter on a SAW and count what survives.',
+              'A pure sine has ONE partial. A low-pass at 2 kHz cuts mostly above 2 kHz — and your sine sits far below it. Filters change a sound only when something lives near or past the cutoff. Try the same filter on a SAW and count what survives.',
             wrongHint: 'Look at the spectrum pane: how many lines does a sine have, and where is yours relative to 2 kHz?',
           }}
         />

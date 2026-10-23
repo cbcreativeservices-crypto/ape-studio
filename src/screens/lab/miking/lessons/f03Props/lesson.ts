@@ -46,7 +46,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a prop mic by its properties — a quiet condenser for soft detail, a dynamic for a loud prop or heavy stage spill, a shotgun or a small supercardioid — and compare in the room.',
     credit: { scenarios: ['f03.mic.tube', 'f03.mic.1', 'f03.mic.2', 'f03.rec.1'], note: 'Answer the four checks (one reaches back to where a prop’s sounds come from).' },
-    takeaway: 'A quiet condenser reveals soft paper and small mechanisms; a dynamic suits a loud prop or a spill-heavy stage; a shotgun narrows only in the highs. No one mic suits every object — compare in the room.',
+    takeaway: 'A quiet condenser reveals soft paper and small mechanisms; a dynamic suits a loud prop or a spill-heavy stage; a shotgun narrows mostly in the highs. No one mic suits every object — compare in the room.',
   },
   placement: {
     title: 'Placement Studio',
@@ -181,7 +181,7 @@ const scenarios: MikingScenario[] = [
     explain: 'If one setting cannot serve a quiet latch and a forceful close, capture controlled separate passes or use suitable channels and headroom — never ask for unsafe force, and never accept clipping.',
     why: {
       'Ask the artist to slam the door gently': 'The scene sets the action. Change the capture, not the performance.',
-      'Set the gain for the latch and accept clipping': 'Clipping cannot be undone later. Find headroom or record separate passes.',
+      'Set the gain for the latch and accept clipping': 'Clipping cannot be fully undone later. Find headroom or record separate passes.',
     },
   },
   {
@@ -214,7 +214,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'For paper, the artist repeats the page turn. What do you change between takes?',
     options: ['Only the mic’s aim and position', 'The paper, the mic and the gain', 'The artist’s speed, to suit the mic'],
     correct: 'Only the mic’s aim and position',
-    explain: 'Change one variable at a time: the performer repeats the same turn while only the mic’s aim and position move. Then you know what made the difference.',
+    explain: 'Change one thing at a time: the performer repeats the same turn while only the mic moves. Then you know what made the difference.',
     why: {
       'The paper, the mic and the gain': 'Three changes at once hide which one mattered.',
       'The artist’s speed, to suit the mic': 'The performance serves the scene; the mic moves, not the action.',
@@ -276,7 +276,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A close latch mic and a room mic sound smeared together. Why?',
     options: ['The room mic hears each event later', 'The room mic inverts the door’s polarity', 'The close mic is louder, so the two cancel'],
     correct: 'The room mic hears each event later',
-    explain: 'The farther mic hears each event later; summed, some pitches cancel and the transient blurs. Move or rebalance first; check polarity at matched levels as a diagnostic.',
+    explain: 'The farther mic hears each event later; summed, some frequencies cancel and the transient blurs. Move or rebalance first; check polarity at matched levels as a diagnostic.',
     why: {
       'The room mic inverts the door’s polarity': 'Both face the same door; the difference is when the sound arrives.',
       'The close mic is louder, so the two cancel': 'Level alone does not cancel; the arrival-time difference does.',

@@ -27,7 +27,7 @@ export const A02_VIEWS = { tenor: VIEWS, bass: VIEWS };
 
 const VARIANTS: InstrumentModel['variants'] = [
   { id: 'tenor', label: 'TENOR', blurb: 'A tenor trombone: a bell about 20 cm across, the slide in the right hand.' },
-  { id: 'bass', label: 'BASS', blurb: 'A bass trombone: the same tube length, a wider bore and a bell about 24 cm across — and valves in the bell section, worked by the left thumb.' },
+  { id: 'bass', label: 'BASS', blurb: 'A bass trombone: the same tube length, a wider bore and a bell about 24 cm across — and valves in the bell section, worked by the left hand.' },
 ];
 
 export const A02_MODEL: InstrumentModel = mergeBrass(

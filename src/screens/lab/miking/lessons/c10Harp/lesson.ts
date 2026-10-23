@@ -113,8 +113,8 @@ const scenarios: MikingScenario[] = [
     id: 'hp.set.1',
     page: 'setting',
     prompt: 'A spot mic near the top of the pillar would be easiest from a boom over the harpist’s head. What do you do?',
-    options: ['Swing the boom over quickly while the harpist is not playing', 'Use a secure stand from the side, never over the harpist', 'Hold the mic there by hand during the performance'],
-    correct: 'Use a secure stand from the side, never over the harpist',
+    options: ['Swing the boom over quickly while the harpist is not playing', 'Use a secure stand from the side, clear of the harpist’s head', 'Hold the mic there by hand during the performance'],
+    correct: 'Use a secure stand from the side, clear of the harpist’s head',
     explain: 'Nothing moves over the harp or the harpist’s head without a secure stand and a controlled path. Bring the boom in from the side, clear of their reach and view.',
     why: {
       'Swing the boom over quickly while the harpist is not playing': 'Speed is not safety. Nothing goes over the harpist’s head without a secure stand.',
@@ -139,7 +139,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The harp sounds boomy and you want to put some foam in a sound hole. What comes first?',
     options: ['Push a little foam in yourself: it comes out again after the concert', 'Tape over the hole instead, which is gentler than foam', 'Ask the owner; only with their agreement, and nothing forced in'],
     correct: 'Ask the owner; only with their agreement, and nothing forced in',
-    explain: 'Partly filling a hole is a technique some use — but only when the owner asks for it. First try moving the mic: up, out, or away from the middle of the board.',
+    explain: 'Partly filling a hole is a technique some use — but only with the owner’s agreement. First try moving the mic: up, out, or away from the middle of the board.',
     why: {
       'Push a little foam in yourself: it comes out again after the concert': 'Nothing goes into the harp without the owner’s agreement. Move the mic first.',
       'Tape over the hole instead, which is gentler than foam': 'Tape on the finish can damage it. Ask the owner, and move the mic first.',
@@ -274,7 +274,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A cardioid rejects most directly behind (180°). A supercardioid’s deepest rejection is off the rear axis, near 125°. Aim by the actual pattern.',
     why: {
       'Off to one side of the rear, near 125°': 'That is a supercardioid. A cardioid rejects most straight behind.',
-      'Beside the mic, square to its front': 'At 90° a cardioid still picks up half as much as on axis.',
+      'Beside the mic, square to its front': 'At 90° a cardioid is only about 6 dB down from on axis.',
     },
   },
   {
@@ -457,7 +457,7 @@ const symptoms: Symptom[] = [
     explain: 'Two mics hearing the harp at different times comb in mono. Change the spacing, use a coincident pair, or one mic.',
     why: {
       'Flip one mic’s polarity and leave it that way for the whole concert': 'Polarity does not remove a delay. Fix the geometry.',
-      'Pan the two mics harder apart to separate them': 'Panning does not change the mono sum.',
+      'Pan the two mics harder apart to separate them': 'Panning does not remove the combing in the mono sum.',
     },
   },
   {
@@ -520,7 +520,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'One small condenser about 60 cm in front, aimed back at part of the board', ok: true, power: 'phantom', feedback: 'A suggested single-mic start: defined and practical.' },
       { id: 'c', label: 'A cardioid near the top of the pillar, looking down at the board', ok: true, power: 'phantom', feedback: 'A suggested spot — perhaps with a distant pair for the room.' },
       { id: 'd', label: 'A cardioid 5 cm from the middle of the board, for the most detail', ok: false, power: 'phantom', feedback: 'That close, a cardioid favours one region and booms — and crowds the harpist.' },
-      { id: 'e', label: 'A boom over the harpist’s head, pointing down into the strings', ok: false, power: 'phantom', feedback: 'Nothing goes over the harpist’s head. Bring a spot in from the side.' },
+      { id: 'e', label: 'A boom over the harpist’s head, pointing down into the strings', ok: false, power: 'phantom', feedback: 'Keep booms from hanging over the harpist’s head. Bring a spot in from the side.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.mono', label: 'I will check the pair in mono', role: 'optional', feedback: 'A fair reason for any spaced pair.' }, BRAND_REASON, CLOSE_REASON],
     explain: 'More than one setup passes. What passes is the reasoning: a sensible starting point from its named surface, clearance from the harpist, and power that matches the mic.',

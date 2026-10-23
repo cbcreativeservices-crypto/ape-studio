@@ -66,7 +66,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a close mic and a room mic on the same steps can blur or hollow out together, how the arrival-time difference places comb notches, and why a moving walker makes any one alignment only locally true.',
     credit: { scenarios: ['f01.two.1', 'f01.two.2', 'f01.two.3', 'f01.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics hear each step at different times: some pitches cancel in the sum. Bring up the close mic alone, add the second for a reason, check in mono — move or rebalance first; polarity flips the sign and never removes a delay.',
+    takeaway: 'Two mics hear each step at different times: some frequencies cancel in the sum. Bring up the close mic alone, add the second for a reason, check in mono — move or rebalance first; polarity flips the sign and never removes a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -266,7 +266,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A close mic at 1.4 m and a room mic at 3 m sound hollow together. Why?',
     options: ['Each step reaches them at different times', 'The room mic reverses the polarity of the steps', 'The close mic is louder, so the two cancel'],
     correct: 'Each step reaches them at different times',
-    explain: 'The room mic hears each step later. Summed, some pitches arrive out of step and cancel — a comb of notches. Change placement or level first; check polarity at matched levels only as a diagnostic.',
+    explain: 'The room mic hears each step later. Summed, some frequencies arrive out of step and cancel — a comb of notches. Change placement or level first; check polarity at matched levels only as a diagnostic.',
     why: {
       'The room mic reverses the polarity of the steps': 'Both mics face the same steps; the difference is when the sound arrives, not its sign.',
       'The close mic is louder, so the two cancel': 'Level alone does not cancel; the arrival-time difference makes the notches.',
@@ -495,7 +495,7 @@ export const F01_LESSON: Lesson & { sp: SpExtra } = {
   predictions,
   orient: [
     { title: 'WHAT IT IS', text: 'A Foley footstep is performed, not recorded on set: a Foley artist walks in place in a pit of the right surface, in the right shoes, in time with the picture — or live, beside a theatre stage.', src: 'NF-FOLEY' },
-    { title: 'THE PIT', text: 'A pit about 1.2 × 1 m set into the stage floor, framed in concrete about 10 cm wide, on a heavy slab: one surface per pit — tile, wood, gravel, carpet and more.', src: 'FF-PIT' },
+    { title: 'THE PIT', text: 'Here, a pit about 1.2 × 1 m set into the stage floor, framed in concrete about 10 cm wide, on a heavy slab: one surface per pit — tile, wood, gravel, carpet and more.', src: 'FF-PIT' },
     { title: 'THE SHOE AND THE SURFACE', text: 'The shoe and the surface choose most of the sound — and what lies under the surface joins in: a carpet always lies on something, and a hollow panel can boom.', src: 'FF-CUE' },
     { title: 'THE MOVEMENT', text: 'The walker’s whole movement — feet, arms, body, a pivot or a missed step — and the way out are keep-outs. Every mic, stand and cable stays outside them.', src: 'LESSON-F01' },
   ],
@@ -515,7 +515,7 @@ export const F01_LESSON: Lesson & { sp: SpExtra } = {
       { id: 'walker', label: 'the walker and their whole movement', short: 'THE MOVEMENT', note: 'Feet, arms and body, a pivot or a missed step: mark it on the floor before any stand goes up; the mic, stand and cable stay outside it.', prov: { kind: 'illustrative', reason: 'F01 L69' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'exit', label: 'the exit path', short: 'EXIT PATH', note: 'The way out of the pit to the stage door: no stand or cable across it.', prov: { kind: 'illustrative', reason: 'F01 L69' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'clothes', label: 'the walker’s clothes and breath', short: 'CLOTHES · BREATH', note: 'Trousers, jacket and breath are close to the mic too: a tight pickup aimed down at the steps keeps them off its axis.', prov: { kind: 'illustrative', reason: 'S-FOLEY' }, tag: 'SPILL', scene: 'all' },
-      { id: 'floor', label: 'the floor under the surface', short: 'THE FLOOR', note: 'A hollow layer or a suspended floor can boom with every step — a mic move cannot change it; the surface and its support can.', prov: { kind: 'illustrative', reason: 'FF-PIT' }, tag: 'THE SOURCE', scene: 'all' },
+      { id: 'floor', label: 'the floor under the surface', short: 'THE FLOOR', note: 'A hollow layer or a suspended floor can boom with every step — a mic move changes only how loud it sounds; the surface and its support change the boom itself.', prov: { kind: 'illustrative', reason: 'FF-PIT' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'room', label: 'the room, the ventilation and the other props', short: 'THE ROOM', note: 'A farther mic hears more of the room: wanted for a wide shot, unwanted when the scene is somewhere else.', prov: { kind: 'illustrative', reason: 'FF-HP' }, tag: 'ROOM SOUND', scene: 'studio' },
       { id: 'pa', label: 'the PA and the wedge', short: 'PA · WEDGE', note: 'In a live booth every open mic hears the PA and the wedge: one close mic, the wedge in its rejection, the open mics few.', prov: { kind: 'illustrative', reason: 'S-LIVE, S-AUTOMIX' }, tag: 'FEEDBACK PATH', scene: 'stage' },
     ],

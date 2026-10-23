@@ -33,7 +33,7 @@ export const SUBJECT_META: Record<string, SubjectMeta> = {
     careers: 'Acoustician, system tech, studio designer, install/AV designer.',
   },
   'Measurement & Analysis': {
-    description: 'Measuring and analyzing sound and systems — SPL, frequency response, impulse/RT60, and tuning with real instruments.',
+    description: 'Measuring and analyzing sound and systems — SPL, frequency response, impulse/RT60, and tuning with real measurement tools.',
     careers: 'System engineer, acoustician, QC/test technician, install tuner.',
   },
 

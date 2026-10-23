@@ -26,7 +26,7 @@ export const SYSTEM_CHAIN: ChainSpec = {
       parts: [
         { id: 'pre', label: 'A copy of the console’s output, before the processor', short: 'PRE-DSP', blurb: 'The processor’s settings and its delay are inside the measured path.' },
         { id: 'post', label: 'A copy after the processor, at the amplifier’s input', short: 'POST-DSP', blurb: 'The processor is left out: the trace shows the amplifier, the loudspeaker and the room.' },
-        { id: 'none', label: 'No reference — the mic alone', short: 'MIC ONLY', blurb: 'One channel: a level at the mic, not the response of a path.' },
+        { id: 'none', label: 'No reference — the mic alone', short: 'MIC ONLY', blurb: 'One channel with no known signal: a level at the mic, not the response of a path.' },
       ],
     },
     {
@@ -130,14 +130,14 @@ export const PRODUCT_CHAIN: ChainSpec = {
         { id: 'relative', label: 'A relative comparison at that position', short: 'RELATIVE', blurb: 'Before against after, same position, same cycle.' },
         { id: 'clues', label: 'Timing clues between two channels — not a proven path', short: 'CLUES', blurb: 'Events that line up in both channels, said as clues.' },
         { id: 'spl', label: 'A level in dB SPL read off the recorder', short: 'dB SPL', blurb: 'The recorder’s own digital scale, reported as a pressure level.' },
-        { id: 'power', label: 'The fan’s sound power', short: 'POWER', blurb: 'A property of the device, from a few positions round it.' },
+        { id: 'power', label: 'The fan’s sound power', short: 'POWER', blurb: 'A property of the device, from the positions a set method asks for.' },
       ],
     },
   ],
   rules: [
     { id: 'hand', all: [['vib', 'hand']], reason: 'Never attach, reposition or retrieve a sensor by hand on a running device. A qualified person fixes it on while the device is off and isolated.', safety: true },
     { id: 'spl', all: [['claim', 'spl']], reason: 'A recorder’s dBFS is not a sound-pressure level: without a calibrated chain the honest label is relative.' },
-    { id: 'power', all: [['claim', 'power']], reason: 'Sound power comes from a named method over a defined surface in a qualifying room — not from a few positions round a fan.' },
+    { id: 'power', all: [['claim', 'power']], reason: 'Sound power comes from a named method, with the test space and mic positions it asks for — not from a few positions round a fan.' },
   ],
   briefs: [
     {
@@ -150,7 +150,7 @@ export const PRODUCT_CHAIN: ChainSpec = {
         auto: 'Auto-gain moves the level between runs and hides the change you came to compare.',
         clues: 'One airborne position before and after is a comparison, not a two-channel timing study.',
         spl: 'A recorder’s dBFS is not a sound-pressure level.',
-        power: 'Sound power needs a named method, a defined surface and a qualifying room.',
+        power: 'Sound power needs a named method, with the test space and mic positions it asks for.',
       },
       label: 'RELATIVE · SAME POSITION, SAME CYCLE, FIXED GAIN',
     },
@@ -166,7 +166,7 @@ export const PRODUCT_CHAIN: ChainSpec = {
         relative: 'Two channels in different units are compared by timing, as clues — not as one relative level.',
         hand: 'Never by hand on a running device: a qualified person fixes the sensor on while it is off and isolated.',
         spl: 'A recorder’s dBFS is not a sound-pressure level.',
-        power: 'Sound power needs a named method, a defined surface and a qualifying room.',
+        power: 'Sound power needs a named method, with the test space and mic positions it asks for.',
       },
       label: 'TWO CHANNELS, TWO UNITS · CLUES, NOT A PROVEN PATH',
     },

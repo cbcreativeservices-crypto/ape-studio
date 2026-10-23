@@ -48,7 +48,7 @@ export const M11_COPY: Partial<LessonCopy> = {
     B: { typeId: 'ohPencil', pattern: 'cardioid', zone: 'oh.gj.main' },
     learn: [
       'A close mic and an overhead hear the same drum at two different times: the close mic first, the overhead a few milliseconds later. Summed, that delay notches the drum — the same comb as any pair.',
-      'So build the picture first — the overheads or a whole-kit mic — then bring each close mic up one at a time, at a plausible level, and check in mono. If a hit turns hollow or weak, change the position or the balance; try polarity only as a test. A polarity switch changes the sign; it does not remove the time difference.',
+      'So build the picture first — the overheads or a whole-kit mic — then bring each close mic up one at a time, at a plausible level, and check in mono. If a hit turns hollow or weak, change the position or the balance first, then try polarity. A polarity switch changes the sign; it does not remove the time difference.',
     ],
     warn: 'This graph is a simplified picture: one point source, straight paths, no room. The close mic and the overhead hear different surfaces of the drum at very different levels, so read the notch depths as illustrative. Judge the blend by ear, in mono, at matched levels.',
   },

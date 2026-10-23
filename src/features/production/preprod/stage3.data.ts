@@ -112,7 +112,7 @@ export const STAGE3_PEOPLE: StageDef = {
           fieldId: "rigging_required",
           label: "Is anything flown or rigged?",
           kind: "choice",
-          help: "Loudspeakers, lighting, truss, screens or anything else hung above people. Ground-supported structures count too: a truss tower, goalpost or ground-supported roof holding loudspeakers, lights or screens is a temporary structure that qualified people design and put up (in the US, ANSI E1.21 covers these at outdoor events) — answer Yes for those. If yes, a certified rigger must design and sign off the rigging. This lab does not qualify anyone to rig.",
+          help: "Loudspeakers, lighting, truss, screens or anything else hung above people. Ground-supported structures count too: a truss tower, goalpost or ground-supported roof holding loudspeakers, lights or screens is a temporary structure that qualified people design and put up (in the US, ANSI E1.21 covers these at outdoor events) — answer Yes for those. If yes, a qualified rigger must plan and sign off the rigging. This lab does not qualify anyone to rig.",
           required: {
             music: false,
             podcast: false,
@@ -141,7 +141,7 @@ export const STAGE3_PEOPLE: StageDef = {
           showWhen: { field: "rigging_required", notEquals: ["no"] },
           label: "Certified rigger",
           kind: "text",
-          help: "Rigging is certified work: venues, unions and insurers require a recognised certification and state which they accept. That includes ground-supported towers and roofs (ANSI E1.21 in the US). Name the qualified person and confirm it before the day. This app does not qualify anyone to rig.",
+          help: "Rigging is skilled, safety-critical work: most venues, unions and insurers require a recognised certification and state which they accept. That includes ground-supported towers and roofs (ANSI E1.21 in the US). Name the qualified person and confirm it before the day. This app does not qualify anyone to rig.",
           required: false,
           onlyFor: [
             "live"
@@ -730,9 +730,9 @@ export const STAGE3_PEOPLE: StageDef = {
       ],
       severity: "blocker",
       kind: "unsafe",
-      title: "Something is being flown and no certified rigger is named",
-      detail: "Anything hung above people is a structural load, and a failure can kill. Rigging is certified work that venues, unions and insurers require a recognised certification for, and no amount of audio experience substitutes for it. This plan should not proceed until a qualified person owns the rigging.",
-      fixHint: "Name a certified rigger, confirm their certification with the venue or authority, and have them design and sign off everything that is flown.",
+      title: "Something is being flown and no qualified rigger is named",
+      detail: "Anything hung above people is a structural load, and a failure can kill. Rigging is skilled work that most venues, unions and insurers require a recognised certification for, and no amount of audio experience substitutes for it. This plan should not proceed until a qualified person owns the rigging.",
+      fixHint: "Name a qualified rigger, confirm their certification with the venue or authority, and have them design and sign off everything that is flown.",
       needsLogic: true,
       logicIntent: "Fire when rigging_required is yes and rigger is empty. The unknown case is handled by people-hazards-unknown.",
       onlyFor: [

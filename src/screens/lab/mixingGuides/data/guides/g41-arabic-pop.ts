@@ -104,7 +104,7 @@ export const GUIDE: MixingGuide = {
         "source": "Riq (Arabic tambourine)",
         "cut": "HPF 200–300 Hz; dip 2–4 kHz if harsh",
         "boost": "Shelf +1–2 dB at 10 kHz",
-        "notes": "Dynamic mic handles jingle SPL best"
+        "notes": "Live, a dynamic mic takes the sharp jingle peaks well; in the studio a small condenser gives more detail"
       },
       {
         "source": "Kick",
@@ -335,7 +335,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Never run a chromatic auto-tuner on maqam (melodic mode) vocals without a correct microtonal scale.",
+      "text": "Avoid running a chromatic auto-tuner on maqam (melodic mode) vocals without a correct microtonal scale, unless the artist wants the robotic sound.",
       "bullet": true
     },
     {

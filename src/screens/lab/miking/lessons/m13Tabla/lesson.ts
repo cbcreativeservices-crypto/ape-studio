@@ -332,7 +332,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Is one mic per drum the same as a coincident stereo pair?',
     options: ['No — each mic serves one drum; a coincident pair shares one spot', 'Yes, two mics on the pair make a stereo pair whatever their positions', 'Yes, as long as the two are panned hard apart'],
     correct: 'No — each mic serves one drum; a coincident pair shares one spot',
-    explain: 'A coincident pair puts two directional capsules at one point, angled apart, for a stereo picture. Close mics on each drum are a different technique — and panning them is a separate decision.',
+    explain: 'A coincident pair puts two capsules, usually directional, at one point, angled apart, for a stereo picture. Close mics on each drum are a different technique — and panning them is a separate decision.',
     why: {
       'Yes, two mics on the pair make a stereo pair whatever their positions': 'Two mics are not stereo by themselves; a coincident pair shares one point.',
       'Yes, as long as the two are panned hard apart': 'Panning is a separate decision — and spreading the drums hard apart is not the aim.',
@@ -383,7 +383,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Compare a different target, axis or distance. Keep the change only if the quiet and ringing strokes stay distinct.',
     why: {
       'Ask the player to play the dayan with softer fingers': 'The player’s sound is the goal: move the mic.',
-      'A high-pass filter set as for a kick drum': 'A high-pass filter does not soften clicks — and never import another drum’s settings.',
+      'A high-pass filter set as for a kick drum': 'A high-pass filter does not soften clicks — and another drum’s settings are only a rough start.',
     },
   },
   {
@@ -401,7 +401,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ta.mix.3',
     page: 'practice',
-    prompt: 'The two drum mics sound hollow together. Which change removes the arrival-time difference?',
+    prompt: 'The two drum mics sound hollow together. Which change reduces the arrival-time difference?',
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on one of the mics', 'Turning one mic up until it matches the other'],
     correct: 'Moving a mic so the two paths are closer to equal',
     explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth.',
@@ -583,7 +583,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'By pressing the head with the heel of the hand',
     explain: 'Pressing raises the head’s tension, so the pitch glides — the hand moves across the head all the time.',
     why: {
-      'By turning a tuning peg between the strokes': 'There are no pegs; the glide comes from the hand pressing the head.',
+      'By turning a tuning peg between the strokes': 'Tuning is set before playing, with blocks under the straps; the glide comes from the hand pressing the head.',
       'By striking the patch with more force': 'A harder stroke is louder, not a glide. The glide is pressure.',
     },
   },

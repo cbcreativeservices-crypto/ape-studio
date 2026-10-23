@@ -316,7 +316,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "Start every mix, studio or live, with the lead vocal; build the track around it.",
+      "text": "In R&B, many mixers start with the lead vocal, studio or live, and build the track around it.",
       "bullet": true
     },
     {

@@ -357,7 +357,7 @@ const DRIVER: Workspace = {
         return [
           `Vas/Vb = ${fmt(n(v.vas) / n(v.vb))}, so √(1 + Vas/Vb) = ${fmt(k)}.`,
           `fc = ${fmt(n(v.fs))} × ${fmt(k)} = ${fmt(n(v.fs) * k)} Hz; Qtc = ${fmt(n(v.qts))} × ${fmt(k)} = ${fmt(n(v.qts) * k)}.`,
-          `Qtc ≈ 0.707 is maximally flat; higher (smaller box) is peaky, lower (bigger box) is over-damped.`,
+          `Qtc ≈ 0.707 is maximally flat; higher (smaller box) is peaky, lower (bigger box) is more damped, and over-damped below 0.5.`,
         ];
       },
     },

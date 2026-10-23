@@ -199,7 +199,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'On stage, does a condenser cause more feedback simply because it is more sensitive?',
     options: ['Yes, since its higher output reaches the PA first', 'Not by itself — compare mics at the same useful level', 'Only when it sits closer to the grille than a dynamic'],
     correct: 'Not by itself — compare mics at the same useful level',
-    explain: 'Sensitivity alone does not decide feedback: at the same reproduced level, the pattern, the placement and the monitors decide it. The gain is simply set lower for a more sensitive mic.',
+    explain: 'Sensitivity alone does not decide feedback: at the same reproduced level, the pattern, the placement, the mic’s tone and the monitors decide it. The gain is simply set lower for a more sensitive mic.',
     why: {
       'Yes, since its higher output reaches the PA first': 'The gain is set for the same useful level, so the higher output is simply turned down at the desk.',
       'Only when it sits closer to the grille than a dynamic': 'Closer to the source usually HELPS gain before feedback. Pattern and monitors matter more.',
@@ -334,7 +334,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Polarity inversion reverses the signal’s sign. Only moving a mic changes when the sound arrives: the notches move, the delay does not.',
     why: {
       'It drops to zero, so the two arrivals now line up exactly': 'The mics are still the same distances from the cone: the delay stays.',
-      'It doubles, because the copy is now inverted': 'Polarity has no time in it. Only a mic’s position changes the delay.',
+      'It doubles, because the copy is now inverted': 'Polarity has no time in it. Only a mic’s position, or a channel delay, changes the delay.',
     },
   },
   {

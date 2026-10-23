@@ -147,7 +147,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What does a bass DI give that a cabinet mic does not?',
     options: ['A steady low end with no stage spill', 'The cabinet’s character and the room', 'More output in the very highest octave'],
     correct: 'A steady low end with no stage spill',
-    explain: 'A DI is a consistent electrical foundation that reduces amp spill into the vocal and drum mics. A cabinet mic adds the cabinet’s character — and spill and phase decisions.',
+    explain: 'A DI is a consistent electrical foundation with no stage spill, and lets the amp run quieter, so less of it reaches the vocal and drum mics. A cabinet mic adds the cabinet’s character — and spill and phase decisions.',
     why: {
       'The cabinet’s character and the room': 'That is what the cabinet mic adds; the DI has neither.',
       'More output in the very highest octave': 'The DI’s value is stability and isolation, not extra highs.',
@@ -171,7 +171,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Where does a bass amp’s low end go on a stage?',
     options: ['All round the stage, not just ahead', 'Only along the straight-ahead axis of each woofer', 'Straight down into the stage floor'],
     correct: 'All round the stage, not just ahead',
-    explain: 'Low frequencies spread in every direction from a cabinet — one reason a DI helps the vocal and drum mics.',
+    explain: 'Low frequencies spread in every direction from a cabinet — one reason a DI, with the amp turned down, helps the vocal and drum mics.',
     why: {
       'Only along the straight-ahead axis of each woofer': 'Only the highs beam; the lows spread round.',
       'Straight down into the stage floor': 'Some goes into the floor, but most spreads round the stage.',
@@ -219,7 +219,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A live show is recorded through a split. Where do the audience mics go?',
     options: ['To the recording only, not the wedges', 'To the wedges, so the band hears the crowd', 'To the PA, to make the room sound bigger'],
     correct: 'To the recording only, not the wedges',
-    explain: 'Record audience or room mics when the production needs them, but keep them out of the monitor sends and protect them from feedback.',
+    explain: 'Record audience or room mics when the production needs them, but keep them out of the wedges and protect them from feedback.',
     why: {
       'To the wedges, so the band hears the crowd': 'Distant mics in the wedges are an easy path to feedback.',
       'To the PA, to make the room sound bigger': 'A room mic in the PA hears the PA back.',
@@ -305,7 +305,7 @@ const scenarios: MikingScenario[] = [
     correct: 'At the loudest full-band passage',
     explain: 'Soundcheck the loudest full-band passage, not only isolated instruments: set the stage mix, then leave a stable margin before feedback.',
     why: {
-      'With each instrument on its own': 'Alone, no instrument shows the spill and level of the whole band.',
+      'With each instrument on its own': 'A good first step, but alone no instrument shows the spill and level of the whole band.',
       'During the quietest verse of the set': 'The first loud chorus would then overload or ring.',
     },
   },
@@ -432,7 +432,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'The expanded plan, with only the needed mics open per song', ok: true, power: 'phantom', feedback: 'Fair, with the open-mic count managed song by song.' },
       { id: 'c', label: 'A stereo room pair sent to the PA and to every wedge', ok: false, power: 'phantom', feedback: 'Room mics in the wedges invite feedback.' },
       { id: 'd', label: 'An omni on every source, for a natural sound', ok: false, power: 'phantom', feedback: 'Omnis on a loud stage hear everything; gain before feedback suffers.' },
-      { id: 'e', label: 'A homemade Y-cable to split the mics', ok: false, power: 'phantom', feedback: 'An improvised parallel split is unsafe; use a proper splitter.' },
+      { id: 'e', label: 'A homemade Y-cable to split the mics', ok: false, power: 'phantom', feedback: 'An improvised parallel split risks hum and phantom clashes between the desks; use a proper splitter.' },
     ],
     reasons: [
       { id: 'r.close', label: 'Close, directional mics on the loud sources and the voice', role: 'required', feedback: 'Say why: the most gain before feedback.' },

@@ -97,7 +97,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'I06b', labId: 'percussion', title: 'Finger Cymbals', subtitle: 'A small pair, held still or danced — attack, ring and the moving hands', status: 'ready' },
   { id: 'I06c', labId: 'percussion', title: 'Bar Chimes', subtitle: 'A row of graduated bars swept by hand — the whole sweep and its tail', status: 'ready' },
   { id: 'I07', labId: 'percussion', title: 'Vibraphone', subtitle: 'Metal bars, tubes and fans: one mic above, or a spaced or coincident pair', status: 'ready' },
-  { id: 'I08', labId: 'percussion', title: 'Marimba', subtitle: 'Wooden bars over pipes, five octaves wide: one mic, or a spaced or coincident pair', status: 'ready' },
+  { id: 'I08', labId: 'percussion', title: 'Marimba', subtitle: 'Wooden bars over pipes, often four to five octaves wide: one mic, or a spaced or coincident pair', status: 'ready' },
   { id: 'I09', labId: 'percussion', title: 'Xylophone', subtitle: 'Hard, bright bars: one mic above, off-axis, or a spaced or coincident pair', status: 'ready' },
   { id: 'I10', labId: 'percussion', title: 'Glockenspiel', subtitle: 'Steel bars that ring long: a safe view above, the close example that conflicts, one mic or two', status: 'ready' },
   { id: 'I11a', labId: 'percussion', title: 'Rhodes (Tine Piano)', subtitle: 'Mic the speaker it plays through — the direct signal compared alongside', status: 'ready' },
@@ -142,7 +142,7 @@ export const LESSONS: readonly LessonMeta[] = [
   // Lab 5 (ensembles), group 5 — sections: E10, E16, E12 (each on its own line).
   { id: 'E10', labId: 'ensembles', title: 'Horn Sections', subtitle: 'Brass and saxes together: one section view, a mic for two, or a close mic on each — the players make the balance', status: 'ready' },
   { id: 'E16', labId: 'ensembles', title: 'Jazz Big Band', subtitle: 'Rows of reeds and brass with a rhythm section: a main view, section mics or a mic on every horn — the band makes the balance', status: 'ready' },
-  { id: 'E12', labId: 'ensembles', title: 'Percussion Ensembles', subtitle: 'Stations of drums, mallets and small percussion: one main pickup first, at most two supports, the movement covered', status: 'ready' },
+  { id: 'E12', labId: 'ensembles', title: 'Percussion Ensembles', subtitle: 'Stations of drums, mallets and small percussion: one main pickup first, as few supports as possible, the movement covered', status: 'ready' },
   /* Lab 6 (field), group 1 — Foley stage: F01, F02, F03, F04 (each lesson on its own line). */
   { id: 'F01', labId: 'field', title: 'Foley Footsteps and Surfaces', subtitle: 'A shoe, a surface and a room: about 0.9–1.8 m out, aimed down at the steps, outside the whole movement', status: 'ready' },
   { id: 'F02', labId: 'field', title: 'Clothing and Body Movement', subtitle: 'A cloth pass: about 1–1.5 m from the moving fabric, a close detail outside the whole gesture, the room close under it', status: 'ready' },
