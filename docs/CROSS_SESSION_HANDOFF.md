@@ -636,13 +636,13 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ### 2026-10-23 14:24 · ccode · e1821279
 changed: Home, Glossary, My Enrollments polish (owner 2026-10-23)
-affects other side: nothing (client-only: DJ lab art fix + new Skia shape ratchet test)
+affects other side: nothing (client-only UI copy/layout; enrollIntro is a device-local store)
 needs: nothing
 
 
 ### 2026-10-23 14:24 · ccode · 2e25c2e7
 changed: DJ lab: screen 17 froze black on Android — loupe band was a RoundedRect with no r
-affects other side: nothing (client-only UI copy/layout; enrollIntro is a device-local store)
+affects other side: nothing (client-only: DJ lab art fix + new Skia shape ratchet test)
 needs: nothing
 
 
