@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-22 21:53 · ccode · 3a49864c
+changed: Mixing guides: shipped files are the master copy; converter locked (owner)
+affects other side: nothing backend. NOTE for any session: mixing-guide files are the master copy — never run convert.py into the repo (it now refuses)
+needs: nothing
+
+
 ### 2026-10-22 20:05 · ccode · c8aab4ba
 changed: Fact audit R3 (final): hedges, context, can't-confirm, Career Finder templates + cleanup
 affects other side: glossary mirrors (Comp A): Patch bay ecebd487, Limiter 7f621dc4, Modular d72bd8a0, Digital audio e9071a60 now differ from the app's lab popups; x-copy, rock crusher, F-wrench meanings unsourced — check glossary rows. Lab-cert seed SQL regenerated (why lines only)
