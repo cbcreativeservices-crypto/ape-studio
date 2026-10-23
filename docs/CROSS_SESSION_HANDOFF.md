@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 10:25 · ccode · cc58e08e
+changed: RTA owner pass: band cursor, CAPTURE key, corner colour wheel, level-coloured frames (2026-10-23)
+affects other side: nothing backend (RTA screen + shared bezel optional frame prop).
+needs: nothing
+
+
 ### 2026-10-23 09:59 · ccode · 941dff85
 changed: Multimeter owner design pass (approved 2026-10-23)
 affects other side: nothing backend (Multimeter screen layout + help text; local colour pref only).
