@@ -39,6 +39,7 @@ import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
 import { closeCenterLock, closeVuTuner, openCenterLock, openVuTuner, publishTunerFrame, useCenterLockOpen, useVuTunerOpen } from '../../features/tools/tuner/tunerFrameStore';
 import { useSteadyTuner } from '../../features/tools/tuner/useSteadyTuner';
+import { stepDigits, type DigitsState } from '../../features/tools/tuner/centerLock';
 import { CenterLockTuner } from './CenterLockTuner';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { TunerDiagram } from '../../components/ColorTargetDiagrams';
@@ -545,6 +546,11 @@ function LivePitchMode({
     return () => clearTimeout(id);
   }, [isHeld, heldAgeMs]);
   const shownFreq = accepted && live != null ? live.freq : isHeld && lastGood != null ? lastGood.f : null;
+  // Tuner: the printed Hz refreshes 4×/s like the cents (tuner phase 1, owner
+  // 2026-10-23); the counter modes keep the live value.
+  const hzDigitsRef = useRef<DigitsState>({ value: null, at: 0 });
+  hzDigitsRef.current = stepDigits(hzDigitsRef.current, shownFreq, Date.now());
+  const printedHz = kind === 'tuner' ? hzDigitsRef.current.value : shownFreq;
   const holdNote = accepted
     ? null
     : isHeld
@@ -577,6 +583,8 @@ function LivePitchMode({
   const tunerInTune = kind === 'tuner' && accepted && steady.inTune;
   /** What the tuner displays: the averaged reading live, the held value when held. */
   const tunerCents = note == null ? null : liveCents != null && steady.cents != null ? steady.cents : note.cents;
+  // The printed number refreshes 4×/s (tuner phase 1); the needle stays fast.
+  const tunerDigits = note == null ? null : liveCents != null && steady.digits != null ? steady.digits : note.cents;
   const stats = computePitchStats(histRef.current);
   const outOfRange =
     accepted && live != null && (live.freq < PITCH_RANGE_HZ.min || live.freq > PITCH_RANGE_HZ.max);
@@ -683,7 +691,7 @@ function LivePitchMode({
           accessibilityLabel={`${shownFreq != null ? `${fmtHz(shownFreq)} hertz` : 'No signal'}. ${running ? 'Tap to stop capture.' : 'Tap to start capture.'}`}
         >
           <Text style={[styles.readoutValue, styles.readoutValueGreen, isHeld && styles.readoutDim]}>
-            {shownFreq != null ? fmtHz(shownFreq) : '—'}
+            {printedHz != null ? fmtHz(printedHz) : '—'}
           </Text>
           <Text style={styles.readoutUnit}>Hz</Text>
         </Pressable>
@@ -692,7 +700,7 @@ function LivePitchMode({
           {/* Top display (owner redesign 2026-09-10): the horizontal edgewise
               VU-style tuner on the amber skin — ±30¢, center = in tune. */}
           <SkinnedTunerVu
-            hzText={shownFreq != null ? `${fmtHz(shownFreq)} Hz` : '— Hz'}
+            hzText={printedHz != null ? `${fmtHz(printedHz)} Hz` : '— Hz'}
             cents={tunerCents}
             dim={isHeld}
             inTune={tunerInTune}
@@ -706,7 +714,7 @@ function LivePitchMode({
               tune within ±1 cent (owner 2026-08-05). */}
           <View style={[styles.tunerCurrent, tunerInTune && styles.tunerCurrentInTune]}>
             {/* MEMBER in-tune colour (owner 2026-08-21; moved to the note
-                card's top-right corner 2026-09-11) — discreet wheel. */}
+                card's top-left corner, owner 2026-10-23; was top-right) — discreet wheel. */}
             <ColorWheelButton
               style={styles.tunerWheel}
               current={tunerColor}
@@ -744,7 +752,7 @@ function LivePitchMode({
               ]}
             >
               {note != null && shownFreq != null
-                ? `${centsSnap(tunerCents ?? note.cents) >= 0 ? '+' : ''}${centsSnap(tunerCents ?? note.cents).toFixed(1)} cents · ${fmtHz(shownFreq)} Hz`
+                ? `${centsSnap(tunerDigits ?? note.cents) >= 0 ? '+' : ''}${centsSnap(tunerDigits ?? note.cents).toFixed(1)} cents · ${fmtHz(printedHz ?? shownFreq)} Hz`
                 : 'no stable pitch'}
             </Text>
           </View>
@@ -798,11 +806,12 @@ function LivePitchMode({
             <StatCell help={help} label="STATUS" value={statusLabel} />
           </View>
           <View style={styles.advBtnWrap}>
+            {/* Square key, ADVANCED / TUNER on two lines (owner 2026-10-23). */}
             <GlassButton
-              label="ADV TUNER"
+              label={'ADVANCED\nTUNER'}
               tint="green"
-              height={52}
-              fontSize={13}
+              height={ADV_KEY}
+              fontSize={12}
               onPress={() =>
                 fsGate.gate(() => {
                   if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
@@ -1435,6 +1444,9 @@ export function FrequencyCounterScreen({ navigation }: Props) {
   );
 }
 
+/** The square ADVANCED TUNER key — the STATUS cell's height (owner 2026-10-23). */
+const ADV_KEY = 75;
+
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingBottom: 10 },
@@ -1519,8 +1531,8 @@ const styles = StyleSheet.create({
   // STATUS 2/3 · ADV TUNER 1/3 (owner 2026-09-10). The cell wrap is a row so
   // StatCell's own flexGrow fills it.
   statusRow: { flexDirection: 'row', gap: 10 },
-  statusCellWrap: { flex: 2, flexDirection: 'row' },
-  advBtnWrap: { flex: 1, justifyContent: 'center' },
+  statusCellWrap: { flex: 1, flexDirection: 'row' },
+  advBtnWrap: { width: ADV_KEY, justifyContent: 'center' },
   statLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.textSub },
   statValue: { fontFamily: fonts.oswaldMedium, fontSize: 20, color: colors.textPrimary },
   statUnit: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amberLabel },
@@ -1581,7 +1593,8 @@ const styles = StyleSheet.create({
   centerLockRow: { alignItems: 'center', marginBottom: 6 },
   // Top-right corner of the note card (owner 2026-09-11); 44pt effective
   // target via padding + the wheel's own hit slop.
-  tunerWheel: { position: 'absolute', top: 8, right: 10, zIndex: 2, padding: 6 },
+  // Top-LEFT corner, matching the RTA and Multimeter colour wheels (owner 2026-10-23).
+  tunerWheel: { position: 'absolute', top: 8, left: 10, zIndex: 2, padding: 6 },
   // Tuner setup row (owner 2026-09-10): TUNING STANDARD · LOW-CUT · HIGH-CUT
   // buttons, each opening its compact choice tray below.
   cfgRow: { flexDirection: 'row', alignItems: 'stretch', gap: 8 },

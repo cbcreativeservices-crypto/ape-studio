@@ -127,6 +127,25 @@ That iOS string is owner-ratified copy — restore it as written rather than rew
 
 **Verified 2026-09-05 (evening) before the demo builds:** every package in `package.json` with a native half has its plugin/permission above or autolinks; `tsc --noEmit` clean; 255 tests green.
 
+## 🎯 TUNER PHASE 2 — native pitch engine (owner 2026-10-23: "add this phase 2 for the tuner to our next store build list")
+
+Source: `Downloads/Tuner-Research-and-Claude-Code-Implementation-Report-2026-10-23.docx`.
+Phase 1 (one display filter, slower digits, low-B partial reading, a spread
+check on IN TUNE, the timing bench) is JS only and rides the OTA. Phase 2
+changes `modules/ape-dsp` (C++ on both platforms), so it moves the native
+fingerprint and can ONLY ship in a store build. Build it, bench it, and keep
+iOS and Android identical.
+
+| Change | Today (measured in code 2026-10-23) | Target |
+|---|---|---|
+| Pitch hop (how often YIN runs) | once per analysis drain, ~50 ms (`EngineHub::processChunk`, `ApeDspCore.mm` "drain ring every ~50 ms") → ~20 estimates/s | 10–20 ms hop, overlapping windows; measure CPU and data age on a low-end Android |
+| Window for low notes | fixed 50 ms window + 25 ms max lag → 40 Hz floor (`PitchDetector(fs*0.05, fs*0.025)`); B0 30.9 Hz and A0 27.5 Hz fundamentals are unreadable (phase 1 reads their 2nd partial instead) | longer max lag / window when the selected instrument or piano key needs it (≥ 2 periods of the lowest note), so low B and the piano's bottom octave can read the fundamental |
+| Confidence threshold | JS gate `PITCH_CONF_MIN = 0.5` (FrequencyCounterScreen); YIN `voiced` uses its own threshold | calibrate against recorded instruments (plucked, bowed, wind, low bass, piano) — not a guessed number |
+| Timestamps | frames carry a sequence number, no audio timestamp | stamp each pitch frame with its audio time so the bench can measure true data age / end-to-end delay |
+| Bench on device | phase 1 bench measures the JS display path only | rerun with the native hop change on both test phones; record T50/T90, jitter, acquisition, CPU |
+
+Status: **PLANNED — not started.** Ships only on the owner's explicit build GO.
+
 ## What the owner does
 
 1. `eas build --profile development --platform ios` (and android) from `C:\Users\profe\dev\ape-studio` on the current branch, then install the new dev client on both phones and delete the old one (a stale client next to a new one caused the 2026-08-21 black-screen confusion — see memory `dev-client-reload-crash-2026-08-21`).

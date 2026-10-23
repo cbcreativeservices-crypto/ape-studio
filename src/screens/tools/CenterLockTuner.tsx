@@ -52,8 +52,14 @@ import {
   CLOSE_CENTS,
   courseHint,
   courses,
-  dampCents,
-  averageCents,
+  filterCents,
+  pushConfirm,
+  confirmStats,
+  stepDigits,
+  centsToTarget,
+  SPREAD_MAX_CENTS,
+  type ConfirmSample,
+  type DigitsState,
   directionText,
   displayNote,
   fmtCents,
@@ -563,6 +569,8 @@ type ViewState = {
   target: StringTarget;
   targetIdx: number;
   rawCents: number | null;
+  /** The printed cents number — refreshed every DIGITS_EVERY_MS (phase 1). */
+  digitCents: number | null;
   shownCents: number;
   confirmed: boolean;
   partial: number;
@@ -611,8 +619,11 @@ const LiveReadout = memo(function LiveReadout({
   const chromMidi = useRef<number | null>(null);
   const partialRef = useRef(1);
   const shownRef = useRef(0);
-  /** Averaged cents feeding the lock + needle (null = no reading yet). */
+  /** Filtered cents feeding the needle and digits (null = no reading yet). */
   const avgCentsRef = useRef<number | null>(null);
+  /** The last CONFIRM_WINDOW_MS of readings — IN TUNE is judged on these. */
+  const confirmWinRef = useRef<ConfirmSample[]>([]);
+  const digitsRef = useRef<DigitsState>({ value: null, at: 0 });
   const lastTickAt = useRef(0);
   const lastFrameAt = useRef(0);
   const lastAcceptedAt = useRef(Date.now());
@@ -623,6 +634,7 @@ const LiveReadout = memo(function LiveReadout({
     target: targets[0] ?? NO_TARGET,
     targetIdx: 0,
     rawCents: null,
+    digitCents: null,
     shownCents: 0,
     confirmed: false,
     partial: 1,
@@ -648,6 +660,7 @@ const LiveReadout = memo(function LiveReadout({
     // Targets changed (tuning, capo, A4, temperament) — keep the course, re-arm the lock.
     targetRef.current = { target: Math.max(0, Math.min(targetRef.current.target, targets.length - 1)), candidate: null, candidateSince: null };
     lockRef.current = INITIAL_LOCK;
+    confirmWinRef.current = [];
     driftSince.current = null;
     tunedRef.current = new Set();
     setTuned(new Set());
@@ -661,6 +674,7 @@ const LiveReadout = memo(function LiveReadout({
     if (targetOverride.current != null) {
       targetRef.current = { target: Math.max(0, Math.min(targetOverride.current, targets.length - 1)), candidate: null, candidateSince: null };
       lockRef.current = INITIAL_LOCK;
+      confirmWinRef.current = [];
       targetOverride.current = null;
     }
     const hz = f.accepted ? f.freq : null;
@@ -682,14 +696,20 @@ const LiveReadout = memo(function LiveReadout({
     } else if (hz != null && hz > 0) {
       if (piano) {
         const midi = stepPianoKey(chromMidi.current, hz, a4, stretchAmount);
-        if (midi !== chromMidi.current) lockRef.current = INITIAL_LOCK;
+        if (midi !== chromMidi.current) {
+          lockRef.current = INITIAL_LOCK;
+          confirmWinRef.current = [];
+        }
         chromMidi.current = midi;
         target = pianoTarget(midi, a4, stretchAmount);
         rawCents = centsBetween(hz, target.hz);
         partialRef.current = 1;
       } else if (chromatic) {
         const step = stepChromatic(chromMidi.current, hz, a4, transposeSemis);
-        if (step.midi !== chromMidi.current) lockRef.current = INITIAL_LOCK;
+        if (step.midi !== chromMidi.current) {
+          lockRef.current = INITIAL_LOCK;
+          confirmWinRef.current = [];
+        }
         chromMidi.current = step.midi;
         target = step.target;
         rawCents = centsBetween(hz, target.hz);
@@ -701,7 +721,7 @@ const LiveReadout = memo(function LiveReadout({
           let bestAbs = Infinity;
           targets.forEach((t, i) => {
             if (t.course !== lockedCourse) return;
-            const c = Math.abs(centsBetween(hz, t.hz));
+            const c = Math.abs(centsToTarget(hz, t).cents);
             if (c < bestAbs) {
               bestAbs = c;
               best = i;
@@ -713,7 +733,11 @@ const LiveReadout = memo(function LiveReadout({
           targetRef.current = stepTarget(targetRef.current, near.i, now, false);
         }
         target = targets[targetRef.current.target] ?? NO_TARGET;
-        rawCents = centsBetween(hz, target.hz);
+        // A string under the tracker floor (low B) is read on the partial the
+        // phone hears (phase 1, 2026-10-23).
+        const read = centsToTarget(hz, target);
+        rawCents = read.cents;
+        partialRef.current = read.partial;
       }
     } else if (chromatic && !piano) {
       // Silence in chromatic mode keeps the last written note on screen.
@@ -721,13 +745,16 @@ const LiveReadout = memo(function LiveReadout({
     } else if (piano) {
       target = chromMidi.current != null ? pianoTarget(chromMidi.current, a4, stretchAmount) : view.target;
     }
-    // The lock and the needle read the AVERAGED pitch, not the raw frame
-    // (2026-09-28: a string's natural wobble made IN TUNE shimmer) — see
-    // averageCents / stepLock's hysteresis in centerLock.ts.
+    // Separate controls (tuner phase 1, owner 2026-10-23): the needle reads ONE
+    // fast filter; IN TUNE is judged on the last CONFIRM_WINDOW_MS of readings
+    // (mean in the zone AND a small spread), so the needle is no longer slowed
+    // down to keep IN TUNE from shimmering (the 2026-09-28 fix it replaces).
     const inRange = rawCents != null && Math.abs(rawCents) < OCTAVE_CENTS ? rawCents : null;
-    avgCentsRef.current = averageCents(avgCentsRef.current, inRange, dt);
+    avgCentsRef.current = filterCents(avgCentsRef.current, inRange, dt);
     const lockInput = avgCentsRef.current;
-    const lock = stepLock(lockRef.current, lockInput, now);
+    confirmWinRef.current = pushConfirm(confirmWinRef.current, inRange, now);
+    const win = confirmStats(confirmWinRef.current);
+    const lock = stepLock(lockRef.current, win ? win.mean : null, now, win != null && win.spread <= SPREAD_MAX_CENTS);
     lockRef.current = { inZoneSince: lock.inZoneSince, confirmed: lock.confirmed, outSince: lock.outSince };
     const idx = targetRef.current.target;
     if (lock.justConfirmed) {
@@ -753,7 +780,8 @@ const LiveReadout = memo(function LiveReadout({
       driftSince.current = null;
     }
     const needleCents = lockInput ?? rawCents;
-    if (needleCents != null) shownRef.current = dampCents(shownRef.current, Math.max(-METER_RANGE, Math.min(METER_RANGE, needleCents)), dt);
+    if (needleCents != null) shownRef.current = Math.max(-METER_RANGE, Math.min(METER_RANGE, needleCents));
+    digitsRef.current = stepDigits(digitsRef.current, lockInput ?? rawCents, now);
     holdRef.current = chromatic ? stepHold(holdRef.current, hz != null ? target.note : null, lockInput, now) : INITIAL_HOLD;
     const next: ViewState = {
       target,
@@ -763,6 +791,7 @@ const LiveReadout = memo(function LiveReadout({
       // read). Outside the octave band there is no average, so the raw value
       // still reports "octave off" honestly.
       rawCents: lockInput ?? rawCents,
+      digitCents: digitsRef.current.value,
       shownCents: shownRef.current,
       confirmed: lock.confirmed,
       partial: partialRef.current,
@@ -774,6 +803,7 @@ const LiveReadout = memo(function LiveReadout({
       prev.target === next.target &&
       prev.targetIdx === next.targetIdx &&
       prev.rawCents === next.rawCents &&
+      prev.digitCents === next.digitCents &&
       prev.shownCents === next.shownCents &&
       prev.confirmed === next.confirmed &&
       prev.partial === next.partial &&
@@ -808,11 +838,13 @@ const LiveReadout = memo(function LiveReadout({
       return Math.max(PIANO_LOW_MIDI, Math.min(PIANO_HIGH_MIDI, base + delta));
     });
     lockRef.current = INITIAL_LOCK;
+    confirmWinRef.current = [];
   };
   const toggleKeyLock = () => {
     onTouch();
     setLockedMidi((m) => (m == null ? (chromMidi.current ?? 69) : null));
     lockRef.current = INITIAL_LOCK;
+    confirmWinRef.current = [];
   };
 
   const target = view.target;
@@ -840,7 +872,7 @@ const LiveReadout = memo(function LiveReadout({
     : chromatic
       ? `${target.label.replace(/[A-G]#?\d/, (n) => displayNote(n))}${a4Tag}`
       : inst.numbered
-        ? `STRING ${stringNumber(target, targets)} · ${target.label}${a4Tag}`
+        ? `STRING ${stringNumber(target, targets)} · ${target.label}${view.partial > 1 ? ' · 2ND PARTIAL' : ''}${a4Tag}`
         : `${target.label}${a4Tag}`;
   // Portrait: the note is the display — half the screen width. Landscape: the
   // note, direction and cents own the left column; the meter, string strip
@@ -996,10 +1028,10 @@ const LiveReadout = memo(function LiveReadout({
   );
 
   const centsText = (
-    <Text style={[styles.cents, landscape && styles.centsLandscape, { color: tint }]}>{octaveOff ? (cents! > 0 ? '+1 OCT' : '−1 OCT') : fmtCents(cents)}</Text>
+    <Text style={[styles.cents, landscape && styles.centsLandscape, { color: tint }]}>{octaveOff ? (cents! > 0 ? '+1 OCT' : '−1 OCT') : fmtCents(view.digitCents)}</Text>
   );
   const noteBlock = (
-    <View style={[styles.noteBlock, landscape ? { width: NOTE_COL_W } : { maxWidth: width - 16 }]} accessible accessibilityRole="text" accessibilityLabel={`${displayNote(target.note)}, ${direction}, ${fmtCents(cents)}`}>
+    <View style={[styles.noteBlock, landscape ? { width: NOTE_COL_W } : { maxWidth: width - 16 }]} accessible accessibilityRole="text" accessibilityLabel={`${displayNote(target.note)}, ${direction}, ${fmtCents(view.digitCents)}`}>
       <View style={styles.identityRow}>
         <Text style={[styles.identity, { color: tint }]} {...fitValue(16)}>{identity}</Text>
         {!chromatic && manual ? (

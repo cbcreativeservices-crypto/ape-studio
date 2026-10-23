@@ -54,6 +54,7 @@ import { closeVuTuner, useTunerFrame } from '../../features/tools/tuner/tunerFra
 import { useToolColorPref } from '../../features/tools/waveColorPref';
 import { colors, fonts } from '../../theme/tokens';
 import { useSteadyTuner } from '../../features/tools/tuner/useSteadyTuner';
+import { stepDigits, type DigitsState } from '../../features/tools/tuner/centerLock';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 export const TUNER_SKIN = require('../../../assets/tool-strips/tuner_skin.webp');
@@ -518,6 +519,8 @@ export function VuTunerFullScreen() {
   const steady = useSteadyTuner(note != null ? note.cents : null);
   const cents = note == null ? null : (steady.cents ?? note.cents);
   const inTune = note != null && steady.inTune;
+  // The printed number refreshes 4×/s (tuner phase 1); the needle stays fast.
+  const digits = note == null ? 0 : (steady.digits ?? note.cents);
 
   /**
    * W16 (2026-09-18) — the cents stream must NEVER be spoken.
@@ -548,7 +551,11 @@ export function VuTunerFullScreen() {
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [a11yKey]);
-  const hzText = frame.freq != null ? `${frame.freq < 10 ? frame.freq.toFixed(2) : frame.freq.toFixed(1)} Hz` : '— Hz';
+  // Printed Hz refreshes 4×/s like the cents (tuner phase 1, owner 2026-10-23).
+  const hzDigitsRef = useRef<DigitsState>({ value: null, at: 0 });
+  hzDigitsRef.current = stepDigits(hzDigitsRef.current, frame.freq, Date.now());
+  const hz = hzDigitsRef.current.value;
+  const hzText = hz != null ? `${hz < 10 ? hz.toFixed(2) : hz.toFixed(1)} Hz` : '— Hz';
   const tuneInk = tunerColor ?? colors.green;
   // The face is 2.71:1 — size it to whichever axis binds, leaving room for
   // the note block below (and the safe areas around).
@@ -580,7 +587,7 @@ export function VuTunerFullScreen() {
         </View>
         <TuneChevrons cents={cents} dim={false} tuneColor={tunerColor} />
         <Text style={[fs.cents, inTune && { color: tuneInk }]}>
-          {note != null ? `${centsSnap(note.cents) >= 0 ? '+' : ''}${centsSnap(note.cents).toFixed(1)} cents` : 'no stable pitch'}
+          {note != null ? `${centsSnap(digits) >= 0 ? '+' : ''}${centsSnap(digits).toFixed(1)} cents` : 'no stable pitch'}
         </Text>
       </View>
       <Text style={fs.foot}>Phone microphone · ±30¢ scale · A4 {frame.a4} · silent by design</Text>

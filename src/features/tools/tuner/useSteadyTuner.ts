@@ -11,25 +11,52 @@
  * RELEASE_MS (see centerLock.ts).
  *
  * Pass `null` whenever there is no LIVE reading (held/stale values must never
- * light IN TUNE); the average and the lock reset.
+ * light IN TUNE); the filter, the window and the lock reset.
+ *
+ * Tuner phase 1 (owner 2026-10-23, tuner research report): the same separate
+ * controls as the Advanced Tuner — the needle reads ONE fast filter
+ * (PITCH_TAU_MS), IN TUNE is judged on the last CONFIRM_WINDOW_MS (mean in
+ * the zone AND spread ≤ SPREAD_MAX_CENTS, so vibrato is never called in tune),
+ * and `digits` is the printed number, refreshed every DIGITS_EVERY_MS.
  */
 import { useEffect, useRef, useState } from 'react';
-import { averageCents, INITIAL_LOCK, stepLock, type LockState } from './centerLock';
+import {
+  confirmStats,
+  filterCents,
+  INITIAL_LOCK,
+  pushConfirm,
+  SPREAD_MAX_CENTS,
+  stepDigits,
+  stepLock,
+  type ConfirmSample,
+  type DigitsState,
+  type LockState,
+} from './centerLock';
 
-export function useSteadyTuner(liveCents: number | null): { cents: number | null; inTune: boolean } {
+type Steady = { cents: number | null; inTune: boolean; digits: number | null };
+
+export function useSteadyTuner(liveCents: number | null): Steady {
   const avgRef = useRef<number | null>(null);
+  const winRef = useRef<ConfirmSample[]>([]);
+  const digitsRef = useRef<DigitsState>({ value: null, at: 0 });
   const lockRef = useRef<LockState>(INITIAL_LOCK);
   const atRef = useRef(0);
-  const [steady, setSteady] = useState<{ cents: number | null; inTune: boolean }>({ cents: null, inTune: false });
+  const [steady, setSteady] = useState<Steady>({ cents: null, inTune: false, digits: null });
   useEffect(() => {
     const now = Date.now();
     const dt = atRef.current ? now - atRef.current : 16.7;
     atRef.current = now;
-    const avg = averageCents(avgRef.current, liveCents, dt);
+    const avg = filterCents(avgRef.current, liveCents, dt);
     avgRef.current = avg;
-    const l = stepLock(lockRef.current, avg, now);
+    winRef.current = pushConfirm(winRef.current, liveCents, now);
+    const st = confirmStats(winRef.current);
+    const l = stepLock(lockRef.current, st ? st.mean : null, now, st != null && st.spread <= SPREAD_MAX_CENTS);
     lockRef.current = { inZoneSince: l.inZoneSince, confirmed: l.confirmed, outSince: l.outSince };
-    setSteady((prev) => (prev.cents === avg && prev.inTune === l.confirmed ? prev : { cents: avg, inTune: l.confirmed }));
+    digitsRef.current = stepDigits(digitsRef.current, avg, now);
+    const digits = digitsRef.current.value;
+    setSteady((prev) =>
+      prev.cents === avg && prev.inTune === l.confirmed && prev.digits === digits ? prev : { cents: avg, inTune: l.confirmed, digits },
+    );
   }, [liveCents]);
   return steady;
 }

@@ -557,12 +557,26 @@ export function steadinessText(spread: number): string {
 }
 
 /** Index of the target string nearest (in cents) to a detected frequency. */
+/**
+ * Cents from a string target, reading a string BELOW the tracker floor (low B
+ * on a 5/6-string bass, 30.9 Hz) against the partial the phone actually hears
+ * — the YIN window cannot follow a fundamental under TRACKER_FLOOR_HZ (owner
+ * tuner phase 1, 2026-10-23; the native fix is phase 2 on the build list).
+ */
+export function centsToTarget(hz: number, t: StringTarget): { cents: number; partial: number } {
+  if (t.hz < TRACKER_FLOOR_HZ) {
+    const r = readAgainstPartials(hz, t.hz, 3);
+    return { cents: r.cents, partial: r.partial };
+  }
+  return { cents: centsBetween(hz, t.hz), partial: 1 };
+}
+
 export function nearestTarget(hz: number, targets: StringTarget[]): { i: number; cents: number } {
   let best = 0;
   let bestAbs = Infinity;
   let bestCents = 0;
   targets.forEach((t, i) => {
-    const c = centsBetween(hz, t.hz);
+    const c = centsToTarget(hz, t).cents;
     if (Math.abs(c) < bestAbs) {
       bestAbs = Math.abs(c);
       best = i;
@@ -618,12 +632,63 @@ export function averageCents(avg: number | null, raw: number | null, dtMs: numbe
   return avg + (raw - avg) * alpha;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Tuner phase 1 (owner 2026-10-23, from the tuner research report): SEPARATE
+// controls for the needle, the digits and IN TUNE. The needle used to read a
+// 200 ms average AND a second near-centre damping (dampCents) — two filters in
+// series, ~0.6 s to settle exactly where the player makes the final turn. Now:
+//   • the needle reads ONE time-based filter, PITCH_TAU_MS;
+//   • the cents digits refresh DIGITS_EVERY_MS (fast needle, readable number);
+//   • IN TUNE is judged from the last CONFIRM_WINDOW_MS of readings — their
+//     mean must sit in the zone AND their spread must be small, so a wobbling
+//     or vibrato note is never called in tune, and a steady one still is.
+// averageCents / dampCents stay as the measured BEFORE in the timing bench.
+// ─────────────────────────────────────────────────────────────────────────────
+/** The needle's single filter time constant (report: 80 ms; bench 40/80/140). */
+export const PITCH_TAU_MS = 80;
+/** One time-based exponential filter on cents (null resets; a jump snaps). */
+export function filterCents(prev: number | null, raw: number | null, dtMs: number, tauMs = PITCH_TAU_MS): number | null {
+  if (raw == null) return null;
+  if (prev == null || Math.abs(raw - prev) > AVERAGE_JUMP_CENTS) return raw;
+  const alpha = 1 - Math.exp(-Math.max(0, dtMs) / tauMs);
+  return prev + (raw - prev) * alpha;
+}
+/** The window IN TUNE is judged on. */
+export const CONFIRM_WINDOW_MS = 350;
+/** Largest spread (standard deviation, cents) still called steady enough. */
+export const SPREAD_MAX_CENTS = 3;
+export type ConfirmSample = { t: number; c: number };
+/** Add a reading (null = no valid pitch → the window empties). */
+export function pushConfirm(win: readonly ConfirmSample[], cents: number | null, nowMs: number): ConfirmSample[] {
+  if (cents == null) return [];
+  // A jump (new string / note) starts a fresh window, like the filter's snap.
+  const last = win.length ? win[win.length - 1].c : null;
+  const base = last != null && Math.abs(cents - last) > AVERAGE_JUMP_CENTS ? [] : win;
+  return [...base.filter((s) => nowMs - s.t <= CONFIRM_WINDOW_MS), { t: nowMs, c: cents }];
+}
+/** Mean and spread of the window. */
+export function confirmStats(win: readonly ConfirmSample[]): { mean: number; spread: number } | null {
+  if (win.length === 0) return null;
+  const mean = win.reduce((a, s) => a + s.c, 0) / win.length;
+  const v = win.reduce((a, s) => a + (s.c - mean) * (s.c - mean), 0) / win.length;
+  return { mean, spread: Math.sqrt(v) };
+}
+/** Digits refresh: the newest filtered value, at most every DIGITS_EVERY_MS. */
+export const DIGITS_EVERY_MS = 250;
+export type DigitsState = { value: number | null; at: number };
+export function stepDigits(state: DigitsState, value: number | null, nowMs: number): DigitsState {
+  // Losing / regaining the pitch shows at once; only the number's churn is slowed.
+  if ((value == null) !== (state.value == null)) return { value, at: nowMs };
+  if (nowMs - state.at >= DIGITS_EVERY_MS) return { value, at: nowMs };
+  return state;
+}
+
 /** The lock state machine. `confirmed` flips true once per entry into the zone. */
 export type LockState = { inZoneSince: number | null; confirmed: boolean; outSince?: number | null };
 
 export const INITIAL_LOCK: LockState = { inZoneSince: null, confirmed: false, outSince: null };
 
-export function stepLock(state: LockState, cents: number | null, nowMs: number): LockState & { justConfirmed: boolean } {
+export function stepLock(state: LockState, cents: number | null, nowMs: number, steady = true): LockState & { justConfirmed: boolean } {
   if (cents == null) {
     return { inZoneSince: null, confirmed: false, outSince: null, justConfirmed: false }; // silence releases
   }
@@ -636,8 +701,9 @@ export function stepLock(state: LockState, cents: number | null, nowMs: number):
     if (nowMs - out >= RELEASE_MS) return { inZoneSince: null, confirmed: false, outSince: null, justConfirmed: false };
     return { inZoneSince: state.inZoneSince, confirmed: true, outSince: out, justConfirmed: false };
   }
-  if (a > IN_TUNE_CENTS) {
-    return { inZoneSince: null, confirmed: false, outSince: null, justConfirmed: false }; // outside the entry zone
+  if (a > IN_TUNE_CENTS || !steady) {
+    // Outside the entry zone, or inside it but wobbling too much to call.
+    return { inZoneSince: null, confirmed: false, outSince: null, justConfirmed: false };
   }
   const since = state.inZoneSince ?? nowMs;
   const stable = nowMs - since >= CONFIRM_MS;
