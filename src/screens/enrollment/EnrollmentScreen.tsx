@@ -96,6 +96,7 @@ import { AttractRing } from '../../features/onboarding/AttractCue';
 import { markDeckStepped, useHomeAttract } from '../../features/onboarding/attractStore';
 import { readingColumn } from '../../theme/readingColumn';
 import { CERTIFICATE_REQUIRES_EXAM } from '../../features/finalExam/tenure';
+import { HOME_SETUP_HIDDEN_FOR_LAUNCH } from '../../features/home/homeCardsStore';
 
 /**
  * Audio Fundamentals — the one REQUIRED LAB in the shared core (the other
@@ -197,7 +198,7 @@ const PURPLE = '#c4a2ff';
  * same marker. A searchable answer describing a control nobody can find is
  * worse than no answer.
  */
-const HOME_SETUP_HIDDEN_FOR_LAUNCH = true;
+// The switch itself lives in homeCardsStore.ts, shared with the Home screen (owner 2026-10-23).
 /** '#rrggbb' + alpha -> 'rgba(r,g,b,a)'. Used for the deck chips' lit wash so
  *  one tint constant drives both the border and the fill behind it. */
 function withAlpha(hex: string, a: number): string {

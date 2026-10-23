@@ -276,3 +276,20 @@ export function useDefaultHomeGs(): number | null {
   const list = listStore.use();
   return validDefault(d, list);
 }
+
+/**
+ * ⛔ THE CUSTOM HOME-SCREEN SETUP IS HIDDEN FOR LAUNCH (owner 2026-09-19:
+ * "remove the home setup button… leave the function and screens behind, but
+ * do not have any button showing that goes to it… after launch we will work
+ * on this and get that function going").
+ *
+ * ONE switch for every surface (owner 2026-10-23). The Enrollment screen hid
+ * its three Home Setup controls on this flag, but the Home screen never read
+ * it: a member whose saved Home list was non-empty (core topics are added to
+ * it automatically on enrolment) still got the old custom deck — no MY
+ * ENROLLMENTS card, no DAW Fundamentals, Pro Audio Safety as "MY TOPIC". While
+ * this is true, Home shows the one standard deck to everyone. The saved list
+ * is left untouched, so turning Home Setup back on after launch needs no
+ * migration.
+ */
+export const HOME_SETUP_HIDDEN_FOR_LAUNCH = true;

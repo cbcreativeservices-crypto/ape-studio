@@ -193,7 +193,8 @@ describe('Task 1 — the screens', () => {
 
   it('guests and non-members keep the code-built default deck (unchanged)', () => {
     assert.match(deck, /\{ kind: 'careerFinder', id: 'careerFinder' \},[\s\S]{0,400}\{ kind: 'startHere', id: 'startHere' \},/);
-    assert.match(deck, /if \(entitlement === 'academy' && \(homeGs\.length > 0 \|\| homeBundleKeys\.length > 0\)\)/);
+    // Owner 2026-10-23: the custom deck is also off while Home Setup is hidden.
+    assert.match(deck, /if \(!HOME_SETUP_HIDDEN_FOR_LAUNCH && entitlement === 'academy' && \(homeGs\.length > 0 \|\| homeBundleKeys\.length > 0\)\)/);
   });
 
   it('[R2] Home Setup lists Start Here as a draggable, always-on row and saves its slot', () => {

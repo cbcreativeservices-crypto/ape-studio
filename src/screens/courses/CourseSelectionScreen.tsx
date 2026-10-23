@@ -50,7 +50,7 @@ import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useUpsellAllowed } from '../../features/commercial/useTier';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
 import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs } from '../../data/v3Curriculum';
-import { startHereAfter, useDefaultHomeGs, useHomeBundles, useHomeGs, useHomeOrder } from '../../features/home/homeCardsStore';
+import { HOME_SETUP_HIDDEN_FOR_LAUNCH, startHereAfter, useDefaultHomeGs, useHomeBundles, useHomeGs, useHomeOrder } from '../../features/home/homeCardsStore';
 import { prefetchCardArt } from '../../features/home/cardArtPrefetch';
 import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enrollment/enrollmentStore';
@@ -1593,7 +1593,10 @@ export function CourseSelectionScreen() {
     // all fall through to the default. Gate on the REAL entitlement, never the
     // __DEV__-bypassed `caps` (which forces academy on in dev). When a
     // subscription expires (lapsed) Home reverts to the default automatically.
-    if (entitlement === 'academy' && (homeGs.length > 0 || homeBundleKeys.length > 0)) {
+    // ⛔ Not while Home Setup is hidden for launch (owner 2026-10-23): the
+    // saved list could still switch a member onto the old custom deck — no
+    // MY ENROLLMENTS, no DAW Fundamentals. One standard deck for everyone.
+    if (!HOME_SETUP_HIDDEN_FOR_LAUNCH && entitlement === 'academy' && (homeGs.length > 0 || homeBundleKeys.length > 0)) {
       // Pinned head cards survive the custom deck: Lab (far left, owner request
       // 2026-07-26) + Tools + Glossary, in deck order.
       const fixed = cards.filter(
