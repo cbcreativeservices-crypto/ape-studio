@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-22 18:15 · ccode · 023640ea
+changed: Fact audit R1: 43 S1 fixes, in-app contradictions, dev-leak check (Comp B return)
+affects other side: nothing (app copy + curated notification JSON + careerIndex; rides the approval-day OTA)
+needs: nothing
+
+
 ### 2026-10-22 17:00 · ccode · cff3f25b
 changed: Help + Registry intro: membership is not needed to stay listed and verified
 affects other side: same promise as a39f1ef8, now in Help + the Registry intro — keep registry/verify free of membership checks
