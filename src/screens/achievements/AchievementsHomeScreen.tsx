@@ -10,6 +10,7 @@
  */
 import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { AchievementsStackParamList } from '../../navigation/types';
@@ -241,11 +242,35 @@ export function AchievementsHomeScreen() {
             What is left is true today. Sharing is real and shipped: open any
             certificate or program and the share row offers the link, the QR as
             an image, and the printed certificate. */}
-        <View style={styles.featured} accessibilityRole="summary">
-          <Text style={styles.cardName}>{TROPHY_CASE_EMPTY.shareHead}</Text>
-          <Text style={styles.featuredLead}>{TROPHY_CASE_EMPTY.shareLead}</Text>
-          <Text style={styles.emptyText}>{TROPHY_CASE_EMPTY.shareHint}</Text>
-        </View>
+        {/* A small certificate makes it plain this is where CERTIFICATES live
+            (owner 2026-10-23: "not trophies"); the card opens the Certificates
+            wall, which opens even with none earned and shows a SAMPLE. */}
+        <Pressable
+          style={({ pressed }) => [styles.featured, pressed && styles.cardPressed]}
+          onPressIn={() => prefetchTrophyCase('certificate')}
+          onPress={() => navigation.navigate('Certificates')}
+          accessibilityRole="button"
+          accessibilityLabel={`${TROPHY_CASE_EMPTY.shareHead}. ${TROPHY_CASE_EMPTY.shareHint} Opens your certificates.`}
+        >
+          <View style={styles.cardHead}>
+            <Text style={styles.cardName}>{TROPHY_CASE_EMPTY.shareHead}</Text>
+            <View style={styles.flex} />
+            <Text style={styles.chevron}>›</Text>
+          </View>
+          <View style={styles.shareRow}>
+            <Image
+              source={require('../../../assets/YOUR_NAME_certificate_SAMPLE_web.webp')}
+              style={styles.shareCert}
+              contentFit="contain"
+              accessibilityIgnoresInvertColors
+            />
+            <View style={styles.shareText}>
+              <Text style={styles.featuredLead}>{TROPHY_CASE_EMPTY.shareLead}</Text>
+              <Text style={[styles.emptyText, styles.noFlex]}>{TROPHY_CASE_EMPTY.shareHint}</Text>
+              <Text style={[styles.shareCta, { color: colors.cyan }]}>SEE YOUR CERTIFICATES ›</Text>
+            </View>
+          </View>
+        </Pressable>
         </>
         )}
       </ScrollView>
@@ -303,6 +328,12 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 8,
   },
+  // Share card (owner 2026-10-23): a small certificate beside the copy.
+  shareRow: { flexDirection: 'row', gap: 12, alignItems: 'center' },
+  shareCert: { width: 92, aspectRatio: 486 / 375, borderRadius: 4 },
+  shareText: { flex: 1, gap: 6 },
+  noFlex: { flex: 0 },
+  shareCta: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.2 },
   featuredLead: {
     fontFamily: fonts.barlowMedium,
     fontSize: 14,

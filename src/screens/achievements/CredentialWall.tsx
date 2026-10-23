@@ -12,7 +12,7 @@
  */
 import { useCallback, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 // expo-image, not RN Image (perf hunt 2026-10-03): the course-cards bucket
 // serves `Cache-Control: no-cache`, so RN's loader re-validated every row's art
 // on each visit (and again for the popup's copy of the same file); expo-image's
@@ -94,6 +94,13 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
   const [rows, setRows] = useState<EarnedCredentialRow[] | null>(null);
   const [nearest, setNearest] = useState<NearestCredentialResult | null>(null);
   const [open, setOpen] = useState<EarnedCredentialRow | null>(null);
+  // The SAMPLE certificate window (owner 2026-10-23): with nothing earned yet,
+  // a learner can still open it and see where a certificate, its download and
+  // its share buttons will be. Clearly a sample; nothing in it works.
+  const [sampleOpen, setSampleOpen] = useState(false);
+  // Full-screen certificate (owner 2026-10-23: "seen full screen landscape so
+  // they could show another person their phone").
+  const [fullOpen, setFullOpen] = useState(false);
   const [artFailed, setArtFailed] = useState<ReadonlySet<string>>(() => new Set());
   const markArtFailed = (slug: string) =>
     setArtFailed((prev) => (prev.has(slug) ? prev : new Set(prev).add(slug)));
@@ -230,9 +237,64 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
           );
             })}
             </TabletGrid>
+
+            {/* SAMPLE (owner 2026-10-23) — only while no certificate is earned,
+                so the wall shows where certificates appear and what opening
+                one looks like. Never counted, never fakes progress. */}
+            {kind === 'certificate' && rows != null && rows.length === 0 ? (
+              <Pressable
+                style={[styles.row, styles.rowSample, { borderLeftColor: `${accent}66` }]}
+                onPress={() => setSampleOpen(true)}
+                accessibilityRole="button"
+                accessibilityLabel="Sample certificate. Opens a preview of where your earned certificates, download and sharing will appear."
+              >
+                <View style={styles.sampleArt}>
+                  <Image source={SAMPLE_CERT} style={styles.artImg} contentFit="contain" accessibilityIgnoresInvertColors />
+                </View>
+                <View style={styles.rowMain}>
+                  <View style={styles.sampleHead}>
+                    <Text style={[styles.sampleTag, { color: accent, borderColor: `${accent}88` }]}>SAMPLE</Text>
+                  </View>
+                  <Text style={styles.rowName}>Your certificates appear here</Text>
+                  <Text style={styles.rowMeta}>TAP TO SEE THE CERTIFICATE VIEW</Text>
+                </View>
+                <Text style={styles.chevron}>›</Text>
+              </Pressable>
+            ) : null}
           </>
         )}
       </ScrollView>
+
+      <TrophyModal
+        visible={sampleOpen}
+        iconUrl={null}
+        name="Sample certificate"
+        color={accent}
+        meta="SAMPLE · NOT EARNED"
+        action={null}
+        onClose={() => {
+          setSampleOpen(false);
+          setFullOpen(false);
+        }}
+        overlay={fullOpen && sampleOpen ? <CertificateFullView source={SAMPLE_CERT} label="Sample certificate" onClose={() => setFullOpen(false)} /> : null}
+        onOverlayClose={() => setFullOpen(false)}
+        below={
+          <View style={styles.belowCol}>
+            <FullScreenKey onPress={() => setFullOpen(true)} />
+            <SamplePreviewControls accent={accent} />
+          </View>
+        }
+      >
+        <Image
+          accessible
+          source={SAMPLE_CERT}
+          style={styles.artImg}
+          contentFit="contain"
+          accessibilityRole="image"
+          accessibilityLabel="Example Pro Audio Training Academy certificate, shown with a placeholder name"
+          accessibilityIgnoresInvertColors
+        />
+      </TrophyModal>
 
       <TrophyModal
         visible={!!open}
@@ -248,7 +310,31 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
         onClose={() => {
           setOpen(null);
           setMessage(null);
+          setFullOpen(false);
         }}
+        // The share row, notes and messages go BELOW the art (owner pass
+        // 2026-10-23): as children they sat inside the art frame, which crops
+        // its content and is pointerEvents="none" — the buttons were cut off
+        // and could not be tapped.
+        overlay={fullOpen && open ? <CertificateFullView source={open.slug && !artFailed.has(open.slug) ? credentialArtFor(open.slug) : null} label={open.name} onClose={() => setFullOpen(false)} /> : null}
+        onOverlayClose={() => setFullOpen(false)}
+        below={
+          <View style={styles.belowCol}>
+            {open && open.slug && !artFailed.has(open.slug) && credentialArtFor(open.slug) ? <FullScreenKey onPress={() => setFullOpen(true)} /> : null}
+            {/* [8] (2026-09-07): honest note when the download isn't in this build. */}
+            {!certificateExportAvailable() ? (
+              <Text style={styles.exportNote}>Certificate download isn’t available on this device. Your certificate is safely recorded on your account.</Text>
+            ) : null}
+            {/* Copy / share the verified-record link, and share the QR as an image
+                (owner 2026-09-18). The printed certificate keeps the button above:
+                that path builds a PDF and already existed. */}
+            {open ? <CredentialShareRow credentialName={open.name} onMessage={setMessage} /> : null}
+            {/* Download / share feedback lives INSIDE the modal (bug hunt
+                2026-09-29): on the page it rendered underneath the open modal, so
+                "Could not prepare the certificate" was never seen. */}
+            {message ? <Text style={styles.message}>{message}</Text> : null}
+          </View>
+        }
       >
         {open && open.slug && !artFailed.has(open.slug) && credentialArtFor(open.slug) ? (
           <Image accessible
@@ -266,19 +352,83 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
             <CredentialBadge kind={kind} size={180} />
           </View>
         )}
-        {/* [8] (2026-09-07): honest note when the download isn't in this build. */}
-        {!certificateExportAvailable() ? (
-          <Text style={styles.exportNote}>Certificate download isn’t available on this device. Your certificate is safely recorded on your account.</Text>
-        ) : null}
-        {/* Copy / share the verified-record link, and share the QR as an image
-            (owner 2026-09-18). The printed certificate keeps the button above:
-            that path builds a PDF and already existed. */}
-        {open ? <CredentialShareRow credentialName={open.name} onMessage={setMessage} /> : null}
-        {/* Download / share feedback lives INSIDE the modal (bug hunt
-            2026-09-29): on the page it rendered underneath the open modal, so
-            "Could not prepare the certificate" was never seen. */}
-        {message ? <Text style={styles.message}>{message}</Text> : null}
       </TrophyModal>
+    </View>
+  );
+}
+
+const SAMPLE_CERT = require('../../../assets/YOUR_NAME_certificate_SAMPLE_web.webp');
+
+function FullScreenKey({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable style={({ pressed }) => [styles.fullKey, pressed && { opacity: 0.8 }]} onPress={onPress} accessibilityRole="button" accessibilityLabel="View the certificate full screen, sideways, to show someone">
+      <Text style={styles.fullKeyText}>⤢ VIEW FULL SCREEN</Text>
+    </Pressable>
+  );
+}
+
+/**
+ * The certificate filling the phone, laid out LANDSCAPE (owner 2026-10-23) —
+ * turn the phone sideways and show it to someone. Drawn rotated inside the
+ * popup rather than by locking the device orientation: identical on iOS and
+ * Android, no native module needed, and it cannot strand the app sideways. A
+ * window that is already landscape (a tablet held sideways) shows it upright.
+ */
+function CertificateFullView({ source, label, onClose }: { source: unknown; label: string; onClose: () => void }) {
+  const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const rotate = height > width;
+  const w = rotate ? height : width;
+  const h = rotate ? width : height;
+  return (
+    <View style={styles.fullRoot}>
+      <View
+        style={[
+          { width: w, height: h, left: (width - w) / 2, top: (height - h) / 2, position: 'absolute' },
+          rotate && { transform: [{ rotate: '90deg' }] },
+        ]}
+      >
+        {source ? (
+          <Image
+            accessible
+            source={source as never}
+            style={[styles.fullImg, { margin: rotate ? Math.max(insets.top, 12) : 12 }]}
+            contentFit="contain"
+            accessibilityRole="image"
+            accessibilityLabel={label}
+            accessibilityIgnoresInvertColors
+          />
+        ) : null}
+        {/* Close at the TOP-LEFT of the landscape view (tool full-screen
+            standard: controls on the left). */}
+        <Pressable onPress={onClose} hitSlop={14} style={styles.fullClose} accessibilityRole="button" accessibilityLabel="Close full screen">
+          <Text style={styles.fullCloseX}>✕</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+/** What the real certificate window offers — shown greyed and inert in the
+ *  SAMPLE so the layout is learnable before anything is earned. */
+function SamplePreviewControls({ accent }: { accent: string }) {
+  const keys = ['COPY LINK', 'SHARE LINK', 'SHARE QR'];
+  return (
+    <View style={styles.sampleCtrls} accessible accessibilityLabel="In your own certificate: download certificate, copy link, share link and share QR. Not available in this sample.">
+      <View style={[styles.sampleKey, styles.sampleKeyWide, { borderColor: `${accent}55` }]}>
+        <Text style={styles.sampleKeyText}>DOWNLOAD CERTIFICATE</Text>
+      </View>
+      <Text style={styles.sampleHeadText}>SHARE</Text>
+      <View style={styles.sampleKeyRow}>
+        {keys.map((k) => (
+          <View key={k} style={styles.sampleKey}>
+            <Text style={styles.sampleKeyText}>{k}</Text>
+          </View>
+        ))}
+      </View>
+      <Text style={styles.exportNote}>
+        This is a sample. When you earn a certificate it appears in this list — open it to download the printable certificate and share your verification link or QR code.
+      </Text>
     </View>
   );
 }
@@ -441,6 +591,25 @@ const styles = StyleSheet.create({
   waitingName: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.3, color: colors.textPrimary },
   waitingMeta: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub },
   chevron: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSub },
+  // SAMPLE row + window (owner 2026-10-23).
+  rowSample: { backgroundColor: '#141414', borderWidth: 1, borderColor: '#242424', borderStyle: 'dashed' },
+  sampleArt: { width: 62, aspectRatio: 486 / 375, alignItems: 'center', justifyContent: 'center', opacity: 0.85 },
+  sampleHead: { flexDirection: 'row' },
+  sampleTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.4, borderWidth: 1, borderRadius: 4, paddingHorizontal: 6, paddingVertical: 1 },
+  sampleCtrls: { width: '100%', gap: 8, alignItems: 'center' },
+  belowCol: { width: '100%', alignItems: 'center' },
+  // Full-screen certificate (owner 2026-10-23).
+  fullKey: { borderWidth: 1, borderColor: '#3a3a3a', backgroundColor: '#1a1a1a', borderRadius: 7, paddingVertical: 9, paddingHorizontal: 16, minHeight: 44, justifyContent: 'center', marginBottom: 6 },
+  fullKeyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textPrimary },
+  fullRoot: { flex: 1, backgroundColor: '#000' },
+  fullImg: { flex: 1 },
+  fullClose: { position: 'absolute', top: 14, left: 14, width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(20,20,22,0.85)', borderWidth: 1, borderColor: '#3a3a42' },
+  fullCloseX: { fontSize: 17, color: '#e8ecf2', fontWeight: '600' },
+  sampleHeadText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.6, color: colors.textSub },
+  sampleKeyRow: { flexDirection: 'row', gap: 8, justifyContent: 'center', flexWrap: 'wrap' },
+  sampleKey: { borderWidth: 1, borderColor: '#2e2e2e', backgroundColor: '#151515', borderRadius: 7, paddingVertical: 9, paddingHorizontal: 14, minHeight: 44, justifyContent: 'center', opacity: 0.55 },
+  sampleKeyWide: { alignSelf: 'stretch', alignItems: 'center' },
+  sampleKeyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.textPrimary },
   modalBadge: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   exportNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, textAlign: 'center', marginTop: 10 },
 });

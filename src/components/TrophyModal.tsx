@@ -50,9 +50,16 @@ export function TrophyModal({
   action,
   children,
   below,
+  overlay,
+  onOverlayClose,
   grayed = false,
   onClose,
 }: {
+  /** Optional full-window layer drawn over everything (the full-screen
+   *  certificate, owner 2026-10-23). While it is up, Android BACK calls
+   *  `onOverlayClose` instead of closing the whole popup. */
+  overlay?: ReactNode;
+  onOverlayClose?: () => void;
   visible: boolean;
   iconUrl: string | null | undefined;
   name?: string | null;
@@ -80,7 +87,7 @@ export function TrophyModal({
   const insets = useSafeAreaInsets();
   const ART = artSize(width, height, !!below);
   return (
-    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={overlay && onOverlayClose ? onOverlayClose : onClose}>
       {/* The dark backdrop lives on the HOST, not the scrim, so an optional
           `below` panel sits on the same dimmed field instead of floating on
           nothing. With no panel this is pixel-identical to before. */}
@@ -138,6 +145,7 @@ export function TrophyModal({
         {below ? (
           <View style={[styles.belowWrap, { paddingBottom: insets.bottom + 12 }]}>{below}</View>
         ) : null}
+        {overlay ? <View style={StyleSheet.absoluteFill}>{overlay}</View> : null}
       </View>
     </Modal>
   );
