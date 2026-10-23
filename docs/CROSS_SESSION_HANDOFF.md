@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 11:58 · ccode · bbd8dd89
+changed: Trophy Case: certificate on the Share card, SAMPLE certificate view, full-screen landscape; share row out of the clipped art frame (owner 2026-10-23)
+affects other side: nothing backend (Trophy Case UI; certificate share row now tappable).
+needs: nothing
+
+
 ### 2026-10-23 11:19 · ccode · b7eb9fc7
 changed: Tuner phase 1 (research report): one needle filter, 4/s digits, steady IN TUNE, low-B partial; square ADVANCED TUNER key; tuner wheel top-left (owner 2026-10-23)
 affects other side: nothing backend (tuner display logic + layout; build checklist doc).
