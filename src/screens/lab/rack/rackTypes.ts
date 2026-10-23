@@ -29,6 +29,9 @@ export type BezelItem = {
   sub?: string;
   /** Value tint (e.g. levelColor ramp); default amber. */
   tint?: string;
+  /** Optional coloured frame round the cell (e.g. the level colour, owner
+   *  2026-10-23 — RTA LEVEL / PK HOLD, as on the Multimeter). */
+  frame?: string;
   /** Long-press → this guided-lesson entry (via RackUnit.onHelp). */
   helpKey?: string;
   /** Tap action (PK-HOLD-style tap-to-reset cells). */

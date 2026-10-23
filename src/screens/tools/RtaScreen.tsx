@@ -67,7 +67,7 @@
  *    useToolAutoStart; stops still route through the hook's debounced
  *    releaseMic — never ApeDsp.stop on handoff.
  */
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -97,6 +97,7 @@ import { RackUnit } from '../lab/rack/RackUnit';
 import type { BezelItem, DockParam } from '../lab/rack/rackTypes';
 import type { RootStackParamList } from '../../navigation/types';
 import { readingText } from '../../theme/readingColumn';
+import { fitValue } from '../../theme/legibility';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Rta'>;
@@ -381,7 +382,19 @@ function RtaGlass({
   pianoOn,
   pitchIdx,
   ts = 1,
+  cursorFrac = null,
+  onCursorFrac,
+  corner,
+  peakTickColor,
 }: {
+  /** Per-band peak-hold ticks in the PK HOLD readout's colour (owner 2026-10-23). */
+  peakTickColor?: string;
+  /** Control pinned to the chart's top-left corner (the colour wheel). */
+  corner?: ReactNode;
+  /** Band-reading cursor (owner 2026-10-23, from the Multimeter): 0…1 across
+   *  the chart, null = none. Tap or drag places it. */
+  cursorFrac?: number | null;
+  onCursorFrac?: (f: number | null) => void;
   w: number;
   h: number;
   /** Text/chrome scale (FULL SCREEN, D35 "everything zooms"): the axis text,
@@ -421,6 +434,24 @@ function RtaGlass({
   // Label the minor 15 dB lines too when they sit far enough apart.
   const gutterDbs = ts > 1 && pxPerDb * 15 >= 22 * ts ? [...GRID_DBS, ...GRID_DBS_MINOR] : GRID_DBS;
   const fs12 = 12 * ts;
+  // Cursor → the band under it (equal-width columns), read at that band.
+  const cursorI = cursorFrac != null && n > 0 ? Math.max(0, Math.min(n - 1, Math.floor(cursorFrac * n))) : null;
+  const cursorRead =
+    bands != null && cursorI != null
+      ? {
+          x: (cursorI + 0.5) * barW,
+          text: `${fmtBandHz(bands.centers[cursorI])} Hz · ${
+            !bands.resolvable[cursorI]
+              ? 'not resolved here'
+              : bands.levelsDb[cursorI] <= FLOOR_DB
+                ? 'below floor'
+                : `${bands.estimated?.[cursorI] ? '≈' : ''}${bands.levelsDb[cursorI].toFixed(1)} dB`
+          }`,
+        }
+      : null;
+  const setFromX = (x: number) => {
+    if (chartW > 0 && onCursorFrac) onCursorFrac(Math.max(0, Math.min(0.9999, x / chartW)));
+  };
 
   return (
     <View style={styles.glassBody}>
@@ -445,7 +476,19 @@ function RtaGlass({
         {/* A11Y (2026-09-06): the 61-band spectrum had no accessibility surface
             at all. One spoken summary — the loudest resolvable band — is the
             honest equivalent of what a sighted user reads off the chart. */}
-        <View style={{ flex: 1 }} accessible accessibilityRole="image" accessibilityLabel={spectrumA11yLabel(bands)}>
+        <View style={{ flex: 1 }}>
+          {/* The spoken summary sits on the chart alone, so the overlay
+              controls below are not nested inside an accessible element. */}
+          <View
+            accessible
+            accessibilityRole="image"
+            accessibilityLabel={spectrumA11yLabel(bands)}
+            onStartShouldSetResponder={() => bands != null && !!onCursorFrac}
+            onMoveShouldSetResponder={() => bands != null && !!onCursorFrac}
+            onResponderGrant={(e) => setFromX(e.nativeEvent.locationX)}
+            onResponderMove={(e) => setFromX(e.nativeEvent.locationX)}
+            onResponderTerminationRequest={() => false}
+          >
           {chartW > 0 && (
             <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={chartW} height={chartH}>
               <Defs>
@@ -565,15 +608,34 @@ function RtaGlass({
                           width={w * 0.8}
                           height={2 * ts}
                           rx={1}
-                          fill={PEAK_TICK}
+                          fill={peakTickColor ?? PEAK_TICK}
                           fillOpacity={0.95}
                         />
                       )}
                     </G>
                   );
                 })}
+              {cursorRead != null && (
+                <Line x1={cursorRead.x} y1={2} x2={cursorRead.x} y2={chartH - 2} stroke="#ffffff" strokeWidth={1.2 * ts} opacity={0.9} />
+              )}
             </Svg>
           )}
+          {cursorRead != null && chartW > 0 && (
+            <View pointerEvents="none" style={[styles.cursorChip, { left: Math.max(0, Math.min(chartW - 150 * ts, cursorRead.x - 75 * ts)), width: 150 * ts }]}>
+              <Text style={[styles.cursorChipText, { fontSize: 11 * ts }]} {...fitValue(9)}>{cursorRead.text}</Text>
+            </View>
+          )}
+          </View>
+          {bands != null && onCursorFrac && (
+            cursorRead != null ? (
+              <Pressable onPress={() => onCursorFrac(null)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Clear cursor" style={[styles.cursorClear, { bottom: LABEL_H + 12 * ts }]}>
+                <Text style={[styles.cursorClearText, { fontSize: 10 * ts }]}>CURSOR ✕</Text>
+              </Pressable>
+            ) : (
+              <Text pointerEvents="none" style={[styles.cursorHint, { bottom: LABEL_H + 12 * ts, fontSize: 10 * ts }]}>tap/drag to read Hz + dB</Text>
+            )
+          )}
+          {corner != null && <View style={[styles.glassCorner, { top: 4 * ts, left: 4 * ts }]}>{corner}</View>}
           {/* Band-center frequency labels, aligned under their bars. */}
           <View style={{ height: LABEL_H }}>
             {chartW > 0 &&
@@ -595,6 +657,12 @@ function RtaGlass({
       {pianoOn && <PianoStrip bands={bands} highlightIdx={pitchIdx} ts={ts} gutter={GUTTER} />}
     </View>
   );
+}
+
+/** Band centre for the cursor chip: 31.5 · 125 · 1k · 12.5k. */
+function fmtBandHz(hz: number): string {
+  if (hz >= 1000) return `${Number((hz / 1000).toPrecision(3))}k`;
+  return `${Number(hz.toPrecision(3))}`;
 }
 
 // ---- Piano map (owner 2026-08-05) ------------------------------------------
@@ -958,6 +1026,8 @@ export function RtaScreen({ navigation }: Props) {
   // Custom flat bar colour (member-gated) — used when COLORS (the MIDI ramp) is
   // off (owner rule 2026-08-20). BAR_HOT is the default gradient's top colour.
   const [rtaColor, setRtaColor] = useToolColorPref('ape:tools:rtaColor');
+  // Band-reading cursor, shared by the rack glass and the full screen (owner 2026-10-23).
+  const [cursorFrac, setCursorFrac] = useState<number | null>(null);
   const [pianoOn, setPianoOn] = useState(false);
 
   // DOMINANT-PITCH tracking (owner 2026-08-10): while the piano is shown, poll
@@ -1214,27 +1284,33 @@ export function RtaScreen({ navigation }: Props) {
    *  cleared by RESET PEAK HOLD in the AVG tray (clip latch tints it red until reset), and capture
    *  pauses/resumes with the MIC key or a tap on the glass. Long-press =
    *  guided lesson. */
+  // PK HOLD colour — the readout, its frame and the display's peak ticks share it.
+  const pkHoldColor = hasClipped
+    ? '#ff5a48' // clip latch (owner 2026-08-05) — red until RESET
+    : meter != null && Number.isFinite(meter.peakHoldDb)
+      ? levelColorForDb(meter.peakHoldDb)
+      : undefined;
   const bezel: BezelItem[] = [
     {
       k: 'LEVEL',
       v: `${fmtDb(levelDb)} ${weightUnit(weighting)}`,
       tint: levelDb != null && Number.isFinite(levelDb) ? levelColorForDb(levelDb) : undefined,
+      // Frame in the reading's colour, as on the Multimeter (owner 2026-10-23).
+      frame: levelDb != null && Number.isFinite(levelDb) ? levelColorForDb(levelDb) : undefined,
       helpKey: readoutKey('LEVEL'),
       flex: 1.25,
     },
     {
       k: 'PK HOLD',
       v: fmtDb(meter?.peakHoldDb),
-      tint: hasClipped
-        ? '#ff5a48' // clip latch (owner 2026-08-05) — red until RESET
-        : meter != null && Number.isFinite(meter.peakHoldDb)
-          ? levelColorForDb(meter.peakHoldDb)
-          : undefined,
+      tint: pkHoldColor,
+      frame: pkHoldColor,
       helpKey: readoutKey('PEAK HOLD'),
     },
     { k: 'BANDS', v: String(mode), helpKey: readoutKey('BANDS'), flex: 0.7 },
     {
-      k: 'MIC',
+      // CAPTURE, not MIC — "MIC" read as a mute (owner 2026-10-23).
+      k: 'CAPTURE',
       v: state === 'running' ? 'LIVE' : micPaused ? 'PAUSED' : '—',
       tint: state === 'running' ? undefined : '#7a7f8a',
     },
@@ -1362,22 +1438,18 @@ export function RtaScreen({ navigation }: Props) {
         </View>
       ),
     },
-    // Capture pause/resume (was a tap on the MIC bezel cell — owner rule
-    // 2026-10-10); a tap on the glass does the same.
-    { kind: 'toggle', id: 'mic', label: 'MIC', value: state === 'running', onToggle: state === 'running' ? onStop : onStart },
+    // Capture pause/resume — the ONE capture control (owner 2026-10-23: the
+    // glass tap now places the cursor; "MIC" read as a mute, so CAPTURE).
+    { kind: 'toggle', id: 'mic', label: 'CAPTURE', value: state === 'running', onToggle: state === 'running' ? onStop : onStart },
     // SAVE TRACE — exact §7 flow (onSaveTrace guards on running+bands itself).
     { kind: 'action', id: 'save', label: justSaved ? 'SAVED ✓' : saveGate.label('SAVE'), onPress: onSaveTrace },
   ];
 
   /** The live glass at any size — the rack stage and the full screen share it.
-   *  Tap = pause/resume capture on both (the tool's glass convention). */
+   *  Tap/drag = the band-reading cursor (owner 2026-10-23, as on the
+   *  Multimeter); capture start/stop is the separate MIC key. */
   const renderGlass = (w: number, h: number, ts = 1) => (
-    <Pressable
-      onPress={state === 'running' ? onStop : onStart}
-      accessibilityRole="button"
-      accessibilityLabel={state === 'running' ? 'Tap to stop capture' : 'Tap to start capture'}
-      style={{ width: w, height: h }}
-    >
+    <View style={{ width: w, height: h }}>
       <RtaGlass
         w={w}
         h={h}
@@ -1390,8 +1462,28 @@ export function RtaScreen({ navigation }: Props) {
         pianoOn={pianoOn}
         pitchIdx={pitchIdx}
         ts={ts}
+        cursorFrac={cursorFrac}
+        onCursorFrac={setCursorFrac}
+        peakTickColor={pkHoldColor}
+        corner={
+          <ColorWheelButton
+            style={styles.glassColorBtn}
+            current={rtaColor}
+            onPick={(c) => {
+              setRtaColor(c);
+              if (c) setColorsOn(false); // a custom colour must show (owner 2026-08-21)
+            }}
+            accessibilityLabel="RTA bar colour"
+            feature="the RTA bar colour"
+            pickerTitle="RTA BAR COLOUR"
+            subtitle="The spectrum bars, when COLORS is off"
+            renderDiagram={(hex) => <RtaBarsDiagram tint={hex} defaultTint={WAVE_COLOR_SWATCHES[0]} />}
+            defaultSwatchColor={WAVE_COLOR_SWATCHES[0]}
+            size={Math.round(18 * ts)}
+          />
+        }
       />
-    </Pressable>
+    </View>
   );
 
   return (
@@ -1498,7 +1590,7 @@ export function RtaScreen({ navigation }: Props) {
           <FsKey key="piano" label="PIANO" value={pianoOn ? 'ON' : 'OFF'} active={pianoOn} onPress={() => setPianoOn((v) => !v)} a11y={pianoOn ? 'Piano map, on' : 'Piano map, off'} />,
           <FsKey key="rst" label="PEAK HOLD" value="RESET" onPress={onResetPeak} a11y="Reset peak hold" />,
           <FsKey key="wt" label="LEVEL" value={`${weighting}-WT`} onPress={cycleWeighting} a11y={`Level readout ${weighting}-weighted. Tap to change.`} />,
-          <FsKey key="mic" label="MIC" value={state === 'running' ? 'LIVE' : 'PAUSED'} active={state === 'running'} onPress={state === 'running' ? onStop : onStart} a11y={state === 'running' ? 'Microphone live. Tap to pause.' : 'Microphone paused. Tap to resume.'} />,
+          <FsKey key="mic" label="CAPTURE" value={state === 'running' ? 'LIVE' : 'PAUSED'} active={state === 'running'} onPress={state === 'running' ? onStop : onStart} a11y={state === 'running' ? 'Capture live. Tap to pause capture.' : 'Capture paused. Tap to resume capture.'} />,
         ]}
         renderDisplay={(w, h) => renderGlass(w, h, fsTextScale(w, h))}
         footer={<Text style={styles.fsBadge} numberOfLines={1}>relative dB · uncalibrated approximate</Text>}
@@ -1535,6 +1627,15 @@ const styles = StyleSheet.create({
   panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amberLabel },
   panelSettings: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
   chartRow: { flexDirection: 'row' },
+  // Colour wheel in the chart's top-left corner (owner 2026-10-23).
+  glassCorner: { position: 'absolute' },
+  glassColorBtn: { padding: 3, borderRadius: 6, backgroundColor: 'rgba(12,12,15,0.75)' },
+  // Band-reading cursor (owner 2026-10-23).
+  cursorChip: { position: 'absolute', top: 2, alignItems: 'center', paddingVertical: 2, borderRadius: 6, backgroundColor: 'rgba(12,12,15,0.85)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.35)' },
+  cursorChipText: { fontFamily: fonts.mono, color: '#ffffff' },
+  cursorClear: { position: 'absolute', right: 6, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 5, backgroundColor: 'rgba(12,12,15,0.85)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.35)' },
+  cursorClearText: { fontFamily: fonts.oswaldSemiBold, letterSpacing: 0.8, color: '#ffffff' },
+  cursorHint: { position: 'absolute', right: 6, fontFamily: fonts.mono, color: colors.textMuted },
   gutter: { width: 32 },
   gutterLabel: {
     position: 'absolute',

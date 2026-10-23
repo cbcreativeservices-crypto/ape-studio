@@ -90,7 +90,7 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
     fits(s) ? null : { fontSize: Math.max(V_MIN_FS, Math.floor((V_FS * avail * 10) / (s.length * V_CH * (fontScale || 1))) / 10) };
   return (
     <Pressable
-      style={[styles.cell, { flex: it.flex ?? 1 }, first && styles.cellFirst, it.onPress && styles.cellTappable]}
+      style={[styles.cell, { flex: it.flex ?? 1 }, first && styles.cellFirst, it.onPress && styles.cellTappable, it.frame ? [styles.cellFramed, { borderColor: it.frame, borderLeftColor: it.frame }] : null]}
       onPress={it.onPress}
       onLongPress={it.helpKey ? () => onHelp?.(it.helpKey) : undefined}
       delayLongPress={350}
@@ -161,6 +161,8 @@ const styles = StyleSheet.create({
     gap: 1,
   },
   cellFirst: { borderLeftWidth: 0 },
+  /** A cell with its own coloured frame (BezelItem.frame). */
+  cellFramed: { borderWidth: 1, borderLeftWidth: 1, borderRadius: 7, margin: 3 },
   /** Interactive cells read as slightly lifted glass, not as a different control. */
   cellTappable: { backgroundColor: 'rgba(255,198,77,0.05)' },
   tapMark: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, color: colors.amber },
