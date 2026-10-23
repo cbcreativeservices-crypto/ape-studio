@@ -156,6 +156,7 @@ export function CenterLockTuner() {
   const [stretch, setStretch] = useState<StretchKey>('typical');
   const [strobe, setStrobe] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [pianoGuideOpen, setPianoGuideOpen] = useState(false);
   const recents = prefsStore.use().recents;
   const inst = INSTRUMENTS[instrument];
   const targets = useMemo(() => buildTargets(instrument, tuningKey, a4, capo, temperament), [instrument, tuningKey, a4, capo, temperament]);
@@ -280,6 +281,9 @@ export function CenterLockTuner() {
   const tunings = TUNINGS[instrument];
   const setupChips = (
     <>
+      {inst.piano ? (
+        <Chip label="HOW TO TUNE" on={false} onPress={() => { touch(); setPianoGuideOpen(true); }} accessibilityHint="Opens how to tune a piano" />
+      ) : null}
       {inst.piano
         ? STRETCH_LEVELS.map((s) => (
             <Chip key={s.key} label={s.name} on={stretch === s.key} onPress={() => { touch(); setStretch(s.key); }} accessibilityHint="Sets how far the bass runs flat and the treble sharp" />
@@ -335,12 +339,24 @@ export function CenterLockTuner() {
     </>
   );
 
-  const padTop = Math.max(insets.top, landscape ? 8 : 24) + 6;
+  // Portrait gets more air above the menus (owner 2026-10-23: "scrunched at the top").
+  const padTop = Math.max(insets.top, landscape ? 8 : 24) + (landscape ? 6 : 14);
   // The chip bar grew (owner 2026-09-28: larger instrument/preset chips), so
   // the readout reads its REAL height instead of the old 78/38 guess — the
   // old guess let the readout grow up over the chips and crop their text
   // (owner 2026-09-29).
   const [barH, setBarH] = useState(0);
+  const closeKey = (
+    <Pressable
+      onPress={closeCenterLock}
+      hitSlop={16}
+      style={[styles.closeKey, { opacity: controlsShown ? 1 : CLOSE_REST_OPACITY }]}
+      accessibilityRole="button"
+      accessibilityLabel="Close full screen"
+    >
+      <Text style={styles.closeX}>✕</Text>
+    </Pressable>
+  );
   const padBottom = Math.max(insets.bottom, 10) + 6;
   return (
     <Pressable
@@ -349,34 +365,38 @@ export function CenterLockTuner() {
       accessible={false}
     >
       {/* Top bar — presets, one tap deep; fades after 5 s but stays tappable */}
-      <View style={styles.bar} onLayout={(e) => setBarH(Math.round(e.nativeEvent.layout.height))}>
+      <View style={[styles.bar, !landscape && styles.barPortrait]} onLayout={(e) => setBarH(Math.round(e.nativeEvent.layout.height))}>
         {/* Faded, not hidden (owner 2026-09-29: "larger — more visible and
             intuitive"): at 18% and deaf to taps, the presets read as gone and the
             first tap only woke them. Now they settle to 45% and a tap on a chip
             works straight away (every chip's onPress calls touch()). */}
-        <View style={[styles.barChips, { opacity: controlsShown ? 1 : CHIPS_REST_OPACITY }]}>
-          {landscape ? (
-            <ChipRow>
-              {instrumentChips}
-              <View style={styles.chipGap} />
-              {setupChips}
-            </ChipRow>
-          ) : (
-            <View style={styles.barRows}>
-              <ChipRow>{instrumentChips}</ChipRow>
+        {landscape ? (
+          <>
+            <View style={[styles.barChips, { opacity: controlsShown ? 1 : CHIPS_REST_OPACITY }]}>
+              <ChipRow>
+                {instrumentChips}
+                <View style={styles.chipGap} />
+                {setupChips}
+              </ChipRow>
+            </View>
+            {closeKey}
+          </>
+        ) : (
+          /* Portrait (owner 2026-10-23: the two menus were scrunched and the
+             tuning row cropped): the ✕ shares the INSTRUMENT row only, so the
+             tuning row runs the full width, with more air between the rows. */
+          <View style={styles.barRows}>
+            <View style={styles.barRow1}>
+              <View style={[styles.barChips, { opacity: controlsShown ? 1 : CHIPS_REST_OPACITY }]}>
+                <ChipRow>{instrumentChips}</ChipRow>
+              </View>
+              {closeKey}
+            </View>
+            <View style={{ opacity: controlsShown ? 1 : CHIPS_REST_OPACITY }}>
               <ChipRow>{setupChips}</ChipRow>
             </View>
-          )}
-        </View>
-        <Pressable
-          onPress={closeCenterLock}
-          hitSlop={16}
-          style={[styles.closeKey, { opacity: controlsShown ? 1 : CLOSE_REST_OPACITY }]}
-          accessibilityRole="button"
-          accessibilityLabel="Close full screen"
-        >
-          <Text style={styles.closeX}>✕</Text>
-        </Pressable>
+          </View>
+        )}
       </View>
 
       <LiveReadout
@@ -406,8 +426,56 @@ export function CenterLockTuner() {
         </Text>
       </View>
 
+      {pianoGuideOpen ? <PianoGuide onClose={() => setPianoGuideOpen(false)} /> : null}
       {pickerOpen ? <InstrumentPicker current={instrument} recents={recents} onPick={choose} onClose={() => setPickerOpen(false)} /> : null}
     </Pressable>
+  );
+}
+
+/** Piano tuning basics — the owner's text, VERBATIM (owner 2026-10-23).
+ *  Shown only from the piano setup row. */
+const PIANO_GUIDE = {
+  intro: 'Most piano notes have three strings that should sound as one. You’ll need piano tuning mutes and a properly fitted tuning lever.',
+  steps: [
+    ['Isolate the center string.', 'Use mutes to silence both outer strings of the note.'],
+    ['Tune the center.', 'Repeatedly play the key while making tiny adjustments to the center string’s tuning pin until it matches the app’s target. Confirm you’re adjusting the correct pin.'],
+    ['Match one outer string.', 'Unmute it while keeping the other outer string muted. Tune it to the center string. Listen for the pulsing “wah-wah” sound, called beating. As the pitches come together, the beating slows. Continue until the two tones merge into one steady sound and the beating is no longer heard.'],
+    ['Match the remaining string.', 'Mute the outer string you just tuned, then unmute and tune the remaining outer string to the center. Again, listen until the tones merge and the beating disappears.'],
+    ['Check the complete note.', 'Remove the mutes, play again, and listen for one smooth, steady sound with no beating.'],
+  ],
+  after: [
+    'For two-string notes, tune one and match the other. For single-string notes, tune directly to the app.',
+    'Stretch is already included in the app’s targets. When checking a string with the app, isolate that string so only it sounds by muting (covering and dampening with felt) the other strings above and below it.',
+  ],
+} as const;
+
+function PianoGuide({ onClose }: { onClose: () => void }) {
+  return (
+    <View style={styles.pickerScrim} accessibilityViewIsModal>
+      <Pressable style={StyleSheet.absoluteFill as object} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close piano tuning basics" />
+      <View style={styles.pickerPanel}>
+        <View style={styles.pickerHead}>
+          <Text style={styles.pickerTitle} accessibilityRole="header">PIANO TUNING BASICS</Text>
+          <Pressable onPress={onClose} hitSlop={12} style={styles.pickerClose} accessibilityRole="button" accessibilityLabel="Close">
+            <Text style={styles.closeX}>✕</Text>
+          </Pressable>
+        </View>
+        <ScrollView style={styles.pickerScroll} contentContainerStyle={styles.guideContent}>
+          <Text style={styles.guideText}>{PIANO_GUIDE.intro}</Text>
+          {PIANO_GUIDE.steps.map(([lead, body], i) => (
+            <View key={lead} style={styles.guideStep}>
+              <Text style={styles.guideNum}>{i + 1}.</Text>
+              <Text style={[styles.guideText, { flex: 1 }]}>
+                <Text style={styles.guideLead}>{lead}</Text> {body}
+              </Text>
+            </View>
+          ))}
+          {PIANO_GUIDE.after.map((p) => (
+            <Text key={p} style={styles.guideText}>{p}</Text>
+          ))}
+        </ScrollView>
+      </View>
+    </View>
   );
 }
 
@@ -1310,7 +1378,9 @@ const styles = StyleSheet.create({
   // outgrows its space can never cover the chip text (owner 2026-09-29).
   bar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, gap: 8, zIndex: 2, backgroundColor: '#050506' },
   barChips: { flex: 1 },
-  barRows: { flex: 1, gap: 10 },
+  barPortrait: { flexDirection: 'column', alignItems: 'stretch', paddingBottom: 12 },
+  barRows: { gap: 14 },
+  barRow1: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   chipRowWrap: { flex: 1 },
   // paddingVertical: the horizontal ScrollView clipped the chips' top and
   // bottom borders on iOS, so they read as bare side lines, not buttons.
@@ -1419,6 +1489,12 @@ const styles = StyleSheet.create({
   pickerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 2.4, color: colors.amber },
   pickerClose: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', backgroundColor: '#15161b' },
   pickerScroll: { flexGrow: 0 },
+  // Piano tuning basics popup (owner 2026-10-23).
+  guideContent: { paddingHorizontal: 16, paddingVertical: 14, gap: 12 },
+  guideStep: { flexDirection: 'row', gap: 8 },
+  guideNum: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, lineHeight: 22, color: colors.amber, minWidth: 16 },
+  guideLead: { fontFamily: fonts.barlowSemiBold, color: colors.textPrimary },
+  guideText: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: '#d6d8de' },
   pickerContent: { paddingHorizontal: 12, paddingVertical: 12, gap: 20 },
   pickerSection: { gap: 8 },
   pickerFamily: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 2, color: DIM, paddingHorizontal: 4 },
