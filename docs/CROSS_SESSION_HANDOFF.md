@@ -1,4850 +1,4850 @@
 needs: nothing
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
-affects other side: nothing — local branch only
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
+affects other side: nothing yet — local web-launch-day branch, not pushed (applies Comp A's 2026-10-22 website fact-check A–E2)
