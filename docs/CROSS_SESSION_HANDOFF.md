@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 08:45 · ccode · 86eafc5c
+changed: Owner decisions on the 34 held audit items + spectrogram level strip (2026-10-23)
+affects other side: nothing backend (app copy, calculator ranges, room-design model; lab-cert seed SQL regenerated, 'why' text only). Rides the approval-day OTA.
+needs: nothing
+
+
 ### 2026-10-23 03:07 · ccode · 4bf38262
 changed: Audit R2 fix Round B (last): S3 wording — clarify, hedge, context (Comp B Round 2)
 affects other side: nothing backend (app copy; lab-cert seed SQL regenerated, 'why' lines only). Rides the approval-day OTA.
