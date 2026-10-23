@@ -12,7 +12,7 @@
  * Search by term · empty: "No results for [filter]" · bottom nav visible.
  */
 import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
-import { AppState, BackHandler, FlatList, ImageBackground, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
+import { Animated, AppState, BackHandler, FlatList, ImageBackground, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 /**
  * ⛔ DimModal, NOT react-native's Modal (bug hunt 2026-09-30, pass 2). The
@@ -1198,6 +1198,30 @@ function TermDetails({
   );
 }
 
+/**
+ * One acknowledgement flash on a filter chip's icon (owner 2026-10-23): when a
+ * term is added to or removed from Bookmarks / the Custom Study List, that
+ * list's icon in the filter row grows and settles ONCE, so the action is seen
+ * to have landed there. Reduced motion / Low-Light: a brief dim instead.
+ * `n` counts actions; each new value plays the flash once.
+ */
+function AckFlash({ n, children }: { n: number; children: ReactNode }) {
+  const motion = useDecorativeMotion();
+  const v = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (!n) return;
+    v.setValue(0);
+    Animated.sequence([
+      Animated.timing(v, { toValue: 1, duration: 170, useNativeDriver: true }),
+      Animated.timing(v, { toValue: 0, duration: 330, useNativeDriver: true }),
+    ]).start();
+  }, [n, v]);
+  const style = motion
+    ? { transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [1, 1.45] }) }] }
+    : { opacity: v.interpolate({ inputRange: [0, 1], outputRange: [1, 0.35] }) };
+  return <Animated.View style={style}>{children}</Animated.View>;
+}
+
 function Chip({
   label,
   active,
@@ -2163,6 +2187,25 @@ ${COPY.glossaryFreeAllowance}`,
    *  card popup in CARDS view? Both are "expanded and viewed" to a reader.
    *  Declared here because popupTrail is, and the search field reads it. */
   const anyExpanded = expandedIds.size > 0 || popupTrail.length > 0;
+  // Filter-chip acknowledgement (owner 2026-10-23). While a CARD popup hides
+  // the filter row the flash is held, and plays once when the row is back.
+  const [ack, setAck] = useState<{ fav: number; custom: number }>({ fav: 0, custom: 0 });
+  const pendingAck = useRef<'fav' | 'custom' | null>(null);
+  const rowHiddenRef = useRef(false);
+  rowHiddenRef.current = popupTrail.length > 0;
+  const ackList = useCallback((k: 'fav' | 'custom') => {
+    if (rowHiddenRef.current) {
+      pendingAck.current = k;
+      return;
+    }
+    setAck((a) => ({ ...a, [k]: a[k] + 1 }));
+  }, []);
+  useEffect(() => {
+    if (popupTrail.length > 0 || pendingAck.current == null) return;
+    const k = pendingAck.current;
+    pendingAck.current = null;
+    setAck((a) => ({ ...a, [k]: a[k] + 1 }));
+  }, [popupTrail.length]);
   // "Our Commitment to You" (owner 2026-10-09): once the ~4 minutes are
   // reached it waits for the reader to CLOSE their next definition — a natural
   // pause, never in the middle of a lookup or on the way somewhere else.
@@ -3713,7 +3756,10 @@ ${COPY.glossaryFreeAllowance}`,
               {/* Hold-to-confirm (user request 2026-07-17): holding the
                   bookmark shows what it does before you commit. */}
               <HoldHintPressable
-                onPress={() => toggleFav(item.id)}
+                onPress={() => {
+                  toggleFav(item.id);
+                  ackList('fav');
+                }}
                 hint={bookmarks.has(item.id) ? 'Removes from Bookmarks' : 'Adds to Bookmarks'}
                 selected={bookmarks.has(item.id)}
                 accessibilityLabel={bookmarks.has(item.id) ? 'Remove bookmark' : 'Bookmark term'}
@@ -3730,7 +3776,10 @@ ${COPY.glossaryFreeAllowance}`,
               {/* ★ Custom list toggle (user request 2026-07-18) — was
                   missing from the glossary row. */}
               <HoldHintPressable
-                onPress={() => toggleTermList('starred', item.id)}
+                onPress={() => {
+                  toggleTermList('starred', item.id);
+                  ackList('custom');
+                }}
                 hint={starred.has(item.id) ? 'Removes from Custom list' : 'Adds to Custom list'}
                 selected={starred.has(item.id)}
                 accessibilityLabel={starred.has(item.id) ? 'Remove from custom list' : 'Add to custom list'}
@@ -3857,7 +3906,7 @@ ${COPY.glossaryFreeAllowance}`,
     // `defRev`: definitions merge INTO the entry objects, so the bump is the
     // only signal that a row's text changed.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [queueDefinition, cardView, expandedIds, details, mediaById, deferredSearch, openPopupRoot, toggleExpand, ttsBeg, plainById, queuePlain, shareTerm, toggleFav, bookmarks, starred, termIndex, onLinkPress, onOpenCalc, linksOn, shortRead, capped, filter, formulaById, isMember, mistakesLockLine, onLabAction, detailErrs, retryDetails, defRev],
+    [queueDefinition, cardView, expandedIds, details, mediaById, deferredSearch, openPopupRoot, toggleExpand, ttsBeg, plainById, queuePlain, shareTerm, toggleFav, ackList, bookmarks, starred, termIndex, onLinkPress, onOpenCalc, linksOn, shortRead, capped, filter, formulaById, isMember, mistakesLockLine, onLabAction, detailErrs, retryDetails, defRev],
   );
 
   // Help for this screen (internal-help pass, owner 2026-09-08).
@@ -4079,22 +4128,8 @@ ${COPY.glossaryFreeAllowance}`,
         <HelpDot onPress={glossaryHelp.open} label="Help — using the glossary" />
       </View>
 
-      {/* No search field in full-screen (card) view (owner 2026-10-14) — but a
-          search still filtering the cards says so, with a way to clear it. */}
-      {cardView && search.trim() !== '' ? (
-        <Pressable
-          style={styles.cardSearchPill}
-          onPress={clearSearch}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={`Showing results for ${search.trim()}. Clear the search`}
-        >
-          <Text style={styles.cardSearchPillText}>
-            Results for “{search.trim()}”  ✕
-          </Text>
-        </Pressable>
-      ) : null}
-      {cardView ? null : (
+      {/* The search field shows in BOTH list and card view (owner 2026-10-23:
+          "Search should be visible in both modes" — reverses 2026-10-14). */}
       <View style={styles.searchBox}>
         {/* Search glyph always on the left (Booth 2026-07-15). */}
         <Text style={styles.searchGlyph}>⌕</Text>
@@ -4130,7 +4165,6 @@ ${COPY.glossaryFreeAllowance}`,
             Absent until a build bundles the speech-recognition native module. */}
         {GlossaryDictation ? <GlossaryDictation onText={onSearchChange} /> : null}
       </View>
-      )}
 
       {/* Filters never scroll — they wrap in place (Booth 2026-07-09b). In LIST
           mode they stay visible even while a definition is expanded (the term
@@ -4171,9 +4205,11 @@ ${COPY.glossaryFreeAllowance}`,
           icon={(c) => (
             // Icon only — count removed; the total is shown in the top-right
             // "# Terms" readout (user request 2026-07-24).
-            <View style={styles.chipIconWrap}>
-              <BookmarkIcon color={c} filled={filter === 'favorites'} size={17} />
-            </View>
+            <AckFlash n={ack.fav}>
+              <View style={styles.chipIconWrap}>
+                <BookmarkIcon color={c} filled={filter === 'favorites'} size={17} />
+              </View>
+            </AckFlash>
           )}
           onPress={() => {
             setFilter('favorites');
@@ -4192,7 +4228,9 @@ ${COPY.glossaryFreeAllowance}`,
             // tying the list to studying. Count lives in the "# Terms" readout.
             <View style={styles.chipIconWrap}>
               {/* The deck stays cyan, as on Enrollments, lit or not (owner 2026-10-14). */}
-              <DeckIcon color={CUSTOM_CYAN} size={16} fill={filter === 'custom' ? `${CUSTOM_CYAN}33` : 'none'} />
+              <AckFlash n={ack.custom}>
+                <DeckIcon color={CUSTOM_CYAN} size={16} fill={filter === 'custom' ? `${CUSTOM_CYAN}33` : 'none'} />
+              </AckFlash>
               <Text style={[styles.chipText, { color: c }]}>
                 CUSTOM <Text style={{ color: colors.blue }}>STUDY</Text>
               </Text>
@@ -4902,8 +4940,6 @@ const styles = StyleSheet.create({
   rowToggle: { height: 40, paddingVertical: 0, paddingHorizontal: 14, justifyContent: 'center' },
   rowToggleText: { fontSize: 13 },
   /** Card view: the active search, shown small with a clear ✕ (2026-10-15). */
-  cardSearchPill: { alignSelf: 'flex-start', marginTop: 8, borderWidth: 1, borderColor: colors.hairline, borderRadius: 14, paddingVertical: 5, paddingHorizontal: 12, backgroundColor: '#161616' },
-  cardSearchPillText: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textSecondary },
   /** Full screen / ✕ wears the Flashcards green (owner 2026-10-14). */
   cardsToggleGreen: { borderColor: colors.green, backgroundColor: 'rgba(55,224,95,0.10)' },
   /** The mode that is NOT live, on the BEG/ADV key. */

@@ -1,12 +1,16 @@
 /**
  * The "?" on My Enrollments Dashboard (owner 2026-10-15): a small centred
- * popup menu (popups, never pulldowns) with two choices —
- *   • "How Your Learning Is Organized" → the first-visit intro again
- *   • "Help with this screen" → the Help hub, filtered to enrolment answers
- *     (what the plain HelpKey did before).
+ * popup (popups, never pulldowns) with
+ *   • "How Your Learning Is Organized" → the first-visit intro again, and
+ *   • the help for THIS screen shown right below it, in the popup (owner
+ *     2026-10-23: "already show the help with this screen list") — the same
+ *     answers the Help hub lists for "enroll", each opening in place. Before,
+ *     this was a second button that left for the Help hub.
  */
-import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { filterHelp } from '../../features/help/helpContent';
+import { GlassButton } from '../../components/GlassButton';
 import { useNavigation } from '@react-navigation/native';
 import { Modal, useAfterModalsClose } from '../../components/DimModal';
 import { IntroSheet } from '../../features/intro/ScreenIntroOverlay';
@@ -22,6 +26,9 @@ export function EnrollmentHelpMenu() {
   const handoff = useModalHandoff();
   const [menu, setMenu] = useState(false);
   const [intro, setIntro] = useState(false);
+  const [openId, setOpenId] = useState<string | null>(null);
+  // The Help hub's own search for this screen (what "Help with this screen" opened).
+  const screenHelp = useMemo(() => filterHelp('enroll'), []);
   return (
     <>
       <Pressable
@@ -46,27 +53,57 @@ export function EnrollmentHelpMenu() {
         <Pressable style={styles.backdrop} onPress={() => setMenu(false)} accessible={false} onAccessibilityEscape={() => setMenu(false)}>
           <Pressable style={styles.card} onPress={() => {}} accessible={false}>
             <Text style={styles.tag}>HELP</Text>
-            <Pressable
-              style={styles.item}
+            {/* The amber glass glow (owner 2026-10-23) — the same backlit gold key
+                as Home's CERTIFICATES & PROGRAMS. */}
+            <GlassButton
+              label="HOW YOUR LEARNING IS ORGANIZED"
+              tint="gold"
+              height={50}
+              fontSize={13}
               onPress={() => {
                 setMenu(false);
                 afterClose(() => setIntro(true));
               }}
-              accessibilityRole="button"
-            >
-              <Text style={styles.itemText}>How Your Learning Is Organized</Text>
-            </Pressable>
-            <Pressable
-              style={styles.item}
-              onPress={() => {
-                setMenu(false);
-                // Same call the plain HelpKey makes (pop: true keeps one Help).
-                handoff(() => navigation.navigate('Help', { search: 'enroll' }, { pop: true }));
-              }}
-              accessibilityRole="button"
-            >
-              <Text style={styles.itemText}>Help with this screen</Text>
-            </Pressable>
+            />
+            <Text style={styles.subhead} accessibilityRole="header">HELP WITH THIS SCREEN</Text>
+            <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
+              {screenHelp.map((c) => (
+                <View key={c.key} style={styles.group}>
+                  <Text style={styles.groupTitle}>{c.title}</Text>
+                  {c.entries.map((e) => {
+                    const open = openId === e.id;
+                    return (
+                      <View key={e.id} style={styles.entry}>
+                        <Pressable
+                          onPress={() => setOpenId(open ? null : e.id)}
+                          accessibilityRole="button"
+                          accessibilityState={{ expanded: open }}
+                          aria-expanded={open}
+                          style={styles.qRow}
+                        >
+                          <Text style={styles.caret}>{open ? '▾' : '▸'}</Text>
+                          <Text style={styles.q}>{e.q}</Text>
+                        </Pressable>
+                        {open ? <Text style={styles.a}>{e.a}</Text> : null}
+                        {open && e.jump ? (
+                          <Pressable
+                            style={styles.jump}
+                            onPress={() => {
+                              setMenu(false);
+                              const j = e.jump!;
+                              handoff(() => navigation.navigate(j.route, j.params, { pop: true }));
+                            }}
+                            accessibilityRole="button"
+                          >
+                            <Text style={styles.jumpText}>{e.jump.label} ›</Text>
+                          </Pressable>
+                        ) : null}
+                      </View>
+                    );
+                  })}
+                </View>
+              ))}
+            </ScrollView>
             <Pressable style={styles.close} onPress={() => setMenu(false)} accessibilityRole="button">
               <Text style={styles.closeText}>CLOSE</Text>
             </Pressable>
@@ -104,8 +141,19 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   tag: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 2, color: '#b98a20' },
-  item: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 10, paddingVertical: 12, paddingHorizontal: 14, backgroundColor: '#1a1814' },
-  itemText: { fontFamily: fonts.oswaldMedium, fontSize: 15, color: colors.textPrimary },
+  // Help-with-this-screen list, in the popup (owner 2026-10-23).
+  subhead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 2, color: '#b98a20', marginTop: 6 },
+  list: { maxHeight: 360 },
+  listContent: { gap: 12, paddingBottom: 4 },
+  group: { gap: 6 },
+  groupTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.6, color: colors.textSub },
+  entry: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 10, backgroundColor: '#1a1814', paddingVertical: 10, paddingHorizontal: 12, gap: 8 },
+  qRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
+  caret: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, lineHeight: 20, color: colors.amber, width: 12 },
+  q: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 20, color: colors.textPrimary },
+  a: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary, marginLeft: 20 },
+  jump: { alignSelf: 'flex-start', marginLeft: 20, paddingVertical: 4 },
+  jumpText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
   close: { alignSelf: 'center', paddingVertical: 8, paddingHorizontal: 16 },
   closeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.5, color: colors.textSub },
 });

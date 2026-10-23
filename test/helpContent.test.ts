@@ -214,6 +214,10 @@ function helpKeyTerms(): { term: string; file: string }[] {
         for (const m of src.matchAll(/navigate\('Help', \{ search: '([^']*)' \}/g)) {
           out.push({ term: m[1], file: p });
         }
+        // …and since 2026-10-23 it lists that screen's answers in place.
+        for (const m of src.matchAll(/filterHelp\('([^']*)'\)/g)) {
+          out.push({ term: m[1], file: p });
+        }
       }
     }
   };

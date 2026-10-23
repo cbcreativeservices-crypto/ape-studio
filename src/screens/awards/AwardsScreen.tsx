@@ -16,6 +16,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { EnrollmentHelpMenu } from '../enrollment/EnrollmentHelpMenu';
+import { ENROLL_INTRO_MIN_VISITS, noteEnrollmentsVisit, setEnrollIntroHidden, useEnrollIntroPrefs } from '../../features/enrollment/enrollIntroPrefs';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ViewToken } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
@@ -54,6 +55,10 @@ import { readingColumn } from '../../theme/readingColumn';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { safeGoBack } from '../../lib/safeGoBack';
+
+/** My Enrollments' explanation, owner-approved wording (2026-10-23). */
+const ENROLL_INTRO_TEXT =
+  'Choose the topics you want to study, then load them into your Study dashboard. Here you can see your progress for each certificate and program and for everything you’re enrolled in, and manage your Custom Study List.';
 
 const SPEC_CERT_KEY = 'ape:specCert'; // chosen Specialization Certificate name (Level 1)
 const PROGRAM_PATH_KEY = 'ape:programPath'; // chosen program path name (Level 2)
@@ -466,6 +471,9 @@ const AwardPageView = memo(function AwardPageView({
 });
 
 export function AwardsScreen({ navigation, route }: Props) {
+  // My Enrollments' explanation + its reveal triangle (owner 2026-10-23).
+  const enrollIntro = useEnrollIntroPrefs();
+  const enrollIntroCanHide = enrollIntro.visits >= ENROLL_INTRO_MIN_VISITS;
   const insets = useSafeAreaInsets();
   const { width: screenW } = useWindowDimensions();
   const startIdx = Math.max(0, PAGE_ORDER.indexOf(route.params.category as PageKey));
@@ -907,6 +915,10 @@ export function AwardsScreen({ navigation, route }: Props) {
   }).current;
 
   const currentKey = PAGE_ORDER[idx];
+  // One visit each time My Enrollments is shown (the reveal-triangle gate).
+  useEffect(() => {
+    if (currentKey === 'enrollment') noteEnrollmentsVisit();
+  }, [currentKey]);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -939,6 +951,30 @@ export function AwardsScreen({ navigation, route }: Props) {
         {/* Enrollments' ? is a small menu: the intro again, or Help (owner 2026-10-15). */}
         {currentKey === 'enrollment' ? <EnrollmentHelpMenu /> : null}
       </Pressable>
+      {/* What to do here, under the title (owner 2026-10-23, wording approved).
+          A reveal triangle can hide it — offered only from the learner's
+          ENROLL_INTRO_MIN_VISITS-th visit, so a newcomer always reads it. */}
+      {currentKey === 'enrollment' ? (
+        enrollIntroCanHide ? (
+          <Pressable
+            style={styles.enrollIntroRow}
+            onPress={() => setEnrollIntroHidden(!enrollIntro.hidden)}
+            accessibilityRole="button"
+            accessibilityState={{ expanded: !enrollIntro.hidden }}
+            aria-expanded={!enrollIntro.hidden}
+            accessibilityLabel={enrollIntro.hidden ? 'Show what to do here' : `${ENROLL_INTRO_TEXT} Tap to hide.`}
+          >
+            <Text style={styles.enrollIntroCaret}>{enrollIntro.hidden ? '▸' : '▾'}</Text>
+            {enrollIntro.hidden ? (
+              <Text style={styles.enrollIntroLabel}>WHAT TO DO HERE</Text>
+            ) : (
+              <Text style={[styles.enrollIntro, styles.enrollIntroInRow]}>{ENROLL_INTRO_TEXT}</Text>
+            )}
+          </Pressable>
+        ) : (
+          <Text style={styles.enrollIntro}>{ENROLL_INTRO_TEXT}</Text>
+        )
+      ) : null}
       {/* First open of My Enrollments Dashboard: the owner's intro, once (2026-10-15). */}
       {currentKey === 'enrollment' ? <ScreenIntroOverlay introKey="enrollments" /> : null}
 
@@ -1233,6 +1269,12 @@ export function AwardsScreen({ navigation, route }: Props) {
 }
 
 const styles = StyleSheet.create({
+  // My Enrollments: what to do here, under the title (owner 2026-10-23).
+  enrollIntro: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary, paddingHorizontal: 16, marginTop: -2, marginBottom: 8 },
+  enrollIntroRow: { flexDirection: 'row', alignItems: 'flex-start', paddingLeft: 16, paddingRight: 4, minHeight: 32 },
+  enrollIntroInRow: { flex: 1, paddingHorizontal: 0, paddingRight: 12, marginTop: 0 },
+  enrollIntroCaret: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, lineHeight: 20, color: colors.amber, width: 18 },
+  enrollIntroLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, lineHeight: 20, color: colors.textSub },
   root: { flex: 1, backgroundColor: colors.screenBg },
   /* ⚠️ STILL USED — by the two picker MODALS below, which carry a
      BrandLogo size={30} and no HOME and are NOT the CompactBrandBar

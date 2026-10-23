@@ -445,13 +445,14 @@ export function renderWebPreview(hash: string): ReactElement | null {
                         // card height, which is how it rendered LANDSCAPE cards at
                         // iPad width. Resize the browser to see it.
                         ? { name: 'CourseSelection', component: CourseSelectionScreen as ComponentType }
-                      : hash === '#awardspreview'
+                      : hash.startsWith('#awardspreview')
                         // The Awards pager - page width, getItemLayout and the
                         // settle-index maths all read the window width.
+                        // `#awardspreview/enrollment` opens My Enrollments (2026-10-23).
                         ? {
                             name: 'Awards',
                             component: AwardsScreen as ComponentType,
-                            initialParams: { category: 'specialization' },
+                            initialParams: { category: hash.split('/')[1] || 'specialization' },
                           }
                         : labPreviewFromHash(hash);
   if (toolPreview) {

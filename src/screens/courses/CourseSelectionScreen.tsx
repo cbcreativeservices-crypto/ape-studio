@@ -439,7 +439,7 @@ const TITLE_KEYWORD: Partial<Record<Card['kind'], string>> = {
   glossary: 'Glossary',
   enrollments: 'Enrollments',
   careerFinder: 'Career Finder',
-  startHere: 'First Steps in Audio',
+  startHere: 'First Steps\nin Audio', // gold across the line break (owner 2026-10-23)
 };
 /** The title text with its key word wrapped in gold (plain when the word is absent). */
 function keyedTitle(text: string, kind: Card['kind']): ReactNode {
@@ -977,8 +977,8 @@ function CourseCardView({
           style={StyleSheet.absoluteFill}
         />
         <View>
-          {/* Owner 2026-09-29: the subtitle on its own line. */}
-          <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{keyedTitle('Start Here:\nYour First Steps in Audio', 'startHere')}</Text>
+          {/* Owner 2026-10-23: three lines — Your First Steps / in Audio / Start Here. */}
+          <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{keyedTitle('Your First Steps\nin Audio\nStart Here', 'startHere')}</Text>
         </View>
         <View style={{ alignItems: 'center' }}>
           <View style={{ width: cd.btnW }}>
@@ -1122,7 +1122,9 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Eyebrow color={'#ffc64d'} w={cd.w} text={'STUDY AREA'} />
+          {/* Owner 2026-10-23: the line above the card says what it opens (was
+              "STUDY AREA"); the same subtitle inside the card is gone. */}
+          <Eyebrow color={'#ffc64d'} w={cd.w} text={'Explore Certificates & Programs'} />
           <View style={[styles.cardAboveRule, { backgroundColor: '#ffc64d' }]} />
         </View>
         <Pressable onPress={openArea} accessible={false}>
@@ -1134,9 +1136,6 @@ function CourseCardView({
             />
             <View>
               <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{item.name}</Text>
-              {/* What the button opens (owner 2026-10-14), amber. The button read EXPLORE
-                  until 2026-10-15 (owner: "Explore" is also the top button). */}
-              <Text style={[styles.cardStudyTopic, styles.cardAreaSub]} maxFontSizeMultiplier={HOME_MAX}>Explore Certificates &amp; Programs</Text>
             </View>
             <View style={{ alignItems: 'center' }}>
               <View style={{ width: cd.btnW }}>
@@ -2405,7 +2404,6 @@ const styles = StyleSheet.create({
   // The gold key word inside a card title (owner 2026-10-14).
   cardTitleKey: { color: colors.gold },
   // "Explore Certificate Programs" under each Study Area title — amber (owner 2026-10-14).
-  cardAreaSub: { color: colors.amber },
   // "Study Topic" under the two free topic titles (owner 2026-10-14).
   cardStudyTopic: { fontFamily: fonts.oswaldMedium, fontSize: 15, letterSpacing: 0.6, color: colors.gold, marginTop: 2, textShadowColor: 'rgba(0,0,0,0.75)', textShadowRadius: 4, textShadowOffset: { width: 0, height: 1 } },
   cardTitle: {
