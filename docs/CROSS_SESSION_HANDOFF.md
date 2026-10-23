@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 12:50 · ccode · 95c4ee76
+changed: Home: always the standard deck while Home Setup is hidden (owner 2026-10-23)
+affects other side: nothing backend (Home deck only; saved home lists untouched).
+needs: nothing
+
+
 ### 2026-10-23 11:58 · ccode · bbd8dd89
 changed: Trophy Case: certificate on the Share card, SAMPLE certificate view, full-screen landscape; share row out of the clipped art frame (owner 2026-10-23)
 affects other side: nothing backend (Trophy Case UI; certificate share row now tappable).
