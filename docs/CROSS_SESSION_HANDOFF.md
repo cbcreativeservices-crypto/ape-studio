@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-22 18:48 · ccode · 10d5f8c9
+changed: Fact audit R2: corrections + systemic patterns (Comp B return)
+affects other side: nothing backend (app copy, curated JSON, careerIndex + its build overrides, lab-cert seed SQL regenerated: 2 'why' lines only — re-run only if A reseeds)
+needs: nothing
+
+
 ### 2026-10-22 18:15 · ccode · 023640ea
 changed: Fact audit R1: 43 S1 fixes, in-app contradictions, dev-leak check (Comp B return)
 affects other side: nothing (app copy + curated notification JSON + careerIndex; rides the approval-day OTA)
