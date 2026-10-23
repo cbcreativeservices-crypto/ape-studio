@@ -142,6 +142,13 @@ export function proxy(request: NextRequest) {
     if (legalPublic === "/employers/apply" || /^\/registry\/[^/]+$/.test(legalPublic)) {
       return NextResponse.next();
     }
+    // Credential verification (owner H-A 2026-10-22): the app tells people
+    // "employers can verify them online", so the code-entry page and a
+    // one-segment code page are public too. Same rules: no cookie, not a
+    // site-wide unlock.
+    if (legalPublic === "/verify" || /^\/verify\/[^/]+$/.test(legalPublic)) {
+      return NextResponse.next();
+    }
   }
 
   // Already unlocked with a valid cookie -> show the site.
