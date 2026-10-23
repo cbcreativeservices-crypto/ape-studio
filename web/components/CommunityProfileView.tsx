@@ -5,7 +5,7 @@ import Link from "next/link";
 import { fetchCommunityProfile, type CommunityOutcome } from "@/lib/community";
 
 /**
- * A member's public Audio Community Directory profile.
+ * A member's public Pro Registry profile.
  *
  * Everything shown here was chosen by the member. Nothing is inferred, nothing
  * is ranked, and there is no view count, no online status and no activity

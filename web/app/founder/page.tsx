@@ -4,7 +4,7 @@ import { PageHero, Section, CTARow } from "@/components/content";
 export const metadata: Metadata = {
   title: "Founder",
   description:
-    "Professor Channing “Cháno” Booth — Founder & Curriculum Director of Pro Audio Training Academy: audio educator, engineer, and professional jazz pianist with four decades in the field.",
+    "Professor Channing “Cháno” Booth — Founder & Curriculum Director of Pro Audio Training Academy: audio educator, engineer, and professional salsa and Latin-jazz pianist with four decades in the field.",
 };
 
 export default function Page() {
@@ -45,7 +45,7 @@ export default function Page() {
 
       <Section title="Performer">
         <p>
-          The piano is his main talent. As a professional pianist, Cháno has
+          The piano is his main talent. As a professional salsa and Latin-jazz pianist, Cháno has
           performed in clubs, theaters, arenas, music festivals, and
           international jazz festivals — a performing career that runs alongside
           his work in engineering and education.

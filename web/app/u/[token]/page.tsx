@@ -5,7 +5,7 @@ import Link from "next/link";
 import CommunityProfileView from "@/components/CommunityProfileView";
 
 /**
- * Public Audio Community Directory profile — /u/<public_token>.
+ * Public Pro Registry profile — /u/<public_token>.
  *
  * Separate from /registry/<qr_token>, which verifies CREDENTIALS and is
  * permanent. This page exists only while the member chooses to publish it.
@@ -17,7 +17,7 @@ export default function Page() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
       <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">
-        Audio Community Directory
+        Pro Registry
       </p>
       <div className="mt-4 flex items-baseline justify-between gap-4">
         <h1 className="font-display text-3xl font-semibold uppercase tracking-wide text-foreground sm:text-4xl">

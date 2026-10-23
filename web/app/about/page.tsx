@@ -34,8 +34,8 @@ export default function Page() {
           The Academy was founded by Professor Channing “Cháno” Booth, who has
           taught professional audio at San Diego Miramar College for 28 years and
           brings four decades of experience in live audio, studio recording, and
-          production — alongside a performing career as a professional jazz
-          pianist.
+          production — alongside a performing career as a professional salsa and
+          Latin-jazz pianist.
         </p>
         <p>
           <a href="/founder" className="text-amber underline underline-offset-2 hover:text-amber-deep">

@@ -1,7 +1,7 @@
 import { getSupabaseBrowser } from "./supabase";
 
 /**
- * The public Audio Community Directory profile.
+ * The public Pro Registry profile.
  *
  * Reached at /u/<public_token>. This token belongs to the COMMUNITY PROFILE and
  * is deliberately not the credential QR token: a member can delete their
