@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 09:08 · ccode · cdd16b93
+changed: Aim tips: owner 60° wording reaches every angle (35/40/45/70°) and the templates
+affects other side: nothing backend (miking lab aim-tip copy only). Rides the approval-day OTA.
+needs: nothing
+
+
 ### 2026-10-23 08:45 · ccode · 86eafc5c
 changed: Owner decisions on the 34 held audit items + spectrogram level strip (2026-10-23)
 affects other side: nothing backend (app copy, calculator ranges, room-design model; lab-cert seed SQL regenerated, 'why' text only). Rides the approval-day OTA.
