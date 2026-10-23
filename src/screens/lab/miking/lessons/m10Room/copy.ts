@@ -72,7 +72,7 @@ export const M10_COPY: Partial<LessonCopy> = {
     shield: [],
     azMax: 45,
     elMax: 30,
-    aimBlurb: 'Swing the face up to 45° either way — it still looks at the kit.',
+    aimBlurb: 'Turn the face up to 45° either way — the kit stays in front of the mic, a little off its axis.',
     plan: { u0: -2500, u1: 4000, v0: -2870, v1: 2540 },
     side: { u0: -2500, u1: 4000, v0: -2710, v1: 330 },
     target: 'paL',

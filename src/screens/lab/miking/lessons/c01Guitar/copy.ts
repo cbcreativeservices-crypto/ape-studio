@@ -121,7 +121,7 @@ export const C01_COPY: LessonCopy = {
     shield: C01_SHIELD,
     azMax: 45,
     elMax: 30,
-    aimBlurb: 'Swing the front up to 45° either way — it still points at the guitar.',
+    aimBlurb: 'Turn the front up to 45° either way — the guitar stays in front of the mic, a little off its axis.',
     plan: { u0: -750, u1: 1150, v0: -700, v1: 1560 },
     side: { u0: -750, u1: 1150, v0: -700, v1: 720 },
     target: 'wedge',

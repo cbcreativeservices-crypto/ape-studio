@@ -126,7 +126,7 @@ export function stringsCopy(o: StringsCopyOpts): LessonCopy {
       shield: o.context.shield,
       azMax: 45,
       elMax: 30,
-      aimBlurb: `Swing the front up to 45° either way — it still points at the ${n.one}.`,
+      aimBlurb: `Turn the front up to 45° either way — the ${n.one} stays in front of the mic, a little off its axis.`,
       plan: o.context.plan,
       side: o.context.side,
       target: 'wedge',

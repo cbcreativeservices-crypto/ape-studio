@@ -104,7 +104,7 @@ export const CSN_COPY: LessonCopy = {
     shield: ['csn.shell', 'csn.batter', 'csn.snareHead'],
     azMax: 45,
     elMax: 45,
-    aimBlurb: 'Swing the front up to 45° either way — it still looks at the drum.',
+    aimBlurb: 'Turn the front up to 45° either way — the drum stays in front of the mic, a little off its axis.',
     plan: { u0: -820, u1: 1900, v0: -900, v1: 1100 },
     side: { u0: -820, u1: 1900, v0: -620, v1: 840 },
     target: 'downstage',

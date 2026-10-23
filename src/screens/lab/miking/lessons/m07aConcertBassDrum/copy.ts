@@ -104,7 +104,7 @@ export const CBD_COPY: LessonCopy = {
     shield: ['cbd.shell', 'cbd.playing', 'cbd.far'],
     azMax: 45,
     elMax: 60,
-    aimBlurb: 'Swing the front up to 45° either way — it still looks toward the playing head.',
+    aimBlurb: 'Turn the front up to 45° either way — the playing head stays in front of the mic, a little off its axis.',
     plan: { u0: -1450, u1: 1000, v0: -1560, v1: 1350 },
     side: { u0: -1450, u1: 1000, v0: -900, v1: 840 },
     target: 'downstage',

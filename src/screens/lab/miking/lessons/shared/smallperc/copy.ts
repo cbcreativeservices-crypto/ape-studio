@@ -90,7 +90,7 @@ export function spCopy(o: SpCopyOpts): LessonCopy {
       shield: o.context.shield,
       azMax: 45,
       elMax: 45,
-      aimBlurb: `Swing the front up to 45° either way — it still faces ${o.context.facing}.`,
+      aimBlurb: `Turn the front up to 45° either way — ${o.context.facing} stays in front of the mic, a little off its axis.`,
       plan: o.context.plan ?? { u0: -1300, u1: 1650, v0: -900, v1: 900 },
       side: o.context.side ?? { u0: -1300, u1: 1650, v0: -1800, v1: 60 },
       target: 'downstage',

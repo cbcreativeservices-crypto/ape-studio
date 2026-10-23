@@ -571,7 +571,7 @@ const copy: Partial<LessonCopy> = {
     shield: ['mr.nat.oct5', 'mr.acc.oct5', 'mr.nat.oct43', 'mr.acc.oct43'],
     azMax: 40,
     elMax: 40,
-    aimBlurb: 'Swing the front up to 40° either way.',
+    aimBlurb: 'Turn the front up to 40° either way.',
     plan: { u0: L0.xHigh - 300, u1: SIDE_X + 400, v0: L0.zPlayer - 350, v1: FRONT_Z + 500 },
     side: { u0: L0.xHigh - 300, u1: SIDE_X + 400, v0: L0.yNat - 1300, v1: 60 },
     target: 'side',

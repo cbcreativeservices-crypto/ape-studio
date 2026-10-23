@@ -103,7 +103,7 @@ export const TOMS_COPY: LessonCopy = {
     shield: ['tom1.shell', 'tom1.batter', 'tom1.reso', 'tom1.hoop'],
     azMax: 45,
     elMax: 30,
-    aimBlurb: 'Swing the front up to 45° either way — it still points at the tom.',
+    aimBlurb: 'Turn the front up to 45° either way — the tom stays in front of the mic, a little off its axis.',
     plan: { u0: -700, u1: 800, v0: -780, v1: 900 },
     side: { u0: -600, u1: 900, v0: -1050, v1: 330 },
     target: 'crash1',

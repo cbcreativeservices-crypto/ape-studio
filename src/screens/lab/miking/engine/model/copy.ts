@@ -368,7 +368,7 @@ export const NEUTRAL_COPY: LessonCopy = {
     shield: [],
     azMax: 45,
     elMax: 30,
-    aimBlurb: 'Swing the front either way.',
+    aimBlurb: 'Turn the front either way.',
     plan: { u0: -1000, u1: 1000, v0: -1000, v1: 1000 },
     side: { u0: -1000, u1: 1000, v0: -600, v1: 400 },
     target: '',

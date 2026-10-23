@@ -1010,7 +1010,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
           selectedId: aimAxis,
           onSelect: (id) => setAimAxis(id as 'az' | 'el'),
           options: [
-            { id: 'az', label: 'LEFT–RIGHT', blurb: `Swing the front up to ${AZ_MAX}° either way — it still faces the speaker.` },
+            { id: 'az', label: 'LEFT–RIGHT', blurb: `Turn the front up to ${AZ_MAX}° either way — the speaker stays in front of the mic, a little off its axis.` },
             { id: 'el', label: 'UP–DOWN', blurb: `Tilt the front up to ${EL_MAX}° up or down.` },
           ],
         },

@@ -98,7 +98,7 @@ export const KICK_COPY: LessonCopy = {
     shield: ['kick.shell', 'kick.batter', 'kick.reso', 'kick.resoPorted'],
     azMax: 45,
     elMax: 30,
-    aimBlurb: 'Swing the front up to 45° either way — it still faces the front head.',
+    aimBlurb: 'Turn the front up to 45° either way — the front head stays in front of the mic, a little off its axis.',
     plan: { u0: -800, u1: 1650, v0: -780, v1: 1060 },
     side: { u0: -750, u1: 1650, v0: -420, v1: 330 },
     target: 'downstage',

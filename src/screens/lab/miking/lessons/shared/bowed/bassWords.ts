@@ -66,7 +66,7 @@ export function bassCopy(kind: BassKind, ids: { worked: string; context: string;
       shield: ['bw.body', 'bw.bodyUpper', 'bw.bodyWaist'],
       azMax: 70,
       elMax: 45,
-      aimBlurb: 'Swing the front up to 70° either way — it still faces the bass.',
+      aimBlurb: 'Turn the front up to 70° either way — the bass stays in front of the mic, a little off its axis.',
       plan: { u0: -900, u1: 1900, v0: -900, v1: 1750 },
       side: { u0: -1000, u1: 1900, v0: -1520, v1: 860 },
       target: 'drums',

@@ -118,7 +118,7 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
         onSelect: (id) => setAimAxis(id as 'az' | 'el'),
         options: [
           { id: 'el', label: 'UP–DOWN', blurb: `Tilt the front from ${-EL_MIN}° down to ${EL_MAX}° up — it still faces the drum.` },
-          { id: 'az', label: 'LEFT–RIGHT', blurb: `Swing the front up to ${AZ_MAX}° either way.` },
+          { id: 'az', label: 'LEFT–RIGHT', blurb: `Turn the front up to ${AZ_MAX}° either way.` },
         ],
       },
     },

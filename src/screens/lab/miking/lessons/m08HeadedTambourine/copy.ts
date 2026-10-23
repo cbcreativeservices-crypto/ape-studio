@@ -140,7 +140,7 @@ export const TAMB_COPY: LessonCopy = {
     shield: ['tb.head', 'tb.frame'],
     azMax: 45,
     elMax: 45,
-    aimBlurb: 'Swing the front up to 45° either way — it still faces the tambourine.',
+    aimBlurb: 'Turn the front up to 45° either way — the tambourine stays in front of the mic, a little off its axis.',
     plan: { u0: -1300, u1: 1650, v0: -900, v1: 900 },
     side: { u0: -1300, u1: 1650, v0: -1650, v1: 60 },
     target: 'downstage',

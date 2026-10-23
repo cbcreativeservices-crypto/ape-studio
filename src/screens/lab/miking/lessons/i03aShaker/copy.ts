@@ -134,7 +134,7 @@ export const SHK_COPY: LessonCopy = {
     shield: ['shk.shell.side'],
     azMax: 45,
     elMax: 45,
-    aimBlurb: 'Swing the front up to 45° either way — it still faces the playing area.',
+    aimBlurb: 'Turn the front up to 45° either way — the playing area stays in front of the mic, a little off its axis.',
     plan: { u0: -1300, u1: 1650, v0: -900, v1: 900 },
     side: { u0: -1300, u1: 1650, v0: -1800, v1: 60 },
     target: 'downstage',

@@ -88,7 +88,7 @@ export const HARP_COPY: LessonCopy = {
     shield: ['hp.box', 'hp.pillar'],
     azMax: 45,
     elMax: 40,
-    aimBlurb: 'Swing the front up to 45° either way — it still looks at the soundboard.',
+    aimBlurb: 'Turn the front up to 45° either way — the soundboard stays in front of the mic, a little off its axis.',
     plan: { u0: -1300, u1: 2200, v0: -1500, v1: 1500 },
     side: { u0: -1300, u1: 2200, v0: -2300, v1: 200 },
     target: 'wedge.harp',

@@ -96,7 +96,7 @@ export const SNARE_COPY: LessonCopy = {
     shield: ['snare.shell', 'snare.batter', 'snare.reso', 'snare.hoopTop'],
     azMax: 45,
     elMax: 30,
-    aimBlurb: 'Swing the front up to 45° either way — it still points down at the drum.',
+    aimBlurb: 'Turn the front up to 45° either way — the drum stays in front of the mic, a little off its axis.',
     plan: { u0: -650, u1: 850, v0: -700, v1: 1250 },
     side: { u0: -600, u1: 850, v0: -650, v1: 700 },
     target: 'hihat',

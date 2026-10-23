@@ -142,7 +142,7 @@ export const TIMP_COPY: LessonCopy = {
     shield: ['tp.head29', 'tp.bowl29', 'tp.head26', 'tp.bowl26', 'tp.hoop29', 'tp.hoop26'],
     azMax: 45,
     elMax: 60,
-    aimBlurb: 'Swing the front up to 45° either way — it still looks toward the drum.',
+    aimBlurb: 'Turn the front up to 45° either way — the drum stays in front of the mic, a little off its axis.',
     plan: { u0: -1530, u1: 1450, v0: -900, v1: 1200 },
     side: { u0: -1530, u1: 1450, v0: -1500, v1: 60 },
     target: 'downstage',

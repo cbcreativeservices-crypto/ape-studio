@@ -82,7 +82,7 @@ const PINS: [string, string, string][] = [
   ['lessons/shared/sax/saxLesson.ts', 'cannot cleanly restore what the filter took away', 'cannot restore what the filter removed'],
   ['lessons/shared/sax/saxLesson.ts', 'hardly changes the pitch', 'hardly takes part'],
   ['lessons/f13RoomAcoustics/lesson.ts', 'EDT needs less range and may still hold', 'report insufficient range for that band'],
-  ['lessons/m07aConcertBassDrum/copy.ts', 'between about 25° and {tol}° off the head’s axis', 'off its axis'],
+  ['lessons/m07aConcertBassDrum/copy.ts', 'between about 25° and {tol}° off the head’s axis', '{tol}° off its axis'],
   ['lessons/m07aConcertBassDrum/lesson.ts', 'We found no such rule', 'No source establishes such a rule'],
   ['lessons/e04Duets/lesson.ts', 'most crews mute a mic before it is passed', 'or passes a live mic'],
   ['lessons/e07SingerInstrument/copy.ts', 'a pop screen at least 10 cm in front of it', 'its screen at least 10 cm'],

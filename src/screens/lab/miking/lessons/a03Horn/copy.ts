@@ -58,7 +58,7 @@ export const HORN_COPY: Partial<LessonCopy> = {
     shield: ['lb.bell', 'lb.body', 'lb.hand', 'pl.body'],
     azMax: 70,
     elMax: 45,
-    aimBlurb: 'Swing the front up to 70° either way — it still faces toward the bell.',
+    aimBlurb: 'Turn the front up to 70° either way — the bell stays in front of the mic, a little off its axis.',
     plan: { u0: -1700, u1: 1800, v0: -700, v1: 2000 },
     side: { u0: -1700, u1: 1800, v0: -1500, v1: 60 },
     target: 'fill',
