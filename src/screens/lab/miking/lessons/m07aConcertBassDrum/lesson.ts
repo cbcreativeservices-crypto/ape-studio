@@ -527,7 +527,7 @@ export const M07A_LESSON: Lesson = {
       { id: 'table', label: 'the trap table', short: 'TABLE', note: 'Mallets and small instruments wait here; players reach for them between passages. Keep stands and cables out of that path — and away from the drum’s casters.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'KEEP CLEAR', scene: 'kit' },
       { id: 'brass', label: 'the brass row in front', short: 'BRASS', note: 'Loud, just downstage of the percussion. A farther bass-drum mic hears much more of it.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'downstage', label: 'a floor wedge downstage, on the conductor’s side of the drum', short: 'WEDGE', note: 'Off to the side of a spot looking down at the playing head — a loud source a pattern’s null can be turned toward.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
-      { id: 'fill', label: 'the percussion section’s own monitor', short: 'SECTION MON.', note: 'Upstage, beyond the drum, facing the players: in FRONT of a spot looking at the drum, where no pattern rejects it.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
+      { id: 'fill', label: 'the percussion section’s own monitor', short: 'SECTION MON.', note: 'Upstage and past the far head, facing the players. It is off the drum’s axis, yet still in FRONT of a spot looking down at the drum — about 35° off the mic’s axis — where no pattern rejects it.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'conductor', label: 'the conductor', short: 'CONDUCTOR', note: 'Off to the side of the drum (its heads face along the stage). The player needs a clear sightline: no boom across it.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SIGHTLINE', scene: 'stage' },
       { id: 'pa', label: 'the PA', short: 'PA', note: 'At the front corners, facing the audience. Low-frequency feedback is the bass drum’s particular risk — every open mic hears the PA.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'FEEDBACK PATH', scene: 'stage' },
       { id: 'main', label: 'the main pair over the conductor', short: 'MAIN PAIR', note: 'Two mics on a tall stand, hearing the whole orchestra. Recording, it often carries the bass drum’s low end — the spot adds the transient.', prov: { kind: 'illustrative', reason: 'a typical recording layout' }, tag: 'MAIN PICKUP', scene: 'studio' },
@@ -569,7 +569,7 @@ export const M07A_LESSON: Lesson = {
       },
       {
         id: 'fill',
-        label: 'the percussion section’s own monitor, upstage beyond the drum, facing the players',
+        label: 'the percussion section’s own monitor, upstage and past the far head, facing the players',
         short: 'SECTION MON.',
         p: { x: -1250, y: FLOOR_Y, z: -1180 },
         lift: 150,

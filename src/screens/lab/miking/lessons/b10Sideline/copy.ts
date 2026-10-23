@@ -113,7 +113,7 @@ export const B10_COPY: Partial<LessonCopy> = {
     shield: [],
     azMax: 60,
     elMax: 45,
-    aimBlurb: 'Swing the front up to 60° either way — it still faces the speaking mouth.',
+    aimBlurb: 'Turn the front up to 60° either way — the speaking mouth stays in front of the mic, a little off its axis.',
     plan: { u0: -1700, u1: 2900, v0: -1500, v1: 1900 },
     side: { u0: -1600, u1: 2900, v0: -1700, v1: 1640 },
     target: 'pa',

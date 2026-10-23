@@ -124,7 +124,7 @@ export const KICK_ZONES: DocumentedZone[] = [
     requires: { mount: 'surface', micTypeIds: ['boundaryHalf'] },
     start: { p: { x: 60, y: 0, z: 0 }, az: 0, el: 0 },
     tendency: 'A full, natural sound; with a contour switch (if the mic has one), a sharper attack and more low-end punch. Resting on cushioning suits a boundary mic made for it.',
-    checks: ['It rests on the cushioning, grille uncovered', 'Orientation: sources within 60° above the surface', 'The cable is stable and clear of the pedal', 'The contour switch setting'],
+    checks: ['It rests on the cushioning, grille uncovered', 'Orientation: the beater within 60° of straight up from the plate', 'The cable is stable and clear of the pedal', 'The contour switch setting'],
   },
   {
     id: 'reso.level',

@@ -322,12 +322,35 @@ export const SPL_FIELD_RANGE = {
 /** Absolute zero: no air, no speed of sound, at or below it (D53). The
  *  dry-air model is a classroom model; only this floor is a physical limit. */
 export const ABS_ZERO_C = -273.15;
-/** Field declaration for every AIR TEMPERATURE input: refused at or below
- *  absolute zero (where c = 331.3·√(1 + T/273.15) reaches 0 and then has no
- *  real value). The upper end is left open — no physical limit applies. */
+/** The span of working air (owner decision 2026-10-23, item 7): −40…60 °C.
+ *  Absolute zero is only the physical floor (c = 331.3·√(1 + T/273.15) reaches
+ *  0 there); no room, stage or field anyone works in comes near either end of
+ *  the open range — a typed 20,000,000 °C printed "89650 m/s". */
+export const AIR_TEMP_MIN_C = -40;
+export const AIR_TEMP_MAX_C = 60;
+/** Field declaration for every AIR TEMPERATURE input: refused in words outside
+ *  −40…60 °C (D53), never turned into a speed of sound. */
 export const AIR_TEMP_FIELD = {
-  range: [ABS_ZERO_C + 0.01, Infinity] as const,
-  rangeMsg: 'AIR TEMPERATURE must be above absolute zero (−273.15 °C) — below it there is no air to carry sound.',
+  range: [AIR_TEMP_MIN_C, AIR_TEMP_MAX_C] as const,
+  rangeMsg:
+    'AIR TEMPERATURE must be from −40 to 60 °C (−40 to 140 °F) — the span of air you can work in. Check the temperature you entered.',
+};
+
+/** Microphone sensitivity span (owner decision 2026-10-23, item 7): 0.05 to
+ *  200 mV/Pa covers every real microphone, ribbon to hottest condenser. One
+ *  declaration for every mV/Pa field, so Mic Sensitivity and Mic Output & Preamp
+ *  Gain refuse the same entry (a 2,000,000 mV/Pa mic printed "2005 V"). */
+export const MIC_SENS_MIN_MVPA = 0.05;
+export const MIC_SENS_MAX_MVPA = 200;
+export const MIC_SENS_FIELD = (name: string) => ({
+  range: [MIC_SENS_MIN_MVPA, MIC_SENS_MAX_MVPA] as const,
+  rangeMsg: `${name} must be from 0.05 to 200 mV/Pa — every real microphone sits inside that span (most dynamics about 1–3, most condensers about 5–40). Check the spec sheet value.`,
+});
+/** The same span in dBV/Pa (20·log10(mV/Pa ÷ 1000)): about −86 to −14 dBV/Pa. */
+export const MIC_SENS_DBV_FIELD = {
+  range: [20 * Math.log10(MIC_SENS_MIN_MVPA / 1000), 20 * Math.log10(MIC_SENS_MAX_MVPA / 1000)] as const,
+  rangeMsg:
+    'SENSITIVITY (dBV/Pa) must be from about −86 to −14 dBV/Pa (0.05 to 200 mV/Pa) — every real microphone sits inside that span. Check the spec sheet value.',
 };
 
 // ── Shared physical constants (calc accuracy audit, 2026-10-04) ───────────

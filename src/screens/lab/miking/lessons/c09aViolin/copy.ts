@@ -58,7 +58,7 @@ export const VIOLIN_COPY: Partial<LessonCopy> = {
     shield: ['bw.body', 'bw.bodyUpper', 'bw.bodyWaist'],
     azMax: 60,
     elMax: 45,
-    aimBlurb: 'Swing the front up to 60° either way — it still faces the violin.',
+    aimBlurb: 'Turn the front up to 60° either way — the violin stays in front of the mic, a little off its axis.',
     plan: { u0: -900, u1: 2200, v0: -1500, v1: 1100 },
     side: { u0: -900, u1: 2200, v0: -1100, v1: 1560 },
     target: 'wedge',

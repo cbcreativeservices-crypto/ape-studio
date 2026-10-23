@@ -10,7 +10,8 @@
  *               mouth, "not directly in front" (S-SM2) — 2–6 cm and 45–100°
  *               to the side is the lab's drawing (no distance is given) —
  *               the worked example (booth; also an open position);
- *   b9.analyst  the analyst's own headset, the same place on their mouth;
+ *   b9.analyst  the analyst's own headset, MIRRORED (owner 2026-10-23):
+ *               its boom at the outside corner on the commentator's side;
  *   b9.lip      the lip ribbon, its guard against the upper lip (the
  *               lesson's "designed positioning bars/guard"): the guard's
  *               place is the drawing's; the ribbon's depth behind it is
@@ -59,10 +60,11 @@ const ANALYST_HS: VoiceZoneSpec = {
   ...HEADSET_ONE,
   id: 'b9.analyst',
   label: 'The analyst’s own headset, at their mouth corner',
-  band: 'Each commentator on their own mic: the analyst’s headset boom at the outside corner of their mouth, the same place as the commentator’s — each voice on its own labelled channel.',
+  band: 'Each commentator on their own mic, the two booms mirrored: each boom at the outside corner of the mouth on the side toward the partner, and each voice on its own labelled channel.',
+  off: { ...HEADSET_ONE.off, toward: 'left', prov: ill('beside the mouth on the commentator’s side: 45–100° off the axis (the lab’s drawing, mirrored)') },
   variant: 'booth',
   tendency: 'Each voice strongest in its own mic; the other voice later and much lower. A boom on the side away from the partner hears them more.',
-  checks: ['Each channel alone while the other speaks', 'An overlap: does the sum sound hollow?', 'Both booms set the same way'],
+  checks: ['Each channel alone while the other speaks', 'An overlap: does the sum sound hollow?', 'Mirrored: each boom on the side toward the partner'],
 };
 
 const LIP: VoiceZoneSpec = {

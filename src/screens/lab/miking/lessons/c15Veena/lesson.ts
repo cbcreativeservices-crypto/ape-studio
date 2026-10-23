@@ -175,10 +175,10 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.place.1`,
     page: 'placement',
-    prompt: 'A starting point says 30–50 cm from the top plate, between the bridge and the body. Your readout says 40 cm, square to the plate. Are you in it?',
+    prompt: 'A starting point says 30–50 cm from the top plate, round the middle of the plate, on the far side of the bridge from the neck. Your readout says 40 cm, square to the plate. Are you in it?',
     options: ['Yes: 40 cm falls well inside the 30 to 50 cm band, so it must be in it', 'No: the distance is read from the yali, not the plate', 'Only if the mic is also aimed at that broad area of the plate'],
     correct: 'Only if the mic is also aimed at that broad area of the plate',
-    explain: 'The distance is read square to the plate, from the point the zone names — and this zone also asks for the aim: a broad area of the plate between the bridge and the body, out of the hand’s reach.',
+    explain: 'The distance is read square to the plate, from the point the zone names — and this zone also asks for the aim: a broad area round the middle of the plate, on the far side of the bridge from the neck, out of the hand’s reach.',
     why: {
       'Yes: 40 cm falls well inside the 30 to 50 cm band, so it must be in it': 'The distance is right, but this zone also names an aim. Check where the mic points.',
       'No: the distance is read from the yali, not the plate': 'The zone names the top plate. The yali is at the far end of the neck.',
@@ -270,11 +270,11 @@ const scenarios: MikingScenario[] = [
   },
   ...twoMicChecks(P, VEENA_N),
   ...practiceChecks(P, VEENA_N, {
-    quote: '30–50 cm from the top plate, between the bridge and the body',
-    right: 'The top plate, square to it, aimed between the bridge and the body',
+    quote: '30–50 cm from the top plate, round the middle of the plate, on the far side of the bridge from the neck',
+    right: 'The top plate, round its middle, on the far side of the bridge from the neck',
     wrong1: 'The gourd under the neck, since it works as a second main resonator',
-    wrong2: 'The yali, measured along the neck from its carved head',
-    explain: 'A distance belongs to the point it names: the top plate between the bridge and the body. The gourd and the yali are elsewhere — and the gourd is a support.',
+    wrong2: 'The yali at the far end of the neck, measured back from its carved head',
+    explain: 'A distance belongs to the point it names: the top plate, round its middle, on the far side of the bridge from the neck. The gourd and the yali are elsewhere — and the gourd is a support.',
   }),
 ];
 
@@ -350,7 +350,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A quiet studio, solo veena. The only spare input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'Instrument dynamic 30–50 cm over the plate, aimed between the bridge and the body', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
+      { id: 'a', label: 'Instrument dynamic 30–50 cm over the plate, aimed round the middle of the plate, on the far side of the bridge from the neck', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
       { id: 'b', label: 'Instrument dynamic at the same distance, turned toward the bridge', ok: true, power: 'none', feedback: 'A suggested start for articulation; it needs no phantom.' },
       { id: 'c', label: 'Small condenser over the plate, cardioid', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'Instrument dynamic with its grille removed, 25 cm from the plate', ok: false, power: 'none', feedback: 'Keep a mic’s protective parts on unless its maker allows otherwise — and 25 cm was a study’s radius, not a rule.' },

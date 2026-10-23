@@ -3,8 +3,16 @@
  * combinations · speaker-cable loss · constant-voltage (70 V / 100 V) lines.
  * Follows the wave.ts exemplar (owner spec 2026-07-29).
  */
-import type { Workspace } from '../calcTypes';
+import type { OutputVal, Workspace } from '../calcTypes';
 import { copperOhmPerM, fmt, fmtInt, fmtNotWhole, overAirCeiling, SPL_CEILING_WHY, SPL_FIELD_RANGE, snapWhole } from '../calcUnits';
+
+/** Owner decision 2026-10-23 (item 7, D53): past 100 kW for one speaker no
+ *  amplifier can do it — words, never a number like "1.259e13 W". */
+export const AMP_MAX_POWER_W = 100_000;
+export const NO_AMP_THAT_BIG =
+  'No amplifier can do this — use a more sensitive speaker, more speakers, or move them closer.';
+/** Same limit when several speakers share the load and each share is real. */
+const ONE_AMP_CANNOT = 'No amplifier could drive one speaker this hard — the speakers have to share it, as shown below.';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]) => (typeof v === 'number' ? [v] : v);
@@ -195,10 +203,16 @@ const WS_SPEAKERPOWER: Workspace = {
       keySymbols: ['x²', '·', 'log₁₀', '−', '/'],
       note: 'Solves the SPL prediction backwards for power — one speaker carries the whole target; with N speakers the demand is split.',
       // The box would have to make more than air can carry at 1 m (audit R2).
-      refuse: (v) =>
-        overAirCeiling(n(v.target) + 20 * Math.log10(n(v.dist)) + n(v.headroom))
-          ? 'No speaker can do this — at 1 m it would have to make more than about 194 dB SPL, the loudest sound air can carry. Lower the target or move the listener closer.'
-          : null,
+      // Past 100 kW per speaker no amplifier exists (owner decision 2026-10-23,
+      // item 7): a 0 dB sensitivity printed "1.259e13 W".
+      refuse: (v) => {
+        if (overAirCeiling(n(v.target) + 20 * Math.log10(n(v.dist)) + n(v.headroom))) {
+          return 'No speaker can do this — at 1 m it would have to make more than about 194 dB SPL, the loudest sound air can carry. Lower the target or move the listener closer.';
+        }
+        const N = Math.max(1, Math.floor(snapWhole(n(v.nspk))));
+        const p = Math.pow(10, (n(v.target) + 20 * Math.log10(n(v.dist)) - n(v.sens) + n(v.headroom)) / 10);
+        return !(p / N <= AMP_MAX_POWER_W) ? NO_AMP_THAT_BIG : null;
+      },
       compute: (v) => {
         const sens = n(v.sens);
         const t = n(v.target);
@@ -207,8 +221,12 @@ const WS_SPEAKERPOWER: Workspace = {
         const N = Math.max(1, Math.floor(snapWhole(n(v.nspk))));
         const dBover = t + 20 * Math.log10(d) - sens + hr;
         const p = Math.pow(10, dBover / 10);
-        const out = [
-          { label: 'REQUIRED POWER (one speaker)', value: p, quantity: 'power' as const },
+        const out: OutputVal[] = [
+          // Shared by N speakers, the one-box figure can pass 100 kW while each
+          // speaker's share is real — then it is said in words, not printed.
+          p > AMP_MAX_POWER_W
+            ? { label: 'REQUIRED POWER (one speaker)', text: ONE_AMP_CANNOT }
+            : { label: 'REQUIRED POWER (one speaker)', value: p, quantity: 'power' as const },
           { label: 'dB ABOVE THE 1 W REFERENCE', value: dBover, quantity: 'db' as const, chainable: false },
         ];
         if (N > 1) {
@@ -232,10 +250,16 @@ const WS_SPEAKERPOWER: Workspace = {
         const s = [
           `Distance loss: 20·log10(${fmt(d)}) = ${fmt(loss)} dB, so the box must make ${fmt(t)} + ${fmt(loss)} = ${fmt(t + loss)} dB at 1 m.`,
           `Add ${fmt(hr)} dB headroom and subtract sensitivity: ${fmt(t + loss)} + ${fmt(hr)} − ${fmt(sens)} = ${fmt(dBover)} dB above the 1 W reference.`,
-          `P = 10^(${fmt(dBover)}/10) = ${fmt(p)} W.`,
+          p > AMP_MAX_POWER_W
+            ? `P = 10^(${fmt(dBover)}/10) — more than 100 kW for one speaker. ${ONE_AMP_CANNOT}`
+            : `P = 10^(${fmt(dBover)}/10) = ${fmt(p)} W.`,
         ];
         if (N > 1) {
-          s.push(`Split across ${N} uncorrelated speakers: ${fmt(p)} ÷ ${N} = ${fmt(p / N)} W each.`);
+          s.push(
+            p > AMP_MAX_POWER_W
+              ? `Split across ${N} uncorrelated speakers: 10^(${fmt(dBover)}/10) ÷ ${N} = ${fmt(p / N)} W each.`
+              : `Split across ${N} uncorrelated speakers: ${fmt(p)} ÷ ${N} = ${fmt(p / N)} W each.`,
+          );
         }
         return s;
       },

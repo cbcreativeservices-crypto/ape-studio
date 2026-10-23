@@ -23,7 +23,7 @@ const BASE = standingVoiceCopy({
   practice: { gain: 'b4.prac.gain', second: 'b4.prac.3', mixed: ['b4.mix.1', 'b4.mix.2', 'b4.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: the frame line, the two talkers, and polarity versus delay.' },
   before: [
     { title: 'ASK FOR THE WIDEST FRAME', text: 'Before any mic: ask the camera operator for the widest active frame, every camera angle, the reframes and the moves, and where the light and its shadows fall. Mark the speaking places and the turns. Then choose the closest safe place those allow — and check the picture there.' },
-    { title: 'RIGGING AND THE POLE', text: `${SAFETY.overPeople} ${SAFETY.rigged}` },
+    { title: 'THE STAND AND THE POLE', text: `${SAFETY.overPeople} ${SAFETY.rigged}` },
     { title: 'OUTDOORS', text: `${SAFETY.powerLines} ${SAFETY.weather}` },
     { title: 'LIVE: NO UNCONTROLLED FEEDBACK', text: 'A boom at a public event hears the PA too. Check its working position and pattern with the system’s operator at a safe level; bring it up only to its working level, and at any ring pull it down at once and fix the geometry — any ring-out is the system operator’s job.' },
   ],
@@ -108,7 +108,7 @@ export const B04_COPY: Partial<LessonCopy> = {
     shield: [],
     azMax: 60,
     elMax: 45,
-    aimBlurb: 'Turn the boom mic up to 60° either way — it still faces the mouth.',
+    aimBlurb: 'Turn the boom mic up to 60° either way — the mouth stays in front of the mic, a little off its axis.',
     plan: { u0: -600, u1: 2650, v0: -2400, v1: 900 },
     side: { u0: -600, u1: 2650, v0: -800, v1: 1620 },
     target: 'pa',
@@ -144,7 +144,7 @@ export const B04_COPY: Partial<LessonCopy> = {
     startNew: 'Good — NEXT takes you through the talker and the frame first. You can change how you started here at any time.',
     otherRef: 'Every starting point here is measured from the lips — where the voice leaves — to the front of the mic — a shotgun’s capsule, about 20 cm behind its tip. A boom’s place is set by the frame: as close as the picture allows.',
     clipMount: 'Mount: a boom pole held by an operator outside the frame (a suspension on its end), the camera’s shoe, or a clip on the clothes',
-    standMount: 'Mount: a boom stand rigged and secured by qualified crew',
+    standMount: 'Mount: a boom stand set up and secured by trained crew',
     observation: 'For a real talker and crew, with their agreement. Write tendencies in words — what you heard, not a promised result.',
   },
 };

@@ -22,7 +22,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "No fixed BPM: free, conductor-led tempos from about 40 (largo) to 180+ (presto), often with rubato (flexible, push-pull tempo)",
     "ensemble": "Chamber groups of 2–10; chamber orchestra 15–40; full symphony orchestra 60–100+, sometimes plus chorus and soloists",
     "priority": "A natural, believable picture of the ensemble in its hall: the conductor’s balance, true timbre and full dynamic range",
-    "liveSpl": "Unamplified halls: about 65–80 dBA Leq in the audience, fortissimo (very loud) peaks near 95–100 dBA. Amplified outdoor concerts: usually 75–88 dBA Leq, kept close to acoustic level",
+    "liveSpl": "Unamplified halls: about 75–80 dBA Leq across a concert (quiet stretches 60–70), fortissimo (very loud) peaks near 95–100 dBA. Amplified outdoor concerts: usually 75–88 dBA Leq, kept close to acoustic level",
     "studioLoudness": "Masters commonly −23 to −16 LUFS-I with peaks at −1 dBTP; loudness range often 15–25 LU. Normalization at −14 can turn quiet albums up, so album mode matters"
   },
   "purpose": [

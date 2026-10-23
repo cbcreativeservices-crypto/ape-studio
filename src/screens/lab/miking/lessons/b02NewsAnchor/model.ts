@@ -80,7 +80,7 @@ const boomSpec = (id: string, variants: string[], d: number, band: string): Voic
   variants,
   start: { d: [d, d + 40, d + 80, d + 150, d + 250, d + 350], deg: 45, spread: 12, at: 'mouth' },
   tendency: 'The anchor’s voice from above, with no clothing noise and some of the room — the program’s natural perspective. A lean back or a swivel leaves it; the guest is off its axis.',
-  checks: ['The widest frame and every camera: no mic, arm or shadow in the picture', 'A lean back and a turn to the guest', 'The stand and its arm rigged and secured before anyone sits'],
+  checks: ['The widest frame and every camera: no mic, arm or shadow in the picture', 'A lean back and a turn to the guest', 'The stand and its arm set up and secured before anyone sits'],
 });
 
 const GOOSE: VoiceZoneSpec = {
@@ -104,7 +104,7 @@ const GOOSE: VoiceZoneSpec = {
 export const B02_ZONES: DocumentedZone[] = [
   atPlace(lavSpec('b2.lav', 'On the anchor’s sternum, in the centre', 'After our research, here is where we suggest you begin: with the anchor’s agreement, a small omni lav on a firm clothing edge over the middle of the chest — about 12–25 cm (5–10 in) from the lips — clear of hair, jewellery and the jacket’s movement.', 'One steady distance however the camera frames them, a natural voice from below the chin — quieter when the head turns, and it hears the clothes.', ['Facing the camera, turning to the guest, reading down', 'Rubbing, the tie, the jacket, the earpiece cable', 'The broadcast loop and the cable secured lower down']), LAV_A.at),
   atPlace(lavSpec('b2.concealed', 'Hidden under the shirt, on the sternum', 'Only after the visible place works: the same lav under one layer of the shirt, in a concealer made for it, with the anchor’s agreement and wardrobe’s — an opening kept for the sound.', 'Invisible in any shot — but the cloth over it can dull the top end and rub. Compare it with the visible place at matched loudness; keep the visible lav or the boom ready.', ['The visible place first, then the hidden one, at matched loudness', 'Scratching through the whole movement', 'Nothing over the capsule’s opening'], ['close', 'twoShot']), LAV_A.at),
-  atPlace(boomSpec('b2.boom', ['close'], BOOM_CLOSE.d, `For a stationary interview, the program mic can be a fixed boom: just above the widest frame and a little in front, aimed at the mouth — the tube’s tip about 15 cm clear of the edge, its capsule here about ${cm(BOOM_CLOSE.d)} cm from the lips. Rigged by qualified crew.`), BOOM_CLOSE.p),
+  atPlace(boomSpec('b2.boom', ['close'], BOOM_CLOSE.d, `For a stationary interview, the program mic can be a fixed boom: just above the widest frame and a little in front, aimed at the mouth — the tube’s tip about 15 cm clear of the edge, its capsule here about ${cm(BOOM_CLOSE.d)} cm from the lips. Set up and secured by trained crew.`), BOOM_CLOSE.p),
   atPlace(boomSpec('b2.boom.two', ['twoShot', 'public'], BOOM_TWO.d, `In the two-shot the frame’s top is higher: the fixed boom just above it, aimed at the anchor’s mouth — its capsule about ${cm(BOOM_TWO.d)} cm away, farther than in the close shot.`), BOOM_TWO.p),
   voiceZone(B02_MODEL, VA, GOOSE, MIC_TYPES),
   {

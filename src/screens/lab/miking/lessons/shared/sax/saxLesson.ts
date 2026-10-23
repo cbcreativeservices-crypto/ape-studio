@@ -635,7 +635,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       shield: ['sx.bell', 'sx.body'],
       azMax: 60,
       elMax: 45,
-      aimBlurb: 'Swing the front up to 60° either way — it still faces the horn.',
+      aimBlurb: 'Turn the front up to 60° either way — the horn stays in front of the mic, a little off its axis.',
       plan: c.contextBoxes.plan,
       side: c.contextBoxes.side,
       target: 'wedge',

@@ -108,7 +108,7 @@ export function standingVoiceCopy(o: StandingVoiceCopyOpts): Partial<LessonCopy>
       shield: [],
       azMax: 60,
       elMax: 60,
-      aimBlurb: 'Swing the front up to 60° either way — it still faces the mouth.',
+      aimBlurb: 'Turn the front up to 60° either way — the mouth stays in front of the mic, a little off its axis.',
       plan: { u0: -500, u1: 1400, v0: -650, v1: 650 },
       side: { u0: -500, u1: 1400, v0: -450, v1: 1650 },
       target: 'wedge',

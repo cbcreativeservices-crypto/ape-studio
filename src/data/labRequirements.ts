@@ -116,7 +116,7 @@ const LESSON_WHY: Record<string, string> = {
   mk_F10: 'Binaural heads, Ambisonic microphones and multi-channel arrays capture space, and the channel map is what keeps them right.',
   mk_F11: 'A measurement is only as good as its microphone and its calibration, checked before and after.',
   mk_F12: 'Sound level and environmental noise are measured at set heights and positions, and the conclusion must be no bigger than the evidence.',
-  mk_F13: 'Room acoustics are measured from seats that differ, with the reverberation figures kept apart from each other.',
+  mk_F13: "Room acoustics are measured from several seats, and each seat's reverb figure is kept on its own rather than averaged away.",
   mk_F14: 'Loudspeaker and system measurement depends on naming the measurement point and the delay before trusting any reading.',
   mk_F15: 'Machinery and product sound is measured over whole operating cycles from repeatable positions, from a safe boundary.',
   mk_F16: 'Scientific arrays depend on a marked origin, one shared clock and the right spacing, or they report positions that are not real.',

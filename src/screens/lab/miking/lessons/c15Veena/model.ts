@@ -15,7 +15,7 @@
  *     radiation was measured (EXT-23505: "R = 0.5 m"), where the study found
  *     the plate mattered most — a radius the research looked at, not a
  *     "best" distance (the study itself says so);
- *   • aimed at a broad area of the plate between the bridge and the body,
+ *   • aimed at a broad area round the middle of the plate, on the far side of the bridge from the neck,
  *     or a little toward the bridge for more articulation (the lesson's A
  *     and B, which the research does not contradict).
  * A closer stage spot and a farther room view stay in words.
@@ -33,8 +33,8 @@ export function c15ZoneSpecs(sc: LuteScene): LuteZoneSpec[] {
   return [
     {
       id: 'plate',
-      label: 'Over the top plate, between the bridge and the body',
-      band: 'Start about 30–50 cm (12–20 in) from the top plate, out of the plucking hand’s reach, aimed at a broad area of the plate between the bridge and the body.',
+      label: 'Over the middle of the top plate',
+      band: 'Start about 30–50 cm (12–20 in) from the top plate, out of the plucking hand’s reach, aimed at a broad area round the middle of the plate, on the far side of the bridge from the neck.',
       kind: 'trial',
       src: 'EXT-23505',
       quote: 'Each microphone is kept at a radial distance, R = 0.25 m from the point O; further mapping at R = 0.5 m, R = 0.75 m',

@@ -121,7 +121,7 @@ describe('E1 — a 0 that has no answer is refused by name', () => {
     ['firlen', 'latency', { sr: 0, taps: 1024 }, /SAMPLE RATE must be above 0/],
     ['bitdepth', 'fromBits', { bits: 0 }, /BIT DEPTH must be at least 1 bit/],
     ['bitdepth', 'bitsFromRange', { dr: 0 }, /TARGET DYNAMIC RANGE must be above 0/],
-    ['micsens', 'outputAtSPL', { mvpa: 0, spl: 94 }, /must be above 0/],
+    ['micsens', 'outputAtSPL', { mvpa: 0, spl: 94 }, /SENSITIVITY \(mV\/Pa\) must be from 0\.05 to 200 mV\/Pa/],
     ['rflink', 'pathLoss', { dist: 50, freqMHz: 0 }, /FREQUENCY \(MHz\) must be above 0/],
     ['loudtp', 'windows', { sr: 0 }, /SAMPLE RATE must be above 0/],
     ['align', 'phaseAtFreq', { offset: 1.2, freq: 0, temp: 20 }, /FREQUENCY must be above 0/],
@@ -184,7 +184,10 @@ describe('E2 — the ceiling of air (about 194 dB SPL) is never printed past', (
     it(`${ws}.${key} ${JSON.stringify(v)}`, () => refusedInWords(run(ws, key, v), re));
   }
   it('a mic that can never clip the preamp says so in words, never "275.7 dB SPL"', () => {
-    const r = run('micgain', 'maxspl', { sens: 2e-6, maxIn: 10 });
+    // 2e-6 mV/Pa is now refused by the 0.05–200 mV/Pa span (owner 2026-10-23);
+    // the quietest real mic on a +30 dBu input still can never clip it.
+    refusedInWords(run('micgain', 'maxspl', { sens: 2e-6, maxIn: 10 }), /0\.05 to 200 mV\/Pa/);
+    const r = run('micgain', 'maxspl', { sens: 0.05, maxIn: 30 });
     assert.equal(r.error, null);
     assert.equal(out(r, 'SPL AT PREAMP INPUT CLIP')?.value, undefined);
     assert.match(out(r, 'SPL AT PREAMP INPUT CLIP')?.text ?? '', /cannot put out enough to clip the preamp/);
@@ -210,8 +213,8 @@ describe('E3 — overflow and underflow are refused in words', () => {
     ['pitch', 'transpose', { semi: 3e6, cents: 0 }, /far too large for varispeed/],
     ['transloss', 'massForTL', { tlTarget: 4e7, f: 125 }, /far beyond any real wall/],
     ['bitdepth', 'fromBits', { bits: 24e6 }, /more code values than any number/],
-    ['micsens', 'dbToMv', { dbvpa: -3.65e7 }, /too far below 1 V\/Pa/],
-    ['loudtp', 'loudnessDelta', { lufsA: -1.4e7, lufsB: -20 }, /far apart beyond any real programme/],
+    ['micsens', 'dbToMv', { dbvpa: -3.65e7 }, /from about −86 to −14 dBV\/Pa/],
+    ['loudtp', 'loudnessDelta', { lufsA: -1.4e7, lufsB: -20 }, /LOUDNESS A \(LUFS\) must be from −70 to 0 LUFS/],
   ];
   for (const [ws, key, v, re] of cases) {
     it(`${ws}.${key} ${JSON.stringify(v)}`, () => refusedInWords(run(ws, key, v), re));
@@ -229,7 +232,7 @@ describe('E3 — overflow and underflow are refused in words', () => {
     refusedInWords(run('eyring', 'eyring', { vol: 120, surf: 80, aBar: 0.3 }), /cannot enclose 120 m³ — even a sphere needs about 117\.7 m²/);
     refusedInWords(run('eyring', 'absForRt', { vol: 1.2e8, surf: 160, rtTarget: 0.3 }), /cannot enclose/);
     refusedInWords(run('absorber', 'helmholtz', { openPct: 5e6, depth: 0.1, thick: 0.012, hole: 0.008, temp: 20 }), /cannot be more than 100 %/);
-    refusedInWords(run('wave', 'speed', { temp: -300 }), /above absolute zero/);
+    refusedInWords(run('wave', 'speed', { temp: -300 }), /from −40 to 60 °C/);
     refusedInWords(run('imd', 'products', { f1: 1000, f2: 1000 }), /identical tones make no intermodulation/);
   });
   it('an absurd beat interval never rounds to a "0 BPM" tempo', () => {

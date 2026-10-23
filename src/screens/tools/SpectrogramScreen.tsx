@@ -575,15 +575,19 @@ export function SpectrogramScreen({ navigation }: Props) {
     },
   ];
 
-  /** The full-screen waterfall: frequency gutter · raster · colour scale, with
-   *  the time axis under the raster — all text scaled with the drawing. */
+  /** The full-screen waterfall: frequency gutter · raster, the time axis under
+   *  the raster, then the colour = level strip — all text scaled with the
+   *  drawing. Owner 2026-10-23: the level scale used to stand vertically beside
+   *  the raster and read as a second axis for the frequency rows, so it is now
+   *  a horizontal strip under the time axis (quiet left, loud right), like the
+   *  portrait screen's; the only vertical scale is frequency. */
   const renderFsSpectro = (w: number, h: number) => {
     const ts = fsTextScale(w, h);
     const gutterW = Math.round(34 * ts);
-    const legendW = Math.round(46 * ts);
     const timeH = Math.round(18 * ts);
-    const gridW = Math.max(40, w - gutterW - legendW - 8);
-    const gridH = Math.max(80, h - timeH - 8);
+    const levelH = Math.round(20 * ts);
+    const gridW = Math.max(40, w - gutterW - 8);
+    const gridH = Math.max(80, h - timeH - levelH - 10);
     const fsz = 12 * ts;
     const colW = (gridW / HISTORY_COLS) * speed;
     const colsPer5s = 5000 / SPECTRO_POLL_MS;
@@ -617,20 +621,6 @@ export function SpectrogramScreen({ navigation }: Props) {
             )}
             {frozen ? <Text style={[styles.fsFrozen, { fontSize: fsz }]}>FROZEN</Text> : null}
           </Pressable>
-          {/* Colour scale — the fixed 0 dBFS anchor at the top, the selected
-              range at the bottom (the same heat ramp the raster uses). */}
-          <View style={{ width: legendW, height: gridH, flexDirection: 'row', paddingLeft: 6, gap: 4 }}>
-            <View style={{ width: Math.round(10 * ts), height: gridH, borderRadius: 3, overflow: 'hidden' }}>
-              {Array.from({ length: 32 }, (_, i) => (
-                <View key={i} style={{ flex: 1, backgroundColor: heatColor((31 - i + 0.5) / 32) }} />
-              ))}
-            </View>
-            <View style={{ flex: 1, justifyContent: 'space-between' }}>
-              <Text style={[styles.legendText, { fontSize: fsz }]}>{`${Math.round(anchor)} dB`}</Text>
-              <Text style={[styles.legendText, { fontSize: fsz }]}>{`${Math.round(anchor - dynRange / 2)}`}</Text>
-              <Text style={[styles.legendText, { fontSize: fsz }]}>{`${Math.round(anchor - dynRange)}`}</Text>
-            </View>
-          </View>
         </View>
         {/* Time axis — newest at the right, one mark per real 5 s. */}
         <View style={{ height: timeH, marginLeft: gutterW, width: gridW }}>
@@ -640,6 +630,22 @@ export function SpectrogramScreen({ navigation }: Props) {
             </Text>
           ))}
           <Text style={[styles.timeMark, { right: 0, width: 40 * ts, fontSize: fsz, textAlign: 'right' }]}>now</Text>
+        </View>
+        {/* Colour = level — the same heat ramp the raster uses, quiet (the
+            selected range) on the left, the fixed 0 dBFS anchor on the right. */}
+        <View
+          style={{ height: levelH, marginLeft: gutterW, width: gridW, flexDirection: 'row', alignItems: 'center', gap: 6 * ts }}
+          accessible
+          accessibilityLabel={`Colour shows level: ${Math.round(anchor - dynRange)} dB on the left to ${Math.round(anchor)} dB on the right`}
+        >
+          <Text style={[styles.legendText, { fontSize: fsz }]}>COLOUR = LEVEL</Text>
+          <Text style={[styles.legendText, { fontSize: fsz }]}>{`${Math.round(anchor - dynRange)} dB`}</Text>
+          <View style={{ flex: 1, flexDirection: 'row', height: Math.round(10 * ts), borderRadius: 3, overflow: 'hidden' }}>
+            {Array.from({ length: 32 }, (_, i) => (
+              <View key={i} style={{ flex: 1, backgroundColor: heatColor((i + 0.5) / 32) }} />
+            ))}
+          </View>
+          <Text style={[styles.legendText, { fontSize: fsz }]}>{`${Math.round(anchor)} dB`}</Text>
         </View>
       </View>
     );
@@ -846,6 +852,7 @@ export function SpectrogramScreen({ navigation }: Props) {
                 2026-08-05): dark → blue → … → red, with the dB endpoints of the
                 anchor actually mapped (see anchor docs). */}
             <View style={styles.legendRow}>
+              <Text style={styles.legendText}>COLOUR = LEVEL</Text>
               <View style={styles.legendStrip}>
                 {Array.from({ length: 32 }, (_, i) => (
                   <View key={i} style={{ flex: 1, backgroundColor: heatColor((i + 0.5) / 32) }} />

@@ -251,7 +251,7 @@ export const E09_SETUPS: EnsembleSetup[] = withWords([
     title: 'The spaced overhead pair alone',
     variants: ['stage', 'room'],
     rig: ohRig,
-    mics: 'Two small condensers on one bar, 1.4 m apart, pointing straight down.',
+    mics: 'Two small condensers on one long, well-weighted bar, 1.4 m apart, pointing straight down.',
     start: 'Each mic about 1.2 m (4 ft) from the snare’s centre — the same distance — over the hi-hat side and the other side of the kit.',
     line: 'The whole kit and the cymbals as one picture; the close mics add focus only where it is missing. Check the pair in mono.',
     core: false,

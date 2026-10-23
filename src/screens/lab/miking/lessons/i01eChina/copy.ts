@@ -77,7 +77,7 @@ export const CHINA_COPY: Partial<LessonCopy> = {
     shield: [],
     azMax: 60,
     elMax: 40,
-    aimBlurb: 'Swing the front up to 60° either way — it still looks up at the China.',
+    aimBlurb: 'Turn the front up to 60° either way — the China stays in front of the mic, a little off its axis.',
     plan: { u0: -1150, u1: 1500, v0: -700, v1: 1250 },
     side: { u0: -1150, u1: 1500, v0: -1300, v1: 360 },
     target: 'fill',

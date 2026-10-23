@@ -101,7 +101,7 @@ export function foleyCopy(o: FoleyCopyOpts): Partial<LessonCopy> {
       shield: [],
       azMax: 60,
       elMax: 60,
-      aimBlurb: 'Swing the front up to 60° either way — it still faces the action.',
+      aimBlurb: 'Turn the front up to 60° either way — the action stays in front of the mic, a little off its axis.',
       plan: o.live.plan,
       side: o.live.side,
       target: 'wedge',

@@ -97,7 +97,7 @@ export const PIANO_COPY: LessonCopy = {
     shield: ['gp.rim', 'gp.lid.short', 'gp.strings'],
     azMax: 60,
     elMax: 40,
-    aimBlurb: 'Swing the front up to 60° either way — it still looks down into the piano.',
+    aimBlurb: 'Turn the front up to 60° either way — the piano stays in front of the mic, a little off its axis.',
     // reaches the side-fill in the stage wing (x 3600)
     plan: { u0: -1200, u1: 4000, v0: -1100, v1: 2300 },
     side: { u0: -1200, u1: 4000, v0: -1100, v1: 900 },

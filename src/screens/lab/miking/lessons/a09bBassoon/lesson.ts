@@ -501,7 +501,7 @@ const copy: Partial<LessonCopy> = {
     shield: ['ww.long', 'ww.long.1', 'ww.long.2', 'ww.bell', 'ww.wing'],
     azMax: 60,
     elMax: 60,
-    aimBlurb: 'Swing the front up to 60° either way — it still faces the bassoon.',
+    aimBlurb: 'Turn the front up to 60° either way — the bassoon stays in front of the mic, a little off its axis.',
     plan: { u0: -1300, u1: 1700, v0: -500, v1: 1750 },
     side: { u0: -1300, u1: 1700, v0: -800, v1: 1300 },
     target: 'wedge',

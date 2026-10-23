@@ -59,7 +59,7 @@ export const EUPH_COPY: Partial<LessonCopy> = {
     shield: ['lb.bell.front', 'lb.body', 'pl.body'],
     azMax: 60,
     elMax: 45,
-    aimBlurb: 'Swing the front up to 60° either way — it still faces the bell.',
+    aimBlurb: 'Turn the front up to 60° either way — the bell stays in front of the mic, a little off its axis.',
     plan: { u0: -700, u1: 2300, v0: -1200, v1: 1300 },
     side: { u0: -700, u1: 2300, v0: -1650, v1: 60 },
     target: 'wedge',

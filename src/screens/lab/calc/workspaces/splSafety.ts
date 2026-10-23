@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { DBU_REF_V, P_REF_PA, SPL_CEILING_WHY, SPL_FIELD_RANGE, SPL_OF_1_PA, fmt, fmtCount, fmtNotWhole, overAirCeiling, snapWhole } from '../calcUnits';
+import { DBU_REF_V, MIC_SENS_FIELD, P_REF_PA, SPL_CEILING_WHY, SPL_FIELD_RANGE, SPL_OF_1_PA, fmt, fmtCount, fmtNotWhole, overAirCeiling, snapWhole } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]) => (Array.isArray(v) ? v : [v]);
@@ -159,6 +159,18 @@ export const AMP_ATTENUATOR_NOTE =
  *  words, never printed (a card showed "1.000e8 dB SPL" and "196 dB SPL"). */
 const pastCeiling = (db: number): string | null =>
   overAirCeiling(db) ? `${SPL_CEILING_WHY} Check the levels and distances you entered.` : null;
+/** Owner decision 2026-10-23 (item 7, D53): past 75 dB of gain there is no
+ *  preamp setting to give — say what to do instead, print no number (a quiet
+ *  source printed "GAIN TO HIT TARGET 102.7 dB"). */
+export const PREAMP_MAX_GAIN_DB = 75;
+export const PREAMP_GAIN_TOO_HIGH =
+  'This needs more gain than most preamps have (about 75 dB at most). Move the mic closer, use a more sensitive (hotter) mic, or add an inline mic booster.';
+/** Owner decision 2026-10-23 (item 7, D53): a processor output tops out
+ *  around +20 to +28 dBu, so a limiter threshold above +24 dBu is out of reach
+ *  (a 500,000,000 W rating printed "63.24 dBu", 1125 V). */
+export const LIMITER_MAX_THRESHOLD_DBU = 24;
+export const LIMITER_THRESHOLD_TOO_HIGH =
+  'The processor cannot send that much — its output tops out around +20 to +28 dBu, so this threshold can never be reached. Set the limiter to the amp’s clip point instead.';
 /** The mic's output can never reach the preamp's clip point. */
 const MIC_NEVER_CLIPS =
   'This mic cannot put out enough to clip the preamp — no sound in air is loud enough (about 194 dB SPL is the limit). Watch the mic’s own max SPL instead.';
@@ -908,7 +920,7 @@ const WS_MIC_GAIN: Workspace = {
     'load impedance. This workspace models the spec-sheet number at 1 Pa (≈ 94 dB SPL; exactly 93.98 dB SPL).',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Gain Staging', 'Headroom', 'Preamplifier'],
   fields: [
-    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Millivolts out per pascal (1 Pa ≈ 94 dB SPL). Most dynamics ≈ 1–3 mV/Pa; most condensers ≈ 5–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity Converter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
+    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, ...MIC_SENS_FIELD('MIC SENSITIVITY (mV/Pa)'), placeholder: '2', help: 'Millivolts out per pascal (1 Pa ≈ 94 dB SPL). Most dynamics ≈ 1–3 mV/Pa; most condensers ≈ 5–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity Converter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
     { key: 'spl', name: 'SOURCE SPL AT THE MIC', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '94', help: 'The sound pressure level arriving at the capsule.' },
     { key: 'target', name: 'TARGET LEVEL', quantity: 'db', signed: true, placeholder: '4', help: 'The output level you want after the preamp, in dBu (+4 dBu = pro line level).' },
     // nonNegative (full-app run 2, 2026-10-01): a −12 dB "headroom" ADDED 12 dB
@@ -957,6 +969,10 @@ const WS_MIC_GAIN: Workspace = {
         'How much preamp gain a mic needs to reach a working level. Since the mic’s output tracks SPL dB-for-dB, a quiet source needs more gain and a loud one less. The recommended setting subtracts your headroom so peaks have somewhere to go.',
       keySymbols: ['−'],
       note: 'The recommended setting subtracts your headroom so peaks above the entered SPL have somewhere to go.',
+      refuse: (v) => {
+        const micDbu = 20 * Math.log10(((n(v.sens) / 1000) * paFromSpl(n(v.spl))) / V_REF_DBU);
+        return n(v.target) - micDbu > PREAMP_MAX_GAIN_DB ? PREAMP_GAIN_TOO_HIGH : null;
+      },
       compute: (v) => {
         const p = paFromSpl(n(v.spl));
         const micDbu = 20 * Math.log10(((n(v.sens) / 1000) * p) / V_REF_DBU);
@@ -1116,6 +1132,10 @@ const WS_LIMITER: Workspace = {
         'Turns a speaker’s voltage limit into a processor threshold by removing the amplifier’s voltage gain and a safety margin. The same threshold means a different speaker voltage on every amp, because the amp’s gain sits between them — an RMS/average protection starting point, not a tuned limiter.',
       keySymbols: ['·', 'log₁₀', '√', '/', '−', 'Z'],
       note: 'RMS/average protection starting point. Verify the processor’s meter reference (dBu vs dBFS) before entering it.',
+      refuse: (v) => {
+        const thr = 20 * Math.log10(Math.sqrt(n(v.pwr) * n(v.z)) / V_REF_DBU) - n(v.ampGain) - n(v.margin);
+        return thr > LIMITER_MAX_THRESHOLD_DBU ? LIMITER_THRESHOLD_TOO_HIGH : null;
+      },
       compute: (v) => {
         const volts = Math.sqrt(n(v.pwr) * n(v.z));
         const spkDbu = 20 * Math.log10(volts / V_REF_DBU);

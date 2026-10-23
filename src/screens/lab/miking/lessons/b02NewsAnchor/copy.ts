@@ -24,7 +24,7 @@ const BASE = standingVoiceCopy({
   before: [
     { title: 'THE SHOT, THE MOVES, THE ROOM', text: 'Before any mic: ask for the widest frame, the camera moves, the light and the likely turns — to the camera, to the guest, down to the script. Listen at the seat for fans, a hard desk and the room; note who handles paper or a tablet.' },
     { title: 'ASK FIRST — CONSENT AND WARDROBE', text: `${SAFETY.consent} ${SAFETY.wardrobe} ${SAFETY.skin}` },
-    { title: 'RIGGING AND POWER', text: `A fixed boom over a seated person is rigged and secured by qualified crew before anyone sits beneath it. ${SAFETY.phantom}` },
+    { title: 'THE STAND AND POWER', text: `A fixed boom stand over a seated person is set up and secured by trained crew before anyone sits beneath it. ${SAFETY.phantom}` },
     { title: 'LIVE: NO UNCONTROLLED FEEDBACK', text: 'In a public interview with a PA, bring each mic up only to its working level with the responsible operator; at any ring, pull it down at once and fix the geometry — any ring-out is the system operator’s job.' },
   ],
   studio: {
@@ -88,7 +88,7 @@ export const B02_COPY: Partial<LessonCopy> = {
       bcGooseSuper: 'Ideas to try with a supercardioid gooseneck: its rejection toward the rear, well to one side — check where the PA sits.',
       bcBoundaryDesk: 'Ideas to try with a boundary on the desk: its front toward the anchor, its opening clear, nothing on it — and check its actual pattern.',
     },
-    note: 'Ask first: a lav goes on a person only with their agreement and wardrobe’s; nothing on skin except an adhesive made for skin. A fixed boom over a seated person is rigged by qualified crew.',
+    note: 'Ask first: a lav goes on a person only with their agreement and wardrobe’s; nothing on skin except an adhesive made for skin. A fixed boom stand over a seated person is set up and secured by trained crew.',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on a seated anchor or guest, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every shot, desk and voice is different.',
       separate: 'Where the mic is — chest, above, the desk — its distance and its angle off the mouth are separate variables: change one at a time, with the anchor reading, turning and handling papers as they really will. Distances are measured to the mic’s front (a short shotgun’s capsule) and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m.',
@@ -109,7 +109,7 @@ export const B02_COPY: Partial<LessonCopy> = {
     shield: [],
     azMax: 60,
     elMax: 45,
-    aimBlurb: 'Swing the gooseneck’s capsule up to 60° either way — it still faces the mouth.',
+    aimBlurb: 'Turn the gooseneck’s capsule up to 60° either way — the mouth stays in front of the mic, a little off its axis.',
     plan: { u0: -700, u1: 3000, v0: -2000, v1: 1700 },
     side: { u0: -700, u1: 3000, v0: -1100, v1: 1260 },
     target: 'pa',
@@ -145,7 +145,7 @@ export const B02_COPY: Partial<LessonCopy> = {
     startNew: 'Good — NEXT takes you through the anchor, the frame and the desk first. You can change how you started here at any time.',
     otherRef: 'Every starting point here is measured from the lips — where the voice leaves — to the front of the mic: the capsule of a lav, the capsule behind a short shotgun’s tube, the front of a desk mic.',
     clipMount: 'Mount: a clip on a firm clothing edge (a lav), or a gooseneck from its base on the desk',
-    standMount: 'Mount: a fixed boom stand, its arm level from the side, rigged and secured by qualified crew',
+    standMount: 'Mount: a fixed boom stand, its arm level from the side, set up and secured by trained crew',
     observation: 'For a real anchor and guest, with their agreement and wardrobe’s. Write tendencies in words — what you heard, not a promised result.',
   },
 };

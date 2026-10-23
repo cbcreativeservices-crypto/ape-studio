@@ -518,7 +518,7 @@ const copy: Partial<LessonCopy> = {
     shield: ['ww.lower', 'ww.lower.1', 'ww.lower.2', 'ww.bow', 'ww.bell', 'ww.upper'],
     azMax: 60,
     elMax: 60,
-    aimBlurb: 'Swing the front up to 60° either way — it still faces the instrument.',
+    aimBlurb: 'Turn the front up to 60° either way — the instrument stays in front of the mic, a little off its axis.',
     plan: { u0: -1700, u1: 1200, v0: -500, v1: 1850 },
     side: { u0: -1700, u1: 1200, v0: -400, v1: 1300 },
     target: 'wedge',

@@ -116,7 +116,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Piano / keys",
         "cut": "HPF 80–100 Hz for comping keys; when the piano’s left hand doubles the bass (common in shout music and traditional gospel), only a rumble filter below its lowest note; −2 dB at 250–500 Hz",
-        "boost": "+2 dB at 2–5 kHz for definition",
+        "boost": "+2 dB around 5 kHz for definition",
         "notes": "Keep out of the lead vocal’s 2–4 kHz zone. Talk with the keyboardist first, or know their music."
       },
       {

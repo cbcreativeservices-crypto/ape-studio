@@ -21,7 +21,7 @@
  *     hypercardioid (broadcastMics.compactHyper) whose boom arm runs LEVEL
  *     from the mic's tail along one fixed direction (`standBoomRule`: the
  *     model's mountRule, `fixed`), then the stand drops to the floor — out of
- *     the shot to the talker's side. "Rigged and secured by qualified crew
+ *     the shot to the talker's side. "Set up and secured by trained crew
  *     before anyone sits beneath it" is said in words; no rigging is drawn.
  *
  * WHAT IS HERE
@@ -105,7 +105,7 @@ export function boomSwing(p: Vec3, a: Vec3, b: Vec3): number {
 /** The boom's plain-words safety (exact; every boom page uses these). */
 export const SAFETY = {
   overPeople: 'Keep any mic, clamp or cable above people under full control, so nothing can swing or drop. Check every lock, joint and the cable before moving over anyone.',
-  rigged: 'A boom fixed overhead is rigged and secured by a qualified rigger for that venue before anyone sits or stands beneath it, with a clear path kept while it goes up.',
+  rigged: 'A fixed boom stand over a talker is set up and secured by trained crew before anyone sits or stands beneath it, with a clear path kept while it goes up.',
   powerLines: 'Never hold or raise a conductive pole near overhead power lines. If you are unsure, the pole stays down.',
   weather: 'Windscreens and suspensions are not waterproof: keep a mic or recorder that is not rated for it out of rain, and stop or move when the weather, the access or the rigging is unsafe.',
   fatigue: 'Plan relief for the operator, and shorten the reach rather than stretch to the limit — a tired arm drifts into the shot.',

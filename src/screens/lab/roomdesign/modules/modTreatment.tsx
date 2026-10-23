@@ -191,7 +191,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       // One lane line: keep it under ~40 characters so it clears the lane's label.
       const down = `≈${Math.round(depthLimitHz(th, analysis.c))} Hz`;
       if (sel.kind === 'diffuser') return `${TREATMENT_INFO[sel.kind].short} ${fmtLen(th, units, { small: true })} deep · scatters to ${down}`;
-      return `${TREATMENT_INFO[sel.kind].short} ${fmtLen(th, units, { small: true })} · α125 ${treatmentAlpha({ kind: sel.kind, thickness: th }, 0).toFixed(2)} · to ${down}`;
+      return `${TREATMENT_INFO[sel.kind].short} ${fmtLen(th, units, { small: true })} · α125 ${treatmentAlpha({ kind: sel.kind, thickness: th }, 0).toFixed(2)} · full to ${down}`;
     },
     formatShort: (v) => fmtLen(laneVal(v, THICK_MIN, THICK_MAX, 0.005), units, { small: true }),
     // Nothing to resize until an item exists: LOCKED with its reason, not a

@@ -71,6 +71,10 @@ const voiceB = talkerVoice(ANALYST, IDS_B, ['booth']);
 
 /** A headset's ear pivot on a talker (their right ear). */
 export const earPivot = (t: Talker): Vec3 => onTalker(t, v3(EAR.x, EAR.y, EAR_HALF));
+/** The same over the LEFT ear: the analyst's headset is mirrored (owner
+ *  2026-10-23) — each boom on the side toward the partner, so the partner
+ *  sits behind the capsule. */
+export const earPivotLeft = (t: Talker): Vec3 => onTalker(t, v3(EAR.x, EAR.y, -EAR_HALF));
 /** The caller's right shoulder: where the arm holding a lip mic hangs from. */
 export const SHOULDER_A: Vec3 = onTalker(CALLER, SHOULDER_R);
 
@@ -90,7 +94,7 @@ const parts: Part[] = [
 
 const rims: Rim[] = [
   { id: 'clip.ear.A', label: 'the headset over the commentator’s right ear', c: earPivot(CALLER), axis: v3(0, 0, 1), r: 0, types: HEADSETS },
-  { id: 'clip.ear.B', label: 'the headset over the analyst’s right ear', c: earPivot(ANALYST), axis: v3(0, 0, 1), r: 0, types: HEADSETS, variants: ['booth'] },
+  { id: 'clip.ear.B', label: 'the headset over the analyst’s left ear, on the commentator’s side', c: earPivotLeft(ANALYST), axis: v3(0, 0, -1), r: 0, types: HEADSETS, variants: ['booth'] },
   { id: 'hand.A', label: 'the commentator’s hand', c: SHOULDER_A, axis: v3(0, 0, 1), r: 0, types: ['bcLipRibbon'], variants: ['open'] },
   arm.rim,
 ];

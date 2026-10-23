@@ -7,9 +7,21 @@
  * compute) rather than adding MHz to the audio frequency picker.
  */
 import type { Workspace } from '../calcTypes';
-import { AIR_TEMP_FIELD, DBU_REF_V, fmt, P_REF_PA, SPL_FIELD_RANGE, speedOfSoundAir } from '../calcUnits';
+import { AIR_TEMP_FIELD, DBU_REF_V, fmt, MIC_SENS_DBV_FIELD, MIC_SENS_FIELD, P_REF_PA, SPL_FIELD_RANGE, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
+
+/** Owner decision 2026-10-23 (item 7, D53): RF powers outside the span of
+ *  real wireless gear are refused in words — a 10,000,000 dBm transmitter
+ *  printed a "1.000e7 dB" link margin. */
+const RF_TX_FIELD = {
+  range: [-30, 50] as const,
+  rangeMsg: 'TRANSMIT POWER must be from −30 to +50 dBm (1 µW to 100 W) — the span of real transmitters; wireless mics sit around +10 to +20 dBm. Check the value you entered.',
+};
+const RF_RX_SENS_FIELD = {
+  range: [-130, -20] as const,
+  rangeMsg: 'RECEIVER SENSITIVITY must be from −130 to −20 dBm — the span of real receivers; wireless mic receivers sit around −90 to −105 dBm. Check the spec sheet value.',
+};
 const DEG = Math.PI / 180;
 
 /** Speed of light in vacuum, m/s — exact by the SI definition of the metre. */
@@ -175,8 +187,8 @@ const MICSENS: Workspace = {
     'sensitivity(V/Pa)·p. dBu referenced to 0.7746 V, dBV to 1 V. Ideal, pre-loading figures.',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Microphone (Mic)', 'dBu'],
   fields: [
-    { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '15', help: 'Output in millivolts for a 1 Pa (≈ 94 dB SPL) input.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
-    { key: 'dbvpa', name: 'SENSITIVITY (dBV/Pa)', quantity: 'number', signed: true, placeholder: '-36.5', help: 'Output in dB relative to 1 V/Pa.' },
+    { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, ...MIC_SENS_FIELD('SENSITIVITY (mV/Pa)'), placeholder: '15', help: 'Output in millivolts for a 1 Pa (≈ 94 dB SPL) input.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
+    { key: 'dbvpa', name: 'SENSITIVITY (dBV/Pa)', quantity: 'number', signed: true, ...MIC_SENS_DBV_FIELD, placeholder: '-36.5', help: 'Output in dB relative to 1 V/Pa.' },
     { key: 'spl', name: 'SOUND PRESSURE LEVEL', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '94', help: 'SPL at the capsule to find the output for.', warn: { test: (x) => x < 0, msg: 'Below 0 dB SPL is quieter than the threshold of hearing — check the value.' } },
   ],
   functions: [
@@ -289,12 +301,12 @@ const RFLINK: Workspace = {
   fields: [
     { key: 'dist', name: 'LINK DISTANCE', quantity: 'length', placeholder: '50', help: 'Transmitter-to-receiver distance.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'freqMHz', name: 'FREQUENCY (MHz)', quantity: 'number', nonNegative: true, placeholder: '550', help: 'RF carrier frequency in megahertz.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
-    { key: 'ptx', name: 'TRANSMIT POWER (dBm)', quantity: 'number', signed: true, placeholder: '10', help: 'Transmitter output power in dBm (10 dBm = 10 mW).' },
+    { key: 'ptx', name: 'TRANSMIT POWER (dBm)', quantity: 'number', signed: true, ...RF_TX_FIELD, placeholder: '10', help: 'Transmitter output power in dBm (10 dBm = 10 mW).' },
     // dBi named on the field (audit R2, 2026-10-23): the free-space formula
     // assumes gain relative to an isotropic antenna.
     { key: 'gtx', name: 'TX ANTENNA GAIN (dBi)', quantity: 'db', signed: true, placeholder: '2', help: 'Transmit antenna gain in dBi, minus any cable loss. If a spec gives dBd, add 2.15 to get dBi.' },
     { key: 'grx', name: 'RX ANTENNA GAIN (dBi)', quantity: 'db', signed: true, placeholder: '2', help: 'Receive antenna gain in dBi, minus any cable loss. If a spec gives dBd, add 2.15 to get dBi.' },
-    { key: 'rxsens', name: 'RECEIVER SENSITIVITY (dBm)', quantity: 'number', signed: true, placeholder: '-95', help: 'The weakest signal the receiver works with, in dBm.' },
+    { key: 'rxsens', name: 'RECEIVER SENSITIVITY (dBm)', quantity: 'number', signed: true, ...RF_RX_SENS_FIELD, placeholder: '-95', help: 'The weakest signal the receiver works with, in dBm.' },
   ],
   functions: [
     {

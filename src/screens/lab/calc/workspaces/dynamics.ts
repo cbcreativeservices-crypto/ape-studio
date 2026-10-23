@@ -17,6 +17,17 @@ import { fmt } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
+/** Owner decision 2026-10-23 (item 7, D53): a compressor level — threshold,
+ *  input or target output — is refused in words outside −150…+30 dB. No real
+ *  signal sits outside that span in dBFS or dBu; a −20,000,000 dB threshold
+ *  printed an output of "-1.500e7 dB". */
+export const COMP_LEVEL_MIN_DB = -150;
+export const COMP_LEVEL_MAX_DB = 30;
+const compLevel = (name: string) => ({
+  range: [COMP_LEVEL_MIN_DB, COMP_LEVEL_MAX_DB] as const,
+  rangeMsg: `${name} must be from −150 to +30 dB — no real signal level sits outside that span, in dBFS or dBu. Check the level you entered.`,
+});
+
 /** The honest answer for a ratio below 1:1 — no downward compressor is set there. */
 const ratioBelowOne = (r: number) =>
   `A ratio of ${fmt(r)}:1 is not compression. A compressor’s ratio starts at 1:1 (no change) and goes up — at 4:1, 4 dB in above the threshold gives 1 dB out. Below 1:1 the output would rise faster than the input, which is an expander, not a compressor. Enter a ratio of 1 or more.`;
@@ -68,10 +79,10 @@ const WS_COMPRESSOR: Workspace = {
     'the moment-to-moment gain reduction during a transient.',
   glossary: ['Dynamic range compression', 'Threshold', 'Ratio', 'Gain Reduction', 'Makeup Gain', 'Dynamic Range'],
   fields: [
-    { key: 'thr', name: 'THRESHOLD', quantity: 'db', signed: true, placeholder: '-20', help: 'The level (dBFS) above which compression begins. Below it, the signal is untouched.' },
+    { key: 'thr', name: 'THRESHOLD', quantity: 'db', signed: true, ...compLevel('THRESHOLD'), placeholder: '-20', help: 'The level (dBFS) above which compression begins. Below it, the signal is untouched.' },
     { key: 'ratio', name: 'RATIO (n:1)', quantity: 'number', nonNegative: true, placeholder: '4', help: 'How many dB must go IN above threshold for 1 dB to come OUT above it. 4 means 4:1.', warn: { test: (x) => x < 1, msg: 'Ratio must be at least 1:1 (1:1 is no compression).' } },
-    { key: 'inLvl', name: 'INPUT LEVEL', quantity: 'db', signed: true, placeholder: '-8', help: 'The incoming signal level (dBFS) whose compressed output you want.' },
-    { key: 'targetOut', name: 'TARGET OUTPUT', quantity: 'db', signed: true, placeholder: '-17', help: 'The output level (dBFS) you want a given input to land on.' },
+    { key: 'inLvl', name: 'INPUT LEVEL', quantity: 'db', signed: true, ...compLevel('INPUT LEVEL'), placeholder: '-8', help: 'The incoming signal level (dBFS) whose compressed output you want.' },
+    { key: 'targetOut', name: 'TARGET OUTPUT', quantity: 'db', signed: true, ...compLevel('TARGET OUTPUT'), placeholder: '-17', help: 'The output level (dBFS) you want a given input to land on.' },
     { key: 'targetGr', name: 'TARGET GAIN REDUCTION', quantity: 'db', nonNegative: true, placeholder: '3', help: 'How many dB of gain reduction you want on a given input.', warn: { test: (x) => x < 0, msg: 'Gain reduction is a positive number of dB.' } },
   ],
   functions: [

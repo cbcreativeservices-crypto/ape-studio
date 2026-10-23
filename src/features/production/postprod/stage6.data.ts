@@ -261,7 +261,7 @@ export const STAGE6_MIX: StageDef = {
           fieldId: "depth_approach",
           label: "How depth is created",
           kind: "multiChoice",
-          help: "Reverb is one of these and rarely the most effective.",
+          help: "Reverb is one of these, but not always the most effective. Level, tone and early reflections also place a sound near or far.",
           options: [
             { value: "level", label: "Level" },
             { value: "direct_reverb", label: "Direct-to-reverberant ratio" },

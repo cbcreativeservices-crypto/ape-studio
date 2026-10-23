@@ -33,12 +33,12 @@ export const CONNECTOR_TERMS: AnatomyTerm[] = [
   {
     id: 'jack',
     label: 'JACK',
-    def: 'The fixed connector a plug goes into, mounted on equipment or a panel. Plug and jack are a pair: one travels with the cable, the other stays put.',
+    def: 'The fixed connector a plug goes into, mounted on equipment or a panel. Plug and jack are a pair: one travels with the cable, the other stays put. Some cables (extension leads, Y-cables) end in an inline jack.',
   },
   {
     id: 'socket_receptacle',
     label: 'SOCKET / RECEPTACLE',
-    def: 'Other names for the fixed, receiving side of a connection. “Receptacle” is the formal word — heard most around power connectors — but all three name the half that stays mounted.',
+    def: 'Other names for the fixed, receiving side of a connection. “Receptacle” is the formal word — heard most around power connectors — but all three name the half that stays mounted. Many people also say socket for any female connector, even on a cable end — check which meaning is meant.',
   },
   {
     id: 'male_female',

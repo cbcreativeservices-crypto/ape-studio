@@ -13,8 +13,8 @@
  * broadcast/cameraFrame.ts, boomPole.ts). O-SG (owner item): the shotgun is
  * drawn as its base supercardioid with the narrower high-frequency lobe —
  * "a simplified picture"; the real pattern narrows and changes with pitch.
- * Safety exact, in plain words: never swing gear over people, overhead rigs
- * by qualified crew, no conductive pole near overhead power lines, never
+ * Safety exact, in plain words: never swing gear over people, boom stands set
+ * up and secured by trained crew, no conductive pole near overhead power lines, never
  * provoke feedback.
  * OWNER RULING 2026-10-04 — learner-facing presentation: suggested starting
  * points, never dogma; no source, brand or model in learner text; no badges.

@@ -55,7 +55,7 @@ export const CELLO_COPY: Partial<LessonCopy> = {
     shield: ['bw.body', 'bw.bodyUpper', 'bw.bodyWaist'],
     azMax: 60,
     elMax: 45,
-    aimBlurb: 'Swing the front up to 60° either way — it still faces the cello.',
+    aimBlurb: 'Turn the front up to 60° either way — the cello stays in front of the mic, a little off its axis.',
     plan: { u0: -900, u1: 2100, v0: -1300, v1: 1300 },
     side: { u0: -900, u1: 2100, v0: -1000, v1: 760 },
     target: 'wedge',

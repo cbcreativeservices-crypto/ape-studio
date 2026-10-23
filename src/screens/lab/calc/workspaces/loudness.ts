@@ -11,6 +11,19 @@ import { fmt } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
+/** Owner decision 2026-10-23 (item 7, D53): loudness is refused in words
+ *  outside −70…0 LUFS (BS.1770 gating ignores anything below −70 LUFS) and
+ *  true peak outside −60…+6 dBTP — a −9,000,000 LUFS master printed a
+ *  "9000000 dB" gain change. */
+const lufsField = (name: string) => ({
+  range: [-70, 0] as const,
+  rangeMsg: `${name} must be from −70 to 0 LUFS — real programme loudness sits inside that span (BS.1770 gating ignores anything below −70 LUFS). Check the reading.`,
+});
+const truePeakField = (name: string) => ({
+  range: [-60, 6] as const,
+  rangeMsg: `${name} must be from −60 to +6 dBTP — the span a real true-peak reading or ceiling falls in. Check the reading.`,
+});
+
 /** Owner ruling 2026-10-04: a NEGATIVE margin to the ceiling is a level OVER
  *  the ceiling — it reads "OVER CEILING BY x dB" with the positive amount,
  *  never "MARGIN TO CEILING −x dB". Zero and positive keep "MARGIN TO CEILING".
@@ -74,10 +87,10 @@ const LOUDNORM: Workspace = {
     'this assumes you already measured it correctly.',
   glossary: ['LUFS', 'True Peak', 'Loudness', 'Dynamic Range', 'Gain Staging'],
   fields: [
-    { key: 'measured', name: 'MEASURED LOUDNESS (LUFS)', quantity: 'number', signed: true, placeholder: '-9', help: 'Your program’s integrated loudness, in LUFS.' },
-    { key: 'target', name: 'TARGET LOUDNESS (LUFS)', quantity: 'number', signed: true, placeholder: '-14', help: 'The level to match, in LUFS — a streaming platform’s playback level or a broadcast delivery spec (see the table under the result).' },
-    { key: 'truePeak', name: 'CURRENT TRUE PEAK (dBTP)', quantity: 'number', signed: true, placeholder: '-0.5', help: 'Your master’s measured true-peak level, in dBTP.' },
-    { key: 'ceiling', name: 'TRUE-PEAK CEILING (dBTP)', quantity: 'number', signed: true, placeholder: '-1', help: 'The maximum true peak you’ll allow, in dBTP.' },
+    { key: 'measured', name: 'MEASURED LOUDNESS (LUFS)', quantity: 'number', signed: true, ...lufsField('MEASURED LOUDNESS (LUFS)'), placeholder: '-9', help: 'Your program’s integrated loudness, in LUFS.' },
+    { key: 'target', name: 'TARGET LOUDNESS (LUFS)', quantity: 'number', signed: true, ...lufsField('TARGET LOUDNESS (LUFS)'), placeholder: '-14', help: 'The level to match, in LUFS — a streaming platform’s playback level or a broadcast delivery spec (see the table under the result).' },
+    { key: 'truePeak', name: 'CURRENT TRUE PEAK (dBTP)', quantity: 'number', signed: true, ...truePeakField('CURRENT TRUE PEAK (dBTP)'), placeholder: '-0.5', help: 'Your master’s measured true-peak level, in dBTP.' },
+    { key: 'ceiling', name: 'TRUE-PEAK CEILING (dBTP)', quantity: 'number', signed: true, ...truePeakField('TRUE-PEAK CEILING (dBTP)'), placeholder: '-1', help: 'The maximum true peak you’ll allow, in dBTP.' },
   ],
   functions: [
     {
@@ -140,7 +153,7 @@ const LOUDTP: Workspace = {
     'At 48 kHz the momentary (400 ms) window is 19,200 samples and the short-term (3 s) window is ' +
     '144,000. A section 6 LU louder than another sounds about 2^(6/10) ≈ 1.5× as loud.',
   mistakes: [
-    'Trusting a sample-peak meter for delivery — inter-sample peaks often ride up to about 3 dB higher (more on rare hot material); only a true-peak (oversampled) meter catches them.',
+    'Trusting a sample-peak meter for delivery — inter-sample peaks often sit about 1 dB above the sample peaks, and 3 dB or more on some hot material; only a true-peak (oversampled) meter catches them.',
     'Treating momentary, short-term, and integrated readings as one number — they use different windows and gating and answer different questions.',
     'Assuming +6 dB is "twice as loud" — the rough psychoacoustic doubling is about +10 LU, not +6.',
   ],
@@ -151,8 +164,8 @@ const LOUDTP: Workspace = {
   glossary: ['LUFS', 'True Peak', 'K-weighting', 'Loudness', 'Gating'],
   fields: [
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate, to size the measurement windows.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
-    { key: 'lufsA', name: 'LOUDNESS A (LUFS)', quantity: 'number', signed: true, placeholder: '-14', help: 'First loudness value to compare, in LUFS.' },
-    { key: 'lufsB', name: 'LOUDNESS B (LUFS)', quantity: 'number', signed: true, placeholder: '-20', help: 'Second loudness value to compare, in LUFS.' },
+    { key: 'lufsA', name: 'LOUDNESS A (LUFS)', quantity: 'number', signed: true, ...lufsField('LOUDNESS A (LUFS)'), placeholder: '-14', help: 'First loudness value to compare, in LUFS.' },
+    { key: 'lufsB', name: 'LOUDNESS B (LUFS)', quantity: 'number', signed: true, ...lufsField('LOUDNESS B (LUFS)'), placeholder: '-20', help: 'Second loudness value to compare, in LUFS.' },
     { key: 'samplePeak', name: 'SAMPLE PEAK (dBFS)', quantity: 'number', signed: true, placeholder: '-0.1', help: 'The peak read by a sample-based meter, in dBFS.' },
     { key: 'lossy', name: 'LOSSY DELIVERY?', quantity: 'number', nonNegative: true, integer: true, range: [0, 1], placeholder: '0', help: 'Enter 1 if the target is a lossy codec (MP3/AAC), 0 if lossless.' },
   ],

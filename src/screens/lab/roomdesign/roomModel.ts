@@ -864,6 +864,28 @@ export function roomVolume(room: Room): number {
   return area * (sum / N);
 }
 
+/** The ceiling's real surface area, m² (owner 2026-10-23, NOTE-D3): the
+ *  same front→rear profile roomVolume integrates, walked as 20 straight runs,
+ *  its length over the plan length × plan area. A flat ceiling is exactly the
+ *  plan area; a sloped or vaulted one is larger (it runs along its slope); a
+ *  mixed ceiling's step counts its riser face. */
+export function ceilingArea(room: Room): number {
+  const area = polygonArea(room.vertices);
+  if (room.ceiling === 'flat') return area;
+  const b = bounds(room);
+  if (!(b.length > 0)) return area;
+  const N = 20;
+  const dy = b.length / N;
+  let run = 0;
+  let prev = ceilingHeightAt(room, b.minY);
+  for (let i = 1; i <= N; i++) {
+    const h = ceilingHeightAt(room, b.minY + i * dy);
+    run += Math.hypot(dy, h - prev);
+    prev = h;
+  }
+  return area * (run / b.length);
+}
+
 /** Mean ceiling height (the modal "height" of a non-flat ceiling). */
 export function meanHeight(room: Room): number {
   const area = polygonArea(room.vertices);
@@ -1511,10 +1533,12 @@ export function surfaceList(room: Room, treatment: Treatment[]): SurfaceLine[] {
   lines.push({ label: `Floor · ${SURFACES[room.floor].label}`, area: Math.max(0, area - rugArea * rugScale), alpha: alphaOf(room.floor), tier: 'ESTIMATED' });
   for (const t of live.filter((t) => t.kind === 'rug')) lines.push({ label: 'Thick rug with underlay', area: t.width * t.height * rugScale, alpha: treatAlpha(t), tier: 'ESTIMATED' });
 
-  // Ceiling, minus clouds.
+  // Ceiling, minus clouds. A sloped / vaulted / mixed ceiling counts its
+  // real area along the profile, not its plan area (owner 2026-10-23).
+  const ceilArea = ceilingArea(room);
   const cloudArea = live.filter((t) => t.kind === 'cloud').reduce((s, t) => s + t.width * t.height, 0);
   const cloudScale = cloudArea > area && cloudArea > 0 ? area / cloudArea : 1;
-  lines.push({ label: `Ceiling · ${SURFACES[room.ceilingMat].label}`, area: Math.max(0, area - cloudArea * cloudScale), alpha: alphaOf(room.ceilingMat), tier: 'ESTIMATED' });
+  lines.push({ label: `Ceiling · ${SURFACES[room.ceilingMat].label}`, area: Math.max(0, ceilArea - cloudArea * cloudScale), alpha: alphaOf(room.ceilingMat), tier: 'ESTIMATED' });
   for (const t of live.filter((t) => t.kind === 'cloud')) lines.push({ label: 'Ceiling cloud', area: t.width * t.height * cloudScale, alpha: treatAlpha(t), tier: 'ESTIMATED' });
 
   // Walls: each edge × the local mean height, minus its openings and panels.

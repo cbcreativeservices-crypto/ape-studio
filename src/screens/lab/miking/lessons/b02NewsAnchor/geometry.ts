@@ -113,7 +113,7 @@ const parts: Part[] = [
   { id: 'bc.desk', label: 'the anchor desk', short: 'desk', role: 'A hard top under the mouths: it reflects the voice back up into a raised desk mic. Papers, a keyboard and taps travel through it. A boundary mic lies on it.', solid: { kind: 'box', ...DESK }, prov: DD },
   { id: 'b2.base', label: 'the gooseneck’s base', short: 'base', role: 'A weighted base on the desk, away from the papers and the hands, so taps stay out of the neck.', prov: DD },
   { id: 'bc.camera', label: 'the camera', short: 'camera', role: 'Its widest frame decides how close a boom may come. A desk mic is in the picture; a hidden lav is not.', solid: { kind: 'box', ...cameraBody(CAM_CLOSE) }, prov: DD },
-  { id: 'b2.stand', label: 'the boom stand', short: 'boom stand', role: 'A fixed stand with a level arm, for a seated talker who stays put: rigged and secured by qualified crew before anyone sits beneath it, out of every frame and light.', prov: DD },
+  { id: 'b2.stand', label: 'the boom stand', short: 'boom stand', role: 'A fixed stand with a level arm, for a seated talker who stays put: set up and secured by trained crew before anyone sits beneath it, out of every frame and light.', prov: DD },
   { id: 'b2.pa', label: 'the PA loudspeaker', short: 'PA', role: 'A public interview: it faces the audience, but every open mic on the set hears its back and side.', variants: ['public'], prov: DD },
   REACH_PART,
 ];

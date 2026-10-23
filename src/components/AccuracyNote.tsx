@@ -68,7 +68,7 @@ export const PRACTICE_CLOSER = 'Plan here; confirm the requirements that apply w
 /** CALCULATOR copy (variant "calc") — trust-forward, method-cited. */
 export const CALC_TITLE = 'VERIFIED CALCULATION';
 export const CALC_BODY = [
-  'Built to be a source you can trust in the field. Each result is computed EXACTLY from the formula shown, using established, published engineering methods.',
+  'Built to be a source you can trust in the field. Each result is computed EXACTLY from the formula shown, using established, published engineering methods. For work in the field, confirm with a calibrated instrument.',
   'Every calculator names its method — and any standard it follows (Ohm’s law, IEC, ISO, AES, ITU-R) — right by the FORMULA and the notes beside the result, so you can see exactly how the answer was reached.',
 ];
 export const CALC_CLOSER = 'Computed exactly from the method shown — the FORMULA and notes in each calculator show the source.';

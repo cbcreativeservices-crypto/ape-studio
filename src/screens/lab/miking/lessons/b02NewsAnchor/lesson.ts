@@ -13,8 +13,8 @@
  * reflection (group 1), the camera frame, the fixed boom and the body-worn
  * mount points (group 2). Safety exact, in plain words: consent and
  * wardrobe, skin-safe adhesive only on skin, no bodypack lav into 48 V
- * phantom except through its adapter, overhead booms rigged by qualified
- * crew before anyone sits beneath, never provoke feedback.
+ * phantom except through its adapter, overhead boom stands set up and secured
+ * by trained crew before anyone sits beneath, never provoke feedback.
  * OWNER RULING 2026-10-04 — learner-facing presentation: suggested starting
  * points, never dogma; no source, brand or model in learner text; no badges.
  */
@@ -46,7 +46,7 @@ const pages: LessonPages = {
     title: 'Before any mic',
     goal: 'Know where each mic goes — the program, the recorder, the earpiece, a public PA — and what to settle first: the shot and the moves, consent and wardrobe, safe rigging and power, and a live check without feedback.',
     credit: { scenarios: ['b2.set.1', 'b2.set.2', 'b2.set.3', 'b2.set.4'], note: 'Answer the four checks.' },
-    takeaway: 'Ask for the widest frame, ask the person and wardrobe first, rig an overhead boom with qualified crew, give each speaker their own channel, keep one mic on air per voice, and bring live mics up to their working level only.',
+    takeaway: 'Ask for the widest frame, ask the person and wardrobe first, have trained crew set up and secure an overhead boom stand, give each speaker their own channel, keep one mic on air per voice, and bring live mics up to their working level only.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -147,9 +147,9 @@ const scenarios: MikingScenario[] = [
     id: 'b2.set.3',
     page: 'setting',
     prompt: 'A fixed boom will hang above the guest’s seat. When may the guest sit?',
-    options: ['When qualified crew have rigged and secured it', 'Once the boom is roughly in its place above them', 'As soon as the mic is plugged in and working'],
-    correct: 'When qualified crew have rigged and secured it',
-    explain: 'An overhead boom is rigged and secured by qualified crew before anyone sits beneath it — the stand, the arm, the clamp and the cable.',
+    options: ['When trained crew have set it up and secured it', 'Once the boom is roughly in its place above them', 'As soon as the mic is plugged in and working'],
+    correct: 'When trained crew have set it up and secured it',
+    explain: 'An overhead boom stand is set up and secured by trained crew before anyone sits beneath it — the stand, the arm, the clamp and the cable.',
     why: {
       'Once the boom is roughly in its place above them': 'Roughly placed is not secured. Wait for the crew.',
       'As soon as the mic is plugged in and working': 'A plugged-in mic says nothing about the rigging.',
@@ -489,7 +489,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Add a tested fallback — a boom or desk mic — on its own track', early: 'Add the fallback after the main mic works.' },
       { text: 'Trace every route; live, working level only', early: 'Routing and the live check come last.' },
     ],
-    explain: 'A sensible order. Hide a lav only after the visible place works; rig an overhead boom with qualified crew; live, leave any ring-out to the system’s operator.',
+    explain: 'A sensible order. Hide a lav only after the visible place works; have trained crew set up and secure an overhead boom stand; live, leave any ring-out to the system’s operator.',
   },
 ];
 
@@ -575,9 +575,9 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'A fixed boom over the guest’s seat. When may the guest sit down?',
-    options: ['Once qualified crew have secured it', 'As soon as the boom looks steady to you', 'Once its cable has been taped down'],
-    correct: 'Once qualified crew have secured it',
-    explain: 'An overhead boom is rigged and secured by qualified crew before anyone sits beneath it.',
+    options: ['Once trained crew have secured it', 'As soon as the boom looks steady to you', 'Once its cable has been taped down'],
+    correct: 'Once trained crew have secured it',
+    explain: 'An overhead boom stand is set up and secured by trained crew before anyone sits beneath it.',
     why: {
       'As soon as the boom looks steady to you': 'Looking steady is not the same as secured.',
       'Once its cable has been taped down': 'The cable is one part; the stand, the arm and the clamp need the crew.',
@@ -676,6 +676,6 @@ export const B02_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every anchor, set, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: seated talkers in a typical pose, the camera and its shots as drawing defaults, the boom’s place calculated from the frame, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front (a short shotgun’s capsule). Ask first; skin-safe adhesive only on skin; overhead booms rigged by qualified crew; avoid uncontrolled feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every anchor, set, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: seated talkers in a typical pose, the camera and its shots as drawing defaults, the boom’s place calculated from the frame, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front (a short shotgun’s capsule). Ask first; skin-safe adhesive only on skin; overhead boom stands set up and secured by trained crew; avoid uncontrolled feedback.',
   copy: B02_COPY,
 };

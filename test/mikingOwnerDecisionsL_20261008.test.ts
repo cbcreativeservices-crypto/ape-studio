@@ -61,7 +61,8 @@ describe('L6A — F09 reads a shotgun to its capsule', () => {
   });
   it('the words say capsule, with ONE line on the tip', () => {
     const text = learnerStrings(F09).join('\n');
-    assert.doesNotMatch(text, /front of the mic|mic’s FRONT|mic’s front\b/);
+    // Owner 2026-10-23: the AIM tip's "stays in front of the mic, a little off its axis" is a direction, not a distance.
+    assert.doesNotMatch(text.replace(/stays in front of the mic, a little off its axis/g, ''), /front of the mic|mic’s FRONT|mic’s front\b/);
     const C = copyOf(F09);
     assert.match(C.placement.learn.separate, /On the shotgun drawn here, the tip is about 20 cm nearer the mouth than the capsule\./);
     assert.equal((text.match(/about 20 cm nearer the mouth/g) ?? []).length, 1, 'one line');

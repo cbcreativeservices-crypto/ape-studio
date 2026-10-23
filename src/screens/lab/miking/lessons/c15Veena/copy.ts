@@ -49,7 +49,7 @@ const base = stringsCopy({
   },
   workedZone: { veena: 'plate' },
   workedLine: 'This starting point sits near {line}, above the plate and in front of it.',
-  workedAim: 'Aim at a broad area of the plate between the bridge and the body — the lab counts it while the mic’s axis, followed in, meets the plate within about 7 cm of {head} — not straight at one bridge point.',
+  workedAim: 'Aim at a broad area round the middle of the plate, on the far side of the bridge from the neck — the lab counts it while the mic’s axis, followed in, meets the plate within about 7 cm of {head} — not straight at one bridge point.',
   clearWhat: 'the plucking hand and arm, the left hand along the neck, the gourd on the thigh, the yali and the player’s view',
   placementReveal: 'Toward the bridge tends to bring more of each note’s start, and maybe more click or buzz; a broad view of the plate, more body; farther back, more of the room and the ensemble. Every veena and room differs, so “it depends on this veena” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
   typeNotes: {
@@ -57,7 +57,7 @@ const base = stringsCopy({
     instDynCard: 'Ideas to try with a dynamic: over the plate on a stage; watch the proximity bass if you come closer.',
   },
   learnSeparate: 'Distance from the plate, position along the veena and angle are separate variables: change one at a time and compare at matched levels. Distances are measured to the mic’s FRONT, square to the plate, and rounded to about 5 mm.',
-  learnTendencies: 'Over the plate between the bridge and the body is a starting blend; turned toward the bridge, more articulation; closer, more local colour and movement; farther back in a good room, more of the room. A second mic toward the drone side is optional — check it in mono.',
+  learnTendencies: 'Over the plate, round the middle of the plate, on the far side of the bridge from the neck, is a starting blend; turned toward the bridge, more articulation; closer, more local colour and movement; farther back in a good room, more of the room. A second mic toward the drone side is optional — check it in mono.',
   context: {
     zone: 'plate',
     shield: C15_SHIELD,

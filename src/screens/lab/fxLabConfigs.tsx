@@ -719,7 +719,7 @@ const flangerConfig: FxLabConfig = {
       ],
       correctIdx: 1,
       reveal:
-        'Feedback re-circulates the delayed copy and sharpens the comb: narrower notches and taller resonant peaks, the classic metallic scream at the extreme. Rate is untouched — that is the LFO\u2019s job.',
+        'Feedback re-circulates the delayed copy and sharpens the comb: deeper contrast and taller resonant peaks, the classic metallic scream at the extreme. Rate is untouched — that is the LFO\u2019s job.',
       wrongHint: 'Step FDBK from 0% to −70% HOLLOW and watch the comb\u2019s teeth.',
     },
   ],

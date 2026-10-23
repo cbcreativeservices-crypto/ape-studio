@@ -211,7 +211,9 @@ describe('the body-worn family (bodyWorn.ts)', () => {
     assert.match(BODY_SAFETY.skin, /made for skin/);
     assert.match(BODY_SAFETY.consent, /Ask the wearer first/);
     assert.match(BOOM_SAFETY.overPeople, /above people/);
-    assert.match(BOOM_SAFETY.rigged, /qualified rigger/);
+    // Owner 2026-10-23: a fixed boom STAND over a talker is set up by trained crew (never "rigged").
+    assert.match(BOOM_SAFETY.rigged, /set up and secured by trained crew/);
+    assert.doesNotMatch(BOOM_SAFETY.rigged, /rigged|qualified crew/i);
     assert.match(BOOM_SAFETY.powerLines, /power lines/);
   });
 });
