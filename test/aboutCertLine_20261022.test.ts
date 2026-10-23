@@ -28,3 +28,20 @@ describe('About sheet certificate line matches the approved wording', () => {
     );
   });
 });
+
+// Owner 2026-10-22: the same promise where a member looks for it — the cancel
+// help answer and the Pro Registry intro on the paywall.
+describe('membership is not needed to stay listed — said in help and on the registry intro', () => {
+  it('Help "How do I cancel?" says listed certificates stay listed and verifiable', () => {
+    assert.match(
+      read('features/help/helpContent.ts'),
+      /if you listed them in the Pro Registry, they stay listed, and employers can still find and verify them after your membership ends\./,
+    );
+  });
+  it('the Pro Registry intro says the listing stays whether or not you keep your membership', () => {
+    assert.match(
+      read('lib/copy.ts'),
+      /Your listing and certificates stay in the registry whether or not you keep your membership\.'/,
+    );
+  });
+});

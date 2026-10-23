@@ -83,9 +83,11 @@ export const COPY = {
   membershipUnlocks:
     'Academy membership unlocks guided learning, study tools, quizzes, progress tracking, and the ability to earn Academy certificates. Enroll in as many as you like — choosing more never costs more.',
   /** Was paywallBody ¶2 — ratified, VERBATIM. It is the CONDITIONAL form of the
-   *  verification claim ("Create an optional profile…"). */
+   *  verification claim ("Create an optional profile…"). Last sentence ADDED by
+   *  the owner 2026-10-22: the listing never depends on membership (true in the
+   *  DB — the registry/verify functions check age 18+, never membership). */
   registryProfile:
-    'Create an optional profile in the Pro Audio Training Academy Professional Registry. As you earn certificates, your profile becomes a verified graduate record that employers can validate online and you can share on résumés, job applications, portfolios, and professional networking profiles.',
+    'Create an optional profile in the Pro Audio Training Academy Professional Registry. As you earn certificates, your profile becomes a verified graduate record that employers can validate online and you can share on résumés, job applications, portfolios, and professional networking profiles. Your listing and certificates stay in the registry whether or not you keep your membership.',
   // The free tier's glossary allowance (owner 2026-09-13, governance R7).
   // ADDED, not reworded — marketingLine, upgradeSheetBody and paywallBody each
   // call the glossary "free" and predate the weekly cap (2026-09-10); all three
