@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 00:03 · ccode · 8ce9035c
+changed: One registry name on screen (Pro Registry) + Limiter popup = glossary text
+affects other side: nothing (app copy; Limiter popup now equals glossary plain_english 7f621dc4)
+needs: nothing
+
+
 ### 2026-10-22 21:53 · ccode · 3a49864c
 changed: Mixing guides: shipped files are the master copy; converter locked (owner)
 affects other side: nothing backend. NOTE for any session: mixing-guide files are the master copy — never run convert.py into the repo (it now refuses)
