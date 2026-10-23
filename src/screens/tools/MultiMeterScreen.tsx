@@ -67,7 +67,10 @@ import { releaseMicNow } from '../../features/tools/engine/micSession';
 import { micReleaseOnBackgroundEnabled } from '../../features/settings/store';
 import { deriveSixthOctave, NO_LEVEL, SIXTH_BANDS, SIXTH_EDGE, type DisplayBands } from '../../features/tools/sixthOctave';
 import { useSplCalibration } from '../../features/tools/measure/calibrationStore';
-import { heatColor, levelColorForDb, MIDLINE_BLUE, rampColors, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { heatColor, levelColorForDb, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
+import { ColorWheelButton } from '../../components/ColorWheelButton';
+import { RtaBarsDiagram } from '../../components/ColorTargetDiagrams';
+import { useToolColorPref } from '../../features/tools/waveColorPref';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { useSaveLatch } from '../../features/tools/measure/saveLatch';
@@ -159,10 +162,13 @@ const PLOT_FRAME = '#262b36';
 const GRID = '#333846';
 const GRID_MINOR = '#262b36';
 const AXIS = '#5a6376';
-const BAR_HOT = '#ffd35e';
-const BAR_HI = '#7fd4ff';
-const BAR_MID = '#2f9bff';
-const BAR_DEEP = '#123a5e';
+/** One dB → colour map for the RTA bars AND the level meter beside them
+ *  (owner 2026-10-23: both on the amplitude colour standard, matching the
+ *  scale). Every 6 dB from 0 down to the display floor; offset 0 = 0 dBFS. */
+const LEVEL_SCALE_STOPS = Array.from({ length: -FLOOR_DB / 6 + 1 }, (_, i) => {
+  const db = -6 * i;
+  return { db, offset: db / FLOOR_DB, color: levelColorForDb(db) };
+});
 const CAP_HALO = '#7fd4ff';
 const CAP_CORE = '#d9f1ff';
 const PEAK_TICK = '#ffe8b0';
@@ -603,6 +609,26 @@ export function MultiMeterScreen({ navigation }: Props) {
   /** The one verdict every display on this screen answers to. */
   const captureLive = meter != null;
 
+  // RMS marker beside the level meter = a TRUE 3-second RMS average (owner
+  // 2026-10-23: it must not ride along with the peaks). Power-average the
+  // unweighted fast RMS over the last 3 s — never an average of dB values.
+  const RMS_AVG_MS = 3000;
+  const rmsWinRef = useRef<{ t: number; p: number }[]>([]);
+  const [rms3sDb, setRms3sDb] = useState<number | null>(null);
+  useEffect(() => {
+    if (meter == null) {
+      rmsWinRef.current = [];
+      setRms3sDb(null);
+      return;
+    }
+    const now = Date.now();
+    const win = rmsWinRef.current;
+    win.push({ t: now, p: Math.pow(10, meter.zFastDb / 10) });
+    while (win.length > 0 && now - win[0].t > RMS_AVG_MS) win.shift();
+    const mean = win.reduce((s, x) => s + x.p, 0) / win.length;
+    setRms3sDb(10 * Math.log10(Math.max(mean, 1e-12)));
+  }, [meter]);
+
   // Readout mode (owner rev 24 — long-press the SPL cell): A/C/FS/SPL, same as
   // the SPL meter. Shared field calibration → estimated dB SPL; nominal 100 when
   // uncalibrated. The chosen mode drives the LEVEL cell and the horizontal
@@ -714,7 +740,10 @@ export function MultiMeterScreen({ navigation }: Props) {
   // ---- Cursor (tap/drag on the hero plot) ----------------------------------
   const [cursorX, setCursorX] = useState<number | null>(null);
   const [plotW, setPlotW] = useState(0);
-  const heroH = Math.round(Math.min(340, Math.max(240, winH * 0.36)));
+  // RTA bar colour (owner 2026-10-23): null = the amplitude level colours.
+  const [mmRtaColor, setMmRtaColor] = useToolColorPref('ape:tools:multimeterRtaColor');
+  // 83% of the old 240–340 / 36%-of-screen height (owner 2026-10-23: it took too much vertical space).
+  const heroH = Math.round(0.83 * Math.min(340, Math.max(240, winH * 0.36)));
   const floorY = heroH - 14;
   const pxPerDb = (floorY - ZERO_Y) / -FLOOR_DB;
   const yForDb = (db: number) => Math.max(2, Math.min(floorY, ZERO_Y - db * pxPerDb));
@@ -969,7 +998,7 @@ export function MultiMeterScreen({ navigation }: Props) {
       // while holding dBFS).
       splDb: Math.max(0, m.cFastDb + splOffset),
       peakDb: m.peakDb,
-      rmsDb: m.zFastDb,
+      rmsDb: rms3sDb ?? m.zFastDb, // the 3-second average the RMS cell shows
       peakHoldDb: m.peakHoldDb,
       dominantHz: dom?.hz ?? null,
       dominantSource: dom?.source ?? null,
@@ -1004,7 +1033,7 @@ export function MultiMeterScreen({ navigation }: Props) {
     setGeo(null);
     setPhotoBlocked(false);
     setLocationBlocked(false);
-  }, [state, chips, sgHistory, specView, splOffset, calibrated, meterFlags]);
+  }, [state, chips, sgHistory, specView, splOffset, calibrated, meterFlags, rms3sDb]);
 
   const saveGate = useSaveGate();
   const saveLatch = useSaveLatch();
@@ -1093,11 +1122,13 @@ export function MultiMeterScreen({ navigation }: Props) {
 
   // Horizontal SPL meter fractions (item 7): map −60…0 dBFS → 0…1. Default
   // weighting is C (owner rev 24) to match the status cell.
-  const SPL_MIN_DB = -60;
+  // The level meter shares the RTA's 0…−90 dBFS scale (owner 2026-10-23).
+  const SPL_MIN_DB = FLOOR_DB;
   // Fill maps the RAW weighted dBFS level (−60…0) for the current mode — the
   // caption shows the mode's value/unit (owner rev 24).
   const splFrac = meter ? Math.max(0, Math.min(1, ((modeLevel(meter) ?? SPL_MIN_DB) - SPL_MIN_DB) / -SPL_MIN_DB)) : 0;
   const splHoldFrac = meter ? Math.max(0, Math.min(1, (meter.peakHoldDb - SPL_MIN_DB) / -SPL_MIN_DB)) : 0;
+  const rmsFrac = rms3sDb != null ? Math.max(0, Math.min(1, (rms3sDb - SPL_MIN_DB) / -SPL_MIN_DB)) : 0;
 
   // Mini-scope geometry (WaveformScreen scope math, compact ×1, autoscaled).
   const [scopeW, setScopeW] = useState(0);
@@ -1247,7 +1278,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                 Label/value/unit follow the mode; the mode RIPPLES to PEAK/RMS +
                 the horizontal meter. Colour uses the RAW dBFS (amplitude ramp). */}
             <Pressable
-              style={styles.statusCell}
+              style={[styles.statusCell, meter ? { borderColor: levelColorForDb(modeLevel(meter) as number) } : null]}
               onPress={() => help('spl')}
               onLongPress={() => setUnitPopup(true)}
               delayLongPress={350}
@@ -1258,27 +1289,34 @@ export function MultiMeterScreen({ navigation }: Props) {
                 <Text style={styles.statusLabel}>{MODE_LABEL[unitMode]}</Text>
                 <Text style={styles.statusInfo}>ⓘ</Text>
               </View>
+              {/* Line 2 = the time weighting; values all sit on line 3 (owner 2026-10-23). */}
+              <Text style={styles.statusSub}>Fast</Text>
               <Text style={[styles.statusValue, meter ? { color: levelColorForDb(modeLevel(meter) as number) } : null]}>
                 {meter ? fmtDb(applyRef(modeLevel(meter))) : '—'}
               </Text>
             </Pressable>
             <Pressable accessibilityHint="Press and hold for an explanation." style={styles.statusCell} onLongPress={() => help('peak')} delayLongPress={350}>
               <Text style={styles.statusLabel}>{`PEAK${zTag}`}</Text>
+              <Text style={styles.statusSub}>Fast</Text>
               <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.peakDb) } : null]}>
                 {meter ? fmtDb(applyRef(meter.peakDb)) : '—'}
               </Text>
             </Pressable>
-            <Pressable accessibilityHint="Press and hold for an explanation." style={styles.statusCell} onLongPress={() => help('rms')} delayLongPress={350}>
+            {/* RMS + PK HOLD frames take their reading's level colour (owner 2026-10-23). */}
+            {/* RMS shows the SAME 3-second RMS average as the marker beside the
+                level meter (owner 2026-10-23), not the fast RMS. */}
+            <Pressable accessibilityHint="Press and hold for an explanation." style={[styles.statusCell, meter && rms3sDb != null ? { borderColor: levelColorForDb(rms3sDb) } : null]} onLongPress={() => help('rms')} delayLongPress={350}>
               <Text style={styles.statusLabel}>{`RMS${zTag}`}</Text>
-              <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.zFastDb) } : null]}>
-                {meter ? fmtDb(applyRef(meter.zFastDb)) : '—'}
+              <Text style={styles.statusSub}>3 sec avg</Text>
+              <Text style={[styles.statusValue, meter && rms3sDb != null ? { color: levelColorForDb(rms3sDb) } : null]}>
+                {meter && rms3sDb != null ? fmtDb(applyRef(rms3sDb)) : '—'}
               </Text>
             </Pressable>
             {/* PEAK HOLD: tap the cell (or the ⟲, or long-press) to reset —
                 clears the native meter hold, the per-band holds, AND the red
                 peak latch (user request: tap the readout, not just the key). */}
             <Pressable
-              style={styles.statusCell}
+              style={[styles.statusCell, meter ? { borderColor: levelColorForDb(meter.peakHoldDb) } : null]}
               onPress={onResetPeakHold}
               onLongPress={onResetPeakHold}
               delayLongPress={350}
@@ -1286,7 +1324,7 @@ export function MultiMeterScreen({ navigation }: Props) {
               accessibilityLabel="Peak hold — tap to reset"
             >
               <View style={styles.statusHoldRow}>
-                <Text style={styles.statusLabel}>{`PK HOLD${zTag}`}</Text>
+                <Text style={styles.statusLabel}>PK HOLD</Text>
                 {/* The ⟲ is the AFFORDANCE, not a second button. The whole
                     cell already resets (that is why the tile-tap was added —
                     "tap the readout, not just the key"), so making the glyph
@@ -1294,6 +1332,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                     screen reader two controls for one action. */}
                 <Text style={styles.statusReset}>⟲</Text>
               </View>
+              <Text style={[styles.statusLabel, styles.statusSubRow]}>{zTag.trim()}</Text>
               <Text style={[styles.statusValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : null]}>
                 {meter ? fmtDb(applyRef(meter.peakHoldDb)) : '—'}
               </Text>
@@ -1308,36 +1347,6 @@ export function MultiMeterScreen({ navigation }: Props) {
                 : 'uncalibrated estimate — approximate dB SPL, not a calibrated meter'}
           </Text>
 
-          {/* 7 ── Horizontal main SPL level meter (owner 2026-08-05) — like the
-                 VU screen's, but horizontal + thinner. Left→right level with a
-                 peak-hold tick, MIDI-coloured (blue quiet → red loud). */}
-          <View style={styles.hMeterWrap}>
-            <View style={styles.hMeterTrack}>
-              <GradientView
-                colors={rampColors(splFrac)}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={[styles.hMeterFill, { width: `${splFrac * 100}%` }]}
-              />
-              {splHoldFrac > 0 ? (
-                <View style={[styles.hMeterHold, { left: `${Math.min(99.3, splHoldFrac * 100)}%` }]} />
-              ) : null}
-            </View>
-            {/* dBFS reference scale under the bar (owner rev 24) — the meter maps
-                −60…0 dBFS linearly, so evenly-spaced ticks read true. */}
-            <View style={styles.hMeterScale}>
-              {[-60, -50, -40, -30, -20, -10, 0].map((db) => (
-                <View key={db} style={styles.hMeterTickCol}>
-                  <View style={styles.hMeterTick} />
-                  {/* Labels follow the mode: raw dBFS in FS, offset SPL estimate else. */}
-                  <Text style={styles.hMeterTickLabel}>{unitMode === 'FS' ? db : Math.max(0, db + splOffset)}</Text>
-                </View>
-              ))}
-            </View>
-            <Text style={styles.hMeterCaption}>
-              {MODE_LABEL[unitMode]} {meter ? fmtDb(applyRef(modeLevel(meter))) : '—'} {MODE_UNIT[unitMode]}
-            </Text>
-          </View>
         </>
       )}
 
@@ -1378,6 +1387,10 @@ export function MultiMeterScreen({ navigation }: Props) {
 
               {/* Drag surface: InteractionZone locks the page scroll for the
                   gesture's duration (LabShell pattern, explicit onLock). */}
+              {/* RTA + the level meter standing on its right edge (owner
+                  2026-10-23: moved from the horizontal bar at the top). */}
+              <View style={styles.heroRow}>
+              <View style={{ flex: 1 }}>
               <InteractionZone onLock={(locked) => setScrollEnabled(!locked)}>
                 <View
                   style={{ height: heroH }}
@@ -1393,10 +1406,9 @@ export function MultiMeterScreen({ navigation }: Props) {
                         {/* ONE shared LED ramp, anchored to the dB scale
                             (userSpaceOnUse) — every bar shares it. */}
                         <LinearGradient id="mmBarFill" x1="0" y1={ZERO_Y} x2="0" y2={floorY} gradientUnits="userSpaceOnUse">
-                          <Stop offset="0" stopColor={BAR_HOT} />
-                          <Stop offset="0.13" stopColor={BAR_HI} />
-                          <Stop offset="0.5" stopColor={BAR_MID} />
-                          <Stop offset="1" stopColor={BAR_DEEP} />
+                          {LEVEL_SCALE_STOPS.map((s) => (
+                            <Stop key={s.db} offset={s.offset} stopColor={s.color} />
+                          ))}
                         </LinearGradient>
                       </Defs>
                       <Rect x={0} y={0} width={plotW} height={heroH} rx={8} fill={PLOT_BG} />
@@ -1427,7 +1439,7 @@ export function MultiMeterScreen({ navigation }: Props) {
                           <G key={`band-${b.key}`}>
                             {b.level > FLOOR_DB && (
                               <>
-                                <Rect x={b.x} y={barTop} width={b.w} height={floorY - barTop} fill="url(#mmBarFill)" fillOpacity={0.96} />
+                                <Rect x={b.x} y={barTop} width={b.w} height={floorY - barTop} fill={mmRtaColor ?? 'url(#mmBarFill)'} fillOpacity={0.96} />
                                 <Rect x={b.x - 0.75} y={barTop - 2.5} width={b.w + 1.5} height={5} rx={1.5} fill={CAP_HALO} fillOpacity={0.22} />
                                 <Rect x={b.x} y={barTop - 1.1} width={b.w} height={2.2} rx={1} fill={CAP_CORE} fillOpacity={0.95} />
                               </>
@@ -1460,9 +1472,70 @@ export function MultiMeterScreen({ navigation }: Props) {
                   )}
                 </View>
               </InteractionZone>
+              {/* Colour wheel over the 20–31.5 Hz corner (owner 2026-10-23) —
+                  a sibling ON TOP of the drag surface so a tap opens the
+                  picker instead of dropping the cursor. */}
+              <ColorWheelButton
+                style={styles.rtaColorBtn}
+                current={mmRtaColor}
+                onPick={setMmRtaColor}
+                accessibilityLabel="RTA bar colour"
+                feature="the RTA bar colour"
+                pickerTitle="RTA BAR COLOUR"
+                subtitle="The spectrum bars (Default = level colours)"
+                defaultLabel="Level"
+                renderDiagram={(hex) => <RtaBarsDiagram tint={hex} defaultTint={levelColorForDb(-30)} />}
+                defaultSwatchColor={levelColorForDb(-30)}
+                size={18}
+              />
+              </View>
+              {/* Vertical level meter — −60…0 dBFS mapped linearly bottom→top,
+                  MIDI-coloured fill (blue quiet → red loud) + peak-hold tick.
+                  Labels follow the mode: raw dBFS in FS, offset SPL estimate else. */}
+              <View
+                style={[styles.vMeterCol, { height: heroH, paddingTop: ZERO_Y, paddingBottom: heroH - floorY }]}
+                accessible
+                accessibilityLabel={`${MODE_LABEL[unitMode]} level meter, ${meter ? fmtDb(applyRef(modeLevel(meter))) : 'no reading'} ${MODE_UNIT[unitMode]}`}
+              >
+                {/* Same 0…−90 dBFS scale and grid as the RTA (ZERO_Y…floorY), so
+                    a bar and the meter at the same height are the same level
+                    and the same colour. Labels follow the mode. */}
+                <View style={styles.vMeterScale}>
+                  {[0, -15, -30, -45, -60, -75, -90].map((db) => (
+                    <Text key={db} style={[styles.vMeterTickLabel, { top: (db / FLOOR_DB) * (floorY - ZERO_Y) - 6 }]}>
+                      {unitMode === 'FS' ? db : Math.max(0, db + splOffset)}
+                    </Text>
+                  ))}
+                </View>
+                <View style={styles.vMeterTrack}>
+                  <View style={[styles.vMeterFill, { height: `${splFrac * 100}%` }]}>
+                    <GradientView
+                      colors={LEVEL_SCALE_STOPS.map((s) => s.color) as [string, string, ...string[]]}
+                      locations={LEVEL_SCALE_STOPS.map((s) => s.offset) as [number, number, ...number[]]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 0, y: 1 }}
+                      style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: floorY - ZERO_Y }}
+                    />
+                  </View>
+                  {/* PK HOLD tick in the PK HOLD readout's colour (owner 2026-10-23). */}
+                  {splHoldFrac > 0 && meter ? (
+                    <View style={[styles.vMeterHold, { bottom: `${Math.min(99.3, splHoldFrac * 100)}%`, backgroundColor: levelColorForDb(meter.peakHoldDb) }]} />
+                  ) : null}
+                </View>
+                {/* RMS-Z marker beside the LED column: the 3-second RMS average
+                    on the same scale, coloured by its own level (owner 2026-10-23). */}
+                <View style={styles.vMeterRmsLane}>
+                  {rmsFrac > 0 && rms3sDb != null ? (
+                    <View style={[styles.vMeterRms, { bottom: `${Math.min(98.6, rmsFrac * 100)}%`, backgroundColor: levelColorForDb(rms3sDb) }]} />
+                  ) : null}
+                </View>
+              </View>
+              </View>
 
-              {/* Frequency ticks for the current zoom window. */}
+              {/* Frequency ticks for the current zoom window; the level meter's
+                  unit sits under the meter so its scale is not read as the RTA's. */}
               <View style={styles.tickRow}>
+                <Text style={styles.vMeterUnit}>{MODE_UNIT[unitMode]}</Text>
                 {plotW > 0 &&
                   freqTicks.map((t) => (
                     <Text key={t.f} style={[styles.tickLabel, { left: xForHz(t.f) - 24 }]}>
@@ -1483,15 +1556,10 @@ export function MultiMeterScreen({ navigation }: Props) {
                   <Text style={styles.legendHint}>tap/drag to read Hz + dB</Text>
                 )}
               </View>
+              {/* The resolution notes moved to the foot of the screen (owner
+                  2026-10-23: they pushed the meters apart — keep the displays
+                  together, notices at the bottom). */}
               <Text style={styles.unitLine}>relative dB · uncalibrated</Text>
-              {anyUnresolvable && (
-                <Text style={styles.grayNote}>grayed bands: insufficient resolution at this setting</Text>
-              )}
-              {estimatedBelowHz != null && (
-                <Text style={styles.grayNote}>
-                  {`below ${estimatedBelowHz} Hz the bands are narrower than one FFT step, so neighbours share a reading — the rumble is real, the exact pitch is coarse`}
-                </Text>
-              )}
             </View>
 
             {/* MINI SPECTROGRAM + MINI OSCILLOSCOPE — moved up, directly under the
@@ -1751,6 +1819,19 @@ export function MultiMeterScreen({ navigation }: Props) {
           and approximate, not a calibrated SPL meter. Microphone position and the phone mic's
           response strongly affect every panel.
         </Text>
+        {(anyUnresolvable || estimatedBelowHz != null) && (
+          <View style={styles.spectrumNotes}>
+            <Text style={styles.spectrumNotesHead}>LIVE SPECTRUM NOTES</Text>
+            {anyUnresolvable && (
+              <Text style={styles.grayNote}>grayed bands: insufficient resolution at this setting</Text>
+            )}
+            {estimatedBelowHz != null && (
+              <Text style={styles.grayNote}>
+                {`below ${estimatedBelowHz} Hz the bands are narrower than one FFT step, so neighbours share a reading — the rumble is real, the exact pitch is coarse`}
+              </Text>
+            )}
+          </View>
+        )}
       </ScrollView>
 
       {/* Readout-mode chooser (owner rev 24) — long-press the SPL cell opens it;
@@ -1950,27 +2031,32 @@ const styles = StyleSheet.create({
   // Honesty cue on the dBC readout (owner rev 24) — tap the cell for the note.
   statusInfo: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, color: colors.amberLabel, marginLeft: 3, marginTop: -1 },
   statusValue: { fontFamily: fonts.mono, fontSize: 17, color: colors.textPrimary },
+  // Line 2 of every cell (owner 2026-10-23): time weighting, fixed height so
+  // all four values line up on line 3.
+  statusSub: { fontFamily: fonts.barlowRegular, fontSize: 10.5, lineHeight: 14, height: 14, color: colors.textMuted },
+  statusSubRow: { lineHeight: 14, height: 14 },
   statusReset: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: '#c9d6e4', marginTop: -2 },
 
-  // Horizontal SPL level meter (owner 2026-08-05, item 7) — thin, left→right.
-  hMeterWrap: { paddingHorizontal: 14, marginTop: 6, gap: 3 },
-  hMeterTrack: {
-    height: 12,
-    borderRadius: 6,
+  // Vertical level meter on the RTA's right edge (owner 2026-10-23; was the
+  // horizontal bar under the status cells).
+  rtaColorBtn: { position: 'absolute', top: 6, left: 6, padding: 3, borderRadius: 6, backgroundColor: 'rgba(12,12,15,0.75)' },
+  heroRow: { flexDirection: 'row', gap: 4 },
+  vMeterCol: { width: 42, flexDirection: 'row', gap: 3 },
+  vMeterScale: { flex: 1, position: 'relative' },
+  vMeterTickLabel: { position: 'absolute', right: 0, fontFamily: fonts.mono, fontSize: 9, lineHeight: 12, color: colors.textMuted },
+  vMeterTrack: {
+    width: 10,
+    borderRadius: 5,
     borderWidth: 1,
     borderColor: '#2a2a30',
     backgroundColor: '#0c0c10',
     overflow: 'hidden',
-    justifyContent: 'center',
   },
-  hMeterFill: { position: 'absolute', left: 0, top: 0, bottom: 0, borderRadius: 6 },
-  hMeterHold: { position: 'absolute', top: -1, bottom: -1, width: 2, backgroundColor: '#ffffff' },
-  // dBFS reference scale under the horizontal meter (owner rev 24).
-  hMeterScale: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 1 },
-  hMeterTickCol: { alignItems: 'center' },
-  hMeterTick: { width: 1, height: 4, backgroundColor: '#4a4a52' },
-  hMeterTickLabel: { fontFamily: fonts.mono, fontSize: 9, color: colors.textMuted, marginTop: 1 },
-  hMeterCaption: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
+  vMeterFill: { position: 'absolute', left: 0, right: 0, bottom: 0, overflow: 'hidden' },
+  vMeterHold: { position: 'absolute', left: -1, right: -1, height: 2, backgroundColor: '#ffffff' },
+  vMeterRmsLane: { width: 6 },
+  vMeterRms: { position: 'absolute', left: 0, right: 0, height: 3, marginBottom: -1.5, borderRadius: 1.5 },
+  vMeterUnit: { position: 'absolute', right: 9, width: 34, textAlign: 'right', fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 0.6, color: colors.amberLabel },
 
   // Oscilloscope ×1/×2/×4 zoom chips (item 2).
   scopeZoomRow: { flexDirection: 'row', gap: 5, marginTop: 5 },
@@ -2036,6 +2122,8 @@ const styles = StyleSheet.create({
   legendHint: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textMuted },
   unitLine: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSubAlt },
   grayNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSubAlt, ...readingText },
+  spectrumNotes: { marginTop: 10, gap: 4 },
+  spectrumNotesHead: { fontFamily: fonts.mono, fontSize: 11, letterSpacing: 1, color: colors.textSubAlt },
 
   // Control chips.
   ctrlRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
