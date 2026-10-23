@@ -15,6 +15,7 @@ describe('Advanced Tuner owner pass 2026-10-23', () => {
     // The tuning row is a ROW (a flex: 1 ChipRow in a heightless column collapsed to 0 on a phone).
     assert.match(src, /<View style=\{\[styles\.barRow2, \{ opacity/);
     assert.match(src, /barRow2: \{ flexDirection: 'row' \}/);
+    assert.match(src, /barChips: \{ flex: 1, flexDirection: 'row' \}/);
     assert.match(src, /\(landscape \? 6 : 14\)/);
   });
   it('piano only: a HOW TO TUNE chip opens the owner text verbatim', () => {

@@ -1412,7 +1412,11 @@ const styles = StyleSheet.create({
   // zIndex: the bar always paints above the readout, so a readout that ever
   // outgrows its space can never cover the chip text (owner 2026-09-29).
   bar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, gap: 8, zIndex: 2, backgroundColor: '#050506' },
-  barChips: { flex: 1 },
+  // A ROW (owner 2026-10-23, seen on the Pixel): ChipRow's wrap is flex: 1, and
+  // inside a plain column it got no height of its own on a phone, so the top
+  // row was squeezed to the close key's height and the chips lost their top
+  // and bottom borders ("cropped"). Web drew it whole.
+  barChips: { flex: 1, flexDirection: 'row' },
   barPortrait: { flexDirection: 'column', alignItems: 'stretch', paddingBottom: 12 },
   barRows: { gap: 14 },
   barRow1: { flexDirection: 'row', alignItems: 'center', gap: 8 },
