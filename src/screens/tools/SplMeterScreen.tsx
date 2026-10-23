@@ -2163,8 +2163,9 @@ export function SplMeterScreen({ navigation }: Props) {
                   </Text>
                   <Text style={styles.roomLegendBody}>
                     In SPL / OPTIMAL mode the arc reads as a loudness scale: GREEN up to ~85, YELLOW
-                    85–90, ORANGE 90–96 and RED from 96 — the point where sustained levels get into
-                    hearing-risk territory. The center number turns the color of the zone it sits in
+                    85–90, ORANGE 90–96 and RED from 96. Hearing risk starts near 85 over a full day,
+                    and the safe time halves with every 3 dB more — in the red it is under an hour. The
+                    center number turns the color of the zone it sits in
                     (averaged over ~3 s so it does not flicker at a boundary).
                   </Text>
                   <Text style={styles.roomLegendBody}>

@@ -440,10 +440,11 @@ export function HarmonyModule({ help, focused }: CymaticsModuleProps) {
             Beat frequency = |{ratio.n1} × f₂ − {ratio.n2} × f₁| = {beatHz.toFixed(1)} Hz
           </Text>
           <Text style={P.body}>
-            These two tones are a whole interval apart, so they do not beat against each other — |f₂ − f₁| is the gap between their
-            pitches, not a rate. What beats is the pair of <Text style={P.strong}>partials that used to line up</Text>: partial {ratio.n2} of
-            A and partial {ratio.n1} of B sat on the same frequency while the ratio was locked, and detuning B slides them past each other
-            {' '}{beatHz.toFixed(1)} times a second — loud where they agree, silent where they cancel. A beat is a slow swell in loudness; it is
+            These two tones are a whole interval apart, so they do not beat the way a near-unison pair does — |f₂ − f₁| is the gap between
+            their pitches, not a rate. Two pure sines have no extra partials to line up. Instead, as B drifts off the ratio, the
+            {' '}<Text style={P.strong}>shape of their summed wave</Text> slowly cycles {beatHz.toFixed(1)} times a second. You hear a faint, slow
+            throb, not loud then silent. With rich tones, partial {ratio.n2} of A and partial {ratio.n1} of B really do sit on one frequency and
+            beat at this rate. A beat is a slow swell; it is
             {' '}<Text style={P.strong}>not</Text> a third tone (that needs a nonlinear element). Tuners use exactly this: zero beats = in tune.
           </Text>
         </View>

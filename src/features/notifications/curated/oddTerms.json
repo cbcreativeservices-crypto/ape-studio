@@ -125,7 +125,7 @@
   },
   {
     "term": "Mule block",
-    "body": "A mule block is a pulley that just turns a rigging line around a corner - it redirects the rope but, unlike the lifting blocks, carries none of the load."
+    "body": "A mule block is a pulley that turns a rigging line around a corner. It doesn't lift, but the rope's pull still loads it, so it must be rated like any block."
   },
   {
     "term": "Middle pickup",
@@ -737,7 +737,7 @@
   },
   {
     "term": "Acoustic cutoff frequency",
-    "body": "The Sun has a pitch ceiling near 5.3 mHz: sound waves below it stay trapped inside, unable to escape, while waves above it leak outward into space."
+    "body": "The Sun has an acoustic cutoff near 5.3 mHz: sound waves below it stay trapped inside, while waves above it leak upward into the Sun's thin outer layers."
   },
   {
     "term": "Generation identification",
@@ -753,7 +753,7 @@
   },
   {
     "term": "Atmospheric infrasound on planets",
-    "body": "Volcanoes, impacts and wind make infrasound on other worlds too - but sound needs a gas to travel, so it can never cross the vacuum between planets."
+    "body": "Volcanoes, impacts and wind make infrasound on other worlds too - but sound needs matter to travel, so it can never cross the empty space between planets."
   },
   {
     "term": "Chamber acoustics",
@@ -1069,7 +1069,7 @@
   },
   {
     "term": "MiniDisc recording",
-    "body": "Sony's MiniDisc read recordable discs with light and magnetism together - a laser heated the spot while a field wrote it, an effect called the Kerr effect."
+    "body": "The MiniDisc recorded with light and magnetism - a laser heated the spot while a magnetic field wrote it. Playback read it by the Kerr effect, a twist in light."
   },
   {
     "term": "Level-dependent hearing protector",
@@ -4065,7 +4065,7 @@
   },
   {
     "term": "Line-by-Line Mixing",
-    "body": "Before automatic mic mixers, theatre engineers followed the script by hand, opening only the speaking actor's microphone and muting it again after."
+    "body": "In musical theatre the mixer still follows the script by hand, line by line, opening only the speaking actor's microphone and pulling it down again after."
   },
   {
     "term": "PFX pull",
@@ -4185,7 +4185,7 @@
   },
   {
     "term": "General Emergency Alarm System",
-    "body": "A ship's general emergency alarm is oddly specific: seven short blasts and one long one, sounded on horns and bells until every soul reaches a muster station."
+    "body": "A ship's general emergency alarm is oddly specific: seven or more short blasts, then one long one, on horns and bells until every soul reaches a muster station."
   },
   {
     "term": "Wild pickup",
@@ -4233,7 +4233,7 @@
   },
   {
     "term": "International Foley",
-    "body": "Remove an actor's voice track to dub it and you also lose their footsteps and prop sounds - so Foley artists rebuild every one of them by hand from scratch."
+    "body": "Remove an actor's voice track to dub it and you also lose their footsteps and prop sounds - editors save what they can, and Foley rebuilds the rest by hand."
   },
   {
     "term": "Master lacquer",
@@ -4249,7 +4249,7 @@
   },
   {
     "term": "Isochrony",
-    "body": "Isochrony: a dubbed line must match the original's timing exactly, pauses included - like pouring new words into a cup that can't overflow."
+    "body": "Isochrony: a dubbed line must start and stop with the actor's mouth, pauses included - like pouring new words into a cup that can't overflow."
   },
   {
     "term": "Particle Migration",
@@ -4317,7 +4317,7 @@
   },
   {
     "term": "yoke",
-    "body": "A yoke isn't just the U-bracket that aims a hung speaker - the same word names the coil around a CRT's neck and the windings around a transformer's core."
+    "body": "A yoke isn't just the U-bracket that aims a hung speaker - it's also the coil around a CRT's neck and the part of a transformer's core that joins its legs."
   },
   {
     "term": "warble tone",

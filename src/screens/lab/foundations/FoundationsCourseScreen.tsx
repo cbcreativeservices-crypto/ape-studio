@@ -1808,20 +1808,20 @@ const STEPS: Step[] = [
     paras: [
       'Small vibration → quiet sound. Large vibration → loud sound. That size is AMPLITUDE.',
       'Ride the lane and watch everything move together: the cone travels farther, the squeezes get denser, the graph gets taller, and the level rises — four views of one number.',
-      'Amplitude is the SIZE of the vibration, not its speed. Speed is a different property — that is the next module.',
+      'Amplitude is the SIZE of the vibration, not its rate. Rate is a different property — that is the next module.',
     ],
     Rack: M4Rack,
     check: {
       question: 'To make a LOUDER sound, the speaker cone must…',
       options: [
-        'Move back and forth FASTER',
+        'Move back and forth MORE OFTEN each second',
         'Move back and forth FARTHER',
         'Move physically closer to your ear',
       ],
       correctIdx: 1,
-      wrongHint: 'Ride the AMP lane and watch the cone: what changes — how FAST it moves, or how FAR?',
+      wrongHint: 'Ride the AMP lane and watch the cone: what changes — how OFTEN it moves, or how FAR?',
       reveal:
-        'Farther = bigger pressure swings = louder. Moving FASTER changes how often the air is squeezed — that changes the PITCH, not the loudness. (Getting closer does sound louder, but the speaker itself isn’t making a louder sound.)',
+        'Farther = bigger pressure swings = louder. Moving back and forth MORE OFTEN squeezes the air more times each second — that changes the PITCH, not the loudness. (Getting closer does sound louder, but the speaker itself isn’t making a louder sound.)',
     },
   },
   {

@@ -476,7 +476,7 @@ function PageFeedback({ ctx }: { ctx: PageCtx }) {
       <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
         <Eyebrow>THE ORDER OF OPERATIONS</Eyebrow>
-        <Body>1 · Placement: the wedge in the microphone’s null — directly behind a cardioid; at 110–125° off axis for a hypercardioid, whose rear has a small live lobe — and the mains in front of the microphones, never behind. 2 · Polar pattern and technique: a tighter pattern and a closer mouth both raise the ratio of voice to loop. 3 · Stage volume: a quieter stage needs quieter wedges. 4 · Level: the send at what the performer needs, not more. 5 · Identify the ringing frequency on the analyser and apply a NARROW cut. 6 · Automatic feedback suppressors, if used, as a safety net — not a substitute for the first four.</Body>
+        <Body>1 · Placement: the wedge in the microphone’s null — directly behind a cardioid; about 110–125° off axis for a super- or hypercardioid, whose rear has a small live lobe — and the mains in front of the microphones, never behind. 2 · Polar pattern and technique: a tighter pattern and a closer mouth both raise the ratio of voice to loop. 3 · Stage volume: a quieter stage needs quieter wedges. 4 · Level: the send at what the performer needs, not more. 5 · Identify the ringing frequency on the analyser and apply a NARROW cut. 6 · Automatic feedback suppressors, if used, as a safety net — not a substitute for the first four.</Body>
       </Card>
       <KeyFact>Feedback is a loop, and it takes off at the one frequency where the gain around the loop passes unity. Gain-before-feedback is how much level you can add before that happens — spent first by geometry, then by level, and only last by an equaliser.</KeyFact>
       <Card tone="warn">

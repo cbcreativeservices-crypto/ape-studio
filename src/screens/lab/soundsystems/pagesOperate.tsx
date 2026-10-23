@@ -412,7 +412,7 @@ function PageSoundcheck({ ctx }: { ctx: PageCtx }) {
       valueLabel: w.geometry === 'live' ? 'Live angle' : 'In the null',
       options: [
         { id: 'live', label: 'In the live angle', blurb: 'Off to the side, inside the microphone’s pickup — the loop rings 12 dB sooner in this model.' },
-        { id: 'null', label: 'In the null', blurb: 'Directly behind the microphone: geometry first, before any notch.' },
+        { id: 'null', label: 'In the null', blurb: 'Directly behind this cardioid microphone, where it hears least (a super- or hypercardioid’s null sits about 110–125° off axis): geometry first, before any notch.' },
       ],
       selectedId: w.geometry,
       onSelect: (id) => patch(w.id, { geometry: id as 'live' | 'null' }),

@@ -220,7 +220,7 @@ const WS_LEVEL: Workspace = {
       steps: (v) => {
         const r = n(v.powRatio);
         return [
-          `Watts are POWER, so the multiplier is 10 — the decibel is literally ten bels of power ratio.`,
+          `Watts are POWER, so the multiplier is 10 — a decibel is a tenth of a bel, and the bel is the log of a power ratio.`,
           `dB = 10 × log10(${fmt(r)}) = ${fmt(10 * log10(r))} dB.`,
           `Why not 20? The 20 belongs to amplitudes: doubling the VOLTAGE quadruples the power (V² ÷ Z), so the same physical change is +6 dB either way — 20·log10(2) in volts equals 10·log10(4) in watts. Use 20 for amplitudes, 10 for powers, and the two scales agree.`,
         ];

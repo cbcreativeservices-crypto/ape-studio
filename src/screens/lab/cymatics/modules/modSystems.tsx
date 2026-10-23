@@ -544,7 +544,7 @@ export function SystemsModule({ focused, help }: CymaticsModuleProps) {
       </View>
       <Text style={P.h}>WHAT THEY ALL SHARE</Text>
       <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>Stable patterns appear only at the system’s own resonances — never at an arbitrary frequency.</Text></View>
-      <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>The pattern marks the NODES: where the medium stands still, sand rests, beads hang, a flame is quiet.</Text></View>
+      <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>The pattern marks the NODES of what matters: sand rests where the plate stands still; beads hang where the air pressure barely changes, which is where the air itself moves the most.</Text></View>
       <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>Strings and air columns are harmonic, so they have a pitch; membranes, plates, bells and dishes are not, unless something (a kettle, a bell-founder) pulls their modes toward integers.</Text></View>
     </CymaticsRackLayout>
   );

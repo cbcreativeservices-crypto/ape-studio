@@ -301,7 +301,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Monitors",
-        "live": "Wedges low and well away from mic rejection angles, or IEMs; often DI only in wedges",
+        "live": "Wedges low and aimed into each mic’s null (its rejection angle), or IEMs; often DI only in wedges",
         "studio": "N/A; headphone mix for the singer"
       },
       {

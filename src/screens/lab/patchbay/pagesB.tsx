@@ -245,8 +245,8 @@ function PageWrap(_: { ctx: PageCtx }) {
       <Lead>You can now stand in front of any vertical pair and answer the four questions this lab opened with:</Lead>
       <Card tone="ok">
         <Body>
-          1 · What is the source? The device on the TOP jack’s rear.{'\n'}
-          2 · What is the destination? The device on the BOTTOM jack’s rear.{'\n'}
+          1 · What is the source? On most bays, the device on the TOP jack’s rear.{'\n'}
+          2 · What is the destination? The device on the BOTTOM jack’s rear. Some bays put inputs on top, so check the label.{'\n'}
           3 · Where does the signal travel with no cord? Down the normal — if this bay has one.{'\n'}
           4 · What changes when I plug in? Full: either jack breaks it. Half: the top taps, the bottom breaks — on the common
           bay; rarer bays break on top, so verify. Thru: cords are the only connections there are.

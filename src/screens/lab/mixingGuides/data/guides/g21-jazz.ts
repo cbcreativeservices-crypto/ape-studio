@@ -351,7 +351,7 @@ export const GUIDE: MixingGuide = {
     "Count Basie Orchestra, “April in Paris”, 1955",
     "Thad Jones/Mel Lewis Orchestra, “Central Park North”, 1969",
     "Brad Mehldau Trio, “Blackbird” (Art of the Trio Vol. 1), 1997",
-    "Cécile McLorin Salvant, “Dreams and Daggers” (Dreams and Daggers), 2017",
+    "Cécile McLorin Salvant, “Wild Women Don’t Have the Blues” (Dreams and Daggers), 2017",
     "For smooth jazz/fusion contrast: Weather Report, “Birdland”, 1977"
   ],
   "empty": []

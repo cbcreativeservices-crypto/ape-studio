@@ -377,9 +377,9 @@ const TRANSMISSION: Workspace = {
     'loss (TL). For a simple limp panel it is governed by the MASS LAW: heavier and higher in ' +
     'frequency both mean more isolation — about 6 dB for every doubling of either.',
   whyItMatters:
-    'Isolation is where studios and venues spend real money. The mass law sets the floor: it tells ' +
-    'you the low-frequency isolation a given wall mass can buy, why bass always leaks first, and why ' +
-    'doubling drywall only adds ~6 dB — you need mass, decoupling, and air gaps to do better.',
+    'Isolation is where studios and venues spend real money. The mass law sets the best case for a single ' +
+    'wall: it tells you the low-frequency isolation a given wall mass can buy, why bass leaks first, and why ' +
+    'doubling drywall only adds ~6 dB. Real walls often measure below it — you need mass, decoupling, and air gaps to do better.',
   example:
     'A 25 kg/m² wall at 125 Hz: TL ≈ 20·log₁₀(25·125) − 47 ≈ 23 dB. The same wall at 1 kHz: ' +
     'TL ≈ 41 dB. Doubling the mass to 50 kg/m² adds ~6 dB everywhere.',
@@ -433,7 +433,7 @@ const TRANSMISSION: Workspace = {
         const tl = massLawTl(m, f);
         return [
           `TL = 20·log₁₀(${fmt(m)} × ${fmt(f)}) − 47 = ${fmt(tl)} dB.`,
-          `Mass law adds ~6 dB per octave and ~6 dB per doubling of mass — so isolation is always weakest in the bass.`,
+          `Mass law adds ~6 dB per octave and ~6 dB per doubling of mass — so by the mass law, isolation is weakest in the bass.`,
         ];
       },
       table: (v) => {

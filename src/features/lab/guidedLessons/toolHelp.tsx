@@ -91,7 +91,7 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       'color as level. It shows how a sound evolves — sweeps, decays, harmonics appearing and ' +
       'fading — that a single spectrum can’t.',
     controls: [
-      { key: 'db_range', name: 'dB range', definition: 'The span of levels mapped to the color scale. A narrow range shows faint detail (and more noise); a wide range shows only the strongest content.' },
+      { key: 'db_range', name: 'dB range', definition: 'The span of levels mapped to the color scale. A wide range reaches down to faint detail (and more noise); a narrow range shows only the strongest content.' },
       { key: 'obs_max', name: 'Observed max (readout)', definition: 'The loudest level seen — the top of the current color mapping, so colors stay meaningful as levels change.' },
       { key: 'peak', name: 'Peak (readout)', definition: 'The current instantaneous peak level in dBFS.' },
       { key: 'history', name: 'History (readout)', definition: 'How many time-columns are on screen — how far back in time the display reaches.' },
@@ -99,7 +99,7 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
     ],
     commonMistakes: [
       'Reading it like a waveform — vertical is FREQUENCY, not amplitude; brightness is level.',
-      'Too wide a dB range hides the interesting quiet detail (reflections, tails); narrow it to reveal them.',
+      'Too narrow a dB range hides the interesting quiet detail (reflections, tails); widen it to reveal them.',
       'Forgetting it’s uncalibrated dBFS — the colors are relative levels, not SPL.',
     ],
     proTips: [

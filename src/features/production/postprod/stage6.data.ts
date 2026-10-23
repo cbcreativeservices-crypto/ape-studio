@@ -436,7 +436,7 @@ export const STAGE6_MIX: StageDef = {
           fieldId: "recombination_test",
           label: "Do the stems recombine into the mix",
           kind: "choice",
-          help: "Sum the stems and null them against the full mix. If it does not cancel, something is processed twice, missing, or out of phase — and the client will find it.",
+          help: "Sum the stems and null them against the full mix. If it does not cancel, something is processed twice, missing, or out of phase — or a master compressor or limiter worked on each stem on its own. Find out which before the client does.",
           required: true,
           options: [
             { value: "nulls", label: "Yes — tested and it cancels" },
@@ -616,7 +616,7 @@ export const STAGE6_MIX: StageDef = {
       kind: "conflict",
       title: "Heavy master processing with stems underneath it",
       detail: "Substantial processing sits on the master bus while stems are printed from below it. Recombining them puts that processing through a second time, or leaves it out entirely — and the two versions will not match.",
-      fixHint: "Either print the stems through the same processing, or move the master processing to the finishing stage where it is applied once to a finished mix.",
+      fixHint: "Move the master processing to the finishing stage, where it is applied once to a finished mix. Or print the stems through it — but a compressor or limiter fed one stem at a time acts differently, so the stems will sum close to the mix, not exactly. Test it and note the difference.",
       needsLogic: true,
       logicIntent: "Fire when master_processing is heavy and recombination_test is not nulls and not no_stems."
     },

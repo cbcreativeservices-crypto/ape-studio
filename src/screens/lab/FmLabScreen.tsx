@@ -57,7 +57,7 @@ const RATIOS = [
   { v: 1, label: '1', blurb: 'Modulator = carrier: sidebands land exactly on the harmonic series. Bright but fully pitched — the vintage FM electric-piano zone.' },
   { v: 1.41, label: '1.41 ✳', blurb: '√2 — irrational, so the sidebands fall BETWEEN the harmonics. Nothing lines up: instant bell / metallic clang.' },
   { v: 2, label: '2', blurb: 'One octave up: only odd-ish partials survive — hollow, square-like, still pitched.' },
-  { v: 3.5, label: '3.5 ✳', blurb: 'Another inharmonic ratio: clangorous and gong-like. Compare with 2 or 7 to hear what "in tune with itself" means.' },
+  { v: 3.5, label: '3.5', blurb: 'A half-integer ratio: the sidebands fall between the carrier’s harmonics, on a thin, gappy series an octave down. Still harmonic, but it sounds clangorous and gong-like. Compare with 2 or 7.' },
   { v: 7, label: '7', blurb: 'A high integer: sidebands spray far up the series — thin, glassy, but still harmonic.' },
 ] as const;
 // INDEX range for the lane (continuous — J_k(I) is exact to I = 8 and the
@@ -372,13 +372,13 @@ export function FmLabScreen() {
         spec={{
           question: 'You want a bell — metallic, not quite in tune with itself. Which ratio family?',
           options: [
-            'A non-integer ratio like 1.41 or 3.5',
+            'An irrational ratio like 1.41 (√2)',
             'An integer ratio like 1 or 2',
             'The highest ratio available',
           ],
           correctIdx: 0,
           reveal:
-            'Integer ratios drop the sidebands ON the harmonic series — pitched, musical. Non-integer ratios (√2, 3.5) drop them BETWEEN the harmonics: nothing lines up, and that inharmonic spray is the bell.',
+            'Integer ratios — and simple fractions like 0.5 or 3.5 — drop the sidebands ON a harmonic series, so the tone keeps a pitch. An irrational ratio like √2 drops them BETWEEN the harmonics: nothing lines up, and that inharmonic spray is the bell.',
           wrongHint: 'A/B ratio 1 against 1.41 ✳ and watch where the sticks land.',
         }}
       />

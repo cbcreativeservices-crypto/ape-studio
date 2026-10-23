@@ -973,7 +973,7 @@
   },
   {
     "term": "Tonaderspeisung",
-    "body": "Myth: T-power is just old phantom power. It puts 12 V across the signal pair, not 48 V on the shield - plug the wrong mic in and you risk damage."
+    "body": "Myth: T-power is just old phantom power. It puts 12 V across the signal pair; phantom puts 48 V on both signal pins. Plug in the wrong mic and you risk damage."
   },
   {
     "term": "Tire Cavity Noise",
@@ -1693,7 +1693,7 @@
   },
   {
     "term": "Sample rate versus bit rate",
-    "body": "Myth: sample rate and bit rate are the same thing. Actually sample rate sets captured bandwidth; bit rate is data flow - raising one doesn't raise the other."
+    "body": "Myth: sample rate and bit rate are the same thing. Actually sample rate is samples per second; bit rate is data per second. In PCM, more samples mean more bits."
   },
   {
     "term": "Monitor Speakers (Studio Monitors)",
@@ -1849,7 +1849,7 @@
   },
   {
     "term": "Black hole music",
-    "body": "Myth: the 'black hole music' from Perseus is audible. Actually it's pressure ripples in gas, translated to a pitch about 57 octaves below human hearing."
+    "body": "Myth: the 'black hole music' from Perseus is audible. Actually the gas ripples sit about 57 octaves below middle C. The clip you hear was shifted way up."
   },
   {
     "term": "Brickwall Limiter",
@@ -2313,7 +2313,7 @@
   },
   {
     "term": "Random-incidence correction",
-    "body": "Myth: any measurement mic works the same in a reverberant room. Actually diffuse-field mics need random-incidence correction to read correctly there."
+    "body": "Myth: any measurement mic reads right in a reverberant room. Actually a free-field mic needs a random-incidence correction there; a diffuse-field mic doesn't."
   },
   {
     "term": "Mix amplifier",
@@ -2621,7 +2621,7 @@
   },
   {
     "term": "ERB",
-    "body": "Myth: ERB is just another name for the Bark critical-band scale. Actually they're similar but distinct, and ERB widens with frequency instead of staying fixed."
+    "body": "Myth: ERB is just another name for the Bark scale. Actually they differ: both widen with frequency, but ERB bands are narrower, most of all in the lows."
   },
   {
     "term": "Embedded loudness metadata",
@@ -2773,7 +2773,7 @@
   },
   {
     "term": "Dry Signal",
-    "body": "Studio myth: a DI signal running through a plug-in chain is still 'dry.' Dry means unprocessed -- any effects chain, even subtle ones, makes it wet."
+    "body": "Studio myth: 'dry' always means no plug-ins at all. Most engineers mean no reverb or delay, but some mean fully unprocessed - so say which you mean."
   },
   {
     "term": "Broadcast multiband processor",
@@ -2977,7 +2977,7 @@
   },
   {
     "term": "Supercardioid microphone",
-    "body": "Myth: a supercardioid rejects all sound from behind. Actually it has a rear lobe about 10 dB down — its true nulls sit at the sides."
+    "body": "Myth: a supercardioid rejects all sound from behind. Actually it has a rear lobe about 10 dB down; its deepest nulls sit near 125°, not at the sides."
   },
   {
     "term": "XLR cable tester",
@@ -3981,7 +3981,7 @@
   },
   {
     "term": "Dry sound",
-    "body": "Widely believed: 'dry' means completely unprocessed. Really, it only means no added reverb - EQ and compression can still apply."
+    "body": "Widely believed: 'dry' means completely unprocessed. Really, it means no added reverb, delay or other space - EQ and compression can still apply."
   },
   {
     "term": "Glassiness",
@@ -4189,7 +4189,7 @@
   },
   {
     "term": "Dry Voice",
-    "body": "Myth: a 'dry' voice track means it's quiet or low quality. Actually dry just means unprocessed — it can still be loud and pristine."
+    "body": "Myth: a 'dry' voice track means it's quiet or low quality. Actually dry just means no added reverb or delay — it can still be loud and pristine."
   },
   {
     "term": "Pressure Antinode",
@@ -4369,7 +4369,7 @@
   },
   {
     "term": "Total quality factor",
-    "body": "Myth: a driver's mechanical and electrical damping simply add together. Actually Qts combines Qms and Qes in parallel, not by direct addition."
+    "body": "Myth: a driver's Qms and Qes simply add up to Qts. Actually they combine like parallel resistors: their inverses add, so Qts is lower than either one."
   },
   {
     "term": "Channel count and data rate",

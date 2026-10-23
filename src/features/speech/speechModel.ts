@@ -183,7 +183,7 @@ export const CONSONANTS: ConsonantCategory[] = [
   { id: 'plosive', name: 'Plosives (stops)', how: 'Airflow is blocked completely, pressure builds, then bursts out.', examples: 'P B T D K G', energy: 'A broadband click plus a low-frequency blast of air', bandLoHz: 20, bandHiHz: 4000, micNote: 'The air blast is what pops a microphone — the sound is fine, the wind is the problem.' },
   { id: 'fricative', name: 'Fricatives', how: 'Air is forced through a narrow gap and turns turbulent — a continuous hiss.', examples: 'F V S Z SH ZH TH H', energy: 'Noise-like; S and Z peak roughly 4–10 kHz, SH lower, F and TH weaker and broader', bandLoHz: 2000, bandHiHz: 10000, micNote: 'S and Z are the sibilants a de-esser hunts.' },
   { id: 'affricate', name: 'Affricates', how: 'A stop released straight into a fricative — burst then hiss.', examples: 'CH J', energy: 'A click followed by a short SH-like hiss', bandLoHz: 1500, bandHiHz: 8000, micNote: 'Can trigger both a pop filter’s job and a de-esser’s.' },
-  { id: 'nasal', name: 'Nasals', how: 'The mouth is closed and the soft palate drops, so the voiced buzz resonates out through the nose.', examples: 'M N NG', energy: 'Low, hum-like — strong below ~500 Hz, weak highs', bandLoHz: 80, bandHiHz: 800, micNote: 'Weak in the highs, so they are the first sounds to vanish in a muffled recording.' },
+  { id: 'nasal', name: 'Nasals', how: 'The mouth is closed and the soft palate drops, so the voiced buzz resonates out through the nose.', examples: 'M N NG', energy: 'Low, hum-like — strong below ~500 Hz, weak highs', bandLoHz: 80, bandHiHz: 800, micNote: 'Weak in the highs already, so muffling changes them little; S, F and TH are the sounds that fade first.' },
   { id: 'liquid', name: 'Liquids', how: 'The tongue shapes the airway without fully blocking it; voiced and vowel-like.', examples: 'L R', energy: 'Vowel-like formant structure with a dip', bandLoHz: 200, bandHiHz: 2500, micNote: 'Rarely a microphone problem.' },
   { id: 'glide', name: 'Glides (semivowels)', how: 'A fast movement from one vowel shape to another.', examples: 'W Y', energy: 'Vowel-like, sliding formants', bandLoHz: 200, bandHiHz: 2500, micNote: 'Rarely a microphone problem.' },
 ];
@@ -490,7 +490,7 @@ export const SPEECH_CHECKS: SpeechCheck[] = [
       'The vocal folds vibrate more slowly for nasal sounds',
     ],
     correct: 1,
-    explain: 'Nasals are voiced — the folds buzz — but the mouth is sealed and the soft palate drops, so the buzz exits through the nose, whose passages absorb the highs. That is why nasals are the first sounds to vanish in a muffled recording.',
+    explain: 'Nasals are voiced — the folds buzz — but the mouth is sealed and the soft palate drops, so the buzz exits through the nose, whose passages absorb the highs. That is why a muffled recording hurts S and F far more than M and N.',
   },
   {
     id: 'distance-6in', where: 'distance',

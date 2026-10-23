@@ -423,7 +423,7 @@ export function BinauralLabScreen() {
           ],
           correctIdx: 0,
           reveal:
-            'A pan-pot is level-only. Binaural rendering adds the inter-ear TIME difference and the head-shadow filtering — the cues that make a sound sit outside your head instead of sliding along a line between your ears.',
+            'A pan-pot is level-only. Binaural rendering adds the inter-ear TIME difference and the head-shadow filtering, as real hearing does. On their own these two cues still mostly place a sound inside your head; to sit fully outside it, a sound also needs the outer-ear (HRTF) and room cues.',
           wrongHint: 'THE TWO CUES panel above shows what the pan-pot leaves out.',
         }}
       />

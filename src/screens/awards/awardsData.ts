@@ -118,9 +118,9 @@ const PROGRAM: AwardPage = {
       // Interactive: pick from the established program paths.
       builder: 'programs',
       note:
-        'Academy graduates represent the Pro Audio Training Academy professionally throughout the world. ' +
-        "The Academy's programs are rigorous by design, and graduates emerge among the most knowledgeable " +
-        'in their chosen field of professional audio.',
+        'Academy graduates use what they learned in audio work around the world. ' +
+        "The Academy's programs are rigorous by design. They aim to give you deep, working knowledge " +
+        'of your chosen field of professional audio.',
     },
   ],
 };

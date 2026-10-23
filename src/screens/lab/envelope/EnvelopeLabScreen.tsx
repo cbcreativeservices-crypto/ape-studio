@@ -185,7 +185,7 @@ function PageGallery({ ctx }: { ctx: PageCtx }) {
           <SpeechChart />
           <Card>
             <Body>Spoken language is a sequence of changing transients and sustained sounds: consonants are short bursts and stops, vowels are the sustained parts. Each syllable has its own small envelope, with near-silence between many of them — which is why speech needs its onsets intact to stay intelligible.</Body>
-            <Body>Notice the gaps: a listener separates words by those near-silences and the sharp onsets that follow them. Smear the onsets — a slow compressor, a boomy room — and the words run together.</Body>{/* NEW COPY */}
+            <Body>Notice the gaps: a listener separates words by those near-silences and the sharp onsets that follow them. Squash or smear the onsets — a fast, heavy compressor, a boomy room — and the words run together.</Body>{/* NEW COPY */}
             <Text style={styles.read}>{SPEECH_SYLLABLES.map((s) => s.label).join(' · ')} — {SPEECH_SYLLABLES.length} syllable envelopes</Text>
           </Card>
         </>

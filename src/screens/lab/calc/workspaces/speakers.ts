@@ -56,7 +56,7 @@ const WS_SPEAKERPOWER: Workspace = {
   warnings:
     'Sensitivity specs vary in method — 2.83 V vs 1 W (identical only into 8 Ω), half-space vs ' +
     'free-field — so two "97 dB" boxes may not match. Power compression eats 2–4 dB at full ' +
-    'output and is not modeled. This is inverse-square feasibility math (IEC 60268-4 governs the ' +
+    'output and is not modeled. This is inverse-square feasibility math (IEC 60268-5 governs the ' +
     'formal measurements), not an array or room prediction.',
   glossary: ['Sensitivity', 'Headroom', 'Inverse square law', 'Power', 'Sound pressure level'],
   fields: [

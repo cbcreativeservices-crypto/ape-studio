@@ -55,7 +55,7 @@ const STEREOMIC: Workspace = {
   whyItMatters:
     'It is the math behind AB, ORTF, and the classic 3:1 rule for multi-mic setups. Time-of-arrival ' +
     'delay creates width but risks mono comb filtering; the 3:1 rule keeps bleed between two spot ' +
-    'mics low enough to stay clean when summed.',
+    'mics low enough that the comb it makes when summed is shallow and hard to hear.',
   example:
     'A 40 cm spaced pair, source 30° off-centre (20 °C): path difference = 0.40·sin30° = 0.20 m, so ' +
     'Δt ≈ 0.58 ms and the first mono comb null sits at c/(2·0.20) ≈ 858 Hz.',
@@ -128,7 +128,7 @@ const STEREOMIC: Workspace = {
       formula: 'min spacing = 3 × mic-to-source distance',
       plainFormula: 'The minimum mic spacing equals three times the distance from the first mic to its source.',
       explain:
-        'The 3:1 rule for multi-mic setups: place a second mic at least three times as far from the first mic as the first mic sits from its source. At that spacing the bleed arrives about 9.5 dB down — quiet enough that summing the mics stays clean instead of comb-filtering.',
+        'The 3:1 rule for multi-mic setups: place a second mic at least three times as far from the first mic as the first mic sits from its source. At that spacing the bleed arrives about 9.5 dB down. Summing the mics still combs a little, but the dips are shallow and much harder to hear.',
       keySymbols: ['×'],
       compute: (v) => {
         return [
@@ -139,7 +139,7 @@ const STEREOMIC: Workspace = {
       steps: (v) => {
         return [
           `Minimum spacing = 3 × ${fmt(n(v.micDist))} m = ${fmt(3 * n(v.micDist))} m.`,
-          `At 3× the distance the bleed arrives about ${fmt(-20 * Math.log10(3))} dB down — low enough that summing stays clean.`,
+          `At 3× the distance the bleed arrives about ${fmt(-20 * Math.log10(3))} dB down. Summing still combs a little, but the dips are shallow and hard to hear.`,
         ];
       },
     },

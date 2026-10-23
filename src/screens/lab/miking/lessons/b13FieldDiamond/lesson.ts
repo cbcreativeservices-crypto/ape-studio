@@ -213,7 +213,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Re-aim the axis at the same source',
     explain: 'A new height is a new angle to the source: re-aim at the same target, keep the support out of the source path, and change one thing at a time.',
     why: {
-      'Nothing: the aim carries over unchanged': 'Lower, the old aim points over or past the source.',
+      'Nothing: the aim carries over unchanged': 'Lower, the old aim now passes under the source, or hits the ground short of it.',
       'Raise the gain to make up for the height': 'Height changes the angle; re-aim before touching gain.',
     },
   },

@@ -557,7 +557,7 @@ const FIELD_GUIDE: { title: string; helpKey: string; caption: string }[] = [
     title: 'RINGING FILTERS',
     helpKey: 'eq_ridge',
     caption:
-      'Switch Q RING on: a needle-thin ridge appears at 1.2 kHz and LINGERS far behind its neighbors. High-Q filters store energy — the filter itself rings, which is why surgical boosts can sound "resonant". Try it in the CATHEDRAL, too: the ring vanishes into the reverb — a room that decays slower than the filter MASKS it.',
+      'Switch Q RING on: a needle-thin ridge appears at 1.2 kHz and LINGERS far toward the front, long after its neighbors die. High-Q filters store energy — the filter itself rings, which is why surgical boosts can sound "resonant". Try it in the CATHEDRAL, too: the ring vanishes into the reverb — a room that decays slower than the filter MASKS it.',
   },
   {
     title: 'REVERB TAILS',

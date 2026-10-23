@@ -401,7 +401,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: EnsembleLesson['predictions'] = {
-  microphone: { prompt: 'Before you look: which pattern hears its front and back equally?', options: ['Figure-8', 'Cardioid', 'Omni'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
+  microphone: { prompt: 'Before you look: which pattern hears its front and back equally but rejects its sides?', options: ['Figure-8', 'Cardioid', 'Omni'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: the shared mic moves 10 cm toward one singer. What changes most?', options: ['That singer gets louder', 'Nothing: the other balances it', 'Both get louder equally'], after: 'Watch NEAR / FAR and NEAREST: one singer’s distance is that singer’s level.' },
   context: { prompt: 'The wedge sits on the floor in front of the duet. Where will a supercardioid aimed at a mouth reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'A handheld each. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE to the other singer.' },
