@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 13:37 · ccode · 3906e73b
+changed: Advanced Tuner: top preset row was clipped on phones (chips lost top/bottom borders)
+affects other side: nothing backend (tuner layout fix).
+needs: nothing
+
+
 ### 2026-10-23 13:10 · ccode · e977054c
 changed: Advanced Tuner: the tuning row was invisible on phones (my f8ea7625 layout)
 affects other side: nothing backend (tuner layout fix).
