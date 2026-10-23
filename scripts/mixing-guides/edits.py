@@ -1,4 +1,8 @@
-"""The light copy edit of the owner's 50 mixing guides (house rules, owner
+"""HISTORICAL (owner 2026-10-22): these edits produced the 2026-10-07 conversion.
+The shipped guide files are now the master copy — fix a guide in its own file,
+not here (convert.py refuses to overwrite them).
+
+The light copy edit of the owner's 50 mixing guides (house rules, owner
 ruling 2026-10-04: starting points, not rules; no brand or model names, no
 named engineers, publications, standards bodies or tours used as evidence —
 the research stays in the owner's documents and docs/labs/mixing).

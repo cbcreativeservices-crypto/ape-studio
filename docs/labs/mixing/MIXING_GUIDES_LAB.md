@@ -39,11 +39,13 @@ Every page also shows the house line `STARTING_POINTS_LINE`: *"Starting points, 
 
 ## 3. Data and loading
 
-- One generated file per style: `src/screens/lab/mixingGuides/data/guides/gNN-<id>.ts` (≈1 MB of text in total).
+- One file per style (master copy since 2026-10-22; first generated): `src/screens/lab/mixingGuides/data/guides/gNN-<id>.ts` (≈1 MB of text in total).
 - `data/index.ts` — id, number, title, priority line, origin (the hub and its filter).
 - `data/load.ts` — each guide is `require`d inside a function on first open (cached).
 - **App start does not grow**: nothing of the lab is in the start graph (the catalog imports nothing from it; the Labs-menu tile therefore has no count line). Start graph stays at the 260 cap.
-- Regenerate: `python scripts/mixing-guides/extract_docx.py <scratch>/raw` → `python scripts/mixing-guides/parse.py <scratch>/raw <scratch>/parsed` → `python scripts/mixing-guides/convert.py <scratch>/parsed . --report <scratch>/report.json` → `python scripts/mixing-guides/sources_doc.py <scratch>/report.json docs/labs/mixing/SOURCES.md`. `convert.py` exits non-zero if an edit no longer matches or a brand/citation survives.
+- **MASTER COPY (owner 2026-10-22).** The 50 shipped guide files (plus `index.ts`, `load.ts`) are the master copy. Every fix since the 2026-10-07 conversion — the review rounds, the glossary explainers, the keyboard caution, the wiring rounds, the 2026-10-22 fact audit (one shared WHO note, dBTP pairings) — was made directly in them, about 1,870 lines the converter does not know. **Fix a guide by editing its file**, never `edits.py`.
+- `convert.py` is locked: it writes nothing if any output file already exists with different content (lists them, exits 2). `test/mixingGuidesMasterCopy_20261022.test.ts` guards the lock and the headers. To compare a fresh conversion, point it at a scratch root:
+  - Compare (scratch only): `python scripts/mixing-guides/extract_docx.py <scratch>/raw` → `python scripts/mixing-guides/parse.py <scratch>/raw <scratch>/parsed` → `python scripts/mixing-guides/convert.py <scratch>/parsed <scratch>/root --report <scratch>/report.json` → `python scripts/mixing-guides/sources_doc.py <scratch>/report.json docs/labs/mixing/SOURCES.md`. `convert.py` exits non-zero if an edit no longer matches or a brand/citation survives.
 
 ## 4. Conversion (light copy edit)
 
