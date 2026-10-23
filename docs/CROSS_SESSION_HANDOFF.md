@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-22 20:05 · ccode · c8aab4ba
+changed: Fact audit R3 (final): hedges, context, can't-confirm, Career Finder templates + cleanup
+affects other side: glossary mirrors (Comp A): Patch bay ecebd487, Limiter 7f621dc4, Modular d72bd8a0, Digital audio e9071a60 now differ from the app's lab popups; x-copy, rock crusher, F-wrench meanings unsourced — check glossary rows. Lab-cert seed SQL regenerated (why lines only)
+needs: nothing
+
+
 ### 2026-10-22 18:48 · ccode · 10d5f8c9
 changed: Fact audit R2: corrections + systemic patterns (Comp B return)
 affects other side: nothing backend (app copy, curated JSON, careerIndex + its build overrides, lab-cert seed SQL regenerated: 2 'why' lines only — re-run only if A reseeds)
