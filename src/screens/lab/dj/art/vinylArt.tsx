@@ -37,7 +37,7 @@
  */
 import { useEffect, useMemo, useRef } from 'react';
 import { Easing, useDerivedValue, useSharedValue, withDelay, withSequence, withSpring, withTiming, type SharedValue } from 'react-native-reanimated';
-import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Rect, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { INK } from './ink';
 import { RcaSocket } from './parts';
 import { SceneText } from './sceneText';
@@ -328,9 +328,9 @@ export function ArmSide({ b, v, ang, k = 1, zoom = 1 }: { b: Box; v: VinylState;
       {X(P.x + 46) <= win.x + win.w ? <Line p1={vec(X(P.x + 46), Y(P.y - 16))} p2={vec(loupe.x, loupe.y + loupe.h / 2)} color="rgba(255,198,77,0.45)" strokeWidth={1} /> : null}
       <RoundedRect x={loupe.x} y={loupe.y} width={loupe.w} height={loupe.h} r={8} color="#0b0c0f" />
       <Group clip={Skia.RRectXY(Skia.XYWHRect(loupe.x, loupe.y, loupe.w, loupe.h), 8, 8)}>
-        <RoundedRect x={loupe.x + loupe.w * 0.42} y={loupe.y} width={loupe.w * 0.5} height={loupe.h}>
+        <Rect x={loupe.x + loupe.w * 0.42} y={loupe.y} width={loupe.w * 0.5} height={loupe.h}>
           <LinearGradient start={vec(loupe.x + loupe.w * 0.42, 0)} end={vec(loupe.x + loupe.w * 0.92, 0)} colors={['#1a1b1f', '#2e3036', '#121316']} />
-        </RoundedRect>
+        </Rect>
         <Path path={ringTicks} style="stroke" strokeWidth={1} color="#e1e5ea" />
         {[0, 1, 2, 3, 4, 5, 6, 7].map((g) => {
           const y = loupe.y + loupe.h / 2 + (dial - g) * gPt;
