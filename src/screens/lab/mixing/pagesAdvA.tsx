@@ -35,7 +35,7 @@ function PageGate({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>This lab assumes the Beginning lab’s foundations: the channel path, level-matched judgment, the six routing terms. The boundary rule: Beginning asked “can you make a clear, balanced stereo mix?” — Advanced asks “can you manage, refine, troubleshoot and DELIVER a complex one?” The five dimensions still rule — balance, clarity, depth, movement, focus — Advanced pursues the same five at scale.</Lead>
+      <Lead>This lab assumes the Beginning lab’s foundations: the channel path, level-matched judgment, the six routing terms. The boundary rule: Beginning asked “can you make a clear, balanced stereo mix?” — Advanced asks “can you manage, refine, troubleshoot and DELIVER a complex one?” The five dimensions still rule — balance, frequency, pan and width, depth, movement — Advanced pursues the same five at scale.</Lead>
       {bmlDone === true ? (
         <Card tone="ok">
           <Eyebrow>PREREQUISITE MET</Eyebrow>

@@ -26,7 +26,7 @@ import { feedbackSymptom, fewerMics, GROUP_BRAND, hangDiag, NO_PROVOKE_REASON, n
 import { E06_31, E06_MODEL, E06_PLACE, E06_SETUPS, E06_WEDGES, E06_ZONES, PAIR_FAR } from './geometry.ts';
 
 /** The exposure line (research childrens_choir/SOURCES.md §b, proposed L7/L106 wording, no names). */
-export const EXPOSURE = 'Lower the level at the source first. Measure at the children’s own positions with a sound level meter — an A-weighted 15-minute average and a C-weighted peak. A widely used standard for events aimed at children sets about 94 dB averaged over 15 minutes and 120 dB peak as limits: keep well below them. Keep soundchecks short and quiet; a child’s discomfort, ringing ears or not hearing instructions is never a normal part of a soundcheck.';
+export const EXPOSURE = 'Lower the level at the source first. Measure at the children’s own positions with a sound level meter — an A-weighted 15-minute average and a C-weighted peak. Limits used for events aimed at young children are about 94 dB averaged over 15 minutes, and peaks under 120 dB: keep well below both. Keep soundchecks short and quiet; a child’s discomfort, ringing ears or not hearing instructions is never a normal part of a soundcheck.';
 /** The safeguarding line (childrens_choir/SOURCES.md §a, no names). */
 export const SAFEGUARDING = 'Children are supervised at all times. A responsible adult or qualified crew member controls the setup, the access and every change to a mic; a headset or a transmitter is fitted only by an authorised adult, with the child’s agreement and comfort first, and with a quick way to mute or remove it. Follow the venue’s child-safeguarding policy and the local law.';
 
@@ -59,7 +59,7 @@ const pages: LessonPages = {
     title: 'Live and recording',
     goal: 'Turn an area mic so a low floor monitor sits in its rejection — and know why a children’s choir needs the fewest open mics, quiet monitors and no choir mics in their own monitor.',
     credit: { scenarios: ['cc.ctx.1', 'cc.mon', 'cc.ctx.studio', 'cc.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: turn the area mic (or change its pattern) until the monitor sits in its rejection. STUDIO: answer the decision card. Then the checks.' },
-    takeaway: 'Live, a children’s choir is a feedback and a supervision problem: the fewest open mics, quiet monitors in the mics’ nulls, never the choir mics in the choir monitor. A small room may need little or no reinforcement.',
+    takeaway: 'Live, a children’s choir is a feedback and a supervision problem: the fewest open mics, quiet monitors in the mics’ nulls, little or none of the choir mics in the choir monitor. A small room may need little or no reinforcement.',
   },
   twoMic: {
     title: 'A pair and a soloist’s mic',
@@ -520,7 +520,7 @@ export const E06_LESSON: EnsembleLesson = {
       { id: 'pa', label: 'the PA and the band', short: 'PA · BAND', note: 'The fewest open mics, quiet monitors; compare the natural choir with the reinforced one by muting — a small room may need little or none.', prov: { kind: 'sourced', src: 'LESSON-CHILD', quote: 'compare the natural acoustic level with the reinforced level by muting and unmuting the choir channels (L37)' }, tag: 'SPILL', scene: 'stage' },
       { id: 'room', label: 'the room and its noise', short: 'ROOM', note: 'Air handling, riser movement, page turns and feet: a distant pair hears them. Several short takes beat one long, loud one.', prov: { kind: 'sourced', src: 'LESSON-CHILD', quote: 'Capture several short takes rather than forcing a long, loud rehearsal (L33)' }, tag: 'PART OF THE SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: a gain-before-feedback and supervision problem. The fewest open choir mics, in front and a little above the mouths, aimed at the group; monitors low, in the mics’ rejection and never carrying the choir mics; the level measured where the children stand — and never provoke feedback.',
+    stage: 'LIVE: a gain-before-feedback and supervision problem. The fewest open choir mics, in front and a little above the mouths, aimed at the group; monitors low, in the mics’ rejection and carrying little or none of the choir mics; the level measured where the children stand — and avoid uncontrolled feedback.',
     studio: 'A RECORDING: one pair or a carefully placed area mic first — not a close mic on every child; move it in small steps on loudspeakers; spots only for a section the pair cannot carry; several short takes.',
   },
   diagnostic,
@@ -564,7 +564,7 @@ export const E06_LESSON: EnsembleLesson = {
       { title: 'A SAFE STAGE', text: 'Stable stands with appropriate bases or sandbags, ramps over cable crossings, water, costumes and moving scenery kept away from connectors and power; nothing that restricts breathing, movement or a safe exit.' },
       { title: 'LISTEN FIRST', text: 'Hear the children unamplified from the audience or the recording position; the director can often fix the balance with the layout or the risers before any gain.' },
     ],
-    safety: 'Supervision at all times; a responsible adult controls every mic. Stable stands, sandbags and cable ramps; exits clear; stop the group before moving anything. Nothing hangs over the children’s heads; a hung mic goes in front of the mouths, only by a competent rigger with the venue’s approval. Quiet monitors, the level measured where the children stand; never provoke feedback.',
+    safety: 'Supervision at all times; a responsible adult controls every mic. Stable stands, sandbags and cable ramps; exits clear; stop the group before moving anything. Nothing hangs over the children’s heads; a hung mic goes in front of the mouths, only by a competent rigger with the venue’s approval. Quiet monitors, the level measured where the children stand; avoid uncontrolled feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a children’s choir: one pair, centred, a few feet in front and a little above their heads, aimed at their mouths — a place to start and compare, not a rule.',
       clearance: 'The stand’s wide base in front of the first row, clear of the children’s feet and the way out; a sandbag on its base, its cable taped flat or under a ramp, away from the children’s path.',

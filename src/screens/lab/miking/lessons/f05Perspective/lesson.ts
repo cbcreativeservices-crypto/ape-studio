@@ -43,7 +43,7 @@ const pages: LessonPages = {
     title: 'Before any mic',
     goal: 'Settle the pictured action, each mic’s job and the room before anything goes up — and keep every stand outside the artist’s path.',
     credit: { scenarios: ['f05.set.1', 'f05.set.2', 'f05.set.hear'], note: 'Answer the three checks.' },
-    takeaway: 'The shot, the mono destination, a job for each mic, the room checked against the picture, the path marked and clear. Hearing comes first, and feedback is never provoked.',
+    takeaway: 'The shot, the mono destination, a job for each mic, the room checked against the picture, the path marked and clear. Hearing comes first, and feedback is never left uncontrolled.',
   },
   microphone: {
     title: 'Choose the microphones',
@@ -61,7 +61,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the live station’s mic so the wedge sits in its rejection — and know why a quiet stage can keep a room channel while a live stage keeps its open mics few.',
     credit: { scenarios: ['f05.ctx.1', 'f05.ctx.2', 'f05.ctx.ring', 'f05.ctx.studio', 'f05.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the wedge sits in the rejection. STUDIO: answer the decision card. Then the checks.' },
-    takeaway: 'On a quiet stage, close and room channels give the mix a choice. Live, one stable pickup at a known station, the wedge in its rejection, the open mics few — and feedback never provoked.',
+    takeaway: 'On a quiet stage, close and room channels give the mix a choice. Live, one stable pickup at a known station, the wedge in its rejection, the open mics few — and no uncontrolled feedback.',
   },
   twoMic: {
     title: 'Two mics on a moving action',
@@ -426,7 +426,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A small supercardioid at the station, the wedge off its rear side', ok: true, power: 'phantom', feedback: 'A fair live choice — check the margin at show level.' },
       { id: 'c', label: 'A room mic 3 m back for a natural sound', ok: false, power: 'phantom', feedback: 'A farther mic hears the PA and the wedge: little margin before feedback.' },
       { id: 'd', label: 'An X/Y pair and a room mic, all open on the PA', ok: false, power: 'phantom', feedback: 'Each open mic takes margin away. Start with one.' },
-      { id: 'e', label: 'Raise the gain until it rings, then back off', ok: false, power: 'phantom', feedback: 'Never provoke feedback.' },
+      { id: 'e', label: 'Raise the gain until it rings, then back off', ok: false, power: 'phantom', feedback: 'Not until it rings: set the gain the take needs, with a margin.' },
     ],
     reasons: [CLEAR_REASON('the artist’s path and movement'), { id: 'r.null', label: 'The pattern’s rejection faces the wedge', role: 'required', feedback: 'Say where the wedge sits against the pattern.' }, { id: 'r.op', label: 'Checked with the operator at show level', role: 'optional', feedback: 'A fair live reason.' }, { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Feedback is never provoked.' }],
     explain: 'Two setups pass. What passes is the reasoning: one stable pickup at the station, the wedge in its rejection, the path clear, and the gain checked with the operator.',

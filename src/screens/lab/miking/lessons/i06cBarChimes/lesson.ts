@@ -464,7 +464,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Why do the short bars sound higher?',
     options: ['A bar’s pitch rises with 1 ÷ length²', 'They are made of a lighter metal', 'They are hung on shorter filaments'],
     correct: 'A bar’s pitch rises with 1 ÷ length²',
-    explain: 'For bars of one thickness and metal, half the length gives four times the pitch.',
+    explain: 'For bars of one thickness and metal, half the length gives four times the frequency: two octaves higher.',
     why: {
       'They are made of a lighter metal': 'The row is usually one metal; the length sets the pitch.',
       'They are hung on shorter filaments': 'The filament only holds the bar; the bar’s length sets its pitch.',
@@ -563,7 +563,7 @@ export const I06C_LESSON: Lesson = {
   live: {
     wedges: [
       { id: 'wedge', label: 'a floor wedge downstage, facing back toward the player', short: 'WEDGE', p: { x: 1600, y: 0, z: 350 }, lift: 150, faces: { x: -1, y: 0, z: -0.2 }, note: 'On the audience side, behind a mic that faces the row — the case a pattern’s null can help with.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
-      { id: 'side', label: 'a side-fill monitor across the stage', short: 'SIDE FILL', p: { x: 300, y: 0, z: 1700 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Off to the player’s right, roughly beside the mic’s front: no pattern’s null reaches it. Distance and level do the work.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
+      { id: 'side', label: 'a side-fill monitor across the stage', short: 'SIDE FILL', p: { x: 300, y: 0, z: 1700 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Off to the player’s right, roughly beside the mic’s front: no cardioid’s or supercardioid’s null reaches it. Distance and level do the work.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
     ],
   },
   accuracyDetail:

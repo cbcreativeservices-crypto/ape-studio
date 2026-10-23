@@ -242,7 +242,7 @@ export const A10_WEDGES: Wedge[] = [
     lift: FLOOR_Y,
     faces: v3(1, 0, 0),
     glyph: 'none',
-    note: 'The player’s own amp, behind and to the side: a mic facing the harmonica has it off to one side, not behind — no pattern’s null reaches it. Distance, the amp’s level and its angle do the work.',
+    note: 'The player’s own amp, behind and to the side: a mic facing the harmonica has it off to one side, not behind — no cardioid’s or supercardioid’s null reaches it. Distance, the amp’s level and its angle do the work.',
     prov: ill('the amp drawn behind the player and off their axis (a drawing default)'),
   },
 ];

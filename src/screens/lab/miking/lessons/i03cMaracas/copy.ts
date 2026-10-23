@@ -79,7 +79,7 @@ export const MAR_COPY: LessonCopy = spCopy({
     before: [
       { title: 'BOTH HEADS, BOTH ARCS', text: 'Ask for the whole part — the largest accent, changes of height, any switch to another instrument or the voice. Find where both heads travel; the mic, boom and cable stay outside both arms’ reach.' },
       { title: 'THE PAIR FIRST', text: 'Plastic, wood or rawhide heads, a softer or a more projecting pair: listen to the actual pair at its real playing strength. A material name promises no exact sound.' },
-      { title: 'SAFE INSTRUMENTS', text: 'A loose handle or a cracked vessel can shed its seeds: do not use a damaged pair. Never ask the player to freeze, swap hands or match accents for the mic.' },
+      { title: 'SAFE INSTRUMENTS', text: 'A loose handle or a cracked vessel can shed its seeds: do not use a damaged pair. Move the mic before asking the player to freeze, swap hands or match accents for it.' },
     ],
     planTitle: 'At the percussion station',
   },

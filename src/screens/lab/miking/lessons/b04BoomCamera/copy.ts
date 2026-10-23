@@ -25,7 +25,7 @@ const BASE = standingVoiceCopy({
     { title: 'ASK FOR THE WIDEST FRAME', text: 'Before any mic: ask the camera operator for the widest active frame, every camera angle, the reframes and the moves, and where the light and its shadows fall. Mark the speaking places and the turns. Then choose the closest safe place those allow — and check the picture there.' },
     { title: 'RIGGING AND THE POLE', text: `${SAFETY.overPeople} ${SAFETY.rigged}` },
     { title: 'OUTDOORS', text: `${SAFETY.powerLines} ${SAFETY.weather}` },
-    { title: 'LIVE: NEVER PROVOKE FEEDBACK', text: 'A boom at a public event hears the PA too. Check its working position and pattern with the system’s operator at a safe level; bring it up only to its working level, and at any ring pull it down at once and fix the geometry — never raise a level to find feedback.' },
+    { title: 'LIVE: NO UNCONTROLLED FEEDBACK', text: 'A boom at a public event hears the PA too. Check its working position and pattern with the system’s operator at a safe level; bring it up only to its working level, and at any ring pull it down at once and fix the geometry — any ring-out is the system operator’s job.' },
   ],
   studio: {
     id: 'b4.ctx.studio',
@@ -43,8 +43,8 @@ const BASE = standingVoiceCopy({
 export const B04_COPY: Partial<LessonCopy> = {
   ...BASE,
   variantKey: 'SHOT',
-  variantShort: { close: 'close shot', wide: 'wide shot', live: 'live' },
-  sceneSubject: { close: 'a talker standing on camera, a close shot', wide: 'a talker standing on camera, a wide shot', live: 'a talker on a stage on camera, the PA at the corner' },
+  variantShort: { close: 'close shot', wide: 'wider shot', live: 'live' },
+  sceneSubject: { close: 'a talker standing on camera, a close shot', wide: 'a talker standing on camera, a wider shot', live: 'a talker on a stage on camera, the PA at the corner' },
   viewTag: { side: 'SIDE · FROM THE TALKER’S RIGHT', top: 'TOP · FROM ABOVE' },
   axes: {
     x: { plus: 'toward the camera', minus: 'toward the talker', label: 'IN–OUT', blurb: 'Out from the talker toward the camera, or back (x). Distances are read from the lips.' },
@@ -59,8 +59,8 @@ export const B04_COPY: Partial<LessonCopy> = {
     partsLooking: { side: 'Side view · from the talker’s right', top: 'Top view · from above' },
     partsIdle: 'The voice leaves through the mouth — every distance is read from the lips. Around the talker: the camera and its frame, the boom operator, the PA live. Tap any of them.',
     variantNotes: {
-      close: 'CLOSE SHOT: the camera 2.2 m in front, head and shoulders. Switch SHOT to see the wide shot or the stage.',
-      wide: 'WIDE SHOT: the camera moved back to 3.6 m, to the waist with room round them — the frame’s top is higher.',
+      close: 'CLOSE SHOT: the camera 2.2 m in front, head and shoulders. Switch SHOT to see the wider shot or the stage.',
+      wide: 'WIDER SHOT: the camera moved back to 3.6 m, the talker from the waist up with room round them — the frame’s top is higher.',
       live: 'LIVE: the close shot for the broadcast; the PA at the stage’s front corner faces the audience, but its back and side reach the stage.',
     },
   },
@@ -123,7 +123,7 @@ export const B04_COPY: Partial<LessonCopy> = {
       ...BASE.context!.learn,
       intro: 'These are scenario-based comparisons, not restrictions: the talker is the same — the room, the shot and the PA change.',
       body: 'Live, a boom hears the PA as well as the talker: its place and its pattern’s rejection are tools to aim — and the fewest open mics do more.',
-      warn: 'No mic position alone prevents feedback: the pattern, the open mics, the PA’s place and level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback: the pattern, the open mics, the PA’s place and level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

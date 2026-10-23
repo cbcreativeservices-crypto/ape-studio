@@ -69,7 +69,7 @@ export const VIOLIN_COPY: Partial<LessonCopy> = {
     activityDone: 'done — the wedge sat in a null by your aim or pattern',
     deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). In front of the player and aimed back at the violin, its rear faces the audience side — the wedge, down on the floor, sits below that line, so tilting the mic matters as much as turning it.',
-    shieldNote: 'Even a small violin’s top REFLECTS stage sound into the front of a mic aimed away from it — the free-field pattern cannot show that. Listen with the monitors on.',
+    shieldNote: 'Even a small violin’s top REFLECTS stage sound into the front of the mic aimed at it, even with the mic’s back toward the wedge — the free-field pattern cannot show that. Listen with the monitors on.',
     studioId: 'vn.ctx.studio',
     studioPrompt: 'A studio session, a solo classical violin, a good room: what is the mic’s job?',
     studioNote: 'In the studio, a mic in front and above can carry the whole violin and some room; a closer one adds definition when the arrangement needs it. Repeated trials are practical when the player stops. Switch back to LIVE for the monitor exercise.',
@@ -82,7 +82,7 @@ export const VIOLIN_COPY: Partial<LessonCopy> = {
         { title: 'IN A GROUP', text: 'With a main pair up, a violin mic is a spot: raise it only for a stated balance, and check it in mono so it does not pull the player forward.' },
       ],
       body: 'With a wedge in front of the player, a pattern’s rejection is a tool to aim — tilting as well as turning. Some stage sound in a violin mic is normal; the question is how much the music can take.',
-      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

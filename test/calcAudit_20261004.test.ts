@@ -401,7 +401,7 @@ const V: [string, string, Record<string, unknown>, Record<string, number> | stri
   // ── netaudio
   ['netaudio', 'bandwidth', { channels: 64, sr: 48000, bitdepth: 24 }, { 'RAW DATA RATE': 73728000 }],
   ['netaudio', 'bandwidth', { channels: 1, sr: 8000, bitdepth: 8 }, { 'RAW DATA RATE': 64000 }],
-  ['netaudio', 'packetize', { channels: 64, sr: 48000, bitdepth: 24, packetms: 0.001 }, { 'PAYLOAD PER PACKET': 9216, 'ON-THE-WIRE RATE': 1000 * (9216 + 78) * 8 }],
+  ['netaudio', 'packetize', { channels: 64, sr: 48000, bitdepth: 24, packetms: 0.001 }, { 'AUDIO PER PACKET TIME': 9216, 'PACKETS PER PACKET TIME': 7, 'PACKETS PER SECOND': 7000, 'ON-THE-WIRE RATE': 1000 * (9216 + 7 * 78) * 8 }],
   ['netaudio', 'packetize', { channels: 2, sr: 48000, bitdepth: 24, packetms: 0.000125 }, { 'ON-THE-WIRE RATE': 8000 * (36 + 78) * 8 }],
   // ── timecode
   ['timecode', 'fromFrames', { frames: 9000, fps: 25 }, { 'TOTAL TIME': 360 }],

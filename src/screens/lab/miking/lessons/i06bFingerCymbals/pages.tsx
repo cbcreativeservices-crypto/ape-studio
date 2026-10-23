@@ -100,7 +100,7 @@ const HELD: HandSpec = {
     learn: [
       { title: 'STUDIO', text: 'A still player: one moderate-distance spot, compared with a wider view in a good room. Record the silence after an accent too. In an ensemble, listen to the main pair and overheads first.' },
       { title: 'LIVE', text: 'A fixed station: a stand-mounted directional mic clear of both hands. A dancer: the stage mics or a broader, higher pickup — more spill, less feedback margin. A wearable mic is not a default: it changes with every move.' },
-      { title: 'THE WEDGE', text: 'Keep the finger cymbals low in, or out of, the monitor unless the player needs them: the bright attack raises the feedback risk.' },
+      { title: 'THE WEDGE', text: 'Keep the finger cymbals low in, or out of, the monitor unless the player needs them: they are quiet, so the mic needs a lot of gain, and that raises the feedback risk.' },
     ],
   },
   two: {

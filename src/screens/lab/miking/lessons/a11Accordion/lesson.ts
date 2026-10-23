@@ -477,7 +477,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What is the bellows’ job?',
     options: ['It moves the air through the reeds', 'It makes the sound, like a drum', 'It holds the two sides apart'],
     correct: 'It moves the air through the reeds',
-    explain: 'The bellows are the air source: pulling and pushing them draws air through the reeds.',
+    explain: 'The bellows are the air source: pulling and pushing them moves air through the reeds.',
     why: {
       'It makes the sound, like a drum': 'The reeds make the sound; the bellows supply the air.',
       'It holds the two sides apart': 'It joins them and moves the air between them.',

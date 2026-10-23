@@ -103,7 +103,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
       },
       {
         otherName: 'DMX lighting control run (XLR-shell use)',
-        why: 'Lighting control (DMX512) specifies 120-ohm data cable; some fixtures use XLR-shell connectors, so audio and lighting lines can physically mate.',
+        why: 'Lighting control (DMX512) specifies 120-ohm data cable and 5-pin XLR. Many fixtures use 3-pin XLR anyway, though the standard forbids it, so audio and lighting lines can physically mate.',
         consequence:
           'Microphone cable in a DMX line invites flickering and erratic fixture behavior. Patching audio gear into a control line fails to work and can disrupt the control network — and if the audio line carries +48 V phantom power, it can damage lighting-control electronics. Verify what a line carries before connecting.',
       },

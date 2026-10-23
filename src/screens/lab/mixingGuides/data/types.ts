@@ -133,3 +133,10 @@ export const TABLE_COLUMNS = {
  *  not rules; the owner's own guides open the same way). */
 export const STARTING_POINTS_LINE =
   'Starting points, not rules. Put on a reference track in the style, match its level, listen and adjust to the song, the artist and the room.';
+
+/** The ONE hearing note under every guide's live level (owner ruling
+ *  2026-10-22, fact audit R2): the guides keep the real typical show levels —
+ *  many run above 100 dBA — and this shared line carries the WHO safe-listening
+ *  limit once, instead of a caveat edited into each of the 50 guides. */
+export const WHO_LIVE_LEVEL_NOTE =
+  'WHO recommends audiences be exposed to no more than 100 dB LAeq over 15 minutes — protect your hearing.';

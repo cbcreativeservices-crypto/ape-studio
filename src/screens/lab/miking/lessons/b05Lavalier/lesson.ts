@@ -342,7 +342,7 @@ const scenarios: MikingScenario[] = [
     correct: 'On its own recorder track, muted in the live mix',
     explain: 'A backup is a tested fallback you switch to. Kept on its own track it is ready; summed with the headset it is a second open mic on one voice.',
     why: {
-      'Summed into the stream with the headset': 'Summed, it combs with the headset and costs margin.',
+      'Summed into the stream with the headset': 'Summed, it combs with the headset and adds room and clothing noise.',
       'Into the PA, a little lower than the headset': 'In the PA it is another open mic on the same voice.',
     },
   },
@@ -487,7 +487,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Hide it only if the shot needs it; compare again', early: 'Conceal after the visible place works.' },
       { text: 'Trace every route; live, working level only', early: 'Routing and the live check come last.' },
     ],
-    explain: 'A sensible order. Never plug a bodypack lav straight into phantom power; let the wearer remove it at any time; live, never raise a level to find feedback.',
+    explain: 'A sensible order. Never plug a bodypack lav straight into phantom power; let the wearer remove it at any time; live, leave any ring-out to the system’s operator.',
   },
 ];
 
@@ -515,7 +515,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A directional headset, its rear toward the PA, the lectern muted', ok: true, power: 'pack', feedback: 'A suggested start — check its actual pattern against the PA’s place.' },
       { id: 'c', label: 'A lav low on the chest with the PA turned up', ok: false, power: 'pack', feedback: 'Farther from the mouth, and more PA level: less margin before feedback.' },
       { id: 'd', label: 'The headset and the lectern mic both open', ok: false, power: 'phantom', feedback: 'Two open mics on one voice comb and cost margin. Mute one.' },
-      { id: 'e', label: 'Raise the headset until it rings, then back off', ok: false, power: 'pack', feedback: 'Never provoke feedback. Bring each mic to its working level only.' },
+      { id: 'e', label: 'Raise the headset until it rings, then back off', ok: false, power: 'pack', feedback: 'Ringing out is the system operator’s job. Bring each mic to its working level only.' },
     ],
     reasons: [docReason('the lips'), clearReason('the presenter’s face and the headband’s fit'), { id: 'r.mute', label: 'One open mic on the voice; the lectern muted, a backup on its own track', role: 'required', feedback: 'Say how the two mics on one voice are handled.' }, { id: 'r.rf', label: 'The radio checked along the whole walk, with the operator', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON('presenter'), { id: 'r.loudest', label: 'Turn the PA up so the voice stays on top', role: 'wrong', feedback: 'More PA level brings feedback closer.' }],
     explain: 'Two setups pass. What passes is the reasoning: a capsule close to the mouth, one open mic on the voice, the PA toward the rejection, the radio checked — and no feedback provoked.',
@@ -651,7 +651,7 @@ export const B05_LESSON: Lesson = {
       { id: 'lectern', label: 'the lectern mic', short: 'LECTERN', note: 'A second mic on the same voice: muted whenever the body mic is live.', prov: { kind: 'illustrative', reason: 'the lesson L33' }, tag: 'BLEED', scene: 'stage' },
       { id: 'pa', label: 'the PA', short: 'PA', note: 'Live: it faces the audience, but every open mic on the stage hears it. A capsule close to the mouth and the fewest open mics keep the margin.', prov: { kind: 'illustrative', reason: 'a typical small stage' }, tag: 'FEEDBACK', scene: 'stage' },
     ],
-    stage: 'LIVE: a headset beside the mouth, its rear toward the PA where it is directional, the lectern muted, every route traced. Never provoke feedback.',
+    stage: 'LIVE: a headset beside the mouth, its rear toward the PA where it is directional, the lectern muted, every route traced. Avoid uncontrolled feedback.',
     studio: 'STUDIO: a centred lav, about 12–25 cm from the lips, a loop at the clip and the cable secured lower down — hidden only after the visible place works.',
   },
   diagnostic,
@@ -675,6 +675,6 @@ export const B05_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every presenter, garment, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a presenter in a typical standing pose, the clip points and the cable’s give as drawing defaults, the breath as a cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the capsule. Ask first; skin-safe adhesive only on skin; never a bodypack lav straight into phantom power; never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every presenter, garment, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a presenter in a typical standing pose, the clip points and the cable’s give as drawing defaults, the breath as a cone, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the capsule. Ask first; skin-safe adhesive only on skin; never a bodypack lav straight into phantom power; avoid uncontrolled feedback.',
   copy: B05_COPY,
 };

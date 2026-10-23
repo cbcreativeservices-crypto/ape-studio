@@ -65,7 +65,7 @@ const RATIOS: Ratio[] = [
 ];
 type ViewId = 'waves' | 'lissajous' | 'spectrum';
 const VIEWS: { id: ViewId; label: string; short: string; blurb: string }[] = [
-  { id: 'waves', label: 'Wave addition', short: 'Waves', blurb: 'A, B and A + B, sines added point by point. A locked ratio repeats; a detuned pair swells and cancels — that envelope IS the beat.' },
+  { id: 'waves', label: 'Wave addition', short: 'Waves', blurb: 'A, B and A + B, sines added point by point. A locked ratio repeats; a detuned pair slowly changes shape — near unison it swells and cancels. That slow change IS the beat.' },
   { id: 'lissajous', label: 'Lissajous figure', short: 'Lissa', blurb: 'x = A, y = B. A locked ratio closes into a stable figure; a detuned pair precesses at the beat rate.' },
   { id: 'spectrum', label: 'Spectrum', short: 'Spec', blurb: 'Two lines, nothing else. Consonance is a relationship between the lines — and a beat adds no line.' },
 ];

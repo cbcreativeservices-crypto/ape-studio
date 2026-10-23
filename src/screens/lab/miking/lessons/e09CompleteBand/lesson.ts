@@ -44,7 +44,7 @@ const pages: LessonPages = {
     title: 'Live sound and recording',
     goal: 'Turn the vocal mic so the singer’s wedge sits in its rejection — and give every mic a role: the PA, the wedges, the recording.',
     credit: { scenarios: ['bd.ctx.1', 'bd.ctx.2', 'bd.ctx.studio', 'bd.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: turn the vocal mic (or change its pattern) until the wedge sits in its rejection. STUDIO: answer the decision card. Then the checks.' },
-    takeaway: 'A cardioid, a supercardioid and a hypercardioid each want the wedge at a different angle. Keep room and audience mics out of the wedges, split the mics safely for a recording, and never provoke feedback.',
+    takeaway: 'A cardioid, a supercardioid and a hypercardioid each want the wedge at a different angle. Keep room and audience mics out of the wedges, split the mics safely for a recording, and avoid uncontrolled feedback.',
   },
   twoMic: {
     title: 'Bleed between two mics',
@@ -339,7 +339,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The mix starts to ring as the band gets loud. What comes first?',
     options: ['Lower the level, then check the wedges', 'Turn the PA up to hear where it rings', 'Boost the vocal to stay above the ring'],
     correct: 'Lower the level, then check the wedges',
-    explain: 'Lower the level at the first ring, then check monitor spill, stage volume and the open mics. Never raise a level to find feedback.',
+    explain: 'Lower the level at the first ring, then check monitor spill, stage volume and the open mics. Never push past the agreed level to find feedback.',
     why: {
       'Turn the PA up to hear where it rings': 'Raising a level to find feedback is the one thing never to do.',
       'Boost the vocal to stay above the ring': 'More vocal gain feeds the ring — it gets worse.',
@@ -609,7 +609,7 @@ export const E09_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E09_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A band has no single right plan: hear it, arrange it, then add only the mics each part needs. The readouts on the stage plot are calculated from the drawing — equal source levels, straight paths, ideal patterns, no room — to compare plans, not to predict a venue. Every band, room and production is different: experiment, compare at matched level, and trust your ears. Keep hot equipment ventilated, cables and walkways clear, protect your hearing and never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A band has no single right plan: hear it, arrange it, then add only the mics each part needs. The readouts on the stage plot are calculated from the drawing — equal source levels, straight paths, ideal patterns, no room — to compare plans, not to predict a venue. Every band, room and production is different: experiment, compare at matched level, and trust your ears. Keep hot equipment ventilated, cables and walkways clear, protect your hearing and avoid uncontrolled feedback.',
   copy: { words: ensembleWords('band') },
   ensemble: {
     seatings: { stage: 'band.stage', room: 'band.room' },
@@ -629,7 +629,7 @@ export const E09_LESSON: EnsembleLesson = {
       { title: 'DECIDE THE APPROACH', text: 'Playing together with controlled bleed, an isolation-heavy production, or a hybrid — the rhythm section live, a vocal or a featured amp isolated.' },
       { title: 'SET THE STAGE', text: 'Monitor and cue-mix needs, sightlines and talkback; cable paths, power and stand clearance safe before the soundcheck.' },
     ],
-    safety: 'Never cover hot equipment or block its ventilation; use safe, approved isolation. Keep cables, power and walkways clear and serviceable; split mics only through a proper splitter. Protect your hearing; never provoke feedback.',
+    safety: 'Never cover hot equipment or block its ventilation; use safe, approved isolation. Keep cables, power and walkways clear and serviceable; split mics only through a proper splitter. Protect your hearing; avoid uncontrolled feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a band: the drum pair over the kit, then close mics only where a part needs control — a place to start and compare, not a rule.',
       clearance: 'The boom stand stands in front of the kit, its base clear of the kick pedal and the walkway; the bar above the cymbals’ swing and the sticks’ highest point; the cable dressed flat.',

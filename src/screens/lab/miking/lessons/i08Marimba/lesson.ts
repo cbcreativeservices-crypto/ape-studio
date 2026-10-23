@@ -88,7 +88,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A pipe is about a quarter wavelength of its note: for the lowest C, about 1.3 m — more than the bars’ height above the floor. A wide box resonates in less height.',
     why: {
       'Boxes make the lowest notes much louder than long pipes could': 'The reason is height, not level: a quarter wavelength for the lowest notes will not fit under the bars.',
-      'Wood bars must not hang over metal pipes': 'Every other bar hangs over a pipe; the lowest ones just need something shorter.',
+      'Wood bars must not hang over metal pipes': 'All the other bars hang over pipes; the lowest ones just need something shorter.',
     },
   },
   {
@@ -480,7 +480,7 @@ const words: MalletWords = {
     after: 'Then the bar keeps ringing briefly, the pipe with it: a marimba note is short, which is why players roll long notes. The mallet and the stroke place shape it — the player’s choices.',
     shapes: {
       intro: 'This is the lowest shape — the note. The middle and the ends move opposite ways about two still points, a little in from each end, where the cord passes.',
-      tuned: 'A plain bar’s upper shapes ring at uneven ratios (about 2.76 and 5.40 times the lowest). Marimba bars are carved underneath to tune them — makers call it octave tuning — so a real bar’s ratios differ from this plain one. The still points and the strike-point idea stay.',
+      tuned: 'A plain bar’s upper shapes ring at uneven ratios (about 2.76 and 5.40 times the lowest). Marimba bars are carved underneath to tune them, most often with the first upper shape two octaves above the note, so a real bar’s ratios differ from this plain one. The still points and the strike-point idea stay.',
       notes: ['A shape is set moving only as much as the bar moves at the strike point in that shape: the stroke place is part of the tone.'],
     },
     tube: {
@@ -595,7 +595,7 @@ const copy: Partial<LessonCopy> = {
         { title: 'THE ENSEMBLE', text: 'Hear the main array first; add one or two spots when the part needs level or focus — and check them with the mains, in mono.' },
       ],
       body: 'On stage, the monitors stay where the player needs them: turn the mic or choose its pattern so a null faces a loud unwanted source. Never push the player to strike harder to beat a loud stage.',
-      warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Address nearby levels and monitor placement rather than gain. Never create feedback deliberately.',
+      warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Address nearby levels and monitor placement rather than gain. Avoid uncontrolled feedback.',
     },
   },
   twoMic: {

@@ -108,7 +108,7 @@ const F13Before = makeBeforePage({
     { title: 'IN A LIVE SPACE', text: 'Coordinate the test with the operator and the venue, mute unrelated program, keep stands and cables out of public routes, and never run an unannounced sweep near performers or an audience. Loudspeakers go on rated supports; flown systems are for qualified crew.' },
   ],
   safety: [
-    'No explosive or firearm-like sources in this lab — ever. Use modest test levels, protect hearing, and never drive the source louder only to force a result.',
+    'No explosive or firearm-like sources in this lab — ever. Use modest test levels and protect hearing: raise the source only within safe, clean limits.',
     'The measurement mic goes to the analyzer or recorder only, never back to the PA.',
   ],
 });

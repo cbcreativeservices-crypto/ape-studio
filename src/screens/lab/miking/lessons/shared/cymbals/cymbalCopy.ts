@@ -52,7 +52,7 @@ export const CYM_CONTEXT_WORDS: Pick<LessonCopy['context'], 'deepNull' | 'cardio
       { title: 'MOUNTING', text: 'Cymbals swing and stands get bumped. Live, use secure, repeatable mounts and protect the cables; in the studio, stopped sessions allow careful moves.' },
     ],
     body: 'Cymbals are loud and spread their sound widely: placement and the overheads matter more than the mic model. A pattern’s rejection helps — it does not remove a loud neighbour.',
-    warn: 'No cymbal-mic position alone prevents feedback: the pattern, the other open mics, the monitors, the PA and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+    warn: 'No cymbal-mic position alone prevents feedback: the pattern, the other open mics, the monitors, the PA and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
   },
 };
 

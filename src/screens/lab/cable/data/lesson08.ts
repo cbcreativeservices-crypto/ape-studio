@@ -242,8 +242,8 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
         options: ['MUTE THE CHANNEL FIRST', 'PATCH IT HOT — LINE LEVEL IS HARMLESS', 'YANK IT FAST SO THE POP IS SHORT'],
         correct: 'MUTE THE CHANNEL FIRST',
         explain:
-          'The contacts bridge on the way in and out, popping through the system — and here the pop goes straight into a power amplifier. Mute the channel before connecting or disconnecting.',
-        hint: 'What do bridging contacts do to a live channel — and what sits downstream of THIS one?',
+          'Plugging or unplugging a live line can pop loudly through the system — and here the pop goes straight into a power amplifier. Mute the channel before connecting or disconnecting.',
+        hint: 'What does a live plug or unplug send through the system — and what sits downstream of THIS one?',
       },
     ],
   },
@@ -260,7 +260,7 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
         options: ['LOUDSPEAKER-LEVEL AUDIO', 'LINE-LEVEL AUDIO', 'AC MAINS POWER', 'INSTRUMENT-LEVEL AUDIO'],
         correct: 'LOUDSPEAKER-LEVEL AUDIO',
         explain:
-          'An amplifier’s output is loudspeaker-level — whole volts with real current behind it. It belongs only on loudspeaker terminals, over cable sized for the job.',
+          'An amplifier’s output is loudspeaker-level — whole volts with real current behind it. It goes to loudspeaker terminals, over cable sized for the job — never into a mic or line input.',
         hint: 'On this one connection, the amplifier has already done its work.',
       },
       {

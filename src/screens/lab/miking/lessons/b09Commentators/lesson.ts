@@ -272,7 +272,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'An open position, the PA high to the front-left. A fair first step for the commentary mic?',
     options: ['Close, its least sensitive side toward the PA', 'Farther back, so it hears a more natural stadium', 'Turned up until the voice is over the PA'],
     correct: 'Close, its least sensitive side toward the PA',
-    explain: 'A close mic keeps the voice ahead of the PA and the crowd; then aim its quietest direction at the PA. Test with the venue live; never provoke feedback.',
+    explain: 'A close mic keeps the voice ahead of the PA and the crowd; then aim its quietest direction at the PA. Test with the venue live; avoid uncontrolled feedback.',
     why: {
       'Farther back, so it hears a more natural stadium': 'Farther from the mouth, the PA and the crowd rise against the voice.',
       'Turned up until the voice is over the PA': 'More gain raises the PA with the voice.',
@@ -445,7 +445,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'How close is the mic? Where is the PA against its pattern? Is a sheltered position possible?',
     options: ['Closer mic; its quietest side toward the PA', 'Raise the gain so the voice beats the PA', 'Swap to an omni so the PA sounds more natural'],
     correct: 'Closer mic; its quietest side toward the PA',
-    explain: 'A close mic keeps the voice ahead; the pattern’s quietest direction aimed at the PA helps. A windscreen and shelter help wind, not reverberant PA. Never provoke feedback.',
+    explain: 'A close mic keeps the voice ahead; the pattern’s quietest direction aimed at the PA helps. A windscreen and shelter help wind, not reverberant PA. Avoid uncontrolled feedback.',
     why: {
       'Raise the gain so the voice beats the PA': 'Gain raises the PA with the voice.',
       'Swap to an omni so the PA sounds more natural': 'An omni hears the PA from every side: more of it, not less.',
@@ -480,7 +480,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Trace cough, talkback, the return and the crowd bed', early: 'Routing checks come after the mics work.' },
       { text: 'Check the fallback mic and start the return level low', early: 'The fallback and the return level close the setup.' },
     ],
-    explain: 'A sensible order. A passive ribbon: check its interface and phantom setting with the audio lead first. Never provoke feedback.',
+    explain: 'A sensible order. A passive ribbon: check its interface and phantom setting with the audio lead first. Avoid uncontrolled feedback.',
   },
 ];
 
@@ -650,11 +650,11 @@ export const B09_LESSON: Lesson = {
       { id: 'caller', label: 'the commentator', short: 'COMMENTATOR', note: 'Seated at the desk, the mouth at the point every distance is read from. The head follows the play, reads down and turns to the partner.', prov: { kind: 'illustrative', reason: 'the shared figure seated (drawing default)' }, tag: 'THE SOURCE', scene: 'all' },
       { id: 'analyst', label: 'the analyst beside them', short: 'ANALYST', note: 'About 0.9 m to the right: their voice reaches the commentator’s mic later and much lower. A mic each, on its own channel.', prov: { kind: 'illustrative', reason: 'the lesson L28; the spacing a drawing default' }, tag: 'BLEED', scene: 'studio' },
       { id: 'crowd', label: 'the crowd', short: 'CROWD', note: 'In front and below: every commentary mic hears it. A close mic keeps the voice ahead; the crowd’s own mics carry its energy.', prov: { kind: 'illustrative', reason: 'the lesson L5, L29' }, tag: 'NOISE', scene: 'all' },
-      { id: 'pa', label: 'the PA cluster', short: 'PA', note: 'At an open position the PA may be louder in the mic than the crowd. Aim the pattern’s quietest side at it; never provoke feedback.', prov: { kind: 'illustrative', reason: 'the lesson L29; its place a drawing default' }, tag: 'SPILL', scene: 'stage' },
+      { id: 'pa', label: 'the PA cluster', short: 'PA', note: 'At an open position the PA may be louder in the mic than the crowd. Aim the pattern’s quietest side at it; avoid uncontrolled feedback.', prov: { kind: 'illustrative', reason: 'the lesson L29; its place a drawing default' }, tag: 'SPILL', scene: 'stage' },
       { id: 'notes', label: 'the notes and the screen', short: 'NOTES', note: 'Page turns and reading down: a fixed mic loses the mouth; a boom needs to clear the notes.', prov: { kind: 'illustrative', reason: 'the lesson L5, L6' }, tag: 'MOVEMENT', scene: 'all' },
       { id: 'phones', label: 'the headphones', short: 'HEADPHONES', note: 'Closed earcups: the program, the cues and the commentator’s own voice. Start the level low; they are not hearing protection unless rated.', prov: { kind: 'illustrative', reason: 'the lesson L12, L32' }, tag: 'HEARING', scene: 'all' },
     ],
-    stage: 'OPEN POSITION: a close mic — a lip ribbon on its guard or a headset boom — its quietest side toward the PA, the crowd on its own mics, every route traced. Never provoke feedback.',
+    stage: 'OPEN POSITION: a close mic — a lip ribbon on its guard or a headset boom — its quietest side toward the PA, the crowd on its own mics, every route traced. Avoid uncontrolled feedback.',
     studio: 'BOOTH: a headset boom each at the outside corner of the mouth, each on its own channel, the program on headphones, the return without their own voices.',
   },
   diagnostic,
@@ -678,6 +678,6 @@ export const B09_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every commentator, mic, position and stadium is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a commentator in a typical seated pose, mic patterns and the two-mic comb as textbook shapes, the partner’s voice by distance and pattern only. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. No mic cancels a stadium; never provoke feedback; start the headphone level low.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every commentator, mic, position and stadium is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a commentator in a typical seated pose, mic patterns and the two-mic comb as textbook shapes, the partner’s voice by distance and pattern only. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. No mic cancels a stadium; avoid uncontrolled feedback; start the headphone level low.',
   copy: B09_COPY,
 };

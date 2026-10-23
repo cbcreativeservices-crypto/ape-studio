@@ -296,7 +296,8 @@ describe('Lab 7 group 1 lessons: B01, B07, B06', () => {
   }
   it('B01-1: the live check never provokes feedback (working level; at any ring, pull it down)', () => {
     const s = learnerStrings(lessonById('B01')!).join(' ');
-    assert.match(s, /never raise a level to find feedback/i);
+    assert.match(s, /any ring-out is the system operator’s job/i);
+    assert.doesNotMatch(s, /never raise a level to find feedback/i);
     assert.doesNotMatch(s, /check for feedback/i);
   });
   it('B06-1: the lectern gooseneck starts 10–14 in (254–356 mm), off the mouth’s axis — never "8 in below, centred"', () => {

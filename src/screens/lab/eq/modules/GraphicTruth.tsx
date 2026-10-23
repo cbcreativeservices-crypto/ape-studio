@@ -131,7 +131,7 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
         // Per-view honesty line (verbatim, dynamic).
         badge:
           view === 'mag'
-            ? 'Real overlapping 1-octave bells, energy-combined — not the line through the caps.'
+            ? 'Real overlapping 1-octave bells, their dB responses added — not the line through the caps.'
             : 'Conventional minimum-phase EQ shifts phase around every region it touches — it never changes “only amplitude.”',
         bezel: [
           { k: 'VIEW', v: view === 'mag' ? 'MAG' : 'PHASE ±180°' },

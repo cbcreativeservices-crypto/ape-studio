@@ -59,7 +59,7 @@ const WS_COMPRESSOR: Workspace = {
     'Reading the settled (steady-state) gain reduction as the peak reduction — attack time means transients briefly get LESS reduction than this static math predicts; release means it lingers after the signal drops.',
     'Forgetting a signal below threshold is untouched — no ratio does anything until the level crosses the threshold.',
     'Confusing gain reduction with makeup gain — GR is how much the loud parts are pushed DOWN; makeup gain is a separate, opposite move to bring the whole signal back up afterward.',
-    'Treating a hard-knee number as exact on a soft-knee unit — a soft knee starts compressing gently BELOW the nominal threshold, so real gain reduction near the corner is less than this model shows.',
+    'Treating a hard-knee number as exact on a soft-knee unit — a soft knee starts compressing gently BELOW the nominal threshold and eases into the full ratio a few dB above it, so near the corner real gain reduction is MORE than this model shows.',
   ],
   warnings:
     'Static hard-knee model: output = threshold + (input − threshold) / ratio for levels at or ' +

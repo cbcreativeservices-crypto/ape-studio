@@ -360,7 +360,7 @@ const symptoms: Symptom[] = [
     correct: 'Bypass the filter, test the low phrase, move the mic',
     explain: 'A filter set from the word “euphonium”, or a room that cancels the low notes, can thin the bottom. Find which before reaching for EQ.',
     why: {
-      'Boost the lowest frequencies on the channel first': 'EQ cannot put back what a filter or a cancellation removed.',
+      'Boost the lowest frequencies on the channel first': 'EQ cannot fully put back what a filter or a cancellation removed.',
       'Swap to the largest mic you have, for its bigger diaphragm': 'A larger diaphragm is no promise of low end. The filter and the room come first.',
     },
   },

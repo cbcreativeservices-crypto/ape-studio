@@ -243,7 +243,7 @@ describe('colour, honesty and words', () => {
     assert.match(model, /FFP2\/N95 mask/);
     assert.match(model, /smoke detector, sprinkler head or light fitting/);
     assert.match(model, /check for pipes and wiring before drilling/);
-    assert.match(model, /Class A \/ UL 94/);
+    assert.match(model, /Class A under ASTM E84/);
     const review = strip(read(`${LAB}modules/modReview.tsx`));
     assert.match(review, /<RoomPlanView[^>]*edit="none"/, 'the Review carries a read-only mini plan');
     assert.match(review, /tag=\{i === firstCheck \? 'TRY FIRST' : undefined\}/);

@@ -123,7 +123,7 @@ export const F13_ZONES: DocumentedZone[] = [
     requires: { variant: 'pa', micTypeIds: RX },
     drawn: { side: { u0: 6100, u1: 7600, v0: earY - 100, v1: earY + 100 }, top: { u0: 6100, u1: 7600, v0: -3200, v1: 0 } },
     start: toward(F13_START.paB, PA_REF),
-    tendency: 'The system and the room farther back: how the coverage holds up the room. Compare band by band with the seat nearer the front.',
+    tendency: 'The system and the room farther back: how the coverage holds up in the room. Compare band by band with the seat nearer the front.',
     checks: ['The same PA preset as the first seat', 'Seats measured front to back, in order', 'The label: system + room'],
   },
 ];

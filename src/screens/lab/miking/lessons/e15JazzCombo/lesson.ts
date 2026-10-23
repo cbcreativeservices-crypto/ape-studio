@@ -421,7 +421,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Close mics to the PA and the stream, an audience pair added for the stream', ok: true, power: 'phantom', feedback: 'Fair, with the pair kept out of the wedges.' },
       { id: 'c', label: 'One shared main pair for the PA, wedges and stream', ok: false, power: 'phantom', feedback: 'A poor default for a loud, monitored stage.' },
       { id: 'd', label: 'The room pair in every wedge so the band hears the room', ok: false, power: 'phantom', feedback: 'Distant mics in the wedges invite feedback.' },
-      { id: 'e', label: 'Push the PA until it rings, then back off', ok: false, power: 'phantom', feedback: 'Never provoke feedback.' },
+      { id: 'e', label: 'Push the PA until it rings, then back off', ok: false, power: 'phantom', feedback: 'Not until it rings: set the level the show needs, with a margin.' },
     ],
     reasons: [
       { id: 'r.roles', label: 'Each mic has a role: PA, wedges, stream', role: 'required', feedback: 'Explicit roles keep the pair out of the wedges.' },
@@ -576,7 +576,7 @@ export const E15_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E15_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A combo has no single right setup: hear the group, agree its layout with the players, choose one main view, and add a support only for a stated reason. The readouts on the stage plot are calculated from the drawing — equal source levels, straight paths, ideal patterns, no room — to compare setups, not to predict a club. Every group, room and production is different: experiment, compare at matched level, and trust your ears. Nothing fixed to a valuable instrument without the owner’s approval; protect your hearing; never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A combo has no single right setup: hear the group, agree its layout with the players, choose one main view, and add a support only for a stated reason. The readouts on the stage plot are calculated from the drawing — equal source levels, straight paths, ideal patterns, no room — to compare setups, not to predict a club. Every group, room and production is different: experiment, compare at matched level, and trust your ears. Nothing fixed to a valuable instrument without the owner’s approval; protect your hearing; avoid uncontrolled feedback.',
   copy: { words: ensembleWords('combo') },
   ensemble: {
     seatings: { quartet: 'jazz.quartet', guitar: 'jazz.guitar' },

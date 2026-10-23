@@ -29,7 +29,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How the fan reaches A, B and C',
-    goal: 'See the fan’s sound reach three positions at the same radius — the same direct path, different bounces — and keep pressure, vibration and sound power apart.',
+    goal: 'See the fan’s sound reach three positions at the same radius — the same direct distance, different bounces — and keep pressure, vibration and sound power apart.',
     credit: { scenarios: ['mp.snd.1', 'mp.snd.2', 'mp.snd.3'], note: 'Answer the three checks.' },
     takeaway: 'A mic reads the airborne pressure where its capsule sits; a contact sensor reads vibration in other units; sound power is a property of the device, estimated under a method.',
   },

@@ -21,7 +21,7 @@ const SECTION_CARDS = (
       <Point title="A CLIP-ON MIC">The distance stays steady as the player moves, with strong separation — and a close, smaller view, handling noise and a cable to secure.</Point>
       <Point title="A SUPERCARDIOID">Tighter at the front than a cardioid; its least-sensitive directions sit off its rear, with a small lobe straight behind — place wedges there, not dead behind.</Point>
     </Card>
-    <Body>For the section view, a pair: matched cardioids together (X/Y), 17 cm apart at 110°, or spaced omnis.</Body>
+    <Body>For the section view, a pair: matched cardioids together (X/Y), two cardioids 17 cm apart at 110°, or spaced omnis.</Body>
     {ARRAY_CARDS}
   </>
 );

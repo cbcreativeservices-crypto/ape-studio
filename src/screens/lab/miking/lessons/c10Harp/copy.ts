@@ -112,7 +112,7 @@ export const HARP_COPY: LessonCopy = {
         { title: 'MOUNTING', text: 'Live: secure stands, cables relieved so a pull never reaches the harp, and any miniature on a holder the owner approves.' },
       ],
       body: 'A pattern’s rejection is a tool to aim — moving the wedge, fewer open mics and a lower level often do more. A harp with a built-in pickup can be compared with the mic, separately, before blending.',
-      warn: 'No mic position alone prevents feedback: the pattern, the monitors, the other open mics, the system level and the room all matter. Never create feedback deliberately. Turn the level down before moving a mic.',
+      warn: 'No mic position alone prevents feedback: the pattern, the monitors, the other open mics, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level. Turn the level down before moving a mic.',
     },
   },
   twoMic: {

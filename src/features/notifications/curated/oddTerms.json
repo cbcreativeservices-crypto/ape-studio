@@ -61,7 +61,7 @@
   },
   {
     "term": "phone jack",
-    "body": "A \"phone jack\" carries its name from the earliest telephone switchboards - the quarter-inch socket outlived the switchboards by a century and kept the name."
+    "body": "A \"phone jack\" carries its name from the earliest telephone switchboards - the quarter-inch socket outlived those switchboards and kept the name."
   },
   {
     "term": "Idiophone artifact",
@@ -173,7 +173,7 @@
   },
   {
     "term": "Base film",
-    "body": "Every strip of magnetic tape rides on a plastic backbone whose material tells its age: paper, then acetate, then PVC, then tough polyester by the late '50s."
+    "body": "Every strip of magnetic tape rides on a base film whose material tells its age: paper, then acetate, then PVC, then tough polyester from the late '50s on."
   },
   {
     "term": "Air resonance",
@@ -337,7 +337,7 @@
   },
   {
     "term": "Quartz-enhanced photoacoustic spectroscopy",
-    "body": "This gas detector listens instead of looking: light gets absorbed, makes a tiny sound, and a microscopic tuning fork rings sharply in reply."
+    "body": "This gas detector listens instead of looking: light gets absorbed, makes a tiny sound, and a small quartz tuning fork rings sharply in reply."
   },
   {
     "term": "Listening walk",
@@ -361,11 +361,11 @@
   },
   {
     "term": "Lunzhi tremolo",
-    "body": "A single pluck on the pipa fades fast, so players fake sustain with lunzhi: rolling all four right-hand fingers across the string to keep one note going."
+    "body": "A single pluck on the pipa fades fast, so players fake sustain with lunzhi: rolling all five right-hand fingers, thumb too, across the string to hold one note."
   },
   {
     "term": "CCIF IMD",
-    "body": "This test plays two close, high tones and listens for the phantom low tone gear invents - named for a 1930s telephone body later folded into the ITU."
+    "body": "This test plays two close, high tones and listens for the phantom low tone gear invents - named for a 1920s telephone body later folded into the ITU."
   },
   {
     "term": "Pistonphone",
@@ -493,7 +493,7 @@
   },
   {
     "term": "rayl",
-    "body": "The rayl, the unit for how strongly a medium resists sound flow, is one of the few audio units named for a person - the physicist Lord Rayleigh."
+    "body": "The rayl, the unit for how strongly a medium resists sound flow, is named for a person - the physicist Lord Rayleigh - like the hertz, the volt and the bel."
   },
   {
     "term": "Slide-path clearance",
@@ -589,7 +589,7 @@
   },
   {
     "term": "Tape operator",
-    "body": "The tape machine is long gone from most stages, but the operator who once threaded it is still called the tape op, even when running a laptop."
+    "body": "The tape machine is long gone from most studios, but the assistant who once threaded it is still called the tape op, even when running a laptop."
   },
   {
     "term": "Acoustic emulsification",
@@ -701,7 +701,7 @@
   },
   {
     "term": "Tape Delay",
-    "body": "A tape delay's echo time isn't a knob value - it's the physical gap between a record head and a playback head on the same moving loop of tape."
+    "body": "A tape delay's echo time comes from two things: the gap between the record head and the playback head, and how fast the loop of tape runs past them."
   },
   {
     "term": "Bendir buzz",
@@ -717,7 +717,7 @@
   },
   {
     "term": "Percussion circuit",
-    "body": "Hammond organs add a short, bell-like 'ping' at the start of a note called percussion - but it fires once, so holding two keys down silences it."
+    "body": "Hammond organs add a short, bell-like 'ping' at the start of a note called percussion - but it fires again only after every key is lifted, so legato gets none."
   },
   {
     "term": "Mach wave radiation",
@@ -765,7 +765,7 @@
   },
   {
     "term": "Elliptical equalizer",
-    "body": "Cutting vinyl, an elliptical equalizer folds deep bass toward the groove's center, since out-of-phase bass can throw the cutting or playback stylus off."
+    "body": "Cutting vinyl, an elliptical equalizer folds deep bass to mono, since out-of-phase bass can throw the cutting or playback stylus off."
   },
   {
     "term": "Delay Tracking",
@@ -801,7 +801,7 @@
   },
   {
     "term": "Powder-pattern visualization",
-    "body": "Sprinkle fine powder on a vibrating plate and it dances into pictures: grains pile up on the still lines, tracing a resonance's shape by eye."
+    "body": "Sprinkle sand on a vibrating plate and it dances into pictures: grains pile up on the still lines, tracing its resonance. Very fine powder can do the reverse."
   },
   {
     "term": "skeuomorphism",
@@ -853,7 +853,7 @@
   },
   {
     "term": "Listen Mic Compressor",
-    "body": "SSL built a brutal compressor into its consoles just to tame the talkback mic - until Hugh Padgham caught a drummer through it and helped define 1980s pop."
+    "body": "SSL built a brutal compressor into its consoles just to tame the studio listen mic - until Hugh Padgham caught a drummer through it and helped define 1980s pop."
   },
   {
     "term": "Helmholtz instability",
@@ -873,7 +873,7 @@
   },
   {
     "term": "Time-distance helioseismology",
-    "body": "Scientists scan the Sun's interior by timing sound waves crossing its surface between two points - listening to structure you'll never actually see."
+    "body": "Scientists scan the Sun's interior by timing sound waves that dive inside and resurface between two points - listening to structure you'll never actually see."
   },
   {
     "term": "Voiceprint",
@@ -905,7 +905,7 @@
   },
   {
     "term": "Contribution feed",
-    "body": "Broadcast engineers keep a strict direction sense: a contribution feed flows into the station from the field, lightly compressed since it still has to be mixed."
+    "body": "Broadcast engineers keep a strict direction sense: a contribution feed flows into the station from the field, with light data compression since it gets mixed."
   },
   {
     "term": "Digital audio stationary head",
@@ -925,7 +925,7 @@
   },
   {
     "term": "Constant angular velocity",
-    "body": "A vinyl LP spins at one fixed speed no matter what, so outer grooves glide past the needle faster than inner ones - a mismatch called constant angular velocity."
+    "body": "A vinyl LP spins at one fixed speed, so outer grooves pass the needle faster than inner ones - that fixed-speed scheme is called constant angular velocity."
   },
   {
     "term": "Bubble resonance",
@@ -1101,7 +1101,7 @@
   },
   {
     "term": "Ceramic microphone",
-    "body": "Ceramic mics make sound from a flexing piezoelectric crystal like barium titanate - rugged and cheap, so they turned up in old phones and toys, not studios."
+    "body": "Ceramic mics make sound from a flexing piezoelectric crystal like barium titanate - rugged and cheap, so they turned up in home tape recorders, radios and toys."
   },
   {
     "term": "Buzz-squeak-rattle",
@@ -1141,7 +1141,7 @@
   },
   {
     "term": "Hum-bucking winding",
-    "body": "A hum-bucking winding cancels hum via a second, oppositely-wound coil - outside noise cancels across both, while the signal adds: the guitar humbucker's trick."
+    "body": "A hum-bucking winding cancels hum with a second, reverse-wired coil. In a guitar humbucker that coil's magnet is flipped too, so the string signal still adds."
   },
   {
     "term": "Diggin’ in the crates",
@@ -1149,7 +1149,7 @@
   },
   {
     "term": "Tonpilz transducer",
-    "body": "Tonpilz means singing mushroom in German - a squat underwater sound projector with a light head, heavy tail, and a piezoelectric stack clamped between."
+    "body": "Tonpilz means sound mushroom in German - a squat underwater sound projector with a light head, heavy tail, and a piezoelectric stack clamped between."
   },
   {
     "term": "acousmatic music",
@@ -1301,7 +1301,7 @@
   },
   {
     "term": "Synthetic-aperture sonar",
-    "body": "Synthetic-aperture sonar strings together pings along a moving vehicle's path to fake one huge antenna, yielding seabed images largely independent of range."
+    "body": "Synthetic-aperture sonar strings together pings along a moving vehicle's path to fake one huge antenna, so seabed detail stays sharp even far from the vehicle."
   },
   {
     "term": "Actor-Triggered Scare Audio",
@@ -1413,7 +1413,7 @@
   },
   {
     "term": "phononics",
-    "body": "Phononics is sound's answer to photonics: pattern a material just right and certain frequencies simply cannot pass through it - a one-way street for vibration."
+    "body": "Phononics is sound's answer to photonics: pattern a material just right and certain frequencies simply cannot pass through it - a no-go zone for vibration."
   },
   {
     "term": "Digital Compact Cassette",
@@ -1629,7 +1629,7 @@
   },
   {
     "term": "Seismic-acoustic spectrogram",
-    "body": "Elephants send rumbles through the literal ground, not the air - this spectrogram is built to catch those seismic murmurs alongside earthquakes and volcanoes."
+    "body": "Elephant rumbles travel through the air and also shake the ground - this spectrogram is built to catch those seismic murmurs alongside quakes and volcanoes."
   },
   {
     "term": "Horizontal modulation",
@@ -1721,7 +1721,7 @@
   },
   {
     "term": "Auditory neuropathy spectrum disorder",
-    "body": "In auditory neuropathy, the ear's hair cells work fine, but the timing signal to the brain arrives scrambled - hearing tests look normal even when speech isn't."
+    "body": "In auditory neuropathy the hair cells work fine, but the signal to the brain arrives out of time - some hearing tests look normal, yet speech is hard to follow."
   },
   {
     "term": "Eidophone",
@@ -1873,7 +1873,7 @@
   },
   {
     "term": "Active pickup",
-    "body": "An active pickup's battery drains even when the guitar sits untouched - the input jack itself is the power switch, so an overnight cable kills it."
+    "body": "An active pickup's battery drains whenever a cable sits in the jack, even if no one plays - the input jack itself is the power switch, so unplug after playing."
   },
   {
     "term": "Mass law",
@@ -2025,7 +2025,7 @@
   },
   {
     "term": "Hemp system",
-    "body": "The oldest stage rigging uses no counterweights at all - hand lines tied off on belaying pins, so the crew hoists scenery by pure muscle."
+    "body": "The oldest stage rigging has no steel counterweight sets - hand lines tie off on belaying pins, and the crew hoists scenery by muscle, sometimes with sandbags."
   },
   {
     "term": "metadata forensic examination",
@@ -2193,7 +2193,7 @@
   },
   {
     "term": "Far-side helioseismic imaging",
-    "body": "Sound waves crossing straight through the Sun let astronomers map sunspot storms on its far side, invisible from Earth, before rotation brings them into view."
+    "body": "Sound waves travelling deep inside the Sun let astronomers map sunspot storms on its far side, invisible from Earth, before rotation brings them into view."
   },
   {
     "term": "Rectifier tube",
@@ -2365,7 +2365,7 @@
   },
   {
     "term": "two-microphone method",
-    "body": "Two closely spaced, matched mics separate incoming sound from its own room reflections just by comparing what each hears - the basis of impedance-tube testing."
+    "body": "Two closely spaced, matched mics in a tube split the sound heading toward a sample from the sound it bounces back - the basis of impedance-tube testing."
   },
   {
     "term": "noise map",
@@ -2745,7 +2745,7 @@
   },
   {
     "term": "electrophone",
-    "body": "Electrophones are the fifth family bolted onto the old four-part instrument classification - built for synths, though the electric guitar is still argued over."
+    "body": "Electrophones are the fifth family added to the old four-part instrument classification around 1940 - for electric instruments like the theremin, before synths."
   },
   {
     "term": "Throw steel",
@@ -2965,7 +2965,7 @@
   },
   {
     "term": "Reflection density growth",
-    "body": "Echoes in a room don't trickle in steadily - their count grows with the square of elapsed time, so early reflections thicken fast into a smooth wash."
+    "body": "Echoes in a room don't trickle in steadily - the number arriving each second grows with time squared, so early reflections thicken fast into a smooth wash."
   },
   {
     "term": "phat",
@@ -3037,7 +3037,7 @@
   },
   {
     "term": "Foldback speaker",
-    "body": "Foldback is just British and Australian slang for a stage monitor - the same wedge speaker, pointed back at the performer, wears a different name abroad."
+    "body": "Foldback is the usual British and Australian word for a stage monitor - the same wedge speaker, pointed back at the performer, wears a different name abroad."
   },
   {
     "term": "Crowned guide",
@@ -3277,7 +3277,7 @@
   },
   {
     "term": "Live end",
-    "body": "Some control rooms keep one half deliberately loud: the 'live end' stays hard and diffusive while the 'dead end' around the speakers is heavily absorbed."
+    "body": "Some control rooms keep one half deliberately lively: the 'live end' stays hard and diffusive while the 'dead end' around the speakers is heavily absorbed."
   },
   {
     "term": "Lectern",
@@ -3349,7 +3349,7 @@
   },
   {
     "term": "Original Pressing",
-    "body": "An original pressing was stamped from the very metal plates cut when the album first came out - a reissue almost always starts from a different source."
+    "body": "An original pressing was stamped from the first metal plates made when the album came out - a reissue almost always starts from a different source."
   },
   {
     "term": "Auditory spectrogram",
@@ -3389,7 +3389,7 @@
   },
   {
     "term": "Chordophone artifact",
-    "body": "Chordophone: the classification for ancient string instruments like lyres and harps - identified mostly from wear marks, since the strings rot away."
+    "body": "Chordophone: the class for every string instrument. Ancient ones like lyres and harps are identified mostly from wear marks, since the strings rot away."
   },
   {
     "term": "Acoustic looming",
@@ -3477,7 +3477,7 @@
   },
   {
     "term": "Ringing out the room",
-    "body": "Ringing out a room means slowly raising gain until the PA howls, then notching that exact frequency - turning feedback into a map of the room's weak spots."
+    "body": "Ringing out means slowly raising gain until one frequency starts to ring, then notching it - turning controlled feedback into a map of the room's weak spots."
   },
   {
     "term": "Loudness assimilation",
@@ -3649,7 +3649,7 @@
   },
   {
     "term": "Fill pumping",
-    "body": "Mismatched room-tone levels between edits make a mix's supposed silence visibly breathe - swelling and fading in time with the cuts."
+    "body": "Mismatched room-tone levels between edits make a mix's supposed silence audibly breathe - swelling and fading in time with the cuts."
   },
   {
     "term": "Inverse Problem",
@@ -3697,7 +3697,7 @@
   },
   {
     "term": "Bridle",
-    "body": "A bridle hangs a load from two rigging legs instead of one - widen the angle past 90 degrees and each leg's tension climbs fast, nearly doubling near 150."
+    "body": "A bridle hangs a load from two rigging legs instead of one - widen the angle and each leg's pull climbs fast: past 120°, each leg holds more than the load."
   },
   {
     "term": "HIFU",
@@ -3749,7 +3749,7 @@
   },
   {
     "term": "Reverse-log potentiometer",
-    "body": "A reverse-log, or anti-log, pot is a volume knob wired backwards - most of its change happens at the start of the turn, not the end."
+    "body": "A reverse-log, or anti-log, pot is the mirror image of a normal volume pot - most of its change happens at the start of the turn, not the end."
   },
   {
     "term": "jamming",
@@ -3933,7 +3933,7 @@
   },
   {
     "term": "Preview head",
-    "body": "Vinyl lathes get a head start: a second playback head reads the program one revolution ahead, warning the cutter to widen the groove before loud parts."
+    "body": "Disc cutting gets a head start: a preview head on the tape deck plays the music a disc turn early, so the lathe can space grooves wider before loud parts."
   },
   {
     "term": "oronym",
@@ -4049,7 +4049,7 @@
   },
   {
     "term": "Actor delay alignment",
-    "body": "Live theatre speakers deliberately play an actor's voice a beat late - the Haas effect then makes the amplified sound seem to come from the actor, not the PA."
+    "body": "Live theatre speakers deliberately play an actor's voice a few milliseconds late - the Haas effect then makes the sound seem to come from the actor, not the PA."
   },
   {
     "term": "Ohm-out",
@@ -4073,7 +4073,7 @@
   },
   {
     "term": "Brown note",
-    "body": "The brown note is a supposed infrasonic tone said to make anyone hearing it lose bowel control - a beloved urban legend no study has ever confirmed."
+    "body": "The brown note is a supposed infrasonic tone said to make anyone hearing it lose bowel control - a beloved urban legend with no good evidence behind it."
   },
   {
     "term": "Control-voltage-to-MIDI interface",

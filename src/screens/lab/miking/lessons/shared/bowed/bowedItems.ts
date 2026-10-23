@@ -122,7 +122,7 @@ export const feedbackSymptom = (id: string, w: Words): Symptom => ({
   firstChecks: 'Lower the offending level; revise the mic, monitor and instrument geometry and the number of open mics. The body can reflect the monitor into the mic.',
   options: ['Lower the level, then change the geometry and open mics', `Boost the ${w.noun} channel so it covers the ring`, 'Swap to an omni mic, which is less likely to start feeding back'],
   correct: 'Lower the level, then change the geometry and open mics',
-  explain: `Feedback is a sound-system condition: reduce the level first, then move the mic or the monitor and close mics you do not need. The ${w.noun}’s body can reflect a monitor into a mic aimed away from it. Never provoke feedback on purpose.`,
+  explain: `Feedback is a sound-system condition: reduce the level first, then move the mic or the monitor and close mics you do not need. The ${w.noun}’s body can reflect a monitor into a mic aimed away from it. Avoid uncontrolled feedback.`,
   why: {
     [`Boost the ${w.noun} channel so it covers the ring`]: 'More gain feeds the loop. Lower the level first.',
     'Swap to an omni mic, which is less likely to start feeding back': 'An omni rejects nothing: it usually makes feedback more likely, not less.',

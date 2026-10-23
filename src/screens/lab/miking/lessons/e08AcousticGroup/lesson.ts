@@ -88,7 +88,7 @@ const scenarios: MikingScenario[] = [
     explain: 'High-frequency sources like a mandolin or fiddle project bright highs in a narrow beam; keep them off a neighbour mic’s axis.',
     why: {
       'It is the loudest instrument in the group, by far': 'It need not be loud; its brightness is what cuts through.',
-      'It radiates mostly into the floor': 'That is the upright bass, through its endpin.',
+      'It radiates mostly into the floor': 'Not a mandolin or fiddle. Only the upright bass sends much into the floor, through its endpin — and even the bass sounds mostly from its body.',
     },
   },
   {

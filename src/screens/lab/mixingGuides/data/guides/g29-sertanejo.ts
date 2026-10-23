@@ -22,7 +22,7 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "Sertanejo is Brazil’s mass-market heart music: songs about love, betrayal, drinking away heartbreak (“sofrência”), the countryside, pickup trucks and nightlife. It is the most-streamed genre in the country, and its artists headline agricultural fairs and rodeos such as the Festa do Peão de Barretos, where an 80,000-capacity arena fills night after night. The audience does not just listen; it sings the entire song, often louder than the PA in quiet passages, and raises phones during the big ballad. Brazilians also consume live recordings (“ao vivo”) at a far higher rate than any other market, so the “show” sound is the genre’s reference sound. Listeners will say “that sounded wrong” if they cannot understand the lyrics, if the duo’s harmony sounds like two separate singers instead of one voice, if the accordion is missing on the hook, or if the crowd feels absent from a live record."
+      "text": "Sertanejo is Brazil’s mass-market heart music: songs about love, betrayal, drinking away heartbreak (“sofrência”), the countryside, pickup trucks and nightlife. It is the most-streamed genre in the country, and its artists headline agricultural fairs and rodeos such as the Festa do Peão de Barretos, where a rodeo arena with about 35,000 seats fills night after night. The audience does not just listen; it sings the entire song, often louder than the PA in quiet passages, and raises phones during the big ballad. Live recordings (“ao vivo”) are a major way Brazilian fans hear the music, so the “show” sound is the genre’s reference sound. Listeners will say “that sounded wrong” if they cannot understand the lyrics, if the duo’s harmony sounds like two separate singers instead of one voice, if the accordion is missing on the hook, or if the crowd feels absent from a live record."
     }
   ],
   "instruments": [
@@ -79,7 +79,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: lead duo (as one block), kick and bass, snare, accordion (hooks pushed up), acoustic guitar, electric guitar, keys/pads, percussion, viola (the ten-string country guitar, pushed in its features), reverb returns, audience mics. Kick and bass share the bottom: in ballads the bass sustains (60–200 Hz) and the kick is softer and shorter; in arrocha (slow, romantic Bahian style) and funknejo (sertanejo-funk blend) the kick or 808 dominates 45–70 Hz, so high-pass the bass slightly higher and let it sit around 80–120 Hz. Pan the duo near center (about 5–15% left/right, matching their stage positions); acoustic guitar and accordion opposite each other at 30–50%; electric guitar and keys wider. A double-tracked violão (nylon-string guitar) can go hard left and right in the studio."
+      "text": "Hierarchy, loudest to quietest: lead duo (as one block), kick and bass, snare, accordion (hooks pushed up), acoustic guitar, electric guitar, keys/pads, percussion, viola (the ten-string country guitar, pushed in its features), reverb returns, audience mics. Kick and bass share the bottom: in ballads the bass sustains (60–200 Hz) and the kick is softer and shorter; in arrocha (slow, romantic Bahian style) and funknejo (sertanejo-funk blend) the kick or 808 dominates 45–70 Hz, so high-pass the bass slightly higher and let it sit around 80–120 Hz. Pan the duo near center (about 5–15% left/right, matching their stage positions); acoustic guitar and accordion opposite each other at 30–50%; electric guitar and keys wider. A double-tracked violão (acoustic guitar) can go hard left and right in the studio."
     }
   ],
   "eq": {
@@ -240,7 +240,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "Room / short reverb",
-        "appliedTo": "Drums, percussion, violão (nylon-string guitar)",
+        "appliedTo": "Drums, percussion, violão (acoustic guitar)",
         "setting": "0.6–1.0 s",
         "amount": "Subtle–moderate"
       },
@@ -271,7 +271,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Pop sertanejo masters land around −9 to −7 LUFS-I with true peak at −1 dBTP (−2 dBTP for very loud masters to avoid codec overs). Most streaming services normalize to −14 LUFS, so excess loudness buys nothing. Ballads benefit from a PLR of 9–11 dB (about −10 to −12 LUFS-I at −1 dBTP); “ao vivo” (live) releases keep more loudness range (6–9 LU) so the crowd moments land."
+      "text": "Pop sertanejo masters land around −9 to −7 LUFS-I with true peak at −2 dBTP (a common streaming recommendation for masters louder than −14 LUFS, to avoid codec overs). Most streaming services normalize to −14 LUFS, so excess loudness buys nothing. Ballads benefit from a PLR of 9–11 dB (about −11 to −13 LUFS-I at −2 dBTP); “ao vivo” (live) releases keep more loudness range (6–9 LU) so the crowd moments land."
     }
   ],
   "liveStudio": {
@@ -288,7 +288,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Instruments",
-        "live": "Mostly DI/piezo for violão (nylon-string guitar), viola (ten-string country guitar) and accordion to fight bleed",
+        "live": "Mostly DI/piezo for violão (acoustic guitar), viola (ten-string country guitar) and accordion to fight bleed",
         "studio": "Real mics on acoustic instruments; many “live” albums overdub instruments in the studio after recording drums, bass and vocals at the show"
       },
       {
@@ -309,7 +309,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "100–105 dBA Leq, local boundary limits",
-        "studio": "−9 to −7 LUFS-I, −1 dBTP"
+        "studio": "−9 to −7 LUFS-I, −2 dBTP"
       }
     ],
     "notes": []
@@ -328,7 +328,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Piezo violão (nylon-string guitar) and viola (ten-string country guitar) get quacky and harsh at volume—tame 1–2 kHz and 4–6 kHz rather than adding top.",
+      "text": "Piezo violão (acoustic guitar) and viola (ten-string country guitar) get quacky and harsh at volume—tame 1–2 kHz and 4–6 kHz rather than adding top.",
       "bullet": true
     },
     {

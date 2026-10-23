@@ -188,7 +188,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A clip made for the bass grips the two outer strings below the bridge and carries the capsule with the instrument. It still hears the stage, and its close view is more local.',
     why: {
       'Its clip stops it from hearing the drums and the rest of the stage': 'A clip is a mount, not a pattern: the mic still hears the stage.',
-      'It needs no phantom power, so a plain line input will do': 'A miniature condenser needs phantom power, through its adapter.',
+      'It needs no phantom power, so a plain line input will do': 'This miniature condenser needs phantom power, through its adapter.',
     },
   },
   {
@@ -209,9 +209,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says “15–30 cm out in front, just above the bridge”. Where is the mic?',
     options: ['Clipped onto the bridge, at its top edge', 'In front of the strings, a little higher than the bridge', 'Under the strings, in the gap between the bridge and the arched top'],
     correct: 'In front of the strings, a little higher than the bridge',
-    explain: '“Above the bridge” is a height on the instrument’s face — a little up the strings from the bridge — with the mic 15–30 cm out in front. Nothing goes on the bridge.',
+    explain: '“Above the bridge” is a height on the instrument’s face — a little up the strings from the bridge — with the mic 15–30 cm out in front. No mic goes on the bridge.',
     why: {
-      'Clipped onto the bridge, at its top edge': 'Nothing clips to the bridge: it can damp its vibration.',
+      'Clipped onto the bridge, at its top edge': 'No mic clips to the bridge: it can damp its vibration.',
       'Under the strings, in the gap between the bridge and the arched top': 'That is a different geometry — a capsule mounted on the strings — with distances of its own.',
     },
   },
@@ -409,7 +409,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Which channel and which speaker excite the body? Lower the offending level and revise the monitor, amp and mic geometry.',
     options: ['Cut all the low end on both bass channels at once, to stop the ring', 'Lower the offending level; revise monitor, amp and mic geometry', 'Boost the bass channel so the note covers the ring'],
     correct: 'Lower the offending level; revise monitor, amp and mic geometry',
-    explain: 'A resonant bass can feed back acoustically. Reduce the offending level, change the speaker, bass and mic geometry and the number of open mics, and check the pickup channel separately. Never provoke feedback.',
+    explain: 'A resonant bass can feed back acoustically. Reduce the offending level, change the speaker, bass and mic geometry and the number of open mics, and check the pickup channel separately. Avoid uncontrolled feedback.',
     why: {
       'Cut all the low end on both bass channels at once, to stop the ring': 'A broad cut removes musical fundamentals; find the narrow problem and its cause.',
       'Boost the bass channel so the note covers the ring': 'More gain feeds the loop. Lower it first.',

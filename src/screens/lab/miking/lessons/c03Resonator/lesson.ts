@@ -301,7 +301,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Instrument dynamic 20–45 cm from the coverplate and upper body, a little off the picking hand', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
       { id: 'b', label: 'Instrument dynamic about 20 cm from the coverplate, compared with a broader view', ok: true, power: 'none', feedback: 'A suggested starting point; it needs no phantom.' },
       { id: 'c', label: 'Small condenser facing the coverplate', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
-      { id: 'd', label: 'Clip-on mini near the coverplate’s edge', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },
+      { id: 'd', label: 'Clip-on mini near the coverplate’s edge', ok: false, power: 'phantom', feedback: 'This miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic resting on the coverplate, aimed into its holes', ok: false, power: 'none', feedback: 'Never rest anything on the coverplate. Keep the mic off the hardware.' },
     ],
     reasons: [DOC_REASON, clearReason('the bar or slide, the picking hand and the player’s turn'), POWER_REASON, { id: 'r.listen', label: 'I will listen round the instrument before committing to a spot', role: 'optional', feedback: 'A fair reason: the cone and the ports radiate differently.' }, brandReason(RESO), LOUD_REASON],

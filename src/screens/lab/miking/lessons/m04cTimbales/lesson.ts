@@ -250,7 +250,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Live, a percussion overhead covers the bells. Does it belong in the player’s wedge mix?',
     options: ['Not necessarily — decide monitor feeds with the system operator', 'Yes — each open mic on stage belongs in the player’s own wedge mix', 'Yes, as long as the wedge is turned down a little'],
     correct: 'Not necessarily — decide monitor feeds with the system operator',
-    explain: 'An overhead useful for a recording or the main PA may be unnecessary or a problem in a nearby wedge. Decide monitor feeds with the operator, and never provoke feedback.',
+    explain: 'An overhead useful for a recording or the main PA may be unnecessary or a problem in a nearby wedge. Decide monitor feeds with the operator, and avoid uncontrolled feedback.',
     why: {
       'Yes — each open mic on stage belongs in the player’s own wedge mix': 'Each mic in a wedge mix adds feedback risk and spill. Send only what the player needs.',
       'Yes, as long as the wedge is turned down a little': 'Turning down helps, but the first question is whether the feed is needed at all.',
@@ -264,7 +264,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Not at every frequency — reposition with the player, or mic it separately',
     explain: 'No cardioid null or EQ move removes a nearby ringing bell at every frequency. Discuss its position with the player, re-aim, or give it independent pickup only if justified.',
     why: {
-      'Yes — aim the null at the bell and it disappears': 'Real nulls are shallow and change with pitch; a close, loud bell still spills.',
+      'Yes — aim the null at the bell and it disappears': 'Real nulls are shallower than drawn and change with pitch; a close, loud bell still spills.',
       'Yes — one narrow EQ cut on the timbale channel removes the bell completely': 'A bell has many frequencies, shared with the drums; a cut cannot remove it alone.',
     },
   },
@@ -436,7 +436,7 @@ const symptoms: Symptom[] = [
     correct: 'The accessory’s position, the mic’s aim and the other open mics',
     explain: 'Discuss the accessory’s position with the player; re-aim, or add independent pickup only if justified.',
     why: {
-      'Aim a null at the bell and expect it to disappear from the channel': 'Real nulls are shallow and change with pitch; a nearby bell still spills.',
+      'Aim a null at the bell and expect it to disappear from the channel': 'Real nulls are shallower than drawn and change with pitch; a nearby bell still spills.',
       'Cut the high frequencies until the bell is gone': 'A cut also dulls the drums; the bell shares their frequencies.',
     },
   },
@@ -473,7 +473,7 @@ const symptoms: Symptom[] = [
     explain: 'Clearance comes first: stop before anything moves, and recheck after the full-intensity passage.',
     why: {
       'Keep going carefully and fix the mount once the song has finished': 'Clearance comes first: stop before any mic moves.',
-      'Ask the player to play around the mic': 'Never ask the player to play around the mic. Move it.',
+      'Ask the player to play around the mic': 'Move it first: the player should not have to play around the mic.',
     },
   },
 ];
@@ -791,7 +791,7 @@ export const M04C_LESSON: HandLesson = {
         { title: 'WHAT THE PART NEEDS', text: 'Bells, blocks and cymbals may be louder than the heads and enter several mics. A mono PA or off-axis audience may need a centred timbale feed rather than hard-panned drums.' },
         { title: 'MOUNTING', text: 'Stable, properly rated stands and compatible clips only, cables secured with strain relief, nothing that could drop onto the player — checked again after a changeover.' },
       ],
-      closing: 'No technique transfers unchanged to every PA: feedback depends on the loudspeaker, microphone, room and gain. Place speakers and mics by the actual pattern, decide monitor feeds with the operator, and never provoke feedback.',
+      closing: 'No technique transfers unchanged to every PA: feedback depends on the loudspeaker, microphone, room and gain. Place speakers and mics by the actual pattern, decide monitor feeds with the operator, and avoid uncontrolled feedback.',
     },
     pairs: [
       {

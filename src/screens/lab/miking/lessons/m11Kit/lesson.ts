@@ -466,7 +466,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Use only channels that serve the audience; check gain before feedback with the operator.',
     options: ['Which channels the audience needs; gain before feedback with the operator', 'Open all the drum channels and pull the master fader down a little', 'Turn the monitors up so the drummer can hear the whole kit more clearly'],
     correct: 'Which channels the audience needs; gain before feedback with the operator',
-    explain: 'Every open mic hears the monitors and the PA. Close the channels the PA does not need, and check the margin with the operator — never provoke feedback.',
+    explain: 'Every open mic hears the monitors and the PA. Close the channels the PA does not need, and check the margin with the operator, and avoid uncontrolled feedback.',
     why: {
       'Open all the drum channels and pull the master fader down a little': 'More open mics, less margin: the master hides the problem.',
       'Turn the monitors up so the drummer can hear the whole kit more clearly': 'Louder monitors bring feedback closer.',

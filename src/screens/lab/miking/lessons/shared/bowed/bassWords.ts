@@ -41,7 +41,7 @@ export function bassCopy(kind: BassKind, ids: { worked: string; context: string;
       reveal: 'Higher toward the fingerboard tends to bring more finger (or bow) and pitch; lower toward the top and an f-hole, more body and output; farther, more of the whole instrument and the room. Basses and rooms vary, so “it depends on this bass” is fair too.',
       typeNotes: {
         sdcCard: 'Ideas to try: start out in front, a little above the bridge; then move one thing at a time — a little higher toward the fingerboard, a little lower toward the top — and play low and high notes, soft and strong, each time.',
-        strMini: 'Ideas to try with a miniature: keep its clip on the two outer strings below the bridge (never on the bridge), then change only the capsule’s angle — toward an f-hole gives more level.',
+        strMini: 'Ideas to try with a miniature: keep its clip on the two outer strings below the bridge (not on the bridge itself), then change only the capsule’s angle — toward an f-hole gives more level.',
       },
       note: 'Clearance comes first: stop the bassist before moving a real mic. A mic, clip or cable anywhere ' + hand + ' can reach — or where a stand could tip onto the bass — is in the wrong place, whatever the number says.',
       availableLead: 'Starting points for this mic',
@@ -90,7 +90,7 @@ export function bassCopy(kind: BassKind, ids: { worked: string; context: string;
           { title: 'FEEDBACK', text: 'A resonant bass can feed back. Lower the offending level, change the speaker, bass and mic geometry, and check the pickup channel separately.' },
         ],
         body: 'With a drum kit beside the bassist, a pattern’s rejection is a tool to aim — but low frequencies are hard to reject, and the body reflects. Moving people and amps is a fair answer too.',
-        warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the bass amp, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+        warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the bass amp, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
       },
     },
     twoMic: {
@@ -120,7 +120,7 @@ export function bassCopy(kind: BassKind, ids: { worked: string; context: string;
       refTitle: 'MEASURED FROM',
       otherRef: 'The same number measured from another part of the bass — the top, the bridge’s foot, an f-hole — would put the mic somewhere else.',
       noAim: 'This starting point gives no aim, so the mic simply faces the bass. Distance, height and angle are still separate things to try.',
-      clipMount: 'Mount: a clip made for this instrument — on two strings below the bridge, never on the bridge — with the owner’s agreement',
+      clipMount: 'Mount: a clip made for this instrument — on two strings below the bridge, not on the bridge itself — with the owner’s agreement',
       standMount: bowed ? 'Mount: a stable stand placed clear of the bow’s sweep, the endpin and the bassist’s feet' : 'Mount: a stable stand placed clear of the hands, the endpin and the bassist’s feet',
       inPath: 'bass in path',
       facing: 'facing the bass',

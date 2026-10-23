@@ -237,7 +237,7 @@ describe('the one safety card (safety.ts)', () => {
     assert.match(SPORTS_SAFETY.animals.text, /No mic on a horse, its tack or its rider/);
     assert.match(SPORTS_SAFETY.electrics.text, /qualified person/);
     assert.match(SPORTS_SAFETY.hearing.text, /Start the headphone level low/);
-    assert.match(SPORTS_SAFETY.feedback.text, /never provoke feedback/);
+    assert.match(SPORTS_SAFETY.feedback.text, /avoid uncontrolled feedback/);
   });
   it('outdoors carries the lightning row; both lists carry approval and never into play', () => {
     assert.ok(OUTDOOR_ROWS.includes(SPORTS_SAFETY.lightning));

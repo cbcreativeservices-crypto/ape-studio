@@ -170,7 +170,7 @@ describe('calcAmpacity — the full published tables, pinned', () => {
     for (const [g, a] of [[14, 15], [12, 20], [10, 30]]) close(num(run('awg', { awg: g, insul: 90, term: 75, ambient: 30, ccc: 3 }), 'MAX OVERCURRENT DEVICE (240.4(D))'), a);
     const r = run('awg', { awg: 8, insul: 90, term: 75, ambient: 30, ccc: 3 }).find((x) => x.label === 'MAX OVERCURRENT DEVICE (240.4(D))')!;
     assert.equal(r.value, undefined);
-    assert.match(r.text ?? '', /14, 12 and 10 AWG only/);
+    assert.match(r.text ?? '', /covers copper from 18 to 10 AWG\. This size is larger/);
   });
 });
 

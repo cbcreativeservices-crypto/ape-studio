@@ -51,7 +51,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim a tom mic so its pattern’s rejection faces the crash above — and know what a pattern cannot do, and when cymbal in a tom mic is fine.',
     credit: { scenarios: ['tm.ctx.1', 'tm.ctx.2', 'tm.ctx.studio', 'tm.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the crash sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'Pointing down at a tom puts a mic’s rear toward the cymbals; the actual pattern decides where it rejects most. Real nulls are shallow, cymbals are loud, and no mic position alone prevents feedback.',
+    takeaway: 'Pointing down at a tom puts a mic’s rear toward the cymbals; the actual pattern decides where it rejects most. Real nulls are shallower than the picture, cymbals are loud, and no mic position alone prevents feedback.',
   },
   twoMic: {
     title: 'Top and bottom',

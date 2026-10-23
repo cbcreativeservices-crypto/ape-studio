@@ -344,7 +344,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why is foul territory on a diamond marked “may be live”?',
     options: ['A ball can arrive there in play', 'It is where the crew may set up', 'Only the umpire may walk there'],
     correct: 'A ball can arrive there in play',
-    explain: 'Foul territory can still be in play: foul balls and throws arrive there. Check the park’s ground rules and every possible ball path.',
+    explain: 'Foul territory can still be live: fielders chase foul pop-ups there, and throws can land there. Check the park’s ground rules and every possible ball path.',
     why: {
       'It is where the crew may set up': 'Crew positions are approved separately — foul territory can be live.',
       'Only the umpire may walk there': 'It is about the ball, not who walks there.',
@@ -564,7 +564,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['Each can be balanced on its own', 'It halves the risk of feedback there', 'The rules ask for three channels'],
     correct: 'Each can be balanced on its own',
     explain: 'Independent channels let each be balanced, muted or handed off on its own.',
-    why: { 'It halves the risk of feedback there': 'Feedback is about routing, not the number of channels.', 'The rules ask for three channels': 'It is a production choice, not a rule.' },
+    why: { 'It halves the risk of feedback there': 'Separate channels do not change feedback. It depends on what each open mic hears from the speakers, and how many mics are open.', 'The rules ask for three channels': 'It is a production choice, not a rule.' },
   },
 ];
 

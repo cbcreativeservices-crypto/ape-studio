@@ -37,7 +37,7 @@ const BASE = standingVoiceCopy({
   },
   contextPoints: [
     { title: 'APPROVAL FIRST', text: 'Every position here starts with permission — for the mount, the pack, the destination and the time window. Where it is refused, the perimeter or an interview is the fallback.' },
-    { title: 'ON THE PA', text: 'An official’s announcement mic feeds the PA and hears it back: open it on purpose, mute it again, aim its quietest side toward the PA where the mouth allows. Never provoke feedback.' },
+    { title: 'ON THE PA', text: 'An official’s announcement mic feeds the PA and hears it back: open it on purpose, mute it again, aim its quietest side toward the PA where the mouth allows. Avoid uncontrolled feedback.' },
     { title: 'MOVEMENT', text: 'People in sport run, bend, shout and sweat. A headset holds one distance through the turns; a chest mic stays on the chest. Test with safe, representative movement.' },
     { title: 'THE LOUDEST MOMENT', text: 'Set the transmitter’s gain for the loudest voice, a whistle nearby or a celebration, with headroom — and watch the transmitter, the receiver and the actual destination.' },
   ],
@@ -82,7 +82,7 @@ export const B11_COPY: Partial<LessonCopy> = {
     workedZone: { coach: 'b11.lav', official: 'b11.official', athlete: 'b11.athlete' },
     workedAim: 'Aim it toward the mouth — the lab counts it while the mic points within about {tol}° of the lips.',
     workedClear: 'Clear of the body’s equipment: the capsule off fabric edges, zips, badges and straps, nothing on a helmet or a pad, the cable with a loop and slack. Approval and clearance come first, before any number.',
-    reveal: 'A chest mic tends to sound fuller in the chest and steadier in level, but it does not turn with the head; a headset boom keeps one distance and hears more breath. People and kit vary, so “it depends on this person” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'A chest mic tends to sound fuller in the chest, but it does not turn with the head, so its tone and level shift as the head turns; a headset boom keeps one distance and hears more breath. People and kit vary, so “it depends on this person” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
       locLav: 'Ideas to try with a body mic: at the approved place, its capsule toward the mouth, clear of rubbing fabric; listen through a turn, an arm raise, a jog and the breathing after it.',
       bcHeadsetBoom: 'Ideas to try with a broadcast headset: the capsule at the outside corner of the mouth, out of the breath; check it beside the team’s own headset, a cap or a visor.',
@@ -94,7 +94,7 @@ export const B11_COPY: Partial<LessonCopy> = {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on a person in sport — once it is approved — measured from the lips to the front of the mic. They are starting points, not rules: no chest position or mouth offset fits every uniform, body and mic. Experimentation is encouraged, inside the approval.',
       separate: 'Distance and the angle off the mouth’s axis are separate variables: change one at a time, with safe, representative movement each time. Distances are measured to the mic’s FRONT — a shotgun’s to its capsule, about 20 cm behind the tip — and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m; no millimetre claim is made.',
       clearance: 'Clearance comes first: the approved place, nothing on protective equipment, the cable and the pack secured.',
-      tendencies: 'A chest mic tends to sound fuller and steadier and to change with head turns; a headset boom keeps one distance and hears more breath; a perimeter mic hears more of the field and the crowd. These are tendencies, and people vary.',
+      tendencies: 'A chest mic tends to sound fuller and to change in tone and level with head turns; a headset boom keeps one distance and hears more breath; a perimeter mic hears more of the field and the crowd. These are tendencies, and people vary.',
     },
   },
   context: {
@@ -125,7 +125,7 @@ export const B11_COPY: Partial<LessonCopy> = {
       ...BASE.context!.learn,
       intro: 'These are scenario-based comparisons, not restrictions: the voice is the same — who wears the mic, what is approved and where it goes change.',
       body: 'An official’s announcement mic feeds the PA it can hear. A pattern’s rejection helps a little; a close capsule, the mic open only for the announcement and the PA’s own placement do more.',
-      warn: 'No mic position alone prevents feedback: the pattern, the open mics, the PA’s place and level and the stadium all matter. Never create feedback deliberately — at any ring, pull it down at once.',
+      warn: 'No mic position alone prevents feedback: the pattern, the open mics, the PA’s place and level and the stadium all matter. Ringing out is the PA operator’s job; at any ring, pull it down at once.',
     },
   },
   twoMic: {

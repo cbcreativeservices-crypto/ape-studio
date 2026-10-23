@@ -37,12 +37,12 @@ export const brassFeedback = (id: string, noun: string): Symptom => ({
   firstChecks: 'Lower the offending level; revise the mic, monitor and player geometry and the number of open mics.',
   options: ['Lower the level; then change the layout and open mics', `Boost the ${noun} channel so it rides over the ring`, 'Swap to an omni mic, which is less likely to feed back'],
   correct: 'Lower the level; then change the layout and open mics',
-  explain: 'Feedback is a sound-system condition: reduce the level first, then move the mic or the wedge, aim the pattern’s rejection and close mics you do not need. Never provoke feedback on purpose.',
+  explain: 'Feedback is a sound-system condition: reduce the level first, then move the mic or the wedge, aim the pattern’s rejection and close mics you do not need. Avoid uncontrolled feedback.',
   why: {
     [`Boost the ${noun} channel so it rides over the ring`]: 'More gain feeds the loop. Lower the level first.',
     'Swap to an omni mic, which is less likely to feed back': 'An omni rejects nothing: it usually makes feedback more likely, not less.',
   },
 });
 
-export const DYN_POWER_REASON: SetupReason = { id: 'r.power', label: 'The mic gets the power it needs: none for a dynamic, phantom for a condenser', role: 'required', feedback: 'Say how the mic is powered: a dynamic needs none; a condenser needs phantom power.' };
+export const DYN_POWER_REASON: SetupReason = { id: 'r.power', label: 'The mic gets the power it needs: none for a dynamic, phantom for a condenser', role: 'required', feedback: 'Say how the mic is powered: a dynamic needs none; a condenser needs power, usually phantom.' };
 export const CLIP_POWER_REASON: SetupReason = { id: 'r.power', label: 'Each mic gets its power: phantom (through its adapter) for the miniature, none for a dynamic', role: 'required', feedback: 'Say how the mic is powered: the miniature needs phantom power through its adapter; a dynamic needs none.' };

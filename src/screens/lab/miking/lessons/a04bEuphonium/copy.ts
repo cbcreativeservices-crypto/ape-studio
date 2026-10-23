@@ -83,7 +83,7 @@ export const EUPH_COPY: Partial<LessonCopy> = {
         { title: 'MOUNTING', text: 'A clip advertised for trumpet or trombone may not fit a euphonium bell. Only one its maker confirms, with the player’s agreement — or a stand. Never tape on the finish.' },
       ],
       body: 'With a front bell and a wedge in front, a pattern’s rejection is a tool to aim — tilting the mic as well as turning it. Some stage sound in a euphonium mic is normal; the question is how much the music can take.',
-      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

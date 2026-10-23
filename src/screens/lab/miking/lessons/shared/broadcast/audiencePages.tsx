@@ -452,7 +452,7 @@ export function usePaAngleStep(spec: { onDone: () => void; prediction?: Predicti
 type PairId = 'xy' | 'ortf' | 'ab' | 'zones';
 const PAIRS: Readonly<Record<PairId, { label: string; short: string; a: P2; b: P2; h: number; words: string }>> = {
   xy: { label: 'A coincident XY pair', short: 'XY', a: STUDIO.M, b: STUDIO.M, h: STUDIO.hBar, words: 'Two capsules at one point, angled apart: every source reaches both at the same moment. Width from level differences only — a predictable mono sum.' },
-  ortf: { label: 'A near-coincident pair', short: 'NEAR PAIR', a: { x: STUDIO.M.x - 0.085, y: STUDIO.M.y }, b: { x: STUDIO.M.x + 0.085, y: STUDIO.M.y }, h: STUDIO.hBar, words: 'Two capsules a hand’s width apart, angled out: small time differences add width, with some mono compatibility — audition the mono sum.' },
+  ortf: { label: 'A near-coincident pair', short: 'NEAR PAIR', a: { x: STUDIO.M.x - 0.085, y: STUDIO.M.y }, b: { x: STUDIO.M.x + 0.085, y: STUDIO.M.y }, h: STUDIO.hBar, words: 'Two capsules about 17 cm apart, angled out: small time differences add width, with some mono compatibility — audition the mono sum.' },
   ab: { label: 'A spaced omni pair', short: 'SPACED', a: { x: -0.3, y: 4 }, b: { x: 0.3, y: 4 }, h: 3.8, words: 'Two omnis spaced apart over the hall: a sense of the room and its low end — and time differences that comb in mono.' },
   zones: { label: 'Two zone mics', short: 'TWO ZONES', a: STUDIO.ZL, b: STUDIO.ZR, h: STUDIO.hCorner, words: 'One mic at each front corner, each its own zone: metres apart, each nearest its own people. Not a stereo pair — the image can wander and the mono sum colours.' },
 };

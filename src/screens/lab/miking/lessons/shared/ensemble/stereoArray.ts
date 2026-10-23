@@ -281,7 +281,7 @@ export const ARRAYS: Readonly<Record<ArrayPresetId, ArrayDef>> = {
     recordingAngle: null,
     what: 'One large-diaphragm condenser set to figure-8, between two singers facing each other — one singer in each lobe, its dead sides to the room.',
     tends: 'Two voices on one channel with the sides rejected; strong proximity effect, so small moves change the balance.',
-    check: 'Both mouths on the axis at matched distance; nothing loud at the back lobe of a live room.',
+    check: 'Both mouths on the axis at matched distance; in a live room, nothing loud behind either singer.',
     art: 'ldc',
     prov: src('LESSON-DUET', 'a bidirectional figure-eight microphone can put one singer in each lobe (E04 L11; the figure-8 is the textbook bidirectional pattern)'),
   },

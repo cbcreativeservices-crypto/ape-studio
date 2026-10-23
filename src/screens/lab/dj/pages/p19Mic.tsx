@@ -533,7 +533,7 @@ function TalkTray({ tr, lead }: { tr: Transport; lead: () => number }) {
         <LabChip label={music ? '● TALK NOW' : 'PLAY THE MUSIC FIRST'} selected={announcing(b)} onPress={() => (music ? announce(lead()) : tr.play('A'))} />
         {music ? <LabChip label="● SHOUT (+10 dB)" selected={false} onPress={() => announce(lead(), SHOUT_DB)} /> : null}
       </Row>
-      <TrayNote tone="fine">The lab’s voice is a synthesised speech-like sound — rhythm, pitch and syllables, no words. A shout is about 10 dB louder than speech.</TrayNote>
+      <TrayNote tone="fine">The lab’s voice is a synthesised speech-like sound — rhythm, pitch and syllables, no words. SHOUT adds the lab’s 10 dB; a real shout can be up to about 20 dB louder than normal speech.</TrayNote>
       <EventListen />
     </View>
   );

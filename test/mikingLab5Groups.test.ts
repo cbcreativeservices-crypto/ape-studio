@@ -190,7 +190,7 @@ describe('the no-provocation rule (E04 Ex. 4 rewritten; every group lesson)', ()
   it('Ex. 4 brings monitors up only to the agreed level and lowers the send at any ring', () => {
     assert.match(EX4, /only to the agreed performance level/);
     assert.match(EX4, /lower that send at once/);
-    assert.match(EX4, /never raise the level to find the feedback point/);
+    assert.match(EX4, /never push past the agreed level to find the feedback point/);
     assert.ok(lessonById('E04')!.practice.task.includes(EX4));
   });
   it('no correct answer or passing setup raises the level to find feedback', () => {
@@ -216,7 +216,7 @@ describe('E06: children drawn from above only; safeguarding and exposure in word
     assert.match(SAFEGUARDING, /supervised at all times/);
     assert.match(SAFEGUARDING, /authorised adult/);
     assert.match(SAFEGUARDING, /child-safeguarding policy and the local law/);
-    assert.match(EXPOSURE, /94 dB averaged over 15 minutes and 120 dB peak/);
+    assert.match(EXPOSURE, /about 94 dB averaged over 15 minutes, and peaks under 120 dB/);
     assert.match(EXPOSURE, /at the source first/);
     assert.doesNotMatch(SAFEGUARDING + EXPOSURE, GROUP_NAMES);
   });

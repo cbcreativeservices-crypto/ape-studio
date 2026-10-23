@@ -25,7 +25,7 @@ const BASE = standingVoiceCopy({
     { title: 'MAP THE POSITIONS AND THE DESTINATIONS', text: 'Before any mic: draw every speaking position — the moderator, the panelists, the lectern, the audience question point, a remote contributor, an interpreter — and where each voice must go: the PA, the stream, the recorder, the press feed, a remote return. A lectern mic does not cover the aisle.' },
     { title: 'ASK WHO TURNS AND WHO MOVES', text: 'Walk the stage: who turns to whom, who stands or steps away, who handles paper or speaks softly. A body-worn mic goes on a person only with their agreement.' },
     { title: 'THE PRESS FEED, WITH THE EVENT AUDIO LEAD', text: 'Check the exact port: its connector, its level, its isolation and its phantom-power policy. Line level into a mic input overloads; mic level into a line input is too quiet. No phantom power into a feed nobody has verified, and no passive splitter cable for many reporters.' },
-    { title: 'NEVER PROVOKE FEEDBACK', text: 'Start with only the needed speech mics open; set usable gain for the quietest speaker without raising a distant mic to make up for its place. Never raise gain to provoke feedback as a test. Protect cable paths, stands and accessible routes.' },
+    { title: 'NO UNCONTROLLED FEEDBACK', text: 'Start with only the needed speech mics open; set usable gain for the quietest speaker without raising a distant mic to make up for its place. Never raise gain to provoke feedback as a test. Protect cable paths, stands and accessible routes.' },
   ],
   studio: {
     id: 'b6.ctx.studio',
@@ -121,7 +121,7 @@ export const B06_COPY: Partial<LessonCopy> = {
     learn: {
       ...BASE.context!.learn,
       body: 'Live, every open mic hears the PA. A pattern’s rejection is a tool to aim; a closer mic and fewer open mics do more.',
-      warn: 'No mic position alone prevents feedback: the open mics, the PA’s place and level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback: the open mics, the PA’s place and level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

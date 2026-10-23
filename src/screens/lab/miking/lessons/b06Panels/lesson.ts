@@ -41,7 +41,7 @@ const pages: LessonPages = {
     title: 'Before any mic',
     goal: 'Map every speaking position and every destination, check the press feed’s port with the event audio lead, and keep the open mics few — before any mic goes up.',
     credit: { scenarios: ['b6.set.1', 'b6.set.2', 'b6.set.3', 'b6.set.4'], note: 'Answer the four checks.' },
-    takeaway: 'Map who speaks where and where each voice must go; route the audience question on purpose; match the press feed’s level and never send phantom power into it unverified; never provoke feedback.',
+    takeaway: 'Map who speaks where and where each voice must go; route the audience question on purpose; match the press feed’s level and never send phantom power into it unverified; avoid uncontrolled feedback.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -51,7 +51,7 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we suggest you begin — a gooseneck about 20–30 cm below a panelist’s mouth, the lectern gooseneck about 25–36 cm and a little off the mouth — then move the mic and see what changes.',
+    goal: 'Start where we suggest you begin — a panel gooseneck about 20–30 cm from the mouth, a little below its line, the lectern gooseneck about 25–36 cm and a little off the mouth — then move the mic and see what changes.',
     credit: { scenarios: ['b6.place.1', 'b6.place.2', 'b6.place.3', 'b6.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the talker, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from the lips — not a rule. A short and a tall presenter, a turn to a neighbour and a step back all change the answer; clearance from the face, the sight line and the papers comes first.',
   },
@@ -414,7 +414,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Are the bases near the papers and the hands? Are they on a shock mount?',
     options: ['Move the bases away from papers; isolate them', 'Turn the low end of all the panel mics right down', 'Ask the panel not to touch the table at all'],
     correct: 'Move the bases away from papers; isolate them',
-    explain: 'Structure noise travels through the table into the base and the neck. Keep bases away from page turning; a table or shock mount helps.',
+    explain: 'Structure noise travels through the table into the base and the neck. Keep bases away from page turning; an isolating base or a shock mount helps.',
     why: {
       'Turn the low end of all the panel mics right down': 'A deep cut thins every voice and leaves the knocks’ cause.',
       'Ask the panel not to touch the table at all': 'People handle papers; isolate the mics.',
@@ -450,7 +450,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Lower the level at once. How many open mics? Where is the PA against the patterns?',
     options: ['Lower the level, then close the unused mics', 'Turn the panel up so it stays over the ring', 'Swap all the goosenecks for omni capsules'],
     correct: 'Lower the level, then close the unused mics',
-    explain: 'Feedback is a sound-system condition: lower the send, then fewer open mics, closer mics and the PA toward the patterns’ rejection. Never provoke feedback on purpose.',
+    explain: 'Feedback is a sound-system condition: lower the send, then fewer open mics, closer mics and the PA toward the patterns’ rejection. Leave any ring-out to the system’s operator.',
     why: {
       'Turn the panel up so it stays over the ring': 'More gain feeds the loop.',
       'Swap all the goosenecks for omni capsules': 'Omnis hear the PA from every side: feedback comes sooner.',
@@ -472,7 +472,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Route the question and remote voices to every feed', early: 'Route the feeds once the mics work.' },
       { text: 'With the audio lead, check the press port’s level and contents', early: 'The press feed comes after the routing.' },
     ],
-    explain: 'A sensible order. Phantom power: mute the outputs first and follow your own equipment’s manual; never into an unverified feed port. Never raise gain to provoke feedback.',
+    explain: 'A sensible order. Phantom power: mute the outputs first and follow your own equipment’s manual; never into an unverified feed port. Leave any ring-out to the system’s operator.',
   },
 ];
 
@@ -547,7 +547,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'How do you check panel mics with the PA on before the event?',
     options: ['Each to its working level; any ring, pull down', 'Raise each one until it rings, to find the system’s limit', 'Open all at once at a high level to test'],
     correct: 'Each to its working level; any ring, pull down',
-    explain: 'Never raise gain to provoke feedback: bring each mic up to its working level only.',
+    explain: 'Ringing out is the system operator’s job: bring each mic up to its working level only.',
     why: {
       'Raise each one until it rings, to find the system’s limit': 'Provoking feedback risks ears and loudspeakers.',
       'Open all at once at a high level to test': 'Many open mics at a high level invite feedback.',
@@ -637,7 +637,7 @@ export const B06_LESSON: Lesson = {
       { id: 'pa', label: 'the PA', short: 'PA', note: 'Every open mic hears it: the fewest open mics, the patterns’ rejection toward it.', prov: { kind: 'illustrative', reason: 'a typical small stage' }, tag: 'FEEDBACK', scene: 'stage' },
       { id: 'press', label: 'the press feed box', short: 'PRESS FEED', note: 'A copy of the mix for the reporters: it carries only what is routed into it, often at mic level from isolated outputs.', prov: { kind: 'illustrative', reason: 'the lesson L34' }, tag: 'ROUTE', scene: 'all' },
     ],
-    stage: 'LECTERN: the gooseneck about 25–36 cm from the mouth, a little off it, the PA toward its rejection; a headset for walking with the lectern muted; the aisle mic routed to every feed. Never provoke feedback.',
+    stage: 'LECTERN: the gooseneck about 25–36 cm from the mouth, a little off it, the PA toward its rejection; a headset for walking with the lectern muted; the aisle mic routed to every feed. Avoid uncontrolled feedback.',
     studio: 'PANEL: a gooseneck each, about 20–30 cm below each mouth, on separate channels — or, in a quiet room with no PA, a shared boundary between two.',
   },
   diagnostic,
@@ -660,6 +660,6 @@ export const B06_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every panel, lectern, room and PA is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: talkers in typical poses, mic patterns and the two-mic comb as textbook shapes, the open-mic cost as about 3 dB per doubling, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. Never provoke feedback; never send phantom power into an unverified feed.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every panel, lectern, room and PA is different: move the mics, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: talkers in typical poses, mic patterns and the two-mic comb as textbook shapes, the open-mic cost as about 3 dB per doubling, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. Avoid uncontrolled feedback; never send phantom power into an unverified feed.',
   copy: B06_COPY,
 };

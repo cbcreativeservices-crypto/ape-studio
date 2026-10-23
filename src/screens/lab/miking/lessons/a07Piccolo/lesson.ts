@@ -84,9 +84,9 @@ const scenarios: MikingScenario[] = [
     id: 'pc.snd.1',
     page: 'sound',
     prompt: 'A piccolo is about half a flute’s length. What does that do to its pitch?',
-    options: ['It sounds an octave above its written notes', 'It sounds a fifth below the concert flute’s notes', 'It sounds the same, only louder'],
-    correct: 'It sounds an octave above its written notes',
-    explain: 'Half the length, half the wavelength: twice the frequency. A piccolo sounds an octave above its written pitch.',
+    options: ['It sounds an octave above the flute', 'It sounds a fifth below the concert flute’s notes', 'It sounds the same, only louder'],
+    correct: 'It sounds an octave above the flute',
+    explain: 'Half the length, half the wavelength: twice the frequency. A piccolo sounds an octave above the flute.',
     why: {
       'It sounds a fifth below the concert flute’s notes': 'A shorter tube sounds higher, not lower.',
       'It sounds the same, only louder': 'Length sets the pitch; the piccolo sounds an octave up.',
@@ -310,7 +310,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No — begin with the same geometry and listen',
     explain: 'The material is not a position prescription. Keep comparable geometry when comparing instruments, then adjust from what you actually hear.',
     why: {
-      'Yes — a wooden piccolo needs a closer mic': 'No source shows a fixed material sound; start from the geometry.',
+      'Yes — a wooden piccolo needs a closer mic': 'We found no source showing a fixed sound for a material; start from the geometry.',
       'Yes — a metal piccolo needs a darker-sounding mic': 'Choose by what you hear at matched level, not by the material.',
     },
   },
@@ -553,7 +553,7 @@ const copy: Partial<LessonCopy> = {
         { title: 'HEARING', text: 'The piccolo is loud at the player’s ear: manage rehearsal and show exposure, and keep monitor and in-ear levels comfortable.' },
       ],
       body: 'With a wedge in front of the player, a pattern’s rejection is a tool to aim — tilting as well as turning. A small instrument does not need a louder channel.',
-      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

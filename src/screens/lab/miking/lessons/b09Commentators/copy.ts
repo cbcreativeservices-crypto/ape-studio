@@ -34,7 +34,7 @@ const BASE = standingVoiceCopy({
   },
   contextPoints: [
     { title: 'CLOSENESS FIRST', text: 'A close mic keeps the voice ahead of the crowd: a headset boom at the mouth corner, or a lip ribbon against the lip. No pattern makes the crowd vanish.' },
-    { title: 'THE PA AND THE CROWD', text: 'At an open position the PA may be louder in the commentary mic than the crowd. A figure-8 hears least at its sides: aim a side at the PA where the voice allows. Never provoke feedback.' },
+    { title: 'THE PA AND THE CROWD', text: 'At an open position the PA may be louder in the commentary mic than the crowd. A figure-8 hears least at its sides: aim a side at the PA where the voice allows. Avoid uncontrolled feedback.' },
     { title: 'MOVEMENT', text: 'Commentators follow the play, read down and turn to the partner. A headset turns with the head; a desk-arm mic does not — it suits a quiet booth with a steady caller.' },
     { title: 'THE LOUDEST CALL', text: 'Set gain on the most excited real call, with headroom at every stage. A filter cannot undo an input overloaded by a shout or a blast of air.' },
   ],
@@ -119,7 +119,7 @@ export const B09_COPY: Partial<LessonCopy> = {
       ...BASE.context!.learn,
       intro: 'These are scenario-based comparisons, not restrictions: the commentator is the same — the position, the crowd and the PA change.',
       body: 'At an open position the PA and the crowd reach every commentary mic. A pattern’s null is a tool to aim; a close mic does more.',
-      warn: 'No mic position alone prevents feedback where the commentary feeds the PA: the pattern, the open mics, the PA’s place and level and the stadium all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback where the commentary feeds the PA: the pattern, the open mics, the PA’s place and level and the stadium all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

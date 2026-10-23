@@ -200,7 +200,7 @@ export const SYMBOL_GROUPS: SymbolGroup[] = [
       {
         symbol: '2π',
         name: 'one cycle in radians',
-        meaning: 'One full cycle is 2π radians, so ω = 2πf. It appears in reactance (2πfL, 1/2πfC), resonance, and phase math whenever rotation underlies the formula.',
+        meaning: 'One full cycle is 2π radians, so ω = 2πf. It appears in reactance (2πfL, 1/(2πfC)), resonance, and phase math whenever rotation underlies the formula.',
         example: 'XL = 2π·f·L',
         glossaryTerm: 'Angular Frequency',
       },

@@ -1022,7 +1022,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       level: 'low_voltage_power',
       cautions: [
         'USB PD can negotiate tens of volts and substantial current — enough that a damaged cable or connector can heat up. Discard cables with bent shells, scorched contacts or melted strain relief.',
-        'Use certified cables for high-wattage charging; miscapable cables misreport what they can carry.',
+        'Use certified cables for high-wattage charging; an uncertified cable may misreport what it can carry.',
         'Never open a charger — the mains side inside is qualified-person territory.',
       ],
     },

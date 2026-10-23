@@ -106,10 +106,10 @@ export const E07_COPY: Partial<LessonCopy> = {
         { title: 'ONE MIC OR TWO', text: 'One mic: the performance whole, the room in it, no re-balancing later. Two: control of each source — and bleed, phase and a mono check to manage.' },
         { title: 'SPILL BOTH WAYS', text: 'The vocal mic hears the guitar or piano; the instrument mic hears the voice. Turn each mic’s least-sensitive direction toward the other source — a figure-8’s side null can help, but it is not a guarantee.' },
         { title: 'LIVE: THE MOST STABLE PATH', text: 'A directional vocal mic and the most stable instrument path — a pickup or DI for a guitar, a line out for a keyboard — before a distant instrument mic. A piano’s mics go close or inside the lid.' },
-        { title: 'THE MARGIN', text: 'Set the agreed level with a stable margin. At any ring, lower that send at once and change the placement, the angle or the pattern — never raise the level to find feedback.' },
+        { title: 'THE MARGIN', text: 'Set the agreed level with a stable margin. At any ring, lower that send at once and change the placement, the angle or the pattern — never push past the agreed level to find feedback.' },
       ],
       body: 'A pattern’s rejection is a tool to aim at the other source. Some bleed is normal with a singer behind an instrument; the question is how much the music can take.',
-      warn: 'No mic position alone prevents feedback: the patterns, the open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — bring the level up only to the agreed performance level, and at any ring lower that send at once.',
+      warn: 'No mic position alone prevents feedback: the patterns, the open mics, the monitors, the system level and the room all matter. Avoid uncontrolled feedback — bring the level up only to the agreed performance level, and at any ring lower that send at once.',
     },
   },
   twoMic: {

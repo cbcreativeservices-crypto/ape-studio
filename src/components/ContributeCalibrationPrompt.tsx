@@ -26,7 +26,7 @@ import { colors, fonts } from '../theme/tokens';
 
 const REFS: { key: ReferenceQuality; label: string; sub: string }[] = [
   { key: 'calibrator', label: 'Acoustic calibrator', sub: '94 / 114 dB piston or coupler' },
-  { key: 'type1_2_meter', label: 'SPL meter', sub: 'a real sound-level meter (Type 1/2)' },
+  { key: 'type1_2_meter', label: 'SPL meter', sub: 'a real sound-level meter (Class 1/2, once called Type 1/2)' },
   { key: 'consumer_app', label: 'Another app or phone', sub: 'a consumer SPL app' },
   { key: 'eyeballed', label: 'Rough guess', sub: 'no reference — estimated by ear' },
 ];

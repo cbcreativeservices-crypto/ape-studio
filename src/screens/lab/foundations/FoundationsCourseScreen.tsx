@@ -1831,7 +1831,7 @@ const STEPS: Step[] = [
     paras: [
       'Amplitude was the SIZE of the vibration. Frequency is its RATE: how many complete back-and-forth cycles happen each second, counted in hertz (Hz).',
       'Both sources on the stage are identical except for one number. Watch the orbit dials — one lap is one cycle. B simply completes its cycles more often.',
-      'A faster rate packs the compressions closer together in time. Your ear reports that as HIGHER. Nothing else changed — not the size, not the distance, only the rate.',
+      'A faster rate packs the compressions closer together in time. Your ear reports that as HIGHER. Nothing else changed — not the size, not how far the cone moves, only the rate.',
     ],
     Rack: M5Rack,
     check: {
@@ -1858,7 +1858,7 @@ const STEPS: Step[] = [
     ],
     Rack: M6Rack,
     check: {
-      question: 'A 55 Hz wave is ~6 m long. Your eardrum is ~6 mm. How can you hear it at all?',
+      question: 'A 55 Hz wave is ~6 m long. Your eardrum is ~1 cm across. How can you hear it at all?',
       options: [
         'The whole 6 m wave squeezes into the ear',
         'The ear reads the pressure changes ARRIVING AT ONE POINT, over time',
@@ -1984,8 +1984,8 @@ const STEPS: Step[] = [
     title: 'THE FOURIER PRINCIPLE',
     paras: [
       'Module 11 built complex tones out of sines in harmonic relationships. Fourier’s theorem is the breathtaking reverse: any repeating pattern — however jagged — can have its harmonics taken apart into plain sines. Not approximately. Exactly.',
-      'That means every sound has two complete descriptions: the waveform (pressure over time) and the SPECTRUM (which sines, how strong). Same information, two views.',
-      'Ride UNMIX to pull this wave apart into its ingredient list. Every analyzer, every EQ readout, every spectrogram in this app is doing precisely this — live, on real air.',
+      'That means every sound has two complete descriptions: the waveform (pressure over time) and the SPECTRUM (which sines, how strong, and how they line up in time). Same information, two views.',
+      'Ride UNMIX to pull this wave apart into its ingredient list. The analyzers and spectrograms in the app’s measuring tools do this same job live, on real sound from the mic.',
     ],
     Rack: M12Rack,
     // Owner 2026-09-13, on the Pixel: this check "asks about a spectrum

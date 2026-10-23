@@ -82,11 +82,11 @@ export const SAX_MIC_TYPES = {
     address: 'end',
     patterns: [{ id: 'supercardioid', label: 'supercardioid', prov: { kind: 'sourced', src: 'DPA-MOUNT', quote: '4099S … do not point the microphone directly into the bell, but angle it between the bell and the keys' } }],
     body: { length: placeholder(30, 'the miniature capsule’s length'), radius: placeholder(6, 'the miniature capsule’s radius') },
-    power: 'phantom power through its adapter; a wireless pack may cut below 80 Hz',
+    power: 'phantom power through its XLR adapter, which cuts the lows below about 80 Hz',
     mount: 'clip',
     clip: { reach: placeholder(140, 'the bell clip’s gooseneck reach from the rim to the capsule (proposal §4: ≤ 140)') },
     examples: [{ model: 'DPA 4099S on the saxophone clip', fact: '"do not point the microphone directly into the bell, but angle it between the bell and the keys"; "low-cut filter at 80 Hz in the transmitter… built into the adapter supplied with 4099G, 4099V, 4099S and 4099T"; dedicated foam windscreen and shock-absorbing mount.', src: 'DPA-MOUNT' }],
     art: 'gooseneck',
-    blurb: 'A tiny condenser on a short gooseneck, held by a clip made for the bell rim: it moves with the horn, so the player can move. Needs phantom power through its adapter; some wireless packs cut the lows below about 80 Hz. Only a clip made for this bell, with the player’s agreement.',
+    blurb: 'A tiny condenser on a short gooseneck, held by a clip made for the bell rim: it moves with the horn, so the player can move. Needs phantom power through its adapter; the XLR adapter also cuts the lows below about 80 Hz. Only a clip made for this bell, with the player’s agreement.',
   },
 } satisfies Record<string, MicType>;

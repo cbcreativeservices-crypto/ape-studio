@@ -199,7 +199,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A separate low-frequency effects channel',
     explain: '“.1” is a delivery channel for low-frequency effects — not a sixth full-range ambience mic and not a requirement for a subwoofer mic. Never send a full-range field channel to it.',
     why: {
-      'A sixth mic for the room’s lowest sounds': 'No mic is required for it; some units derive it.',
+      'A sixth mic for the room’s lowest sounds': 'No mic is needed for it: the mixer sends chosen low effects to it.',
       'A centre mic set one metre higher': '“.1” is a channel, not a mic position.',
     },
   },
@@ -257,7 +257,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two of the four Ambisonic tracks are swapped. What happens to a source?',
     options: ['It lands in the wrong direction', 'It gets louder by the swapped amount', 'Nothing: the converter sorts the tracks'],
     correct: 'It lands in the wrong direction',
-    explain: 'The converter reads each track as the capsule its slot expects: a swap turns or tilts the field. Label the tracks from the mic’s manual and check with a test source.',
+    explain: 'The converter reads each track as the capsule its slot expects: a swap mirrors the field, so sounds land in the wrong places. Label the tracks from the mic’s manual and check with a test source.',
     why: {
       'It gets louder by the swapped amount': 'A swap moves the image; it does not change the level that way.',
       'Nothing: the converter sorts the tracks': 'The converter cannot know which capsule is on which track.',
@@ -394,7 +394,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Was the rig’s front to the scene front? Is the front logged? Are the tracks in order?',
     options: ['Check the rig’s front and the track order', 'Pan the whole mix back round to the centre again', 'Turn the front source up in the mix instead'],
     correct: 'Check the rig’s front and the track order',
-    explain: 'A rig facing away, or two tracks swapped, turns the picture. Check the log and the channel map; a decoder can turn a correct field, not repair a wrong one.',
+    explain: 'A rig facing away turns the picture; two swapped tracks mirror it. Check the log and the channel map: a logged turn can be undone in the decoder, and a swap by putting the tracks back in order.',
     why: {
       'Pan the whole mix back round to the centre again': 'Panning hides the cause; check the front and the map first.',
       'Turn the front source up in the mix instead': 'Level does not move a direction.',
@@ -442,7 +442,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Lower the level at once. Is the array routed into the PA?',
     options: ['Lower it, then take the array off the PA', 'Turn the array up so that it covers the ringing', 'Move the array closer to the PA'],
     correct: 'Lower it, then take the array off the PA',
-    explain: 'An array near the PA, fed into it, makes a feedback path. Lower the level, then keep the array on the stream path only. Never provoke feedback.',
+    explain: 'An array near the PA, fed into it, makes a feedback path. Lower the level, then keep the array on the stream path only. Avoid uncontrolled feedback.',
     why: {
       'Turn the array up so that it covers the ringing': 'More gain feeds the loop.',
       'Move the array closer to the PA': 'Closer hears more of the PA.',
@@ -641,6 +641,6 @@ export const F10_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every place and listener is different: walk, listen, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: example scenes, example array layouts with no spacing claimed, the four-track conversion and capsule patterns as textbook shapes. Heights are read from the ground. Safety is exact: at least 3 m (10 ft) from overhead power lines, and 30 minutes after the last lightning or thunder. A spatial recording is not a calibrated measurement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every place and listener is different: walk, listen, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: example scenes, example array layouts with no spacing claimed, the four-track conversion and capsule patterns as textbook shapes. Heights are read from the ground. Safety is exact: at least 3 m (10 ft) from overhead power lines, more for high-voltage ones, and 30 minutes after the last lightning or thunder. A spatial recording is not a calibrated measurement.',
   copy: F10_COPY,
 };

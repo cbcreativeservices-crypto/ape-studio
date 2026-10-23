@@ -214,7 +214,7 @@ export const CROSS_SECTIONS: CrossSection[] = [
       { name: 'JACKET', role: 'Outer protection and the printed category marking.' },
       {
         name: 'FOUR TWISTED PAIRS',
-        role: 'Each pair is twisted at its own rate to reject interference — pair integrity is what makes high speeds work.',
+        role: 'Each pair is twisted at its own rate so the pairs pick up less of each other’s signal (crosstalk); the twist also rejects outside noise. Pair integrity is what makes high speeds work.',
       },
       { name: 'INSULATION', role: 'Color-coded insulation identifies each conductor and the pair it belongs to.' },
       { name: 'CONDUCTORS', role: 'Eight copper paths, working as four pairs.' },

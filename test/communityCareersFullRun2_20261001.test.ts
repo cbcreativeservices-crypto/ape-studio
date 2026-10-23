@@ -43,7 +43,10 @@ describe('E1: COMMON ENTRY POINTS never lists a PE-licence or graduate-degree ti
   it('the hazard is real: those titles read as the lowest preparation level', () => {
     // careerIndex.preparationLevel: "Master's …" and the PE flag both score 0.
     const lvl0 = (p: string) => !/doctorate|graduate|clinical|law degree|military|credentialing/i.test(p) && !/bachelor's degree common/i.test(p);
-    for (const t of ['Acoustical Consultant', 'Music Librarian', 'Audio Archivist']) {
+    // Fact audit R2 (2026-10-22): the PE consultants now read "Bachelor's degree
+    // common" (level 1), so Acoustical Consultant no longer shows the hazard. Studio
+    // Acoustics Designer is still a level-0 PE title ("Portfolio, credits, …").
+    for (const t of ['Studio Acoustics Designer', 'Music Librarian', 'Audio Archivist']) {
       const c = index.careers.find((x) => x.t === t);
       assert.ok(c, t);
       assert.ok(lvl0(index.enums.preparation[c.prep]), `${t} is level 0`);

@@ -192,7 +192,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Gates are rarely needed (no acoustic kit). De-ess MCs at 5–8 kHz for 2–4 dB. Live, put a gentle limiter or multiband on the DJ input: some baile (dance party) files peak at 0 dBFS with near-zero crest factor and can slam the drive rack. Use no more than 2–3 dB on the bus there and leave the system limiters for protection."
+        "text": "Gates are rarely needed (no acoustic kit). De-ess MCs at 5–8 kHz for 2–4 dB. Live, put a gentle limiter or multiband on the DJ input: some baile (dance party) files peak at 0 dBFS with a very low crest factor (only a few dB) and can slam the drive rack. Use no more than 2–3 dB on the bus there and leave the system limiters for protection."
       }
     ]
   },
@@ -255,7 +255,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Funk masters are among the loudest in pop: −7 to −4 LUFS-I is common, mandelão (stripped, distorted São Paulo funk) and bruxaria (“witchcraft”: eerie, noisy funk) are intentionally clipped beyond that, and pop-funk crossover sits about −8 to −6. Keep true peak at −1 dBTP at most; −2 dBTP is recommended for masters louder than −14 LUFS. Normalization to −14 LUFS turns hot masters down, so the clipping must sound intentional. PLR of 5–8 dB and LRA of 2–4 LU are normal (at −2 dBTP that PLR means a master at about −7 LUFS-I or quieter)."
+      "text": "Funk masters are among the loudest in pop: −7 to −4 LUFS-I is common, mandelão (stripped, distorted São Paulo funk) and bruxaria (“witchcraft”: eerie, noisy funk) are intentionally clipped beyond that, and pop-funk crossover sits about −8 to −6. Keep true peak at −1 dBTP at most; −2 dBTP is recommended for masters louder than −14 LUFS. Normalization to −14 LUFS turns hot masters down, so the clipping must sound intentional. LRA of 2–4 LU is normal, and PLR is very low: at −2 dBTP, a −7 to −4 LUFS-I master leaves only 2–5 dB."
     }
   ],
   "liveStudio": {

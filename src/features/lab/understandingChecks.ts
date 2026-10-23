@@ -742,7 +742,7 @@ const STEREO: readonly Q[] = [
       'The pan position of the whole mix',
     ],
     correct: 'The level of the SIDE (what differs between left and right) against the MID (what they share)',
-    explanation: 'More side means wider — and less mono-safe. 0% width is pure mid (mono); 100% is the image as recorded; past 100% the side outweighs the mid.',
+    explanation: 'More side means wider — and less mono-safe. 0% width is pure mid (mono); 100% is the image as recorded; past 100% the side is turned up above its recorded level.',
   },
   {
     id: 'mono-fold',
@@ -1125,7 +1125,7 @@ const MIC_SELECT: readonly Q[] = [
       'Three polar patterns',
     ],
     correct: 'Three different things — how it converts sound, how it is directional, and its physical form',
-    explanation: 'Condenser names the transducer inside, shotgun names a directivity design, lavalier names a form factor. One microphone can be all three.',
+    explanation: 'Condenser names the transducer inside, shotgun names a directivity design, lavalier names a form factor. One mic can be two of them, like a condenser shotgun or a condenser lav.',
   },
   {
     id: 'lectern-rumble',

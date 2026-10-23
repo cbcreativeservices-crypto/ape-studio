@@ -1092,7 +1092,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
                 </Point>
               ))}
             </Card>
-            <Note tone="warn">No mic position alone prevents feedback: the monitors and PA, the gain, the room and the open mics all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency. If it starts, lower the level first, then revisit the geometry.</Note>
+            <Note tone="warn">No mic position alone prevents feedback: the monitors and PA, the gain, the room and the open mics all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level. If it starts, lower the level first, then revisit the geometry.</Note>
           </>
         ),
       },

@@ -24,7 +24,7 @@ const SPEC = ensembleHandSpec({
   axes: STAGE_PLOT_AXES,
   aimWords: { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the front).' },
   mic: {
-    intro: 'A transducer category alone does not decide tone, spill or headroom: read the real mic’s specifications. For the group, a matched cardioid pair (X/Y, the 17 cm pair) — or omnis in a quiet room worth hearing; small condensers for spots, their off-axis sound still acceptable. Condensers need phantom power; every stand a stable base.',
+    intro: 'A transducer category alone does not decide tone, spill or headroom: read the real mic’s specifications. For the group, a matched cardioid pair (X/Y, the 17 cm pair) — or omnis in a quiet room worth hearing; small condensers for spots, their off-axis sound still acceptable. Condensers need power, usually phantom; every stand a stable base.',
     mountLine: () => 'Mount: a stand or boom with a stable base, clear of the bows, the hands, the cases and the walkways',
     extra: ARRAY_CARDS,
   },

@@ -37,7 +37,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know the path from the strings to the desk — which feeds hear the air and which are wires — what sits round the amp on a stage and in a studio, and what to do before any mic.',
     credit: { scenarios: ['eg.set.1', 'eg.set.2', 'eg.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'A mic on the amp hears air; a DI or the amp’s direct output is a separate electrical source. A speaker output goes only to a speaker. Keep the player’s pedals and the amp’s vents clear, and protect your hearing.',
+    takeaway: 'A mic on the amp hears air; a DI or the amp’s direct output is a separate electrical source. A speaker output goes to a speaker, never into a desk input. Keep the player’s pedals and the amp’s vents clear, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -214,7 +214,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The grille is the surface you can see and measure from — and the number belongs to the speaker that is really sounding. On many combos the speaker sits off-centre, so the middle of the grille can be the wrong place to start.',
     why: {
       'From the middle of the grille, wherever the speaker is': 'The middle of the grille is not the middle of the speaker on many amps. Find the speaker first.',
-      'From the back of the cone, measured inside the amp': 'Nothing is measured from inside the amp: you cannot see or reach it. The grille is the reference.',
+      'From the back of the cone, measured inside the amp': 'Nothing is measured from inside the amp, even where an open back lets you see the speaker. The grille is the reference.',
     },
   },
   {
@@ -557,7 +557,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A dynamic at the dust cap’s edge, plus a dynamic 15–30 cm behind the open back, polarity flipped', ok: true, power: 'none', feedback: 'A front-and-rear pair from outside, checked in mono — dynamics need no phantom.' },
       { id: 'b', label: 'A dynamic close at the cap’s edge, plus a dynamic 60–90 cm back for the room', ok: true, power: 'none', feedback: 'Close plus room in a good room — bring the room mic up under the close one and check in mono.' },
       { id: 'c', label: 'A small condenser 60–90 cm back, and a dynamic close in', ok: false, power: 'phantom', feedback: 'These inputs have no phantom power for the condenser.' },
-      { id: 'd', label: 'A dynamic inside the open back, by the valves', ok: false, power: 'none', feedback: 'Nothing goes inside the amp: the chassis and valves are hot and live.' },
+      { id: 'd', label: 'A dynamic inside the open back, by the valves', ok: false, power: 'none', feedback: 'Nothing goes inside the amp: the valves get very hot, and high voltage is close by inside.' },
       { id: 'e', label: 'Two dynamics side by side at the same spot on the cone', ok: false, power: 'none', feedback: 'Two mics hearing the same thing add little and can comb — give the second a different view.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.mono', label: 'Each mic is heard alone, then the pair is blended and checked in mono', role: 'optional', feedback: 'A good habit with any two-mic pickup.' }, BRAND_REASON, BASS_REASON],
@@ -629,8 +629,8 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'The desk is short of inputs. Can the amp’s speaker output go straight into a desk input?',
-    options: ['No — a speaker output goes only to a speaker', 'Yes, through the input pad on the desk’s channel', 'Yes, if the amp is turned down low first'],
-    correct: 'No — a speaker output goes only to a speaker',
+    options: ['No — a speaker output never feeds a desk input', 'Yes, through the input pad on the desk’s channel', 'Yes, if the amp is turned down low first'],
+    correct: 'No — a speaker output never feeds a desk input',
     explain: 'A speaker output carries high power. It goes to a speaker, by a speaker cable — never to a mic, line or ordinary DI input. Use the amp’s own direct output only as its manual describes.',
     why: {
       'Yes, through the input pad on the desk’s channel': 'An input pad is not made for speaker-level power. The connection itself is the danger.',
@@ -750,5 +750,5 @@ export const C02_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every guitar, amp, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one combo with a 12 in speaker (its outer size is real; where the speaker sits, the open back and the controls are drawing choices), an ideal string, textbook mic patterns, and cone and string motion drawn larger. Distances are rounded to about 5 mm and measured from the grille to the mic’s front. Place mics with the amp off or muted, never open an amp, and send a speaker output only to a speaker.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every guitar, amp, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one combo with a 12 in speaker (its outer size is real; where the speaker sits, the open back and the controls are drawing choices), an ideal string, textbook mic patterns, and cone and string motion drawn larger. Distances are rounded to about 5 mm and measured from the grille to the mic’s front. Place mics with the amp off or muted, never open an amp, and send a speaker output to a speaker, never into a desk input.',
 };

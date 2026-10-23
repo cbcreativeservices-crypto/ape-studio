@@ -293,7 +293,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "95–102 dBA LAeq, boundary limit of 75 dB(A) or lower and curfew in India",
-        "studio": "−9 to −6 LUFS-I, −1 dBTP"
+        "studio": "−9 to −6 LUFS-I, −2 dBTP"
       }
     ],
     "notes": []

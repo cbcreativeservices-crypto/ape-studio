@@ -105,7 +105,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Straight ahead, along the bell’s axis',
     explain: 'The bell beams the highs forward, more so as the pitch rises; the lows spread out nearly all round. That is why a mic on the axis sounds brighter and one off to the side softer.',
     why: {
-      'Evenly all round the bell, front and back': 'That is the low notes. The highs gather along the axis.',
+      'Evenly all round the bell, front and back': 'That is the lows. The highs gather along the axis.',
       'Back toward the player, from the valves': 'The valves only change the tube. The sound leaves at the bell, and the highs go forward.',
     },
   },
@@ -168,7 +168,7 @@ const scenarios: MikingScenario[] = [
     explain: 'On the bell, the capsule keeps one distance however the player turns — a stand mic has a working zone the bell can leave. It still hears the stage, and its close view is more coloured.',
     why: {
       'Its clip stops it hearing the rest of the band': 'A clip is a mount, not a pattern: the mic still hears the stage.',
-      'It needs no power, so a spare input will do': 'A miniature condenser needs phantom power, through its adapter.',
+      'It needs no power, so a spare input will do': 'This miniature condenser needs phantom power, through its adapter.',
     },
   },
   {
@@ -271,10 +271,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tp.rec.3',
     page: 'context',
-    prompt: 'FROM EARLIER · Where does a trumpet send its low notes?',
+    prompt: 'FROM EARLIER · Where does a trumpet send its lows?',
     options: ['Nearly all round, even behind', 'Only straight ahead, on the axis', 'Mostly down toward the floor'],
     correct: 'Nearly all round, even behind',
-    explain: 'Low down the bell spreads the sound nearly all round. So even a mic behind or beside the horn hears its lows — and so does every other open mic on the stage.',
+    explain: 'In the lows, the bell spreads the sound nearly all round. So even a mic behind or beside the horn hears its lows — and so does every other open mic on the stage.',
     why: {
       'Only straight ahead, on the axis': 'That is the highs. The lows spread round.',
       'Mostly down toward the floor': 'The bell points ahead; the lows spread all round it, not down.',
@@ -375,7 +375,7 @@ const symptoms: Symptom[] = [
   {
     id: 'tp.sym.distort',
     observation: 'Strong notes distort, though the desk meter looks fine',
-    firstChecks: 'Which stage clips — the mic’s capsule, the preamp, the converter? Check the mic’s rating and pad; reset gain on the loud passage.',
+    firstChecks: 'Which stage clips — the mic itself, the preamp, the converter? Check the mic’s rating and pad; reset gain on the loud passage.',
     options: ['Check the mic’s rating and pad, then the gain', 'Pull the channel fader down until it sounds clean', 'Add a limiter set to a standard trumpet level'],
     correct: 'Check the mic’s rating and pad, then the gain',
     explain: 'A trumpet’s peaks can overload the mic itself before the desk shows it. Use a mic and a pad that take the level, then set gain on the strongest real passage.',
@@ -428,7 +428,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A loud stage: a trumpet soloist with drums and a singer, moving and turning, with a cup mute in one tune. Phantom power available.',
     setups: [
       { id: 'a', label: 'A miniature on a bell clip, aimed between centre and edge', ok: true, power: 'phantom', feedback: 'A suggested starting point that rides on the bell — check the fit, the cup mute and the cable.' },
-      { id: 'b', label: 'Dynamic about 30 cm away, a little off axis, pattern aimed at the wedge', ok: true, power: 'none', feedback: 'A suggested starting point if the player keeps to an agreed zone — check the cup mute clears it.' },
+      { id: 'b', label: 'Dynamic about 30 cm away, a little off axis, its null aimed at the wedge', ok: true, power: 'none', feedback: 'A suggested starting point if the player keeps to an agreed zone — check the cup mute clears it.' },
       { id: 'c', label: 'Condenser 1 m in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage a metre away hears the band and the monitors more than the horn.' },
       { id: 'd', label: 'A generic clamp tightened onto the bell, then taped', ok: false, power: 'phantom', feedback: 'Never an unapproved clamp on a bell or its finish: use a clip made for it, with the player’s agreement.' },
       { id: 'e', label: 'A mic aimed straight at the singer’s mic, to share it', ok: false, power: 'none', feedback: 'That puts the bell at the singer’s ear and mic — a layout problem, not a mic choice.' },

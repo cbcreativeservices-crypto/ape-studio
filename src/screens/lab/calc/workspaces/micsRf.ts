@@ -34,7 +34,7 @@ const fsplDb = (distM: number, fHz: number) => 20 * Math.log10(distM) + 20 * Mat
 export function friisNearField(distM: number, fHz: number): string | null {
   const lambda = C_LIGHT / fHz;
   return distM < lambda
-    ? `${fmt(distM)} m is closer than one wavelength (${fmt(lambda * 100)} cm at ${fmt(fHz / 1e6)} MHz). Free-space path loss only holds in the far field — at least a wavelength or so apart; this close, the antennas sit in each other’s near field and the formula would even show a gain. Enter a distance of at least ${fmt(lambda)} m.`
+    ? `${fmt(distM)} m is closer than one wavelength (${fmt(lambda * 100)} cm at ${fmt(fHz / 1e6)} MHz). Free-space path loss only holds in the far field — at least a wavelength or so apart; this close, the antennas sit in each other’s near field, and under about a twelfth of a wavelength the formula would even show a gain. Enter a distance of at least ${fmt(lambda)} m.`
     : null;
 }
 

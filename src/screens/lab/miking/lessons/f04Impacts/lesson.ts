@@ -419,7 +419,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A small supercardioid about 50 cm from the impact, the wedge in its rejection', ok: true, power: 'phantom', feedback: 'A suggested starting point for live: close, contained, aimed — check at show level.' },
       { id: 'b', label: 'A dynamic close to the impact, the wedge behind it', ok: true, power: 'none', feedback: 'A fair live choice for a strong hit — check the wedge against the real pattern.' },
       { id: 'c', label: 'A splash effect in an open bucket on the stage', ok: false, power: 'phantom', feedback: 'No wet effect live without approved containment, cleanup and separation.' },
-      { id: 'd', label: 'Push the gain until it rings, then back it off', ok: false, power: 'phantom', feedback: 'Never provoke feedback. Check with the operator, short of any ring.' },
+      { id: 'd', label: 'Push the gain until it rings, then back it off', ok: false, power: 'phantom', feedback: 'Not until it rings. Check with the operator, short of any ring.' },
       { id: 'e', label: 'A mic in the block’s travel for the closest hit', ok: false, power: 'phantom', feedback: 'The block hits it. Stay outside the travel.' },
     ],
     reasons: [DOC_REASON('the impact'), CLEAR_REASON('the block’s travel'), { id: 'r.null', label: 'The pattern’s rejection faces the wedge', role: 'required', feedback: 'Say where the wedge sits against the pattern.' }, { id: 'r.op', label: 'The gain is checked with the operator at show level', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Feedback is never provoked — not even to find the edge.' }],

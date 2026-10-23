@@ -253,7 +253,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You stand 40 cm behind the capsule during a reading. What changes?',
     options: ['Your body reflects a late copy of the sound into it', 'Nothing: the capsule faces the loudspeaker, not you', 'Only the lows, which your body absorbs entirely'],
     correct: 'Your body reflects a late copy of the sound into it',
-    explain: 'A person near the capsule is a reflecting surface: a copy of the sound arrives a little later and adds to the reading. The closer you stand, the stronger it is.',
+    explain: 'A person near the capsule is a reflecting surface: a copy of the sound arrives a little later and mixes with the direct sound, raising some pitches and cutting others. The closer you stand, the stronger it is.',
     why: {
       'Nothing: the capsule faces the loudspeaker, not you': 'A measurement mic hears round itself: a reflection from behind still reaches it.',
       'Only the lows, which your body absorbs entirely': 'A body reflects and scatters the mids and highs most; the lows pass round it.',
@@ -439,7 +439,7 @@ const symptoms: Symptom[] = [
     explain: 'The capsule may need a polarization supply or a constant-current input. Use the exact approved path; do not experiment with pinouts or apply power to an unverified sensor.',
     why: {
       'A homemade cable to try phantom power': 'An improvised pinout can damage the capsule and preamp: never experiment with pinouts.',
-      'More gain on the input until it shows': 'No gain fixes a preamp with no power.',
+      'More gain on the input until it shows': 'No gain fixes a capsule that gets no power.',
     },
   },
   {

@@ -274,7 +274,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'An official’s announcement mic feeds the PA. A fair first step?',
     options: ['Close capsule, opened only to announce', 'Left open through play in case of anything', 'Turned up to be heard over the crowd'],
     correct: 'Close capsule, opened only to announce',
-    explain: 'Close and opened on purpose: the fewest open mics, the PA as far into the rejection as the mouth allows. Never provoke feedback.',
+    explain: 'Close and opened on purpose: the fewest open mics, the PA as far into the rejection as the mouth allows. Avoid uncontrolled feedback.',
     why: {
       'Left open through play in case of anything': 'An open mic feeds the PA back and carries private talk.',
       'Turned up to be heard over the crowd': 'More gain brings feedback closer; the PA’s level is set by the PA.',

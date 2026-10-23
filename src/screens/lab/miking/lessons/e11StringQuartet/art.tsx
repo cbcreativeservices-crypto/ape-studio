@@ -20,7 +20,7 @@ const SPEC = ensembleHandSpec({
   firstMic: 'arrCard',
   mic: {
     intro: 'Use quiet, low-noise mics with a suitable response for the main pair: matched cardioids for X/Y and the 17 cm pair, omnis for a spaced pair, a figure-8 for an M/S Side. For a spot or a close mic, a cardioid on its own stand — or a miniature on a mount made for the instrument, with the player’s approval and its specified adapter.',
-    mountLine: () => 'Mount: a stand with a stable base in front of the group, clear of the bows, the endpin and the sightlines; an instrument mount only with the player’s approval, never on the bridge or the varnish',
+    mountLine: () => 'Mount: a stand with a stable base in front of the group, clear of the bows, the endpin and the sightlines; an instrument mount only with the player’s approval, none on the varnish, none on the bridge unless made for it',
     extra: ARRAY_CARDS,
   },
   ctx: {

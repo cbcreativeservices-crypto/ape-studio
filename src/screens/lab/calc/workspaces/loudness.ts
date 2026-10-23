@@ -145,7 +145,7 @@ const LOUDTP: Workspace = {
     'Assuming +6 dB is "twice as loud" — the rough psychoacoustic doubling is about +10 LU, not +6.',
   ],
   warnings:
-    'Teaching mechanics only. Window lengths: momentary 400 ms, short-term 3 s (75% overlap). ' +
+    'Teaching mechanics only. Window lengths: momentary 400 ms, short-term 3 s; integrated loudness uses 400 ms blocks with 75% overlap. ' +
     'Perceived-loudness doubling ≈ +10 LU is a psychoacoustic rule of thumb. Real BS.1770 loudness ' +
     'requires the full gated K-weighted algorithm on the audio; true peak requires ≥4× oversampling.',
   glossary: ['LUFS', 'True Peak', 'K-weighting', 'Loudness', 'Gating'],
@@ -165,7 +165,7 @@ const LOUDTP: Workspace = {
       plainFormula:
         'The momentary window is 0.4 seconds and the short-term window is 3 seconds, each multiplied by the sample rate to get a length in samples.',
       explain:
-        'BS.1770 measures loudness over fixed time windows. This turns those windows — 400 ms for the fast momentary meter and 3 s for the smoothed short-term meter — into a count of samples at your sample rate, and shows the 100 ms block step (75% overlap) that makes the two meters react at different speeds.',
+        'BS.1770 and the EBU meter spec measure loudness over fixed time windows. This turns those windows — 400 ms for the fast momentary meter and 3 s for the smoothed short-term meter — into a count of samples at your sample rate, and shows the 100 ms step between 400 ms blocks (75% overlap). The window length, not the step, is what makes the two meters react at different speeds.',
       keySymbols: ['×'],
       compute: (v) => {
         return [
@@ -176,7 +176,7 @@ const LOUDTP: Workspace = {
       },
       steps: (v) => [
         `Momentary = 0.4 s × ${fmt(n(v.sr))} = ${fmt(0.4 * n(v.sr))} samples; short-term = 3 s × ${fmt(n(v.sr))} = ${fmt(3 * n(v.sr))} samples.`,
-        `Blocks overlap 75%, stepping every 100 ms (${fmt(0.1 * n(v.sr))} samples) — why the momentary meter reacts fast and the short-term meter smooths.`,
+        `400 ms blocks step every 100 ms (${fmt(0.1 * n(v.sr))} samples), so they overlap 75%. The short 400 ms window is why the momentary meter reacts fast; the 3 s window is why the short-term meter smooths.`,
       ],
     },
     {

@@ -38,7 +38,7 @@ const METER_SIGNALS: readonly { id: SignalKey; name: string; blurb: string }[] =
 
 type MeterKind = 'peak' | 'loudness';
 const METER_KINDS: readonly { key: MeterKind; label: string; short: string; blurb: string }[] = [
-  { key: 'peak', label: 'Peak programme meter', short: 'PEAK', blurb: 'Sample peak per channel with an OVER lamp — one instant at a time, and a crest-factor line underneath.' },
+  { key: 'peak', label: 'Sample peak meter', short: 'PEAK', blurb: 'Sample peak per channel with an OVER lamp — one instant at a time, and a crest-factor line underneath.' },
   { key: 'loudness', label: 'Loudness meter (BS.1770-style)', short: 'LUFS', blurb: 'Momentary, short-term and INTEGRATED loudness, plus loudness range — how loud the piece is, not how high its peak is. No target line: the right number depends on content and destination.' },
 ];
 
@@ -170,7 +170,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <Body>The Visual Audio Analysis lab's own meters on the glass. Ride GAIN: PEAK, TRUE PK and LUFS on the bezel all move by the same amount — a gain change is the one thing that moves every number together — and the face moves with them. Switch FACE between the peak programme meter and the loudness meter; change SIGNAL to see how the GAP between peak and loudness depends on the material (that gap is what a limiter spends). The loudness meter here draws no target line on purpose.</Body>
+              <Body>The Visual Audio Analysis lab's own meters on the glass. Ride GAIN: PEAK, TRUE PK and LUFS on the bezel all move by the same amount — a gain change is the one thing that moves every number together — and the face moves with them. Switch FACE between the sample peak meter and the loudness meter; change SIGNAL to see how the GAP between peak and loudness depends on the material (that gap is what a limiter spends). The loudness meter here draws no target line on purpose.</Body>
               <Card>
                 <Point title="Peak level (dBFS)">The highest sample. It tells you about one instant, not about how loud the piece is.</Point>
                 <Point title="True peak (dBTP)">An estimate of the reconstructed waveform BETWEEN samples (oversampled). It can exceed the sample peak; converters and lossy encoders see it.</Point>

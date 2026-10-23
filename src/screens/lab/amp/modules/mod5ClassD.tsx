@@ -217,7 +217,7 @@ export function Mod5ClassD() {
               <SectionTitle>1 · MODULATION (PWM)</SectionTitle>
               <Body>
                 The comparator holds the audio against a much faster triangle carrier: audio above carrier → switch high;
-                below → switch low. Louder audio makes wider pulses. Pulse-width modulation is the classic example, not the
+                below → switch low. As the audio rises the pulses widen, and as it falls they narrow; louder audio swings the widths further. Pulse-width modulation is the classic example, not the
                 only Class D method.
               </Body>
               <Text style={styles.note}>Switching rate reduced for visual demonstration — real carriers run at hundreds of kilohertz. Input panel: audio (cyan) against the carrier (amber dashed).</Text>

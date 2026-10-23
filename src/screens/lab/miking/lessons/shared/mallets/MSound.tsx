@@ -49,7 +49,7 @@ function useFocusedSafe(): boolean {
 }
 
 const STRIKES = [
-  { id: 'mid', label: 'THE MIDDLE', xi: 0.5, blurb: 'The middle of the bar — where the lowest shape moves most.' },
+  { id: 'mid', label: 'THE MIDDLE', xi: 0.5, blurb: 'The middle of the bar — far from the still points, so it drives the lowest shape strongly.' },
   { id: 'third', label: 'A THIRD OF THE WAY', xi: 1 / 3, blurb: 'A third of the way along the bar — between the middle and a still point.' },
   { id: 'end', label: 'NEAR AN END', xi: 0.06, blurb: 'Close to one end, beyond the cord.' },
 ] as const;

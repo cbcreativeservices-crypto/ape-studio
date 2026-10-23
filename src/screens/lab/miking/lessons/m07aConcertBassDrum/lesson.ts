@@ -83,7 +83,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The playing head squeezes the air inside, and the air pushes the far head out: the two heads are coupled through the air, and both radiate.',
     why: {
       'Pulls it inward, toward the playing head': 'The playing head moving in squeezes the air; squeezed air pushes on the far head, so it moves outward.',
-      'Nothing: the air escapes through the shell wall': 'The shell is closed wood. The air is squeezed and pushes the far head out.',
+      'Nothing: the air escapes through the shell wall': 'The shell is closed. The air is squeezed and pushes the far head out.',
     },
   },
   {

@@ -128,7 +128,7 @@ export const CSN_COPY: LessonCopy = {
         { title: 'THE IMAGE', text: 'A spot raised too far pulls the snare to the front of the orchestra. Bring it up under the main pickup and check where the drum seems to sit.' },
       ],
       body: 'On an amplified stage the monitors stay where the players need them: turn the mic or choose its pattern so that a null faces a loud unwanted source. The section’s own monitor beside the players sits in front of a mic aimed at the drum, where no pattern rejects it.',
-      warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Work it out with the system operator, and never create feedback deliberately.',
+      warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Work it out with the system operator, and avoid uncontrolled feedback.',
     },
   },
   twoMic: {

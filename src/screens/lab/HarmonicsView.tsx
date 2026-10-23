@@ -2044,7 +2044,7 @@ export function HarmonicsView({
               <Text style={styles.caption}>
                 Tap the display (or the header ▶) to start: it plays the fundamental as a sine (
                 {GEN_LEVEL_DB} dBFS) while analyzing the microphone. Real harmonic distortion from
-                the speaker, room, and mic lines up with the markers — that is the lesson.
+                the speaker and mic lines up with the markers — that is the lesson.
                 {!feedbackAllowed
                   ? ' The tone stays muted for feedback safety until you switch on the override above (use headphones, or the built-in mic will hear the speaker).'
                   : ''}

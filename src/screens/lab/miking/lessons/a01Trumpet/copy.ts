@@ -82,7 +82,7 @@ export const A01_COPY: Partial<LessonCopy> = {
         { title: 'THE LOUDEST NOTE', text: 'A trumpet’s peaks can overload a mic’s own capsule and electronics before the desk shows it. Check the mic’s rating and pad, then set gain on the strongest real accent.' },
       ],
       body: 'With a wedge in front of the player, a pattern’s rejection is a tool to aim — tilting as well as turning. Some stage sound in a trumpet mic is normal; the question is how much the music can take.',
-      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

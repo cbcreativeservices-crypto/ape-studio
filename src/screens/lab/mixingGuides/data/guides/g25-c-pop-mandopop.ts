@@ -313,7 +313,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "94–100 dBA LAeq-15",
-        "studio": "−11 to −6 LUFS-I by style, −1 dBTP"
+        "studio": "−11 to −6 LUFS-I by style, −2 dBTP"
       }
     ],
     "notes": []

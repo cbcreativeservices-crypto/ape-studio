@@ -163,7 +163,7 @@ const scenarios: MikingScenario[] = [
     explain: 'On the violin, the capsule keeps one distance however the player turns — a stand mic has a working zone the player can leave. It still hears the stage, and its close view is more coloured.',
     why: {
       'Its clip stops it from hearing the monitors and the rest of the stage': 'A clip is a mount, not a pattern: the mic still hears the stage.',
-      'It needs no power, so a spare input without phantom will do': 'A miniature condenser needs phantom power, through its adapter.',
+      'It needs no power, so a spare input without phantom will do': 'This miniature condenser needs phantom power, through its adapter.',
     },
   },
   {
@@ -437,7 +437,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A miniature clipped to the bass-side rib, aimed at the bridge, away from the face', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the fiddle — check the clip fits and the cable is relieved.' },
       { id: 'b', label: 'A miniature on a holder behind the bridge, under the strings, checked for harshness', ok: true, power: 'phantom', feedback: 'A suggested starting point: steady as the player moves — compare under and over the strings.' },
       { id: 'c', label: 'Small condenser 1 m in front, for a natural blended sound', ok: false, power: 'phantom', feedback: 'On a loud stage a metre away hears the band and the monitors more than the fiddle.' },
-      { id: 'd', label: 'A clip pushed onto the bridge, where the sound starts', ok: false, power: 'phantom', feedback: 'Nothing goes on the bridge: it can damp it and risk the instrument.' },
+      { id: 'd', label: 'A clip pushed onto the bridge, where the sound starts', ok: false, power: 'phantom', feedback: 'No mic goes on the bridge: it can damp it and risk the instrument.' },
       { id: 'e', label: 'A miniature taped to the top, by the f-hole', ok: false, power: 'phantom', feedback: 'Never improvise on the varnish or the f-hole edge: use a mount made for the violin.' },
     ],
     reasons: [docReason('the bridge’s foot or the strings behind the bridge'), clearReason('the bow, the bow arm, the chin rest and the player’s face'), POWER_REASON, { id: 'r.move', label: 'A mic that moves with the fiddle holds the sound as the player moves', role: 'optional', feedback: 'A fair live reason for a miniature.' }, BRAND_REASON('violin'), { id: 'r.loudest', label: 'Turn it up until the fiddle is louder than the banjo', role: 'wrong', feedback: 'More gain raises the stage in that mic too, and brings feedback closer.' }],

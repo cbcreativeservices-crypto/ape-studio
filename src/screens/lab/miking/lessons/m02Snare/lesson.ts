@@ -598,7 +598,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The snare-side head moves faster than the wires can follow: they leave it and slap back, again and again — the buzz.',
     why: {
       'The batter head rubs against the metal hoop each time it moves': 'That would be a fault. The buzz is the wires slapping the snare-side head.',
-      'The air inside the drum rattles against the shell': 'The air drives the heads; it is the wires on the snare-side head that rattle.',
+      'The air inside the drum rattles against the shell': 'The air links the two heads; it is the wires on the snare-side head that rattle.',
     },
   },
   {

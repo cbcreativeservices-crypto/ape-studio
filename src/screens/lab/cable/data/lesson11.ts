@@ -571,7 +571,7 @@ const A_PICKS: ConnectionPick[] = [
       travels(
         'speaker_level',
         'correct',
-        'An amplifier’s output is loudspeaker-level — volts of drive with real current. It belongs only on loudspeaker terminals, over speaker cable sized for the job.',
+        'An amplifier’s output is loudspeaker-level — volts of drive with real current. It goes to loudspeaker terminals, over speaker cable sized for the job — never into a mic or line input.',
       ),
       travels(
         'line_level',
@@ -1256,7 +1256,7 @@ const B_FAULTS: FaultStage = {
           label: 'The supply label does not match the device label — wrong voltage AND polarity',
           verdict: 'correct',
           explain:
-            'Exactly. The supply label and the device label must match on every item — voltage, DC type, polarity symbol, current. This one misses on voltage AND polarity, and a full fit with the wrong electrical spec can damage the device immediately. The barrel fitting proves nothing.',
+            'Exactly. The supply must match the device on voltage, DC type and polarity symbol, and its current rating must be at or above what the device needs. This one misses on voltage AND polarity, and a full fit with the wrong electrical spec can damage the device immediately. The barrel fitting proves nothing.',
           consequence: 'equipment_risk',
         },
         {
@@ -1271,7 +1271,7 @@ const B_FAULTS: FaultStage = {
           label: 'Only the voltage matters, and 12 V is close enough to 9 V',
           verdict: 'wrong',
           explain:
-            'Voltage, polarity, DC-vs-AC type and current capacity must ALL match — and this supply is wrong on two of them. Overvoltage and reversed polarity are each individually able to damage equipment.',
+            'Voltage, polarity and DC-vs-AC type must ALL match, and the current rating must be at or above the device’s need — this supply is wrong on two of them. Overvoltage and reversed polarity are each individually able to damage equipment.',
         },
       ],
     },

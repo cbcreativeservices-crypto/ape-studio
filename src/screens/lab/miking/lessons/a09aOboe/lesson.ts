@@ -400,7 +400,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The air column behaves as if the tube ended just past the first open hole; only the lowest notes come mainly from the bell.',
     why: {
       'From the bell, like the lowest note': 'Only notes with every hole closed come mainly from the bell.',
-      'Back through the reed': 'The reed is closed by the lips.',
+      'Back through the reed': 'The lips seal round the reed, so the reed end acts as a closed end: little sound leaves there.',
     },
   },
   {
@@ -512,7 +512,7 @@ const copy: Partial<LessonCopy> = {
         { title: 'IN A SECTION', text: 'With a main pair up, an oboe mic is a spot: bring it up only for a stated balance, and check it in mono. A section spot can sit between two oboes at about head height.' },
       ],
       body: 'With a wedge in front of the player, a pattern’s rejection is a tool to aim — tilting as well as turning. Some stage sound in an oboe mic is normal; the question is how much the music can take.',
-      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

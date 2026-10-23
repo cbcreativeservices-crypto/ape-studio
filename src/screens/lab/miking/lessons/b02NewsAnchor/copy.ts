@@ -25,7 +25,7 @@ const BASE = standingVoiceCopy({
     { title: 'THE SHOT, THE MOVES, THE ROOM', text: 'Before any mic: ask for the widest frame, the camera moves, the light and the likely turns — to the camera, to the guest, down to the script. Listen at the seat for fans, a hard desk and the room; note who handles paper or a tablet.' },
     { title: 'ASK FIRST — CONSENT AND WARDROBE', text: `${SAFETY.consent} ${SAFETY.wardrobe} ${SAFETY.skin}` },
     { title: 'RIGGING AND POWER', text: `A fixed boom over a seated person is rigged and secured by qualified crew before anyone sits beneath it. ${SAFETY.phantom}` },
-    { title: 'LIVE: NEVER PROVOKE FEEDBACK', text: 'In a public interview with a PA, bring each mic up only to its working level with the responsible operator; at any ring, pull it down at once and fix the geometry — never raise a level to find feedback.' },
+    { title: 'LIVE: NO UNCONTROLLED FEEDBACK', text: 'In a public interview with a PA, bring each mic up only to its working level with the responsible operator; at any ring, pull it down at once and fix the geometry — any ring-out is the system operator’s job.' },
   ],
   studio: {
     id: 'b2.ctx.studio',
@@ -124,7 +124,7 @@ export const B02_COPY: Partial<LessonCopy> = {
       ...BASE.context!.learn,
       intro: 'These are scenario-based comparisons, not restrictions: the anchor is the same — the set, the shot and the PA change.',
       body: 'In a public interview the PA is a loudspeaker every open mic hears. Close mics, the fewest open, and a pattern’s rejection aimed at the PA do more than any single trick.',
-      warn: 'No mic position alone prevents feedback: the pattern, the open mics, the PA’s place and level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback: the pattern, the open mics, the PA’s place and level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

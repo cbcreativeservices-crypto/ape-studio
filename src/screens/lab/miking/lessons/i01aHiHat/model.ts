@@ -102,7 +102,7 @@ export const HAT_ZONES: DocumentedZone[] = [
   {
     id: 'hh.edgeLow',
     label: 'A few centimetres over the outer edge',
-    band: 'Start a few centimetres — about 4.5–6.5 cm (2–2.5 in) — above the top cymbal’s outer edge on the far side, aimed down. Close to the edge, keep the mic out of the air that rushes out as the pair closes.',
+    band: 'Start a few centimetres — about 4.5–6.5 cm (1.8–2.6 in) — above the top cymbal’s outer edge on the far side, aimed down. Close to the edge, keep the mic out of the air that rushes out as the pair closes.',
     kind: 'trial',
     src: 'SN-E914',
     quote: 'Position the microphone a few centimetres above the outer edge of the hi-hat aiming down. … When closing the hi-hat, a strong air current is created on the edge.',

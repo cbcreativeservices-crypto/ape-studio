@@ -64,7 +64,10 @@ RELATIONSHIP = ['Core audio/acoustics', 'Closely related / supporting', 'Audio-d
 ORIENTATION = ['Technical / engineering', 'Hands-on technical / trade', 'Business / editorial / operations', 'Creative / performance', 'Science / research', 'Education / coaching', 'Clinical / therapeutic', 'Legal / policy / standards']
 TITLE_CLASS = ['Established industry role', 'Technical/creative specialty', 'Operational/creative role', 'Leadership/management', 'Research specialty', 'Education/communication', 'Business/legal/adjacent role', 'Consulting/freelance service', 'Skilled trade/craft', 'Regulated or credentialed profession', 'Entry/support role']
 STATUS = ['Established occupation or industry role', 'Established specialty or employer title', 'Emerging or fast-evolving title', 'Regulated/credentialed title']
-WORK_MODEL = ['Staff roles common; consulting/contract options vary', 'Staff, freelance, or project-based depending on sector', 'Often freelance/contract; staff roles also exist', 'Project, venue, tour, or contract work common']
+WORK_MODEL = ['Staff roles common; consulting/contract options vary', 'Staff, freelance, or project-based depending on sector', 'Often freelance/contract; staff roles also exist', 'Project, venue, tour, or contract work common',
+              # Not in the workbook; used only by scripts/career-index-overrides.json `workModel`
+              # (fact audit 2026-10-22). Appended, so the workbook codes 0-3 never move.
+              'Staff roles at a government patent office', 'Full-time uniformed military service', 'Self-employed business owner']
 
 def code(table, value, what):
     v = (value or '').strip()
@@ -180,8 +183,12 @@ def main():
     HANDS_ON = 'Hands-on training, certificate/associate degree, apprenticeship, or experience'
     VARIES = "Varies: portfolio/experience, certificate, associate, or bachelor's pathway"
     craft = {fam_ids.index(f) for f in ov['craftFamilies']}
+    # A title given an explicit `preparation` above keeps it: the craft re-table is for
+    # the workbook's title-class DEFAULT, not for a per-role correction that happens to
+    # read "Bachelor's degree common" (e.g. engineers in Manufacturing, fact audit 2026-10-22).
+    explicit_prep = set(ov['preparation'])
     for c in careers:
-        if c['f'] in craft and c['prep'] == DEGREE_DEFAULT:
+        if c['f'] in craft and c['prep'] == DEGREE_DEFAULT and c['t'] not in explicit_prep:
             c['prep'] = HANDS_ON if re.search(r'(Technician|Operator|Assistant|Stagehand|Tech|Crew|Hand|Roadie|Runner)\b', c['t']) else VARIES
     for title, ori in ov['orientation'].items():
         if title.startswith('_'): continue
@@ -200,6 +207,22 @@ def main():
         for c in each(title): c['tier'] = code(TIER, t, 'tier')
     for title, wm in ov.get('workModel', {}).items():
         for c in each(title): c['wm'] = code(WORK_MODEL, wm, 'work model')
+    # ── fact-audit hooks (Comp B return, 2026-10-22) ──
+    # per-title title status (e.g. a state-licensed role shown as "Regulated/credentialed title")
+    for title, st in ov.get('status', {}).items():
+        if title.startswith('_'): continue
+        for c in each(title): c['st'] = code(STATUS, st, 'title status')
+    # per-title Professional Engineer flag, for titles the family suffix rule above misses
+    for title in ov.get('professionalEngineer', []):
+        for c in each(title): c['pe'] = 1
+    # drop a misleading "also called" name (must be present, so a workbook change fails loudly)
+    for title, names in ov.get('removeAlternates', {}).items():
+        if title.startswith('_'): continue
+        for c in each(title):
+            for n in names:
+                if n not in c.get('alt', []): sys.exit(f'removeAlternates: {title!r} has no alternate {n!r}')
+                c['alt'].remove(n)
+            if not c['alt']: c.pop('alt')
 
     demote = {RELATIONSHIP.index(r) for r in ov['demoteCoreWhenRelationshipIn']}
     demoted = 0

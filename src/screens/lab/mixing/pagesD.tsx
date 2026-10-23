@@ -208,7 +208,7 @@ function PageExport({ ctx }: { ctx: PageCtx }) {
         {inspected ? <Body>✓ Start clean · end tail complete · no clipped samples · length correct · all parts present. THIS pass, every time, is what “professional” mostly means.</Body> : null}
       </Card>
       <UnderstandingCheck
-        question="Your bounce plays fine for 3:40 of its 3:55 — then silence. Most likely story?"
+        question="Your bounce plays fine, then stops at 3:40 — but the song runs 3:55. Most likely story?"
         options={['The exported file is corrupt; export again and hope', 'The export range ended early and truncated the tail', 'Fifteen seconds of end silence is normal in WAV files', 'The mastering stage will restore the missing ending']}
         correct={1}
         explain="A truncated tail almost always means the export selection ended early — the last fifteen seconds were outside the range. It is one of the most common export bugs, and the END-check exists precisely for it."

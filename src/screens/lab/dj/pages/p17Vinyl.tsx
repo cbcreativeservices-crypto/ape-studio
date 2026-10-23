@@ -305,7 +305,7 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
       </Step>
       <Step n={2}>
         <Do>Open PLATTER and start the turntable. The dial says 4.0 g — but listen: the loud, bright moments spit and fizz. Open ARM, put the STYLUS SCALE under the needle: the real force is 2.5 g. The ring was never zeroed.</Do>
-        <P>So set it properly: LIFT the arm on the cue lever, turn the weight until it FLOATS LEVEL, ZERO THE DIAL RING, lower it, then turn the weight to 4.0 g. Set the ANTI-SKATE to match.</P>
+        <P>So set it properly: LIFT the arm clear of the record (cue lever down, so it floats free), turn the weight until it FLOATS LEVEL, ZERO THE DIAL RING, lower it, then turn the weight to 4.0 g. Set the ANTI-SKATE to match.</P>
         <Note tone="safety">Lift and lower the arm with the cue lever, and with the channel fader down (PLATTER → FADER 1 DOWN): a dropped stylus is a loud thump through the PA, and can chip the stylus. The lab flags a THUMP when you move the arm on a live channel.</Note>
       </Step>
       <Step n={3}>

@@ -327,9 +327,9 @@ const WS_PITCH: Workspace = {
       inputs: ['f', 'ref'],
       formula: 'm = 69 + 12·log₂(f / A4); cents = (m − round m) × 100',
       plainFormula:
-        'The MIDI number equals 69 plus twelve times the base-two log of the frequency over the A4 reference; the cents offset is the fractional part times 100.',
+        'The MIDI number equals 69 plus twelve times the base-two log of the frequency over the A4 reference; the cents offset is the MIDI number minus the nearest whole note, times 100.',
       explain:
-        'Translates a frequency into a note name and tuning offset. Because pitch is logarithmic, twelve times the base-two log of the ratio to A4 gives the position in semitones, and MIDI 69 anchors A4. The leftover fraction, times 100, is how many cents sharp or flat the tone sits.',
+        'Translates a frequency into a note name and tuning offset. Because pitch is logarithmic, twelve times the base-two log of the ratio to A4 gives the position in semitones, and MIDI 69 anchors A4. The gap to the nearest whole note, times 100, is how many cents sharp or flat the tone sits.',
       keySymbols: ['·', '−', '×', '/'],
       compute: (v) => {
         const f = n(v.f);
@@ -684,7 +684,7 @@ const WS_ROOMMODES: Workspace = {
     'modal frequencies tells you why the bass disappears at the mix position, where to try ' +
     'moving the speakers or the chair, and which frequencies the bass trapping has to reach.',
   example:
-    'A 5 × 4 × 2.5 m room at 20 °C (c ≈ 343 m/s): fundamentals f = c/2L → 34.3 Hz (length), ' +
+    'A 5 × 4 × 2.5 m room at 20 °C (c ≈ 343.2 m/s): fundamentals f = c/2L → 34.3 Hz (length), ' +
     '42.9 Hz (width), 68.6 Hz (height). Note that the second-order height mode (137.3 Hz) and ' +
     'the fourth-order length mode (137.3 Hz) stack — a 2:1 dimension ratio piles modes on the ' +
     'same frequencies.',

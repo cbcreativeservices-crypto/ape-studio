@@ -331,7 +331,7 @@ export const KEY_TERMS: Record<MasteringModuleId, readonly { term: string; def: 
     { term: 'Sample peak (dBFS)', def: 'The highest sample value.' },
     { term: 'True peak (dBTP)', def: 'The estimated peak of the reconstructed waveform between samples.' },
     { term: 'Integrated loudness (LUFS)', def: 'Gated, K-weighted average loudness of the whole programme (ITU-R BS.1770).' },
-    { term: 'PLR', def: 'Peak-to-loudness ratio — one plain measure of how much headroom sits above the average.' },
+    { term: 'PLR', def: 'Peak-to-loudness ratio — one plain measure of how far the peaks sit above the average loudness.' },
   ],
   release: [
     { term: 'Red Book', def: 'The audio CD standard: 16-bit, 44.1 kHz, stereo.' },

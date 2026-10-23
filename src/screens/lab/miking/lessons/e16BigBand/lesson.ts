@@ -417,7 +417,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Shared section mics, plus piano, bass and a solo spot', ok: true, power: 'phantom', feedback: 'Fair: fewer open mics, solos covered — the nearest player may dominate.' },
       { id: 'c', label: 'The main pair alone, sent to the PA and the wedges', ok: false, power: 'phantom', feedback: 'A distant pair in the PA and wedges invites feedback.' },
       { id: 'd', label: 'Every mic open all night, faded only by ear', ok: false, power: 'phantom', feedback: 'Unneeded open mics cost margin; attenuate them when not needed.' },
-      { id: 'e', label: 'Push the wedges until they ring, then back off', ok: false, power: 'phantom', feedback: 'Never provoke feedback.' },
+      { id: 'e', label: 'Push the wedges until they ring, then back off', ok: false, power: 'phantom', feedback: 'Not until they ring: set the level the players need, with a margin.' },
     ],
     reasons: [{ id: 'r.roles', label: 'Each channel has a route: PA, monitors, or stream', role: 'required', feedback: 'Say why: remote listeners need a different balance from the room.' }, SAFE_REASON, POWER_REASON, BRAND_REASON, { id: 'r.room', label: 'The room pair makes the PA sound natural', role: 'wrong', feedback: 'In the PA, a distant pair mostly hears the PA.' }],
     explain: 'Two setups pass. What passes is the reasoning: clear routes, close mics where the PA needs them, fewer open mics, no provoked feedback.',

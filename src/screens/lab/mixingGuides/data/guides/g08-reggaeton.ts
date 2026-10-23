@@ -263,7 +263,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Commercial reggaeton masters typically land at −8 to −5 LUFS-I, with short-term loudness of −6 to −4 LUFS in the coros (choruses); Latin trap is a little more open (−9 to −6). Use −1 dBTP for masters at or below −14 LUFS and −2 dBTP for louder ones, since dense, limited dembow (reggaeton's core drum pattern) overshoots in lossy codecs. Most streaming services normalize to −14 LUFS, so extreme loudness buys nothing there. The genre tolerates a low PLR (6–9 dB; at −2 dBTP that means a master at about −8 LUFS-I or quieter) and a loudness range of 3–6 LU, but keep the drop contrast."
+      "text": "Commercial reggaeton masters typically land at −8 to −5 LUFS-I, with short-term loudness of −6 to −4 LUFS in the coros (choruses); Latin trap is a little more open (−9 to −6). Use −1 dBTP for masters at or below −14 LUFS and −2 dBTP for louder ones, since dense, limited dembow (reggaeton's core drum pattern) overshoots in lossy codecs. Most streaming services normalize to −14 LUFS, so extreme loudness buys nothing there. The genre tolerates a very low PLR (peak minus loudness): at −2 dBTP, a −8 to −5 LUFS-I master leaves only 3–6 dB. Keep a loudness range of 3–6 LU, but keep the drop contrast."
     }
   ],
   "liveStudio": {

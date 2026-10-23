@@ -53,7 +53,7 @@ export const WAVEFORM_LEARN: ToolLearnContent = {
     {
       claim: 'Vertical zoom turns the signal up.',
       truth:
-        'Zoom only changes how many pixels each dB occupies on screen. The signal level in dBFS is untouched — nothing you hear or record changes. Gain changes the signal; zoom changes the picture of it. Read level from the axis and the measured values, not from the size of the drawing.',
+        'Zoom only changes how tall the trace is drawn on screen. The signal level in dBFS is untouched — nothing you hear or record changes. Gain changes the signal; zoom changes the picture of it. Read level from the axis and the measured values, not from the size of the drawing.',
     },
     {
       claim: 'You can see frequency balance in a waveform.',

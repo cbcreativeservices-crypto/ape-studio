@@ -25,7 +25,7 @@ const BASE = standingVoiceCopy({
     { title: 'CHOOSE THE PERSPECTIVE FIRST', text: 'Before any mic: a dry, close announcer sound, a natural narration with some room, or a guest who must match the host? Ask whether the reader sits or stands, reads from paper or a screen, turns to someone, whispers or projects, and has to stay on camera.' },
     { title: 'LISTEN TO THE ROOM', text: 'Scout the real position: fans, vents, traffic, furniture and the booth’s own ring. Listen to speech and to the pauses. Soft panels tame some reflections; a blanket round a mic does not make outside noise disappear.' },
     { title: 'A REMOTE GUEST’S MIC', text: 'Agree a quiet room and an external mic or a headset before the event, with headphones or earbuds so the program does not spill from loudspeakers into the mic — and check the app really chose that mic, not the laptop’s own. Test with the guest’s normal posture, level and connection.' },
-    { title: 'NEVER PROVOKE FEEDBACK', text: 'Keep loudspeakers out of an open mic’s path; headphones at a comfortable level. Never test by provoking feedback or by blowing into a capsule — use the real voice. Secure heavy arms and stands; keep cables out of walking paths.' },
+    { title: 'NEVER TEST WITH FEEDBACK', text: 'Keep loudspeakers out of an open mic’s path; headphones at a comfortable level. Never test by provoking feedback or by blowing into a capsule — use the real voice. Secure heavy arms and stands; keep cables out of walking paths.' },
   ],
   studio: {
     id: 'b7.ctx.studio',
@@ -122,7 +122,7 @@ export const B07_COPY: Partial<LessonCopy> = {
     learn: {
       ...BASE.context!.learn,
       body: 'A pattern’s rejection is a tool to aim; a loudspeaker switched off, and headphones, do more. Mute or lower the mics nobody is using.',
-      warn: 'Never create feedback deliberately — not as an exercise, not to “find” a frequency — and never blow into a capsule to test it.',
+      warn: 'Never test a mic with feedback, and never blow into a capsule to test it.',
     },
   },
   twoMic: {

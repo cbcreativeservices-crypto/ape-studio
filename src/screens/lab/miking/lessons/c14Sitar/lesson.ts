@@ -21,7 +21,7 @@ const pages: LessonPages = {
     title: 'Meet the sitar',
     goal: 'Get to know the sitar — a long-necked, fretted lute on a gourd, with melody, drone and (often) sympathetic strings — what it is, where you meet it, what it does in the music, and its parts, before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'The mizrab plucks a main string over a broad bone bridge; the bridge drives the board on the gourd; and the sympathetic strings under the arched frets ring with the notes — or the overtones — that match their tuning.',
+    takeaway: 'The mizrab plucks a main string over a broad bridge; the bridge drives the board on the gourd; and the sympathetic strings under the arched frets ring with the notes — or the overtones — that match their tuning.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -424,7 +424,7 @@ export const C14_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A plucked, fretted lute: a large gourd with a thin wooden board (the tabli), a broad bone bridge, and a long hollow neck with arched frets. Many sitars carry melody strings, drone strings and sympathetic strings — this one seven main and thirteen sympathetic; another sitar may have none.', src: 'MET-ADHIKARI' },
+    { title: 'WHAT IT IS', text: 'A plucked, fretted lute: a large gourd with a thin wooden board (the tabli), a broad bridge (of horn, bone or a synthetic), and a long hollow neck with arched frets. Many sitars carry melody strings, drone strings and sympathetic strings — this one seven main and thirteen sympathetic; another sitar may have none.', src: 'MET-ADHIKARI' },
     { title: 'WHERE YOU MEET IT', text: 'North Indian classical music, usually with tabla and a tanpura drone, and in film, fusion and many other styles — on concert stages and in studios. This lesson covers studio recording and live sound.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Melody, with bends pulled sideways across the frets, rhythmic drone strokes, and a shimmering decay from the sympathetic strings. The bridge’s buzzing brightness is part of it: ask what is intended.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'This lab draws a sitar the size of one real sitar: about 125 cm long, its gourd about 34 cm across and 31 cm deep. Where things sit on it — the frets, the pegs, the second gourd — are drawn, not measured. Sitars vary.', src: 'MET-ADHIKARI' },
@@ -435,7 +435,7 @@ export const C14_LESSON: Lesson = {
       { title: 'The string swings — grazing the bridge', text: 'Released, the string swings between its still ends — the broad main bridge and the nut, or the fret it is pressed to. As it swings it grazes the bridge’s gently curved top: the bright, buzzing edge the player intends. Motion drawn many times larger.' },
       { title: 'The bridge drives the board', text: 'Each swing works the broad bridge, and the bridge drives the thin board over the gourd. The board moves the air — the air inside the gourd too.' },
       { title: 'Sound leaves', text: 'Sound leaves mostly from the board round the bridge, toward a listener in front. The strings and the left hand are heard most directly toward the neck.' },
-      { title: 'The sympathetic strings answer', text: 'Under the frets, sympathetic strings tuned for the music are set going by the bridge when the played note lines up with their tuning — and ring on after it. On a sitar that has them; the next steps show why only some notes do it.' },
+      { title: 'The sympathetic strings answer', text: 'Under the frets, sympathetic strings tuned for the music run over their own small bridge. The board sets them going when the played note lines up with their tuning — and ring on after it. On a sitar that has them; the next steps show why only some notes do it.' },
     ],
     attack: 'The start of the note: the mizrab’s strike and the string grazing the broad bridge — a bright, buzzing onset. It is heard most directly close to the bridge; a close mic there makes it dominate.',
     body: 'The note’s ring: the strings, the board and the gourd’s air together, plus — after matching notes — the sympathetic shimmer. A wider view and the room carry the decay; toward the neck, the strings and the shimmer can stand out more. Tendencies; sitars vary.',

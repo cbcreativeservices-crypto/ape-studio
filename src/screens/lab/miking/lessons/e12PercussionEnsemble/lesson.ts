@@ -405,7 +405,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Two area mics round the moving player’s stations, plus the congas', ok: true, power: 'phantom', feedback: 'Fair: the movement covered with few channels, checked for overlap.' },
       { id: 'c', label: 'A distant spaced pair turned up for the PA', ok: false, power: 'phantom', feedback: 'It raises the stage spill and the PA with the percussion.' },
       { id: 'd', label: 'A fixed mic where the shaker started, nothing else', ok: false, power: 'none', feedback: 'A fixed capsule cannot follow an instrument moved out of its pickup.' },
-      { id: 'e', label: 'Ring out the wedges by pushing them to feedback', ok: false, power: 'none', feedback: 'Never provoke feedback.' },
+      { id: 'e', label: 'Push the wedges until they ring, then back off', ok: false, power: 'none', feedback: 'Not until they ring: set the level the players need, with a margin.' },
     ],
     reasons: [{ id: 'r.need', label: 'Reinforce only what does not already reach the audience', role: 'required', feedback: 'Say why: loud instruments may need nothing; the missing detail does.' }, SAFE_REASON, POWER_REASON, BRAND_REASON, { id: 'r.all', label: 'Every loud instrument needs its own close mic', role: 'wrong', feedback: 'Loud instruments may already carry; more open mics cost margin.' }],
     explain: 'Two setups pass. What passes is the reasoning: reinforce what is missing, cover the movement, wedges in the rejection, no provoked feedback.',
@@ -570,7 +570,7 @@ export const E12_LESSON: EnsembleLesson = {
       { title: 'PLOT THE STAGE', text: 'Instruments, players, changes, wedges, mains and safe cable routes; each mic labelled by the source or area it serves, with its pattern, power, pad, height, distance, angle and routing.' },
       { title: 'PLAN THE INPUTS', text: 'Enough channels for the sources sounding together, not for an average moment of the piece.' },
     ],
-    safety: 'Suitably rated stands, secured, with overhead hardware out of reach; cables clear of paths, pedals and instrument changes. Never block a resonator or touch a vibrating bar. Keep ears away from close strikes and use hearing protection when the exposure warrants it. Never provoke feedback.',
+    safety: 'Suitably rated stands, secured, with overhead hardware out of reach; cables clear of paths, pedals and instrument changes. Never block a resonator or touch a vibrating bar. Keep ears away from close strikes and use hearing protection when the exposure warrants it. Avoid uncontrolled feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a compact percussion group: one main pair in front and a little above — a suggested trial to start from and compare, not a rule.',
       clearance: 'The stand in front of the group, clear of the players’ paths and the audience’s way; its cable dressed flat and out of the walkways.',

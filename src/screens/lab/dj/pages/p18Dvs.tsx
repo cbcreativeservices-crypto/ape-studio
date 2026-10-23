@@ -37,7 +37,7 @@ import { SkipOptional } from './skipOptional';
 import { clampNeedle } from './eventGuards';
 
 const TERMS = [
-  { term: 'Control record', def: 'A record with no music on it — a steady tone the software can read. Its speed and direction tell the software how to play the track.' },
+  { term: 'Control record', def: 'A record with no music on it — a coded tone the software can read. Its speed and direction tell the software how to play the track, and its code tells it where the needle is.' },
   { term: 'Calibrate', def: 'Letting the software measure the noise — on this system, with the needle on the still record — so it can tell the control tone from hum and crackle.' },
   { term: 'Absolute / relative', def: 'ABSOLUTE: the needle’s place is the track’s place, so a needle drop jumps the music. RELATIVE: only speed and direction follow; the music keeps its own place.' },
   { term: 'Internal', def: 'The software plays on its own and ignores the turntable — the way to keep the music going when the control signal fails.' },

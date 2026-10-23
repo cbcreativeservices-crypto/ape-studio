@@ -275,7 +275,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Acoustic chanson and piano-voice records sound best at −14 to −11 LUFS-I with a PLR of 12–16 dB (at −2 dBTP that means a master at about −14 LUFS-I or quieter) and LRA of 8–12 LU; modern variété-pop is mastered around −10 to −8 LUFS-I. Keep true peak at −1 dBTP (−2 dBTP for masters louder than −14). Most streaming services normalize to −14 LUFS, so a dynamic chanson master loses nothing and keeps its emotion."
+      "text": "Acoustic chanson and piano-voice records sound best at −14 to −11 LUFS-I with a wide PLR (at −2 dBTP, a −14 to −11 LUFS-I master leaves 9–12 dB) and LRA of 8–12 LU; modern variété-pop is mastered around −10 to −8 LUFS-I. Keep true peak at −1 dBTP (−2 dBTP for masters louder than −14). Most streaming services normalize to −14 LUFS, so a dynamic chanson master loses nothing and keeps its emotion."
     }
   ],
   "liveStudio": {

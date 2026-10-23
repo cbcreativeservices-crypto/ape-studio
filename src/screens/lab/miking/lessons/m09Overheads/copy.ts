@@ -97,7 +97,7 @@ export const M09_COPY: Partial<LessonCopy> = {
         { title: 'MECHANICS', text: 'Studio: stop the take to try heights and positions safely. Live: stable stands, secured cables, a repeatable changeover, sightlines and a moving player come first.' },
       ],
       body: 'On a stage the monitors stay where the players need them: you turn a mic or choose its pattern so that a null faces a loud unwanted source. Mics pointing down at the kit have the stage below them; a side mic low beside the kit is another open mic.',
-      warn: 'No overhead position alone prevents feedback: the monitors, the PA, gain, the room and every open mic matter. Never create feedback deliberately — not as an exercise, not to find a frequency.',
+      warn: 'No overhead position alone prevents feedback: the monitors, the PA, gain, the room and every open mic matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

@@ -398,7 +398,7 @@ function PageGr({ ctx }: { ctx: PageCtx }) {
       <Card>
         {peak}
         {/* NEW COPY: range is a cap, not a dose — the old line said 10 dB of range was "lisp territory whatever the threshold says". */}
-        <Body>Range is the safety rail: however far above threshold an S goes, the gain never drops more than this. Most voices stay natural with the range at 4–6 dB. Open it wide and the threshold alone decides how hard it works — which is how a de-esser ends up lisping.</Body>
+        <Body>Range is the safety rail: however far above threshold an S goes, the gain never drops more than this. Most voices stay natural with the range at 4–6 dB. Open it wide and only the threshold and ratio decide how hard it works — which is how a de-esser ends up lisping.</Body>
         <Body>These meters are conceptual — relative gain, not calibrated level.</Body>
       </Card>
     </View>

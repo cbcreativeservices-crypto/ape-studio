@@ -466,7 +466,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Lower the level at once. Is the boom far from the mouth? Is its rear toward the PA? Too many open mics?',
     options: ['Lower it, then fix the place and open mics', 'Turn the boom up so the voice stays over the ring', 'Swap the boom for an omni nearer the PA'],
     correct: 'Lower it, then fix the place and open mics',
-    explain: 'Pull the level down first, then bring the boom closer, aim its rejection at the PA and close unused mics — with the system’s operator. Never provoke feedback.',
+    explain: 'Pull the level down first, then bring the boom closer, aim its rejection at the PA and close unused mics — with the system’s operator. Avoid uncontrolled feedback.',
     why: {
       'Turn the boom up so the voice stays over the ring': 'More gain feeds the loop.',
       'Swap the boom for an omni nearer the PA': 'An omni nearer the PA hears it from every side.',
@@ -489,7 +489,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Rehearse turns, the second talker and a reframe', early: 'Check the movement once the level is set.' },
       { text: 'Trace every route; keep a tested fallback', early: 'Routing and the fallback come last.' },
     ],
-    explain: 'A sensible order. Never swing gear over people; no conductive pole near power lines; live, never raise a level to find feedback.',
+    explain: 'A sensible order. Never swing gear over people; no conductive pole near power lines; live, leave any ring-out to the system’s operator.',
   },
 ];
 
@@ -517,7 +517,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A boom for the broadcast, a lav on its own track', ok: true, power: 'phantom', feedback: 'A suggested start: one mic on air, a tested fallback.' },
       { id: 'c', label: 'The boom and the lav summed in the program', ok: false, power: 'phantom', feedback: 'Two mics on one voice comb. Choose one.' },
       { id: 'd', label: 'The boom swung out over the audience to reach', ok: false, power: 'phantom', feedback: 'Never swing gear over people.' },
-      { id: 'e', label: 'Raise the boom until it rings, then back off', ok: false, power: 'phantom', feedback: 'Never provoke feedback. Bring it up to its working level only.' },
+      { id: 'e', label: 'Raise the boom until it rings, then back off', ok: false, power: 'phantom', feedback: 'Ringing out is the system operator’s job. Bring it up to its working level only.' },
     ],
     reasons: [docReason('the lips'), clearReason('the frame and the audience'), { id: 'r.one', label: 'One mic on air per voice; the other on its own track', role: 'required', feedback: 'Say how the boom and any other mic on the voice are used.' }, { id: 'r.op', label: 'The place and pattern checked with the system’s operator', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON('talker'), { id: 'r.loudest', label: 'Turn the boom up until it is louder than the PA', role: 'wrong', feedback: 'More gain brings feedback closer.' }],
     explain: 'Two setups pass. What passes is the reasoning: a boom as close as the frame allows, its rejection toward the PA, one mic on air, a tested fallback, nothing over people — and no feedback provoked.',
@@ -653,7 +653,7 @@ export const B04_LESSON: Lesson = {
       { id: 'operator', label: 'the boom operator', short: 'OPERATOR', note: 'Outside every frame, on a clear path; a tired arm drifts — plan relief.', prov: { kind: 'illustrative', reason: 'the lesson L28' }, tag: 'CREW', scene: 'all' },
       { id: 'pa', label: 'the PA', short: 'PA', note: 'Live: every open mic on the stage hears it. The boom’s place and pattern are checked with the system’s operator.', prov: { kind: 'illustrative', reason: 'a typical small stage' }, tag: 'FEEDBACK', scene: 'stage' },
     ],
-    stage: 'LIVE: the boom as close as the frame allows, its rejection toward the PA, one mic on air, every route traced. Never provoke feedback.',
+    stage: 'LIVE: the boom as close as the frame allows, its rejection toward the PA, one mic on air, every route traced. Avoid uncontrolled feedback.',
     studio: 'STUDIO: the boom just outside the widest frame, aimed at the mouth, on its own channel — a compact directional mic compared if the room is reflective.',
   },
   diagnostic,
@@ -677,6 +677,6 @@ export const B04_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every shot, room, mic and voice is different: move the boom, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a talker in a typical standing pose, the cameras and their shots as drawing defaults, each boom start calculated from the frame, the shotgun’s pattern as a simplified shape, the two-mic comb as a textbook graph. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Never swing gear over people; no pole near power lines; never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every shot, room, mic and voice is different: move the boom, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a talker in a typical standing pose, the cameras and their shots as drawing defaults, each boom start calculated from the frame, the shotgun’s pattern as a simplified shape, the two-mic comb as a textbook graph. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Never swing gear over people; no pole near power lines; avoid uncontrolled feedback.',
   copy: B04_COPY,
 };

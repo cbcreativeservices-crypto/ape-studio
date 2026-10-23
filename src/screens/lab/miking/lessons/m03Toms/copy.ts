@@ -127,7 +127,7 @@ export const TOMS_COPY: LessonCopy = {
         { title: 'MOUNTING', text: 'Studio: stopped sessions allow careful moves. Live: secure, repeatable mounts and protected cables matter under vibration and changeovers.' },
       ],
       body: 'Rack toms usually sit under crash or ride cymbals: physical placement can matter more than the mic model. A pattern’s rejection helps with a cymbal above — but it does not remove a loud cymbal.',
-      warn: 'No tom-mic position alone prevents feedback: the pattern, the other open mics, the monitors, the PA and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No tom-mic position alone prevents feedback: the pattern, the other open mics, the monitors, the PA and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

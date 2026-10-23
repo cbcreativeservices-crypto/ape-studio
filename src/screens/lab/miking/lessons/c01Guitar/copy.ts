@@ -145,7 +145,7 @@ export const C01_COPY: LessonCopy = {
         { title: 'MOVEMENT', text: 'A player may shift several centimetres between sitting, standing, singing and the loud passages. Mark a comfortable position, and test the whole performance.' },
       ],
       body: 'With a wedge in front, a pattern’s rejection is a tool to aim. With a singing player, the voice reaches the guitar mic from its front: no null helps there — plan the balance of the two mics instead.',
-      warn: 'No guitar-mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. If it starts, lower the level first, then change the geometry. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No guitar-mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. If it starts, lower the level first, then change the geometry. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

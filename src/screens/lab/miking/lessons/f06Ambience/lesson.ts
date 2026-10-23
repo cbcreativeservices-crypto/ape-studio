@@ -282,7 +282,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Every open mic near a loudspeaker takes away gain before feedback. Place it for useful pickup with little PA in it, route it on purpose, and mute unused channels.',
     why: {
       'All the ambience mics open and loud': 'Each open mic adds PA spill and takes away margin. Keep only what you need open.',
-      'Raise it until it starts to ring': 'Feedback is never provoked — not even to find the limit.',
+      'Raise it until it starts to ring': 'Not until it rings: set the level the scene needs, with a margin.',
     },
   },
   {
@@ -317,7 +317,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The angle between the two axes',
     explain: '110° is the included angle between the capsules’ axes — 55° each side of the front — with the capsules 17 cm apart. Move the whole pair, never the geometry.',
     why: {
-      'The angle of each capsule from ahead': 'That would be 220° between them. Each capsule is 55° off the front.',
+      'The angle of each capsule from ahead': 'Then the two would point 140° apart, both partly backward. Each capsule is 55° off the front.',
       'The spread of the source in front': 'That is the pair’s recording angle (about 95°), not its 110°.',
     },
   },
@@ -529,13 +529,13 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'One cardioid facing the square, its back to the PA', ok: true, power: 'phantom', feedback: 'A fair live choice: the rear toward the PA — check the margin with the operator.' },
       { id: 'c', label: 'Four ambience mics open round the PA', ok: false, power: 'phantom', feedback: 'Each open mic takes margin away and adds spill. Start with one.' },
       { id: 'd', label: 'A stand on the sidewalk, nearest the road', ok: false, power: 'phantom', feedback: 'The sidewalk stays clear. Find a safe spot off it.' },
-      { id: 'e', label: 'Raise the ambience until it rings, then back off', ok: false, power: 'phantom', feedback: 'Feedback is never provoked — not even to find the edge.' },
+      { id: 'e', label: 'Raise the ambience until it rings, then back off', ok: false, power: 'phantom', feedback: 'Not until it rings: set the level the scene needs, with a margin.' },
     ],
     reasons: [
       { id: 'r.pa', label: 'Little of the PA reaches it', role: 'required', feedback: 'Say where the PA is against the mic.' },
       { id: 'r.clear', label: 'The stand is off every path and route', role: 'required', feedback: 'Clearance is part of every passing setup.' },
       { id: 'r.mono', label: 'The stream’s mono path is checked', role: 'optional', feedback: 'A fair live reason.' },
-      { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Feedback is never provoked.' },
+      { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Not until it rings: backing off from the edge leaves no margin.' },
     ],
     explain: 'Two setups pass. What passes is the reasoning: one open channel with little PA in it, the stand clear of every route, and the gain checked with the operator — never by making it ring.',
   },
@@ -576,8 +576,8 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Near a stream, what does a few steps’ move change most?',
     options: ['The water against the rest', 'The birds against the rest', 'Nothing much at all'],
     correct: 'The water against the rest',
-    explain: 'The nearest source changes distance most: near water, the water’s share of the balance changes most.',
-    why: { 'The birds against the rest': 'The birds are farther: their distance changes least.', 'Nothing much at all': 'Near water a small move is clearly heard.' },
+    explain: 'A few steps are a big share of the short way to the water, so the water’s share of the balance changes most.',
+    why: { 'The birds against the rest': 'The birds are farther: a few steps are a small share of their distance, so their level changes least.', 'Nothing much at all': 'Near water a small move is clearly heard.' },
   },
   {
     id: 'amb.q.4',

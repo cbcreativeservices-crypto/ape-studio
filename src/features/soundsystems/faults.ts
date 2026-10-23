@@ -596,7 +596,7 @@ export const FAULTS: readonly FaultCase[] = [
     options: ['A digital clock mismatch — one clock master, everything else following it', 'A bad microphone cable', 'A ground loop', 'Feedback'],
     correct: 0,
     explain: 'One bad cable affects one channel; a clock fault affects every channel at once, at the same instant. Two devices each believing they are master is the classic cause.',
-    fix: 'Choose ONE clock master — on a proprietary link usually the console — and set every other device to follow it. On Dante or AES67 the network ELECTS the master: the equivalent mistake is two devices forced to preferred master, or one forced to INTERNAL. Confirm the sample rates match.',
+    fix: 'Choose ONE clock master — on a proprietary link usually the console — and set every other device to follow it. On Dante or AES67 the network ELECTS the master, even when more than one device is set as preferred. The usual mistake there is a device set to its own INTERNAL clock instead of the network. Confirm the sample rates match.',
     forward: 'Every channel together means the fault is where the channels first share a clock — the console’s digital input, not any microphone.',
   },
   {
@@ -611,7 +611,7 @@ export const FAULTS: readonly FaultCase[] = [
       'stagebox',
       { signal: 'ok', note: 'Everything drops together.', flags: ['dropout'] },
       {
-        stagebox: { signal: 'ok', note: 'The LINK LED blinks off when the door moves. Every input drops together. The cable is crushed at the hinge — and the switch has Energy-Efficient Ethernet enabled, which drops the link between packets.', flags: ['dropout'] },
+        stagebox: { signal: 'ok', note: 'The LINK LED blinks off when the door moves. Every input drops together. The cable is crushed at the hinge — and the switch has Energy-Efficient Ethernet enabled, which idles the port between packets and can cause clock trouble and dropouts.', flags: ['dropout'] },
         consoleIn: { signal: 'ok', note: 'Every channel vanishes and returns as one.', flags: ['dropout'] },
         listener: { signal: 'ok', note: 'A second of silence, then the show returns.', flags: ['dropout'] },
       },

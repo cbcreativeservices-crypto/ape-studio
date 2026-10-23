@@ -203,7 +203,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A longer sector on the approach',
     explain: 'Aimed along the segment, the approach stays on the axis longer — and so does whatever lies beyond it, a crowd or a loudspeaker. Aimed across, a short contact region is the detail.',
     why: {
-      'A louder sound at the closest point': 'At the closest point the source is now off the axis — a little quieter.',
+      'A louder sound at the closest point': 'At the closest point the source is now off to the side of the mic — much quieter.',
       'Less of whatever lies beyond': 'Aiming along the path puts more of what lies beyond on the axis, not less.',
     },
   },
@@ -309,7 +309,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The walking source seems to rise in pitch as it comes closer. What can you conclude?',
     options: ['Nothing about its speed', 'Its exact walking speed', 'The mic is out of tune'],
     correct: 'Nothing about its speed',
-    explain: 'A walk is not a speed measurement, and a change in pitch can also come from the source itself, reflections and the mic’s off-axis tone. The lab draws no pitch number.',
+    explain: 'A walk is not a speed measurement. At walking pace any Doppler pitch shift is tiny, and a pitch change can also come from the source itself or from reflections. The lab draws no pitch number.',
     why: {
       'Its exact walking speed': 'A walk in a practice room is not a speed measurement.',
       'The mic is out of tune': 'A mic has no tuning; the change is in what reaches it.',

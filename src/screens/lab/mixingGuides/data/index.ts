@@ -223,7 +223,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 30,
     "title": "Punjabi Pop / Bhangra",
     "line": "Dhol-driven groove locked to the low end (808 or bass), with the Punjabi lead vocal riding clearly on top",
-    "origin": "Punjab (India/Pakistan) harvest and wedding folk; staged bhangra from the 1960s–70s; electrified by UK diaspora bands (Birmingham, Coventry, Bradford, Southall) in the 1980s; reshaped by Canadian (Brampton, Surrey) and Indian Punjabi pop/hip-hop since the 2010s"
+    "origin": "Punjab (India/Pakistan) harvest and wedding folk; staged bhangra from the 1950s; electrified by UK diaspora bands (Birmingham, Coventry, Bradford, Southall) in the 1980s; reshaped by Canadian (Brampton, Surrey) and Indian Punjabi pop/hip-hop since the 2010s"
   },
   {
     "id": "blues",

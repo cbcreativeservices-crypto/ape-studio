@@ -466,7 +466,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'The mic hears a monitor, the PA or the board’s resonance: lower the level, change the geometry, reduce the open mics.',
     options: ['Lower the level, then the geometry and the open mics', 'Keep the level up and cut the ringing frequency with EQ', 'Move the mic closer to the wedge to monitor it better'],
     correct: 'Lower the level, then the geometry and the open mics',
-    explain: 'Bring the level down first; then aim the rejection, move the wedge, and close the mics you do not need. Never provoke feedback.',
+    explain: 'Bring the level down first; then aim the rejection, move the wedge, and close the mics you do not need. Avoid uncontrolled feedback.',
     why: {
       'Keep the level up and cut the ringing frequency with EQ': 'Lower the level first. EQ is not a substitute for geometry.',
       'Move the mic closer to the wedge to monitor it better': 'That feeds more of the wedge into the mic.',

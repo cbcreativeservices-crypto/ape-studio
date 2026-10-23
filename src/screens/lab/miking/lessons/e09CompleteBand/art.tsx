@@ -37,7 +37,7 @@ const SPEC = ensembleHandSpec({
   axes: STAGE_PLOT_AXES,
   aimWords: { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the front).' },
   mic: {
-    intro: 'A transducer category alone does not decide tone, spill or headroom: read the real mic’s specifications. On a band stage: directional dynamics close to the loud sources and the voice, small condensers for the drum pair, and a DI where a line output will do. Condensers need phantom power; every stand needs a stable base.',
+    intro: 'A transducer category alone does not decide tone, spill or headroom: read the real mic’s specifications. On a band stage: directional dynamics close to the loud sources and the voice, small condensers for the drum pair, and a DI where a line output will do. Condensers need power, usually phantom; every stand needs a stable base.',
     mountLine: () => 'Mount: a boom stand with a stable base, clear of the players, their pedals and the walkways; cables dressed flat and serviceable',
     extra: BAND_CARDS,
   },

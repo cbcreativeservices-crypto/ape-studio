@@ -65,7 +65,7 @@ const pages: LessonPages = {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
     credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all eight symptoms (a retry is explained, never penalised).' },
-    takeaway: 'Move the mic, or try the other grille, before reaching for EQ. A rattle, hum, a shock or a hot smell is not a mic problem: stop, and involve the owner or a technician.',
+    takeaway: 'Move the mic, or try the other grille, before reaching for EQ. A rattle, a shock, a hot smell, or hum that new cables do not cure is not a mic problem: stop, and involve the owner or a technician.',
   },
   practice: {
     title: 'Practice',
@@ -316,7 +316,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip the auxiliary output’s polarity. What happens to the arrival-time difference?',
     options: ['Nothing — polarity flips the sign, not the timing', 'It drops to zero, so the two arrivals line up exactly', 'It doubles, because the copy is inverted'],
     correct: 'Nothing — polarity flips the sign, not the timing',
-    explain: 'Polarity reverses the sign. Only moving the mic changes when the sound arrives: the notches move, the delay does not.',
+    explain: 'Polarity reverses the sign. Only moving the mic, or delaying its channel, changes when the sound arrives: the notches move, the delay does not.',
     why: {
       'It drops to zero, so the two arrivals line up exactly': 'The paths are unchanged, so the delay stays.',
       'It doubles, because the copy is inverted': 'Polarity has no time in it. Only a position changes the delay.',
@@ -478,7 +478,7 @@ const symptoms: Symptom[] = [
     explain: 'Make it safe first by lowering the level. Then move the wedge or the instrument, aim the mic’s rejection at the wedge, and close unused channels.',
     why: {
       'Turn the keyboard channel up so it covers the spill and feedback': 'More gain feeds the loop — feedback becomes MORE likely.',
-      'Add a second close mic on the other grille': 'Another open mic costs more gain before feedback.',
+      'Add a second close mic on the other grille': 'Another open mic lowers your gain before feedback.',
     },
   },
   {
@@ -715,5 +715,5 @@ export const I11B_LESSON: Lesson = {
   ],
   live: { wedges: wurliWedges() },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every instrument, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a reed piano at typical proportions (its two 4 × 8 in oval speakers are real; the case size, the grille positions and their tilt are drawing choices — measure the real one), a seated player as a keep-clear outline, one note of the mechanism as an inside view, textbook mic patterns, and motion drawn larger. Distances are measured from the grille to the mic’s front and rounded to about 5 mm. Keep the case closed, keep stands off the lid, and send a speaker output only to a speaker.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every instrument, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a reed piano at typical proportions (its two 4 × 8 in oval speakers are real; the case size, the grille positions and their tilt are drawing choices — measure the real one), a seated player as a keep-clear outline, one note of the mechanism as an inside view, textbook mic patterns, and motion drawn larger. Distances are measured from the grille to the mic’s front and rounded to about 5 mm. Keep the case closed, keep stands off the lid, and send a speaker output only to a speaker or a load box made for it.',
 };

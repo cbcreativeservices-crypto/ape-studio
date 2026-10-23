@@ -39,7 +39,7 @@ const pages: LessonPages = {
     title: 'Before any mic',
     goal: 'Know what to settle before any mic goes up on location: the scene map, permission and privacy, asking before touching anyone, separate channels, power lines and weather.',
     credit: { scenarios: ['loc.set.1', 'loc.set.2', 'loc.set.3', 'loc.set.4'], note: 'Answer the four checks.' },
-    takeaway: 'Map the scene, ask first, keep each mic on its own channel, never hide a mic to record anyone secretly, keep at least 3 m (10 ft) from power lines, and stop for lightning.',
+    takeaway: 'Map the scene, ask first, keep each mic on its own channel, never hide a mic to record anyone secretly, keep at least 3 m (10 ft) from power lines (more for high-voltage ones), and stop for lightning.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -446,7 +446,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Lower the level at once. Is the mic now near the PA or the wedge? Too many open mics?',
     options: ['Lower the level, then fix the mic and the open mics', 'Turn the voice up so it covers up the ringing sound', 'Cup the handheld so the sound stays inside the grille'],
     correct: 'Lower the level, then fix the mic and the open mics',
-    explain: 'Feedback is a sound-system condition: lower the send first, then close unused mics and change the geometry — the wedge in the rejection, the presenter clear of the PA. Never provoke feedback on purpose.',
+    explain: 'Feedback is a sound-system condition: lower the send first, then close unused mics and change the geometry — the wedge in the rejection, the presenter clear of the PA. Avoid uncontrolled feedback.',
     why: {
       'Turn the voice up so it covers up the ringing sound': 'More gain feeds the loop.',
       'Cup the handheld so the sound stays inside the grille': 'Cupping changes the pattern and usually brings feedback closer.',
@@ -635,7 +635,7 @@ export const F09_LESSON: Lesson = {
       { id: 'line', label: 'an overhead power line', short: 'POWER LINE', note: 'Outdoors: the pole and every mic at least 3 m (10 ft) away — farther if unsure; if you cannot be sure, the pole stays down.', prov: { kind: 'sourced', src: 'OSHA-ELEC', quote: 'Stay at least 10 feet away from overhead power lines.' }, tag: 'SAFETY', scene: 'all' },
       { id: 'pa', label: 'the PA and the wedge', short: 'PA · WEDGE', note: 'Live: the audience hears the loudspeakers as it happens, and every open mic hears them too. The fewest open mics; the wedge in the pattern’s rejection.', prov: { kind: 'illustrative', reason: 'a typical small stage' }, tag: 'FEEDBACK', scene: 'stage' },
     ],
-    stage: 'LIVE: a close handheld, a headset or a well-fitted body mic; the wedge where the pattern rejects most; the fewest open mics; the stream, the recorder and the PA checked as separate paths. Never provoke feedback.',
+    stage: 'LIVE: a close handheld, a headset or a well-fitted body mic; the wedge where the pattern rejects most; the fewest open mics; the stream, the recorder and the PA checked as separate paths. Avoid uncontrolled feedback.',
     studio: 'ON SET: a boom just above the frame, aimed at the mouth and following the head; a body mic and a plant only for a need, each on its own channel; the camera mic as a reference.',
   },
   diagnostic,
@@ -661,6 +661,6 @@ export const F09_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every talker, place and shot is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one talker in a typical standing pose, a camera with three example shot sizes, mic patterns and the two-mic comb as textbook shapes, the shotgun drawn as a supercardioid. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s capsule. Safety is exact: at least 3 m (10 ft) from overhead power lines, and 30 minutes after the last lightning or thunder. Put a mic on a person only with their agreement, and never record anyone secretly.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every talker, place and shot is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one talker in a typical standing pose, a camera with three example shot sizes, mic patterns and the two-mic comb as textbook shapes, the shotgun drawn as a supercardioid. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s capsule. Safety is exact: at least 3 m (10 ft) from overhead power lines, more for high-voltage ones, and 30 minutes after the last lightning or thunder. Put a mic on a person only with their agreement, and never record anyone secretly.',
   copy: F09_COPY,
 };

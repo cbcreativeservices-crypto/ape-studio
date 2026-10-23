@@ -279,7 +279,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Folk tolerates and needs wide dynamics. Solo acoustic masters often sit at −18 to −14 LUFS-I; band-driven indie folk at −13 to −10. Keep true peak at −1 dBTP (−2 dBTP with sharp fingerpicked transients). Aim for a PLR of 12–16 dB and a loudness range of 6–12 LU. Because services normalize to around −14 LUFS, a loud master gains nothing and loses the quiet details the genre lives on."
+      "text": "Folk tolerates and needs wide dynamics. Solo acoustic masters often sit at −18 to −14 LUFS-I; band-driven indie folk at −13 to −10. Keep true peak at −1 dBTP (−2 dBTP for masters louder than −14 LUFS or with sharp fingerpicked transients). Aim for a PLR of 12–16 dB and a loudness range of 6–12 LU. Because services normalize to around −14 LUFS, a loud master gains nothing and loses the quiet details the genre lives on."
     }
   ],
   "liveStudio": {
@@ -317,7 +317,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "80–96 dBA Leq",
-        "studio": "−16 to −11 LUFS-I, −1 dBTP"
+        "studio": "−16 to −11 LUFS-I, −1 dBTP (−2 if louder than −14)"
       }
     ],
     "notes": []

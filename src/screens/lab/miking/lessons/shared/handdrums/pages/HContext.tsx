@@ -190,7 +190,7 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
               <Note tone="ok">{`What you just saw: a ${pattern} rejects most at ≈ ${Math.round(nulls[0])}° — toward the rear but OFF the axis — with a pickup lobe directly behind (${fmtDb(gainDb(pattern, 180))} there). With a modest tilt that off-axis null can face the wedge while the front still faces the drum.`}</Note>
             )
           ) : null}
-          <Note>Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction. Check it at a controlled level with the system operator; never create feedback to test it.</Note>
+          <Note>Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction. Check it at a controlled level with the system operator, and avoid uncontrolled feedback.</Note>
         </>
       ) : (
         <>

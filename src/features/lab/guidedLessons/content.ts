@@ -43,7 +43,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     commonMistakes: [
       'Boost-sweep to FIND, then forgetting to CUT — the narrow-boost sweep is diagnostic only; the fix is usually a cut.',
-      'Boosting when you should cut — subtractive EQ preserves headroom and avoids piling up phase problems.',
+      'Boosting when you should cut — subtractive EQ preserves headroom (a cut still shifts phase, just as a boost does).',
       'Narrow Q for tonal shaping — surgical Q is for notches/hum; musical moves need wide Q, or they ring.',
       'Forgetting minimum-phase EQ shifts phase — heavy EQ on multi-mic sources combs.',
       'Not high-passing non-bass sources — subsonic rumble eats headroom and muddies the mix.',
@@ -92,7 +92,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Start 1/8-dotted synced, feedback ~25%, wet low, highs rolled off — instantly musical.',
       'Use Freeze / Peak-Hold to let students predict the next echo before it lands.',
     ],
-    formula: 'Delay for a note (ms) = (60000 / BPM) × note-fraction. Quarter-note ms = 60000 / BPM.',
+    formula: 'Delay for a note (ms) = (60000 / BPM) × beats, where a quarter note = 1, an eighth = 0.5 and a dotted eighth = 0.75. Quarter-note ms = 60000 / BPM.',
   },
 
   // ─────────────────────────────────────────────────────── LAB 3 · Reverb ──
@@ -127,7 +127,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Compare hall vs plate on the same vocal to hear diffusion/density differences.',
       'Duck the reverb under the dry vocal phrase, let it bloom in the gaps.',
     ],
-    formula: 'RT60 = time to decay 60 dB. Sabine: RT60 = 0.161·V / A (V = volume m³, A = total absorption in sabins) — links to the Wave-Physics Absorption module.',
+    formula: 'RT60 = time to decay 60 dB. Sabine: RT60 = 0.161·V / A (V = volume m³, A = total absorption in m², i.e. metric sabins) — links to the Wave-Physics Absorption module.',
   },
 
   // ─────────────────────────────────────────────────────── LAB 4 · Chorus ──
@@ -178,11 +178,11 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'rate', name: 'Rate (LFO speed)', range: '0.05–10 Hz · default ~0.2 Hz', definition: 'How fast the notches sweep up/down the spectrum. Slow = classic jet sweep.' },
       { key: 'depth', name: 'Depth (sweep range)', range: '0–100% · default ~50%', definition: 'How far the delay time is modulated → how far the notches travel.' },
       { key: 'manual', name: 'Manual / Delay time (center)', range: '0.1–10 ms · default ~2 ms', definition: 'The base delay the LFO modulates around; sets notch spacing (spacing = 1/delay).' },
-      { key: 'feedback', name: 'Feedback / Regeneration', range: '−95…+95% · default ~40%', definition: 'Feeds output back to input; deepens notches. Negative feedback shifts the notch pattern and gives the hollow "through-a-tube" tone.' },
+      { key: 'feedback', name: 'Feedback / Regeneration', range: '−95…+95% · default ~40%', definition: 'Feeds output back to input; sharpens the peaks between the notches, so the comb rings and the sweep gets stronger. Negative feedback shifts the notch pattern and gives the hollow "through-a-tube" tone.' },
       { key: 'mix', name: 'Mix (Wet/Dry)', range: '0–100% · default 50%', definition: 'Comb notches are deepest at 50% (equal dry+wet).' },
       { key: 'lfo_wave', name: 'LFO Waveform', range: 'Triangle (default) / Sine / Log', definition: 'Shape of the sweep motion.' },
       { key: 'stereo_offset', name: 'Stereo width / LFO phase offset', range: '0–180° · default 90°', definition: 'Offsets the L vs R LFO for a stereo sweep.' },
-      { key: 'tzf', name: 'Through-Zero (TZF)', range: 'on/off · default off', definition: 'A second delay line lets the notch pass through 0 ms for the dramatic "reverse jet" flange.', advanced: true },
+      { key: 'tzf', name: 'Through-Zero (TZF)', range: 'on/off · default off', definition: 'A second delay line lets the delayed copy sweep through 0 ms, past the dry signal, for the dramatic "reverse jet" flange.', advanced: true },
     ],
     commonMistakes: [
       'Calling it a flanger when it’s really a chorus — delay too long (>~10–15 ms) with little feedback stops the sweeping comb; keep the delay short and add feedback.',
@@ -330,7 +330,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'drive', name: 'Threshold / Input Gain (Drive)', range: '0…+24 dB drive · default 0', definition: 'How hard you push into the limiter → how much gain reduction/loudness.' },
       { key: 'release', name: 'Release', range: '1 ms–1 s · default ~100 ms / Auto', definition: 'Recovery time. Too fast → distortion/pumping (esp. bass); too slow → dulls dynamics.' },
       { key: 'attack', name: 'Attack', range: '0–5 ms · near-instant', definition: 'A hair of attack lets transient "punch" through before catching it.', advanced: true },
-      { key: 'lookahead', name: 'Lookahead', range: '0–5 ms · default ~1.5 ms', definition: 'Delays audio so peaks are caught before they occur → no overshoot without audible distortion.' },
+      { key: 'lookahead', name: 'Lookahead', range: '0–5 ms · default ~1.5 ms', definition: 'Delays audio so peaks are caught before they occur → no overshoot, and less audible distortion.' },
       { key: 'true_peak', name: 'True-Peak / ISP mode', range: 'on/off · default on', definition: 'Oversampled detection to catch inter-sample peaks that exceed the ceiling after D/A or lossy encode.' },
       { key: 'character', name: 'Character / Style', range: 'Transparent … Aggressive', definition: 'Algorithm flavor.', advanced: true },
       { key: 'dither', name: 'Dither', range: 'off / TPDF / shaped', definition: 'Apply when the limiter is the last step before bit-depth reduction.', advanced: true },
@@ -362,7 +362,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     whatItIs:
       'Distortion/saturation reshapes the waveform through a nonlinearity, generating new ' +
       'harmonics. Symmetric shaping adds odd harmonics (hollow/harsh); asymmetric adds even ' +
-      '(warm). Aliasing is both a hazard and a teaching target here.',
+      'harmonics too (warm). Aliasing is both a hazard and a teaching target here.',
     controls: [
       { key: 'display', name: 'What the display shows', definition: "The waveshape curve is how the input wave gets bent — the SHAPE decides the harmonics. Symmetric clipping makes odd harmonics; asymmetry (a tube) adds even ones too." },
       { key: 'hard_clip', name: 'Type (clip shape)', definition: 'The shaping curve. Symmetric clipping (hard/soft) chops top and bottom the SAME → odd harmonics; the tube’s asymmetry adds EVEN harmonics — the “warm” signature.' },
@@ -371,10 +371,10 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'mix', name: 'Mix', definition: 'Blends the distorted signal with the clean dry — parallel (≈50%) keeps clarity while adding grit underneath.' },
     ],
     commonMistakes: [
-      'No oversampling → aliasing — nonlinearity creates harmonics above Nyquist that fold back as inharmonic harshness. Oversample — but aliasing is also a teaching target, so make oversampling a toggle.',
+      'No oversampling → aliasing — nonlinearity creates harmonics above Nyquist that fold back as inharmonic harshness. Oversampling prevents it; this lab lets you switch it off so you can hear the aliasing.',
       'Confusing loudness with distortion — drive raises level; level-match to judge character, not "more".',
       'Too much drive — a touch adds harmonics/glue; excess buries clarity and intelligibility.',
-      'Not distinguishing odd vs even harmonics — symmetric (hard) clip → odd (hollow/harsh); asymmetric (tube) → even (warm).',
+      'Not distinguishing odd vs even harmonics — symmetric (hard) clip → odd (hollow/harsh); asymmetric (tube) → even plus odd (warm).',
       'Bit-crush vs sample-reduction confusion — bit reduction = quantization noise; sample-rate reduction = aliasing/downsampling. Different mechanisms.',
       'Distorting the full range — often better to band-limit (drive the mids, keep lows/highs clean) to avoid fizz/mud.',
       'DC offset from asymmetric shaping — builds up → click/headroom loss; HPF after the shaper.',
@@ -383,7 +383,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'A/B hard-clip vs tube on a sine and read the FFT: odd-only vs odd+even harmonic stacks.',
       'Push a high sine with oversampling OFF to show aliasing (inharmonic partials), then ON to remove it.',
     ],
-    formula: 'A nonlinearity y = f(x) expands a sine into a harmonic series; symmetric f → odd, asymmetric f → even. Any harmonic above fs/2 aliases to fs − f. THD = RMS of the harmonics ÷ RMS of the fundamental (an amplitude ratio).',
+    formula: 'A nonlinearity y = f(x) expands a sine into a harmonic series; odd-symmetric f → odd only, asymmetric f → even + odd. A harmonic above fs/2 folds back to |f − k·fs| (between fs/2 and fs, that is fs − f). THD = RMS of the harmonics ÷ RMS of the fundamental (an amplitude ratio).',
   },
 
   // ──────────────────────────────────────────────────────── LAB 11 · Noise ──
@@ -475,7 +475,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'harmonic_phase', name: 'Harmonic phase', definition: 'The phase of each partial. Changing phases redraws the waveform shape dramatically, yet a steady tone sounds nearly identical (the ear’s phase-deafness).' },
       { key: 'view', name: 'View (MODEL / LIVE)', definition: 'Switches the display between MODEL — the analytic harmonic recipe you’re editing, drawn exactly from the math — and LIVE, the real spectrum captured from the mic. MODEL is exact and editable; LIVE is measured and labeled uncalibrated.' },
       { key: 'axis', name: 'Axis (LOG ♪ / LIN)', definition: 'Switches the frequency axis. LOG (♪) spaces the octaves evenly, matching how we hear pitch; LIN spaces the Hz evenly, so the harmonics line up at equal intervals. Same data — only the horizontal spacing changes.' },
-      { key: 'crest', name: 'Crest factor (readout)', definition: 'The gap between the wave’s PEAK and its RMS (average) level, in dB. A pure sine is ~3 dB; spiky, peaky waves read higher. It shows how much headroom the peaks demand versus the perceived loudness. Computed from the model, not a live measurement.' },
+      { key: 'crest', name: 'Crest factor (readout)', definition: 'The gap between the wave’s PEAK and its RMS (effective) level, in dB. A pure sine is ~3 dB; spiky, peaky waves read higher. It shows how much headroom the peaks demand versus the perceived loudness. Computed from the model, not a live measurement.' },
       { key: 'slope', name: 'Envelope slope (readout)', definition: 'How fast the harmonic levels fall off going up the series, in dB per octave. A steeper (more negative) slope sounds darker/duller; a shallow slope keeps the highs and sounds brighter. Fit to the model’s harmonic envelope.' },
     ],
     commonMistakes: [
@@ -585,16 +585,16 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'ratio_lock', name: 'Ratio-lock', definition: 'Snaps the two frequencies to a simple integer ratio — 2:1 octave, 3:2 fifth, 4:3 fourth, 5:4 major third. Simple ratios draw stable closed figures; a near-miss slowly precesses, and that drift IS beating.' },
       { key: 'frequencies', name: 'Frequencies (f₁–f₄)', definition: 'The pendulum frequencies. Their RATIO sets the pattern — the interval made visible. Changing frequency changes the figure; changing amplitude only changes its size.' },
       { key: 'amplitude', name: 'Amplitude', definition: 'Pendulum swing size — scales the figure. It does not change the pattern (a classic confusion with frequency).' },
-      { key: 'phase', name: 'Phase', definition: 'The starting angle of each pendulum. Same ratio, different phase → a rotated/different figure (line vs ellipse vs circle in the 2-pendulum Lissajous case).' },
+      { key: 'phase', name: 'Phase', definition: 'The starting angle of each pendulum. Same ratio, different phase → a rotated/different figure (at 1:1 in the 2-pendulum Lissajous case: line vs ellipse vs circle).' },
       { key: 'damping', name: 'Damping', definition: 'The decay envelope e^(−dt) that spirals the figure inward. None = it never resolves; too much = it dies before drawing. The decay is what creates the classic spiral look.' },
       { key: 'mode', name: 'Lateral / Rotary', definition: 'Lateral drives X and Y from separate pendulums (the Lissajous case). Rotary sums two circular motions — flower-petal figures whose petal count follows the ratio.' },
       { key: 'drive_from_oscillators', name: 'Drive from oscillators', definition: 'Links the figure to two real tones so you HEAR the interval while watching it — a consonant ratio yields both a stable figure and a consonant sound.' },
     ],
     commonMistakes: [
       'Thinking the figure is random art — every figure is deterministic; simple integer ratios draw stable closed figures.',
-      'Expecting complex/irrational ratios to close — only simple ratios (2:1, 3:2, 4:3) close cleanly; near-but-inexact ratios drift/precess, and that drift is beating.',
+      'Expecting every ratio to close cleanly — simple ratios (2:1, 3:2, 4:3) close fast; complex ones take so long the figure looks tangled; irrational ones never close. Near-but-inexact ratios drift/precess, and that drift is beating.',
       'Confusing amplitude with frequency — amplitude changes figure size; frequency changes the pattern.',
-      'Ignoring phase — same ratio, different phase → a rotated/different figure (line vs ellipse vs circle in the 2-pendulum case).',
+      'Ignoring phase — same ratio, different phase → a rotated/different figure (at 1:1 in the 2-pendulum case: line vs ellipse vs circle).',
       'Damping extremes — none = it never resolves; too much = it dies before drawing. The decay envelope creates the spiral look.',
       'Viewing it silently — the payoff is driving it from two oscillators: a consonant ratio yields a stable figure AND a consonant sound.',
     ],
@@ -602,7 +602,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Ratio-lock to 2:1, 3:2, 4:3, 5:4 and hear each interval as the figure snaps to a stable shape — intervals made visible + audible.',
       'Detune slightly off a locked ratio and watch the figure slowly precess = seeing beats.',
     ],
-    formula: 'x(t) = A₁sin(f₁t+φ₁)e^(−d₁t) + A₂sin(f₂t+φ₂)e^(−d₂t) (similarly y). Ratio f₁:f₂ = musical interval; the undamped 2-pendulum case = a Lissajous figure; a small detune Δ makes the figure precess at a rate ∝ Δ.',
+    formula: 'x(t) = A₁sin(2πf₁t+φ₁)e^(−d₁t) + A₂sin(2πf₂t+φ₂)e^(−d₂t) (similarly y). Ratio f₁:f₂ = musical interval; the undamped 2-pendulum case = a Lissajous figure; a small detune Δ makes the figure precess at a rate ∝ Δ.',
   },
 
   // ──────────────────────────────── CAPSTONE · Signal Chain Builder (§8) ──
@@ -652,7 +652,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     tagline: 'Strings make fractions audible.',
     whatItIs:
       'A vibrating string is physics you can touch: fretting shortens the vibrating length, ' +
-      'and pitch rises in exact proportion. Halve the string (12th fret) and the frequency ' +
+      'and pitch rises as the length falls (frequency is inversely proportional to length). Halve the string (12th fret) and the frequency ' +
       'doubles — an octave. The simple fractions ARE the consonant intervals: ≈2/3 of the ' +
       'string (7th fret) is a perfect fifth (3:2), ≈3/4 (5th fret) a perfect fourth (4:3). ' +
       'Touching (not pressing) a node point instead forces a natural harmonic — only the ' +
@@ -773,7 +773,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     commonMistakes: [
       'Listening on speakers — binaural cues require HEADPHONES; on speakers the two channels mix in the air (crosstalk) and the illusion collapses.',
       'Expecting elevation — this model does azimuth + distance only; up/down cues come from pinna filtering (HRTF), which a time/level model cannot produce.',
-      'Testing with a low sine and hearing nothing move — ITD produces only a tiny interaural phase difference and ILD nearly vanishes at low frequencies, so a low pure tone gives weak cues; use noise or a higher tone to hear the effect clearly.',
+      'Testing with a low sine and hearing little move — a low tone has almost no level difference between the ears and no sharp onsets, so it leans on timing alone, and the very lowest tones give almost no usable cue; use noise or a higher tone to hear the effect clearly.',
       'Front/back confusion — time and level are (nearly) symmetric front-to-back; without personal HRTF cues the brain guesses. The gentle rear darkening here is a hint, not a solution.',
       'Confusing binaural with stereo panning — pan pots change LEVEL only; binaural adds the TIME and SHADOW cues your ears actually use.',
       'Assuming this is an HRTF renderer — it is deliberately a simplified physics model (badged); measured-HRTF localization is sharper, especially outside the front arc.',
@@ -845,7 +845,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'air', name: 'Air particles', definition: 'What actually exists: molecules rocking back and forth around a home position. The pattern of squeezes travels; the air itself stays put.' },
       { key: 'pressure_graph', name: 'Pressure graph', definition: 'Pressure at one point plotted over time. It is a GRAPH — not the shape of the sound. Above the zero line = compression, below = rarefaction, zero = atmospheric.' },
       { key: 'speaker_cone', name: 'Speaker cone', definition: 'The source: electricity → motion → air. Forward strokes compress, backward strokes rarefy.' },
-      { key: 'amplitude', name: 'Amplitude', definition: 'How FAR the vibration travels — bigger swings mean bigger pressure changes mean louder sound. Not the same thing as how FAST it vibrates (that is frequency).' },
+      { key: 'amplitude', name: 'Amplitude', definition: 'How FAR the vibration swings from rest — bigger swings mean bigger pressure changes mean louder sound. Not the same thing as how FAST it vibrates (that is frequency).' },
       // Playground controls (each drives every view at once).
       { key: 'frequency', name: 'Frequency', definition: 'How FAST the air vibrates — cycles per second (Hz). More cycles = a higher pitch, and the compression bands sit closer together.', range: '55 Hz – 3.5 kHz' },
       { key: 'waveform', name: 'Waveform', definition: 'The SHAPE of one cycle. A sine is pure; square/saw/triangle add harmonics — extra sine waves stacked on top that change the timbre.' },
@@ -1039,7 +1039,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'quant_error', name: 'Quantization error', definition: 'Original sample value − stored value: the small rounding residue. ERROR-ONLY view isolates it. With healthy signals it behaves like noise; with tiny undithered signals it becomes correlated distortion — the reason dither exists.' },
       { key: 'dither', name: 'Dither', definition: 'A controlled trace of noise added before reducing bit depth. It LINEARIZES quantization: the correlated error becomes a benign noise floor, and low-level detail survives statistically over time — at the cost of that small added noise. It is not "extra resolution" magic.' },
       { key: 'noise_shaping', name: 'Noise shaping', definition: 'Dither\'s companion: pushes the added noise energy toward frequencies where hearing is least sensitive, buying audibly quieter results at the same bit depth. Applied at final fixed-point output — not repeatedly.' },
-      { key: 'binary_sample', name: 'Sample inspector', definition: 'One stored sample, every way at once: decimal, binary, hex, normalized amplitude, % of full scale and dBFS. Sample 24,001 = 12,486 = 0011000011000110 = +0.381 = −8.4 dBFS — same number, five costumes.' },
+      { key: 'binary_sample', name: 'Sample inspector', definition: 'One stored sample, every way at once: decimal, binary, hex, normalized amplitude, % of full scale and dBFS. Sample 24,001 = 12,486 = 0011000011000110 = 0x30C6 = +0.381 = 38.1% = −8.4 dBFS — same number, six costumes.' },
       { key: 'bit_toggle', name: 'Bit toggling', definition: 'Flip any bit and watch the value move: the MSB carries half the full scale (and the sign in two\'s complement), the LSB carries one quantization step. Bit significance made physical.' },
       { key: 'twos_complement', name: 'Two\'s complement', definition: 'How signed PCM stores negatives: the top bit carries negative weight. It gives one extra negative code (−32,768 vs +32,767 at 16-bit) and makes binary arithmetic seamless across zero.' },
       { key: 'adc_chain', name: 'ADC signal flow', definition: 'Mic → preamp → anti-aliasing filter → sample-and-hold → quantizer → encoder → PCM stream. Tap any block for its job, its failure modes, and what those failures sound like.' },
@@ -1160,14 +1160,14 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'lra', name: 'Loudness Range (LRA)', definition: 'The statistical spread between the program\'s soft and loud sections (in LU). A movie might span 20+; a pop master 4–6. It quantifies "how dynamic is this program" — not how loud.' },
       { key: 'true_peak_meter', name: 'True peak (dBTP)', definition: 'The reconstructed analog waveform can rise ABOVE the highest sample between samples. True-peak meters oversample to catch it — why platforms ask for −1 dBTP ceilings, and why "no clipped samples" isn\'t "no clipping".' },
       { key: 'spectrum_read', name: 'Reading a spectrum', definition: 'Left = lows, right = highs, height = energy. Ask three things: where is the energy centered, is the shape smooth or spiky, and is anything sticking up that shouldn\'t be?' },
-      { key: 'spectral_patterns', name: 'Spectrum patterns', definition: 'Speech = formant humps 200 Hz–3 kHz. Kick = LF mound + click bump. Cymbal = dense HF wash. Hum = needle spikes at exact mains harmonics. Feedback = ONE towering narrow spike. Pink noise = smooth −3 dB/octave ramp on an FFT display (flat on a 1/3-octave RTA). Learn seven shapes and you can read most sessions.' },
+      { key: 'spectral_patterns', name: 'Spectrum patterns', definition: 'Speech = formant humps 200 Hz–3 kHz. Kick = LF mound + click bump. Guitar = a midrange hill of harmonic peaks. Cymbal = dense HF wash. Hum = needle spikes at exact mains harmonics. Feedback = ONE towering narrow spike. Pink noise = smooth −3 dB/octave ramp on an FFT display (flat on a 1/3-octave RTA). Learn seven shapes and you can read most sessions.' },
       { key: 'spectrogram_axes', name: 'Spectrogram axes', definition: 'Time runs HORIZONTAL, frequency VERTICAL, level is COLOR. It is a spectrum filmed over time — the most misread display in audio because people try to read it like a waveform.' },
       { key: 'spectrogram_patterns', name: 'Spectrogram patterns', definition: 'Speech = stacked formant bands with pitch striations. Birdsong = rising/falling thin chirps. Cymbal = bright HF wash fading right. Feedback = one horizontal line getting brighter. Whistle = a single thin steady line. White noise = uniform confetti.' },
       { key: 'waterfall_axes', name: 'Waterfall axes (CSD)', definition: 'Frequency across, level up, TIME stepping TOWARD you: the loud start (t = 0) stands tall at the back, and each slice in front of it is the spectrum a moment later. The front edge is the latest instant — the range decaying toward you IS the decay.' },
       { key: 'waterfall_decay', name: 'Reading decay', definition: 'A healthy room/speaker collapses evenly — the whole range settles together. Anything still standing tall while its neighbors are gone is RINGING: a room mode, a resonant driver, a high-Q filter.' },
-      { key: 'room_ring', name: 'Room resonances in the waterfall', definition: 'One frequency\'s ridge stretches far toward the front while everything nearby has died: that frequency is ringing — the room (or cabinet) stores and releases energy there. EQ can tame its level; only treatment/damping shortens its decay.' },
+      { key: 'room_ring', name: 'Room resonances in the waterfall', definition: 'One frequency\'s ridge stretches far toward the front while everything nearby has died: that frequency is ringing — the room (or cabinet) stores and releases energy there. A matched EQ cut can tame its level, and its ring at one seat; only treatment/damping shortens its decay for every seat.' },
       { key: 'damping', name: 'Damping materials', definition: 'Slide concrete → curtains → carpet → panels and watch the mountain\'s tail shorten — highs first (porous absorption), lows last (they need thickness). The waterfall shows what the RT60 number only summarizes.' },
-      { key: 'eq_ridge', name: 'EQ in the waterfall', definition: 'Boost 250 Hz and its mountain grows TALLER — but decay stays the same length: EQ changes level, not ring time. A high-Q boost adds a narrow ridge that also RINGS — the filter itself stores energy. That is why surgical boosts can sound "resonant".' },
+      { key: 'eq_ridge', name: 'EQ in the waterfall', definition: 'Boost 250 Hz with a broad EQ and its mountain grows TALLER — but the decay keeps much the same length: broad EQ mostly changes level, not ring time. A high-Q boost adds a narrow ridge that also RINGS — the filter itself stores energy. That is why surgical boosts can sound "resonant".' },
       { key: 'reverb_tails', name: 'Reverb tails compared', definition: 'Room = short, warm slope. Plate = long, bright, even sheet. Hall = long with lows outlasting highs. Spring = narrow bouncy ridges. You can identify the reverb type from the waterfall before you ever hear it.' },
       { key: 'phase_meter', name: 'Correlation meter', definition: '+1 = identical channels (mono), 0 = unrelated (wide), −1 = opposite polarity (cancellation in mono). Healthy stereo lives between ~+0.3 and +1. Sitting near −1 means the mono bus — and many phones — will eat your mix.' },
       { key: 'goniometer', name: 'Goniometer / vectorscope', definition: 'The dot cloud: a vertical line = mono, a fat ball = wide, a HORIZONTAL line = pure anti-phase. Lean left/right = channel imbalance. It\'s the correlation meter with a picture attached. Note the convention: a goniometer ROTATES the L-vs-R plot 45° so mono stands upright — a plain oscilloscope in X-Y mode does not, and there mono is the 45° diagonal.' },
@@ -1181,7 +1181,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Expecting a VU needle to show a snare hit — 300 ms of inertia is the point, not a defect.',
       'Reading a spectrogram left-to-right as "low-to-high" — time is horizontal; frequency is vertical.',
       'Treating "no clipped samples" as "no clipping" — true peaks live between the samples.',
-      'EQ-cutting a ringing frequency and expecting the DECAY to shorten — level and ring time are different axes (the waterfall shows both).',
+      'EQ-cutting a ringing room mode and expecting the DECAY to shorten for every seat — a matched cut can help at one seat, but only treatment shortens it everywhere (the waterfall shows level and decay).',
       'Ignoring the correlation meter until the mono PA/phone playback collapses the mix.',
       'Chasing streaming loudness with limiting alone — integrated LUFS responds to the whole program, not the ceiling.',
       'Reading meters without knowing their ballistics — the same signal reads differently on purpose.',

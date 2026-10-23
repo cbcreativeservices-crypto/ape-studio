@@ -427,7 +427,7 @@ const WS_SPL_ADD: Workspace = {
       name: 'Sources needed for a target increase (reverse)',
       inputs: ['delta'],
       formula: 'N = 10^(ΔdB/10)',
-      plainFormula: 'The number of sources equals ten raised to the target increase in dB, divided by ten.',
+      plainFormula: 'The number of sources equals ten raised to the power of (the target increase in dB divided by ten).',
       explain:
         'The reverse: how many uncorrelated sources a target increase over one source needs. Because doubling sources always buys just +3 dB, the price of each extra dB grows fast — a 6 dB gain needs four sources, 10 dB needs ten.',
       keySymbols: ['x²', 'Δ', '/'],

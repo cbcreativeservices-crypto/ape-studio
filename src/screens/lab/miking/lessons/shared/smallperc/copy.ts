@@ -110,7 +110,7 @@ export function spCopy(o: SpCopyOpts): LessonCopy {
         intro: 'These are scenario-based comparisons, not rules: a dedicated spot may suit a busy stage; an existing overhead or ensemble mic may suit a quiet one.',
         points: o.context.points,
         body: 'On an amplified stage the monitors stay where the players need them: turn the mic or choose its pattern so a null faces a loud unwanted source. Mute an unused channel when it is not needed.',
-        warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Work it out with the system operator, and never create feedback deliberately.',
+        warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Work it out with the system operator, and avoid uncontrolled feedback.',
       },
     },
     twoMic: {

@@ -97,7 +97,7 @@ export const SCENARIOS: readonly Scenario[] = [
     to: { device: 'Mixer', port: 'Channel 2 mic input · +48 V available' },
     choices: [
       { id: 'a', name: 'XLR microphone cable — balanced shielded pair', a: 'xlr3', b: 'xlr3', verdict: 'correct', explain: 'Phantom power rides the SAME two signal pins back up the mic cable — a proper balanced cable carries the signal down and the power up. Mute the channel before plugging, then switch +48 V on.' },
-      { id: 'b', name: 'XLR-to-TS adapter cable into a line input', a: 'xlr3', b: 'ts_quarter', verdict: 'bal_unbal', explain: 'The adapter unbalances the connection — and an unbalanced path cannot deliver phantom power correctly. The condenser stays silent.' },
+      { id: 'b', name: 'XLR-to-TS adapter cable into a line input', a: 'xlr3', b: 'ts_quarter', verdict: 'bal_unbal', explain: 'A line input does not supply phantom power, and the adapter unbalances the connection. The condenser gets no power and stays silent.' },
       { id: 'c', name: 'RCA interconnect with adapters piled on each end', a: 'rca', b: 'rca', verdict: 'bal_unbal', explain: 'Adapters make it fit; they do not make it balanced, and phantom cannot ride an unbalanced consumer interconnect. A plain wired adapter changes only the shape, never the signal.' },
       { id: 'd', name: '1/4-inch speaker cable', a: 'ts_speaker_legacy', b: 'ts_speaker_legacy', verdict: 'no_fit', explain: 'Wrong plugs for both ends — and speaker cable is the wrong construction for any mic-level job even where it fits.' },
     ],

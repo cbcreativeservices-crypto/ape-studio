@@ -162,7 +162,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Mounted on the strings below the bridge, the capsule moves with the cello, so the level and tone hold as the cellist sways — and close placement helps the cello against the stage. It still hears the monitors and the stage.',
     why: {
       'Its clip stops it from hearing the monitors and the rest of the stage': 'A clip is a mount, not a pattern: the mic still hears the stage — and the cello’s body reflects sound into it.',
-      'It needs no power, so a spare input without phantom will do': 'A miniature condenser needs phantom power, through its adapter.',
+      'It needs no power, so a spare input without phantom will do': 'This miniature condenser needs phantom power, through its adapter.',
     },
   },
   {
@@ -255,7 +255,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Feedback starts to ring on the cello’s mic. What is the first move?',
     options: ['Boost the cello channel so the note covers the ring', 'Ask the cellist to play louder, so the mic needs less gain to work', 'Lower the level, then change the mic, monitor and open mics'],
     correct: 'Lower the level, then change the mic, monitor and open mics',
-    explain: 'Feedback is a sound-system condition: reduce the level at once, then revise the geometry — the mic, the wedge, the open mics. Never provoke it on purpose.',
+    explain: 'Feedback is a sound-system condition: reduce the level at once, then revise the geometry — the mic, the wedge, the open mics. Leave any ring-out to the system’s operator.',
     why: {
       'Boost the cello channel so the note covers the ring': 'More gain feeds the loop. Lower the level first.',
       'Ask the cellist to play louder, so the mic needs less gain to work': 'Feedback is the system’s to fix, not the player’s to cover.',
@@ -350,7 +350,7 @@ const symptoms: Symptom[] = [
     correct: 'Angle, distance, the filter and the room — with the low C playing',
     explain: 'A filter set too high, a mic off to one side or a room that cancels the lows can each thin the C string. Check them with the low C playing before reaching for EQ.',
     why: {
-      'Boost the low end on the channel before anything else': 'EQ cannot put back what a filter or a cancellation removed. Find the cause first.',
+      'Boost the low end on the channel before anything else': 'EQ cannot fully put back what a filter or a cancellation removed. Find the cause first.',
       'Swap to the largest mic you have, for its bigger diaphragm and bass': 'Diaphragm size does not decide the lows. Placement, the filter and the room do.',
     },
   },

@@ -82,7 +82,7 @@ export const HORN_COPY: Partial<LessonCopy> = {
         { title: 'MOUNTING', text: 'A general brass clip is not proof it fits a horn. Only a clip its maker confirms for this horn, never on the detachable bell joint, with the player’s agreement — or a stand.' },
       ],
       body: 'With a fill or a kit behind the horn section, a rear mic’s rejection is a tool to aim. Some stage sound in a horn mic is normal; the question is how much the music can take.',
-      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

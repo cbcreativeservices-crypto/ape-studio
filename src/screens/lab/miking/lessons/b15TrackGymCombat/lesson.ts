@@ -564,7 +564,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['Each can be controlled on its own', 'It halves the risk of feedback', 'The rules ask for two channels'],
     correct: 'Each can be controlled on its own',
     explain: 'Separate inputs let the cue and the action be balanced, delayed or muted independently.',
-    why: { 'It halves the risk of feedback': 'Feedback is about routing, not separate inputs.', 'The rules ask for two channels': 'It is a production choice, not a rule.' },
+    why: { 'It halves the risk of feedback': 'Separate inputs do not change feedback: it comes from a mic hearing a speaker it feeds.', 'The rules ask for two channels': 'It is a production choice, not a rule.' },
   },
 ];
 

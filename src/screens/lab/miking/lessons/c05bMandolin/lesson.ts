@@ -301,7 +301,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Instrument dynamic 30–40 cm out, aimed at the neck junction', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
       { id: 'b', label: 'Instrument dynamic about 20 cm from the oval hole, a little off it', ok: true, power: 'none', feedback: 'A suggested starting point; it needs no phantom. Listen for boom.' },
       { id: 'c', label: 'Small omni condenser at the neck junction', ok: false, power: 'phantom', feedback: 'A fair idea in a good room — but this input has no phantom power.' },
-      { id: 'd', label: 'Clip-on mini between the joint and the hole', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },
+      { id: 'd', label: 'Clip-on mini between the joint and the hole', ok: false, power: 'phantom', feedback: 'This miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic 2 cm into the oval hole', ok: false, power: 'none', feedback: 'Never insert a mic into an opening: it favours one resonance and risks the instrument.' },
     ],
     reasons: [DOC_REASON, clearReason('the picking arc, the fretting hand and the player’s turn'), POWER_REASON, { id: 'r.record', label: 'I will note the exact position so I can find it again', role: 'optional', feedback: 'A fair reason on a small instrument.' }, brandReason(MANDO), LOUD_REASON],

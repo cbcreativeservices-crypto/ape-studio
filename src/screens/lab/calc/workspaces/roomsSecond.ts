@@ -209,9 +209,9 @@ const BOUNDARY: Workspace = {
     'sound comb-filter: cancellations where the round trip is a half wavelength out of phase, ' +
     'reinforcements where it is in phase. This is SBIR — the dip that plagues near-wall monitors.',
   whyItMatters:
-    'The first, deepest cancellation is the one you feel: a boom or a suck-out in the low mids set ' +
+    'The first, deepest cancellation is the one you feel: a suck-out in the low mids set ' +
     'purely by how far the driver sits from the boundary. You cannot EQ a true cancellation back ' +
-    '(the energy is gone) — you move the speaker, or you treat the boundary.',
+    '(a boost feeds the reflection too, so the dip stays) — you move the speaker, or you treat the boundary.',
   example:
     'A woofer 0.6 m from the front wall (20 °C, c = 343 m/s): first cancellation at c/(4·0.6) ≈ 143 Hz, ' +
     'first reinforcement at c/(2·0.6) ≈ 286 Hz. Pulling it to 0.3 m moves the null up to ≈ 286 Hz.',

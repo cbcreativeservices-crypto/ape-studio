@@ -475,7 +475,7 @@ function FreqStage({ viz, w, h, f, focused }: { viz: VizModule; w: number; h: nu
   const lambda = lambdaFor(w, f);
   return (
     <View style={{ width: w, height: h, justifyContent: 'center', gap: 4 }}>
-      <Text style={[styles.winLabel, { fontSize: 10 * ts }]}>AIR — squeezes closer together as frequency rises</Text>
+      <Text style={[styles.winLabel, { fontSize: 10 * ts }]}>AIR — the squeezes come closer together as frequency rises</Text>
       <viz.AirParticlesView clock={clock} width={w} height={airH} visHz={visHz} amp={0.7} lambdaPx={lambda} showEar />
       <Text style={[styles.winLabel, { fontSize: 10 * ts }]}>PRESSURE — more cycles in the same space</Text>
       <viz.PressureGraphView clock={clock} width={w} height={graphH} visHz={visHz} amp={0.7} lambdaPx={lambda} />

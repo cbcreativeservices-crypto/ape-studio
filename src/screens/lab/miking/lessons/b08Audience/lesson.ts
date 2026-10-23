@@ -628,7 +628,7 @@ export const B08_LESSON: Lesson = {
   },
   unknowns: [
     { text: 'The studio audience (one section 9 × 6 m, an aisle each side, a PA at each front corner of the stage 2.8 m up, a rigging bar above the front rows, a camera at the back) and the event (three sections round a 15 m stage, PA clusters 7 m up and a front fill, rails and a truss) are drawing defaults.', dims: [] },
-    { text: 'The crowd mics’ heights (3.2 m on the bar, 2.4 m at the stage’s corners, 3.5 m on a rail, 6 m on the truss) and the faces’ height (1.2 m) are drawing defaults; no source gives a crowd mic’s height, distance or angle.', dims: [] },
+    { text: 'The crowd mics’ heights (3.2 m on the bar, 2.4 m at the stage’s corners, 3.5 m on a rail, 6 m on the truss) and the faces’ height (1.2 m) are drawing defaults; we found no source that gives a crowd mic’s height, distance or angle.', dims: [] },
     { text: 'The PA’s coverage wedges are a simplified picture of where it points, not a measured dispersion; the patterns are ideal first-order shapes; levels by distance alone; delays from straight paths.', dims: [] },
     { text: 'The surround and Ambisonic mics are drawn as tokens with their fronts and channel labels; no decode or fold-down is drawn.', dims: [] },
   ],

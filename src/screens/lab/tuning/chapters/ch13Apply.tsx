@@ -251,7 +251,7 @@ export function Ch13Apply({ ctx }: ChapterProps) {
         wrong={[
           'All three were called E. A name is a label; the systems disagree about the FREQUENCY the label gets.',
           undefined,
-          'All three E’s sat in the same octave — 386, 400 and 408 ¢ above the same C. The differences are a few cents, not 1200.',
+          'All three E’s sat in the same octave — 386, 400 and 408 ¢ above the same C. The differences are about 8 to 22 cents, not 1200.',
           'Every clip is rendered to the same loudness rule. What differs is pitch, by ratio — not level.',
         ]}
         onCorrect={() => mark(5)}

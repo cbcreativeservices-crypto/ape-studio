@@ -668,8 +668,8 @@ function horseshoe(): Seating {
 
 const PERC_SECS: readonly SecG5[] = [
   { id: 'cg', label: 'congas', short: 'CONGAS', family: 'percussion', radiates: 'From the heads, up and out under the hands — and from the open lower ends, near the floor.' },
-  { id: 'mar', label: 'marimba', short: 'MARIMBA', family: 'percussion', radiates: 'From the wooden bars, up — and from the open tops of the tubes hanging under them, which carry the low notes; the low end is the long, wide end.' },
-  { id: 'vib', label: 'vibraphone', short: 'VIBRAPHONE', family: 'percussion', radiates: 'From the metal bars and the tubes under them; the notes ring on after each stroke until the pedal stops them.' },
+  { id: 'mar', label: 'marimba', short: 'MARIMBA', family: 'percussion', radiates: 'From the wooden bars, up — and from the open tops of the tubes hanging under them, each tuned to boost its own bar; the low end is the long, wide end.' },
+  { id: 'vib', label: 'vibraphone', short: 'VIBRAPHONE', family: 'percussion', radiates: 'From the metal bars and the tubes under them; with the pedal down the notes ring on; let it up and they stop.' },
   { id: 'tbl', label: 'small percussion', short: 'SMALL PERC', family: 'percussion', radiates: 'From each instrument as it is played: shakers and the tambourine move through the air; the cymbal on its stand rings out from its edge.' },
   { id: 'timp', label: 'timpani', short: 'TIMPANI', family: 'percussion', radiates: 'From the heads, up and out — loud, low peaks.' },
   { id: 'perc', label: 'bass drum, snare and cymbals', short: 'DRUMS · CYMBALS', family: 'percussion', radiates: 'From each instrument struck: the bass drum’s heads to the sides, the snare up, the cymbals from their edges — sharp, loud attacks.' },

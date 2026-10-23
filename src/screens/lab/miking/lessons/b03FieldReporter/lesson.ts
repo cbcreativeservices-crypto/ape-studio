@@ -453,7 +453,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Lower the level at once. Where is the PA against the pattern? How close is the mic to the mouth?',
     options: ['Lower it, then close and re-aim the mic', 'Turn the handheld up over the ring', 'Swap to an omni held farther away'],
     correct: 'Lower it, then close and re-aim the mic',
-    explain: 'Feedback is a sound-system condition: lower the send, then bring the mic close to the mouth with its rejection toward the loudspeaker. Never provoke feedback on purpose.',
+    explain: 'Feedback is a sound-system condition: lower the send, then bring the mic close to the mouth with its rejection toward the loudspeaker. Leave any ring-out to the system’s operator.',
     why: {
       'Turn the handheld up over the ring': 'More gain feeds the loop.',
       'Swap to an omni held farther away': 'An omni held far hears the PA from every side: feedback sooner.',

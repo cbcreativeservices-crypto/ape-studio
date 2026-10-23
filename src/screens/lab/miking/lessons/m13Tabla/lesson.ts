@@ -394,7 +394,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Strong rejection on paper; less in reality, often least in the lows',
     explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and often least at low frequencies — use the null to aim, not to promise silence.',
     why: {
-      'Silence from the wedge, because it sits right in the null': 'Real nulls are shallow, and often shallowest in the lows.',
+      'Silence from the wedge, because it sits right in the null': 'Real nulls are shallower than drawn, and often shallowest in the lows.',
       'More pickup than straight behind, where it rejects most': 'Straight behind, a supercardioid has a small rear lobe; it rejects most toward the rear sides.',
     },
   },
@@ -695,7 +695,7 @@ export const M13_LESSON: Lesson = {
   live: {
     wedges: [
       { id: 'wedge', label: 'the player’s wedge, downstage, facing back toward the player', short: 'WEDGE', p: { x: 1400, y: 0, z: 0 }, lift: 150, faces: { x: -1, y: 0, z: 0 }, note: 'Downstage of the player, on the audience side — where a mic aimed back at the pair points its rear.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
-      { id: 'side', label: 'a side-fill monitor across the stage', short: 'SIDE FILL', p: { x: 200, y: 0, z: 1500 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Off to the player’s right, roughly beside the mic’s front: no pattern’s null reaches it. Distance and level do the work.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
+      { id: 'side', label: 'a side-fill monitor across the stage', short: 'SIDE FILL', p: { x: 200, y: 0, z: 1500 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Off to the player’s right, roughly beside the mic’s front: no cardioid’s or supercardioid’s null reaches it. Distance and level do the work.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
     ],
   },
   accuracyDetail:

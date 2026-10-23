@@ -94,7 +94,7 @@ export const M11_PITCH: EarModule = {
       seeIt: {
         kind: 'spectrum',
         clips: [0, 1],
-        caption: 'Interval = the ratio between the stacks. An octave lands every harmonic on a harmonic.',
+        caption: 'Interval = the ratio between the stacks. An octave lands every harmonic of the upper note on a harmonic of the lower one.',
       },
     };
   },

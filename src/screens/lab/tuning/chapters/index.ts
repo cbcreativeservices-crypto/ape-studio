@@ -48,7 +48,7 @@ export const CHAPTERS: ChapterDef[] = [
   { index: 6, title: CHAPTER_TITLES[6], short: 'Comma', objective: 'Measure the Pythagorean comma exactly and see that it is not rounding.', rack: true, Component: Ch6Comma },
   { index: 7, title: CHAPTER_TITLES[7], short: 'Just', objective: 'Build pure triads from small ratios — and find what one fixed mapping gives up when the key changes.', rack: true, Component: Ch7Just },
   { index: 8, title: CHAPTER_TITLES[8], short: 'Compare', objective: 'Find which degrees of two same-named scales differ, and by exactly what ratio.', rack: true, Component: Ch8Compare },
-  { index: 9, title: CHAPTER_TITLES[9], short: 'Meantone', objective: 'Narrow the fifth until four of them make a pure third — then locate the wolf that pays for it.', rack: true, Component: Ch9Meantone },
+  { index: 9, title: CHAPTER_TITLES[9], short: 'Meantone', objective: 'Narrow the fifth until four of them, less two octaves, make a pure third — then locate the wolf that pays for it.', rack: true, Component: Ch9Meantone },
   { index: 10, title: CHAPTER_TITLES[10], short: 'Equal', objective: 'Derive 2^(1/12) and see that equal semitones are equal ratios, not equal hertz.', rack: true, Component: Ch10Equal },
   { index: 11, title: CHAPTER_TITLES[11], short: 'Compare', objective: 'Compare four systems fairly: same C, same keys, same sounds — only the ratios change.', rack: true, Component: Ch11Systems },
   { index: 12, title: CHAPTER_TITLES[12], short: 'Tradeoffs', objective: 'State what each system preserves, what it gives up, and which common claims are wrong.', Component: Ch12Tradeoffs },

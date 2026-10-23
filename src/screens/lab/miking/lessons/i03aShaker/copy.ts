@@ -155,11 +155,11 @@ export const SHK_COPY: LessonCopy = {
       points: [
         { title: 'SPOT OR SHARED', text: 'A shared overhead can work on a quiet stage, but it also hears cymbals, monitors and backline. One dedicated directional mic can serve a station of shakers and tambourine.' },
         { title: 'THE PATTERN’S NULLS', text: 'A cardioid rejects most behind it; supercardioid and hypercardioid patterns have a rear lobe and nulls off to the sides of the rear — place the wedge by the real pattern.' },
-        { title: 'NOT ENOUGH LEVEL', text: 'If close placement still cannot give enough level before feedback: lower the stage, move the player, or choose a louder shaker. Never solve feedback by adding gain.' },
+        { title: 'NOT ENOUGH LEVEL', text: 'If close placement still cannot give enough level before feedback: lower the stage level, move the player, or choose a louder shaker. Never solve feedback by adding gain.' },
         { title: 'SECURE IT', text: 'Boom, cable and connector secured so the playing motion cannot pull the mic down; a clip on another instrument does not follow a separately moving shaker.' },
       ],
       body: 'On an amplified stage the monitors stay where the players need them: turn the mic or choose its pattern so a null faces a loud unwanted source. Mute an unused channel when it is not needed.',
-      warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Work it out with the system operator, and never create feedback deliberately.',
+      warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Work it out with the system operator, and avoid uncontrolled feedback.',
     },
   },
   twoMic: {

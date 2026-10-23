@@ -14,7 +14,7 @@ export const C05B_COPY = stringsCopy({
   subject: { a: 'a standing player with an A-style mandolin', f: 'a standing player with an F-style mandolin' },
   variantKey: 'STYLE',
   variantShort: { a: 'A-style, oval hole', f: 'F-style, f-holes' },
-  variantNotes: { f: 'F-STYLE: two f-holes, a carved scroll and points. The body outline and the opening are separate things: name each when you describe a mandolin.' },
+  variantNotes: { f: 'F-STYLE: a carved scroll and points, often with two f-holes. The body outline and the opening are separate things: name each when you describe a mandolin.' },
   figureLabel: 'Front view of a standing player with a mandolin: a small body with its opening, a floating bridge, eight strings in four pairs over a short neck to the headstock, the tailpiece at the tail end.',
   partsIdle: 'Eight strings, in four pairs, drive a floating bridge; the bridge drives the carved top; the top and the air in the body make the sound — the next page shows how.',
   radiator: 'top',

@@ -283,7 +283,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Title tracks often land at −8 to −5 LUFS-I, true peak −1 dBTP; chart pop generally measures −9 to −7. Most streaming services normalize to about −14 LUFS (some −16), so very loud masters get turned down; keep PLR around 7–9 dB to protect kick and vocal transients (at −1 dBTP that means a master at about −8 LUFS-I or quieter). Loudness range is only 3–6 LU; contrast lives in the arrangement."
+      "text": "Title tracks often land at −8 to −5 LUFS-I, true peak −2 dBTP (a common streaming recommendation for masters louder than −14 LUFS); chart pop generally measures −9 to −7. Most streaming services normalize to about −14 LUFS (some −16), so very loud masters get turned down; keep PLR around 7–9 dB to protect kick and vocal transients (at −2 dBTP that means a master at about −9 LUFS-I or quieter). Loudness range is only 3–6 LU; contrast lives in the arrangement."
     }
   ],
   "liveStudio": {

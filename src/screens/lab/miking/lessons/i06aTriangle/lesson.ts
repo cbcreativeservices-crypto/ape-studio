@@ -47,7 +47,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about 30–60 cm from the triangle, in front and a little to one side, away from the beater — then move the mic and see what changes.',
     credit: { scenarios: ['tri.place.1', 'tri.place.2', 'tri.place.3', 'tri.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the player, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'Begin about 30–60 cm away, aimed at the bars as a whole, away from the beater — never inside the triangle or the beater’s path. Change one thing at a time, and listen to light and strong strokes, a roll and the cutoff.',
+    takeaway: 'Begin about 30–60 cm away, aimed at the whole triangle, away from the beater — never inside the triangle or the beater’s path. Change one thing at a time, and listen to light and strong strokes, a roll and the cutoff.',
   },
   context: {
     title: 'Studio or live',
@@ -108,7 +108,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Where does a struck triangle’s sound leave from?',
     options: ['All along the rod, in many directions', 'Only from the spot where the beater hit', 'Mostly from the open corner, as from a pipe'],
     correct: 'All along the rod, in many directions',
-    explain: 'The whole bent bar vibrates, so sound leaves all along it. A mic aimed at the bars as a whole hears the attack and the ring together.',
+    explain: 'The whole bent bar vibrates, so sound leaves all along it. A mic aimed at the whole triangle hears the attack and the ring together.',
     why: {
       'Only from the spot where the beater hit': 'The stroke starts there, but the whole rod rings and radiates.',
       'Mostly from the open corner, as from a pipe': 'A triangle is not a pipe: the bar itself radiates, all along its length.',
@@ -184,13 +184,13 @@ const scenarios: MikingScenario[] = [
     explain: 'The pattern decides how much sound from other directions — the room, the drums, the monitors — reaches the mic. The ring and the pitch belong to the triangle.',
     why: {
       'How long the triangle keeps ringing after each stroke': 'The ring is the instrument’s; a mic can only hear more or less of it against the room.',
-      'Which pitch the triangle sounds when struck': 'The mic does not change the triangle’s shapes or pitch.',
+      'Which pitch the triangle sounds when struck': 'The mic does not change how the triangle vibrates, or its pitch.',
     },
   },
   {
     id: 'tri.rec.1',
     page: 'microphone',
-    prompt: 'FROM EARLIER · Why point the mic at the bars as a whole rather than at the beater’s spot?',
+    prompt: 'FROM EARLIER · Why point the mic at the whole triangle rather than at the beater’s spot?',
     options: ['The whole rod rings, so the ring comes from all of it', 'The beater’s spot is the only place sound comes from', 'Sound comes out of the open corner like a pipe'],
     correct: 'The whole rod rings, so the ring comes from all of it',
     explain: 'The attack starts where the beater lands, but the whole bent bar rings. Aimed at it all — and away from the beater’s path — the mic hears attack and ring together.',
@@ -541,7 +541,7 @@ export const I06A_LESSON: Lesson = {
       { title: 'Sound leaves all round', text: 'Sound leaves all along the rod, in many directions. Hanging freely from its line, it rings on — until the player lets it fade or closes their fingers round it.' },
     ],
     attack: 'The start of each stroke: the steel beater’s brief contact with the bar. A mic close to where the beater lands, or aimed straight at it, tends to hear more of a metallic tick; the beater and the spot change it before the mic does.',
-    body: 'The long ring after the stroke: the whole bent bar shimmering, from all along its length — until the player lets it fade or damps it. A mic aimed at the bars as a whole hears attack and ring together. Tendencies — triangles, beaters and players vary.',
+    body: 'The long ring after the stroke: the whole bent bar shimmering, from all along its length — until the player lets it fade or damps it. A mic aimed at the whole triangle hears attack and ring together. Tendencies — triangles, beaters and players vary.',
     head: { diameterMm: 203.2, rods: 0, label: 'an 8 in triangle', strikeSrc: 'PAS-1906' },
   },
   setting: {
@@ -577,7 +577,7 @@ export const I06A_LESSON: Lesson = {
   live: {
     wedges: [
       { id: 'wedge', label: 'a floor wedge downstage, facing back toward the player', short: 'WEDGE', p: { x: 1600, y: 0, z: -350 }, lift: 150, faces: { x: -1, y: 0, z: 0.2 }, note: 'On the audience side, behind a mic that faces the triangle — the case a pattern’s null can help with.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
-      { id: 'side', label: 'a side-fill monitor across the stage', short: 'SIDE FILL', p: { x: 300, y: 0, z: 1600 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Off to the player’s right, roughly beside the mic’s front: no pattern’s null reaches it. Distance and level do the work.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
+      { id: 'side', label: 'a side-fill monitor across the stage', short: 'SIDE FILL', p: { x: 300, y: 0, z: 1600 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Off to the player’s right, roughly beside the mic’s front: no cardioid’s or supercardioid’s null reaches it. Distance and level do the work.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
     ],
   },
   accuracyDetail:

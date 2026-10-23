@@ -279,9 +279,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Live, the singer-guitarist’s wedge rings as the level comes up. What do you do?',
     options: ['Lower that send at once, then change the geometry', 'Raise it a little more to find the exact ringing note', 'Turn the guitar up so it covers the ringing'],
     correct: 'Lower that send at once, then change the geometry',
-    explain: 'Bring the level up only to the agreed performance level with a stable margin. At any ring, lower that send at once and change the placement, the angle or the pattern. Never raise the level to find the feedback point.',
+    explain: 'Bring the level up only to the agreed performance level with a stable margin. At any ring, lower that send at once and change the placement, the angle or the pattern. Never push past the agreed level to find the feedback point.',
     why: {
-      'Raise it a little more to find the exact ringing note': 'Never provoke feedback: it is loud, it is unsafe, and it is not a measurement.',
+      'Raise it a little more to find the exact ringing note': 'Not with the performer there: it is loud and unsafe. Finding a ringing note is a separate, controlled ring-out before the show.',
       'Turn the guitar up so it covers the ringing': 'More level feeds the loop. Lower the send first.',
     },
   },
@@ -407,7 +407,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'A distant condenser, a monitor on its axis, a resonant body? Use the pickup or DI, move the monitor, reduce stage level — and notch only after placement.',
     options: ['Pickup or DI, move the monitor, less stage level', 'Turn the guitar mic up past the ringing', 'Aim the guitar mic straight at the wedge instead'],
     correct: 'Pickup or DI, move the monitor, less stage level',
-    explain: 'A pickup or DI is more stable than a distant mic; keep the instrument mic off the monitor’s axis and lower the stage level. Never raise the level to find the feedback point.',
+    explain: 'A pickup or DI is more stable than a distant mic; keep the instrument mic off the monitor’s axis and lower the stage level. Never push past the agreed level to find the feedback point.',
     why: {
       'Turn the guitar mic up past the ringing': 'More gain feeds the loop.',
       'Aim the guitar mic straight at the wedge instead': 'That is the most sensitive direction for the wedge — the opposite of what helps.',
@@ -490,7 +490,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A vocal dynamic on a boom; the piano’s mics inside the lid, mounted without touching the strings', ok: true, power: 'phantom', feedback: 'Also fair — with the owner’s agreement and nothing near the moving parts.' },
       { id: 'c', label: 'A distant stereo pair on the room for a natural sound', ok: false, power: 'phantom', feedback: 'Distant piano mics need too much gain for reinforcement.' },
       { id: 'd', label: 'A stand right beside the bench, the vocal mic over the keys', ok: false, power: 'none', feedback: 'A stand where the pianist can strike it, or in the way of the bench and the pedals, is the wrong place.' },
-      { id: 'e', label: 'Raise the level until it rings, then pull back a little', ok: false, power: 'none', feedback: 'Never provoke feedback: set the agreed level with a stable margin.' },
+      { id: 'e', label: 'Raise the level until it rings, then pull back a little', ok: false, power: 'none', feedback: 'Not until it rings: set the agreed level with a stable margin.' },
     ],
     reasons: [
       { id: 'r.doc', label: 'Each mic is measured from its own source: the lips, the strings', role: 'required', feedback: 'Say what each mic is measured from.' },
@@ -639,7 +639,7 @@ export const E07_LESSON: Lesson = {
       { id: 'performer', label: 'the performer', short: 'PERFORMER', note: 'Seated with the guitar, or at the piano: the mouth is where the vocal distances start.', prov: { kind: 'illustrative', reason: 'the host families’ player (drawing default)' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'other', label: 'the other source', short: 'THE OTHER SOURCE', note: 'The guitar or the piano is in every vocal mic; the voice is in every instrument mic. Aim each mic’s rejection at the other source; check the pair in mono.', prov: { kind: 'illustrative', reason: 'the lesson L13, L33' }, tag: 'SPILL', scene: 'all' },
       { id: 'hands', label: 'the hands, the arm, the neck and the pedals', short: 'THE PERFORMER’S SPACE', note: 'Stands and cables stay clear of the strumming arm, the fretting hand, the neck and the headstock; at the piano, of the head, the hands, the music desk, the lid, the pedals, the bench and the way out.', prov: { kind: 'illustrative', reason: 'the lesson L21, L42, L102' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'wedge', label: 'the wedge', short: 'WEDGE', note: 'For a cardioid vocal mic, a monitor generally goes directly behind it; a supercardioid’s rejection sits well to one side of its rear. Keep the guitar mic off the monitor’s axis.', prov: { kind: 'illustrative', reason: 'the lesson L27–L28' }, tag: 'MONITOR', scene: 'stage' },
+      { id: 'wedge', label: 'the wedge', short: 'WEDGE', note: 'For a cardioid vocal mic, a monitor generally goes directly behind it; a supercardioid rejects best off to each side of its rear. Keep the guitar mic off the monitor’s axis.', prov: { kind: 'illustrative', reason: 'the lesson L27–L28' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'One coherent mic, or a distant pair, brings the room in: it suits a quiet, good-sounding room and a stable performer.', prov: { kind: 'illustrative', reason: 'the lesson L10, L19' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: a directional vocal mic, the most stable instrument path — a pickup or DI, a line out, close piano mics — the monitor where the vocal mic rejects it, and a stable margin before feedback, never chased.',

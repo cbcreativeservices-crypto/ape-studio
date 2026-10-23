@@ -21,7 +21,7 @@ import { SHARED_AT } from '../shared/ensemble/seatingVoices.ts';
 import { E04_30_31, E04_HANDS_31, E04_IND_31, E04_MODEL, E04_PLACE, E04_SETUPS, E04_WEDGES, E04_ZONES, QU_PAIR, SIX_IN_DB } from './geometry.ts';
 
 /** Exercise 4, rewritten (the no-provocation rule). */
-export const EX4 = 'In a live-style test, bring the monitors up in small steps only to the agreed performance level while the singers perform the loudest passage. If any ring is heard, lower that send at once, then correct the placement or the monitor’s angle before going on — never raise the level to find the feedback point.';
+export const EX4 = 'In a live-style test, bring the monitors up in small steps only to the agreed performance level while the singers perform the loudest passage. If any ring is heard, lower that send at once, then correct the placement or the monitor’s angle before going on — never push past the agreed level to find the feedback point.';
 
 const pages: LessonPages = {
   meet: {
@@ -68,7 +68,7 @@ const pages: LessonPages = {
   },
   practice: {
     title: 'Practice',
-    goal: 'Put a live duet setup in order, choose and justify a setup for a studio duet and a live one, and run a monitor check that never provokes feedback.',
+    goal: 'Put a live duet setup in order, choose and justify a setup for a studio duet and a live one, and run a monitor check with a stable margin.',
     credit: { scenarios: ['du.prac.order', 'du.prac.gain', 'du.prac.setup1', 'du.prac.setup2', 'du.prac.3', 'du.nom', 'du.31why', 'du.ring'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional.' },
     takeaway: 'Decide blend or control, place the singers before adding mics, match the distances, space separate mics 3:1, set gain on the loudest passage, check mono — and bring monitors up only to the agreed level.',
   },
@@ -393,7 +393,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Supercardioid handhelds, the wedge well to one side of the rear', ok: true, power: 'none', feedback: 'Fair beside a loud band, with the wedge near the nulls.' },
       { id: 'c', label: 'A figure-8 between them on the stage', ok: false, power: 'phantom', feedback: 'Its back lobe hears the band and the wedge: a studio choice.' },
       { id: 'd', label: 'One handheld passed between them, live', ok: false, power: 'none', feedback: 'A live mic passed around is handling noise and a risk.' },
-      { id: 'e', label: 'Monitors up until it rings, then down a bit', ok: false, power: 'none', feedback: 'Never provoke feedback: up only to the agreed level.' },
+      { id: 'e', label: 'Monitors up until it rings, then down a bit', ok: false, power: 'none', feedback: 'Not until it rings: up only to the agreed level — down a bit leaves no margin.' },
     ],
     reasons: [DIST_REASON, SAFE_REASON, R31, NO_PROVOKE_REASON, GROUP_BRAND],
     explain: 'Two setups pass. What passes is the reasoning: close handhelds measured from the lips, the wedge in the rejection, the mics well apart — and no provoked feedback.',
@@ -452,7 +452,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['Only to the agreed level, down at any ring', 'Until it starts to ring, then back a little', 'As loud as the singers ask for'],
     correct: 'Only to the agreed level, down at any ring',
     explain: EX4,
-    why: { 'Until it starts to ring, then back a little': 'Never provoke feedback: it risks the singers’ hearing and the speakers.', 'As loud as the singers ask for': 'Agree a level that lets them hear — and keep it there; loud monitors bring feedback closer.' },
+    why: { 'Until it starts to ring, then back a little': 'Not until it rings: uncontrolled feedback risks the singers’ hearing and the speakers, and backing off a little leaves no margin.', 'As loud as the singers ask for': 'Agree a level that lets them hear — and keep it there; loud monitors bring feedback closer.' },
   },
   {
     id: 'du.q.6',
@@ -547,7 +547,7 @@ export const E04_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E04_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Decide first: one blended ensemble or separately controllable voices; then place the singers before adding mics. Every duet, group and room is different: rehearse, experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical standing singers, ideal patterns, straight paths, distances measured from the lips. Move a real mic near someone’s face only with their agreement; never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Decide first: one blended ensemble or separately controllable voices; then place the singers before adding mics. Every duet, group and room is different: rehearse, experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical standing singers, ideal patterns, straight paths, distances measured from the lips. Move a real mic near someone’s face only with their agreement; avoid uncontrolled feedback.',
   copy: { words: { ...ensembleWords('duet'), player: 'singers', reference: 'LIPS', inside: 'among the singers', outside: 'clear of the singers', axis: 'the mouth’s axis', facing: 'facing the singers', shield: 'singers in path' } },
   ensemble: {
     seatings: { shared: 'duo.shared', fig8: 'duo.fig8', quartet: 'vocal.quartet' },
@@ -568,7 +568,7 @@ export const E04_LESSON: EnsembleLesson = {
       { title: 'HEAR THE REAL MUSIC', text: 'The loudest and softest passages, unison and harmony, words with strong plosives or S sounds — before final placement.' },
       { title: 'PLACE THE SINGERS FIRST', text: 'In the performance arrangement: place the main mic or pair, then move the singers before adding mics. Both on the same acoustic plane for an intimate duet.' },
     ],
-    safety: 'Stable stands, secure cable paths, clear movement areas. Nobody covers a grille, points a handheld at a monitor or passes a live mic. Hearing protection for high-level checks. Monitors up in small steps only to the agreed level — down at once at any ring; never provoke feedback.',
+    safety: 'Stable stands, secure cable paths, clear movement areas. Nobody covers a grille, points a handheld at a monitor or passes a live mic. Hearing protection for high-level checks. Monitors up in small steps only to the agreed level — down at once at any ring; avoid uncontrolled feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a duet in a good room: one mic at their mouth height, the two singers on a semicircle in front, each mouth the same distance away — a place to start and rehearse, not a rule.',
       clearance: 'The stand’s base clear of both singers’ feet, its boom running away from them; the cable dressed flat, out of their moves.',

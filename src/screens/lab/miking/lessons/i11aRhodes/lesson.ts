@@ -37,7 +37,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know the path from the tines to the desk — which feeds hear the air and which are wires — what sits round the keyboard and its amp, and what to do before any mic.',
     credit: { scenarios: ['rh.set.1', 'rh.set.2', 'rh.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'A mic on the amp hears air; a DI is a separate electrical source. A speaker output goes only to a speaker. Keep the pedal foot and the amp’s vents clear, and protect your hearing.',
+    takeaway: 'A mic on the amp hears air; a DI is a separate electrical source. A speaker output goes only to a speaker, or to a load box made for it. Keep the pedal foot and the amp’s vents clear, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -67,7 +67,7 @@ const pages: LessonPages = {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
     credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
-    takeaway: 'Move the mic before reaching for EQ, one change at a time. A clanking note, hum or a hot smell is not a mic problem: stop, and involve the owner or a technician.',
+    takeaway: 'Move the mic before reaching for EQ, one change at a time. A clanking note, a hot smell, or hum that new cables do not cure is not a mic problem: stop, and involve the owner or a technician.',
   },
   practice: {
     title: 'Practice',
@@ -341,7 +341,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip one source’s polarity. What happens to the arrival-time difference?',
     options: ['Nothing — polarity flips the sign, not the timing', 'It drops to zero, so the two arrivals line up exactly', 'It doubles, because the copy is inverted'],
     correct: 'Nothing — polarity flips the sign, not the timing',
-    explain: 'Polarity reverses the signal’s sign. Only moving a mic changes when the sound arrives: the notches move, the delay does not.',
+    explain: 'Polarity reverses the signal’s sign. Only moving a mic, or delaying its channel, changes when the sound arrives: the notches move, the delay does not.',
     why: {
       'It drops to zero, so the two arrivals line up exactly': 'The paths are unchanged, so the delay stays.',
       'It doubles, because the copy is inverted': 'Polarity has no time in it. Only a position changes the delay.',
@@ -616,8 +616,8 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'The desk is short of inputs. Can the amp’s speaker output go into a desk input or a DI?',
-    options: ['No — a speaker output goes only to a speaker', 'Yes, through the channel’s input pad, switched in first', 'Yes, if the amp is turned down first'],
-    correct: 'No — a speaker output goes only to a speaker',
+    options: ['No — a speaker output never goes into a desk input', 'Yes, through the channel’s input pad, switched in first', 'Yes, if the amp is turned down first'],
+    correct: 'No — a speaker output never goes into a desk input',
     explain: 'A speaker output carries high power. It goes to a speaker, by a speaker cable — never to a mic, line or ordinary DI input. Only a device rated for it, fitted as its maker says, takes that level.',
     why: {
       'Yes, through the channel’s input pad, switched in first': 'An input pad is not made for speaker-level power. The connection itself is the danger.',
@@ -739,5 +739,5 @@ export const I11A_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every instrument, amp, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one combo amp with a 12 in speaker (its outer size is real; where the speaker sits, the open back and the controls are drawing choices), a 61-key tine piano drawn at a typical size, one note of its mechanism as an inside view, textbook mic patterns, and motion drawn larger. The close distances are general amplifier starting points, measured here from the grille cloth to the mic’s front and rounded to about 5 mm. Place mics with the amp muted, never open the instrument or the amp, and send a speaker output only to a speaker.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every instrument, amp, speaker, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one combo amp with a 12 in speaker (its outer size is real; where the speaker sits, the open back and the controls are drawing choices), a 61-key tine piano drawn at a typical size, one note of its mechanism as an inside view, textbook mic patterns, and motion drawn larger. The close distances are general amplifier starting points, measured here from the grille cloth to the mic’s front and rounded to about 5 mm. Place mics with the amp muted, never open the instrument or the amp, and send a speaker output only to a speaker or a load box made for it.',
 };

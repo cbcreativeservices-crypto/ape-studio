@@ -76,7 +76,7 @@ export const F09_COPY: Partial<LessonCopy> = {
     ...BASE.placement!,
     workedZone: { set: 'loc.boom', outdoor: 'loc.boom.out', live: 'loc.stage' },
     workedAim: 'Aim it at the mouth — the lab counts it while the mic points within about {tol}° of the lips. As the talker turns, the operator turns the mic with them.',
-    workedClear: 'Clear of the talker and out of the shot: the mic, the pole and their shadows stay above the frame line, and nothing touches the talker. Outdoors, nothing within 3 m (10 ft) of a power line. Clearance comes first, before any number.',
+    workedClear: 'Clear of the talker and out of the shot: the mic, the pole and their shadows stay above the frame line, and nothing touches the talker. Outdoors, nothing within 3 m (10 ft) of a power line, more for high-voltage lines. Clearance comes first, before any number.',
     reveal: 'Closer tends to bring more voice and less room; a wider shot pushes the boom away; a body mic keeps one distance but sounds of the chest and the clothes. Talkers and places vary, so “it depends on this scene” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
       locBoomSgCap: 'Ideas to try with the shotgun on the pole: bring it as close as the frame allows, keep it pointed at the mouth through the whole line, and listen to the head turns — not only where the talker started.',
@@ -89,7 +89,7 @@ export const F09_COPY: Partial<LessonCopy> = {
       vocDynSuper: 'Ideas to try with a supercardioid: its rear lobe means the wedge goes well to one side of its rear — check the actual pattern.',
       vocHeadset: 'Ideas to try with a headset: place the capsule where its maker says, near the corner of the mouth and out of the breath; then leave it there.',
     },
-    note: 'Clearance comes first: nothing touches the talker, the pole and its shadow stay out of the shot, cables stay out of the walking path, and outdoors nothing comes within 3 m (10 ft) of a power line. Ask before putting anything on a person.',
+    note: 'Clearance comes first: nothing touches the talker, the pole and its shadow stay out of the shot, cables stay out of the walking path, and outdoors nothing comes within 3 m (10 ft) of a power line (more for high-voltage lines). Ask before putting anything on a person.',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on location, measured from the lips to the mic’s capsule. They are starting points, not rules — move from there and listen. Experimentation is encouraged: there is no single right answer, and every talker, place and shot is different.',
       separate: 'Distance, height and the angle off the mouth’s axis are separate variables; the frame and the head turn change them during a take. Distances are measured to the mic’s CAPSULE and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m, so no millimetre claim is made. The tip of a shotgun is about 20 cm nearer the mouth than its capsule.',

@@ -16,7 +16,7 @@ export const GUIDE: MixingGuide = {
     "ensemble": "Solo producer with sampler/laptop; live sets 1–2 people (sampler + keys), occasionally a 3–5 piece band (keys, guitar, bass, drums, horn)",
     "priority": "The warm, swung drum-and-keys pocket: a soft, round kick and dusty snare under a mellow, filtered chord loop, with nothing harsh",
     "liveSpl": "85–95 dBA Leq (LAeq-15 min); roughly 100–110 dBC; café/lounge sets 75–85 dBA",
-    "studioLoudness": "Masters commonly −14 to −10 LUFS-I, true peak −1 dBTP; streaming normalizes to about −14"
+    "studioLoudness": "Masters commonly −14 to −10 LUFS-I, true peak −1 dBTP (−2 if louder than −14); streaming normalizes to about −14"
   },
   "purpose": [
     {
@@ -268,7 +268,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Most releases land at −14 to −10 LUFS-I, with true peak at −1 dBTP; a few catalog tracks run quieter (−16). Since streaming services normalize to about −14, mastering hotter buys nothing and costs softness. Because playlists matter so much, match loudness across an album or compilation within about 1 LU. PLR of 9–13 dB and LRA of 3–6 LU are typical; the genre tolerates little dynamic range but hates squashed, clipped transients."
+      "text": "Most releases land at −14 to −10 LUFS-I, with true peak at −1 dBTP (−2 dBTP if louder than −14 LUFS); a few catalog tracks run quieter (−16). Since streaming services normalize to about −14, mastering hotter buys nothing and costs softness. Because playlists matter so much, match loudness across an album or compilation within about 1 LU. PLR of 9–13 dB and LRA of 3–6 LU are typical; the genre tolerates little dynamic range but hates squashed, clipped transients."
     }
   ],
   "liveStudio": {
@@ -290,7 +290,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Noise",
-        "live": "Crackle and hiss get amplified with gain; manage with input gain, not gates",
+        "live": "Crackle and hiss rise with the music as you add gain; set the texture level at the source or on its own track, not with gates",
         "studio": "Textures as separate, balanced tracks"
       },
       {

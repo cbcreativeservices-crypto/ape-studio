@@ -25,7 +25,7 @@ type VarId = 'material' | 'size' | 'thickness' | 'shape' | 'driver' | 'support' 
 type Variable = { id: VarId; label: string; short: string; question: string; options: { label: string; short: string; patch: Partial<PlateSpec> }[] };
 
 const VARIABLES: Variable[] = [
-  { id: 'material', label: 'Material', short: 'Mat', question: 'Same plate, same tone — a different metal. Does the figure survive?', options: [
+  { id: 'material', label: 'Material', short: 'Mat', question: 'Same plate, same tone — a different material. Does the figure survive?', options: [
     { label: 'Aluminum', short: 'Al', patch: { material: 'aluminum' } }, { label: 'Steel', short: 'Steel', patch: { material: 'steel' } }, { label: 'Brass', short: 'Brass', patch: { material: 'brass' } }, { label: 'Acrylic', short: 'Acryl', patch: { material: 'acrylic' } }, { label: 'Glass', short: 'Glass', patch: { material: 'glass' } }, { label: 'Solid wood', short: 'Wood', patch: { material: 'wood' } },
   ] },
   { id: 'size', label: 'Size', short: 'Size', question: 'Same tone — a bigger plate. Where does the resonance go?', options: [

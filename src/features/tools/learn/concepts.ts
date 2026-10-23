@@ -72,7 +72,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
       'Coherence is a trust indicator, not a level and not a response curve.',
       'Low coherence can mean noise, reflections, wrong delay, or unrelated sound.',
       'Never make EQ decisions from data where coherence is low.',
-      'Coherence requires dual-channel measurement — one microphone cannot compute it.',
+      'Coherence requires dual-channel measurement — the mic signal alone, with no reference, cannot compute it.',
       'Noisy or unstable conditions lower measurement reliability before they change the sound.',
     ],
     relatedTools: ['rta', 'signalgen'],
@@ -118,7 +118,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
     sections: [
       {
         head: 'THE ROOM ANSWERS A QUESTION',
-        body: 'Excite a room with something short and broadband — ideally a proper test signal, less ideally a clap — and record what comes back. That recording is the impulse response: amplitude versus time, showing every path the sound took from source to microphone. Two rooms, or even two positions in one room, produce visibly different answers.',
+        body: 'Excite a room with something short and broadband, like a clap, and record what comes back. That recording is a rough impulse response: amplitude versus time, showing every path the sound took from source to microphone. A test signal such as a sweep works better, but the tool must process the recording to get the impulse response. Two rooms, or even two positions in one room, produce visibly different answers.',
       },
       {
         head: 'READING THE TIMELINE',
@@ -188,7 +188,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
     sections: [
       {
         head: 'THE THREE AXES',
-        body: 'Time runs horizontal, frequency runs vertical, and color or intensity encodes level in dB. The first two are exact; the third is not — reading level from color is only precise to a few dB, and the color scale is relative to the chosen display range. Change the range or the floor and the same audio paints a different picture.',
+        body: 'Time runs horizontal, frequency runs vertical, and color or intensity encodes level in dB. Time and frequency are only as sharp as the FFT settings allow; level is looser still — reading level from color is only precise to a few dB, and the color scale is relative to the chosen display range. Change the range or the floor and the same audio paints a different picture.',
       },
       {
         head: 'THE RESOLUTION TRADE-OFF',

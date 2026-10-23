@@ -241,7 +241,7 @@ export const E14_SETUPS: EnsembleSetup[] = [
     rig: { id: 'treeCompact', params: { turn: 0 }, place: { c: TREE_C, face: 0, tilt: 25 }, mount: { kind: 'boom', reach: 1600 } },
     mics: 'Three omni small condensers on a smaller T-bar: left and right about 1.5 m (5 ft) apart, the centre about 0.75 m (2.5 ft) ahead.',
     start: 'The same place as the larger tree: over the podium, about 3.2 m (10.5 ft) up, the centre fed into both sides a few dB down.',
-    line: 'The capsules sit closer than 1.5 m to each other, so the three hear more alike: compare its width and centre with the 2 m tree at matched level.',
+    line: 'The mics sit closer together than on the 2 m tree, so the three hear more alike: compare its width and centre with the 2 m tree at matched level.',
     core: false,
     view: 'plan',
   },

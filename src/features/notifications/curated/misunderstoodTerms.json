@@ -45,7 +45,7 @@
   },
   {
     "term": "Mantissa or significand",
-    "body": "Myth: more mantissa bits widen a float's dynamic range. Actually the exponent sets range - the significand only holds precision, not bit-depth resolution."
+    "body": "Myth: more mantissa bits widen a float's dynamic range. Actually the exponent sets the range - the significand bits set the precision at any given level."
   },
   {
     "term": "Streaming mastering",
@@ -93,7 +93,7 @@
   },
   {
     "term": "Audio metering scale",
-    "body": "Myth: any level meter shows the same thing. dBFS reads peaks, VU and PPM read differently smoothed averages, and LUFS reads perceived loudness."
+    "body": "Myth: any level meter shows the same thing. A sample-peak meter reads peaks in dBFS, VU a slow average, a PPM near-peaks, and LUFS perceived loudness."
   },
   {
     "term": "Electrostatic driver",
@@ -121,7 +121,7 @@
   },
   {
     "term": "Reverb predelay and source distance",
-    "body": "Commonly assumed: more predelay pushes a source farther back — but it's the opposite; longer predelay makes the source feel closer, mimicking a nearer room."
+    "body": "Commonly assumed: more predelay pushes a source farther back — often it's the opposite; a longer gap makes it feel closer, like a voice near you in a big room."
   },
   {
     "term": "Normalized loudness",
@@ -481,7 +481,7 @@
   },
   {
     "term": "Outer-ear filtering",
-    "body": "Popular belief: the outer ear is a passive funnel with no effect on tone. Actually it actively filters sound, boosting around 3-4 kHz with real peaks."
+    "body": "Popular belief: the outer ear is a passive funnel with no effect on tone. Actually its shape filters sound, boosting about 2-5 kHz with a main peak near 3 kHz."
   },
   {
     "term": "Octave-band analysis",
@@ -493,7 +493,7 @@
   },
   {
     "term": "Audio spectrum flatness",
-    "body": "Myth: a high spectrum-flatness value means a sound is loud. Actually it means the sound is noise-like - flatness measures tonal balance, not level."
+    "body": "Myth: a high spectrum-flatness value means a sound is loud. Actually it means the sound is noise-like - flatness measures noisy versus tonal, not level."
   },
   {
     "term": "Balanced Signal",
@@ -717,7 +717,7 @@
   },
   {
     "term": "White Noise",
-    "body": "Myth: white noise and pink noise are interchangeable test hiss. Actually white is flat per hertz and sounds bright; pink falls per octave to match how we hear."
+    "body": "Myth: white and pink noise are the same test hiss. Actually white is flat per hertz and sounds bright; pink falls 3 dB per octave, equal energy each octave."
   },
   {
     "term": "Mouthpiece pop",
@@ -745,7 +745,7 @@
   },
   {
     "term": "Cancellation",
-    "body": "Does any phase difference between two signals cause cancellation? Not quite - it needs equal level and exactly 180 degrees of offset."
+    "body": "Does any phase difference between two signals cause cancellation? Partly - large offsets cut the level. Total cancellation needs equal level and exactly 180°."
   },
   {
     "term": "DC offset",
@@ -757,7 +757,7 @@
   },
   {
     "term": "Loudness Control",
-    "body": "Studio myth: the 'loudness' button on a receiver is the same as loudness normalization in streaming. It's a fixed bass boost meant only for quiet listening."
+    "body": "Studio myth: the 'loudness' button on a receiver is the same as loudness normalization in streaming. It boosts bass, and often treble, for quiet listening."
   },
   {
     "term": "LMF gain",
@@ -805,7 +805,7 @@
   },
   {
     "term": "Master track (Live)",
-    "body": "The myth: a return track and the master track do the same job. Actually the master is where every track sums to a final output; a return is just an aux send."
+    "body": "The myth: a return track and the master track do the same job. Actually the master is where every track sums; a return holds an effect that sends feed into."
   },
   {
     "term": "DI + mic blend",
@@ -953,7 +953,7 @@
   },
   {
     "term": "Plywood",
-    "body": "The myth: thicker plywood absorbs more bass as a panel absorber. Actually added mass and stiffness lower and narrow the tuned frequency instead."
+    "body": "The myth: thicker plywood absorbs more bass as a panel absorber. Actually its added mass mainly lowers the tuned frequency; it doesn't simply absorb more."
   },
   {
     "term": "Reverb swell",
@@ -1013,7 +1013,7 @@
   },
   {
     "term": "Nodal plane",
-    "body": "Myth: a node in a standing wave is where the energy died. Pressure nodes are velocity peaks a quarter-wave away - the energy is stored, not gone."
+    "body": "Myth: a standing-wave node is where the energy died. A pressure node is a velocity peak; pressure peaks sit a quarter-wave away. The energy is stored, not gone."
   },
   {
     "term": "Acoustic compliance of enclosure",
@@ -1109,7 +1109,7 @@
   },
   {
     "term": "Plug-in power",
-    "body": "Widely believed: plug-in power and 48V phantom power are interchangeable. Really, it's a lower voltage for small electret mics — condensers won't run on it."
+    "body": "Widely believed: plug-in power and 48V phantom are interchangeable. Really, it's a low voltage for small electret mics — mics that need phantom won't run on it."
   },
   {
     "term": "Summing amplifier",
@@ -1253,7 +1253,7 @@
   },
   {
     "term": "Wet monitor mix",
-    "body": "The myth: 'wet' means unprocessed and 'dry' means with effects. Actually it's reversed — wet carries added effects, dry is untouched."
+    "body": "The myth: 'wet' means unprocessed and 'dry' means with effects. Actually it's reversed — wet carries added reverb or delay; dry has none, though EQ may apply."
   },
   {
     "term": "Summing",
@@ -1617,7 +1617,7 @@
   },
   {
     "term": "Acoustic Mass",
-    "body": "Myth: a wider port has more acoustic mass. Actually a larger cross-sectional area lowers acoustic mass - length and end corrections matter more than width."
+    "body": "Myth: a wider port has more acoustic mass. Actually more area lowers acoustic mass and more length raises it - so a wider port must be longer to tune the same."
   },
   {
     "term": "Acoustic amplifier",
@@ -1733,7 +1733,7 @@
   },
   {
     "term": "Limiter threshold/gain",
-    "body": "Myth: a limiter's threshold and input gain do the same job. Actually gain sets how hard you drive the signal in; the ceiling caps how high it can come out."
+    "body": "Myth: a limiter's input gain and its ceiling do the same job. Actually gain (or a lower threshold) sets how hard it works; the ceiling caps the output."
   },
   {
     "term": "Analog Summing",
@@ -2037,7 +2037,7 @@
   },
   {
     "term": "Delay Time",
-    "body": "The myth: delay time controls how many echoes repeat. Actually that's feedback; delay time only sets the gap before the first repeat."
+    "body": "The myth: delay time controls how many echoes repeat. Actually that's feedback; delay time sets the gap between each repeat."
   },
   {
     "term": "Termination resistor",
@@ -2445,7 +2445,7 @@
   },
   {
     "term": "RC rating",
-    "body": "Studio myth: RC and NC ratings measure room noise the same way. Actually RC (room criterion) judges spectral balance too, not just overall loudness like NC."
+    "body": "Studio myth: RC and NC ratings measure room noise the same way. Both use octave-band curves, but RC also rates balance, like rumble or hiss; NC doesn't."
   },
   {
     "term": "Limiter LED",
@@ -3105,7 +3105,7 @@
   },
   {
     "term": "DAC",
-    "body": "Widely believed: a DAC just outputs the raw sample numbers as sound. Really, it reconstructs them through a filter — skip that and you'd hear stepped noise."
+    "body": "Widely believed: a DAC just outputs the raw sample numbers as sound. Really, it rebuilds a smooth wave via a filter — skip that and ultrasonic copies appear."
   },
   {
     "term": "Speaker Coupling",
@@ -3137,7 +3137,7 @@
   },
   {
     "term": "Gated loudness",
-    "body": "It's tempting to think gating artificially lowers a loudness reading. In fact it just excludes silent blocks so pauses don't skew the average."
+    "body": "It's tempting to think gating artificially lowers a loudness reading. In fact it drops silent and very quiet blocks so pauses don't drag the average down."
   },
   {
     "term": "Keyboard amplifier",
@@ -3165,7 +3165,7 @@
   },
   {
     "term": "unity gain bandwidth",
-    "body": "Common belief: an op-amp delivers its full gain at every frequency. Actually gain falls as frequency rises, reaching zero (unity) at its gain-bandwidth product."
+    "body": "Common belief: an op-amp delivers its full gain at every frequency. Actually gain falls as frequency rises, reaching unity (0 dB) near its gain-bandwidth value."
   },
   {
     "term": "Reference monitoring level",
@@ -3633,7 +3633,7 @@
   },
   {
     "term": "Harman Target",
-    "body": "Myth: the Harman target is a perfectly flat response. Actually it's flat through the midrange with a gentle downward tilt toward the treble."
+    "body": "Myth: the Harman target is a perfectly flat response. Actually it adds a bass shelf below about 200 Hz and an upper-mid lift, then falls gently in the treble."
   },
   {
     "term": "Transient-Preserving Compression",
@@ -3829,7 +3829,7 @@
   },
   {
     "term": "Tape winding quality",
-    "body": "Myth: winding tape as tightly as possible is always safest. Over-tight winds can stretch or emboss the tape -- and heads-out storage worsens print-through."
+    "body": "Myth: winding tape very tightly is always safest. Over-tight winds can stretch or emboss the tape -- and heads-out storage turns print-through into pre-echo."
   },
   {
     "term": "Subcardioid",
@@ -3857,7 +3857,7 @@
   },
   {
     "term": "Flat encoded capture",
-    "body": "Common belief: decoding a noise-reduction tape later is as accurate as decoding at transfer. Actually alignment errors can compound the longer decoding waits."
+    "body": "Common belief: decoding a noise-reduction tape later is as good as at transfer. Only if the copy keeps the tape's exact level; a level error throws it off."
   },
   {
     "term": "lexical stress",
@@ -3865,7 +3865,7 @@
   },
   {
     "term": "Johnson–Nyquist noise",
-    "body": "Myth: a quieter design can beat the thermal noise of its own source resistance. Actually that noise floor is set by resistance and temperature alone."
+    "body": "Myth: a quieter design can beat the thermal noise of its own source resistance. Actually that noise floor is set by resistance, temperature and bandwidth."
   },
   {
     "term": "Residual-noise measurement",
@@ -4185,7 +4185,7 @@
   },
   {
     "term": "Kick boundary microphone",
-    "body": "Common belief: a boundary mic needs no power since it sits without a stand. Actually a condenser boundary mic still needs phantom power to work at all."
+    "body": "Common belief: a boundary mic needs no power since it sits without a stand. Actually a condenser boundary mic still needs power, usually phantom, to work."
   },
   {
     "term": "Dry Voice",
@@ -4301,7 +4301,7 @@
   },
   {
     "term": "GBW",
-    "body": "It's tempting to think gain-bandwidth product is a fixed rule for every op-amp. In fact multi-pole or decompensated parts don't follow that constant-GBW rule."
+    "body": "It's tempting to think gain-bandwidth product is a fixed rule for every op-amp. In fact current-feedback parts don't follow it, and some need a minimum gain."
   },
   {
     "term": "Reverb Send",
@@ -4309,7 +4309,7 @@
   },
   {
     "term": "Clipping prevention",
-    "body": "Myth: watching RMS or average meters is enough to catch clipping. Actually short peaks can clip between readings; true-peak metering actually prevents it."
+    "body": "Myth: watching RMS or average meters is enough to catch clipping. Actually short peaks can clip without moving them; a peak or true-peak meter catches them."
   },
   {
     "term": "Output sensitivity/level trim (mic)",

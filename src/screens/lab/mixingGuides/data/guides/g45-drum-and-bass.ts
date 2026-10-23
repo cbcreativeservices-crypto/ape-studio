@@ -232,7 +232,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Tempo delay",
         "appliedTo": "Vocal phrase ends, MC throws",
-        "setting": "Dotted 1/8 or 3/16 at 174 BPM (≈ 259 ms), 20–35% feedback, HPF 300 Hz",
+        "setting": "Dotted 1/8 (same as 3/16) at 174 BPM (≈ 259 ms), 20–35% feedback, HPF 300 Hz",
         "amount": "Subtle, automated as throws"
       },
       {
@@ -274,7 +274,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club masters typically land at −7 to −5 LUFS-I, drops around −6 LUFS short-term (some liquid nearer −9 to −8). Streaming normalizes to about −14 LUFS; use a −1 dBTP ceiling, or −2 dBTP for masters louder than −14. Leave 3–6 dB of mix headroom before mastering. D&B tolerates a low PLR (6–8 dB; at −2 dBTP that means a master at about −8 LUFS-I or quieter) in drops but needs breakdown-to-drop contrast."
+      "text": "Club masters typically land at −7 to −5 LUFS-I, drops around −6 LUFS short-term (some liquid nearer −9 to −8). Streaming normalizes to about −14 LUFS; use a −1 dBTP ceiling, or −2 dBTP for masters louder than −14. Leave 3–6 dB of mix headroom before mastering. D&B tolerates a very low PLR in drops (at −2 dBTP, a −7 to −5 LUFS-I master leaves only 3–5 dB) but needs breakdown-to-drop contrast."
     }
   ],
   "liveStudio": {
@@ -307,7 +307,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "100–105 dBA Leq, venue caps and dBC limits",
-        "studio": "−7 to −5 LUFS-I club master, −1 dBTP"
+        "studio": "−7 to −5 LUFS-I club master, −2 dBTP"
       }
     ],
     "notes": []

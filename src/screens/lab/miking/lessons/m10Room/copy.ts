@@ -96,7 +96,7 @@ export const M10_COPY: Partial<LessonCopy> = {
         { title: 'WHO CHECKS IT', text: 'Studio: compare positions at the same listening level. Live: the system operator checks the real routing and margin at show level — never by provoking feedback.' },
       ],
       body: 'On a stage the PA and the monitors stay where the show needs them: you turn the mic or choose its pattern so that a null faces the loudest unwanted source. Monitors on the kit’s side are in front of a room mic facing the kit, where no null reaches.',
-      warn: 'Do not assume a room mic can be turned up safely in the PA. Never create feedback deliberately — not as an exercise, not to find a frequency.',
+      warn: 'Do not assume a room mic can be turned up safely in the PA. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

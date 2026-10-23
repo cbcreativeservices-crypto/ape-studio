@@ -125,6 +125,10 @@ export function FmLabScreen() {
   const env = ENVS.find((e) => e.key === envKey)!;
   const fm = carrier * ratio;
   const carson = 2 * fm * (index + 1);
+  // Aliasing depends on where the TOP of the Carson band sits (carrier + half
+  // the width), not on the width alone (fact audit R2, F084866).
+  const bandTop = carrier + carson / 2;
+  const pastNyquist = bandTop > NYQUIST;
   // Harmonicity follows the ✳ scheme, not integer-ness (F03): a simple fraction
   // like 0.5 (=1/2) is still perfectly pitched, so the caption keys off the ✳
   // marks (the irrational bell/metallic ratios) rather than an integer-only test.
@@ -253,8 +257,8 @@ export function FmLabScreen() {
             {
               k: 'BW',
               v: `${(carson / 1000).toFixed(1)} kHz`,
-              // Carson band past Nyquist = folding — the bezel flags it red.
-              tint: carson > NYQUIST ? '#ff6b5e' : undefined,
+              // Top of the Carson band past Nyquist = folding — the bezel flags it red.
+              tint: pastNyquist ? '#ff6b5e' : undefined,
               helpKey: 'display',
             },
           ],
@@ -335,11 +339,11 @@ export function FmLabScreen() {
                 ? 'Inharmonic ratio (✳) — sidebands fall BETWEEN the harmonics: the bell/metallic family. ✳ on a RATIO marks these.'
                 : 'Simple ratio — sidebands land ON a harmonic series (pitched), even for a fraction like 0.5.')}
         </Text>
-        <Text style={carson > NYQUIST ? styles.advisory : styles.caption}>
+        <Text style={pastNyquist ? styles.advisory : styles.caption}>
           Carson bandwidth ≈ 2·fm·(I+1) = {(carson / 1000).toFixed(1)} kHz
-          {carson > NYQUIST
-            ? ' — EXCEEDS Nyquist (24 kHz): the top sidebands fold back (audible aliasing — itself a lesson). The BW readout flags it red.'
-            : ` of ${NYQUIST / 1000} kHz available.`}
+          {pastNyquist
+            ? ` — its top (carrier + half the width ≈ ${(bandTop / 1000).toFixed(1)} kHz) passes Nyquist (${NYQUIST / 1000} kHz): those sidebands fold back (audible aliasing — itself a lesson). The BW readout flags it red.`
+            : `; its top (carrier + half the width ≈ ${(bandTop / 1000).toFixed(1)} kHz) stays under the ${NYQUIST / 1000} kHz Nyquist limit.`}
         </Text>
       </View>
 

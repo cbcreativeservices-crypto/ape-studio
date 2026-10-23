@@ -79,7 +79,7 @@ export const CELLO_COPY: Partial<LessonCopy> = {
         { title: 'MOUNTING', text: 'Studio: paused sessions allow careful comparisons. Live: a clip made for this cello, a cable routed away from the endpin and the chair, and a full-motion check before the show.' },
       ],
       body: 'With a wedge in front of the cellist, a pattern’s rejection is a tool to aim — tilting the mic as well as turning it. Some stage sound in a cello mic is normal; the question is how much the music can take.',
-      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

@@ -48,7 +48,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim a room mic so its pattern’s rejection faces the PA — and know where a room feed belongs on a show.',
     credit: { scenarios: ['rm.ctx.1', 'rm.ctx.2', 'rm.ctx.studio', 'rm.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: turn the room mic (or change its pattern) until the PA sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'Live, a distant room mic hears the PA and the monitors and costs gain before feedback: it usually feeds a recording or broadcast, kept out of the PA and the monitors. Real nulls are shallow, and the room returns sound from every side.',
+    takeaway: 'Live, a distant room mic hears the PA and the monitors and costs gain before feedback: it usually feeds a recording or broadcast, kept out of the PA and the monitors. Real nulls are shallower than the picture, and the room returns sound from every side.',
   },
   twoMic: {
     title: 'Room and kit together',
@@ -282,8 +282,8 @@ const scenarios: MikingScenario[] = [
     id: 'rm.ctx.2',
     page: 'context',
     prompt: 'The room mic is in a null of the PA on paper. Can it now be turned up safely in the house mix?',
-    options: ['No — real nulls are shallow, and reflections arrive all round', 'Yes — a null removes the PA from the mic', 'Yes, as long as it stays a supercardioid aimed at the kit the whole time'],
-    correct: 'No — real nulls are shallow, and reflections arrive all round',
+    options: ['No — real nulls are not that deep, and reflections arrive all round', 'Yes — a null removes the PA from the mic', 'Yes, as long as it stays a supercardioid aimed at the kit the whole time'],
+    correct: 'No — real nulls are not that deep, and reflections arrive all round',
     explain: 'A null is infinitely deep only on paper; real mics reject far less, often least in the lows, and the room returns the PA from every side. Do not assume it is safe in the house system.',
     why: {
       'Yes — a null removes the PA from the mic': 'A null reduces one direct path, a little; the room still brings the PA back.',
@@ -392,7 +392,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The PA sits in the room mic’s null on paper. What can you expect?',
     options: ['Less PA than without it, but far from silence', 'Silence from the PA in the room mic', 'More PA than it would hear if the mic faced the PA'],
     correct: 'Less PA than without it, but far from silence',
-    explain: 'Real nulls are shallow, often least in the lows, and the room reflects the PA from every side.',
+    explain: 'Real nulls are shallower than drawn, often least in the lows, and the room reflects the PA from every side.',
     why: {
       'Silence from the PA in the room mic': 'A null is deep only on paper; the room brings the PA back from other directions.',
       'More PA than it would hear if the mic faced the PA': 'Facing away, the direct sound of the PA is turned down — just not to silence.',
@@ -470,7 +470,7 @@ const symptoms: Symptom[] = [
     explain: 'If the room mic hears more of the band or the PA than the drums, move closer, leave it out, or keep it out of the PA and monitors.',
     why: {
       'Raise the drums in the room mic until they cover the rest of the band': 'You cannot raise one source inside one mic; the mic hears what the room gives it.',
-      'Point the room mic at the PA to check how much it hears': 'That invites feedback. Never provoke it deliberately.',
+      'Point the room mic at the PA to check how much it hears': 'That invites uncontrolled feedback.',
     },
   },
   {
@@ -534,7 +534,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'No room mic: the close mics and the overheads carry the recording', ok: true, power: 'none', feedback: 'A fair choice when the room or the stage would add more spill than space.' },
       { id: 'c', label: 'A distant room mic in the PA, to make the kit bigger in the hall', ok: false, power: 'phantom', feedback: 'In the PA it costs gain before feedback and feeds the PA back into itself.' },
       { id: 'd', label: 'A room mic in the drummer’s monitor mix', ok: false, power: 'phantom', feedback: 'An open distant mic in a loud wedge is a feedback risk for little gain.' },
-      { id: 'e', label: 'A room mic pointed at the PA to check its level in soundcheck', ok: false, power: 'phantom', feedback: 'Never provoke feedback; the system operator checks routing and margin.' },
+      { id: 'e', label: 'A room mic pointed at the PA to check its level in soundcheck', ok: false, power: 'phantom', feedback: 'Pointed at the PA it invites uncontrolled feedback; the system operator checks routing and margin.' },
     ],
     reasons: [CLEAR, { id: 'r.route', label: 'Its routing keeps it out of the PA and the monitor mixes', role: 'required', feedback: 'Say where the feed goes — and where it does not.' }, { id: 'r.gbf', label: 'It leaves gain before feedback for the mics the audience needs', role: 'required', feedback: 'On a loud stage, say what it does for gain before feedback.' }, { id: 'r.op', label: 'The system operator checks the routing and margin at show level', role: 'optional', feedback: 'A fair live reason.' }, BRAND, FAR],
     explain: 'Two choices pass — one with no room mic at all. What passes is the reasoning: clearance, routing, and gain before feedback.',

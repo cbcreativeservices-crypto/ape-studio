@@ -122,7 +122,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Use a mount made for the instrument, with the player’s approval: check the full bow sweep, the left hand’s travel, chair movement and cable slack. No adhesive on varnish, no cable pulling on the instrument.',
     why: {
       'Only that the clip holds tight on the rib': 'Tight is not enough: the bow, the hand and the cable must stay clear.',
-      'That it sits right on top of the bridge itself': 'Never on the bridge: the mount stays off the bridge and the varnish.',
+      'That it sits right on top of the bridge itself': 'Not on the bridge: a clip mount stays off the bridge and the varnish.',
     },
   },
   hearingCheck('sq', 'setups', 'a loud band stage'),
@@ -256,7 +256,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The spot is 1 m nearer the cello than the pair. About how much earlier?',
     options: ['About 2.9 ms', 'About 29 ms', 'About 0.3 ms'],
     correct: 'About 2.9 ms',
-    explain: 'Sound travels about 343 m a second: 1 m takes about 2.9 ms. That is one source’s estimate — several players, reflections and movement change it.',
+    explain: 'Sound travels about 343 m a second: 1 m takes about 2.9 ms. That holds for one player in one spot — several players, reflections and movement change it.',
     why: {
       'About 29 ms': 'That would be about 10 m of path difference.',
       'About 0.3 ms': 'That would be about 10 cm of path difference.',
@@ -270,7 +270,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Lower or move the spots, then compare',
     explain: 'Overlap, level and arrival times hollow the sum: lower the spots, move them, and test timing only in context — compared with the plain version.',
     why: {
-      'Flip each spot’s polarity, then listen again': 'Polarity cannot remove a frequency-dependent delay relationship.',
+      'Flip each spot’s polarity, then listen again': 'Polarity flips every frequency the same way; it cannot undo a time gap, whose effect changes with pitch.',
       'Delay each spot by its distance': 'One distance suits one player at best; level and placement first.',
     },
   },
@@ -393,7 +393,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Instrument-mounted mics fitted with the players, cables dressed clear of the bows', ok: true, power: 'phantom', feedback: 'Fair: stable distance as they move — recheck the monitors with them in place.' },
       { id: 'c', label: 'A distant pair for the PA, turned up until the strings cut', ok: false, power: 'phantom', feedback: 'A distant pair on a loud stage feeds back first.' },
       { id: 'd', label: 'Clip mics taped to the varnish', ok: false, power: 'phantom', feedback: 'Never adhesive on varnish; use a mount made for the instrument.' },
-      { id: 'e', label: 'Ring the system out loudly before the show', ok: false, power: 'phantom', feedback: 'Never provoke feedback; check gain at conservative levels.' },
+      { id: 'e', label: 'Ring the system out loudly before the show', ok: false, power: 'phantom', feedback: 'Not loudly: keep any ring-out short and controlled, and check gain at conservative levels.' },
     ],
     reasons: [{ id: 'r.close', label: 'Close directional pickup for the loud stage', role: 'required', feedback: 'Say why: the strings against a loud band need closeness.' }, SAFE_REASON, POWER_REASON, BRAND_REASON, { id: 'r.pair', label: 'A distant pair gives the most natural PA sound', role: 'wrong', feedback: 'Natural for a recording, but a distant pair on a loud stage is the first to feed back.' }],
     explain: 'Two setups pass. What passes is the reasoning: close pickup, loud sources away, monitors by the pattern, and the bows left clear.',
@@ -510,7 +510,7 @@ export const E11_LESSON: EnsembleLesson = {
     items: [
       { id: 'bows', label: 'the bows’ sweep and the players’ movement', short: 'BOWS', note: 'Check the full bow sweep, the left hand’s travel, chair movement, the cello’s endpin and the cable slack before anything is final.', prov: { kind: 'sourced', src: 'LESSON-QUARTET', quote: 'Check the full bow sweep, left-hand travel, chair movement, cello endpin and cable slack (L50)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'eyes', label: 'the players’ eye contact', short: 'SIGHTLINES', note: 'Seat the group as the players prefer; preserve eye contact and the conductor’s view. Stands go where nobody needs to see.', prov: { kind: 'sourced', src: 'LESSON-QUARTET', quote: 'Preserve eye contact and conductor visibility (L8)' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'varnish', label: 'the instruments’ varnish and bridges', short: 'INSTRUMENTS', note: 'No adhesive on varnish, nothing on the bridge, no cable pulling on the instrument; mounts made for it, with the player’s approval.', prov: { kind: 'sourced', src: 'LESSON-QUARTET', quote: 'Do not use ordinary adhesive on varnish or let a cable pull on the instrument (L50)' }, tag: 'HANDS OFF', scene: 'all' },
+      { id: 'varnish', label: 'the instruments’ varnish and bridges', short: 'INSTRUMENTS', note: 'No adhesive on varnish, nothing on the bridge that is not made for it, no cable pulling on the instrument; mounts made for it, with the player’s approval.', prov: { kind: 'sourced', src: 'LESSON-QUARTET', quote: 'Do not use ordinary adhesive on varnish or let a cable pull on the instrument (L50)' }, tag: 'HANDS OFF', scene: 'all' },
       { id: 'band', label: 'loud amps, drums and loudspeakers', short: 'LOUD STAGE', note: 'On a band stage, move loud amplifiers, drums and loudspeaker coverage away from the strings where you can.', prov: { kind: 'sourced', src: 'LESSON-QUARTET', quote: 'Move loud amplifiers, drums and loudspeaker coverage away from the strings where feasible (L48)' }, tag: 'SPILL', scene: 'stage' },
       { id: 'wedges', label: 'the wedges', short: 'MONITORS', note: 'Place wedges by the real mic’s polar diagram, with the player in position — a null at a loud source does not guarantee silence.', prov: { kind: 'sourced', src: 'LESSON-QUARTET', quote: 'Place wedges using the actual microphone’s polar diagram (L49)' }, tag: 'FEEDBACK', scene: 'stage' },
       { id: 'room', label: 'the room’s decay', short: 'THE ROOM', note: 'Keep the room’s decay if it serves the music; move the group or the pair if reflections smear entrances.', prov: { kind: 'sourced', src: 'LESSON-QUARTET', quote: 'Preserve the room decay if it serves the music (L37)' }, tag: 'PART OF THE SOUND', scene: 'studio' },
@@ -537,7 +537,7 @@ export const E11_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E11_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A quartet has no single right setup: seat the players as they like, start with a pair in front of and above them, change height and distance one at a time, and add a support only for a line that needs it. Every group, room and stage is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical seatings, ideal patterns, straight paths and distances read from the drawing. Mounts only with the players’ approval and never on varnish; protect your hearing; never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A quartet has no single right setup: seat the players as they like, start with a pair in front of and above them, change height and distance one at a time, and add a support only for a line that needs it. Every group, room and stage is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical seatings, ideal patterns, straight paths and distances read from the drawing. Mounts only with the players’ approval and never on varnish; protect your hearing; avoid uncontrolled feedback.',
   copy: { words: ensembleWords('string quartet') },
   ensemble: {
     seatings: { quartet: 'quartet.arc', quartetVa: 'quartet.arcVa', sections: 'strings.american' },
@@ -557,7 +557,7 @@ export const E11_LESSON: EnsembleLesson = {
       { title: 'DECIDE WHAT IT IS FOR', text: 'The quartet blending in the room, or separate sources for reinforcement and production control — neither is best everywhere.' },
       { title: 'CLEARANCES', text: 'The bow’s sweep, the left hand, the chair, the cello’s endpin and the cable slack — checked with the players, before anything is final.' },
     ],
-    safety: 'Mounts only with the player’s approval: never on the bridge or the varnish, no cable pulling on the instrument, every bow sweep left clear. Stands stable and clear of the players’ movement; anything over the players is the venue’s rigging. Protect your hearing; never provoke feedback.',
+    safety: 'Mounts only with the player’s approval: none on the varnish, none on the bridge unless made for it, no cable pulling on the instrument, every bow sweep left clear. Stands stable and clear of the players’ movement; anything over the players is the venue’s rigging. Protect your hearing; avoid uncontrolled feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a quartet: a central pair in front of and above the group, with a view across all four — a trial to start from, not a published best place.',
       clearance: 'The stand in front of the quartet, clear of the bows’ sweep, the cello’s endpin and the players’ sightlines; its cable dressed flat and out of the way.',

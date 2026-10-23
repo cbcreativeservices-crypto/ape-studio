@@ -627,7 +627,7 @@ const copy: Partial<LessonCopy> = {
         { title: 'THE ENSEMBLE', text: 'The mains may already carry a vibraphone picture. Add a spot or a pair only for a clear musical need — each open mic adds spill.' },
       ],
       body: 'On stage, the monitors stay where the player needs them: turn the mic or choose its pattern so that a null faces a loud unwanted source — and remember that real nulls are often shallowest at low frequencies.',
-      warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. If the gain before feedback is not enough, improve the source and speaker layout or lower the stage level before boosting the channel. Never create feedback deliberately.',
+      warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. If the gain before feedback is not enough, improve the source and speaker layout or lower the stage level before boosting the channel. Avoid uncontrolled feedback.',
     },
   },
   twoMic: {

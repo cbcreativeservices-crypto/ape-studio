@@ -53,7 +53,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'With a mic under the China aimed up, turn its rejection toward the drummer’s floor monitor — and know when the overheads are enough.',
     credit: { scenarios: ['ch.ctx.1', 'ch.ctx.2', 'ch.ctx.studio', 'ch.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the drummer’s fill sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'Aimed up from under the China, a mic’s rear faces the floor. Real nulls are shallow, and no mic position alone prevents feedback.',
+    takeaway: 'Aimed up from under the China, a mic’s rear faces the floor. Real nulls are shallower than the picture, and no mic position alone prevents feedback.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -133,7 +133,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Turned over, the cup hangs lowest; upright, the valley is lowest. An under-mic starts below whichever is lowest, clear of its downward swing.',
     why: {
       'The lip, at the rim of the plate': 'Turned over, the cup hangs below the rim.',
-      'The felt under the wing nut': 'The felts sit at the centre; the cup hangs below them.',
+      'The felt under the wing nut': 'That felt sits inside the turned-over cup; the cup hangs below it.',
     },
   },
   hearingCheck(W),

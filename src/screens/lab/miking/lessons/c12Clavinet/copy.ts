@@ -51,7 +51,7 @@ export const CLAV_COPY: LessonCopy = {
     studioIdle: 'In the studio a clean direct track and a close mic on the amp are often kept side by side, each labelled.',
     before: [
       { title: 'DRAW THE PATH FIRST', text: 'Write down the chain before any mic: clavinet → pedals → amp → speaker → mic → console, and where a direct signal is taken (before or after the pedals). Note the clavinet’s pickup and filter switches, the pedal order and the amp settings — they are part of the sound.' },
-      { title: 'ELECTRICAL SAFETY', text: 'The clavinet’s passive pickup goes to a DI or an instrument (Hi-Z) input — never a mic input, never phantom power. Keep mains cables, extension leads and the amp’s ventilation clear; never open a powered amp or change the instrument’s wiring. Hum or an intermittent output is for a qualified technician.' },
+      { title: 'ELECTRICAL SAFETY', text: 'The clavinet’s passive pickup goes to a DI or an instrument (Hi-Z) input — never a mic input, never phantom power. Keep mains cables, extension leads and the amp’s ventilation clear; never open a powered amp or change the instrument’s wiring. A fault inside the instrument or the amp — hum from inside it, or an intermittent output — is for a qualified technician.' },
     ],
   },
   placement: {
@@ -65,12 +65,12 @@ export const CLAV_COPY: LessonCopy = {
       instDynCard: 'Ideas to try with an instrument dynamic: right at the grille on the dust-cap line, then one change at a time — across the cone, the angle, the distance.',
       sdcCard: 'Ideas to try with a small condenser: check its maximum level against the loudest playing first, and listen for the extra detail — or the extra harshness — it brings.',
     },
-    note: `Clearance comes first: the mic never touches the grille (it is drawn ${GRILLE_X} mm in front of the baffle), the stand cannot tip into the speaker, and nothing goes near a hot tube chassis.`,
+    note: `Clearance comes first: the stand holds the mic, never the grille (drawn ${GRILLE_X} mm in front of the baffle), the stand cannot tip into the speaker, and nothing goes near a hot tube chassis.`,
     availableLead: 'Starting points for this mic and amp',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on this amp, measured from the surface it names — the grille, or the open back. They are starting points, not rules: move from there and listen — there is no single right answer.',
       separate: 'Distance from the grille, position across the cone and angle are separate variables: change one at a time, and mark each position so you can return to it. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
-      clearance: 'Clearance comes first. The mic never touches the grille or a moving cone; the stand cannot fall into the speaker; nothing goes near a hot tube chassis; cables are taped where the player walks.',
+      clearance: 'Clearance comes first. The stand holds the mic: it never rests on the grille or touches a moving cone; the stand cannot fall into the speaker; nothing goes near a hot tube chassis; cables are taped where the player walks.',
       tendencies: 'Toward the centre of the speaker tends to bring more bite and edge; toward the edge, or turned off axis, a rounder sound; farther back, more cabinet and room. These are tendencies; amps, speakers and settings vary.',
     },
   },
@@ -111,7 +111,7 @@ export const CLAV_COPY: LessonCopy = {
         { title: 'MOUNTING', text: 'A low, stable stand or an approved cabinet clip that cannot fall into the speaker or touch a hot amp; cables secured so nobody trips and nothing strikes the grille.' },
       ],
       body: 'A pattern’s rejection is a tool to aim — lowering the offending monitor, fewer open mics and using the direct path often do more. If the amp is also the player’s monitor, manage the two sources so the mic does not keep catching the wedge.',
-      warn: 'No mic position alone prevents feedback: the pattern, the monitors, the other open mics, the system level and the room all matter. Never create feedback deliberately. Turn the level down before moving a mic, and do not simply keep raising the clavinet’s output.',
+      warn: 'No mic position alone prevents feedback: the pattern, the monitors, the other open mics, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level. Turn the level down before moving a mic, and do not simply keep raising the clavinet’s output.',
     },
   },
   twoMic: {

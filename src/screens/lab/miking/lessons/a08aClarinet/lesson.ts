@@ -531,7 +531,7 @@ const copy: Partial<LessonCopy> = {
         { title: 'IN A SECTION', text: 'With a main pair up, a clarinet mic is a spot: bring it up only for a stated balance, and check it in mono. A section spot can sit between two players, pointing down.' },
       ],
       body: 'With a wedge in front of the player, a pattern’s rejection is a tool to aim — tilting as well as turning. Some stage sound in a clarinet mic is normal; the question is how much the music can take.',
-      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {
@@ -582,7 +582,7 @@ export const A08A_LESSON: WindLesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A woodwind with a single cane reed on a mouthpiece, a long, nearly cylindrical wooden tube with about twenty tone holes and a flared bell. Its keys let the fingers open and close the holes; a register key lifts every fingering a twelfth.', src: 'Y-CL-MECH' },
+    { title: 'WHAT IT IS', text: 'A woodwind with a single cane reed on a mouthpiece, a long, nearly cylindrical tube (usually wood; many beginner models are plastic) with about two dozen tone holes and a flared bell. Its keys let the fingers open and close the holes; a register key lifts most fingerings a twelfth.', src: 'Y-CL-MECH' },
     { title: 'WHERE YOU MEET IT', text: 'Orchestras, wind bands, chamber groups, jazz and klezmer bands, studio sessions. This lesson covers one B♭ clarinet (the A clarinet is the same in every way that matters here): a studio solo, a loud stage and a spot in a section.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'It sings melodies and runs over a wide range — dark low notes, bright high ones, very soft entries. Ask what the music needs: a blended orchestral colour, an intimate solo, or a separated line over a band.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'About 63 cm without its mouthpiece, about 66 cm with it. Its lowest note sounds at about 147 Hz. This lab draws a clarinet about that size, held 35° out from the body — seated, or standing.', src: 'MET-CL' },

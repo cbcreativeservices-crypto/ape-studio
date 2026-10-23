@@ -383,7 +383,7 @@ export const NEUTRAL_COPY: LessonCopy = {
     studioId: '',
     studioPrompt: 'A studio session has no wedge to reject. The decision changes: what is the room worth?',
     studioNote: 'In the studio, repeated trials are practical when the performer stops.',
-    learn: { intro: 'These are scenario-based comparisons, not restrictions.', points: [], body: '', warn: 'No mic position alone prevents feedback. Never create feedback deliberately.' },
+    learn: { intro: 'These are scenario-based comparisons, not restrictions.', points: [], body: '', warn: 'No mic position alone prevents feedback. Avoid uncontrolled feedback.' },
   },
   twoMic: {
     A: { typeId: '', pattern: 'cardioid', zone: '' },

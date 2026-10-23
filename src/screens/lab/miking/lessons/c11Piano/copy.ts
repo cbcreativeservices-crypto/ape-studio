@@ -122,7 +122,7 @@ export const PIANO_COPY: LessonCopy = {
         { title: 'MOUNTING', text: 'Studio: stands and booms, careful comparisons. Live: secure mounts the owner approves (magnets on the frame, a boundary under the lid), cables clear of the pedals and the bench.' },
       ],
       body: 'A pattern’s rejection is a tool to aim; lowering the lid and moving the wedge change more than any pattern can. With a singer and a piano sharing a room, the vocal spill may decide where the piano mics go — that belongs to the ensembles lab.',
-      warn: 'No mic position alone prevents feedback: the pattern, the lid, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency. Turn the level down before moving a mic or the lid.',
+      warn: 'No mic position alone prevents feedback: the pattern, the lid, the other open mics, the monitors, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level. Turn the level down before moving a mic or the lid.',
     },
   },
   twoMic: {

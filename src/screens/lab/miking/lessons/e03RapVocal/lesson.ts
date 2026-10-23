@@ -425,7 +425,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the wedge in a sensitive direction, or the grille covered? Lower the level at once, uncover the grille, then use the mic’s actual null.',
     options: ['Lower the level, then put the wedge in the null', 'Turn the vocal up so it covers the ringing', 'Cup the grille so the sound stays inside it'],
     correct: 'Lower the level, then put the wedge in the null',
-    explain: 'Lower that send first, then aim the pattern’s rejection at the wedge and keep the grille open. Never provoke feedback on purpose.',
+    explain: 'Lower that send first, then aim the pattern’s rejection at the wedge and keep the grille open. Avoid uncontrolled feedback.',
     why: {
       'Turn the vocal up so it covers the ringing': 'More gain feeds the loop. Lower the level first.',
       'Cup the grille so the sound stays inside it': 'Cupping changes the pattern and usually makes feedback more likely.',

@@ -65,7 +65,7 @@ const pages: LessonPages = {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
     credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
-    takeaway: 'Check the noise, the range, the processing and the room’s state before the number — and never drive the source louder to force a result.',
+    takeaway: 'Check the noise, the range, the processing and the room’s state before the number — and raise the source only within safe, clean limits.',
   },
   practice: {
     title: 'Practice',
@@ -146,7 +146,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The room’s noise by band, and its state',
     explain: 'The noise floor sets how much range a decay has; the doors, curtains, people and air handling are part of what you measure.',
     why: {
-      'The PA’s loudest possible level in the room': 'Louder is not the aim: never drive the source louder to force a result.',
+      'The PA’s loudest possible level in the room': 'Louder is not the aim: you need enough range above the noise, at a safe level.',
       'The colour of the walls and of the floor': 'Materials matter; their colour does not.',
     },
   },
@@ -218,7 +218,7 @@ const scenarios: MikingScenario[] = [
     correct: 'It is where the listeners’ ears will be',
     explain: 'About 1.2 m (4 ft) is a seated listener’s ear — a sensible height for an audience seat. There is no universal height: the method you use sets it.',
     why: {
-      'It is the height that the method requires': 'No universal height exists: the method sets its own.',
+      'It is the height that the method requires': 'A method may name it, but it picks 1.2 m because that is where seated ears are.',
       'It keeps the stand from being seen': 'Sightlines matter in a show, but the height follows the listener.',
     },
   },
@@ -300,7 +300,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'T20 reads 1.2 s. What does that number mean?',
     options: ['An estimate of a 60 dB decay time', 'The time for the sound to fall by 20 dB', 'The time for the sound to fall by 25 dB'],
     correct: 'An estimate of a 60 dB decay time',
-    explain: 'T20 is fitted from −5 to −25 dB and extrapolated to 60 dB (×3): an estimate of a 60 dB decay, not 20 dB of seconds observed.',
+    explain: 'T20 is fitted from −5 to −25 dB and extrapolated to 60 dB (×3): an estimate of a 60 dB decay, not the time the sound took to fall 20 dB.',
     why: {
       'The time for the sound to fall by 20 dB': 'The 20 is the fitted range; the figure is extrapolated to 60 dB.',
       'The time for the sound to fall by 25 dB': 'The fit runs from −5 to −25 dB, but the figure is the 60 dB time.',
@@ -312,10 +312,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'The 125 Hz band has too little range for T30 or T20. What do you report?',
     options: ['That the band has too little range', 'The T30 anyway, marked as rough', 'A rerun with the source driven louder'],
     correct: 'That the band has too little range',
-    explain: 'If neither fit is supported, report insufficient range for that band — or measure at a quieter time. Never drive the source louder only to force a result.',
+    explain: 'If neither fit is supported, report insufficient range for that band. A rerun can add range: at a quieter time, with more averaging, or louder only within the source’s clean, safe limits.',
     why: {
       'The T30 anyway, marked as rough': 'A fit into the noise floor is not rough: it is unsupported.',
-      'A rerun with the source driven louder': 'Never drive the source louder only to force a result.',
+      'A rerun with the source driven louder': 'That is a new measurement, not a report — and louder only within the source’s clean, safe limits.',
     },
   },
   {
@@ -326,7 +326,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Clean input, no output limiter, room for the tail',
     explain: 'Watch the input for clipping and the output for limiting, at a safe, modest level, with enough range for the decay above the floor.',
     why: {
-      'The level as high as the PA will go without a fault': 'Never drive the source louder only to force a result: modest, safe levels.',
+      'The level as high as the PA will go without a fault': 'Not the PA’s maximum: a safe level that stays clean, with enough range above the noise.',
       'The input set low, so nothing could possibly clip': 'Too low buries the tail in the input’s own noise.',
     },
   },
@@ -487,7 +487,7 @@ const setupTasks: SetupTask[] = [
       R('same', 'The same positions and room state both times', 'required', 'Only the panels may change.'),
       R('bands', 'Band-by-band decays, invalid bands marked', 'required', 'The change is in the bands.'),
       R('repeat', 'Each run repeated to catch disturbances', 'optional', 'It shows a cough or a door.'),
-      R('louder', 'The source driven louder after, for a cleaner tail', 'wrong', 'Never drive the source louder to force a result.'),
+      R('louder', 'The source driven louder after, for a cleaner tail', 'wrong', 'Keep the source level the same both times: only the panels may change.'),
     ],
     explain: 'More than one set-up passes: the same seats and the same state make the comparison fair.',
   },
@@ -615,7 +615,7 @@ export const F13_LESSON: Lesson = {
     items: [
       { id: 'state', label: 'the room’s state', short: 'ROOM STATE', note: 'Doors, curtains, panels, furniture, people and the air handling: log them for every run; empty and occupied differ.', prov: { kind: 'sourced', src: 'F13-LESSON', quote: 'Record whether doors, curtains, movable panels, furniture, audience, HVAC … are in their intended operating states (L5)' }, tag: 'LOG IT', scene: 'all' },
       { id: 'people', label: 'people near the receiver', short: 'PEOPLE', note: 'A person near the mic or a moved chair changes the reflections: keep people and stands out of the direct path and monitor from a safe place.', prov: { kind: 'sourced', src: 'F13-LESSON', quote: 'a person near the mic or a moved chair changes reflection conditions (L24)' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'noise', label: 'the room’s noise', short: 'NOISE FLOOR', note: 'The floor every decay has to clear by 10 dB: log it band by band with the air handling as it will be.', prov: { kind: 'sourced', src: 'RA-T', quote: 'endpoint "at least 10dB above the noise floor"' }, tag: 'LOG IT', scene: 'all' },
+      { id: 'noise', label: 'the room’s noise', short: 'NOISE FLOOR', note: 'The bottom of each fit must sit at least 10 dB above it — about 35 dB of decay for T20, 45 dB for T30. Log it band by band with the air handling as it will be.', prov: { kind: 'sourced', src: 'RA-T', quote: 'endpoint "at least 10dB above the noise floor"' }, tag: 'LOG IT', scene: 'all' },
       { id: 'pa', label: 'the installed PA', short: 'THE PA', note: 'Through it you measure the system and the room; your mic never goes back into it. Flown systems are for qualified crew.', prov: { kind: 'sourced', src: 'F13-LESSON', quote: 'The measured IR includes system and room (L41); leave flown-system work to qualified personnel (L43)' }, tag: 'SYSTEM + ROOM', scene: 'stage' },
       { id: 'booth', label: 'a studio booth', short: 'BOOTH', note: 'Compare representative source and mic positions; repeat after moving panels or curtains, the geometry and the state logged.', prov: { kind: 'sourced', src: 'F13-LESSON', quote: 'Studio room or booth … repeat after moving panels or curtains (L33–L34)' }, tag: 'BEFORE / AFTER', scene: 'studio' },
     ],

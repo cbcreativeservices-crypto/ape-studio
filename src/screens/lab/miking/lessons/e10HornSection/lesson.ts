@@ -43,7 +43,7 @@ const pages: LessonPages = {
     title: 'Live sound and recording',
     goal: 'Turn a close mic so a floor monitor sits in its rejection — and decide what each mic feeds: the PA, the monitors, the recording.',
     credit: { scenarios: ['hs.ctx.1', 'hs.ctx.2', 'hs.ctx.studio', 'hs.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: turn the trumpet mic (or change its pattern) until the monitor sits in its rejection. STUDIO: answer the decision card. Then the checks.' },
-    takeaway: 'For the PA: close cardioids or supercardioids, wedges in the real rejection, only the level the players need. For a recording: the room and the section’s own balance. Never provoke feedback to find the limit.',
+    takeaway: 'For the PA: close cardioids or supercardioids, wedges in the real rejection, only the level the players need. For a recording: the room and the section’s own balance. Never push past what the players need to find the limit.',
   },
   twoMic: {
     title: 'Close mics and the pair',
@@ -371,7 +371,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is a mic aimed at a monitor, or too far for the gain needed? Lower that send at once; move the wedge into the pattern’s rejection, work closer, lower the stage level.',
     options: ['Lower the send; fix the wedge and distance', 'Push it until it rings, then back off a bit', 'Turn the mics toward the monitors instead'],
     correct: 'Lower the send; fix the wedge and distance',
-    explain: 'Bring levels up only to what the players need. At any ring, lower that send immediately and fix the geometry — never provoke feedback to find the limit.',
+    explain: 'Bring levels up only to what the players need. At any ring, lower that send immediately and fix the geometry — never push past what the players need to find the limit.',
     why: { 'Push it until it rings, then back off a bit': 'Never work by provoking feedback.', 'Turn the mics toward the monitors instead': 'That points their most sensitive side at the loop.' },
   },
   {
@@ -432,7 +432,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A close cardioid on each player, wedges in each mic’s rejection', ok: true, power: 'none', feedback: 'Gain before feedback and control; the wedges sit where the mics hear least.' },
       { id: 'b', label: 'Close mics for the PA, a section pair only for the stream', ok: true, power: 'phantom', feedback: 'Roles kept apart: the pair stays out of the PA and the wedges.' },
       { id: 'c', label: 'A spaced omni pair 3 m out, sent to the PA', ok: false, power: 'phantom', feedback: 'A distant pair in the PA hears the PA and the stage.' },
-      { id: 'd', label: 'Raise the wedges until they ring, then back off', ok: false, power: 'none', feedback: 'Never provoke feedback; bring them up to what the players need.' },
+      { id: 'd', label: 'Raise the wedges until they ring, then back off', ok: false, power: 'none', feedback: 'Not until they ring: bring them up to what the players need, with a margin.' },
       { id: 'e', label: 'Cables slack across the players’ feet, to save time', ok: false, power: 'none', feedback: 'Cable slack must not catch a hand, slide, chair or foot.' },
     ],
     reasons: [
@@ -604,7 +604,7 @@ export const E10_LESSON: EnsembleLesson = {
       { title: 'LET THE PLAYERS BALANCE', text: 'Stronger instruments a little farther from a section mic, weaker or darker ones closer, bells aimed consistently — before moving any mic.' },
       { title: 'CHOOSE MINIMAL OR EXPANDED', text: 'One section mic or pair favours blend; a close mic on each player gives control but acts as one multi-mic system.' },
     ],
-    safety: 'Stable stand bases; full slide and player clearance; cables secured from hands, chairs and feet. Keep your ears off the bells’ axes and use hearing protection when the exposure warrants it. Brass peaks close to a bell can exceed 140 dB SPL. Never lift a protective mains earth to cure hum; never provoke feedback.',
+    safety: 'Stable stand bases; full slide and player clearance; cables secured from hands, chairs and feet. Keep your ears off the bells’ axes and use hearing protection when the exposure warrants it. Brass peaks close to a bell can exceed 140 dB SPL. Never lift a protective mains earth to cure hum; avoid uncontrolled feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a horn section: one section pair in front of the players, a little above, before any close mic — a place to start and compare, not a rule.',
       clearance: 'The stand in front of the line, clear of the slides at full extension and of the players’ way in and out; its cable dressed flat and out of the walkways.',

@@ -117,7 +117,7 @@ export const E04_ZONES: DocumentedZone[] = [
   mainZone({
     id: 'du.shared',
     label: 'One mic, the duet on a semicircle in front',
-    band: 'One cardioid (or omni) at the singers’ mouth height, the two of them on a semicircle in front of it — each mouth the same distance away. The nearer singer would dominate, and sound bassier.',
+    band: 'One cardioid (or omni) at the singers’ mouth height, the two of them on a semicircle in front of it — each mouth the same distance away. If not, the nearer singer would dominate and, at a cardioid, sound bassier.',
     kind: 'sourced',
     src: 'AKG-C414',
     quote: 'select the cardioid or omni pattern and place the vocalists in a semicircle in front of the microphone (§4.6.2); "Keep mouths at comparable distances from the capsule" (the lesson L10)',

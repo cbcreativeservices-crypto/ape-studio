@@ -40,7 +40,7 @@ const pages: LessonPages = {
     title: 'Before any mic',
     goal: 'Choose the perspective, listen to the room, check a remote guest’s real mic and return, and keep loudspeakers out of open mics — before any mic goes up.',
     credit: { scenarios: ['b7.set.1', 'b7.set.2', 'b7.set.3', 'b7.set.4'], note: 'Answer the four checks.' },
-    takeaway: 'Decide close or moderate first; listen to the real room; give a remote guest headphones, their own chosen mic and a return without their own voice; never provoke feedback.',
+    takeaway: 'Decide close or moderate first; listen to the real room; give a remote guest headphones, their own chosen mic and a return without their own voice; avoid uncontrolled feedback.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -547,7 +547,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'How do you test a reader’s mic and the system before a session?',
     options: ['With the real voice at a working level', 'By blowing into the capsule to hear it work', 'Raising the level until it rings, then back'],
     correct: 'With the real voice at a working level',
-    explain: 'Never blow into a capsule and never provoke feedback: use the real voice at a working level.',
+    explain: 'Never blow into a capsule or test with feedback: use the real voice at a working level.',
     why: {
       'By blowing into the capsule to hear it work': 'It can harm the capsule and tells you nothing about the voice.',
       'Raising the level until it rings, then back': 'Provoking feedback risks ears and loudspeakers.',

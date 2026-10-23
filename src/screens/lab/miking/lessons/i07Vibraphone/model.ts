@@ -28,7 +28,7 @@ export const VIBE_FAM: MalletFamily = {
     damper: 'A felt-covered bar under the bars. Pedal up, it touches them and stops the notes; pedal down, it moves away and they ring on.',
     pedal: 'The damper pedal, at the player’s feet. The player’s foot and its travel are the player’s space — keep stand legs and cable loops away from it.',
     motor: 'A small motor under the low end turns the fan shafts at a speed the player sets. It needs mains power; its housing is never opened for a mic.',
-    fans: 'A fan in the top of every tube, on one shaft per row. Turning, they open and close the tubes — the pulsing vibrato.',
+    fans: 'A fan in the top of every tube, on one shaft per row. Turning, they open and close the tubes — the pulsing, mostly a change in level (tremolo).',
   },
 };
 

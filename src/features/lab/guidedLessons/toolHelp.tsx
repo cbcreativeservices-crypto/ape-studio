@@ -65,7 +65,7 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
     controls: [
       { key: 'banding', name: 'Band resolution', definition: 'How finely the spectrum is split: 1/1-octave is coarse and quick to read; 1/3-octave is finer, closer to how we hear tonal balance.' },
       { key: 'averaging', name: 'Averaging', definition: 'How much the bars are smoothed over time. More averaging steadies a jumpy display so you can read the trend; less reacts instantly.' },
-      { key: 'level', name: 'Level (readout)', definition: 'The overall broadband level right now. Tap the small C / A / Z stack to weight it: Z is flat (unweighted), A emphasises mid/high like the ear at quiet levels, C is near-flat with gentle roll-off. This tool is UNCALIBRATED, so the unit stays dBFS — dBFS(A)/dBFS(C) are relative, weighted digital levels, NOT dB SPL. Use them to compare tonal emphasis, not absolute loudness.' },
+      { key: 'level', name: 'Level (readout)', definition: 'The overall broadband level right now. Tap the small C / A / Z stack to weight it: Z is flat (unweighted), A turns the lows down hard (and the extreme highs a little) like the ear at quiet levels, C is near-flat with gentle roll-off. This tool is UNCALIBRATED, so the unit stays dBFS — dBFS(A)/dBFS(C) are relative, weighted digital levels, NOT dB SPL. Use them to compare tonal emphasis, not absolute loudness.' },
       { key: 'peak_hold', name: 'Peak hold (readout)', definition: 'The maximum instantaneous peak seen since the last reset, in dBFS — catches brief peaks your eye would miss. Turns red at ≥ 0 dBFS (the converter is clipping). Tap the cell to reset it. It is the WHOLE signal’s waveform peak, so it can read far above every bar: a clap, a knock or a bump on the mic is a spike lasting milliseconds whose energy is spread across dozens of bands and averaged over the analysis window — each band’s bar and peak cap stay low while the waveform itself touched full scale.' },
       { key: 'bands', name: 'Bands (readout)', definition: 'How many frequency bands the selected banding mode shows — it matches the BANDS key.' },
       { key: 'marks', name: 'What the display shows', definition: 'Each bar is one frequency band, low (left) → high (right); bar height is that band’s level. A thin cap floating above a bar is its peak-hold. Bars drawn GRAY are “not resolvable” — the FFT can’t reliably separate that low band at this window size, so the app dims them instead of faking a value. In 61-band mode the lowest bands are always shown: they are narrower than one FFT step, so neighbours share a reading — the rumble level is real, the exact pitch is coarse (HI-RES sharpens it).' },
@@ -140,7 +140,7 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       'A-weighting + SLOW is the standard for ambient/room-level checks.',
       'Field-calibrate once (steady pink noise against a reference) and the offset persists on the device.',
     ],
-    formula: 'SPL ≈ 20·log₁₀(p/p₀), p₀ = 20 µPa. Weighting applies the A/C curve; FAST/SLOW set the integration time (125 ms / 1 s).',
+    formula: 'SPL ≈ 20·log₁₀(p/p₀), p₀ = 20 µPa. Weighting applies the A/C curve; FAST/SLOW set the time constant (125 ms / 1 s).',
   },
 
   // ── Waveform (oscilloscope-style envelope) ────────────────────────────────
@@ -218,8 +218,8 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
     controls: [
       { key: 'rt60', name: 'RT60 (readout)', definition: 'The headline result: the time (seconds) for the sound to decay 60 dB. Short = a dry, treated room; long = a live, reflective space. It’s frequency-dependent, so it’s shown per band.' },
       { key: 'edt', name: 'EDT (readout)', definition: 'Early Decay Time — RT extrapolated from just the first 10 dB of decay. It tracks the room’s PERCEIVED liveness better than the full RT60, which is dominated by the late tail.' },
-      { key: 't20', name: 'T20 (readout)', definition: 'RT60 estimated by fitting the −5 to −25 dB portion of the decay (×3). Robust when the noise floor is close — you only need 20 clean dB.' },
-      { key: 't30', name: 'T30 (readout)', definition: 'RT60 estimated from the −5 to −35 dB portion (×2). More of the decay = more reliable, but it needs a quieter room / stronger source to see 30 clean dB.' },
+      { key: 't20', name: 'T20 (readout)', definition: 'RT60 estimated by fitting the −5 to −25 dB portion of the decay (×3). More robust when the noise floor is close — but the peak still needs to sit about 35 dB above the noise floor.' },
+      { key: 't30', name: 'T30 (readout)', definition: 'RT60 estimated from the −5 to −35 dB portion (×2). More of the decay = more reliable, but it needs a quieter room / stronger source: about 45 dB from the peak down to the noise floor.' },
       { key: 'r2', name: 'R² (readout)', definition: 'How straight the decay was — the fit quality (1.0 = perfectly straight line). Low R² means a noisy or non-exponential decay: treat the RT number with suspicion.' },
       { key: 'decay_range', name: 'Decay range (readout)', definition: 'How many clean dB of decay were captured above the noise floor. Too small and the fit can’t reach T20/T30 honestly — the tool tells you rather than guessing.' },
       { key: 'band', name: 'Octave band (readout)', definition: 'Which frequency band each row is for. Bass usually rings longer than treble, which is why RT60 is reported band-by-band, not as one number.' },
@@ -228,7 +228,7 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
     commonMistakes: [
       'Trusting an RT with low R² or tiny decay range — a noisy, short capture gives a number that isn’t real; re-capture with a sharper, louder source.',
       'Using one RT for the whole room — it changes with frequency; read the bands, don’t average them away.',
-      'Weak source into a noisy room — you need a clean ~30–40 dB of decay above the noise floor for a trustworthy T30.',
+      'Weak source into a noisy room — you need the peak about 45 dB above the noise floor for a trustworthy T30 (about 35 dB for T20).',
       'Confusing EDT with RT60 — EDT (first 10 dB) is about perceived liveness; RT60/T30 is the full decay.',
     ],
     proTips: [
@@ -283,7 +283,7 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       'Watch PEAK vs RMS while the oscilloscope runs — you can see crest factor in both panels at once.',
       'If FEEDBACK BEGINNING appears, the chip names the frequency — pull that region on your EQ before it blooms.',
     ],
-    formula: 'Bands: 1/3-octave energy sums (10·log₁₀ Σ power, dBFS). Overlay: FFT bins, exponentially averaged (αₑ). Note: n = round(12·log₂(f/440)) + 69; cents = 1200·log₂(f/f_note). Pink slope ≈ −3 dB/oct.',
+    formula: 'Bands: 1/3-octave energy sums (10·log₁₀ Σ power, dBFS). Overlay: FFT bins, exponentially averaged (αₑ). Note: n = round(12·log₂(f/440)) + 69; cents = 1200·log₂(f/f_note). Pink: ≈ −3 dB/oct on the FFT overlay, flat on the 1/3-octave bands.',
   },
 };
 

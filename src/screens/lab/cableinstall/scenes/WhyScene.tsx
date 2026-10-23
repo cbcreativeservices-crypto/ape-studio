@@ -24,7 +24,7 @@ const CONSEQUENCES: { id: string; title: string; body: string }[] = [
   { id: 'reliability', title: 'RELIABILITY', body: 'Poor strain relief, excessive stress and damaged connectors become the intermittent faults that eat entire days.' },
   { id: 'signal', title: 'SIGNAL INTEGRITY', body: 'Interference exposure, deformed twisted pairs, over-bent fiber and careless routing all degrade the thing the cable exists to carry.' },
   { id: 'service', title: 'SERVICEABILITY', body: 'Technicians must identify, trace, disconnect, replace and troubleshoot — dressing decides whether that takes minutes or a shift.' },
-  { id: 'mech', title: 'MECHANICAL PROTECTION', body: 'Abrasion, pinch points, crush and unsupported weight damage cable invisibly, from the inside out.' },
+  { id: 'mech', title: 'MECHANICAL PROTECTION', body: 'Abrasion, pinch points, crush and unsupported weight damage cable, often where you cannot see it — crush and over-tight ties harm the inside first.' },
   { id: 'work', title: 'PROFESSIONAL WORKMANSHIP', body: 'An installation should be organized, understandable and maintainable — by someone who has never seen it before.' },
 ];
 

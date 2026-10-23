@@ -122,7 +122,7 @@ export const KICK_COPY: LessonCopy = {
         { title: 'MOUNTING', text: 'Studio: repeated trials are practical when the performer stops. Live: stable, repeatable mounting and a protected cable route matter most during a show.' },
       ],
       body: 'On a real stage the monitors stay where the players need them: you turn the mic or choose its pattern so that a null faces a loud unwanted source. A drummer’s own fill usually sits in front of a kick mic aimed at the drum, where no pattern rejects; the drum itself shields an inside mic.',
-      warn: 'No kick-mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No kick-mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

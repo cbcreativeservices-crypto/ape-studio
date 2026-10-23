@@ -260,7 +260,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Smart Processors Lab",
     term: "De-esser",
     plainEnglish:
-      "Sibilance is the harsh 'S' sound in words like 'yes,' 'sister,' or 'sound,' and it sits around 4 to 8 kHz. A de-esser is a processor that spots this excessive sibilance and turns it down. Some work by compressing only at the sibilance frequencies, an approach called dynamic EQ. Others find the specific 'S' syllables and reduce just those. De-essers are key in vocal recording, where harsh esses can be distracting.",
+      "Sibilance is the harsh 'S' sound in words like 'yes,' 'sister,' or 'sound,' and it sits roughly around 4 to 10 kHz. A de-esser is a processor that spots this excessive sibilance and turns it down. A split-band de-esser turns down only the high band where the 'S' lives, much like a dynamic EQ. A wideband de-esser turns down the whole signal for a moment each time an 'S' comes through. De-essers are key in vocal recording, where harsh esses can be distracting.",
     glossaryId: "13de599c-2d67-45b9-8e64-d1a6ebb9219f",
   },
   DelayLab: {

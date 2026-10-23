@@ -102,7 +102,7 @@ export const F14_ZONES: DocumentedZone[] = [
   {
     id: 'ls.near',
     label: 'Close to the woofer’s cone',
-    band: 'Try the capsule a couple of centimetres in front of the woofer’s dust cap — never touching the cone, the grille or the port — and log the gap.',
+    band: 'Try the capsule about 1 cm or less in front of the woofer’s dust cap — closer for a small woofer, never touching the cone, the grille or the port — and log the gap.',
     kind: 'trial',
     src: 'F14-LESSON',
     quote: 'place the capsule close to the chosen radiator … avoid contact with the cone, grille, vent or electrical parts, and log the offset (F14 L18)',

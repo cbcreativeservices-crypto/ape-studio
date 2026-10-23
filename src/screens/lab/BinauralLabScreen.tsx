@@ -417,7 +417,7 @@ export function BinauralLabScreen() {
         spec={{
           question: 'A studio pan-pot and this binaural panner both "move" a sound. What does the pan-pot NOT do?',
           options: [
-            'Change the timing between the ears — it only changes level',
+            'Change the timing between the channels — it only changes level',
             'Change the level between speakers',
             'Work on headphones',
           ],

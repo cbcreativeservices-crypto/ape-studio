@@ -145,7 +145,7 @@ export function stringsCopy(o: StringsCopyOpts): LessonCopy {
         intro: 'These are scenario-based comparisons, not restrictions: a close directional mic can suit a studio take, and a farther mic can suit a quiet stage.',
         points: o.context.points,
         body: o.context.body,
-        warn: `No ${n.one}-mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. If it starts, lower the level first, then change the geometry. Never create feedback deliberately — not as an exercise, not to “find” a frequency.`,
+        warn: `No ${n.one}-mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. If it starts, lower the level first, then change the geometry. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.`,
       },
     },
     twoMic: {

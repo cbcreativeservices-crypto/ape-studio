@@ -445,7 +445,7 @@ export const SECTIONS: readonly StartSection[] = [
         paras: [
           'Every sound starts with something vibrating — moving back and forth, over and over. Here it is a speaker cone. It could just as well be a guitar string, a drum skin or your vocal cords.',
           'Each push of the cone squeezes the air in front of it together; each pull lets the air spread apart. That pattern of squeezes and stretches travels outward through the air. The air is the medium: the material the sound travels through.',
-          'The air does not blow across the room. Each tiny bit of air only moves a little way back and forth and passes the push on to its neighbour — like a wave passing along a crowd.',
+          'The air does not blow across the room. Each tiny bit of air only moves a little way back and forth and passes the push on to its neighbour — like a push passed down a line of people standing close together.',
           'When the wave reaches you, it pushes your eardrum back and forth, and your brain hears sound.',
           TONE_NOTE,
         ],

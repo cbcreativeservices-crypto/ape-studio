@@ -266,7 +266,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern metal masters typically land at −8 to −5 LUFS-I, with PLR as low as 6–8 dB (at −2 dBTP that means a master at about −8 LUFS-I or quieter); traditional and doom records sit more naturally around −10 to −8. Keep true peak at −1 dBTP, or −2 dBTP for masters louder than −14 LUFS to avoid codec clipping. Streaming normalizes to around −14 LUFS, so extreme loudness brings no playback advantage and costs punch."
+      "text": "Modern metal masters typically land at −8 to −5 LUFS-I; at −2 dBTP that leaves a PLR (peak minus loudness) of only about 3–6 dB. Traditional and doom records sit more naturally around −10 to −8. Keep true peak at −1 dBTP, or −2 dBTP for masters louder than −14 LUFS to avoid codec clipping. Streaming normalizes to around −14 LUFS, so extreme loudness brings no playback advantage and costs punch."
     }
   ],
   "liveStudio": {

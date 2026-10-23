@@ -335,7 +335,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is a mic, a preamp or a converter overloading at forte? Check the pad and the gain on the loudest passage before any EQ.',
     options: ['Check pads and gain at forte', 'Add EQ to soften the brass', 'Move the pair closer to the brass'],
     correct: 'Check pads and gain at forte',
-    explain: 'Distortion on peaks is overload: find the stage that clips — capsule, preamp, converter — and fix its gain or pad.',
+    explain: 'Distortion on peaks is overload: find the stage that clips — the mic’s own circuit, the preamp or the converter — and fix its gain or pad.',
     why: {
       'Add EQ to soften the brass': 'EQ cannot repair clipping.',
       'Move the pair closer to the brass': 'Closer makes the peaks louder at the pair.',

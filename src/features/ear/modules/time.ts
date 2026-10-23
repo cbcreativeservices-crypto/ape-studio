@@ -352,7 +352,7 @@ export const M9_REVERB: EarModule = {
         seeIt: {
           kind: 'wave',
           clips: [0],
-          caption: 'The tail’s slope IS the RT60 — the Wave lab’s reverb module measures exactly this.',
+          caption: 'The tail’s slope sets the RT60 — the Wave lab’s reverb module measures exactly this.',
         },
       };
     }

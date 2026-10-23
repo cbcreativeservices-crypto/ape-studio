@@ -584,7 +584,7 @@ const copy: Partial<LessonCopy> = {
         { title: 'THE PA', text: 'In a mono PA, a hard left/right recording pan does not translate to the room. Keep monitor sends only as high as the player needs.' },
       ],
       body: 'On stage, the monitors stay where the player needs them: aim the real pattern’s rejection at loud neighbours and speakers — cardioid and supercardioid patterns put their nulls in different places.',
-      warn: 'No mic position alone prevents feedback: solve it with mic, speaker and source geometry and the channel count before adding gain or aggressive EQ. Never create feedback deliberately.',
+      warn: 'No mic position alone prevents feedback: solve it with mic, speaker and source geometry and the channel count before adding gain or aggressive EQ. Avoid uncontrolled feedback.',
     },
   },
   twoMic: {

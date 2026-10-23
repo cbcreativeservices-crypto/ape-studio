@@ -474,10 +474,10 @@ const symptoms: Symptom[] = [
     firstChecks: 'Lower or omit unnecessary overhead gain, test pattern and position relative to monitors and other sources, and assess what the PA needs.',
     options: ['Overhead gain, the pattern and position against the monitors, and what the PA needs', 'Raise the overheads until the cymbals cut through the rest of the band', 'Point the overheads at the wedges briefly to hear what they pick up'],
     correct: 'Overhead gain, the pattern and position against the monitors, and what the PA needs',
-    explain: 'Lower or leave out overhead gain the PA does not need; check the pattern and position against the monitors. Never provoke feedback to find it.',
+    explain: 'Lower or leave out overhead gain the PA does not need; check the pattern and position against the monitors. Never push past the needed level to find it.',
     why: {
       'Raise the overheads until the cymbals cut through the rest of the band': 'More gain is exactly what brings feedback closer. Start from what the PA needs.',
-      'Point the overheads at the wedges briefly to hear what they pick up': 'That invites feedback. Never provoke it deliberately.',
+      'Point the overheads at the wedges briefly to hear what they pick up': 'That invites uncontrolled feedback.',
     },
   },
   {

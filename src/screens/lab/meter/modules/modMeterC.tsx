@@ -955,7 +955,7 @@ const CASES: DetectiveCase[] = [
       ],
       correctIdx: 1,
       reveal:
-        'Two-part fix: a narrow notch drops the loop gain below 1 at the ringing frequency (ringing out), and the GEOMETRY — mic behind the speakers, tighter pickup pattern, less distance gain — stops the loop from finding the next frequency.',
+        'Two-part fix: a narrow notch drops the loop gain below 1 at the ringing frequency (ringing out). Then fix the GEOMETRY — mic behind the speakers, a tighter pickup pattern, and the mic closer to the source so it needs less gain — so the loop cannot find the next frequency.',
       wrongHint: 'You must break the LOOP: attack the frequency, then the acoustics feeding it.',
     },
   },

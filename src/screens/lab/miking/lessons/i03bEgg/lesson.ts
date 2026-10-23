@@ -168,7 +168,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · A directional mic, very close to a moving egg. What can you expect?',
     options: ['Tone changes as the egg leaves its axis, and handling thumps', 'A steadier sound, since the egg now dominates the whole room', 'Nothing different from a mic placed farther back'],
     correct: 'Tone changes as the egg leaves its axis, and handling thumps',
-    explain: 'Directional mics change tone off axis, and very close they exaggerate low-frequency handling sound (proximity effect).',
+    explain: 'Directional mics change tone off axis. Very close, proximity effect lifts the lows, so thumps from the hand sound bigger.',
     why: {
       'A steadier sound, since the egg now dominates the whole room': 'Closer, each small movement is a big share of the distance: less steady.',
       'Nothing different from a mic placed farther back': 'Distance changes level steadiness, off-axis tone and handling noise.',
@@ -494,7 +494,7 @@ export const I03B_LESSON: SpLesson = {
     { title: 'WHAT IT IS', text: 'A small, handleless shell — often egg-shaped plastic — with grains inside. Shaken, the grains strike the shell: an idiophone, with no drumhead. Played singly, or one in each hand.', src: 'MEINL-ES4' },
     { title: 'WHERE YOU MEET IT', text: 'On studio overdubs, on stage at a percussion station, and in many players’ pockets — a quiet, detailed pulse that often sits under a groove.', src: 'DPA-JONAS' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Short wrist strokes, broader arm motion, interlocking patterns with two hands. Its forward and return strokes need not be equally accented — and eggs come in softer and louder versions for different settings.', src: 'LESSON-EGG' },
-    { title: 'ITS SIZE', text: 'Small enough to hide in a hand. This lab draws an egg about 6 cm long and 4.5 cm across — a drawing; no maker prints a size.', src: 'LESSON-EGG' },
+    { title: 'ITS SIZE', text: 'Small enough to hide in a hand. This lab draws an egg about 6 cm long and 4.5 cm across — a drawing; sizes vary by maker.', src: 'LESSON-EGG' },
   ],
   sound: {
     stages: [

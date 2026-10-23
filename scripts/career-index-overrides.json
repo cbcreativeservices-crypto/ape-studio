@@ -12,6 +12,7 @@
    4400,
    4370,
    4390,
+   4395,
    4360
   ],
   "Education, Research, Training & Technical Communication": [
@@ -23,10 +24,29 @@
   ],
   "Audio Business, Product, Sales & Operations": [
    4390,
+   4395,
    4360,
    4370,
    4400,
    4380
+  ],
+  "Audio Software, DSP, AI & Machine Learning": [
+   4420,
+   4410,
+   4430,
+   3050,
+   3410
+  ],
+  "Technical Standards, Regulation, Law & Rights": [
+   4490,
+   4510,
+   4540
+  ],
+  "Audio Networks, Cloud & Technical Infrastructure": [
+   4720,
+   3320,
+   3330,
+   4490
   ]
  },
  "regulated": [
@@ -52,7 +72,50 @@
   "Aural Rehabilitation Specialist",
   "Tinnitus Rehabilitation Specialist",
   "Hyperacusis Specialist",
-  "Clinical Vocal-Fold Imaging Specialist"
+  "Clinical Vocal-Fold Imaging Specialist",
+  "Hearing Rehabilitation Specialist",
+  "Environmental Noise Analyst",
+  "Transportation Noise Analyst",
+  "Highway Noise Specialist",
+  "Airport Noise Specialist",
+  "Airport Noise Compliance Officer",
+  "Nondestructive Testing Specialist — Ultrasonic",
+  "Ultrasonic Testing Technician",
+  "Acoustic Emission Testing Specialist",
+  "Audiology Technician",
+  "Audiometric Technician",
+  "Hearing-Device Verification Specialist",
+  "Occupational Hearing-Conservationist",
+  "Point-of-Care Ultrasound Specialist",
+  "Defense Audio Intelligence Analyst",
+  "Occupational Noise Compliance Officer",
+  "Environmental Noise Compliance Officer",
+  "Audio Patent Agent",
+  "Rigging Supervisor",
+  "Rigging Coordinator",
+  "Hoist Technician",
+  "Rigging Inspection Technician",
+  "Power Distribution Technician — Events",
+  "Generator Technician — Events",
+  "Electrical Safety Coordinator — Production",
+  "Production Safety Manager — Entertainment",
+  "Concert Band Director",
+  "Marching Band Director",
+  "Music Teacher",
+  "Instrumental Music Teacher",
+  "Vocal Music Teacher",
+  "Music Technology Teacher",
+  "Music Therapy Program Director",
+  "Music Therapy Internship Director",
+  "Hearing-Conservation Technician",
+  "Community Noise Officer",
+  "Environmental Noise Inspector",
+  "Noise Code Enforcement Officer",
+  "Anti-Submarine Warfare Acoustic Operator",
+  "Maritime Patrol Acoustic Operator",
+  "Naval Acoustics Engineer",
+  "Underwater Acoustics Engineer — Defense",
+  "Acoustic Sensor Engineer — Defense"
  ],
  "_pe_rule": "Every title ending in 'Engineer' or 'Consultant' inside the Architectural Acoustics family: offering engineering services to the public commonly needs a PE licence.",
  "professionalEngineerFamilies": [
@@ -100,11 +163,59 @@
   "Music Reference Librarian": "Master's in library/ information science (MLS/MLIS) typically required; often paired with a music degree",
   "Digital Music Librarian": "Master's in library/ information science (MLS/MLIS) typically required; often paired with a music degree",
   "DJ Equipment Sales Specialist": "Varies: portfolio/experience, certificate, associate, or bachelor's pathway",
-  "Museum Musical-Instrument Conservator": "Graduate degree commonly expected; professional portfolio may also matter"
+  "Museum Musical-Instrument Conservator": "Graduate degree commonly expected; professional portfolio may also matter",
+  "Audio Patent Agent": "Science or engineering degree (or enough science course credits), then the patent office registration exam (US: USPTO)",
+  "Patent Examiner — Audio Technology": "Bachelor's degree in engineering or science required; graduate study can raise starting pay",
+  "Sample-Library Recording Engineer": "Varies: portfolio/experience, certificate, associate, or bachelor's pathway",
+  "Acoustical Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Building Acoustics Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Room Acoustics Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Worship-Space Acoustics Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Education-Facility Acoustics Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Healthcare Acoustics Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Sound-Isolation Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Noise-Control Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Environmental Acoustics Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Occupational Noise Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Rail Noise and Vibration Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Wind-Turbine Noise Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Construction Noise and Vibration Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Vibration Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Electroacoustic Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Sound-System Acoustical Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Sound-Quality Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Principal Acoustical Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Acoustic Code and Standards Consultant": "Bachelor's degree common; portfolio/certification may supplement",
+  "Manufacturing Engineer — Audio Products": "Bachelor's degree common; portfolio/certification may supplement",
+  "Audio Quality Engineer": "Bachelor's degree common; portfolio/certification may supplement",
+  "Supplier Quality Engineer — Audio": "Bachelor's degree common; portfolio/certification may supplement",
+  "Failure-Analysis Engineer — Audio": "Bachelor's degree common; portfolio/certification may supplement",
+  "Audiovisual Conservator": "Graduate degree commonly expected; professional portfolio may also matter",
+  "Magnetic-Tape Conservator": "Graduate degree commonly expected; professional portfolio may also matter",
+  "Audio Technology Patent Attorney": "Science or engineering degree, law degree, bar admission, and the patent office registration exam (US: USPTO)",
+  "Military Band Musician": "Audition and enlistment; basic training and military music school for most posts",
+  "Band Director": "Bachelor's degree (often in music education) and a state teaching license for public-school posts; private and community groups vary",
+  "Orchestra Director": "Bachelor's degree (often in music education) and a state teaching license for public-school posts; private and community groups vary",
+  "School Choir Director": "Bachelor's degree (often in music education) and a state teaching license for public-school posts; private and community groups vary",
+  "Concert Band Director": "Bachelor's degree (often in music education) and a state teaching license for public-school posts; private and community groups vary",
+  "Marching Band Director": "Bachelor's degree (often in music education) and a state teaching license for public-school posts; private and community groups vary",
+  "Accent Modification Specialist — Clinical": "Graduate clinical training and jurisdictional licensure/credentialing commonly required",
+  "Auditory-Verbal Therapist": "Graduate clinical training and jurisdictional licensure/credentialing commonly required",
+  "Listening and Spoken Language Specialist": "Graduate clinical training and jurisdictional licensure/credentialing commonly required",
+  "Cochlear-Implant Rehabilitation Specialist": "Graduate clinical training and jurisdictional licensure/credentialing commonly required",
+  "Aural Rehabilitation Specialist": "Graduate clinical training and jurisdictional licensure/credentialing commonly required",
+  "Hearing Rehabilitation Specialist": "Graduate clinical training and jurisdictional licensure/credentialing commonly required",
+  "Tinnitus Rehabilitation Specialist": "Graduate clinical training and jurisdictional licensure/credentialing commonly required",
+  "Hyperacusis Specialist": "Graduate clinical training and jurisdictional licensure/credentialing commonly required",
+  "Clinical Vocal-Fold Imaging Specialist": "Graduate clinical training and jurisdictional licensure/credentialing commonly required",
+  "Artist Discovery Specialist": "Varies: portfolio/experience, certificate, associate, or bachelor's pathway",
+  "Sonar Systems Engineer": "Bachelor's degree common; portfolio/certification may supplement",
+  "Sonar Signal-Processing Engineer": "Bachelor's degree common; portfolio/certification may supplement"
  },
  "_craft_rule": "In these craft families a degree is neither common nor expected for the working roles; the workbook's 'Bachelor's degree common' is a spreadsheet default from title class. Rows whose preparation is that default are re-tabled: technician/operator/assistant/stagehand rows to hands-on training, everything else to the 'varies' pathway.",
  "craftFamilies": [
   "Live Sound, Touring & Festivals",
+  "Mixing & Mastering",
   "Theatre, Worship, Venues & Show Control",
   "Recording Studios & Music Production",
   "Manufacturing, Quality, Calibration & Repair",
@@ -175,17 +286,34 @@
   "Audio-dependent allied work",
   "Adjacent but audio-specific"
  ],
- "unregulated": [
-  "Concert Band Director",
-  "Marching Band Director"
- ],
+ "unregulated": [],
  "tier": {
   "Speech Editor": "Direct audio occupation",
   "Defense Audio Intelligence Analyst": "Direct audio occupation"
  },
  "workModel": {
   "Audio Event Detection Engineer": "Staff roles common; consulting/contract options vary",
-  "Live Sound Equipment Sales Specialist": "Staff roles common; consulting/contract options vary"
+  "Live Sound Equipment Sales Specialist": "Staff roles common; consulting/contract options vary",
+  "Patent Examiner — Audio Technology": "Staff roles at a government patent office",
+  "Mixing Engineer": "Often freelance/contract; staff roles also exist",
+  "Mix Engineer": "Often freelance/contract; staff roles also exist",
+  "Immersive Music Mixing Engineer": "Often freelance/contract; staff roles also exist",
+  "Electronic Music Mixing Engineer": "Often freelance/contract; staff roles also exist",
+  "Stem Mixing Engineer": "Often freelance/contract; staff roles also exist",
+  "Remote Mixing Engineer": "Often freelance/contract; staff roles also exist",
+  "Radio DJ": "Staff roles common; consulting/contract options vary",
+  "Military Band Musician": "Full-time uniformed military service",
+  "Sonar Operator": "Staff roles common; consulting/contract options vary",
+  "Sonar Systems Operator": "Staff roles common; consulting/contract options vary",
+  "Anti-Submarine Warfare Acoustic Operator": "Staff roles common; consulting/contract options vary",
+  "Maritime Patrol Acoustic Operator": "Staff roles common; consulting/contract options vary",
+  "Music Store Owner": "Self-employed business owner",
+  "Recording Studio Owner": "Self-employed business owner",
+  "Studio Owner": "Self-employed business owner",
+  "Audio Production Company Owner": "Self-employed business owner",
+  "Audio Company Founder": "Self-employed business owner",
+  "Audio Product Owner": "Staff roles common; consulting/contract options vary",
+  "Artist Discovery Specialist": "Staff, freelance, or project-based depending on sector"
  },
  "_removeTitles_about": "Titles dropped from the Career Finder entirely (owner content call 2026-09-11). Not real standalone occupations: task-not-a-job, technique-not-a-title, informal slang, or a constructed dupe already covered elsewhere. Build drops any career record whose title matches exactly.",
  "removeTitles": [
@@ -193,5 +321,24 @@
   "Virtual Soundcheck Engineer",
   "Earwig Technician",
   "Near-Field Mixer"
- ]
+ ],
+ "_status_about": "Per-title title status (fact audit 2026-10-22): hearing-aid dispensing is a state-licensed job, so these read as regulated titles.",
+ "status": {
+  "Hearing Instrument Specialist": "Regulated/credentialed title",
+  "Hearing-Aid Specialist": "Regulated/credentialed title",
+  "Hearing-Aid Fitting Specialist": "Regulated/credentialed title"
+ },
+ "_professionalEngineer_about": "Per-title PE flag for acousticians the family suffix rule misses (hand-set 2026-09-20 in careerIndex.json; moved here 2026-10-22 so a rebuild keeps it).",
+ "professionalEngineer": [
+  "Architectural Acoustician",
+  "Studio Acoustics Designer",
+  "Concert-Hall Acoustician",
+  "Theatre Acoustician"
+ ],
+ "_removeAlternates_about": "Drop a misleading 'also called' name (fact audit 2026-10-22): 'hearing specialist' is the everyday name for a hearing-aid specialist, a separate licensed role.",
+ "removeAlternates": {
+  "Audiologist": [
+   "hearing specialist"
+  ]
+ }
 }

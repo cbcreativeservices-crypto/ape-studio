@@ -162,7 +162,7 @@ function PageSystem({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>THE SECTIONS OF EVERY SYSTEM</Eyebrow>
-        <Body>Sound sources — microphones, DIs, playback and wireless → stage inputs — analog snake or digital stagebox → mixing console → signal processing → loudspeaker management processor → power amplifiers → passive and powered loudspeakers, subwoofers, stage monitors and in-ears → main, auxiliary, group, matrix and zone outputs — all of it standing on electrical power and grounding that were designed for it.</Body>
+        <Body>Sound sources — microphones, DIs, playback and wireless → stage inputs — analog snake or digital stagebox → mixing console, with its main, auxiliary, group, matrix and zone outputs → signal processing → loudspeaker management processor → power amplifiers → passive and powered loudspeakers, subwoofers, stage monitors and in-ears — all of it standing on electrical power and grounding that were designed for it.</Body>
       </Card>
     </SoundSystemsRackLayout>
   );

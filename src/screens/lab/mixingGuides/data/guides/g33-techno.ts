@@ -202,7 +202,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Dub (echo-heavy remix style) chord delay",
         "appliedTo": "Stabs, chords",
-        "setting": "Dotted 1/8 or 3/16, 40–70% feedback, band-pass 300 Hz–3 kHz, fed into a short reverb",
+        "setting": "Dotted 1/8 (same as 3/16), 40–70% feedback, band-pass 300 Hz–3 kHz, fed into a short reverb",
         "amount": "Heavy, ridden live"
       },
       {
@@ -254,7 +254,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club masters typically land at −9 to −6 LUFS-I with a true peak of −1 dBTP (hard techno often runs −6 to −5). Vinyl cuts work best around −9 LUFS short-term max with strictly mono lows. Streaming normalizes to about −14 LUFS (some services about −16), so a master at −6 gets turned down and loses punch next to a −9 master with intact kick transients. Keep a PLR of about 7–10 dB, so the kick still hits after limiting (at −1 dBTP that means a master at about −8 LUFS-I or quieter)."
+      "text": "Club masters typically land at −9 to −6 LUFS-I with a true peak of −1 dBTP, or −2 dBTP for streaming (hard techno often runs −6 to −5). Vinyl cuts work best around −9 LUFS short-term max with strictly mono lows. Streaming normalizes to about −14 LUFS (some services about −16), so a master at −6 gets turned down and loses punch next to a −9 master with intact kick transients. Keep a PLR of about 7–10 dB, so the kick still hits after limiting (at −1 dBTP that means a master at about −8 LUFS-I or quieter)."
     }
   ],
   "liveStudio": {
@@ -292,7 +292,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "98–103 dBA LAeq, legal caps such as 99 dBA LAeq-30",
-        "studio": "−9 to −6 LUFS-I, −1 dBTP; vinyl and streaming versions may differ"
+        "studio": "−9 to −6 LUFS-I, −1 dBTP (−2 for streaming); vinyl and streaming versions may differ"
       }
     ],
     "notes": []

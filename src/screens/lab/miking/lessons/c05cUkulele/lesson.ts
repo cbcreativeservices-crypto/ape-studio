@@ -301,7 +301,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Instrument dynamic 20–40 cm from the neck joint, a little off the hole’s axis', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
       { id: 'b', label: 'Instrument dynamic about 20 cm toward the sound hole, compared with the joint', ok: true, power: 'none', feedback: 'A suggested starting point; it needs no phantom. Listen for one booming note.' },
       { id: 'c', label: 'Small omni condenser a little back, for the room', ok: false, power: 'phantom', feedback: 'A fair idea in a good room — but this input has no phantom power.' },
-      { id: 'd', label: 'Clip-on mini between the hole and the joint', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },
+      { id: 'd', label: 'Clip-on mini between the hole and the joint', ok: false, power: 'phantom', feedback: 'This miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic resting against the top for isolation', ok: false, power: 'none', feedback: 'Never press a mic against the instrument: it rattles, damps it and can mark it.' },
     ],
     reasons: [DOC_REASON, clearReason('the fingers, the fretting hand and the player’s view'), POWER_REASON, { id: 'r.noise', label: 'I will check finger squeaks and fret noise at this distance', role: 'optional', feedback: 'A fair reason for a fingerpicked piece.' }, brandReason(UKE), LOUD_REASON],

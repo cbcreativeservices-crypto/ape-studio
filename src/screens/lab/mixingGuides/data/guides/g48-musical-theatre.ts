@@ -43,7 +43,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Rock and pop scores:",
-      "text": "onstage or isolated bands with drum shields and in-ears (Rock of Ages, Hamilton, Six).",
+      "text": "onstage or isolated bands with drum shields and in-ears (Rock of Ages, Six).",
       "bullet": true
     },
     {

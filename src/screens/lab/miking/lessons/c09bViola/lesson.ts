@@ -234,7 +234,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The holder grips two strings behind the bridge, its capsule over or under them. Never clamp across the bowing length, and never onto the bridge.',
     why: {
       'Across the strings under the fingerboard, right where the bow plays them': 'That is the bowing length: the bow would hit it.',
-      'On the bridge itself, gripping its top': 'Nothing clamps the bridge: it can damp it and risk the instrument.',
+      'On the bridge itself, gripping its top': 'No mic clamps the bridge: it can damp it and risk the instrument.',
     },
   },
   {
@@ -373,7 +373,7 @@ const symptoms: Symptom[] = [
     correct: 'Placement and the high-pass filter, before any bass boost',
     explain: 'A filter set too high or a position far from the body can thin the C. Set the filter only after confirming it does not remove useful viola body.',
     why: {
-      'Boost the low end on the channel until the C is full': 'EQ cannot restore what a filter removed. Check the filter and the position first.',
+      'Boost the low end on the channel until the C is full': 'EQ cannot fully restore what a filter removed. Check the filter and the position first.',
       'Swap to the largest mic you have, for its bigger diaphragm and bass': 'Diaphragm size does not decide the lows. Placement and the filter do.',
     },
   },
@@ -433,7 +433,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Compact cardioid 20–30 cm from the bridge, aimed at the bridge and top', ok: true, power: 'phantom', feedback: 'A suggested starting point: closer and aimed, for definition — listen for bow noise and the C string.' },
       { id: 'b', label: 'Compact cardioid aimed toward the body, a little farther back', ok: true, power: 'phantom', feedback: 'A suggested starting point that favours weight — useful if the arrangement is thin.' },
       { id: 'c', label: 'Small condenser 1.2 m away, to catch the room', ok: false, power: 'phantom', feedback: 'Far away adds room, not the definition and separation the brief asks for.' },
-      { id: 'd', label: 'A mic clamped to the bridge for the most definition', ok: false, power: 'phantom', feedback: 'Nothing clamps the bridge: it can damp it and risk the instrument.' },
+      { id: 'd', label: 'A mic clamped to the bridge for the most definition', ok: false, power: 'phantom', feedback: 'No mic clamps the bridge: it can damp it and risk the instrument.' },
       { id: 'e', label: 'A stand mic beside the bow hand, as close to the strings as possible', ok: false, power: 'phantom', feedback: 'That is the bow arm’s path: the mic would be struck.' },
     ],
     reasons: [docReason('the bridge'), clearReason('the bow’s full arc, the bow arm and the player’s head'), POWER_REASON, { id: 'r.prox', label: 'Close up, proximity effect can add useful body — I will check the C string', role: 'optional', feedback: 'A fair reason, checked by ear.' }, BRAND_REASON('viola'), LOUD_REASON],

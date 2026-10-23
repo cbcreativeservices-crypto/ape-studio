@@ -298,7 +298,7 @@ export const SCENE_ITEMS: SceneItem[] = [
     answer: 'fault',
     nudge: 'Powering up proves the line and neutral paths. What path did this plug lose?',
     explain:
-      'A plug missing its ground pin is not a working plug — the earth pin is the fault-current path that keeps a fault from energizing the equipment chassis. Disposition: remove from service immediately; the missing pin is never adapted around or ignored.',
+      'A plug missing its ground pin is not a working plug — the earth pin carries fault current away so the fuse blows or the breaker trips; without it, a fault can leave the metal chassis live. Disposition: remove from service immediately; the missing pin is never adapted around or ignored.',
   },
   {
     id: 'combo_no_latch',

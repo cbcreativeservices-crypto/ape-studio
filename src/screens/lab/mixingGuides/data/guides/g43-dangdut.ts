@@ -19,7 +19,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "Classic dangdut 120–140 BPM; koplo (fast East-Java style) feels faster (130–160 BPM) because the kendang (two-headed hand drum) packs in more strokes per bar; slow ballads 70–90 BPM",
     "ensemble": "Orkes (OM, “orchestra”): 7–12 players — kendang (two-headed hand drum), suling (bamboo flute), 1–2 keyboards, 2 electric guitars, bass, mandolin, drum kit or tambourine, plus 2–6 rotating singers; solo “organ tunggal” (one-keyboardist band) keyboardist + kendang + singer",
     "priority": "The kendang (two-headed hand drum): the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
-    "liveSpl": "96–102 dBA LAeq-15 for village stages and festivals; 115–125 dBC; East Java caps static systems at 120 dB (2025 rule)",
+    "liveSpl": "96–102 dBA LAeq-15 for village stages and festivals; 115–125 dBC; East Java caps static systems at 120 dBA (2025 rule)",
     "studioLoudness": "Masters commonly −10 to −7 LUFS-I (video uploads often louder); streaming services normalize to about −14"
   },
   "purpose": [
@@ -272,7 +272,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Village stages, kampung festivals and touring OM shows usually run 96–102 dBA LAeq-15 at FOH, peaks 110–115 dBA, around 115–125 dBC. East Java’s “sound horeg” speaker-truck events, often playing koplo (fast East-Java style) remixes, have measured 120–130 dB; in August 2025 the province capped stationary systems at 120 dB and moving units at 85 dB. A C-minus-A gap of 20 dB or more at 100 dBA signals excessive sub; dangdut needs controlled low-mids for the dhut, not EDM sub. Common hearing-safety guidance rates 100 dBA safe for about 15 minutes, and outdoor shows run 3–5 hours, so offer earplugs and protect your own hearing."
+      "text": "Village stages, kampung festivals and touring OM shows usually run 96–102 dBA LAeq-15 at FOH, peaks 110–115 dBA, around 115–125 dBC. East Java’s “sound horeg” speaker-truck events, often playing koplo (fast East-Java style) remixes, have measured 120–130 dB; in August 2025 the province capped stationary systems at 120 dBA and moving units at 85 dBA. A C-minus-A gap of 20 dB or more at 100 dBA signals excessive sub; dangdut needs controlled low-mids for the dhut, not EDM sub. Common hearing-safety guidance rates 100 dBA safe for about 15 minutes, and outdoor shows run 3–5 hours, so offer earplugs and protect your own hearing."
     },
     {
       "label": "Studio / streaming:",
@@ -313,8 +313,8 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "96–102 dBA LAeq-15, local caps (e.g., 120 dB East Java static systems)",
-        "studio": "−10 to −7 LUFS-I, −1 dBTP"
+        "live": "96–102 dBA LAeq-15, local caps (e.g., 120 dBA East Java static systems)",
+        "studio": "−10 to −7 LUFS-I, −2 dBTP"
       }
     ],
     "notes": []

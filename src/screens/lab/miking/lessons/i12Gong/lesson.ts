@@ -577,7 +577,7 @@ export const I12_LESSON: Lesson = {
   live: {
     wedges: [
       { id: 'wedge', label: 'a floor wedge downstage, facing back toward the player', short: 'WEDGE', p: { x: 1700, y: 0, z: -200 }, lift: 150, faces: { x: -1, y: 0, z: -0.1 }, note: 'In front of the gong, behind a mic that faces it — the case a pattern’s null can help with.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
-      { id: 'side', label: 'a side-fill monitor across the stage', short: 'SIDE FILL', p: { x: 300, y: 0, z: 1700 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Off to the side, roughly beside the mic’s front: no pattern’s null reaches it. Distance and level do the work.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
+      { id: 'side', label: 'a side-fill monitor across the stage', short: 'SIDE FILL', p: { x: 300, y: 0, z: 1700 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Off to the side, roughly beside the mic’s front: no cardioid’s or supercardioid’s null reaches it. Distance and level do the work.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
     ],
   },
   accuracyDetail:

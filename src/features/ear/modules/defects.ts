@@ -162,7 +162,7 @@ export const M5_DEFECTS: EarModule = {
   phones: 'any',
   playbackNote: 'Hum fundamentals are weak on phone speakers — the harmonics carry it.',
   // NEW COPY
-  listenFor: 'Steady or one-off? Tonal (hum, buzz, hiss) or impulsive (click, pop, dropout)? Then how rough — smooth hum versus edgy buzz.',
+  listenFor: 'Steady or one-off? Steady (hum, buzz, hiss) or impulsive (click, pop, dropout)? Then how rough — smooth hum versus edgy buzz.',
   levels: 4,
   levelNames: ['Six common defects, solo', 'All twelve, solo', 'Under a program bed', 'Buried in the program'],
   makeTrial: (level, seed) => {
@@ -188,7 +188,7 @@ export const M5_DEFECTS: EarModule = {
         ? {
             kind: 'spectrum',
             clips: [0],
-            caption: 'Tonal defects leave fingerprints — mains harmonics, tilted floors, harmonic spray.',
+            caption: 'Steady defects leave fingerprints — mains harmonics, tilted noise floors, harmonic spray.',
           }
         : {
             kind: 'wave',

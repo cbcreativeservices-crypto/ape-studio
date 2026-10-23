@@ -122,7 +122,7 @@ export const feedbackFirst = (id: string, noun: string): MikingScenario => ({
   prompt: `Feedback starts to ring on the ${noun} mic. What is the first move?`,
   options: ['Lower the level, then change the mic, monitor and open mics', `Boost the ${noun} channel so the note covers up the ringing tone`, 'Ask the player to play louder so the mic needs less gain'],
   correct: 'Lower the level, then change the mic, monitor and open mics',
-  explain: 'Feedback is a sound-system condition: reduce the level at once, then revise the geometry — the mic, the wedge, the open mics. Never provoke it on purpose.',
+  explain: 'Feedback is a sound-system condition: reduce the level at once, then revise the geometry — the mic, the wedge, the open mics. Avoid uncontrolled feedback.',
   why: {
     [`Boost the ${noun} channel so the note covers up the ringing tone`]: 'More gain feeds the loop. Lower the level first.',
     'Ask the player to play louder so the mic needs less gain': 'Feedback is the system’s to fix, not the player’s to cover.',
@@ -155,7 +155,7 @@ export const hollowSymptom = (id: string): Symptom => ({
   },
 });
 
-export const POWER_REASON: SetupReason = { id: 'r.power', label: 'The mic gets the power it needs — phantom for the condensers, the manual’s rule for a ribbon', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom power; a ribbon follows its own manual.' };
+export const POWER_REASON: SetupReason = { id: 'r.power', label: 'The mic gets the power it needs — phantom for the condensers, the manual’s rule for a ribbon', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom power; a ribbon follows its own manual.' };
 export const BRAND_REASON = (noun: string): SetupReason => ({ id: 'r.brand', label: `It is the brand most engineers reach for on a ${noun}`, role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' });
 export const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It is the loudest position, right on the bell’s axis', role: 'wrong', feedback: 'Loudness is not a passing reason — level comes from gain — and on axis is the brightest, hardest view, not the best one.' };
 export const docReason = (from: string): SetupReason => ({ id: 'r.doc', label: `It is a suggested starting point for this kind of mic, measured from ${from}`, role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' });

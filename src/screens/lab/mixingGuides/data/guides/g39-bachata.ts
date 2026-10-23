@@ -96,7 +96,7 @@ export const GUIDE: MixingGuide = {
         "source": "Bongó (small pair of hand drums)",
         "cut": "HPF 100–150 Hz; −2–3 dB at 300–500 Hz (boxy)",
         "boost": "+2–3 dB at 150–250 Hz (macho/hembra body: the small and large drums); +2 dB at 4–6 kHz (slap)",
-        "notes": "Bongos aren’t very bright, so don’t over-push the top"
+        "notes": "Bongos are already bright and high-pitched, so don’t over-push the top"
       },
       {
         "source": "Tumba (low conga) / floor tom (majao: chorus feel)",
@@ -303,7 +303,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "95–102 dBA LAeq-15, sub controlled",
-        "studio": "−10 to −8 LUFS-I (urban), −1 dBTP"
+        "studio": "−10 to −8 LUFS-I (urban), −2 dBTP"
       }
     ],
     "notes": []

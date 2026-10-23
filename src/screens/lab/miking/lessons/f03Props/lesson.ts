@@ -408,7 +408,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A small supercardioid close at the station, the wedge in its rejection', ok: true, power: 'phantom', feedback: 'A suggested starting point for live: compact, stable, aimed — check at show level.' },
       { id: 'b', label: 'A dynamic close at the station, the wedge behind it', ok: true, power: 'none', feedback: 'A fair live choice where spill is heavy — check the wedge against the real pattern.' },
       { id: 'c', label: 'A room mic far back to make the props sound natural', ok: false, power: 'phantom', feedback: 'Far back it returns the PA and takes away feedback margin.' },
-      { id: 'd', label: 'Push the gain until it rings, then back it off', ok: false, power: 'phantom', feedback: 'Never provoke feedback. Check with the operator, short of any ring.' },
+      { id: 'd', label: 'Push the gain until it rings, then back it off', ok: false, power: 'phantom', feedback: 'Not until it rings. Check with the operator, short of any ring.' },
       { id: 'e', label: 'A mic in the drawer’s travel, for the closest sound', ok: false, power: 'phantom', feedback: 'The drawer hits it. Stay outside the travel.' },
     ],
     reasons: [DOC_REASON('the prop’s sounding part'), CLEAR_REASON('the hand’s and the drawer’s travel'), { id: 'r.null', label: 'The pattern’s rejection faces the wedge', role: 'required', feedback: 'Say where the wedge sits against the pattern.' }, { id: 'r.op', label: 'The gain is checked with the operator at show level', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Feedback is never provoked — not even to find the edge.' }],

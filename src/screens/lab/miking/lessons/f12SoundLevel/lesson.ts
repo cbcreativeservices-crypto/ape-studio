@@ -36,7 +36,7 @@ const pages: LessonPages = {
     title: 'Before any meter',
     goal: 'Settle the question, the descriptor and the safety of every position before the tripod goes up.',
     credit: { scenarios: ['sl.set.1', 'sl.set.2', 'sl.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'The question, the receiver, the descriptor and the window first. Positions you may use and can reach safely; 3 m (10 ft) from power lines; inside at once when thunder is heard.',
+    takeaway: 'The question, the receiver, the descriptor and the window first. Positions you may use and can reach safely; at least 3 m (10 ft) from power lines, more for high-voltage ones; inside at once when thunder is heard.',
   },
   microphone: {
     title: 'The meter’s settings',
@@ -241,7 +241,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Moving the meter from the open lawn to the wall: what changes in what it receives?',
     options: ['The facade’s reflection joins the direct sound', 'The road’s traffic stops reaching the meter at all', 'The air unit falls silent at the wall'],
     correct: 'The facade’s reflection joins the direct sound',
-    explain: 'At the facade the reflection arrives almost with the direct sound: the most the wall can add. Name the position; never call it free field.',
+    explain: 'At the facade the wall’s reflection adds to the direct sound: about 3 dB at the usual 2 m position, up to about 6 dB with the mic flat on the wall. Name the position; never call it free field.',
     why: {
       'The road’s traffic stops reaching the meter at all': 'The wall faces the road: the traffic still arrives, now with its reflection.',
       'The air unit falls silent at the wall': 'The air unit runs as before; the meter is simply nearer it.',
@@ -573,7 +573,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['The car’s direct sound', 'Its reflection off the ground', 'Its reflection off the house'],
     correct: 'The car’s direct sound',
     explain: 'The straight path is the shortest; every reflection travels farther.',
-    why: { 'Its reflection off the ground': 'A reflection always travels farther than the straight path.', 'Its reflection off the house': 'A reflection always travels farther — and A is not reached by the facade’s here.' },
+    why: { 'Its reflection off the ground': 'A reflection always travels farther than the straight path.', 'Its reflection off the house': 'A reflection always travels farther — and here the facade’s reflection does not reach A.' },
   },
 ];
 

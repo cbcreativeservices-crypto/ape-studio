@@ -25,7 +25,7 @@ export const SPORTS_SAFETY: Readonly<Record<'approval' | 'play' | 'protective' |
   weather: { id: 'weather', title: 'WIND AND RAIN', text: 'A windscreen is not waterproofing, and a rain cover meant for between takes is not for recording. Check every component’s ratings; keep connectors protected and out of water and traffic.' },
   electrics: { id: 'electrics', title: 'WET-AREA ELECTRICS', text: 'Temporary power and connections near water, ice or rain are set up and approved by a qualified person — never improvised.' },
   hearing: { id: 'hearing', title: 'HEARING', text: 'Start the headphone level low and keep aware of what is around you — a dish or a shotgun can make a distant peak loud in the headphones.' },
-  feedback: { id: 'feedback', title: 'FEEDBACK', text: 'Keep effects mics out of the venue PA unless a feed is truly needed; never provoke feedback to test a system.' },
+  feedback: { id: 'feedback', title: 'FEEDBACK', text: 'Keep effects mics out of the venue PA unless a feed is truly needed; avoid uncontrolled feedback.' },
   withdraw: { id: 'withdraw', title: 'WITHDRAW', text: 'Name who can order a mic withdrawn. If it is struck or moved, mute it; inspect it only in authorized safe access.' },
 };
 

@@ -12,7 +12,7 @@ export const SPL_LEARN: ToolLearnContent = {
     {
       head: 'WHAT YOU ARE LOOKING AT',
       body:
-        'The big number is acoustic sound pressure level in dB SPL — how much the air is actually moving at the microphone, referenced to the quietest pressure a healthy ear can detect. Around it sit a Peak value, an RMS (average-energy) value, the current weighting (A, C, or Z), the response mode (Fast or Slow), and the calibration status. Every one of those settings changes what the number means, so the display always shows them together. A reading without its settings is not a measurement — it is just a number.',
+        'The big number is acoustic sound pressure level in dB SPL — how much the air pressure is changing at the microphone, measured against 20 micropascals, about the quietest 1 kHz tone a healthy young ear can hear. Around it sit a Peak value, an RMS (average-energy) value, the current weighting (A, C, or Z), the response mode (Fast or Slow), and the calibration status. Every one of those settings changes what the number means, so the display always shows them together. A reading without its settings is not a measurement — it is just a number.',
     },
     {
       head: 'DB SPL VS DBFS',

@@ -102,7 +102,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The mouthpiece end is closed by the lips, so every standing wave has its biggest pressure swing there; the open bell end is a pressure still point. That is why the lips can lock onto the tube’s resonances.',
     why: {
       'At the bell, where the tube opens out widest': 'The open bell is where the pressure stands still. The pressure swings most at the closed, lip end.',
-      'Halfway round the coil, at the middle of the tube': 'The middle can be a still point or a peak, depending on the shape. Only the lip end is a peak for every shape.',
+      'Halfway round the coil, at the middle of the tube': 'The middle can be a still point or a peak, depending on the note. Only the lip end is a peak for every note.',
     },
   },
   {

@@ -18,7 +18,7 @@ const PERC_CARDS = (
     <Card>
       <Point title="ONE MAIN MIC">Mono documentation, or a compact group that already balances: every essential instrument must stay audible.</Point>
       <Point title="A COMPACT DYNAMIC OVER THE DRUMS">One mic between two hand drums, just above the heads, aimed down: both drums on one channel, every stroke, a robust choice for a loud stage.</Point>
-      <Point title="SMALL CONDENSERS OVER THE BARS">One a few centimetres over the bars favours the notes nearest it; a pair higher up, spaced or angled, evens the range.</Point>
+      <Point title="SMALL CONDENSERS OVER THE BARS">One about 10–15 cm over the bars favours the notes nearest it; a pair higher up, spaced or angled, evens the range.</Point>
       <Point title="AREA MICS">Shared by the stations a player moves between: check the coverage through every change and the overlap between areas.</Point>
     </Card>
     <Body>Check each device’s overload on the strongest accent: the mic, any adapter or transmitter, the preamp and the converter. Sensitivity is output, not rejection — the pattern, distance and aim decide the spill.</Body>

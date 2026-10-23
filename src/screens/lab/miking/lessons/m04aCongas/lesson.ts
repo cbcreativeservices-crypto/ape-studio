@@ -466,7 +466,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Monitor position, number of open channels, mic distance and pattern, PA and room.',
     options: ['Monitor position, open channels, mic distance and pattern', 'Turn the monitor up so the player hears more of the congas', 'Add another mic farther away to catch more of the drums'],
     correct: 'Monitor position, open channels, mic distance and pattern',
-    explain: 'Re-aim or move the monitor and mic with the system operator; close an unneeded channel. Never create feedback to test it.',
+    explain: 'Re-aim or move the monitor and mic with the system operator; close an unneeded channel. Avoid uncontrolled feedback.',
     why: {
       'Turn the monitor up so the player hears more of the congas': 'More monitor level means less margin before feedback.',
       'Add another mic farther away to catch more of the drums': 'Another open, distant mic raises feedback risk. Use the fewest open mics that work.',
@@ -734,7 +734,7 @@ export const M04A_LESSON: HandLesson = {
       items: [
         { id: 'open', label: 'OPEN TONE', short: 'OPEN', frac: 0.85, tool: 'fingers', text: 'Four fingers near the rim, bouncing off: a clear, ringing tone.' },
         { id: 'muted', label: 'MUTED TONE', short: 'MUTED', frac: 0.85, tool: 'fingers', text: 'Four fingers struck and held against the head: the tone is stopped short.' },
-        { id: 'bass', label: 'BASS STROKE', short: 'BASS', frac: 0.3, tool: 'palm', text: 'The full palm, slightly cupped, a little off centre: a low, round sound.' },
+        { id: 'bass', label: 'BASS STROKE', short: 'BASS', frac: 0.3, tool: 'palm', text: 'The full palm, flat, near the centre: a low, round sound.' },
       ],
       note: 'This simplified head shows WHERE the hand lands, not how it meets the head — its area and how long it stays — which is what separates an open tone from a muted one, or from a slap. Ask the player to show you every stroke.',
     },
@@ -796,7 +796,7 @@ export const M04A_LESSON: HandLesson = {
         { title: 'WHAT THE PART NEEDS', text: 'A quiet acoustic stage may only need a shared overhead-style position. A loud stage with wedges usually needs closer, independent control. Check the real audience coverage with the system operator.' },
         { title: 'MOUNTING', text: 'Studio: repeated trials are practical when the player stops. Live: stable stands or approved clips, cables secured away from feet, checked during the loudest passage.' },
       ],
-      closing: 'No mic position alone prevents feedback: the monitors and PA, channel gain, the room and the open mics all matter. A supercardioid’s rear lobe is not a cardioid’s rear null — place monitors by the actual pattern. Never create feedback deliberately.',
+      closing: 'No mic position alone prevents feedback: the monitors and PA, channel gain, the room and the open mics all matter. A supercardioid’s rear lobe is not a cardioid’s rear null — place monitors by the actual pattern. Avoid uncontrolled feedback.',
     },
     pairs: [
       {

@@ -19,7 +19,7 @@ export const GUIDE: MixingGuide = {
   "expects": "They expect the sound of real acoustic instruments in a real room: rich strings, woodwinds placed behind them, brass and timpani with weight but not glare.",
   "glance": {
     "origin": "Europe, from the Baroque (c. 1600–1750) through the Classical and Romantic eras to today; the modern symphony orchestra took shape in 18th–19th century Vienna, Germany, France and Italy",
-    "tempo": "No fixed BPM: free, conductor-led tempos from about 40 (adagio) to 180+ (presto), with constant rubato (flexible, push-pull tempo)",
+    "tempo": "No fixed BPM: free, conductor-led tempos from about 40 (largo) to 180+ (presto), with constant rubato (flexible, push-pull tempo)",
     "ensemble": "Chamber groups of 2–10; chamber orchestra 15–40; full symphony orchestra 60–100+, sometimes plus chorus and soloists",
     "priority": "A natural, believable picture of the ensemble in its hall: the conductor’s balance, true timbre and full dynamic range",
     "liveSpl": "Unamplified halls: about 65–80 dBA Leq in the audience, fortissimo (very loud) peaks near 95–100 dBA. Amplified outdoor concerts: usually 75–88 dBA Leq, kept close to acoustic level",
@@ -48,7 +48,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Percussion:",
-      "text": "timpani first; then bass drum, cymbals, snare, mallets and harp. Short transients with very high peaks.",
+      "text": "timpani first; then bass drum, cymbals, snare and mallets. Short transients with very high peaks. The harp (a plucked string) often sits nearby.",
       "bullet": true
     },
     {
@@ -257,7 +257,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "In an unamplified hall, the audience typically hears about 75–80 dBA Leq across a concert, with long stretches around 60–70 dBA and fortissimo (very loud) peaks of 95–100 dBA. Musicians on stage are 5–7 dB louder, around 84–92 dBA Leq, with peaks above 120 dBC near timpani, percussion and brass, so hearing protection is a real occupational issue for players. When an orchestra is amplified outdoors, match acoustic levels instead of exceeding them: about 75–88 dBA Leq at FOH, peaks under about 100 dBA, C-weighted readings roughly 10–15 dB above A-weighted. Subwoofers are often left out entirely; a well-designed system needs very little reinforcement below about 50 Hz. Large outdoor orchestral venues use delay-matrix and imaging rather than volume to make the orchestra feel present."
+      "text": "In an unamplified hall, the audience typically hears about 75–80 dBA Leq across a concert, with long stretches around 60–70 dBA and fortissimo (very loud) peaks of 95–100 dBA. Musicians on stage hear more, around 84–92 dBA Leq, with peaks above 120 dBC near timpani, percussion and brass, so hearing protection is a real occupational issue for players. When an orchestra is amplified outdoors, match acoustic levels instead of exceeding them: about 75–88 dBA Leq at FOH, peaks under about 100 dBA, C-weighted readings roughly 10–15 dB above A-weighted. Subwoofers are often left out entirely; a well-designed system needs very little reinforcement below about 50 Hz. Large outdoor orchestral venues use delay-matrix and imaging rather than volume to make the orchestra feel present."
     },
     {
       "label": "Studio / streaming:",

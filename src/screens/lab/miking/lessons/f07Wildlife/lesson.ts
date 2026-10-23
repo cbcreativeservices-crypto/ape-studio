@@ -275,9 +275,9 @@ const scenarios: MikingScenario[] = [
     id: 'wl.ctx.3',
     page: 'context',
     prompt: 'A survey compares two sites. What must stay the same?',
-    options: ['The mic, settings, place and method', 'Only the time of day of the two visits', 'Nothing, if both takes sound good'],
-    correct: 'The mic, settings, place and method',
-    explain: 'For a comparison, keep the mic and its settings, orientation, place, dates, schedule and weather notes the same, as the method asks.',
+    options: ['The mic, settings, placement and method', 'Only the time of day of the two visits', 'Nothing, if both takes sound good'],
+    correct: 'The mic, settings, placement and method',
+    explain: 'For a comparison, keep the mic and its settings, its height and orientation, the dates, the schedule and the weather notes the same, as the method asks.',
     why: {
       'Only the time of day of the two visits': 'Time matters — so do the mic, the settings and the method.',
       'Nothing, if both takes sound good': 'Sounding good is not a comparison: the method must match.',

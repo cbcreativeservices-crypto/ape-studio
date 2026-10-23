@@ -95,7 +95,7 @@ export const CAJ_MODEL: InstrumentModel = {
     name: 'cajón',
     body: false,
     states: [
-      state(STATES.rear, 'REAR PORT', 'A box cajón with its port on the back, snare wires inside the plate.', 'a rear-port cajón'),
+      state(STATES.rear, 'REAR PORT', 'A box cajón with its port on the back, snare wires inside the box, against the plate.', 'a rear-port cajón'),
       state(STATES.frontport, 'FRONT PORT', 'A front-port model: the port in front, facing up, below a set-back playing surface.', 'a front-port cajón'),
     ],
     views: {

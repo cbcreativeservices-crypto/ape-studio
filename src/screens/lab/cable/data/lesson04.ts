@@ -126,7 +126,7 @@ export const PLUG_COMPARISONS: PlugComparison[] = [
     question: 'Interchangeable?',
     answer: 'depends',
     why:
-      'These are all TRS cables — balanced and stereo use even ride the same two-conductors-plus-shield construction. The construction cannot tell you which job the cable is doing; the equipment on each end decides, so the ASSIGNMENT at both ends must match.',
+      'These are all TRS cables — balanced and stereo uses share the same two-conductors-plus-shield construction. The construction cannot tell you which job the cable is doing; the equipment on each end decides, so the ASSIGNMENT at both ends must match.',
     consequence:
       'A balanced source patched into an insert lands on a send/return pair instead of an input: the channel goes silent or routes wrongly. A stereo source into a balanced mono input is heard as left-minus-right, so center-panned content largely cancels: thin, hollow audio with vocals and bass nearly missing. Wrong connection, no damage.',
   },

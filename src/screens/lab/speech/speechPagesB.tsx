@@ -330,7 +330,7 @@ export function PageDistance({ ctx }: { ctx: PageCtx }) {
           ? 'Very close: the voice is loud and dry and the room disappears — but every plosive is a gust in the capsule, the bass lift is large, and moving an inch changes everything.'
           : inches === 6
             ? 'The working distance for most speech: strong direct sound, the room well below it, a modest warmth from proximity — and plosives starting to matter: on-axis at 6 inches a pop filter earns its place.'
-            : 'A hand-span away: natural and forgiving of movement, but the room is only about 14 dB down and the gain you add to compensate brings the noise up with it.'}</Body>
+            : 'About a foot away: natural and forgiving of movement, but the room is only about 14 dB down and the gain you add to compensate brings the noise up with it.'}</Body>
         <Body>Direct sound falls 6 dB per doubling of distance; the reverberant room does not fall at all. That ratio — direct to room — is what "close" and "far" actually sound like.</Body>
       </Card>
       <SpeechCheckCard id="distance-6in" />

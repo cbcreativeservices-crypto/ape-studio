@@ -348,7 +348,7 @@ const symptoms: Symptom[] = [
 
 const SPOTS_EVERY: SetupReason = { id: 'r.spots', label: 'A close mic on every singer gives the most control', role: 'wrong', feedback: 'Close mics everywhere lose the blend and pile up open mics; spots only for a named need.' };
 const R31: SetupReason = { id: 'r.31', label: 'The area mics at least three times their distance apart', role: 'required', feedback: 'Say how far apart the mics are: 3:1 keeps the comb shallow.' };
-const RMON: SetupReason = { id: 'r.mon', label: 'The choir mics kept out of the choir’s own monitor', role: 'required', feedback: 'Choir mics in the choir monitor are a sure path to feedback.' };
+const RMON: SetupReason = { id: 'r.mon', label: 'The choir mics kept out of the choir’s own monitor', role: 'required', feedback: 'Choir mics in the choir monitor are a quick path to feedback.' };
 
 const setupTasks: SetupTask[] = [
   {
@@ -374,7 +374,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Two supercardioid area mics, the monitor in their rejection', ok: true, power: 'phantom', feedback: 'Fair: tighter patterns for a loud stage, the monitor where they reject most.' },
       { id: 'c', label: 'Six area mics 1 m apart for even coverage', ok: false, power: 'phantom', feedback: 'Far under 3:1, and six open mics eat the margin before feedback.' },
       { id: 'd', label: 'The choir mics sent to the choir’s monitor', ok: false, power: 'phantom', feedback: 'A sure way to feedback: the monitor plays into the mics feeding it.' },
-      { id: 'e', label: 'Raise the PA until it rings, then back off a little', ok: false, power: 'phantom', feedback: 'Never provoke feedback; bring it up only to the agreed level.' },
+      { id: 'e', label: 'Raise the PA until it rings, then back off a little', ok: false, power: 'phantom', feedback: 'Not until it rings: up only to the agreed level — backing off a little leaves no margin.' },
     ],
     reasons: [FEWEST_REASON, SAFE_REASON, R31, RMON, NO_PROVOKE_REASON, GROUP_BRAND],
     explain: 'Two setups pass. What passes is the reasoning: the fewest mics, spaced 3:1, the monitor in their nulls and out of the choir mics, and no provoked feedback.',
@@ -495,7 +495,7 @@ export const E05_LESSON: EnsembleLesson = {
       { id: 'pa', label: 'the PA and the band', short: 'PA · BAND', note: 'Live, the choir mics hear the band and the PA too: the fewest open mics, tighter patterns, and a mute check of the natural level.', prov: { kind: 'sourced', src: 'S-CHOIR', quote: 'tighter patterns such as supercardioid or hypercardioid; use the minimum number of microphones' }, tag: 'SPILL', scene: 'stage' },
       { id: 'room', label: 'the room’s own sound', short: 'ROOM', note: 'Judge the pair’s distance on loudspeakers: headphones can misjudge the room’s width and tone.', prov: { kind: 'sourced', src: 'LESSON-CHOIR', quote: 'Headphones can misrepresent room width and tonal balance (L14)' }, tag: 'PART OF THE SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: a gain-before-feedback problem as much as a balance one. The fewest open choir mics, a few feet out and a little above, aimed at the singers; monitors low and in the mics’ rejection; never the choir mics in the choir monitor — and never provoke feedback.',
+    stage: 'LIVE: a gain-before-feedback problem as much as a balance one. The fewest open choir mics, a few feet out and a little above, aimed at the singers; monitors low and in the mics’ rejection; little or none of the choir mics in the choir monitor — and avoid uncontrolled feedback.',
     studio: 'A RECORDING: the simplest credible stereo setup first, moved in small steps and judged on loudspeakers; spots only where the pair cannot carry a section; check mono.',
   },
   diagnostic,
@@ -537,7 +537,7 @@ export const E05_LESSON: EnsembleLesson = {
       { title: 'THE REAL MUSIC', text: 'Rehearse the loudest and softest passages, unison and divided harmony, consonant-heavy words, sustained vowels and any soloists. Mark the layout.' },
       { title: 'THE FEWEST MICS', text: 'Decide what the mics are for — a recording, reinforcement or both — and use the fewest open mics that cover the choir.' },
     ],
-    safety: 'Stable stands with wide bases and protected cable paths, clear of the risers’ edges and the singers’ way on and off. Nothing hangs over the singers’ heads: anything hung is the venue’s, on approved rigging. Stop the choir before moving a mic. Protect your hearing; never provoke feedback.',
+    safety: 'Stable stands with wide bases and protected cable paths, clear of the risers’ edges and the singers’ way on and off. Nothing hangs over the singers’ heads: anything hung is the venue’s, on approved rigging. Stop the choir before moving a mic. Protect your hearing; avoid uncontrolled feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin a choir recording: one main pair, centred, a few feet in front and a little above the first row’s heads — a place to start and compare, not a rule.',
       clearance: 'The stand in front of the first row, clear of the singers’ feet and sightlines to the conductor; its cable dressed flat and away from the way on and off the risers.',

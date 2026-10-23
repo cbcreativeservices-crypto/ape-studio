@@ -52,7 +52,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'With a mic under the crash aimed up, turn its rejection toward the drummer’s floor monitor — and know when the overheads are enough.',
     credit: { scenarios: ['cr.ctx.1', 'cr.ctx.2', 'cr.ctx.studio', 'cr.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the drummer’s fill sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'Under a crash, aimed up, a mic’s rear faces the floor — one reason some engineers mic cymbals from below on loud stages. Real nulls are shallow, and no mic position alone prevents feedback.',
+    takeaway: 'Under a crash, aimed up, a mic’s rear faces the floor — one reason some engineers mic cymbals from below on loud stages. Real nulls are shallower than the picture, and no mic position alone prevents feedback.',
   },
   twoMic: {
     title: 'Two microphones',

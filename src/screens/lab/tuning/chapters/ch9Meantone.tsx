@@ -289,7 +289,7 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
 
       {part === 'C' ? (
         <>
-          <Prompt>Narrow the fifth until four fifths create a pure 5:4 major third.</Prompt>
+          <Prompt>Narrow the fifth until four fifths, brought down two octaves, make a pure 5:4 major third.</Prompt>
           <Body>Reference marks: pure 3/2 at {PURE_FIFTH.cents.toFixed(2)} ¢ · equal at {ET_FIFTH.cents.toFixed(0)} ¢ · quarter-comma at {MEANTONE_FIFTH.cents.toFixed(2)} ¢. The lane runs {MIN}–{MAX} ¢.</Body>
           <Card tone="math">
             <MathLine>fifth = {fifthCents.toFixed(2)} ¢ → g = 2^({fifthCents.toFixed(2)}/1200) = {slider.g.toFixed(6)}</MathLine>

@@ -692,7 +692,7 @@ function HandContext(spec: HandSpec) {
                 </Point>
               ))}
             </Card>
-            <Note tone="warn">No mic position alone prevents feedback: the monitors and PA, the gain, the room and the open mics all matter. Begin with the monitor sends down and raise them gradually. If ringing starts, lower the send at once — never create feedback on purpose.</Note>
+            <Note tone="warn">No mic position alone prevents feedback: the monitors and PA, the gain, the room and the open mics all matter. Begin with the monitor sends down and raise them gradually. If ringing starts, lower the send at once — avoid uncontrolled feedback.</Note>
           </>
         ),
       },

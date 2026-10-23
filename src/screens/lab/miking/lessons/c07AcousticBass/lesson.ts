@@ -52,7 +52,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why two paths on one bass can thin out the low end, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: [`${P}.two.1`, `${P}.two.2`, `${P}.two.3`, `${P}.two.4`], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two paths hear the bass at different times, so their sum combs — and the low end suffers first. Polarity flips the sign; it does not remove a delay. Judge the pair in mono at matched levels.',
+    takeaway: 'Two paths hear the bass at different times, so their sum combs — and the longer the delay, the lower the first notch reaches into the bass. Polarity flips the sign; it does not remove a delay. Judge the pair in mono at matched levels.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -301,7 +301,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Instrument dynamic 20–45 cm out from the neck joint, angled to the top and strings', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom. Check the lowest notes.' },
       { id: 'b', label: 'Instrument dynamic about 30 cm from the treble side of the upper bout', ok: true, power: 'none', feedback: 'A borrowed starting point worth trying; it needs no phantom.' },
       { id: 'c', label: 'Small condenser at the neck joint, cardioid', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
-      { id: 'd', label: 'Clip-on mini between the neck joint and the hole', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },
+      { id: 'd', label: 'Clip-on mini between the neck joint and the hole', ok: false, power: 'phantom', feedback: 'This miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic pressed against the top under the bridge', ok: false, power: 'none', feedback: 'Never press a mic on the instrument: it rattles, damps the top and can mark the finish.' },
     ],
     reasons: [DOC_REASON, clearReason('both hands, the long neck and the player’s view'), POWER_REASON, { id: 'r.room', label: 'I will move the mic or the player if one low note booms in this room', role: 'optional', feedback: 'A fair studio reason: rooms are uneven in the low end.' }, brandReason(BASS), LOUD_REASON],

@@ -906,12 +906,12 @@ export function RefractionModule(p: WaveModuleProps) {
             escaped overhead lands at ear level far away. Same source, same level — the atmosphere is
             the lens.
           </Text>
-          <Text style={dstyles.eyebrow}>WIND DOES NOT BLOW SOUND — GRADIENTS BEND IT</Text>
+          <Text style={dstyles.eyebrow}>WIND BARELY PUSHES SOUND — GRADIENTS BEND IT</Text>
           <Text style={dstyles.body}>
-            Wind moves at a few m/s; sound at ~343 m/s — the breeze cannot carry it anywhere. What
+            Wind moves at a few m/s; sound at ~343 m/s — the breeze does carry sound, but only nudges its speed. What
             matters is wind SHEAR: wind is faster aloft, so downwind the effective sound speed grows
             with height (bends rays down — louder) while upwind it shrinks with height (bends rays up
-            — quieter). The upwind/downwind asymmetry at every outdoor show is refraction, not
+            — quieter). The upwind/downwind asymmetry at every outdoor show is mostly refraction, not
             transport.
           </Text>
         </PanelCard>
@@ -1035,7 +1035,7 @@ export function DiffractionModule(p: WaveModuleProps) {
             Waves bend around anything comparable to or smaller than their own wavelength. Slide the
             frequency: at 80 Hz (λ ≈ 4.3 m) the detour over a 4 m wall is only a fraction of a
             wavelength, so the loss stays modest — about 9 dB here, and the rumble still arrives. At
-            8 kHz (λ ≈ 4 cm) the same detour is tens of wavelengths and the shadow gets deep — nearly
+            8 kHz (λ ≈ 4 cm) the same detour is more than a dozen wavelengths and the shadow gets deep — nearly
             three times the loss. One barrier, one
             geometry — the wavelength alone decides who gets through.
           </Text>
@@ -1452,7 +1452,7 @@ const STANDING_MISTAKES = [
 ];
 
 const STANDING_CHECK: CheckSpec = {
-  question: 'A kick drum mic ends up parked at a NODE of the room’s 80 Hz mode. The recording…',
+  question: 'A room mic for the kick drum ends up parked at a NODE of the room’s 80 Hz mode. The recording…',
   options: [
     'Booms at 80 Hz — nodes are the loud spots',
     'Nearly loses 80 Hz at that spot — the mode’s pressure minimum lives there',

@@ -56,7 +56,7 @@ export const STAGE3_SESSION: StageDef = {
           fieldId: "session_frame_rate",
           label: "Session frame rate",
           kind: "choice",
-          help: "Must match the picture. Drop-frame and non-drop are different answers, not two names for one.",
+          help: "Must match the picture. Drop-frame and non-drop run at the same 29.97 rate but count the timecode differently, so they are not two names for one choice.",
           onlyFor: ["podcast", "live"],
           options: [
             { value: "23_976", label: "23.976" },

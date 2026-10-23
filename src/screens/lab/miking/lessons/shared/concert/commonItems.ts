@@ -176,7 +176,7 @@ export function contactSymptom(w: Words): Symptom {
     explain: 'Clearance comes first: the player stops before anything moves, and the full passage — not a still pose — sets the clearance. A mic that cannot go in safely is left out.',
     why: {
       'Carry on carefully, and move the stand at the next break in the music': 'Clearance comes first: stop before anything moves, not at the next break.',
-      [`Ask the ${w.player} to play around the mic for this piece`]: 'The music sets the player’s motion. Move the mic, or leave it out — never ask the player to change their technique for it.',
+      [`Ask the ${w.player} to play around the mic for this piece`]: 'The music sets the player’s motion. Move the mic, or leave it out — the player should not have to change their technique for it.',
     },
   };
 }

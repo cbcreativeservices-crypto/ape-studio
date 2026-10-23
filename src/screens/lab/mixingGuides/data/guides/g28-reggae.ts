@@ -96,7 +96,7 @@ export const GUIDE: MixingGuide = {
         "source": "Bass (DI + amp)",
         "cut": "HPF 30–35 Hz; LPF 2.5–4 kHz; −2–3 dB at 250 Hz if woolly",
         "boost": "+2–4 dB at 60–100 Hz; small lift at 600–800 Hz",
-        "notes": "Round and dark; the upper-mid lift helps small speakers"
+        "notes": "Round and dark; the midrange lift helps small speakers"
       },
       {
         "source": "Skank (offbeat chord chop) guitar",
@@ -259,7 +259,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Roots and lovers rock masters land around −12 to −9 LUFS-I, true peak −1 dBTP (−2 if louder than −14). Streaming normalizes to −14 LUFS, so loud masters gain nothing. Keep limiting light (PLR 10–13 dB, about −12 to −14 LUFS-I at −2 dBTP) and distortion low so the bass stays round. Check on a sub, in a car and on a phone, where only the bass’s 600–800 Hz overtones carry the line."
+      "text": "Roots and lovers rock masters land around −12 to −9 LUFS-I, true peak −1 dBTP (−2 if louder than −14). Streaming normalizes to −14 LUFS, so loud masters gain nothing. Keep limiting light (PLR 10–13 dB, about −12 to −15 LUFS-I at −2 dBTP) and distortion low so the bass stays round. Check on a sub, in a car and on a phone, where only the bass’s 600–800 Hz overtones carry the line."
     }
   ],
   "liveStudio": {
@@ -297,7 +297,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "97–103 dBA, 118–128 dBC",
-        "studio": "−12 to −9 LUFS-I, −1 dBTP"
+        "studio": "−12 to −9 LUFS-I, −2 dBTP"
       }
     ],
     "notes": []

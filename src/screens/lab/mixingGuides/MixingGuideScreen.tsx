@@ -44,6 +44,7 @@ import {
   GUIDE_SECTIONS,
   STARTING_POINTS_LINE,
   TABLE_COLUMNS,
+  WHO_LIVE_LEVEL_NOTE,
   type GuideSectionKey,
   type GuideText,
   type MixingGuide,
@@ -167,6 +168,8 @@ export function MixingGuideScreen() {
                     <View key={r.key} style={[styles.glanceRow, i > 0 && styles.rowRule]}>
                       <Text style={styles.glanceLabel}>{r.label}</Text>
                       <Text style={styles.glanceValue}>{guide.glance[r.key]}</Text>
+                      {/* The shared WHO hearing note sits once, under the live level (owner ruling 2026-10-22). */}
+                      {r.key === 'liveSpl' ? <Text style={styles.glanceNote}>{WHO_LIVE_LEVEL_NOTE}</Text> : null}
                     </View>
                   ))}
                 </View>
@@ -324,6 +327,7 @@ const styles = StyleSheet.create({
   rowRule: { borderTopWidth: 1, borderTopColor: colors.hairlineDim },
   glanceLabel: { fontFamily: fonts.oswaldMedium, fontSize: 11.5, letterSpacing: 0.9, color: colors.textSub, textTransform: 'uppercase' },
   glanceValue: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
+  glanceNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub, marginTop: 4 },
   sectionsHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   allBtn: { minHeight: 44, justifyContent: 'center', paddingLeft: 12 },
   allText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1, color: colors.amber },

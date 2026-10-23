@@ -147,7 +147,7 @@ export function Mod3Bias() {
                     ? 'The operating point sits near cutoff: the negative half of the swing drives the device below zero current and simply vanishes. Idle current and heat are low — but the waveform is missing a piece.'
                     : single.region === 'saturation'
                       ? 'The operating point sits near full conduction: the positive half runs out of room and flattens. Idle current and heat are high even before any signal.'
-                      : 'The device idles in the middle of its range, so the whole swing fits. Idle current and heat are moderate — this is the trade Class A makes on purpose.'}
+                      : 'The device idles in the middle of its range, so the whole swing fits. It draws a steady idle current and runs hottest with no signal — this is the trade Class A makes on purpose.'}
                 </Body>
                 <Text style={styles.note}>No single bias value suits every amplifier — the right point depends on the device, the circuit, and the class of operation.</Text>
               </Card>

@@ -1130,7 +1130,7 @@ const gateConfig: FxLabConfig = {
       correctIdx: 0,
       reveal:
         'Chatter is the signal hovering at the threshold. HOLD keeps the gate open a minimum time; a longer release closes it gently instead of slamming on every wobble.',
-      wrongHint: 'Set RELEASE to 20 ms CHATTER on the decaying source and listen to the name.',
+      wrongHint: 'Set RELEASE to 20 ms on the decaying source and listen for the chatter.',
     },
   ],
 };

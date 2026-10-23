@@ -458,7 +458,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Monitor position, polar pattern, number of open mics, routing, gain.',
     options: ['Monitor position, pattern, open mics, routing and gain', 'Turn the wedge up so the player hears the djembe better', 'Add a second low mic for more bass in the PA'],
     correct: 'Monitor position, pattern, open mics, routing and gain',
-    explain: 'Work with the operator to change the geometry or omit the optional low mic. Never provoke feedback.',
+    explain: 'Work with the operator to change the geometry or omit the optional low mic. Avoid uncontrolled feedback.',
     why: {
       'Turn the wedge up so the player hears the djembe better': 'More monitor level means less margin before feedback.',
       'Add a second low mic for more bass in the PA': 'Each open mic adds risk; low-frequency gain especially.',
@@ -473,7 +473,7 @@ const symptoms: Symptom[] = [
     explain: 'Clearance comes first: stop before anything moves, and check again during full movement.',
     why: {
       'Keep going carefully, and fix the stand once the song is over': 'Clearance comes first: stop before any mic moves.',
-      'Ask the player to play around the mic': 'Never ask the player to sit or stand unnaturally for a mic. Move it.',
+      'Ask the player to play around the mic': 'The player should not have to sit or stand unnaturally for a mic. Move it.',
     },
   },
 ];
@@ -786,7 +786,7 @@ export const M05_LESSON: HandLesson = {
         { title: 'WHAT THE PART NEEDS', text: 'An exposed solo djembe might welcome room perspective; a live mono PA might need one reliable, focused feed.' },
         { title: 'MOUNTING', text: 'A freely played drum is not immobilised for a mic diagram. Ask whether a fixed stand stays aligned through the performance, and test the full movement.' },
       ],
-      closing: 'Feedback is a loop of microphone, loudspeaker, room and gain. Supercardioid and hypercardioid rear lobes differ from a cardioid’s; a bottom mic near a floor wedge hears the monitor too. Check at the intended level with the operator — never provoke feedback.',
+      closing: 'Feedback is a loop of microphone, loudspeaker, room and gain. Supercardioid and hypercardioid rear lobes differ from a cardioid’s; a bottom mic near a floor wedge hears the monitor too. Check at the intended level with the operator, and avoid uncontrolled feedback.',
     },
     pairs: [
       {

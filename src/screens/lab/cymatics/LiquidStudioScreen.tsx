@@ -148,7 +148,7 @@ const VIEWS: { id: LiquidViewMode; label: string; short: string; blurb: string }
   { id: 'surface', label: 'Liquid surface', short: 'Surf', blurb: 'The lit, glossy surface as a camera above the dish would see it.' },
   { id: 'height', label: 'Height map', short: 'Height', blurb: 'Surface displacement in the Academy ramp: dark = still, red = the highest crests and deepest troughs.' },
   { id: 'contours', label: 'Contours', short: 'Cont', blurb: 'Iso-height lines over the dimmed height map: amber = crests, blue = troughs.' },
-  { id: 'refraction', label: 'Refraction', short: 'Refr', blurb: 'The classic cymatics photograph: light through the liquid focuses into a bright web where the surface is concave.' },
+  { id: 'refraction', label: 'Refraction', short: 'Refr', blurb: 'The classic cymatics photograph: light through the liquid focuses into a bright web under the raised crests, which act like small lenses.' },
   { id: 'liquid3d', label: '3D surface', short: '3D', blurb: 'Exaggerated surface height, strobed to a few hertz so you can see it (the real surface moves at the response frequency).' },
   { id: 'section', label: 'Cross-section', short: 'Slice', blurb: 'A slice through the surface. Drag on the dish to move the slice.' },
 ];

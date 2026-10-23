@@ -25,7 +25,7 @@ const BASE = standingVoiceCopy({
     { title: 'LISTEN TO THE HOST AND THE ROOM FIRST', text: 'Before any mic: hear normal speech, emphatic speech, a laugh, a breath and a head turn at the real desk. Find the fans, the air conditioning, the traffic, bare walls, the desk’s reflection and chair or arm noise — and reduce them at the source where you can. A mic cannot remove sound that already reaches it.' },
     { title: 'WHICH END TO SPEAK INTO', text: 'Check the address side on the mic itself: an end-address mic is spoken into along its body, a side-address mic into its marked front. Do not judge it by its shape.' },
     { title: 'A SAFE, STEADY ARM', text: 'Secure the arm and its clamp within their load rating; mind the springs and the pinch points; route the cable with slack through the arm’s travel; keep stands and cables out of walking paths. Phantom power only on paths made for it.' },
-    { title: 'LIVE: NEVER PROVOKE FEEDBACK', text: 'Before a live show, trace every mic to the recorder, the stream, the headphones, the talkback and the PA. Bring each mic up only to its working level with the responsible operator; at any ring, pull that channel down at once and fix the geometry — never raise a level to find feedback.' },
+    { title: 'LIVE: NO UNCONTROLLED FEEDBACK', text: 'Before a live show, trace every mic to the recorder, the stream, the headphones, the talkback and the PA. Bring each mic up only to its working level with the responsible operator; at any ring, pull that channel down at once and fix the geometry — any ring-out is the system operator’s job.' },
   ],
   studio: {
     id: 'b1.ctx.studio',
@@ -34,7 +34,7 @@ const BASE = standingVoiceCopy({
   },
   contextPoints: [
     { title: 'PERSPECTIVE', text: 'Studio: a mic each, about 10–15 cm for a broadcast dynamic or 15–20 cm for a condenser, on separate channels. Live: closer, so the voice stays ahead of the PA and the room.' },
-    { title: 'SPILL AND FEEDBACK', text: 'Studio bleed and PA feedback are related routing problems, not the same thing. Live, every open mic hears the PA: fewest open mics, and the pattern’s rejection toward the loudspeaker.' },
+    { title: 'SPILL AND FEEDBACK', text: 'Studio bleed and PA feedback are related pickup problems, not the same thing. Live, every open mic hears the PA: fewest open mics, and the pattern’s rejection toward the loudspeaker.' },
     { title: 'MOVEMENT', text: 'Hosts read down, turn to a guest and lean back. A steady seated position matters more than the exact number — move the arm to the host, do not make the host crane to the mic.' },
     { title: 'THE LOUDEST LINE', text: 'Set gain on the loudest real speech, the laugh and the shout, with headroom at every stage. No single peak number is a placement rule.' },
   ],
@@ -90,7 +90,7 @@ export const B01_COPY: Partial<LessonCopy> = {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on a host, measured from the lips to the front of the mic. They are starting points, not rules — move from there and listen. Experimentation is encouraged: every voice, desk and room is different.',
       separate: 'Distance, height and the angle off the mouth’s axis are separate variables: change one at a time, with the host reading the real script each time. Distances are measured to the mic’s FRONT and rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m — no millimetre claim is made.',
       clearance: 'Clearance comes first: off the face, out of the sight line, clear of the hands and the papers.',
-      tendencies: 'Closer tends to sound fuller and drier, with more breath and pops from a directional mic (the proximity effect); farther, more room and more of the other host; off the mouth’s line, softer pops. These are tendencies, and voices vary.',
+      tendencies: 'Closer tends to sound drier, with more breath and pops, and fuller from a directional mic (the proximity effect); farther, more room and more of the other host; off the mouth’s line, softer pops. These are tendencies, and voices vary.',
     },
   },
   context: {
@@ -120,7 +120,7 @@ export const B01_COPY: Partial<LessonCopy> = {
     learn: {
       ...BASE.context!.learn,
       body: 'On a live show the PA is a loudspeaker every open mic hears. A pattern’s rejection is a tool to aim; a closer mic and fewer open mics do more.',
-      warn: 'No mic position alone prevents feedback: the pattern, the open mics, the PA’s place and level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback: the pattern, the open mics, the PA’s place and level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

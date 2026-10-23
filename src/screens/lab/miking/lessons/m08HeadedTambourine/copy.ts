@@ -164,7 +164,7 @@ export const TAMB_COPY: LessonCopy = {
         { title: 'PEAKS', text: 'Set gain from the loudest shake or accent AND the quietest roll, with a peak meter. A slow average meter hides the peaks that overload an input.' },
       ],
       body: 'On an amplified stage the monitors stay where the players need them: turn the mic or choose its pattern so that a null faces a loud unwanted source. A wider pattern covers movement but hears more of the stage.',
-      warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Work it out with the system operator, and never create feedback deliberately.',
+      warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Work it out with the system operator, and avoid uncontrolled feedback.',
     },
   },
   twoMic: {

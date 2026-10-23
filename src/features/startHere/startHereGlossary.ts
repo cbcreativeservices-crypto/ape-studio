@@ -38,7 +38,7 @@ export const STARTER_GLOSSARY: Record<string, StarterGlossaryEntry> = {
   'decibel (db)': {
     term: 'Decibel (dB)',
     definition: 'A logarithmic unit that expresses sound level, electrical signal amplitude, or frequency response magnitude. It is always measured relative to a defined reference value (such as a standard for SPL, voltage, or full scale).',
-    plain_english: 'The decibel compares a measured value to a fixed reference. It is a logarithmic scale, so each step is a multiply, not an add. That matches our hearing, which also works in multiplying steps. Adding about 10 dB sounds roughly twice as loud. All sound measures (dB SPL, dBu, dBFS) are decibels against different references.',
+    plain_english: 'The decibel compares a measured value to a fixed reference. It is a logarithmic scale, so each step is a multiply, not an add. That matches our hearing, which also works in multiplying steps. Adding about 10 dB sounds roughly twice as loud. Sound and signal levels (dB SPL, dBu, dBFS) are all decibels against different references.',
   },
   frequency: {
     term: 'Frequency',
@@ -73,7 +73,7 @@ export const STARTER_GLOSSARY: Record<string, StarterGlossaryEntry> = {
   'meter (metering)': {
     term: 'Meter (Metering)',
     definition: 'A device or on-screen indicator that displays the level of an audio signal (peak, RMS, average, or loudness) relative to a calibrated reference, so operators can monitor and control signal amplitude; common types include the VU meter, peak programme meter (PPM), and digital peak (dBFS) meter.',
-    plain_english: 'A meter shows how loud a signal is. You watch it to keep levels high enough to be clear but low enough to avoid distortion. It is like a speedometer for sound.',
+    plain_english: 'A meter shows the level of a signal. You watch it to keep levels high enough to be clear but low enough to avoid distortion. It is like a speedometer for your signal.',
   },
   'microphone (mic)': {
     term: 'Microphone (Mic)',

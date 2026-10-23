@@ -11,6 +11,21 @@ import { DB_PER_BIT, FULL_SCALE_SINE_DB, fmt, fmtCount, snapWhole } from '../cal
  *  1992). A properly dithered converter's ideal SNR is therefore 6.02·N − 3.01. */
 const TPDF_NOISE_DB = 10 * Math.log10(3);
 
+/** Audio bytes one standard Ethernet packet can carry: a 1500-byte MTU less
+ *  the IP (20), UDP (8) and RTP (12) headers. AES67 lists ~10 channels of
+ *  48 kHz / 24-bit at 1 ms as the most one packet holds (fact audit R2, F089179). */
+const MAX_AUDIO_PER_PACKET = 1460;
+/** Packets for one packet time: the audio is split into packets of at most
+ *  MAX_AUDIO_PER_PACKET bytes, each carrying ~78 B of header on the wire. */
+function netPackets(channels: number, sr: number, bitdepth: number, packetS: number) {
+  const spp = sr * packetS;
+  const audio = spp * channels * (bitdepth / 8);
+  const pkts = Math.max(1, Math.ceil(snapWhole(audio / MAX_AUDIO_PER_PACKET)));
+  const pps = pkts / packetS;
+  const wireBps = ((audio + pkts * 78) * 8) / packetS;
+  return { spp, audio, pkts, pps, wireBps };
+}
+
 /** A transition band must fit below Nyquist: the passband edge, the stopband
  *  edge and the band between all lie in 0 … fs/2. */
 const firTransitionTooWide = (sr: number, trans: number): string | null =>
@@ -115,7 +130,7 @@ const NETAUDIO: Workspace = {
   section: 'digital',
   reportPrefix: 'NET',
   intro:
-    'Audio-over-IP (Dante, AES67, AVB) turns channels into packets. The raw payload is simply ' +
+    'Network audio (Dante and AES67 over IP, or AVB straight on Ethernet) turns channels into packets. The raw payload is simply ' +
     'channels × sample rate × bit depth, but the wire also carries packet headers many times a ' +
     'second. This workspace gives both the raw rate and a realistic on-the-wire estimate.',
   whyItMatters:
@@ -124,7 +139,8 @@ const NETAUDIO: Workspace = {
     'Undersize the link and you get dropouts under load.',
   example:
     '64 channels at 48 kHz / 24-bit: raw = 64×48000×24 ≈ 73.7 Mbit/s. At a 1 ms packet time that is ' +
-    '48 samples/packet, ≈ 9.2 kB payload every ms, 1000 packets/s — plus ~78 bytes header each.',
+    '48 samples per channel, ≈ 9.2 kB of audio every ms. One standard Ethernet packet carries at most ~1460 B ' +
+    'of audio, so that takes at least 7 packets every ms (7000 packets/s), each with ~78 bytes of header.',
   mistakes: [
     'Sizing only the raw audio rate — at low latency, per-packet headers add a large, real overhead on top.',
     'Forgetting bandwidth is per DIRECTION — a full-duplex flow needs the rate both ways.',
@@ -171,34 +187,29 @@ const NETAUDIO: Workspace = {
       key: 'packetize',
       name: 'Packets & on-the-wire rate',
       inputs: ['channels', 'sr', 'bitdepth', 'packetms'],
-      formula: 'wire = pkts/s × (payload + ~78 B header)',
+      formula: 'packets = ⌈audio ÷ ~1460 B⌉; wire = (audio + packets × ~78 B) ÷ packet time',
       plainFormula:
-        'The on-the-wire rate equals the packets per second times the payload plus about 78 bytes of header per packet.',
+        'The audio for one packet time is split into packets of at most about 1460 bytes each. The on-the-wire rate equals that audio plus about 78 bytes of header for every packet, divided by the packet time.',
       explain:
-        'The wire carries packet headers many times a second on top of the audio. Smaller packet times mean lower latency but more packets — and more header overhead. This estimates the realistic on-the-wire rate, showing why very low latency costs bandwidth.',
+        'The wire carries packet headers many times a second on top of the audio. One standard Ethernet packet holds only about 1460 bytes of audio, so a large channel count needs several packets every packet time. Smaller packet times mean lower latency but more packets — and more header overhead. This estimates the realistic on-the-wire rate, showing why very low latency costs bandwidth.',
       keySymbols: ['×', '/'],
-      note: 'Header estimate 78 B/packet (Ethernet+IP+UDP+RTP + preamble + inter-frame gap).',
+      note: 'Header estimate 78 B/packet (Ethernet+IP+UDP+RTP + preamble + inter-frame gap). Up to ~1460 B of audio per packet (a 1500-byte packet less its IP, UDP and RTP headers). Real systems split channels into streams of their own size, so treat the packet count as a minimum.',
       compute: (v) => {
-        const spp = n(v.sr) * n(v.packetms);
-        const payload = spp * n(v.channels) * (n(v.bitdepth) / 8);
-        const pps = 1 / n(v.packetms);
-        const wireBps = pps * (payload + 78) * 8;
+        const p = netPackets(n(v.channels), n(v.sr), n(v.bitdepth), n(v.packetms));
         return [
-          { label: 'SAMPLES PER PACKET', value: spp, quantity: 'samples', chainable: false },
-          { label: 'PAYLOAD PER PACKET', value: payload, quantity: 'datasize', unit: 'kb', chainable: false },
-          { label: 'PACKETS PER SECOND', value: pps, quantity: 'number', chainable: false },
-          { label: 'ON-THE-WIRE RATE', value: wireBps, quantity: 'datarate', unit: 'mbps' },
+          { label: 'SAMPLES PER PACKET', value: p.spp, quantity: 'samples', chainable: false },
+          { label: 'AUDIO PER PACKET TIME', value: p.audio, quantity: 'datasize', unit: 'kb', chainable: false },
+          { label: 'PACKETS PER PACKET TIME', value: p.pkts, quantity: 'number', chainable: false },
+          { label: 'PACKETS PER SECOND', value: p.pps, quantity: 'number', chainable: false },
+          { label: 'ON-THE-WIRE RATE', value: p.wireBps, quantity: 'datarate', unit: 'mbps' },
         ];
       },
       steps: (v) => {
-        const spp = n(v.sr) * n(v.packetms);
-        const payload = spp * n(v.channels) * (n(v.bitdepth) / 8);
-        const pps = 1 / n(v.packetms);
-        const wireBps = pps * (payload + 78) * 8;
+        const p = netPackets(n(v.channels), n(v.sr), n(v.bitdepth), n(v.packetms));
         return [
-          `${fmt(n(v.packetms) * 1000)} ms/packet → ${fmt(spp)} samples/packet, ${fmt(pps)} packets/s.`,
-          `Payload = ${fmt(spp)} × ${fmtCount(n(v.channels))} ch × ${fmt(n(v.bitdepth) / 8)} B = ${fmt(payload)} B; + ~78 B header.`,
-          `Wire rate ≈ ${fmt(pps)} × ${fmt(payload + 78)} B × 8 = ${fmt(wireBps / 1e6)} Mbit/s.`,
+          `${fmt(n(v.packetms) * 1000)} ms per packet time → ${fmt(p.spp)} samples per channel; audio = ${fmt(p.spp)} × ${fmtCount(n(v.channels))} ch × ${fmt(n(v.bitdepth) / 8)} B = ${fmt(p.audio)} B.`,
+          `${fmt(p.audio)} B ÷ ~${MAX_AUDIO_PER_PACKET} B per packet → ${fmtCount(p.pkts)} packet${p.pkts === 1 ? '' : 's'} per packet time, ${fmt(p.pps)} packets/s.`,
+          `Wire rate ≈ (${fmt(p.audio)} B + ${fmtCount(p.pkts)} × 78 B) × 8 ÷ ${fmt(n(v.packetms) * 1000)} ms = ${fmt(p.wireBps / 1e6)} Mbit/s.`,
         ];
       },
     },
@@ -366,7 +377,7 @@ const FIRLEN: Workspace = {
     'Treating the estimate as exact — window and design method shift the real tap count; this is a sizing rule of thumb.',
   ],
   warnings:
-    'fred harris’s rule of thumb (harris, "On the use of windows…", Proc. IEEE 1978): N ≈ (fs/Δf)·(A/22), ' +
+    'fred harris’s rule of thumb (harris, Multirate Signal Processing for Communication Systems): N ≈ (fs/Δf)·(A/22), ' +
     'with Δf the transition width (Hz) and A the stopband attenuation (dB). The result is exactly what ' +
     'that rule gives; the rule itself is an ESTIMATE — an optimal (Parks–McClellan) design usually ' +
     'lands within about 10% of it, a windowed-sinc design needs more taps. Linear-phase latency = ' +
@@ -515,7 +526,7 @@ const CONVOLUTION: Workspace = {
       formula: 'latency = block ÷ sample rate',
       plainFormula: 'The latency equals the block size divided by the sample rate.',
       explain:
-        'Block-based processing adds delay: one block to fill going in, one coming out. This converts a processing or FFT-partition block size into its latency. Partitioned convolution keeps the first block small to cut this delay while staying efficient on the long tail.',
+        'Block-based processing adds delay: a whole block must fill before it can be processed. This converts a processing or FFT-partition block size into that latency. Partitioned convolution keeps the first block small to cut this delay while staying efficient on the long tail.',
       keySymbols: ['÷'],
       compute: (v) => {
         return [
@@ -526,7 +537,7 @@ const CONVOLUTION: Workspace = {
       steps: (v) => {
         return [
           `Block latency = ${fmtCount(n(v.block))} samples ÷ ${fmt(n(v.sr))} Hz = ${fmt((n(v.block) / n(v.sr)) * 1000)} ms.`,
-          `Uniform-block convolution adds one block in and one out; partitioned schemes keep the FIRST block small to cut this.`,
+          `Uniform-block convolution adds about one block of delay; partitioned schemes keep the FIRST block small to cut this.`,
         ];
       },
     },

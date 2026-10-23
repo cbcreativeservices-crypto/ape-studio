@@ -333,7 +333,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip the rear mic’s polarity. What happens to the arrival-time difference between the two mics?',
     options: ['Nothing — polarity flips the sign, not the timing', 'It drops to zero, so the two arrivals line up', 'It doubles, because the copy is now inverted'],
     correct: 'Nothing — polarity flips the sign, not the timing',
-    explain: 'Polarity inversion reverses the signal’s sign: the notches move, the delay does not. Only moving a mic changes when the sound arrives.',
+    explain: 'Polarity inversion reverses the signal’s sign: the notches move, the delay does not. Only moving a mic, or delaying its channel, changes when the sound arrives.',
     why: {
       'It drops to zero, so the two arrivals line up': 'The mics are still the same distance from the cone: the delay stays.',
       'It doubles, because the copy is now inverted': 'Polarity has no time in it. Only a mic’s position changes the delay.',

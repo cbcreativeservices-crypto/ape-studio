@@ -101,7 +101,7 @@ export function noProvoke(w: FoleyWords, page: SourcePageId, id = `${w.p}.ctx.ri
     prompt: `In a live booth, how do you find how much gain the ${w.what} mic can take?`,
     options: ['Raise it with the operator at show level, short of any ring', 'Push it until it rings, then back it off a little', 'Turn the PA off first, then set the gain as high as it will go'],
     correct: 'Raise it with the operator at show level, short of any ring',
-    explain: 'Check the gain with the system operator, the PA and the wedges at their intended levels, the performer walking the real cue — and stop well short of any ringing. Feedback is never provoked on purpose, not even as a demonstration.',
+    explain: 'Check the gain with the system operator, the PA and the wedges at their intended levels, the performer walking the real cue — and stop well short of any ringing. Uncontrolled feedback has no place here, not even as a demonstration.',
     why: {
       'Push it until it rings, then back it off a little': 'Provoking feedback risks hearing and loudspeakers. Stop short of any ring, and change the geometry instead.',
       'Turn the PA off first, then set the gain as high as it will go': 'The PA is what feeds back. The check has to be made with it on, at its show level.',

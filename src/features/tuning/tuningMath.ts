@@ -301,7 +301,7 @@ export function buildQuarterCommaMeantoneC(): TuningSystem {
     id: 'meantone',
     name: 'Quarter-comma meantone C-major example',
     shortName: 'Quarter-comma meantone',
-    description: 'Fifths narrowed by a quarter of the syntonic comma so that four of them make a pure 5:4 major third.',
+    description: 'Fifths narrowed by a quarter of the syntonic comma so that four of them, less two octaves, make a pure 5:4 major third.',
     rule: 'Use one tempered fifth g = ⁴√5 for every step, then fold into the octave.',
     root: 'C',
     notes: defs.map(([sp, v, exact, src], i) => ({ spelling: sp, degree: i + 1, value: displayFromIrrational(v, exact, src) })),

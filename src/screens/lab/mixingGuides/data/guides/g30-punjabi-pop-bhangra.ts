@@ -13,7 +13,7 @@ export const GUIDE: MixingGuide = {
   "title": "Punjabi Pop / Bhangra",
   "expects": "Listeners expect a chest-thumping dhol (big two-headed barrel drum), a ringing tumbi (one-string plucked lute) hook, and a singer whose Punjabi words and “hoi/balle balle” calls are clear and proud.",
   "glance": {
-    "origin": "Punjab (India/Pakistan) harvest and wedding folk; staged bhangra from the 1960s–70s; electrified by UK diaspora bands (Birmingham, Coventry, Bradford, Southall) in the 1980s; reshaped by Canadian (Brampton, Surrey) and Indian Punjabi pop/hip-hop since the 2010s",
+    "origin": "Punjab (India/Pakistan) harvest and wedding folk; staged bhangra from the 1950s; electrified by UK diaspora bands (Birmingham, Coventry, Bradford, Southall) in the 1980s; reshaped by Canadian (Brampton, Surrey) and Indian Punjabi pop/hip-hop since the 2010s",
     "tempo": "90–110 BPM for most modern Punjabi pop and trap-leaning tracks; classic bhangra/chaal grooves 150–180 BPM (often felt in half time); ballads 70–85",
     "ensemble": "Wedding/club: singer + dhol (big two-headed barrel drum) player + DJ or tracks. Touring pop: lead singer, 1–2 dhol, tumbi (one-string plucked lute)/guitar/keys, drummer, bass, 2–3 backing vocals plus timecoded playback (40–60 inputs)",
     "priority": "Dhol-driven groove locked to the low end (808 or bass), with the Punjabi lead vocal riding clearly on top",
@@ -302,7 +302,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "98–104 dBA LAeq-15, peaks above 108 dBA",
-        "studio": "−9 to −6 LUFS-I, −1 dBTP"
+        "studio": "−9 to −6 LUFS-I, −2 dBTP"
       }
     ],
     "notes": []

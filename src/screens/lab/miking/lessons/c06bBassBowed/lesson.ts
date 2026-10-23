@@ -177,7 +177,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A clip made for the bass grips the two outer strings below the bridge — on the tailpiece side, away from the bow — and carries the capsule with the instrument. Its view is more local.',
     why: {
       'Its clip stops it from hearing the rest of the orchestra and the hall around it': 'A clip is a mount, not a pattern: the mic still hears its neighbours.',
-      'It needs no phantom power, so a plain line input will do': 'A miniature condenser needs phantom power, through its adapter.',
+      'It needs no phantom power, so a plain line input will do': 'This miniature condenser needs phantom power, through its adapter.',
     },
   },
   {

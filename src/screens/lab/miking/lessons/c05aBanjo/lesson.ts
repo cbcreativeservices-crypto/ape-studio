@@ -90,7 +90,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Most of them move under the bridge, so most are driven',
     explain: 'A shape is driven only as much as the head moves under the driving point. Off centre, few shapes have a still line there — so many ring together: bright and quick.',
     why: {
-      'Only the lowest shape is driven; the rest stay still': 'That would be closer to a centre strike. Off centre, many shapes are driven.',
+      'Only the lowest shape is driven; the rest stay still': 'Not even a centre strike does that: it drives every shape without a still line through the middle. Off centre, many more are driven.',
       'None are driven, because the bridge is not at the centre': 'A drive anywhere off a still line sets a shape moving.',
     },
   },
@@ -302,7 +302,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Instrument dynamic 30–40 cm out, aimed at the neck junction', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom.' },
       { id: 'b', label: 'Instrument dynamic about 3 in from the head’s edge, compared with the junction', ok: true, power: 'none', feedback: 'A suggested starting point; it needs no phantom.' },
       { id: 'c', label: 'Small omni condenser near the neck junction, for the room', ok: false, power: 'phantom', feedback: 'A fair idea in a good room — but this input has no phantom power, and this condenser needs it.' },
-      { id: 'd', label: 'Clip-on mini by the tailpiece', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },
+      { id: 'd', label: 'Clip-on mini by the tailpiece', ok: false, power: 'phantom', feedback: 'This miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic behind the open back, assumed to give the deepest tone', ok: false, power: 'none', feedback: 'Behind, the player’s body obstructs it: audition a rear view, never assume it.' },
     ],
     reasons: [DOC_REASON, clearReason('the picking hand and forearm, the fretting hand and the neck'), POWER_REASON, { id: 'r.compare', label: 'I will compare the junction and the head with the same phrase', role: 'optional', feedback: 'A fair reason: change one thing at a time.' }, brandReason(BANJO), LOUD_REASON],

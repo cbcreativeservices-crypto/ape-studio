@@ -173,7 +173,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Mounted on the body, the capsule moves with the guitar, so a moving player does not change the distance. It still hears a small local view, and it still needs power.',
     why: {
       'It rejects the stage, so feedback stops mattering': 'A clip is a mount, not a pattern. Feedback still depends on levels, monitors and aim.',
-      'It needs no power, so the spare input will do': 'A miniature condenser needs phantom power through its adapter.',
+      'It needs no power, so the spare input will do': 'This miniature condenser needs phantom power through its adapter.',
     },
   },
   {
@@ -185,7 +185,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Dynamic mics need no power. The small condenser and the clip-on mini are condensers: they need phantom power, whatever their size or cable.',
     why: {
       'The small condenser, if its cable run is short': 'Cable length does not power a condenser. Only the dynamic works without phantom.',
-      'The clip-on mini, because it is so small': 'Size does not change what it needs: a miniature condenser needs phantom too.',
+      'The clip-on mini, because it is so small': 'Size does not change what it needs: this miniature condenser needs phantom too.',
     },
   },
   {
@@ -530,7 +530,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Instrument dynamic, 15–30 cm out from the 12th fret (here, the neck joint)', ok: true, power: 'none', feedback: 'A suggested starting point; a dynamic needs no phantom. Check that the soft notes sit above the noise.' },
       { id: 'b', label: 'Instrument dynamic, 15–30 cm out from the sound hole, listening for boom', ok: true, power: 'none', feedback: 'A suggested starting point; it needs no phantom. Compare it with the 12th fret.' },
       { id: 'c', label: 'Small condenser, cardioid, near the 12th fret', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
-      { id: 'd', label: 'Clip-on mini between the neck joint and the hole', ok: false, power: 'phantom', feedback: 'A miniature condenser needs phantom power, which this input does not have.' },
+      { id: 'd', label: 'Clip-on mini between the neck joint and the hole', ok: false, power: 'phantom', feedback: 'This miniature condenser needs phantom power, which this input does not have.' },
       { id: 'e', label: 'Instrument dynamic 2 cm over the strings at the 12th fret, for detail', ok: false, power: 'none', feedback: 'That is in the fretting hand’s path, and it magnifies finger noise. Start out in front.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.noise', label: 'I will check that the softest notes sit clear of the room and preamp noise', role: 'optional', feedback: 'A fair reason for a quiet nylon piece.' }, BRAND_REASON, { id: 'r.bright', label: 'A bright spot near the bridge will make it sound like a steel-string', role: 'wrong', feedback: 'Choosing a bright position just to imitate steel strings works against this guitar. Balance it as it is.' }],

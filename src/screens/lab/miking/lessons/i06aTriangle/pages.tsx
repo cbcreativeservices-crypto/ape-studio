@@ -95,7 +95,7 @@ const HAND: HandSpec = {
     learn: [
       { title: 'STUDIO', text: 'A quiet solo: one moderate-distance spot, compared with a wider view in a good room. Record the whole phrase, pauses included, to hear clip noises and the room during the ring. Set gain on the strongest stroke, then check the soft ones.' },
       { title: 'LIVE', text: 'A quiet stage: a shared percussion mic may be enough. A loud one: a closer directional spot outside the beater’s path, with its null toward the loudest wedge. A mounted triangle makes the spot repeatable — if the mount does not rattle or ring.' },
-      { title: 'THE WEDGE', text: 'Keep the triangle low in, or out of, the player’s monitor: its brief attack raises the feedback risk and can sound uncomfortably sharp there.' },
+      { title: 'THE WEDGE', text: 'Keep the triangle low in, or out of, the player’s monitor: a quiet triangle needs a lot of gain, which raises the feedback risk, and its brief attack can sound uncomfortably sharp there.' },
     ],
   },
   two: {

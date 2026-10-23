@@ -133,7 +133,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Do not put the mic into the slot or its grille where a mallet can reach — including a missed stroke.',
     why: {
       'In front of the block, a little off to the side, toward the opening': 'That is one of the two starting viewpoints.',
-      'Above the block, looking at the surface': 'Above and in front, outside the mallet, is the other.',
+      'Above the block, looking at the surface': 'That is the other starting viewpoint: above, aimed at the top, clear of the mallet.',
     },
   },
   {

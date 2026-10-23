@@ -223,7 +223,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Moving the boom nearer, to the frame’s edge',
     explain: 'Directional rejection cannot fully restore the voice-to-room balance lost to distance. Bring the boom as close as the frame allows.',
     why: {
-      'A longer tube, which reaches farther': 'The tube narrows the highs; it does not reach farther.',
+      'A longer tube, which reaches farther': 'The tube narrows its pickup in the highs; it does not reach farther.',
       'Aiming the tube more precisely at the mouth': 'Aim keeps it on the voice; it does not shorten the distance.',
     },
   },
@@ -438,7 +438,7 @@ const symptoms: Symptom[] = [
   },
   {
     id: 'b2.sym.hollowdesk',
-    observation: 'A raised desk mic sounds hollow',
+    observation: 'A low desk mic sounds hollow',
     firstChecks: 'How low is it over the hard desk? Are papers or a laptop between? Is the capsule raised toward the mouth?',
     options: ['Raise it toward the mouth, off the desk', 'Boost the treble to bring back the clarity', 'Lay a second mic flat on the desk beside it'],
     correct: 'Raise it toward the mouth, off the desk',
@@ -466,7 +466,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Lower the level at once. Is the guest now far from their mic? Too many open mics? Where is the PA against the pattern?',
     options: ['Lower it, then fix the distance and open mics', 'Turn the guest’s mic up so the voice stays over it', 'Swap the gooseneck for an omni nearer the PA'],
     correct: 'Lower it, then fix the distance and open mics',
-    explain: 'Pull the level down first, then bring the mic back to the mouth, close unused mics and put the PA in the pattern’s rejection — with the responsible operator. Never provoke feedback.',
+    explain: 'Pull the level down first, then bring the mic back to the mouth, close unused mics and put the PA in the pattern’s rejection — with the responsible operator. Avoid uncontrolled feedback.',
     why: {
       'Turn the guest’s mic up so the voice stays over it': 'More gain feeds the loop.',
       'Swap the gooseneck for an omni nearer the PA': 'An omni nearer the PA hears it from every side.',
@@ -489,7 +489,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Add a tested fallback — a boom or desk mic — on its own track', early: 'Add the fallback after the main mic works.' },
       { text: 'Trace every route; live, working level only', early: 'Routing and the live check come last.' },
     ],
-    explain: 'A sensible order. Hide a lav only after the visible place works; rig an overhead boom with qualified crew; live, never raise a level to find feedback.',
+    explain: 'A sensible order. Hide a lav only after the visible place works; rig an overhead boom with qualified crew; live, leave any ring-out to the system’s operator.',
   },
 ];
 
@@ -517,7 +517,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A gooseneck each, raised, its rejection toward the PA', ok: true, power: 'phantom', feedback: 'A suggested start — check the actual pattern against the PA’s place.' },
       { id: 'c', label: 'Every mic on the desk left open in case', ok: false, power: 'phantom', feedback: 'Each open mic hears the PA: less margin before feedback.' },
       { id: 'd', label: 'The boom and the lav both in the program', ok: false, power: 'phantom', feedback: 'Two mics on one voice comb. Choose one.' },
-      { id: 'e', label: 'Raise the mics until the PA rings, then back off', ok: false, power: 'phantom', feedback: 'Never provoke feedback. Bring each to its working level only.' },
+      { id: 'e', label: 'Raise the mics until the PA rings, then back off', ok: false, power: 'phantom', feedback: 'Ringing out is the system operator’s job. Bring each to its working level only.' },
     ],
     reasons: [docReason('the lips'), clearReason('the talkers, the papers and the frame'), { id: 'r.one', label: 'One mic on air per voice; the fewest mics open', role: 'required', feedback: 'Say how the open mics are kept to the ones needed.' }, { id: 'r.op', label: 'The PA level and the mics checked with the operator', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON('news anchor'), { id: 'r.loudest', label: 'Turn the mics up until the voices beat the PA', role: 'wrong', feedback: 'More gain brings feedback closer.' }],
     explain: 'Two setups pass. What passes is the reasoning: close mics measured from the lips, one on air per voice, the fewest open, the PA toward the rejection and checked with the operator — and no feedback provoked.',
@@ -653,7 +653,7 @@ export const B02_LESSON: Lesson = {
       { id: 'frame', label: 'the camera’s frame', short: 'FRAME', note: 'A boom stays just outside the widest frame; a reframe or a second camera can bring it into the picture.', prov: { kind: 'illustrative', reason: 'the lesson L6, L15' }, tag: 'PICTURE', scene: 'studio' },
       { id: 'pa', label: 'the PA', short: 'PA', note: 'A public interview: it faces the audience, but every open mic on the set hears it.', prov: { kind: 'illustrative', reason: 'a typical small stage' }, tag: 'FEEDBACK', scene: 'stage' },
     ],
-    stage: 'PUBLIC: close mics, the fewest open, a pattern’s rejection toward the PA where the mic has one, every route traced. Never provoke feedback.',
+    stage: 'PUBLIC: close mics, the fewest open, a pattern’s rejection toward the PA where the mic has one, every route traced. Avoid uncontrolled feedback.',
     studio: 'NEWS SET: a centred lav on each talker on separate channels, a boom just outside the widest frame as program or fallback, a desk mic where the shot allows.',
   },
   diagnostic,
@@ -670,12 +670,12 @@ export const B02_LESSON: Lesson = {
   },
   unknowns: [
     { text: 'The seated anchor and guest: the lips 450 mm above a 740 mm desk (the floor 1190 mm below the lips), the guest 80 cm along the desk on the anchor’s right — drawing defaults.', dims: ['yFloor'] },
-    { text: 'The desk (70 cm deep, from 65 cm on the anchor’s left to 65 cm past the guest), the gooseneck’s base, the boundary’s place, the scripts — drawing defaults. The gooseneck’s 20–30 cm is the panels lesson’s drawing default; no source gives one here.', dims: [] },
+    { text: 'The desk (70 cm deep, from 65 cm on the anchor’s left to 65 cm past the guest), the gooseneck’s base, the boundary’s place, the scripts — drawing defaults. The gooseneck’s 20–30 cm is the panels lesson’s drawing default; we found no source that gives one here.', dims: [] },
     { text: 'The camera (2.6 m out at eye level) and its two shots — drawing defaults. The boom’s start is calculated from the drawing: the tube’s tip 15 cm outside the widest frame on a line 45° up and 20° to the anchor’s left, the capsule the tube’s length behind it; the stand’s arm (85 cm) and its column are drawing defaults.', dims: [] },
     { text: 'The lav’s place on the chest is the shared figure’s; its distance (about 21 cm) falls inside the researched 12.5–25 cm band. The PA’s place (2.2 m out, 1.6 m to the left, 1.7 m up) — a drawing default. The head turns about its centre; the desk reflects as a mirror (simplified pictures).', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every anchor, set, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: seated talkers in a typical pose, the camera and its shots as drawing defaults, the boom’s place calculated from the frame, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front (a short shotgun’s capsule). Ask first; skin-safe adhesive only on skin; overhead booms rigged by qualified crew; never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every anchor, set, mic and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: seated talkers in a typical pose, the camera and its shots as drawing defaults, the boom’s place calculated from the frame, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front (a short shotgun’s capsule). Ask first; skin-safe adhesive only on skin; overhead booms rigged by qualified crew; avoid uncontrolled feedback.',
   copy: B02_COPY,
 };

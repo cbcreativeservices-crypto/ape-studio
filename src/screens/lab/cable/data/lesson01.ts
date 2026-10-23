@@ -39,7 +39,7 @@ export const CARRIED_CATEGORIES: CarriedCategory[] = [
     id: 'speaker_level',
     label: 'LOUDSPEAKER-LEVEL AUDIO',
     blurb:
-      'A power amplifier’s output: whole volts to well over a hundred, with real current behind it. It belongs only on loudspeaker terminals.',
+      'A power amplifier’s output: whole volts to well over a hundred, with real current behind it. It goes to loudspeaker terminals — never into a mic or line input.',
   },
   {
     id: 'digital_audio',
@@ -135,7 +135,7 @@ export const CARRY_PAIRS: CarryPair[] = [
     options: ['speaker_level', 'line_level', 'instrument_level', 'ac_mains'],
     correct: 'speaker_level',
     explain:
-      'An amplifier’s output is loudspeaker-level — volts of drive with real current. It belongs only on loudspeaker terminals, over speaker cable sized for the job.',
+      'An amplifier’s output is loudspeaker-level — volts of drive with real current. It goes to loudspeaker terminals, over speaker cable sized for the job — never into a mic or line input.',
   },
   {
     id: 'interface_computer',

@@ -293,7 +293,7 @@ function outputsOf(e: Ok | Refusal): OutputVal[] {
   out.push(
     e.ocpdMax !== null
       ? { label: 'MAX OVERCURRENT DEVICE (240.4(D))', value: e.ocpdMax, quantity: 'current', chainable: false }
-      : { label: 'MAX OVERCURRENT DEVICE (240.4(D))', text: '240.4(D) covers 14, 12 and 10 AWG only. For this size the overcurrent device follows 240.4(B) and (C).' },
+      : { label: 'MAX OVERCURRENT DEVICE (240.4(D))', text: '240.4(D) covers copper from 18 to 10 AWG. This size is larger, so the overcurrent device follows 240.4(B) and (C).' },
   );
   out.push(
     { label: 'MAX CONTINUOUS LOAD (80%)', value: e.continuous, quantity: 'current', chainable: false },

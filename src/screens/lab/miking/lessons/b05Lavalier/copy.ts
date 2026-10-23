@@ -26,7 +26,7 @@ const BASE = standingVoiceCopy({
     { title: 'ASK FIRST — CONSENT AND COMFORT', text: `${SAFETY.consent} ${SAFETY.remove}` },
     { title: 'WARDROBE AND SKIN', text: `${SAFETY.wardrobe} ${SAFETY.skin}` },
     { title: 'THE RIGHT ADAPTER, THE RIGHT INPUT', text: `Use the connector and adapter made for this mic and this transmitter: a plug that fits is not proof of the right wiring, bias or level. ${SAFETY.phantom}` },
-    { title: 'LIVE: NEVER PROVOKE FEEDBACK', text: 'Compare the feeds at a safe level with the venue’s operator. Bring each mic up only to its working level, mute the ones not in use, and at the first sign of ringing pull it down at once and fix the geometry — never raise a level to find feedback.' },
+    { title: 'LIVE: NO UNCONTROLLED FEEDBACK', text: 'Compare the feeds at a safe level with the venue’s operator. Bring each mic up only to its working level, mute the ones not in use, and at the first sign of ringing pull it down at once and fix the geometry — any ring-out is the system operator’s job.' },
   ],
   studio: {
     id: 'b5.ctx.studio',
@@ -121,7 +121,7 @@ export const B05_COPY: Partial<LessonCopy> = {
       ...BASE.context!.learn,
       intro: 'These are scenario-based comparisons, not restrictions: the presenter is the same — the room, the PA and the picture change.',
       body: 'With a PA, the closest capsule keeps the voice ahead of the loudspeakers; a directional headset adds a rejection to aim. The fewest open mics do more than either.',
-      warn: 'No mic position alone prevents feedback: the pattern, the open mics, the PA’s place and level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback: the pattern, the open mics, the PA’s place and level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

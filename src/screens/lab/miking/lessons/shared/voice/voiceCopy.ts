@@ -132,7 +132,7 @@ export function standingVoiceCopy(o: StandingVoiceCopyOpts): Partial<LessonCopy>
           { title: 'THE LOUDEST NOTE', text: 'A voice can top 135 dB right at the lips. Set gain on the loudest real passage — the first full take is often louder than the soundcheck.' },
         ],
         body: 'With a wedge in front of the singer, a pattern’s rejection is a tool to aim. Some stage sound in a vocal mic is normal; the question is how much the music can take.',
-        warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency. Do not cup the grille: it changes the pattern and brings feedback closer.',
+        warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level. Do not cup the grille: it changes the pattern and brings feedback closer.',
       },
     },
     twoMic: {

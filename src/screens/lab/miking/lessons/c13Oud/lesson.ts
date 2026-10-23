@@ -199,8 +199,8 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.3`,
     page: 'placement',
     prompt: 'Why does this lesson give a farther room view no number?',
-    options: ['The oud is too quiet to be miked from farther away', 'No oud research gives one: try it by ear in a good room', 'A far mic sounds much the same wherever in the room it is placed'],
-    correct: 'No oud research gives one: try it by ear in a good room',
+    options: ['The oud is too quiet to be miked from farther away', 'We found no oud research that gives one: try it by ear in a good room', 'A far mic sounds much the same wherever in the room it is placed'],
+    correct: 'We found no oud research that gives one: try it by ear in a good room',
     explain: 'The oud-specific starting points are close-in ones. Farther back is worth trying where the room is pleasing and quiet — move back from the first start and listen for the oud and the room together.',
     why: {
       'The oud is too quiet to be miked from farther away': 'It can be — in a quiet, pleasing room. There is simply no researched distance to give.',

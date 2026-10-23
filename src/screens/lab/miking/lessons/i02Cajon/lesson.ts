@@ -462,7 +462,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What sets the gap for a front cajón mic?',
     options: ['Both hands’ arcs, the knees, heels and the exit', 'The box’s width and its height', 'The length of the microphone’s body and its clip'],
     correct: 'Both hands’ arcs, the knees, heels and the exit',
-    explain: 'No source gives a universal safe clearance: the seated player’s complete movement decides.',
+    explain: 'No single clearance is safe for every player: the seated player’s whole movement decides.',
     why: {
       'The box’s width and its height': 'The box stays put; the hands move.',
       'The length of the microphone’s body and its clip': 'Fitting is not clearing the hands.',
@@ -489,7 +489,7 @@ export const I02_LESSON: SpLesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A wooden box the player sits astride and strikes: a struck idiophone — the plate and the box vibrate, with no stretched head. Wires or strings inside can add a snare buzz.', src: 'GRIN-CAJ' },
+    { title: 'WHAT IT IS', text: 'A wooden box the player sits on and strikes: a struck idiophone — the plate and the box vibrate, with no stretched head. Wires or strings inside can add a snare buzz.', src: 'GRIN-CAJ' },
     { title: 'WHERE YOU MEET IT', text: 'Acoustic sets, singer-songwriter stages, flamenco and pop — often beside a singer and an acoustic guitar.', src: 'LESSON-CAJON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'A whole kit in a box: centre strokes for the bass, top-corner slaps for the snare, ghost notes in between.', src: 'MEINL-JC50' },
     { title: 'ITS SIZE', text: 'A museum cajón measures about 32 × 32 × 48 cm with an 18 cm port; this lab draws one that size.', src: 'GRIN-CAJ' },

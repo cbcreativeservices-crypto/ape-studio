@@ -33,7 +33,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Electric bass:",
-      "text": "fingerstyle and slap-and-pop, the latter developed by Larry Graham in the late 1960s to imitate a drummer — thumb on the low strings as kick, popped high strings as snare. Bootsy Collins added envelope filter and fuzz (“space bass”); analog synth bass took over in electro-funk.",
+      "text": "fingerstyle and slap-and-pop, the latter developed by Larry Graham in the mid-1960s to imitate a drummer — thumb on the low strings as kick, popped high strings as snare. Bootsy Collins added envelope filter and fuzz (“space bass”); analog synth bass took over in electro-funk.",
       "bullet": true
     },
     {
@@ -321,7 +321,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "95–101 dBA Leq",
-        "studio": "−10 to −8 LUFS-I (modern), −1 dBTP"
+        "studio": "−10 to −8 LUFS-I (modern), −2 dBTP"
       }
     ],
     "notes": []

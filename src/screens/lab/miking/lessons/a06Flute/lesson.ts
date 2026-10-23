@@ -262,7 +262,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No — start from the same geometry and listen',
     explain: 'A wooden concert flute works like a metal one: the embouchure and the open holes. Begin with the same positions, then move for what you actually hear — not for a material stereotype.',
     why: {
-      'Yes — wood needs a closer, darker mic': 'No source shows a fixed material sound. Start from the geometry and listen.',
+      'Yes — wood needs a closer, darker mic': 'We found no source showing a fixed sound for a material. Start from the geometry and listen.',
       'Yes — metal needs a treble cut before testing': 'A silver colour is not a recipe. Test first, at matched level.',
     },
   },
@@ -560,7 +560,7 @@ const copy: Partial<LessonCopy> = {
         { title: 'IN A SECTION', text: 'With a main pair up, a flute mic is a spot: bring it up only for a stated balance, and check it in mono.' },
       ],
       body: 'With a wedge in front of the player, a pattern’s rejection is a tool to aim — tilting as well as turning. Some stage sound in a flute mic is normal; the question is how much the music can take.',
-      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

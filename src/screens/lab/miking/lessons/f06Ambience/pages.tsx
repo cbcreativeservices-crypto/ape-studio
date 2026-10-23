@@ -140,7 +140,7 @@ function F06Context({ lesson, answers, onAnswered, onInteractive, interactiveDon
     readStep('live', 'Studio, live and broadcast', [
       { title: 'FOR A FILM OR STUDIO', text: 'Keep an identifiable bed and separate foreground options, and say in the log where each layer was recorded.' },
       { title: 'LIVE AND BROADCAST', text: 'An ambience mic can bring the audience or the place to a remote listener. Place it for useful pickup with little of the PA or the monitors in it, and route it on purpose: every open mic near a loudspeaker takes away gain before feedback. A quiet field pair made for later editing is not automatically safe as an open live feed.' },
-      { title: 'NEVER PROVOKE FEEDBACK', text: 'Mute unused ambience channels, check every path to the speakers, streams and recorders at a controlled level — and never raise the output to find where it rings.' },
+      { title: 'NO UNCONTROLLED FEEDBACK', text: 'Mute unused ambience channels, check every path to the speakers, streams and recorders at a controlled level — and never push the output past what is needed to find where it rings.' },
     ]),
     fieldCheckStep(lesson, 'context', answers, onAnswered),
   ];

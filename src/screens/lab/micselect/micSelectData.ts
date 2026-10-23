@@ -44,7 +44,7 @@ export type MicTypeCard = {
 export const CLASS_NOTE =
   'These are NOT equivalent categories. "Condenser" names the transducer principle inside; ' +
   '"shotgun" names an acoustic directivity design; "lavalier" names a physical form factor. ' +
-  'One microphone can be all three at once — a shotgun is usually a condenser, and a lavalier ' +
+  'One microphone can fit more than one — a shotgun is usually a condenser, and a lavalier ' +
   'is usually an electret condenser.';
 
 export const MIC_TYPES: MicTypeCard[] = [
@@ -90,7 +90,7 @@ export const MIC_TYPES: MicTypeCard[] = [
       'Quality ranges from consumer to excellent',
       'The engine inside most miniature mics',
     ],
-    apps: 'Lavaliers, headsets, phones, measurement capsules, many studio mics.',
+    apps: 'Lavaliers, headsets, older phones, measurement capsules, many studio mics.',
     limitation: 'Quality varies enormously by design — "electret" alone tells you little.',
   },
   {
@@ -286,7 +286,7 @@ export const CHARACTERISTICS: Characteristic[] = [
     key: 'snr',
     name: 'Signal-to-noise ratio',
     why: [
-      'Sensitivity and self-noise combined into one usable number: how far the signal sits above the mic’s own noise for a reference level.',
+      'Self-noise restated as one usable number: how far a 94 dB SPL reference signal sits above the mic’s own noise.',
     ],
   },
   {

@@ -67,11 +67,11 @@ const WS_LEVEL: Workspace = {
     { key: 'dbv', name: 'LEVEL (dBV)', quantity: 'db', signed: true, placeholder: '-10', help: 'Level referenced to 1 V RMS — the consumer line-level scale.' },
     { key: 'vFromDbv', name: 'VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '0.316', help: 'RMS signal voltage to express on the dBV scale.', warn: { test: (x) => x <= 0, msg: 'Voltage must be positive — dB scales have no level for 0 V or negative RMS values.' } },
     { key: 'dbx', name: 'LEVEL (dBu or dBV)', quantity: 'db', signed: true, placeholder: '4', help: 'A level on either scale — the converter shows both readings of the same voltage.' },
-    { key: 'ampRatio', name: 'AMPLITUDE RATIO', quantity: 'ratio', nonNegative: true, placeholder: '2', help: 'Linear ratio of voltages, sound pressures, or fader positions (out ÷ in).', warn: { test: (x) => x <= 0, msg: 'Ratio must be positive — a zero or negative ratio has no dB value.' } },
+    { key: 'ampRatio', name: 'AMPLITUDE RATIO', quantity: 'ratio', nonNegative: true, placeholder: '2', help: 'Linear ratio of voltages, sound pressures, or gains (out ÷ in).', warn: { test: (x) => x <= 0, msg: 'Ratio must be positive — a zero or negative ratio has no dB value.' } },
     { key: 'powRatio', name: 'POWER RATIO', quantity: 'ratio', nonNegative: true, placeholder: '2', help: 'Linear ratio of powers or intensities (out ÷ in) — watts, not volts.', warn: { test: (x) => x <= 0, msg: 'Ratio must be positive — a zero or negative ratio has no dB value.' } },
     { key: 'dbAmp', name: 'LEVEL CHANGE', quantity: 'db', signed: true, placeholder: '6', help: 'Gain or attenuation in dB to convert back to an amplitude (voltage) ratio.' },
     { key: 'dbPow', name: 'LEVEL CHANGE', quantity: 'db', signed: true, placeholder: '3', help: 'Gain or attenuation in dB to convert back to a power (wattage) ratio.' },
-    { key: 'pct', name: 'PERCENT CHANGE', quantity: 'percent', signed: true, placeholder: '50', help: 'Change in an amplitude quantity: +50 means half again louder in voltage, −50 means half the voltage.', warn: { test: (x) => x <= -100, msg: '−100% is already silence — amplitude cannot drop by more than 100%.' } },
+    { key: 'pct', name: 'PERCENT CHANGE', quantity: 'percent', signed: true, placeholder: '50', help: 'Change in an amplitude quantity: +50 means one and a half times the voltage, −50 means half the voltage.', warn: { test: (x) => x <= -100, msg: '−100% is already silence — amplitude cannot drop by more than 100%.' } },
   ],
   functions: [
     {
@@ -343,13 +343,13 @@ const WS_OHMS: Workspace = {
   ],
   warnings:
     'These are sine-wave, resistive-load teaching calculations. A loudspeaker is a reactive load ' +
-    'whose impedance varies with frequency, and music is not a sine wave — real amplifier power ' +
-    'ratings follow formal methods (IEC 60268-3/-5), which this tool models but does not replace.',
+    'whose impedance varies with frequency, and music is not a sine wave — real power ratings ' +
+    'follow formal methods (IEC 60268-3 for amplifiers, IEC 60268-5 for loudspeakers), which this tool models but does not replace.',
   glossary: ['Power', 'Voltage', 'Current', 'Impedance', 'RMS', 'Amplifier', 'Loudspeaker'],
   fields: [
     { key: 'vrms', name: 'VOLTAGE (RMS)', quantity: 'voltage', nonNegative: true, placeholder: '28.3', help: 'RMS signal voltage across the load — what all the power formulas assume.', warn: { test: (x) => x <= 0, msg: 'Voltage must be positive.' } },
     { key: 'z', name: 'IMPEDANCE', quantity: 'impedance', placeholder: '8', help: 'Load impedance (nominal) — treated as a plain resistance in this model.', warn: { test: (x) => x <= 0, msg: 'Impedance must be positive — 0 Ω is a short circuit.' } },
-    { key: 'p', name: 'POWER', quantity: 'power', placeholder: '100', help: 'Average (RMS) power delivered to the load.', warn: { test: (x) => x <= 0, msg: 'Power must be positive.' } },
+    { key: 'p', name: 'POWER', quantity: 'power', placeholder: '100', help: 'Average power delivered to the load (often loosely called “RMS power”).', warn: { test: (x) => x <= 0, msg: 'Power must be positive.' } },
     { key: 'vpk', name: 'PEAK VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '40', help: 'The waveform’s crest voltage, as read on an oscilloscope.', warn: { test: (x) => x <= 0, msg: 'Peak voltage must be positive.' } },
   ],
   functions: [
@@ -561,8 +561,8 @@ const WS_ELECTRONICS: Workspace = {
     'A low-impedance source (an output of a few ohms) feeding a divider of R1 = 10 kΩ over ' +
     'R2 = 10 kΩ halves the voltage (−6 dB). A 1 µF coupling cap into a stage with a true ' +
     '10 kΩ input makes an RC high-pass with ' +
-    'fc = 1/(2π × 10000 × 1×10⁻⁶) ≈ 15.9 Hz — safely below the audio band, which is exactly ' +
-    'why 1 µF is such a common coupling value.',
+    'fc = 1/(2π × 10000 × 1×10⁻⁶) ≈ 15.9 Hz — below the audio band, but still about 2 dB down ' +
+    'at 20 Hz, so many designs use a larger cap for a lower corner.',
   mistakes: [
     'Expecting parallel resistors to add — the combined value is always LESS than the smallest branch (two 8 Ω speakers in parallel are 4 Ω, not 16 Ω).',
     'Trusting the unloaded divider formula when the next stage’s input impedance is comparable to R2 — the load sits in parallel with R2 and pulls the output lower.',

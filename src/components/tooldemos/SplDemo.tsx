@@ -451,7 +451,7 @@ const SCENES: SceneDef[] = [
     chip: 'FAST vs SLOW',
     title: 'FAST vs SLOW RESPONSE',
     watch: 'Both meters are fed the identical stepped pattern above them. FAST flicks past the 85 marker on peaks; SLOW settles on the trend.',
-    body: 'FAST and SLOW are meter ballistics — averaging windows of 125 ms and 1 s. FAST resolves every short event, which is what you want when hunting transients; SLOW damps the same input into a stable value you can log and compare against exposure limits. Neither is more accurate, and two readings only compare when both meters used the same response.',
+    body: 'FAST and SLOW are meter ballistics — time constants of 125 ms and 1 s. FAST resolves every short event, which is what you want when hunting transients; SLOW damps the same input into a stable value you can log and compare against exposure limits. Neither is more accurate, and two readings only compare when both meters used the same response.',
     note: 'Exposure is a dose — level × time. The 85 dBA action level is an 8-hour average, so judge it from SLOW or logged readings, never from FAST flickers.',
   },
 ];

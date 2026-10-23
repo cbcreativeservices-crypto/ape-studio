@@ -129,7 +129,7 @@ export const B03_COPY: Partial<LessonCopy> = {
     learn: {
       ...BASE.context!.learn,
       body: 'At a live event every open mic hears the loudspeaker. A directional pattern helps only when it is aimed so its rejection suits the loudspeaker; closeness to the speaking mouth does more.',
-      warn: 'No mic position alone prevents feedback. Never create feedback deliberately — bring an interview mic that feeds a local PA up only to its working level, and pull it down at any ring.',
+      warn: 'No mic position alone prevents feedback. Ringing out is the PA operator’s job: bring an interview mic that feeds a local PA up only to its working level, and pull it down at any ring.',
     },
   },
   twoMic: {

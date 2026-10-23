@@ -33,7 +33,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know the path from the strings to the desk — the DI, the head, the speaker cable and the mic — what sits round the rig, and what to do before any mic.',
     credit: { scenarios: ['ba.set.1', 'ba.set.2', 'ba.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'A DI box before the head and the head’s own DI output are electrical sources, each on its own channel. A speaker output goes only to a speaker, by a speaker cable. Protect your hearing: the lows carry a lot of energy.',
+    takeaway: 'A DI box before the head and the head’s own DI output are electrical sources, each on its own channel. A speaker output goes to a speaker by a speaker cable, never into a desk input. Protect your hearing: the lows carry a lot of energy.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -129,8 +129,8 @@ const scenarios: MikingScenario[] = [
     id: 'ba.set.2',
     page: 'setting',
     prompt: 'The desk is short of inputs. Can the head’s speaker output go into a desk input or an ordinary DI?',
-    options: ['Yes, through the DI box’s pad switch', 'Yes, as long as the head is turned right down first', 'No — a speaker output goes only to a speaker'],
-    correct: 'No — a speaker output goes only to a speaker',
+    options: ['Yes, through the DI box’s pad switch', 'Yes, as long as the head is turned right down first', 'No — a speaker output never feeds either'],
+    correct: 'No — a speaker output never feeds either',
     explain: 'A speaker output carries high power. It goes to the cabinet by a speaker cable — never to a mic, line or ordinary DI input. Some heads must never run without their speaker load: read the manual; when unsure, stop and ask a technician.',
     why: {
       'Yes, through the DI box’s pad switch': 'An instrument DI’s pad is for loud instruments, not speaker-level power.',
@@ -547,7 +547,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A DI box before the head, plus a low-frequency dynamic close on one woofer', ok: true, power: 'phantom', feedback: 'The DI carries the dependable lows; the close mic adds the cabinet. The DI box gets its phantom.' },
       { id: 'b', label: 'The head’s own DI output, plus a dynamic close on one woofer', ok: true, power: 'none', feedback: 'Also fair — once the manual says what PRE or POST includes; label it so.' },
       { id: 'c', label: 'Two mics, one 60–100 cm back for the room', ok: false, power: 'phantom', feedback: 'On a loud stage a far mic hears the drums and the PA; no DI to lean on.' },
-      { id: 'd', label: 'The head’s speaker output into a desk input', ok: false, power: 'none', feedback: 'Never: a speaker output goes only to a speaker.' },
+      { id: 'd', label: 'The head’s speaker output into a desk input', ok: false, power: 'none', feedback: 'Never: a speaker output goes to a speaker, not a desk input.' },
       { id: 'e', label: 'One mic in the middle of the grille, between the four woofers', ok: false, power: 'none', feedback: 'Between woofers the arrivals can cancel; and there is no DI for the low end.' },
     ],
     reasons: [DOC_REASON, LABEL_REASON, POWER_REASON, { id: 'r.spill', label: 'The DI carries no stage spill; the close mic rejects some', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, BASS_REASON],
@@ -631,8 +631,8 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Can the head’s speaker output go into a desk input or an ordinary DI?',
-    options: ['No — a speaker output goes only to a speaker', 'Yes, through the DI’s pad', 'Yes, if the head is turned all the way down first'],
-    correct: 'No — a speaker output goes only to a speaker',
+    options: ['No — a speaker output never feeds either', 'Yes, through the DI’s pad', 'Yes, if the head is turned all the way down first'],
+    correct: 'No — a speaker output never feeds either',
     explain: 'Speaker outputs carry high power: to a speaker, by a speaker cable, only.',
     why: {
       'Yes, through the DI’s pad': 'A DI’s pad is not made for speaker-level power.',
@@ -735,5 +735,5 @@ export const C08_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every bass, rig, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one 4 × 10 cabinet with a horn (its outer size is real; the layout, the woofer sizes and the head are drawing choices), an ideal string, textbook mic patterns, motion drawn larger. Distances are rounded to about 5 mm and measured from the grille to the mic’s front. Make connections with levels at zero, never open an amp, and send a speaker output only to a speaker.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every bass, rig, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one 4 × 10 cabinet with a horn (its outer size is real; the layout, the woofer sizes and the head are drawing choices), an ideal string, textbook mic patterns, motion drawn larger. Distances are rounded to about 5 mm and measured from the grille to the mic’s front. Make connections with levels at zero, never open an amp, and send a speaker output to a speaker, never into a desk input.',
 };

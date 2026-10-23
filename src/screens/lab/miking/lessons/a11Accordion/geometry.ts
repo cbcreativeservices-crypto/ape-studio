@@ -225,7 +225,7 @@ export const A11_MODEL: InstrumentModel = {
 
 export const A11_WEDGES: Wedge[] = [
   { id: 'wedge', label: 'a floor wedge downstage, facing back at the player', short: 'WEDGE', p: v3(1500, FLOOR_Y, CENTRE_Z), lift: 150, faces: v3(-1, 0, 0), note: 'In front of the player, behind a mic that faces the accordion — the case a pattern’s null can help with.', prov: ill('a typical stage layout; no source gives the position') },
-  { id: 'side', label: 'a side-fill monitor on the bass side', short: 'SIDE FILL', p: v3(1250, FLOOR_Y, -1350), lift: 150, faces: v3(-0.76, 0, 0.65), note: 'Off to the bass side, roughly beside the mic: no pattern’s null reaches it — and the bass side moves toward it on every pull. Distance and level do the work.', prov: ill('a typical stage layout') },
+  { id: 'side', label: 'a side-fill monitor on the bass side', short: 'SIDE FILL', p: v3(1250, FLOOR_Y, -1350), lift: 150, faces: v3(-0.76, 0, 0.65), note: 'Off to the bass side, roughly beside the mic: no cardioid’s or supercardioid’s null reaches it — and the bass side moves toward it on every pull. Distance and level do the work.', prov: ill('a typical stage layout') },
 ];
 
 /** The bass side's distance from a point over the cycle (the two-mic panel's moving source). */

@@ -55,7 +55,7 @@ export const noProvoke = (p: string, page: SourcePageId): MikingScenario => ({
   prompt: 'You bring the singers’ monitors up for the loudest song and hear the first ring. What next?',
   options: ['Lower that send at once, then fix the placement', 'Push a little more to find the exact feedback point', 'Leave it, since the audience will cover it'],
   correct: 'Lower that send at once, then fix the placement',
-  explain: 'Bring monitors up in small steps only to the agreed performance level. At any ring, lower that send at once, then correct the mic’s aim, the monitor’s angle or the pattern before going on. Never raise the level to find where it feeds back.',
+  explain: 'Bring monitors up in small steps only to the agreed performance level. At any ring, lower that send at once, then correct the mic’s aim, the monitor’s angle or the pattern before going on. Never push past the agreed level to find where it feeds back.',
   why: {
     'Push a little more to find the exact feedback point': 'Hunting the feedback point risks the singers’ hearing and the speakers; the agreed level is the target, never the edge.',
     'Leave it, since the audience will cover it': 'A ring grows with the loudest notes; it is lowered at once, not left for later.',
@@ -175,6 +175,6 @@ export const phaseySymptom = (id: string, what = 'The group sounds hollow or pha
 });
 
 export const GROUP_BRAND: SetupReason = { id: 'r.brand', label: 'It is the brand most groups use', role: 'wrong', feedback: 'A brand is not part of passing: choose by the pattern, the distance and the group.' };
-export const NO_PROVOKE_REASON: SetupReason = { id: 'r.ring', label: 'Raise the monitors until it rings, then back off', role: 'wrong', feedback: 'Never provoke feedback: monitors up only to the agreed level, and down at once at any ring.' };
+export const NO_PROVOKE_REASON: SetupReason = { id: 'r.ring', label: 'Raise the monitors until it rings, then back off', role: 'wrong', feedback: 'Not until it rings: monitors up only to the agreed level, and down at once at any ring.' };
 export const FEWEST_REASON: SetupReason = { id: 'r.fewest', label: 'The fewest open mics that cover the group', role: 'optional', feedback: 'A fair reason: every doubling of open mics costs about 3 dB of margin.' };
 export const SAFE_REASON: SetupReason = { id: 'r.safe', label: 'Stands and cables clear of the singers, their feet and the way out', role: 'required', feedback: 'Safe placement is part of every passing setup.' };

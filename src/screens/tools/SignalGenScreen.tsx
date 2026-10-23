@@ -98,7 +98,7 @@ const SIGNALS: { key: GenModeName; label: string; blurb: string }[] = [
   { key: 'pink', label: 'PINK', blurb: 'Equal energy per OCTAVE — matches how hearing and RTAs divide the spectrum. THE measurement and tuning noise.' },
   { key: 'brown', label: 'BROWN', blurb: 'Energy falling 6 dB per octave — deep rumble, like distant surf. All weight, no sizzle.' },
   { key: 'blue', label: 'BLUE', blurb: 'Pink’s mirror: energy RISING per octave. Thin and airy — mostly a dither/testing curiosity.' },
-  { key: 'violet', label: 'VIOLET', blurb: 'White’s mirror, rising 6 dB per octave — almost pure sizzle. The extreme end of the noise family.' },
+  { key: 'violet', label: 'VIOLET', blurb: 'Brown’s mirror, rising 6 dB per octave — almost pure sizzle. The extreme end of the noise family.' },
   { key: 'sweepLin', label: 'SWEEP LIN', blurb: 'A tone gliding at constant Hz per second — it races through the bass and crawls through the highs.' },
   { key: 'sweepLog', label: 'SWEEP LOG', blurb: 'A tone gliding at constant OCTAVES per second — equal time in every octave. The sweep that sounds even, and the one measurement uses.' },
   { key: 'click', label: 'CLICK', blurb: 'A dry metronome tick — sharp transients with silence between, for timing, echoes and latency checks.' },

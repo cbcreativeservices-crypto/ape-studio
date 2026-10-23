@@ -54,7 +54,7 @@ export function powerCheck(w: CymWords, dynamicWord: string): MikingScenario {
     explain: 'A dynamic mic needs no power. Every condenser here needs phantom power, whatever its size or cable length — check the input before you choose.',
     why: {
       'The small condensers, if the cable run is short': 'Cable length does not power a condenser. It needs phantom power from the desk.',
-      'The clip-on condenser, because it is so small': 'Its size does not change what it needs: a condenser needs phantom power.',
+      'The clip-on condenser, because it is so small': 'Its size does not change what it needs: this condenser needs phantom power.',
     },
   };
 }
@@ -142,7 +142,7 @@ export function orderTask(w: CymWords): OrderTask {
   };
 }
 
-export const POWER_REASON: SetupReason = { id: 'r.power', label: 'Each mic gets the power it needs (phantom, or none)', role: 'required', feedback: 'Say how each mic is powered: a condenser needs phantom; a dynamic needs none.' };
+export const POWER_REASON: SetupReason = { id: 'r.power', label: 'Each mic gets the power it needs (phantom, or none)', role: 'required', feedback: 'Say how each mic is powered: a condenser needs power, usually phantom; a dynamic needs none.' };
 export const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'Mic, stand and cable stay clear of the stick, the swing and the player', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 export const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand of cymbal mic most engineers use', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 export function docReason(w: CymWords): SetupReason {

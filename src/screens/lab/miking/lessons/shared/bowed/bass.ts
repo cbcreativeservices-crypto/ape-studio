@@ -130,7 +130,7 @@ export const BASS_UNDER: ZoneT = {
   requires: { micTypeIds: ['strMini'] },
   draw: { side: zoneDisc('side', UNDER, 34), top: zoneDisc('top', UNDER, 34) },
   tendency: 'The low end and body together with the string’s bite, close and steady as the bassist moves — a more local colour. Aimed toward an f-hole, more level.',
-  checks: ['A clip made for the bass, on the strings — never on the bridge', 'Clear of the fingers, the strings and the bow path', 'The cable kept from rubbing as the bassist moves'],
+  checks: ['A clip made for the bass, on the strings, not the bridge', 'Clear of the fingers, the strings and the bow path', 'The cable kept from rubbing as the bassist moves'],
 };
 
 /** A zone with its start found once, clear on this model. */

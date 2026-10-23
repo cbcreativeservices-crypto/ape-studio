@@ -38,7 +38,7 @@ const SPEC = ensembleHandSpec({
     learn: [
       { title: 'LIVE', text: 'The fewest open mics that give the clarity needed: directional handhelds or stand mics, the wedges out of each mic’s most sensitive direction, no ensemble mic in a monitor that can excite it. A repeatable distance — close for the words, a little away for a loud phrase.' },
       { title: 'THE STUDIO', text: 'Place the singers, then one mic, a figure-8 or a pair in a controlled room; a mic each with screens and matched distances when each voice needs its own control. Spot mics are support, never a replacement for a balanced performance.' },
-      { title: 'THE MONITOR CHECK', text: 'Bring the monitors up in small steps only to the agreed level while the singers perform the loudest passage. At any ring, lower that send at once and fix the placement or the monitor’s angle — never raise the level to find the feedback point.' },
+      { title: 'THE MONITOR CHECK', text: 'Bring the monitors up in small steps only to the agreed level while the singers perform the loudest passage. At any ring, lower that send at once and fix the placement or the monitor’s angle — never push past the agreed level to find the feedback point.' },
     ],
   },
   two: {

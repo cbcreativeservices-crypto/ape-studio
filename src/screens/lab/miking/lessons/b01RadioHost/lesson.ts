@@ -42,7 +42,7 @@ const pages: LessonPages = {
     title: 'Before any mic',
     goal: 'Know where each mic goes — the headphones, the stream, the recorder, a remote guest’s return, the PA — and what to settle before any mic goes up: the room, the address side, a safe arm, a live check without feedback.',
     credit: { scenarios: ['b1.set.1', 'b1.set.2', 'b1.set.3', 'b1.set.4'], note: 'Answer the four checks.' },
-    takeaway: 'Listen to the host and the room, find the address side, secure the arm, give a remote guest the program without their own voice, and bring live mics up to their working level only — never to find feedback.',
+    takeaway: 'Listen to the host and the room, find the address side, secure the arm, give a remote guest the program without their own voice, and bring live mics up to their working level only — any ring-out is the system operator’s job.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -60,7 +60,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim a live host’s mic so its pattern’s rejection faces the PA — and know why a studio podcast and a live talk show need different choices.',
     credit: { scenarios: ['b1.ctx.1', 'b1.ctx.2', 'b1.ctx.studio', 'b1.rec.3'], interactive: 'wedgeInNull', note: 'LIVE SHOW: aim the mic (or change its pattern) until the PA sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'In the studio, headphones and the loudspeakers off; live, every open mic hears the PA — a close mic, the fewest open mics and the rejection toward the loudspeaker. Studio bleed and PA feedback are related routing problems, not the same thing.',
+    takeaway: 'In the studio, headphones and the loudspeakers off; live, every open mic hears the PA — a close mic, the fewest open mics and the rejection toward the loudspeaker. Studio bleed and PA feedback are related pickup problems, not the same thing.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -146,7 +146,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Before a live talk show, how do you bring the hosts’ mics up?',
     options: ['Each to its working level; at any ring, pull it down', 'Raise each one until it rings, then back off a little', 'Open them all at full level to test the system'],
     correct: 'Each to its working level; at any ring, pull it down',
-    explain: 'With the responsible operator, bring each mic up only to its working level. At any ring, pull that channel down at once and fix the geometry or the open mics. Never raise a level to find feedback.',
+    explain: 'With the responsible operator, bring each mic up only to its working level. At any ring, pull that channel down at once and fix the geometry or the open mics. Any ring-out is the system operator’s job.',
     why: {
       'Raise each one until it rings, then back off a little': 'Provoking feedback risks ears and loudspeakers. Stop at the working level.',
       'Open them all at full level to test the system': 'Every open mic lowers the margin before feedback; full level on all of them invites it.',
@@ -256,7 +256,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Move the mic a little off the breath line',
     explain: 'A small offset — a little above or to one side, still aimed at the mouth — or a pop screen keeps the air off the capsule. A filter cannot undo a pop that has already overloaded the input.',
     why: {
-      'Cut all the low end on the channel': 'A deep cut thins the voice and does not stop a blast from overloading the mic.',
+      'Cut all the low end on the channel': 'A deep cut thins the voice and does not stop a blast from overloading the input.',
       'Turn the mic so it faces away from the host': 'Aimed away, the mic hears the room instead of the voice.',
     },
   },
@@ -452,7 +452,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Lower the level at once. Is the mic now farther from the mouth? Too many open mics? Where is the PA against the pattern?',
     options: ['Lower the level, then fix the distance and open mics', 'Turn the host’s mic up so it stays over the ringing', 'Swap the host’s mic for an omni so it hears the room'],
     correct: 'Lower the level, then fix the distance and open mics',
-    explain: 'Feedback is a sound-system condition: lower the send first, then bring the mic back to the mouth, close unused mics and put the PA in the pattern’s rejection. Never provoke feedback on purpose.',
+    explain: 'Feedback is a sound-system condition: lower the send first, then bring the mic back to the mouth, close unused mics and put the PA in the pattern’s rejection. Leave any ring-out to the system’s operator.',
     why: {
       'Turn the host’s mic up so it stays over the ringing': 'More gain feeds the loop.',
       'Swap the host’s mic for an omni so it hears the room': 'An omni hears the PA from every side: feedback comes sooner.',
@@ -475,7 +475,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Add a second host on their own channel; test an overlap', early: 'Add the second host after the first is set.' },
       { text: 'Trace every route; live, bring mics up to working level only', early: 'Routing and the live check come last.' },
     ],
-    explain: 'A sensible order. Phantom power: mute the outputs first and follow your own equipment’s manual. Live: never raise a level to find feedback.',
+    explain: 'A sensible order. Phantom power: mute the outputs first and follow your own equipment’s manual. Live: leave any ring-out to the system’s operator.',
   },
 ];
 
@@ -503,7 +503,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A supercardioid close, the PA well to one side of its rear', ok: true, power: 'none', feedback: 'A suggested start — check the actual pattern against the PA’s place.' },
       { id: 'c', label: 'A condenser farther back, for a more natural voice', ok: false, power: 'phantom', feedback: 'Farther back, it hears more of the PA against the voice: less margin before feedback.' },
       { id: 'd', label: 'Every spare mic on the desk left open in case', ok: false, power: 'none', feedback: 'Each open mic adds the PA and the room. Keep only the needed mics open.' },
-      { id: 'e', label: 'Raise the host’s mic until it rings, then back off', ok: false, power: 'none', feedback: 'Never provoke feedback. Bring each mic to its working level only.' },
+      { id: 'e', label: 'Raise the host’s mic until it rings, then back off', ok: false, power: 'none', feedback: 'Ringing out is the system operator’s job. Bring each mic to its working level only.' },
     ],
     reasons: [docReason('the lips'), clearReason('the host’s face and hands'), { id: 'r.paths', label: 'The stream, the recorder, the headphones and the PA are traced as separate routes', role: 'required', feedback: 'Say how each destination is checked.' }, { id: 'r.null', label: 'The pattern’s rejection faces the PA', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON('talk show'), { id: 'r.loudest', label: 'Turn it up until the voice is louder than the PA', role: 'wrong', feedback: 'More gain brings feedback closer.' }],
     explain: 'Two setups pass. What passes is the reasoning: a close mic measured from the lips, the PA toward the rejection, the fewest open mics, and every route traced — with no feedback provoked.',
@@ -550,7 +550,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Before a live show, how do you check the hosts’ mics with the PA on?',
     options: ['Each up to its working level only; any ring, pull it down', 'Raise each until it rings to find the limit, then back off', 'Open them all at once at a high level to test the system'],
     correct: 'Each up to its working level only; any ring, pull it down',
-    explain: 'Never provoke feedback: bring each mic to its working level with the responsible operator, and at any ring pull it down at once and fix the geometry.',
+    explain: 'Avoid uncontrolled feedback: bring each mic to its working level with the responsible operator, and at any ring pull it down at once and fix the geometry.',
     why: {
       'Raise each until it rings to find the limit, then back off': 'Provoking feedback risks ears and loudspeakers.',
       'Open them all at once at a high level to test the system': 'Many open mics at a high level invite feedback.',
@@ -638,7 +638,7 @@ export const B01_LESSON: Lesson = {
       { id: 'phones', label: 'the headphones', short: 'HEADPHONES', note: 'Closed-back headphones at a comfortable level, the loudspeakers off: the program stays out of the mics.', prov: { kind: 'illustrative', reason: 'the lesson L28' }, tag: 'SPILL', scene: 'studio' },
       { id: 'pa', label: 'the PA', short: 'PA', note: 'Live: it faces the audience, but every open mic hears it. Fewest open mics, the pattern’s rejection toward it.', prov: { kind: 'illustrative', reason: 'a typical small stage' }, tag: 'FEEDBACK', scene: 'stage' },
     ],
-    stage: 'LIVE SHOW: a broadcast dynamic close on its arm, the PA toward the pattern’s rejection, the fewest open mics, every route traced. Never provoke feedback.',
+    stage: 'LIVE SHOW: a broadcast dynamic close on its arm, the PA toward the pattern’s rejection, the fewest open mics, every route traced. Avoid uncontrolled feedback.',
     studio: 'STUDIO: a mic each, about 10–15 cm for a broadcast dynamic or 15–20 cm for a condenser, headphones on, each host on their own channel.',
   },
   diagnostic,
@@ -662,6 +662,6 @@ export const B01_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every host, mic, desk and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a host in a typical seated pose, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. Live: never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every host, mic, desk and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a host in a typical seated pose, the desk’s reflection as a mirror, mic patterns and the two-mic comb as textbook shapes, the 3:1 rule as a note, never a test. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front. Live: avoid uncontrolled feedback.',
   copy: B01_COPY,
 };

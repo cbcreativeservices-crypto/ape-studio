@@ -82,7 +82,7 @@ export const TIMP_COPY: LessonCopy = {
       },
     },
     shapeWords: {
-      lowest: 'This is the (1,1) shape — the timpani’s NOTE. The other shapes are measured against it: with the air the head moves, the main ones fall near 1.5, 2 and 2.5 times it — close to whole-number steps, which is why a timpani sounds pitched.',
+      lowest: 'This is the (1,1) shape — the timpani’s NOTE. The other shapes are measured against it: with the air the head moves, the main ones fall near 1.5, 2 and 2.5 times it — the 2 : 3 : 4 : 5 steps of a harmonic series, which is why a timpani sounds pitched.',
       other: 'On a timpani this shape sits at {ratio} times the note’s (1,1) shape. The air the head moves, in the bowl and above it, pulls the main shapes toward near-whole-number steps from the note; the ring-shaped (0,1) sits just below the note and dies away fast.',
       ratioSub: 'vs (1,1)',
       badge: 'A simplified picture: ideal shapes, with a timpani’s ratios (the air’s effect included) · blue + toward you, amber − away',
@@ -166,7 +166,7 @@ export const TIMP_COPY: LessonCopy = {
         { title: 'THE PITCH', text: 'Reflections, nearby stands and a very close attack can mask the perceived pitch. Check every note in the passage, not one hit.' },
       ],
       body: 'On an amplified stage the monitors stay where the players need them: turn the mic or choose its pattern so that a null faces a loud unwanted source — and remember that real nulls are often shallowest at the low frequencies a timpani makes.',
-      warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Work it out with the system operator, and never create feedback deliberately.',
+      warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Work it out with the system operator, and avoid uncontrolled feedback.',
     },
   },
   twoMic: {

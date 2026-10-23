@@ -262,7 +262,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Bluegrass and acoustic records commonly land at −14 to −11 LUFS-I, Americana band records at −11 to −9, with true peak at −1 dBTP. Aim for a PLR of 11–15 dB (at −1 dBTP that means a master at about −12 LUFS-I or quieter) and a loudness range of at least 6 LU; heavy limiting smears picking transients and makes banjos harsh."
+      "text": "Bluegrass and acoustic records commonly land at −14 to −11 LUFS-I, Americana band records at −11 to −9, with true peak at −1 dBTP (−2 dBTP for masters louder than −14 LUFS). Aim for a PLR of 11–15 dB (at −1 dBTP that means a master at about −12 LUFS-I or quieter) and a loudness range of at least 6 LU; heavy limiting smears picking transients and makes banjos harsh."
     }
   ],
   "liveStudio": {
@@ -300,7 +300,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "85–92 dBA (bluegrass), 92–98 dBA (Americana)",
-        "studio": "−14 to −9 LUFS-I, −1 dBTP"
+        "studio": "−14 to −9 LUFS-I, −1 dBTP (−2 if louder than −14)"
       }
     ],
     "notes": []

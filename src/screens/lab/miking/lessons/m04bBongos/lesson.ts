@@ -43,7 +43,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — one mic between the heads, or a spot or clip-on per drum — clear of every finger stroke; then move the mic and see what changes.',
     credit: { scenarios: ['bg.place.1', 'bg.place.2', 'bg.place.3', 'bg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'No source gives a bongo distance: “just above” means safely clear of the hands, then listen. Move toward the weaker drum, back off to blend — one change at a time.',
+    takeaway: 'There is no set bongo distance: “just above” means safely clear of the hands, then listen. Move toward the weaker drum, back off to blend — one change at a time.',
   },
   context: {
     title: 'Studio or live',
@@ -228,7 +228,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No set number — start safely clear of the hands, then listen',
     explain: '“Just above” does not supply a safe number of inches. The player’s hand arc and the mic’s size set the minimum clearance; move and re-aim after hearing the full passage.',
     why: {
-      'Exactly 5 cm above the heads, measured to the grille': 'No source gives a number. Clearance from the hands comes first, then listening.',
+      'Exactly 5 cm above the heads, measured to the grille': 'There is no set number. Clearance from the hands comes first, then listening.',
       'A hand’s width above the heads, about 10 cm, on a pair of bongos': 'Players and mics differ. Start safely clear of this player’s hands, then listen.',
     },
   },
@@ -446,7 +446,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Loudspeaker and monitor axes, open mic count, distance?',
     options: ['Monitor and speaker axes, open mics and mic distance', 'Raise the bongo monitor so that the player hears more of it', 'Open a second bongo mic to share the level'],
     correct: 'Monitor and speaker axes, open mics and mic distance',
-    explain: 'Coordinate mic and speaker placement with the operator; use only the channels you need. Never provoke feedback.',
+    explain: 'Coordinate mic and speaker placement with the operator; use only the channels you need. Avoid uncontrolled feedback.',
     why: {
       'Raise the bongo monitor so that the player hears more of it': 'More monitor level means less margin before feedback.',
       'Open a second bongo mic to share the level': 'Each open mic adds feedback risk. Use only what you need.',
@@ -461,7 +461,7 @@ const symptoms: Symptom[] = [
     explain: 'Clearance comes first: stop the player before anything moves, and check again during the full passage.',
     why: {
       'Keep going carefully and fix it after the song': 'Clearance comes first: stop before any mic moves.',
-      'Ask the player to keep their hands away from it': 'Never ask the player to play around the mic. Move the mic.',
+      'Ask the player to keep their hands away from it': 'Move the mic first: the player should not have to play around it.',
     },
   },
   {
@@ -790,7 +790,7 @@ export const M04B_LESSON: HandLesson = {
         { title: 'WHAT THE PART NEEDS', text: 'A pattern label cannot guarantee gain before feedback: open channels, distance, speaker positions and monitor level all matter. Sound-check at the intended level with the operator.' },
         { title: 'MOUNTING', text: 'A fixed stand may not keep covering a moving pair; a clip may transfer vibration. Coordinate stands and cables with the player and test the full range of motion.' },
       ],
-      closing: 'Feedback is a loop of microphone, loudspeaker, room and gain. A figure-8 has two live lobes and side nulls; a supercardioid’s rear differs from a cardioid’s. Stop if feedback begins — never provoke it.',
+      closing: 'Feedback is a loop of microphone, loudspeaker, room and gain. A figure-8 has two live lobes and side nulls; a supercardioid’s rear differs from a cardioid’s. Stop if feedback begins — never let it build.',
     },
     pairs: [
       {

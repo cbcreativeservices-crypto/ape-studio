@@ -259,7 +259,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No feedback even at the mic’s top volume setting',
     explain: 'Start every control low; walk the playing area with the amp and monitors at show level; set the system so nothing rings even at the highest knob position the player may use. A notch is not a substitute for safe geometry.',
     why: {
-      'Turn it up until it starts to ring, then back off': 'Never create feedback on purpose: raise levels gradually and stop before ringing.',
+      'Turn it up until it starts to ring, then back off': 'Ringing out is the system operator’s job. Raise levels gradually and stop before ringing.',
       'Use a narrow EQ notch so it can go louder': 'A notch does not replace safe geometry or lower gain.',
     },
   },
@@ -594,6 +594,6 @@ export const A10_LESSON: Lesson = {
   ],
   live: { wedges: A10_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. No maker publishes a universal stand distance for an acoustic harmonica: the 15–30 cm is a practical starting experiment. The amp’s starting points come from amplifier-speaker practice, measured from the grille cloth. Every player, harmonica, harp mic, amp and room is different: move the mic, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: one reed’s swing (motion drawn larger), an ideal reed’s shapes, the hands’ chamber as drawings, mic patterns as textbook shapes. Distances are rounded to about 5 mm. Keep clear of the mouth and the hands, check the input the harp mic needs, and never provoke feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. We found no maker that publishes a universal stand distance for an acoustic harmonica: the 15–30 cm is a practical starting experiment. The amp’s starting points come from amplifier-speaker practice, measured from the grille cloth. Every player, harmonica, harp mic, amp and room is different: move the mic, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: one reed’s swing (motion drawn larger), an ideal reed’s shapes, the hands’ chamber as drawings, mic patterns as textbook shapes. Distances are rounded to about 5 mm. Keep clear of the mouth and the hands, check the input the harp mic needs, and avoid uncontrolled feedback.',
   copy: { words: metalWords('harmonica', 'player') },
 };

@@ -541,7 +541,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'cert-time-based-and-creative-fx-v3': [
     { key: 'tr_reverb', why: 'Reverb is one of the two named topics of this certificate.' },
-    { key: 'tr_delay', why: 'Delay is the other, and the effects below are all built from it.' },
+    { key: 'tr_delay', why: 'Delay is the other, and chorus and flanging below are built from it.' },
     { key: 'tr_chorus', why: 'Chorus is a modulated delay — the first of the three comb-filter effects.' },
     { key: 'tr_flanger', why: 'Flanging is the same idea at a shorter delay, and it sounds nothing like chorus.' },
     { key: 'tr_phaser', why: 'Phasing uses all-pass stages instead of delay, and the difference matters in a mix.' },
@@ -568,7 +568,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'cert-vocal-recording-and-production-v3': [
     { key: 'tr_mic_select', why: 'The vocal microphone choice shapes everything downstream.' },
-    { key: 'tr_smart_processors', why: 'Sibilance is created at the microphone and dealt with here.' },
+    { key: 'tr_smart_processors', why: 'Sibilance starts in the mouth, the microphone can make it worse, and it is dealt with here.' },
     { key: 'tr_autotune', why: 'Tuning a vocal is an expected deliverable, and it has to be done on purpose.' },
     ...mk('E01', 'E02', 'E03'),
   ],

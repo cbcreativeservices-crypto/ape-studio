@@ -128,7 +128,7 @@ export const B10_COPY: Partial<LessonCopy> = {
       ...BASE.context!.learn,
       intro: 'These are scenario-based comparisons, not restrictions: the voices are the same — the place, the time to prepare, the crowd and the PA change.',
       body: 'At the sideline every open mic hears the crowd and the PA. A pattern’s rejection is a tool to aim; a mic close to the speaking mouth does more.',
-      warn: 'No mic position alone makes a stadium quiet. Never create feedback deliberately — if an interview mic feeds a local PA, bring it up only to its working level and pull it down at any ring.',
+      warn: 'No mic position alone makes a stadium quiet. Ringing out is the PA operator’s job — if an interview mic feeds a local PA, bring it up only to its working level and pull it down at any ring.',
     },
   },
   twoMic: {

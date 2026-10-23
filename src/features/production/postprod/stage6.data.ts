@@ -188,7 +188,7 @@ export const STAGE6_MIX: StageDef = {
           fieldId: "master_processing",
           label: "Processing on the master bus",
           kind: "choice",
-          help: "Mix-bus processing is a legitimate choice. It is only a problem when the stems are printed underneath it and then recombined through it again.",
+          help: "Mix-bus processing is a legitimate choice. It is a problem when the stems are printed under it and summed without it, or when stems printed through it are summed through it again.",
           options: [
             { value: "none", label: "None" },
             { value: "light", label: "Light — printed into the stems consistently" },
@@ -615,7 +615,7 @@ export const STAGE6_MIX: StageDef = {
       severity: "attention",
       kind: "conflict",
       title: "Heavy master processing with stems underneath it",
-      detail: "Substantial processing sits on the master bus while stems are printed from below it. Recombining them puts that processing through a second time, or leaves it out entirely — and the two versions will not match.",
+      detail: "Substantial processing sits on the master bus while stems are printed from below it. Summed without that chain, the stems leave the processing out; stems printed through it and summed through it again get it twice — either way the two versions will not match.",
       fixHint: "Move the master processing to the finishing stage, where it is applied once to a finished mix. Or print the stems through it — but a compressor or limiter fed one stem at a time acts differently, so the stems will sum close to the mix, not exactly. Test it and note the difference.",
       needsLogic: true,
       logicIntent: "Fire when master_processing is heavy and recombination_test is not nulls and not no_stems."
@@ -730,6 +730,6 @@ export const STAGE6_MIX: StageDef = {
     },
     onlyFor: ["music", "live"],
     passWhen: "The guitars and keys group reaches the stems; the vocal plate send has a matching return in the routing table; the stems recombine into the mix, or the remaining difference is described; the master processing is no longer heavy with stems printed beneath it; every print has been checked and a print verification list exists; a separate mix version has been made; a gain structure is recorded; the mix has been cross-checked on at least one other system; comparisons are level-matched; and the monitoring level no longer varies.",
-    debrief: "The client was right and the balance was never the problem. Three structural faults, none of which makes a sound: a whole group of instruments that never reached the stems, which is why the instrumental was missing the guitars and keys; a reverb send with no return in the table, so the plate was doing nothing and somebody had compensated by pushing the vocal forward; and heavy master-bus processing with the stems printed from underneath it, so summing them could never reconstruct what the client approved. Notice what the null test would have done here. Two minutes, at the point of printing, and all three would have shown up as a residual instead of as an email. That is why the recombination test is the one required question in this stage."
+    debrief: "The client was right and the balance was never the problem. Three structural faults, none of which makes a sound: a whole group of instruments that never reached the stems, which is why the instrumental was missing the guitars and keys; a reverb send with no return in the table, so the plate was doing nothing and somebody had compensated by pushing the vocal forward; and heavy master-bus processing with the stems printed from underneath it, so summing them could never reconstruct what the client approved. Notice what the null test would have done here. Two minutes, at the point of printing, and the missing group and the master processing would have shown up as a residual instead of as an email. The dead plate would not — it is missing from the approved mix too, so only the routing table catches it. That is why the recombination test is the one required question in this stage."
   }
 };

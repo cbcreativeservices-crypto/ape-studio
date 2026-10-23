@@ -55,7 +55,7 @@ const parts: Part[] = [
     id: 'csn.snaresOn',
     label: 'snares (on)',
     short: 'snares',
-    role: 'Fourteen strands of brass cable pressed against the snare-side head. Their response is part of the concert snare’s colour, not noise.',
+    role: 'Strands of cable, wire or gut pressed against the snare-side head (fourteen drawn here); the number and material vary by drum. Their response is part of the concert snare’s colour, not noise.',
     prov: W.strands.prov,
     variants: ['on'],
     solid: { kind: 'box', min: { x: -W.length.mm / 2, y: snaresY(true), z: -W.width.mm / 2 }, max: { x: W.length.mm / 2, y: snaresY(true) + 3.4, z: W.width.mm / 2 } },

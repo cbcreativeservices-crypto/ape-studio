@@ -193,7 +193,7 @@ export const METER_CHAIN: ChainSpec = {
         { id: 'eq', label: 'Averaged over the whole window (equivalent level)', short: 'AVERAGE', blurb: 'The energy average over the stated interval.' },
         { id: 'F', label: 'Fast', short: 'FAST', blurb: 'Follows changes quickly; its largest value is a fast maximum.' },
         { id: 'S', label: 'Slow', short: 'SLOW', blurb: 'Smooths changes; its largest value is a slow maximum.' },
-        { id: 'peak', label: 'The meter’s peak detector', short: 'PEAK', blurb: 'The highest instantaneous pressure the meter can register.' },
+        { id: 'peak', label: 'The meter’s peak detector', short: 'PEAK', blurb: 'The highest instant pressure the meter picks up during the measurement.' },
       ],
     },
     {

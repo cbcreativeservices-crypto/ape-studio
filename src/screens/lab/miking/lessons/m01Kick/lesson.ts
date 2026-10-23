@@ -608,7 +608,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The batter head squeezes the air inside, and the air pushes the front head outward: the two heads are coupled through the air (with a port, some air also rushes out).',
     why: {
       'Pulls it inward, toward the beater': 'The batter head moving in squeezes the air; squeezed air pushes on the front head, so it moves outward.',
-      'Nothing — the air escapes through the shell': 'The shell is closed wood, apart from small vent holes. The air is squeezed and pushes the front head outward; a port lets some of it out.',
+      'Nothing — the air escapes through the shell': 'The shell is closed, apart from small vent holes. The air is squeezed and pushes the front head outward; a port lets some of it out.',
     },
   },
   {

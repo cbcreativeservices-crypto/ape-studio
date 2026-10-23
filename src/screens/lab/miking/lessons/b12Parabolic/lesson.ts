@@ -359,7 +359,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Measured from the surface the maker names, not an estimated centre — and rechecked after travel.',
     why: {
       'The loudest result on the day': 'Louder is not focused.',
-      'The middle of the bowl, by eye': 'The focus is not at the bowl’s middle.',
+      'The middle of the bowl, by eye': 'The focus sits on the centre line, but at a depth you cannot judge by eye.',
     },
   },
 ];

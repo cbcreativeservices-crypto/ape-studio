@@ -120,7 +120,7 @@ export function foleyCopy(o: FoleyCopyOpts): Partial<LessonCopy> {
         intro: 'These are scenario-based comparisons, not restrictions: the same action, a quiet Foley stage or a live theatre with a PA.',
         points: o.live.points,
         body: 'In a live room every open mic also hears the PA and the wedges. Aim the pattern’s rejection at the loudest one, keep the mic close enough, and keep the open channels few.',
-        warn: 'No mic position alone prevents feedback: the PA, the wedges, the channel gain, the room and the open mics all matter — check them with the system operator at the intended level. Never create feedback deliberately, not as a demonstration and not to “find” a frequency.',
+        warn: 'No mic position alone prevents feedback: the PA, the wedges, the channel gain, the room and the open mics all matter — check them with the system operator at the intended level. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
       },
     },
     twoMic: {

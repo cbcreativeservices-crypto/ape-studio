@@ -612,7 +612,7 @@ export const APP_SCENARIOS: AppScenario[] = [
     brief: 'A bench circuit built to SHOW how an amplifier works — simplicity matters more than efficiency.',
     accepted: ['A'],
     reasoning: { A: 'One device, one operating point, full-cycle conduction: the simplest amplifier to build, probe and understand. Efficiency is irrelevant on a bench.' },
-    rejected: { AB: 'Two devices and a bias network hide the basic idea.', D: 'Modulators and filters obscure the lesson.', C: 'Cannot pass audio at all.', TUBE: 'A tube stage can also be single-ended — but the brief asks for the transistor circuit that students can build safely at low voltage.' },
+    rejected: { AB: 'Two devices and a bias network hide the basic idea.', D: 'Modulators and filters obscure the lesson.', C: 'Cannot amplify audio cleanly: it conducts for less than half of each cycle.', TUBE: 'A tube stage can also be single-ended — but the brief asks for the transistor circuit that students can build safely at low voltage.' },
   },
   {
     id: 'ap-rf', title: 'RF transmitter output stage',

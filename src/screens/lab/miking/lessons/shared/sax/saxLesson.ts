@@ -104,7 +104,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       title: 'Choose the microphone',
       goal: `Choose a mic for the ${s} by its properties — pattern, power, size and mount — not by its brand.`,
       credit: { scenarios: [id('mic.1'), id('mic.2'), id('mic.3'), id('mic.4'), id('rec.1')], note: 'Answer the five checks (one reaches back to how the sax sounds).' },
-      takeaway: 'Dynamics need no power; condensers and the bell clip need phantom power. A clip goes on the bell rim only, made for that bell. No mic type is best for every horn, room and show.',
+      takeaway: 'Dynamics need no power; the condensers here and the bell clip need phantom power. A clip goes on the bell rim only, made for that bell. No mic type is best for every horn, room and show.',
     },
     placement: {
       title: 'Placement Studio',
@@ -452,7 +452,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       firstChecks: 'Lower the level, then change the mic, monitor and player geometry, and close mics you do not need.',
       options: ['Lower the level, then change the geometry and open mics', 'Boost the sax channel so the horn is louder than the ring', 'Swap to an omni mic, which is less likely to feed back'],
       correct: 'Lower the level, then change the geometry and open mics',
-      explain: 'Feedback is a sound-system condition: reduce the level first, then move the mic or the monitor, and close mics you do not need. Never provoke feedback on purpose.',
+      explain: 'Feedback is a sound-system condition: reduce the level first, then move the mic or the monitor, and close mics you do not need. Avoid uncontrolled feedback.',
       why: {
         'Boost the sax channel so the horn is louder than the ring': 'More gain feeds the loop. Lower the level first.',
         'Swap to an omni mic, which is less likely to feed back': 'An omni rejects nothing: it usually makes feedback more likely, not less.',
@@ -493,7 +493,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
   ];
 
   const R: Reasons = {
-    POWER: { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom (a miniature through its adapter); a dynamic needs none.' },
+    POWER: { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs power, usually phantom (a miniature through its adapter); a dynamic needs none.' },
     DOC: { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the part it names', role: 'required', feedback: 'Say why it is a good place to begin, and which part it is measured from.' },
     CLEAR: { id: 'r.clear', label: 'The mic, mount and cable stay clear of the bell’s swing, the hands and the keys', role: 'required', feedback: 'Clearance is part of every passing setup.' },
     BRAND: { id: 'r.brand', label: `It is the brand most engineers reach for on a ${s}`, role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' },
@@ -659,7 +659,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
           { title: 'IN A SECTION', text: `With a main pair or section mics up, a ${s} mic is a spot: raise it only for a stated balance, and check it in mono so it does not pull the player forward.` },
         ],
         body: 'With a wedge in front of the player, a pattern’s rejection is a tool to aim — tilting as well as turning. Some stage sound in a horn mic is normal; the question is how much the music can take.',
-        warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+        warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
       },
     },
     twoMic: {

@@ -91,7 +91,7 @@ function useBellows(_p: PageProps): MikingStep {
         <Card>
           <Point title="TWO SIDES, ONE MOVING">{`Both sides sound: the treble reeds through the grille, the bass reeds through the bass side. The bass side moves with every push and pull — so this mic is now ${fmtLen(dBass)} from it, and the treble side’s sound reaches it ${fmtMs(Math.abs(dt))} ${dt >= 0 ? 'after' : 'before'} the bass side’s.`}</Point>
         </Card>
-        <Note>On a piano accordion a key gives the same note on the push and the pull; on a diatonic button accordion the note changes with the direction. Either way, the air flows through the reeds both ways — and the bellows are the air source, not a place to point a mic into.</Note>
+        <Note>On a piano accordion a key gives the same note on the push and the pull; on a diatonic button accordion the note changes with the direction. Either way, each note has a pair of reeds: one sounds on the push, the other on the pull — and the bellows are the air source, not a place to point a mic into.</Note>
         {moved ? <Note tone="ok">The treble side stayed put; the bass side moved — so a fixed mic’s distance, its level and the timing between the two sides all change through the phrase. A fixed delay or polarity setting cannot follow that.</Note> : null}
       </>
     ),

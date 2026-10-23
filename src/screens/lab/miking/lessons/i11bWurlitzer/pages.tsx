@@ -112,7 +112,7 @@ export const I11B_SPEC: KeysPagesSpec = {
   chain: CHAIN,
   backs: ['closed'],
   notes: {
-    mech: 'A simplified picture of one note. Real reeds differ from note to note, and the reed moves far less than drawn. A bad note or hum is the instrument — a technician’s job, never a mic move.',
+    mech: 'A simplified picture of one note. Real reeds differ from note to note, and the reed moves far less than drawn. A bad note, or hum that new cables do not cure, is the instrument — a technician’s job, not a mic move.',
     mechCheck: 'The reed is a struck, vibrating solid — like the other instruments in this lab — but its useful sound is the amplified one: you mic the speakers, and hear the whole chain of reed, pickup, preamp, amplifier, speaker and lid.',
     spots: 'Close in, the spot on the oval shapes the sound: the centre tends to be brighter and clickier, the outer end rounder. These are general speaker tendencies — a small oval in a lid may behave differently, so test by ear.',
     speaker: 'Two small oval speakers, one behind each grille in the lid’s front slope — and they face the player, not the room. Find them from outside, without lifting the lid. If the player uses an external amp through the auxiliary output, that amp’s speaker becomes the source: mic it as its own speaker.',

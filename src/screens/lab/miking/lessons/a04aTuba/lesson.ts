@@ -337,7 +337,7 @@ const symptoms: Symptom[] = [
     correct: 'Bypass the filter, hear the note, then move or rebalance',
     explain: 'A filter set from a table, a room that cancels a low note, or a bass guitar on the same note can each hide it. Find which before reaching for EQ.',
     why: {
-      'Boost the lowest frequencies on the channel first': 'EQ cannot put back what a filter or a cancellation removed. Find the cause first.',
+      'Boost the lowest frequencies on the channel first': 'EQ cannot fully put back what a filter or a cancellation removed. Find the cause first.',
       'Swap to a kick-drum mic, since it is made for lows': 'A kick mic is no promise for a tuba; the cause is usually the filter, the room or the mix.',
     },
   },

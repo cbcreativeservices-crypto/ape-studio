@@ -1181,7 +1181,7 @@ export function ThreeWindowView({
           <SpeakerConeView clock={clock} width={spkW} height={116 * k} visHz={visHz} amp={amp} mode={mode} />
         </View>
         <View style={{ gap: 4 * k }}>
-          <OText style={twStyles.winLabel}>AIR — molecules, moving</OText>
+          <OText style={twStyles.winLabel}>AIR — small parcels, moving</OText>
           <AirParticlesView
             clock={clock}
             width={airW}

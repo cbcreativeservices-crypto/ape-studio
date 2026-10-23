@@ -412,7 +412,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the wedge in a sensitive direction of the pattern? Lower the level at once, then use the mic’s actual null and change the geometry.',
     options: ['Lower the level, then put the wedge in the null', 'Turn the vocal up so it covers the ringing', 'Cup the grille so the sound stays inside it'],
     correct: 'Lower the level, then put the wedge in the null',
-    explain: 'Feedback is a sound-system condition: lower that send first, then aim the pattern’s rejection at the wedge and reduce open mics. Never provoke feedback on purpose.',
+    explain: 'Feedback is a sound-system condition: lower that send first, then aim the pattern’s rejection at the wedge and reduce open mics. Avoid uncontrolled feedback.',
     why: {
       'Turn the vocal up so it covers the ringing': 'More gain feeds the loop. Lower the level first.',
       'Cup the grille so the sound stays inside it': 'Cupping changes the pattern and usually makes feedback more likely.',
@@ -598,7 +598,7 @@ export const E01_LESSON: Lesson = {
       { id: 'wedge', label: 'the singer’s floor wedge', short: 'WEDGE', note: 'In front of the singer, facing back at them: behind a mic aimed at the mouth. Straight behind suits a cardioid; a supercardioid’s rejection sits well to one side of its rear.', prov: { kind: 'illustrative', reason: 'S-VOC-TIPS, S-SM58-UG, S-LIVE' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'band', label: 'the band and the PA', short: 'BAND · PA', note: 'Drums, amps and the PA all reach a vocal mic. A close mic keeps the voice ahead of them; a pattern aimed well keeps more of them out.', prov: { kind: 'illustrative', reason: 'a typical stage' }, tag: 'SPILL', scene: 'stage' },
     ],
-    stage: 'LIVE: a handheld vocal mic within about 10 cm, the wedge where the pattern rejects most, the band and the PA loud. Never cup the grille, and never raise the level to find feedback.',
+    stage: 'LIVE: a handheld vocal mic within about 10 cm, the wedge where the pattern rejects most, the band and the PA loud. Never cup the grille, and never push past the agreed level to find feedback.',
     studio: 'STUDIO: a quiet room, closed-back headphones, the loudspeakers off, a screened condenser about 15–30 cm from the lips. Repeated takes are practical; the room can be part of the sound.',
   },
   diagnostic,

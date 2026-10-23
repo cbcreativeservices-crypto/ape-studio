@@ -261,7 +261,7 @@ const WS_PHASE: Workspace = {
     'cancels; that is the hollow midrange you hear before you flip polarity or nudge the mic. ' +
     'The 180° frequency of any delay is simply 1/(2Δt).',
   mistakes: [
-    'Treating "360°" as an audible difference: 360° at one frequency is a whole cycle late — identical waveform there, but every OTHER frequency is at some other angle, so the combined sound is still comb-filtered.',
+    'Treating "360°" as perfectly aligned: 360° at one frequency is a whole cycle late — identical waveform there, but every OTHER frequency is at some other angle, so the combined sound is still comb-filtered.',
     'Ignoring wrapping: an analyzer showing 30° could be 30°, 390°, or 750° of true offset — the display wraps every 360° and hides whole cycles.',
     'Assuming one phase value pins down one delay: at a single frequency, φ and φ + k·360° are indistinguishable, so a phase reading alone cannot tell you the absolute time offset.',
     'Confusing polarity inversion (180° at ALL frequencies, zero time) with a delay that happens to hit 180° at one frequency — the fix for one is a switch, for the other a mic move.',

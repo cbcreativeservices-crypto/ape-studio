@@ -46,7 +46,7 @@ export function micChecks(p: string, n: Noun): MikingScenario[] {
       explain: `Mounted on the ${n.one}, the capsule moves with it, so a moving player does not change the distance. It still hears a small local view, and it still needs power.`,
       why: {
         'It rejects the stage, so feedback stops mattering': 'A clip is a mount, not a pattern. Feedback still depends on levels, monitors and aim.',
-        'It needs no power, so the spare input will do': 'A miniature condenser needs phantom power through its adapter.',
+        'It needs no power, so the spare input will do': 'This miniature condenser needs phantom power through its adapter.',
       },
     },
     {
@@ -58,7 +58,7 @@ export function micChecks(p: string, n: Noun): MikingScenario[] {
       explain: 'Dynamic mics need no power. The small condenser and the clip-on mini are condensers: they need phantom power, whatever their size or cable.',
       why: {
         'The small condenser, if its cable run is short': 'Cable length does not power a condenser. Only the dynamic works without phantom.',
-        'The clip-on mini, because it is so very small': 'Size does not change what it needs: a miniature condenser needs phantom too.',
+        'The clip-on mini, because it is so very small': 'Size does not change what it needs: this miniature condenser needs phantom too.',
       },
     },
     {

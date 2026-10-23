@@ -120,7 +120,7 @@ export const SNARE_COPY: LessonCopy = {
         { title: 'MOUNTING', text: 'Studio: paused sessions allow careful comparisons. Live: stable mounts, protected cables and repeatable positions matter during a show and a fast changeover.' },
       ],
       body: 'With the hi-hat this close, a pattern’s rejection is a tool to aim — but hi-hat spill is not automatically a defect, and when channels are few one mic angled between the snare and the hi-hat can be an intentional choice.',
-      warn: 'No snare-mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+      warn: 'No snare-mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.',
     },
   },
   twoMic: {

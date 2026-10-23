@@ -36,7 +36,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know the path from the strings to the desk — the volume pedal, the amp, the direct taps — the player’s keep-clear space, and what to do before any mic.',
     credit: { scenarios: ['ps.set.1', 'ps.set.2', 'ps.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'The player’s feet and knees work the pedals, knee levers and volume pedal while they play: no stand or cable there. A direct output is electrical, its own source. A speaker output goes only to a speaker.',
+    takeaway: 'The player’s feet and knees work the pedals, knee levers and volume pedal while they play: no stand or cable there. A direct output is electrical, its own source. A speaker output goes to a speaker, never into a desk input.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -148,7 +148,7 @@ const scenarios: MikingScenario[] = [
     correct: 'That it stands firm and cannot tip if bumped',
     explain: 'A tilted amp must be mechanically stable — follow its own manual for any tilt foot or stand. A falling amp is a danger to people and equipment.',
     why: {
-      'That the mic touches its grille to steady it': 'A mic never touches the grille, and it is no support.',
+      'That the mic touches its grille to steady it': 'The grille is no support: the stand holds the mic.',
       'That the tilt points the speaker at the wedge': 'An amp aimed at a monitor or open mic raises spill and feedback.',
     },
   },
@@ -551,7 +551,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Small condenser 5–15 cm from the grille on the speaker, its level rating checked', ok: true, power: 'phantom', feedback: 'Close and directional, with the phantom it needs.' },
       { id: 'c', label: 'A mic on a stand among the pedals, aimed up at the strings', ok: false, power: 'none', feedback: 'That blocks the player’s zone — and the sound to mic is the amp.' },
       { id: 'd', label: 'A mic 60–90 cm back from the amp, for the room', ok: false, power: 'none', feedback: 'On a stage beside the drums that hears more stage than steel.' },
-      { id: 'e', label: 'The amp’s speaker output into the desk', ok: false, power: 'none', feedback: 'Never: a speaker output goes only to a speaker.' },
+      { id: 'e', label: 'The amp’s speaker output into the desk', ok: false, power: 'none', feedback: 'Never: a speaker output goes to a speaker, not a desk input.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Close, directional pickup helps against drum spill and feedback', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, BRIGHT_REASON],
     explain: 'More than one setup passes. What passes is the reasoning: a sensible starting point, the player’s space kept clear, and power that matches the mic.',
@@ -734,5 +734,5 @@ export const C04_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. These are general amp-miking practices to experiment with on a steel player’s amp, not steel-specific coordinates: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the instruments with typical proportions, one combo standing in for the steel amp, an ideal string, textbook mic patterns, motion drawn larger. Keep the player’s pedals and knee levers clear, never open an amp, and send a speaker output only to a speaker.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. These are general amp-miking practices to experiment with on a steel player’s amp, not steel-specific coordinates: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the instruments with typical proportions, one combo standing in for the steel amp, an ideal string, textbook mic patterns, motion drawn larger. Keep the player’s pedals and knee levers clear, never open an amp, and send a speaker output to a speaker, never into a desk input.',
 };

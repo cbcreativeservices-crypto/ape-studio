@@ -587,7 +587,7 @@ export const A12_LESSON: Lesson = {
     { text: 'The room is a drawing default: a nave 30 × 15 × 14 m, pews every 1 m from 7.7 m (so the fourth pew is the case study’s 35 ft), aisles at 2.8–3.8 m either side, side passages from 7 m, a rear gallery.', dims: ['naveL', 'naveW', 'naveH', 'firstPew', 'pewPitch', 'pewRows', 'aisleZ0', 'aisleZ1', 'sideZ'] },
     { text: 'Only the case study has numbers (about 35 ft from the pipework, about 8 ft up, midway between the walls). The congregation pair’s band (the pew area, 1.5–3.5 m up) and the division spot’s 3–6 m are the drawing’s own; no universal distance exists.', dims: [] },
     { text: 'The room picture is one lengthwise resonance of an ideal hard-walled nave — illustrative; real rooms mix many, in every direction.', dims: [] },
-    { text: 'A near-coincident pair is drawn as 17 cm and 110°; one guide rounds the spacing to six inches (CORRECTIONS_LOG ORG-02).', dims: [] },
+    { text: 'A near-coincident pair is drawn as 17 cm and 110°; some guides round the spacing to about six inches (15 cm).', dims: [] },
   ],
   live: { wedges: A12_WEDGES },
   accuracyDetail:
