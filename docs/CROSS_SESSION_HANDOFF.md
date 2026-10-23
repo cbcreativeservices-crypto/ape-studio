@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 09:59 · ccode · 941dff85
+changed: Multimeter owner design pass (approved 2026-10-23)
+affects other side: nothing backend (Multimeter screen layout + help text; local colour pref only).
+needs: nothing
+
+
 ### 2026-10-23 09:08 · ccode · cdd16b93
 changed: Aim tips: owner 60° wording reaches every angle (35/40/45/70°) and the templates
 affects other side: nothing backend (miking lab aim-tip copy only). Rides the approval-day OTA.
