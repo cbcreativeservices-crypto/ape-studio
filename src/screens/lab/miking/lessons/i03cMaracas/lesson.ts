@@ -505,7 +505,7 @@ export const I03C_LESSON: SpLesson = {
     { title: 'WHAT IT IS', text: 'Shaken vessel rattles: a hollow head with seeds inside, on a handle. Usually a matched pair, one in each hand — the seeds strike and rub the vessel: an idiophone.', src: 'GRIN-MAR' },
     { title: 'WHERE YOU MEET IT', text: 'In Latin and popular music, on studio overdubs, at percussion stations — and in the hands of singers.', src: 'LESSON-MARACAS' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'A pulse with accents on the up and the down strokes, each arm playing its own; a circular wrist gives a longer, smoother sustain.', src: 'RANGEL' },
-    { title: 'ITS SIZE', text: 'Pairs measured in a collection run about 27–30 cm (10.6–11.8 in) long. This lab draws a pair 28.4 cm long, with plastic or rawhide-like heads drawn as rawhide.', src: 'GRIN-MAR' },
+    { title: 'ITS SIZE', text: 'Pairs measured in a collection run about 27–30 cm (10.6–11.8 in) long, with plastic or rawhide-like heads. This lab draws a pair 28.4 cm long, with rawhide heads.', src: 'GRIN-MAR' },
   ],
   sound: {
     stages: [

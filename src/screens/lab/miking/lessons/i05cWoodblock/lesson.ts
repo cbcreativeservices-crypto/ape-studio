@@ -130,7 +130,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Where must the mic never go?',
     options: ['Into the slot, or where the mallet can reach', 'In front of the block, a little off to the side, toward the opening', 'Above the block, looking at the surface'],
     correct: 'Into the slot, or where the mallet can reach',
-    explain: 'Do not put the mic into the slot or its grille where a mallet can reach — including a missed stroke.',
+    explain: 'Do not put the mic, or its grille, into the slot or anywhere a mallet can reach — including a missed stroke.',
     why: {
       'In front of the block, a little off to the side, toward the opening': 'That is one of the two starting viewpoints.',
       'Above the block, looking at the surface': 'That is the other starting viewpoint: above, aimed at the top, clear of the mallet.',
@@ -145,7 +145,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Is it the beater and the strike, or a very close mic? Try an appropriate mallet and support, then viewpoint and distance.',
     why: {
       'A brighter mic, closer, for a cleaner click': 'Closer and brighter makes the click dominate more.',
-      'A low-mid boost on the channel EQ to add the woody body back': 'EQ cannot invent a body the support has choked.',
+      'A low-mid boost on the channel EQ to add the woody body back': 'EQ cannot add body the block is not giving; check the mallet and the support first.',
     },
   },
   slowMeter(W),
@@ -353,7 +353,7 @@ const symptoms: Symptom[] = [
   },
   {
     id: 'wb.s.clip',
-    observation: 'Clipping on the hard strokes',
+    observation: 'A harsh, distorted sound on the hard strokes',
     firstChecks: 'Which stage distorts — or is the block cracked?',
     options: ['The stage that overloads — or a cracked block', 'Pull the channel fader down a little', 'A softer mallet for the hard strokes'],
     correct: 'The stage that overloads — or a cracked block',

@@ -65,7 +65,7 @@ const PATTERNS: { key: string; label: string; a: number; b: number; blurb: strin
   { key: 'omni', label: 'OMNI', a: 1, b: 0, blurb: 'Hears equally in every direction — no rejection anywhere. Natural sound, zero feedback protection.' },
   { key: 'cardioid', label: 'CARDIOID', a: 0.5, b: 0.5, blurb: 'The heart shape: full sensitivity in front, dead at the REAR. The live-vocal standard — point the null at the monitor.' },
   { key: 'super', label: 'SUPER', a: 0.37, b: 0.63, blurb: 'Tighter in front than cardioid, but the null moves to ~127° and a small rear lobe appears — aim monitors at the null, not the tail.' },
-  { key: 'hyper', label: 'HYPER', a: 0.25, b: 0.75, blurb: 'Tighter still, with a bigger rear lobe — the best side rejection of the cardioid family, but it hears a little of what is directly behind.' },
+  { key: 'hyper', label: 'HYPER', a: 0.25, b: 0.75, blurb: 'Tighter still, with a bigger rear lobe — the best side rejection of the cardioid family, but it hears a fair amount from directly behind (only about 6 dB down).' },
   { key: 'fig8', label: 'FIGURE-8', a: 0, b: 1, blurb: 'Front and back equally, sides completely DEAD — the pattern of most ribbon mics, and one half of mid-side.' },
 ];
 
@@ -287,7 +287,7 @@ const STEREO_TECHS: {
     from: 'LEVEL+TIME',
     plain: 'Two mics spaced about as far apart as your ears, angled outward.',
     use: 'The safe default for a room, a choir, an acoustic guitar — it sounds like standing there.',
-    mono: 'Good. The spacing is small enough that summing costs you width, not tone.',
+    mono: 'Good. The spacing is small enough that summing costs you mostly width and only a little tone.',
     note: 'Two cardioids 17 cm apart at 110° — deliberately ear-like. Each channel differs in LEVEL and in a fraction of a millisecond of TIME, which is exactly how your own hearing places a sound.',
   },
   {
@@ -396,7 +396,7 @@ function CapsuleSection({ focused, help, wellTop, wellBottom }: SectionProps) {
               badge="MOVING-COIL DYNAMIC CUTAWAY — ILLUSTRATIVE MODEL · coil travel exaggerated ~1,000× · amber = induced current"
               title="INSIDE THE CAPSULE"
             />
-            <IllustrationBadge text="MOVING-COIL DYNAMIC CUTAWAY — ILLUSTRATIVE MODEL · coil travel exaggerated ~1,000×; the on-drawing caveat states the mass-controlled-cardioid honesty note · amber = induced current (⊗/⊙ mark its direction, and flip as it reverses)" />
+            <IllustrationBadge text="MOVING-COIL DYNAMIC CUTAWAY — ILLUSTRATIVE MODEL · coil travel exaggerated ~1,000× · amber = induced current (⊗/⊙ mark its direction, and flip as it reverses)" />
             <DisplayGuideButton onPress={() => help('capsule')} />
             <Text style={styles.readout}>e = B · l · v — voltage tracks the coil’s VELOCITY</Text>
             <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('capsule')}>
@@ -799,7 +799,7 @@ function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionPr
       // OMNI has no proximity effect: the lane said "+N dB low-shelf" over a
       // flat curve and a FLAT bezel (slider audit 2026-10-14).
       format: () =>
-        !directional ? `${inches} in · omni — no boost` : inches >= 12 ? '12 in · no boost' : `${inches} in · +${boostDb} dB low-shelf`,
+        !directional ? `${inches} in · omni — no boost` : inches >= 12 ? '12 in · no extra boost' : `${inches} in · +${boostDb} dB low-shelf`,
       formatShort: () => `${inches} in`,
       helpKey: 'proximity',
     },
@@ -868,7 +868,7 @@ function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionPr
       <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('proximity')}>
         <Text style={styles.caption}>
           Radio-voice warmth IS this effect, used on purpose. It is also why a singer who swallows
-          the mic turns muddy — and why most channel strips have a high-pass filter.
+          the mic turns muddy — and one reason most channel strips have a high-pass filter.
         </Text>
       </CollapsibleSection>
       <CheckQuestion spec={PROX_CHECK} />

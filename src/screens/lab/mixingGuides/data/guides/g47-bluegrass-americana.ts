@@ -258,7 +258,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Acoustic bluegrass sounds best around 85–92 dBA LAeq-15 at FOH (one major acoustic tour averaged roughly 85–97 dB SPL); C-weighted levels sit only a few dB higher, since there is little sub content. Americana with drums runs 92–98 dBA, rarely above 100. Sub-woofers are often not needed for bluegrass; high-pass the subs or leave them off. Big bluegrass festivals use delay towers to keep average levels moderate across a big field. Use windscreens on condensers outdoors. Gain before feedback is usually the limit; IEMs and pickups-to-wedges (mics to FOH) help."
+      "text": "Acoustic bluegrass sounds best around 85–92 dBA LAeq-15 at FOH; C-weighted levels sit only a few dB higher, since there is little sub content. Americana with drums runs 92–98 dBA, rarely above 100. Sub-woofers are often not needed for bluegrass; high-pass the subs or leave them off. Big bluegrass festivals use delay towers to keep average levels moderate across a big field. Use windscreens on condensers outdoors. Gain before feedback is usually the limit; IEMs and pickups-to-wedges (mics to FOH) help."
     },
     {
       "label": "Studio / streaming:",
@@ -327,7 +327,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Align pickup and mic (0.5–2 ms delay), then check polarity: flip it and keep the setting that sounds fuller; this audience complains about loud long before quiet.",
+      "text": "Delay the pickup about 0.5–2 ms to line it up with the mic, then check polarity: flip it and keep the setting that sounds fuller. This audience complains about loud long before quiet.",
       "bullet": true
     }
   ],

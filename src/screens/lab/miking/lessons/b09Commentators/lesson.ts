@@ -310,7 +310,7 @@ const scenarios: MikingScenario[] = [
     correct: 'It rises: their mouth now faces your mic',
     explain: 'A voice is louder and brighter in front of the mouth than to its side: turned toward you, more of their voice reaches your mic — and their mouth is a little closer too. Check each channel while the other talks.',
     why: {
-      'It drops: they are facing away from the field': 'Facing away from the field is facing toward you — and your mic.',
+      'It drops: they are facing away from the field': 'Turning toward you turns them partly away from the field, and their mouth toward your mic.',
       'Nothing: your mic is cardioid': 'A cardioid still hears the sides, and the turn changes what the voice sends your way.',
     },
   },

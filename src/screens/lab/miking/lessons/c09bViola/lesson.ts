@@ -575,7 +575,7 @@ export const C09B_LESSON: Lesson = {
   ],
   sound: {
     stages: [
-      { title: 'The bow grips the string', text: 'Rosin on the bow hair grips the string and drags it sideways with the bow — a tiny way, many times larger here than it really moves.' },
+      { title: 'The bow grips the string', text: 'Rosin on the bow hair grips the string and drags it sideways with the bow. The real move is tiny; it is drawn many times larger here.' },
       { title: 'The string slips back', text: 'When the string’s pull gets stronger than the grip, it slips back past its resting place, and the hair catches it again — once every vibration: that is how a bow keeps a note going.' },
       { title: 'The string rocks the bridge', text: 'The vibrating strings pull the top of the bridge from side to side, and the bridge rocks on its two feet.' },
       { title: 'The bridge drives the top', text: 'Under one foot the top moves in and out; under the other, the soundpost holds the top nearly still and passes the motion to the back. The top, the back and the air inside all vibrate.' },

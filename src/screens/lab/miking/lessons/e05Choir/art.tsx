@@ -63,7 +63,7 @@ const SPEC = ensembleHandSpec({
     placeBadge: 'Blue = suggested starting points · grey dashes = the singers’ space · pinch to zoom',
     clearance: 'Clearance comes first: the risers’ edges, the singers’ feet and their way on and off, the sightlines to the conductor. Nothing hangs over the singers.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. An area mic aimed down at the choir turns its back up and toward the hall — a floor monitor below it sits off that axis, so tilt the mic or try a tighter pattern.',
-    sourceNote: 'What you just saw: a section reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each section gives its own delay.',
+    sourceNote: 'What you just saw: a section reaches the two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each section gives its own delay.',
   },
 });
 

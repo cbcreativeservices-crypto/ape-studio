@@ -15,7 +15,7 @@ export const M11_COPY: Partial<LessonCopy> = {
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
   instrument: {
     figureBadge: 'A 5-piece kit — every source a plan can mic',
-    figureLabel: 'Side view of a 5-piece drum kit: the hi-hat and the crash on the left, the snare, the rack toms over the kick, the floor tom and the ride on the right, the drummer’s keep-out hatched.',
+    figureLabel: 'Side view of a 5-piece drum kit from the player’s right: the floor tom and the ride nearest, the snare and the rack toms over the kick behind them, the hi-hat and a crash on the far side, the drummer’s keep-out hatched.',
     partsBadge: 'The kit from the side and from above · a typical right-handed layout · tap a part',
     partsLooking: { side: 'Side view · from the player’s right', top: 'Top view · from above' },
     partsIdle: 'A complete setup is a coordinated view of kick, snare, toms and cymbals — any room sound chosen deliberately. Tap a part to see what it means for a channel plan.',

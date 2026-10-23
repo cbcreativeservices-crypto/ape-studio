@@ -1286,7 +1286,7 @@ export function RtaScreen({ navigation }: Props) {
               label="HI-RES"
               active={hiRes}
               onPress={() => applyHiRes(true)}
-              a11yLabel="High resolution — reveals lower frequencies, slower response"
+              a11yLabel="High resolution — finer detail in the low bands, slower response"
             />
           </View>
           {/* Peak hold has no on/off in this tool — the control is RESET (spec

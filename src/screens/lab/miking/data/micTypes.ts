@@ -65,7 +65,7 @@ export const MIC_TYPES: Record<string, MicType> = {
     short: 'BOUNDARY',
     transducer: 'condenser',
     address: 'boundary',
-    patterns: [{ id: 'halfCardioid', label: 'half-cardioid (hemisphere above the surface)', prov: { kind: 'sourced', src: 'S-B91-UG', quote: 'Half-cardioid (cardioid in hemisphere above mounting surface)' } }],
+    patterns: [{ id: 'halfCardioid', label: 'half-cardioid (picks up only above the surface)', prov: { kind: 'sourced', src: 'S-B91-UG', quote: 'Half-cardioid (cardioid in hemisphere above mounting surface)' } }],
     body: {
       length: { mm: 139.1, prov: { kind: 'sourced', src: 'S-B91-UG', quote: '139,1 mm' } },
       radius: { mm: 10.15, prov: { kind: 'sourced', src: 'S-B91-UG', quote: '20,3 mm (height; half of it)' } },

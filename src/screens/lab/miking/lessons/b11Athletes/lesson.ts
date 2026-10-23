@@ -384,7 +384,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Who plans the frequencies for the body mics, the intercom and the officials’ systems?',
     options: ['The event’s radio coordinator, for all', 'Each crew separately, for its own system only', 'The first to switch on gets the clearest one'],
     correct: 'The event’s radio coordinator, for all',
-    explain: 'One coordinator assigns and monitors frequencies and the antenna plan for the whole venue — broadcast, intercom, IFB and the officials’ systems.',
+    explain: 'One coordinator plans the radio for the whole venue: who gets which frequency, and where the antennas go. That covers broadcast, intercom, the talkback in presenters’ earpieces (IFB) and the officials’ radios.',
     why: {
       'Each crew separately, for its own system only': 'Separate plans collide; the venue coordinates them all.',
       'The first to switch on gets the clearest one': 'First come is how systems knock each other out.',
@@ -412,7 +412,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the body shadowing the antenna? Is the antenna straight? Batteries? Is the receiver placed for the movement area?',
     options: ['Check the antenna, the batteries, the plan', 'Coil the antenna up so it cannot snag on anything', 'Turn the receiver’s output up a lot'],
     correct: 'Check the antenna, the batteries, the plan',
-    explain: 'The body can shadow the radio path: the antenna as the maker says, fresh batteries, the venue’s antenna plan walked at real density.',
+    explain: 'The body can block the radio path. Hang the antenna as the maker says, fit fresh batteries, and check the venue’s antenna plan with a walk test, every radio switched on.',
     why: {
       'Coil the antenna up so it cannot snag on anything': 'A coiled antenna loses range.',
       'Turn the receiver’s output up a lot': 'Level does not restore a lost radio signal.',

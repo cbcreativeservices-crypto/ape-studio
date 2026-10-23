@@ -457,7 +457,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What does a bass trombone have that a tenor usually lacks?',
     options: ['Valves for extra tubing, and a larger bell', 'A longer slide that reaches nine positions', 'A reed fitted into its mouthpiece cup'],
     correct: 'Valves for extra tubing, and a larger bell',
-    explain: 'The same tube length, but a wider bore, a larger bell and valves — often F and G♭ — for the lowest notes. Configurations vary.',
+    explain: 'The same tube length, but a wider bore, a larger bell and usually two valves — often F and G♭ — for the lowest notes. Many tenors have one F valve too. Configurations vary.',
     why: {
       'A longer slide that reaches nine positions': 'The slide has seven positions, as the tenor’s; the valves add the extra length.',
       'A reed fitted into its mouthpiece cup': 'No brass instrument has a reed: the lips buzz.',

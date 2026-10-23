@@ -85,7 +85,7 @@ export const TRIAGE_SCENARIOS: readonly Scenario[] = [
   { id: 't2', moduleId: 'what', prompt: 'The lead vocal sits 3 dB too low in the chorus only; everything else is right.', options: TRIAGE_OPTIONS, correct: 'Mix revision', explain: 'A stereo master has no independent handle on the vocal. Anything that lifts it lifts what shares its range. Ask for a revised mix or a vocal-up version.' },
   { id: 't3', moduleId: 'what', prompt: 'Track 3 arrives 2 dB quieter than the rest of the set, but internally it is well balanced.', options: TRIAGE_OPTIONS, correct: 'Mastering adjustment', explain: 'Consistency ACROSS tracks is a mastering job: level and tone between songs are balanced at this stage.' },
   { id: 't4', moduleId: 'what', prompt: 'The file is labelled "final" but the version number is lower than the one in the email thread.', options: TRIAGE_OPTIONS, correct: 'More information from the client', explain: 'Mastering the wrong version wastes everyone\'s time. Confirm the approved version before listening critically.' },
-  { id: 't5', moduleId: 'what', prompt: 'A snare hit in bar 12 is distorted — the clipping is on the snare only, not the bus.', options: TRIAGE_OPTIONS, correct: 'Mix revision', explain: 'Distortion baked into one element cannot be cleanly removed from a stereo file. The mixer can fix it at the source in seconds.' },
+  { id: 't5', moduleId: 'what', prompt: 'A snare hit in bar 12 is distorted — the clipping is on the snare only, not the bus.', options: TRIAGE_OPTIONS, correct: 'Mix revision', explain: 'Distortion baked into one element cannot be cleanly removed from a stereo file. The mixer can fix it at the source: lower the gain that clips, or repair or replace the hit.' },
   { id: 't6', moduleId: 'what', prompt: 'The ending fades too slowly for the client\'s taste; the recording itself is clean.', options: TRIAGE_OPTIONS, correct: 'Mastering adjustment', explain: 'Fades, tops and tails are routine mastering edits on the stereo programme.' },
   { id: 't7', moduleId: 'what', prompt: 'The mix peaks at −0.1 dBFS with a limiter already on the mix bus, and the client says "make it competitive".', options: TRIAGE_OPTIONS, correct: 'More information from the client', explain: 'Both questions, and the first one is information: ask for the mix WITHOUT the bus limiter and ask what "competitive" means to them (a reference, a destination). Stacking limiting on limiting is how dynamics die.' },
   { id: 't8', moduleId: 'what', prompt: 'The stereo image is a little narrow across the whole song and the client wants it wider.', options: TRIAGE_OPTIONS, correct: 'Mastering adjustment', explain: 'Programme-wide width can be adjusted in mastering — with a mono-compatibility check before and after.' },
@@ -328,7 +328,7 @@ export const KEY_TERMS: Record<MasteringModuleId, readonly { term: string; def: 
     { term: 'QC', def: 'Reopening and auditioning the exported files themselves.' },
   ],
   loudness: [
-    { term: 'Sample peak (dBFS)', def: 'The highest sample value.' },
+    { term: 'Sample peak (dBFS)', def: 'The largest sample value, positive or negative.' },
     { term: 'True peak (dBTP)', def: 'The estimated peak of the reconstructed waveform between samples.' },
     { term: 'Integrated loudness (LUFS)', def: 'Gated, K-weighted average loudness of the whole programme (ITU-R BS.1770).' },
     { term: 'PLR', def: 'Peak-to-loudness ratio — one plain measure of how far the peaks sit above the average loudness.' },

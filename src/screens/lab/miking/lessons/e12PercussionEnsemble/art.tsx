@@ -76,8 +76,8 @@ const SPEC = ensembleHandSpec({
   words: {
     placeBadge: 'Blue = suggested starting points · grey dashes = the players’ space · pinch to zoom',
     clearance: 'Clearance comes first: the players’ paths, sticks and mallets, pedals and instrument changes; nothing on a bar or over a resonator opening.',
-    cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A mic aimed down at the heads turns its back up and away — where a wedge can sit in its rejection.',
-    sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each instrument gives its own delay.',
+    cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A mic aimed down at the heads turns its back up and away — a floor wedge sits below that line, so angle the mic in from the wedge side, or try a tighter pattern.',
+    sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each instrument gives its own delay.',
   },
 });
 

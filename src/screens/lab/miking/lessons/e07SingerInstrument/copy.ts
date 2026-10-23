@@ -59,7 +59,7 @@ export const E07_COPY: Partial<LessonCopy> = {
     typeNotes: {
       vocDynCard: 'Ideas to try with a vocal dynamic: hold a steady distance, then turn the mic until its rear faces the instrument as much as the mouth allows.',
       vocDynSuper: 'Ideas to try with a supercardioid: its least-sensitive directions sit off its rear — aim them at the guitar or the strings.',
-      vocLdc: 'Ideas to try with the studio condenser: its screen at least 10 cm in front, the singer’s posture kept steady through the song.',
+      vocLdc: 'Ideas to try with the studio condenser: a pop screen at least 10 cm in front of it, the singer’s posture kept steady through the song.',
       sdcCard: 'Ideas to try with a small condenser: 15–30 cm out from the 12th fret or the sound hole — and turn its rear toward the mouth.',
       instDynCard: 'Ideas to try with an instrument dynamic: closer to the guitar than a condenser, its rear toward the mouth.',
       vocLdcOpen: 'Ideas to try with one condenser for both: move it until voice and instrument balance, then ask the performer to keep the posture.',

@@ -33,7 +33,7 @@ const SPEC = ensembleHandSpec({
     prompt: 'The floor monitor stays in front of the group, facing the players. Turn the cello spot (AIM) or change its PATTERN until the monitor sits in its rejection — and keep its front on the cello.',
     label: 'the chamber group with a cardioid spot on the cello and a floor monitor in front,',
     learn: [
-      { title: 'A RECORDING', text: 'Build the sound with one main array first; add at most two supports for stated reasons; ambience later. Keep the raw channels and their geometry noted for the mix.' },
+      { title: 'A RECORDING', text: 'Build the sound with one main array first; add as few supports as you can (in this lab, at most two at first), each for a stated reason; ambience later. Keep the raw channels and their geometry noted for the mix.' },
       { title: 'REINFORCEMENT', text: 'Find what already reaches the audience. Close, directional support where it is needed; fewer open mics; monitors placed by the real polar diagrams, at the level the players need. A beautiful distant array may be wrong for the PA.' },
       { title: 'BOTH AT ONCE', text: 'Give every mic a role: capture, PA, or both. A recording pair need not feed the PA; a shared preamp’s gain reaches every feed on it — agree who controls gain and phantom power.' },
     ],
@@ -62,8 +62,8 @@ const SPEC = ensembleHandSpec({
   words: {
     placeBadge: 'Blue = suggested starting points · grey dashes = the players’ space · pinch to zoom',
     clearance: 'Clearance comes first: the players’ sightlines, breathing, bowing, slides, pedals and the way in and out. Anything suspended is the venue’s, by qualified personnel.',
-    cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A spot aimed down at the cello turns its back up and toward the hall — where a monitor can sit in its rejection.',
-    sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each player gives its own delay.',
+    cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A spot aimed down at the cello turns its back up and toward the hall — a floor monitor below it sits off that axis, so turn or tilt the mic, or try a tighter pattern.',
+    sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each player gives its own delay.',
   },
 });
 

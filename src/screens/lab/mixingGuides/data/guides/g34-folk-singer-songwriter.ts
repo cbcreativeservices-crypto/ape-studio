@@ -269,7 +269,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The vocal is the record. It sits clearly in front, typically 2–4 dB above the guitar in perceived level for solo material, and the listener should hear breath, lip and texture without harshness. Tone is natural and warm: control proximity build-up at 200–350 Hz, avoid aggressive presence boosts, and add air gently. Pitch correction should be minimal and manual—small note fixes only; audible tuning is a credibility killer in this genre. Doubles are uncommon in traditional folk but central in indie folk (stacked unisons and close harmonies, often with slight timing differences). Harmonies should be tucked 4–8 dB below the lead and blended so they feel like one voice. Studio: large-diaphragm condensers, ribbons for darker voices, or a broadcast-style dynamic for close intimacy; figure-8 mics with nulls aimed at the other source can give 20 dB or more of voice/guitar separation. Live: a handheld condenser or supercardioid dynamic."
+      "text": "The vocal is the record. It sits clearly in front, typically 2–4 dB above the guitar in perceived level for solo material, and the listener should hear breath, lip and texture without harshness. Tone is natural and warm: control proximity build-up at 200–350 Hz, avoid aggressive presence boosts, and add air gently. Pitch correction should be minimal and manual—small note fixes only; audible tuning is a credibility killer in this genre. Doubles are uncommon in traditional folk but central in indie folk (stacked unisons and close harmonies, often with slight timing differences). Harmonies should be tucked 4–8 dB below the lead and blended so they feel like one voice. Studio: large-diaphragm condensers, ribbons for darker voices, or a broadcast-style dynamic for close intimacy. Figure-8 mics with nulls aimed at the other source give useful voice/guitar separation, though a real room makes the nulls shallower than on paper. Live: a handheld condenser or supercardioid dynamic."
     }
   ],
   "loudness": [
@@ -324,7 +324,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "If the guitar has a pickup, always get a DI from it even if the player wants only a mic; it saves you when feedback starts.",
+      "text": "If the guitar has a pickup, most engineers take a DI from it as well, even when the player wants only a mic; ask the player first. It saves you when feedback starts.",
       "bullet": true
     },
     {

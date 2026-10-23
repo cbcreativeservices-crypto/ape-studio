@@ -247,7 +247,7 @@ const feedsReq = (text: string, extra: (v: FeedView) => boolean = () => true): R
 /** The plain reason when one amplifier would have to run a passive top and a
  *  passive sub on one channel (round-8 grade R7-SS-02, rule S2). */
 export function topAndSubWhy(outs: readonly ConsoleOut[]): string {
-  return `One amplifier is driving a passive top and a passive sub from ${outs.map(outTag).join(' and ')} — on a two-channel amplifier that puts a top and a sub on one channel, with no crossover split between them. Tops and subs need their own amp channels after the processor’s crossover: give the subs an amplifier (or channels) of their own.`;
+  return `One amplifier is driving a passive top and a passive sub from ${outs.map(outTag).join(' and ')} — with more mixes than its two channels, a top and a sub end up sharing one channel, with no crossover split between them. Tops and subs need their own amp channels after the processor’s crossover: give the subs an amplifier (or channels) of their own.`;
 }
 
 /** The plain reason a fill, a delay or an in-ear pack is on the wrong

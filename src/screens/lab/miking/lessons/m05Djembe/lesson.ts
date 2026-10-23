@@ -49,7 +49,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s real rejection faces the floor wedge — and know what a pattern cannot do.',
     credit: { scenarios: ['dj.ctx.1', 'dj.ctx.2', 'dj.ctx.studio', 'dj.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: tilt the mic (or change its pattern) until the floor wedge sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'Point pickup and rejection by the actual pattern: supercardioid and hypercardioid rear lobes differ from a cardioid’s. A bottom mic near a floor wedge hears the monitor too. No mic position alone prevents feedback.',
+    takeaway: 'Point pickup and rejection by the actual pattern: a cardioid rejects most straight behind, where supercardioids and hypercardioids have a small rear lobe. A bottom mic near a floor wedge hears the monitor too. No mic position alone prevents feedback.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -692,7 +692,7 @@ export const M05_LESSON: HandLesson = {
   ],
   live: {
     wedges: [
-      { id: 'wedge', label: 'the player’s floor wedge, in front of the drum, facing them', short: 'WEDGE', p: { x: 1000, y: 0, z: 0 }, lift: 150, faces: { x: -1, y: 0, z: 0 }, note: 'Below and in front of a mic aimed at the head — where an off-axis null can help.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
+      { id: 'wedge', label: 'the player’s floor wedge, in front of the drum, facing them', short: 'WEDGE', p: { x: 1000, y: 0, z: 0 }, lift: 150, faces: { x: -1, y: 0, z: 0 }, note: 'Below the mic and on the audience side, off the back of a mic aimed at the head — where an off-axis null can help.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
       { id: 'sidefill', label: 'a side fill at the side of the stage, facing across', short: 'SIDE FILL', p: { x: -250, y: 0, z: -1900 }, lift: 1100, faces: { x: 0, y: 0, z: 1 }, note: 'Off to the side of the mic: one null cannot face every monitor — distance, level and fewer open mics matter too.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
     ],
   },
@@ -773,7 +773,7 @@ export const M05_LESSON: HandLesson = {
     placeLearn: [
       'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic. The two top positions — very close, and quite far — are different case examples, not rules; the low and under positions only exist when the drum is raised clear of the floor.',
       'Change one variable at a time while the player plays the same full passage. Nearer raises direct sound but can exaggerate contact; backing off in a good room integrates the strokes with more room and more of the band. A fixed angle does not mean a fixed tone across drums and patterns.',
-      'Clearance comes first. Stop the player before moving any mic, stand, cable or support. Map the hand, wrist, knee, leg and drum-motion envelope; keep the low mic and cable out of foot traffic and from under an unstable instrument. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
+      'Clearance comes first. Stop the player before moving any mic, stand, cable or support. Map the hand, wrist, knee, leg and drum-motion envelope; keep the low mic and cable out of foot traffic and from under an unstable instrument. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason.',
       'A low mic is a focused supplement, often narrower and with less hand articulation — not a one-mic solution. If there is no safe, repeatable low position, keep one well-placed top or front mic.',
     ],
     context: {
@@ -786,7 +786,7 @@ export const M05_LESSON: HandLesson = {
         { title: 'WHAT THE PART NEEDS', text: 'An exposed solo djembe might welcome room perspective; a live mono PA might need one reliable, focused feed.' },
         { title: 'MOUNTING', text: 'A freely played drum is not immobilised for a mic diagram. Ask whether a fixed stand stays aligned through the performance, and test the full movement.' },
       ],
-      closing: 'Feedback is a loop of microphone, loudspeaker, room and gain. Supercardioid and hypercardioid rear lobes differ from a cardioid’s; a bottom mic near a floor wedge hears the monitor too. Check at the intended level with the operator, and avoid uncontrolled feedback.',
+      closing: 'Feedback is a loop of microphone, loudspeaker, room and gain. A cardioid rejects most straight behind, where supercardioids and hypercardioids have a small rear lobe; a bottom mic near a floor wedge hears the monitor too. Check at the intended level with the operator, and avoid uncontrolled feedback.',
     },
     pairs: [
       {
@@ -811,7 +811,7 @@ export const M05_LESSON: HandLesson = {
     pairLearn: [
       'The upper and lower mics receive different parts of the sound field, at different times and with possibly different pressure directions. Bring up the upper mic alone, then the lower at a musically useful level; test bass, tones and slaps in mono — not just one stroke.',
       'If the blend loses body or changes attack, move or aim one mic, compare the polarity switch, and evaluate again with any other open mics. Never reverse a channel just because it sits below the drum.',
-      'What you just saw: sound reaches two mics at different times; summed, the delayed copy cancels where it is half a period late. A 180° polarity flip swaps the notches and peaks; it does not remove the travel-time difference or align every frequency.',
+      'What you just saw: sound reaches two mics at different times; summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late. A 180° polarity flip swaps the notches and peaks; it does not remove the travel-time difference or align every frequency.',
     ],
     pairWarn: 'The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone (1/r) — that does not hold this close to a drumhead, so read the depths as illustrative only. Judge the pair by ear, in mono, at matched levels.',
   },

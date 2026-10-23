@@ -226,7 +226,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     labs: [
       { name: 'Digital Audio Systems', blurb: 'Sampling, Nyquist, aliasing, bit depth, quantization, dither, A/D and D/A conversion.', route: 'DigitalLab', key: 'af_digital_audio', member: true },
       { name: 'Visual Audio Analysis', blurb: 'Waveform, spectrum, spectrogram, waterfall, phase, correlation, LUFS, peak, RMS, VU.', route: 'MeterLab', key: 'af_visual_analysis', member: true },
-      { name: 'Signal Chain Builder', blurb: 'This rack’s fixed order: Generator → EQ → Comp → Gate → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output.', route: 'SignalChainLab', key: 'af_signal_chain', member: true },
+      { name: 'Signal Chain Builder', blurb: 'This rack’s fixed order: Generator → EQ → Comp → Gate → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output. Most engineers would gate before the compressor.', route: 'SignalChainLab', key: 'af_signal_chain', member: true },
       { name: 'Signal Detective', blurb: 'Identify the meter, read the display, spot the problem, prescribe the fix.', route: 'MeterModule', params: { id: 'detective' }, key: 'af_signal_detective', member: true },
       // FLAGSHIP (owner spec 2026-08-15): connectors, cables, selection,
       // inspection, virtual tester, system challenges, safety-gated final.
@@ -351,7 +351,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       { name: 'Limiter', blurb: 'Brickwall ceiling, release, gain reduction (GR).', route: 'LimiterLab' },
       // LIVE V1 (owner brief 2026-09-02): the family hub opens with the De-Esser
       // & Sibilance Control lab; the other processors are listed as planned.
-      { name: 'Smart Processors Lab', blurb: 'Processors that listen, decide and act — V1: the De-Esser & Sibilance Control lab.', route: 'SmartProcessorsLab' },
+      { name: 'Smart Processors Lab', blurb: 'Processors that listen, decide and act — first up: the De-Esser & Sibilance Control lab.', route: 'SmartProcessorsLab' },
     ],
   },
   {
@@ -370,7 +370,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     id: 'modulation',
     glyph: '🌀',
     name: 'Modulation',
-    description: 'Moving comb filters and detuned voices — chorus, flanger, phaser.',
+    description: 'Moving notches and detuned voices — chorus, flanger, phaser.',
     section: 'training',
     kind: 'list',
     labs: [

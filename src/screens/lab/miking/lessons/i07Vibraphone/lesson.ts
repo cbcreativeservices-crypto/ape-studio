@@ -553,7 +553,7 @@ const copy: Partial<LessonCopy> = {
     kitA11y: 'A small jazz group from above: the vibraphone with its player, a drum kit, a bass amp and a piano.',
     kitLanding: 'Tap anything around the vibraphone — or step through ITEM — to see what it means for a vibraphone mic. There is nothing to answer yet.',
     kitIdle: 'The vibraphone in a small band: the player behind it, the drums and the bass amp close by — loud neighbours for any mic over the bars.',
-    leftHanded: 'Layouts vary: the low end is on the player’s left. Check the real layout and every note the part uses with the player.',
+    leftHanded: 'Most vibraphones put the low end on the player’s left, but layouts vary. Check the real layout and every note the part uses with the player.',
     stageA11y: 'The group on a stage, from above: a floor wedge in front of the vibraphone, a side fill on stage left, the audience below.',
     studioA11y: 'The vibraphone in a studio room, from above: the walls around it, no monitors.',
     stageIdle: 'Two monitors: a wedge in front of the vibraphone, facing the player, and a side fill on a stand at stage left. The PA faces the audience.',

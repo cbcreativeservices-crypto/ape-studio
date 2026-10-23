@@ -30,9 +30,9 @@ export const RIDE_COPY: Partial<LessonCopy> = {
     variantNotes: {},
   },
   setting: {
-    kitA11y: 'The drum kit from above: the ride on the player’s right, ringed in amber, over the floor tom; the larger crash beside it, the throne behind.',
+    kitA11y: 'The drum kit from above: the ride on the player’s right, ringed in amber, over the floor tom; the 18 in crash beside it, the throne behind.',
     kitLanding: 'Tap anything around the ride — or step through ITEM — to see what it means for a ride mic. There is nothing to answer yet.',
-    kitIdle: 'The ride hangs over the floor tom on the player’s right, with the larger crash beside it. The player’s right arm reaches out to it all song long.',
+    kitIdle: 'The ride hangs over the floor tom on the player’s right, with the 18 in crash beside it. The player’s right arm reaches out to it all song long.',
     leftHanded: 'Many left-handed players set the kit up mirrored — the ride on the left.',
     stageA11y: 'The kit on a stage, from above: the drummer’s fill beside the throne, a downstage wedge on the audience side, and the audience and PA to the right.',
     studioA11y: 'The kit in a studio room, from above: no monitors on the floor; the room’s walls around it.',
@@ -59,7 +59,7 @@ export const RIDE_COPY: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the face of the ride it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every ride is different.',
       separate: 'Height above the ride, the spot over the plate (bell, bow or edge) and the angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT, square to the tilted ride, and rounded to ≈ 5 mm.',
-      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable out of the stick’s side of the ride, its swing (hardest after a crash on the edge), the crash beside it, the ride’s own boom and the player’s right arm. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room on a real kit.',
+      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable out of the stick’s side of the ride, its swing (hardest after a crash on the edge), the crash beside it, the ride’s own boom and the player’s right arm. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real kit.',
       tendencies: 'Toward the bell tends to bring a brighter, more cutting sound; toward the edge more of the wash. Higher takes in more of the kit around the ride; underneath, less stick. Tendencies, checked by ear.',
     },
   },

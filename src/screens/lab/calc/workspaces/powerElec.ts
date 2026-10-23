@@ -457,7 +457,7 @@ const RACK: Workspace = {
       inputs: ['watts', 'mains', 'dTempF'],
       formula: 'I = P/V; BTU/hr = W·3.4121; CFM = BTU/hr / (1.08·ΔT)',
       plainFormula:
-        'The mains current equals the power over the voltage; the heat output equals the wattage times 3.4121 BTU per hour; and the cooling airflow equals the heat output divided by 1.08 times the temperature rise.',
+        'The mains current equals the power over the voltage; the heat output equals the wattage times 3.4121 (BTU per hour for each watt); and the cooling airflow equals the heat output divided by the product of 1.08 and the temperature rise in °F.',
       explain:
         'Every watt a rack draws that isn’t sent down speaker cables ends up as heat, so total wattage is a safe high guess for amp racks. From the total device wattage this gives the mains current it pulls, the heat it dumps in BTU per hour, and the airflow (CFM) needed to hold a chosen temperature rise — sizing the circuit, the AC load, and the fans before something trips or cooks.',
       keySymbols: ['Δ', '·', '/'],

@@ -358,7 +358,7 @@ function PageMonitorMixes({ ctx }: { ctx: PageCtx }) {
       <Body>Four aux sends, one per wedge, on every channel. Wedge 1 is the singer’s: vocal and a little keys. Wedge 2 the guitarist’s: guitar, vocal, kick. Wedge 3 the bassist’s: bass, kick, vocal. Wedge 4 the drummer’s: kick, bass, vocal.</Body>
       <Prompt>Step each send up and set it PRE — or use ALL PRE at the top of a column. Watch the wedges fill.</Prompt>
       <GoalChips goals={goals} latched={latched} />
-      <KeyFact>Each aux is one performer’s world. The house engineer’s faders must not reach into it — which is what PRE means. Each aux is then usually one performer’s mix — one or more wedges, or one in-ear transmitter.</KeyFact>
+      <KeyFact>The house engineer’s faders must not reach into a performer’s mix — which is what PRE means. Each aux is then usually one performer’s mix — one or more wedges, or one in-ear transmitter. A stereo in-ear mix often takes a linked pair of auxes.</KeyFact>
     </SoundSystemsRackLayout>
   );
 }

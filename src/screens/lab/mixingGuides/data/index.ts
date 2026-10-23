@@ -70,7 +70,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "num": 8,
     "title": "Reggaeton",
     "line": "The dembow (reggaeton's core drum pattern) pulse (kick, sub and snare/timbal) locked and huge, with a clear, upfront Spanish lead vocal riding on it",
-    "origin": "Panama’s Spanish-language reggae (late 1980s) and Puerto Rico’s “underground” scene (early–mid 1990s), built on the Jamaican Dem Bow riddim (instrumental backing track); global from 2004, with Latin trap rising out of Puerto Rico from the mid-2000s"
+    "origin": "Panama’s Spanish-language reggae (late 1980s) and Puerto Rico’s “underground” scene (early–mid 1990s), built on the Jamaican Dem Bow riddim (instrumental backing track); global from 2004, with Latin trap growing out of Puerto Rico from the mid-2000s and breaking through in the mid-2010s"
   },
   {
     "id": "regional-mexican",

@@ -46,7 +46,7 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we suggest you begin — one mic for the pair, or one per drum — measured from the right head, outside the hands; then move the mic and see what changes.',
+    goal: 'Start where we suggest you begin — one mic for the pair, or one per drum — measured from the head the zone names, outside the hands; then move the mic and see what changes.',
     credit: { scenarios: ['cg.place.1', 'cg.place.2', 'cg.place.3', 'cg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named head — not a rule. Shift toward the quieter drum, raise for a blend, move closer for directness — one change at a time, and clearance first.',
   },
@@ -505,7 +505,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, measured from the head it names', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of the hands, wrists, knees and the open ends', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on congas', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position on the drums', role: 'wrong', feedback: 'Bass emphasis is not a passing reason, and no position always gives the most bass.' };
@@ -783,7 +783,7 @@ export const M04A_LESSON: HandLesson = {
     placeLearn: [
       'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum and player is different.',
       'Height, distance and angle are separate variables: change one at a time and have the player play every stroke again. A starting point that names an aim counts only while the mic faces that way. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
-      'Clearance comes first. Stop the player before moving a mic; keep the capsule, stand, boom, clamp and cable clear of every hand stroke, wrist and knee — and of the open lower ends. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear; leave more room on a real stage, and check again during the loudest, most animated passage.',
+      'Clearance comes first. Stop the player before moving a mic; keep the capsule, stand, boom, clamp and cable clear of every hand stroke, wrist and knee — and of the open lower ends. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real stage, and check again during the loudest, most animated passage.',
       'Closer and more direct tends to bring more hand detail and isolation — and can favour one stroke or make slaps very pronounced. Backing off in a good room tends to balance the strokes, with more of the room and the band. A separate room mic, about two metres in front, is another idea for a good studio. Move the mic before reaching for EQ.',
     ],
     context: {
@@ -820,7 +820,7 @@ export const M04A_LESSON: HandLesson = {
     pairLearn: [
       'Two mics on the same drums capture overlapping sound at different times. Bring up one mic as a reference, then add the second at a useful level, and listen to the blend in mono across every stroke.',
       'If the lows or the attack thin out, move or re-aim a mic first, then compare its polarity switch — a diagnostic step, not a cure. Keep whichever arrangement best represents the whole part; live, use the fewest open mics that give the control you need.',
-      'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity inversion flips the sign — the notches and peaks swap places; it does not remove the delay. No fixed spacing ratio makes a pair on one set of drums coherent.',
+      'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity inversion flips the sign — the notches and peaks swap places; it does not remove the delay. No fixed spacing ratio makes a pair on one set of drums coherent.',
     ],
     pairWarn: 'The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone (1/r) — that does not hold this close to a drumhead, so read the depths as illustrative only. Judge the pair by ear, in mono, at matched levels.',
   },

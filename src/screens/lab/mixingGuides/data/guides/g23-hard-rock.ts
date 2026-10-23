@@ -126,7 +126,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "Hammond / keys",
         "cut": "HPF 100 Hz; −2 dB at 250–400 Hz",
-        "boost": "+2 dB at 1–3 kHz on organ grit",
+        "boost": "+2 dB at 1–2 kHz on organ grit",
         "notes": "Keep out of the vocal’s 2–4 kHz zone"
       }
     ],

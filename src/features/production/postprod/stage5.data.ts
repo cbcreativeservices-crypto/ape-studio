@@ -543,7 +543,7 @@ export const STAGE5_BUILD: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "Correction applied without hearing it against the original",
-      detail: "Correction is being judged without a level-matched comparison to the performance it replaced. Corrected material is often a little louder and a little tidier, and both of those read as better on their own.",
+      detail: "Correction is being judged without a level-matched comparison to the performance it replaced. Corrected material often comes back at a slightly different level and a little tidier, and either can read as better on its own.",
       fixHint: "Match the levels, switch between the two in context, and specifically listen for what has gone rather than for what has improved.",
       needsLogic: true,
       logicIntent: "Fire when correction_scope is non-empty and correction_compared is no or soloed."

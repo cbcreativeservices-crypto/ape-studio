@@ -506,7 +506,7 @@ function LiquidStudio() {
             {dualId === 'off'
               ? 'One drive frequency. Two-frequency forcing is the usual way the quasiperiodic “superlattice” patterns are made.'
               : tone.dualReady
-                ? `Two tones summed in one channel (${formatHz(freq)} + ${formatHz(freqB!)}) — heard AND shown. The surface prefers a quasiperiodic lattice.`
+                ? `Two tones summed in one channel (${formatHz(freq)} + ${formatHz(freqB!)}) — heard AND shown. The surface can form a quasiperiodic lattice, depending on the two frequencies and their mix.`
                 : 'The second tone is SHOWN only — this build’s sound engine plays one tone at a time.'}
           </Text>
         </View>

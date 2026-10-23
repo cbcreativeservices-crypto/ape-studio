@@ -240,7 +240,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'amb.rec.2',
     page: 'placement',
-    prompt: 'FROM EARLIER · Who should be told before you record identifiable conversation?',
+    prompt: 'FROM EARLIER · Before you record identifiable conversation, who or what do you check?',
     options: ['Check the permissions and privacy rules', 'Nobody, as long as it is recorded outdoors', 'Only the venue, after the take'],
     correct: 'Check the permissions and privacy rules',
     explain: 'Check access, permissions and the privacy rules for the place before capturing identifiable conversation or publishing a take — they vary from place to place.',

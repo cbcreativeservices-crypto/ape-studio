@@ -77,7 +77,7 @@ export const STARTER_GLOSSARY: Record<string, StarterGlossaryEntry> = {
   },
   'microphone (mic)': {
     term: 'Microphone (Mic)',
-    definition: 'A transducer converting acoustic sound waves to electrical signals. Types include dynamic (moving-coil), condenser, and ribbon; lavalier describes a form factor rather than a transducer type. Essential to all audio recording.',
+    definition: 'A transducer converting acoustic sound waves to electrical signals. Types include dynamic (moving-coil), condenser, and ribbon; lavalier describes a form factor rather than a transducer type. Essential to recording any acoustic sound.',
     plain_english: 'A microphone is the first link in the audio chain. It turns sound in the air into an electrical signal your gear can work with. The types work in different ways. Condenser mics are sensitive and detailed. Dynamic mics are rugged. Knowing your mics is basic to good recording.',
   },
   noise: {

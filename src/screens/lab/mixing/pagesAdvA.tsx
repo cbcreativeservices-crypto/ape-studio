@@ -54,7 +54,7 @@ function PageGate({ ctx }: { ctx: PageCtx }) {
             correct={1}
             explain="Post-fader means tapped AFTER the fader — the copy follows every mix move. That is why effects usually ride post and cue feeds usually ride pre."
             wrong={[
-              'So muting a channel would leave its reverb blasting — mix one show and this theory dies fast.',
+              'So pulling the fader down would leave its reverb playing on its own — mix one show and this theory dies fast.',
               undefined,
               'No console volunteers gain. Nothing in a send path compensates for anything.',
               'Signals do not migrate between channels — routing only goes where it is patched.',
@@ -125,7 +125,7 @@ function PagePlanning({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>Amateur mixes start at the kick drum. Professional mixes start at a DECISION LIST — because on a 60-track session, taste without a plan is just wandering.</Lead>
+      <Lead>Professional mixes start at a DECISION LIST — before the first fader, even before the kick drum — because on a 60-track session, taste without a plan is just wandering.</Lead>
       <Card>
         <Eyebrow>THE PLAN, BEFORE THE FADERS</Eyebrow>
         <ConceptList items={PLANNING.map((p) => ({ id: p.id, name: p.name, blurb: p.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
@@ -248,7 +248,7 @@ function PageGroupsDeep({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>WHERE THE COMPRESSOR SITS — AND WHERE A PULL ACTS</Eyebrow>
-        <Prompt>The drawing follows your pick above. Then pull the VCA or the subgroup down 6 dB and watch which fader moves.</Prompt>
+        <Prompt>The drawing follows your pick above. Then pull the VCA or the subgroup down 6 dB and watch where the cut acts.</Prompt>
         <GroupsArt comp={comp} pull={pull} />
         <Row>
           {(

@@ -429,7 +429,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A miniature on a bell clip, aimed between centre and edge', ok: true, power: 'phantom', feedback: 'A suggested starting point that rides on the bell — check the fit, the cup mute and the cable.' },
       { id: 'b', label: 'Dynamic about 30 cm away, a little off axis, its null aimed at the wedge', ok: true, power: 'none', feedback: 'A suggested starting point if the player keeps to an agreed zone — check the cup mute clears it.' },
-      { id: 'c', label: 'Condenser 1 m in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage a metre away hears the band and the monitors more than the horn.' },
+      { id: 'c', label: 'Condenser 1 m in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage, a mic a metre away hears much more of the band and the monitors, and feedback comes sooner.' },
       { id: 'd', label: 'A generic clamp tightened onto the bell, then taped', ok: false, power: 'phantom', feedback: 'Never an unapproved clamp on a bell or its finish: use a clip made for it, with the player’s agreement.' },
       { id: 'e', label: 'A mic aimed straight at the singer’s mic, to share it', ok: false, power: 'none', feedback: 'That puts the bell at the singer’s ear and mic — a layout problem, not a mic choice.' },
     ],

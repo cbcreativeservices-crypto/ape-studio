@@ -524,7 +524,7 @@ export const E16_LESSON: EnsembleLesson = {
     stages: [
       { title: 'Three rows, three distances', text: 'Reeds nearest and lowest, trombones next, trumpets highest and farthest: anything in front hears the rows at different distances.' },
       { title: 'Each horn its own way', text: 'Brass from the bell, strongly directional; saxes from their tone holes and bells; the trombones’ slides moving in front of them.' },
-      { title: 'The rhythm section beside', text: 'The piano under its lid, the bass from its body, the guitar from its amp, the kit from every drum and cymbal — loud neighbours for every horn mic.' },
+      { title: 'The rhythm section beside', text: 'The piano under its lid, the bass from its body, the guitar mostly from its amp, the kit from every drum and cymbal — loud neighbours for every horn mic.' },
     ],
     attack: 'Brass attacks and drum hits reach close mics first and hardest; the main view hears them softened by distance and the room.',
     body: 'The band blended in the room. A main pair hears the rows as the hall does; section and close mics hear their players with the band behind them. Tendencies — bands and rooms vary.',

@@ -110,7 +110,7 @@ export const SAFETY_RULES: readonly SafetyRule[] = [
   {
     id: 'mute_first',
     rule: 'Mute the system before connecting or disconnecting equipment.',
-    why: 'Contacts bridge as plugs seat and pops go through the system at full power — the monitors and the audience hear every one.',
+    why: 'Contacts bridge as plugs seat, and each pop goes through the system at whatever gain it is set to — the monitors and the audience hear every one.',
   },
   {
     id: 'amps_last',
@@ -171,7 +171,7 @@ export const MISCONCEPTIONS: readonly Misconception[] = [
   { id: 'xlr_mic', claim: 'XLR always carries a microphone signal.', answer: false, correction: 'XLR also carries balanced line, AES3 digital, intercom and more. The shell never identifies the signal.' },
   { id: 'balanced_stereo', claim: 'Balanced means stereo.', answer: false, correction: 'Balanced is a NOISE-REJECTION scheme: ONE signal on two conductors with equal impedance to ground, plus a shield. Many outputs drive both legs in opposite polarity; some drive only one. Either way a balanced connection is mono.' },
   { id: 'fit_compatible', claim: 'If two connectors fit, the devices are compatible.', answer: false, correction: 'Fit is question 1 of 4. Signal, construction and safety still have to pass — the most expensive mistakes all FIT perfectly.' },
-  { id: 'midi_audio', claim: 'MIDI cables carry musical audio.', answer: false, correction: 'MIDI carries INSTRUCTIONS — which note, how hard, which control. No audio signal ever travels down a MIDI cable.' },
+  { id: 'midi_audio', claim: 'MIDI cables carry musical audio.', answer: false, correction: 'MIDI carries INSTRUCTIONS — which note, how hard, which control. The sound itself never travels down a MIDI cable as an audio signal.' },
   { id: 'adapter_converts', claim: 'An adapter automatically converts the signal.', answer: false, correction: 'A plain wired adapter changes only the SHAPE — it can preserve or degrade a connection, never upgrade it. Level, balance, impedance and protocol are untouched. A pad, a matching transformer or a DI is a different part that does convert, chosen for that job.' },
   { id: 'usbc_identical', claim: 'All USB-C cables have identical capabilities.', answer: false, correction: 'Identical plugs, different cables: data rate, power rating and video support vary. Some charge-only cables have no data wires at all.' },
   { id: 'any_quarter', claim: 'Any 1/4-inch cable can connect an amplifier to a passive speaker.', answer: false, correction: 'Only actual SPEAKER cable belongs on amplifier duty. An instrument cable with the same plug loses power, heats, and can fail.' },

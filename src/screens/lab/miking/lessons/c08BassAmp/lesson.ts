@@ -107,7 +107,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Close in, a mic aimed at the middle of a woofer tends to hear…',
     options: ['only the lowest notes, since the middle moves most', 'nothing of the cone, only the dust cap’s air', 'more upper-mid bite than toward the edge'],
     correct: 'more upper-mid bite than toward the edge',
-    explain: 'Higher up, the middle of the cone does more of the work, so a close mic aimed there tends to hear more attack — slap, pick, fretless articulation. Toward the edge tends to be warmer. Tendencies to check.',
+    explain: 'At higher pitches, the middle of the cone does more of the work, so a close mic aimed there tends to hear more attack — slap, pick, fretless articulation. Toward the edge tends to be warmer. Tendencies to check.',
     why: {
       'only the lowest notes, since the middle moves most': 'At low pitches the whole cone moves as one; the middle adds the UPPER content.',
       'nothing of the cone, only the dust cap’s air': 'The dust cap is part of the moving cone: the mic hears the cone’s front.',

@@ -31,7 +31,7 @@ export const RIDE_MODEL: InstrumentModel = cymbalModel({
   },
   roles: {
     'kit.floor': 'Right under the ride: a mic under the ride has the floor tom below it, and the floor tom’s mic hears plenty of ride.',
-    'cym.crash2': 'The larger crash hangs beside and above the ride’s audience side: a mic over that side runs into it.',
+    'cym.crash2': 'The 18 in crash hangs beside and above the ride’s audience side: a mic over that side runs into it.',
     'kit.throne': 'The player sits here; the right arm reaches out to the ride — its tip on the bow and bell, its shoulder on the edge.',
   },
   listed: ['kit.floor', 'cym.crash2', 'kit.throne'],

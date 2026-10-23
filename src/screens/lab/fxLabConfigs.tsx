@@ -1194,7 +1194,7 @@ const limiterConfig: FxLabConfig = {
     rangeDb: -40,
     ceilingDb: v[P.ceilingDb],
     makeupDb: 0,
-    // "this v1 limiter is a fast peak limiter" (the lab's own note) — the
+    // "this lab’s limiter is a fast peak limiter" (the lab's own note) — the
     // ceiling is not negotiable, so the attack is effectively instant.
     // Effects.hpp:373 forces 0.1 ms in LimiterMode regardless of param 3, so
     // that is what the drawing depicts.
@@ -1209,7 +1209,7 @@ const limiterConfig: FxLabConfig = {
       v[P.ceilingDb] < -20 ? `${Math.abs(v[P.ceilingDb] + 20)} dB of constant gain reduction (watch the meter)` : 'under the ceiling, untouched'
     }.`,
   pollGr: 'limiter',
-  note: 'True-peak/inter-sample detection and lookahead are covered in the lesson (ⓘ) — this v1 limiter is a fast peak limiter.',
+  note: 'True-peak (inter-sample) detection and lookahead are covered in the lesson (ⓘ) — this lab’s limiter is a fast peak limiter.',
   checks: [
     {
       question: 'A limiter is best described as…',
@@ -1318,7 +1318,7 @@ const distConfig: FxLabConfig = {
       ? 'Top and bottom clip DIFFERENTLY (asymmetric) → even harmonics join the odd ones — the “warm” sound of many tube stages.'
       : 'Top and bottom clip the SAME (symmetric) → odd harmonics only — hollow/harsh.';
   },
-  note: 'Bitcrush and sample-rate reduction are in the engine, but this lab does not draw them — the lesson (ⓘ) explains how they work.',
+  note: 'Bitcrush and sample-rate reduction are real effects, but this lab does not draw them — the lesson (ⓘ) explains how they work.',
   checks: [
     {
       question: 'Distortion makes a pure sine tone sound "rich". What was added?',
@@ -1541,7 +1541,7 @@ const stereoConfig: FxLabConfig = {
     v[P.monoFold] > 0.5
       ? 'MONO CHECK: everything wide is gone — only the MID survives the fold.'
       : v[P.widthPct] > 100
-        ? 'Past 100% the SIDE outweighs the MID — huge on headphones, hollow in mono. Watch the correlation.'
+        ? 'Past 100% the SIDE is boosted above its natural balance with the MID — huge on headphones, hollow in mono. Watch the correlation.'
         : v[P.widthPct] === 0
           ? 'Width 0 = pure MID: a vertical line, perfectly mono-safe.'
           : 'The classic trade: width vs mono safety.',

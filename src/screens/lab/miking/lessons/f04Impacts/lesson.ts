@@ -299,8 +299,8 @@ const scenarios: MikingScenario[] = [
     id: 'f04.two.4',
     page: 'twoMic',
     prompt: 'You have two airborne mics on a splash. What is a fair way to use them?',
-    options: ['Choose one for the scene, or sum it if mono holds', 'Sum both at equal level, so neither view is lost', 'Sum both and flip one’s polarity to tighten the attack'],
-    correct: 'Choose one for the scene, or sum it if mono holds',
+    options: ['Choose one for the scene, or sum both if mono holds', 'Sum both at equal level, so neither view is lost', 'Sum both and flip one’s polarity to tighten the attack'],
+    correct: 'Choose one for the scene, or sum both if mono holds',
     explain: 'Choosing among mics, rather than combining every main mic, is a fair working method; a second mic can be a distant perspective or a different task. If you sum them, check the sum in mono over the whole cue.',
     why: {
       'Sum both at equal level, so neither view is lost': 'Two mics at different distances make a comb when summed; choosing one is just as fair.',

@@ -637,7 +637,7 @@ export function ToolStage({ width, height, view, amount, ov, loud }: { width: nu
         <SvgText x={x0 + 6} y={top + 26} fontSize={fsS} fill={ink.dim} fontFamily={fonts.mono}>↑ out dB</SvgText>
         {/* ≤ 316 units at 11 (the old line ran to x 424 of 360 and was cut
             off mid-word on every phone and in full screen). */}
-        <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>a static curve (no attack, release or knee) · it bends at thr</SvgText>
+        <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>a static curve (no attack or release; hard knee) · it bends at thr</SvgText>
       </Svg>
     );
   }

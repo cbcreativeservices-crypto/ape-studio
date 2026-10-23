@@ -15,7 +15,7 @@ export const TWO_WORDS = {
   shoulderWarn: 'In this drawing the shoulder method’s second mic lands inside the sticks’ reach, near the player’s right shoulder. The 81 cm is a described example — it is never a reason to crowd the player. Move the mic clear, then re-measure.',
   xyWide: 'Wider than about 135°, the capsules start to aim past the kit; lowering the pair, or a smaller angle, gives a more direct sound.',
   ms: 'A Mid mic faces the kit; a figure-8 Side mic sits with it, its two lobes across the kit. A matrix (in the desk or software, not a rewired cable) makes left = Mid + Side and right = Mid − Side, so the width is set by the Side’s level. Summed to mono, the Side cancels and only the Mid is left — a mono-safe pair, as long as the decode is right.',
-  comb: 'What you just saw: sound reaches two mics at different times. Summed, the later copy cancels where it is half a period late — comb-filter notches. Polarity flips the sign: the notches and peaks swap places, but the delay stays. 0 dB on the graph is the two arrivals in step.',
+  comb: 'What you just saw: sound reaches two mics at different times. Summed, the later copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late — comb-filter notches. Polarity flips the sign: the notches and peaks swap places, but the delay stays. 0 dB on the graph is the two arrivals in step.',
 } as const;
 
 export const PAIRS_WORDS: Record<PairId, { label: string; short: string; blurb: string; how: string; tradeoff: string; mono: string }> = {

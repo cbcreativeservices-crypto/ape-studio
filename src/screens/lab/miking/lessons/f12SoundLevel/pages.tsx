@@ -180,7 +180,7 @@ function F12Context({ lesson, answers, onAnswered, onInteractive, interactiveDon
       layout: 'read',
       body: (
         <Card>
-          <Point title="THE WINDSCREEN">Fit it, and watch for gusts buffeting the capsule in the lows. A windscreen reduces buffeting — it does not make a high-wind interval valid, and it does not waterproof the mic.</Point>
+          <Point title="THE WINDSCREEN">Fit the windscreen, and watch for gusts buffeting the capsule in the lows. A windscreen reduces buffeting — it does not make a high-wind interval valid, and it does not waterproof the mic.</Point>
           <Point title="ONE PROTOCOL’S WIND LIMIT">One park-monitoring protocol leaves out intervals with wind over 5 m/s (11 mph) because of false readings. That limit belongs to that protocol; your method names its own.</Point>
           <Point title="LOG IT, DO NOT FIX IT">Note wind, rain, temperature and humidity as the method asks, and the aircraft, speech, construction or rain that change what a level means. No arbitrary filter, noise reduction or “wind correction” to get a cleaner number; keep the raw records and a written reason for every interval you leave out.</Point>
         </Card>

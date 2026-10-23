@@ -91,7 +91,7 @@ export const GEAR: readonly GearSpec[] = [
     accepts: [],
     emits: ['mic', 'line'],
     roles: ['stageSource', 'stageInfra', 'foh'],
-    blurb: 'The rack half of a wireless microphone. The transmitter rides on the performer; the receiver outputs the signal on a cable — usually mic level on its XLR, line level on its ¼-inch — set by its switch. The RF rack lives side-stage on any real show.',
+    blurb: 'The rack half of a wireless microphone. The transmitter rides on the performer; the receiver outputs the signal on a cable — usually mic level on its XLR, line level on its ¼-inch — set by its switch. On most larger shows the RF rack lives side-stage; on a small show it may sit at front of house.',
     from: 'The handheld or bodypack transmitter over radio.',
     to: 'A console input — match the receiver’s output switch to the input you use.',
     many: true,

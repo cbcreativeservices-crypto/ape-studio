@@ -12,7 +12,7 @@
  */
 import type { MikingScenario, SetupReason, Symptom } from '../../../engine/model/types.ts';
 
-const OK = 'No — the mic’s own capsule may be overloading';
+const OK = 'No — the mic itself may be overloading';
 const METER = 'Yes — a clean meter means the whole chain is clean';
 const LOWGAIN = 'Yes, as long as the preamp gain is set low';
 
@@ -40,7 +40,7 @@ export const brassFeedback = (id: string, noun: string): Symptom => ({
   explain: 'Feedback is a sound-system condition: reduce the level first, then move the mic or the wedge, aim the pattern’s rejection and close mics you do not need. Avoid uncontrolled feedback.',
   why: {
     [`Boost the ${noun} channel so it rides over the ring`]: 'More gain feeds the loop. Lower the level first.',
-    'Swap to an omni mic, which is less likely to feed back': 'An omni rejects nothing: it usually makes feedback more likely, not less.',
+    'Swap to an omni mic, which is less likely to feed back': 'An omni has no null to aim at the monitor: it usually makes feedback more likely, not less.',
   },
 });
 

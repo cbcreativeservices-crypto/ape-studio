@@ -33,7 +33,7 @@ export const GUIDE: MixingGuide = {
   "instruments": [
     {
       "label": "Drums and programming:",
-      "text": "acoustic kit plus electronic layers; dance tracks often blend kick samples or 808-style subs, reggaeton-influenced songs carry the dembow (reggaeton's core drum pattern) pattern.",
+      "text": "acoustic kit plus electronic layers; dance tracks often blend kick samples or 808-style subs, reggaeton-influenced songs carry the dembow (reggaeton's core drum pattern).",
       "bullet": true
     },
     {
@@ -53,7 +53,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Latin percussion:",
-      "text": "congas, bongos, timbales (two metal-shelled drums with cymbal and cowbells), güiro (scraped gourd), shaker, campana (cowbell), cajón (box drum) and flamenco palmas (handclaps) in Spanish pop; pandeiro (Brazilian tambourine), surdo (deep samba bass drum) and cavaquinho (small four-string guitar) in Brazilian pop; accordion and caja vallenata (small vallenato hand drum) for Colombian vallenato-pop (Colombian accordion pop).",
+      "text": "congas, bongos, timbales (two metal-shelled drums with cymbal and cowbells), güiro (scraped gourd), shaker, campana (cowbell), cajón (box drum) and flamenco palmas (handclaps) in Spanish pop; pandeiro (Brazilian tambourine) and surdo (deep samba bass drum) in Brazilian pop, often next to the cavaquinho (small four-string guitar); caja vallenata (small vallenato hand drum), which plays with the accordion, in vallenato-pop (Colombian accordion pop).",
       "bullet": true
     },
     {

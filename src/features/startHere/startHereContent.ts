@@ -338,8 +338,8 @@ export const FIRST_SOURCES: readonly { id: FirstSource; label: string; blurb: st
 export type Unplug = 'none' | 'cableA' | 'cableB';
 export const UNPLUG_OPTIONS: readonly { id: Unplug; label: string; blurb: string }[] = [
   { id: 'none', label: 'ALL CONNECTED', blurb: 'Every cable plugged in: the signal reaches the speaker and the listener hears it.' },
-  { id: 'cableA', label: 'UNPLUG MIC CABLE', blurb: 'The mixer and the speaker both lose the signal — everything after the break loses it. The listener hears only the singer’s own, unamplified voice.' },
-  { id: 'cableB', label: 'UNPLUG SPEAKER CABLE', blurb: 'The mixer still receives the mic, and its meters still move — but nothing reaches the speaker. The listener hears only the singer’s unamplified voice.' },
+  { id: 'cableA', label: 'UNPLUG MIC CABLE', blurb: 'The mixer and the speaker both lose the signal — everything after the break loses it. The listener hears only the source itself, unamplified: your voice, or the small test-tone speaker.' },
+  { id: 'cableB', label: 'UNPLUG SPEAKER CABLE', blurb: 'The mixer still receives the mic, and its meters still move — but nothing reaches the speaker. The listener hears only the source itself, unamplified: your voice, or the small test-tone speaker.' },
 ];
 
 /** Step 5: reflect — tap to reveal. */
@@ -688,7 +688,7 @@ export const SECTIONS: readonly StartSection[] = [
         id: 'fs-make',
         title: 'Step 1 · Make a sound',
         rack: true,
-        lead: 'On the display: the source vibrating. Choose the sound you will follow through the next five steps.',
+        lead: 'On the display: the source vibrating. Choose the sound you will follow through all five steps.',
         caption: 'Pick a SOURCE. For the test tone, set its FREQUENCY and press PLAY. For your voice, just hum.',
         paras: [
           'Every audio signal starts as a sound. Choose one: the app’s test tone, or your own voice.',

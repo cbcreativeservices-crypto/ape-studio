@@ -25,7 +25,7 @@ const BASE = standingVoiceCopy({
     { title: 'SURVEY THE POSITION FIRST', text: 'Before any mic: draw who sits where, the sight lines, the desk, the notes and the screen, the windows, the venue’s loudspeakers, the crowd’s direction — and where each voice must go: the program, the recorder, the PA, talkback and the commentator’s own headphones.' },
     { title: 'HEAR A REAL CALL', text: 'Ask for a quiet passage and an excited peak while the commentator follows imaginary play: watch how far the mouth moves, whether the head turns to the partner, and what glasses, a scarf or the notes knock against.' },
     { title: 'A RIBBON NEEDS CARE', text: 'Never blow into a mic to test it. A lip ribbon is passive: check its interface and its phantom-power setting with the audio lead before connecting, and follow the venue’s hygiene rule for a shared lip mic.' },
-    { title: 'CABLES AND STRUCTURE', text: 'Secure headset and desk cables away from walkways, doors and windows. Nothing over the playing area, and nothing fixed to the venue’s structure without approval. Have a tested fallback mic before the event starts.' },
+    { title: 'CABLES AND STRUCTURE', text: 'Secure headset and desk cables away from walkways, doors and windows. Nothing over the playing area without approval and a qualified rigger, and nothing fixed to the venue’s structure without approval. Have a tested fallback mic before the event starts.' },
   ],
   studio: {
     id: 'b9.ctx.studio',

@@ -136,8 +136,8 @@ const AXES_AMP: HandSpec['axes'] = {
 const WORDS: HandSpec['words'] = {
   placeBadge: 'Blue = suggested starting points · grey dashes = the hands, the player and the amp’s vents · pinch to zoom',
   clearance: 'Clearance comes first: the mouth, the hands’ whole movement, any neck holder and a harmonica swap. On the amp, keep the mic off the grille and the air behind the amp clear. Cables out of walkways.',
-  cardioidTried: 'What you just saw: a cardioid rejects most directly behind (180°). A stand mic facing the harmonica turns its back toward the audience side — where a floor wedge often sits. The harp amp, behind the player, sits off to its side: no null reaches it.',
-  sourceNote: 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: the front and the back of the cone each give their own delay.',
+  cardioidTried: 'What you just saw: a cardioid rejects most directly behind (180°). A stand mic facing the harmonica turns its back toward the audience side — where a floor wedge often sits. The harp amp, behind the player, sits in front of the mic and off to one side: no null reaches it.',
+  sourceNote: 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: the front and the back of the cone each give their own delay.',
 };
 
 const BASE: Omit<HandSpec, 'axes' | 'worked' | 'place' | 'learnZones'> = {
@@ -286,7 +286,7 @@ const SPEC: FreeReedSpec = {
     ],
     seqLooking: 'One reed cut open · the comb’s channel above, the plate and its slot',
     useWhere: useHandChamber,
-    shapesNote: 'A real harmonica reed is tapered and weighted at its tip by the maker, so its numbers differ — the picture shows which parts move. Every reed is a different length: one note each.',
+    shapesNote: 'A real harmonica reed is shaped by the maker — often tapered, and low reeds are sometimes weighted at the tip — so its numbers differ. The picture shows which parts move. Each reed is tuned to one note.',
     silentNote: 'This lab never plays a sound and draws no frequency curve: how a real harmonica sounds depends on the player, the reeds, the hands and the room. The pictures show where the sound comes from and where it leaves.',
   },
   hand: HAND_ACOUSTIC,

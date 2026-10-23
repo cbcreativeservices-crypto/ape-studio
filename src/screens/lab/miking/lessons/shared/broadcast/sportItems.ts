@@ -6,13 +6,13 @@
 import type { MikingScenario, SetupReason } from '../../../engine/model/types.ts';
 
 /** A wrong setup reason: loudness. */
-export const LOUD_VOICE: SetupReason = { id: 'r.loud', label: 'It will give the loudest voice of any position', role: 'wrong', feedback: 'Loudness is not a passing reason — level comes from gain and distance, not from a position.' };
+export const LOUD_VOICE: SetupReason = { id: 'r.loud', label: 'It will give the loudest voice of any position', role: 'wrong', feedback: 'Loudness is not a passing reason — gain sets the level; choose a position for what else the mic hears.' };
 
 /** Which change removes the arrival-time difference of one voice in two mics. */
 export const removeDelayVoice = (id: string): MikingScenario => ({
   id,
   page: 'practice',
-  prompt: 'One voice in two open mics sounds thin. Which change removes the arrival-time difference itself?',
+  prompt: 'One voice in two open mics sounds thin. Which change shrinks the arrival-time difference itself?',
   options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on one of the two microphones', 'Turning the farther mic up until it matches'],
   correct: 'Moving a mic so the two paths are closer to equal',
   explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth; neither removes the delay. Often the better answer is one mic open, not two.',

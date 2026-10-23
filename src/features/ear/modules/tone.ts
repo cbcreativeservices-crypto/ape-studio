@@ -112,7 +112,7 @@ export const M1_FREQUENCY: EarModule = {
   title: 'Frequency Recognition',
   blurb: 'Name pure tones on the ISO third-octave grid — the ear-training bedrock.',
   phones: 'recommended',
-  playbackNote: '63–80 Hz is genuinely absent on phone speakers.',
+  playbackNote: 'Phone speakers lose most of the low end: 63–80 Hz is absent, and tones up to about 200 Hz are weak. Use headphones, volume turned down first, for the low trials.',
   // NEW COPY
   listenFor: 'Anchor 1 kHz in your head first. Below it tones gain weight, then boom; above it, edge, then sizzle.',
   levels: 4,

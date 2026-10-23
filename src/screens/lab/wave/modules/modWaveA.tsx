@@ -453,7 +453,7 @@ const ABSORB_MATS: MaterialKey[] = [
 ];
 
 const ABSORB_MISTAKES = [
-  'Thinking thicker/denser absorbs everything — absorption is FREQUENCY-DEPENDENT; thin porous absorbers work highs, not lows.',
+  'Thinking any absorber soaks up everything — absorption is FREQUENCY-DEPENDENT; thin porous absorbers work highs, not lows.',
   'Trying to absorb bass with thin foam — lows need thick/tuned membrane/Helmholtz absorbers or distance from the boundary.',
   'Confusing absorption (reduces reflections inside) with soundproofing/isolation (stops transmission).',
   'Over-absorbing → a dead, unnatural room.',

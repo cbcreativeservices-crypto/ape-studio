@@ -91,8 +91,8 @@ const LESSON_WHY: Record<string, string> = {
   mk_A02: 'Trombone has a moving slide in front of it, and the microphone has to stay out of its path.',
   mk_A05b: 'Alto saxophone sounds from its keys as well as its bell, so aiming only at the bell misses half the instrument.',
   mk_A05c: 'Tenor saxophone needs the same balance between bell and keys over a lower, bigger body.',
-  mk_A06: 'Flute sounds mostly from the mouthpiece and the open holes, and from the far end only on its lowest notes; breath noise comes with a close microphone.',
-  mk_A08a: 'Clarinet sounds mostly from its finger holes, not its bell — the most common miking mistake on the instrument.',
+  mk_A06: 'Flute sounds mostly from the hole the player blows across and the open finger holes, and from the far end only on its lowest notes; breath noise comes with a close microphone.',
+  mk_A08a: 'Clarinet sounds mostly from its finger holes, not its bell. Aiming only at the bell is the most common miking mistake on it.',
   // Voice and ensembles
   mk_E01: 'The lead vocal is the most important microphone in most sessions and shows, and distance from the lips decides its sound.',
   mk_E02: 'Background and harmony vocals are balanced by distance and spacing, and the wrong spacing turns them into phase trouble.',
@@ -152,7 +152,7 @@ const BEGINNING_MIXING_ALL: LabRequirement[] = [
   { key: 'mxb_comp', why: 'Compression holds a part steady in the mix without draining its life.' },
   { key: 'mxb_space', why: 'Reverb and delay give the mix its depth, and too much drowns it.' },
   { key: 'mxb_terms', why: 'Inserts, sends, returns, buses, groups and auxes are the six words every routing conversation uses.' },
-  { key: 'mxb_sends', why: 'Pre- and post-fader sends decide whether an effect follows the fader — and when a route accidentally doubles.' },
+  { key: 'mxb_sends', why: 'Pre- and post-fader sends decide whether an effect follows the fader — and whether a route sends the same sound twice by mistake.' },
   { key: 'mxb_auto', why: 'Automation is how a mix changes with the song instead of sitting still.' },
   { key: 'mxb_finish', why: 'Checking on other speakers and at matched level is how a mix is known to be finished.' },
   { key: 'mxb_export', why: 'A mix that is exported wrongly has not been delivered.' },
@@ -219,7 +219,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_speech', why: 'Assisted listening is measured in speech intelligibility, which starts with how speech is produced and heard.' },
   ],
   'cert-audio-archival-and-restoration-v3': [
-    { key: 'tr_eq', why: 'Restoration is mostly filtering, and knowing when a filter is removing the recording along with the noise.' },
+    { key: 'tr_eq', why: 'Restoration is mostly filtering. The skill is knowing when a filter takes out the recording along with the noise.' },
     { key: 'ear_defect', why: 'Hum, hiss, crackle, clicks and dropouts have to be named by ear before they can be removed.' },
   ],
   'cert-audio-career-and-business-v3': [
@@ -333,7 +333,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'cert-forensic-audio-v3': [
     { key: 'tr_speech', why: 'Forensic work is almost always about recovering speech, so speech production is the subject.' },
-    { key: 'tr_eq', why: 'Enhancement is filtering — and knowing when a filter is removing evidence along with the noise.' },
+    { key: 'tr_eq', why: 'Enhancement is filtering. The skill is knowing when a filter takes out evidence along with the noise.' },
     { key: 'ear_defect', why: 'Dropouts, clicks and discontinuities can be signs of an edit, though they have other causes too, and you have to hear them.' },
   ],
   'cert-gain-staging-and-signal-flow-v3': [
@@ -341,7 +341,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'ear_clipping', why: 'Clipping is what bad gain staging sounds like, and you have to catch it by ear.' },
   ],
   'cert-game-audio-v3': [
-    { key: 'tr_binaural', why: 'Game audio places sound objects around the player, and that is how they are heard on headphones.' },
+    { key: 'tr_binaural', why: 'Game audio places sound objects around the player. On headphones, they are heard through binaural rendering.' },
   ],
   'cert-guitar-tone-and-recording-v3': [
     { key: 'tr_mic_select', why: 'Guitar tone on a record is largely the microphone in front of the cabinet.' },
@@ -375,7 +375,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'cert-live-sound-system-engineer-v3': [
     { key: 'tr_sound_systems', why: 'Designing, wiring, testing, tuning and fault-finding a live system is this certificate.' },
-    { key: 'tr_phase', why: 'Aligning subs to tops and the deck to the delays is phase work.' },
+    { key: 'tr_phase', why: 'Aligning subs to tops and the main speakers to the delay speakers is phase work.' },
     { key: 'tr_eq', why: 'Tuning a deployed system is filtering it to the room.' },
   ],
   'cert-live-wireless-mic-systems-v3': [
@@ -559,7 +559,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   'cert-vinyl-and-disc-mastering-v3': [
     { key: 'tr_mastering', why: 'Disc mastering starts from the mastering chain this lab teaches.' },
     { key: 'tr_eq', why: 'Cutting a lacquer is a set of frequency constraints applied with filters.' },
-    { key: 'tr_phase', why: 'Out-of-phase bass will not cut — mono compatibility is a physical limit here, not a preference.' },
+    { key: 'tr_phase', why: 'Out-of-phase bass makes the groove depth swing too far to cut or play safely — mono compatibility is a physical limit here, not a preference.' },
   ],
   'cert-vocal-mixing-specialist-v3': [
     { key: 'tr_smart_processors', why: 'De-essing is a process most vocal mixes need and most people set wrong.' },
@@ -614,7 +614,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'ear_defect', why: 'A repair starts with naming the fault by ear — hum, buzz, crackle and dropout point to different causes.' },
   ],
   'prog-audio-preservation-restoration-and-archival-science-v3': [
-    { key: 'tr_eq', why: 'Restoration is filtering, and knowing when a filter is destroying the record.' },
+    { key: 'tr_eq', why: 'Restoration is filtering. The skill is knowing when a filter is harming the record.' },
     { key: 'ear_defect', why: 'Hum, hiss, crackle, clicks and dropouts have to be named by ear before they can be removed.' },
   ],
   'prog-audio-standards-and-technical-compliance-v3': [

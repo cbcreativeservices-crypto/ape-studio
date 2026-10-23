@@ -676,8 +676,8 @@ export function SpeakerCoverageLabScreen() {
                 Narrow boxes (60°) put the same power into a smaller wedge, so they arrive louder at the
                 back — but they demand careful aim. Wide boxes (120°) spread that power over far more
                 area, so they cover close and wide at a lower level everywhere, not just at the back.
-                Where two speakers overlap, the shared zone runs hotter (about +3 dB) — energy piles up
-                (and, in the real world, combs). Front fills cover the gap between the mains at the
+                Where two speakers overlap, the shared zone runs hotter — about +3 dB on average as energy piles up
+                (in the real world it also combs: up to +6 dB at some frequencies, deep cuts at others). Front fills cover the gap between the mains at the
                 front — and, when the mains fly, the first rows they pass over.
               </Text>
             ) : (

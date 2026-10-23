@@ -362,7 +362,7 @@ const setupTasks: SetupTask[] = [
       { id: 'e', label: 'A mic straight over the clutch, touching the pull rod to hold it still', ok: false, power: 'none', feedback: 'Never on the rod or the clutch: they move with the pedal. Keep the mic clear.' },
     ],
     reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the hi-hat’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
-    explain: 'Two plans pass: no hat mic, or a dynamic over the far edge. What passes is the reasoning: start from the overheads, keep clear, and power what this input can supply.',
+    explain: 'Two plans pass: no hat mic, or a dynamic over the far edge. What passes is the reasoning: start from the overheads, keep clear, and choose a mic this input can run (a dynamic needs no power).',
   },
 ];
 

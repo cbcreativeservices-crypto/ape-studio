@@ -98,7 +98,7 @@ export function glockPairs(typeId: string, barY: number): PairPreset[] {
       id: 'near',
       label: 'NEAR-COINCIDENT PAIR — close together, angled apart',
       short: 'NEAR-COINC.',
-      blurb: 'Two mics about 17 cm apart, angled about 110° apart, about 45 cm above the middle of the bars — a stable picture and a reliable mono sum. The sizes are a drawing default, not a rule.',
+      blurb: 'Two mics about 17 cm apart, angled about 110° apart, about 45 cm above the middle of the bars — a stable picture and a mostly safe mono sum; an end bar still reaches one mic a little first. The sizes are a drawing default, not a rule.',
       coincident: false,
       typeId,
       pattern: 'cardioid',

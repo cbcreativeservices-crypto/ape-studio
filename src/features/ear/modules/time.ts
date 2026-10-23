@@ -348,7 +348,7 @@ export const M9_REVERB: EarModule = {
         correct: idx,
         near: [idx - 1, idx + 1].filter((i) => i >= 0 && i < decays.length),
         ordered: { low: 'too short', high: 'too long' }, // NEW COPY
-        reveal: `${decays[idx].truth} Rendered on the ${space.label.replace(' (emulation)', '').toLowerCase()} emulation’s comb set.`, // NEW COPY
+        reveal: `${decays[idx].truth} Rendered on the ${space.label.replace(' (emulation)', '').toLowerCase()} emulation’s set of delay lines.`, // NEW COPY
         seeIt: {
           kind: 'wave',
           clips: [0],

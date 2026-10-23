@@ -158,7 +158,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
     cause: 'CH 1’s TRIM was turned right up, so the channel itself was clipping.',
     evidence: 'The CH 1 meter sat in the red while the MASTER was low — the distortion started at the channel.',
     repair: 'Bring TRIM 1 down until the CH 1 meter averages with CH 2 and never reaches CLIP.',
-    prevention: 'Set each channel’s gain in the headphones by its average level, before it goes on air.',
+    prevention: 'Set each channel’s gain on its meter by its average level while you cue it, before it goes on air.',
     probe: 'Where is the FIRST meter in the chain that reaches the red?',
     where: 'Open MIXER: the first gain stage of the channel that crunches.',
     wrong: {

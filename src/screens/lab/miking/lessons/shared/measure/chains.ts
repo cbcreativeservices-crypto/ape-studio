@@ -293,7 +293,7 @@ export const ROOM_CHAIN: ChainSpec = {
       label: 'Source',
       short: 'SOURCE',
       parts: [
-        { id: 'omni', label: 'An omni test source at a performer position', short: 'OMNI', blurb: 'A broadly radiating, well-known source: it excites the room much as a performer would.' },
+        { id: 'omni', label: 'An omni test source at a performer position', short: 'OMNI', blurb: 'A well-known source that sends sound out evenly in all directions; placed where a performer stands, it excites the room the same way on every run.' },
         { id: 'pa', label: 'The installed PA, through its processing', short: 'PA', blurb: 'The house system as the audience hears it: its loudspeakers, its processing and its coverage.' },
       ],
     },

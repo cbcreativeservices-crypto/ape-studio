@@ -288,7 +288,7 @@ export type ImageSpec = {
 const ARRAY_BLURB: Readonly<Partial<Record<ArrayPresetId, string>>> = {
   xy: 'Two cardioids together, 90° apart: the image from level alone.',
   ortf: 'Two cardioids 17 cm apart, 110° between them: level and time.',
-  ab: 'Two omnis side by side: the image mostly from time.',
+  ab: 'Two omnis spaced apart: the image mostly from time.',
   ms: 'A forward cardioid and a sideways figure-8, decoded to left and right.',
 };
 

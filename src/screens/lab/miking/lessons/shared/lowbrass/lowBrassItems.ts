@@ -120,8 +120,8 @@ export const feedbackFirst = (id: string, noun: string): MikingScenario => ({
   id,
   page: 'context',
   prompt: `Feedback starts to ring on the ${noun} mic. What is the first move?`,
-  options: ['Lower the level, then change the mic, monitor and open mics', `Boost the ${noun} channel so the note covers up the ringing tone`, 'Ask the player to play louder so the mic needs less gain'],
-  correct: 'Lower the level, then change the mic, monitor and open mics',
+  options: ['Lower the level, then move the mic or wedge; close spare mics', `Boost the ${noun} channel so the note covers up the ringing tone`, 'Ask the player to play louder so the mic needs less gain'],
+  correct: 'Lower the level, then move the mic or wedge; close spare mics',
   explain: 'Feedback is a sound-system condition: reduce the level at once, then revise the geometry — the mic, the wedge, the open mics. Avoid uncontrolled feedback.',
   why: {
     [`Boost the ${noun} channel so the note covers up the ringing tone`]: 'More gain feeds the loop. Lower the level first.',

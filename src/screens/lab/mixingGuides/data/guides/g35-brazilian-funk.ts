@@ -192,7 +192,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Gates are rarely needed (no acoustic kit). De-ess MCs at 5–8 kHz for 2–4 dB. Live, put a gentle limiter or multiband on the DJ input: some baile (dance party) files peak at 0 dBFS with a very low crest factor (only a few dB) and can slam the drive rack. Use no more than 2–3 dB on the bus there and leave the system limiters for protection."
+        "text": "Gates are rarely needed (no acoustic kit). De-ess MCs at 5–8 kHz for 2–4 dB. Live, put a gentle limiter or multiband on the DJ input: some baile (dance party) files peak at 0 dBFS with a very low crest factor (only a few dB) and can slam the drive rack. Keep that DJ-input limiter to 2–3 dB of gain reduction at most, and leave the system limiters for protection."
       }
     ]
   },

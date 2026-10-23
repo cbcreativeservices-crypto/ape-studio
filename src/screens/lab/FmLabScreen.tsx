@@ -56,7 +56,7 @@ const RATIOS = [
   { v: 0.5, label: '0.5', blurb: 'Modulator at HALF the carrier: sidebands land an octave down — a sub-octave, still perfectly pitched.' },
   { v: 1, label: '1', blurb: 'Modulator = carrier: sidebands land exactly on the harmonic series. Bright but fully pitched — the vintage FM electric-piano zone.' },
   { v: 1.41, label: '1.41 ✳', blurb: '√2 — irrational, so the sidebands fall BETWEEN the harmonics. Nothing lines up: instant bell / metallic clang.' },
-  { v: 2, label: '2', blurb: 'One octave up: only odd-ish partials survive — hollow, square-like, still pitched.' },
+  { v: 2, label: '2', blurb: 'One octave up: only the odd harmonics are made — hollow, square-like, still pitched.' },
   { v: 3.5, label: '3.5', blurb: 'A half-integer ratio: some sidebands land on the carrier’s harmonics and some fall halfway between them, on a thin, gappy series an octave down. Still harmonic, but it can sound hollow and clangy. Compare with 2 or 7.' },
   { v: 7, label: '7', blurb: 'A high integer: sidebands spray far up the series — thin, glassy, but still harmonic.' },
 ] as const;

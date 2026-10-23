@@ -312,7 +312,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The 125 Hz band has too little range for T30 or T20. What do you report?',
     options: ['That the band has too little range', 'The T30 anyway, marked as rough', 'A rerun with the source driven louder'],
     correct: 'That the band has too little range',
-    explain: 'If neither fit is supported, report insufficient range for that band. A rerun can add range: at a quieter time, with more averaging, or louder only within the source’s clean, safe limits.',
+    explain: 'If neither fit is supported, report too little range for T20 and T30 in that band; EDT needs less range and may still hold, so report it on its own. A rerun can add range: at a quieter time, with more averaging, or louder only within the source’s clean, safe limits.',
     why: {
       'The T30 anyway, marked as rough': 'A fit into the noise floor is not rough: it is unsupported.',
       'A rerun with the source driven louder': 'That is a new measurement, not a report — and louder only within the source’s clean, safe limits.',

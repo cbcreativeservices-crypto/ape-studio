@@ -18,7 +18,7 @@ export const A05A_ART: LessonArt = makeSaxLessonArt(SOPRANO_SAX, {
     bellNote: 'The soprano’s bell continues the line of the body, down and forward — far from the upper holes. Its bell starts to act like a megaphone above about 2.6 kHz, so the high harmonics come out of it strongly.',
     registerNote: 'A simplified cone. A real saxophone has two octave vents — the neck’s and the body’s — that the octave key switches between; each one sits close to a still point of the notes it serves.',
     silentNote: 'This lab never plays a sound and draws no frequency curve for the soprano: how a real soprano sounds depends on the horn, the mouthpiece, the reed and the player. The pictures show where the sound comes from and where it leaves.',
-    reveal: 'Most of a note leaves at the first open hole — the open hole nearest the mouthpiece — and the open holes just past it. The bell carries the high harmonics, and the lowest notes.',
+    reveal: 'Most of a note leaves at the first open hole — the open hole nearest the mouthpiece — and the open holes just past it. The high harmonics travel on to holes farther down and to the bell, which also carries the lowest notes.',
   },
   setting: {
     ...A05A_PLAN,

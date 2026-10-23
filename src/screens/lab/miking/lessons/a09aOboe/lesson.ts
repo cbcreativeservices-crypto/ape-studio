@@ -127,7 +127,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The air column behaves as if the tube ended just past the first open hole; only the lowest notes — every hole closed — leave mainly from the bell.',
     why: {
       'The bell, where the notes come out': 'Only the lowest notes come mainly from the bell.',
-      'The reed, back toward the player’s mouth': 'The reed is closed by the lips; it starts the sound but does not let it out.',
+      'The reed, back toward the player’s mouth': 'The lips seal round the reed: it starts the sound, but little of it leaves there.',
     },
   },
   {

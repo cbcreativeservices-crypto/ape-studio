@@ -27,7 +27,7 @@ const PINS: { id: string; file: string; now: string; gone: string }[] = [
   { id: 'F026194', file: 'b10Sideline/lesson.ts', now: "correct: 'The event’s radio coordinator'", gone: 'The venue’s radio coordinator' },
   { id: 'F027443', file: 'b12Parabolic/pages.tsx', now: 'Flip the POLARITY of the second mic, the fixed shotgun at F, both ways', gone: 'Flip B’s POLARITY' },
   { id: 'F029785', file: 'b17CrowdComplete/lesson.ts', now: 'by qualified riggers with venue approval', gone: 'by qualified venue staff' },
-  { id: 'F029960', file: 'b17CrowdComplete/pages.tsx', now: 'a polarity or delay mismatch between the two paths breaks the matrix', gone: 'independent processing on the two paths' },
+  { id: 'F029960', file: 'b17CrowdComplete/pages.tsx', now: 'A polarity flip on one path swaps left and right; a delay between the paths blurs the image', gone: 'independent processing on the two paths' },
   { id: 'F030302', file: 'c05aBanjo/lesson.ts', now: 'Louder only seems fuller', gone: 'Louder is not fuller' },
   { id: 'F030068', file: 'c01Guitar/copy.ts', now: 'a figure-8’s side null can', gone: 'no null helps there' },
   { id: 'F033777', file: 'c08BassAmp/lesson.ts', now: 'about 61 cm wide, 76 cm tall and 48 cm deep', gone: 'about 76 cm wide, 61 cm tall' },

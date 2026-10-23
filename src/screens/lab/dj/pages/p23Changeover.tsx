@@ -202,7 +202,7 @@ function PlugTray({ onHot, onEarth, onUnplug2 }: { onHot: (w: string | null) => 
         />
         <LabChip label={l2.isolator ? 'USB ISOLATOR IN' : 'NO ISOLATOR'} selected={l2.isolator} onPress={() => updateBooth((x) => withLap(x, 2, { isolator: !evOf(x).lap2.isolator }))} compact />
       </Row>
-      <TrayNote tone="fine">A USB isolator breaks the ground in the USB lead. Check it supports your interface’s USB speed — many run only at the slower one.</TrayNote>
+      <TrayNote tone="fine">A USB isolator breaks the ground in the USB lead. Check it supports your interface’s USB speed — many run only at full speed (USB 1.1), not the high speed most USB 2.0 interfaces use.</TrayNote>
       <Row head="DJ 1’S LAPTOP → THE MIXER’S USB PORT 1">
         <LabChip label={ev.lap1.usb ? 'USB PORT 1: CONNECTED (UNPLUG)' : 'CONNECT USB PORT 1'} selected={ev.lap1.usb} onPress={() => updateBooth((x) => withLap(x, 1, { usb: !evOf(x).lap1.usb }))} compact />
       </Row>

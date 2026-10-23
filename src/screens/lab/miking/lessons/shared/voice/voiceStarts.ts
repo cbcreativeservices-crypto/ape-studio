@@ -117,7 +117,7 @@ export function stageRow(o: RowOpts): VoiceZoneSpec {
     aimTol: 15,
     ...pick(o),
     start: o.start ?? { d: [60, 55, 65, 50, 70, 80], at: 'mouth' },
-    tendency: o.tendency ?? 'A strong, close voice with the most of the singer over the stage — and a full low end from the proximity effect. Very close it can sound heavy or distorted; a steady distance matters more than the exact one.',
+    tendency: o.tendency ?? 'A strong, close voice, well above the stage sound — and a full low end from the proximity effect. Very close it can sound heavy or distorted; a steady distance matters more than the exact one.',
     checks: o.checks ?? ['The singer’s loudest note: the voice can top 135 dB right at the lips', 'The grille kept clear: no cupping', 'Where the wedge sits against the pattern'],
   };
 }

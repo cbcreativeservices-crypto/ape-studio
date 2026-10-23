@@ -907,7 +907,7 @@ export const STAGE2_DELIVER: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "A destination is chosen but no loudness requirement is recorded",
-      detail: "Most publishing destinations have a loudness and peak requirement or target, and they are not the same. A master that meets one can be rejected or automatically altered by another. There is no universal figure to fall back on.",
+      detail: "Most publishing destinations set a loudness and peak requirement or target, and the numbers differ from one to the next. A master that meets one can be rejected or automatically altered by another. There is no universal figure to fall back on.",
       fixHint: "Obtain the specification from each destination and copy its loudness and peak requirements, with units, into the row for each deliverable. Record where you found them.",
       needsLogic: true,
       logicIntent: "Fire when at least one platform other than live_venue or internal is selected in stage 1 and every spec_table row has an empty loudness_requirement, or when spec rows exist with loudness values but loudness_spec_source is empty. Treat a live venue as exempt when it is the only destination. Never suggest a value."

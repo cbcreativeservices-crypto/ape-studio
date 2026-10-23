@@ -149,7 +149,7 @@ const INSTRUMENT_DEFS = {
     labels: ['G', 'D', 'A', 'D'],
     partners: ['G3', 'D4', null, null],
     doubled: true,
-    blurb: 'G2 D3 A3 D4 · octave pairs on the low two',
+    blurb: 'G2 D3 A3 D4 · low two often in octave pairs',
   },
   balalaikaPrima: { name: 'Balalaika · prima', short: 'BALALAIKA', family: 'Folk', strings: ['E4', 'A4'], labels: ['E ×2', 'A'], blurb: 'E4 E4 A4 · two E strings in unison' },
   charango: {

@@ -108,7 +108,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Material names describe examples, not fixed microphone frequency curves. Listen to the one in the room.',
     why: {
       'Yes — fiberglass comes out the brighter of the two': 'No such rule; compare the actual instruments.',
-      'Yes — gourds sound darker, so they need a boost': 'Listen first; EQ cannot claim a construction that is absent.',
+      'Yes — gourds sound darker, so they need a boost': 'There is no such rule; listen to this güiro before you reach for EQ.',
     },
   },
   {

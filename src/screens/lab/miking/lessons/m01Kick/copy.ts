@@ -17,7 +17,7 @@ export const KICK_COPY: LessonCopy = {
   viewTag: { side: 'SIDE · CUTAWAY', top: 'TOP · CUTAWAY' },
   axes: {
     x: { plus: 'past batter', minus: 'before batter', label: 'ALONG the drum', blurb: 'Toward or away from the batter head (x). Distance is read from the head the zone names.' },
-    y: { plus: 'below axis', minus: 'above axis', label: 'HEIGHT', blurb: 'Up or down (y). Height above the floor is not shown — the floor line is unknown.' },
+    y: { plus: 'below axis', minus: 'above axis', label: 'HEIGHT', blurb: 'Up or down (y). The lab does not show the height above the floor.' },
     z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z).' },
     surfaceY: 'A boundary plate rests on the pillow: its height is set by the cushioning.',
   },
@@ -48,7 +48,7 @@ export const KICK_COPY: LessonCopy = {
     reveal: 'The squeezed air pushes the front head OUTWARD, away from the player — both heads move the same way at that moment. The two heads are coupled through the air inside.',
     after: 'Then both heads spring back and keep ringing for a while — the BODY of the sound. How long depends on the tuning, the damping and the drum (the Drum Tuning Lab covers that).',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones. Beaters usually strike at the centre or 1–2 in above it.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones, the lowest shape among them. Beaters usually strike at the centre or 1–2 in above it.',
       'This is a simplified head in empty space. On a real kick, the air inside and the second head pull these numbers around — the next step shows the two heads working together.',
     ],
     coupledSubject: 'Side view of the kick',
@@ -82,7 +82,7 @@ export const KICK_COPY: LessonCopy = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum is different.',
       separate: 'Height, distance and angle are separate variables: change one at a time. A starting point that names an aim (“facing the beater”) counts only while the mic faces that head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.',
-      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable clear of both heads, the beater, the port edge, the damping and the pedal. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room on a real kit.',
+      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable clear of both heads, the beater, the port edge, the damping and the pedal. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real kit.',
       tendencies: 'Moving toward the beater side often increases the emphasis of attack; toward the front head can reveal more resonance — tendencies, and drums vary. With a directional mic, proximity effect also changes the lows as it nears a radiating surface; how much depends on the source’s size and the mic, and close to a large head it is usually less than a point-source chart suggests.',
     },
   },

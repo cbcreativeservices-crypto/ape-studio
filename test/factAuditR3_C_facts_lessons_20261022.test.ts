@@ -109,7 +109,7 @@ describe('guided lessons and tool help', () => {
   });
   it('F001616/F001621: carrier pitch holds only for whole-number ratios', () => {
     assert.ok(!CONTENT.includes('Rich, bell-like; pitch stays at the carrier.'));
-    assert.ok(CONTENT.includes('with whole-number ratios the perceived pitch stays at the carrier'));
+    assert.ok(CONTENT.includes('as long as the modulator is a whole-number multiple of the carrier, the perceived pitch stays at the carrier'));
   });
   it('F001832: no "180° behind the front pressure" claim', () => {
     assert.ok(!CONTENT.includes('~180° behind the front pressure'));

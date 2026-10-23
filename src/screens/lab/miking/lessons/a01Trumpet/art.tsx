@@ -63,7 +63,7 @@ export const A01_ART: LessonArt = {
         flugelhorn: {
           low: 'Low down a flugelhorn spreads its sound nearly all round, like every brass bell.',
           mid: 'In the middle the front starts to win.',
-          high: 'Up high the sound beams forward along the bell’s axis. Its larger bell narrows the beam a little sooner than a trumpet’s — the brass family’s trend, as no flugelhorn was measured on its own.',
+          high: 'Up high the sound beams forward along the bell’s axis. Its larger bell starts to narrow the beam at a slightly lower pitch than a trumpet’s. That is the general trend for brass bells; no flugelhorn was measured on its own.',
         },
       },
       mutes: {

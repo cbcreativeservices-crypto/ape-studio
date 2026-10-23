@@ -213,7 +213,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The same 15–30 cm in front, a little above the bridge — but the bow plays right there, sweeping out to both sides. The mic, stand and cable sit outside its whole path.',
     why: {
       'It must sit right on the bow’s path, to hear the bow': 'A mic in the bow’s path will be hit — and would hear far too much scrape.',
-      'It must touch the strings, so it moves with them': 'Nothing touches the strings above the bridge; that is where the bow plays.',
+      'It must touch the strings, so it moves with them': 'No mic or clip touches the strings above the bridge; that is where the bow plays.',
     },
   },
   {

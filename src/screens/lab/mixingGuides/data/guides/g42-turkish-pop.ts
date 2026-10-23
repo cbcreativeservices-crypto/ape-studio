@@ -83,7 +83,7 @@ export const GUIDE: MixingGuide = {
       "text": "Loudest to quietest: lead vocal; kick and darbuka (goblet drum; roughly equal, with the darbuka pushed up in breaks); bass; string/bağlama hook (pushed when it carries the melody, tucked under the vocal otherwise); snare/clap; keys and pads; backing vocals; kanun (plucked zither)/clarinet fills; reverb returns."
     },
     {
-      "text": "Low end: the kick or 808 owns 45–70 Hz, the bass owns 70–200 Hz, and the darbuka düm (low center stroke) needs a small window around 90–130 Hz. If all three fight, high-pass the darbuka at 70–80 Hz and let it read from its 2–5 kHz attack. Lead vocal, kick, bass, snare and darbuka sit centre. Spread first and second violins left and right (or the stereo string pair wide), bağlama (long-necked Turkish lute) roughly 20–40% one side, kanun or clarinet opposite. Percussion layers (def, bendir, shakers) go wider, 50–70%."
+      "text": "Low end: the kick or 808 owns 45–70 Hz, the bass owns 70–200 Hz, and the darbuka düm (low center stroke) needs a small window around 90–130 Hz. If all three fight, high-pass the darbuka at 70–80 Hz and let it read from its 2–5 kHz attack. Lead vocal, kick, bass, snare and darbuka sit centre. Spread first and second violins left and right (or the stereo string pair wide), bağlama (long-necked Turkish lute) roughly 20–40% one side, kanun or clarinet opposite. Percussion layers such as def (frame drum with jingles), bendir (frame drum with a snare) and shakers go wider, 50–70%."
     }
   ],
   "eq": {
@@ -110,7 +110,7 @@ export const GUIDE: MixingGuide = {
         "source": "Kick / 808",
         "cut": "HPF 25–35 Hz; −3–5 dB at 250–400 Hz",
         "boost": "+2–3 dB at 50–60 Hz; +2 dB at 2–4 kHz on acoustic kick",
-        "notes": "Keep the kick narrower than the darbuka’s low thump"
+        "notes": "Keep the kick’s low boost narrow so it leaves room for the darbuka’s low thump"
       },
       {
         "source": "Bass",

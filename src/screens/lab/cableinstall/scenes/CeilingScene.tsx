@@ -871,7 +871,7 @@ export function CeilingScene({ width, completed, onComplete, openSources }: CiMo
       failedLayouts.current.add(hookKey);
       wrongs.current.spacing += 1;
     }
-    say(ok ? 'Spacing meets the supplied specification.' : `Widest span is ${maxGap} units — the supplied spec says every ${SPEC_MAX_GAP}.`);
+    say(ok ? 'Spacing meets the supplied specification.' : `Widest span is ${maxGap} units — the supplied spec says a support every ${SPEC_MAX_GAP} units.`);
   };
   const confirmRoute = () => {
     if (confirmed || spacing?.ok !== true) return;

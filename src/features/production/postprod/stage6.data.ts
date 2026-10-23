@@ -222,7 +222,7 @@ export const STAGE6_MIX: StageDef = {
           help: "What the listener must hear at every moment, and what gives way to it. This is the sentence that settles most balance arguments.",
           required: true,
           helpBy: {
-            podcast: "Usually speech intelligibility, everywhere, without exception. Say so if it is, and say what the exceptions are if there are any."
+            podcast: "Usually speech intelligibility, almost everywhere. Say so if it is, and name any places where something else comes first."
           }
         },
         {
@@ -572,7 +572,7 @@ export const STAGE6_MIX: StageDef = {
       kind: "conflict",
       title: "A send with nowhere to arrive",
       detail: "An auxiliary send in the routing table has no matching return. It will look like it is working, use processing, and contribute nothing — which is normally diagnosed as the effect \"not being strong enough\".",
-      fixHint: "Every send needs a return that reaches the master and the stems. Check the destination column against the return rows.",
+      fixHint: "Every effect send needs a return that reaches the master and the stems. Check the destination column against the return rows.",
       needsLogic: true,
       logicIntent: "Fire when bus_structure contains an aux row and no return row, or when an aux row's bs_feeds names nothing that matches another row's bs_name."
     },

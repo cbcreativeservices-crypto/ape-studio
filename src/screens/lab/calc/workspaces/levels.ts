@@ -60,7 +60,7 @@ const WS_LEVEL: Workspace = {
     '"about 12 dB" difference between pro and consumer line level, and why plugging one into ' +
     'the other without matching sounds too hot or too weak.',
   mistakes: [
-    'Using 10·log10 on a voltage ratio (or 20·log10 on a power ratio) — amplitude quantities use 20, power quantities use 10. Same dB result describes both only because power goes as voltage squared.',
+    'Using 10·log10 on a voltage ratio (or 20·log10 on a power ratio) — amplitude quantities use 20, power quantities use 10. The same dB result describes both only when the load stays the same, because power goes as voltage squared.',
     'Treating dBu and dBV as interchangeable — they differ by a fixed 2.22 dB (dBu reads higher for the same voltage) because their references differ: 0.7746 V vs 1 V.',
     'Reading "−10 dBV" as "−10 dBu" on a spec sheet — the pro/consumer gap is ≈ 11.8 dB, not 14 dB.',
     'Expecting +3 dB to sound twice as loud — it is double the POWER, a small but clearly audible step; to sound twice as loud takes about +10 dB.',
@@ -184,7 +184,7 @@ const WS_LEVEL: Workspace = {
       explain:
         'The two scales measure the same voltage against different references — dBu against 0.7746 V, dBV against 1 V — so they differ by a fixed 2.218 dB (dBu always reads higher). Converting between them is a single addition.',
       keySymbols: ['−', '·'],
-      note: 'The offset is exact: 20·log10(0.7746 V ÷ 1 V) ≈ −2.218 dB. The same voltage always reads 2.218 dB HIGHER in dBu.',
+      note: 'The offset is fixed: 20·log10(0.7746 V ÷ 1 V) ≈ −2.218 dB. The same voltage always reads 2.218 dB HIGHER in dBu.',
       // The same level the Voltage-from-dBu card refuses is refused here too.
       refuse: (v) => tooFarFromRef(n(v.dbx), 20, 'a voltage'),
       compute: (v) => {
@@ -357,7 +357,7 @@ const WS_OHMS: Workspace = {
     '80 V peak-to-peak — the amp’s rails must clear it with headroom to spare.',
   mistakes: [
     'Plugging PEAK voltage into the RMS formulas — a 40 V-peak sine is 28.3 V RMS; using 40 doubles your computed power.',
-    'Treating a speaker’s "8 Ω nominal" as a constant — real impedance swings with frequency, often dipping near half the nominal figure at some frequencies.',
+    'Treating a speaker’s "8 Ω nominal" as a constant — real impedance swings with frequency. It often dips below the nominal figure, and on some speakers it falls close to half of it.',
     'Doubling amplifier power and expecting double loudness — ×2 power is +3 dB, a small but clearly audible step; perceived doubling needs about ten times the power.',
     'Halving the load (8 Ω → 4 Ω) without checking the amp — same voltage into half the impedance means DOUBLE the current and double the power demand.',
     'Mixing RMS voltage with peak current (or vice versa) in P = V·I — both must be RMS for average power.',
@@ -897,7 +897,7 @@ const WS_QBW: Workspace = {
         const fc = Math.sqrt(a * b);
         return [
           `The center is the GEOMETRIC mean: fc = √(f₁ × f₂) = √(${fmt(a)} × ${fmt(b)}) = √${fmt(a * b)} = ${fmt(fc)} Hz.`,
-          `The plain average would be (${fmt(a)} + ${fmt(b)}) ÷ 2 = ${fmt((a + b) / 2)} Hz — but that sits closer to the top octave, not the audible middle.`,
+          `The plain average would be (${fmt(a)} + ${fmt(b)}) ÷ 2 = ${fmt((a + b) / 2)} Hz — but that always sits above the musical middle, toward the higher frequency.`,
           `Example: the musical center of 100 Hz and 400 Hz is 200 Hz (one octave up from 100, one octave down from 400), not 250 Hz.`,
           `That is why parametric edges are geometric around fc, and why 1/3-octave bands are spaced by a constant RATIO, not a constant number of Hz.`,
         ];

@@ -908,7 +908,7 @@ const WS_MIC_GAIN: Workspace = {
     'load impedance. This workspace models the spec-sheet number at 1 Pa (≈ 94 dB SPL; exactly 93.98 dB SPL).',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Gain Staging', 'Headroom', 'Preamplifier'],
   fields: [
-    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Millivolts out per pascal (1 Pa ≈ 94 dB SPL). Dynamics ≈ 1–3 mV/Pa; condensers ≈ 8–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity Converter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
+    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Millivolts out per pascal (1 Pa ≈ 94 dB SPL). Most dynamics ≈ 1–3 mV/Pa; most condensers ≈ 5–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity Converter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
     { key: 'spl', name: 'SOURCE SPL AT THE MIC', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '94', help: 'The sound pressure level arriving at the capsule.' },
     { key: 'target', name: 'TARGET LEVEL', quantity: 'db', signed: true, placeholder: '4', help: 'The output level you want after the preamp, in dBu (+4 dBu = pro line level).' },
     // nonNegative (full-app run 2, 2026-10-01): a −12 dB "headroom" ADDED 12 dB
@@ -1077,7 +1077,7 @@ const WS_LIMITER: Workspace = {
     // nonNegative (full-app run 1, 2026-10-01): the margin is SUBTRACTED, so a
     // typed −3 ("3 dB below") set the threshold 3 dB ABOVE the rating and the
     // result read "keeps continuous voltage -3 dB below the rating".
-    { key: 'margin', name: 'SAFETY MARGIN', quantity: 'db', nonNegative: true, placeholder: '3', help: 'Extra dB below the computed clip-equivalent threshold — insurance for rating optimism and impedance dips.' },
+    { key: 'margin', name: 'SAFETY MARGIN', quantity: 'db', nonNegative: true, placeholder: '3', help: 'Extra dB below the level that puts the speaker’s rated voltage on its terminals — insurance for rating optimism and impedance dips.' },
   ],
   functions: [
     {

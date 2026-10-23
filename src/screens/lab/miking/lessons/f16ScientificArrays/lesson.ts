@@ -253,7 +253,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The probe is turned 90° to the flow. What does it read?',
     options: ['Close to zero along its axis', 'The full flow, unchanged', 'Twice the flow, sideways'],
     correct: 'Close to zero along its axis',
-    explain: 'A p–p probe reads the component along its axis: cos 90° ≈ 0 — even though the pressure is the same.',
+    explain: 'A two-mic (p–p) probe reads only the part of the flow along its axis: at 90°, cos θ = 0, so it reads near zero — even though the pressure is the same.',
     why: {
       'The full flow, unchanged': 'Only the part along the axis is read.',
       'Twice the flow, sideways': 'Turning it does not add flow: cos θ only shrinks it.',
@@ -279,7 +279,7 @@ const scenarios: MikingScenario[] = [
     correct: 'What each heard, not the timing',
     explain: 'Without one clock, the time between the tracks is not the sound’s: report observations, not an order.',
     why: {
-      'An arrival order, if you align them': 'Aligning by hand removes the very difference you came for.',
+      'An arrival order, if you align them': 'Aligning on the click wipes out the gap you came for; a sync mark still leaves two clocks that drift.',
       'A direction, with care': 'Care does not fix a drifting clock.',
     },
   },
@@ -370,7 +370,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ar.mix.3',
     page: 'practice',
-    prompt: 'The R channel shows the left click first. What do you check first?',
+    prompt: 'A click from the side point, on the right, shows up first on the L channel. What do you check first?',
     options: ['The channel map', 'The speed of sound', 'The room’s size'],
     correct: 'The channel map',
     explain: 'A swapped channel map reverses every order. Check the map with a known source before the physics.',

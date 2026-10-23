@@ -148,7 +148,7 @@ const DEFECTS: Defect[] = [
   },
   {
     key: 'rf', label: 'RF interference (emulation)',
-    truth: 'RF pickup (emulation) — pulsed bursts of a buzzy carrier, the old GSM-near-a-cable sound.',
+    truth: 'RF pickup (emulation) — a buzz that pulses on and off as radio bursts leak into the audio, the old GSM-near-a-cable sound.',
     solo: (rng) => rfInterference(silence(1.6), rng),
     onBed: (b, rng, mix) => addUnder(b, rfInterference(silence(b.length / SR), rng), mix + 6),
   },
@@ -183,7 +183,7 @@ export const M5_DEFECTS: EarModule = {
       answers: deck.map((x) => ({ label: x.label })),
       correct: idx,
       near: near && near.length ? near : undefined,
-      reveal: `${d.truth}${level >= 3 ? ' (The bed is a rendered surrogate.)' : ''}`,
+      reveal: `${d.truth}${level >= 3 ? ' (The music bed is a stand-in made by the app.)' : ''}`,
       seeIt: tonal
         ? {
             kind: 'spectrum',

@@ -322,7 +322,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Polarity flips the sign; it does not remove a delay. Compare both states at matched levels — and check the rest of the kit too.',
     why: {
       'Yes: the two mics are now lined up in time': 'Polarity is not a time alignment.',
-      'Yes, but only for the low notes of the kick': 'The delay is the same at every pitch; polarity swaps the notches and peaks.',
+      'Yes, but only for the low notes of the kick': 'The delay is the same at every frequency; polarity swaps the notches and peaks.',
     },
   },
   {
@@ -456,7 +456,7 @@ const symptoms: Symptom[] = [
     correct: 'Each channel in mono with the overheads; the overhead spacing',
     explain: 'A wide spaced pair can change the tone or the centre in mono. Find which channels combine badly, and change spacing or position.',
     why: {
-      'Widen the stereo panning so the mono sum has more room': 'Mono ignores panning; the arrival differences remain.',
+      'Widen the stereo panning so the mono sum has more room': 'Panning does not change when each sound arrives; in mono the time gaps remain.',
       'Add a room pair to fill the mono sum back out again with more space': 'More distant mics add more arrival differences, not fewer.',
     },
   },
@@ -466,7 +466,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Use only channels that serve the audience; check gain before feedback with the operator.',
     options: ['Which channels the audience needs; gain before feedback with the operator', 'Open all the drum channels and pull the master fader down a little', 'Turn the monitors up so the drummer can hear the whole kit more clearly'],
     correct: 'Which channels the audience needs; gain before feedback with the operator',
-    explain: 'Every open mic hears the monitors and the PA. Close the channels the PA does not need, and check the margin with the operator, and avoid uncontrolled feedback.',
+    explain: 'Every open mic hears the monitors and the PA. Close the channels the PA does not need, check the margin with the operator, and avoid uncontrolled feedback.',
     why: {
       'Open all the drum channels and pull the master fader down a little': 'More open mics, less margin: the master hides the problem.',
       'Turn the monitors up so the drummer can hear the whole kit more clearly': 'Louder monitors bring feedback closer.',

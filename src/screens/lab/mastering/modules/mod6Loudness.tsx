@@ -26,7 +26,7 @@ import { MODEL_BADGE, RENDER_BADGE, type ModuleProps } from './shared';
 
 const CEILING = -1.0;
 /** On the glass while the LOUDER picture is a drivePreview estimate (HOLD #20). */
-const DRIVE_PREVIEW_NOTE = 'ESTIMATE · RENDER FOLLOWS ON RELEASE';
+const DRIVE_PREVIEW_NOTE = 'ESTIMATE · RENDERS WHEN YOU LET GO';
 /** The LISTEN step's index in the steps below (pinned by test/perfDecisionsC_20261004). */
 const LISTEN_STEP = 1;
 const METER_SIGNALS: readonly { id: SignalKey; name: string; blurb: string }[] = [

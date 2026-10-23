@@ -86,7 +86,7 @@ export const GUIDE: MixingGuide = {
     "rows": [
       {
         "source": "Lead vocal (primeira voz)",
-        "cut": "HPF 90–120 Hz; −2–3 dB at 250–350 Hz; narrow notch at 2.5–4 kHz if nasal/harsh",
+        "cut": "HPF 90–120 Hz; −2–3 dB at 250–350 Hz; narrow notch at 2.5–4 kHz if harsh (a nasal tone sits lower, near 1 kHz)",
         "boost": "+2 dB at 1.5–3 kHz (diction); +1–2 dB shelf at 10 kHz",
         "notes": "Keep the bright, forward tone; do not thin the chest too much"
       },
@@ -253,7 +253,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Audience mics",
         "appliedTo": "Live recordings",
-        "setting": "Shotguns and spaced pairs aimed at crowd, delayed to align",
+        "setting": "Shotguns and spaced pairs aimed at the crowd, time-aligned to the stage mics",
         "amount": "Heavy in sing-alongs, tucked elsewhere"
       }
     ],

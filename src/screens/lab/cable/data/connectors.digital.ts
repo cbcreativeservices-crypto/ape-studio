@@ -57,7 +57,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
           { label: '4', role: 'GND — power and signal return', ink: 'dcNeg' },
           {
             label: '5–9',
-            role: 'SuperSpeed pairs — present only on USB 3.x Type-A connectors and cables',
+            role: 'Two SuperSpeed pairs and a ground contact — present only on USB 3.x Type-A connectors and cables',
             ink: 'dataA',
             note: 'A USB 2.0-only Type-A plug or cable simply does not have these contacts; the link then runs at USB 2.0 speed.',
           },
@@ -281,7 +281,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
       'Hot-pluggable by design',
     ],
     limitations: [
-      'Mechanically the most fragile common USB connector — the socket is a frequent failure point on heavily used portable gear',
+      'Fragile in hard use — the small socket is a frequent failure point on heavily used portable gear',
       'USB 2.0 speeds in the common form (a wider two-part Micro-B "SuperSpeed" variant exists but is rare in audio equipment)',
       'Friction fit with tiny retention springs — strain or a worn plug leads to intermittent contact',
       'Largely superseded by USB-C on current equipment',
@@ -863,7 +863,7 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
       'Carries multichannel digital audio (protocol-dependent) through a thin, light cable',
     ],
     limitations: [
-      'The port does not identify the protocol: optical S/PDIF (stereo, or packed surround) and ADAT (multichannel) use the same connector and fiber but are different, incompatible formats — both devices must be set to the same one',
+      'The port does not identify the protocol: optical S/PDIF (stereo, or data-compressed surround) and ADAT (multichannel) use the same connector and fiber but are different, incompatible formats — both devices must be set to the same one',
       'Fragile compared with copper: tight bends, kinks, and crushing damage the fiber invisibly',
       'End-faces must stay clean and unscratched; dust caps exist for a reason',
       'Practical run lengths are shorter than balanced copper or network runs (cable- and equipment-dependent)',
@@ -897,11 +897,11 @@ export const CONNECTORS_DIGITAL: ConnectorRecord[] = [
       'Dust caps present on unused ports and stored cables',
     ],
     basicTest:
-      'An electrical continuity tester reads OPEN on an optical cable by design — that is correct, not a fault. The basic field check is visual — done the fiber-safe way: with the far end connected to a powered source, point the free end at your palm or a white surface and look for the dim red glow, viewing from an angle rather than bringing the fiber end toward your eye. No glow through a known-lit path means a broken fiber. TOSLINK is low-power LED light, but this same check performed on other fiber systems would aim invisible laser light at your eye — the technique, like the no-staring habit, must not distinguish. Inspect the end-faces for dirt and scratches at the same time.',
+      'An electrical continuity tester reads OPEN on an optical cable by design — that is correct, not a fault. The basic field check is visual — done the fiber-safe way: with the far end connected to a powered source, point the free end at your palm or a white surface and look for the dim red glow, viewing from an angle rather than bringing the fiber end toward your eye. No glow through a known-lit path means a broken fiber. TOSLINK is low-power LED light, but other fiber systems can carry laser light you cannot see. So use this same safe method on every fiber, every time. Inspect the end-faces for dirt and scratches at the same time.',
     safety: {
       level: 'signal',
       cautions: [
-        'The red light in a consumer/pro-audio optical port is low-power LED light, generally considered harmless — but make not staring into ANY optical port a habit: other fiber systems in the wider world use invisible, more powerful laser light, and the habit should not distinguish.',
+        'The red light in an audio optical port is low-power LED light, generally considered harmless. Still, make it a habit never to stare into ANY optical port: other fiber systems use stronger laser light you cannot see, so keep the habit for every port.',
       ],
     },
     glossary: [],

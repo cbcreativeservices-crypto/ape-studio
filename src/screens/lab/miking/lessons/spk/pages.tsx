@@ -452,7 +452,7 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
             </Point>
           </Card>
           <Note>{`This beam is a far-field picture. At ${fmtHz(fHz)} it only applies from ${fmtLen(farFrom)} out. A mic a few centimetres from the grille sits in the speaker’s near field, where the spot it faces on the cone matters more — the next step.`}</Note>
-          {inNearField(50, fHz) ? null : <Note>At this low pitch even a close mic is past the near field — but the spread is wide anyway.</Note>}
+          {inNearField(50, fHz) ? null : <Note>At this low pitch the wide pattern already holds a few centimetres from the cone, so even a close mic hears it spread wide.</Note>}
         </>
       ),
     },
@@ -1200,7 +1200,7 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
             <Point title="A ROTARY CABINET, LIVE">Stable stands outside, usable gain, nothing in the players’ or crew’s way. A mono PA can use one upper and one lower channel; a stereo upper pair is optional. Room mics hear the PA and cut the feedback margin.</Point>
             <Point title="WHAT TO SEND">The cabinets are already loud in the room: reinforce only what the audience needs. Let the system operator route the PA, wedges, in-ears and recording separately.</Point>
           </Card>
-          <Note tone="warn">No mic position alone prevents feedback: the monitors and PA, the gain, the room and the open mics all matter. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.</Note>
+          <Note tone="warn">No mic position alone prevents feedback: the monitors and PA, the gain, the room and the open mics all matter. Mic-to-PA feedback is made on purpose only to ring out a system — by its operator, at a controlled level.</Note>
         </>
       ),
     },

@@ -156,7 +156,7 @@ describe('S3 — digital', () => {
 describe('S3 — production', () => {
   it('R7-PROD-02: inter-sample peaks are already in the master; encoding raises them', () => {
     assert.doesNotMatch(STAGE7, /The difference appears after encoding/);
-    assert.match(STAGE7, /Peaks between samples are already in the master, and encoding can push them higher/);
+    assert.match(STAGE7, /Peaks between samples can already be in the master, and encoding can push them higher/);
   });
 
   it('R7-PROD-03: backing off the limiting/compression gives the dynamics back, not gain', () => {

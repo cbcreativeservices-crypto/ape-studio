@@ -22,7 +22,7 @@ export const M09_COPY: Partial<LessonCopy> = {
   },
   instrument: {
     figureBadge: 'A 5-piece kit from the player’s right — what the overheads hear',
-    figureLabel: 'Side view of a 5-piece drum kit: the hi-hat and the crash on the left, the snare, the rack toms over the kick, the floor tom and the ride on the right, the drummer’s keep-out hatched.',
+    figureLabel: 'Side view of a 5-piece drum kit from the player’s right: the floor tom and the ride nearest, the snare and the rack toms over the kick behind them, the hi-hat and a crash on the far side, the drummer’s keep-out hatched.',
     partsBadge: 'The kit from the side and from above · a typical right-handed layout · tap a part',
     partsLooking: { side: 'Side view · from the player’s right', top: 'Top view · from above' },
     partsIdle: 'Above the kit the cymbals are closest, the snare is the usual reference and the kick is farthest away. Tap a part to see what it means for an overhead.',
@@ -56,7 +56,7 @@ export const M09_COPY: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is a place we suggest you begin, measured from a named reference — the snare head, the floor-tom rim, the snare’s centre. They are starting points, not rules: move from there and listen — there is no single right answer.',
       separate: 'Height, front–back position, aim and the spacing of a pair are separate variables: change one at a time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the end of its grille, so no millimetre claim is made.',
-      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep mics, booms and cables out of the sticks’ reach and the cymbals’ swing, with the stand’s base outside the kit. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room on a real kit.',
+      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep mics, booms and cables out of the sticks’ reach and the cymbals’ swing, with the stand’s base outside the kit. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real kit.',
       tendencies: 'Raising overheads tends to bring in more cymbals and room; lowering them, more drums. Moving a pair toward the front of the kit brings the cymbals and rack toms closer; toward the back, the snare, the floor tom and the hi-hat. Tendencies to check by ear.',
     },
   },
@@ -83,7 +83,7 @@ export const M09_COPY: Partial<LessonCopy> = {
     prompt: 'The monitors stay where the stage needs them. Tilt or turn the MIC (AIM), or change its PATTERN, until the drum fill sits in the rejection.',
     activityDone: 'done — the drum fill sat in a null by your aim or pattern',
     deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.',
-    cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). The drum fill sits below the side mic, so a cardioid’s rear barely reaches it.',
+    cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). The drum fill sits below the side mic, not behind it, so a cardioid’s null does not face it.',
     shieldNote: 'A side mic low beside the kit is one more open mic on stage: it hears the kit, the monitors and the room. Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction.',
     studioId: 'oh.ctx.studio',
     studioPrompt: 'A studio session has no wedge to reject. The decision changes: what is the room worth?',

@@ -237,7 +237,7 @@ export const ARRAYS: Readonly<Record<ArrayPresetId, ArrayDef>> = {
     pattern: 'omni',
     turn: { min: 0, max: 45, def: 0 },
     recordingAngle: null,
-    what: 'A smaller tree some engineers have used: left and right about 1.5 m apart, the centre about 0.75 m ahead — closer together than the wider tree’s 1.5 m.',
+    what: 'A smaller tree some engineers have used: left and right about 1.5 m apart, the centre about 0.75 m ahead — smaller both ways than the wider tree’s 2 m across and 1.5 m forward.',
     tends: 'Less spread between the three omnis: a narrower, more centred picture than the wider tree.',
     check: 'The same as the wider tree: centre level, edges, mono.',
     prov: src('PELLOWE', 'maybe 2.5 feet back and 5 feet apart you would have 2 more (Decca practice, 1997 interview)'),

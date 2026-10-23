@@ -80,8 +80,8 @@ const scenarios: MikingScenario[] = [
     id: 'tb.snd.1',
     page: 'sound',
     prompt: 'A stroke lands in the middle of the head. Which of the head’s vibration shapes can it set moving?',
-    options: ['Mostly the ring-shaped ones; the rest are still there', 'All of them equally, since the whole head moves when it is struck', 'Only the shapes with a still line running across the middle'],
-    correct: 'Mostly the ring-shaped ones; the rest are still there',
+    options: ['Mostly the ring-shaped ones; the rest stand still there', 'All of them equally, since the whole head moves when it is struck', 'Only the shapes with a still line running across the middle'],
+    correct: 'Mostly the ring-shaped ones; the rest stand still there',
     explain: 'A stroke drives a shape only as much as the head moves where it lands. Shapes with a still line across the head do not move at the middle, so a middle stroke drives mainly the ring-shaped, lower ones — the deep sound.',
     why: {
       'All of them equally, since the whole head moves when it is struck': 'The hand touches one area. A shape is driven only as much as the head moves there — not at all on a still line.',
@@ -181,7 +181,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Not necessarily — the target, the body and the room matter too',
     explain: 'A directional mic can lift its lows close to a source, but it depends on the mic and the source; a pressure omni has little or none. A different target or the room can also thicken the sound.',
     why: {
-      'Yes, extra bass up close is the mic’s proximity effect in each case': 'Other parts of the drum and the room can change the bass too; and a pressure omni has no proximity effect.',
+      'Yes, extra bass up close is the mic’s proximity effect in each case': 'Other parts of the drum and the room can change the bass too; and a pressure omni has little or no proximity effect.',
       'Yes, unless the mic you are using happens to be a condenser': 'Proximity effect depends on the pattern (pressure-gradient), not on whether the mic is a condenser.',
     },
   },
@@ -302,7 +302,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Inverting a channel changes its sign; it does not remove a difference in arrival time. Only moving a mic, or delaying its channel, changes the delay.',
     why: {
       'It drops to zero, so the two arrivals line up again': 'The mics are still at the same distances: the delay is unchanged.',
-      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only a mic’s position changes the delay.',
+      'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic, or delaying its channel, changes the delay.',
     },
   },
   {
@@ -686,7 +686,7 @@ export const M12_LESSON: Lesson = {
   live: {
     wedges: [
       { id: 'wedge', label: 'the player’s wedge, downstage, facing back toward the player', short: 'WEDGE', p: { x: 1500, y: 0, z: 350 }, lift: 150, faces: { x: -1, y: 0, z: -0.2 }, note: 'Downstage of the player, on the audience side — where a mic aimed back at the drum points its rear.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
-      { id: 'side', label: 'a side-fill monitor across the stage', short: 'SIDE FILL', p: { x: 300, y: 0, z: 1500 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Off to the player’s right, roughly beside the mic’s front: no cardioid’s or supercardioid’s null reaches it. Distance and level do the work.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
+      { id: 'side', label: 'a side-fill monitor across the stage', short: 'SIDE FILL', p: { x: 300, y: 0, z: 1500 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Off to the player’s right, out to the mic’s side rather than behind it: no cardioid’s or supercardioid’s null reaches it. Distance and level do the work.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
     ],
   },
   accuracyDetail:

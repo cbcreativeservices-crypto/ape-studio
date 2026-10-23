@@ -193,7 +193,7 @@ export function GraphicTruthModule(_p: EqModuleComponentProps) {
         </GlossaryText>
 
         <Text style={styles.caption}>
-          EXAMPLE drops the sliders to a gentle-looking 125 Hz +3, 250 Hz +6, 500 Hz +3 dB — exactly
+          EXAMPLE sets the sliders to a gentle-looking 125 Hz +3, 250 Hz +6, 500 Hz +3 dB — exactly
           the innocent move whose real response surprises people. CLEAR returns every slider to 0 dB.
           FILTERS reveals every band’s own bell under the composite.
         </Text>

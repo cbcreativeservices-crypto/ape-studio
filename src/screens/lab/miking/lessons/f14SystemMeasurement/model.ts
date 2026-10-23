@@ -153,7 +153,7 @@ export const F14_ZONES: DocumentedZone[] = [
     drawn: SEAT_DRAW(S.front, 1200),
     requires: { variant: 'venue', micTypeIds: FF },
     start: toward(S.front, MAIN_L),
-    tendency: 'Nearer the main and lower against it: louder, and often brighter or duller as the seat falls toward the edge of its vertical coverage.',
+    tendency: 'Nearer the main and below its aim: often louder, and often duller as the seat falls toward the edge of its vertical coverage.',
     checks: ['The same main and settings as the mid seat', 'Seats measured front to back, in order', 'Each trace stored on its own'],
   },
   {

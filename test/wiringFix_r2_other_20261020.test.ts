@@ -125,7 +125,8 @@ describe('CA-R2-01..05 — Calc pads, 70 V and "suggested"', () => {
   it('speakers: amp-nearer / powered first, 70 V for distributed; lighter (not thin) cable; suggested', () => {
     const s = read('src/screens/lab/calc/workspaces/speakers.ts');
     assert.match(s, /move the amplifier nearer the speaker \(or use powered speakers\); for distributed paging or background music, a 70 V line/);
-    assert.match(s, /past ~20–30 m on light gauge into low impedance/);
+    // Round-2 audit B (R055429, 2026-10-23): clarified, still 'light-gauge' (never 'thin').
+    assert.match(s, /past ~20–30 m of light-gauge cable into a low-impedance load/);
     assert.doesNotMatch(s, /thin cable/);
     assert.doesNotMatch(s, /RECOMMENDED|Recommended|recommends/);
   });

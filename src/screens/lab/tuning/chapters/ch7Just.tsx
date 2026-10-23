@@ -308,7 +308,7 @@ export function Ch7Just({ ctx }: ChapterProps) {
               {!keyDemo.moved.length && !keyDemo.added.length ? <MathLine>No note needs to move — you are already in C.</MathLine> : null}
               <Body>
                 {keyDemo.moved.length || keyDemo.added.length
-                  ? `Recomputing the mapping around ${tonic} restores its simple relationships — at the cost of moving ${keyDemo.moved.length} note${keyDemo.moved.length === 1 ? '' : 's'} and adding ${keyDemo.added.length} new pitch${keyDemo.added.length === 1 ? '' : 'es'}. A fixed-pitch acoustic instrument cannot do this mid-piece; a singer or string player can.`
+                  ? `Recomputing the mapping around ${tonic} restores its simple relationships — at the cost of moving ${keyDemo.moved.length} note${keyDemo.moved.length === 1 ? '' : 's'} and adding ${keyDemo.added.length} new pitch${keyDemo.added.length === 1 ? '' : 'es'}. A fixed-pitch acoustic instrument cannot do this mid-piece; a singer or a fretless string player (the violin family) can.`
                   : 'Pick another tonic to see which notes would have to move.'}
               </Body>
             </Card>

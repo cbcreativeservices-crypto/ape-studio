@@ -285,7 +285,7 @@ export function HSound({ lesson, art, answers, onAnswered, onInteractive, intera
               {`A struck head vibrates in several shapes at once; this is one of them. ${shapeIdx === 0 ? 'It is the lowest shape — the others are measured against it, and none of them is a whole-number multiple, which is part of why a drum sounds less “pitched” than a string.' : `Its pitch is ${shape.ratio.toFixed(2)} times the lowest shape’s on a simplified head — not a whole number.`} At this strike point (${point.label.toLowerCase()}) the head moves ${sharePct} % of this shape’s peak, so the strike ${share < 0.05 ? 'does not drive this shape at all: it lands on a still line' : share < 0.4 ? 'drives it only a little' : 'drives it strongly'}.`}
             </Point>
           </Card>
-          <Note>A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a strike there drives only the ring-shaped ones. Toward the edge, the shapes with still lines across the head join in.</Note>
+          <Note>A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a strike there drives only the ring-shaped ones, the lowest shape among them. Toward the edge, the shapes with still lines across the head join in.</Note>
           <Note>This is a simplified head in empty space. On a real drum the air in the shell, the rim and the hand pull these numbers around.</Note>
         </>
       ),

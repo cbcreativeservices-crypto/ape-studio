@@ -203,7 +203,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A longer sector on the approach',
     explain: 'Aimed along the segment, the approach stays on the axis longer — and so does whatever lies beyond it, a crowd or a loudspeaker. Aimed across, a short contact region is the detail.',
     why: {
-      'A louder sound at the closest point': 'At the closest point the source is now off to the side of the mic — much quieter.',
+      'A louder sound at the closest point': 'At the closest point the source is now about 45° off the axis — quieter and duller.',
       'Less of whatever lies beyond': 'Aiming along the path puts more of what lies beyond on the axis, not less.',
     },
   },
@@ -335,7 +335,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The loudest safe peak near −12 dBFS',
     explain: 'In this quiet practice the loudest safe peak is your strongest repeatable gentle clap: near −12 dBFS is a trial starting point, with more margin for live peaks. No practice gain certifies a real pass-by.',
     why: {
-      'Bring the gentle clap right up to −6 dBFS': 'With a gentle clap already at −6 dBFS, the first real pass clips.',
+      'Bring the gentle clap right up to −6 dBFS': 'With a gentle clap already at −6 dBFS, your strongest clap clips.',
       'Leave it as it is and normalise it later': 'Normalising cannot fix a clip, or the noise of a gain set too low.',
     },
   },
@@ -479,7 +479,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A shotgun aimed along the straight, plus a mono ambience', ok: true, power: 'phantom', feedback: 'A suggested start: the approach on the axis, the event carried by the ambience, generous input margin.' },
       { id: 'b', label: 'A coincident stereo pair at the media point', ok: true, power: 'phantom', feedback: 'A suggested start where the trajectory matters: check its orientation and the mono downmix.' },
-      { id: 'c', label: 'A stand inside the run-off for a closer pass', ok: false, power: 'phantom', feedback: 'Nobody stands in the run-off, at any time.' },
+      { id: 'c', label: 'A stand inside the run-off for a closer pass', ok: false, power: 'phantom', feedback: 'No audio crew or stand goes in the run-off, at any time.' },
       { id: 'd', label: 'A mic taped to the safety barrier', ok: false, power: 'phantom', feedback: 'Nothing is attached to a safety barrier or a flag post by default.' },
       { id: 'e', label: 'Gain set on a distant car, peaks left to chance', ok: false, power: 'phantom', feedback: 'The nearest pass needs its headroom at every stage.' },
     ],
@@ -547,7 +547,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What does a passing source’s pitch tell you in a walking practice?',
     options: ['Nothing about its speed', 'Exactly how fast it walked', 'The pattern of the mic'],
     correct: 'Nothing about its speed',
-    explain: 'A walk is not a speed measurement: its pitch shift is tiny, and pitch changes also come from the source, reflections and off-axis tone.',
+    explain: 'A walk is not a speed measurement: its pitch shift is tiny. Pitch changes also come from the source and reflections, and an off-axis change in tone can sound like one.',
     why: { 'Exactly how fast it walked': 'A walk in a practice room is not a speed measurement.', 'The pattern of the mic': 'Pitch does not reveal the pattern.' },
   },
   {

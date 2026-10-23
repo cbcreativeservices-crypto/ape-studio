@@ -147,7 +147,7 @@ describe('S3 Meter / Signal Chain / FX / Modular — guided-lesson and catalog t
   });
   it('FX-02: mono-fold says inverted polarity cancels and delay combs', () => {
     const d = Object.values(LAB_LESSONS).flatMap((l) => l.controls).filter((c) => c.key === 'mono_fold').map((c) => c.definition).join(' ');
-    assert.match(d, /Anything with inverted polarity cancels and anything delayed combs here/);
+    assert.match(d, /Anything flipped in one channel but not the other cancels, and anything delayed between channels combs here/);
     assert.doesNotMatch(d, /out of phase cancels or combs/);
   });
   it('MOD-01: the Raw Drone names the envelope on the VCA', () => {

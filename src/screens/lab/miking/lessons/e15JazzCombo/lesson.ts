@@ -74,7 +74,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The ride, the hi-hat and the brushes',
     explain: 'The ride, hi-hat and brush detail often carry the time — so a kit view from above is heard first, and overly close cymbal pickup can dominate.',
     why: {
-      'The kick drum, played on each beat of the bar': 'A jazz kick is usually lighter and plays less; the cymbals carry the time.',
+      'The kick drum, played on each beat of the bar': 'A jazz kick is often played very softly, at most feathered on the beat; the ride and hi-hat carry the time.',
       'The toms between the phrases': 'Toms colour the fills; the time lives on the ride and hi-hat.',
     },
   },
@@ -472,10 +472,10 @@ const diagnostic: DiagnosticItem[] = [
     id: 'jz.q.4',
     covers: 'setups',
     prompt: 'A loud club, wedges, and a stream. What feeds the PA?',
-    options: ['Close mics on the sources', 'One shared main pair, for nature', 'A spaced omni pair up high'],
+    options: ['Close mics on the sources', 'One shared main pair, for a natural sound', 'A spaced omni pair up high'],
     correct: 'Close mics on the sources',
     explain: 'A single shared main pair is a poor default for a loud monitored stage; close pickup gives the PA its gain before feedback.',
-    why: { 'One shared main pair, for nature': 'Natural for a recording, but a distant pair in the PA feeds back.', 'A spaced omni pair up high': 'An omni pair hears even more of the PA.' },
+    why: { 'One shared main pair, for a natural sound': 'Natural for a recording, but a distant pair in the PA feeds back.', 'A spaced omni pair up high': 'An omni pair hears even more of the PA.' },
   },
   {
     id: 'jz.q.5',

@@ -758,7 +758,7 @@ export function CompArt({ settings }: { settings: CompSettings | null }) {
       h={298}
       a11y={
         settings
-          ? `The snare compressor: threshold ${settings.thresholdDb} dB, ${settings.ratio} to 1, attack ${settings.attackMs} milliseconds, release ${settings.releaseMs}. One real snare hit, dry in grey and compressed in amber, level-matched: ${settings.attackMs < 5 ? 'the fast attack clamps the front of the hit, so the crack is flattened' : 'the slow attack lets the first crack through before the gain comes down on the body'}. The gain reduction dips up to ${Math.round(-deepest)} dB.`
+          ? `The snare compressor: threshold ${settings.thresholdDb} dB, ${settings.ratio} to 1, attack ${settings.attackMs} milliseconds, release ${settings.releaseMs} milliseconds. One real snare hit, dry in grey and compressed in amber, level-matched: ${settings.attackMs < 5 ? 'the fast attack clamps the front of the hit, so the crack is flattened' : 'the slow attack lets the first crack through before the gain comes down on the body'}. The gain reduction dips up to ${Math.round(-deepest)} dB.`
           : 'The snare compressor, bypassed. One real snare hit, dry; the gain line is flat at 0 dB.'
       }
     >

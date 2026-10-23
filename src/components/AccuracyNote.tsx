@@ -61,7 +61,7 @@ export const PRACTICE_TITLE = 'PLANNING EDUCATION — NOT LEGAL OR SAFETY ADVICE
 export const PRACTICE_BODY = [
   'These labs teach you how to plan a production and what to ask for at each step. They do not give legal advice, and they are not a substitute for a qualified professional.',
   'Rights, licensing, clearance, releases, consent, insurance and employment requirements vary by country, union, venue and production type. Confirm what applies to your own work before you rely on it.',
-  'Rigging, electrical distribution and structural loading must be designed and approved by people licensed or certified for that work. Studying here does not qualify you to do it.',
+  'Rigging, electrical distribution and structural loading must be designed and approved by people qualified for that work, and licensed where the law requires it. Studying here does not qualify you to do it.',
 ];
 export const PRACTICE_CLOSER = 'Plan here; confirm the requirements that apply where you work.';
 

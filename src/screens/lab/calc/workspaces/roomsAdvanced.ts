@@ -299,7 +299,7 @@ const ABSORBER: Workspace = {
     'air in its holes against the cavity. Both are tuned to a target frequency — here is the math.',
   whyItMatters:
     'Low-frequency room problems need absorbers that WORK low, and porous foam that thin doesn’t. ' +
-    'Panel and Helmholtz resonators put absorption exactly where a mode or a boom lives, using ' +
+    'Panel and Helmholtz resonators put absorption in the band where a mode or a boom lives, using ' +
     'depth and mass instead of metres of foam.',
   example:
     'Panel absorber: a 5 kg/m² membrane over a 5 cm gap tunes to 59.9/√(5·0.05) ≈ 120 Hz. ' +

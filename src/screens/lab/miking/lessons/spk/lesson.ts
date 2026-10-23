@@ -336,7 +336,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Polarity inversion reverses the signal’s sign: the notches and peaks swap places, but the delay does not change. Only moving a mic, or delaying its channel, changes when the sound arrives.',
     why: {
       'It drops to zero, so the two arrivals line up': 'The mics are still the same distance from the cone: the delay stays.',
-      'It doubles, because the copy is now inverted': 'Polarity has no time in it. Only a mic’s position changes the delay.',
+      'It doubles, because the copy is now inverted': 'Polarity has no time in it. Only moving a mic, or delaying its channel, changes the delay.',
     },
   },
   {
@@ -532,7 +532,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Instrument dynamic close in front of the speaker, aimed at the dust-cap edge', ok: true, power: 'none', feedback: 'A suggested starting point, close and directional for a loud stage; a dynamic needs no power.' },
       { id: 'b', label: 'Small condenser about 5–15 cm from the grille, on the active speaker', ok: true, power: 'phantom', feedback: 'Close and directional, and this channel has the phantom power it needs.' },
-      { id: 'c', label: 'Instrument dynamic right at the grille, on the centre of the cone', ok: true, power: 'none', feedback: 'A brighter starting point; fine if it suits the player’s tone — keep it off the cloth.' },
+      { id: 'c', label: 'Instrument dynamic just off the grille, on the centre of the cone', ok: true, power: 'none', feedback: 'A brighter starting point; fine if it suits the player’s tone — keep it off the cloth.' },
       { id: 'd', label: 'A mic 60–90 cm back from the cabinet, for the room', ok: false, power: 'none', feedback: 'On a loud stage that hears the drums and monitors and lowers the margin before feedback.' },
       { id: 'e', label: 'A dynamic pressed against the grille cloth so it cannot move', ok: false, power: 'none', feedback: 'Keep the mic off the cloth: contact adds noise and can damage both.' },
     ],
@@ -666,7 +666,7 @@ export const SPK_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A loudspeaker in a box. The amplifier drives a cone, most often paper, that pushes the air. A mic on a cabinet hears that air — the speaker, the box and the room — not the instrument’s electrical signal.', src: 'LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'Guitar and bass amps, amplified harmonica and electric pianos, and organs played through a rotary cabinet (the Leslie) — on stage and in the studio. Those lessons all send you here for the speaker itself.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'The speaker and its box are part of the instrument’s sound: a guitarist’s tone is the amp AND the speaker. In a rotary cabinet the turning horn and drum make the sound swirl — the motion is part of the performance.', src: 'LESSON' },
-    { title: 'ITS SIZE', text: 'A 12 in speaker is about 31 cm across. A 1×12 cabinet is about 50 cm wide, a 4×12 about 77 cm and a 4×10 bass cabinet about 76 cm; the rotary cabinet drawn here is about 74 × 52 × 104 cm. This lab draws one of each.', src: 'MAR-MX112 / MAR-1960A / AMP-410 / HAM-122H / CEL-V30' },
+    { title: 'ITS SIZE', text: 'A 12 in speaker is about 31 cm across. A 1×12 cabinet is about 50 cm wide, a 4×12 about 77 cm and a 4×10 bass cabinet about 61 cm wide and 76 cm tall; the rotary cabinet drawn here is about 74 × 52 × 104 cm. This lab draws one of each.', src: 'MAR-MX112 / MAR-1960A / AMP-410 / HAM-122H / CEL-V30' },
   ],
   sound: {
     stages: [

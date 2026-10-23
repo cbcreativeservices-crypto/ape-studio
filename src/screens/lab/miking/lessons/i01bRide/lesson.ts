@@ -109,7 +109,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A shape is driven only as much as the plate moves under the stick. Near the held centre most of the ringing shapes barely move (a few, with a still ring, do) — so the bell’s clear, bright accent sits over less wash.',
     why: {
       'The bell is hollow, so the stick cannot reach the plate itself': 'The bell is part of the plate. It is the held centre that moves so little.',
-      'The bell is struck with the shoulder, which is too soft': 'The bell is usually played with the tip. Where it lands is what matters.',
+      'The bell is struck with the shoulder, which is too soft': 'The bell is often played with the stick’s shoulder, which gives it more power, not less. Where it lands is what matters.',
     },
   },
   {

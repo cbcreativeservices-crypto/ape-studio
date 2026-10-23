@@ -410,7 +410,7 @@ const symptoms: Symptom[] = [
     explain: 'A pickup or DI is more stable than a distant mic; keep the instrument mic off the monitor’s axis and lower the stage level. Never push past the agreed level to find the feedback point.',
     why: {
       'Turn the guitar mic up past the ringing': 'More gain feeds the loop.',
-      'Aim the guitar mic straight at the wedge instead': 'That is the most sensitive direction for the wedge — the opposite of what helps.',
+      'Aim the guitar mic straight at the wedge instead': 'That puts the wedge on the mic’s most sensitive axis — the opposite of what helps.',
     },
   },
   {

@@ -224,7 +224,7 @@ export type Driver = {
 };
 export const DRIVERS: readonly Driver[] = [
   { id: 'tweeter25', label: '25 mm dome tweeter', diameterMm: 25, fs: 800, qts: 0.7, breakupHz: 22000, cone: 'aluminium dome', blurb: 'A stiff metal dome: pistonic to the top of hearing, then one violent breakup above it.' },
-  { id: 'full100', label: '100 mm full-range', diameterMm: 100, fs: 90, qts: 0.6, breakupHz: 4500, cone: 'paper cone', blurb: 'Small and light: rigid low, cone flexing by the mid-treble, breakup in the presence region.' },
+  { id: 'full100', label: '100 mm full-range', diameterMm: 100, fs: 90, qts: 0.6, breakupHz: 4500, cone: 'paper cone', blurb: 'Small and light: rigid low, cone flexing in the upper mids, breakup in the presence region.' },
   { id: 'mid130', label: '130 mm midrange', diameterMm: 130, fs: 60, qts: 0.45, breakupHz: 3200, cone: 'polypropylene cone', blurb: 'Damped plastic cone: the breakup is soft and broad rather than a single peak.' },
   { id: 'woofer200', label: '200 mm woofer', diameterMm: 200, fs: 40, qts: 0.4, breakupHz: 2000, cone: 'paper cone', blurb: 'A classic 8": mass-controlled piston through the bass, edge flexing in the low mids.' },
   { id: 'woofer300', label: '300 mm woofer', diameterMm: 300, fs: 30, qts: 0.35, breakupHz: 1200, cone: 'treated paper cone', blurb: 'A 12": large piston area, low resonance, breakup already in the mids — hence the crossover.' },
@@ -279,7 +279,7 @@ export function readCone(driver: Driver, f: number): ConeRead {
     why = 'Below the suspension resonance the cone is stiffness-controlled. For a given drive it moves about the same amount, but the output falls about 12 dB per octave. A sealed box adds an air spring, which raises the system resonance above f_s and stiffens this region further.';
   } else if (r <= 1.4) {
     stage = 'resonance';
-    why = `At f_s ≈ ${driver.fs} Hz the moving mass and the suspension exchange energy freely: the cone moves fastest here for the least drive (Q_ts ${driver.qts}). Above it the cone becomes mass-controlled.`;
+    why = `At f_s ≈ ${driver.fs} Hz the moving mass and the suspension exchange energy freely: the cone moves fastest here for the least drive (Q_ts ${driver.qts} says how sharp this peak is). Above it the cone becomes mass-controlled.`;
     label = 'CALCULATED';
   } else if (b < 0.35 && ka < 1.2) {
     stage = 'piston';

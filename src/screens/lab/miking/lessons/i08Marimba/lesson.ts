@@ -496,7 +496,7 @@ const words: MalletWords = {
     prompt: 'Choose a PAIR, then step BAR to the lowest and the highest bar. Watch DELAY and LEVEL — and the comb below. Try the wider pair, too.',
     learn: [
       'Two layouts to begin from, as alternatives: two mics aimed down about 46 cm (1½ ft) above the bars, either about 61 cm (2 ft) apart, or grilles together angled 135° apart — a coincident pair.',
-      'Spaced: one mic toward the lower played region, one toward the higher, overlapping through the middle. On a widely played five-octave keyboard 61 cm may be too narrow: test the range and adjust spacing, height and aims. Coincident: no time difference in mono and a coherent picture, with less separate register control.',
+      'Spaced: one mic toward the lower played region, one toward the higher, overlapping through the middle. On a widely played five-octave keyboard 61 cm may be too narrow: test the range and adjust spacing, height and aims. Coincident: no time gap between the two mics, so a clean mono sum and a coherent picture, with less separate register control.',
       'Listen to each mic alone, both together, and summed to mono before reaching for automatic time alignment or the polarity switch. In a suitable studio a near-coincident or wider pair can be tried too — judge the mono picture and the whole keyboard.',
     ],
     warn: 'A simplified picture: one point on one bar, straight paths, no room. Judge a real pair by ear — each mic alone, both together, and in mono — at matched levels.',
@@ -595,7 +595,7 @@ const copy: Partial<LessonCopy> = {
         { title: 'THE ENSEMBLE', text: 'Hear the main array first; add one or two spots when the part needs level or focus — and check them with the mains, in mono.' },
       ],
       body: 'On stage, the monitors stay where the player needs them: turn the mic or choose its pattern so a null faces a loud unwanted source. Never push the player to strike harder to beat a loud stage.',
-      warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Address nearby levels and monitor placement rather than gain. Avoid uncontrolled feedback.',
+      warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Lower nearby levels and place the monitors well, rather than adding gain. If feedback starts, pull the level down at once: it can harm ears and speakers.',
     },
   },
   twoMic: {

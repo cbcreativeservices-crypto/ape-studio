@@ -47,7 +47,7 @@ export const TAMB_COPY: LessonCopy = {
     reveal: 'Struck, the head is pushed in and the frame jolts; the loose jingle pairs are thrown against each other. Two sounds start at once: the head’s body and the jingles’ bright clash.',
     after: 'Then the head rings briefly and the jingles keep shimmering for a moment. Head material, jingle metal, the rows and the player’s technique all change the balance between them.',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones, the lowest shape among them.',
       'This is a simplified head on a closed rim. A real tambourine’s back is open and its frame is held in a hand, so these numbers shift — the next step shows the head and the jingles together.',
     ],
     coupledSubject: 'The tambourine edge-on',
@@ -123,7 +123,7 @@ export const TAMB_COPY: LessonCopy = {
     learn: {
       intro: 'What you just did, in words. After our research, one mic about 15–30 cm (6–12 in) from the tambourine is where we suggest you begin. From there, aim at the head for more body or at the rim for more jingle. Starting points, not rules: move and listen — there is no single right answer.',
       separate: 'Height, distance and angle are separate variables: change one at a time, with the same passage. A held tambourine moves toward and away from a fixed mic: find a spot that covers the whole motion.',
-      clearance: 'Clearance comes first. Have the player show the whole arm, wrist, hand and stick motion, and the shake, before anything is placed. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room for a real player.',
+      clearance: 'Clearance comes first. Have the player show the whole arm, wrist, hand and stick motion, and the shake, before anything is placed. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room for a real player.',
       tendencies: 'Closer usually raises the tambourine against its neighbours but lets one jingle or one impact jump out; a little farther blends head, rim and room. If it is too bright, try distance and angle first. All tendencies to check by ear.',
     },
   },
@@ -150,7 +150,7 @@ export const TAMB_COPY: LessonCopy = {
     prompt: 'The monitor stays where the stage needs it. Turn the MIC (AIM) or change its PATTERN until the downstage wedge sits in the rejection.',
     activityDone: 'done — the downstage wedge sat in a null by your aim or pattern',
     deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there. Use the null to aim, not to promise silence.',
-    cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). The wedge sits behind the mic and off to one side: tilt the mic and its back can face it.',
+    cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). The wedge sits behind the mic and off to one side: turn the mic and its back can face it.',
     shieldNote: 'Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction. A wider pattern covers a moving player better but hears more of the stage.',
     studioId: 'tb.ctx.studio',
     studioPrompt: 'A recording in a hall has no wedge to reject. The decision changes: does the tambourine need its own mic?',

@@ -31,7 +31,7 @@ export const L07_LEAD: L07Lead[] = [
     // supply destroys equipment even where it cannot shock anyone").
     title: 'LOW-VOLTAGE DC',
     body:
-      'Power for small devices, delivered by adapters and supplies. Voltage, polarity and current capacity must all match the device — and nothing on the plug tells you any of them; only the printed labels do. The wrong supply destroys equipment even where the voltage is too low to harm a person.',
+      'Power for small devices, delivered by adapters and supplies. Voltage, polarity and current capacity must all match the device — and nothing on the plug tells you any of them; only the printed labels do. The wrong supply can destroy equipment even where the voltage is too low to harm a person.',
   },
 ];
 

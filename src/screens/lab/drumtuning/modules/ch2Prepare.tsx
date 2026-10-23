@@ -54,10 +54,10 @@ function knownSequence(approach: 'even' | 'random', step: number, lugs: LugCount
 type InspectPoint = { id: string; label: string; short: string; blurb: string };
 
 const HARDWARE_CHIPS: { id: DrumPart; label: string; text: string }[] = [
-  { id: 'rods', label: 'RODS', text: 'Each turns freely, none bent. A rod that backs out under playing drops its lug: the drum "will not hold tuning".' },
+  { id: 'rods', label: 'RODS', text: 'Each turns freely, none bent. A rod that backs out under playing loses tension at its lug: the drum "will not hold tuning".' },
   { id: 'lugs', label: 'LUGS', text: 'Casings tight on the shell, inserts not stripped, washers present and flat. One bad lug makes one unreliable rod.' },
   { id: 'hoop', label: 'HOOPS', text: 'Flat and round — set one on a table; it should touch all the way round. A bent hoop cannot press the head down evenly.' },
-  { id: 'batter', label: 'HEAD', text: 'Coating worn through, dents, a stretched collar, a year cranked high — replace it. Old heads tune unevenly and drift.' },
+  { id: 'batter', label: 'HEAD', text: 'Coating worn through, dents, a stretched collar, a year kept at very high tension — replace it. Old heads tune unevenly and drift.' },
   { id: 'edge', label: 'EDGE', text: 'Clean, level, no chips. Grit between head and edge is a buzz or a dead spot that LOOKS like a tuning problem.' },
 ];
 

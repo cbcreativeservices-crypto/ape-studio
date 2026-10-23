@@ -1139,7 +1139,7 @@ export const STAGE6_READINESS: StageDef = {
           hz_hazard: "Stage monitor levels during the headline set",
           hz_likelihood: "medium",
           hz_severity: "serious",
-          hz_control: "Monitor engineer holds levels; ear protection at the desk",
+          hz_control: "Monitor engineer holds levels; ear protection offered on stage and at the desk",
           hz_owner: "Dana",
           hz_status: "controlled"
         }

@@ -466,7 +466,7 @@ const WS_COMB: Workspace = {
     'Two arrivals of the same signal — a mic plus a nearby reflection, two mics on one source, ' +
     'two speakers covering one seat — carve this exact comb into the sound. It is the physics ' +
     'behind the "hollow", "phasey" tone of a badly placed mic and the seat-to-seat tonal drift ' +
-    'in overlapping PA coverage. Knowing where the nulls fall tells you whether to hear it as a ' +
+    'in overlapping PA coverage. Knowing where the nulls fall tells you to treat it as a ' +
     'placement problem, not an EQ problem.',
   example:
     'A mic picks up a floor reflection 0.5 ms behind the direct sound. First null = 1/(2 × ' +

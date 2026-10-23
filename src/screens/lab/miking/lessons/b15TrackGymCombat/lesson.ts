@@ -322,7 +322,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The loudest safe peak near −12 dBFS',
     explain: 'In this quiet practice the loudest safe peak is your strongest repeatable gentle clap: set it near −12 dBFS, then keep more margin for an unpredictable event — a trial starting point, not a broadcast standard.',
     why: {
-      'Bring the quiet clap up to −6 dBFS': 'With a quiet clap already at −6 dBFS, the first bell or whistle clips.',
+      'Bring the quiet clap up to −6 dBFS': 'With a quiet clap already at −6 dBFS, your strongest clap clips.',
       'Leave it as it is, and normalise it later': 'Normalising later cannot fix a clip, or the noise of a gain set too low.',
     },
   },

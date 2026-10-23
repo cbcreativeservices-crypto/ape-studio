@@ -346,7 +346,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Should a close amp mic and a room mic be panned hard apart?',
     options: ['Hard apart: a close mic and a room mic on one amp make a stereo pair', 'Not necessarily: they need not be panned apart to sound larger', 'Hard apart, so that they cannot comb in mono'],
     correct: 'Not necessarily: they need not be panned apart to sound larger',
-    explain: 'A close and a room mic are two perspectives, not a stereo pair. Panning does not change the mono sum — check it either way.',
+    explain: 'A close and a room mic are two perspectives, not a stereo pair. Panning does not remove combing from the mono sum — check it either way.',
     why: {
       'Hard apart: a close mic and a room mic on one amp make a stereo pair': 'Two perspectives on one speaker are not automatically a stereo pair.',
       'Hard apart, so that they cannot comb in mono': 'Panning does not remove the combing in the mono sum.',

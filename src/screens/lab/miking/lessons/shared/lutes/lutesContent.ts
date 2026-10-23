@@ -32,7 +32,7 @@ export function oudWedges(sc: LuteScene): Wedge[] {
       p: sc.fit.mouth,
       lift: 0,
       faces: v(0, 0, 1),
-      note: 'Above and behind the oud mic’s front: in the front half of any pattern aimed at the oud, so no null reaches it. Plan the balance instead.',
+      note: 'Above the oud, on the side the oud mic faces: in the front half of any pattern aimed at the oud, so no null reaches it. Plan the balance instead.',
       prov: STAGE,
       glyph: 'none',
     },

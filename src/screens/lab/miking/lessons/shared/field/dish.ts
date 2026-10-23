@@ -28,7 +28,7 @@ export type Dish = { id: DishId; label: string; short: string; D: number; f: num
 
 /** The dishes the lab draws (mm). Product names stay in the research record. */
 export const DISHES: Readonly<Record<DishId, Dish>> = {
-  typical: { id: 'typical', label: 'A typical 57 cm dish', short: '57 CM', D: 570, f: Math.round(0.36 * 570), note: 'A common size for a bird-recording dish; the focus drawn at about a third of its width from the middle.' },
+  typical: { id: 'typical', label: 'A typical 57 cm dish', short: '57 CM', D: 570, f: Math.round(0.36 * 570), note: 'A common size for a bird-recording dish; the focus drawn about a third of its width out from the bottom of the bowl.' },
   d585: { id: 'd585', label: 'A 58.5 cm dish, focus 21 cm', short: '58.5 CM', D: 585, f: 210, note: 'One maker’s set: the capsule mounted at the focus, facing the dish.' },
   d500: { id: 'd500', label: 'A 50 cm dish, focus 14 cm', short: '50 CM', D: 500, f: 140, note: 'Another maker’s set: a deeper bowl, the capsule at a marked focus, aimed back at the dish.' },
 };

@@ -115,7 +115,7 @@ export const STAGE7_FINISH: StageDef = {
           fieldId: "measured_true_peak",
           label: "Measured maximum true peak",
           kind: "number",
-          help: "True peak, not sample peak. Peaks between samples are already in the master, and encoding can push them higher — which is where a compliant file stops being compliant.",
+          help: "True peak, not sample peak. Peaks between samples can already be in the master, and encoding can push them higher — which is where a compliant file stops being compliant.",
           unit: "dBTP",
           required: true
         },
@@ -495,7 +495,7 @@ export const STAGE7_FINISH: StageDef = {
       kind: "unrealistic",
       title: "The dynamics have been flattened to reach the target",
       detail: "The loudness range is very small and the correction was compression or limiting. Pushed this way, a programme gets louder and stops being able to emphasise anything — and on a platform that normalises, the loudness is turned back down while the flatness stays.",
-      fixHint: "Take overall gain off instead and let the target be met at a lower level. Where the range is genuinely too wide, ride the loud moments rather than compressing everything.",
+      fixHint: "Back off the compression or limiting, then meet the target with overall gain. Where the range is genuinely too wide, ride the loud moments rather than compressing everything.",
       needsLogic: true,
       logicIntent: "Fire when measured_lra is a number below a threshold that ccode chooses and loudness_action is compression or limiting."
     },
@@ -539,7 +539,7 @@ export const STAGE7_FINISH: StageDef = {
       kind: "mismatch",
       title: "Dither applied more than once",
       detail: "Dither is noise added deliberately to hide the error from reducing bit depth. Applied repeatedly through a chain it stops solving that and simply accumulates.",
-      fixHint: "Apply it once, at the last point where the bit depth is reduced, and nowhere else.",
+      fixHint: "Reduce the bit depth only once, at the end of the chain, and apply dither at that one point.",
       needsLogic: true,
       logicIntent: "Fire when dither_applied is multiple."
     },

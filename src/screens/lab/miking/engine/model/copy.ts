@@ -327,7 +327,7 @@ export const NEUTRAL_COPY: LessonCopy = {
     cells: [],
     reveal: '',
     after: 'Then the heads spring back and keep ringing for a while — the BODY of the sound.',
-    shapesNotes: ['A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones.'],
+    shapesNotes: ['A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones, the lowest shape among them.'],
     coupledSubject: 'Side view of the drum',
     coupledNote: 'One strike sets both going; the sound you hear is the two together.',
     silentNote: 'This lab never plays a sound and draws no frequency curve for the drum. The pictures show where the sound comes from and where it leaves.',

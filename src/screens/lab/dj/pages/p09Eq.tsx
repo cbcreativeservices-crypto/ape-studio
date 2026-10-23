@@ -218,7 +218,7 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
         <Do>Kill deck B’s LOW, then hand the bass over: bring LOW 2 up as you take LOW 1 down. Then sweep a filter with resonance.</Do>
         <P>A bass handover is one way to blend, not the only way. Some tracks blend fine with both lows partly down; some sound better with a filter. Compare at the same level and trust what you hear in the room — suggested starting points, not rules.</P>
         <GoalChips goals={goals.slice(0, 3)} latched={latched.slice(0, 3)} />
-        <Note>These ranges, crossovers and slopes are this lab’s mixer. Real mixers differ — some isolators cut to −∞ across the whole knob, some EQs only cut −12 dB. Check your own.</Note>
+        <Note>These ranges, crossovers and slopes are this lab’s mixer. Real mixers differ — some isolators kill a band fully at the end stop, some EQs only cut −12 dB. Check your own.</Note>
       </Step>
       <Step n={5}>
         <Do>On your own: make deck A sound far away, as if from the next room — without touching its EQ.</Do>

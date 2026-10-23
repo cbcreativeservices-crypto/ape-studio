@@ -426,7 +426,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'Delay the spot to the main pair and flip its polarity, as a matter of course', ok: false, power: 'phantom', feedback: 'Neither is automatic: move or rebalance first, then judge both in mono.' },
       { id: 'e', label: 'Turn the main pair up until the tuba is clear', ok: false, power: 'phantom', feedback: 'That raises everything else too. Definition needs a little direct tuba, not more of everything.' },
     ],
-    reasons: [docReason('the bell'), clearReason('the bell’s sway, the valve hand and the neighbours'), POWER_REASON, { id: 'r.mono', label: 'I will raise it gradually and check it with the main pair in mono', role: 'optional', feedback: 'A fair reason: a spot supports the main pair, it does not replace it.' }, BRAND_REASON('tuba'), { id: 'r.boost', label: 'A tuba spot needs a big low-end boost to work', role: 'wrong', feedback: 'Close spots already lift the lows. Keep the line supportive.' }],
+    reasons: [docReason('the bell'), clearReason('the bell’s sway, the valve hand and the neighbours'), POWER_REASON, { id: 'r.mono', label: 'I will raise it gradually and check it with the main pair in mono', role: 'optional', feedback: 'A fair reason: a spot supports the main pair, it does not replace it.' }, BRAND_REASON('tuba'), { id: 'r.boost', label: 'A tuba spot needs a big low-end boost to work', role: 'wrong', feedback: 'Close directional spots already lift the lows. Keep the line supportive.' }],
     explain: 'Two spots pass. What passes is the reasoning: a sensible starting point, clearance, the right power — and a spot that supports the main pair rather than pulling the tuba forward.',
   },
 ];

@@ -68,7 +68,7 @@ const SPEC = ensembleHandSpec({
     placeBadge: 'Blue = suggested starting points · white dots = the players’ distances to the pair, from above · pinch to zoom',
     clearance: 'Clearance comes first: the bows, the picking hands, the cases, the players’ feet and the walkways.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A guitar spot aimed back at the 12th fret turns its back toward the audience — the wedge, on the floor in front, sits low behind it.',
-    sourceNote: 'What you just saw: a player reaches the two mics at different times. Summed, the late copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each player gives its own delay.',
+    sourceNote: 'What you just saw: a player reaches the two mics at different times. Summed, the late copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each player gives its own delay.',
   },
 });
 

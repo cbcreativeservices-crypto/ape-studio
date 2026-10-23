@@ -421,7 +421,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'In the modern layout, where are the cellos as the conductor faces them?',
     options: ['Right, the basses behind', 'Left, beside the violins', 'Centre, behind the winds'],
     correct: 'Right, the basses behind',
-    explain: 'High to low, left to right: most often the cellos on the outside right, the basses behind them.',
+    explain: 'High to low, left to right: in this layout the cellos sit on the outside right, the basses behind them. Some orchestras swap the cellos and violas.',
     why: { 'Left, beside the violins': 'That is the other layout, with the violins facing each other.', 'Centre, behind the winds': 'Behind the winds sit the brass and percussion.' },
   },
   {
@@ -439,7 +439,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Which main array keeps every pair of its mics at least 1.5 m apart?',
     options: ['The three-omni tree', 'The 17 cm cardioid pair', 'The coincident X/Y pair'],
     correct: 'The three-omni tree',
-    explain: 'The tree’s left and right are 2 m apart and the centre 1.5 m ahead: every pair at least 1.5 m apart.',
+    explain: 'The tree’s left and right mics are 2 m apart; the centre sits 1.5 m ahead, about 1.8 m from each side mic — so every pair is at least 1.5 m apart.',
     why: { 'The 17 cm cardioid pair': 'Its capsules are 17 cm apart.', 'The coincident X/Y pair': 'Its capsules are together.' },
   },
   {

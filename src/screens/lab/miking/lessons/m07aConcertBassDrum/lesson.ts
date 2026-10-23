@@ -83,7 +83,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The playing head squeezes the air inside, and the air pushes the far head out: the two heads are coupled through the air, and both radiate.',
     why: {
       'Pulls it inward, toward the playing head': 'The playing head moving in squeezes the air; squeezed air pushes on the far head, so it moves outward.',
-      'Nothing: the air escapes through the shell wall': 'The shell is closed. The air is squeezed and pushes the far head out.',
+      'Nothing: the air escapes through the shell wall': 'The shell is closed, apart from a small air vent on many drums. The air is squeezed and pushes the far head out.',
     },
   },
   {
@@ -315,7 +315,7 @@ const scenarios: MikingScenario[] = [
     correct: 'It reveals useful sustain, works alone, and holds up in mono',
     explain: 'A second view is an experiment: compare it alone and together in mono at useful levels, and discard it if it adds bleed, phase problems or risk.',
     why: {
-      'The far head should have a mic of its very own, as a rule': 'No source establishes such a rule; the second mic has to earn its place.',
+      'The far head should have a mic of its very own, as a rule': 'We found no such rule; the second mic has to earn its place.',
       'The drum needs more level than one single spot can ever give it': 'Level comes from gain and the fader, not from another mic.',
     },
   },
@@ -427,7 +427,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'How does a concert bass drum usually sit in an orchestra?',
     options: ['In a tilting stand, its heads facing sideways', 'On the floor, its heads facing out to the audience', 'Lying flat on a table, one head facing up'],
     correct: 'In a tilting stand, its heads facing sideways',
-    explain: 'It hangs on pivots in a tilting stand on locking casters, its heads usually facing sideways along the stage; the crew sets and locks its angle.',
+    explain: 'It usually hangs on pivots in a tilting stand on locking casters, its heads facing sideways along the stage; the crew sets and locks its angle.',
     why: {
       'On the floor, its heads facing out to the audience': 'That is closer to a kit’s kick drum. A concert bass drum hangs in a stand, heads sideways.',
       'Lying flat on a table, one head facing up': 'It hangs in a stand on pivots, its heads facing sideways.',
@@ -502,7 +502,7 @@ export const M07A_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A large, two-headed bass drum for orchestras and concert bands — distinct from a drum kit’s kick. It hangs on pivots in a tilting stand on locking casters, and is played with a large felt mallet.', src: 'YMH-CB9-STAND' },
+    { title: 'WHAT IT IS', text: 'A large, two-headed bass drum for orchestras and concert bands — distinct from a drum kit’s kick. It usually hangs on pivots in a tilting stand on locking casters, and is played with a large felt mallet.', src: 'YMH-CB9-STAND' },
     { title: 'WHERE YOU MEET IT', text: 'In the percussion section of an orchestra or band, usually with its heads facing sideways along the stage — recorded in halls and studios, and amplified on stage.', src: 'LESSON-CBD' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Single big strokes, soft rolls, and notes left to bloom or damped by hand on either head. Few notes — but a lot of low-frequency energy and a fast start.', src: 'LESSON-CBD' },
     { title: 'ITS SIZE', text: 'Concert bass drums are often 32 to 40 in across and 16 to 22 in deep. This lab draws a 36 × 16 in drum.', src: 'YMH-CPCAT' },
@@ -531,7 +531,7 @@ export const M07A_LESSON: Lesson = {
       { id: 'conductor', label: 'the conductor', short: 'CONDUCTOR', note: 'Off to the side of the drum (its heads face along the stage). The player needs a clear sightline: no boom across it.', prov: { kind: 'illustrative', reason: 'a typical concert layout' }, tag: 'SIGHTLINE', scene: 'stage' },
       { id: 'pa', label: 'the PA', short: 'PA', note: 'At the front corners, facing the audience. Low-frequency feedback is the bass drum’s particular risk — every open mic hears the PA.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'FEEDBACK PATH', scene: 'stage' },
       { id: 'main', label: 'the main pair over the conductor', short: 'MAIN PAIR', note: 'Two mics on a tall stand, hearing the whole orchestra. Recording, it often carries the bass drum’s low end — the spot adds the transient.', prov: { kind: 'illustrative', reason: 'a typical recording layout' }, tag: 'MAIN PICKUP', scene: 'studio' },
-      { id: 'hall', label: 'the hall', short: 'THE HALL', note: 'In a quiet, good hall a little more distance can blend the two heads and the room; a raised spot can pull the drum out of its place.', prov: { kind: 'illustrative', reason: 'a generic hall; no source gives its size' }, tag: 'ROOM SOUND', scene: 'studio' },
+      { id: 'hall', label: 'the hall', short: 'THE HALL', note: 'In a quiet, good hall a little more distance can blend the two heads and the room; a spot pushed too loud in the mix can pull the drum out of its place.', prov: { kind: 'illustrative', reason: 'a generic hall; no source gives its size' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: an amplified orchestra or band — monitors on stage, the PA facing the audience. Low-frequency feedback, bleed and the gain before feedback favour one stable, directional spot near the playing head, worked out with the operator.',
     studio: 'RECORDING: the main pickup carries the orchestra and much of the bass drum’s low end; a spot adds the transient, low in the mix. A quiet hall can reward a little more distance.',

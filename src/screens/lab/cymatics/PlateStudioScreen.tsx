@@ -697,7 +697,7 @@ function PlateStudio() {
               : res.state === 'approaching' && res.next
                 ? `Next resonance: ${res.next.label} at ${formatHz(res.next.hz)}.`
                 : res.state === 'below'
-                  ? `First excitable resonance is at ${res.next ? formatHz(res.next.hz) : '—'} — below it the plate only flexes as a whole.`
+                  ? `First excitable resonance is at ${res.next ? formatHz(res.next.hz) : '—'} — below it the plate just moves as a whole and forms no figure.`
                   : `Off resonance — small motion, no stable figure; the sand shivers but does not organise.${res.next ? ` Nearest: ${res.next.label} at ${formatHz(res.next.hz)} — open FREQ and tap LAND ON to land on it.` : ''}`}
           </Text>
           <View style={styles.rowBetween}>

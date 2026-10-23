@@ -568,7 +568,7 @@ export const E04_LESSON: EnsembleLesson = {
       { title: 'HEAR THE REAL MUSIC', text: 'The loudest and softest passages, unison and harmony, words with strong plosives or S sounds — before final placement.' },
       { title: 'PLACE THE SINGERS FIRST', text: 'In the performance arrangement: place the main mic or pair, then move the singers before adding mics. Both on the same acoustic plane for an intimate duet.' },
     ],
-    safety: 'Stable stands, secure cable paths, clear movement areas. Nobody covers a grille, points a handheld at a monitor or passes a live mic. Hearing protection for high-level checks. Monitors up in small steps only to the agreed level — down at once at any ring; avoid uncontrolled feedback.',
+    safety: 'Stable stands, secure cable paths, clear movement areas. Nobody covers a grille or points a handheld at a monitor, and most crews mute a mic before it is passed. Hearing protection for high-level checks. Monitors up in small steps only to the agreed level — down at once at any ring; avoid uncontrolled feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a duet in a good room: one mic at their mouth height, the two singers on a semicircle in front, each mouth the same distance away — a place to start and rehearse, not a rule.',
       clearance: 'The stand’s base clear of both singers’ feet, its boom running away from them; the cable dressed flat, out of their moves.',

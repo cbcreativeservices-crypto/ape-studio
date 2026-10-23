@@ -308,7 +308,7 @@ const A_PICKS: ConnectionPick[] = [
       travels(
         'clock_sync',
         'wrong',
-        'You picked CLOCK / SYNC — the timing reference that keeps digital devices sampling in step. That is not audio at all; this trunk carries the audio itself, as NETWORKED AUDIO.',
+        'You picked CLOCK / SYNC — the timing reference that keeps digital devices sampling in step. The network does carry its own timing messages, but its main load is the audio itself — NETWORKED AUDIO.',
         'no_signal',
       ),
     ],
@@ -992,7 +992,7 @@ const B_PICKS: ConnectionPick[] = [
         'trrs',
         '3.5 mm TRRS headset plug (via adapter)',
         'wrong',
-        'You picked a TRRS headset plug. Its fourth contact is a microphone path this stereo jack does not provide — playback commonly works, but the mic is unavailable, and on some combinations audio is weak or one-sided because the ground lands on the wrong contact. The correct choice is the headphones’ own TRS stereo plug.',
+        'You picked a TRRS headset plug. Its fourth contact is a microphone path this stereo jack does not provide — playback may work, but the mic is unavailable, and on many combinations the ground lands on the wrong contact: the sound turns thin, with the vocal and other center sounds nearly gone. The correct choice is the headphones’ own TRS stereo plug.',
         'unreliable',
       ),
       cable(
@@ -1154,7 +1154,7 @@ const B_DATA: PickStage = {
           'midi_ok',
           'Controller MIDI OUT → Interface MIDI IN',
           'correct',
-          'Data flows one way: OUT of the sender, INTO the receiver — OUT→IN, always. The controller performs, so its OUT feeds the interface’s IN. Two-way communication would take a second cable.',
+          'Data flows one way: OUT of the sender, INTO the receiver — OUT→IN (a THRU jack passes on a copy of IN, so THRU→IN is right for a chain too). The controller performs, so its OUT feeds the interface’s IN. Two-way communication would take a second cable.',
         ),
         cable(
           'midi_rev',
@@ -1200,7 +1200,7 @@ const B_FAULTS: FaultStage = {
       label: 'Interface ↔ Computer — USB cable, Type-B end at the interface',
       fault: false,
       okExplain:
-        'That line is sound: digital audio (and often the interface’s power) as data, with the Type-B peripheral end at the interface and the host end at the computer.',
+        'That line is sound: digital audio travels on it as data, with the Type-B peripheral end at the interface and the host end at the computer.',
     },
     {
       id: 'bf_monL',
@@ -1243,7 +1243,7 @@ const B_FAULTS: FaultStage = {
       id: 'bf_midi',
       label: 'MIDI controller MIDI OUT → Interface MIDI IN — 5-pin DIN cable',
       fault: false,
-      okExplain: 'That line is sound: control data flowing OUT→IN, the only direction MIDI data moves.',
+      okExplain: 'That line is sound: control data flowing OUT→IN, the direction MIDI data moves (THRU only repeats what reaches IN).',
     },
     {
       id: 'bf_dc',

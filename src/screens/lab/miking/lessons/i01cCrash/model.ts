@@ -100,7 +100,7 @@ function under(id: string, v: 'crash1' | 'crash2'): DocumentedZone {
     requires: { variant: v, micTypeIds: ['sdcCard'] },
     drawn: bandDrawn(c, b),
     start: poseToward(bandMid(c, b, { r: 0.45, h: 0.5 }), at(c, 60, (b.th[0] + b.th[1]) / 2, 0)),
-    tendency: 'Out of the stick’s way and below the overheads’ view, its rear toward the floor and the monitors. From below there tends to be less stick and more of the plate’s wash.',
+    tendency: 'Out of the stick’s way, hearing the underside the overheads hear less of, its rear toward the floor and the monitors. From below there tends to be less stick and more of the plate’s wash.',
     checks: ['Below the plate’s downward swing after the hardest crash', 'Clear of the crash’s own boom and the drums below', 'Its rear faces the floor: good for the monitors'],
   };
 }

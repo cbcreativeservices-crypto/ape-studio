@@ -163,8 +163,8 @@ const NETAUDIO: Workspace = {
     'of audio, so that takes at least 7 packets every ms (7000 packets/s), each with ~78 bytes of header.',
   mistakes: [
     'Sizing only the raw audio rate — at low latency, per-packet headers add a large, real overhead on top.',
-    'Forgetting bandwidth is per DIRECTION — a full-duplex flow needs the rate both ways.',
-    'Running audio and control/other traffic on an unmanaged, uncongested-by-luck switch — AoIP wants QoS and headroom.',
+    'Forgetting bandwidth is per DIRECTION — a full-duplex link carries its full rate each way, so check the sending and the receiving traffic against the link on their own; do not add them.',
+    'Running audio and control/other traffic on a switch with no QoS and hoping the other traffic stays light — AoIP wants QoS and headroom.',
   ],
   warnings:
     'Raw rate = channels × sample rate × bit depth. Wire estimate adds ~78 bytes/packet (Ethernet ' +
@@ -496,7 +496,7 @@ const CONVOLUTION: Workspace = {
     'makes it run in real time — and the latency your block size buys.',
   example:
     'A 2 s IR at 48 kHz stereo: 96000 taps per channel. Direct form = 96000×48000×2 ≈ 9.2 billion ' +
-    'MAC/s — far past real time by hand, which is why FFT partitioning exists. The IR itself is ' +
+    'MAC/s — far too heavy to run in real time by brute force, which is why FFT partitioning exists. The IR itself is ' +
     '≈ 768 kB as 32-bit floats.',
   mistakes: [
     'Assuming direct-form convolution is feasible — the MAC/s count shows why partitioned FFT convolution is mandatory for long IRs.',
@@ -569,7 +569,7 @@ const CONVOLUTION: Workspace = {
       steps: (v) => {
         return [
           `Block latency = ${fmtCount(n(v.block))} samples ÷ ${fmt(n(v.sr))} Hz = ${fmt((n(v.block) / n(v.sr)) * 1000)} ms.`,
-          `Uniform-block convolution adds about one block of delay; partitioned schemes keep the FIRST block small to cut this.`,
+          `Uniform-block convolution adds about one block of delay; mixed-size (non-uniform) partitioned schemes keep the FIRST block small to cut this.`,
         ];
       },
     },
@@ -659,7 +659,7 @@ const BITDEPTH: Workspace = {
       formula: 'N = dynamic range / 6.02 (rounded up)',
       plainFormula: 'The number of bits equals the dynamic range divided by 6.02, rounded up to a whole number.',
       explain:
-        'The reverse: the bit depth a target dynamic range needs. Since each bit adds about 6.02 dB, it divides the target by 6.02 and rounds up to a whole bit — then shows the range those whole bits actually deliver. In practice you round to the nearest standard depth (16, 24, 32).',
+        'The reverse: the bit depth a target dynamic range needs. Since each bit adds about 6.02 dB, it divides the target by 6.02 and rounds up to a whole bit — then shows the range those whole bits actually deliver. In practice you round up to the next standard depth (16, 24, 32).',
       keySymbols: ['/'],
       compute: (v) => {
         const dr = n(v.dr);
@@ -678,7 +678,7 @@ const BITDEPTH: Workspace = {
         return [
           `Each bit adds 6.0206 dB (20·log₁₀2), so bits = range ÷ 6.0206 = ${fmt(dr)} ÷ 6.0206 = ${fmt(exact)}.`,
           `Bits come in whole numbers, so round UP to ${fmtCount(need)} bit${need === 1 ? '' : 's'} — which delivers 6.0206 × ${fmtCount(need)} = ${fmt(DB_PER_BIT * need)} dB of range.`,
-          `(For example, a 90 dB target needs 15 bits of range → in practice you would pick 16-bit, the nearest standard depth.)`,
+          `(For example, a 90 dB target needs 15 bits of range → in practice you would pick 16-bit, the next standard depth up.)`,
         ];
       },
     },

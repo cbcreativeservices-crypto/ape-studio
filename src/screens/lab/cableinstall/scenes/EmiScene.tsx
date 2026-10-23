@@ -87,7 +87,7 @@ const EMI_SOURCES: EmiSource[] = [
 /* ── the seven real levers (rule 'emi-no-universal-distance') ───────────── */
 const EMI_LEVERS: { name: string; blurb: string }[] = [
   { name: 'LEVEL', blurb: 'How strong the noise source is — and how small your signal is.' },
-  { name: 'BALANCING', blurb: 'Balanced interconnects reject what couples onto both conductors.' },
+  { name: 'BALANCING', blurb: 'Balanced interconnects reject noise that couples EQUALLY onto both conductors.' },
   { name: 'SHIELDING', blurb: 'A correctly terminated shield blocks ELECTRIC-field pickup. Low-frequency MAGNETIC hum (feeders, transformers) passes through it: twisting and distance reduce that.' },
   { name: 'CURRENT', blurb: 'More current in the neighbor, more magnetic field around it.' },
   { name: 'DISTANCE', blurb: 'Exposure falls fast as separation grows.' },

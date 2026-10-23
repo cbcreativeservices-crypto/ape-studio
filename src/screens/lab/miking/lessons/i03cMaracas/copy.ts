@@ -79,7 +79,7 @@ export const MAR_COPY: LessonCopy = spCopy({
     before: [
       { title: 'BOTH HEADS, BOTH ARCS', text: 'Ask for the whole part — the largest accent, changes of height, any switch to another instrument or the voice. Find where both heads travel; the mic, boom and cable stay outside both arms’ reach.' },
       { title: 'THE PAIR FIRST', text: 'Plastic, wood or rawhide heads, a softer or a more projecting pair: listen to the actual pair at its real playing strength. A material name promises no exact sound.' },
-      { title: 'SAFE INSTRUMENTS', text: 'A loose handle or a cracked vessel can shed its seeds: do not use a damaged pair. Move the mic before asking the player to freeze, swap hands or match accents for it.' },
+      { title: 'SAFE INSTRUMENTS', text: 'A loose handle or a cracked vessel can shed its seeds: point out a damaged pair to the player before the take. Move the mic before asking the player to freeze, swap hands or match accents for it.' },
     ],
     planTitle: 'At the percussion station',
   },
@@ -92,7 +92,7 @@ export const MAR_COPY: LessonCopy = spCopy({
     learn: {
       intro: 'What you just did, in words. After our research, one mic centred in front of the pair, about 40–80 cm (16–32 in) from the midpoint between the heads, is where we suggest you begin; one general tip for percussion is a gap of about 30 cm or more. If one hand disappears, a spot per head. Starting points, not rules.',
       separate: 'Distance, height and angle are separate variables: change one at a time. The distance is from the middle of the sound area — not from the nearest single stroke.',
-      clearance: 'Clearance comes first. Large strokes need more space; keep the stand and cable outside both arcs. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
+      clearance: 'Clearance comes first. Large strokes need more space; keep the stand and cable outside both arcs. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason.',
       tendencies: 'Move toward the quieter side if the balance allows, back if the near head leaps every stroke, closer — still outside the arcs — if the room takes over. All tendencies to check by ear.',
     },
   },

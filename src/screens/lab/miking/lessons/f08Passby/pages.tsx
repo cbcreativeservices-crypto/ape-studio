@@ -150,7 +150,7 @@ function F08Context({ lesson, answers, onAnswered, onInteractive, interactiveDon
     image,
     readStep('live', 'Studio, live and broadcast', [
       { title: 'FIXED OR TRACKED IS A VIEWPOINT', text: 'A tracked directional mic holds the subject; a fixed pair lets it cross the image. Neither is the one correct pass-by — they are different listeners.' },
-      { title: 'LIVE', text: 'For a live show or a broadcast, a fixed, safe array can cover a predictable route without a moving operator. Route only the channels you need to the PA, the monitors and the stream, check mono and the audience positions, and control the gain before feedback.' },
+      { title: 'LIVE', text: 'For a live show or a broadcast, a fixed, safe array can cover a predictable route without a moving operator. Route only the channels you need to the PA, the monitors and the stream, check mono and the audience positions, and check the gain before feedback.' },
       { title: 'CUES, NOT STEPS', text: 'If the subject changes path, an operator may track from a safe station — with intercom or visual cues, never by stepping toward the action to rescue a missed sound.' },
     ]),
     fieldCheckStep(lesson, 'context', answers, onAnswered),

@@ -598,7 +598,7 @@ const wedges: Wedge[] = [
     p: { x: PA_C.x, y: FLOOR, z: PA_C.z },
     lift: FLOOR - PA_C.y,
     faces: { x: -1, y: 0, z: 0 },
-    note: 'High beyond the camera, to the front-right: it reaches the handheld from in front and above — where the pattern’s rejection can be aimed only so far while the mic still faces the mouth.',
+    note: 'High beyond the camera, to the guest’s front-right. It reaches the handheld from above, on the camera side. The pattern’s rejection can be aimed only so far while the mic still faces the mouth.',
     prov: { kind: 'illustrative', reason: 'a typical stadium sideline: the PA’s place and height are drawing defaults' },
     glyph: 'none',
   },

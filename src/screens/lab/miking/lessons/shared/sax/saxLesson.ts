@@ -450,12 +450,12 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       id: id('s.fb'),
       observation: 'Feedback, or heavy spill from the stage',
       firstChecks: 'Lower the level, then change the mic, monitor and player geometry, and close mics you do not need.',
-      options: ['Lower the level, then change the geometry and open mics', 'Boost the sax channel so the horn is louder than the ring', 'Swap to an omni mic, which is less likely to feed back'],
-      correct: 'Lower the level, then change the geometry and open mics',
+      options: ['Lower the level, then change the geometry and close spare mics', 'Boost the sax channel so the horn is louder than the ring', 'Swap to an omni mic, which is less likely to feed back'],
+      correct: 'Lower the level, then change the geometry and close spare mics',
       explain: 'Feedback is a sound-system condition: reduce the level first, then move the mic or the monitor, and close mics you do not need. Avoid uncontrolled feedback.',
       why: {
         'Boost the sax channel so the horn is louder than the ring': 'More gain feeds the loop. Lower the level first.',
-        'Swap to an omni mic, which is less likely to feed back': 'An omni rejects nothing: it usually makes feedback more likely, not less.',
+        'Swap to an omni mic, which is less likely to feed back': 'An omni has no null to aim at the monitor: it usually makes feedback more likely, not less.',
       },
     },
     {
@@ -466,7 +466,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       correct: 'Bypass the filter and compare on the lowest real phrase',
       explain: 'A high-pass filter set above the horn’s lowest notes removes their weight. Check it bypassed against the actual low line, and set it only for rumble or handling noise.',
       why: {
-        'Turn the low-frequency EQ up to bring the weight back': 'EQ after the filter cannot restore what the filter removed. Bypass and compare first.',
+        'Turn the low-frequency EQ up to bring the weight back': 'EQ after the filter cannot cleanly restore what the filter took away. Bypass and compare first.',
         'Ask the player to leave out the lowest notes of the part': 'The part is the music. Set the filter for it, not the other way round.',
       },
     },
@@ -715,7 +715,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
         { title: 'The reed opens and closes', text: 'The player’s breath and lips set the cane reed vibrating against the mouthpiece: it lets puffs of air into the horn, many times a second, at the note’s pitch.' },
         { title: 'A pressure pulse runs down the cone', text: 'Each puff sends a pressure pulse down the conical tube — drawn here as one bright spot, far slower than it really travels.' },
         { title: 'The first open hole ends the air column', text: 'At the first open tone hole the pulse meets the room’s air and turns back: the air column acts as if the tube ended there — a little beyond it, in practice. Its length sets the note.' },
-        { title: 'Sound leaves', text: 'Most of the note leaves through the first open hole and the open holes just past it; the bell carries its high harmonics. The tube beyond the first open hole hardly takes part.' },
+        { title: 'Sound leaves', text: 'Most of the note leaves through the first open hole and the open holes just past it; the bell carries its high harmonics. The tube beyond the first open hole hardly changes the pitch.' },
       ],
       attack: 'The start of a note: the player’s tongue releasing the reed and the reed beginning to vibrate. Breath and reed noise come from the mouthpiece, by the player’s mouth — a mic close to the mouthpiece hears more breath than horn.',
       body: 'The sustained tone: the air column ringing, leaving mostly through the open holes near the first open one and — for the lowest notes and the high harmonics — the bell. Where it leaves moves with every note, so a close mic hears a changing picture, and a little distance blends it. Tendencies; horns and players vary.',

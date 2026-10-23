@@ -64,7 +64,7 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Musical theatre has the widest dynamic range of almost any amplified genre. A show can carry 30–40 dB of program dynamic range compared with 5–10 dB at a concert: underscore might sit around −25 dB on the band VCA while a finale peaks at +10 dB. Preserve that range — the hush before a big ballad note is what makes the note land. Control comes from hands on faders, not heavy compression. Leave headroom so the Act 2 finale can be the biggest moment."
+      "text": "Musical theatre has the widest dynamic range of almost any amplified genre. A show can carry 30–40 dB of program dynamic range compared with 5–10 dB at a concert: underscore can sit 30 dB or more below the finale. Preserve that range — the hush before a big ballad note is what makes the note land. Control comes from hands on faders, not heavy compression. Leave headroom so the Act 2 finale can be the biggest moment."
     }
   ],
   "balance": [
@@ -193,7 +193,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Gates are rarely used on vocal mics — fader pickups replace them. Dynamic EQ at 200–400 Hz and 2–4 kHz helps actors whose tone changes from speech to belt. Set transmitter gain so peaks sit near −12 dBFS."
+        "text": "Gates are rarely used on vocal mics — fader pickups replace them. Dynamic EQ at 200–400 Hz and 2–4 kHz helps actors whose tone changes from speech to belt. Set transmitter gain so the loudest peaks sit near −12 dBFS on the digital receiver or console input meter."
       }
     ]
   },
@@ -238,7 +238,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "System alignment delay",
         "appliedTo": "Every vocal output",
-        "setting": "Voice arrives 10–20 ms after the natural sound",
+        "setting": "The amplified voice arrives 10–20 ms after the natural sound",
         "amount": "Always on — not an effect, but essential"
       }
     ],
@@ -250,7 +250,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The voice is king. Mix line by line: bring each actor’s fader up quickly just before they speak and pull it down when they finish, so only one or two mics are open at once. That avoids comb filtering between nearby actors and lowers noise and feedback risk. Use faders, not mutes — an actor can whisper one line and shout the next. Learn the script nearly word for word, including each performer’s habits. Placement beats EQ: the forehead/hairline is most natural, ear and cheek positions add boom and lose top. Principals often wear two mics with a backup receiver patched to a spare fader. Pitch correction is not used live in traditional book shows; cast albums use light, transparent tuning. For fast patter (Sondheim, Hamilton’s rap) and dialogue over underscore, dip the band 2–4 dB rather than pushing the vocal."
+      "text": "The voice is king. Mix line by line: bring each actor’s fader up quickly just before they speak and pull it down when they finish, so only one or two mics are open at once. That avoids comb filtering between nearby actors and lowers noise and feedback risk. Use faders, not mutes — an actor can whisper one line and shout the next. Learn the script nearly word for word, including each performer’s habits. Placement beats EQ: the forehead/hairline is most natural, ear and cheek positions add boom and lose top. Principals often wear two mics with a backup receiver patched to a spare fader. Pitch correction is rarely used live in traditional book shows; cast albums use light, transparent tuning. For fast patter (Sondheim, Hamilton’s rap) and dialogue over underscore, dip the band 2–4 dB rather than pushing the vocal."
     }
   ],
   "loudness": [

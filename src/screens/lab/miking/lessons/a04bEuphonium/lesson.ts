@@ -358,7 +358,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'A high-pass corner or a room cancellation: bypass the filter, play the actual written low phrase, then move the mic or the player.',
     options: ['Bypass the filter, test the low phrase, move the mic', 'Boost the lowest frequencies on the channel first', 'Swap to the largest mic you have, for its bigger diaphragm'],
     correct: 'Bypass the filter, test the low phrase, move the mic',
-    explain: 'A filter set from the word “euphonium”, or a room that cancels some low frequencies, can thin the bottom. Find which before reaching for EQ.',
+    explain: 'A high-pass filter set from a preset or habit rather than the part’s lowest note, or a room that cancels some low frequencies, can thin the bottom. Find which before reaching for EQ.',
     why: {
       'Boost the lowest frequencies on the channel first': 'EQ cannot fully put back what a filter or a cancellation removed.',
       'Swap to the largest mic you have, for its bigger diaphragm': 'A larger diaphragm is no promise of low end. The filter and the room come first.',

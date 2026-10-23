@@ -214,7 +214,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'For paper, the artist repeats the page turn. What do you change between takes?',
     options: ['Only the mic’s aim and position', 'The paper, the mic and the gain', 'The artist’s speed, to suit the mic'],
     correct: 'Only the mic’s aim and position',
-    explain: 'Change one thing at a time: the performer repeats the same turn while only the mic moves. Then you know what made the difference.',
+    explain: 'Keep the paper, the gain and the performance the same, and move only the mic — its aim or its distance, one at a time. Then you know what made the difference.',
     why: {
       'The paper, the mic and the gain': 'Three changes at once hide which one mattered.',
       'The artist’s speed, to suit the mic': 'The performance serves the scene; the mic moves, not the action.',

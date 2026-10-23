@@ -555,7 +555,7 @@ const copy: Partial<LessonCopy> = {
       intro: 'These are scenario-based comparisons, not restrictions.',
       points: [
         { title: 'PERSPECTIVE', text: 'Studio: a solo may want the room, a softer view of the keys and the chosen amount of breath. Live: a flute among drums needs a closer, separated sound.' },
-        { title: 'SPILL AND FEEDBACK', text: 'Studio: the room and the neighbours. Live: monitors, the PA and the band. Closer, the right pattern and aim help — and a windscreen helps most once the capsule is off the jet.' },
+        { title: 'SPILL AND FEEDBACK', text: 'Studio: the room and the neighbours. Live: monitors, the PA and the band. Moving closer, with the right pattern and aim, helps. A windscreen does not cut spill: it helps with breath, once the capsule is off the jet.' },
         { title: 'MOVEMENT', text: 'Flutists turn with the head and the music. A stand mic has a working zone; a headset follows the head, a foot clip the flute.' },
         { title: 'IN A SECTION', text: 'With a main pair up, a flute mic is a spot: bring it up only for a stated balance, and check it in mono.' },
       ],

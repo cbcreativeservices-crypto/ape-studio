@@ -147,8 +147,8 @@ const scenarios: MikingScenario[] = [
     id: 'hm.mic.1',
     page: 'microphone',
     prompt: 'This cupped harp mic is omni. Where can a floor wedge go to avoid feedback?',
-    options: ['No null helps: distance, level and angle do the work', 'Directly behind the mic, where its rear null would sit', 'Off to its side, where a pickup pattern is weakest'],
-    correct: 'No null helps: distance, level and angle do the work',
+    options: ['No null helps: distance, level and the wedge’s aim do the work', 'Directly behind the mic, where its rear null would sit', 'Off to its side, where a pickup pattern is weakest'],
+    correct: 'No null helps: distance, level and the wedge’s aim do the work',
     explain: 'An omni picks up all round, so there is no rear null to aim. Place the wedge on an assumption of no rejection, keep levels down and keep the cupped mic away from loudspeakers.',
     why: {
       'Directly behind the mic, where its rear null would sit': 'That works for a cardioid. An omni harp mic has no rear null.',
@@ -259,7 +259,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No feedback even at the mic’s top volume setting',
     explain: 'Start every control low; walk the playing area with the amp and monitors at show level; set the system so nothing rings even at the highest knob position the player may use. A notch is not a substitute for safe geometry.',
     why: {
-      'Turn it up until it starts to ring, then back off': 'Ringing out is the system operator’s job. Raise levels gradually and stop before ringing.',
+      'Turn it up until it starts to ring, then back off': 'Ringing out is a careful system check, not a way to set a player’s level. Raise levels gradually and stop before ringing.',
       'Use a narrow EQ notch so it can go louder': 'A notch does not replace safe geometry or lower gain.',
     },
   },

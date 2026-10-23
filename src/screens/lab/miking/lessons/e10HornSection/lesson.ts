@@ -131,7 +131,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'hs.mic.1',
     page: 'microphone',
-    prompt: 'On a loud stage, which close mic tends to help the PA most?',
+    prompt: 'On a loud stage, which mic choice tends to help the PA most?',
     options: ['A cardioid or supercardioid, close', 'An omni a metre away from the bell', 'A spaced pair well behind the section'],
     correct: 'A cardioid or supercardioid, close',
     explain: 'Close directional mics improve gain before feedback and reject more of the stage. A distant mic can sound fuller but gives the PA more room and monitor sound to amplify.',

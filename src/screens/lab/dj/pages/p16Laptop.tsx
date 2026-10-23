@@ -234,7 +234,7 @@ function PageLaptop({ ctx }: { ctx: PageCtx }) {
         {biggerThanNeeded ? <Note tone="try">Clean — but a smaller buffer may manage too, with less latency. Try one step down.</Note> : null}
         <P>Smaller buffers suit scratching and quick cueing; bigger ones suit a heavy set. Find the balance for your own laptop — these are this model’s numbers.</P>
         <GoalChips goals={goals.slice(0, 4)} latched={latched.slice(0, 4)} />
-        <Note>Before a gig: charger in, sleep and USB power saving off, the interface in a port on the laptop itself (not a hub), notifications and wireless tasks off. A hum or whine that comes and goes with the charger is a ground loop — Screen 23.</Note>
+        <Note>Before a gig: charger in, sleep and USB power saving off, the interface in a port on the laptop itself (not a hub), notifications and wireless tasks off. A hum or whine that comes and goes with the charger is most likely a ground loop — Screen 23.</Note>
       </Step>
       <Step n={5}>
         <Do>On your own: switch the rate to 96 kHz and keep it running 20 s with no dropouts, with the smallest buffer that manages it. Most DJ setups run at 44.1 or 48 kHz; 96 kHz doubles the work for nothing the floor can hear — try it to see the cost.</Do>

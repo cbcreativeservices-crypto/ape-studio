@@ -83,7 +83,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'bcl.snd.1',
     page: 'sound',
-    prompt: 'How does a bass clarinet’s sound leave, compared with a soprano clarinet’s?',
+    prompt: 'How does a bass clarinet’s sound leave the instrument?',
     options: ['Only from the bell, which points up at the player', 'A blend of the bell and the tone holes, like a saxophone', 'Only from the holes, as the bell is too wide to radiate'],
     correct: 'A blend of the bell and the tone holes, like a saxophone',
     explain: 'Its bell and its holes both contribute, and which leads changes with the note and the player’s angle — so treat the two as one source, and test the whole part.',

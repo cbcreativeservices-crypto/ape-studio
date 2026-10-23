@@ -64,7 +64,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Put a dish session in order, choose and justify setups for two briefs, and say what would justify a second dish.',
     credit: { scenarios: ['pb.prac.order', 'pb.prac.gain', 'pb.prac.setup1', 'pb.prac.setup2', 'pb.prac.3', 'pb.mix.1', 'pb.mix.2', 'pb.mix.3'], note: 'Put the session in order, answer the gain check, complete both briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real, approved practice.' },
-    takeaway: 'The target first, the maker’s assembly and focus, an approved place and arc, a planned handoff and headroom pass. A bigger dish or more gain do not — and more than one setup can pass.',
+    takeaway: 'What passes: the target first, the maker’s assembly and focus, an approved place and arc, a planned handoff, and headroom. A bigger dish or more gain does not — and more than one setup can pass.',
   },
 };
 
@@ -319,7 +319,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'For which event do you set the dish’s gain?',
     options: ['The nearest, loudest one, with margin', 'The quietest distant call that you want', 'A typical moment in the middle of play'],
     correct: 'The nearest, loudest one, with margin',
-    explain: 'Set the gain for the nearest, loudest credible event you can test safely, the loudest safe rehearsal peak near −12 dBFS, and keep margin.',
+    explain: 'Set the gain for the nearest, loudest credible event you can test safely. Bring its rehearsal peak to about −12 dBFS, which leaves margin for louder moments.',
     why: {
       'The quietest distant call that you want': 'Then the first near shout clips.',
       'A typical moment in the middle of play': 'The peaks, not the typical moments, overload a stage.',
@@ -581,10 +581,10 @@ export const B12_LESSON: Lesson = {
   setting: {
     items: [
       { id: 'beyond', label: 'the crowd beyond the target', short: 'ON THE AXIS', note: 'Whatever is on the axis is favoured with the play — the crowd behind the player too. Re-aim, or use another angle.', prov: { kind: 'illustrative', reason: 'the lesson L9, L27' }, tag: 'SPILL', scene: 'all' },
-      { id: 'pa', label: 'the PA', short: 'PA', note: 'A PA in the target’s direction is gathered with it. Keep effects out of the PA’s own feed.', prov: { kind: 'illustrative', reason: 'the lesson L9' }, tag: 'SPILL', scene: 'all' },
+      { id: 'pa', label: 'the PA', short: 'PA', note: 'A PA in the target’s direction is gathered with it. Keep the dish and the effects mics out of the PA’s own feed.', prov: { kind: 'illustrative', reason: 'the lesson L9' }, tag: 'SPILL', scene: 'all' },
       { id: 'near', label: 'loud events near the operator', short: 'NEARBY PEAKS', note: 'Impacts, whistles, celebrations and shouting close by: headroom for the nearest, loudest event — and headphones that start low.', prov: { kind: 'illustrative', reason: 'the lesson L29' }, tag: 'HEADROOM', scene: 'all' },
       { id: 'people', label: 'crew, cameras and walkways', short: 'PEOPLE', note: 'Assigned zones, routes and exits: the dish, its support and its cable stay out of them; a short cable, never dragging in a walkway.', prov: { kind: 'illustrative', reason: 'the lesson L5, L21' }, tag: 'KEEP CLEAR', scene: 'all' },
-      { id: 'wind', label: 'wind and weather', short: 'WEATHER', note: 'A cover made for the dish and element; wet connectors and electronics paused when exposure passes the ratings.', prov: { kind: 'illustrative', reason: 'the lesson L24–L25' }, tag: 'WIND', scene: 'all' },
+      { id: 'wind', label: 'wind and weather', short: 'WEATHER', note: 'A cover made for the dish and element. Pause when rain or damp goes past what the connectors and electronics are rated for.', prov: { kind: 'illustrative', reason: 'the lesson L24–L25' }, tag: 'WIND', scene: 'all' },
     ],
     stage: 'The dish is often a supplementary action mic: commentary, fixed effects and ambience stay on separate controllable channels. Compare the tracked dish with a fixed mic and the ambience at a normal moment and a crowd peak.',
     studio: 'A quiet practice lets you hear the dish’s aim and focus clearly — but no distance it reaches on a quiet day is a reliable working range at a real event.',

@@ -50,7 +50,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s real rejection faces a loud unwanted source — and know when the claves cannot be separated.',
     credit: { scenarios: ['clv.ctx.1', 'clv.ctx.2', 'clv.ctx.studio', 'clv.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the downstage wedge sits in the rejection. STUDIO: answer the decision card. Then the checks.' },
-    takeaway: 'Aim nulls by the real pattern. More channel level lifts the spill too; move, lower the stage, choose a projecting pair — or say it cannot be done.',
+    takeaway: 'Aim nulls by the real pattern. More channel level lifts the spill too; move, lower the stage volume, choose a projecting pair — or say it cannot be done.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -81,7 +81,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why is the supported clave struck in its middle?',
     options: ['The middle swings strongly in its lowest bending shape', 'The middle is where the wood is at its very thickest', 'The middle is farthest from the player’s supporting fingers'],
     correct: 'The middle swings strongly in its lowest bending shape',
-    explain: 'An unclamped bar’s lowest shape swings at its middle (and most at its ends) and stays put at two points about a fifth of the way in — a strike there drives the ring strongly.',
+    explain: 'An unclamped bar’s lowest shape swings at its middle (and most at its ends) and stays put at two points about a fifth of the way in. A strike at the middle drives the ring strongly.',
     why: {
       'The middle is where the wood is at its very thickest': 'Most claves are about as thick in the middle as at the ends; the shape of its bending is the reason.',
       'The middle is farthest from the player’s supporting fingers': 'The fingers support it near its still points; between them, the middle is where it swings most.',
@@ -228,7 +228,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Nearby cymbals dominate the clave channel live. Is more gain the answer?',
     options: ['No — it raises the cymbals too; change geometry first', 'Yes — a little more gain brings the claves above them', 'Yes, combined with a bright EQ boost on the claves'],
     correct: 'No — it raises the cymbals too; change geometry first',
-    explain: 'Move the performer or the mic, lower the stage, or choose a more projecting pair — and if separation is impossible, say so.',
+    explain: 'Move the performer or the mic, lower the stage volume, or choose a more projecting pair — and if separation is impossible, say so.',
     why: {
       'Yes — a little more gain brings the claves above them': 'The channel carries the cymbals too; they rise with it.',
       'Yes, combined with a bright EQ boost on the claves': 'A boost lifts the cymbals’ highs in the same channel.',

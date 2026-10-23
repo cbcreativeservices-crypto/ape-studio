@@ -73,7 +73,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
       'Low coherence can mean noise, reflections, wrong delay, or unrelated sound.',
       'Never make EQ decisions from data where coherence is low.',
       'Coherence requires dual-channel measurement — the mic signal alone, with no reference, cannot compute it.',
-      'Noisy or unstable conditions lower measurement reliability before they change the sound.',
+      'Noise and unsteady conditions can lower coherence before you hear any change.',
     ],
     relatedTools: ['rta', 'signalgen'],
   },
@@ -163,7 +163,7 @@ export const CONCEPT_MODULES: ConceptModule[] = [
       },
       {
         head: 'DECAY IS FREQUENCY-DEPENDENT',
-        body: 'A single RT60 number is a summary, not the room. Decay time varies by frequency band — low frequencies commonly ring far longer than highs, because absorption is frequency-dependent. Professional practice reports decay per octave band from 125 Hz to 4 kHz, and treats a one-number value (often the 500 Hz–1 kHz average) as a summary of the mids only.',
+        body: 'A single RT60 number is a summary, not the room. Decay time varies by frequency band — in many rooms low frequencies ring longer than highs, because absorption is frequency-dependent. Professional practice reports decay per octave band from 125 Hz to 4 kHz, and treats a one-number value (often the 500 Hz–1 kHz average) as a summary of the mids only.',
       },
       {
         head: 'WHEN NOISE INVALIDATES THE RESULT',

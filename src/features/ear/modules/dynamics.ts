@@ -232,7 +232,7 @@ export const M14_CLIPPING: EarModule = {
         seeIt: {
           kind: 'spectrum',
           clips: [0, 1],
-          caption: 'Hard clipping sprays new distortion product right across the top of the spectrum.',
+          caption: 'Hard clipping sprays new distortion products across the spectrum, most visibly at the top.',
         },
       };
     }

@@ -49,7 +49,7 @@ export const M10_COPY: Partial<LessonCopy> = {
     workedClear: 'Clear of the kit, the player, the walls, the door and the walkway — floor stands only. Clearance comes first, and the drummer stops before a real mic moves.',
     blocked: {},
     reveal: 'Farther out tends to bring more of the room — reflections and decay — and less direct kit; whether that helps depends on this room. “It depends” is a fair answer here.',
-    typeNotes: { roomLdc: 'A side-address mic hears out of the face of its body: face it toward the kit.', ohLdc: 'The same large condenser as an overhead, facing down: a counterweighted boom, nothing over the player.' },
+    typeNotes: { roomLdc: 'A side-address mic hears out of the face of its body: face it toward the kit.', ohLdc: 'The same large condenser as an overhead, facing down: a secured, counterweighted boom, clear of the player’s head and sticks.' },
     note: 'Clearance comes first: stop the drummer before moving a real mic, keep stands out of exits and walkways, and fix nothing to the walls or the ceiling without the venue’s okay.',
     availableLead: 'Starting points for this mic',
     learn: {

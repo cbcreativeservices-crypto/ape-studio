@@ -131,7 +131,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Horn section",
-        "cut": "HPF 100–150 Hz (bari 60–80 Hz); −2–3 dB at 2–4 kHz if piercing",
+        "cut": "HPF 100–150 Hz (bari and trombone 60–80 Hz); −2–3 dB at 2–4 kHz if piercing",
         "boost": "+1–2 dB at 200–300 Hz (body)",
         "notes": "Ribbon mics or a high-cut tame bite"
       },

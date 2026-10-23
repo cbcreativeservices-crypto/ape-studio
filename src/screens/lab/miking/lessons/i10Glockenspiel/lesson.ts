@@ -462,7 +462,7 @@ const words: MalletWords = {
     stages: [
       { title: 'The mallet lands', text: 'A hard mallet lands on a small steel bar. The ATTACK is bright: rubber gives less of it than metal, plastic a medium attack.' },
       { title: 'The bar bends and rings', text: 'The bar bends — the middle down, both ends up — and springs back: its lowest shape, drawn far larger than it moves. It hangs on strings through holes at its still points.' },
-      { title: 'The air in the tube rings with it', text: 'Under the bar, a short tube — open at the top, closed at the bottom, a quarter wavelength long — rings with it. Every natural has one; of the sharps and flats, only those that need one do.', byVariant: { case: 'No tubes here: the bars rest over the case’s box, whose air and wood support them.' } },
+      { title: 'The air in the tube rings with it', text: 'Under the bar, a short tube — open at the top, closed at the bottom, a quarter wavelength long — rings with it. Every natural has one; on this model only some of the sharps and flats do.', byVariant: { case: 'No tubes here: the bars rest over the case’s box, whose air and wood support them.' } },
       { title: 'Sound leaves — up and out', text: 'Sound leaves the bar, up and out — bright, with a long ring. Pedal down, the notes ring on; released, the damper stops them.', byVariant: { case: 'Sound leaves the bar, up and out — bright, with a long ring, until the player’s hand damps it. The open lid stands on the audience side.' } },
     ],
     cells: [

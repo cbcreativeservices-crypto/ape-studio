@@ -38,7 +38,7 @@ const PA_PARTS: Part[] = [-1, 1].map((s) => ({
   id: s < 0 ? 'pa.left' : 'pa.right',
   label: s < 0 ? 'PA speaker (stage left)' : 'PA speaker (stage right)',
   short: 'PA',
-  role: 'A PA speaker on a stand, facing the audience. A room mic behind it still hears it — the PA and the room answer back.',
+  role: 'A PA speaker on a stand, facing the audience. A room mic behind it still hears it — directly, and again as the room sends it back.',
   variants: ['live'],
   prov: ill('a typical small stage; no source gives the position'),
   solid: { kind: 'box', min: { x: PA.x - PA.d / 2, y: yAt(PA.h1), z: s * PA.z - PA.w / 2 }, max: { x: PA.x + PA.d / 2, y: KIT_FLOOR_Y, z: s * PA.z + PA.w / 2 } },

@@ -269,7 +269,7 @@ const RFLINK: Workspace = {
     'compare to the receiver’s sensitivity to get your link margin. Enter frequency in MHz.',
   whyItMatters:
     'A positive, comfortable margin is the difference between a rock-solid show and dropouts when ' +
-    'someone walks behind a wall. Higher bands (like today’s crowded UHF) lose more per metre, and ' +
+    'someone walks behind a wall. Higher bands (like today’s crowded UHF) lose more over the same distance, and ' +
     'antenna gain and cable loss are the levers you actually control.',
   example:
     'A 550 MHz link at 50 m: FSPL = 20·log₁₀(50) + 20·log₁₀(550e6) − ' + FSPL_K_TXT + ' ≈ 61.2 dB. With +10 dBm ' +

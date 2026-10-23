@@ -878,7 +878,7 @@ registerActivityChecks({
     },
     {
       id: 'captions-and-collection',
-      label: 'Caption timing is verified against the final master and the series compared across',
+      label: 'Caption timing is verified against the final master and across the series',
       met: (c) =>
         ['yes', 'na'].includes(str(c.get('finish', 'access_timing_checked'))) &&
         many(c.get('finish', 'collection_checks')).length > 0,

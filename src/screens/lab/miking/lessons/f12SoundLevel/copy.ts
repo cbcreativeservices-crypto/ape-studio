@@ -14,7 +14,7 @@ export const F12_COPY: Partial<LessonCopy> = {
   axes: {
     x: { plus: 'toward the road', minus: 'toward the house', label: 'ACROSS THE LAWN', blurb: 'Toward the road or back toward the house (x).' },
     y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y): the method names the height above the ground.' },
-    z: { plus: 'along the facade, away from the house’s corner', minus: 'along the facade, toward its far end', label: 'ALONG', blurb: 'Along the facade and the road (z).' },
+    z: { plus: 'along the facade, toward the lawn', minus: 'along the facade, toward its far end', label: 'ALONG', blurb: 'Along the facade and the road (z).' },
   },
   instrument: {
     figureBadge: 'The meter on its tripod',
@@ -30,7 +30,7 @@ export const F12_COPY: Partial<LessonCopy> = {
     workedAim: 'Point the meter as its data says — a free-field meter toward the road.',
     workedClear: 'On the property side, clear of the road, the house and anyone’s path; the tripod stable, the cable secured.',
     blocked: { site: 'The meter or its tripod would touch the house, the air unit or the road’s keep-out — move it clear.' },
-    reveal: 'Each position stands for one thing: the open spot, the traffic; 2 m from the facade, the traffic and its reflection; at the wall, the most the facade can add.',
+    reveal: 'Each position stands for one thing: the open spot, the traffic; 2 m from the facade, the traffic and its reflection; at the wall, nearly the most the facade can add.',
     typeNotes: { slm: 'The complete meter, its windscreen on, aimed as its data says.' },
     note: 'Return to the same spot, height and aim for a before-and-after; log what changed.',
     availableLead: 'Starting points for the meter here',

@@ -464,8 +464,8 @@ const symptoms: Symptom[] = [
     id: 'b2.sym.feedback',
     observation: 'Public interview: the PA rings when the guest leans back',
     firstChecks: 'Lower the level at once. Is the guest now far from their mic? Too many open mics? Where is the PA against the pattern?',
-    options: ['Lower it, then fix the distance and open mics', 'Turn the guest’s mic up so the voice stays over it', 'Swap the gooseneck for an omni nearer the PA'],
-    correct: 'Lower it, then fix the distance and open mics',
+    options: ['Pull the level down, then fix the distance and open mics', 'Turn the guest’s mic up so the voice stays over it', 'Swap the gooseneck for an omni nearer the PA'],
+    correct: 'Pull the level down, then fix the distance and open mics',
     explain: 'Pull the level down first, then bring the mic back to the mouth, close unused mics and put the PA in the pattern’s rejection — with the responsible operator. Avoid uncontrolled feedback.',
     why: {
       'Turn the guest’s mic up so the voice stays over it': 'More gain feeds the loop.',

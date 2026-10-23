@@ -714,7 +714,7 @@ export function RouteScene({ width, completed, onComplete, openSources }: CiModu
                       ? `${shortest.name} is the shortest pull here and still held up — that is a coincidence to verify every time, not a rule.`
                       : `${shortest.name} is the shortest pull here — and it finished ${
                           shortRank === rk.length ? `LAST at ${shortOverall}/100` : `#${shortRank} of ${rk.length} at ${shortOverall}/100`
-                        }, ${rk[0].overall - shortOverall} points behind ${rk[0].option.name}. Length is one input; safety, protection, pathway quality and the next technician are the rest.`}
+                        }, ${rk[0].overall - shortOverall} points behind ${rk[0].option.name}. Length is one input; safety, protection, pathway quality and the next technician matter too.`}
                   </Text>
                   <RuleFeedback ruleId="plan-shortest-not-best" verdict="info" openSources={openSources} />
                 </Appear>

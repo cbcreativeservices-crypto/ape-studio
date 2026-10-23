@@ -72,7 +72,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: kick and snare (soft but clear), keys/main loop, bass, melody or lead sample, hats and percussion, textures, ambience and FX returns. The kick is a short round thump around 60–90 Hz; the bass owns the sustained low end, usually ducked by the kick with sidechain. Keep total low end modest, since much listening is on earbuds and laptops. Kick, snare, bass and main loop sit center; hats and shakers slightly off-center; guitar or counter-melody panned 20–40% opposite the keys; crackle and rain wide. Lo-fi often uses a somewhat narrowed stereo field, which suits the “old record” feel."
+      "text": "Hierarchy, loudest to quietest: kick and snare (soft but clear), keys/main loop, bass, melody or lead sample, hats and percussion, textures, ambience and FX returns. The kick is a short round thump around 60–90 Hz; the bass owns the sustained low end, usually ducked by the kick with sidechain. Keep total low end modest, since much listening is on earbuds and laptops. Kick, snare, bass and main loop sit center; hats and shakers slightly off-center; guitar or counter-melody panned 20–40% to one side; crackle and rain wide. Lo-fi often uses a somewhat narrowed stereo field, which suits the “old record” feel."
     }
   ],
   "eq": {
@@ -133,8 +133,8 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Master",
-        "cut": "HPF 25–30 Hz",
-        "boost": "Optional gentle shelf −1 to −3 dB above 10–12 kHz",
+        "cut": "HPF 25–30 Hz; optional gentle high shelf, −1 to −3 dB above 10–12 kHz",
+        "boost": "—",
         "notes": "Master-bus top roll-off is a common genre choice"
       }
     ],

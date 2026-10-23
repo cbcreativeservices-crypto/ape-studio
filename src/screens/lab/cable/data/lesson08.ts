@@ -260,7 +260,7 @@ export const SELECTION_SCENARIOS: SelectionScenario[] = [
         options: ['LOUDSPEAKER-LEVEL AUDIO', 'LINE-LEVEL AUDIO', 'AC MAINS POWER', 'INSTRUMENT-LEVEL AUDIO'],
         correct: 'LOUDSPEAKER-LEVEL AUDIO',
         explain:
-          'An amplifier’s output is loudspeaker-level — whole volts with real current behind it. It goes to loudspeaker terminals, over cable sized for the job — never into a mic or line input.',
+          'An amplifier’s output is loudspeaker-level — many volts (often tens of volts on a big amp) with real current behind it. It goes to loudspeaker terminals, over cable sized for the job — never into a mic or line input.',
         hint: 'On this one connection, the amplifier has already done its work.',
       },
       {

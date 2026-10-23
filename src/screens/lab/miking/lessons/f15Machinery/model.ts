@@ -46,7 +46,7 @@ export const F15_ZONES: DocumentedZone[] = [
   {
     id: 'mp.A',
     label: 'Position A: where the user sits',
-    band: 'Start at the user’s position — this drawing puts it 1 m (3.3 ft) from the fan, beside its airflow, at a seated ear height of about 1.2 m (4 ft) — with the height, distance and aim written down.',
+    band: 'Start near the user’s seat: this drawing puts it 1 m (3.3 ft) from the fan, just beside its airflow so the capsule does not read wind, at a seated ear height of about 1.2 m (4 ft). Write down the height, distance and aim.',
     kind: 'trial',
     src: 'F15-LESSON',
     quote: 'Mount a suitable mic at the defined normal listening/work position, with height, orientation, distance and operating state logged (F15 L13)',

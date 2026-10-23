@@ -131,7 +131,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The beater strikes the exact centre of the head. Which of the head’s vibration shapes can it set moving?',
     options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the centre'],
     correct: 'Only the ring-shaped ones; the rest have a still line there',
-    explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the centre, so a centre strike drives only the ring-shaped ones.',
+    explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the centre, so a centre strike drives only the ring-shaped ones, the lowest shape among them.',
     why: {
       'All of them equally, because the whole of the head is struck': 'The beater touches one small spot. A shape is driven only as much as the head moves at that spot in that shape — not at all on a still line.',
       'Only the shapes that have a still line across the centre': 'The reverse: a still line through the centre means the head does not move there in that shape, so a centre strike cannot push it.',
@@ -511,7 +511,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, measured from the head it names', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of heads, beater, damping and pedal', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on a kick', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position on the drum', role: 'wrong', feedback: 'Bass emphasis is not a passing reason, and no position always gives the most bass.' };
@@ -591,8 +591,8 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'A strike exactly at the centre of a drumhead drives which of its vibration shapes?',
-    options: ['Only the ring-shaped ones — the rest are still there', 'All of the shapes, each one just as hard', 'Only the shapes split by a line through the centre'],
-    correct: 'Only the ring-shaped ones — the rest are still there',
+    options: ['Only the ring-shaped ones — the rest stand still there', 'All of the shapes, each one just as hard', 'Only the shapes split by a line through the centre'],
+    correct: 'Only the ring-shaped ones — the rest stand still there',
     explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape; a shape with a still line through the centre does not move there.',
     why: {
       'All of the shapes, each one just as hard': 'The beater touches one spot. A shape is driven only as much as the head moves at that spot — not at all on a still line.',

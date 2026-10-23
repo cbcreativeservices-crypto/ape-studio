@@ -733,9 +733,9 @@ const WS_ROOMMODES: Workspace = {
     'moving the speakers or the chair, and which frequencies the bass trapping has to reach.',
   example:
     'A 5 × 4 × 2.5 m room at 20 °C (c ≈ 343.2 m/s): fundamentals f = c/2L → 34.3 Hz (length), ' +
-    '42.9 Hz (width), 68.6 Hz (height). Note that the second-order height mode (137.3 Hz) and ' +
-    'the fourth-order length mode (137.3 Hz) stack — a 2:1 dimension ratio piles modes on the ' +
-    'same frequencies.',
+    '42.9 Hz (width), 68.6 Hz (height). Note that the height fundamental and the second length ' +
+    'mode stack at 68.6 Hz, and they stack again at 137.3 Hz — a 2:1 dimension ratio piles ' +
+    'modes on the same frequencies.',
   mistakes: [
     'EQing a null — a cancellation is missing energy at that point in space; boosting the band just eats headroom and rings elsewhere. Move the listener, the source, or add treatment.',
     'Treating this table as a full low-frequency prediction — mode math says where modes CAN sit, not how audible each one is from your seat.',
@@ -905,7 +905,7 @@ const WS_SABINE: Workspace = {
     'the way they do.',
   mistakes: [
     'Using a single broadband α — coefficients are strongly frequency-dependent; a panel rated 0.9 at 1 kHz may do almost nothing at 100 Hz.',
-    'Absorbing only highs (thin foam everywhere): the top dies, the bottom keeps booming, and the room sounds worse than untreated.',
+    'Absorbing only highs (thin foam everywhere): the top dies, the bottom keeps booming, and the room can sound worse than untreated.',
     'Chasing RT60 in small rooms — below a few hundred hertz, modal behavior dominates and a single decay number stops describing what you hear.',
   ],
   warnings:

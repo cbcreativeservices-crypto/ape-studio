@@ -130,7 +130,7 @@ function PageSubFeeds({ ctx }: { ctx: PageCtx }) {
       <KeyFact>A subwoofer reproduces from about 30–40 Hz up to the crossover at 80–120 Hz and nothing else. Crossover-fed subs get everything below that from every channel. Aux-fed subs get only the channels you send; matrix-fed subs get the buses you choose (a matrix taking MAIN sends the whole mix) — which is why an accidental vocal send puts a singer’s chest in the subwoofers with the crossover blameless.</KeyFact>
       <Card>
         <Eyebrow>ALSO IN THE CHAIN</Eyebrow>
-        <Body>High-pass and low-pass filters make the crossover; a powered subwoofer’s internal crossover does the same job without a processor, and hands the tops a high-passed feed from its own output. Polarity and delay between the subs and the tops are set at the crossover point — the alignment page covers that.</Body>
+        <Body>High-pass and low-pass filters make the crossover; a powered subwoofer’s internal crossover does the same job without a processor, and many hand the tops a high-passed feed from their own output — some pass the full range, so check yours. Polarity and delay between the subs and the tops are set at the crossover point — the alignment page covers that.</Body>
       </Card>
     </SoundSystemsRackLayout>
   );

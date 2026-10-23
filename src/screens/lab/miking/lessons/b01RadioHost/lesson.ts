@@ -407,7 +407,7 @@ const symptoms: Symptom[] = [
     explain: 'Very close, the proximity effect builds the low end. Move the mic back a little and compare at matched loudness before reaching for a low cut.',
     why: {
       'Turn the channel up so the words cut through': 'More gain raises the boom with the words.',
-      'Swap to a mic with a bigger foam windscreen on it': 'A windscreen does not change the proximity effect.',
+      'Swap to a mic with a bigger foam windscreen on it': 'A windscreen does not cure it: the distance from the lips to the capsule sets the proximity effect.',
     },
   },
   {

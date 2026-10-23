@@ -742,8 +742,8 @@ const WS_CV70: Workspace = {
     'and give each speaker a transformer with TAP settings in watts. Budgeting is simple ' +
     'addition: sum the taps, keep headroom, and never exceed the amplifier.',
   whyItMatters:
-    'Constant-voltage lines exist to make long multi-speaker runs practical — high voltage means ' +
-    'low current, so lighter cable than an 8 Ω run and dozens of speakers per line work — line loss still applies on long runs. But the amplifier’s ' +
+    'Constant-voltage lines exist to make long multi-speaker runs practical. High voltage means ' +
+    'low current, so the line can use lighter cable than an 8 Ω run and still feed dozens of speakers. Line loss still applies on long runs. But the amplifier’s ' +
     'wattage is a hard budget: overload the line and the whole zone distorts or trips, not just ' +
     'one speaker.',
   example:
@@ -755,7 +755,7 @@ const WS_CV70: Workspace = {
   mistakes: [
     'Loading an amplifier to 100% of its rating — distributed amps want about 20% of the rating held in reserve (load to ≈ 80% — the 1 dB default here) for transformer losses, line loss, and program peaks.',
     'Summing speaker RATINGS instead of TAP settings — a "32 W" ceiling speaker tapped at 5 W puts 5 W on the line, not 32.',
-    'Running long 8 Ω low-impedance lines where a 70 V system belongs — for distributed speakers, the cable loss math (see Speaker Cable Loss) turns brutal past ~20–30 m on light gauge into low impedance. For a few full-range speakers, moving the amplifier nearer (or powered speakers) is the other fix.',
+    'Running long 8 Ω low-impedance lines where a 70 V system belongs — for distributed speakers, the cable loss math (see Speaker Cable Loss) turns brutal past ~20–30 m of light-gauge cable into a low-impedance load. For a few full-range speakers, moving the amplifier nearer (or using powered speakers) is the other fix.',
   ],
   warnings:
     'Keep roughly 20% of the amplifier’s rating in reserve on distributed lines (load it to about ' +

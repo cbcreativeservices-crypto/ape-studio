@@ -325,7 +325,7 @@ export const ROUTING_TOOLS: readonly RoutingTool[] = [
     isCopy: false,
     remoteControl: true,
     mixesBuses: false,
-    use: 'One button that mutes a set of channels together — band off, walk-in music on, between songs.',
+    use: 'One button that mutes a set of channels at once — say, all the band mics between songs.',
     notFor: 'Level control — a mute group has no fader.',
   },
 ];
@@ -402,7 +402,7 @@ export const WHICH_TOOL: readonly WhichToolCase[] = [
     correct: 'aux',
     why: 'A POST-FADER aux send: the copy follows the fader, so the wet stays in proportion to the dry.',
     wrong: {
-      subgroup: 'A subgroup would send the whole vocal path into the reverb — no dry signal left to balance against.',
+      subgroup: 'A subgroup is a summed path, not a send: the vocals would need routing to it as well as to the main, and each vocal would lose its own reverb amount. A post-fader aux does this job.',
       dca: 'A DCA carries no audio to feed a reverb.',
     },
   },

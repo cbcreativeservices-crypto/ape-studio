@@ -343,7 +343,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     ],
     commonMistakes: [
       'Assuming any “IEC cable” fits — this is a different, larger coupler than C13/C14',
-      'Adapting between the C13 and C19 families to “make it work” — the keying difference exists to protect the wiring',
+      'Adapting between the C13 and C19 families to “make it work”, so a heavy load is fed through a lighter cord — the keying exists to protect the wiring (a rated C20-to-C13 cord feeding light gear from a C19 outlet is a different case)',
       'Keeping a heat-marked or cracked coupler in service on a high-current load',
     ],
     notInterchangeableWith: [
@@ -755,7 +755,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     ],
     limitations: [
       'Not intermateable with the original powerCON family despite the related name',
-      'Lower current class than the original 20 A family (commonly rated 16 A — verify the exact model)',
+      'Often a lower current rating than the original 20 A family (16 A on many models, though some carry a 20 A rating in the US — verify the exact model)',
       'Every capability that matters (breaking capacity, outdoor rating) is model-specific, never assumed from the shell',
     ],
     commonMistakes: [

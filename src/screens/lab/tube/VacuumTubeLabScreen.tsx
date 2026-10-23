@@ -475,7 +475,7 @@ function AmplifySection(p: SectionProps) {
         </Text>
         <Text style={styles.caption}>
           That plate current, pulled through a resistor, becomes a LARGE copy of the input — flipped
-          upside-down, because MORE grid signal means MORE current means the plate voltage DROPS.
+          upside-down: a MORE POSITIVE grid means MORE current, and more current means the plate voltage DROPS.
           Most tube mic preamps, guitar amps, compressors and broadcast consoles repeat this one
           picture, with other stages (like the cathode follower) mixed in.
         </Text>
@@ -778,8 +778,8 @@ function SaturationSection(p: SectionProps) {
         </Text>
         <Text style={styles.caption}>
           WHY it sounds good: rounding COMPRESSES the loudest moments (the “give” engineers love)
-          and adds harmonics related to the note — the ear reads warmth and grit. A circuit that
-          hits a hard wall instead shears the peaks off flat, adding harsh, fizzy harmonics. Same
+          and adds mostly low, gentle harmonics of the note — the ear reads warmth and grit. A circuit that
+          hits a hard wall instead shears the peaks off flat, adding strong high harmonics that sound harsh and fizzy. Same
           overload, opposite character — that difference is the sound of tube gear.
         </Text>
       </SectionWell>

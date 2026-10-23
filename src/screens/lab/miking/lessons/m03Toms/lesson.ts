@@ -111,7 +111,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The stick strikes the exact centre of a tom’s batter head. Which of its vibration shapes can it set moving?',
     options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the centre'],
     correct: 'Only the ring-shaped ones; the rest have a still line there',
-    explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape; off centre, more shapes join in.',
+    explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape. The ring-shaped ones include the lowest shape, the plain dome; off centre, more shapes join in.',
     why: {
       'All of them equally, because the whole of the head is struck': 'The stick touches one small spot. A shape is driven only as much as the head moves there.',
       'Only the shapes that have a still line across the centre': 'The reverse: a still line through the centre means the head does not move there.',
@@ -232,7 +232,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You use one mic between the two rack toms. What can you no longer do later?',
     options: ['Change the balance of the two toms on a fader', 'Hear either tom at all through that channel', 'Use that channel with the overheads in the mix'],
     correct: 'Change the balance of the two toms on a fader',
-    explain: 'A shared mic keeps one combined perspective: the balance between the two toms is set by where the mic sits, not by a fader. With a mic on each tom instead, the two mics are on different sources — where 3:1 applies: 3:1 can reduce interacting pickup between mics on different sources (each mic at least three times nearer its own tom than the other mic is).',
+    explain: 'A shared mic keeps one combined perspective: the balance between the two toms is set by where the mic sits, not by a fader. With a mic on each tom instead, the two mics are on different sources, where 3:1 applies: keep the mics at least three times as far apart as each one is from its own tom, to reduce how they interact.',
     why: {
       'Hear either tom at all through that channel': 'Both toms come through the shared mic — that is its point.',
       'Use that channel with the overheads in the mix': 'It mixes with the overheads like any tom channel. What it cannot do is balance the two toms separately.',

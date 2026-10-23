@@ -211,6 +211,9 @@ const PART_DEFAULT: Required<PartWords> = {
   rosette: { label: 'rosette', short: 'rosette', role: 'The inlaid ring round the sound hole.' },
 };
 
+/** A resonator's bridge stands on the cone (R030386): its own role unless a lesson words it. */
+const CONE_BRIDGE = { label: 'bridge', short: 'bridge', role: 'It stands on the resonator cone. The strings press it down, and it drives the cone like a loudspeaker.' };
+
 export type BuildOpts = {
   id: string;
   name: string;
@@ -274,7 +277,7 @@ export function buildGuitarModel(opts: BuildOpts): BuiltGuitarModel {
       add('cone', W.cone, undefined);
       if (sp.opening.ports) add('ports', W.ports, undefined);
     }
-    add('bridge', W.bridge, B({ min: v(sp.bridge.x.mm - sp.bridge.l.mm / 2, -sp.bridge.w.mm / 2, 0), max: v(sp.bridge.x.mm + sp.bridge.l.mm / 2, sp.bridge.w.mm / 2, sp.opening.kind === 'coverplate' ? 18 : 11) }), { clearance: dd(6, 'bridge keep-off') });
+    add('bridge', sp.opening.kind === 'coverplate' && W.bridge === PART_DEFAULT.bridge ? CONE_BRIDGE : W.bridge, B({ min: v(sp.bridge.x.mm - sp.bridge.l.mm / 2, -sp.bridge.w.mm / 2, 0), max: v(sp.bridge.x.mm + sp.bridge.l.mm / 2, sp.bridge.w.mm / 2, sp.opening.kind === 'coverplate' ? 18 : 11) }), { clearance: dd(6, 'bridge keep-off') });
     // The strings over the top and the neck (moving).
     const spreadMax = sp.strings.spreadSaddle.mm / 2 + 3;
     add('strings', W.strings, B({ min: v(sp.bridge.x.mm + 4, -spreadMax, g.h(0) - 3), max: v(g.L, spreadMax, g.h(g.edge) + 3) }), { moving: true, clearance: stringClear });

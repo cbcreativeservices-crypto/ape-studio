@@ -18,7 +18,7 @@ export const A05D_ART: LessonArt = makeSaxLessonArt(BARITONE_SAX, {
     bellNote: 'The baritone’s holes are spread along a long body, so where a note leaves moves a long way between the lowest and the highest notes — one reason a farther mic, or the triangle, takes in more of the horn.',
     registerNote: 'A simplified cone. A real saxophone has two octave vents — the neck’s and the body’s — that the octave key switches between; each one sits close to a still point of the notes it serves.',
     silentNote: 'This lab never plays a sound and draws no frequency curve for the baritone: how a real baritone sounds depends on the horn, the mouthpiece, the reed and the player. The pictures show where the sound comes from and where it leaves.',
-    reveal: 'Most of a note leaves at the first open hole — the open hole nearest the mouthpiece — and the open holes just past it. The bell carries the high harmonics, and the lowest notes.',
+    reveal: 'Most of a note leaves at the first open hole — the open hole nearest the mouthpiece — and the open holes just past it. The high harmonics travel on to holes farther down and to the bell, which also carries the lowest notes.',
   },
   setting: {
     ...A05D_PLAN,

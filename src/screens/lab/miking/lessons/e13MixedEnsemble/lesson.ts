@@ -229,7 +229,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'mix.rec.3',
     page: 'context',
-    prompt: 'FROM EARLIER · The horn’s bell points back. Where does a monitor near it reach?',
+    prompt: 'FROM EARLIER · A floor monitor sits near the horn. Where does its sound reach?',
     options: ['Into the mics on the stage, too', 'Only the horn player’s own ears', 'Nowhere: monitors are directional'],
     correct: 'Into the mics on the stage, too',
     explain: 'A monitor radiates into every nearby mic, not only the player’s ears. Place it with the mics’ rejection in mind, and keep its level to what the players need.',
@@ -326,7 +326,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Main-array geometry or panning? Check the spacing and the centre contribution before adding more channels.',
     options: ['Check spacing and the centre feed', 'Add two more mics out at the far sides', 'Pan the pair wider still'],
     correct: 'Check spacing and the centre feed',
-    explain: 'A spaced pair too wide, or a tree’s centre too low, thins the middle: check those before adding channels.',
+    explain: 'A spaced pair too wide, or a tree’s centre mic too low in the mix, thins the middle: check those before adding channels.',
     why: { 'Add two more mics out at the far sides': 'More side mics widen it further.', 'Pan the pair wider still': 'Wider panning deepens the hole.' },
   },
   {
@@ -345,7 +345,7 @@ const symptoms: Symptom[] = [
     options: ['Find the clipping stage; fix its gain', 'Soften the accents with EQ and a limiter', 'Move all of the mics farther back'],
     correct: 'Find the clipping stage; fix its gain',
     explain: 'Distortion on accents is overload somewhere in the chain: find which stage clips, then its pad or gain.',
-    why: { 'Soften the accents with EQ and a limiter': 'EQ cannot repair clipping.', 'Move all of the mics farther back': 'That changes the perspective; the clipping stage is still clipping.' },
+    why: { 'Soften the accents with EQ and a limiter': 'Once a stage clips, EQ or a limiter after it cannot undo it.', 'Move all of the mics farther back': 'That changes the perspective; the clipping stage is still clipping.' },
   },
   {
     id: 'mix.s.ring',
@@ -392,7 +392,7 @@ const setupTasks: SetupTask[] = [
 const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern rejects most of the room behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from 1.5 m to 3 m in front. What changes most?', options: ['More blend and more room', 'Only the level', 'The front players dominate more'], after: 'Farther back, the distances to the front and back players even out: the NEAR / FAR readout shrinks, and the room comes up. Compare at matched level.' },
-  context: { prompt: 'The monitor sits in front of the cello spot, a little to the side. Can its rejection reach it?', options: ['Yes — turn the mic’s back toward it', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
+  context: { prompt: 'The monitor sits on the floor between the cello spot and the hall, a little to the side. Can the spot’s rejection reach it?', options: ['Yes — turn the mic’s back toward it', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'A main pair and a cello spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
 };
 
@@ -436,7 +436,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'mix.q.5',
     covers: 'setups',
-    prompt: 'How many supports might you add at first, and why?',
+    prompt: 'For this chamber group, how many supports might you add at first, and why?',
     options: ['At most two, each with a reason', 'One for each player, to be safe', 'None: a pair is enough'],
     correct: 'At most two, each with a reason',
     explain: 'Start with the main array; add as few supports as you can, each for a musical reason you can state.',

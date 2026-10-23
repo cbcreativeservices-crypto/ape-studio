@@ -186,7 +186,7 @@ export function MTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
           {T.learn.map((t) => (
             <Body key={t.slice(0, 24)}>{t}</Body>
           ))}
-          <Note>What you just saw: a bar reaches two spaced mics at different times; summed, the late copy cancels where it is half a period late — comb notches. Grilles together, the times match for every bar, and the two mics differ only in level. Polarity flips the sign — the notches and peaks swap places; it does not remove a delay.</Note>
+          <Note>What you just saw: a bar reaches two spaced mics at different times; summed, the late copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late — comb notches. Grilles together, the times match for every bar, and the two mics differ only in level. Polarity flips the sign — the notches and peaks swap places; it does not remove a delay.</Note>
         </>
       ),
     },

@@ -135,7 +135,7 @@ export function ChannelStrip({ selected, onTap }: { selected: StripStation; onTa
   const ctlMuteY = 80;
   const ctlDropX = 174;
   return (
-    <Frame h={STRIP_H} a11y="A channel strip in signal order from the top: input and preamp gain, high-pass filter, channel EQ, insert, then the mute (on this console the mute also silences the pre-fader sends; that depends on the console), then the pre-fader tap point where the monitor, announce and in-ear sends leave, the fader with pan, the post-fader tap point where the reverb and sub sends leave, and the assignment to the main bus or a group. The direct output is pre- or post-fader by setting. Off to the side, controls with no audio in them: a DCA's level acts on the fader; a DCA's mute and a mute group act on the mute. Tap a block to read about it; the mute is read with the fader.">
+    <Frame h={STRIP_H} a11y="A channel strip in signal order from the top: input and preamp gain, high-pass filter, channel EQ, insert (this console puts the insert after the EQ; most compact analog desks put it before), then the mute (on this console the mute also silences the pre-fader sends; that depends on the console), then the pre-fader tap point where the monitor, announce and in-ear sends leave, the fader with pan, the post-fader tap point where the reverb and sub sends leave, and the assignment to the main bus or a group. The direct output is pre- or post-fader by setting. Off to the side, controls with no audio in them: a DCA's level acts on the fader; a DCA's mute and a mute group act on the mute. Tap a block to read about it; the mute is read with the fader.">
       {line(26, 32)}
       {line(52, 58)}
       {line(78, 84)}

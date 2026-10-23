@@ -59,7 +59,7 @@ const pages: LessonPages = {
     title: 'Bass and treble',
     goal: 'See why a mic over the bass and one over the treble can thin out in mono, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: ['pn.two.1', 'pn.two.2', 'pn.two.3', 'pn.two.4', 'pn.two.5'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the five checks.' },
-    takeaway: 'Two spaced mics hear the middle strings at different times: in mono that can comb. Moving a mic changes the delay; the polarity switch does not. Check each mic alone, the pair, and the pair in mono, at matched levels.',
+    takeaway: 'Two spaced mics hear the middle strings at similar levels but at slightly different times: in mono that can comb. Moving a mic changes the delay; the polarity switch does not. Check each mic alone, the pair, and the pair in mono, at matched levels.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -280,11 +280,11 @@ const scenarios: MikingScenario[] = [
     id: 'pn.ctx.studio',
     page: 'context',
     prompt: 'Studio session, a beautiful room, a solo pianist. What could justify mics outside the piano instead of over the strings?',
-    options: ['Outside mics pick up far less of the hammers than they really do', 'The room is worth hearing, and the music wants the whole instrument', 'Mics over the strings belong on a stage, not in a studio'],
+    options: ['Outside mics pick up none of the hammer or key noise', 'The room is worth hearing, and the music wants the whole instrument', 'Mics over the strings belong on a stage, not in a studio'],
     correct: 'The room is worth hearing, and the music wants the whole instrument',
     explain: 'In a good room, an outside pair blends the whole keyboard with the room — a natural solo perspective. Over the strings brings definition; the choice is what the music needs.',
     why: {
-      'Outside mics pick up far less of the hammers than they really do': 'Outside mics hear the hammers too, blended with the rest. The reason is the room and the whole instrument.',
+      'Outside mics pick up none of the hammer or key noise': 'Outside mics hear the hammers too, blended with the rest. The reason is the room and the whole instrument.',
       'Mics over the strings belong on a stage, not in a studio': 'Mics over the strings are common in studios. The decision is the perspective the music wants.',
     },
   },
@@ -328,8 +328,8 @@ const scenarios: MikingScenario[] = [
     id: 'pn.two.3',
     page: 'twoMic',
     prompt: 'The bass/treble pair sounds thin in mono. Which change works on the cause itself?',
-    options: ['Pan the two mics harder left and right to widen them', 'Boost the middle frequencies on both mics until it sounds full again', 'Bring the pair closer or change its geometry, then recheck'],
-    correct: 'Bring the pair closer or change its geometry, then recheck',
+    options: ['Pan the two mics harder left and right to widen them', 'Boost the middle frequencies on both mics until it sounds full again', 'Bring the mics closer together, or change the geometry, then recheck'],
+    correct: 'Bring the mics closer together, or change the geometry, then recheck',
     explain: 'The cause is the time difference between the mics. Narrowing the pair, changing its geometry — a coincident pair, or one mic — changes it. Panning and EQ do not.',
     why: {
       'Pan the two mics harder left and right to widen them': 'Panning changes the stereo picture, not the mono sum. The comb is still there in mono.',

@@ -11,7 +11,7 @@ export const WAVEFORM_LEARN: ToolLearnContent = {
     {
       head: 'WHAT YOU ARE LOOKING AT',
       body:
-        'The waveform is a graph of amplitude over time: the horizontal axis is time, the vertical axis is signal level, and the trace swings above and below a center zero line just like an oscilloscope. Everything above the zero line is positive pressure or voltage, everything below is negative, and silence sits flat on the line itself. At normal zoom you are not seeing individual wave cycles — you are seeing an envelope, the outline of thousands of cycles per second compressed into each pixel column.',
+        'The waveform is a graph of amplitude over time: the horizontal axis is time, the vertical axis is signal level, and the trace swings above and below a center zero line just like an oscilloscope. Everything above the zero line is positive pressure or voltage, everything below is negative, and silence sits flat on the line itself. At normal zoom you are not seeing individual wave cycles — you are seeing an envelope, the outline of many samples (often many cycles) packed into each pixel column.',
     },
     {
       head: 'HOW TO READ IT',

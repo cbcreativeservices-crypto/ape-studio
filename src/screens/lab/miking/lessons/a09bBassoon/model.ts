@@ -45,7 +45,7 @@ const DPA_Z: Omit<DocumentedZone, 'start'> = {
 
 const FOOT_Z: Omit<DocumentedZone, 'start'> = {
   id: 'bsn.foot',
-  label: 'About a foot from the sound holes',
+  label: 'About a foot from the finger holes',
   band: 'For a balanced sound: try about 25–35 cm (about a foot) in front of the finger holes on the boot, facing them.',
   kind: 'sourced',
   src: 'S-REC',

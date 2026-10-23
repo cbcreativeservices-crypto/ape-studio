@@ -332,10 +332,10 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.2',
     covers: 'instrument',
-    prompt: 'Where does a five-string banjo’s short string start?',
+    prompt: 'Where is a five-string banjo’s short string tuned?',
     options: ['At the tailpiece, behind the bridge', 'At a peg partway up the neck', 'At a tuner on the resonator'],
     correct: 'At a peg partway up the neck',
-    explain: 'The fifth string is short: it starts at its own peg partway up the neck.',
+    explain: 'The fifth string is short: it is tuned at its own peg partway up the neck.',
     why: {
       'At the tailpiece, behind the bridge': 'All strings anchor at the tailpiece; the fifth one’s other end is the peg up the neck.',
       'At a tuner on the resonator': 'There are no tuners on the resonator; the fifth peg is on the neck.',

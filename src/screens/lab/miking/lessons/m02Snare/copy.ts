@@ -43,7 +43,7 @@ export const SNARE_COPY: LessonCopy = {
     reveal: 'The squeezed air pushes the snare-side head DOWN — both heads move the same way at that moment. The two heads are coupled through the air inside, and the snare-side head drives the wires.',
     after: 'Then both heads keep ringing and the wires keep rattling for a while — the BODY of the sound. How long depends on the tuning, the wires’ tension and the drum (the Drum Tuning Lab covers tuning).',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones. Off centre, more shapes join in.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones, the lowest shape among them. Off centre, more shapes join in.',
       'This is a simplified head in empty space. On a real snare, the air inside, the second head and the wires pull these numbers around — the next step shows the two heads working together.',
     ],
     coupledSubject: 'Side view of the snare',
@@ -80,7 +80,7 @@ export const SNARE_COPY: LessonCopy = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the rim or the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every snare is different.',
       separate: 'Rim position, height and angle are separate variables: change one at a time. “Above the rim” and “above the head” are different numbers — the rim stands above the head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.',
-      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand, clamp and cable out of the sticks’ path, rimshots, cross-stick and the hi-hat’s travel, and route the cable away from the pedals. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room on a real kit.',
+      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand, clamp and cable out of the sticks’ path, rimshots, cross-stick and the hi-hat’s travel, and route the cable away from the pedals. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real kit.',
       tendencies: 'Starting near the rim and aiming toward the centre is a common approach; a more centred aim can change the balance of strike and ring. These are tendencies, and drums vary. With a directional mic, proximity effect also changes the lows at short distances.',
     },
   },

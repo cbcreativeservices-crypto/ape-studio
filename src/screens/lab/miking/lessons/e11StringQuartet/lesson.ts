@@ -270,7 +270,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Lower or move the spots, then compare',
     explain: 'Overlap, level and arrival times hollow the sum: lower the spots, move them, and test timing only in context — compared with the plain version.',
     why: {
-      'Flip each spot’s polarity, then listen again': 'Polarity flips every frequency the same way; it cannot undo a time gap, whose effect changes with pitch.',
+      'Flip each spot’s polarity, then listen again': 'Polarity flips every frequency the same way; it cannot undo a time gap, whose effect changes with frequency.',
       'Delay each spot by its distance': 'One distance suits one player at best; level and placement first.',
     },
   },

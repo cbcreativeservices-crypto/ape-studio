@@ -1926,7 +1926,7 @@ const STEPS: Step[] = [
     ],
     Rack: M9Rack,
     check: {
-      question: 'A tone at 80 Hz and a tone at 1 kHz have the SAME amplitude. Why does the 80 Hz tone sound quieter?',
+      question: 'A tone at 80 Hz and a tone at 1 kHz reach your ear with the SAME amplitude (the same pressure swing). Why does the 80 Hz tone sound quieter?',
       options: [
         'Low frequencies carry less energy',
         'The ear is simply less sensitive at low frequencies',
@@ -1985,7 +1985,7 @@ const STEPS: Step[] = [
     tag: 'MODULE 12',
     title: 'THE FOURIER PRINCIPLE',
     paras: [
-      'Module 11 built complex tones out of sines in harmonic relationships. Fourier’s theorem is the breathtaking reverse: any repeating pattern — however jagged — can have its harmonics taken apart into plain sines. Exactly — though sharp corners need an endless list of them.',
+      'Module 11 built complex tones out of sines in harmonic relationships. Fourier’s theorem is the breathtaking reverse: any repeating pattern — however jagged — can be taken apart into plain sines at whole-number multiples of its repeat rate (its harmonics). The fit is exact — though sharp corners need an endless list of them.',
       'That means every sound has two complete descriptions: the waveform (pressure over time) and the SPECTRUM (which sines, how strong, and how they line up in time). Same information, two views.',
       'Ride UNMIX to pull this wave apart into its ingredient list. The analyzers and spectrograms in the app’s measuring tools do this same job live, on real sound from the mic.',
     ],

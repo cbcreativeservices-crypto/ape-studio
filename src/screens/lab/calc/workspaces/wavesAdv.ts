@@ -20,15 +20,15 @@ const ALIGN: Workspace = {
     'realigns them, and shows the phase relationship any offset creates at a given frequency.',
   whyItMatters:
     'Time alignment is the difference between a punchy, coherent system and a hollow, phasey one. A ' +
-    'few centimetres of driver offset is degrees of phase error at the crossover; a metre of sub-to-' +
-    'top offset is milliseconds you can dial back in with delay.',
+    'few centimetres of driver offset can be tens of degrees of phase error at the crossover; a metre ' +
+    'of sub-to-top offset is a few milliseconds you can dial back in with delay.',
   example:
     'A sub 1.2 m closer than the tops (20 °C): delay = 1.2 ÷ 343 ≈ 3.5 ms to add to the SUB. At an ' +
     '80 Hz crossover that same 1.2 m offset is 360·1.2·80/343 ≈ 101° of phase — well out of step ' +
     'until aligned.',
   mistakes: [
     'Delaying the wrong source — you delay the CLOSER (earlier) source to wait for the farther one, never the other way.',
-    'Aligning by ear at one frequency and ignoring the rest — a fixed delay fixes timing at every frequency (for one spot), but polarity and crossover phase still need checking.',
+    'Aligning by ear or by phase at one frequency only — a phase match at one frequency can be a whole cycle off, and crossover filters shift phase by a different amount at each frequency. A fixed delay fixes only the travel time (for one spot); still check polarity and crossover phase across the whole overlap band.',
     'Forgetting temperature — the speed of sound (and therefore the right delay) shifts with air temperature.',
   ],
   warnings:
@@ -162,7 +162,7 @@ const IMD: Workspace = {
   mistakes: [
     'Confusing IMD with harmonic distortion — harmonics are integer multiples (musical); IMD sums/differences usually are not (harsh).',
     'Assuming high-frequency intermod is harmless — the DIFFERENCE tone can land in the most audible midrange.',
-    'Trying to filter third-order products — with close tones, 2f₁−f₂ and 2f₂−f₁ sit so close to them that no practical filter separates them.',
+    'Trying to filter third-order products — with close tones, 2f₁−f₂ and 2f₂−f₁ sit so close to the two tones you fed in that no practical filter can split them off.',
   ],
   warnings:
     'Frequency-only model: products at |m·f₁ ± n·f₂|; order = |m|+|n|. Whether each product is ' +

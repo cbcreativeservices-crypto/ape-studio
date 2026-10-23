@@ -85,7 +85,7 @@ export const F08_ZONES: DocumentedZone[] = [
     quote: 'XY 90° (±45°), no comb summing to mono; MS mono-compatible; ORTF 17 cm, wider than XY with reasonable mono',
     bandProv: ill('the spot is a drawing default; the pairs’ geometry is sourced'),
     start: facing(F08_START.walk),
-    tendency: 'The walker crosses the image from one side to the other without a mono hole — check the channel order and fold it to mono.',
+    tendency: 'The walker crosses the image from one side to the other without a hole in the middle — check the channel order and fold it to mono.',
     checks: ['Left and right labelled and checked', 'No hole in the middle as the walker crosses', 'The mono sum over the whole pass'],
   }),
   pbZone({
@@ -104,7 +104,7 @@ export const F08_ZONES: DocumentedZone[] = [
     quote: 'From a safe fixed crew position, swivel an appropriate directional mic smoothly to follow the subject, without walking into its route (L21)',
     bandProv: ill('the station and the pole are drawing defaults'),
     start: walkAim(TRACK_P, 0),
-    tendency: 'It holds the walker in focus across the pass — its level still follows distance, without a fixed mic’s off-axis fall — but handling or off-axis colour can creep in.',
+    tendency: 'It holds the walker in focus across the pass — its level still follows distance, without a fixed mic’s off-axis fall — but handling noise can creep in, and off-axis colour if the aim lags.',
     checks: ['Feet planted: the operator never steps toward the route', 'A smooth swing, no handling noise', 'The take labelled as a tracked, focused perspective'],
   }),
   pbZone({
@@ -174,7 +174,7 @@ export const F08_ZONES: DocumentedZone[] = [
     quote: 'XY 90°; MS mono-compatible; ORTF 17 cm',
     bandProv: ill('the spot is a drawing default'),
     start: facing(F08_START.veh),
-    tendency: 'The vehicle crosses the image; a fast pass makes time differences in a spaced pair change quickly — check mono over the whole pass.',
+    tendency: 'The vehicle crosses the image. An X/Y or M/S pair has no time gap between its capsules; a spaced pair’s time differences would change fast on a quick pass. Check mono over the whole pass.',
     checks: ['Channels labelled', 'Mono over the entire pass', 'The crew behind the line for every pass'],
   }),
 ];

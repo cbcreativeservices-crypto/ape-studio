@@ -43,7 +43,7 @@ export const CBD_COPY: LessonCopy = {
     reveal: 'The squeezed air pushes the far head OUTWARD — both heads move the same way at that moment. The two heads are coupled through the air inside.',
     after: 'Then both heads keep ringing for a long, low bloom. How long depends on the tuning, the mallet and the player’s damping — the player may stop either head by hand.',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones. Players choose the area for the colour they want.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones, the lowest shape among them. Players choose the area for the colour they want.',
       'This is a simplified head in empty space. On a real drum the air inside and the second head pull these numbers around — the next step shows the two heads working together.',
     ],
     coupledSubject: 'Side view of the concert bass drum',
@@ -78,7 +78,7 @@ export const CBD_COPY: LessonCopy = {
   placement: {
     workedZone: { set: 'cbd.spot' },
     workedLine: 'This starting point is also read against {line}: the readout says how far above it the mic is.',
-    workedAim: 'Look diagonally down at {head} — the starting point counts while the mic looks down at the head between about 20° and {tol}° off its axis. Distance, height and angle are separate things to try.',
+    workedAim: 'Look diagonally down at {head} — the starting point counts while the mic looks down at the head between about 25° and {tol}° off the head’s axis. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of the mallet’s whole swing, both damping hands, the stand and the player. Clearance comes first, before any number — about 45 cm is a starting point, not a safety distance — and the player stops before a real mic moves.',
     blocked: {},
     reveal: 'Closer tends to bring more of the drum against the room and the stage — and more of the exact spot and the mallet; farther, more of the whole drum and the hall. Drums, halls and players vary, so “it depends” is fair too.',
@@ -88,7 +88,7 @@ export const CBD_COPY: LessonCopy = {
     learn: {
       intro: 'What you just did, in words. After our research, here is where we suggest you begin: a spot above the playing head, looking diagonally down at it from about 45 cm — or closer, for a loud stage. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum, player and hall is different.',
       separate: 'Height, distance and angle are separate variables: change one at a time with the same passage. A mic on the far head, a side position or a room mic are experiments for a quiet room — compare them alone and together in mono, and leave them out if they add little.',
-      clearance: 'Clearance comes first. Have the player show the mallet’s full arc, rolls, other mallets and both hands damping both heads before anything is placed. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room on a real stage.',
+      clearance: 'Clearance comes first. Have the player show the mallet’s full arc, rolls, other mallets and both hands damping both heads before anything is placed. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real stage.',
       tendencies: 'A spot near the playing head favours the mallet’s transient; the main pickup and farther mics carry more of the low bloom and the hall. A kick-drum mic’s shaped response may not suit an orchestral bass drum — compare it with a more neutral mic by ear. All tendencies.',
     },
   },

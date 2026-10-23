@@ -384,7 +384,7 @@ function PagePeakAverage({ ctx }: { ctx: PageCtx }) {
         <Body>{id === 'snare' ? 'The percussive sound spends almost all its time far below its peak: a big crest factor. A peak meter reads it high; an average meter barely moves.' : 'The sustained sound sits near its peak most of the time: a small crest factor. Peak and average meters nearly agree.'}</Body>
       </Card>
       <Card>
-        <Eyebrow>WORKED EXAMPLE · FOUR DIFFERENT SPANS</Eyebrow>
+        <Eyebrow>WORKED EXAMPLE · TWO LEVELS, TWO SPANS</Eyebrow>
         {/* NEW COPY — dynamic range was a single clause before; the brief lists it as an objective */}
         <Body><Text style={styles.term}>Peak</Text> — the highest instant. Here {fmtDb(toDb(pk))}.</Body>
         <Body><Text style={styles.term}>Average (RMS)</Text> — what the body of the sound works out to. Here {fmtDb(toDb(av))}.</Body>

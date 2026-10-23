@@ -148,7 +148,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Where does a fiddle’s sound leave?',
     options: ['Up and out from the top, under the chin', 'Straight down from the back plate into the floor', 'From the scroll at the end of the neck'],
     correct: 'Up and out from the top, under the chin',
-    explain: 'The top plate and f-holes radiate up and out — bright along the bow’s line — so a spot sits in front and a little above.',
+    explain: 'The top plate and f-holes radiate up and out, the brightest highs roughly square to the top — so a spot sits in front and a little above.',
     why: {
       'Straight down from the back plate into the floor': 'The back radiates too, but much less toward a front mic.',
       'From the scroll at the end of the neck': 'The scroll radiates very little.',
@@ -195,9 +195,9 @@ const scenarios: MikingScenario[] = [
     id: 'ac.ctx.1',
     page: 'context',
     prompt: 'A duo plays a small room through a mono PA. Which approach?',
-    options: ['A close or narrowly compatible one', 'A wide spaced pair, for a bigger sound', 'Two mics spaced as wide as the stage'],
-    correct: 'A close or narrowly compatible one',
-    explain: 'In a mono PA, do not build a wide stereo array just because two mics are available; use a mono or narrowly compatible approach when it is safer and clearer.',
+    options: ['Close mics, or a narrow mono-safe pair', 'A wide spaced pair, for a bigger sound', 'Two mics spaced as wide as the stage'],
+    correct: 'Close mics, or a narrow mono-safe pair',
+    explain: 'In a mono PA, do not build a wide stereo array just because two mics are available; use close mics or a narrow pair that sums well in mono when it is safer and clearer.',
     why: {
       'A wide spaced pair, for a bigger sound': 'Summed to mono, a wide pair can thin out — and feed back sooner.',
       'Two mics spaced as wide as the stage': 'Wider spacing makes the mono sum worse.',
@@ -269,7 +269,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A polarity switch makes the guitar fuller. What has it shown?',
     options: ['That one relationship sums better', 'That the delay between them is gone', 'That each note now sums well in mono'],
     correct: 'That one relationship sums better',
-    explain: 'Do not assume a polarity switch or a digital delay fixes poor geometry; check with all mics on, in mono.',
+    explain: 'A flip changes where this pair’s peaks and dips fall, so fuller means this one pair of mics now sums better. It does not move the sound in time, and it may hurt other mics or notes: check with all mics on, in mono.',
     why: {
       'That the delay between them is gone': 'A polarity flip never moves an arrival in time.',
       'That each note now sums well in mono': 'A comb filter’s notches fall on some frequencies and not others; one flip suits some, not all.',

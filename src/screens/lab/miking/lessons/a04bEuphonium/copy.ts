@@ -27,7 +27,7 @@ export const EUPH_COPY: Partial<LessonCopy> = {
   placement: {
     workedZone: { up: 'eu.above', front: 'eu.sideF' },
     workedLine: 'This starting point also reads how far the mic is from {line}: the dashed line straight out of the bell.',
-    workedAim: 'Aim it toward an outer part of the bell, not straight into it. The lab counts it while the mic points within about {tol}° of the bell’s centre.',
+    workedAim: 'Aim it toward an outer part of the bell, not straight into it. The lab counts any aim within about {tol}° of the bell’s centre, so an aim at the edge counts too.',
     workedClear: 'Clear of every part — the bell’s opening, the player rising or tilting the bell, both valve hands, the slides and the path to stand. Clearance comes first, and the player stops before a real mic moves.',
     blocked: {},
     reveal: 'Closer tends to bring a tighter, more isolated euphonium with more valve and breath detail; farther brings more of the room and the section. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',

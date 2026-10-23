@@ -40,7 +40,7 @@ const pages: LessonPages = {
     title: 'Before any mic',
     goal: 'Know what else reaches a rap vocal mic — the headphones, the room, the wedge and the beat — the working zone the performer moves in, and what to settle before any mic goes up.',
     credit: { scenarios: ['rp.set.1', 'rp.set.2', 'rp.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'Hear the real verse, ad-libs and hook first. Agree a working zone; do not chase the performer with the mic. Closed-back headphones in the studio, the wedge in the pattern’s null on stage — and hearing first.',
+    takeaway: 'Hear the real verse, ad-libs and hook first. Agree a working zone; do not chase the performer with the mic. Closed-back headphones in the studio, the wedge in the pattern’s null on stage — and the performer’s hearing first.',
   },
   microphone: {
     title: 'Choose the microphone',

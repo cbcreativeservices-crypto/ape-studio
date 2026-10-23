@@ -117,7 +117,7 @@ export function Mod4Tools({ onAnswered }: ModuleProps) {
               </Card>
               <Card>
                 <Point title="EQ">Broad tonal shaping (shelves, tilt) and problem correction (narrow). Compared at matched level — a shelf changes loudness as well as tone.</Point>
-                <Point title="Dynamics">Compression for density and shape, limiting for a peak ceiling, other dynamics tools where a goal asks for them. The curve on the glass is static — attack, release and knee are not shown.</Point>
+                <Point title="Dynamics">Compression for density and shape, limiting for a peak ceiling, other dynamics tools where a goal asks for them. The curve on the glass is static, so it cannot show attack or release; it is drawn with a hard knee.</Point>
                 <Point title="Stereo / spatial">Width or channel balance — always with a mono-compatibility check, because width that only lives in the sides vanishes in a fold.</Point>
                 <Point title="Meters and analysis">Peak and true-peak, loudness (the BS.1770 family), phase correlation, spectrum. They verify a decision made by listening; they do not make it. The meter on the glass reads the client's mix through LEVEL (a plain gain): short-term and integrated loudness and true peak are measured from the render, and true peak over the −1 dBTP line reads red.</Point>
               </Card>

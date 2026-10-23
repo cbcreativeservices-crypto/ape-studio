@@ -95,7 +95,7 @@ export const EGG_COPY: LessonCopy = spCopy({
     learn: {
       intro: 'What you just did, in words. After our research, a mic about 30–60 cm (1–2 ft) from the middle of the usual playing area, aimed into it, is where we suggest you begin; one general tip for percussion is a gap of about 30 cm or more. With two eggs close together, one mic between them; wide apart, perhaps one each. Starting points, not rules.',
       separate: 'Distance, height and angle are separate variables: change one at a time, with the same grip and phrase. The distance is to the middle of the motion, not to the nearest excursion.',
-      clearance: 'Clearance comes first. At 30 cm a hand may still come close in a big stroke — check the real closest approach. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
+      clearance: 'Clearance comes first. At 30 cm a hand may still come close in a big stroke — check the real closest approach. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason.',
       tendencies: 'If one stroke leaps in level, move back or recentre; if the egg is buried, try closer outside the path, better rejection, or a louder egg. All tendencies to check by ear.',
     },
   },

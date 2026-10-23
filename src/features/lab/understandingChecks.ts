@@ -637,7 +637,7 @@ const NOISE: readonly Q[] = [
       'It is the only colour a microphone can measure',
     ],
     correct: 'Equal energy per octave matches how we hear, so it sounds balanced',
-    explanation: 'Hearing works on a roughly log scale, closer to octaves than to equal slices of hertz. Pink noise puts the same energy in each octave, so it sounds even from bottom to top.',
+    explanation: 'Hearing works on a roughly log scale, closer to octaves than to equal slices of hertz. Pink noise puts the same energy in each octave, so it sounds even from bottom to top. It also reads flat on an octave or 1/3-octave analyzer, the way rooms and speakers are measured.',
   },
 ];
 

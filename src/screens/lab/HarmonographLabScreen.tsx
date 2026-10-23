@@ -640,7 +640,7 @@ export function HarmonographLabScreen() {
         <Text style={styles.sectionHead}>REAL-TIME SWINGS</Text>
         <Text style={styles.caption}>
           The machine runs at the true frequency you set (0.5–10 Hz): 1 Hz is one full swing per
-          second. Around 0.5–2 Hz you’re at real harmonograph pendulum speeds — slow enough to watch
+          second. Around 0.5–1 Hz you’re at real harmonograph pendulum speeds — slow enough to watch
           every swing. Push toward 10 Hz and the arms blur; the drawing fills in fast. In ROTARY the paper platform is a third pendulum with its own speed — the PLAT
           lane; tiny platform detunes are what precess the rose.
         </Text>

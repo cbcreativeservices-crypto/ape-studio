@@ -96,7 +96,7 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.snd.3`,
     page: 'sound',
-    prompt: 'Is every F-hole mandolin brighter than every oval-hole mandolin?',
+    prompt: 'Is each f-hole mandolin brighter than each oval-hole one?',
     options: ['Yes: f-holes add treble to the sound in each case', 'No: it is a design tendency, not a guarantee', 'Yes, as long as both mandolins are F-style'],
     correct: 'No: it is a design tendency, not a guarantee',
     explain: 'F-hole mandolins often lean toward treble attack and chop, oval-hole ones toward a rounder, more vocal sound — tendencies a maker describes. Listen to the actual instrument.',
@@ -220,8 +220,8 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.3`,
     page: 'context',
     prompt: 'FROM EARLIER · The player keeps a note going by picking it fast. What is that called?',
-    options: ['Chop — the offbeat chords of the rhythm', 'Sustain — the string just ringing on alone', 'Tremolo — set gain on its strongest accents'],
-    correct: 'Tremolo — set gain on its strongest accents',
+    options: ['Chop — the offbeat chords of the rhythm', 'Sustain — the string just ringing on alone', 'Tremolo — rapid picking of one note'],
+    correct: 'Tremolo — rapid picking of one note',
     explain: 'Tremolo is rapid repeated picking. Set preamp gain on the strongest chops and tremolo accents, leaving headroom.',
     why: {
       'Chop — the offbeat chords of the rhythm': 'Chop is the percussive offbeat chord; tremolo is the rapid picking of one note.',

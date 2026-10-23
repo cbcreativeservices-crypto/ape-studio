@@ -470,7 +470,7 @@ const symptoms: Symptom[] = [
     explain: 'If the room mic hears more of the band or the PA than the drums, move closer, leave it out, or keep it out of the PA and monitors.',
     why: {
       'Raise the drums in the room mic until they cover the rest of the band': 'You cannot raise one source inside one mic; the mic hears what the room gives it.',
-      'Point the room mic at the PA to check how much it hears': 'That invites uncontrolled feedback.',
+      'Point the room mic at the PA to check how much it hears': 'If it is routed to the PA or the monitors, that invites feedback — and it tells you nothing about a useful spot.',
     },
   },
   {
@@ -517,7 +517,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · Studio, a good-sounding live room, nobody else playing. The producer wants a natural room around the kit; overheads and close mics are up; the mix may be checked in mono. One or two channels for the room.',
     setups: [
       { id: 'a', label: 'A low omni pair about 1 m in front of the kick, checked in mono', ok: true, power: 'phantom', feedback: 'An integrated, kick-rich room picture; the mono check covers the pair.' },
-      { id: 'b', label: 'One large condenser 1–2 m in front of the kit, facing it', ok: true, power: 'phantom', feedback: 'A mono room-and-kit picture with more kick; simple and mono-safe.' },
+      { id: 'b', label: 'One large condenser 1–2 m in front of the kit, facing it', ok: true, power: 'phantom', feedback: 'A mono room-and-kit picture with more kick; simple, with no pair to check — then check its blend with the close mics in mono.' },
       { id: 'c', label: 'A coincident pair farther out, facing the kit, compared with a mono spot', ok: true, power: 'phantom', feedback: 'Width with a stable mono sum inside the pair — then the blend with the close mics.' },
       { id: 'd', label: 'Two mics taped to the side walls, as far apart as the room allows', ok: false, power: 'phantom', feedback: 'Nothing is fixed to the walls without the studio’s okay and qualified people. And the widest pair is not always the best.' },
       { id: 'e', label: 'A mic in the doorway, where the room sounds most open', ok: false, power: 'phantom', feedback: 'A doorway is an exit and a walkway: keep it clear.' },
@@ -534,7 +534,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'No room mic: the close mics and the overheads carry the recording', ok: true, power: 'none', feedback: 'A fair choice when the room or the stage would add more spill than space.' },
       { id: 'c', label: 'A distant room mic in the PA, to make the kit bigger in the hall', ok: false, power: 'phantom', feedback: 'In the PA it costs gain before feedback and feeds the PA back into itself.' },
       { id: 'd', label: 'A room mic in the drummer’s monitor mix', ok: false, power: 'phantom', feedback: 'An open distant mic in a loud wedge is a feedback risk for little gain.' },
-      { id: 'e', label: 'A room mic pointed at the PA to check its level in soundcheck', ok: false, power: 'phantom', feedback: 'Pointed at the PA it invites uncontrolled feedback; the system operator checks routing and margin.' },
+      { id: 'e', label: 'A room mic pointed at the PA to check its level in soundcheck', ok: false, power: 'phantom', feedback: 'Pointed at the PA, it hears mostly PA; if it is routed to the PA or the monitors, it can ring. The system operator checks routing and margin.' },
     ],
     reasons: [CLEAR, { id: 'r.route', label: 'Its routing keeps it out of the PA and the monitor mixes', role: 'required', feedback: 'Say where the feed goes — and where it does not.' }, { id: 'r.gbf', label: 'It leaves gain before feedback for the mics the audience needs', role: 'required', feedback: 'On a loud stage, say what it does for gain before feedback.' }, { id: 'r.op', label: 'The system operator checks the routing and margin at show level', role: 'optional', feedback: 'A fair live reason.' }, BRAND, FAR],
     explain: 'Two choices pass — one with no room mic at all. What passes is the reasoning: clearance, routing, and gain before feedback.',

@@ -479,7 +479,7 @@ export const CURVES: CurveCard[] = [
       [1, -1],
     ],
     emphasize: 'The midrange, by getting the low end out of the way.',
-    attenuate: 'Rumble, handling noise, stage wash, HVAC — everything below ~150 Hz.',
+    attenuate: 'Rumble, handling noise, stage wash, HVAC — mostly the lows below about 100–150 Hz, cut more the lower they go.',
     useful: 'Lecterns and stages with structure-borne noise; sources with no useful lows.',
   },
   {
@@ -708,7 +708,7 @@ export const JOB_GROUPS: JobGroup[] = [
       { key: 'piano', name: 'Piano', ratings: [['Off-axis consistency', 5], ['Transient detail', 4], ['Self-noise', 4], ['Stereo pairing', 4]], note: 'A huge source — matched pairs and even off-axis behavior.' },
       { key: 'strings', name: 'Strings', ratings: [['Self-noise', 5], ['Smooth HF', 4], ['Tonal detail', 4], ['Max SPL', 1]], note: 'Quiet and delicate; harshness shows instantly.' },
       { key: 'brass', name: 'Brass', ratings: [['Max SPL', 4], ['Smooth HF', 4], ['Tonal detail', 3], ['Ruggedness', 3]], note: 'Loud AND bright — ribbons’ gentle top is a classic answer.' },
-      { key: 'woodwinds', name: 'Woodwinds', ratings: [['Self-noise', 4], ['Tonal detail', 4], ['Off-axis consistency', 4], ['Max SPL', 2]], note: 'The sound comes from the whole instrument, not the bell — even pickup matters.' },
+      { key: 'woodwinds', name: 'Woodwinds', ratings: [['Self-noise', 4], ['Tonal detail', 4], ['Off-axis consistency', 4], ['Max SPL', 2]], note: 'The sound comes from the whole instrument, not just the bell — even pickup matters.' },
       { key: 'perc', name: 'Percussion', ratings: [['Transient detail', 5], ['Max SPL', 4], ['Ruggedness', 3], ['Self-noise', 2]], note: 'Attack fidelity first; some pieces are shockingly loud.' },
     ],
   },
@@ -792,7 +792,7 @@ export const CHALLENGE_VARIANTS: ChallengeVariant[] = [
     correct: 'E',
     accept: [],
     explain:
-      'Movement rules out the boom and the fixed handheld frame: the wireless lavalier travels WITH the speaker at a ' +
+      'When the speaker moves, a boom and a fixed handheld are hard to keep on them: the wireless lavalier travels WITH the speaker at a ' +
       'constant distance, with a windjammer for outside.',
   },
 ];

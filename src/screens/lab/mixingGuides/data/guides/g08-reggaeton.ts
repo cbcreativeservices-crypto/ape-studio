@@ -13,8 +13,8 @@ export const GUIDE: MixingGuide = {
   "title": "Reggaeton",
   "expects": "Crowds expect to feel the dembow (reggaeton's core drum pattern) in their body, hear every word clearly enough to shout along, and get a drop or “beat switch” that sends the floor up.",
   "glance": {
-    "origin": "Panama’s Spanish-language reggae (late 1980s) and Puerto Rico’s “underground” scene (early–mid 1990s), built on the Jamaican Dem Bow riddim (instrumental backing track); global from 2004, with Latin trap rising out of Puerto Rico from the mid-2000s",
-    "tempo": "Reggaeton 88–100 BPM (classic perreo (close, hip-led dance) 90–96; “romántico” (slow romantic style) 80–90; Dominican dembow (reggaeton's core drum pattern) 110–130); Latin trap 60–80 BPM, often felt in double time (120–160)",
+    "origin": "Panama’s Spanish-language reggae (late 1980s) and Puerto Rico’s “underground” scene (early–mid 1990s), built on the Jamaican Dem Bow riddim (instrumental backing track); global from 2004, with Latin trap growing out of Puerto Rico from the mid-2000s and breaking through in the mid-2010s",
+    "tempo": "Reggaeton 88–100 BPM (classic perreo (close, hip-led dance) 90–96; “romántico” (slow romantic style) 80–90; Dominican dembow (a separate, faster style from the Dominican Republic) 110–130); Latin trap 60–80 BPM, often felt in double time (120–160)",
     "ensemble": "Solo artist or duo + DJ and full playback; arena tours add a drummer/percussionist, keys, guitar, 2–4 backing vocalists and dancers",
     "priority": "The dembow (reggaeton's core drum pattern) pulse (kick, sub and snare/timbal) locked and huge, with a clear, upfront Spanish lead vocal riding on it",
     "liveSpl": "98–103 dBA LAeq-15 min in clubs and arenas; 118–128 dBC; C-minus-A gap often 18–22 dB",
@@ -200,7 +200,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Avoid overcompressing drums: dembow depends on short, crisp tails. On live vocals, an expander (about 4 dB range, threshold just under the singer’s quietest line) cuts stage noise from IEM-less, running artists. De-ess at 5–8 kHz for 3–5 dB; Spanish “s” sounds are frequent. Mastering commonly uses soft clipping plus 3–5 dB of limiting."
+        "text": "Avoid overcompressing drums: dembow depends on short, crisp tails. On live vocals, an expander (about 4 dB range, threshold just under the singer’s quietest line) turns down wedge and stage spill between lines. It helps most when artists run around and use wedges instead of in-ear monitors. De-ess at 5–8 kHz for 3–5 dB; Spanish “s” sounds are frequent. Mastering commonly uses soft clipping plus 3–5 dB of limiting."
       }
     ]
   },

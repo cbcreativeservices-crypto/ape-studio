@@ -216,7 +216,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "De-ess the lead at 5–8 kHz for 2–4 dB, and watch the shaker/sibilance pile-up in the same region. Gates are rarely needed on programmed parts; live, gate toms and expand talking drum and conga mics gently (−10 dB range) to tame percussion-riser bleed. A slow multiband on the master around 60 Hz (attack/release slow enough to follow the tempo) keeps subs breathing with the groove."
+        "text": "De-ess the lead at 5–8 kHz for 2–4 dB, and watch the shaker/sibilance pile-up in the same region. Gates are rarely needed on programmed parts; live, gate toms and expand talking drum and conga mics gently (−10 dB range) to tame percussion-riser bleed. A slow multiband on the master around 60 Hz keeps subs breathing with the groove; time its release to the tempo so it lets go between beats."
       }
     ]
   },

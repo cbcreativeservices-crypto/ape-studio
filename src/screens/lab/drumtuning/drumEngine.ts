@@ -956,7 +956,7 @@ export const SYMPTOMS: readonly SymptomCase[] = [
       { id: 'reso', label: 'Retune the resonant head away from the batter', why: 'Two heads near the same pitch exchange energy and sustain each other; moving the resonant head changes the sustain and where the ring sits.' },
       { id: 'damp', label: 'Add a gel pad near the rim', why: 'Damping takes the high ring first and shortens it; the heads keep their relationship. A different sound from retuning the resonant head — both are legitimate fixes.' },
       { id: 'even', label: 'Even the batter lugs', why: 'The batter is already even in this case — evening it again changes nothing.' },
-      { id: 'tighten', label: 'Tighten both heads a quarter turn all round', why: 'Higher tension moves the ring up; it does not shorten it — and cranking every rod on a drum already up high is how hoops go out of round.' },
+      { id: 'tighten', label: 'Tighten both heads a quarter turn all round', why: 'Higher tension moves the ring up; it does not shorten it — and cranking every rod on a drum that is already high stretches the heads and chokes the tone.' },
     ],
     clears: ['reso', 'damp'],
     strike: 0.6,

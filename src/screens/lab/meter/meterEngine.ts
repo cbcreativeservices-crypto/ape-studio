@@ -683,7 +683,7 @@ export const EQ_FILTERS: {
     label: '1 kHz shelf',
     hz: 1000,
     kind: 'shelf',
-    blurb: 'Not a bump at all: everything well above 1 kHz moves together, by the same amount. A tilt, not a target — the tool for "too dull" or "too bright".',
+    blurb: 'Not a bump at all: everything well above 1 kHz moves together, by the same amount. A broad lift or cut, not a target — the tool for "too dull" or "too bright".',
   },
 ];
 

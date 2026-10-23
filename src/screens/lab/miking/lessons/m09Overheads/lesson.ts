@@ -409,12 +409,12 @@ const scenarios: MikingScenario[] = [
     id: 'oh.mix.3',
     page: 'practice',
     prompt: 'The overheads and the close snare make the snare hollow together. Which change removes the arrival difference itself?',
-    options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity of the close snare mic', 'Raising the snare mic to cover the overheads'],
+    options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity of the close snare mic', 'Turning the snare mic up to cover the overheads'],
     correct: 'Moving a mic so the two paths are closer to equal',
     explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth; neither removes the delay.',
     why: {
       'Flipping the polarity of the close snare mic': 'Polarity flips the sign; the snare still arrives at the overheads later.',
-      'Raising the snare mic to cover the overheads': 'Level changes how deep the notches are, not where the delay comes from.',
+      'Turning the snare mic up to cover the overheads': 'Level changes how deep the notches are, not where the delay comes from.',
     },
   },
 ];
@@ -673,10 +673,10 @@ export const M09_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'cymbals', label: 'the crash cymbals', short: 'CRASHES', planIds: ['crash1', 'crash2'], tag: 'CLOSEST', note: 'They hang highest and closest to an overhead, and swing when struck. Keep each mic and its boom outside the swing — about 6 cm each way at the edge is the keep-out drawn here.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan positions; swing envelope a drawing default' } },
+      { id: 'cymbals', label: 'the crash cymbals', short: 'CRASHES', planIds: ['crash1', 'crash2'], tag: 'CLOSEST', note: 'They hang highest and closest to an overhead, and swing when struck. Keep each mic and its boom outside the swing — about 6 cm each way at the edge is the keep-out drawn here. A cymbal hit hard can swing farther, so leave more room.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan positions; swing envelope a drawing default' } },
       { id: 'ride', label: 'the ride', short: 'RIDE', tag: 'PLAYED ON', note: 'Over the floor tom, played all the time on its bow and bell. An overhead on that side — and the floor-tom side mic — hears it strongly.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
       { id: 'hihat', label: 'the hi-hats', short: 'HI-HATS', tag: 'LOUD, CLOSE', note: 'To the player’s left: often one of the loudest things in an overhead on that side. Air puffs out sideways as the pair closes.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
-      { id: 'snare', label: 'the snare', short: 'SNARE', tag: 'REFERENCE', note: 'The overheads’ usual reference: their distances are measured to its centre, so its sound reaches each mic at the same moment.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
+      { id: 'snare', label: 'the snare', short: 'SNARE', tag: 'REFERENCE', note: 'The overheads’ usual reference: their distances are measured to its centre. When the two distances match, its sound reaches each mic at the same moment.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
       { id: 'kick', label: 'the kick', short: 'KICK', tag: 'FARTHEST', note: 'Low and in the middle: an overhead above the kit usually hears it last and weakest. The line from the kick through the snare is a useful centre line for a pair.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
       { id: 'toms', label: 'the rack toms', short: 'TOMS', planIds: ['tom1', 'tom2'], tag: 'UNDER CRASHES', note: 'Under the crashes. Moving a pair toward the front of the kit brings the rack toms and the cymbals closer.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan positions' } },
       { id: 'floor', label: 'the floor tom', short: 'FLOOR TOM', tag: 'SIDE MIC', note: 'The floor-tom method’s side mic sits just beyond it, about 15 cm (6 in) above its rim, outside the player’s reach.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },

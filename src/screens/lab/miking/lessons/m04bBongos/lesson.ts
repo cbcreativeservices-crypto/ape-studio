@@ -497,7 +497,7 @@ const orderTasks: OrderTask[] = [
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This input gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: the condensers here need phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, from the right head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is read from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point for this kind of mic, measured from the head it names', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is read from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of the fingers, palms and legs', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on bongos', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position on the pair', role: 'wrong', feedback: 'Bass emphasis is not a passing reason, and no position always gives the most bass.' };
@@ -777,7 +777,7 @@ export const M04B_LESSON: HandLesson = {
     placeLearn: [
       'What you just did, in words. After our research, each blue zone is a region where we suggest you begin with that kind of mic. We could not find a published bongo distance, so “just above” here means safely clear of the hands — then listen. They are starting points, not rules.',
       'Height, distance and angle are separate variables: change one at a time and have the player play the whole part again. A starting point that names an aim counts only while the mic faces that way. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
-      'Clearance comes first. Stop the player before moving a mic; keep the grille, body, clamp, boom and cable out of every finger and palm stroke, and leave room for a seated player’s legs. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear; check again during vigorous playing.',
+      'Clearance comes first. Stop the player before moving a mic; keep the grille, body, clamp, boom and cable out of every finger and palm stroke, and leave room for a seated player’s legs. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Check again during vigorous playing.',
       'A shared mic farther away can represent both drums more evenly in a quiet room — and gathers more room and other instruments; a close mic gives more direct sound but may favour one stroke or one drum. A figure-8 between the drums, a lobe toward each head, is another idea — map its back lobe and side nulls first.',
     ],
     context: {

@@ -242,7 +242,7 @@ describe('safety rules (safety review 2026-10-01)', () => {
     assert.match(st, /<LoudnessMeterFace /);
     assert.match(st, /TP = true peak: over the −1 dBTP line it reads red/);
     assert.doesNotMatch(st, /'TP MODEL'/);
-    assert.match(st, /a static curve \(no attack, release or knee\)/);
+    assert.match(st, /a static curve \(no attack or release; hard knee\)/);
     assert.match(st, /side level half the mid/);
     assert.match(st, /50 Hz · ISO 226-style model, simplified/);
   });

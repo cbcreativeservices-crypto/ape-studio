@@ -96,7 +96,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The stick strikes the exact centre of the head. Which of the head’s vibration shapes can it set moving?',
     options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the centre'],
     correct: 'Only the ring-shaped ones; the rest have a still line there',
-    explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the centre, so a centre strike drives only the ring-shaped ones.',
+    explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the centre, so a centre strike drives only the ring-shaped ones, the lowest shape among them.',
     why: {
       'All of them equally, because the whole of the head is struck': 'The stick touches one small spot. A shape is driven only as much as the head moves at that spot — not at all on a still line.',
       'Only the shapes that have a still line across the centre': 'The reverse: a still line through the centre means the head does not move there in that shape, so a centre strike cannot push it.',
@@ -452,8 +452,8 @@ const diagnostic: DiagnosticItem[] = [
     id: 'cs.q.3',
     covers: 'sound',
     prompt: 'A stroke exactly at the centre of a drumhead drives which of its vibration shapes?',
-    options: ['Only the ring-shaped ones — the rest are still there', 'All of the shapes, each one just as hard', 'Only the shapes that are split by a line through the centre'],
-    correct: 'Only the ring-shaped ones — the rest are still there',
+    options: ['Only the ring-shaped ones — the rest stand still there', 'All of the shapes, each one just as hard', 'Only the shapes that are split by a line through the centre'],
+    correct: 'Only the ring-shaped ones — the rest stand still there',
     explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape; a shape with a still line through the centre does not move there.',
     why: {
       'All of the shapes, each one just as hard': 'The stick touches one spot. A shape is driven only as much as the head moves there.',

@@ -97,7 +97,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'At a front seat, which usually arrives first?',
     options: ['The sound from the nearest source', 'The sound from the loudest source', 'The bounce off the rear wall'],
     correct: 'The sound from the nearest source',
-    explain: 'Arrival time is the path ÷ the speed of sound, plus any processing delay: with no delay set, the nearest loudspeaker — here the front fill — arrives first, whatever its level.',
+    explain: 'Arrival time is the path ÷ the speed of sound, plus any processing delay: with no delay set, the nearest loudspeaker arrives first, whatever its level — at the front seat drawn here, the sub, then the front fill, then the main.',
     why: {
       'The sound from the loudest source': 'Level does not move an arrival: the main may be louder and still arrive later than the nearer fill.',
       'The bounce off the rear wall': 'A bounce off the far wall travels much farther: at the front it arrives long after the direct sound.',

@@ -222,7 +222,7 @@ export function useBackgroundStep({ words, onDone }: { words: BackgroundWords; o
         <Landing looking={words.looking} prompt={words.prompt} />
         <Card>
           {r.ok ? (
-            <Point title={`THE SOURCE ALONE · ${r.source.toFixed(1)} dB`}>{`The total holds the source’s energy and the background’s, so the background comes off as energy: ${r.correction.toFixed(1)} dB off the total here — not ${total - bgL} dB, which is what plain subtraction would wrongly give as the source.`}</Point>
+            <Point title={`THE SOURCE ALONE · ${r.source.toFixed(1)} dB`}>{`The total holds the source’s energy and the background’s, so the background comes off as energy: ${r.correction.toFixed(1)} dB off the total here. Plain subtraction of the dB numbers would wrongly give the source as ${total - bgL} dB.`}</Point>
           ) : (
             <Point title="REFUSED">{why}</Point>
           )}

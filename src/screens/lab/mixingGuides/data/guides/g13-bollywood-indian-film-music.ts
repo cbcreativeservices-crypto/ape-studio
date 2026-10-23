@@ -116,13 +116,13 @@ export const GUIDE: MixingGuide = {
         "source": "Sitar (long-necked plucked lute) / santoor (hammered dulcimer)",
         "cut": "HPF 120–150 Hz; −2 dB at 250–400 Hz",
         "boost": "+2 dB at 3–5 kHz (jawari buzz / hammer attack)",
-        "notes": "Sitar sympathetic-string shimmer lives above 5 kHz — protect it"
+        "notes": "Most of the sitar’s shimmer (jawari buzz and sympathetic strings) shows up as bright overtones above about 5 kHz — protect it"
       },
       {
         "source": "Strings section",
         "cut": "HPF 80–120 Hz (violins 200 Hz); −1–2 dB at 2–6 kHz under vocal",
         "boost": "+1–2 dB shelf at 10–12 kHz",
-        "notes": "Cut the upper band on strings and percussion so the vocal air band stays clear"
+        "notes": "Keep the shelf gentle; if strings or percussion crowd the vocal’s air band, cut their top end instead"
       }
     ],
     "notes": []

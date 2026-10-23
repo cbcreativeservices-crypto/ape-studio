@@ -113,7 +113,7 @@ function B16Placement(p: PageProps) {
     title: 'a short shotgun at M1, across the walk',
     pieces: [
       { key: 'WHERE', value: 'M1', title: 'WHERE TO BEGIN', text: 'In equipment area M1, beside the middle of the walk — the stand, the cable loop and the windshield inside the area.' },
-      { key: 'HEIGHT', value: '≈ 1 m', title: 'THE HEIGHT', text: 'The capsule about 1 m up, at the clap and speech height. There is no universal trackside height: a real one follows the assigned access and its protection.' },
+      { key: 'HEIGHT', value: '≈ 1 m', title: 'THE HEIGHT', text: 'The capsule about 1 m up, near the clap height. There is no universal trackside height: a real one follows the assigned access and its protection.' },
       { key: 'AIM', value: 'ACROSS', title: 'THE AIM', text: 'Across the walk, at B: a short, strong sector. Aimed along the walk instead, the approach stays on the axis longer.' },
       { key: 'RANGE', value: '2.0 m', title: 'THE RANGE', text: 'About 2 m at the closest point, about 2.83 m at A and C. Keep the gain fixed for the whole walk.' },
       { key: 'CLEAR', value: 'IN AREA', title: 'CLEARANCE', text: 'Nothing in the walking path; a real course, arena or deck adds its run-off, gates and routes.' },

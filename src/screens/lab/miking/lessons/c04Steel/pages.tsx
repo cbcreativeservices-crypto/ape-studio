@@ -21,7 +21,7 @@ export const C04_SPEC: AmpPagesSpec = {
     { id: 'lap', label: 'LAP STEEL, FROM ABOVE', blurb: 'A lap steel across the player’s knees, played with a bar; usually no pedals or knee levers. Through an amp, the same miking applies.' },
   ],
   instParts: [
-    { id: 'ps.neck', title: 'NECK AND STRINGS', text: 'Ten strings over a flat fretboard with painted fret markers — no frets to press. Some pedal steels have two necks with different tunings.', shows: [...TOP, ...SIDE] },
+    { id: 'ps.neck', title: 'NECK AND STRINGS', text: 'Most necks have ten strings over a flat fretboard with painted fret markers — no frets to press; some have twelve. Some pedal steels have two necks with different tunings.', shows: [...TOP, ...SIDE] },
     { id: 'ps.bar', title: 'THE BAR', text: 'A heavy steel bar the left hand rests on the strings: a movable fret. Only the string between the bar and the changer sounds; sliding the bar glides the pitch.', shows: TOP },
     { id: 'ps.pickup', title: 'PICKUP', text: 'A magnetic pickup near the changer, under the strings: it turns their motion into a small signal for the volume pedal and the amp.', shows: TOP },
     { id: 'ps.changer', title: 'CHANGER', text: 'At the bridge end: fingers that tighten or slacken chosen strings when a pedal or knee lever moves — raising or lowering their pitch.', shows: [...TOP, ...SIDE] },

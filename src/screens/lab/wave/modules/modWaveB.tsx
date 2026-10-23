@@ -1108,7 +1108,7 @@ export function CardioidSubModule(p: WaveModuleProps) {
         <Mistakes
           items={[
             'Wrong delay/polarity/spacing cancels in the WRONG direction — a front null instead of a rear null.',
-            'Thinking one sub can be cardioid — it needs ≥2 sources with a time/polarity offset.',
+            'Thinking one driver alone can be cardioid — it needs ≥2 sources with a time/polarity offset (some single cabinets hold two drivers to do it).',
             'Ignoring the frequency limits set by the spacing.',
             'Expecting perfect rear rejection everywhere — it is band- and geometry-limited.',
           ]}
@@ -1787,7 +1787,7 @@ const BUILDER_CAPSTONE: CheckSpec[] = [
     wrongHint: 'In Module 7 the notch spacing followed 1/delay. What happens to the delay when you step away from the wall?',
   },
   {
-    question: 'Capstone 3 of 3 — the back half of the audience hears the highs fall off, but the lows carry fine. Which mechanism?',
+    question: 'Capstone 3 of 3 — the speaker is aimed at the front rows. The back half of the audience hears the highs fall off, but the lows carry fine. Which mechanism?',
     options: [
       'Standing waves eating the highs',
       'Comb filtering from the ceiling',

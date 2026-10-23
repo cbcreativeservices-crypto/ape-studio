@@ -270,7 +270,7 @@ function MembraneStudio() {
   const modeOptions = isSpeaker
     ? [
         { id: 'fs', hz: driver.fs, label: `${formatHz(driver.fs)} · resonance f_s`, blurb: 'The suspension resonance: mass and suspension spring balance here, so the cone moves most easily.' },
-        { id: 'piston', hz: driver.fs * 3, label: `${formatHz(driver.fs * 3)} · piston band`, blurb: 'Mass-controlled: the whole cone moves as one and excursion falls as 1/f² while the output stays flat.' },
+        { id: 'piston', hz: driver.fs * 3, label: `${formatHz(driver.fs * 3)} · piston band`, blurb: 'Mass-controlled: the whole cone moves as one and excursion falls as 1/f², while the on-axis output stays flat (in a baffle, up to about ka = 1).' },
         { id: 'ka1', hz: 343 / (Math.PI * (driver.diameterMm / 1000)), label: `${formatHz(343 / (Math.PI * (driver.diameterMm / 1000)))} · ka = 1`, blurb: 'The wavelength equals the cone circumference: above this the driver begins to beam.' },
         { id: 'edge', hz: driver.breakupHz * 0.45, label: `${formatHz(driver.breakupHz * 0.45)} · edge flexing`, blurb: 'The surround and outer cone stop following the coil rigidly — the centre leads the rim.' },
         { id: 'breakup', hz: driver.breakupHz * 1.3, label: `${formatHz(driver.breakupHz * 1.3)} · breakup`, blurb: 'Above the first bending frequency the cone no longer moves as one: peaks, dips, distortion.' },

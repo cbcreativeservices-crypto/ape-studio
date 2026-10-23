@@ -389,7 +389,7 @@ function SurfaceTray({ room, setRoom, onCeilingMat }: { room: Room; setRoom: (fn
         }}
       />
       <Caption>{`${SURFACES[room.ceilingMat].blurb} ${alphaLine(room.ceilingMat)}`}</Caption>
-      <Caption>{`ESTIMATED: textbook teaching coefficients, not ISO 354 product data. Floor and ceiling ${area.toFixed(1)} m² each; volume ${roomVolume(room).toFixed(1)} m³.`}</Caption>
+      <Caption>{`ESTIMATED: textbook teaching coefficients, not ISO 354 product data. Floor and ceiling ${area.toFixed(1)} m² each${room.ceiling === 'flat' ? '' : ' (the ceiling is counted at its plan area; a sloped one is really a little larger)'}; volume ${roomVolume(room).toFixed(1)} m³.`}</Caption>
     </View>
   );
 }

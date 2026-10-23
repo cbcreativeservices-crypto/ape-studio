@@ -18,7 +18,7 @@ export const RTA_LEARN: ToolLearnContent = {
     },
     {
       head: 'FREQUENCY REGIONS',
-      body: 'Engineers read the display in regions rather than exact bands: sub-bass (below ~60 Hz), bass (~60–250 Hz), low mids (~250–500 Hz), midrange (~500 Hz–2 kHz), presence (~2–6 kHz), and air (~6 kHz up). These borders are approximate vocabulary, not physics — their job is to let you connect what you hear (boom, mud, harshness, sizzle) to where it lives on the axis. Practice naming the region before you look at the numbers; that link between ear and display is the whole point of the tool.',
+      body: 'Engineers read the display in regions rather than exact bands: sub-bass (below ~60 Hz), bass (~60–250 Hz), low mids (~250–500 Hz), midrange (~500 Hz–2 kHz), presence (~2–6 kHz), brilliance (~6–10 kHz), and air (~10 kHz up). These borders are approximate vocabulary, not physics — their job is to let you connect what you hear (boom, mud, harshness, sizzle) to where it lives on the axis. Practice naming the region before you look at the numbers; that link between ear and display is the whole point of the tool.',
     },
     {
       head: 'SMOOTHING, AVERAGING AND PEAK HOLD',

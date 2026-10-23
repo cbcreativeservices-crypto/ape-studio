@@ -195,7 +195,7 @@ export const STAGE3_SESSION: StageDef = {
           fieldId: "grouped_sources",
           label: "Sources that must stay grouped",
           kind: "longText",
-          help: "Multi-microphone sources whose tracks must be edited together — a drum kit, an orchestral section, a stereo pair, a piano. Editing one of these alone breaks the phase relationship that makes them sound like one thing.",
+          help: "Multi-microphone sources whose tracks must be edited together — a drum kit, an orchestral section, a stereo pair, a piano. Moving or fading one of these alone breaks the phase relationship that makes them sound like one thing.",
           placeholder: "e.g. Kit (kick, snare, hats, toms, overheads, room) — always edited as a group"
         },
         {

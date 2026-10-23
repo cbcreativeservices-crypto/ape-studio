@@ -571,16 +571,16 @@ export const I06A_LESSON: Lesson = {
   unknowns: [
     { text: 'The open corner’s gap (15 mm), the held height (1250 mm, "in front of the chest"), eye level (1600 mm), the line’s length (40 mm) and a beater’s diameter (6 mm) — drawing defaults.', dims: ['gap', 'holdH', 'eyeH', 'line', 'beaterD'] },
     { text: 'The beater’s path, the clip hand and the player’s position are ILLUSTRATIVE keep-outs for the owner to check.', dims: [] },
-    { text: 'The 30–60 cm starting range and the wider 60–100 cm view are the lesson’s own trials; the one published number is a general 30 cm floor for percussion.', dims: [] },
+    { text: 'The 30–60 cm starting range and the wider 60–100 cm view are the lesson’s own trials; the one published number is a general rule of at least 30 cm from percussion.', dims: [] },
     { text: 'Held at the chest (one teaching source) or at eye level (another): both are players’ choices; the chest hold is drawn (owner TRI-D2).', dims: [] },
   ],
   live: {
     wedges: [
       { id: 'wedge', label: 'a floor wedge downstage, facing back toward the player', short: 'WEDGE', p: { x: 1600, y: 0, z: -350 }, lift: 150, faces: { x: -1, y: 0, z: 0.2 }, note: 'On the audience side, behind a mic that faces the triangle — the case a pattern’s null can help with.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
-      { id: 'side', label: 'a side-fill monitor across the stage', short: 'SIDE FILL', p: { x: 300, y: 0, z: 1600 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Off to the player’s right, roughly beside the mic’s front: no cardioid’s or supercardioid’s null reaches it. Distance and level do the work.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
+      { id: 'side', label: 'a side-fill monitor across the stage', short: 'SIDE FILL', p: { x: 300, y: 0, z: 1600 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Off to the player’s right, out to the mic’s side rather than behind it: no cardioid’s or supercardioid’s null reaches it. Distance and level do the work.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. There is no single agreed triangle miking standard: these starting points come from how microphones behave and a general 30 cm floor for percussion, and every triangle, beater, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one 8 in triangle, a standing player, the bar’s shapes drawn on the straight bar it was bent from, motion drawn much larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the beater and the hands.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. There is no single agreed triangle miking standard: these starting points come from how microphones behave and a general rule of at least 30 cm from percussion, and every triangle, beater, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one 8 in triangle, a standing player, the bar’s shapes drawn on the straight bar it was bent from, motion drawn much larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the beater and the hands.',
   copy: { words: metalWords('triangle', 'percussionist') },
 };

@@ -247,7 +247,7 @@ export const E15_SETUPS: EnsembleSetup[] = [
     singles: [AMP_MIC],
     mics: 'A spaced pair of small condensers over the kit; a dynamic facing the amp’s speaker.',
     start: 'The amp turned so its speaker points away from the kit, its mic a few centimetres from the grille; the pair each about 1.2 m (4 ft) from the snare, pointing down.',
-    line: 'Less guitar in the drum mics and more drums out of the guitar mic — separation from the arrangement, before any mic or EQ.',
+    line: 'Less guitar in the drum mics, while the guitar mic, a few centimetres from its speaker, still hears far more guitar than drums — separation from the arrangement, before any mic or EQ.',
     roles: 'To the recording and the PA.',
     core: true,
     view: 'plan',

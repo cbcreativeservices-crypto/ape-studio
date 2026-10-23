@@ -20,7 +20,7 @@ export const XYLO_FAM: MalletFamily = {
   roles: {
     naturals: 'The bars of the naturals, nearest the player: rosewood or a synthetic, hard and bright. A mallet strikes; the bar rings, briefly.',
     accidentals: 'The sharps and flats in the far row, a little higher — laid out like the piano’s black keys.',
-    resonators: 'A tube under each bar it serves, open at the top and closed at the bottom; the lower the note, the longer the tube. Some models put tubes under only the sharps and flats that need them.',
+    resonators: 'A tube under each bar it serves, open at the top and closed at the bottom; the lower the note, the longer the tube. Some models put a tube under every natural but under only some of the sharps and flats.',
     cords: 'Cords through each bar at its still points, on posts along the rails. Nothing clamps to a bar, a cord or a tube; nothing is set on the bars.',
     frame: 'The frame on locking casters, height adjustable. Park it and lock it before the stands go in.',
   },

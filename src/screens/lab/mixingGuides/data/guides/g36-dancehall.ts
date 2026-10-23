@@ -14,7 +14,7 @@ export const GUIDE: MixingGuide = {
   "expects": "Listeners expect bass they feel in the chest, a kick that knocks, and every word of the patois (Jamaican Creole) lyric understood, because wordplay and quotable lines are the currency.",
   "glance": {
     "origin": "Kingston, Jamaica, late 1970s (out of reggae and sound system culture); went digital with “Sleng Teng” in 1985; global pop crossover from the 2000s",
-    "tempo": "Mostly 85–110 BPM (classic and “bashment” (hard party dancehall) 90–100; uptempo riddims (instrumental backing tracks) 100–120; trap-dancehall often 70–80 felt in half time)",
+    "tempo": "Mostly 85–110 BPM (classic and “bashment” (hard party dancehall) 90–100; uptempo riddims (instrumental backing tracks) 100–120; trap-dancehall often has a half-time feel of about 70–80)",
     "ensemble": "Deejay (rhythmic chanting MC)/singer + selector (sound-system DJ)/DJ and playback; touring acts add a 4–6 piece band (drums, bass, keys, guitar, 1–2 backing vocals/hype man)",
     "priority": "The riddim’s (backing track’s) kick-and-bass weight with the deejay’s (chanting MC’s) voice cutting through clearly on top",
     "liveSpl": "98–104 dBA LAeq-15 min at shows; 120–130 dBC common because sub is the point; street dances run louder and less controlled",

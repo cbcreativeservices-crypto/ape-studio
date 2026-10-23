@@ -176,7 +176,7 @@ export const M10_ZONES: DocumentedZone[] = [
     drawn: { side: { u0: OVER_LDC.x - 150, u1: OVER_LDC.x + 150, v0: OVER_LDC.y - 160, v1: OVER_LDC.y + 160 }, top: { u0: OVER_LDC.x - 150, u1: OVER_LDC.x + 150, v0: OVER_LDC.z - 150, v1: OVER_LDC.z + 150 } },
     start: { p: OVER_LDC, az: 0, el: -90 },
     tendency: 'More cymbals than the front position, from the same mic. Compare a modest move in front with raising it over the kit.',
-    checks: ['A counterweighted boom, nothing over the player', 'Its face toward the kit', 'Cymbals against drums'],
+    checks: ['A secured, counterweighted boom, clear of the player’s head', 'Its face toward the kit', 'Cymbals against drums'],
   },
 ];
 

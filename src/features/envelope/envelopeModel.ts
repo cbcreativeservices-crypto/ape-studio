@@ -229,7 +229,7 @@ export const PRESETS: SoundPreset[] = [
   {
     id: 'piano', name: 'Piano', kind: 'percussive',
     adsr: { attackMs: 8, decayMs: 1400, sustain: 0.12, releaseMs: 500, holdMs: 0, attackShape: 'exponential', decayShape: 'exponential' },
-    bullets: ['Fast attack (a hammer strike)', 'Long natural decay while the key is down', 'No true sustain — the pedal only lets that decay run longer', 'Release = the damper drops when the key comes up'], // NEW COPY
+    bullets: ['Fast attack (a hammer strike)', 'Long natural decay while the key is down', 'No true sustain — the pedal only lets that decay keep going after the key comes up', 'Release = the damper drops when the key comes up'], // NEW COPY
     notice: 'Notice there is no flat S region: a struck string can only lose energy. What looks like sustain on a piano is just a slow decay.', // NEW COPY
   },
   {

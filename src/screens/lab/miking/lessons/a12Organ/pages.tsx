@@ -425,7 +425,7 @@ const HAND: HandSpec = {
     placeBadge: 'Blue = suggested starting points · grey dashes = aisles, passages and exits kept clear · pinch to zoom',
     clearance: 'Clearance and access come first: the aisles, the passages, the exits and the wheelchair route stay clear; nothing touches or hangs from the organ; the console and the organist keep their space. Elevated or suspended mics are the venue’s installation, by a qualified rigger.',
     cardioidTried: 'What you just saw: a mic’s rejection sits behind it, or off to the sides of its rear. A spot facing up at the organ turns its back toward the nave — where a PA high on the arch can sit in a null.',
-    sourceNote: 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each division gives its own delay, so no single setting suits every registration.',
+    sourceNote: 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each division gives its own delay, so no single setting suits every registration.',
   },
 };
 

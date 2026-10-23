@@ -308,7 +308,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Only for a reason — the room, a balance — and if it holds in mono',
     explain: 'A strong single-mic sound is the reference. Add a second view for a stated goal, hear each alone and the pair in mono, and keep it only if it helps.',
     why: {
-      'Yes: a single mic cannot record in stereo': 'Stereo is not a requirement for a solo cello — and the instrument is small enough to move the image as the player sways.',
+      'Yes: a single mic cannot record in stereo': 'You do not need stereo for a solo cello. And with a close pair, the image can wander as the player sways.',
       'Yes, one mic for the low C string and another one for the high A': 'Mics do not split strings: each hears the whole cello from its own place.',
     },
   },

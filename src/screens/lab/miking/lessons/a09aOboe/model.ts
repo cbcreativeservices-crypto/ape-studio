@@ -45,7 +45,7 @@ const DPA_Z: Omit<DocumentedZone, 'start'> = {
 
 const FOOT_Z: Omit<DocumentedZone, 'start'> = {
   id: 'ob.foot',
-  label: 'About a foot from the sound holes',
+  label: 'About a foot from the tone holes',
   band: 'For a balanced sound: try about 25–35 cm (about a foot) from the tone holes, facing them.',
   kind: 'sourced',
   src: 'S-REC',

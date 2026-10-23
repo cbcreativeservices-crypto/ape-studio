@@ -432,7 +432,7 @@ const symptoms: Symptom[] = [
   },
   {
     id: 'sl.sym.5',
-    observation: 'The source cannot be switched off, and total and background read 2 dB apart',
+    observation: 'The source cannot be switched off; a background taken at a like spot out of its reach reads 2 dB below the total',
     firstChecks: 'The method’s limit; report the limitation',
     options: ['Report it as not separable by the method', 'Subtract 2 dB and report what is left', 'Use L90 as the background level and carry on'],
     correct: 'Report it as not separable by the method',

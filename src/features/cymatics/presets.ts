@@ -146,7 +146,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
     predict: 'Steel is three times stiffer AND three times denser than aluminum. Will the mode move up, down, or stay put?',
     steps: [
       'Note the mode frequency in aluminum.',
-      'Switch MATERIAL to steel. The figure dissolves — tap ‹ −0.1 % a few times and it returns barely 1 % lower: three times stiffer AND three times denser nearly cancel.',
+      'Switch MATERIAL to steel. The figure dissolves — tap ‹ −0.1 % about ten times and it returns barely 1 % lower: three times stiffer AND three times denser nearly cancel.',
       'Switch to acrylic: soft and heavily damped — the frequency drops and the figure blurs.',
       'Switch to solid wood and rotate the GRAIN: the modes re-order.',
     ],

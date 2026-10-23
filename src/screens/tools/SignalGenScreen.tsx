@@ -94,7 +94,7 @@ const sliderToFreq = (v: number) => Math.round(FREQ_SLIDER_MIN * Math.pow(FREQ_S
 // the words "pink" or "violet" explains itself.
 const SIGNALS: { key: GenModeName; label: string; blurb: string }[] = [
   { key: 'sine', label: 'SINE', blurb: 'One pure frequency at the dial — the reference tone for level checks and ear training.' },
-  { key: 'white', label: 'WHITE', blurb: 'Equal energy per Hz. The top octaves dominate (each octave holds twice the frequencies) — bright, hissy.' },
+  { key: 'white', label: 'WHITE', blurb: 'Equal energy per Hz. The top octaves dominate (each octave is twice as wide in Hz as the one below) — bright, hissy.' },
   { key: 'pink', label: 'PINK', blurb: 'Equal energy per OCTAVE — matches how hearing and RTAs divide the spectrum. The most common measuring and tuning noise.' },
   { key: 'brown', label: 'BROWN', blurb: 'Energy falling 6 dB per octave — deep rumble, like distant surf. All weight, no sizzle.' },
   { key: 'blue', label: 'BLUE', blurb: 'Pink’s mirror: energy RISING 3 dB per octave. Thin and airy — mostly a dither/testing curiosity.' },
@@ -662,7 +662,7 @@ export function SignalGenScreen({ navigation }: Props) {
       helpKey: 'frequency',
       render: () => (
         <View style={{ gap: 10 }}>
-          <Text style={styles.subHead}>FINE — ±1 SEMITONE (×2^1/12)</Text>
+          <Text style={styles.subHead}>FINE — ±1 SEMITONE (×2^(1/12))</Text>
           <View style={styles.stepperRow}>
             <Pressable
               style={styles.stepBtn}

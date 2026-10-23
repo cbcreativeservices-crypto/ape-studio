@@ -125,7 +125,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Closer to the speaking mouth, the voice rises by distance while the distant street barely changes: more voice against the background. The omni still hears all round.',
     why: {
       'The omni starts to hear only one side': 'Its pattern does not change: an omni hears every side wherever it is.',
-      'The street gets farther from the mic': 'A few centimetres hardly change the distance to the street; the mouth is what comes closer.',
+      'The street gets farther from the mic': 'A short move hardly changes the distance to the street, which is metres away; the mouth is what comes closer.',
     },
   },
   voiceRatingCheck('b3.set.1', 'the guest'),

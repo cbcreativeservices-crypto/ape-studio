@@ -8,7 +8,7 @@
  *
  * Two sources, two ways of playing: held still (orchestral) and danced. The
  * 30–60 cm range and the wider dance views are the lesson's own trials; the
- * one published number is a general 30 cm floor for percussion.
+ * one published number is a general rule of at least 30 cm from percussion.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, PLAYER_REASON, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, tailSymptom, type MetalWords } from '../shared/metal/metalItems.ts';
@@ -560,15 +560,15 @@ export const I06B_LESSON: Lesson = {
   unknowns: [
     { text: 'The dome (26 mm) and the metal’s thickness — drawing defaults; the sizes are one measured museum pair, not a standard for modern pairs.', dims: ['domeD', 'thick'] },
     { text: 'The held height (1150 mm), the drop (60 mm), the dancer’s hand height (1550 mm), the dance envelope (r 700 mm, 2050 mm high) and the 3 m route — drawing defaults the owner checks.', dims: ['holdH', 'drop', 'danceH', 'danceR', 'danceTop', 'route'] },
-    { text: 'The 30–60 cm starting range and the wider dance views are the lesson’s own trials; the one published number is a general 30 cm floor for percussion. A wearable mic is not a default (the lesson).', dims: [] },
+    { text: 'The 30–60 cm starting range and the wider dance views are the lesson’s own trials; the one published number is a general rule of at least 30 cm from percussion. A wearable mic is not a default (the lesson).', dims: [] },
   ],
   live: {
     wedges: [
       { id: 'wedge', label: 'a floor wedge downstage, facing back toward the player', short: 'WEDGE', p: { x: 1600, y: 0, z: 350 }, lift: 150, faces: { x: -1, y: 0, z: -0.2 }, note: 'On the audience side, behind a mic that faces the cymbals — the case a pattern’s null can help with.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
-      { id: 'side', label: 'a side-fill monitor across the stage', short: 'SIDE FILL', p: { x: 600, y: 0, z: 1700 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Off to the player’s right, roughly beside the mic’s front: no cardioid’s or supercardioid’s null reaches it. Distance and level do the work.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
+      { id: 'side', label: 'a side-fill monitor across the stage', short: 'SIDE FILL', p: { x: 600, y: 0, z: 1700 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Off to the player’s right, out to the mic’s side rather than behind it: no cardioid’s or supercardioid’s null reaches it. Distance and level do the work.', prov: { kind: 'illustrative', reason: 'a typical stage layout' } },
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. There is no single agreed finger-cymbal miking standard: these starting points come from how microphones behave and a general 30 cm floor for percussion, and every pair, player, dance and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one measured pair, a standing player or a dancer on a straight route, the plate’s shapes on a flat disc held at its centre, motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the hands and the route.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. There is no single agreed finger-cymbal miking standard: these starting points come from how microphones behave and a general rule of at least 30 cm from percussion, and every pair, player, dance and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one measured pair, a standing player or a dancer on a straight route, the plate’s shapes on a flat disc held at its centre, motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the hands and the route.',
   copy: { words: metalWords('finger cymbals', 'player') },
 };

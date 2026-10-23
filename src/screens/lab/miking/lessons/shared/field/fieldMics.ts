@@ -91,7 +91,7 @@ export const FIELD_MIC_TYPES = {
     clip: { reach: dd(40, 'a clothing clip’s reach to the capsule') },
     examples: [{ model: 'body-worn miniature omni (generic)', fact: 'SHURE-LAV: "Place the shirt microphone above the sternum" — no distance from the mouth is given (UNKNOWN; the distance is read from the drawing).', src: 'SHURE-LAV' }],
     art: 'lavalier',
-    blurb: 'A tiny omni on a clip, on the chest just above the breastbone — with the wearer’s agreement. It stays the same distance from the mouth however wide the shot, but it moves with the chest, not the head, and it can hear the clothes.',
+    blurb: 'A tiny omni on a clip, on the chest, over the breastbone — with the wearer’s agreement. It stays the same distance from the mouth however wide the shot, but it moves with the chest, not the head, and it can hear the clothes.',
   },
   locPlant: {
     id: 'locPlant',

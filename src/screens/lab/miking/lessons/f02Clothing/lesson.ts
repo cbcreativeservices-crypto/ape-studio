@@ -63,7 +63,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a garment mic and a room mic can sound hollow together, how the arrival-time difference places comb notches, and why a moving garment makes any one alignment only locally true.',
     credit: { scenarios: ['f02.two.1', 'f02.two.2', 'f02.two.3', 'f02.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Two mics hear the cloth at different times. Add the room mic for an interior only if it helps, check the pair in mono over the whole action, move or rebalance first — and keep separate performances apart from simultaneous mics.',
+    takeaway: 'Two mics hear the cloth at different times. Add the room mic for an interior only if it helps, check the pair in mono over the whole action, move or rebalance first. Two separate passes, one after the other, are not the same as two mics open at once.',
   },
   troubleshoot: {
     title: 'Troubleshoot',

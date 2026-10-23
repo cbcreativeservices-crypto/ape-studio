@@ -63,7 +63,7 @@ function F14Sound({ lesson, answers, onAnswered }: PageProps) {
       badge: 'Straight paths at 20 °C · dashed rings = one bounce of the main off the floor and the rear wall · simplified',
       prompt: 'Drag TIME and watch the main, the fill and the sub arrive, then the bounces; change POINT between three seats.',
       looking: 'The venue',
-      note: 'As if every loudspeaker made one click at the same instant. The nearest source arrives first; the floor’s bounce close behind it; the rear wall’s much later at the front. The picture shows the paths and the times, not the levels — the main plays louder than the fill, and the sub only the lows.',
+      note: 'As if every loudspeaker made one click at the same instant. The nearest source arrives first. The main’s floor bounce comes close behind the main; its rear-wall bounce much later at the front. The picture shows the paths and the times, not the levels — the main plays louder than the fill, and the sub only the lows.',
       arrived: 'arrived after',
       pending: 'arrives after',
       subject: 'the venue',

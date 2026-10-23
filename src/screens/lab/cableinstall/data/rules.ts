@@ -476,7 +476,7 @@ export const CI_RULES: CiRule[] = [
     severity: 'info',
     studentText: 'Healthy balanced interconnects with correct shield practice reject most induced noise — routing is the second layer.',
     whyText:
-      'Audio interconnection practice (shield termination, pin-1 handling, bonding) determines how much induced energy becomes audible. Routing distance buys margin; correct interconnection buys immunity.',
+      'Audio interconnection practice (shield termination, pin-1 handling, bonding) determines how much induced energy becomes audible. Routing distance buys margin; correct interconnection rejects most of the rest.',
     sourceRefs: ['aes48', 'tia607'],
   },
 

@@ -545,7 +545,7 @@ export const FAULTS: readonly FaultCase[] = [
     ),
     options: ['The crossover frequency is set far too high in the processor', 'The subwoofer polarity is reversed', 'A vocal send is feeding the subs', 'The amplifier is clipping'],
     correct: 0,
-    explain: 'With crossover-fed subs, the console has no sub send — only the crossover decides what goes where. The processor reading names the number: 400 Hz sends most of the music to the subwoofers.',
+    explain: 'With crossover-fed subs, the console has no sub send — only the crossover decides what goes where. The processor reading names the number: at 400 Hz, the vocals and much of the music go to the subwoofers.',
     fix: 'Set the crossover for these cabinets (typically 80–120 Hz), then re-check level and alignment between subs and tops.',
     forward: 'The console send was cleared first, which turned a “vocals in the subs” symptom into a processor question in one step.',
   },

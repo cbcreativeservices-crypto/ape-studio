@@ -118,7 +118,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A rimshot strikes the head and the rim together. What does the simplified head picture show of it?',
     options: ['The head driven near its edge — not the rim’s own ring', 'Everything: the rim and the head ring as one surface', 'Nothing: a rimshot lands on the rim and misses the head'],
     correct: 'The head driven near its edge — not the rim’s own ring',
-    explain: 'Near the edge the head’s shapes with still lines across it are driven; the metal rim adds its own ring, which this membrane model does not cover.',
+    explain: 'Near the edge the stick drives more of the head’s higher shapes, the ones with still lines across it; the metal rim adds its own ring, which this membrane model does not cover.',
     why: {
       'Everything: the rim and the head ring as one surface': 'The rim is metal and rings on its own; the head model shows only the head.',
       'Nothing: a rimshot lands on the rim and misses the head': 'A rimshot strikes the head and the rim together.',
@@ -778,7 +778,7 @@ export const M04C_LESSON: HandLesson = {
     placeLearn: [
       'What you just did, in words. After our research, each blue zone is a region where we suggest you begin with that kind of mic. We could not find a published timbale distance, so the distances shown are our own rough guides: begin out of every stick path, then listen. Starting points, not rules.',
       'The shell-oriented and above-head starting points differ because they favour different surfaces: a part mostly on heads and rimshots may suit a top mic; a continuous cáscara may need a mic nearer the shells. Change one thing at a time and ask for the whole phrase again.',
-      'Clearance comes first. Stop the player before moving a stand, clamp or cable; keep every mic and boom outside the widest head, rim, shell and accessory strokes, and nothing where it could drop onto the player. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where; recheck after the full-intensity passage.',
+      'Clearance comes first. Stop the player before moving a stand, clamp or cable; keep every mic and boom outside the widest head, rim, shell and accessory strokes, and nothing where it could drop onto the player. Keep-clear areas appear as the mic gets close and show roughly where; if a move is stopped, they turn red and give the reason. Recheck after the full-intensity passage.',
       'A separate percussion overhead — one starting point is a pair about 91–107 cm (3–3½ ft) above the drums — can cover bells and the whole setup when the part needs it. Bring each extra mic in only for a demonstrated need, and check mono.',
     ],
     context: {
@@ -814,7 +814,7 @@ export const M04C_LESSON: HandLesson = {
     pairLearn: [
       'With a pair of spots, each mic may hear both drums and the accessories at different times and levels. Begin with one mic at a realistic level, add the second, and check the complete phrase in mono — watch for thin drum tone, shifted attacks, or a bell that becomes surprisingly prominent.',
       'Move or re-aim a mic first, then compare the polarity switch. Add any overhead, shell or accessory mic one at a time and repeat the check. In stereo, keep the image right for the arrangement — a mono PA may need a centred feed.',
-      'What you just saw: sound reaches two mics at different times; summed, the delayed copy cancels where it is half a period late. Polarity inversion is not a time-alignment control: the notches and peaks swap places; it does not remove the delay. No fixed “correct” polarity exists for every rig.',
+      'What you just saw: sound reaches two mics at different times; summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late. Polarity inversion is not a time-alignment control: the notches and peaks swap places; it does not remove the delay. No fixed “correct” polarity exists for every rig.',
     ],
     pairWarn: 'The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone (1/r) — that does not hold this close to a drumhead, so read the depths as illustrative only. Judge the pair by ear, in mono, at matched levels.',
   },

@@ -457,7 +457,7 @@ const words: MalletWords = {
     stages: [
       { title: 'The mallet lands', text: 'A hard rubber or synthetic mallet lands on the middle of a rosewood bar. The ATTACK is short and bright — the mallet decides much of it.' },
       { title: 'The bar bends and rings', text: 'The bar bends — the middle down, both ends up — and springs back: its lowest shape, drawn far larger than it moves. The cord passes through its two still points.' },
-      { title: 'The air in the tube rings with it', text: 'Under the bar, its tube — open at the top, closed at the bottom, a quarter wavelength long — rings with it. On this model only some sharps and flats have a tube.', byVariant: { concert: 'Under the bar, its tube — open at the top, closed at the bottom, a quarter wavelength long — rings with it. On this model every bar has one.' } },
+      { title: 'The air in the tube rings with it', text: 'Under the bar, its tube — open at the top, closed at the bottom, a quarter wavelength long — rings with it. On this model every natural has a tube, but only some sharps and flats do.', byVariant: { concert: 'Under the bar, its tube — open at the top, closed at the bottom, a quarter wavelength long — rings with it. On this model every bar has one.' } },
       { title: 'Sound leaves — up and out', text: 'Sound leaves the bar and the tube’s mouth, up and out. A xylophone note is short and bright, and sounds an octave above the written note.' },
     ],
     cells: [
@@ -476,7 +476,7 @@ const words: MalletWords = {
     tube: {
       intro: 'Open under the bar, closed at the bottom: the tube rings at the note whose quarter wavelength fits it — about {len} here. The highest notes need tubes only a few centimetres long.',
       visible: 'The air moves most at the open mouth and presses most at the closed end.',
-      noTube: 'No tube under this bar: on this model only the sharps and flats that need one have a tube.',
+      noTube: 'No tube under this bar: on this model every natural has a tube, but only some sharps and flats do.',
     },
   },
   two: {

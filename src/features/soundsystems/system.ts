@@ -235,10 +235,10 @@ function mismatchReason(fromKind: GearKind, toKind: GearKind, emits: readonly Si
   const from = gearSpec(fromKind);
   const to = gearSpec(toKind);
   if (emits.every((l) => l === 'mic') && accepts.includes('line') && !accepts.includes('mic')) {
-    return `${from.name} is MIC LEVEL — roughly 40–60 dB, hundreds of times in voltage, too small for ${to.name}. It needs a preamp first: route it through the console or a stagebox (some powered loudspeakers carry a mic input — a preamp inside the box).`;
+    return `${from.name} is MIC LEVEL — roughly 40–60 dB below line level, about 100 to 1,000 times smaller in voltage, too small for ${to.name}. It needs a preamp first: route it through the console or a stagebox (some powered loudspeakers carry a mic input — a preamp inside the box).`;
   }
   if (accepts.every((l) => l === 'speaker')) {
-    return `${to.name} is passive — it needs a POWER AMPLIFIER between ${from.name} and the cabinet. Line level moves no cone.`;
+    return `${to.name} is passive — it needs a POWER AMPLIFIER between ${from.name} and the cabinet. Line level is far too weak to drive a cone.`;
   }
   if (accepts.every((l) => l === 'wireless')) {
     return `${to.name} only listens to its transmitter. Feed the in-ear transmitter, and it feeds the pack.`;

@@ -79,7 +79,7 @@ const COLORS: { key: NoiseColor; label: string; mode: number; slope: number }[] 
 const COLOR_CHARACTER: Record<NoiseColor, string> = {
   white: 'Equal energy per Hz — sounds bright because every higher octave holds twice the bandwidth. The untilted reference.',
   pink: 'Equal energy per OCTAVE — roughly matches how we hear. The mixing and measurement reference.',
-  brown: 'Energy doubling toward the bottom — rumble, surf, distant thunder.',
+  brown: 'Energy piles up toward the bottom — 6 dB more per Hz for every octave down: rumble, surf, distant thunder.',
   // Plain RPDF/TPDF dither is FLAT (white). Only NOISE-SHAPED dither is
     // high-frequency weighted — and the Digital lab teaches exactly that
     // (digital/vizQuant.tsx:386), so this line contradicted it.
@@ -112,7 +112,7 @@ function noiseGuardSentence(): string {
   if (nativeHpfActive()) {
     return (
       `the engine's built-in ${SPEAKER_HPF_HZ} Hz high-pass removes that sub-bass before it ` +
-      'reaches the driver, so every colour plays at the same level'
+      'reaches the driver, so no colour needs its level cut'
     );
   }
   const cuts = Object.entries(NOISE_GUARD_DB)

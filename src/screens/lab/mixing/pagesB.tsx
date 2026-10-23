@@ -132,7 +132,7 @@ function PageSubtractive({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>When a mix fights you, the strongest question is rarely “what do I ADD?” It is “what can I take away?” Subtraction is a decision philosophy — and each move works on one of the five dimensions: level on balance, frequency on frequency, space on depth, automation on movement.</Lead>
+      <Lead>When a mix fights you, the strongest question is rarely “what do I ADD?” It is “what can I take away?” Subtraction is a decision philosophy — and each move works on one of the five dimensions — for example, level on balance, frequency on frequency, space on depth, automation on movement.</Lead>
       <Card>
         <Eyebrow>SIX WAYS TO SUBTRACT</Eyebrow>
         <ConceptList
@@ -253,7 +253,7 @@ function PagePanning({ ctx }: { ctx: PageCtx }) {
         correct={1}
         explain="Low frequencies carry most of a mix’s energy. Push that energy to one side and the whole image leans; fold to mono and off-centre low end shifts level. Centre keeps the spine stable everywhere."
         wrong={[
-          'Some old consoles were odd, but the reason survives every modern DAW — it is physics and playback, not nostalgia.',
+          'Consoles could pan low end fine; the real old reason was vinyl, where bass on one side could make the cutting stylus jump. The reason still holds in every modern DAW — it is physics and playback, not nostalgia.',
           undefined,
           'They CAN be panned — pan is just level between speakers. It is a bad idea for the spine, not an impossibility.',
           'The vocal sits at centre WITH them — the sides are for supports, not for the spine.',

@@ -138,7 +138,7 @@ function PageCheckFinish({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>RUN ONE NOW</Eyebrow>
-        <AbPlayer pb={pb} variants={variants} onPick={(id) => setMono(id === 'mono')} note="The demo balance, stereo and folded — matched. On your own mixes this fold is where panned parts quietly disappear." />
+        <AbPlayer pb={pb} variants={variants} onPick={(id) => setMono(id === 'mono')} note="The demo balance, stereo and folded — matched. On your own mixes this fold is where hard-panned parts get quieter and wide, out-of-phase effects can vanish." />
         <MixMapArt settings={AUTO_BASE} mono={mono} title={mono ? 'THE MIX · FOLDED TO MONO' : 'THE MIX · STEREO'} state={mono ? 'MONO FOLD' : 'STEREO'} />
       </Card>
       <UnderstandingCheck

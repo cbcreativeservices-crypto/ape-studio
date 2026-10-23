@@ -106,7 +106,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Upright, where might a jazz player ride a large China?',
     options: ['The side of the shoulder, about an inch above the valley', 'The very centre of the cup, with the stick’s shoulder', 'Underneath the lip, reaching up from below the plate'],
     correct: 'The side of the shoulder, about an inch above the valley',
-    explain: 'One jazz drummer rides where the shoulder comes down into the valley, about an inch above it: the side of the shoulder rides with a controlled sound.',
+    explain: 'Some jazz players ride where the shoulder comes down into the valley, about an inch above it: the side of the shoulder gives a controlled ride sound.',
     why: {
       'The very centre of the cup, with the stick’s shoulder': 'The cup gives hard accents. Riding is done on the shoulder, or lightly out at the edge.',
       'Underneath the lip, reaching up from below the plate': 'The stick plays the top face. The shoulder, above the valley, is the ride spot.',

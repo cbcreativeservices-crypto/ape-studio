@@ -152,7 +152,7 @@ const B01Setting = makeBroadcastSetting({
       },
       points: [
         { title: 'DIFFERENT DESTINATIONS', text: 'A remote guest’s return, the producer’s talkback, the headphones, the stream and the recorder are different destinations. Label and check each route before the show.' },
-        { title: 'HEADPHONES, NOT A LOUDSPEAKER', text: 'Hear the program on headphones: a loudspeaker near an open mic sends it back into the mic. On a live show the PA is placed by its design, and unused mics stay closed.' },
+        { title: 'HEADPHONES, NOT A LOUDSPEAKER', text: 'Hear the program on headphones: a loudspeaker near an open mic sends it back into the mic. On a live show the PA goes where the system design puts it, and unused mics stay closed.' },
       ],
     }),
 });

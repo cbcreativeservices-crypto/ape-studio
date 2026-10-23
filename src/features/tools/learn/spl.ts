@@ -59,7 +59,7 @@ export const SPL_LEARN: ToolLearnContent = {
     {
       claim: 'Weighting is just a display option — the level is the level.',
       truth:
-        'Weighting is a filter applied before the level is computed, so it changes the measured number itself. A-weighting can read tens of dB below C-weighting on bass-heavy material because it discards most low-frequency energy. Any SPL figure is incomplete without its weighting stated — 95 dB(A) and 95 dB(C) describe different acoustic events.',
+        'Weighting is a filter applied before the level is computed, so it changes the measured number itself. On bass-heavy music, A-weighting can read 10 to 20 dB or more below C-weighting, because it discards most low-frequency energy. Any SPL figure is incomplete without its weighting stated — 95 dB(A) and 95 dB(C) describe different acoustic events.',
     },
     {
       claim: 'Fast mode is more accurate than Slow mode.',

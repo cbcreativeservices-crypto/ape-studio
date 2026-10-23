@@ -44,7 +44,7 @@ export const TIMP_COPY: LessonCopy = {
     reveal: 'Struck off-centre, the head goes down where the mallet lands and up on the far side — a see-saw. The air under it is shoved across the bowl rather than squeezed.',
     after: 'Then the head keeps ringing in its pitched shapes — the note. How long, and how bright, depends on the mallet, the strike point, the tuning and any damping: all the timpanist’s choices.',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. A centre strike drives only the ring-shaped ones — on a timpani that means more thud and less of the note; a third of the way in from the hoop drives the pitched shapes well.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. A centre strike drives only the ring-shaped ones, the lowest shape among them — on a timpani that means more thud and less of the note; a third of the way in from the hoop drives the pitched shapes well.',
       'This picture uses the head’s ideal shapes; the ratios are a timpani’s, with the bowl’s air included. A real drum, its head and its tuning move them a little.',
     ],
     coupledSubject: 'Side view of one timpano, cut open',
@@ -82,7 +82,7 @@ export const TIMP_COPY: LessonCopy = {
       },
     },
     shapeWords: {
-      lowest: 'This is the (1,1) shape — the timpani’s NOTE. The other shapes are measured against it: with the air the head moves, the main ones fall near 1.5, 2 and 2.5 times it — the 2 : 3 : 4 : 5 steps of a harmonic series, which is why a timpani sounds pitched.',
+      lowest: 'This is the (1,1) shape — the timpani’s NOTE. The other shapes are measured against it: with the air the head moves, the main ones fall near 1.5, 2 and 2.5 times it. Counting the note, 1 : 1.5 : 2 : 2.5 is 2 : 3 : 4 : 5 — steps of a harmonic series, which is why a timpani sounds pitched.',
       other: 'On a timpani this shape sits at {ratio} times the note’s (1,1) shape. The air the head moves, in the bowl and above it, pulls the main shapes toward near-whole-number steps from the note; the ring-shaped (0,1) sits just below the note and dies away fast.',
       ratioSub: 'vs (1,1)',
       badge: 'A simplified picture: ideal shapes, with a timpani’s ratios (the air’s effect included) · blue + toward you, amber − away',
@@ -126,7 +126,7 @@ export const TIMP_COPY: LessonCopy = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin: a shared spot about 1 m above the heads between two drums (one for each pair in a set of four), or a closer spot on the conductor’s side of one drum. They are starting points, not rules: move from there and listen — there is no single right answer, and every set, player and hall is different.',
       separate: 'Height, distance and angle are separate variables: change one at a time, with the whole passage. The number of drums is not a required number of mics — scale up only if the music needs it.',
-      clearance: 'Clearance comes first. Have the timpanist show the mallets’ full sweep, the reach between drums, the pedal changes and their sightline to the conductor before anything is placed. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room on a real stage.',
+      clearance: 'Clearance comes first. Have the timpanist show the mallets’ full sweep, the reach between drums, the pedal changes and their sightline to the conductor before anything is placed. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real stage.',
       tendencies: 'A shared spot farther up hears more of both drums and of the hall; a closer spot hears more attack and a smaller part of a large head, and may miss the note’s full bloom. Aiming near the rim never means putting hardware in the playing area. All tendencies to check by ear.',
     },
   },

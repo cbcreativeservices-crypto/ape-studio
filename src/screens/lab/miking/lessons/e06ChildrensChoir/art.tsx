@@ -65,7 +65,7 @@ const SPEC = ensembleHandSpec({
     placeBadge: 'Blue = suggested starting points · from above only · pinch to zoom',
     clearance: 'Clearance comes first: the children’s feet, the way out, the cable routes — and nothing over their heads. Stop the group before moving any stand.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. An area mic aimed at the children turns its back toward the hall — turn it, or try a tighter pattern, until the low monitor sits in its rejection.',
-    sourceNote: 'What you just saw: a voice reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay.',
+    sourceNote: 'What you just saw: a voice reaches the two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay.',
   },
 });
 

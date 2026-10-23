@@ -75,7 +75,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     limitations: [
       'Smaller contacts than 1/4-inch; worn or dirty jacks cause intermittents',
       'A patch point tells you nothing about what is wired behind it — the bay label and wiring chart do',
-      'Normalled bays pass signal with no cable inserted; a plug in the bottom (input) jack breaks that path, while on a half-normalled bay a plug in the top jack only takes a copy',
+      'Normalled bays pass signal with no cable inserted; a plug in the bottom (input) jack breaks that path. On most half-normalled bays a plug in the top jack only takes a copy; some break on the top jack, so check the chart',
     ],
     commonMistakes: [
       'Assuming a TT plug and a 1/4-inch plug are the same connector at different ages — they are different sizes',
@@ -170,7 +170,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
     commonMistakes: [
       'Treating every 1/4-inch jack as the same job — a patch point, an instrument input, and an insert jack all use the same shell',
       'Using a standard TRS plug in an older long-frame bay because it "sort of fits"',
-      'Forgetting that a plug in a normalled point can break the built-in signal path (on a half-normalled bay, only the bottom jack does)',
+      'Forgetting that a plug in a normalled point can break the built-in signal path (on most half-normalled bays only the bottom jack does; some break on the top)',
     ],
     notInterchangeableWith: [
       {

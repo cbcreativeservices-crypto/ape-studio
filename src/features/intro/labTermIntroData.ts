@@ -316,7 +316,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Phase",
     term: "Phase",
     plainEnglish:
-      "Phase is where a wave is in its up-and-down cycle compared to another wave. When two copies line up (in phase) they add together. When one is half a cycle behind (180 degrees) they cancel. Phase drives comb filtering, mono compatibility, and speaker alignment.",
+      "Phase is where a wave is in its up-and-down cycle compared to another wave. When two copies line up (in phase) they add together. When two equal sine waves are half a cycle apart (180 degrees) they cancel. Phase drives comb filtering, mono compatibility, and speaker alignment.",
     glossaryId: "a3004045-dce0-4e6d-9a51-f1149c4584a3",
   },
   OscillatorLab: {
@@ -340,7 +340,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Harmonics",
     term: "Harmonics",
     plainEnglish:
-      "Harmonics are extra tones that sit above a note's main pitch. Their pitches are simple multiples of that main pitch. The mix of harmonics gives each instrument its own tone color. A flute and a guitar differ because their harmonics differ.",
+      "Harmonics are extra tones that sit above a note's main pitch. Their frequencies are whole-number multiples of the main note's frequency. The mix of harmonics gives each instrument its own tone color. A flute and a guitar differ because their harmonics differ.",
     glossaryId: "1a3d423e-5d58-4039-88da-8b2d6cd8e6b1",
   },
   FmLab: {

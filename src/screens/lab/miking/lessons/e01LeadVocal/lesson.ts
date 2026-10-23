@@ -186,8 +186,8 @@ const scenarios: MikingScenario[] = [
     id: 'lv.mic.3',
     page: 'microphone',
     prompt: 'A singer belts hard rock and the studio condenser sounds harsh. A fair idea to try?',
-    options: ['Audition a dynamic, a type made for loud voices', 'Turn the condenser to face away from the singer', 'Add a second condenser to smooth the sound'],
-    correct: 'Audition a dynamic, a type made for loud voices',
+    options: ['Audition a dynamic, a type often used for loud voices', 'Turn the condenser to face away from the singer', 'Add a second condenser to smooth the sound'],
+    correct: 'Audition a dynamic, a type often used for loud voices',
     explain: 'A dynamic is often a good choice for aggressive rock, metal or rap, or a voice whose highs turn hard. Audition it with the real performance, at matched level.',
     why: {
       'Turn the condenser to face away from the singer': 'A mic facing away hears the room, not a better voice.',

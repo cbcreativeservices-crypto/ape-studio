@@ -122,7 +122,7 @@ export const WORKFLOW_TEMPLATES: Workflow[] = [
   ]),
   tpl('room-survey', 'Room Acoustics Survey', 'RT60, then critical distance and the direct-to-reverberant ratio.', [
     { workspaceId: 'sabine', fnKey: 'rtFromVA', note: 'Estimate RT60 for the room.' },
-    { workspaceId: 'critdist', fnKey: 'dc', note: 'Critical distance from RT60 and source directivity.' },
+    { workspaceId: 'critdist', fnKey: 'dc', note: 'Critical distance from room volume, RT60 and source directivity.' },
     { workspaceId: 'critdist', fnKey: 'drr', note: 'Direct-to-reverberant ratio at the listener.' },
   ]),
   tpl('bass-boundaries', 'Bass & Boundaries', 'Axial modes, boundary cancellations, and the Schroeder transition.', [
@@ -159,7 +159,7 @@ export const WORKFLOW_TEMPLATES: Workflow[] = [
   ]),
   tpl('stereo-mic', 'Stereo Mic Setup', 'Arrival delay & comb null, then the 3:1 spacing rule.', [
     { workspaceId: 'stereomic', fnKey: 'pathDelay', note: 'Arrival delay and the first mono comb null.' },
-    { workspaceId: 'stereomic', fnKey: 'threeToOne', note: 'Minimum spacing to keep bleed clean in mono.' },
+    { workspaceId: 'stereomic', fnKey: 'threeToOne', note: '3:1 spacing for two mics on different sources, so bleed stays clean in mono.' },
   ]),
   tpl('network-audio', 'Network Audio Link', 'Raw audio bandwidth, then the on-the-wire packet rate.', [
     { workspaceId: 'netaudio', fnKey: 'bandwidth', note: 'Raw channels × sample rate × bit depth.' },

@@ -91,7 +91,7 @@ function useBellows(_p: PageProps): MikingStep {
         <Card>
           <Point title="TWO SIDES, ONE MOVING">{`Both sides sound: the treble reeds through the grille, the bass reeds through the bass side. The bass side moves with every push and pull — so this mic is now ${fmtLen(dBass)} from it, and the treble side’s sound reaches it ${fmtMs(Math.abs(dt))} ${dt >= 0 ? 'after' : 'before'} the bass side’s.`}</Point>
         </Card>
-        <Note>On a piano accordion a key gives the same note on the push and the pull; on a diatonic button accordion the note changes with the direction. Either way, each note has a pair of reeds: one sounds on the push, the other on the pull — and the bellows are the air source, not a place to point a mic into.</Note>
+        <Note>On a piano accordion a key gives the same note on the push and the pull; on a diatonic button accordion the note changes with the direction. Either way, each key or button has a pair of reeds: one sounds on the push, the other on the pull — and the bellows are the air source, not a place to point a mic into.</Note>
         {moved ? <Note tone="ok">The treble side stayed put; the bass side moved — so a fixed mic’s distance, its level and the timing between the two sides all change through the phrase. A fixed delay or polarity setting cannot follow that.</Note> : null}
       </>
     ),
@@ -215,7 +215,7 @@ const HAND: HandSpec = {
     placeBadge: 'Blue = suggested starting points · grey dashes = the bellows’ travel and the player · pinch to zoom',
     clearance: 'Clearance comes first: the bellows’ whole travel — opening and closing, the lower arc most — the hands, the straps, the elbows and, seated, the chair’s turn. No stand leg or cable in that path; slack for the full cycle.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind (180°). A mic facing the accordion turns its back toward the audience side — where a floor wedge often sits. The side-fill on the bass side sits off to its side: no null reaches it.',
-    sourceNote: 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE and the BELLOWS: each side, at each moment of the cycle, gives its own delay.',
+    sourceNote: 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE and the BELLOWS: each side, at each moment of the cycle, gives its own delay.',
   },
 };
 

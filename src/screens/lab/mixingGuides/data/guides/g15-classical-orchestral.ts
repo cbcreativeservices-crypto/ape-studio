@@ -19,7 +19,7 @@ export const GUIDE: MixingGuide = {
   "expects": "They expect the sound of real acoustic instruments in a real room: rich strings, woodwinds placed behind them, brass and timpani with weight but not glare.",
   "glance": {
     "origin": "Europe, from the Baroque (c. 1600–1750) through the Classical and Romantic eras to today; the modern symphony orchestra took shape in 18th–19th century Vienna, Germany, France and Italy",
-    "tempo": "No fixed BPM: free, conductor-led tempos from about 40 (largo) to 180+ (presto), with constant rubato (flexible, push-pull tempo)",
+    "tempo": "No fixed BPM: free, conductor-led tempos from about 40 (largo) to 180+ (presto), often with rubato (flexible, push-pull tempo)",
     "ensemble": "Chamber groups of 2–10; chamber orchestra 15–40; full symphony orchestra 60–100+, sometimes plus chorus and soloists",
     "priority": "A natural, believable picture of the ensemble in its hall: the conductor’s balance, true timbre and full dynamic range",
     "liveSpl": "Unamplified halls: about 65–80 dBA Leq in the audience, fortissimo (very loud) peaks near 95–100 dBA. Amplified outdoor concerts: usually 75–88 dBA Leq, kept close to acoustic level",
@@ -318,7 +318,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Balance with spot mics turned down until you just notice them missing, then stop.",
+      "text": "Bring each spot mic down until you just notice it missing, then raise it a touch and stop.",
       "bullet": true
     },
     {

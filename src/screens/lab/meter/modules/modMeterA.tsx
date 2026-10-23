@@ -571,7 +571,7 @@ export function PeakModule(p: MeterModuleProps) {
           <Text style={dstyles.eyebrow}>WHAT PEAK CANNOT TELL YOU — PREVIEW OF MODULE 3</Text>
           <Text style={dstyles.body}>
             Set KICK and ORGAN to the same peak and look at RMS: the meter face is
-            identical while the average energy differs by the CREST readout — more than 10 dB. Peak is
+            identical, but the average energy differs by the gap between their CREST readouts — more than 10 dB. Peak is
             the converter's bodyguard, not a loudness meter. The next module puts a 300 ms needle on
             the same signals and makes that difference physical.
           </Text>

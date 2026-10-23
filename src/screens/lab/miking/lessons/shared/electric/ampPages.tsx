@@ -1215,7 +1215,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
               <Body>{`The DI reaches the desk at once; the mic hears the speaker only after the sound crosses the air — about ${fmtMs(dt).replace('≈ ', '')} here. Every centimetre the mic moves back adds about 0.03 ms. Flipping the DI's polarity changes where the notches fall, not that delay.`}</Body>
             )}
             {predicted != null && (flips.toInv || flips.toNorm) ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: the notches and peaks swap places, but the delay stays.`}</Note> : null}
-            {!rearMode ? <Note>Whether the amp and speaker invert the signal is not known for any real amp from here — so try BOTH polarity settings by ear, in mono, and keep the fuller one. In a fixed studio setup the DI can also be delayed to line up; no single delay or polarity fixes every frequency.</Note> : null}
+            {!rearMode ? <Note>This lab cannot tell whether your amp and speaker flip the signal — so try BOTH polarity settings by ear, in mono, and keep the fuller one. In a fixed studio setup the DI can also be delayed to line up; no single delay or polarity fixes every frequency.</Note> : null}
             <Note tone="warn">{rearMode ? 'Each mic really hears its own side of the cone AND the room, so this graph shows only the shared part. Judge it by ear, in mono, at matched levels.' : 'A real DI and mic differ in more than delay: the amp, the speaker and the room shape the mic’s sound. This graph shows only the shared part — judge the blend by ear, in mono, at matched levels.'}</Note>
           </>
         ),

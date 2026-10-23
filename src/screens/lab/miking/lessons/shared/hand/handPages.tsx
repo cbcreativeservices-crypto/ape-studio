@@ -663,7 +663,7 @@ function HandContext(spec: HandSpec) {
             {isDeepNull(db) ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and often least at low frequencies. Use the null to aim, not to promise silence.</Note> : null}
             {tried ? (
               pattern === 'cardioid' ? (
-                <Note tone="ok">{spec.words?.cardioidTried ?? 'What you just saw: a cardioid rejects most directly behind (180°). A mic aimed down at a drum points its back UP and away — a floor wedge often sits below that.'}</Note>
+                <Note tone="ok">{spec.words?.cardioidTried ?? 'What you just saw: a cardioid rejects most directly behind (180°). A mic aimed down at a drum points its back up and away; a floor wedge often sits below that line, outside the null, so angle the mic in from the wedge side.'}</Note>
               ) : (
                 <Note tone="ok">{`What you just saw: a ${pattern} rejects most at ≈ ${Math.round(nulls[0])}° — toward the rear but OFF the axis — and picks up a little directly behind (${fmtDb(gainDb(pattern, 180))}). Check the real pattern of the mic in use before you place the wedge.`}</Note>
               )
@@ -826,7 +826,7 @@ function HandTwoMic(spec: HandSpec) {
             {T.learn.map((p, i) => (
               <Body key={i}>{p}</Body>
             ))}
-            <Note>{spec.words?.sourceNote ?? 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Flipping polarity swaps the notches and peaks; it does not remove the delay. Change the SOURCE: each part of the drum gives its own delay, so no single setting suits every stroke.'}</Note>
+            <Note>{spec.words?.sourceNote ?? 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Flipping polarity swaps the notches and peaks; it does not remove the delay. Change the SOURCE: each part of the drum gives its own delay, so no single setting suits every stroke.'}</Note>
           </>
         ),
       },

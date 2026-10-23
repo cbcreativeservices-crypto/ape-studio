@@ -65,7 +65,7 @@ const pages: LessonPages = {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
     credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all eight symptoms (a retry is explained, never penalised).' },
-    takeaway: 'Move the mic, or try the other grille, before reaching for EQ. A rattle, a shock, a hot smell, or hum that new cables do not cure is not a mic problem: stop, and involve the owner or a technician.',
+    takeaway: 'Move the mic, or try the other grille, before reaching for EQ. A rattle, a shock, a hot smell, or hum that new cables and the DI’s ground lift do not cure is not a mic problem: stop, and involve the owner or a technician.',
   },
   practice: {
     title: 'Practice',

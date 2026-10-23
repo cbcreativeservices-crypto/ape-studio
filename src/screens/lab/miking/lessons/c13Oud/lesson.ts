@@ -203,7 +203,7 @@ const scenarios: MikingScenario[] = [
     correct: 'We found no oud research that gives one: try it by ear in a good room',
     explain: 'The oud-specific starting points are close-in ones. Farther back is worth trying where the room is pleasing and quiet — move back from the first start and listen for the oud and the room together.',
     why: {
-      'The oud is too quiet to be miked from farther away': 'It can be — in a quiet, pleasing room. There is simply no researched distance to give.',
+      'The oud is too quiet to be miked from farther away': 'It can be miked from farther back, in a quiet, pleasing room. There is simply no researched distance to give.',
       'A far mic sounds much the same wherever in the room it is placed': 'Distance and the room change the sound a lot; that is why it is tried by ear.',
     },
   },
@@ -430,7 +430,7 @@ export const C13_LESSON: Lesson = {
   ],
   sound: {
     stages: [
-      { title: 'The risha plucks', text: 'The risha pulls a course aside and lets it go — near the bridge, over the small roses. That release is where the ATTACK, the click at the start of the note, begins.' },
+      { title: 'The risha plucks', text: 'The risha pulls a course aside and lets it go — near the bridge, level with the small roses. That release is where the ATTACK, the click at the start of the note, begins.' },
       { title: 'The string swings', text: 'Released, the string swings between its two still ends — the bridge and the nut, or the finger on the fretless neck. Its lowest shape is drawn here many times larger than it really moves.' },
       { title: 'The bridge drives the face', text: 'Each swing tugs at the bridge, so it rocks and drives the thin face. The face moves the air — the air inside the bowl too.' },
       { title: 'Sound leaves', text: 'Sound leaves from the face round the bridge and through the three rosettes, where the bowl’s air breathes in and out. The ringing that follows is the BODY of the note — the bloom.' },

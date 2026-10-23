@@ -167,7 +167,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'pb.mic.1',
     page: 'microphone',
-    prompt: 'You want the whole pass at a steady, even pickup. A fair first choice?',
+    prompt: 'You want an even pickup pattern across the whole pass. A fair first choice?',
     options: ['A fixed omni beside the path', 'A narrow shotgun aimed at one spot', 'A figure-8 with its side to the path'],
     correct: 'A fixed omni beside the path',
     explain: 'An omni hears about equally all round: the level follows distance alone, with no off-axis change. A directional mic aimed at the crossing is the other fair choice.',
@@ -194,7 +194,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A tracked shotgun follows the walker. What tends to change?',
     options: ['It holds the walker; handling can creep in', 'It adds a Doppler shift of its very own', 'It turns the pass into a real stereo image'],
     correct: 'It holds the walker; handling can creep in',
-    explain: 'Kept on its axis, the walker stays present: the level follows distance alone, with no off-axis fall, and handling or off-axis colour can creep in.',
+    explain: 'Kept on its axis, the walker stays present: the level follows distance alone, with no off-axis fall; handling noise can creep in, and off-axis colour if the aim lags.',
     why: {
       'It adds a Doppler shift of its very own': 'The operator turns but does not travel: no added pitch shift.',
       'It turns the pass into a real stereo image': 'One tracked mic is still mono: the mix decides where it sits.',
@@ -489,7 +489,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'An X/Y pair 3 m from the path’s line, outside the envelope', ok: true, power: 'phantom', feedback: 'A suggested starting point: the walker crosses the image and the pair holds in mono.' },
       { id: 'b', label: 'An M/S pair at the same spot, Mid and Side labelled', ok: true, power: 'phantom', feedback: 'A fair choice: decoded, it crosses the image; in mono the Mid remains.' },
       { id: 'c', label: 'A stand at the path’s edge, its cable across the path', ok: false, power: 'phantom', feedback: 'The cable across the path is a trip hazard; route it away.' },
-      { id: 'd', label: 'Spaced omnis 4 m apart either side of the path', ok: false, power: 'phantom', feedback: 'One would be across the path — and wide spacing combs in mono.' },
+      { id: 'd', label: 'Spaced omnis 4 m apart either side of the path', ok: false, power: 'phantom', feedback: 'One mic sits on the far side, so its cable crosses the path — and wide spacing combs in mono.' },
       { id: 'e', label: 'A tracked shotgun, the operator walking alongside', ok: false, power: 'phantom', feedback: 'The operator stays at a fixed station — and the brief asked for a stationary viewer.' },
     ],
     reasons: [
@@ -625,7 +625,7 @@ export const F08_LESSON: Lesson = {
       { id: 'env', label: 'the path’s envelope', short: 'ENVELOPE', note: 'Nothing and nobody inside the path, its deviation or its stopping room.', prov: { kind: 'sourced', src: 'LESSON-F08', quote: 'Keep microphones, stands, crew and cables outside active traffic and travel paths, including the subject’s possible deviation and stopping area (L37)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'traffic', label: 'traffic', short: 'TRAFFIC', note: 'Never on an active roadway; a stand or a cone is not traffic control.', prov: { kind: 'sourced', src: 'OSHA-WZ', quote: 'workers are exposed to hazards from passing motor vehicle traffic' }, tag: 'SAFETY', scene: 'all' },
     ],
-    stage: 'LIVE: a fixed, safe array on a predictable route, only the needed channels routed, gain checked before feedback.',
+    stage: 'LIVE: a fixed, safe array on a predictable route, only the needed channels routed, and the gain before feedback checked.',
     studio: 'FILM: the whole pass, its perspective named — fixed, tracked or separate positions.',
   },
   diagnostic,

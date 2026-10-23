@@ -201,7 +201,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A short hypercardioid, at the same distance',
     explain: 'Indoors, reflections reach a shotgun from all round; a short directional mic with a smoother off-axis sound often does as well or better. Compare the two at the same distance.',
     why: {
-      'A longer shotgun, so the room drops away more': 'A longer tube narrows down to somewhat lower pitches, not the lows; it does not make reflections drop away indoors.',
+      'A longer shotgun, so the room drops away more': 'A longer tube stays narrow down to somewhat lower frequencies, but not in the lows; it does not make reflections drop away indoors.',
       'An omni, for a more focused voice': 'An omni hears the room from every side — the opposite of focus.',
     },
   },
@@ -401,7 +401,7 @@ const symptoms: Symptom[] = [
     explain: 'Distance decides the voice against the room. Close the gap the frame allows; if the shot is too wide for that, the body mic takes over those moments.',
     why: {
       'Turn the boom channel up in the mix': 'Gain raises the room as much as the voice.',
-      'Swap it for a longer shotgun from farther': 'A longer tube narrows down to somewhat lower pitches, not the lows; it does not reach farther.',
+      'Swap it for a longer shotgun from farther': 'A longer tube stays narrow down to somewhat lower frequencies, but not in the lows; it does not reach farther.',
     },
   },
   {

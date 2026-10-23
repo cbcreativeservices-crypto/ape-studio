@@ -92,7 +92,7 @@ export const CLV_COPY: LessonCopy = spCopy({
     learn: {
       intro: 'What you just did, in words. After our research, a mic about 30–60 cm (1–2 ft) from the middle of the striking area, aimed at it, is where we suggest you begin; one general tip for percussion is a gap of about 30 cm or more. Starting points, not rules.',
       separate: 'Distance, height and angle are separate variables: change one at a time, with both hands moving. If the player changes the grip, the mic may need reassessing.',
-      clearance: 'Clearance comes first: never between the sticks, outside the striker’s whole path. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
+      clearance: 'Clearance comes first: never between the sticks, outside the striker’s whole path. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason.',
       tendencies: 'A sharp click with little wood? Compare the grip and the pair first, then a little more distance or another safe angle. Buried by the room? Closer — outside both hands. All tendencies to check by ear.',
     },
   },
@@ -107,7 +107,7 @@ export const CLV_COPY: LessonCopy = spCopy({
       { title: 'A PREDICTABLE STATION', text: 'A playing spot where the player can hold the supported clave naturally and strike it safely — and a directional stand mic near it, checked against the full band.' },
       { title: 'SHARED OR DEDICATED', text: 'One mic can serve claves and other hand percussion when positions and levels suit; a spot is justified when the pulse matters and other mics miss it.' },
       { title: 'A SINGER WITH CLAVES', text: 'The vocal mic hears the click too; a second channel does not remove that vocal-mic spill.' },
-      { title: 'NOT ENOUGH SEPARATION', text: 'Raising the clave channel raises the cymbals and monitors in it. Move the player or mic, lower the stage, or choose a more projecting pair — or say it cannot be done.' },
+      { title: 'NOT ENOUGH SEPARATION', text: 'Raising the clave channel raises the cymbals and monitors in it. Move the player or mic, lower the stage volume, or choose a more projecting pair — or say it cannot be done.' },
     ],
   },
   twoMic: {
@@ -116,7 +116,7 @@ export const CLV_COPY: LessonCopy = spCopy({
     B: 'clv.above.solid',
     learn: [
       'A common situation: a clave spot and the main or percussion mic that hears it too. The same strike arrives at different times — unwanted colouring can result.',
-      'Listen to both channels together and in MONO; adjust the physical position, the balance or the need for the spot rather than reaching for a mandatory polarity switch.',
+      'Listen to both channels together and in MONO; adjust the physical position, the balance or the need for the spot. Do not assume a polarity flip is the fix.',
     ],
   },
   facing: 'facing the striking area',

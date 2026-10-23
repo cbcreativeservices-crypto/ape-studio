@@ -94,7 +94,7 @@ function useFrameStep(): MikingStep {
         setSeen((prev) => (prev.has(s) ? prev : new Set([...prev, s])));
       },
       sticky: true,
-      options: SHOT_IDS.map((s) => ({ id: s, label: `${SHOTS[s].label} — ${SHOTS[s].words}`, blurb: s === 'wide' ? 'Room above the head grows: the boom backs off.' : s === 'close' ? 'Little headroom: the boom can come closest.' : 'The talker to the waist.' })),
+      options: SHOT_IDS.map((s) => ({ id: s, label: `${SHOTS[s].label} — ${SHOTS[s].words}`, blurb: s === 'wide' ? 'Room above the head grows: the boom backs off.' : s === 'close' ? 'Little space above the head: the boom can come closest.' : 'The talker to the waist.' })),
     },
   ];
   const bezel: BezelItem[] = [

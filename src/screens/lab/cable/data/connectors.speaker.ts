@@ -114,7 +114,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
         otherName: '4-pole speakON-style connector',
         why: '2-pole cable connectors can mate with 4-pole chassis connectors, engaging circuit 1 only.',
         consequence:
-          'On a line that uses circuit 2 (bi-amp or dual-channel), everything wired to 2+/2− is simply absent — missing output. But if the cabinet is switched to bi-amp mode, circuit 1 feeds one driver section directly with no crossover in the way, and a full-range feed onto a high-frequency section can damage it. Fitting is not proof the whole connection is made — or that the right band reaches the right section. Verify the cabinet’s mode and circuit assignments.',
+          'On a line that uses circuit 2 (bi-amp or dual-channel), everything wired to 2+/2− is simply absent — missing output. And if the cabinet is switched to bi-amp mode, circuit 1 feeds one driver section directly with no crossover in the way: if that section is the high-frequency one, a full-range feed can damage it. Fitting is not proof the whole connection is made — or that the right band reaches the right section. Verify the cabinet’s mode and circuit assignments.',
       },
     ],
     inspectionPoints: [

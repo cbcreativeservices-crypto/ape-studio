@@ -525,7 +525,7 @@ export type CiInspectionDefect = {
 
 export const CI_INSPECTION_POOL: CiInspectionDefect[] = [
   { id: 'ins-1', mistakeId: 'sharp-bend', label: 'Mic line folded hard behind the stage box', zone: 0, x: 12, y: 78 },
-  { id: 'ins-2', mistakeId: 'crushed-by-tie', label: 'Snake waist-tied to oval at the stage edge', zone: 0, x: 22, y: 84 },
+  { id: 'ins-2', mistakeId: 'crushed-by-tie', label: 'Snake squeezed oval by a tight tie at the stage edge', zone: 0, x: 22, y: 84 },
   { id: 'ins-3', mistakeId: 'connector-strain', label: 'Stage-box fan-out hanging on its XLRs', zone: 0, x: 8, y: 70 },
   // ins-4 sits ON the bare stretch of the analog run, past the ramp's end
   // (R4-CI-01: the aisle crossing itself IS in a rated ramp, x 128–172;

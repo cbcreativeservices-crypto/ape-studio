@@ -496,7 +496,7 @@ export const I04_LESSON: SpLesson = {
     { title: 'WHAT IT IS', text: 'A frame with loose metal jingles and no vibrating head — a ring or a crescent. The moving jingles are the sound. (A headed tambourine adds a drum’s body; it has its own lesson in Lab 1.)', src: 'LESSON-TAMB-HL' },
     { title: 'WHERE YOU MEET IT', text: 'In bands, gospel and pop, at percussion stations and in singers’ hands — on stages and studio overdubs, often sharing a mic with shakers.', src: 'DPA-JONAS' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Shakes, rolls, accents struck into the hand, a mounted ring played with a stick. Each motion gives a different attack and a different path through the air.', src: 'LESSON-TAMB-HL' },
-    { title: 'ITS SIZE', text: 'Concert tambourines are often about 10 in across. This lab draws a 10 in ring with one row of jingle pairs — and a crescent as the other shape.', src: 'PAS-ECV01' },
+    { title: 'ITS SIZE', text: 'Many tambourines are about 10 in across. This lab draws a 10 in ring with one row of jingle pairs — and a crescent as the other shape.', src: 'PAS-ECV01' },
   ],
   sound: {
     stages: [

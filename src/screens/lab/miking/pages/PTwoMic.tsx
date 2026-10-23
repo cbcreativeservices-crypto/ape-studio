@@ -177,7 +177,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
           {T.learn.map((t) => (
             <Body key={t.slice(0, 24)}>{t}</Body>
           ))}
-          <Note>What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity inversion flips the sign — the notches and peaks swap places, and the lows thin out; it does not remove the delay. 0 dB on the graph is the two arrivals in step: at equal level that is 6 dB above either mic alone, so a comb both lifts and cuts.</Note>
+          <Note>What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late: comb-filter notches. Polarity inversion flips the sign — the notches and peaks swap places, and the lows thin out; it does not remove the delay. 0 dB on the graph is the two arrivals in step: at equal level that is 6 dB above either mic alone, so a comb both lifts and cuts.</Note>
         </>
       ),
     },

@@ -184,7 +184,7 @@ export function Mod6Supply() {
                 <Body>
                   {supply === 'linear'
                     ? 'Mains → transformer steps it to the rail voltage → rectifier → reservoir capacitors smooth it into DC rails. Heavy, simple, and the reservoir droops under sustained load — the sag you will see on the display.'
-                    : 'Mains is rectified first, chopped at high frequency, passed through a small transformer where one is used, then rectified and often regulated. Lighter, and when regulated it holds the rails up better under load. Neither type is automatically superior — each has a place.'}
+                    : 'Mains is rectified first, chopped at high frequency, passed through a small high-frequency transformer that steps it down and isolates the rails from the mains, then rectified and often regulated. Lighter, and when regulated it holds the rails up better under load. Neither type is automatically superior — each has a place.'}
                 </Body>
               </Card>
 

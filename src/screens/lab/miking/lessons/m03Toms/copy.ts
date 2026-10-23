@@ -48,7 +48,7 @@ export const TOMS_COPY: LessonCopy = {
     reveal: 'The squeezed air pushes the bottom head OUT, away from the batter — both heads move the same way at that moment. The two heads are coupled through the air inside.',
     after: 'Then both heads keep ringing for a while — the BODY of the tom, often a clear pitch. How long it rings depends on the tuning, the damping and the drum (the Drum Tuning Lab covers that).',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones. Off centre, more shapes join in.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones, the lowest shape among them. Off centre, more shapes join in.',
       'This is a simplified head in empty space. On a real tom, the air inside and the second head pull these numbers around — the next step shows the two heads working together.',
     ],
     coupledSubject: 'Side view of the tom',
@@ -86,7 +86,7 @@ export const TOMS_COPY: LessonCopy = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every tom is different.',
       separate: 'Distance from the rim, height above the head and the direction of the mic’s axis are separate variables: change one at a time. On a tilted tom, height is measured square to the head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.',
-      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, clamp, gooseneck, stand and cable out of the sticks’ path across every tom, the cymbals’ swing, the holder, the floor tom’s legs and the player’s leg. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room on a real kit.',
+      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, clamp, gooseneck, stand and cable out of the sticks’ path across every tom, the cymbals’ swing, the holder, the floor tom’s legs and the player’s leg. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real kit.',
       tendencies: 'Toward the rim tends to bring a higher-pitched attack; toward the centre a fuller low end — tendencies, and drums vary. With a directional mic, proximity effect also changes the lows at short distances; “closer to the centre” does not promise more bass every time.',
     },
   },
