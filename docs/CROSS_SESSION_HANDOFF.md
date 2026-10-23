@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 03:07 · ccode · 4bf38262
+changed: Audit R2 fix Round B (last): S3 wording — clarify, hedge, context (Comp B Round 2)
+affects other side: nothing backend (app copy; lab-cert seed SQL regenerated, 'why' lines only). Rides the approval-day OTA.
+needs: nothing
+
+
 ### 2026-10-23 02:37 · ccode · 5c77ba84
 changed: Audit R2 fix Round A: S2, safety, quizzes, patterns, calculators (D53), disputes (Comp B Round 2)
 affects other side: nothing backend (app copy + calculator logic; lab-cert seed SQL regenerated: 3 'why' lines). Rides the approval-day OTA.
