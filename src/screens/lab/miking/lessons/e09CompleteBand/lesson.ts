@@ -49,7 +49,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Bleed between two mics',
     goal: 'The vocal mic and the kick mic both hear the band: see how much later each source reaches the far mic, what polarity changes and what it does not, and why bleed is judged in the complete mix.',
-    credit: { scenarios: ['bd.first', 'bd.two.1', 'bd.two.2'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
+    credit: { scenarios: ['bd.first', 'bd.two.1', 'bd.two.2'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
     takeaway: 'Bleed arrives late in the far mic. Polarity changes its sign, never its time. Move a mic, change the distance or reduce the overlap before reaching for a delay — and judge in the complete mix, in mono.',
   },
   troubleshoot: {
@@ -341,7 +341,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Lower the level, then check the wedges',
     explain: 'Lower the level at the first ring, then check monitor spill, stage volume and the open mics. Never push past the agreed level to find feedback.',
     why: {
-      'Turn the PA up to hear where it rings': 'Raising a level to find feedback is the one thing never to do.',
+      'Turn the PA up to hear where it rings': 'Not while the band plays. Feedback is made on purpose only to ring out a system, by its operator, at a controlled level, before the show.',
       'Boost the vocal to stay above the ring': 'More vocal gain feeds the ring — it gets worse.',
     },
   },
@@ -467,7 +467,7 @@ const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern rejects most of the stage behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the overhead pair 20 cm. What changes most?', options: ['More cymbals and more room', 'Only the level', 'More kick and toms'], after: 'Higher, the cymbals and the room come up and the drums go down a little. Compare at matched level.' },
   context: { prompt: 'The wedge sits in front of the singer, below the mic. Can the mic’s rejection reach it?', options: ['Yes — aim the mic’s back toward it', 'No — only an omni can', 'It already sits in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'The vocal mic and the kick mic both hear the kick. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE to the singer.' },
+  twoMic: { prompt: 'The vocal mic and the kick mic both hear the kick. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to the singer.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -620,7 +620,7 @@ export const E09_LESSON: EnsembleLesson = {
       figureTitle: 'A BAND ON A STAGE',
       figureBadge: 'From above, as the audience sees it · a typical stage plot, not a particular band',
       sectionsNote: 'Drums upstage centre, guitar and bass in front of their amps, keys at the side, the singer downstage — a wedge for each player, the PA at the corners. Switch SEATING for the band in one room. Tap a player or an amp.',
-      soundNote: 'The arcs show WHERE each sound leaves — never how loud. The guitar and bass leave from their amps, along each speaker’s axis; the kit from everywhere at once; the keys only through the DI and the wedges.',
+      soundNote: 'The arcs show WHERE each sound leaves — never how loud. The guitar and bass leave from their amps, along each speaker’s axis; the kit from everywhere at once; the keys only through the DI, the wedges and the PA.',
       mainAt: ROOM_C,
     },
     before: [

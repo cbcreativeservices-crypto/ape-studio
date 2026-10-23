@@ -612,7 +612,7 @@ export function ClavinetPath({ w, h, option, accessibilityLabel }: { w: number; 
     { id: 'amp', text: 'AMP · SPEAKER', short: 'AMP', u: 635, v: 22, align: 'center', tone: ampLit ? 'amber' : 'muted' },
     { id: 'mic', text: 'MIC', u: 870, v: 92, align: 'center', tone: mic ? 'blue' : 'muted' },
     { id: 'console', text: 'CONSOLE · INTERFACE', short: 'CONSOLE', u: 830, v: 572, align: 'center' },
-    { id: 'warn', text: 'CLAVINET OUTPUT → DI OR LINE INPUT · NO MIC INPUT, NO PHANTOM', short: 'OUTPUT → DI · NO PHANTOM', u: 20, v: 590, align: 'left', tone: 'amber' },
+    { id: 'warn', text: 'CLAVINET OUTPUT → DI OR HI-Z INPUT · NO MIC INPUT, NO PHANTOM', short: 'OUTPUT → DI · NO PHANTOM', u: 20, v: 590, align: 'left', tone: 'amber' },
   ];
   if (di) labels.push({ id: 'di', text: pre ? 'DI · BEFORE THE PEDALS' : 'DI · AFTER THE PEDALS', short: pre ? 'DI · PRE' : 'DI · POST', u: pre ? 325 : 505, v: 395, align: 'center', tone: 'blue' });
   if (mic) labels.push({ id: 'air', text: 'IN THE AIR', u: 760, v: 230, align: 'center', tone: 'blue' });

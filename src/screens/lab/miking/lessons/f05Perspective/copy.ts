@@ -45,7 +45,7 @@ export const F05_COPY: Partial<LessonCopy> = foleyCopy({
     shapesNotes: ['The pictures show the order of events and where they start — never their level.'],
     coupledSubject: 'The stage from above: the keys, a close mic and a room mic',
     coupledNote: 'The same jingle reaches both mics: the close one first and loudest, mostly direct; the room one later, weaker, with the walls’ reflections right behind. That is perspective — two distances, not left and right.',
-    silentNote: 'This lab never plays a sound and draws no frequency curve. The pictures show where the sound goes and in what order it arrives.',
+    silentNote: 'This lab never plays a sound. The stage pictures show where the sound goes and in what order it arrives; the one graph, later on, is a simplified picture.',
     pair: {
       title: 'Near or far',
       badge: 'From above · straight paths and two wall reflections · where the sound goes, not how loud',
@@ -97,7 +97,7 @@ export const F05_COPY: Partial<LessonCopy> = foleyCopy({
       { title: 'ONE STABLE PICKUP', text: 'Studio: one mic for the whole action, then a room channel or a pair only for a reason. Live: one stable, source-proximate directional mic at a repeatable station.' },
       { title: 'EVERY OPEN MIC COSTS', text: 'Extra open room mics pick up the loudspeakers, raise the room and the noise, and take away gain before feedback; add a second feed only with a clear purpose for the audience.' },
       { title: 'MOVEMENT FOR THE SEATS', text: 'Keep any stereo movement intelligible at the audience’s seats, in the mono feeds and in the monitors.' },
-      { title: 'WITH THE OPERATOR', text: 'The system operator controls the routing and checks it at normal rehearsal level — never by looking for feedback.' },
+      { title: 'WITH THE OPERATOR', text: 'The system operator controls the routing and checks it at a controlled level. Any ring-out is the operator’s job, done before the show, never during it.' },
     ],
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind it. Aimed at the keys, its rear points away from the artist — the wedge, on the floor ahead and to one side, sits off that line, nearer a supercardioid’s deeper rejection.',
     shieldNote: 'The artist and the station reflect the wedge’s sound, which a free-field pattern cannot show. Check at show level with the system operator.',

@@ -57,7 +57,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Two singers, two mics',
     goal: 'A handheld each: see each singer reach the other mic later and quieter, what polarity changes and what it does not, and why spacing helps.',
-    credit: { scenarios: ['du.two.1', 'du.two.2', 'du.two.3'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
+    credit: { scenarios: ['du.two.1', 'du.two.2', 'du.two.3'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
     takeaway: 'Every open mic hears both singers — its own first. Mute-check each channel, listen in stereo and in mono, and move a mic until the sum is stable and clear.',
   },
   troubleshoot: {
@@ -230,7 +230,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why keep the duet’s shared mic out of their own monitor?',
     options: ['That monitor can excite the mic: feedback', 'Their monitor is meant for the band only', 'A shared mic cannot feed a monitor'],
     correct: 'That monitor can excite the mic: feedback',
-    explain: 'Never send an ensemble mic into a monitor that can excite it: the monitor plays into the mic feeding it. Keep monitors low, carrying what the singers need.',
+    explain: 'An ensemble mic in a monitor that can excite it is a feedback loop: the monitor plays into the mic feeding it. Most engineers keep it out, or only low with a stable margin. Keep monitors low, carrying what the singers need.',
     why: {
       'Their monitor is meant for the band only': 'A monitor carries what the singers need — just not the mic it can feed back into.',
       'A shared mic cannot feed a monitor': 'It can — that is exactly the loop to avoid.',
@@ -404,7 +404,7 @@ const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern hears its front and back equally but rejects its sides?', options: ['Figure-8', 'Cardioid', 'Omni'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: the shared mic moves 10 cm toward one singer. What changes most?', options: ['That singer gets louder', 'Nothing: the other balances it', 'Both get louder equally'], after: 'Watch NEAR / FAR and NEAREST: one singer’s distance is that singer’s level.' },
   context: { prompt: 'The wedge sits on the floor in front of the duet. Where will a supercardioid aimed at a mouth reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'A handheld each. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE to the other singer.' },
+  twoMic: { prompt: 'A handheld each. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to the other singer.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -520,7 +520,7 @@ export const E04_LESSON: EnsembleLesson = {
     items: [
       { id: 'singers', label: 'the singers’ feet, faces and moves', short: 'SINGERS', note: 'Stable stands, secure cable paths and clear movement areas; nobody covering a grille, pointing a handheld at a monitor or passing a live mic.', prov: { kind: 'sourced', src: 'LESSON-DUET', quote: 'Do not allow singers to cover the grille, point a handheld capsule toward a monitor, or share a microphone by passing it while the channel is live (L54)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'other', label: 'the other singer', short: 'THE OTHER VOICE', note: 'Each open mic hears the other singer too — later and quieter. Keep separate mics at least three times their distance to their singers apart, and check mono.', prov: { kind: 'sourced', src: 'S-LIVE', quote: 'if two microphones are each placed one foot from their sound sources, the distance between the microphones should be at least three feet' }, tag: 'SPILL', scene: 'all' },
-      { id: 'wedge', label: 'the wedges', short: 'WEDGES', note: 'Out of each mic’s most sensitive direction: a cardioid tolerates a wedge straight in front of the singer, a supercardioid well to one side — from the real polar plot.', prov: { kind: 'sourced', src: 'S-VOC-TIPS', quote: 'monitor directly in front of the vocalist (cardioid); slightly to one side (hypercardioid)' }, tag: 'MONITOR', scene: 'stage' },
+      { id: 'wedge', label: 'the wedges', short: 'WEDGES', note: 'Out of each mic’s most sensitive direction: a cardioid tolerates a wedge straight in front of the singer; for a supercardioid, put the wedge toward the rear, off to one side, near its null. Check the real polar plot.', prov: { kind: 'sourced', src: 'S-VOC-TIPS', quote: 'monitor directly in front of the vocalist (cardioid); slightly to one side (hypercardioid)' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'band', label: 'the band and the PA', short: 'BAND · PA', note: 'The fewest open mics that give the clarity needed; directional handhelds reject more of the band.', prov: { kind: 'sourced', src: 'LESSON-DUET', quote: 'begin with the minimum number of open microphones that achieves the required clarity (L52)' }, tag: 'SPILL', scene: 'stage' },
       { id: 'phones', label: 'the headphones', short: 'HEADPHONES', note: 'Each singer’s mix low enough that the mic does not capture the headphone spill.', prov: { kind: 'sourced', src: 'LESSON-DUET', quote: 'Keep each singer’s monitor level low enough that the microphone does not capture loud headphone spill (L46)' }, tag: 'SPILL', scene: 'studio' },
       { id: 'room', label: 'the room', short: 'ROOM', note: 'One mic, a figure-8 or a pair hears the room as part of the duet: a controlled, flattering room.', prov: { kind: 'sourced', src: 'LESSON-DUET', quote: 'when the room is suitable and a coherent blend is wanted (L10)' }, tag: 'PART OF THE SOUND', scene: 'studio' },
@@ -541,7 +541,7 @@ export const E04_LESSON: EnsembleLesson = {
   },
   unknowns: [
     { text: 'The semicircle’s radius (40 cm), the figure-8 duet’s 30 cm each side and the quartet’s 75 cm spacing are drawing defaults (no source gives them).', dims: [] },
-    { text: `The duet’s handhelds are drawn about ${Math.round(E04_HANDS_31.rA / 10)} cm from the lips (within 10 cm), ${(E04_HANDS_31.d / 100).toFixed(0)} cm apart. The quartet’s cardioids at 22 cm are ≈ ${E04_IND_31.ratio.toFixed(1)}:1 apart; at 30 cm only ≈ ${E04_30_31.ratio.toFixed(1)}:1.`, dims: [] },
+    { text: `The duet’s handhelds are drawn about ${Math.round(E04_HANDS_31.rA / 10)} cm from the lips (within 10 cm), ${(E04_HANDS_31.d / 10).toFixed(0)} cm apart. The quartet’s cardioids at 22 cm are ≈ ${E04_IND_31.ratio.toFixed(1)}:1 apart; at 30 cm only ≈ ${E04_30_31.ratio.toFixed(1)}:1.`, dims: [] },
     { text: 'The quartet’s pair is drawn about 0.95 m in front and 0.25 m above the mouths; from about 0.9 m the group fills a 17 cm pair’s 95° angle (calculated from the drawing).', dims: [] },
     { text: 'The singers are the shared adult figure (lips 1550 mm above the floor); the wedge 0.7 m in front of the duet is a drawing default.', dims: [] },
   ],

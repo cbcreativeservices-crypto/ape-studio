@@ -471,7 +471,7 @@ describe('guest rules, persistence and credit', () => {
     assert.match(content, /In this model, /, 'the relationships are the model\'s measurements');
     assert.match(content, /describe the pitch bend of these two settings in opposite ways/);
     assert.doesNotMatch(content, /deepest apparent|least apparent/);
-    assert.match(content, /never a wrench or pliers/, 'the caution');
+    assert.match(content, /not a wrench or pliers/, 'the caution');
     assert.match(strip(read(`${DIR}/modules/ch2Prepare.tsx`)), /CAUTION_TITLE/);
     assert.match(strip(read(`${DIR}/modules/ch3Method.tsx`)), /CAUTION_TITLE/);
     const ch2 = strip(read(`${DIR}/modules/ch2Prepare.tsx`));

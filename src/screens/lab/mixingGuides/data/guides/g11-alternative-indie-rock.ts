@@ -17,7 +17,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "90–140 BPM (slowcore and ballads 60–85; post-punk and garage revival 140–170)",
     "ensemble": "3–5 piece band: drums, bass, 1–2 guitars, often synth/keys, singer-guitarist; larger collectives (6–10) with strings, horns, multi-instrumentalists",
     "priority": "Character and texture of the guitars and the singer’s voice, with a natural-sounding drum kit holding it together",
-    "liveSpl": "94–100 dBA Leq (LAeq-15 min) in clubs and theaters; roughly 110–120 dBC; outdoor ordinances often cap at 95 dBA",
+    "liveSpl": "94–100 dBA Leq (LAeq-15 min) in clubs and theaters; roughly 110–118 dBC LCeq; outdoor ordinances often cap at 95 dBA",
     "studioLoudness": "Masters commonly −11 to −8 LUFS-I (lo-fi and folk-leaning records −14 to −11); streaming normalizes to about −14"
   },
   "purpose": [
@@ -277,7 +277,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and theater shows typically run 94–100 dBA LAeq-15 at FOH, with louder fuzz and noise acts reaching 100–103 dBA and C-weighted levels around 110–120 dBC. Indie needs moderate sub—most energy is in the guitars and midrange; a C-minus-A gap above roughly 18–20 dB means the sub is too hot for the genre. Outdoor city parks commonly enforce limits around 95 dBA, and crowd singalongs can measure louder than the band. Shoegaze and noise-rock crowds expect volume as an experience; offer earplugs and watch your own exposure."
+      "text": "Club and theater shows typically run 94–100 dBA LAeq-15 at FOH, with louder fuzz and noise acts reaching 100–103 dBA and C-weighted LCeq around 110–118 dBC. Indie needs moderate sub—most energy is in the guitars and midrange; a C-minus-A gap above roughly 18–20 dB means the sub is too hot for the genre. Outdoor city parks commonly enforce limits around 95 dBA, and crowd singalongs can measure louder than the band. Shoegaze and noise-rock crowds expect volume as an experience; offer earplugs and watch your own exposure."
     },
     {
       "label": "Studio / streaming:",
@@ -314,7 +314,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "94–100 dBA Leq, ordinance limits outdoors",
-        "studio": "−11 to −8 LUFS-I, −1 to −2 dBTP"
+        "studio": "−11 to −8 LUFS-I, −2 dBTP"
       },
       {
         "area": "Playback",

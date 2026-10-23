@@ -38,12 +38,12 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       { key: 'frequency', name: 'Frequency', definition: 'The pitch of the sine, in Hz — how many cycles per second. Sets which single frequency you’re sending.', range: '63 Hz – 6 kHz on the fader; 20 Hz – 20 kHz via ±1-semitone steps' },
       { key: 'sweep', name: 'Sweep', definition: 'Glides the frequency from a start to an end over a set time — one pass reveals a system’s whole frequency response. Repeat loops it.' },
       { key: 'click_tempo', name: 'Click tempo', definition: 'How often the click/impulse repeats (BPM). Clicks are for timing and echo/reverb tests — each one is a sharp, broadband event.' },
-      { key: 'output_level', name: 'Output level', definition: 'How loud the generator runs, in dBFS. Kept well below 0 dBFS by default so nothing clips; a hard cap protects your ears and the speaker.' },
+      { key: 'output_level', name: 'Output level', definition: 'How loud the generator runs, in dBFS. Kept well below 0 dBFS by default so nothing clips. A hard cap limits the level, but it cannot know your volume setting: start with the volume low, then raise it.' },
       { key: 'safety', name: 'Speaker safety', definition: 'A protective high-pass on the built-in speaker so very low tones don’t over-excurse the tiny driver. Shown honestly — it filters what you hear on the phone speaker.' },
       { key: 'status', name: 'Output status (readout)', definition: 'The level actually leaving the output after the safety cap — labeled dBFS · uncalibrated (never SPL). A CAP badge shows when the −12 dBFS hard cap is holding the level below what you asked for.' },
     ],
     commonMistakes: [
-      'Blasting a low sine on the phone speaker — small drivers can’t reproduce it and distort or over-excurse; use headphones for true low end.',
+      'Blasting a low sine on the phone speaker — small drivers can’t reproduce it and distort or over-excurse; judge true low end on proper monitors, not the phone.',
       'Reading the output level as SPL — it is dBFS (digital full scale), not a calibrated sound-pressure level.',
       'Forgetting a sweep is MOVING — a single spectrum snapshot of a sweep is only that instant, not the whole response.',
     ],
@@ -76,7 +76,7 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       'Trusting a jumpy display — raise averaging before judging tonal balance.',
     ],
     proTips: [
-      'Feed pink noise and look for the overall tilt — a well-balanced system reads roughly even across bands with pink noise.',
+      'Feed pink noise and look for the overall tilt. Pink noise alone reads even across 1/3-octave bands, so any tilt or bump comes from the system and the room.',
       '1/3-octave for tonal decisions; 1/1-octave for a quick glance.',
     ],
     formula: 'Octave bands: center f_n, band edges f_n·2^(±1/2N) for 1/N-octave. Level per band = 10·log₁₀(Σ power) dBFS.',
@@ -92,7 +92,7 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       'fading — that a single spectrum can’t.',
     controls: [
       { key: 'db_range', name: 'dB range', definition: 'The span of levels mapped to the color scale. A wide range reaches down to faint detail (and more noise); a narrow range shows only the strongest content.' },
-      { key: 'obs_max', name: 'Observed max (readout)', definition: 'The loudest level seen — the top of the current color mapping, so colors stay meaningful as levels change.' },
+      { key: 'obs_max', name: 'Observed max (readout)', definition: 'The loudest level seen so far, as a number. The color scale itself stays fixed with 0 dBFS at the top, so earlier history never changes color.' },
       { key: 'peak', name: 'Peak (readout)', definition: 'The current instantaneous peak level in dBFS.' },
       { key: 'history', name: 'History (readout)', definition: 'How many time-columns are on screen — how far back in time the display reaches.' },
       { key: 'marks', name: 'What the display shows', definition: 'Time runs left→right (newest at the right edge); the VERTICAL axis is frequency (low at the bottom, high at the top); COLOR/brightness is level. A rising diagonal streak is a sweep climbing in pitch; horizontal lines are steady tones; faint trailing repeats after a bright onset are a room’s reflections.' },
@@ -279,7 +279,7 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       'Judging tonal balance while smoothing is LOW — raise it so the average trace settles before you read the trend.',
     ],
     proTips: [
-      'Play pink noise: the 1/3-octave columns should read roughly even, the detector should flag PINK-NOISE CHARACTER, and the average trace shows your system’s tilt.',
+      'Play pink noise: the detector should flag PINK-NOISE CHARACTER. Pink noise alone reads roughly even on the 1/3-octave columns, so a tilt there is your system and room. The amber FFT average slopes down about 3 dB per octave even on a flat system.',
       'Watch PEAK vs RMS while the oscilloscope runs — you can see crest factor in both panels at once.',
       'If FEEDBACK BEGINNING appears, the chip names the frequency — pull that region on your EQ before it blooms.',
     ],

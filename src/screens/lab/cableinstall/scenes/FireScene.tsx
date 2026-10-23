@@ -835,7 +835,7 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
         {plenumPairDone ? (
           <LessonCard
             head="CEILING CAVITY ≠ AUTOMATICALLY PLENUM"
-            body="Whether a ceiling space handles environmental air is a fact of the building’s design — some cavities move air through the open space, others carry it in ducts, and the requirements differ. Identify the space from the project documents before selecting cable; assuming in either direction produces a wrong installation."
+            body="Whether a ceiling space handles environmental air is a fact of the building’s design — some cavities move air through the open space, others carry it in ducts, and the requirements differ. Identify the space from the project documents before selecting cable. Do not guess: a cable not listed for an air-handling space breaks code there, and rating every run for the worst case costs more than it needs to."
           />
         ) : null}
       </CiSection>
@@ -914,7 +914,7 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
           <Text style={styles.tintNote}>• Red-hatched wall = marked rated assembly, slab to slab · plain stud wall = non-rated partition, stops just above the ceiling</Text>
           <Text style={styles.tintNote}>• Cyan arrows = air movement · cyan-washed cavity = the cavity itself carries return air · grey duct = return air kept in a duct</Text>
           <Text style={styles.tintNote}>• Red caps = an installed listed firestop system (lab symbol — real products vary in form and color) · dashed red outline = a listed system is required there · solid outline = the matched system, not yet installed</Text>
-          <Text style={styles.tintNote}>• Amber dashed = your proposed route · violet = this run’s cable · CMR = riser-rated cable listing · numbers = the three spaces</Text>
+          <Text style={styles.tintNote}>• Amber dashed = your proposed route · violet = this run’s cable · green CMR = a cable already in the riser, riser-rated (riser-rated is not plenum-rated) · numbers = the three spaces</Text>
           <Text style={styles.tintNote}>Whether a wall is rated and how a space handles air come from the project drawings — verify with the plans and the AHJ.</Text>
         </View>
       </CollapsibleSection>

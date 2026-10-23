@@ -349,7 +349,7 @@ function HandSetting(spec: HandSpec) {
                 </Point>
               ))}
             </Card>
-            <Note tone="warn">Protect your hearing at soundcheck. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens. It has nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
+            <Note tone="warn">Protect your hearing at soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens. They have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
             <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />
           </>
         ),
@@ -754,7 +754,7 @@ function HandTwoMic(spec: HandSpec) {
       {
         kind: 'toggle',
         id: 'polarity',
-        label: B.polarity === 1 ? 'B POLARITY +' : 'B POLARITY −',
+        label: B.polarity === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
         value: B.polarity === -1,
         onToggle: () => {
           const next = B.polarity === 1 ? -1 : 1;
@@ -778,11 +778,11 @@ function HandTwoMic(spec: HandSpec) {
       { k: 'PATH Δd B−A', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
       { k: 'DELAY Δt B−A', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? 'no comb' : dt > 0 ? 'B later' : 'B earlier', flex: 1.35 },
       { k: '1ST NOTCH', v: equal ? 'NO COMB' : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.2 },
-      { k: 'POLARITY', v: `B ${B.polarity === 1 ? '+' : '−'}`, sub: rearFlip ? 'rear lobe: −' : 'switch', flex: 0.95 },
+      { k: 'POLARITY', v: `MIC B ${B.polarity === 1 ? '+' : '−'}`, sub: rearFlip ? 'rear lobe: −' : 'switch', flex: 0.95 },
     ];
     const [wellW, setWellW] = useState(0);
     const pairNow = `${ownSentence(rig, 'A', zA, spec.outside)} ${ownSentence(rig, 'B', zB, spec.outside)}`;
-    const combLabel = `Simplified two-mic sum for ${region.label}: ${equal ? 'no path difference, no comb' : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}; mic B polarity switch ${B.polarity === 1 ? 'normal' : 'inverted'}.`;
+    const combLabel = `Simplified two-mic sum for ${region.label}: ${equal ? 'no path difference, no comb' : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}; mic B’s channel polarity ${B.polarity === 1 ? 'normal' : 'inverted'}.`;
     const pred = lesson.predictions.twoMic;
     const flipped = flips.toInv || flips.toNorm;
     const tick = (on: boolean) => (on ? '✓' : '○');
@@ -809,9 +809,9 @@ function HandTwoMic(spec: HandSpec) {
             </Text>
             <NowLine text={pairNow} />
             <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>{wellW > 0 ? <CombPanel rig={rig} source={src} w={wellW} h={150} label={combLabel} /> : null}</View>
-            <Body>{equal ? `No path difference: ${region.label} reaches both mics at the same instant.` : `B hears ${region.label} ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
+            <Body>{equal ? `No path difference: ${region.label} reaches both mics at the same instant.` : `Mic B hears ${region.label} ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} mic A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
             {rearFlip ? <Note>{`${region.label} is in a mic’s rear lobe: a rear lobe is polarity-inverted, so the notches follow the ${sEff === 1 ? 'same-polarity' : 'inverted'} set even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
-            {predicted != null && flipped ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: it moves the notches, it does not remove the delay.`}</Note> : null}
+            {predicted != null && flipped ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: the notches and peaks swap places, but the delay stays.`}</Note> : null}
             <Note tone="warn">{T.warn}</Note>
           </>
         ),
@@ -826,7 +826,7 @@ function HandTwoMic(spec: HandSpec) {
             {T.learn.map((p, i) => (
               <Body key={i}>{p}</Body>
             ))}
-            <Note>{spec.words?.sourceNote ?? 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each part of the drum gives its own delay, so no single setting suits every stroke.'}</Note>
+            <Note>{spec.words?.sourceNote ?? 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Flipping polarity swaps the notches and peaks; it does not remove the delay. Change the SOURCE: each part of the drum gives its own delay, so no single setting suits every stroke.'}</Note>
           </>
         ),
       },

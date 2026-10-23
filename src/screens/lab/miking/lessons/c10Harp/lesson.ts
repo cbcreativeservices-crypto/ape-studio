@@ -29,7 +29,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know the harp’s surroundings — the harpist’s hands, feet, view and head, the pedals or levers, what a stage and a studio add — and what to do before any mic.',
     credit: { scenarios: ['hp.set.1', 'hp.set.2', 'hp.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'The harpist’s hands work both sides of the strings and their feet the pedals: no stand, mic or cable goes there, and nothing over the harp or their head. Ask before anything touches the harp. Protect your hearing.',
+    takeaway: 'The harpist’s hands work both sides of the strings and their feet the pedals: no stand, mic or cable goes there. No boom swings over the harp or their head; bring a spot in from the side on a secure stand. Ask before anything touches the harp. Protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -127,9 +127,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Your harp mic is rated to a very high maximum SPL. What does that tell you about a long, loud rehearsal next to the orchestra?',
     options: ['Everyone is safe while the music stays below the mic’s rated level', 'Nothing — a mic’s max SPL is a distortion limit, not a hearing limit', 'You are safe for as long as the mic stays nearer to the harp than you are'],
     correct: 'Nothing — a mic’s max SPL is a distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time — and an orchestra or band around the harp is loud.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — and an orchestra or band around the harp is loud.',
     why: {
-      'Everyone is safe while the music stays below the mic’s rated level': 'Max SPL tells you when the mic distorts, not what your ears can take. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'Everyone is safe while the music stays below the mic’s rated level': 'Max SPL tells you when the mic distorts, not what your ears can take. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'You are safe for as long as the mic stays nearer to the harp than you are': 'A mic is not a hearing meter. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -201,7 +201,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Phantom power, an approved holder and the owner’s agreement',
     explain: 'This miniature is a condenser: it needs phantom power, often through its own adapter. It goes on a holder the owner approves — never forced in, never taped to the finish.',
     why: {
-      'Nothing: miniatures are dynamic mics, so they need no power at all': 'Miniatures like this are condensers: they need phantom power.',
+      'Nothing: miniatures are dynamic mics, so they need no power at all': 'This miniature is a condenser. On a cable, it needs phantom power.',
       'Tape, so that it stays firmly on the soundboard': 'Tape can damage the finish. Use an approved holder.',
     },
   },
@@ -281,11 +281,11 @@ const scenarios: MikingScenario[] = [
     id: 'hp.ctx.studio',
     page: 'context',
     prompt: 'A solo harp in a beautiful room. What could justify a pair about 2 m away instead of close spots?',
-    options: ['Distant mics pick up far less of the harpist’s fingers than close ones do', 'Close spots belong on a stage, not in a studio, by convention', 'The room is worth hearing, and the whole harp blends at that distance'],
+    options: ['Distant mics hear less of the room than close spots do', 'Close spots belong on a stage, not in a studio, by convention', 'The room is worth hearing, and the whole harp blends at that distance'],
     correct: 'The room is worth hearing, and the whole harp blends at that distance',
     explain: 'Around 2–3 m from a full-size harp the instrument and the room integrate — a natural solo perspective. Close spots bring definition; the choice is what the music needs.',
     why: {
-      'Distant mics pick up far less of the harpist’s fingers than close ones do': 'Distance does soften finger noise, but the reason is the blend and the room.',
+      'Distant mics hear less of the room than close spots do': 'Distance brings in more of the room, not less. In a good room, that is the point.',
       'Close spots belong on a stage, not in a studio, by convention': 'Close spots are used in studios too. The decision is the perspective.',
     },
   },
@@ -530,7 +530,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A harp with a loud band on a club stage, a wedge for the harpist. One channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'A cardioid about 60 cm in front, its rear toward the harpist’s wedge', ok: true, power: 'phantom', feedback: 'A suggested start, with the wedge aimed into its rejection.' },
+      { id: 'a', label: 'A cardioid about 60 cm in front, turned so the wedge sits as far toward its rear as it can', ok: true, power: 'phantom', feedback: 'A suggested start, with the wedge aimed into its rejection.' },
       { id: 'b', label: 'An approved miniature omni at the second sound hole from the bottom', ok: true, power: 'phantom', feedback: 'A suggested live option, close and concealed — with the owner’s agreement.' },
       { id: 'c', label: 'A spaced pair of omnis 3 m away, to catch the whole harp', ok: false, power: 'phantom', feedback: 'On a loud stage a distant pair hears the band more than the harp.' },
       { id: 'd', label: 'A miniature taped inside a sound hole with foam around it', ok: false, power: 'phantom', feedback: 'No tape on the finish and no foam pushed in without the owner asking for it.' },
@@ -546,7 +546,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a mic from 30 cm to 60 cm from the soundboard. What changes?', options: ['More boom', 'More of the whole harp', 'It depends on this harp'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this cardioid, facing the harp, reject the harpist’s wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
-  twoMic: { prompt: 'If you flip one mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip one mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -617,9 +617,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your harp mic is rated to a very high maximum SPL. What does that tell you about a long, loud rehearsal next to the orchestra?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the music stays below the mic’s rated level', 'It is safe as long as the mic is nearer the harp than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — measured where the person listens.',
     why: {
-      'It is safe for as long as the music stays below the mic’s rated level': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for as long as the music stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is nearer the harp than you': 'Where the mic sits says nothing about your ears.',
     },
   },
@@ -633,7 +633,7 @@ const wedges: Wedge[] = [
     p: { x: 1300, y: 0, z: 250 },
     lift: 150,
     faces: { x: -1, y: 0, z: 0 },
-    note: 'On the floor in front of the harp, facing back at the harpist: below and behind a front mic that looks down at the board — off its rear axis, where a supercardioid’s or hypercardioid’s deepest rejection lies.',
+    note: 'On the floor in front of the harp, facing back at the harpist: below a front mic that looks down at the board, about 105° off its axis. A super- or hypercardioid rejects more there than a cardioid does.',
     prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' },
   },
   {

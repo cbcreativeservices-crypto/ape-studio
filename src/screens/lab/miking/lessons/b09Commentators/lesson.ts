@@ -474,11 +474,11 @@ const orderTasks: OrderTask[] = [
     steps: [
       { text: 'Map the position: seats, sight lines, the crowd, the PA, the feeds', early: 'Start with the position, before any equipment.' },
       { text: 'Hear a quiet call and an excited one while following play', early: 'Hear the real call before you choose a mic.' },
-      { text: 'Fit each headset and set the boom at the mouth corner', early: 'Fit the mics once you know how the commentators work.' },
+      { text: 'Turn the return down, fit each headset and set the boom at the mouth corner', early: 'Fit the mics once you know how the commentators work.' },
       { text: 'Set gain on the most excited call, with headroom', early: 'Gain comes once the mic is placed.' },
       { text: 'Each channel alone while the other talks; then an overlap', early: 'Check the partner once both mics are set.' },
       { text: 'Trace cough, talkback, the return and the crowd bed', early: 'Routing checks come after the mics work.' },
-      { text: 'Check the fallback mic and start the return level low', early: 'The fallback and the return level close the setup.' },
+      { text: 'Check the fallback mic; bring the return up from low to comfortable under real noise', early: 'The fallback and the return level close the setup.' },
     ],
     explain: 'A sensible order. A passive ribbon: check its interface and phantom setting with the audio lead first. Avoid uncontrolled feedback.',
   },
@@ -520,7 +520,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: which mic keeps one distance as the head turns?', options: ['A headset boom', 'A desk-arm mic', 'Both of them'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you move the headset capsule from the mouth corner to straight in front of the lips. What changes?', options: ['More pops and breath', 'More crowd', 'It depends on this commentator'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'A figure-8 lip mic faces the mouth. Where is it least sensitive to the PA?', options: ['Straight behind it', 'At its sides', 'In front of it'], after: 'Now turn or tilt the mic with AIM and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip the analyst’s mic polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the analyst’s mic polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

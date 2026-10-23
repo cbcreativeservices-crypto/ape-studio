@@ -284,7 +284,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern Nashville masters commonly land at −9 to −7 LUFS-I. Because that is louder than −14 LUFS, a common streaming recommendation puts true peak at or below −2 dBTP (−1 dBTP is enough for quieter masters). Traditional, Americana-leaning and acoustic records sit around −12 to −10 LUFS-I. A PLR of roughly 8–11 dB (at −2 dBTP that means a master at about −10 LUFS-I or quieter) and a loudness range of 5–8 LU keeps ballads breathing and choruses lifting."
+      "text": "Modern Nashville masters commonly land at −9 to −7 LUFS-I. Because that is louder than −14 LUFS, a common streaming recommendation puts true peak at or below −2 dBTP (−1 dBTP is enough for quieter masters). Traditional, Americana-leaning and acoustic records sit around −12 to −10 LUFS-I. Those quieter records can keep a PLR (peak minus loudness) of roughly 8–11 dB; at −2 dBTP that means about −10 LUFS-I or quieter, while a loud modern master leaves only 5–7 dB. A loudness range of 5–8 LU keeps ballads breathing and choruses lifting."
     }
   ],
   "liveStudio": {

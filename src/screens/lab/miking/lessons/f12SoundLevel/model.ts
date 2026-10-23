@@ -86,7 +86,7 @@ export const F12_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: ['slm'] },
     drawn: { side: { u0: 60, u1: 300, v0: -1600, v1: -1400 }, top: { u0: 60, u1: 300, v0: FACADE_MID_Z - 1000, v1: FACADE_MID_Z + 1000 } },
     start: { p: F12_START.wall, az: 0, el: 90 },
-    tendency: 'The direct sound and the wall’s reflection arriving close together: near the most the facade can add, which only a mic flat on the wall gets in full. A method that asks for it corrects for it; never call it a free-field reading.',
+    tendency: 'The direct sound and the wall’s reflection arriving close together. The closer the mic, the more the facade adds; only a mic flat on the wall gets the full amount. A method that asks for it corrects for it; never call it a free-field reading.',
     checks: ['Close, but nothing touching the wall', 'The method’s correction for a facade position', 'The tripod clear of anyone’s path'],
   },
 ];

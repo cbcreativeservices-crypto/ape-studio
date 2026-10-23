@@ -283,11 +283,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Stadium and coast-festival shows (large line arrays with delay towers for 25,000–50,000 people) typically run 97–102 dBA LAeq-15 at FOH and about 112–120 dBC, peaks 110–115 dBA. The style needs solid low-mid and moderate sub; a C-minus-A gap above 18–20 dB suggests too much. Wedding halls are the risk zone: reflective rooms, guests of all ages near the PA for 4–6 hours. Aim for 90–96 dBA LAeq there and leave the already-loud zaffa (wedding procession) drums barely reinforced. By common hearing-safety guidance, 100 dBA is safe for about 15 minutes."
+      "text": "Stadium and coast-festival shows (large line arrays with delay towers for 25,000–50,000 people) typically run 97–102 dBA LAeq-15 at FOH and about 112–120 dBC LCeq, peaks 110–115 dBA. The style needs solid low-mid and moderate sub; a C-minus-A gap above 18–20 dB suggests too much. Wedding halls are the risk zone: reflective rooms, guests of all ages near the PA for 4–6 hours. Aim for 90–96 dBA LAeq there and leave the already-loud zaffa (wedding procession) drums barely reinforced. NIOSH advises no more than about 15 minutes a day at 100 dBA."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Up-tempo masters commonly reach −9 to −6 LUFS-I, ballads −11 to −9, with true peak at −1 dBTP (−2 dBTP when louder than −14 LUFS). Services normalize to about −14 LUFS, so over-limiting gains nothing and costs string swells and darbuka (goblet drum) punch. A PLR of 8–11 dB (at −2 dBTP that means a master at about −10 LUFS-I or quieter) and loudness range of 5–9 LU keep the intro-to-chorus contrast."
+      "text": "Up-tempo masters commonly reach −9 to −6 LUFS-I, ballads −11 to −9, with true peak at −1 dBTP (−2 dBTP when louder than −14 LUFS). Services normalize to about −14 LUFS, so over-limiting gains nothing and costs string swells and darbuka (goblet drum) punch. A PLR of 8–11 dB and a loudness range of 5–9 LU keep the intro-to-chorus contrast; at −2 dBTP that PLR means about −10 LUFS-I or quieter, a little below the common up-tempo range."
     }
   ],
   "liveStudio": {
@@ -320,7 +320,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "97–102 dBA LAeq-15; halls 90–96 dBA",
-        "studio": "−9 to −6 LUFS-I, −2 dBTP"
+        "studio": "Often −9 to −6 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],
     "notes": []

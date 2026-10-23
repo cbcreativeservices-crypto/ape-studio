@@ -46,7 +46,7 @@ export function harpPatchVerdict(p: HarpPatch): PatchVerdict {
 export const HARP_PATCHES: readonly { id: HarpPatch; label: string; short: string; text: string }[] = [
   { id: 'harpToAmp', label: 'Harp mic → the amp’s input', short: 'HARP MIC → AMP', text: 'OK: a harp mic is usually made for a high-impedance input like the amp’s. Turn its volume down before you plug in, then bring it up while keeping away from the speakers.' },
   { id: 'harpToDesk', label: 'Harp mic → a desk mic input', short: 'HARP MIC → DESK', text: 'CHECK FIRST: its output is usually high-impedance; a standard low-impedance mic input needs a matching transformer or a DI. A connector that fits proves nothing, and do not assume phantom power is safe for it — read its manual.' },
-  { id: 'spkToDesk', label: 'The amp’s speaker output → the desk', short: 'SPEAKER OUT → DESK', text: 'STOP: a speaker output carries power for a speaker and goes to a speaker only, by a speaker cable — never into a mic, line or DI input. Mic the speaker instead.' },
+  { id: 'spkToDesk', label: 'The amp’s speaker output → the desk', short: 'SPEAKER OUT → DESK', text: 'STOP: a speaker output carries power for a speaker and goes to a speaker, by a speaker cable — never into a mic or line input, or an ordinary DI. Only a DI made for speaker level, used as its manual says, can take it, with the speaker still connected. Mic the speaker instead.' },
   { id: 'standToDesk', label: 'Stand mic → a desk mic input', short: 'STAND MIC → DESK', text: 'OK: a stand mic for the acoustic harmonica goes to an ordinary mic input. Mute the outputs before switching any phantom power.' },
 ];
 

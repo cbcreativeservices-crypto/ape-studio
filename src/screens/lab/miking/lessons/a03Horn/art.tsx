@@ -69,7 +69,7 @@ export const HORN_ART: LessonArt = {
         { title: 'LISTEN FROM BOTH SIDES', text: 'Walk to an audience seat in front, then to a safe spot behind and beside the bell. The difference you hear — softer and blended in front, more forceful behind — is the choice the mics will make.' },
         { title: 'WORK WITH THE HORN AS IT IS', text: 'The horn and its finish are the player’s. Nothing clamps the detachable bell joint, the valve linkage or where the hand goes; a clip only if its maker confirms it fits this horn, and only with the player’s agreement.' },
       ],
-      hearing: 'Protect your hearing in loud rehearsals and on loud stages. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Standing right behind a horn bell is loud: keep your time there short, and use hearing protection.',
+      hearing: 'Protect your hearing in loud rehearsals and on loud stages. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Standing right behind a horn bell is loud: keep your time there short, and use hearing protection.',
     }),
   },
 };

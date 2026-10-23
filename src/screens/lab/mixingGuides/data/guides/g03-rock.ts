@@ -17,7 +17,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "100–150 BPM (ballads 65–90; shuffles and up-tempo rockers to 160+)",
     "ensemble": "4–6 piece band: drums, bass, 1–2 electric guitars, keys, lead vocal plus 1–3 backing vocals",
     "priority": "The drums-and-bass engine with the lead vocal riding clearly on top",
-    "liveSpl": "98–103 dBA Leq (LAeq-15 min); roughly 115–125 dBC; many festivals cap at 100–105 dBA",
+    "liveSpl": "98–103 dBA Leq (LAeq-15 min); roughly 112–120 dBC LCeq; many festivals cap at 100–105 dBA",
     "studioLoudness": "Modern masters commonly −10 to −7 LUFS-I (classic catalog remasters around −12 to −9); streaming normalizes to about −14"
   },
   "purpose": [
@@ -271,7 +271,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and theater rock typically runs 96–102 dBA LAeq-15 at FOH, arenas and festivals 100–105 dBA, with C-weighted levels around 115–125 dBC; a C-minus-A gap of 20 dB or more signals excessive sub. Peaks run 110–115 dBA. Many European festivals enforce limits such as 100 dBA over 60 minutes or 102–103 dBA LAeq-15 at FOH, with peak caps around 115 dBA. Rock needs moderate sub, not EDM-level sub. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes—offer earplugs and protect your own ears."
+      "text": "Club and theater rock typically runs 96–102 dBA LAeq-15 at FOH, arenas and festivals 100–105 dBA, with C-weighted LCeq around 112–120 dBC; a C-minus-A gap of 20 dB or more signals excessive sub. Peaks run 110–115 dBA. Many European festivals enforce limits such as 100 dBA over 60 minutes or 102–103 dBA LAeq-15 at FOH, and some also cap C-weighted peaks (such as 135 dBC). Rock needs moderate sub, not EDM-level sub. NIOSH advises no more than about 15 minutes a day at 100 dBA—offer earplugs and protect your own ears."
     },
     {
       "label": "Studio / streaming:",

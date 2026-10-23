@@ -452,7 +452,7 @@ const SCENES: SceneDef[] = [
     title: 'FAST vs SLOW RESPONSE',
     watch: 'Both meters are fed the identical stepped pattern above them. FAST flicks past the 85 marker on peaks; SLOW settles on the trend.',
     body: 'FAST and SLOW are meter ballistics — time constants of 125 ms and 1 s. FAST resolves every short event, which is what you want when hunting transients; SLOW damps the same input into a stable value you can log and compare against exposure limits. Neither is more accurate, and two readings only compare when both meters used the same response.',
-    note: 'Exposure is a dose — level × time. The 85 dBA action level is an 8-hour average, so judge it from SLOW or logged readings, never from FAST flickers.',
+    note: 'Exposure is a dose — level × time. 85 dBA (the NIOSH 8-hour recommendation and the OSHA action level) is an 8-hour average, so judge it from SLOW or logged readings, never from FAST flickers.',
   },
 ];
 
@@ -796,7 +796,7 @@ function FastSlowScene() {
           </View>
           <View style={[styles.calloutAnnot, { top: BAR3_H * (1 - ACTION_FRAC) - 5 }]}>
             <View style={[styles.calloutLeader, { backgroundColor: SALMON }]} />
-            <Text style={[styles.calloutText, { color: SALMON }]}>85 dB SPL · ACTION</Text>
+            <Text style={[styles.calloutText, { color: SALMON }]}>85 dBA · ACTION</Text>
           </View>
           <View style={[styles.calloutAnnot, { top: BAR3_H * (1 - SLOW_TREND_FRAC) - 5 }]}>
             <View style={styles.calloutLeader} />

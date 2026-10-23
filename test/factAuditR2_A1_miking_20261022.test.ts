@@ -31,7 +31,7 @@ const PINS: { id: string; file: string; now: string; gone: string }[] = [
   { id: 'F015204', file: 'a01Trumpet/copy.ts', now: 'Feedback is made on purpose only to ring out a system — by its operator, at a controlled level.', gone: 'Never create feedback deliberately' },
   { id: 'F021171', file: 'b01RadioHost/copy.ts', now: 'any ring-out is the system operator’s job', gone: 'never raise a level to find feedback' },
   { id: 'F030882', file: 'c08BassAmp/lesson.ts', now: "'No — a speaker output never feeds either'", gone: 'goes only to a speaker' },
-  { id: 'F036564', file: 'c12Clavinet/lesson.ts', now: 'Never tape a mic to the grille cloth', gone: 'The mic never touches the grille' },
+  { id: 'F036564', file: 'c12Clavinet/lesson.ts', now: 'Do not tape a mic to the grille cloth', gone: 'The mic never touches the grille' },
   { id: 'F025307', file: 'b08Audience/lesson.ts', now: 'we found no source that gives a crowd mic’s height', gone: 'no source gives a crowd mic’s height' },
   { id: 'F030379', file: 'c05cUkulele/lesson.ts', now: "'This miniature condenser needs phantom power, which this input does not have.'", gone: "'A miniature condenser needs phantom power" },
 ];

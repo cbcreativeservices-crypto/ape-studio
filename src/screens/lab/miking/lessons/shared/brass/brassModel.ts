@@ -77,7 +77,7 @@ export function brassModel(P: HornPose, o: BrassModelOpts): InstrumentModel {
     'br.leadpipe': { label: 'leadpipe', short: 'leadpipe', role: 'The tube the mouthpiece fits into: the air column starts here.' },
     'br.slides': { label: 'tuning and valve slides', short: 'slides', role: 'Short U-shaped slides set the tuning; the valve slides are the extra lengths each valve brings in. Players pull them out to tune — keep clips and cables clear.' },
     'br.valves': { label: slide ? 'valve section' : 'valves', short: slide ? 'valves' : 'valves', role: slide ? 'Two rotary valves in the bell section, worked by the left hand: each brings in an extra loop of tube for the lowest notes.' : 'Three piston valves. Pressing one sends the air round an extra loop of tube, lowering the pitch.' },
-    'br.slide': { label: 'slide', short: 'slide', role: 'The long U of tube the right hand moves: out to make the tube longer and the pitch lower — seven positions from 1st (closed) to 7th (out at arm’s length). It is precision tubing: never let anything touch it.' },
+    'br.slide': { label: 'slide', short: 'slide', role: 'The long U of tube the right hand moves: out to make the tube longer and the pitch lower — seven positions from 1st (closed) to 7th (out at arm’s length). It is precision tubing: keep everything clear of it.' },
   };
   for (const t of P.tubes) {
     for (let i = 0; i < t.pts.length - 1; i++) {

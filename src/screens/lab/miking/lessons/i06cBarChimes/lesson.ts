@@ -57,7 +57,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Two microphones',
     goal: 'Put a mic at each end of the row: see how the bars reach them at different times, what polarity does and does not change, and judge the pair in mono.',
-    credit: { scenarios: ['bc.two.1', 'bc.two.2', 'bc.two.3', 'bc.two.4'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
+    credit: { scenarios: ['bc.two.1', 'bc.two.2', 'bc.two.3', 'bc.two.4'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
     takeaway: 'Almost every bar reaches two end mics at different times — a different delay for every bar along the sweep; only a bar midway between them arrives at both at once. Polarity flips the sign; it does not remove a delay. Check width and mono; start with one mic.',
   },
   troubleshoot: {
@@ -430,7 +430,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 40 cm to 80 cm. What changes most?', options: ['A more even row, more room', 'More attack, less room', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits downstage, behind the mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'Two mics at the two ends: which bar reaches both mics at the same time?', options: ['A bar in the middle', 'The longest bar', 'Every bar'], after: 'Flip B POLARITY both ways, then move a mic — and try each SOURCE along the row.' },
+  twoMic: { prompt: 'Two mics at the two ends: which bar reaches both mics at the same time?', options: ['A bar in the middle', 'The longest bar', 'Every bar'], after: 'Flip MIC B POLARITY both ways, then move a mic — and try each SOURCE along the row.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

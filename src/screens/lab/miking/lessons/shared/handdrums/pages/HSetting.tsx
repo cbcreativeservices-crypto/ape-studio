@@ -158,7 +158,7 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
             <Point title="ASK THE PLAYER FIRST">{H.before.ask}</Point>
             <Point title="WORK WITH THE DRUMS AS THEY ARE">{H.before.asIs}</Point>
           </Card>
-          <Note tone="warn">Protect your hearing during loud strokes and soundcheck. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens. It has nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
+          <Note tone="warn">Protect your hearing during loud strokes and soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens. They have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />
         </>
       ),

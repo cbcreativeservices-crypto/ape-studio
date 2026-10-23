@@ -120,7 +120,7 @@ const scenarios: MikingScenario[] = [
     explain: 'One egg or two, how far apart the hands go, how the palm covers the shell — all decide where a mic can go and what it hears.',
     why: {
       'One clean stroke, so that the level can be set from it alone': 'One stroke hides the second hand, the biggest gesture and the grip.',
-      'Nothing yet: put the mic up, then adjust the player': 'Never adjust the player to fit a mic; place the mic for the player.',
+      'Nothing yet: put the mic up, then adjust the player': 'Start by placing the mic for the player, not the player for the mic; any change to the part is the player’s call.',
     },
   },
   hearingCheck(W),
@@ -406,7 +406,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: two eggs, hands wide apart. Can one mic still serve?', options: ['Yes, from farther back', 'No — two mics are needed', 'It depends on the part'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

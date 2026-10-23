@@ -86,7 +86,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
     limitations: [
       'Bulkier than 1/4-inch or 3.5 mm connectors',
       'The same 3-pin shell serves several different jobs (analog audio, AES3 digital, some control uses) — the connector alone does not identify the signal',
-      'Phantom power on the line can misbehave with equipment not designed to receive it — verify before patching',
+      'Phantom power on the line can upset or damage equipment not built to receive it — verify before patching',
     ],
     commonMistakes: [
       'Assuming every XLR connection is an analog microphone signal',
@@ -200,7 +200,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
       {
         otherId: 'ts_speaker_legacy',
         otherName: 'Speaker cable with 1/4-inch TS plugs',
-        why: 'Same plug, different cable: instrument cable is a shielded small-gauge conductor for tiny signals; speaker cable is two heavier unshielded conductors for amplifier current. Older amplifiers and loudspeakers used TS jacks for speaker connections, so both cables exist in the field.',
+        why: 'Same plug, different cable: instrument cable is a shielded small-gauge conductor for tiny signals; speaker cable is two heavier unshielded conductors for amplifier current. Many amplifiers and cabinets use TS jacks for the speaker link — most guitar and bass amps still do — so both cables turn up in the field.',
         consequence:
           'An instrument cable on a speaker run loses power in its small conductor and can heat at higher power — a reliability problem that can become cable failure and put the amplifier at risk. A speaker cable used for an instrument has no shield, so it hums and buzzes — noise, not damage.',
       },
@@ -223,7 +223,7 @@ export const CONNECTORS_ANALOG: ConnectorRecord[] = [
     safety: {
       level: 'signal',
       cautions: [
-        'The plug fitting a jack does not confirm the level behind it. Legacy amplifier speaker outputs also use 1/4-inch TS jacks — verify what a jack carries before patching. Speaker connections follow a different rule: power the amplifier off before connecting or disconnecting a speaker cable. A tube amplifier driven without a speaker load can damage its output transformer and tubes — turning the volume down is not enough.',
+        'The plug fitting a jack does not confirm the level behind it. Many amplifier speaker outputs use 1/4-inch TS jacks too — most guitar and bass amps and cabinets do — so verify what a jack carries before patching. Speaker connections follow a different rule: power the amplifier off before connecting or disconnecting a speaker cable. A tube amplifier driven without a speaker load can damage its output transformer and tubes — turning the volume down is not enough.',
       ],
     },
     glossary: ['TS Connector (Tip-Sleeve)', 'DI box (direct injection)'],

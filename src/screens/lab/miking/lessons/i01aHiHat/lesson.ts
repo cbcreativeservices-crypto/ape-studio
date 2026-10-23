@@ -356,7 +356,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A studio session in a good room. The overheads give a crisp hi-hat. ONE spare channel, with NO phantom power.',
     setups: [
       { id: 'a', label: 'No hat mic: the overheads already carry the hats clearly', ok: true, power: 'none', feedback: 'A fair plan when the overheads carry the hats — fewer open mics, nothing to power.' },
-      { id: 'b', label: 'A small dynamic over the far edge, aimed down, the snare on the far side of the pair', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
+      { id: 'b', label: 'A small dynamic over the far edge, aimed down, the snare on the far side of the pair', ok: true, power: 'none', feedback: 'A suggested starting point. A dynamic needs no phantom power, so this input works for it.' },
       { id: 'c', label: 'A small condenser 5–10 cm above the bow, away from the snare', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A clip-on condenser under the bottom cymbal', ok: false, power: 'phantom', feedback: 'A fair position — but this condenser needs phantom power, and this input has none.' },
       { id: 'e', label: 'A mic straight over the clutch, touching the pull rod to hold it still', ok: false, power: 'none', feedback: 'Never on the rod or the clutch: they move with the pedal. Keep the mic clear.' },
@@ -371,7 +371,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you slide the mic’s aim from the edge toward the cup. What changes?', options: ['More of the lower tones', 'More of the high overtones', 'It depends on these hats'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The mic under the hats points up. Where will a supercardioid reject the floor monitor best?', options: ['Straight below the mic', 'Below, off to one side', 'Level with the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
-  twoMic: { prompt: 'If you flip the under mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the under mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 /* THE QUICK CHECK (LESSON_JOURNEY §2.5): two per foundation; q.6 critical. */

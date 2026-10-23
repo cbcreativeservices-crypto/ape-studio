@@ -41,7 +41,7 @@ describe('fact audit R2 · mixing guides: fixed claims', () => {
   it('blues: the 11–15 dB PLR is for traditional masters only', () => {
     const s = g('g31-blues');
     assert.match(s, /For traditional masters, aim for a PLR of 11–15 dB/);
-    assert.match(s, /louder electric masters land nearer 7–9 dB/);
+    assert.match(s, /[Ll]ouder electric masters land nearer 7–9 dB/);
   });
   it('classical: largo at 40 BPM, harp is not percussion, no wrong 5–7 dB gap', () => {
     const s = g('g15-classical-orchestral');
@@ -79,7 +79,7 @@ describe('fact audit R2 · mixing guides: fixed claims', () => {
     assert.match(s, /stationary systems at 120 dBA and moving units at 85 dBA/);
     assert.match(s, /static systems at 120 dBA \(2025 rule\)/);
     assert.match(s, /120 dBA East Java static systems/);
-    assert.doesNotMatch(s, /120 dB(?!A)/);
+    assert.doesNotMatch(s, /120 dB(?![AC])/); // Round A 2026-10-23: "112–120 dBC LCeq" is the C-weighted show level, not a cap
   });
   it('a dotted 1/8 is the same note as 3/16', () => {
     assert.match(g('g45-drum-and-bass'), /Dotted 1\/8 \(same as 3\/16\) at 174 BPM/);

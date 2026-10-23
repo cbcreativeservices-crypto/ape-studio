@@ -55,7 +55,7 @@ const SPECS: VoiceZoneSpec[] = [
   {
     id: 'rp.screen',
     label: 'A close condenser behind a screen',
-    band: 'Try a studio condenser close — up to about 15 cm (6 in) from the lips — with a pop screen in front. With the screen at least 10 cm ahead of the mic, the mic itself starts about 15 cm out.',
+    band: 'Try a studio condenser close — about 15 cm (6 in) from the lips — with a pop screen in front. With the screen 10 cm ahead of the mic, as drawn here, the mic cannot come much closer than about 15 cm.',
     kind: 'sourced',
     src: R.sm4.src,
     quote: R.sm4.quote,

@@ -84,6 +84,7 @@ function learnerText(g: Guide): { path: string; text: string }[] {
 }
 
 /** Brands, models, platforms and named authorities never shown to a learner
+ *  (WHO, NIOSH and OSHA are no longer banned: owner rule 1, 2026-10-23 - hearing guidance names the authority)
  *  (mirrors scripts/mixing-guides/flags.py, the conversion's own gate). */
 const BRANDS = [
   'Shure', 'SM ?5[78]\\w*', 'SM ?7\\w*', 'Beta ?\\d+\\w*', 'KSM ?\\d*\\w*', 'Telefunken', 'M8[01]', 'DPA', 'd:facto', 'Sony', 'C-?800G?',
@@ -97,7 +98,7 @@ const BRANDS = [
   'Tele', 'Strat\\w*', 'Jazzmasters?', 'Rickenbacker', 'Gibson', 'ES-335', 'Les Paul', 'Bassman', 'JC-?120', 'Marshall\\w*', 'Ampeg\\w*',
   'SansAmp\\w*', 'Big Muff', 'P-bass', 'Dobro', 'Hohner', 'Fishman', 'DiGiCo', 'RIVAGE', 'Axient', 'L-Acoustics', 'L-ISA', 'Meyer',
   'd&b', 'TiMax', 'KLANG', 'Spotify\\w*', 'YouTube\\w*', 'Apple(?: Music)?', 'Tidal', 'Amazon', 'Anghami', 'SoundCloud', 'TikTok',
-  'WhatsApp', 'Netflix', 'Bluetooth', 'Atmos', 'Dolby', 'MultiTracks\\w*', 'Loop Community', 'WHO', 'NIOSH', 'OSHA', 'AES', 'AAO-HNS',
+  'WhatsApp', 'Netflix', 'Bluetooth', 'Atmos', 'Dolby', 'MultiTracks\\w*', 'Loop Community', 'AES', 'AAO-HNS',
   'EBU', 'ARIB', 'DIN', 'NHK', 'Sound On Sound', 'Mix magazine', 'ProSoundWeb', 'Luminate', 'IFPI',
 ];
 const BRAND_RE = new RegExp(`(?<![\\w-])(?:${BRANDS.join('|')})(?![\\w])`);

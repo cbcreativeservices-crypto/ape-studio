@@ -20,8 +20,8 @@ import type { GVariant, GuitarScene, ZoneSpec } from '../shared/guitars/guitarMo
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 
 export const C05B_VARIANTS: GVariant[] = [
-  { id: 'a', label: 'A-STYLE', blurb: 'A teardrop body with an oval sound hole — often a rounder, more vocal character.', phrase: 'an A-style mandolin', spec: MANDO_A, posture: 'standing' },
-  { id: 'f', label: 'F-STYLE', blurb: 'A carved body with two f-holes, a scroll and points — often more treble attack and percussive chop.', phrase: 'an F-style mandolin', spec: MANDO_F, posture: 'standing' },
+  { id: 'a', label: 'A-STYLE', blurb: 'A teardrop body, most often with an oval sound hole — often a rounder, more vocal character.', phrase: 'an A-style mandolin', spec: MANDO_A, posture: 'standing' },
+  { id: 'f', label: 'F-STYLE', blurb: 'A carved body with a scroll and points, most often with two f-holes — often more treble attack and percussive chop.', phrase: 'an F-style mandolin', spec: MANDO_F, posture: 'standing' },
 ];
 
 const STAND = ['sdcCard', 'instDynCard'];

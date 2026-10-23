@@ -19,7 +19,7 @@ const SPEC = ensembleHandSpec({
   firstZone: 'ch.live',
   firstMic: 'arrCard',
   mic: {
-    intro: 'A transducer category alone does not decide tone, spill or headroom: read the real mic’s specifications. Area mics: directional condensers on tall stands, a tighter pattern where the PA is loud. A main pair: matched cardioids (X/Y, the 17 cm pair) or omnis in a fine, quiet room; a figure-8 for an M/S Side. Each needs phantom power.',
+    intro: 'A transducer category alone does not decide tone, spill or headroom: read the real mic’s specifications. Area mics: directional condensers on tall stands, a tighter pattern where the PA is loud. A main pair: matched cardioids (X/Y, the 17 cm pair) or omnis in a fine, quiet room; a figure-8 for an M/S Side. The condensers need phantom power; if the figure-8 is a ribbon, check its manual before you switch phantom on.',
     mountLine: () => 'Mount: a tall stand with a wide base, clear of the risers’ edges, the singers’ feet and their sightlines to the conductor; anything hung is the venue’s, in front of the mouths — never over the heads',
     extra: ARRAY_CARDS,
   },
@@ -43,7 +43,7 @@ const SPEC = ensembleHandSpec({
     B: { zone: 'ch.spot', mic: 'arrCard' },
     names: { A: 'MAIN PAIR', B: 'SOPRANO SPOT' },
     looking: 'Two mics · A the main pair’s centre, B the soprano spot',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE: each section reaches the two mics at its own times.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each section reaches the two mics at its own times.',
     label: 'The choir on risers with the main pair (A) and a soprano spot (B)',
     warn: 'This simplified graph shows one point source and straight paths, no room. A section is many singers at different distances, so one delay never suits them all — judge by ear, in mono, against the pair alone.',
     learn: [
@@ -63,7 +63,7 @@ const SPEC = ensembleHandSpec({
     placeBadge: 'Blue = suggested starting points · grey dashes = the singers’ space · pinch to zoom',
     clearance: 'Clearance comes first: the risers’ edges, the singers’ feet and their way on and off, the sightlines to the conductor. Nothing hangs over the singers.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. An area mic aimed down at the choir turns its back up and toward the hall — a floor monitor below it sits off that axis, so tilt the mic or try a tighter pattern.',
-    sourceNote: 'What you just saw: a section reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each section gives its own delay.',
+    sourceNote: 'What you just saw: a section reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each section gives its own delay.',
   },
 });
 

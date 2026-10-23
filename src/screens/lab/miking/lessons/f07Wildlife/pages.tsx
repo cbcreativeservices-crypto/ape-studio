@@ -155,7 +155,7 @@ function F07Context({ lesson, answers, onAnswered, onInteractive, interactiveDon
       { title: 'LEVELS', text: 'Listen for the strongest likely call and leave headroom; raising the gain also raises the mic’s own noise and the place’s. A plane or a gust in the beam still spoils a take.' },
       { title: 'FILM OR LIBRARY', text: 'Keep the raw targeted take, log the species or its uncertainty and the place, and record a separate wide habitat bed if it is needed. Label any processed version and keep the original.' },
       { title: 'LIVE COVERAGE', text: 'Mount securely in an approved place, protect it from the weather, route it only to the feeds that need it and check any PA path for feedback. A moving narrow beam makes level jumps; a shotgun or a wider mic may serve an audience more steadily.' },
-      { title: 'MONITORING', text: 'A tracked target and a fixed recorder answer different questions. For comparisons between sites or seasons, keep the mic, its settings, orientation, place, dates, schedule and weather notes the same. One clear call proves an event — not how many animals there are, or where there are none.' },
+      { title: 'MONITORING', text: 'A tracked target and a fixed recorder answer different questions. To compare sites or seasons, keep the mic, its settings, height, orientation and schedule the same, and log the dates and weather the same way each time. One clear call proves an event — not how many animals there are, or where there are none.' },
     ]),
     fieldCheckStep(lesson, 'context', answers, onAnswered),
   ];

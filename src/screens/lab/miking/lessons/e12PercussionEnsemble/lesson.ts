@@ -48,7 +48,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'The main pair and a support',
     goal: 'The main pair and the conga mic: see how much earlier the support hears the drums, what polarity changes and what it does not, and judge the sum in mono.',
-    credit: { scenarios: ['pe.two.0', 'pe.two.1', 'pe.two.2'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
+    credit: { scenarios: ['pe.two.0', 'pe.two.1', 'pe.two.2'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
     takeaway: 'One strike reaching several mics at different times changes the attack and tone. Change position, angle or the support’s level first; never align every spot to one strike by reflex.',
   },
   troubleshoot: {
@@ -416,7 +416,7 @@ const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern rejects most of what is behind the conga mic?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the pair from 2 m to 2.5 m. What changes?', options: ['Which surfaces and instruments dominate', 'Only the level', 'Nothing a listener would notice'], after: 'Higher, the distances to the front and back instruments change — and so do the surfaces the pair hears. Compare at matched level; higher is not automatically better.' },
   context: { prompt: 'The wedge sits in front of the congas on the floor. Can the conga mic’s rejection reach it?', options: ['Yes — turn the mic’s back toward it', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'The pair and the conga mic. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE to another instrument.' },
+  twoMic: { prompt: 'The pair and the conga mic. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another instrument.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

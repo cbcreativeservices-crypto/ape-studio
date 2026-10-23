@@ -490,7 +490,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'cert-sound-design-with-synthesis-v3': [
     { key: 'tr_oscillator', why: 'Synthesis starts with what the oscillator is actually producing.' },
-    { key: 'tr_modular', why: 'Oscillator, filter, amplifier, LFO and envelope is the signal flow behind most synthesisers.' },
+    { key: 'tr_modular', why: 'Oscillator, filter and amplifier, shaped by an LFO and an envelope, is the plan behind most synthesisers.' },
     { key: 'tr_fm', why: 'FM is a widely used technique and one of the least understood.' },
   ],
   /**
@@ -542,8 +542,8 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   'cert-time-based-and-creative-fx-v3': [
     { key: 'tr_reverb', why: 'Reverb is one of the two named topics of this certificate.' },
     { key: 'tr_delay', why: 'Delay is the other, and chorus and flanging below are built from it.' },
-    { key: 'tr_chorus', why: 'Chorus is a modulated delay — the first of the three sweeping-notch effects.' },
-    { key: 'tr_flanger', why: 'Flanging is the same idea at a shorter delay, and it sounds nothing like chorus.' },
+    { key: 'tr_chorus', why: 'Chorus is a modulated delay — the first of the three sweeping effects, heard as shimmer more than a sweeping notch.' },
+    { key: 'tr_flanger', why: 'Flanging is the same idea at a shorter delay, and it sounds clearly different from chorus.' },
     { key: 'tr_phaser', why: 'Phasing uses all-pass stages instead of delay, and the difference matters in a mix.' },
     { key: 'ear_delay', why: 'Setting a delay to the song means hearing its time, not reading it.' },
     { key: 'ear_reverb', why: 'Telling a room from a plate from a hall by ear is what choosing a reverb depends on.' },

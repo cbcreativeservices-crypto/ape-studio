@@ -61,7 +61,7 @@ const pages: LessonPages = {
     title: 'Two sources',
     goal: 'Blend a front and a rear mic on the open-backed combo — or a mic and the direct signal — and see what polarity does and does not change.',
     credit: { scenarios: ['rh.two.1', 'rh.two.2', 'rh.two.3'], interactive: 'polarityVsDelay', note: 'Flip the polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
-    takeaway: 'Hear each source alone, then together in mono, at matched levels. The direct signal arrives first and lacks the speaker and room. Move or rebalance before reaching for polarity or delay; polarity flips the sign, it does not remove a delay.',
+    takeaway: 'Hear each source alone, then together in mono, at matched levels. The direct signal arrives first and lacks the speaker and room. Move or rebalance before reaching for polarity or delay. The one exception is a mic behind an open back: it starts out inverted, so try its polarity first. Polarity flips the sign; it does not remove a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -341,10 +341,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip one source’s polarity. What happens to the arrival-time difference?',
     options: ['Nothing — polarity flips the sign, not the timing', 'It drops to zero, so the two arrivals line up exactly', 'It doubles, because the copy is inverted'],
     correct: 'Nothing — polarity flips the sign, not the timing',
-    explain: 'Polarity reverses the signal’s sign. Only moving a mic, or delaying its channel, changes when the sound arrives: the notches move, the delay does not.',
+    explain: 'Polarity reverses the signal’s sign. When you flip it, the notches and peaks swap places, but the delay does not change. Only moving a mic, or delaying its channel, changes when the sound arrives.',
     why: {
       'It drops to zero, so the two arrivals line up exactly': 'The paths are unchanged, so the delay stays.',
-      'It doubles, because the copy is inverted': 'Polarity has no time in it. Only a position changes the delay.',
+      'It doubles, because the copy is inverted': 'Polarity has no time in it. Only moving a mic, or delaying its channel, changes the delay.',
     },
   },
   {
@@ -631,9 +631,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about standing by a loud amp all through soundcheck?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe while the amp stays below the level of the mic’s rating', 'It is safe as long as the mic is closer than you are'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
-      'It is safe while the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe while the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is closer than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens.',
     },
   },

@@ -96,7 +96,7 @@ const METHODS: Method[] = [
   { id: 'shotgun', label: 'A perimeter shotgun', short: 'SHOTGUN', gives: 'Aimed detail from a closer permitted zone — fixed on a stand, or safely operated.', limit: 'Its rejection depends on frequency: through the lows and mids it hears like its capsule, narrower only higher up. Aim and distance change the tone. It has no acoustic zoom.', mics: [SG_A], note: 'Read the model’s pattern drawings: a shotgun can have side and rear pickup.' },
   { id: 'dish', label: 'A parabolic dish', short: 'DISH', gives: 'Selected distant transients or calls, from a permitted viewing position, turned within an approved arc.', limit: 'Focus and aim are critical; a portable dish helps the high frequencies most. A crowd or PA on its axis is favoured along with the play.', mics: [DISH_A], note: 'Assembled with the maker’s capsule, focal reference and mount — never a shotgun at the focus by assumption.' },
   { id: 'ambience', label: 'Fixed ambience', short: 'AMBIENCE', gives: 'A stable mono or stereo sense of the venue and its audience, through every play.', limit: 'Less action isolation; a nearby spectator or the PA can dominate it.', mics: [AMB_E], note: 'An XY pair of cardioids is a useful starting comparison; a single broad mic a simpler mono fallback.' },
-  { id: 'structure', label: 'An approved structure or boundary mic', short: 'STRUCTURE', gives: 'A repeatable local effect where a specific mount is allowed — the backstop side of the plate, an approved surface.', limit: 'Impact, vibration, the ball and the structure’s own rules can rule it out. Nothing on goals, nets or flagposts.', mics: [{ ...B13_SETUPS[2].mics[0], id: 'st' }], scene: BASE, box: { x0: -30, y0: -26, x1: 30, y1: 34 }, note: 'Mounting approval first; never through screening into live-ball space.' },
+  { id: 'structure', label: 'An approved structure or boundary mic', short: 'STRUCTURE', gives: 'A repeatable local effect where a specific mount is allowed — the backstop side of the plate, an approved surface.', limit: 'Impact, vibration, the ball and the structure’s own rules can rule it out. Nothing goes on goals, nets or flagposts without the competition’s approval.', mics: [{ ...B13_SETUPS[2].mics[0], id: 'st' }], scene: BASE, box: { x0: -30, y0: -26, x1: 30, y1: 34 }, note: 'Mounting approval first; never through screening into live-ball space.' },
 ];
 
 function B13Microphone(p: PageProps) {
@@ -173,7 +173,7 @@ function B13TwoMic(p: PageProps) {
     onInteractive: p.onInteractive,
     done: p.interactiveDone.has('polarityVsDelay'),
     prediction: p.lesson.predictions.twoMic,
-    intro: 'Walk the source from A to C (WALK): the shotgun at M and the ambience at E hear it at different times. Flip mic B’s POLARITY both ways and watch which readouts change.',
+    intro: 'Walk the source from A to C (WALK): the shotgun at M and the ambience at E hear it at different times. Flip the POLARITY of the second mic, the ambience mic at E, both ways and watch which readouts change.',
   });
   return <PageSteps steps={[overlap, checkStep(p, 'twoMic')]} />;
 }

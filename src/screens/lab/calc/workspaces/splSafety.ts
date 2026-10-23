@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { DBU_REF_V, P_REF_PA, SPL_OF_1_PA, fmt, fmtCount, snapWhole } from '../calcUnits';
+import { DBU_REF_V, P_REF_PA, SPL_CEILING_WHY, SPL_FIELD_RANGE, SPL_OF_1_PA, fmt, fmtCount, fmtNotWhole, overAirCeiling, snapWhole } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]) => (Array.isArray(v) ? v : [v]);
@@ -155,6 +155,17 @@ export const AMP_ATTENUATOR_NOTE =
   'If they are turned down, the amp has less gain than the spec says, so measure the real gain again and redo the threshold.';
 
 /** Leq when every paired duration is 0 min — an average over no time. */
+/** D53 (audit R2, 2026-10-23): a level past the ceiling of air is refused in
+ *  words, never printed (a card showed "1.000e8 dB SPL" and "196 dB SPL"). */
+const pastCeiling = (db: number): string | null =>
+  overAirCeiling(db) ? `${SPL_CEILING_WHY} Check the levels and distances you entered.` : null;
+/** The mic's output can never reach the preamp's clip point. */
+const MIC_NEVER_CLIPS =
+  'This mic cannot put out enough to clip the preamp — no sound in air is loud enough (about 194 dB SPL is the limit). Watch the mic’s own max SPL instead.';
+/** "1 level but 3 durations — only the first pair is counted" (singular at 1). */
+const pairsMsg = (nl: number, nt: number, m: number) =>
+  `You entered ${nl} level${nl === 1 ? '' : 's'} but ${nt} duration${nt === 1 ? '' : 's'} — only the first ${m === 1 ? 'pair is' : `${m} pairs are`} counted.`;
+
 const LEQ_NO_TIME =
   'The durations add up to 0 minutes, so there is no time to average the levels over and no Leq to give. Enter how long each level lasted — at least one interval longer than 0 minutes.';
 
@@ -191,11 +202,11 @@ const WS_SPL_DIST: Workspace = {
     'never as a venue prediction.',
   glossary: ['Sound Pressure Level', 'Decibel', 'Inverse Square Law', 'Free field', 'Critical distance'],
   fields: [
-    { key: 'l1', name: 'KNOWN LEVEL L₁', quantity: 'spl', signed: true, placeholder: '100', help: 'The measured or specified level at the reference distance.' },
-    { key: 'd1', name: 'REFERENCE DISTANCE d₁', quantity: 'length', placeholder: '1', help: 'The distance at which L₁ was measured (often 1 m on spec sheets).', warn: { test: (x) => x <= 0, msg: 'Reference distance must be greater than zero.' } },
-    { key: 'd2', name: 'NEW DISTANCE d₂', quantity: 'length', placeholder: '8', help: 'The distance where you want to know (or set) the level.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'l1', name: 'KNOWN LEVEL L₁', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '100', help: 'The measured or specified level at the reference distance.' },
+    { key: 'd1', name: 'REFERENCE DISTANCE d₁', quantity: 'length', placeholder: '1', help: 'The distance at which L₁ was measured (often 1 m on spec sheets).', positive: true, warn: { test: (x) => x <= 0, msg: 'Reference distance must be greater than zero.' } },
+    { key: 'd2', name: 'NEW DISTANCE d₂', quantity: 'length', placeholder: '8', help: 'The distance where you want to know (or set) the level.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'rate', name: 'FALLOFF PER DOUBLING', quantity: 'db', nonNegative: true, placeholder: '4.5', help: 'dB lost each time distance doubles: 6 = point source, 3 = ideal line source, real arrays land between.' },
-    { key: 'lTarget', name: 'TARGET LEVEL AT d₂', quantity: 'spl', signed: true, placeholder: '96', help: 'The level you want the listener at d₂ to receive.' },
+    { key: 'lTarget', name: 'TARGET LEVEL AT d₂', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '96', help: 'The level you want the listener at d₂ to receive.' },
   ],
   functions: [
     {
@@ -209,6 +220,7 @@ const WS_SPL_DIST: Workspace = {
         'A free-field point source loses 6 dB every time the distance doubles. This predicts the level at a new distance from a known level at a known distance — the basis of every coverage question, from the back row to the front-row heat.',
       keySymbols: ['−', '·', 'log₁₀', '/', 'x₁'],
       note: 'Free-field point source: −6 dB per doubling of distance.',
+      refuse: (v) => pastCeiling(n(v.l1) - 20 * Math.log10(n(v.d2) / n(v.d1))),
       compute: (v) => {
         const drop = 20 * Math.log10(n(v.d2) / n(v.d1));
         return [
@@ -237,6 +249,7 @@ const WS_SPL_DIST: Workspace = {
         'An idealized (infinite) line source spreads cylindrically, so it loses only 3 dB per doubling of distance — half the falloff of a point source. Real line arrays only approximate this, and only in their near field, which is exactly why arrays throw farther.',
       keySymbols: ['−', '·', 'log₁₀', '/', 'x₁'],
       note: 'Idealized (infinite) line source: −3 dB per doubling. Real line arrays only approximate this, and only in their near field.',
+      refuse: (v) => pastCeiling(n(v.l1) - 10 * Math.log10(n(v.d2) / n(v.d1))),
       compute: (v) => {
         const drop = 10 * Math.log10(n(v.d2) / n(v.d1));
         return [
@@ -264,6 +277,7 @@ const WS_SPL_DIST: Workspace = {
         'Uses a measured per-doubling falloff rate instead of the ideal 6 or 3 dB. Real arrays typically land between the two. The base-two log turns the distance ratio into a number of doublings, each costing the entered rate.',
       keySymbols: ['−', '·', '/', 'x₁'],
       note: 'Use a measured per-doubling rate — real arrays typically land between 3 and 6 dB per doubling.',
+      refuse: (v) => pastCeiling(n(v.l1) - n(v.rate) * Math.log2(n(v.d2) / n(v.d1))),
       compute: (v) => {
         const drop = n(v.rate) * Math.log2(n(v.d2) / n(v.d1));
         return [
@@ -292,6 +306,12 @@ const WS_SPL_DIST: Workspace = {
         'The reverse of the point-source law: how loud a source must be at the reference distance to deliver a target level farther away. It adds back the distance loss the target must overcome — sizing a system before the show.',
       keySymbols: ['·', 'log₁₀', '/', 'x₁'],
       note: 'Reverse of the point-source law: how loud must it be at the reference distance to deliver the target level at d₂.',
+      // A required level past the ceiling of air is no source at all (audit
+      // R2, 2026-10-23): a 192 dB SPL target at 8 m asked for "210.1 dB SPL".
+      refuse: (v) =>
+        overAirCeiling(n(v.lTarget) + 20 * Math.log10(n(v.d2) / n(v.d1)))
+          ? 'No source can do this — at d₁ it would need more than about 194 dB SPL, the loudest sound air can carry. Lower the target or move the listener closer.'
+          : null,
       compute: (v) => {
         const gain = 20 * Math.log10(n(v.d2) / n(v.d1));
         return [
@@ -332,7 +352,7 @@ const WS_SPL_ADD: Workspace = {
     'source buys less than the last.',
   mistakes: [
     'Adding decibels arithmetically — 95 + 95 = 190 is the classic. Two equal uncorrelated sources give +3 dB, never a doubling of the numbers.',
-    'Expecting two subs to give +6 dB everywhere. Coherent (in-phase, same-signal) coupling can reach +6 dB at some positions, but uncorrelated or partially correlated summing gives +3 dB — and phase misalignment can give less, or cancellation. This tool computes the uncorrelated (energy) sum.',
+    'Expecting two subs to give +6 dB everywhere. Coherent (in-phase, same-signal) coupling can reach +6 dB at some positions. Uncorrelated summing gives +3 dB, and partly correlated summing falls in between — while phase misalignment can give less, or cancellation. This tool computes the uncorrelated (energy) sum.',
     'Removing a much quieter source and expecting an audible change — anything more than ~10 dB below the loudest contributes under half a dB to the total.',
   ],
   warnings:
@@ -343,11 +363,11 @@ const WS_SPL_ADD: Workspace = {
   glossary: ['Sound Pressure Level', 'Decibel', 'Incoherent Summation', 'Phase', 'Correlation'],
   fields: [
     { key: 'levels', name: 'SOURCE LEVELS', quantity: 'list', signed: true, placeholder: '95, 92, 88', help: 'The individual levels in dB SPL, comma-separated — one per source.' },
-    { key: 'lvl', name: 'LEVEL OF ONE SOURCE', quantity: 'spl', signed: true, placeholder: '95', help: 'The level a single one of the identical sources produces at the listening position.' },
+    { key: 'lvl', name: 'LEVEL OF ONE SOURCE', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '95', help: 'The level a single one of the identical sources produces at the listening position.' },
     { key: 'count', name: 'NUMBER OF SOURCES', quantity: 'number', nonNegative: true, integer: true, placeholder: '4', help: 'How many identical, uncorrelated sources are running.', warn: { test: (x) => x < 1, msg: 'Need at least one source.' } },
     { key: 'delta', name: 'TARGET INCREASE', quantity: 'db', nonNegative: true, placeholder: '6', help: 'How many dB louder than ONE source you want the combined total to be.' },
-    { key: 'la', name: 'LOUDER SOURCE', quantity: 'spl', signed: true, placeholder: '95', help: 'Level of the first source at the listening position.' },
-    { key: 'lb', name: 'QUIETER SOURCE', quantity: 'spl', signed: true, placeholder: '84', help: 'Level of the second source at the listening position.' },
+    { key: 'la', name: 'LOUDER SOURCE', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '95', help: 'Level of the first source at the listening position.' },
+    { key: 'lb', name: 'QUIETER SOURCE', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '84', help: 'Level of the second source at the listening position.' },
   ],
   functions: [
     {
@@ -360,6 +380,10 @@ const WS_SPL_ADD: Workspace = {
       explain:
         'Decibels are logarithms, so levels never add arithmetically. This converts each level back to an energy ratio, sums the energy, and converts back — the right way to combine independent (uncorrelated) sources. It shows how much the total sits above the loudest single source.',
       keySymbols: ['·', 'log₁₀', 'Σ', 'x²', 'x₁'],
+      refuse: (v) => {
+        const ls = arr(v.levels);
+        return ls.some(overAirCeiling) ? `${SPL_CEILING_WHY} Check the levels you entered.` : pastCeiling(dbSum(ls));
+      },
       compute: (v) => {
         const ls = arr(v.levels);
         const tot = dbSum(ls);
@@ -406,6 +430,7 @@ const WS_SPL_ADD: Workspace = {
       explain:
         'N identical, uncorrelated sources add N times the energy, which is 10·log(N) of gain: two give +3 dB, four give +6 dB, ten give +10 dB. Each new identical source buys less than the last.',
       keySymbols: ['·', 'log₁₀'],
+      refuse: (v) => pastCeiling(n(v.lvl) + 10 * Math.log10(n(v.count))),
       compute: (v) => {
         const gain = 10 * Math.log10(n(v.count));
         return [
@@ -432,15 +457,24 @@ const WS_SPL_ADD: Workspace = {
         'The reverse: how many uncorrelated sources a target increase over one source needs. Because doubling sources always buys just +3 dB, the price of each extra dB grows fast — a 6 dB gain needs four sources, 10 dB needs ten.',
       keySymbols: ['x²', 'Δ', '/'],
       note: 'Uncorrelated sum. Doubling sources always buys +3 dB — the price of each extra dB grows fast.',
+      // An increase whose source count overflows (audit R2, 2026-10-23) got the
+      // generic "check for zeros" error, which names the wrong cause.
+      refuse: (v) =>
+        Number.isFinite(Math.pow(10, n(v.delta) / 10))
+          ? null
+          : 'That gain would need more sources than could ever exist. Enter a smaller increase.',
       compute: (v) => {
         const N = Math.pow(10, n(v.delta) / 10);
         return [
-          { label: 'EXACT SOURCE MULTIPLE', value: N, quantity: 'number', chainable: false },
+          // Never a bare "1" for a multiple above 1 (audit R2, 2026-10-23).
+          fmt(N) === String(Math.round(N)) && N !== Math.round(N)
+            ? { label: 'EXACT SOURCE MULTIPLE', text: `${fmtNotWhole(N)}×` }
+            : { label: 'EXACT SOURCE MULTIPLE', value: N, quantity: 'number', chainable: false },
           {
             label: 'PRACTICAL ANSWER',
             // "1 sources (next whole number above 1×)" at 0 dB, and "above 4×" for an
             // exact 4 (calc check A, 2026-10-03) — a whole multiple is not rounded up.
-            text: `You need ${fmtCount(Math.ceil(snapWhole(N)))} source${Math.ceil(snapWhole(N)) === 1 ? '' : 's'} (${fmt(N)}× rounded up to a whole number) to gain at least ${fmt(n(v.delta))} dB over one source.`,
+            text: `You need ${fmtCount(Math.ceil(snapWhole(N)))} source${Math.ceil(snapWhole(N)) === 1 ? '' : 's'} (${fmtNotWhole(N)}× rounded up to a whole number) to gain at least ${fmt(n(v.delta))} dB over one source.`,
           },
         ];
       },
@@ -448,8 +482,8 @@ const WS_SPL_ADD: Workspace = {
         const d = n(v.delta);
         const N = Math.pow(10, d / 10);
         return [
-          `A ${fmt(d)} dB increase is an energy ratio of 10^(${fmt(d)}/10) = ${fmt(N)}×.`,
-          `Uncorrelated sources contribute equal energy, so you need ${fmt(N)}× the sources — round up to ${fmtCount(Math.ceil(snapWhole(N)))} in practice.`,
+          `A ${fmt(d)} dB increase is an energy ratio of 10^(${fmt(d)}/10) = ${fmtNotWhole(N)}×.`,
+          `Uncorrelated sources contribute equal energy, so you need ${fmtNotWhole(N)}× the sources — round up to ${fmtCount(Math.ceil(snapWhole(N)))} in practice.`,
         ];
       },
     },
@@ -463,6 +497,7 @@ const WS_SPL_ADD: Workspace = {
       explain:
         'Energy-sums two levels and checks which dominates. When one source is more than about 10 dB below the other, it adds under half a dB — muting it barely moves the meter. Within 10 dB, both matter. It is why removing a quiet channel often barely changes the total level.',
       keySymbols: ['·', 'log₁₀', 'x²'],
+      refuse: (v) => pastCeiling(dbSum([n(v.la), n(v.lb)])),
       compute: (v) => {
         const la = n(v.la);
         const lb = n(v.lb);
@@ -526,7 +561,8 @@ const WS_DOSE: Workspace = {
     'conservation programs — talk to a qualified professional for anything real.',
   glossary: ['Sound Pressure Level', 'Decibel', 'A weighting', 'Leq', 'Exposure/Dose', 'Exchange rate'],
   fields: [
-    { key: 'lex', name: 'EXPOSURE LEVEL', quantity: 'spl', signed: true, placeholder: '94', help: 'The A-weighted level (dBA) the person is exposed to.' },
+    // dBA, not dB SPL (audit R2, 2026-10-23): the criterion is A-weighted.
+    { key: 'lex', name: 'EXPOSURE LEVEL', quantity: 'spl', unitIds: ['dba'], defaultUnit: 'dba', signed: true, ...SPL_FIELD_RANGE, placeholder: '94', help: 'The A-weighted level (dBA) the person is exposed to.' },
     { key: 'doseLevels', name: 'INTERVAL LEVELS', quantity: 'list', signed: true, placeholder: '85, 94, 100', help: 'A-weighted level (dBA) of each interval, comma-separated — paired by position with the durations below.' },
     { key: 'doseMins', name: 'INTERVAL DURATIONS', quantity: 'list', nonNegative: true, placeholder: '240, 90, 30', help: 'Duration of each interval in MINUTES, comma-separated — same order as the levels.' },
   ],
@@ -541,7 +577,8 @@ const WS_DOSE: Workspace = {
       explain:
         'How long a level can run before the NIOSH-style criterion (85 dBA, 3 dB exchange, 8 hours) is used up. Every 3 dB above 85 halves the allowable time — brutally unintuitive, and why turning it up “just a little” matters so much. A teaching calculation, not medical or legal advice.',
       keySymbols: ['/', 'x²', '−'],
-      note: 'Criterion 85 dBA · exchange rate 3 dB · reference duration 8 h. Recommended-practice style; not a legal limit.',
+      // Names the authorities (owner ruling 2026-10-23).
+      note: 'Criterion 85 dBA · exchange rate 3 dB · reference duration 8 h. NIOSH recommends 85 dBA for 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       compute: (v) => {
         const T = allowMin(n(v.lex), 85, 3);
         const none = nioshNoLimit(n(v.lex));
@@ -638,7 +675,7 @@ const WS_DOSE: Workspace = {
             ? [
                 {
                   label: 'CHECK INPUTS',
-                  text: `You entered ${ls.length} levels but ${ts.length} durations — only the first ${m} pairs are counted.`,
+                  text: pairsMsg(ls.length, ts.length, m),
                 },
               ]
             : []),
@@ -715,7 +752,7 @@ const WS_DOSE: Workspace = {
             ? [
                 {
                   label: 'CHECK INPUTS',
-                  text: `You entered ${ls.length} levels but ${ts.length} durations — only the first ${m} pairs are counted.`,
+                  text: pairsMsg(ls.length, ts.length, m),
                 },
               ]
             : []),
@@ -809,14 +846,14 @@ const WS_DOSE: Workspace = {
             ? [
                 {
                   label: 'CHECK INPUTS',
-                  text: `You entered ${ls.length} levels but ${ts.length} durations — only the first ${m} pairs are counted.`,
+                  text: pairsMsg(ls.length, ts.length, m),
                 },
               ]
             : [];
         if (!(tt > 0)) return [...check, { label: 'NO TIME TO AVERAGE', text: LEQ_NO_TIME, refusal: true }];
         return [
           ...check,
-          { label: 'Leq OVER THE INTERVALS', value: 10 * Math.log10(e / tt), quantity: 'spl' },
+          { label: 'Leq OVER THE INTERVALS', value: 10 * Math.log10(e / tt), quantity: 'spl', unit: 'dba' },
           { label: 'TOTAL DURATION', value: tt * 60, quantity: 'time', unit: 'min', chainable: false },
         ];
       },
@@ -871,8 +908,8 @@ const WS_MIC_GAIN: Workspace = {
     'load impedance. This workspace models the spec-sheet number at 1 Pa (≈ 94 dB SPL; exactly 93.98 dB SPL).',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Gain Staging', 'Headroom', 'Preamplifier'],
   fields: [
-    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Millivolts out per pascal (1 Pa ≈ 94 dB SPL). Dynamics ≈ 1–3 mV/Pa; condensers ≈ 8–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity Converter.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
-    { key: 'spl', name: 'SOURCE SPL AT THE MIC', quantity: 'spl', signed: true, placeholder: '94', help: 'The sound pressure level arriving at the capsule.' },
+    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Millivolts out per pascal (1 Pa ≈ 94 dB SPL). Dynamics ≈ 1–3 mV/Pa; condensers ≈ 8–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity Converter.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
+    { key: 'spl', name: 'SOURCE SPL AT THE MIC', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '94', help: 'The sound pressure level arriving at the capsule.' },
     { key: 'target', name: 'TARGET LEVEL', quantity: 'db', signed: true, placeholder: '4', help: 'The output level you want after the preamp, in dBu (+4 dBu = pro line level).' },
     // nonNegative (full-app run 2, 2026-10-01): a −12 dB "headroom" ADDED 12 dB
     // to the recommended gain — peaks then clipped 12 dB past the target.
@@ -961,20 +998,32 @@ const WS_MIC_GAIN: Workspace = {
       plainFormula:
         'The maximum SPL equals 93.98 (the SPL of exactly 1 pascal) plus the preamp’s input clip level in dBu, minus the mic’s output level at 1 pascal.',
       explain:
-        'Where the mic’s own output reaches the preamp’s input clip point — the SPL at which you should engage a pad. Because the output tracks SPL dB-for-dB, a hotter mic clips the preamp at a lower SPL. The mic also has its own max-SPL limit to respect.',
+        'Where the mic’s own output reaches the preamp’s input clip point at minimum gain — engage a pad before this SPL. With more gain dialled in, the preamp clips sooner. Because the output tracks SPL dB-for-dB, a hotter mic clips the preamp at a lower SPL. The mic also has its own max-SPL limit to respect.',
       keySymbols: ['−'],
       note: 'Where the MIC OUTPUT alone hits the preamp’s input clip point — engage a pad before this, and remember the mic has its own max-SPL limit too.',
       compute: (v) => {
         // The sensitivity is the output at 1 Pa, which is 93.98 dB SPL — not
         // 94 (calc follow-up 2026-10-03: the 0.02 dB was dropped).
         const sensDbu = 20 * Math.log10(n(v.sens) / 1000 / V_REF_DBU);
+        const clip = SPL_OF_1_PA + n(v.maxIn) - sensDbu;
+        // Past the ceiling of air the answer is words (audit R2, 2026-10-23):
+        // a 2e-6 mV/Pa mic printed a clip point of "275.7 dB SPL".
+        if (overAirCeiling(clip)) {
+          return [
+            { label: 'SPL AT PREAMP INPUT CLIP', text: MIC_NEVER_CLIPS },
+            { label: 'MIC LEVEL AT 1 Pa (≈ 94 dB SPL)', value: sensDbu, quantity: 'db', chainable: false },
+          ];
+        }
         return [
-          { label: 'SPL AT PREAMP INPUT CLIP', value: SPL_OF_1_PA + n(v.maxIn) - sensDbu, quantity: 'spl' },
+          { label: 'SPL AT PREAMP INPUT CLIP', value: clip, quantity: 'spl' },
           { label: 'MIC LEVEL AT 1 Pa (≈ 94 dB SPL)', value: sensDbu, quantity: 'db', chainable: false },
         ];
       },
       steps: (v) => {
         const sensDbu = 20 * Math.log10(n(v.sens) / 1000 / V_REF_DBU);
+        if (overAirCeiling(SPL_OF_1_PA + n(v.maxIn) - sensDbu)) {
+          return [`At 1 Pa (${fmt(SPL_OF_1_PA)} dB SPL) this mic outputs ${fmt(n(v.sens))} mV = ${fmt(sensDbu)} dBu.`, MIC_NEVER_CLIPS];
+        }
         return [
           `At 1 Pa (${fmt(SPL_OF_1_PA)} dB SPL) this mic outputs ${fmt(n(v.sens))} mV = ${fmt(sensDbu)} dBu.`,
           `Mic output tracks SPL dB-for-dB, so it reaches the ${fmt(n(v.maxIn))} dBu clip point at ${fmt(SPL_OF_1_PA)} + ${fmt(n(v.maxIn))} − (${fmt(sensDbu)}) = ${fmt(SPL_OF_1_PA + n(v.maxIn) - sensDbu)} dB SPL.`,
@@ -1019,8 +1068,8 @@ const WS_LIMITER: Workspace = {
     'dialing in the result.',
   glossary: ['Limiter', 'Headroom', 'Gain Staging', 'Power', 'Impedance', 'Decibel'],
   fields: [
-    { key: 'pwr', name: 'SPEAKER CONTINUOUS RATING', quantity: 'power', placeholder: '500', help: 'The CONTINUOUS (RMS/AES-style) power rating — not program, not peak.', warn: { test: (x) => x <= 0, msg: 'Power rating must be greater than zero.' } },
-    { key: 'z', name: 'NOMINAL IMPEDANCE', quantity: 'impedance', placeholder: '8', help: 'The speaker’s nominal impedance; real impedance varies with frequency.', warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
+    { key: 'pwr', name: 'SPEAKER CONTINUOUS RATING', quantity: 'power', placeholder: '500', help: 'The CONTINUOUS (RMS/AES-style) power rating — not program, not peak.', positive: true, warn: { test: (x) => x <= 0, msg: 'Power rating must be greater than zero.' } },
+    { key: 'z', name: 'NOMINAL IMPEDANCE', quantity: 'impedance', placeholder: '8', help: 'The speaker’s nominal impedance; real impedance varies with frequency.', positive: true, warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
     // nonNegative (full-app run 2, 2026-10-01): the gain is SUBTRACTED, so a
     // typed −32 set the threshold 64 dB ABOVE the safe one. No power amp has
     // negative voltage gain.

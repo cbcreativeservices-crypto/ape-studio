@@ -7,7 +7,7 @@
  * QuantityKind for either); the compute() converts to base H/F.
  */
 import type { Workspace } from '../calcTypes';
-import { ALPHA_CU_20C, BTU_PER_HR_PER_W, CU_TEMP_RANGE, awgAreaM2, fmt, fmtInt, rhoCopper, snapWhole } from '../calcUnits';
+import { ALPHA_CU_20C, BTU_PER_HR_PER_W, CU_TEMP_RANGE, awgAreaM2, fmt, fmtInt, fmtNotWhole, rhoCopper, snapWhole } from '../calcUnits';
 import { AMPACITY_CALC_NAME } from './ampacity';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
@@ -81,9 +81,9 @@ const TRANSFORMER: Workspace = {
     'transformers add insertion loss, limited bandwidth, and saturation the ideal ignores.',
   glossary: ['Audio transformer', 'Impedance', 'Voltage', 'Turns ratio', 'Current'],
   fields: [
-    { key: 'zp', name: 'PRIMARY IMPEDANCE', quantity: 'impedance', placeholder: '600', help: 'Impedance seen at the primary (input) side.', warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
-    { key: 'zs', name: 'SECONDARY IMPEDANCE', quantity: 'impedance', placeholder: '150', help: 'Impedance of the load on the secondary (output) side.', warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
-    { key: 'turns', name: 'TURNS RATIO (primary:secondary)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Primary turns ÷ secondary turns.', warn: { test: (x) => x <= 0, msg: 'Turns ratio must be greater than zero.' } },
+    { key: 'zp', name: 'PRIMARY IMPEDANCE', quantity: 'impedance', placeholder: '600', help: 'Impedance seen at the primary (input) side.', positive: true, warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
+    { key: 'zs', name: 'SECONDARY IMPEDANCE', quantity: 'impedance', placeholder: '150', help: 'Impedance of the load on the secondary (output) side.', positive: true, warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
+    { key: 'turns', name: 'TURNS RATIO (primary:secondary)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Primary turns ÷ secondary turns.', positive: true, warn: { test: (x) => x <= 0, msg: 'Turns ratio must be greater than zero.' } },
   ],
   functions: [
     {
@@ -174,8 +174,8 @@ const PADS: Workspace = {
     'Pi-pad: series R = Z·(K²−1)/(2K), each shunt R = Z·(K+1)/(K−1).',
   glossary: ['Attenuation', 'Impedance', 'Decibel', 'Gain Staging', 'Pad'],
   fields: [
-    { key: 'atten', name: 'ATTENUATION', quantity: 'db', nonNegative: true, placeholder: '20', help: 'How many dB to drop the signal.', warn: { test: (x) => x <= 0, msg: 'Attenuation must be greater than zero dB.' } },
-    { key: 'z', name: 'CHARACTERISTIC IMPEDANCE', quantity: 'impedance', placeholder: '600', help: 'The line impedance the pad must match on both sides.', warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
+    { key: 'atten', name: 'ATTENUATION', quantity: 'db', nonNegative: true, placeholder: '20', help: 'How many dB to drop the signal.', positive: true, warn: { test: (x) => x <= 0, msg: 'Attenuation must be greater than zero dB.' } },
+    { key: 'z', name: 'CHARACTERISTIC IMPEDANCE', quantity: 'impedance', placeholder: '600', help: 'The line impedance the pad must match on both sides.', positive: true, warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
   ],
   functions: [
     {
@@ -201,9 +201,11 @@ const PADS: Workspace = {
         const K = Math.pow(10, n(v.atten) / 20);
         const Z = n(v.z);
         return [
-          `K = 10^(${fmt(n(v.atten))}/20) = ${fmt(K)}.`,
-          `Series R1 = R2 = ${fmt(Z)}·(${fmt(K)}−1)/(${fmt(K)}+1) = ${fmt((Z * (K - 1)) / (K + 1))} Ω.`,
-          `Shunt R3 = ${fmt(Z)}·2·${fmt(K)}/(${fmt(K)}²−1) = ${fmt((Z * 2 * K) / (K * K - 1))} Ω.`,
+          // K with enough figures to differ from 1 (audit R2, 2026-10-23): a
+          // tiny attenuation showed "K = 1" and then "(1−1)" with a non-zero R.
+          `K = 10^(${fmt(n(v.atten))}/20) = ${fmtNotWhole(K)}.`,
+          `Series R1 = R2 = ${fmt(Z)}·(${fmtNotWhole(K)}−1)/(${fmtNotWhole(K)}+1) = ${fmt((Z * (K - 1)) / (K + 1))} Ω.`,
+          `Shunt R3 = ${fmt(Z)}·2·${fmtNotWhole(K)}/(${fmtNotWhole(K)}²−1) = ${fmt((Z * 2 * K) / (K * K - 1))} Ω.`,
         ];
       },
     },
@@ -230,9 +232,9 @@ const PADS: Workspace = {
         const K = Math.pow(10, n(v.atten) / 20);
         const Z = n(v.z);
         return [
-          `K = 10^(${fmt(n(v.atten))}/20) = ${fmt(K)}.`,
-          `Series R = ${fmt(Z)}·(${fmt(K)}²−1)/(2·${fmt(K)}) = ${fmt((Z * (K * K - 1)) / (2 * K))} Ω.`,
-          `Each shunt R = ${fmt(Z)}·(${fmt(K)}+1)/(${fmt(K)}−1) = ${fmt((Z * (K + 1)) / (K - 1))} Ω (one at each end).`,
+          `K = 10^(${fmt(n(v.atten))}/20) = ${fmtNotWhole(K)}.`,
+          `Series R = ${fmt(Z)}·(${fmtNotWhole(K)}²−1)/(2·${fmtNotWhole(K)}) = ${fmt((Z * (K * K - 1)) / (2 * K))} Ω.`,
+          `Each shunt R = ${fmt(Z)}·(${fmtNotWhole(K)}+1)/(${fmtNotWhole(K)}−1) = ${fmt((Z * (K + 1)) / (K - 1))} Ω (one at each end).`,
         ];
       },
     },
@@ -250,7 +252,7 @@ const VDROP: Workspace = {
     'the load. Enter the wire gauge, the run length, and the current, and see the round-trip ' +
     'resistance, the voltage lost, and the percentage that never arrives.',
   whyItMatters:
-    'Long DC runs to pedals, phantom-power feeds, powered-speaker mains, and lighting all sag if ' +
+    'Long DC runs to pedals, remote 48 V supplies, powered-speaker mains, and lighting all sag if ' +
     'the wire is too thin. A supply that reads fine at the rack can arrive out of spec at the far ' +
     'end. This is how you size a gauge before the gear misbehaves.',
   example:
@@ -273,10 +275,10 @@ const VDROP: Workspace = {
   glossary: ['Voltage', 'Resistance', 'Current', 'AWG', 'Power'],
   fields: [
     { key: 'awg', name: 'WIRE GAUGE (AWG)', quantity: 'number', signed: true, integer: true, range: [-3, 40], placeholder: '16', help: 'American Wire Gauge — smaller number = thicker wire.' },
-    { key: 'len', name: 'RUN LENGTH (one way)', quantity: 'length', placeholder: '30', help: 'One-way cable length; the calc doubles it for the return path.', warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },
-    { key: 'current', name: 'CURRENT', quantity: 'current', nonNegative: true, placeholder: '3', help: 'Current the load draws through the cable.', warn: { test: (x) => x <= 0, msg: 'Current must be greater than zero.' } },
-    { key: 'vsrc', name: 'SUPPLY VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '48', help: 'Source voltage, for the percentage-drop figure.', warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
-    { key: 'pct', name: 'ALLOWABLE DROP', quantity: 'percent', nonNegative: true, placeholder: '3', help: 'The maximum voltage drop you will accept, in percent.', warn: { test: (x) => x <= 0, msg: 'Allowable drop must be greater than zero.' } },
+    { key: 'len', name: 'RUN LENGTH (one way)', quantity: 'length', placeholder: '30', help: 'One-way cable length; the calc doubles it for the return path.', positive: true, warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },
+    { key: 'current', name: 'CURRENT', quantity: 'current', nonNegative: true, placeholder: '3', help: 'Current the load draws through the cable.', positive: true, warn: { test: (x) => x <= 0, msg: 'Current must be greater than zero.' } },
+    { key: 'vsrc', name: 'SUPPLY VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '48', help: 'Source voltage, for the percentage-drop figure.', positive: true, warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
+    { key: 'pct', name: 'ALLOWABLE DROP', quantity: 'percent', nonNegative: true, placeholder: '3', help: 'The maximum voltage drop you will accept, in percent.', positive: true, warn: { test: (x) => x <= 0, msg: 'Allowable drop must be greater than zero.' } },
     { key: 'condTemp', name: 'CONDUCTOR TEMPERATURE', quantity: 'temperature', signed: true, range: CU_TEMP_RANGE, placeholder: '75', help: 'How hot the copper runs. For a cable carrying its full load use the insulation’s rated temperature — 75 °C is the NEC Chapter 9 Table 8 basis. Use 20 °C only for a cool, lightly loaded run. Copper resistance rises 0.393% per °C.' },
   ],
   functions: [
@@ -430,7 +432,7 @@ const RACK: Workspace = {
     'A rack pulling 800 W on 120 V draws ≈ 6.7 A and dumps ≈ 2730 BTU/hr. To hold a 10 °F rise you ' +
     'need roughly 2730 ÷ (1.08·10) ≈ 253 CFM of airflow through it.',
   mistakes: [
-    'Loading a 15 A circuit to its rating — keep continuous draw under ~80% (≈12 A) so it doesn’t nuisance-trip.',
+    'Loading a 15 A circuit to its rating — keep continuous draw under ~80% (≈12 A) so the breaker and wiring don’t overheat or trip.',
     'Forgetting that amplifier heat scales with how hard it’s driven, not its idle draw — size for the show, not the standby.',
     'Sealing gear in a rack with no airflow path — heat has to leave or the thermal protection will end your night.',
   ],
@@ -443,10 +445,10 @@ const RACK: Workspace = {
     'and confirm against the nameplate current rating. Duty cycle and rack airflow paths vary.',
   glossary: ['Power', 'Current', 'Voltage', 'Amplifier'],
   fields: [
-    { key: 'watts', name: 'TOTAL POWER DRAW', quantity: 'power', placeholder: '800', help: 'Sum of every device’s real power draw under load.', warn: { test: (x) => x <= 0, msg: 'Power must be greater than zero.' } },
-    { key: 'mains', name: 'MAINS VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '120', help: 'Wall voltage: 120 V (US) or 230 V (EU).', warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
-    { key: 'dTempF', name: 'ALLOWABLE TEMP RISE (°F)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'How many °F warmer the rack exhaust may be than the intake.', warn: { test: (x) => x <= 0, msg: 'Temperature rise must be greater than zero.' } },
-    { key: 'breaker', name: 'BREAKER RATING', quantity: 'current', nonNegative: true, placeholder: '15', help: 'The circuit breaker’s amp rating, for the safe-load figure.', warn: { test: (x) => x <= 0, msg: 'Breaker rating must be greater than zero.' } },
+    { key: 'watts', name: 'TOTAL POWER DRAW', quantity: 'power', placeholder: '800', help: 'Sum of every device’s real power draw under load.', positive: true, warn: { test: (x) => x <= 0, msg: 'Power must be greater than zero.' } },
+    { key: 'mains', name: 'MAINS VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '120', help: 'Wall voltage: 120 V (US) or 230 V (EU).', positive: true, warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
+    { key: 'dTempF', name: 'ALLOWABLE TEMP RISE (°F)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'How many °F warmer the rack exhaust may be than the intake.', positive: true, warn: { test: (x) => x <= 0, msg: 'Temperature rise must be greater than zero.' } },
+    { key: 'breaker', name: 'BREAKER RATING', quantity: 'current', nonNegative: true, placeholder: '15', help: 'The circuit breaker’s amp rating, for the safe-load figure.', positive: true, warn: { test: (x) => x <= 0, msg: 'Breaker rating must be greater than zero.' } },
   ],
   functions: [
     {
@@ -487,7 +489,7 @@ const RACK: Workspace = {
       explain:
         'The 80% rule for continuous loads (US NEC, 3 hours or more): keep a circuit’s ongoing draw under 80% of its breaker rating so the breaker and wiring don’t overheat or trip. This turns a breaker’s amp rating and the mains voltage into the safe continuous wattage — and the absolute maximum for reference.',
       keySymbols: ['·'],
-      note: 'The 80% rule for continuous loads keeps the breaker from nuisance-tripping.',
+      note: 'The US 80% rule for loads that run for hours keeps the breaker and wires from getting too hot or tripping.',
       compute: (v) => {
         const full = n(v.breaker) * n(v.mains);
         return [
@@ -538,8 +540,8 @@ const COMPLEXZ: Workspace = {
   fields: [
     { key: 'r', name: 'RESISTANCE', quantity: 'impedance', placeholder: '8', help: 'Series resistance in ohms.', warn: { test: (x) => x < 0, msg: 'Resistance cannot be negative.' } },
     { key: 'indmH', name: 'INDUCTANCE (mH)', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Inductance in millihenries.', warn: { test: (x) => x < 0, msg: 'Inductance cannot be negative.' } },
-    { key: 'capuF', name: 'CAPACITANCE (µF)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'Capacitance in microfarads.', warn: { test: (x) => x <= 0, msg: 'Capacitance must be greater than zero.' } },
-    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '1000', help: 'The frequency to evaluate the impedance at.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'capuF', name: 'CAPACITANCE (µF)', quantity: 'number', nonNegative: true, placeholder: '10', help: 'Capacitance in microfarads.', positive: true, warn: { test: (x) => x <= 0, msg: 'Capacitance must be greater than zero.' } },
+    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '1000', help: 'The frequency to evaluate the impedance at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
   functions: [
     {
@@ -582,7 +584,7 @@ const COMPLEXZ: Workspace = {
         return [
           `XL = 2π·${fmt(n(v.f))}·${fmt(L)} = ${fmt(XL)} Ω; XC = 1/(2π·${fmt(n(v.f))}·${fmt(C)}) = ${fmt(XC)} Ω.`,
           `Net reactance X = ${fmt(XL)} − ${fmt(XC)} = ${fmt(X)} Ω.`,
-          `|Z| = √(${fmt(R)}² + ${fmt(X)}²) = ${fmt(mag)} Ω, phase = ${fmt(phase)}° (${phase >= 0 ? 'inductive' : 'capacitive'}).`,
+          `|Z| = √(${fmt(R)}² + ${X < 0 ? `(${fmt(X)})` : fmt(X)}²) = ${fmt(mag)} Ω, phase = ${fmt(phase)}° (${phase >= 0 ? 'inductive' : 'capacitive'}).`,
         ];
       },
     },
@@ -596,6 +598,9 @@ const COMPLEXZ: Workspace = {
       explain:
         'Where inductive and capacitive reactance cancel, the circuit resonates. This finds that frequency for a given inductor and capacitor. At resonance a series LC looks purely resistive (and a parallel LC looks very large) — the tuning behind crossovers and filters.',
       keySymbols: ['f', '/', 'π', '·', '√', 'x₁'],
+      // 0 mH is a valid entry on the impedance card (an RC circuit), but here
+      // it has no resonance — said in words (audit R2, 2026-10-23).
+      refuse: (v) => (n(v.indmH) > 0 ? null : 'Enter an inductance above 0 mH. With no inductance there is no resonance.'),
       compute: (v) => {
         const L = n(v.indmH) / 1000;
         const C = n(v.capuF) / 1e6;

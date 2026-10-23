@@ -450,7 +450,7 @@ registerActivityChecks({
     },
     {
       id: 'phantom-correct',
-      label: 'Every condenser has phantom on, and no line or playback row has it on',
+      label: 'Every condenser and active ribbon in this list has phantom on, and no line, playback or passive ribbon row has it on',
       met: (c) =>
         inputs(c).length > 0 &&
         !inputs(c).some((r) => {

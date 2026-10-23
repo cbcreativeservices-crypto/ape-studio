@@ -1376,8 +1376,9 @@ function M10Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         </Text>
       ) : tone.engineReady ? (
         <Text style={styles.caption}>
-          This engine build predates the stereo dual-oscillator — the drawn sum above stays exact;
-          install the newest dev build to HEAR the drifting-phase demo.
+          {__DEV__
+            ? 'This engine build predates the stereo dual-oscillator — the drawn sum above stays exact; install the newest dev build to HEAR the drifting-phase demo.'
+            : 'This version of the app cannot play this demo yet. The drawn sum above stays exact; update the app to HEAR the drifting-phase demo.'}
         </Text>
       ) : null}
       {wellBottom}
@@ -1495,8 +1496,9 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       <AnalyticBadge text="LAYERS AND SUM DRAWN FROM THE SAME RECIPE THE ENGINE PLAYS · PHASE-LOCKED, SLOWED · EACH ROW'S COLOUR = ITS LEVEL" />
       {!tone.additiveReady && tone.engineReady ? (
         <Text style={styles.caption}>
-          This engine build predates the additive generator — the drawing stays exact; install the
-          newest dev build to HEAR each harmonic enter the tone.
+          {__DEV__
+            ? 'This engine build predates the additive generator — the drawing stays exact; install the newest dev build to HEAR each harmonic enter the tone.'
+            : 'This version of the app cannot play this demo yet. The drawing stays exact; update the app to HEAR each harmonic enter the tone.'}
         </Text>
       ) : null}
       <Text style={styles.caption}>
@@ -1812,7 +1814,7 @@ const STEPS: Step[] = [
     ],
     Rack: M4Rack,
     check: {
-      question: 'To make a LOUDER sound, the speaker cone must…',
+      question: 'To make a LOUDER sound at the SAME pitch, the speaker cone must…',
       options: [
         'Move back and forth MORE OFTEN each second',
         'Move back and forth FARTHER',
@@ -1821,7 +1823,7 @@ const STEPS: Step[] = [
       correctIdx: 1,
       wrongHint: 'Ride the AMP lane and watch the cone: what changes — how OFTEN it moves, or how FAR?',
       reveal:
-        'Farther = bigger pressure swings = louder. Moving back and forth MORE OFTEN squeezes the air more times each second — that changes the PITCH, not the loudness. (Getting closer does sound louder, but the speaker itself isn’t making a louder sound.)',
+        'Farther = bigger pressure swings = louder. Moving back and forth MORE OFTEN squeezes the air more times each second — that changes the PITCH, so it is no longer the same note. (Getting closer does sound louder, but the speaker itself isn’t making a louder sound.)',
     },
   },
   {
@@ -2031,7 +2033,7 @@ const STEPS: Step[] = [
       correctIdx: 2,
       wrongHint: 'Could a meter inside the app know how loud your ROOM is without a calibrated mic? What can it actually measure?',
       reveal:
-        'dBFS is DIGITAL level: distance below the converter’s full scale. It is not SPL and not loudness (Module 9 showed loudness needs the ear’s curve). This app labels every reading honestly — dBFS · uncalibrated — because a number you misread is worse than no number.',
+        'dBFS is DIGITAL level: distance below the converter’s full scale. It is not SPL and not loudness (Module 9 showed loudness needs the ear’s curve). This app labels its readings honestly — dBFS · uncalibrated where that is the truth — because a number you misread is worse than no number.',
     },
   },
   {

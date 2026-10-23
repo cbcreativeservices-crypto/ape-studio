@@ -48,7 +48,7 @@ import { assertJourneyPages } from './_mikingPages.ts';
 const IDS = ['F05', 'F06', 'F07', 'F08'];
 const L = (id: string): Lesson => lessonById(id)!;
 const dist = (a: { x: number; y: number; z: number }, b: { x: number; y: number; z: number }) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
-const RESEARCH = /\b(Cornell|Macaulay|Innercore|Telinga|Wildtronics|OpenStax|Rode|RØDE|Rycote|MKH|Roesch|Sound Devices|Schoeps|SCHOEPS|DPA|Shure|Sennheiser|Neumann|NPS|NWS|NIOSH|OSHA|MUTCD|ANSI|Hecker|Cross|Malcolm|Warner|Watson Wu|Potter|Les Smith)\b/;
+const RESEARCH = /\b(Cornell|Macaulay|Innercore|Telinga|Wildtronics|OpenStax|Rode|RØDE|Rycote|MKH|Roesch|Sound Devices|Schoeps|SCHOEPS|DPA|Shure|Sennheiser|Neumann|NPS|NWS|MUTCD|ANSI|Hecker|Cross|Malcolm|Warner|Watson Wu|Potter|Les Smith)\b/;
 const angleDeg = (a: { x: number; y: number; z: number }, b: { x: number; y: number; z: number }) => (Math.acos(Math.max(-1, Math.min(1, (a.x * b.x + a.y * b.y + a.z * b.z) / (Math.hypot(a.x, a.y, a.z) * Math.hypot(b.x, b.y, b.z))))) * 180) / Math.PI;
 
 describe('frame G and Lab 5’s arrays (lessons/shared/field)', () => {

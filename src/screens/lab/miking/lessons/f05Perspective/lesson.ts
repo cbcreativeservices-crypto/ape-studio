@@ -428,7 +428,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'An X/Y pair and a room mic, all open on the PA', ok: false, power: 'phantom', feedback: 'Each open mic takes margin away. Start with one.' },
       { id: 'e', label: 'Raise the gain until it rings, then back off', ok: false, power: 'phantom', feedback: 'Not until it rings: set the gain the take needs, with a margin.' },
     ],
-    reasons: [CLEAR_REASON('the artist’s path and movement'), { id: 'r.null', label: 'The pattern’s rejection faces the wedge', role: 'required', feedback: 'Say where the wedge sits against the pattern.' }, { id: 'r.op', label: 'Checked with the operator at show level', role: 'optional', feedback: 'A fair live reason.' }, { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Feedback is never provoked.' }],
+    reasons: [CLEAR_REASON('the artist’s path and movement'), { id: 'r.null', label: 'The pattern’s rejection faces the wedge', role: 'required', feedback: 'Say where the wedge sits against the pattern.' }, { id: 'r.op', label: 'Checked with the operator at show level', role: 'optional', feedback: 'A fair live reason.' }, { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Not by you. Only the system operator makes feedback on purpose, to ring out a system at a controlled level.' }],
     explain: 'Two setups pass. What passes is the reasoning: one stable pickup at the station, the wedge in its rejection, the path clear, and the gain checked with the operator.',
   },
 ];
@@ -542,7 +542,7 @@ export const F05_LESSON: Lesson & { sp: SpExtra } = {
       { id: 'room', label: 'the stage room', short: 'THE ROOM', note: 'A farther mic hears more of it — the right room, or the wrong one for the picture.', prov: { kind: 'illustrative', reason: 'F05 L6' }, tag: 'ROOM SOUND', scene: 'studio' },
       { id: 'pa', label: 'the PA and the wedge', short: 'PA · WEDGE', note: 'Live, every open mic hears them: one close pickup, the wedge in its rejection, the open mics few.', prov: { kind: 'illustrative', reason: 'S-AUTOMIX, S-LIVE' }, tag: 'FEEDBACK PATH', scene: 'stage' },
     ],
-    stage: 'LIVE: one stable close mic at a known station, the wedge in its rejection, a second feed only with a purpose — never a ring to find the limit.',
+    stage: 'LIVE: one stable close mic at a known station, the wedge in its rejection, a second feed only with a purpose. Leave any ring-out to the system operator.',
     studio: 'STUDIO: one mic for the whole action, then a room channel or a pair only when the scene asks — each on its own labelled channel.',
   },
   diagnostic,

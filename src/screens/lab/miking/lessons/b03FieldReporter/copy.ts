@@ -32,7 +32,7 @@ const BASE = standingVoiceCopy({
     { title: 'A SAFE SPOT', text: 'The reporter, the guest and the camera operator stay out of vehicle paths, crowd surges, emergency activity and restricted areas. No stand or cable blocks an exit or a walkway. Never put people somewhere unsafe for a quieter background.' },
     { title: 'A STOP SIGNAL', text: 'For a live report, agree a clear stop or move signal with the crew before going on air — and use it.' },
     { title: 'LIGHTNING', text: B03_LIGHTNING },
-    { title: 'RAIN', text: 'A windscreen is not waterproofing: keep the mic, the transmitter and the connectors out of the rain. Do not expose electronics to rain, and never make wind or loudness hazardous for a demonstration.' },
+    { title: 'RAIN', text: 'A windscreen is not waterproofing: keep the mic, the transmitter and the connectors out of the rain. Do not expose electronics to rain.' },
     { title: 'ASK FIRST', text: 'Get the guest’s agreement before bringing a mic close to their face or clipping one to their clothes. Keep the outstretched mic clear of passers-by and vehicles, and never stretch until your stance is unstable.' },
   ],
   studio: {

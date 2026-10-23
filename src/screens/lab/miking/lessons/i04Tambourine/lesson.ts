@@ -34,7 +34,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know where the tambourine player stands, what is around them, what a stage and a studio add — and what to do before any mic.',
     credit: { scenarios: ['tmb.set.1', 'tmb.set.hear', 'tmb.set.2'], note: 'Answer the three checks.' },
-    takeaway: 'Watch the whole arc and the loudest accent, check the instrument, never ask for a swing toward the mic. Protect your hearing.',
+    takeaway: 'Watch the whole arc and the loudest accent, check the instrument, and place the mic for the player rather than asking for a swing toward it. Protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -408,7 +408,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: the mic sits 20 cm in front of the tambourine. Is that its clearance?', options: ['No — the swing may come closer', 'Yes — 20 cm is the gap', 'It depends on the stroke'], after: 'Rest the mic in two zones and read FROM and CLEAR — two different numbers.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

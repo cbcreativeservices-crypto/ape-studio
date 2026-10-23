@@ -50,7 +50,7 @@ const parts: Part[] = [
   { id: 'csn.shell', label: 'shell', short: 'shell', role: 'The cylinder between the heads. With the heads, the tuning and any muffling, it shapes the drum’s ring.', prov: SPEC.depth.prov, solid: S.shell },
   { id: 'csn.hoop', label: 'top rim (hoop)', short: 'rim', role: 'The rim holding the batter head, here a steel triple-flange hoop. Close mics are placed relative to it — and must stay off it.', prov: SPEC.hoop.t.prov, solid: S.hoopTop },
   { id: 'csn.hoopB', label: 'bottom rim (hoop)', short: 'bottom rim', role: 'The rim holding the snare-side head. A bottom mic sits just below it.', prov: SPEC.hoop.t.prov, solid: S.hoopBottom! },
-  { id: 'csn.lugs', label: 'lugs and tension rods (10 per head)', short: 'lugs', role: 'Tension rods tune the drum — ten per head on this one. Tuning is the player’s choice — never re-tune a drum to suit a mic.', prov: SPEC.rods.n.prov, solid: S.lugs },
+  { id: 'csn.lugs', label: 'lugs and tension rods (10 per head)', short: 'lugs', role: 'Tension rods tune the drum — ten per head on this one. Tuning is the player’s choice: ask, and do not re-tune a player’s drum yourself to suit a mic.', prov: SPEC.rods.n.prov, solid: S.lugs },
   {
     id: 'csn.snaresOn',
     label: 'snares (on)',

@@ -251,11 +251,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Large Bollywood tours in arenas and stadiums typically run 95–102 dBA LAeq-15 at FOH, with peaks near 110 dBA and 110–120 dBC on dance numbers. Crowd sing-alongs add several dB, so leave vocal headroom. India’s Noise Pollution Rules, 2000 cap loudspeakers at the boundary at 10 dB(A) above the area’s ambient standard or 75 dB(A), whichever is lower, and ban outdoor amplified sound 10 pm–6 am except on limited festival nights; courts have enforced this on major concerts. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes — offer earplugs to crew. Watch a C-minus-A gap above 20 dB, which signals too much sub."
+      "text": "Large Bollywood tours in arenas and stadiums typically run 95–102 dBA LAeq-15 at FOH, with peaks near 110 dBA and 110–120 dBC on dance numbers. Crowd sing-alongs add several dB, so leave vocal headroom. India’s Noise Pollution Rules, 2000 cap loudspeakers at the boundary at 10 dB(A) above the area’s ambient standard or 75 dB(A), whichever is lower, and ban outdoor amplified sound 10 pm–6 am except on limited festival nights; courts have enforced this on major concerts. NIOSH advises no more than about 15 minutes a day at 100 dBA — offer earplugs to crew. Watch a C-minus-A gap above 20 dB, which signals too much sub."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Dance and item numbers commonly master at −8 to −6 LUFS-I; ballads at −11 to −9 LUFS-I. Keep true peak at −1 dBTP, or −2 dBTP for loud masters, since streaming services normalize to about −14 LUFS and that margin avoids transcoding distortion. Check on phone speakers, where most listeners first hear these songs; theatrical 5.1/immersive versions keep wider dynamics."
+      "text": "Dance and item numbers commonly master at −8 to −6 LUFS-I; ballads at −11 to −9 LUFS-I. Keep true peak at −1 dBTP, or −2 dBTP for loud masters, because lossy streaming files can push peaks higher and distort; streaming services then turn songs down to about −14 LUFS. Check on phone speakers, where most listeners first hear these songs; theatrical 5.1/immersive versions keep wider dynamics."
     }
   ],
   "liveStudio": {
@@ -293,7 +293,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "95–102 dBA LAeq, boundary limit of 75 dB(A) or lower and curfew in India",
-        "studio": "−9 to −6 LUFS-I, −2 dBTP"
+        "studio": "Often −9 to −6 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],
     "notes": []

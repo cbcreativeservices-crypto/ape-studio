@@ -93,12 +93,13 @@ describe('H7-2 — a divider’s attenuation does not depend on the input voltag
     const o = outs('electronics', 'divider', { vin: 0, r1: 10000, r2: 10000 });
     const att = o.find((x) => x.label === 'ATTENUATION');
     assert.ok(att && Number.isFinite(att.value), `ATTENUATION ${att?.value}`);
-    assert.ok(Math.abs(att.value! - 20 * Math.log10(0.5)) < 1e-12);
+    // A MAGNITUDE since audit R2 (2026-10-23): "−6.021 dB of attenuation" was a double negative.
+    assert.ok(Math.abs(att.value! - 20 * Math.log10(2)) < 1e-12);
     assert.ok(steps('electronics', 'divider', { vin: 0, r1: 10000, r2: 10000 }).every(noDashNumber));
   });
   it('unchanged for a real input', () => {
     const att = outs('electronics', 'divider', { vin: 1, r1: 30000, r2: 10000 }).find((x) => x.label === 'ATTENUATION');
-    assert.ok(Math.abs(att!.value! - 20 * Math.log10(0.25)) < 1e-12);
+    assert.ok(Math.abs(att!.value! - 20 * Math.log10(4)) < 1e-12);
   });
 });
 

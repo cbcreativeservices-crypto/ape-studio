@@ -477,10 +477,10 @@ const symptoms: Symptom[] = [
     firstChecks: 'Monitor, lid/mount or hardware contact: reduce the level, secure or relocate safely, and retest.',
     options: ['Reduce the level, then secure or move the mount and retest', 'Keep playing and fix it with EQ during the next song', 'Wedge something between the lid and the rim to stop it buzzing'],
     correct: 'Reduce the level, then secure or move the mount and retest',
-    explain: 'Bring the level down first. Then find what touches what — a mount, a cable, the lid — and secure or relocate it safely, with the owner’s agreement. Never improvise on the lid’s hardware.',
+    explain: 'Bring the level down first. Then find what touches what — a mount, a cable, the lid — and secure or relocate it safely, with the owner’s agreement. Only the owner or a piano technician adjusts the lid’s hardware.',
     why: {
       'Keep playing and fix it with EQ during the next song': 'Feedback and rattles need the level down now, then a physical fix.',
-      'Wedge something between the lid and the rim to stop it buzzing': 'Never alter the lid’s support or hardware. Ask the owner; fix the mount.',
+      'Wedge something between the lid and the rim to stop it buzzing': 'Only the owner or a piano technician alters the lid’s support. Ask the owner; fix the mount.',
     },
   },
   {
@@ -560,7 +560,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a mic back along the strings, away from the hammers. What changes?', options: ['More attack', 'A softer attack', 'It depends on this piano'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this mic, looking down into the piano, reject a side-fill speaker best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
-  twoMic: { prompt: 'If you flip one mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip one mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 /* THE QUICK CHECK (LESSON_JOURNEY §2.5): two items per foundation page; q.6
@@ -633,9 +633,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your piano mic is rated to a very high maximum SPL. What does that tell you about standing by the open piano through a long, loud soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the piano stays below the mic’s rated level', 'It is safe as long as the mic is nearer the hammers than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts; close to the hammers a piano can pass 130 dB. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts; close to the hammers a piano can pass 130 dB. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — measured where the person listens.',
     why: {
-      'It is safe for as long as the piano stays below the mic’s rated level': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for as long as the piano stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is nearer the hammers than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },

@@ -99,6 +99,6 @@ export const ROUTE_WORDS = {
   learn: [
     { title: 'STUDIO', text: 'Separate tracks keep later decisions open. In a shared room, other instruments’ bleed can make the kit cohesive — or reduce later control. A poor-sounding room may favour more close pickup.' },
     { title: 'LIVE', text: 'Open mics hear the monitors and the PA: use the channels the audience needs and check gain before feedback with the system operator. A room or audience mic for a recording or broadcast can stay out of the PA and the wedge mixes.' },
-    { title: 'SOUNDCHECK', text: 'The drummer plays the whole show’s dynamics; the operator checks the kick, snare and tom balance, the cymbals, the monitor sends and the level at the audience. Check mutes, patching and polarity labels. Never induce feedback, and never fix feedback only with a fader after an earlier stage has overloaded.' },
+    { title: 'SOUNDCHECK', text: 'The drummer plays the whole show’s dynamics; the operator checks the kick, snare and tom balance, the cymbals, the monitor sends and the level at the audience. Check mutes, patching and polarity labels. Feedback is made on purpose only to ring out a system — by its operator, at a controlled level. If a stage before the fader overloads, lower its gain: a fader cannot undo it.' },
   ],
 };

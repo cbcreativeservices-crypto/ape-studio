@@ -22,7 +22,7 @@ export const B08_MODEL = sceneModel({
   parts: [
     { id: 'S', label: 'the middle of the audience section', short: 'section', role: 'Where a crowd mic aims: the faces and upper bodies of a representative section.', lesson: false },
     { id: 'N', label: 'the front-row seat nearest the bar', short: 'front row', role: 'The nearest person to a low crowd mic: one clapper here can dominate it.', lesson: false },
-    { id: 'M', label: 'the crowd mic’s place on the rigging bar', short: 'bar', role: 'Above and a little in front of the section — hung only by qualified crew.', lesson: false },
+    { id: 'M', label: 'the crowd mic’s place on the rigging bar', short: 'bar', role: 'Above and a little in front of the section — hung only by a qualified rigger.', lesson: false },
     { id: 'area', label: 'the hall floor', short: 'floor', role: 'Aisles and exits stay clear: no stand or cable in them.', lesson: false },
   ],
   views: { side: { u0: -7500, u1: 7500, v0: -5000, v1: 600 }, top: { u0: -7500, u1: 7500, v0: -10200, v1: 4800 } },

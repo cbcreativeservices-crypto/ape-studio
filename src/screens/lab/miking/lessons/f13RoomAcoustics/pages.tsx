@@ -105,7 +105,7 @@ const F13Before = makeBeforePage({
     { title: 'THE QUESTION AND THE STATE', text: 'Write down the purpose — the room’s own reverberation, the installed system at a listener seat, a treatment change, one recording position — and the room’s state: doors, curtains, movable panels, furniture, people, the air handling. Empty and occupied can differ.' },
     { title: 'THE SOURCE', text: 'For the room itself, a broadly radiating, well-known test source where the method calls for one. A sweep through the installed PA measures the system plus the room — useful, and labelled as such.' },
     { title: 'THE NOISE FIRST', text: 'Before the test, log the room’s noise, band by band, with the air handling and the people as they will be. Close an optional noise source only if the intended state allows it — or come back at a quieter time.' },
-    { title: 'IN A LIVE SPACE', text: 'Coordinate the test with the operator and the venue, mute unrelated program, keep stands and cables out of public routes, and never run an unannounced sweep near performers or an audience. Loudspeakers go on rated supports; flown systems are for qualified crew.' },
+    { title: 'IN A LIVE SPACE', text: 'Coordinate the test with the operator and the venue, mute unrelated program, keep stands and cables out of public routes, and never run an unannounced sweep near performers or an audience. Loudspeakers go on rated supports; flown systems are for qualified riggers.' },
   ],
   safety: [
     'No explosive or firearm-like sources in this lab — ever. Use modest test levels and protect hearing: raise the source only within safe, clean limits.',

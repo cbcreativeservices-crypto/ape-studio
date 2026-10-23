@@ -535,7 +535,7 @@ const setupTasks: SetupTask[] = [
       { id: 'r.pa', label: 'Little of the PA reaches it', role: 'required', feedback: 'Say where the PA is against the mic.' },
       { id: 'r.clear', label: 'The stand is off every path and route', role: 'required', feedback: 'Clearance is part of every passing setup.' },
       { id: 'r.mono', label: 'The stream’s mono path is checked', role: 'optional', feedback: 'A fair live reason.' },
-      { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Not until it rings: backing off from the edge leaves no margin.' },
+      { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Not until it rings: on a live feed the ring goes out to the stream and the crowd. Set the level the scene needs, with a margin.' },
     ],
     explain: 'Two setups pass. What passes is the reasoning: one open channel with little PA in it, the stand clear of every route, and the gain checked with the operator — never by making it ring.',
   },

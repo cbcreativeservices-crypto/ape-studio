@@ -324,7 +324,7 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       <Body>
         Compare, don't cover: a room with every wall absorbed is fatiguing and makes mixes sound dry everywhere else. Switch each item off and on, read the RT60 estimate and the treated-path count, and keep what changes something. The rear wall is often better scattered (a diffuser) than killed, if there is room for one.
       </Body>
-      <Caption>Mount heavy items — bass traps, clouds, wood diffusers — into structure with rated hardware and a safety cable overhead; use fire-rated materials; never block an exit, a heater or a ventilation grille; keep panels clear of sockets, lights and heaters, and never hang a cloud under or over a smoke detector, sprinkler head or light fitting. If in doubt about a fixing, ask someone qualified.</Caption>
+      <Caption>Mount heavy items — bass traps, clouds, wood diffusers — into structure with rated hardware and a safety cable overhead; use fire-rated materials; never block an exit, a heater or a ventilation grille; keep panels clear of sockets and lights, and never hang a cloud under or over a smoke detector, sprinkler head or light fitting. If in doubt about a fixing, ask someone qualified.</Caption>
       <Caption>{`ESTIMATED throughout: broadband teaching coefficients, and a Sabine/Eyring decay that assumes a diffuse field a small room does not have below its Schroeder frequency (≈ ${Number.isFinite(analysis.schroeder) ? Math.round(analysis.schroeder) : '—'} Hz here) — the 125 Hz figure is indicative only. Sabine also ignores air absorption, which matters above a few kHz in a large room. Measure the real room before and after.`}</Caption>
     </RoomRackLayout>
   );

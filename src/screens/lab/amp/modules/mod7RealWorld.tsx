@@ -349,7 +349,7 @@ export function Mod7RealWorld() {
               <FormulaCard
                 title="Level change = 10 · log10(P2 / P1)"
                 lines={[`${ratio.toFixed(2)}× the power = ${deltaDb >= 0 ? '+' : ''}${deltaDb.toFixed(2)} dB`, '2× power ≈ +3.01 dB · 10× power = +10 dB · 0.5× power ≈ −3.01 dB']}
-                note="+3 dB is clearly audible — it is not “twice as loud.” Roughly +10 dB — ten times the power — is what most listeners call twice as loud. Acoustic output also depends on loudspeaker sensitivity, distance, frequency content, directivity, the room, limiting, and power compression."
+                note="+3 dB is small but clearly audible — it is not “twice as loud.” Roughly +10 dB — ten times the power — is what most listeners call twice as loud. Acoustic output also depends on loudspeaker sensitivity, distance, frequency content, directivity, the room, limiting, and power compression."
               />
               <MisconceptionCard m={misc('watts-loudness')} />
 

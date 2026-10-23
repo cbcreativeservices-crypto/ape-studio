@@ -58,7 +58,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the effects mic so its rejection faces the wedge at a live station — and know why a quiet Foley stage and a live theatre need different plans, and no wet effect live without approved containment.',
     credit: { scenarios: ['f04.ctx.1', 'f04.ctx.2', 'f04.ctx.ring', 'f04.ctx.studio', 'f04.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the wedge sits in the rejection. STUDIO: answer the decision card. Then the four checks.' },
-    takeaway: 'On a quiet stage, change props, distance and protection between takes. Live, small contained effects at a fixed station, the wedge in the rejection, no wet effect without approved containment — and feedback never provoked.',
+    takeaway: 'On a quiet stage, change props, distance and protection between takes. Live, small contained effects at a fixed station, the wedge in the rejection, no wet effect without approved containment — and ringing out left to the system operator.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -303,7 +303,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Choose one for the scene, or sum it if mono holds',
     explain: 'Choosing among mics, rather than combining every main mic, is a fair working method; a second mic can be a distant perspective or a different task. If you sum them, check the sum in mono over the whole cue.',
     why: {
-      'Sum both at equal level, so neither view is lost': 'Summing adds a delay and a comb; choosing one is just as fair.',
+      'Sum both at equal level, so neither view is lost': 'Two mics at different distances make a comb when summed; choosing one is just as fair.',
       'Sum both and flip one’s polarity to tighten the attack': 'Polarity flips the sign; it never removes the delay between the two mics.',
     },
   },
@@ -358,7 +358,7 @@ const symptoms: Symptom[] = [
     explain: 'A contact-only view hears the attack. Let the object resonate and move toward its body or the room.',
     why: {
       'Boost the low end until the click has some body': 'EQ cannot add a body the mic did not hear.',
-      'Strike harder so the body comes through': 'Unsafe force is never the answer; move the mic.',
+      'Strike harder so the body comes through': 'A harder hit changes the cue, not what the mic hears; move the mic.',
     },
   },
   {
@@ -422,7 +422,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'Push the gain until it rings, then back it off', ok: false, power: 'phantom', feedback: 'Not until it rings. Check with the operator, short of any ring.' },
       { id: 'e', label: 'A mic in the block’s travel for the closest hit', ok: false, power: 'phantom', feedback: 'The block hits it. Stay outside the travel.' },
     ],
-    reasons: [DOC_REASON('the impact'), CLEAR_REASON('the block’s travel'), { id: 'r.null', label: 'The pattern’s rejection faces the wedge', role: 'required', feedback: 'Say where the wedge sits against the pattern.' }, { id: 'r.op', label: 'The gain is checked with the operator at show level', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Feedback is never provoked — not even to find the edge.' }],
+    reasons: [DOC_REASON('the impact'), CLEAR_REASON('the block’s travel'), { id: 'r.null', label: 'The pattern’s rejection faces the wedge', role: 'required', feedback: 'Say where the wedge sits against the pattern.' }, { id: 'r.op', label: 'The gain is checked with the operator at show level', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Not during the cue. Feedback is made on purpose only to ring out a system, by its operator, at a controlled level.' }],
     explain: 'Two setups pass. What passes is the reasoning: a close, contained pickup, the wedge in its rejection, the travel clear, and gain checked with the operator — never by making it ring.',
   },
 ];
@@ -432,7 +432,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will the supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move from the close impact start to about 1.5 m. What changes?', options: ['More body and room', 'A sharper click', 'It depends on this table'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the artist. Where will a supercardioid aimed at the impact reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

@@ -117,7 +117,7 @@ const parts: Part[] = [
   { id: 'player.legs', label: 'the talker’s legs and feet', short: 'legs', role: 'Standing: the operator’s feet and the cables stay clear of theirs.', solid: S.legs, listIn: [], prov: FIG },
   { id: 'bc.camera', label: 'the camera', short: 'camera', role: 'What it frames decides where a boom may go: just outside the widest frame. A mic on top of it points the right way, but it is as far from the talker as the camera is — and moves back with it.', solid: { kind: 'box', ...cameraBody(CAM_CLOSE) }, variants: ['close', 'live'], prov: DD },
   { id: 'bc.cameraWide', label: 'the camera, moved back', short: 'camera', role: 'Moved back for the wider shot: its own mic went back with it, and the frame grew — the boom must stay farther away too.', solid: { kind: 'box', ...cameraBody(CAM_WIDE) }, variants: ['wide'], prov: DD },
-  { id: 'b4.operator', label: 'the boom operator', short: 'operator', role: 'A trained operator stands outside every frame on a clear path, the pole held from a rehearsed, safe place — never swung above people. Plan relief: a tired arm drifts into the shot.', prov: DD },
+  { id: 'b4.operator', label: 'the boom operator', short: 'operator', role: 'A trained operator stands outside every frame on a clear path, the pole held from a rehearsed, safe place — held steady over the talker, never swung over the audience. Plan relief: a tired arm drifts into the shot.', prov: DD },
   { id: 'b4.pa', label: 'the PA loudspeaker', short: 'PA', role: 'Live: it faces the audience, but every open mic on the stage hears its back and side. Check the boom’s working position and pattern with the system’s operator.', variants: ['live'], prov: DD },
   REACH_PART,
 ];

@@ -391,7 +391,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'One small condenser about 50 cm away, centred, a little higher', ok: true, power: 'phantom', feedback: 'Also fair: a different height to balance the heads — compare by ear.' },
       { id: 'c', label: 'Two spots, hard-panned, because there are two maracas', ok: false, power: 'phantom', feedback: 'Two instruments do not require two channels; stereo should serve a deliberate idea.' },
       { id: 'd', label: 'A mic aimed at the handles to avoid the bright seeds', ok: false, power: 'phantom', feedback: 'The heads are the source; aimed at the handles the mic misses them.' },
-      { id: 'e', label: 'Ask the player to hold both maracas still and shake gently', ok: false, power: 'none', feedback: 'The player’s motion is never changed to suit a mic.' },
+      { id: 'e', label: 'Ask the player to hold both maracas still and shake gently', ok: false, power: 'none', feedback: 'Keep the motion as the player plays it. If you ask for a change, ask only after you have moved the mic.' },
     ],
     reasons: [DOC, CLEAR_REASON, POWER_REASON, PEAK_REASON, BRAND_REASON, TECH_REASON],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point from the midpoint between the heads, outside both arcs, power that matches the mic.',
@@ -405,7 +405,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'No maraca spot: the vocal mic and the band mics carry them, checked at soundcheck', ok: true, power: 'none', feedback: 'Fair if they are heard well enough: fewer open mics on a loud stage.' },
       { id: 'c', label: 'A small condenser on the maracas', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A maraca spot turned up to pull the rattle out of the vocal', ok: false, power: 'none', feedback: 'A spot cannot remove what the vocal mic already hears.' },
-      { id: 'e', label: 'Ask the singer to hold the maracas away from the face', ok: false, power: 'none', feedback: 'The singer’s gestures are theirs; rehearse and place the mics for them.' },
+      { id: 'e', label: 'Ask the singer to hold the maracas away from the face', ok: false, power: 'none', feedback: 'Rehearse the gestures and place the mics for them first. Any change to how the singer moves is their choice.' },
     ],
     reasons: [{ id: 'r.doc', label: 'It accounts for the vocal mic and both arms', role: 'required', feedback: 'Say what it covers: both heads, both arms — and the vocal mic that hears them too.' }, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Fewer open mics keep spill and feedback down', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, TECH_REASON],
     explain: 'Two setups pass. What passes is the reasoning: the vocal mic’s pickup accounted for, both arms covered safely, power the input can supply.',
@@ -417,7 +417,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: one centred mic, the right hand much closer to it. What happens?', options: ['The right hand dominates', 'Both stay balanced', 'It depends on the pair'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

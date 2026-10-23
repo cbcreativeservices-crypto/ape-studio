@@ -20,7 +20,7 @@ const SPEC = ensembleHandSpec({
   firstMic: 'arrCard',
   mic: {
     intro: 'Use quiet, low-noise mics with a suitable response for the main pair: matched cardioids for X/Y and the 17 cm pair, omnis for a spaced pair, a figure-8 for an M/S Side. For a spot or a close mic, a cardioid on its own stand — or a miniature on a mount made for the instrument, with the player’s approval and its specified adapter.',
-    mountLine: () => 'Mount: a stand with a stable base in front of the group, clear of the bows, the endpin and the sightlines; an instrument mount only with the player’s approval, none on the varnish, none on the bridge unless made for it',
+    mountLine: () => 'Mount: a stand with a stable base in front of the group, clear of the bows, the endpin and the sightlines; an instrument mount only with the player’s approval: no adhesive on the varnish, and none on the bridge unless made for it',
     extra: ARRAY_CARDS,
   },
   ctx: {
@@ -43,7 +43,7 @@ const SPEC = ensembleHandSpec({
     B: { zone: 'q.vc', mic: 'arrCard' },
     names: { A: 'MAIN PAIR', B: 'CELLO SPOT' },
     looking: 'Two mics · A the main pair’s centre, B the cello spot',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE: each player reaches the two mics at its own times.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each player reaches the two mics at its own times.',
     label: 'The quartet with the main pair (A) and a cello spot (B)',
     warn: 'This simplified graph shows one point source and straight paths, no room. A bowed string is a large source and players move, so one delay never suits them all — judge by ear, in mono, against the plain version.',
     learn: [
@@ -63,7 +63,7 @@ const SPEC = ensembleHandSpec({
     placeBadge: 'Blue = suggested starting points · grey dashes = the players and their bows · pinch to zoom',
     clearance: 'Clearance comes first: the bows’ full sweep, the left hands, the chairs, the cello’s endpin, the cables and the players’ sightlines. Mounts only with the player’s approval.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A spot aimed down at the cello turns its back up and toward the hall — where a monitor can sit in its rejection.',
-    sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each player gives its own delay.',
+    sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each player gives its own delay.',
   },
 });
 

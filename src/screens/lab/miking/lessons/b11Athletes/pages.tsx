@@ -31,7 +31,7 @@ function useTools(): ReturnType<typeof useTurnStep>[] {
     words: {
       looking: 'Front or side · a body mic on the wearer · hatched = never mount here',
       prompt: 'Choose the WEARER, then the MIC, and look from the FRONT and the SIDE. TURN the head and read what a chest mic loses.',
-      done: 'The mic goes where the approval says; the pack sits low and retained at the small of the back, its antenna straight; the cable leaves the mic with a small loop and slack for the head and the torso. Protective equipment is never touched. A chest mic stays on the chest when the head turns — a headset turns with it.',
+      done: 'The mic goes where the approval says; the pack sits low and retained at the small of the back, its antenna straight; the cable leaves the mic with a small loop and slack for the head and the torso. Protective equipment is never altered, and holds a mic only where the athlete and the team approve. A chest mic stays on the chest when the head turns — a headset turns with it.',
       wearer: {
         coach: 'A coach at the sideline: an approved chest mic leaves both hands for the work; an approved headset holds a steadier distance. Their team headset is their own system — a broadcast mic never taps into it.',
         official: 'An official: the event’s announcement mic or headset, opened on purpose to the PA and muted again. The officials’ private circuit is a different system and stays closed.',

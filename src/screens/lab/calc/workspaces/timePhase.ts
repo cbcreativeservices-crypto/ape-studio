@@ -4,7 +4,7 @@
  * Authored to the wave.ts exemplar (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, fmtCount, fmtInt, snapWhole, speedOfSoundAir } from '../calcUnits';
+import { AIR_TEMP_FIELD, fmt, fmtCount, fmtInt, fmtSamples, snapWhole, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 /** An angle folded into [0, 360) — −90 → 270, 450 → 90 (NaN stays NaN). */
@@ -40,10 +40,10 @@ const WS_DISTDELAY: Workspace = {
     '0.08741 × 48000 ≈ 4196 samples; a DSP that only accepts whole samples is at most half a ' +
     'sample (~10 µs, ~3.6 mm) from perfect.',
   mistakes: [
-    'Forgetting temperature: between a 10 °C load-in and a 30 °C show, 30 m of throw shifts by more than 1.5 ms — enough to smear an alignment done in the morning.',
+    'Forgetting temperature: 30 m of throw at a 10 °C load-in and at a 30 °C show differs by about 3 ms — enough to smear an alignment done in the morning.',
     'Confusing one-way with round-trip: a reflection off a back wall travels TO the wall and BACK, so its delay is the round-trip distance, twice the one-way figure.',
     'Rounding samples carelessly: for alignment you want the NEAREST whole sample, not a truncation — a floor() at 44.1 kHz can quietly cost you most of a sample (~23 µs).',
-    'Treating "1 ms per foot" as exact — it is a room-temperature rule of thumb (actually ~0.88 ms/ft at 20 °C); fine for sanity checks, not for final alignment.',
+    'Treating "1 ms per foot" as exact — it is a room-temperature rule of thumb (actually ~0.89 ms/ft at 20 °C); fine for sanity checks, not for final alignment.',
   ],
   warnings:
     'Speed of sound uses the classroom dry-air model c = 331.3·√(1 + T/273.15); humidity and ' +
@@ -64,6 +64,7 @@ const WS_DISTDELAY: Workspace = {
       name: 'AIR TEMPERATURE',
       quantity: 'temperature',
       signed: true,
+      ...AIR_TEMP_FIELD,
       placeholder: '20',
       help: 'Sets the speed of sound in the classroom dry-air model.',
     },
@@ -87,6 +88,7 @@ const WS_DISTDELAY: Workspace = {
       name: 'SAMPLE RATE',
       quantity: 'samplerate',
       defaultUnit: 'srkhz',
+      positive: true,
       placeholder: '48',
       help: 'Samples per second of the digital system (44.1 kHz, 48 kHz, 96 kHz…).',
       warn: { test: (x) => x < 8000 || x > 384000, msg: 'Outside the usual audio range (8 kHz – 384 kHz) — check the unit.' },
@@ -118,14 +120,16 @@ const WS_DISTDELAY: Workspace = {
         return [
           `c = 331.3 × √(1 + ${fmt(n(v.temp))}/273.15) = ${fmt(c)} m/s.`,
           `t = ${fmt(d)} m ÷ ${fmt(c)} m/s = ${fmt(t)} s = ${fmt(t * 1000)} ms.`,
-          `In samples: ${fmt(t * 44100)} at 44.1 kHz, ${fmt(t * 48000)} at 48 kHz, ${fmt(t * 96000)} at 96 kHz.`,
+          `In samples: ${fmtSamples(t * 44100)} at 44.1 kHz, ${fmtSamples(t * 48000)} at 48 kHz, ${fmtSamples(t * 96000)} at 96 kHz.`,
         ];
       },
       table: (v) => {
         const t = n(v.dist) / speedOfSoundAir(n(v.temp));
         const rows = [44100, 48000, 96000].map((sr) => [
           `${sr / 1000} kHz`,
-          fmt(t * sr),
+          // fmtSamples, not fmt (audit R2, 2026-10-23): 4 figures cut 16782.5
+          // to "16780" beside a NEAREST WHOLE of 16783.
+          fmtSamples(t * sr),
           // fmtInt, not `${Math.round()}` (edge-case QA 2026-09-11): a
           // temperature below absolute zero makes c NaN, and the NEAREST WHOLE
           // column printed "NaN" beside an EXACT SAMPLES column already
@@ -213,7 +217,7 @@ const WS_DISTDELAY: Workspace = {
         const sr = n(v.sr);
         const N = denoise(t * sr);
         return [
-          `N = ${fmt(t * 1000)} ms × ${fmt(sr)} Hz = ${fmtCount(N)} samples.`,
+          `N = ${fmt(t * 1000)} ms × ${fmt(sr)} Hz = ${fmtSamples(N)} samples.`,
           `A sample-only DSP must pick a whole number: nearest is ${fmtInt(N)}, leaving ${fmt(Math.abs(Math.round(N) - N) / sr * 1e6)} µs of residual — usually negligible, but it is why fractional-delay processing exists.`,
         ];
       },
@@ -261,7 +265,7 @@ const WS_PHASE: Workspace = {
     'cancels; that is the hollow midrange you hear until you nudge the mic or delay one channel. ' +
     'The 180° frequency of any delay is simply 1/(2Δt).',
   mistakes: [
-    'Treating "360°" as perfectly aligned: 360° at one frequency is a whole cycle late — identical waveform there, but every OTHER frequency is at some other angle, so the combined sound is still comb-filtered.',
+    'Treating "360°" as perfectly aligned: 360° at one frequency is a whole cycle late — the waveform looks the same there (and at its whole multiples), but most other frequencies sit at other angles, so the combined sound is still comb-filtered.',
     'Ignoring wrapping: an analyzer showing 30° could be 30°, 390°, or 750° of true offset — the display wraps every 360° and hides whole cycles.',
     'Assuming one phase value pins down one delay: at a single frequency, φ and φ + k·360° are indistinguishable, so a phase reading alone cannot tell you the absolute time offset.',
     'Confusing polarity inversion (180° at ALL frequencies, zero time) with a delay that happens to hit 180° at one frequency — the fix for one is a switch, for the other a mic move.',
@@ -277,6 +281,7 @@ const WS_PHASE: Workspace = {
       key: 'f',
       name: 'FREQUENCY',
       quantity: 'frequency',
+      positive: 'FREQUENCY must be above 0 — at 0 Hz there is no cycle, so a delay has no phase angle.',
       placeholder: '1000',
       help: 'The frequency at which the phase relationship is evaluated.',
     },
@@ -308,6 +313,7 @@ const WS_PHASE: Workspace = {
       name: 'AIR TEMPERATURE',
       quantity: 'temperature',
       signed: true,
+      ...AIR_TEMP_FIELD,
       placeholder: '20',
       help: 'Sets the speed of sound for converting path difference to time.',
     },
@@ -444,6 +450,8 @@ const WS_PHASE: Workspace = {
 /** Zero extra path: the second arrival is in step with the first. */
 const NO_COMB_SAME_PATH =
   'No path difference → no comb-filter nulls: the second arrival lands in step with the first and simply adds to it.';
+const NO_COMB_NO_DELAY =
+  'No delay → no comb-filter nulls: the second arrival lands in step with the first and simply adds to it.';
 
 const WS_COMB: Workspace = {
   id: 'comb',
@@ -498,6 +506,7 @@ const WS_COMB: Workspace = {
       name: 'AIR TEMPERATURE',
       quantity: 'temperature',
       signed: true,
+      ...AIR_TEMP_FIELD,
       placeholder: '20',
       help: 'Sets the speed of sound for converting the path difference to a delay.',
     },
@@ -507,7 +516,7 @@ const WS_COMB: Workspace = {
       key: 'combFromDelay',
       name: 'Comb from time delay',
       inputs: ['dt'],
-      formula: 'f_null = (2k+1)/(2Δt); f_peak = k/Δt; spacing = 1/Δt',
+      formula: 'f_null = (2k−1)/(2Δt); f_peak = k/Δt; k = 1, 2, 3…; spacing = 1/Δt',
       plainFormula:
         'Nulls fall at odd multiples of one over twice the delay; peaks fall at whole multiples of one over the delay; and the comb spacing is one over the delay.',
       explain:
@@ -515,6 +524,9 @@ const WS_COMB: Workspace = {
       keySymbols: ['/', 'Δ'],
       compute: (v) => {
         const dt = n(v.dt);
+        // No delay, no comb (audit R2, 2026-10-23): the same words as a 0 m
+        // path difference, never the generic "check for zeros" error.
+        if (dt === 0) return [{ label: 'COMB FILTERING', text: NO_COMB_NO_DELAY, refusal: true }];
         return [
           { label: 'FIRST NULL', value: 1 / (2 * dt), quantity: 'frequency' },
           { label: 'NULL/NULL SPACING', value: 1 / dt, quantity: 'frequency' },
@@ -523,6 +535,7 @@ const WS_COMB: Workspace = {
       },
       steps: (v) => {
         const dt = n(v.dt);
+        if (dt === 0) return [NO_COMB_NO_DELAY];
         return [
           `The first null sits where ${fmt(dt * 1000)} ms is half a cycle: f = 1 ÷ (2 × ${fmt(dt)}) = ${fmt(1 / (2 * dt))} Hz.`,
           `Nulls repeat at every odd multiple (${fmt(3 / (2 * dt))} Hz, ${fmt(5 / (2 * dt))} Hz…); peaks at every multiple of 1/Δt = ${fmt(1 / dt)} Hz.`,
@@ -532,7 +545,7 @@ const WS_COMB: Workspace = {
       table: (v) => {
         const dt = n(v.dt);
         const rows: string[][] = [];
-        for (let k = 0; k < 8; k++) {
+        for (let k = 0; k < (dt === 0 ? 0 : 8); k++) {
           rows.push([
             `${k + 1}`,
             `${fmt(((2 * k + 1) / (2 * dt)) / 1000)} kHz`,
@@ -546,7 +559,7 @@ const WS_COMB: Workspace = {
       key: 'combFromPath',
       name: 'Comb from path-length difference',
       inputs: ['pathDiff', 'temp'],
-      formula: 'Δt = d / c; then f_null = (2k+1)/(2Δt)',
+      formula: 'Δt = d / c; then f_null = (2k−1)/(2Δt), k = 1, 2, 3…',
       plainFormula:
         'The delay equals the path difference over the speed of sound; then the nulls fall at odd multiples of one over twice that delay.',
       explain:
@@ -642,6 +655,7 @@ const WS_LATENCY: Workspace = {
       name: 'BUFFER SIZE',
       quantity: 'samples',
       integer: true,
+      positive: 'BUFFER SIZE must be at least 1 sample — a buffer that holds nothing passes no audio.',
       placeholder: '128',
       help: 'Samples per processing block (32, 64, 128, 256, 512…).',
       warn: { test: (x) => x > 4096, msg: 'Unusually large buffer — typical audio settings are 32–2048 samples.' },
@@ -651,6 +665,7 @@ const WS_LATENCY: Workspace = {
       name: 'SAMPLE RATE',
       quantity: 'samplerate',
       defaultUnit: 'srkhz',
+      positive: true,
       placeholder: '48',
       help: 'Samples per second of the session.',
       warn: { test: (x) => x < 8000 || x > 384000, msg: 'Outside the usual audio range (8 kHz – 384 kHz) — check the unit.' },
@@ -792,7 +807,7 @@ const WS_LATENCY: Workspace = {
         ];
       },
       steps: (v) => [
-        `N = ${fmt(n(v.t) * 1000)} ms × ${fmt(n(v.sr))} Hz = ${fmtCount(denoise(n(v.t) * n(v.sr)))} samples.`,
+        `N = ${fmt(n(v.t) * 1000)} ms × ${fmt(n(v.sr))} Hz = ${fmtSamples(denoise(n(v.t) * n(v.sr)))} samples.`,
       ],
     },
   ],
@@ -818,9 +833,9 @@ const WS_FFT: Workspace = {
     'Reading an analyzer well starts with knowing which side of this trade its settings sit on.',
   example:
     'A 4096-point FFT at 48 kHz: bin spacing = 48000 ÷ 4096 ≈ 11.7 Hz, window = 4096 ÷ 48000 ≈ ' +
-    '85.3 ms. To separate bass notes 5 Hz apart you would need N = 48000 ÷ 5 = 9600 points — ' +
-    'next power of two 16384, giving 2.93 Hz bins but a 341 ms window: fine for a sustained ' +
-    'note, hopeless for a drum fill.',
+    '85.3 ms. To separate bass notes 5 Hz apart, aim for bins about half the gap (2.5 Hz): ' +
+    'N = 48000 ÷ 2.5 = 19200 points — next power of two 32768, giving 1.46 Hz bins but a 683 ms ' +
+    'window: fine for a sustained note, hopeless for a drum fill.',
   mistakes: [
     'Expecting fine low-frequency resolution from short windows: a 1024-point FFT at 48 kHz has ~47 Hz bins — the entire bottom octave of a bass lands in one or two bins.',
     'Reading bin spacing as measurement accuracy: a peak can be pinned between bins far more precisely (interpolation), and a bin value is energy over the whole window, not an instantaneous reading.',
@@ -851,6 +866,7 @@ const WS_FFT: Workspace = {
       name: 'SAMPLE RATE',
       quantity: 'samplerate',
       defaultUnit: 'srkhz',
+      positive: true,
       placeholder: '48',
       help: 'Samples per second feeding the FFT.',
       warn: { test: (x) => x < 8000 || x > 384000, msg: 'Outside the usual audio range (8 kHz – 384 kHz) — check the unit.' },
@@ -913,6 +929,15 @@ const WS_FFT: Workspace = {
       explain:
         'The reverse: the FFT length that gives a target bin spacing (to split two close tones, plan on two or three bins between them). Most FFT tools use powers of two, so it rounds up — buying finer bins at the cost of a longer window. Check that the sound you are analyzing lasts at least that long.',
       keySymbols: ['/', 'Δ'],
+      // Coarser than half the sample rate is no FFT (audit R2, 2026-10-23): a
+      // 5 MHz spacing at 48 kHz printed a "0.0096 samples" FFT and 1 point.
+      refuse: (v) => {
+        const sr = n(v.sr);
+        const df = n(v.df);
+        return sr > 0 && df > sr / 2
+          ? `At ${fmt(sr / 1000)} kHz the coarsest bin spacing is ${fmt(sr / 2000)} kHz (a 2-point FFT) — ask for a spacing of half the sample rate or less.`
+          : null;
+      },
       compute: (v) => {
         const sr = n(v.sr);
         const df = n(v.df);
@@ -922,7 +947,8 @@ const WS_FFT: Workspace = {
         const N = sr / df;
         const pow2 = Math.pow(2, Math.ceil(Math.log2(Math.max(1, snapWhole(N)))));
         return [
-          { label: 'MINIMUM FFT SIZE', value: N, quantity: 'samples', chainable: false },
+          // A size is a whole number of points: the smallest one that reaches Δf.
+          { label: 'MINIMUM FFT SIZE', value: Math.ceil(snapWhole(N)), quantity: 'samples', chainable: false },
           { label: 'NEXT POWER OF TWO', text: `${fmtInt(pow2)} points` },
           { label: 'ACTUAL RESOLUTION AT THAT SIZE', value: sr / pow2, quantity: 'frequency' },
           { label: 'WINDOW AT THAT SIZE', value: pow2 / sr, quantity: 'time', unit: 'ms' },
@@ -934,7 +960,9 @@ const WS_FFT: Workspace = {
         const N = sr / df;
         const pow2 = Math.pow(2, Math.ceil(Math.log2(Math.max(1, snapWhole(N)))));
         return [
-          `N = ${fmt(sr)} Hz ÷ ${fmt(df)} Hz = ${fmtCount(N)} points minimum.`,
+          Number.isInteger(snapWhole(N))
+            ? `N = ${fmt(sr)} Hz ÷ ${fmt(df)} Hz = ${fmtCount(N)} points minimum.`
+            : `N = ${fmt(sr)} Hz ÷ ${fmt(df)} Hz = ${fmt(N, 6)}, so at least ${fmtInt(Math.ceil(snapWhole(N)))} points.`,
           `FFTs want powers of two, so round UP to ${fmtInt(pow2)}: actual spacing = ${fmt(sr)} ÷ ${fmtInt(pow2)} = ${fmt(sr / pow2)} Hz, with a ${fmt((pow2 / sr) * 1000)} ms window.`,
           `Rounding up buys finer bins at the cost of a longer window — check that the sound you are analyzing lasts at least that long.`,
         ];

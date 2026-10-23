@@ -53,7 +53,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Two microphones',
     goal: 'Put one mic on each drum: see what polarity does and does not change, and judge the pair in mono.',
-    credit: { scenarios: ['ta.two.1', 'ta.two.2', 'ta.two.3', 'ta.two.4'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
+    credit: { scenarios: ['ta.two.1', 'ta.two.2', 'ta.two.3', 'ta.two.4'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
     takeaway: 'Each mic also hears the other drum. Polarity flips the sign; it does not remove a delay. Check the pair in mono with both drums, the glides and ordinary movement — and keep the setup that holds up across the passage.',
   },
   troubleshoot: {
@@ -269,13 +269,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ta.ctx.2',
     page: 'context',
-    prompt: 'Your stage mic is a supercardioid. Where should the wedge NOT go?',
-    options: ['Straight behind it — that pattern hears a little there', 'Toward its rear sides, where it rejects most of all', 'Anywhere except straight in front of the mic’s grille'],
-    correct: 'Straight behind it — that pattern hears a little there',
-    explain: 'A supercardioid rejects most toward the rear sides and has a small pickup directly behind. A narrower front pattern is not automatic protection from feedback: check the real pattern.',
+    prompt: 'Your stage mic is a supercardioid. Where does the wedge get the most rejection?',
+    options: ['Toward its rear sides, near 126°', 'Straight behind it, at 180°', 'Off to one side of it, at 90°'],
+    correct: 'Toward its rear sides, near 126°',
+    explain: 'On the ideal pattern the nulls sit about 126° off the front. Straight behind, it still hears a small rear lobe; at the side it hears more. A narrower front pattern is not automatic protection from feedback: check the real pattern.',
     why: {
-      'Toward its rear sides, where it rejects most of all': 'That is where it rejects MOST — a good place for a wedge.',
-      'Anywhere except straight in front of the mic’s grille': 'A supercardioid still picks up at its sides (about −9 dB on the ideal pattern); only its rear sides reject strongly.',
+      'Straight behind it, at 180°': 'It hears a small rear lobe there (about 12 dB down). The nulls are toward the rear sides.',
+      'Off to one side of it, at 90°': 'At the side it hears even more (about 9 dB down on the ideal pattern) than straight behind.',
     },
   },
   {
@@ -404,9 +404,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'The two drum mics sound hollow together. Which change reduces the arrival-time difference?',
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on one of the mics', 'Turning one mic up until it matches the other'],
     correct: 'Moving a mic so the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth.',
+    explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth.',
     why: {
-      'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
+      'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
       'Turning one mic up until it matches the other': 'Level changes the depth of the notches, not the delay.',
     },
   },
@@ -534,7 +534,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Two directional dynamics, one per drum, close in and angled for separation', ok: true, power: 'none', feedback: 'Selective pickup for a loud stage; dynamics need no phantom.' },
       { id: 'b', label: 'One directional dynamic in front of and above the area between the heads', ok: true, power: 'none', feedback: 'Simple; check the balance between the drums and the quiet strokes.' },
       { id: 'c', label: 'Two cardioid condensers, one per drum', ok: false, power: 'phantom', feedback: 'A fair arrangement — but these inputs have no phantom power.' },
-      { id: 'd', label: 'A coincident pair about 50–80 cm away for a stereo picture', ok: false, power: 'phantom', feedback: 'Far on a loud stage hears the band and the monitors — and these inputs have no phantom.' },
+      { id: 'd', label: 'A coincident pair about 50–80 cm away for a stereo picture', ok: false, power: 'phantom', feedback: 'Far on a loud stage hears the band and the monitors — and condensers would need phantom, which these inputs do not have.' },
       { id: 'e', label: 'A dynamic right over the bayan’s patch, where the hand presses', ok: false, power: 'none', feedback: 'The pressing hand comes first: never in its way.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Close, directional pickup helps against stage spill and feedback', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, BASS_REASON],
@@ -547,7 +547,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: one mic in front of the pair, the dayan dominates. What helps most?', options: ['Moving the mic toward the bayan', 'Only turning the mic toward the bayan', 'Moving it farther back'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this supercardioid reject the wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
-  twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -619,9 +619,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about sitting near a loud stage through a long soundcheck?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the stage stays below the mic’s rated level', 'It is safe as long as the mic sits closer than you do'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
     why: {
-      'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA over 8 hours.',
+      'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic sits closer than you do': 'Where the mic sits says nothing about your ears.',
     },
   },

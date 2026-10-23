@@ -105,7 +105,7 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
             <>
               <Body>Ride MONITOR. The curve is a model of the equal-loudness picture: as the level drops, the ear's sensitivity to the bass (and a little of the treble) falls away faster than at 1 kHz, so a quiet listen reads thin and a loud one reads full — the same file. The ghost curves are 65, 83 and 95 dB for company. A tonal decision made at a different level from the last one is a decision about the level.</Body>
               <Card tone={advice.tone === 'sensible' ? 'accent' : advice.tone === 'low' ? 'plain' : 'warn'}>
-                <Point title={advice.tone === 'sensible' ? 'A sensible level' : advice.tone === 'low' ? 'Quiet' : advice.tone === 'hot' ? 'Hot' : 'Unsafe'}>{advice.note} PER DAY on the bezel is the DAILY LIMIT: the NIOSH figure of 8 h at 85 dBA, halved every 3 dB above.</Point>
+                <Point title={advice.tone === 'sensible' ? 'A sensible level' : advice.tone === 'low' ? 'Quiet' : advice.tone === 'hot' ? 'Hot' : 'Unsafe'}>{advice.note} PER DAY on the bezel is the NIOSH recommended daily limit: 8 h at 85 dBA, halved every 3 dB above. The US legal limit (OSHA) is looser: 90 dBA, halved every 5 dB.</Point>
               </Card>
               <Card>
                 <Point title="Consistent, sensible monitoring levels">Pick one moderate working level and return to it. Comparisons mean something only when the level is the same each time; fatigue stays manageable; hearing is protected. The lab never suggests turning up to "hear it better".</Point>

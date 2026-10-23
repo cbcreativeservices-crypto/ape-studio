@@ -439,7 +439,7 @@ export function buildLute(kind: LuteKind, words: Record<string, PartWords>, name
       { id: 'veena.env.legs', label: 'the player’s crossed legs', shape: boxE(f.legs), prov: PLAYER },
     );
     const reg = (id: string, partId: string, label: string, p: Vec3, note: string) => regions.push({ id: pid(kind, id), partId: pid(kind, partId), label, anchor: P(p), prov: ill('a point chosen to stand for the region'), note });
-    reg('plate', 'plate', 'the top plate', v(-90, 0, 2), 'The top plate over the big resonator, driven through the bridge: in the measured radiation it mattered most, and the pattern changed with pitch, direction and distance.');
+    reg('plate', 'plate', 'the top plate', v(-90, 0, 2), 'The top plate over the big resonator, moved by the bridge. In tests it sent out the most sound, and the pattern changed with pitch, direction and distance.');
     reg('bridge', 'bridge', 'the flat bridge', v(0, 0, 18), 'The strings vibrate against the broad, flat bridge — the buzz the player intends. Close in, it is heard most directly.');
     reg('gourd', 'gourd', 'the neck-end gourd', v(g.gourd.x, 0, g.gourd.z), 'A support for the neck on the thigh — not a second main soundboard. Do not expect it to radiate like the top plate.');
   }

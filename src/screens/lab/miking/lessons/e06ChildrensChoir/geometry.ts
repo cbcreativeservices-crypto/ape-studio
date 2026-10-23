@@ -133,7 +133,7 @@ export const E06_ZONES: DocumentedZone[] = [
 
 /** A floor monitor in front of the children, low, facing them. */
 export const E06_WEDGES: Wedge[] = [
-  { id: 'mon', label: 'a low floor monitor in front of the children, facing them', short: 'MONITOR', p: v3(-AREA_X, 0, 1500), lift: 300, faces: v3(0, 0, -1), note: 'Low in level, in front of the children, facing them — below and in front of the area mic, where its rejection can be turned toward it. It carries the piano, never the choir’s own mics.', prov: ill('a typical position: a drawing default') },
+  { id: 'mon', label: 'a low floor monitor in front of the children, facing them', short: 'MONITOR', p: v3(-AREA_X, 0, 1500), lift: 300, faces: v3(0, 0, -1), note: 'Low in level, in front of the children and facing them. It sits on the hall side of the area mic and below it, where its rejection can be turned toward it. It carries the piano, with little or none of the choir’s own mics.', prov: ill('a typical position: a drawing default') },
 ];
 
 /* ── STARTING SETUPS (all drawn from above) ── */

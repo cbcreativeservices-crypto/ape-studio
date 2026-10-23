@@ -56,7 +56,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Action and audience together',
     goal: 'The action mic and the audience pair hear one gentle clap at different times: watch the delay and the comb change as the clap moves 1 m, and what polarity does and does not change.',
-    credit: { scenarios: ['cc.two.1', 'cc.two.2', 'cc.two.3'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND walk the clap, then answer the three checks.' },
+    credit: { scenarios: ['cc.two.1', 'cc.two.2', 'cc.two.3'], interactive: 'polarityVsDelay', note: 'Flip the audience mic’s polarity (the second mic) both ways AND walk the clap, then answer the three checks.' },
     takeaway: 'A delay set for one point is wrong at the next; the room’s later arrival can be the perspective you want. Use a delay for a named, stationary problem only.',
   },
   troubleshoot: {
@@ -322,10 +322,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cc.prac.gain',
     page: 'practice',
-    prompt: 'A gentle collective clap peaks at −26 dBFS; the real crowd will roar. Your gain?',
+    prompt: 'In the quiet practice, a gentle collective clap peaks at −26 dBFS. Where do you set the practice gain?',
     options: ['The loudest safe peak near −12 dBFS', 'The gentle clap brought right up to −3 dBFS', 'Left as it is, the files normalised later'],
     correct: 'The loudest safe peak near −12 dBFS',
-    explain: 'In this quiet practice the loudest safe peak is the strongest repeatable gentle clap: near −12 dBFS is a trial, with more margin for the reactions a rehearsal cannot make. It is an input peak, not a loudness target.',
+    explain: 'In this quiet practice the loudest safe peak is the strongest repeatable gentle clap: bring it near −12 dBFS as a trial. A real roar can be far louder, so set the event gain from the real crowd, with much more margin. It is an input peak, not a loudness target.',
     why: {
       'The gentle clap brought right up to −3 dBFS': 'With a gentle clap already at −3 dBFS, the first real roar clips.',
       'Left as it is, the files normalised later': 'Normalising cannot fix a clip, or the noise of a gain set too low.',
@@ -360,11 +360,11 @@ const scenarios: MikingScenario[] = [
     id: 'cc.mix.3',
     page: 'practice',
     prompt: 'One side of the stereo audience pair fails mid-event. What do you send?',
-    options: ['A known-good mono version', 'The one side, panned to centre', 'Nothing until the pair is fixed'],
+    options: ['A known-good mono version', 'The working side, still sent as stereo', 'Nothing until the pair is fixed'],
     correct: 'A known-good mono version',
     explain: 'Use the verified mono or stereo fallback, and say which version failed; do not present one failed side of a pair as a stereo mix.',
     why: {
-      'The one side, panned to centre': 'One side of a pair is an off-axis, untested picture, not a verified version.',
+      'The working side, still sent as stereo': 'Sent as stereo, one working side puts the whole crowd in one speaker.',
       'Nothing until the pair is fixed': 'The bed has to continue; that is what the fallback is for.',
     },
   },
@@ -511,7 +511,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Which pair keeps the mono sum the most solid?', options: ['A coincident XY pair', 'Spaced omnis', 'All the same'], after: 'Now step through each METHOD.' },
   placement: { prompt: 'Predict: the pair moves 1 m closer to the audience. What comes forward?', options: ['Nearby voices', 'The venue’s scale', 'Nothing'], after: 'Rest the pair in two zones and read what each one suggests.' },
   context: { prompt: 'In the minimal layout the action mic fails. What carries the event?', options: ['The audience pair', 'The commentary', 'Nothing'], after: 'Now run the failure drill.' },
-  twoMic: { prompt: 'If you flip the pair’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then walk the clap.' },
+  twoMic: { prompt: 'If you flip the pair’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then walk the clap.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

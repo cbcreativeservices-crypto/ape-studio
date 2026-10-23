@@ -104,8 +104,8 @@ export function boomSwing(p: Vec3, a: Vec3, b: Vec3): number {
 
 /** The boom's plain-words safety (exact; every boom page uses these). */
 export const SAFETY = {
-  overPeople: 'Never let a mic, a clamp or a cable swing above people. Check every lock, joint and the cable before moving over anyone.',
-  rigged: 'A boom fixed overhead is rigged and secured by qualified crew for that venue before anyone sits or stands beneath it, with a clear path kept while it goes up.',
+  overPeople: 'Keep any mic, clamp or cable above people under full control, so nothing can swing or drop. Check every lock, joint and the cable before moving over anyone.',
+  rigged: 'A boom fixed overhead is rigged and secured by a qualified rigger for that venue before anyone sits or stands beneath it, with a clear path kept while it goes up.',
   powerLines: 'Never hold or raise a conductive pole near overhead power lines. If you are unsure, the pole stays down.',
   weather: 'Windscreens and suspensions are not waterproof: keep a mic or recorder that is not rated for it out of rain, and stop or move when the weather, the access or the rigging is unsafe.',
   fatigue: 'Plan relief for the operator, and shorten the reach rather than stretch to the limit — a tired arm drifts into the shot.',

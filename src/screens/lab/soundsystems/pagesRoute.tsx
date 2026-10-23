@@ -605,7 +605,7 @@ function PageMatrices({ ctx }: { ctx: PageCtx }) {
       <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
         <Eyebrow>THE LOBBY</Eyebrow>
-        <Body>The announce mic should arrive louder than everything else — it comes in twice: inside MAIN and by its own route on AUX 7. Its Aux 7 send is PRE-fader, like the monitor sends: a house fader ride on the announce channel does not change what the lobby hears, and the channel MUTE (above the PRE tap on this console) still closes it.</Body>
+        <Body>The announce mic should arrive louder than everything else — it comes in twice: inside MAIN and by its own route on AUX 7. Its Aux 7 send is PRE-fader, like the monitor sends: a house fader ride on the announce channel changes only the part inside MAIN, not the extra on AUX 7. The channel MUTE (above the PRE tap on this console) still closes both.</Body>
       </Card>
       <KeyFact>A matrix is the post-main tool. Whatever the house engineer does to the mix, the fills, the lobby and the recorder follow it — and each can still be shaped on its own. On a smaller console without matrices the same feeds come from spare aux outputs, at the cost of building each one channel by channel.</KeyFact>
     </SoundSystemsRackLayout>

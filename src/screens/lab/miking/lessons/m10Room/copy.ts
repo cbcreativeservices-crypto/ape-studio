@@ -50,7 +50,7 @@ export const M10_COPY: Partial<LessonCopy> = {
     blocked: {},
     reveal: 'Farther out tends to bring more of the room — reflections and decay — and less direct kit; whether that helps depends on this room. “It depends” is a fair answer here.',
     typeNotes: { roomLdc: 'A side-address mic hears out of the face of its body: face it toward the kit.', ohLdc: 'The same large condenser as an overhead, facing down: a counterweighted boom, nothing over the player.' },
-    note: 'Clearance comes first: stop the drummer before moving a real mic, keep stands out of exits and walkways, and fix nothing to the walls or the ceiling.',
+    note: 'Clearance comes first: stop the drummer before moving a real mic, keep stands out of exits and walkways, and fix nothing to the walls or the ceiling without the venue’s okay.',
     availableLead: 'Starting points for this mic',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is a place we suggest you begin — most measured from the kick’s front head. They are starting points, not rules: no distance is a “room mic” by itself. Move from there and listen.',
@@ -83,7 +83,7 @@ export const M10_COPY: Partial<LessonCopy> = {
     activityDone: 'done — the PA sat in a null by your aim or pattern',
     deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less, often least at low frequencies — and the room sends the PA’s sound back from every side. Use the null to aim, not to promise silence.',
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). The PA sits behind and to one side, so a cardioid’s null does not quite reach it.',
-    shieldNote: 'A distant mic hears the room as well as the PA directly: reflections arrive from every side, which no pattern rejects. This is the reasoning, not a prediction.',
+    shieldNote: 'A distant mic hears the room as well as the PA directly: reflections arrive from every side, which no pattern can fully reject. This is the reasoning, not a prediction.',
     studioId: 'rm.ctx.studio',
     studioPrompt: 'A studio session has no PA to reject. The decision changes: what is this room worth?',
     studioNote: 'In a good room a room signal can become part of the kit’s sound; in a poor one, record it only if it earns its channel. Switch back to LIVE for the PA exercise.',

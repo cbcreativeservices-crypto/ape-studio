@@ -25,7 +25,7 @@ const SPEC = ensembleHandSpec({
   aimWords: { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the front).' },
   mic: {
     intro: 'A transducer category alone does not decide tone, spill or headroom: read the real mic’s specifications. For the main view, matched cardioids (X/Y, the 17 cm pair) or omnis (a spaced pair) in a room that justifies them; small condensers for the bass and the piano; a dynamic close to a loud horn or an amp. Condensers need power, usually phantom; every stand a stable base.',
-    mountLine: () => 'Mount: a tall stand with a stable base, clear of the players’ movement, the piano pedals and lid, and the bass endpin — never fixed to the instrument',
+    mountLine: () => 'Mount: a tall stand with a stable base, clear of the players’ movement, the piano pedals and lid, and the bass endpin — nothing fixed to the instrument without the owner’s approval',
     extra: ARRAY_CARDS,
   },
   ctx: {
@@ -48,7 +48,7 @@ const SPEC = ensembleHandSpec({
     B: { zone: 'jz.ub', mic: 'sdcCard' },
     names: { A: 'MAIN PAIR', B: 'BASS SPOT' },
     looking: 'Two mics · A the main pair’s centre, B the bass spot',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE: each player reaches the two mics at its own times.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each player reaches the two mics at its own times.',
     label: 'The combo with the main pair (A) and a bass spot (B)',
     warn: 'This simplified graph shows one point source and straight paths, no room. Real players are large sources at different distances, so one delay never suits them all — judge by ear, in mono, against the plain version.',
     learn: [
@@ -66,9 +66,9 @@ const SPEC = ensembleHandSpec({
   },
   words: {
     placeBadge: 'Blue = suggested starting points · grey dashes = the players’ space · pinch to zoom',
-    clearance: 'Clearance comes first: the players’ movement, the piano pedals and lid, the bass endpin, the walkways — nothing fixed to an instrument.',
+    clearance: 'Clearance comes first: the players’ movement, the piano pedals and lid, the bass endpin, the walkways — nothing fixed to an instrument without the owner’s approval.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A bass mic aimed back at the bridge turns its back toward the audience — the wedge, on the floor in front, sits low behind it.',
-    sourceNote: 'What you just saw: a player reaches the two mics at different times. Summed, the late copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each player gives its own delay.',
+    sourceNote: 'What you just saw: a player reaches the two mics at different times. Summed, the late copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each player gives its own delay.',
   },
 });
 

@@ -187,7 +187,7 @@ export const L07_CHECKS: L07Check[] = [
     ],
     correctIdx: 1,
     reveal:
-      'Hum is solved on the signal side — isolation transformers and proper grounding practice — never by defeating the safety earth. The earth pin is what keeps a fault from energizing the equipment chassis.',
+      'Hum is solved with isolation transformers, balanced lines and proper grounding practice — such as powering the whole system from one source — never by defeating the safety earth. The earth pin is what keeps a fault from energizing the equipment chassis.',
     wrongHint: 'The protective earth is a life-safety path. Is any amount of hum worth removing it?',
   },
   {

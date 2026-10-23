@@ -133,7 +133,7 @@ export const riggingDiag = (p: string): DiagnosticItem => ({
   prompt: 'The best place for the pair needs it hung above the stage. What do you do?',
   options: ['Ask the venue: its crew, its rated plan', 'Tie it to a lighting bar yourself', 'Use a boom stand at its full extension over them'],
   correct: 'Ask the venue: its crew, its rated plan',
-  explain: 'Anything flown, attached to the building or reached over players is the venue’s: an approved rigging plan, rated hardware and qualified crew. Otherwise choose a safe floor position.',
+  explain: 'Anything flown, attached to the building or reached over players is the venue’s: an approved rigging plan, rated hardware and a qualified rigger. Otherwise choose a safe floor position.',
   why: {
     'Tie it to a lighting bar yourself': 'An unapproved attachment over players is never yours to make.',
     'Use a boom stand at its full extension over them': 'Over the players an overextended boom is a hazard; choose a safe position instead.',
@@ -146,10 +146,10 @@ export const riggingCheck = (p: string, page: SourcePageId): MikingScenario => (
   prompt: 'The tree would sound best hung over the strings. Who puts it up?',
   options: ['The venue’s crew, to a rated plan', 'You, carefully, with good cable ties', 'A player, during the rehearsal break'],
   correct: 'The venue’s crew, to a rated plan',
-  explain: 'Flying an array, attaching to the structure or reaching over players needs the venue’s approved rigging plan, rated hardware and qualified crew. Otherwise use a safe floor stand.',
+  explain: 'Flying an array, attaching to the structure or reaching over players needs the venue’s approved rigging plan, rated hardware and a qualified rigger. Otherwise use a safe floor stand.',
   why: {
     'You, carefully, with good cable ties': 'Cable ties and signal cable are not suspension hardware, and it is not your call.',
-    'A player, during the rehearsal break': 'Rigging is the venue’s qualified crew’s job, never a player’s.',
+    'A player, during the rehearsal break': 'Rigging is a job for the venue’s qualified rigger, not a player’s.',
   },
 });
 
@@ -159,7 +159,7 @@ export const hearingCheck = (p: string, page: SourcePageId, loud = 'brass and pe
   prompt: `You monitor ${loud} on headphones for an hour. What protects your hearing?`,
   options: ['Sensible levels and limited time', 'The maximum SPL rating of the mics', 'Turning up to hear the detail'],
   correct: 'Sensible levels and limited time',
-  explain: 'A widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — a limit for people where they listen. Keep monitoring sensible and take breaks.',
+  explain: 'NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are limits for people, measured where they listen. Keep monitoring sensible and take breaks.',
   why: {
     'The maximum SPL rating of the mics': 'That is about the microphone, not your ears.',
     'Turning up to hear the detail': 'Louder raises your exposure; detail comes from placement, not level.',

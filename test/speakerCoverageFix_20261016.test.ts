@@ -69,7 +69,7 @@ test('the colour ramp: about 20 dB from red to black (the legend says so)', () =
   assert.equal(coverageT(10 ** (-16 / 10)), 0);
   const scr = read('src/screens/lab/micspeaker/SpeakerCoverageLabScreen.tsx');
   assert.match(scr, /Red to deep blue spans about 20 dB; BLACK is below that/);
-  assert.match(scr, /rated angle\s+\(90°, 60°…\) is where it is already 6 dB quieter/);
+  assert.match(scr, /edges of a box’s\s+rated angle \(90°, 60°…\) are where it is already 6 dB quieter/);
 });
 
 test('side view: the field, wavefronts and beam rays are painted inside the room AIR (no ray through the floor)', () => {

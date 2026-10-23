@@ -61,7 +61,7 @@ function track(): VenueScene {
     surface: 'track',
     markings: [{ pts: rect(f), closed: true }, ...Array.from({ length: lanes - 1 }, (_, i) => line(p2(f.x0, (i + 1) * lw), p2(f.x1, (i + 1) * lw))), line(p2(0, 0), p2(0, W))],
     keepClear: [
-      { id: 'start', label: 'the start area: blocks, the start group and the starter', short: 'KEEP CLEAR', poly: rect({ x0: -9, y0: -1.2, x1: -4, y1: W + 1.2 }), basis: 'drawing', note: 'Behind the line: the blocks, the athletes in their warm-up and the start group. Nothing is set or moved there during the ready period — and the start equipment and its loudspeakers are never touched for audio.' },
+      { id: 'start', label: 'the start area: blocks, the start group and the starter', short: 'KEEP CLEAR', poly: rect({ x0: -9, y0: -1.2, x1: -4, y1: W + 1.2 }), basis: 'drawing', note: 'Behind the line: the blocks, the athletes in their warm-up and the start group. Nothing is set or moved there during the ready period. Only the start crew handles the start equipment and its loudspeakers; audio touches them only with that crew’s approval.' },
       ...band('lanes', f, 1.2, 'the margin along the lanes', 'drawing', 'A margin along the lanes: no stand leg, cable loop or windshield reaches toward a runner.').slice(0, 2),
     ],
     routes: [
@@ -98,7 +98,7 @@ function gymnastics(): VenueScene {
     markings: [{ pts: rect(f), closed: true }, { pts: rect(run), closed: true }, { pts: rect({ x0: 31.6, y0: 5.4, x1: 32.6, y1: 6.6 }), closed: true }, { pts: rect(mat), closed: true }],
     keepClear: [
       ...band('border', f, 1, 'the floor’s border', 'drawing', 'The border round the floor area, and room for a gymnast to step out: no stand or cable in it.'),
-      { id: 'vault', label: 'the vault: run-up, board, table, landing and recovery', short: 'KEEP CLEAR', poly: rect({ x0: 14.5, y0: 2.5, x1: 41, y1: 9.5 }), basis: 'drawing', note: 'The whole run-up, the board, the table and its padding, the landing mats and the recovery space past them. A mic beyond all of it, never beside the table.' },
+      { id: 'vault', label: 'the vault: run-up, board, table, landing and recovery', short: 'KEEP CLEAR', poly: rect({ x0: 14.5, y0: 2.5, x1: 41, y1: 9.5 }), basis: 'drawing', note: 'The whole run-up, the board, the table and its padding, the landing mats and the recovery space past them. A mic goes beyond all of it, only at a position the event has approved — not beside the table.' },
     ],
     routes: [
       { id: 'judges', label: 'the judges’ places', short: 'JUDGES', pts: [p2(2, -3), p2(10, -3)], kind: 'officials' },

@@ -74,7 +74,7 @@ export const CELLO_ART: LessonArt = {
         { title: 'ASK THE PLAYER FIRST', text: 'How do they sit and sway? Where does the bow go — long strokes, string crossings, pizzicato? What sound do they want: a full body, more bow, more room? Hear the cello unamplified in the room first, from the low C to the high A.' },
         { title: 'WORK WITH THE CELLO AS IT IS', text: 'The cello is valuable and delicate, and it is the cellist’s. Ask before touching it; nothing presses the bridge, the top, the f-holes or the varnish, and no clip goes on without their agreement.' },
       ],
-      hearing: 'Protect your hearing during soundcheck and on loud stages. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Turn monitors down before moving a mic near a player, keep levels sensible, and use hearing protection.',
+      hearing: 'Protect your hearing during soundcheck and on loud stages. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Turn monitors down before moving a mic near a player, keep levels sensible, and use hearing protection.',
     }),
   },
 };

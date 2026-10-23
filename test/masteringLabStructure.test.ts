@@ -216,7 +216,9 @@ describe('safety rules (safety review 2026-10-01)', () => {
     assert.match(m3, /dB SPL \(C, slow\)/);
     assert.match(m3, /k: 'SPL \(C\)'/);
     assert.match(m3, /k: 'PER DAY', v: dailyLimitLabel\(level\)/);
-    assert.match(m3, /PER DAY on the bezel is the DAILY LIMIT: the NIOSH figure/);
+    // owner ruling 2026-10-23: NIOSH named as a recommendation, OSHA as the legal limit
+    assert.match(m3, /PER DAY on the bezel is the NIOSH recommended daily limit/);
+    assert.match(m3, /legal limit \(OSHA\)[^.]*90 dBA/);
     assert.match(m3, /Exposure limits are quoted A-weighted; a C-weighted music reading is a few dB higher/);
     assert.match(m3, /Measure, don't guess/);
     assert.match(m3, /EXAMPLE figures/);

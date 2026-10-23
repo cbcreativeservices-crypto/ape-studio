@@ -53,7 +53,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Two singers, two mics',
     goal: 'Two handhelds in the row: see each singer reach the neighbouring mic later and quieter, what polarity changes and what it does not, and why spacing helps.',
-    credit: { scenarios: ['bv.two.1', 'bv.two.2', 'bv.two.3'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
+    credit: { scenarios: ['bv.two.1', 'bv.two.2', 'bv.two.3'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
     takeaway: 'Each voice reaches every open mic — its own first, the others later and quieter. Spaced 3:1 the late copies are quiet and the comb shallow; solo each mic and check the mono sum.',
   },
   troubleshoot: {
@@ -400,7 +400,7 @@ const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern rejects most of the drums beside the singer?', options: ['Supercardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: the shared mic moves 10 cm toward the middle singer. What changes most?', options: ['The middle singer gets louder', 'Nothing: the others balance it', 'All three get louder equally'], after: 'Watch NEAR / FAR and NEAREST: one singer’s distance is that singer’s level.' },
   context: { prompt: 'The wedge is on the floor in front of the singer. Where will a supercardioid aimed at the mouth reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'Two handhelds on two singers. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE to the other singer.' },
+  twoMic: { prompt: 'Two handhelds on two singers. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to the other singer.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -416,7 +416,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'bv.q.2',
     covers: 'meet',
-    prompt: 'At a shared mic, how does a singer get quieter in the mix?',
+    prompt: 'At a shared mic, how does a singer get quieter in the mix and keep their tone?',
     options: ['Step back a little', 'Turn to face the room', 'Sing straight into the top'],
     correct: 'Step back a little',
     explain: 'One mic, one channel: distance is each singer’s fader.',
@@ -457,7 +457,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'You monitor three loud vocals and a band on headphones all day. What protects your ears?',
     options: ['Sensible levels and short breaks', 'The mics’ highest level rating', 'Turning up to hear the detail'],
     correct: 'Sensible levels and short breaks',
-    explain: 'A widely used guideline: no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — a limit for people where they listen.',
+    explain: 'NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are limits for people, measured where they listen.',
     why: { 'The mics’ highest level rating': 'That is about the mic, not your ears.', 'Turning up to hear the detail': 'Louder raises your exposure; detail comes from placement.' },
   },
 ];
@@ -561,7 +561,7 @@ export const E02_LESSON: EnsembleLesson = {
       { title: 'HEAR THE REAL SONG', text: 'The loudest chorus, the quietest entrance, unison consonants, sustained vowels, any moves — who dominates, who turns their head, who also plays.' },
       { title: 'A SAFE, REHEARSED STAGE', text: 'Stable stands, secured cables, room to move; at a shared mic a known working zone with approach and exit paths, rehearsed with the real song.' },
     ],
-    safety: 'Stable stands and secured cables so the singers can move without tripping or striking a mic. Lower the channel before moving a live mic; never pass a live handheld. Keep monitors and headphones comfortable — never ask singers to shout over unsafe levels — and avoid uncontrolled feedback.',
+    safety: 'Stable stands and secured cables so the singers can move without tripping or striking a mic. Lower the channel before moving a live mic. Most crews mute a handheld before it is passed; if it must pass live, ride the fader. Keep monitors and headphones comfortable, so no singer has to shout over loud levels, and avoid uncontrolled feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin when singers share a mic: one large condenser at their mouth height, every mouth about the same distance from it — a place to start and rehearse, not a rule. For a row of singers, the group mic sits a little above their heads instead.',
       clearance: 'The stand’s base clear of the singers’ feet and their way in and out; its cable dressed flat, out of the moves.',

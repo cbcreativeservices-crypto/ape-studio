@@ -326,7 +326,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Never gate brushes or the ride, and don’t crush the drum bus until cymbals turn to grit.",
+      "text": "Avoid gating brushes or the ride, and don’t crush the drum bus until cymbals turn to grit.",
       "bullet": true
     },
     {

@@ -81,9 +81,9 @@ export const hearingDiag = (id: string, w: WindWords): DiagnosticItem => {
     prompt: `Your ${w.noun} mic is rated to a very high maximum SPL. What does that tell you about a long, loud rehearsal?`,
     options: [a, b, key],
     correct: key,
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
-      [a]: 'A mic’s rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      [a]: 'A mic’s rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       [b]: 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   };
@@ -176,7 +176,7 @@ export const clipThreatSymptom = (id: string, w: WindWords): Symptom => {
     explain: `Only a clip made for this ${w.noun}, fitted with the player’s agreement, clear of every hole, key, rod, pad and joint. If the fit is in doubt, a stand mic is the safe choice.`,
     why: {
       [a]: 'More pressure on a wooden body or a joint risks the instrument. Stop instead.',
-      [b]: 'Tape on the finish or the keys is never a fix. Remove the clip and use a stand.',
+      [b]: 'Tape on the finish or the keys can mark or jam them. Remove the clip and use a stand.',
     },
   };
 };

@@ -108,7 +108,7 @@ export const MISCONCEPTIONS: Misconception[] = [
   {
     id: 'watts-loudness', moduleId: 'realworld', verdict: 'false',
     statement: 'Twice the amplifier power means twice the loudness.',
-    correction: 'Twice the power is about +3 dB — a small but noticeable step, but far from “twice as loud.”',
+    correction: 'Twice the power is about +3 dB — a small but clearly audible step, but far from “twice as loud.”',
     detail: 'Level scales with 10·log10(P2/P1), so ×2 power ≈ +3 dB and ×10 power = +10 dB. Perceived loudness also depends on speaker sensitivity, distance, frequency content, and the room.',
   },
   {
@@ -364,7 +364,7 @@ export const AMP_CHECKS: AmpCheck[] = [
     q: 'Going from a 100 W amplifier to a 200 W amplifier buys you about…',
     options: ['+3 dB', '+10 dB', 'Twice the loudness', '+6 dB'],
     correct: 0,
-    explain: 'ΔdB = 10·log10(200/100) ≈ +3 dB. Audible, worthwhile — but a long way from double loudness, which needs roughly ten times the power.',
+    explain: 'ΔdB = 10·log10(200/100) ≈ +3 dB. Small but clearly audible, and worthwhile — but a long way from double loudness, which needs roughly ten times the power.',
   },
   {
     id: 'r-cable', moduleId: 'realworld',
@@ -560,7 +560,7 @@ export type WaveKind =
  *  cannot be distinguished must not count against the learner. */
 export const WAVE_KINDS: { key: WaveKind; label: string; evidence: string; alsoAccept?: WaveKind[] }[] = [
   { key: 'clean', label: 'Clean output', evidence: 'A smooth sine that follows the input with room below the rail lines — nothing flattened, nothing missing at zero.', alsoAccept: ['classd-filtered'] },
-  { key: 'voltage-clip', label: 'Voltage clipping', evidence: 'Flat tops sitting EXACTLY on the rail lines. The supply ran out of volts.' },
+  { key: 'voltage-clip', label: 'Voltage clipping', evidence: 'Flat tops sitting at the rail lines (a real output stage stops a volt or two short of them). The supply ran out of volts.' },
   { key: 'crossover', label: 'Crossover distortion', evidence: 'A flat step or kink right at the zero crossing; the peaks are untouched. Output-stage handoff, not the rails.' },
   { key: 'current-limit', label: 'Current limiting', evidence: 'Flat tops BELOW the rail lines with voltage to spare above them. The output stage would not pass more current.' },
   { key: 'sag', label: 'Supply sag', evidence: 'Clipping that begins below the nominal rails because the rails themselves drooped under sustained load — the rail lines have moved inward.' },
@@ -612,7 +612,7 @@ export const APP_SCENARIOS: AppScenario[] = [
     brief: 'A bench circuit built to SHOW how an amplifier works — simplicity matters more than efficiency.',
     accepted: ['A'],
     reasoning: { A: 'One device, one operating point, full-cycle conduction: the simplest amplifier to build, probe and understand. Efficiency is irrelevant on a bench.' },
-    rejected: { AB: 'Two devices and a bias network hide the basic idea.', D: 'Modulators and filters obscure the lesson.', C: 'Cannot amplify audio cleanly: it conducts for less than half of each cycle.', TUBE: 'A tube stage can also be single-ended — but the brief asks for the transistor circuit that students can build safely at low voltage.' },
+    rejected: { AB: 'Two devices and a bias network hide the basic idea.', D: 'Modulators and filters obscure the lesson.', C: 'Cannot amplify audio cleanly: it conducts for less than half of each cycle.', TUBE: 'A tube stage can also be single-ended Class A, but tubes need high voltages that are not safe on a student bench. A low-voltage transistor stage shows the same idea more safely.' },
   },
   {
     id: 'ap-rf', title: 'RF transmitter output stage',

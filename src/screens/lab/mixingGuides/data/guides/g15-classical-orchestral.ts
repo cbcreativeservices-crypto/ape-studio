@@ -117,7 +117,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Brass spots",
-        "cut": "HPF 60–100 Hz; −2–3 dB at 1.5–3 kHz if blatty",
+        "cut": "HPF 60–100 Hz (tuba and bass trombone about 30–40 Hz); −2–3 dB at 1.5–3 kHz if blatty",
         "boost": "None",
         "notes": "Usually used for control, rarely pushed up"
       },

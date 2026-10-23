@@ -5,7 +5,7 @@
  * solves, unit-aware fields, worked steps, honesty notes, glossary terms.
  */
 import type { Workspace } from '../calcTypes';
-import { SABINE_K, fmt, speedOfSoundAir } from '../calcUnits';
+import { AIR_TEMP_FIELD, fmt, SABINE_K, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -48,10 +48,10 @@ const CRITICAL_DISTANCE: Workspace = {
     'patterns vary with frequency. Formal room acoustics is the domain of ISO 3382.',
   glossary: ['Critical distance', 'Reverberation Time', 'RT60', 'Directivity', 'Q factor', 'Reverberation'],
   fields: [
-    { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '300', help: 'Length × width × height of the room.', warn: { test: (x) => x <= 0, msg: 'Volume must be greater than zero.' } },
-    { key: 'rt60', name: 'REVERBERATION TIME (RT60)', quantity: 'time', defaultUnit: 's', placeholder: '0.8', help: 'Time for the reverberant tail to decay 60 dB.', warn: { test: (x) => x <= 0, msg: 'RT60 must be greater than zero.' } },
-    { key: 'q', name: 'DIRECTIVITY (Q)', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Source directivity factor: omni ≈ 1, cardioid ≈ 3, horn ≈ 10+.', warn: { test: (x) => x <= 0, msg: 'Directivity Q must be greater than zero.' } },
-    { key: 'r', name: 'LISTENING DISTANCE', quantity: 'length', placeholder: '3', help: 'How far the listener or mic is from the source.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '300', help: 'Length × width × height of the room.', positive: true, warn: { test: (x) => x <= 0, msg: 'Volume must be greater than zero.' } },
+    { key: 'rt60', name: 'REVERBERATION TIME (RT60)', quantity: 'time', defaultUnit: 's', placeholder: '0.8', help: 'Time for the reverberant tail to decay 60 dB.', positive: true, warn: { test: (x) => x <= 0, msg: 'RT60 must be greater than zero.' } },
+    { key: 'q', name: 'DIRECTIVITY (Q)', quantity: 'number', nonNegative: true, placeholder: '1', help: 'Source directivity factor: omni ≈ 1, cardioid ≈ 3, horn ≈ 10+.', positive: true, warn: { test: (x) => x <= 0, msg: 'Directivity Q must be greater than zero.' } },
+    { key: 'r', name: 'LISTENING DISTANCE', quantity: 'length', placeholder: '3', help: 'How far the listener or mic is from the source.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
   ],
   functions: [
     {
@@ -139,9 +139,9 @@ const SCHROEDER: Workspace = {
     'diffuse-field model (above) assumes good diffusion.',
   glossary: ['Room Mode', 'Standing wave', 'Reverberation Time', 'RT60', 'Modal density'],
   fields: [
-    { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '50', help: 'Length × width × height of the room.', warn: { test: (x) => x <= 0, msg: 'Volume must be greater than zero.' } },
-    { key: 'rt60', name: 'REVERBERATION TIME (RT60)', quantity: 'time', defaultUnit: 's', placeholder: '0.4', help: 'Time for the reverberant tail to decay 60 dB.', warn: { test: (x) => x <= 0, msg: 'RT60 must be greater than zero.' } },
-    { key: 'fs', name: 'TARGET SCHROEDER FREQUENCY', quantity: 'frequency', placeholder: '200', help: 'A Schroeder frequency you want to design toward.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '50', help: 'Length × width × height of the room.', positive: true, warn: { test: (x) => x <= 0, msg: 'Volume must be greater than zero.' } },
+    { key: 'rt60', name: 'REVERBERATION TIME (RT60)', quantity: 'time', defaultUnit: 's', placeholder: '0.4', help: 'Time for the reverberant tail to decay 60 dB.', positive: true, warn: { test: (x) => x <= 0, msg: 'RT60 must be greater than zero.' } },
+    { key: 'fs', name: 'TARGET SCHROEDER FREQUENCY', quantity: 'frequency', placeholder: '200', help: 'A Schroeder frequency you want to design toward.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
   functions: [
     {
@@ -216,7 +216,7 @@ const BOUNDARY: Workspace = {
     'A woofer 0.6 m from the front wall (20 °C, c = 343 m/s): first cancellation at c/(4·0.6) ≈ 143 Hz, ' +
     'first reinforcement at c/(2·0.6) ≈ 286 Hz. Pulling it to 0.3 m moves the null up to ≈ 286 Hz.',
   mistakes: [
-    'EQ-ing out a boundary cancellation — the null is destructive interference, not excess energy; cut nothing, just move the speaker.',
+    'Trying to EQ a boundary dip back. The null is two waves canceling, not lost energy — a boost feeds the reflection too, so the dip stays. Move the speaker or treat the boundary.',
     'Measuring to the cabinet face instead of the driver — SBIR is set by the DRIVER-to-boundary path.',
     'Forgetting the floor and side walls: every nearby surface adds its own comb; the worst is usually the closest boundary.',
   ],
@@ -226,9 +226,9 @@ const BOUNDARY: Workspace = {
     'reinforcement = c/(2d).',
   glossary: ['Comb Filtering', 'Reflection (acoustics)', 'Interference', 'Phase', 'Standing wave', 'Wavelength'],
   fields: [
-    { key: 'd', name: 'DISTANCE TO BOUNDARY', quantity: 'length', defaultUnit: 'm', placeholder: '0.6', help: 'Driver-to-surface distance (wall, floor, or console).', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound.' },
-    { key: 'fNull', name: 'TARGET NULL FREQUENCY', quantity: 'frequency', placeholder: '150', help: 'A cancellation frequency you want to place (or avoid).', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'd', name: 'DISTANCE TO BOUNDARY', quantity: 'length', defaultUnit: 'm', placeholder: '0.6', help: 'Driver-to-surface distance (wall, floor, or console).', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
+    { key: 'fNull', name: 'TARGET NULL FREQUENCY', quantity: 'frequency', placeholder: '150', help: 'A cancellation frequency you want to place (or avoid).', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
   functions: [
     {
@@ -328,10 +328,10 @@ const REFLECTION: Workspace = {
     'difference. Assumes the reflection is a clean single copy; real surfaces filter and scatter it.',
   glossary: ['Comb Filtering', 'Reflection (acoustics)', 'Interference', 'Delay', 'Phase'],
   fields: [
-    { key: 'dDirect', name: 'DIRECT PATH', quantity: 'length', defaultUnit: 'm', placeholder: '0.3', help: 'Straight-line distance from source to listener/mic.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
-    { key: 'dReflected', name: 'REFLECTED PATH', quantity: 'length', defaultUnit: 'm', placeholder: '0.75', help: 'Total distance the reflection travels: source → surface → listener.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound.' },
-    { key: 'fNull', name: 'TARGET FIRST-NULL FREQUENCY', quantity: 'frequency', placeholder: '400', help: 'A first-notch frequency you want the geometry to produce.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'dDirect', name: 'DIRECT PATH', quantity: 'length', defaultUnit: 'm', placeholder: '0.3', help: 'Straight-line distance from source to listener/mic.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'dReflected', name: 'REFLECTED PATH', quantity: 'length', defaultUnit: 'm', placeholder: '0.75', help: 'Total distance the reflection travels: source → surface → listener.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
+    { key: 'fNull', name: 'TARGET FIRST-NULL FREQUENCY', quantity: 'frequency', placeholder: '400', help: 'A first-notch frequency you want the geometry to produce.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
   functions: [
     {

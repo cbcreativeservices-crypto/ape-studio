@@ -110,7 +110,7 @@ export const L06_STRIPS: L06Strip[] = [
     id: 'ethernet_concept',
     title: 'ETHERNET — ONE PLUG, MANY SYSTEMS',
     paras: [
-      'T568A and T568B are BOTH valid termination schemes. What matters is that both ends of a cable follow the same one: mixing ends builds a crossover cable, which modern auto-sensing equipment may tolerate but which is a mislabeled, inconsistent termination that will confuse later troubleshooting.',
+      'T568A and T568B are BOTH valid termination schemes. What matters is that both ends of a cable follow the same one: mixing ends builds a crossover cable. Modern auto-sensing equipment may tolerate it, but unless it is marked as a crossover, it is an inconsistent termination that will confuse later troubleshooting.',
       'The connector proves NOTHING about the protocol: networked-audio systems (such as Dante or AVB), digital snake protocols (such as AES50), and plain office networking all use the same plug. Matching ports do not mean compatible equipment — the system behind the port decides, so identify ports from labels and documentation, not shape.',
       'Power over Ethernet can place tens of watts of DC power on the same cable as the data (up to roughly 90 W under IEEE 802.3bt). Standards-based PoE energizes only after detecting a compatible device — but that detection step belongs only to standards-based (IEEE 802.3af/at/bt) equipment. “Passive” PoE injectors — still widely sold — put their full voltage on the pairs permanently with no detection and can damage non-PoE devices (or a cable tester) connected to an energized run. Identify what feeds a run before patching it.',
     ],
@@ -143,7 +143,7 @@ export const L06_STRIPS: L06Strip[] = [
     paras: [
       'The port does not identify the protocol: optical S/PDIF (stereo) and ADAT (multichannel) use the same connector and fiber but are different, incompatible formats — both devices must be set to the same one. Most equipment mutes on an unrecognized format, but some instead outputs noise; keep monitor levels down until both ends match.',
       'There is no electrical conductor in the cable — that is why it is immune to hum, interference, and ground loops, and why kinks, tight bends, and dirty or scratched end-faces can degrade or kill the signal. Keep dust caps on unused ports and stored cables, and respect the bend radius.',
-      'The basic field check, done the fiber-safe way: with the far end connected to a powered source, point the free end at your palm or a white surface and look for the dim red glow, viewing from an angle — never bring a fiber end toward your eye. TOSLINK is low-power LED light, but the same check performed on other fiber systems would aim invisible laser light at your eye; the technique, like the no-staring habit, must not distinguish.',
+      'The basic field check, done the fiber-safe way: with the far end connected to a powered source, point the free end at your palm or a white surface and look for the dim red glow, viewing from an angle — never bring a fiber end toward your eye. TOSLINK is low-power LED light, but other fiber systems can carry laser light you cannot see. So keep the same safe habit on every fiber.',
     ],
   },
   {

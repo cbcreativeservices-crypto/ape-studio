@@ -1563,7 +1563,7 @@ export function EchoModule(p: WaveModuleProps) {
         <PanelCard>
           <Text style={dstyles.eyebrow}>ECHO TIMELINE — ARRIVALS AT THE LISTENER</Text>
           <ArrivalTimeline arrivals={arrivals} thresholdMs={ECHO_FUSE_MS} />
-          <Badge text="STEMS = arrivalsAt (DIRECT + 1st/2nd-ORDER IMAGE-SOURCE REFLECTIONS) · AMBER FUSES WITH THE DIRECT (<50 ms) · RED READS AS A DISCRETE ECHO · THE ECHO READOUT TRACKS THE LOUDEST RED STEM, NOT THE LAST" />
+          <Badge text="STEMS = ARRIVALS: THE DIRECT SOUND, THEN THE FIRST AND SECOND REFLECTIONS · AMBER FUSES WITH THE DIRECT (<50 ms) · RED READS AS A DISCRETE ECHO · THE ECHO READOUT TRACKS THE LOUDEST RED STEM, NOT THE LAST" />
         </PanelCard>
       }
       mistakes={

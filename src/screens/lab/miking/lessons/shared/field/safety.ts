@@ -41,7 +41,7 @@ export const SAFETY: Readonly<Record<SafetyId, SafetyCard>> = {
   wildlife: {
     id: 'wildlife',
     title: 'WILDLIFE',
-    text: 'Local rules come first. As an example, US national parks ask visitors to stay at least 25 yards (about 23 m) from most wildlife and 100 yards (about 91 m) from bears and wolves — some parks ask for more. If an animal reacts to you, you are too close: back away. Never use calls, recorded playback or attractants, and keep away from nests.',
+    text: 'Local rules come first. As an example, US national parks ask visitors to stay at least 25 yards (about 23 m) from most wildlife and 100 yards (about 91 m) from bears and wolves — some parks ask for more. If an animal reacts to you, you are too close: back away. Do not feed or bait wildlife. Use no calls or recorded playback in this lab — many sites ban them — and keep away from nests.',
   },
   traffic: {
     id: 'traffic',
@@ -56,7 +56,7 @@ export const SAFETY: Readonly<Record<SafetyId, SafetyCard>> = {
   hearing: {
     id: 'hearing',
     title: 'HEARING',
-    text: 'Monitor at a comfortable level. For long, loud exposure — traffic, machinery, a loud vehicle — use hearing protection that still lets you hear what is around you. A widely used guideline: no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA above that.',
+    text: 'Monitor at a comfortable level. For long, loud exposure — traffic, machinery, a loud vehicle — use hearing protection that still lets you hear what is around you. NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
   },
 };
 

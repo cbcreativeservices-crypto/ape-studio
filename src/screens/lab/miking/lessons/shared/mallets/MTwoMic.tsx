@@ -124,7 +124,7 @@ export function MTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
     {
       kind: 'toggle',
       id: 'polarity',
-      label: B.polarity === 1 ? 'B POLARITY +' : 'B POLARITY −',
+      label: B.polarity === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
       value: B.polarity === -1,
       onToggle: () => rig.setPolarity('B', B.polarity === 1 ? -1 : 1),
     },
@@ -186,7 +186,7 @@ export function MTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
           {T.learn.map((t) => (
             <Body key={t.slice(0, 24)}>{t}</Body>
           ))}
-          <Note>What you just saw: a bar reaches two spaced mics at different times; summed, the late copy cancels where it is half a period late — comb notches. Grilles together, the times match for every bar, and the two mics differ only in level. Polarity flips the sign — it moves the notches; it does not remove a delay.</Note>
+          <Note>What you just saw: a bar reaches two spaced mics at different times; summed, the late copy cancels where it is half a period late — comb notches. Grilles together, the times match for every bar, and the two mics differ only in level. Polarity flips the sign — the notches and peaks swap places; it does not remove a delay.</Note>
         </>
       ),
     },

@@ -206,7 +206,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'From A to B, what do you keep the same?',
     options: ['The radius, height, gain and cycle', 'Only the gain, to make them match', 'Only the angle; the rest may move about'],
     correct: 'The radius, height, gain and cycle',
-    explain: 'Change one position at a time: at the same radius, height, gain and operating cycle, the difference belongs to the angle.',
+    explain: 'Change one position at a time. At the same radius, height, gain and operating cycle, the difference comes from the new spot: the fan’s direction and the room’s bounces there.',
     why: {
       'Only the gain, to make them match': 'Matching the gain to the reading hides the very difference you moved to see.',
       'Only the angle; the rest may move about': 'The angle is what changes; everything else stays.',
@@ -611,7 +611,7 @@ export const F15_LESSON: Lesson = {
   orderTasks,
   setupTasks,
   predictions,
-  setupPairs: [{ label: 'A and B: the same radius, two sides', A: { zone: 'mp.A' }, B: { zone: 'mp.B' }, line: 'One radius, one height, two angles: the difference belongs to the angle — if the cycle and the room stayed the same.' }],
+  setupPairs: [{ label: 'A and B: the same radius, two sides', A: { zone: 'mp.A' }, B: { zone: 'mp.B' }, line: 'One radius, one height, two angles. If the cycle stays the same, the difference comes from the spot: the fan’s direction and the room’s bounces there.' }],
   orient: [
     { title: 'WHAT IT IS', text: 'Miking a product while it runs, from repeatable, safe positions: what a user hears at a stated point, a comparison before and after a change, or clues to a fault — each claim no bigger than the setup.', src: 'F15-LESSON' },
     { title: 'THE DEVICE', text: 'A low-risk, intact, guarded device under its own instructions — here a desk fan on a small table. Industrial machines are not a place to practise: they appear here only as a no-go example.', src: 'F15-LESSON' },

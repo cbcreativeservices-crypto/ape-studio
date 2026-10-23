@@ -210,7 +210,7 @@ export const METER_CHAIN: ChainSpec = {
   ],
   rules: [
     { id: 'recorder', all: [['instrument', 'recorder']], reason: 'A recorder’s dBFS is not a sound pressure level: it cannot stand in for a meter.' },
-    { id: 'fast-peak', all: [['time', 'F'], ['report', 'lcpeak']], reason: 'Never relabel a fast maximum as a true peak.' },
+    { id: 'fast-peak', all: [['time', 'F'], ['report', 'lcpeak']], reason: 'Never relabel a fast maximum as the meter’s peak level.' },
     { id: 'slow-peak', all: [['time', 'S'], ['report', 'lcpeak']], reason: 'A slow maximum is not a peak either: a peak needs the meter’s peak detector.' },
   ],
   briefs: [
@@ -263,8 +263,8 @@ export const METER_CHAIN: ChainSpec = {
         A: 'The method names C-weighting for this peak.',
         Z: 'The method names C-weighting for this peak.',
         eq: 'An average smooths the impulses away.',
-        F: 'A fast maximum is not a true peak.',
-        S: 'A slow maximum is not a true peak.',
+        F: 'A fast maximum is not the meter’s peak level.',
+        S: 'A slow maximum is not the meter’s peak level.',
         laeq: 'An average smooths the impulses away.',
         lafmax: 'A fast maximum is not the peak the method names.',
         db: 'Write the meter’s own label: the peak, with its weighting.',

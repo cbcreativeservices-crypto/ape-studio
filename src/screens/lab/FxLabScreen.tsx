@@ -762,8 +762,10 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           ) : (
             <Text style={styles.caption}>
               {Platform.OS === 'web'
-                ? 'This web preview runs the visual simulator — the effect audio path plays on the phone dev build. The visuals and lessons above are fully live.'
-                : 'Effect AUDIO needs the v6 engine build — this dev client predates the effects path. The visuals and lessons above are fully live; install the next dev build to hear it.'}
+                ? 'This web preview runs the visual simulator — the effect audio plays in the phone app. The visuals and lessons above are fully live.'
+                : __DEV__
+                  ? 'Effect AUDIO needs the v6 engine build — this dev client predates the effects path. The visuals and lessons above are fully live; install the next dev build to hear it.'
+                  : 'This version of the app cannot play the effect audio yet. The visuals and lessons above work fully; update the app to hear it.'}
             </Text>
           )
         ) : null}

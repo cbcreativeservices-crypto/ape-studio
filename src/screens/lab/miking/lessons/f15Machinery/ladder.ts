@@ -25,7 +25,7 @@ export const F15_LADDER: ClaimLadder = {
     { id: 'bright', text: 'The fan sounds airier from the side', short: 'AIRIER FROM THE SIDE', needs: 'creative', why: 'A heard character can be shown by any honest recording — said as a perspective, not a measurement.' },
     { id: 'blade', text: 'The new blade is about 3 dB quieter at A', short: '3 dB QUIETER AT A', needs: 'relative', why: 'A before-and-after at one position needs the same mic, gain, position and cycle — not an absolute level.' },
     { id: 'spl', text: 'The level at the user’s seat is 52 dBA', short: '52 dBA AT THE SEAT', needs: 'pressure', why: 'An absolute level needs a calibrated chain, the checks, the metric and the position stated.' },
-    { id: 'power', text: 'The fan’s sound power is 48 dB', short: 'SOUND POWER 48 dB', needs: 'power', why: 'Sound power is a property of the source, estimated over a defined surface under a named method — a few positions cannot give it.' },
+    { id: 'power', text: 'The fan’s sound power is 62 dB', short: 'SOUND POWER 62 dB', needs: 'power', why: 'Sound power is a property of the source, worked out under a named method — over a defined surface or in a qualifying room. A few positions picked by ear cannot give it.' },
     { id: 'dose', text: 'A worker beside it gets a safe daily dose', short: 'A SAFE DAILY DOSE', needs: null, why: 'A dose needs the exposure method, the duration and the work pattern: a short fixed sample is not a personal dose, whatever the setup.' },
   ],
 };

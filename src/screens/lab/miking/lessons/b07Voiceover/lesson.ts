@@ -224,7 +224,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b7.place.1',
     page: 'placement',
-    prompt: 'You move the screened condenser from 25 cm to 12 cm. What tends to change?',
+    prompt: 'You move the screened condenser from 30 cm to 15 cm. What tends to change?',
     options: ['More breath and bass, less of the room', 'More room and a more open, airy voice', 'Only the level, the tone stays the same'],
     correct: 'More breath and bass, less of the room',
     explain: 'Closer, a directional mic gains bass (proximity) and hears more breath and mouth noise — and less of the room. Compare at matched loudness.',
@@ -510,9 +510,9 @@ const setupTasks: SetupTask[] = [
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: where does a reader’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now STEP through (or PLAY ONCE), then look down to the script and try the stand.' },
   microphone: { prompt: 'Before you move anything: which mic keeps a turning guest at one distance?', options: ['A desk mic', 'A headset', 'A boundary mic'], after: 'Now choose each TYPE and see where it starts.' },
-  placement: { prompt: 'Predict: the condenser moves from 25 cm to 12 cm. What changes?', options: ['More bass and breath', 'More room', 'It depends on this voice'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
+  placement: { prompt: 'Predict: the condenser moves from 30 cm to 15 cm. What changes?', options: ['More bass and breath', 'More room', 'It depends on this voice'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The monitor is on the desk to the host’s left. Where will a supercardioid aimed at the host reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip the guest mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the guest mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

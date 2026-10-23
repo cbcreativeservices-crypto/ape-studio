@@ -85,7 +85,7 @@ export const TMB_COPY: LessonCopy = spCopy({
     before: [
       { title: 'THE WHOLE PART, THE WHOLE ARC', text: 'Ask for the loudest accent, a sustained shake or roll, and any change of hands or position. Note the instrument’s arc, not only where it rests.' },
       { title: 'CHECK THE INSTRUMENT', text: 'Jingles and frame secure, no unintended rattles. Jingle count, rows and metal vary — do not rank materials without comparing them in the room.' },
-      { title: 'NO SWING TOWARD THE MIC', text: 'Agree a comfortable playing zone; never ask the player to swing toward an exposed capsule for level. Start with the channel muted while you place it.' },
+      { title: 'NO SWING TOWARD THE MIC', text: 'Agree a comfortable playing zone and place the mic for it, rather than asking the player to swing toward an exposed capsule for level. Start with the channel muted while you place it.' },
     ],
     planTitle: 'At the percussion station',
   },

@@ -533,7 +533,7 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
     setPick(saidOk);
     const right = saidOk === item.ok;
     if (right) setCorrect((c) => c + 1);
-    say(`${right ? 'Correct.' : 'Not quite.'} ${item.ok ? 'Approved hardware.' : 'Never hang cable on this.'} ${item.why}`);
+    say(`${right ? 'Correct.' : 'Not quite.'} ${item.ok ? 'Approved hardware.' : 'Not rated cable hardware — do not hang cable on this.'} ${item.why}`);
   };
 
   // Held in a ref so the delayed hand-off always runs the freshest closure.
@@ -598,23 +598,24 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
   const checkSpacing = () => {
     setCheckNonce((n) => n + 1);
     const exact = placed.size === CORRECT_POS.length && CORRECT_POS.every((i) => placed.has(i));
-    if (exact) {
+    const units = [...placed].sort((a, b) => a - b).map((i) => POS_UNITS[i] as number);
+    const anchors = [0, ...units, SPAN_UNITS];
+    const maxGap = Math.max(...anchors.slice(1).map((b, i) => b - anchors[i]));
+    // The spec is a MAXIMUM span (audit R2 R056414): any layout whose largest
+    // span is at or under it meets the spec; extra supports cost, not fail.
+    if (exact || maxGap <= SPEC_EVERY) {
       setSpacingVerdict('good');
-      const msg = 'Supports at 4 and 8 — the documented every-4-unit design, sag inside the limit.';
+      const msg = exact
+        ? 'Supports at 4 and 8 — the documented every-4-unit design, sag inside the limit.'
+        : 'That meets the 4-unit maximum. It uses more hardware than the design needs — more cost and labor, but not a fault.';
       setSpacingMsg(msg);
       setSpacingPassed(true);
-      say(`Correct. ${msg}`);
+      say(`${exact ? 'Correct.' : 'Meets spec.'} ${msg}`);
       tryFire(sortPassed, true);
       return;
     }
     wrongSpacingRef.current += 1;
-    const units = [...placed].sort((a, b) => a - b).map((i) => POS_UNITS[i] as number);
-    const anchors = [0, ...units, SPAN_UNITS];
-    const maxGap = Math.max(...anchors.slice(1).map((b, i) => b - anchors[i]));
-    const msg =
-      maxGap > SPEC_EVERY
-        ? `A span of ${maxGap} units exceeds the documented 4-unit maximum — check the spec card again.`
-        : 'That is more hardware than the documented design calls for — install to the system’s criteria, not more, not less.';
+    const msg = `A span of ${maxGap} units exceeds the documented 4-unit maximum — check the spec card again.`;
     setSpacingVerdict('bad');
     setSpacingMsg(msg);
     say(`Not to spec. ${msg}`);
@@ -767,13 +768,13 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
                       source={itemArt}
                       aspect={CI_SUPPORT_ART_ASPECT}
                       label={`${item.name}, as found on site`}
-                      caption={item.ok ? 'THE REAL THING — APPROVED CABLE HARDWARE' : 'THE REAL THING — NEVER A CABLE SUPPORT'}
+                      caption={item.ok ? 'THE REAL THING — APPROVED CABLE HARDWARE' : 'THE REAL THING — NOT A CABLE SUPPORT'}
                     />
                   ) : null}
                   <RuleFeedback
                     ruleId={item.ruleId}
                     verdict={matched ? 'good' : 'bad'}
-                    short={`${matched ? 'Correct — ' : 'Not quite — '}${item.ok ? 'this IS proper cable hardware. ' : 'never hang cable on this. '}${item.why}`}
+                    short={`${matched ? 'Correct — ' : 'Not quite — '}${item.ok ? 'this IS proper cable hardware. ' : 'not rated cable hardware, so do not hang cable on this. '}${item.why}`}
                     openSources={openSources}
                   />
                   {item.ok && item.roles ? (

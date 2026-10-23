@@ -105,7 +105,7 @@ const OVER_SCRIPT: VoiceZoneSpec = {
   micTypeIds: ['vocLdcOpen'],
   variant: 'booth',
   start: { d: [250, 240, 260, 230, 270], deg: 18, at: 'mouth' },
-  tendency: 'The reader looks over the mic to the script; fewer pops and less of the paper’s reflection. Check how the voice sounds a little off the mic’s axis.',
+  tendency: 'The reader looks under the mic to the script; fewer pops and less of the paper’s reflection. Check how the voice sounds a little off the mic’s axis.',
   checks: ['The sight line to the script', 'The mount firm, rated for the mic', 'Head movement as the reader looks down'],
 };
 

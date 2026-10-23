@@ -282,11 +282,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and theater soul shows typically run 92–98 dBA LAeq-15 at FOH, with C-weighted levels around 108–115 dBC; supper clubs, jazz-soul rooms and seated theaters often 90–95 dBA. Horn-shout peaks reach 105–110 dBA. A C-minus-A gap above about 15–18 dB usually means too much sub for soul. By common hearing-safety guidance, 94 dBA is safe for about one hour—offer earplugs and protect the band’s ears."
+      "text": "Club and theater soul shows typically run 92–98 dBA LAeq-15 at FOH, with C-weighted levels around 108–115 dBC; supper clubs, jazz-soul rooms and seated theaters often 90–95 dBA. Horn-shout peaks reach 105–110 dBA. A C-minus-A gap above about 18 dB usually means too much sub for soul. NIOSH advises no more than about an hour a day at 94 dBA—offer earplugs and protect the band’s ears."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern soul and neo-soul masters typically land at −11 to −8 LUFS-I; retro-soul and catalog reissues often sit at −13 to −10. Keep true peak at or below −1 dBTP, or −2 dBTP for masters louder than −14 LUFS, a common streaming recommendation. Services normalize to about −14 LUFS, so extra loudness buys nothing. Soul benefits from a PLR of 10–13 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter) and a loudness range of 6–9 LU so ballads breathe and vamps build."
+      "text": "Modern soul and neo-soul masters typically land at −11 to −8 LUFS-I; retro-soul and catalog reissues often sit at −13 to −10. Keep true peak at or below −1 dBTP, or −2 dBTP for masters louder than −14 LUFS, a common streaming recommendation. Services normalize to about −14 LUFS, so extra loudness buys nothing. Soul benefits from a PLR of 10–13 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter, below the modern range) and a loudness range of 6–9 LU so ballads breathe and vamps build."
     }
   ],
   "liveStudio": {
@@ -324,7 +324,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "92–98 dBA Leq; build through the set",
-        "studio": "−11 to −8 LUFS-I, −2 dBTP"
+        "studio": "Typical −11 to −8 LUFS-I, −2 dBTP; −12 or quieter keeps a 10–13 dB PLR"
       }
     ],
     "notes": []

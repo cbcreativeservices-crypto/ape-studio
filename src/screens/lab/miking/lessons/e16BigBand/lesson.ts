@@ -49,7 +49,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'The pair and a close mic',
     goal: 'The main pair and the lead alto’s close mic: see how much earlier the close mic hears the alto, what polarity changes and what it does not, and judge the sum in mono.',
-    credit: { scenarios: ['bb.two.0', 'bb.two.1', 'bb.two.2'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
+    credit: { scenarios: ['bb.two.0', 'bb.two.1', 'bb.two.2'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
     takeaway: 'A close mic hears its player earlier than the pair: it can change the timbre, the attack and the apparent depth. Lower or move it before reaching for polarity or delay; one delay cannot align every moving player.',
   },
   troubleshoot: {
@@ -397,7 +397,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'bb.prac.setup1',
     page: 'practice',
-    brief: 'BRIEF 1 · A concert in a good hall, recorded; the band balances itself well. Phantom power on every input; check each ribbon’s manual first.',
+    brief: 'BRIEF 1 · A concert in a good hall, recorded; the band balances itself well. Phantom power is available on every input; switch it on only where a mic needs it, and check each ribbon’s manual first.',
     setups: [
       { id: 'a', label: 'A main pair about 2.5 m in front, elevated, plus piano and bass support', ok: true, power: 'phantom', feedback: 'A concert perspective with selective detail from the rhythm section.' },
       { id: 'b', label: 'The pair, plus a mic for every two horns, raised under it', ok: true, power: 'phantom', feedback: 'Fair: some section control under the main view.' },
@@ -428,7 +428,7 @@ const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern rejects most of what is behind the alto mic?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from 2 m to 3 m in front and higher. What changes most?', options: ['The rows even out, with more room', 'Only the level', 'The saxes dominate more'], after: 'Farther and higher, the distances to the saxes and the trumpets even out: the NEAR / FAR readout shrinks. Compare at matched level.' },
   context: { prompt: 'The wedge sits in front of the saxes on the floor. Can the alto mic’s rejection reach it?', options: ['Yes — turn the mic’s back toward it', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'The pair and the lead alto’s mic. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
+  twoMic: { prompt: 'The pair and the lead alto’s mic. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -537,7 +537,7 @@ export const E16_LESSON: EnsembleLesson = {
       { id: 'rhythm', label: 'the drums, the amps and the piano lid', short: 'RHYTHM', note: 'The kit and the amps reach every nearby mic; agree the amp’s level and direction with the player; keep hardware clear before moving the piano lid.', prov: { kind: 'sourced', src: 'LESSON-BIGBAND', quote: 'Turn or lower the amp with the player’s agreement if it floods horn/piano mics (L86)' }, tag: 'SPILL', scene: 'all' },
       { id: 'mon', label: 'the wedges and the PA', short: 'MONITORS', note: 'Place speakers and wedges by each mic’s real rejection — rear lobes of supercardioids and figure-8s included; attenuate unneeded mics.', prov: { kind: 'sourced', src: 'LESSON-BIGBAND', quote: 'Place speakers and monitors relative to the actual mic rejection, including rear lobes (L98)' }, tag: 'FEEDBACK', scene: 'stage' },
       { id: 'routes', label: 'the PA, the monitors and the stream', short: 'ROUTES', note: 'Remote listeners do not hear the band in the room: keep the room pair on its own recording or stream route.', prov: { kind: 'sourced', src: 'LESSON-BIGBAND', quote: 'Keep the main/room pair on a separate recording or stream route (L97)' }, tag: 'ROLES', scene: 'stage' },
-      { id: 'rig', label: 'risers and anything above the band', short: 'RISERS', note: 'Approved risers, suspended arrays and structural attachments are the venue’s qualified crew’s work.', prov: { kind: 'sourced', src: 'LESSON-BIGBAND', quote: 'Approved risers, suspended arrays and structural attachments belong to qualified venue crew (L119)' }, tag: 'VENUE ONLY', scene: 'all' },
+      { id: 'rig', label: 'risers and anything above the band', short: 'RISERS', note: 'Approved risers, suspended arrays and structural attachments are work for the venue’s qualified rigger.', prov: { kind: 'sourced', src: 'LESSON-BIGBAND', quote: 'Approved risers, suspended arrays and structural attachments belong to qualified venue crew (L119)' }, tag: 'VENUE ONLY', scene: 'all' },
       { id: 'screens', label: 'screens and sightlines', short: 'SCREENS', note: 'Screens only when they improve useful separation without spoiling sightlines or cueing; compare the band’s sound after every seating change.', prov: { kind: 'sourced', src: 'LESSON-BIGBAND', quote: 'Use screens only when they improve useful separation without spoiling sightlines (L94)' }, tag: 'STUDIO', scene: 'studio' },
     ],
     stage: 'LIVE: start from the band’s acoustic sound at audience positions. Reinforce what needs it — often bass, piano, vocals and a soft solo; work closer where separation and gain are needed; attenuate mics not in use; a qualified operator manages the PA level.',
@@ -575,7 +575,7 @@ export const E16_LESSON: EnsembleLesson = {
       { title: 'LET THE BAND BALANCE', text: 'The bandleader sets the balance with the players; then choose the perspective or support that keeps it for the listener.' },
       { title: 'CHOOSE THE CONTROL', text: 'A main pair with rhythm support; section mics with solo spots; a mic on every horn; close sources for the PA with a separate room pair — by the room and the job.' },
     ],
-    safety: 'Stable stands; cables protected from chairs, pedals, slides, mutes and access routes. Approved risers, suspended arrays and structural attachments are the venue’s qualified crew’s work. Set levels on the strongest planned passage and follow the venue’s hearing practice; follow each ribbon’s own manual on air and power; never sustain feedback.',
+    safety: 'Stable stands; cables protected from chairs, pedals, slides, mutes and access routes. Approved risers, suspended arrays and structural attachments are work for the venue’s qualified rigger. Set levels on the strongest planned passage and follow the venue’s hearing practice; follow each ribbon’s own manual on air and power; never sustain feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a big band: one main pair in front of the horns, from an elevated view — a place to start and compare, not a rule.',
       clearance: 'The stand in front of the band, clear of the soloists’ path and the audience’s way; its cable dressed flat and out of the walkways.',

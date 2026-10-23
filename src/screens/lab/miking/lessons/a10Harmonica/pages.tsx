@@ -159,7 +159,7 @@ const BASE: Omit<HandSpec, 'axes' | 'worked' | 'place' | 'learnZones'> = {
       { id: 'room', box: { u0: -1300, u1: 1700, v0: 900, v1: 1040 }, scene: 'studio', label: { u: 200, v: 820 } },
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the harmonica player facing the audience, the harp amp behind and to the side of them, a wedge downstage in front, the band upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the harmonica player and the harp amp, no monitors on the floor.${sel ? ` Highlighted: ${sel}.` : ''}`),
-    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'),
+    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience to the right' : 'Plan · a studio room from above'),
     first: 'The player faces the audience with the harmonica in their hands; their amp stands behind and to the side, so they hear it without it pointing at the cupped mic.',
     before: [
       { title: 'ASK THE PLAYER', text: 'Which sound: clean acoustic harmonica, close amplified harp through the PA, or the harp amp itself? Which harmonicas — and do they swap them, sing too, or use a neck holder? Where will they put a hand-held mic down?' },
@@ -195,7 +195,7 @@ const BASE: Omit<HandSpec, 'axes' | 'worked' | 'place' | 'learnZones'> = {
     B: { zone: 'hm.amp.far', mic: 'sdcCard' },
     names: { A: 'CLOSE SPEAKER MIC', B: 'FARTHER AMP MIC' },
     looking: 'Two mics on the harp amp · A close, B farther back',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.',
     label: 'The harp amp with a close mic (A) and a farther mic (B)',
     warn: 'This simplified graph shows one point source and straight paths, no reflections. A real speaker radiates from its whole cone and the room answers back — read the notch depths as illustrative only, and judge the blend by ear, in mono, over real phrases.',
     learn: [
@@ -274,7 +274,7 @@ const SPEC: FreeReedSpec = {
     partsBadge: 'Tap a part to name it · switch PATH for the harp amp',
     partsLooking: (v) => (v === 'amp' ? 'From the front · the harp amp, its speaker shown behind the cloth' : 'The harmonica taken apart · and at the lips'),
     partsNote: 'Two things to meet: the harmonica (and the hands round it), and — on the amplified path — the harp amp. Switch PATH to see the amp.',
-    partsWarn: 'Never reach for the player’s harmonicas or hands. A stand that can strike the mouth, the instrument or a neck holder is never acceptable.',
+    partsWarn: 'Ask before you touch the player’s harmonicas or hands; they are the player’s to move. A stand that can strike the mouth, the instrument or a neck holder is never acceptable.',
     variantKey: 'PATH',
   },
   sound: {

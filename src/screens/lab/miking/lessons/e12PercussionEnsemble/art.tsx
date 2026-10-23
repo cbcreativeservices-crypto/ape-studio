@@ -57,7 +57,7 @@ const SPEC = ensembleHandSpec({
     B: { zone: 'pc.conga', mic: 'hdDynCard' },
     names: { A: 'MAIN PAIR', B: 'CONGA MIC' },
     looking: 'Two mics · A the main pair’s centre, B the conga mic',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE: each instrument reaches the two mics at its own times.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each instrument reaches the two mics at its own times.',
     label: 'The stations with the main pair (A) and a conga mic (B)',
     warn: 'This simplified graph shows one point source and straight paths, no room. Every instrument and reflection has its own path difference, so one delay never suits them all — judge by ear, in mono, against the plain version.',
     learn: [
@@ -77,7 +77,7 @@ const SPEC = ensembleHandSpec({
     placeBadge: 'Blue = suggested starting points · grey dashes = the players’ space · pinch to zoom',
     clearance: 'Clearance comes first: the players’ paths, sticks and mallets, pedals and instrument changes; nothing on a bar or over a resonator opening.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A mic aimed down at the heads turns its back up and away — where a wedge can sit in its rejection.',
-    sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each instrument gives its own delay.',
+    sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each instrument gives its own delay.',
   },
 });
 

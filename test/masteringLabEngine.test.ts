@@ -164,7 +164,9 @@ describe('monitoring level — hearing safety', () => {
     assert.equal(monitoringAdvice(96).tone, 'unsafe');
     assert.equal(monitoringAdvice(62).tone, 'low');
     assert.match(monitoringAdvice(85).note, /85 dBA[^.]*8 hours/i);
-    assert.match(monitoringAdvice(85).note, /every 3 dB above halves it/i);
+    // owner ruling 2026-10-23: both authorities, both rules
+    assert.match(monitoringAdvice(85).note, /NIOSH[^.]*every 3 dB above/i);
+    assert.match(monitoringAdvice(85).note, /OSHA[^.]*90 dBA[^.]*5 dB/);
     assert.match(monitoringAdvice(62).note, /reference level/i);
     for (const l of [84, 90, 96, 100]) assert.doesNotMatch(monitoringAdvice(l).note, /better|turn it up|louder is|survivable/i);
     assert.match(monitoringAdvice(96).note, /hearing/i);

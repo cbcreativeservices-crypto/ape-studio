@@ -119,7 +119,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why can a shared boundary mic between two panelists change more with each head turn?',
     options: ['It is farther from each mouth than a gooseneck', 'It hears only the talker on its left side', 'A boundary mic only works when people are silent'],
     correct: 'It is farther from each mouth than a gooseneck',
-    explain: 'Farther away and low on the table, every turn is a bigger change in angle and level — and it hears more of the room and the table.',
+    explain: 'Farther away and low on the table, the voice is a smaller part of what it hears. When a turn dulls the voice, it sinks further into the room and the table — and the mic hears more of the neighbour.',
     why: {
       'It hears only the talker on its left side': 'It hears both — that is the idea of sharing it.',
       'A boundary mic only works when people are silent': 'It works for speech; it is simply farther from each mouth.',
@@ -156,7 +156,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Before a live panel, how do you check the panel mics with the PA on?',
     options: ['Each up to its working level; any ring, pull down', 'Raise each one until it rings, then back it off a bit', 'Open all of them at once at a high level'],
     correct: 'Each up to its working level; any ring, pull down',
-    explain: 'Start with only the needed speech mics open; bring each to its working level with the responsible operator. Never raise gain to provoke feedback as a test.',
+    explain: 'Start with only the needed speech mics open; bring each to its working level with the responsible operator. Do not cause feedback as a test: ringing out is the system operator’s job, at a controlled level.',
     why: {
       'Raise each one until it rings, then back it off a bit': 'Provoking feedback risks ears and loudspeakers.',
       'Open all of them at once at a high level': 'Many open mics at a high level invite feedback.',
@@ -512,7 +512,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: is every boundary mic an omni?', options: ['Yes', 'No', 'Only on a table'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: the lectern gooseneck moves from 35 cm to 25 cm from the lips. What changes?', options: ['More voice, less room', 'More room', 'It depends on this presenter'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is at the stage’s front corner. Where will a supercardioid lectern mic reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip the headset’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the headset’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -589,7 +589,7 @@ const wedges: Wedge[] = [
     p: { x: PA_C.x, y: STAND_FLOOR, z: PA_C.z },
     lift: STAND_FLOOR - PA_C.y,
     faces: { x: 1, y: 0, z: 0 },
-    note: 'On a pole at the stage’s front corner, facing the audience: its back and side reach the lectern — below and off to one side of a gooseneck aimed up at the mouth.',
+    note: 'On a pole at the stage’s front corner, facing the audience: its back and side reach the lectern. A gooseneck aimed up at the mouth points its rear down toward the audience, so the PA, up on its pole to one side, is off that rear.',
     prov: { kind: 'illustrative', reason: 'a typical small stage: the PA’s place and height are drawing defaults' },
     glyph: 'none',
   },
@@ -638,7 +638,7 @@ export const B06_LESSON: Lesson = {
       { id: 'press', label: 'the press feed box', short: 'PRESS FEED', note: 'A copy of the mix for the reporters: it carries only what is routed into it, often at mic level from isolated outputs.', prov: { kind: 'illustrative', reason: 'the lesson L34' }, tag: 'ROUTE', scene: 'all' },
     ],
     stage: 'LECTERN: the gooseneck about 25–36 cm from the mouth, a little off it, the PA toward its rejection; a headset for walking with the lectern muted; the aisle mic routed to every feed. Avoid uncontrolled feedback.',
-    studio: 'PANEL: a gooseneck each, about 20–30 cm below each mouth, on separate channels — or, in a quiet room with no PA, a shared boundary between two.',
+    studio: 'PANEL: a gooseneck each, on its own channel, about 20–30 cm from the mouth and a little below it — or, in a quiet room with no PA, a shared boundary between two.',
   },
   diagnostic,
   practice: {

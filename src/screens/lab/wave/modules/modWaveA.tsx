@@ -1259,7 +1259,7 @@ const COMB_MISTAKES = [
   'Thinking comb filtering is a tone problem to EQ AWAY — it is position/time-based: fix geometry/timing.',
   'Not realizing a tiny movement shifts the notch frequencies drastically.',
   'Confusing comb filtering (delay+sum) with resonance/room modes.',
-  'Ignoring it when using two mics on one source (the 3:1 rule).',
+  'Ignoring it with two open mics: on one source, match their distances; on two sources, use the 3:1 rule.',
 ];
 
 const COMB_CHECK: CheckSpec = {
@@ -1409,9 +1409,9 @@ export function CombModule(p: WaveModuleProps) {
           </Text>
           <Text style={dstyles.eyebrow}>WHERE YOU WILL MEET IT</Text>
           <Text style={dstyles.body}>
-            A mic near a music stand, a podium mic over a hard desk, two open mics on one source (keep
-            the second mic at least 3× the source distance away — the 3:1 rule), a speaker against a
-            bare wall. Comb filtering is delay-plus-sum, not resonance: the room stores nothing here —
+            A mic near a music stand, a podium mic over a hard desk, two open mics on one source (match
+            their distances), two mics on two sources (keep each mic at least 3× farther from the other
+            source than from its own — the 3:1 rule), a speaker against a bare wall. Comb filtering is delay-plus-sum, not resonance: the room stores nothing here —
             unlike the standing waves of Module 8.
           </Text>
           <Text style={dstyles.caption}>← MIC / MIC → nudge the mic 0.15 m — six inches — per press.</Text>

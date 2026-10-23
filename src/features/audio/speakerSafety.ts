@@ -145,7 +145,7 @@ export function isGuardEngaged(hz: number): boolean {
  * moment they take hold of it.
  *
  * ⚠️ THIS CONTRADICTS `LOW_FREQ_ADVISORY` BELOW, DELIBERATELY AND ONLY IN PART.
- * That one says "use headphones for the full low end" — sound advice for HEARING
+ * That one says "use headphones with the volume turned down first" — sound advice for HEARING
  * a 40 Hz tone the phone speaker cannot reproduce, and it appears in the
  * Harmonics and Oscillator labs, which have no user-driven level fader. This one
  * fires only where the user can RAISE the level themselves. Keep the split
@@ -161,5 +161,5 @@ export const LEVEL_HEARING_WARNING_BODY =
 /** Shared honest disclosure — the built-in speaker can't reproduce the lowest
  *  frequencies, and the guard high-passes them. */
 export const LOW_FREQ_ADVISORY =
-  `Low frequencies are high-passed (${SPEAKER_HPF_HZ} Hz, −12 dB/oct) to protect the phone speaker — ` +
-  `use headphones for the full low end. Toggle PHONE SPEAKER OUTPUT to see exactly what the filter does.`;
+  `Low frequencies are high-passed (${SPEAKER_HPF_HZ} Hz, −12 dB/oct) to protect the phone speaker. ` +
+  `To hear the full low end, use headphones with the volume turned down first. Toggle PHONE SPEAKER OUTPUT to see exactly what the filter does.`;

@@ -207,11 +207,11 @@ const scenarios: MikingScenario[] = [
     id: 'b2.mic.3',
     page: 'microphone',
     prompt: 'What does a boom outside the frame avoid that a lav meets?',
-    options: ['Clothing noise from the garments', 'The camera’s frame and its edges', 'The room and its reflections'],
+    options: ['Clothing noise from the garments', 'The need to aim it at the mouth', 'The room and its reflections'],
     correct: 'Clothing noise from the garments',
     explain: 'A boom hears no jacket, tie or cable — but it must stay outside every frame, and it hears more of the room.',
     why: {
-      'The camera’s frame and its edges': 'The frame is the boom’s main limit.',
+      'The need to aim it at the mouth': 'A boom must be aimed at the mouth; an omni lav’s aim matters little.',
       'The room and its reflections': 'A boom farther away hears more of the room, not less.',
     },
   },
@@ -529,7 +529,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you choose: which mic has no clothing touching it?', options: ['A visible lav', 'A boom outside the frame', 'A hidden lav'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you hide the lav under one layer of the shirt. What changes?', options: ['It can dull and rub', 'Nothing at all', 'It depends on the shirt'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is at the stage’s front corner. Where will a supercardioid gooseneck reject it best?', options: ['Straight in front', 'Off to the rear, about 125°', 'At its side'], after: 'Now turn or tilt the gooseneck with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip the lav’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the lav’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

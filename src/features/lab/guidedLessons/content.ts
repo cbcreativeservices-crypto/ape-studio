@@ -107,7 +107,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'spatial cues, the late tail gives size and decay. Pre-delay separates the dry source ' +
       'from the wash; damping shapes the tail’s tone.',
     controls: [
-      { key: 'display', name: 'What the display shows', definition: "The curve is the decay — level falling over time after the sound stops. RT60 is WHERE it crosses −60 dB (a time, not an amount). The flat gap before it starts is pre-delay." },
+      { key: 'display', name: 'What the display shows', definition: "The curve is the decay — level falling over time after the sound stops. RT60 is how long the curve takes to fall 60 dB, counted from where the fall starts (a time, not an amount). The flat gap before it starts is pre-delay." },
       { key: 'decay', name: 'RT60 (decay time)', definition: 'How long the tail takes to fade 60 dB — short often suggests a small or dead room, long a big, hard hall or cavern. It’s a TIME, not an amount of reverb.', range: '0.4 s booth … 6 s cavern' },
       { key: 'pre_delay', name: 'Pre-delay', definition: 'The short pause before the wash arrives after the dry sound — it keeps the source clear and hints at room size. 0 glues the tail to the source.', range: '0 – 60 ms' },
       { key: 'hf_damping', name: 'HF damping', definition: 'How fast the highs fade within the tail. More damping = a darker, softer room (soft surfaces); less = a bright, live space.' },
@@ -172,7 +172,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     whatItIs:
       'A flanger sums a short, LFO-modulated delay (~0.1–10 ms) with the dry signal, producing ' +
       'evenly-spaced (harmonic) comb notches that sweep as the delay time modulates. Feedback ' +
-      'deepens the notches. Evenly-spaced sweeping notches are its signature vs the phaser.',
+      'sharpens the peaks between the notches, so the sweep rings. Evenly-spaced sweeping notches are its signature vs the phaser.',
     controls: [
       { key: 'display', name: 'What the display shows', definition: "Evenly spaced comb notches whose spacing = 1 ÷ delay-time; the ghost curves show the LFO’s sweep range. Even spacing is the flanger fingerprint — compare the phaser’s uneven notches." },
       { key: 'rate', name: 'Rate (LFO speed)', range: '0.05–10 Hz · default ~0.2 Hz', definition: 'How fast the notches sweep up/down the spectrum. Slow = classic jet sweep.' },
@@ -215,7 +215,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'rate', name: 'Rate (LFO speed)', range: '0.05–10 Hz · default ~0.3 Hz', definition: 'Sweeps the all-pass corner frequencies (moves the notches).' },
       { key: 'depth', name: 'Depth', range: '0–100% · default ~60%', definition: 'Modulation range of the sweep.' },
       { key: 'stages', name: 'Stages / Poles', range: '2 / 4 / 6 / 8 / 12 · default 4', definition: 'More stages = more notches = thicker. Notch count ≈ stages ÷ 2.' },
-      { key: 'feedback', name: 'Feedback / Resonance', range: '0–95% · default ~30%', definition: 'Sharpens and deepens the notches.' },
+      { key: 'feedback', name: 'Feedback / Resonance', range: '0–95% · default ~30%', definition: 'Sharpens the peaks between the notches, so the sweep sounds stronger and rings.' },
       { key: 'center', name: 'Center Frequency / Manual', range: '~100 Hz–8 kHz · default ~1 kHz', definition: 'Base frequency the sweep centers on.' },
       { key: 'mix', name: 'Mix (Wet/Dry)', range: '0–100% · default 50%', definition: 'Notches deepest near 50%.' },
       { key: 'lfo_wave', name: 'LFO Waveform', range: 'Sine (default) / Triangle', definition: 'Shape of the sweep motion.' },
@@ -287,7 +287,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'display', name: 'What the display shows', definition: "The transfer curve shows the cliff: below the threshold the output falls toward the floor; above it, sound passes through. The GR meter below is the LIVE, measured reduction." },
       { key: 'threshold', name: 'Threshold', range: '−80…0 dB · default ~−40 dB', definition: 'Level the signal must exceed to open the gate.' },
       { key: 'attack', name: 'Attack', range: '0.01–100 ms · default ~1 ms', definition: 'Time to open once threshold is crossed. Fast preserves transients.' },
-      { key: 'hold', name: 'Hold', range: '0–500 ms · default ~10 ms', definition: 'Minimum open time after the signal drops below threshold, before release — the primary anti-chatter control.' },
+      { key: 'hold', name: 'Hold', range: '0–500 ms · default ~10 ms', definition: 'Minimum open time after the signal drops below threshold, before release — a main anti-chatter control, along with Hysteresis.' },
       { key: 'release', name: 'Release', range: '5 ms–2 s · default ~100 ms', definition: 'Time to close after the signal falls below threshold. Too fast = chatter; too slow = bleed.' },
       { key: 'range', name: 'Range / Depth (Floor)', range: '−∞…−6 dB · default ~−40 dB', definition: 'How much attenuation when "closed". A partial range is gentler and more natural (expander-like).' },
       { key: 'hysteresis', name: 'Hysteresis', range: '0–25 dB · default ~3 dB', definition: 'Separate open vs close thresholds to stop chatter near the threshold.' },
@@ -329,7 +329,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'ceiling', name: 'Ceiling (Output ceiling)', range: '−12…0 dBTP · default −1.0 dBTP', definition: 'Absolute maximum output. −1 dBTP is a commonly quoted margin; lossy delivery often uses −2 dBTP; check the destination’s current spec.' },
       { key: 'drive', name: 'Threshold / Input Gain (Drive)', range: '0…+24 dB drive · default 0', definition: 'How hard you push into the limiter → how much gain reduction/loudness.' },
       { key: 'release', name: 'Release', range: '1 ms–1 s · default ~100 ms / Auto', definition: 'Recovery time. Too fast → distortion/pumping (esp. bass); too slow → dulls dynamics.' },
-      { key: 'attack', name: 'Attack', range: '0–5 ms · near-instant', definition: 'A hair of attack lets transient "punch" through before catching it.', advanced: true },
+      { key: 'attack', name: 'Attack', range: '0–5 ms · near-instant', definition: 'How fast the gain drops to catch a peak. Inside the lookahead, a little attack softens the dip so hits keep more punch. If attack is longer than the lookahead, short peaks slip past the ceiling.', advanced: true },
       { key: 'lookahead', name: 'Lookahead', range: '0–5 ms · default ~1.5 ms', definition: 'Delays audio so peaks are caught before they occur → no overshoot, and less audible distortion.' },
       { key: 'true_peak', name: 'True-Peak / ISP mode', range: 'on/off · default on', definition: 'Oversampled detection to catch inter-sample peaks that exceed the ceiling after D/A or lossy encode.' },
       { key: 'character', name: 'Character / Style', range: 'Transparent … Aggressive', definition: 'Algorithm flavor.', advanced: true },
@@ -349,7 +349,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Gain-stage INTO the limiter with the input/drive; leave the ceiling fixed at the destination’s figure (−1 dBTP is commonly quoted, −2 for lossy delivery) and judge by GR + ears, not the number.',
       'Compare Attack 0 vs a hair of attack to hear transient punch return.',
     ],
-    formula: 'Limiter ≈ compressor with ratio → ∞. True-peak meters oversample to about 192 kHz (4× at 48 kHz, 2× at 96 kHz) to estimate inter-sample peaks. Ceiling is a hard cap: out ≤ ceiling always.',
+    formula: 'Limiter ≈ compressor with ratio → ∞. True-peak meters oversample to about 192 kHz (4× at 48 kHz, 2× at 96 kHz) to estimate inter-sample peaks. Ceiling is a hard cap: out ≤ ceiling, as long as the lookahead covers the attack.',
   },
 
   // ─────────────────────────────────────────────────── LAB 10 · Distortion ──
@@ -466,7 +466,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'square = odd harmonics; saw = all; triangle = odd (steeper rolloff). The FFT/harmonic ' +
       'analyzer shows the content the oscilloscope shape cannot.',
     controls: [
-      { key: 'display', name: 'What the display shows', definition: "Three linked views of the SAME harmonics: the bar/heatmap (level of each harmonic), the piano gutter (which note each lands on), and the waveform (their summed shape). ANALYTIC = drawn from the model; REAL = your live mic." },
+      { key: 'display', name: 'What the display shows', definition: "Three linked views of the SAME harmonics: the bar/heatmap (level of each harmonic), the piano gutter (which note each lands on), and the waveform (their summed shape). MODEL (ANALYTIC) = drawn from the math; LIVE (REAL SIGNAL) = your live mic." },
       { key: 'wave_shape', name: 'Wave shape / Preset', definition: 'The chosen waveform — sine (fundamental only), square (odd harmonics), sawtooth (all harmonics), triangle (odd, steep rolloff), pulse/PWM. Each carries a characteristic harmonic series.' },
       { key: 'frequency', name: 'Frequency (fundamental)', definition: 'The fundamental pitch in Hz. Every harmonic is an integer multiple of it (2f, 3f, 4f…), so moving the fundamental shifts the whole series up or down together.' },
       { key: 'amplitude', name: 'Amplitude', definition: 'Overall level. Raising it scales every partial equally — it does NOT add harmonics (a common confusion).' },
@@ -503,7 +503,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     whatItIs:
       'The Oscillator lab generates classic waveforms plus FM and AM synthesis, and shows why ' +
       'naïve digital saw/square alias. FM modulates frequency (rich sidebands); AM modulates ' +
-      'amplitude (tremolo).',
+      'amplitude (tremolo at slow rates, new sidebands at audio rates).',
     controls: [
       { key: 'display', name: 'What the display shows', definition: "The strip shows one cycle of the wave’s SHAPE; the bars show its harmonic recipe — how much of each overtone the shape contains. Both are analytic, drawn from the waveform, not measured." },
       { key: 'sine', name: 'Sine', definition: 'The pure tone — one partial, the fundamental only. Every other waveform is a stack of sines (Fourier); the sine is the building block.' },
@@ -513,12 +513,12 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'pulse', name: 'Pulse', definition: 'A rectangular wave with adjustable duty cycle. Duty shapes the harmonic content (nulls where n·d is an integer) — it changes timbre, not pitch.' },
       { key: 'frequency', name: 'Frequency', definition: 'The fundamental pitch in Hz. All harmonics move with it; near Nyquist even band-limited waves run out of harmonics and thin out.' },
       { key: 'noise', name: 'Noise', definition: 'Aperiodic signal with a continuous spectrum instead of discrete harmonics — see the Noise lab for the colors.' },
-      { key: 'fm', name: 'FM', definition: 'Frequency modulation — the modulator wobbles the carrier’s frequency, creating sidebands at fc ± n·fm (Bessel amplitudes). Rich, bell-like; when the modulator is a whole-number multiple of the carrier, pitch stays at the carrier.' },
+      { key: 'fm', name: 'FM', definition: 'Frequency modulation — the modulator wobbles the carrier’s frequency, creating sidebands at fc ± n·fm (Bessel amplitudes). Whole-number ratios sound brassy or organ-like; odd ratios sound like bells. When the modulator is a whole-number multiple of the carrier, pitch stays at the carrier.' },
       { key: 'am', name: 'AM', definition: 'Amplitude modulation — the modulator rides the carrier’s level, creating one sideband pair at fc ± fm (tremolo at slow rates). Ring mod is AM with the carrier suppressed.' },
     ],
     commonMistakes: [
       'Naïve digital waveforms alias — direct-math saw/square generate harmonics above Nyquist that fold back; band-limited generation (wavetable/BLEP) fixes it.',
-      'Confusing FM and AM — FM modulates frequency → sidebands at fc ± n·fm (rich/bell-like); AM modulates amplitude → fc ± fm (tremolo).',
+      'Confusing FM and AM — FM modulates frequency → sidebands at fc ± n·fm (rich or bell-like); AM modulates amplitude → one pair at fc ± fm. Slow AM is heard as tremolo.',
       'AM vs ring modulation — AM keeps the carrier; ring mod (balanced) suppresses it, leaving only sidebands (metallic).',
       'Expecting FM depth to change pitch — increasing the modulation index changes timbre/richness, not pitch; with whole-number ratios the perceived pitch stays at the carrier.',
       'Fundamental set near Nyquist — even band-limited oscillators run out of harmonics up high → thin/dull tone.',
@@ -728,7 +728,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'classic FM bell and electric piano.',
     controls: [
       { key: 'display', name: 'What the display shows', definition: "Each stick is an FM sideband at carrier ± k×modulator, drawn at its true Bessel height — the actual spectrum the voice plays. Green = carrier, amber = sidebands, red dashed = folded (aliased) partials." },
-      { key: 'carrier', name: 'Carrier frequency', definition: 'The base oscillator being modulated — the perceived pitch anchor (for harmonic ratios).', range: '110–880 Hz in this lab' },
+      { key: 'carrier', name: 'Carrier frequency', definition: 'The base oscillator being modulated — the perceived pitch anchor (for whole-number ratios).', range: '110–880 Hz in this lab' },
       { key: 'ratio', name: 'Modulator ratio', definition: 'Modulator frequency = ratio × carrier. INTEGER ratios put sidebands on a harmonic series (pitched, brassy/organ-like); simple fractions like 0.5 or 1.5 are harmonic too, on a lower root; odd, complex ratios land them between harmonics (inharmonic — bells, metallic).', range: '0.5–8 · default 2' },
       { key: 'index', name: 'Modulation index (I)', definition: 'Peak phase deviation in radians. I=0 is a pure sine; raising I activates more sideband pairs (≈ I+1 audible pairs) — the brightness control of FM.', range: '0–8 in this lab' },
       { key: 'index_env', name: 'Index envelope', definition: 'An exponential decay on the index per strike: bright attack fading to pure tone — the classic FM pluck/bell behavior. SUSTAIN holds the index static.' },
@@ -736,7 +736,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     commonMistakes: [
       'Thinking FM adds harmonics like distortion — FM places sidebands SYMMETRICALLY around the carrier at ±k·fm; the spectrum is a Bessel pattern, not a rolloff.',
       'Expecting louder sidebands with higher index everywhere — Bessel amplitudes OSCILLATE: a given sideband can get quieter as the index rises (and the carrier itself can vanish, J₀=0 near I≈2.4).',
-      'Using a non-integer ratio and wondering why the pitch is unclear — inharmonic sidebands don’t form a harmonic series, so the ear loses the fundamental (that IS the bell sound).',
+      'Using an odd, complex ratio (like 1.41) and wondering why the pitch is unclear — its sidebands don’t form a harmonic series, so the ear loses the fundamental (that IS the bell sound). Simple fractions like 0.5 or 1.5 stay pitched.',
       'Cranking index at high ratios — Carson bandwidth ≈ 2·fm·(I+1) can cross Nyquist and alias (digital FM is not band-limited by construction).',
       'Confusing FM with vibrato — vibrato is SLOW frequency modulation (a few Hz, hear the wobble); audio-rate modulation is heard as TIMBRE, not pitch movement.',
       'Ignoring the index envelope — static-index FM sounds like an organ; the movement of brightness over time is what makes FM instruments live.',
@@ -780,7 +780,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     proTips: [
       'Drag a pink-noise source in a slow circle with your eyes closed — notice the side positions snap hard while front/back stays vague. That boundary IS the limit of time/level cues.',
-      'Park one source at −90° and A/B sine 250 Hz vs pink noise: the noise images sharply, the low sine barely moves — cue strength is frequency-dependent.',
+      'Park one source at −90° and A/B sine 250 Hz vs pink noise: the noise images sharply, the low sine sits to the side but feels vaguer — cue strength is frequency-dependent.',
     ],
     formula: 'ITD (Woodworth sphere) = (r/c)·(θ + sin θ), r ≈ 8.75 cm → max ≈ 0.66 ms. ILD grows with sin θ (to ~8 dB here) + head-shadow low-pass on the far ear. Distance: gain ∝ 1/d.',
   },
@@ -866,7 +866,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       { key: 'octave_spiral', name: 'Octave spiral (M8)', definition: 'Frequency drawn the way hearing perceives it: one full turn = one octave = a DOUBLING in Hz. Drag around the spiral to glide pitch. Dots on the upward ray mark 110 · 220 · 440 · 880 Hz — equal musical steps are equal angles even though the Hz jumps grow.' },
       { key: 'loudness_curve', name: 'Ear-sensitivity curve (M9)', definition: 'A SIMPLIFIED illustration of the ear’s frequency response (inspired by equal-loudness contours — not measured data): most sensitive in the few-kHz speech region, much less sensitive at low frequencies. The dot rides the curve at your tone’s frequency: same amplitude ≠ same loudness.' },
       { key: 'phase_sum', name: 'Phase overlay & sum (M10)', definition: 'Two identical waves (gray + blue) at an adjustable phase offset, with their exact mathematical SUM drawn below in amber. At 0° they add to double; at 180° every push meets an equal pull and the sum flattens to silence. The audio demo uses two REAL tones — their audible slow beating is phase alignment cycling.' },
-      { key: 'harmonic_stack', name: 'Harmonic stacker (M11)', definition: 'Six sine layers at whole-number multiples of 220 Hz (weights 1/n, like a sawtooth series). Toggle layers in and out — the drawn SUM and the REAL additive engine follow the same recipe. Pitch never moves; only the character (timbre) changes.' },
+      { key: 'harmonic_stack', name: 'Harmonic stacker (M11)', definition: 'Six sine layers at whole-number multiples of 220 Hz (weights 1/n, like a sawtooth series). Toggle layers in and out — the drawn SUM and the REAL additive engine follow the same recipe. While the layers keep the 220 Hz pattern, the pitch stays put and only the character (timbre) changes. Leave only the even layers and it jumps up an octave.' },
       { key: 'fourier_morph', name: 'Fourier unmix lens (M12)', definition: 'One complex wave pulled apart into its sine ingredients. The UNMIX slider morphs between the summed waveform and its separated components + spectrum “recipe card”. Analytic — computed from the model recipe; the RTA and Spectrogram do the measured version on live sound.' },
       { key: 'tool_map', name: 'Tool map (M13)', definition: 'Each card is one question the course raised, wired to the REAL measurement tool that answers it — live mic, real engine, honest units. SPL = how loud · Frequency Counter = what pitch · RTA = the recipe now · Spectrogram = the recipe over time · Waveform = pressure over time · RT60 = how long the room rings · Signal Generator = a known test source.' },
     ],
@@ -1003,7 +1003,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
       'Treating bias as tweaky folklore — it is just where the idle point sits on the curve, and mis-setting it kills one side of the wave first.',
       'Confusing tube saturation with hard clipping — the rounded shoulder (compression + related harmonics) is the opposite of a chopped-off square edge.',
       'Assuming “more voltage = louder” — B+ sets the attraction and the headroom; loudness is the signal swinging within it.',
-      'Opening a tube amp chassis casually — filter capacitors hold hundreds of volts long after power-down.',
+      'Opening a tube amp chassis yourself — filter capacitors can hold hundreds of volts long after power-down. Leave it to a qualified technician, who drains and checks them first.',
       'Arguing tube vs transistor as better/worse — they are different physics with different failure sounds; pick by the job.',
     ],
     proTips: [
@@ -1069,7 +1069,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     proTips: [
       'Anchor everything to two numbers: samples per cycle (fs ÷ f) for time, and levels (2ᴺ) for amplitude — every myth in this lab dies against one of those two.',
-      'Track with peaks around −18 to −10 dBFS: converter noise is far below you, and most transients stay well clear of the cliff.',
+      'Track with peaks around −12 to −6 dBFS, with the average near −18: converter noise is far below you, and most transients stay well clear of the cliff.',
     ],
     formula: 'Nyquist = fs/2 · alias = |f − n·fs| (nearest n) · levels = 2ᴺ · SNR ≈ 6.02·N + 1.76 dB (theoretical, undithered) · data rate = fs × N × channels.',
   },
@@ -1242,7 +1242,7 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     { key: 'strike', name: 'Strike point', definition: 'A mode is excited in proportion to how much it moves under the mallet. A dead-centre strike sits on every nodal diameter and wakes only the ring modes (the thud); the timpanist strikes about a quarter of the way in to drive the (1,1) mode that carries the pitch. Drag the mallet across a nodal line and watch the mode drop out.' },
     { key: 'kettle', name: 'Timpani kettle', definition: 'A bare membrane’s modes sit at the Bessel ratios 1 : 1.59 : 2.14 : 2.30 : 2.65 — inharmonic, so no clear pitch. Put a closed bowl under it and the air loading pulls the (1,1), (2,1), (3,1), (4,1) modes to about 1 : 1.5 : 2 : 2.5 (Rossing’s measurements): nearly harmonic (like harmonics 2–5 of a missing root), so the ear hears a clear pitch, usually at the (1,1) mode and sometimes an octave lower. That is why a timpani plays a note and a snare does not. Approximated — the measured ratios are applied to the principal modes, a plain air-mass factor to the rest.' },
     { key: 'cone', name: 'The loudspeaker cone', definition: 'A cone is meant to move as one rigid piston. Below its suspension resonance f_s it is stiffness-controlled: it moves about the same amount, but its sound output falls fast; near f_s the motion peaks if damping is low; above it, in the mass-controlled piston band, excursion falls as 1/f² while the radiated pressure stays flat — the reason a driver has a flat passband. ka = πfD/c is the beaming number: above ka ≈ 1 the output narrows. The six stages are Illustrative; f_s, ka and the 1/f² law are Calculated.' },
-    { key: 'breakup', name: 'Cone breakup', definition: 'Above the cone’s first bending frequency it no longer moves as one: the rim decouples from the coil (edge flexing), then bell-like radial modes appear (the same J_n cos nθ family as the drumhead), then several ring at once — peaks, dips and distortion. Paper 8" cones break up near 2 kHz; a stiff metal dome holds to 20 kHz and then breaks violently. Most crossovers hand over below breakup, though paper cones are often run into mild breakup.' },
+    { key: 'breakup', name: 'Cone breakup', definition: 'Above the cone’s first bending frequency it no longer moves as one: the rim decouples from the coil (edge flexing), then bell-like circumferential modes appear (the same J_n cos nθ family as the drumhead), then several ring at once — peaks, dips and distortion. Paper 8" cones break up near 2 kHz; a stiff metal dome holds to 20 kHz and then breaks violently. Most crossovers hand over below breakup, though paper cones are often run into mild breakup.' },
     { key: 'ratio', name: 'Frequency ratios', definition: 'Musical intervals are ratios between two frequencies, not properties of either one: 2 : 1 an octave, 3 : 2 a fifth, 4 : 3 a fourth, 5 : 4 a major third. Two tones at a small-integer ratio line up again and again — their sum repeats, their Lissajous figure closes. Played exactly as harmonics of a shared base through the additive engine.' },
     { key: 'beats', name: 'Beats', definition: 'Two tones a little apart slide in and out of step |f₂ − f₁| times a second: loud where they agree, quiet where they cancel. A beat is a slow swell in loudness, not a third tone — the spectrum shows two lines and nothing between. Zero beats is how a tuner knows two strings are in tune. Shown only on builds whose engine plays one locked pair at a time.' },
     { key: 'lissajous', name: 'Lissajous figure', definition: 'Plot one tone on x and the other on y. A locked ratio n₁ : n₂ closes into a figure with n₂ lobes across and n₁ down; detune the pair and the figure precesses at the beat rate. The Harmonograph draws the same geometry with pendulums.' },

@@ -48,7 +48,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Close mics and the pair',
     goal: 'The section pair and the trumpet’s close mic: see how much earlier the close mic hears the trumpet, what polarity changes and what it does not, and judge the sum in mono.',
-    credit: { scenarios: ['hs.two.0', 'hs.two.1', 'hs.two.2'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
+    credit: { scenarios: ['hs.two.0', 'hs.two.1', 'hs.two.2'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
     takeaway: 'The relevant distance is the difference in paths from the player to each mic. Polarity changes the sign, never the time. Do not time-align the section to the pair by reflex: try level and placement first, and judge by ear.',
   },
   troubleshoot: {
@@ -372,7 +372,7 @@ const symptoms: Symptom[] = [
     options: ['Lower the send; fix the wedge and distance', 'Push it until it rings, then back off a bit', 'Turn the mics toward the monitors instead'],
     correct: 'Lower the send; fix the wedge and distance',
     explain: 'Bring levels up only to what the players need. At any ring, lower that send immediately and fix the geometry — never push past what the players need to find the limit.',
-    why: { 'Push it until it rings, then back off a bit': 'Never work by provoking feedback.', 'Turn the mics toward the monitors instead': 'That points their most sensitive side at the loop.' },
+    why: { 'Push it until it rings, then back off a bit': 'Not during a show. Feedback is made on purpose only to ring out a system, by its operator, at a controlled level.', 'Turn the mics toward the monitors instead': 'That points their most sensitive side at the loop.' },
   },
   {
     id: 'hs.s.mud',
@@ -450,7 +450,7 @@ const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern rejects most of what is behind the trumpet mic?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the pair from 1.8 m to 2.2 m. What changes most?', options: ['The four players even out', 'Only the level', 'The nearest player dominates more'], after: 'Higher, the distances to the nearest and farthest players even out: the NEAR / FAR readout shrinks. Compare at matched level.' },
   context: { prompt: 'The wedge sits in front of the trumpet, on the floor. Can the close mic’s rejection reach it?', options: ['Yes — turn the mic’s back toward it', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'The pair and the trumpet’s close mic. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
+  twoMic: { prompt: 'The pair and the trumpet’s close mic. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -535,7 +535,7 @@ export const E10_LESSON: EnsembleLesson = {
       steps: [
         { text: 'Hear the loudest, softest, highest and lowest passages', early: 'Start with the players and the music.' },
         { text: 'Mark each player’s movement and bell direction', early: 'Know where the bells and slides go before any stand.' },
-        { text: 'Set conservative gain on the loudest passage', early: 'Gain comes once the mics are safely placed.' },
+        { text: 'Set conservative gain on the loudest passage', early: 'Gain comes after you know the music and where the bells and slides go.' },
         { text: 'Make a minimal capture: one section mic or pair', early: 'The minimal plan comes before the expanded one.' },
         { text: 'Expand with close mics only for a stated need; check mono', early: 'Close mics come after the section view, for a reason.' },
       ],

@@ -378,7 +378,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'One condenser about 45–60 cm from the bars, above and a little toward the audience', ok: true, power: 'phantom', feedback: 'One safe, higher view: often enough for a delicate solo.' },
       { id: 'b', label: 'A near-coincident pair over the played span, outside the mallet arc', ok: true, power: 'phantom', feedback: 'A stable picture and a reliable mono sum; keep the width honest.' },
       { id: 'c', label: 'One condenser 10 cm above the middle bars', ok: false, power: 'phantom', feedback: 'Inside the mallets’ path.' },
-      { id: 'd', label: 'A clamp on the frame’s gas spring', ok: false, power: 'none', feedback: 'Never touch the gas spring; mount nothing on the instrument unless its maker made the mount.' },
+      { id: 'd', label: 'A clamp on the frame’s gas spring', ok: false, power: 'none', feedback: 'Leave the gas spring to the player; mount nothing on the instrument unless its maker made the mount.' },
       { id: 'e', label: 'A spaced pair 2 m apart for a huge image', ok: false, power: 'phantom', feedback: 'An exaggerated width for a small instrument — and a hollow mono sum.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.decay', label: 'The full decay is kept: no gate, the damping is the player’s', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, CLOSE_REASON],
@@ -646,7 +646,7 @@ export const I10_LESSON: MalletLesson = {
     { title: 'WHAT IT IS', text: 'Orchestral bells: small tuned steel bars laid out like a piano keyboard, ringing bright and long. Some stand on a frame with tubes under the bars and a damper pedal; others sit in a case, damped by the player’s hand.', src: 'YMH-YG2500-OM' },
     { title: 'WHERE YOU MEET IT', text: 'In the percussion section of orchestras, concert bands and marching bands, in pit bands and on recordings.', src: 'LESSON-GLK' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Sparkling melodies and accents above the ensemble; long ringing notes or crisp damped ones. Mallets — rubber, plastic or metal — and damping are the player’s choices.', src: 'YMH-CHOOSE' },
-    { title: 'ITS SIZE', text: 'A concert model covers about three and a third octaves (sounding C5 to E8, usually written two octaves lower): 41 steel bars, each 32.5 mm wide, about 106 × 56 cm. A case model covers two and a half octaves in a 79 × 48 cm case. This lab draws both.', src: 'YMH-YG2500-OM' },
+    { title: 'ITS SIZE', text: 'A concert model covers about three and a third octaves (sounding C5 to E8, usually written two octaves lower): 41 steel bars, each 32.5 mm wide, about 106 × 56 cm. A case model covers about two and a half octaves (32 bars) in a 79 × 48 cm case. This lab draws both.', src: 'YMH-YG2500-OM' },
   ],
   sound: {
     stages: words.sound.stages.map((s) => ({ title: s.title, text: s.text })),

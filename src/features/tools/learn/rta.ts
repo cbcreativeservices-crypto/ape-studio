@@ -14,7 +14,7 @@ export const RTA_LEARN: ToolLearnContent = {
   sections: [
     {
       head: 'WHAT YOU ARE LOOKING AT',
-      body: 'Each bar shows how much acoustic energy arrived at the microphone in one frequency band over the last moment, low frequencies on the left, high on the right, level in dB vertically. The bands are fractional octaves (1/1 or 1/3 octave) on a logarithmic frequency axis, because that is closer to how hearing divides the spectrum than a linear one. Under the hood the analyzer runs a windowed FFT and sums the bins into bands, so what you see is already a processed summary, not the raw signal.',
+      body: 'Each bar shows how much acoustic energy arrived at the microphone in one frequency band over the last moment, low frequencies on the left, high on the right, level in dB vertically. The bands are fractional octaves (from broad groups and whole octaves down to 1/6 octave) on a logarithmic frequency axis, because that is closer to how hearing divides the spectrum than a linear one. Under the hood the analyzer runs a windowed FFT and sums the bins into bands, so what you see is already a processed summary, not the raw signal.',
     },
     {
       head: 'FREQUENCY REGIONS',

@@ -174,7 +174,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No — it needs phantom power too',
     explain: 'The stand condenser and the headset miniature both need phantom power (the headset through its adapter). Find a powered input.',
     why: {
-      'Yes — a headset needs no power': 'A headset miniature is a condenser: it needs phantom power through its adapter.',
+      'Yes — a headset needs no power': 'This headset mic is a condenser. On a cable, it needs phantom power through its adapter.',
       'Yes, if its cable is short enough': 'Cable length does not power a condenser.',
     },
   },
@@ -339,7 +339,7 @@ const symptoms: Symptom[] = [
     correct: 'Move it off the jet, then a windscreen',
     explain: 'In the jet a capsule hears wind. Aim and distance are the first controls; a windscreen helps after that.',
     why: {
-      'Cut the low frequencies hard on the channel': 'A filter leaves the turbulence’s upper part and thins the piccolo. Move the capsule.',
+      'Cut the low frequencies hard on the channel': 'A filter leaves the turbulence’s upper part, and set too high it thins the lowest notes. Move the capsule first.',
       'Ask the player to blow more gently': 'The breath is the player’s art; the mic’s place is yours.',
     },
   },
@@ -404,7 +404,7 @@ const predictions: WindLesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from close to a metre in front. What changes?', options: ['Fewer clicks, more room', 'More breath', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the piccolo reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

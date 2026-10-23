@@ -856,10 +856,10 @@ export function SamplingModule(p: DigitalModuleProps) {
         <PanelCard>
           <Text style={dstyles.eyebrow}>ANTI-ALIASING FILTER</Text>
           <Text style={dstyles.body}>
-            A low-pass BEFORE the sampler removes content above Nyquist so it can never fold down.
-            Filter off: an above-Nyquist input reaches the sampler and the alias appears in the
-            sampled data above. Filter on: the input is attenuated before measurement — the alias is
-            gone, and honest cost: real signal near the cutoff is attenuated too.
+            A low-pass BEFORE the sampler turns down content above Nyquist so little of it can fold
+            down. Filter off: an above-Nyquist input reaches the sampler and the alias appears in the
+            sampled data above. Filter on: the input is cut before measurement, so the alias drops or
+            vanishes — how much depends on the slope. Honest cost: real signal near the cutoff is cut too.
           </Text>
           {/* FILTER ON/OFF, the slopes and CUTOFF are dock controls now (ALIAS
               tray + CUTOFF key — owner rule 2026-10-10). */}

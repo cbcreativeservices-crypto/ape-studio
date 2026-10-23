@@ -159,7 +159,7 @@ function B14TwoMic(p: PageProps) {
     onInteractive: p.onInteractive,
     done: p.interactiveDone.has('polarityVsDelay'),
     prediction: p.lesson.predictions.twoMic,
-    intro: 'Walk the source from A to C (WALK): the shotguns at M and M2 hear it at different times. Flip mic B’s POLARITY both ways and watch which readouts change.',
+    intro: 'Walk the source from A to C (WALK): the shotguns at M and M2 hear it at different times. Flip the POLARITY of the second mic, the shotgun at M2, both ways and watch which readouts change.',
   });
   return <PageSteps steps={[overlap, checkStep(p, 'twoMic')]} />;
 }

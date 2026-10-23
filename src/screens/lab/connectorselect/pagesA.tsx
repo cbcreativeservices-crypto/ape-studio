@@ -271,7 +271,7 @@ function PageBenchSpeaker({ ctx }: { ctx: PageCtx }) {
       <Lead>{group.blurb}</Lead>
       <Card tone="warn">
         <Eyebrow>THE FAMILY RULE</Eyebrow>
-        <Body>Everything on this bench carries a speaker-level signal — high voltage and real current from an amplifier, not line level. Heavy unshielded conductors, connections made with the amplifier OFF — and never, ever into an input.</Body>
+        <Body>Everything on this bench carries a speaker-level signal — tens of volts and real current from an amplifier, not line level. Heavy unshielded conductors, connections made with the amplifier OFF — and never into a mic or line input.</Body>
       </Card>
       {group.ids.map((id) => (
         <BenchCard key={id} id={id} open={bench.open.has(id)} onToggle={() => bench.toggleId(id)} />

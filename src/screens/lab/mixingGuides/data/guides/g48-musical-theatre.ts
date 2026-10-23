@@ -23,7 +23,7 @@ export const GUIDE: MixingGuide = {
     "ensemble": "15–40 cast on body mics (principals often double-mic’d) plus a 6–25 piece pit orchestra or band; 100–140+ inputs on a large show",
     "priority": "Every word intelligible — lyrics and dialogue carry the story — with voices that seem to come from the actor, not the speakers",
     "liveSpl": "Book/legit shows roughly 80–88 dBA LAeq over an act, big numbers peaking 95–100 dBA; rock/pop-score musicals 90–96 dBA LAeq with peaks near 105 dBA (approximate industry ranges, not published limits)",
-    "studioLoudness": "Cast albums commonly −14 to −10 LUFS-I (traditional orchestral scores toward −16 to −13; pop/hip-hop scores −11 to −9); streaming normalizes to about −14"
+    "studioLoudness": "Cast albums commonly −16 to −9 LUFS-I (traditional orchestral scores −16 to −13; pop/hip-hop scores −11 to −9); streaming normalizes to about −14"
   },
   "purpose": [
     {
@@ -69,7 +69,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: the speaking or singing principal, other principals in a duet, ensemble vocals, melodic orchestra lines that answer the voice, rhythm section, sustained strings and pads, effects and atmospheres. Low end is gentle by rock standards: the bass and kick support the groove without dominating, and the subs are used for weight in big moments, not constantly. Voices sit center and, ideally, image to the actor through delay; on high-end systems (delay-matrix and object-based systems) each mic is time-aligned so the natural voice reaches listeners about 10–20 ms before the reinforcement, letting the precedence effect pull the image to the performer. The orchestra keeps a natural pit spread across left-center-right arrays. Cast albums often sit near a 55:45 vocal-to-band balance, versus pop’s typical 70:30."
+      "text": "Hierarchy, loudest to quietest: the speaking or singing principal, other principals in a duet, ensemble vocals, melodic orchestra lines that answer the voice, rhythm section, sustained strings and pads, effects and atmospheres. Low end is gentle by rock standards: the bass and kick support the groove without dominating, and the subs are used for weight in big moments, not constantly. Voices sit center and, ideally, image to the actor through delay; on high-end systems (delay-matrix and object-based systems) each mic is time-aligned so the natural voice reaches listeners about 10–20 ms before the reinforcement, letting the precedence effect pull the image to the performer. The orchestra keeps a natural pit spread across left-center-right arrays. Cast albums usually keep the band more present than a pop mix, where the vocal sits further on top."
     }
   ],
   "eq": {

@@ -191,7 +191,7 @@ const SPEC: HandSpec = {
   partsBadge: 'A tabla pair · tap a part to name it · the layout is a drawing choice',
   partsLooking: (v) => (v === 'top' ? 'From above · both heads nearly face-on' : 'From the player’s right · the dayan in front, the bayan behind'),
   partsNote: 'Two drums, one instrument: the dayan for ringing and damped strokes, the bayan for the low tones and the pitch glides. Switch the view to see the patches.',
-  partsWarn: 'The drums are the player’s: never wet, heat, tape or tune the heads, and never clip anything to the straps.',
+  partsWarn: 'The drums are the player’s: never wet, heat, tape or tune the heads. Do not clip anything to the straps unless it is made for tabla and the player agrees.',
   plan: {
     items: [
       { id: 'dayan', box: { u0: -160, u1: 200, v0: 30, v1: 290 }, scene: 'all', label: { u: 330, v: 200, align: 'left' } },
@@ -203,7 +203,7 @@ const SPEC: HandSpec = {
       { id: 'room', box: { u0: -1300, u1: 1700, v0: -1000, v1: -860 }, scene: 'studio', label: { u: 200, v: -780 } },
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the tabla player seated on the floor with the dayan to the right and the bayan to the left; the player's wedge downstage on the audience side, a side fill to the right, louder players upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the tabla player seated on the floor, no monitors, the room's walls around.${sel ? ` Highlighted: ${sel}.` : ''}`),
-    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'),
+    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience to the right' : 'Plan · a studio room from above'),
     first: 'The player sits on the floor with the two drums in front; both hands move over the heads, the left one across the bayan all the time. Everything else fits round that.',
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'How do they sit, and how are the drums set? Ask for a short repeated passage: ringing and damped dayan strokes, open bayan tones and glides, strokes on both, quiet finger work — named in their own terms. What is the tabla’s role, and how prominent should the bayan be?' },
@@ -270,7 +270,7 @@ const SPEC: HandSpec = {
     B: { zone: 'ta.bayan.close', mic: 'sdcCard' },
     names: { A: 'DAYAN MIC', B: 'BAYAN MIC' },
     looking: 'Two mics · A over the dayan, B over the bayan',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes — then switch SOURCE to the other drum.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes — then switch SOURCE to the other drum.',
     label: 'The tabla with a mic over each drum: A over the dayan, B over the bayan',
     warn: 'Each mic hears its own drum AND the other, so this simplified graph shows one drum’s sound reaching both mics — not what the pair will sound like. Each drum gives its own delay. Judge the pair by ear, in mono, with both drums, the glides and the player’s normal movement. Equal distances, 3:1 or lining up waveforms prove nothing here.',
     learn: [

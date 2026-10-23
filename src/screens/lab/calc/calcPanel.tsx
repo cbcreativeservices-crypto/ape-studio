@@ -16,7 +16,7 @@ import { memo, useState, type ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, Text, TextInput, View, type KeyboardTypeOptions } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { isRefused, type CalcFunction, type CalcTable, type CalcValues, type FieldDef, type OutputVal } from './calcTypes';
-import { NEGATIVE_MSG, domainError, domainMsg, fmt, isNonNegativeField, listProblem, negativeInput, parseList, parseQuantity, unitsFor, wholeCount } from './calcUnits';
+import { NEGATIVE_MSG, domainError, domainMsg, fmt, isNonNegativeField, listProblem, negativeInput, fmtSamples, outputUnits, parseList, parseQuantity, unitsFor, wholeCount } from './calcUnits';
 
 
 /** Keyboard for a calculator number field (owner 2026-10-14: numbers only, never
@@ -92,6 +92,10 @@ export function runCompute(fn: CalcFunction | null, values: CalcValues | null, f
   const domain = fields ? domainError(fn, values, fields) : null;
   if (domain) return { outputs: [], steps: [], table: null, computeError: true, inputError: domain };
   try {
+    // D53 (audit R2, 2026-10-23): an input THIS function has no answer for is
+    // refused in its own words — never a card of "— Ω" or a 210 dB SPL.
+    const why = fn.refuse ? fn.refuse(values) : null;
+    if (why) return { outputs: [], steps: [], table: null, computeError: true, inputError: why };
     const outputs = fn.compute(values);
     // A result with numbers in it where EVERY number is NaN/∞ is not an answer
     // (bug pass 2, 2026-09-30): a 0 Hz wavelength or a 0 V dBu read as a panel
@@ -119,7 +123,7 @@ export function runCompute(fn: CalcFunction | null, values: CalcValues | null, f
 /** Display string for a numeric output at `sig` figures; `unitOffset` cycles
  *  through the quantity's units (0 = the output's preferred unit). */
 export function formatOutput(o: Extract<OutputVal, { value: number }>, sig: number, unitOffset: number): string {
-  const units = unitsFor(o.quantity);
+  const units = outputUnits(o.quantity, o.unit);
   const startIdx = o.unit ? Math.max(0, units.findIndex((u) => u.id === o.unit)) : 0;
   const u = units[(startIdx + unitOffset) % units.length];
   // A whole-number COUNT is exact, never rounded to sig figs (night bug pass 2,
@@ -130,12 +134,14 @@ export function formatOutput(o: Extract<OutputVal, { value: number }>, sig: numb
   // Whole up to float noise counts too (night bug pass 3) — see wholeCount.
   const whole = wholeCount(o.value, o.quantity);
   if (whole !== null) return `${whole}${u.label ? ' ' + u.label : ''}`;
+  // A fractional SAMPLE count keeps its decimals (audit R2, 2026-10-23).
+  if (o.quantity === 'samples') return `${fmtSamples(o.value, sig)}${u.label ? ' ' + u.label : ''}`;
   return `${fmt(u.fromBase(o.value), sig)}${u.label ? ' ' + u.label : ''}`;
 }
 
 /** The unit label a numeric output displays at `unitOffset`. */
 export function outputUnitLabel(o: Extract<OutputVal, { value: number }>, unitOffset: number): string {
-  const units = unitsFor(o.quantity);
+  const units = outputUnits(o.quantity, o.unit);
   const startIdx = o.unit ? Math.max(0, units.findIndex((u) => u.id === o.unit)) : 0;
   return units[(startIdx + unitOffset) % units.length].label;
 }

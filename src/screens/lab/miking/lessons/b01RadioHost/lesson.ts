@@ -515,7 +515,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: which mic needs phantom power?', options: ['The broadcast dynamic', 'The studio condenser', 'Both of them'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you bring the broadcast dynamic from 15 cm to 6 cm. What changes?', options: ['More bass and breath', 'More room', 'It depends on this host'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is in front of the desk, facing the audience. Where will a supercardioid aimed at the host reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip the second host’s mic polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the second host’s mic polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

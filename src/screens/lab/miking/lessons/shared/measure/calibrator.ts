@@ -74,7 +74,7 @@ export function runCheck(s: CalScenario, seat: Seat): CalOutcome {
     return { pre, post, drift: null, pass: false, action: s.capsule === 'quarter' && seat === 'noAdapter' ? 'No stable reading: a 1/4 in capsule needs the calibrator’s adapter. Fit it as the manuals direct, then check again.' : 'No stable reading: check the seat, the battery and the cable before anything else.' };
   }
   if (!pre.within) {
-    return { pre, post, drift: null, pass: false, action: 'The reading before the run is off: re-seat the calibrator, check the adapter, the battery and the level setting — never turn the gain to force the number.' };
+    return { pre, post, drift: null, pass: false, action: 'The reading before the run is off: re-seat the calibrator, check the adapter, the battery and the level setting. If it is still off, adjust the meter to the stated level only as the maker and the method allow, and log the change. A large offset means a fault: find it, do not hide it with the gain.' };
   }
   const d = drift(preR as number, s.post);
   const ok = post.within && Math.abs(d) <= s.tolerance + 1e-9;

@@ -151,7 +151,7 @@ export function Mod4Tools({ onAnswered }: ModuleProps) {
               <Card>
                 <Body>• Tools are grouped by decision: playback/editing, monitoring, EQ, dynamics, stereo, meters, optional analog.</Body>
                 <Body>• No required chain. Choose by the goal; confirm by listening at matched level; verify with a meter.</Body>
-                <Body>• Width is never touched without a mono check.</Body>
+                <Body>• Most engineers check mono every time they change width.</Body>
               </Card>
               <KeyTerms terms={KEY_TERMS.tools} />
             </>

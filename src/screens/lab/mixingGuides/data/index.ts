@@ -314,7 +314,7 @@ export const MIXING_GUIDE_INDEX: readonly MixingGuideEntry[] = [
     "id": "dangdut",
     "num": 43,
     "title": "Dangdut",
-    "line": "The kendang (two-headed hand drum): the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
+    "line": "The kendang (hand drums): the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
     "origin": "Indonesia: grew from Orkes Melayu (Malay orchestra) in Jakarta and Surabaya (1950s–60s) into dangdut in the late 1960s–70s; dangdut koplo (fast East-Java style) developed in East Java (Surabaya/Sidoarjo area) in the late 1990s–2000s"
   },
   {

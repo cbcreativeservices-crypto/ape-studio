@@ -216,7 +216,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Big festival main stages typically run around 98–103 dBA LAeq over 15 minutes at FOH, with peaks to 110–115 dBA. Dance music carries far more low end than other genres — a C-minus-A difference of about 18 dB at 98 dBA is typical, so expect roughly 115–121 dBC at FOH. Common caps: a widely used safe-listening limit of 100 dBA LAeq-15 min; 103 dBA LAeq-15 min in some countries (with health bodies pushing for 100 or lower); 100 dBA over 60 min with a 125 dBA maximum in others. Some festivals add a dBC cap, and offsite limits often bind first because sub energy travels. Run about 3 dB under the cap, use directional sub arrays, and keep the kick short."
+      "text": "Big festival main stages typically run around 98–103 dBA LAeq over 15 minutes at FOH, with peaks to 110–115 dBA. Dance music carries far more low end than other genres — a C-minus-A difference of about 18 dB at 98 dBA is typical, so expect roughly 115–121 dBC at FOH. Common caps: the WHO safe-listening limit of 100 dBA LAeq-15 min; 103 dBA LAeq-15 min in some countries (with health bodies pushing for 100 or lower); 100 dBA over 60 min with a 125 dBA maximum in others. Some festivals add a dBC cap, and offsite limits often bind first because sub energy travels. Run about 3 dB under the cap, use directional sub arrays, and keep the kick short."
     },
     {
       "label": "Studio / streaming:",
@@ -265,7 +265,7 @@ export const GUIDE: MixingGuide = {
   },
   "notes": [
     {
-      "text": "Start the mix with kick and sub alone; set them around −10 dBFS on the meters and build everything else around them.",
+      "text": "Start the mix with kick and sub alone; set their peaks around −10 dBFS on the meters and build everything else around them.",
       "bullet": true
     },
     {
@@ -293,7 +293,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "Mistake: chasing −4 LUFS masters; they distort on streaming conversion and get turned down anyway.",
+      "text": "Mistake: chasing −4 LUFS masters; they can clip when converted for streaming, and they get turned down anyway.",
       "bullet": true
     },
     {

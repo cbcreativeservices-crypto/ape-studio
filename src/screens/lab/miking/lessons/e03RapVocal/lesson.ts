@@ -202,9 +202,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why can’t the screened condenser sit 5 cm from the lips?',
     options: ['Its screen, 10 cm ahead of it, would hit the face', 'A condenser cannot pick up a voice from that close', 'The boom of its stand is too short to reach'],
     correct: 'Its screen, 10 cm ahead of it, would hit the face',
-    explain: 'The screen sits at least 10 cm in front of the mic, so the mic itself starts about 15 cm out. For a closer sound, a dynamic with its own ball grille is the tool.',
+    explain: 'Here the screen sits 10 cm in front of the mic, so the mic itself starts about 15 cm out. Some setups use a smaller gap, but for a closer sound, a dynamic with its own ball grille is the tool.',
     why: {
-      'A condenser cannot pick up a voice from that close': 'It can — but a screen at least 10 cm ahead has no room.',
+      'A condenser cannot pick up a voice from that close': 'It can — but with this screen 10 cm ahead, there is no room.',
       'The boom of its stand is too short to reach': 'A boom reaches easily; the screen in front runs out of room.',
     },
   },
@@ -362,9 +362,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two mics on one voice sound thin together. Which change removes the arrival-time difference itself?',
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on one of the two', 'Turning the farther mic up until it matches'],
     correct: 'Moving a mic so the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth; neither removes the delay.',
+    explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth; neither removes the delay.',
     why: {
-      'Flipping the polarity switch on one of the two': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
+      'Flipping the polarity switch on one of the two': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
       'Turning the farther mic up until it matches': 'Level changes the depth of the notches, not where they are or the delay behind them.',
     },
   },
@@ -489,7 +489,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: the rapper leans from 15 cm to 8 cm on one line. What changes most?', options: ['The level and the low end', 'Only the room sound', 'Nothing you could hear'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the performer. Where will a supercardioid aimed at the mouth reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

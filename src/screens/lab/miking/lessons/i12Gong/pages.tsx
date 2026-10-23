@@ -38,7 +38,7 @@ const HAND: HandSpec = {
       { id: 'room', box: { u0: -1300, u1: 1700, v0: -1000, v1: -860 }, scene: 'studio', label: { u: 200, v: -780 } },
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the gong in its frame with the player beside its struck face; a wedge downstage in front, the band upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the gong in its frame and the player, no monitors on the floor, the room's walls around.${sel ? ` Highlighted: ${sel}.` : ''}`),
-    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'),
+    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience to the right' : 'Plan · a studio room from above'),
     first: 'The gong hangs in its frame, swinging freely; the player stands beside the struck face with the mallet. Everything else fits round the swing and the mallet’s arc.',
     before: [
       { title: 'IDENTIFY THE GONG', text: 'An orchestral tam-tam (no boss, a broad bloom) or a bossed gong (a raised centre, a more pitch-centred sound)? Do not assume all gongs behave the same. Then ask for quiet and forceful strokes, rolls, the intended decay and any damping.' },
@@ -106,7 +106,7 @@ const HAND: HandSpec = {
     B: { zone: 'gg.D', mic: 'sdcCard' },
     names: { A: 'FRONT MIC', B: 'ROOM MIC' },
     looking: 'Two mics · A in front, B farther out in the room',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.',
     label: 'The gong with a front mic (A) and a room mic (B)',
     warn: 'This simplified graph shows one point source and straight paths, no reflections. A real gong radiates from its whole face, front and back, and its decay evolves — so the comb is not one fixed pattern. Read the notch depths as illustrative only, and judge the blend by ear, in mono, through the whole decay.',
     learn: [
@@ -178,7 +178,7 @@ const SPEC: MetalSpec = {
         'A shape is set moving only as much as the face moves where the mallet lands. At the exact centre, every shape with a still line across the face stands still — so a centre stroke drives only the ring-shaped ones: fewer shapes, a more centred pitch. Off centre, many more move.',
         kindOf(v) === 'bossed'
           ? 'This is a flat disc of even thickness. A real bossed gong’s boss and shoulder shape and concentrate its main tone, so its numbers differ — the picture shows which shapes a stroke can reach.'
-          : 'This is a flat disc of even thickness, hung by its rim. A real tam-tam is slightly domed with a turned rim, and hit hard its energy spreads into finer shapes after the stroke — the build-up you stepped through.',
+          : 'This is a flat disc of even thickness, unsupported at its edge. A real tam-tam hangs on cords through its rim; it is slightly domed with a turned rim, and hit hard its energy spreads into finer shapes after the stroke — the build-up you stepped through.',
       ],
       tried: 'At the exact centre only the ring-shaped shapes move; off centre, nearly all of them do. Where the mallet lands is part of the gong’s colour.',
     },

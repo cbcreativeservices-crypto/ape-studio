@@ -261,11 +261,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Dance socials, clubs and festivals usually run 95–100 dBA LAeq-15 at FOH, with arena concerts at 98–102 dBA and peaks around 108–112 dBA during mambos (instrumental guitar breaks) and crowd singalongs. Bachata needs warm low end but not EDM-level sub: aim for a C-minus-A difference of about 12–18 dB (roughly 110–118 dBC); 20 dB or more means too much sub. Crowd singalongs can add several dB to the reading; for dance events, even floor coverage matters more than raw level. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes, so offer earplugs and protect your own ears."
+      "text": "Dance socials, clubs and festivals usually run 95–100 dBA LAeq-15 at FOH, with arena concerts at 98–102 dBA and peaks around 108–112 dBA during mambos (instrumental guitar breaks) and crowd singalongs. Bachata needs warm low end but not EDM-level sub: aim for a C-minus-A difference of about 12–18 dB (roughly 110–118 dBC); 20 dB or more means too much sub. Crowd singalongs can add several dB to the reading; for dance events, even floor coverage matters more than raw level. NIOSH advises no more than about 15 minutes a day at 100 dBA, so offer earplugs and protect your own ears."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Urban bachata masters typically land at −10 to −8 LUFS-I, traditional and acoustic bachata nearer −12 to −10, with true peak at −1 dBTP (−2 dBTP for masters louder than −14 LUFS). Services normalize to about −14 LUFS, so very loud masters gain nothing and lose the requinto’s (lead guitar’s) transient detail. A PLR of about 9–12 dB (at −2 dBTP that means a master at about −11 LUFS-I or quieter) and a loudness range of 4–7 LU suit the style."
+      "text": "Urban bachata masters typically land at −10 to −8 LUFS-I, traditional and acoustic bachata nearer −12 to −10, with true peak at −1 dBTP (−2 dBTP for masters louder than −14 LUFS). Services normalize to about −14 LUFS, so very loud masters gain nothing and lose the requinto’s (lead guitar’s) transient detail. A PLR of about 9–12 dB and a loudness range of 4–7 LU suit the style; at −2 dBTP that PLR means about −11 LUFS-I or quieter, a bit quieter than the urban range."
     }
   ],
   "liveStudio": {

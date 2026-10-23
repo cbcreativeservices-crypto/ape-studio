@@ -45,7 +45,7 @@ const SPEC = ensembleHandSpec({
     B: { zone: 'sup.ww', mic: 'arrCard' },
     names: { A: 'MAIN PAIR', B: 'WOODWIND SUPPORT' },
     looking: 'Two mics · A the main pair’s centre, B a support over the woodwinds',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE: each section reaches the two mics at its own times.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each section reaches the two mics at its own times.',
     label: 'The orchestra with the main pair (A) and a woodwind support (B)',
     warn: 'This simplified graph shows one point source and straight paths, no hall. A real section is many players at different distances, so no single delay suits them all — judge by ear, in mono, against the plain version.',
     learn: [
@@ -63,9 +63,9 @@ const SPEC = ensembleHandSpec({
   },
   words: {
     placeBadge: 'Blue = suggested starting points · grey dashes = the players and the conductor’s space · pinch to zoom',
-    clearance: 'Clearance comes first: the conductor’s sightlines, the bows, the slides, the music stands, the walkways and the exits. Anything flown or reached over players is the venue’s rigging, by qualified crew.',
+    clearance: 'Clearance comes first: the conductor’s sightlines, the bows, the slides, the music stands, the walkways and the exits. Anything flown or reached over players is the venue’s rigging, by a qualified rigger.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A support aimed down at its players turns its back up and toward the hall — where a monitor can sit in its rejection.',
-    sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each section gives its own delay.',
+    sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each section gives its own delay.',
   },
 });
 

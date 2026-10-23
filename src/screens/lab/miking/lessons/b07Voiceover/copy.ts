@@ -117,7 +117,7 @@ export const B07_COPY: Partial<LessonCopy> = {
     looking: 'The host at the desk · the monitor loudspeaker on the desk',
     prompt: 'If the monitor had to stay on, where would its sound be rejected most? Turn or tilt the MIC (AIM), or change its PATTERN, until the monitor sits in the rejection — while the mic still points at the mouth.',
     activityDone: 'done — the monitor sat in a null by your aim or pattern',
-    cardioidReveal: 'What you just saw: a cardioid rejects most straight behind (180°). The monitor is off to the side on the desk, so turning the mic helps only so far — which is why the talent hears the program on headphones and the monitor stays off while the mics are open.',
+    cardioidReveal: 'What you just saw: a cardioid rejects most straight behind (180°); a supercardioid rejects most toward the rear, off to each side (about 125°). The monitor is off to the side on the desk, so turning the mic helps only so far — which is why the talent hears the program on headphones and the monitor stays off while the mics are open.',
     shieldNote: 'The desk and the people reflect the monitor’s sound too, and the free-field pattern cannot show that. Leave a loudspeaker on near an open mic only in a system designed for it, such as echo control.',
     learn: {
       ...BASE.context!.learn,

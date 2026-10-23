@@ -48,7 +48,7 @@ describe('S1', () => {
     assert.match(STAGE2, /wrong speed and pitch/);
     assert.doesNotMatch(STAGE3, /different sample rate, which is the classic cause of a slow, steady slide/);
     assert.match(STAGE3, /plays at the wrong speed and pitch/);
-    assert.match(STAGE3, /slow, steady slide that people blame on the performer comes from free-running clocks/);
+    assert.match(STAGE3, /slow, steady slide comes from free-running clocks/);
   });
 
   it('R7-DIG-01: 6.02·N + 1.76 is called theoretical SNR (undithered) everywhere', () => {

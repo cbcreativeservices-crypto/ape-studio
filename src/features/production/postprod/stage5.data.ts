@@ -147,7 +147,7 @@ export const STAGE5_BUILD: StageDef = {
           fieldId: "loop_variation",
           label: "Is repeated material varied",
           kind: "choice",
-          help: "The same four-second atmosphere looping for ten minutes becomes audible as a loop somewhere around the third pass, and cannot be unheard after that.",
+          help: "The same four-second atmosphere looping for ten minutes is heard as a loop within a few passes, and cannot be unheard after that.",
           options: [
             { value: "varied", label: "Yes — length, level or layering varies" },
             { value: "long_source", label: "Source is long enough not to repeat" },

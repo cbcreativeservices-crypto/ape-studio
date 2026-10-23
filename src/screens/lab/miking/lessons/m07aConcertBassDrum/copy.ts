@@ -83,7 +83,7 @@ export const CBD_COPY: LessonCopy = {
     blocked: {},
     reveal: 'Closer tends to bring more of the drum against the room and the stage — and more of the exact spot and the mallet; farther, more of the whole drum and the hall. Drums, halls and players vary, so “it depends” is fair too.',
     typeNotes: { smallDynCard: 'A dynamic can work too — no type is automatically too fragile or the only safe choice. Choose by response, pattern, maximum level, power and mount. Keep a ribbon mic well away from a bass drum’s air blast.' },
-    note: 'Clearance comes first: stop the player before moving a real mic, and never move the drum or its stand. The loudest hit may need a pad — set gain on it, not on the average.',
+    note: 'Clearance comes first: stop the player before moving a real mic. The drum and its stand stay as set; only the player or crew moves them. The loudest hit may need a pad — set gain on it, not on the average.',
     availableLead: 'Starting points for this mic',
     learn: {
       intro: 'What you just did, in words. After our research, here is where we suggest you begin: a spot above the playing head, looking diagonally down at it from about 45 cm — or closer, for a loud stage. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum, player and hall is different.',

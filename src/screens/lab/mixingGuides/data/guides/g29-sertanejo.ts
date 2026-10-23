@@ -267,11 +267,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Rodeo arenas and agricultural-fair stages are huge outdoor spaces with delay towers; at Barretos the 140 × 140 m arena uses main line arrays, down-fills, front-fills and long-throw delays, with sub coverage still solid 70 m from the stage. Typical FOH levels run 100–105 dBA LAeq-15 (a constant 110 dBA across a big New Year’s show is the high extreme), with C-weighted levels 118–126 dBC; keep the C–A gap under about 20 dB unless the set leans heavily on 808-based party tracks. Peaks can exceed 115 dBA when the crowd screams. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes; long nights with several acts warrant earplugs for crew."
+      "text": "Rodeo arenas and agricultural-fair stages are huge outdoor spaces with delay towers; at Barretos the 140 × 140 m arena uses main line arrays, down-fills, front-fills and long-throw delays, with sub coverage still solid 70 m from the stage. Typical FOH levels run 100–105 dBA LAeq-15 (a constant 110 dBA across a big New Year’s show is the high extreme), with C-weighted levels 118–126 dBC; keep the C–A gap under about 20 dB unless the set leans heavily on 808-based party tracks. Peaks can exceed 115 dBA when the crowd screams. NIOSH advises no more than about 15 minutes a day at 100 dBA; long nights with several acts warrant earplugs for crew."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Pop sertanejo masters land around −9 to −7 LUFS-I with true peak at −2 dBTP (a common streaming recommendation for masters louder than −14 LUFS, to avoid codec overs). Most streaming services normalize to −14 LUFS, so excess loudness buys nothing. Ballads benefit from a PLR of 9–11 dB (about −11 to −13 LUFS-I at −2 dBTP); “ao vivo” (live) releases keep more loudness range (6–9 LU) so the crowd moments land."
+      "text": "Pop sertanejo masters land around −9 to −7 LUFS-I with true peak at −2 dBTP (a common streaming recommendation for masters louder than −14 LUFS, to avoid codec overs). Most streaming services normalize to −14 LUFS, so excess loudness buys nothing. Ballads often land a little lower, about −10 to −8 LUFS-I; a PLR of 9–11 dB (about −11 to −13 LUFS-I at −2 dBTP) gives them even more room; “ao vivo” (live) releases keep more loudness range (6–9 LU) so the crowd moments land."
     }
   ],
   "liveStudio": {

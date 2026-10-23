@@ -312,9 +312,9 @@ function OrganSetting(p: PageProps) {
             <Point title="MEET THE ORGANIST AND THE VENUE">Ask for the stop list and the divisions, exposed or enclosed pipework, any antiphonal or remote ranks, the pedal range, choir or instruments, and the service, concert or stream routing. Venue and organ staff control the lofts, galleries, chambers and historic fixtures.</Point>
             <Point title="HEAR IT">Ask for soft solo stops, a bright reed or mixture, full organ, the lowest pedal notes and quick changes. Note where a swell shutter opens and whether the room will be full.</Point>
             <Point title="DECIDE WHAT IT IS FOR">A recording, a stream of a service, or local PA? Organs are usually picked up for recording or broadcast rather than amplified in the same room — a common practice, not a rule. Do not add the organ to the PA just because a mic is up.</Point>
-            <Point title="SAFE ACCESS">Accessible floor stands whenever they meet the goal. Anything elevated or suspended needs the venue’s approval and competent people with rated supports — never hang a mic from pipes, ornament, sprinklers, lighting or an unverified beam.</Point>
+            <Point title="SAFE ACCESS">Accessible floor stands whenever they meet the goal. Anything elevated or suspended needs the venue’s approval and a qualified rigger with rated supports — never hang a mic from pipes, ornament, sprinklers, lighting or an unverified beam.</Point>
           </Card>
-          <Note tone="warn">Protect your hearing during full-organ and PA tests: a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — a limit for people where they listen, not a mic’s rating. No deliberate loud feedback test is ever needed.</Note>
+          <Note tone="warn">Protect your hearing during full-organ and PA tests: NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are limits for people where they listen, not a mic’s rating. No deliberate loud feedback test is ever needed.</Note>
           <SpkLink text="An electronic organ and its rotary speaker cabinet are miked like a loudspeaker — covered in full in the Amplified speakers & Leslie module." />
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />
         </>
@@ -338,7 +338,7 @@ const worked = (z: DocumentedZone) => [
   { title: 'THE RANGE', text: z.band, cell: 0 },
   { title: 'ACROSS AND UP', text: 'Over the pews, never in an aisle or an exit, on a safe floor stand at a modest height. Higher is not always better: compare the whole passage.', cell: 1 },
   { title: 'THE AIM', text: 'At the main ranks. Then choose a coherent stereo method for the room and the pipes’ spread, and check the mono sum.', cell: 2 },
-  { title: 'CLEARANCE AND ACCESS', text: 'Clear of the aisles, the exits, the wheelchair route, the console and the organist. Nothing hangs from the organ; anything elevated is the venue’s installation, by competent people.', cell: 3 },
+  { title: 'CLEARANCE AND ACCESS', text: 'Clear of the aisles, the exits, the wheelchair route, the console and the organist. Nothing hangs from the organ; anything elevated is the venue’s installation, by a qualified rigger.', cell: 3 },
 ];
 
 const STEREO = (
@@ -383,7 +383,7 @@ const HAND: HandSpec = {
   learnZones: [
     'What you just did, in words. After our research, each blue zone is where we suggest you begin: a main pair over the congregation aimed at the main ranks; a case study’s fourth-pew position; a spot in front of one division. The organ’s own starting points have no universal distances — walk, listen and compare.',
     'Start with one coherent main pair; add a division spot only to solve a stated balance problem, bring it up under the pair, and recheck soft and full registrations in mono. Spots and mains arrive at different times: move or rebalance before reaching for delay or polarity.',
-    'Floor stands only, in the pews’ rows or other clear places — never in an aisle, an exit or the wheelchair route, never touching the organ. Anything elevated or suspended is the venue’s installation by competent people.',
+    'Floor stands only, in the pews’ rows or other clear places — never in an aisle, an exit or the wheelchair route, never touching the organ. Anything elevated or suspended is the venue’s installation by a qualified rigger.',
   ],
   ctx: {
     pose: { ...DIV, az: DIV.az + 10 },
@@ -396,7 +396,7 @@ const HAND: HandSpec = {
     label: 'the organ with a spot mic in front of the Great and the PA on the chancel arch.',
     learn: [
       { title: 'RECORDING', text: 'One coherent main pair at a balanced listening position; a division spot only for a defined need. Set gain with full organ and the strongest attack, then check the softest stops against ventilation and traffic.' },
-      { title: 'STREAM', text: 'A main room pair for the organ’s scale and the room; separate, closer feeds for choir, speech and a selected organ spot — each on its own channel, with scenes for organ solo, accompaniment and speech. A suspended pair above an aisle is an installation by competent people.' },
+      { title: 'STREAM', text: 'A main room pair for the organ’s scale and the room; separate, closer feeds for choir, speech and a selected organ spot — each on its own channel, with scenes for organ solo, accompaniment and speech. A suspended pair above an aisle is an installation by a qualified rigger.' },
       { title: 'LOCAL PA', text: 'Reinforce only if the audience needs it. Local division spots give more gain before feedback than a distant pair; never send a distant room pair back into the same room’s PA at high gain. Begin low and listen through the real audience area.' },
     ],
   },
@@ -405,7 +405,7 @@ const HAND: HandSpec = {
     B: { zone: 'org.div', mic: 'sdcCard' },
     names: { A: 'MAIN PAIR', B: 'DIVISION SPOT' },
     looking: 'Two mics · A the main pair, B a spot on the Great',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE: each division gives its own delay.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each division gives its own delay.',
     label: 'The nave with the main pair (A) and a division spot (B)',
     warn: 'This simplified graph shows one point source and straight paths, no reflections. A real organ sounds from many places at once and the room answers back — so no single delay suits every registration. Read the notch depths as illustrative only, and judge by ear, in mono.',
     learn: [
@@ -423,7 +423,7 @@ const HAND: HandSpec = {
   },
   words: {
     placeBadge: 'Blue = suggested starting points · grey dashes = aisles, passages and exits kept clear · pinch to zoom',
-    clearance: 'Clearance and access come first: the aisles, the passages, the exits and the wheelchair route stay clear; nothing touches or hangs from the organ; the console and the organist keep their space. Elevated or suspended mics are the venue’s installation, by competent people.',
+    clearance: 'Clearance and access come first: the aisles, the passages, the exits and the wheelchair route stay clear; nothing touches or hangs from the organ; the console and the organist keep their space. Elevated or suspended mics are the venue’s installation, by a qualified rigger.',
     cardioidTried: 'What you just saw: a mic’s rejection sits behind it, or off to the sides of its rear. A spot facing up at the organ turns its back toward the nave — where a PA high on the arch can sit in a null.',
     sourceNote: 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each division gives its own delay, so no single setting suits every registration.',
   },

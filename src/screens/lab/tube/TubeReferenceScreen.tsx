@@ -180,7 +180,8 @@ export function TubeReferenceScreen() {
 
         <Text style={styles.footNote}>
           Ratings and pinouts are transcribed onto each card from published data sheets — always
-          confirm against your amplifier’s documentation before working on live equipment.
+          check them against your amplifier’s own manual. Tube amps hold deadly voltages, even when
+          unplugged: only a qualified technician should work inside one.
         </Text>
       </ScrollView>
     </View>

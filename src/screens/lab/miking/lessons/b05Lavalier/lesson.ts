@@ -291,7 +291,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Where should the PA sit for a directional headset’s most rejection?',
     options: ['Behind the capsule, past the cheek', 'Straight in front of the presenter', 'Anywhere — a headset is too close to care'],
     correct: 'Behind the capsule, past the cheek',
-    explain: 'A cardioid rejects most straight behind it; a tighter pattern, a little off to the rear sides. Aimed in at the lips from beside the mouth, its rear points out past the cheek — so the PA on that side sits nearest the rejection.',
+    explain: 'A cardioid rejects most straight behind it. A tighter pattern rejects most toward the rear sides, about 110–125° off its front. Aimed in at the lips from beside the mouth, its rear points out past the cheek — so the PA on that side sits nearest the rejection.',
     why: {
       'Straight in front of the presenter': 'In front is near the capsule’s pickup, not its rear.',
       'Anywhere — a headset is too close to care': 'Closeness helps a lot, but the pattern still decides how much PA it hears.',
@@ -376,7 +376,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What would justify a second body mic for one presenter?',
     options: ['A tested backup, on its own track', 'A fuller voice from two open mics', 'More level than one mic gives'],
     correct: 'A tested backup, on its own track',
-    explain: 'A backup earns its place for a live show, on its own track, switched to only when needed. Two open mics on one voice comb.',
+    explain: 'A backup earns its place when a failed mic would cost the show. It goes on its own track and is switched to only when needed. Two open mics on one voice comb.',
     why: {
       'A fuller voice from two open mics': 'Two open mics on one voice usually sound hollower, not fuller.',
       'More level than one mic gives': 'Level comes from gain and closeness, not from another mic.',
@@ -527,7 +527,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you choose: which body mic sits closest to the mouth?', options: ['An omni lav', 'A headset', 'A hidden lav'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you move the lav from the sternum to the lapel. What changes?', options: ['Turns one way sound different', 'Nothing much', 'It depends on this presenter'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is at the stage’s front corner on the presenter’s right. Where will a directional headset reject it best?', options: ['Straight in front', 'Behind the capsule, past the cheek', 'Above the head'], after: 'Now turn the capsule with AIM and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip the lectern mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the lectern mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -638,7 +638,7 @@ export const B05_LESSON: Lesson = {
       { title: 'The throat and mouth shape it', text: 'The throat, the tongue, the lips and the open mouth shape the buzz into vowels and words; the tongue, the teeth and the lips add the consonants.' },
       { title: 'It leaves the mouth', text: 'Almost all of it leaves through the open mouth — on m, n and ng it leaves through the nose instead. That is where every distance here is measured from: the lips.' },
     ],
-    attack: 'P, B and T push a puff of air straight out of the lips; S sends a narrow hiss forward. A capsule in that path hears pops and harsh S sounds — beside the corner of the mouth, or down on the chest, it is out of it.',
+    attack: 'P, B and T push a puff of air straight out of the lips; S sends a narrow hiss forward. A capsule in that path hears pops and harsh S sounds. Beside the corner of the mouth, or down on the chest, it is usually out of it.',
     body: 'The vowels carry most of the level and the tone. A lav on the chest hears them from below the chin — a little chest-heavy and quieter when the head turns; a headset hears them from beside the mouth, steady as the head moves. Tendencies, to check by ear.',
     head: { diameterMm: 0, rods: 0, label: 'the mouth', strikeSrc: 'LESSON' },
   },

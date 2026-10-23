@@ -749,9 +749,10 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
         <Text style={styles.caption}>
           Halving the distance gains ~6 dB of DIRECT sound while the room’s reverberant energy stays
           put — so what changes is the BALANCE, and that ratio is what “close” sounds like. The two
-          bars are each source’s share of what the mic picks up. They cross at about 12 inches (the
-          critical distance): closer than that you are recording the talker, farther than that you
-          are recording the room. Typical speech working distance: about 4–12 inches.
+          bars are each source’s share of what the mic picks up. In this model they cross at about 12
+          inches (the critical distance): closer than that you mostly record the talker, farther than
+          that the room. In a real room the crossing point depends on the room and the mic, and is often
+          farther. Typical speech working distance: about 4–12 inches.
         </Text>
       </CollapsibleSection>
       {wellBottom}
@@ -987,7 +988,7 @@ function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
         spec={{
           question: 'A singer drifts 60° off-mic. What does the audience notice FIRST?',
           options: [
-            'The voice gets quieter',
+            'The voice only gets quieter, with the same tone',
             'The voice gets duller — the highs go before the level does',
             'Nothing, until they leave the pattern entirely',
           ],

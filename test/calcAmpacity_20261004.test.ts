@@ -339,7 +339,8 @@ describe('calcAmpacity — loudness targets, verified 2026-10-04', () => {
   it('EBU R 128 −23 ±0.5 LU, −1 dBTP; ATSC A/85 −24 ±2 dB, −2 dBTP; Apple Podcasts −16 ±1; AES TD1008 −16 / −18', () => {
     assert.deepEqual(row(/EBU R 128/).slice(1, 3), ['−23 LUFS ±0.5 LU (±1 LU live)', 'Max −1 dBTP']);
     assert.deepEqual(row(/ATSC A\/85/).slice(1, 3), ['−24 LKFS ±2 dB', '−2 dBTP recommended']);
-    assert.deepEqual(row(/Apple Podcasts/).slice(1, 3), ['−16 LKFS ±1 dB', 'Max −1 dBFS true peak']);
+    // dBTP, not dBFS, for a true-peak ceiling (audit R2, 2026-10-23, R053038).
+    assert.deepEqual(row(/Apple Podcasts/).slice(1, 3), ['−16 LKFS ±1 dB', 'Max −1 dBTP']);
     assert.equal(row(/TD1008/)[1], '−16 LUFS music; −18 LUFS speech');
   });
   it('the old lumped row is gone', () => {

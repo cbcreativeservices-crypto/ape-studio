@@ -161,7 +161,7 @@ export const OUTPUT_CONFIGS: readonly OutputConfig[] = [
     layout: [TOP_L, TOP_R, { slot: 'delayL', feed: 'DELAY', kind: 'delay', aimDeg: 0, coverDeg: 90, delayMs: 87 }, { slot: 'delayR', feed: 'DELAY', kind: 'delay', aimDeg: 0, coverDeg: 90, delayMs: 87 }],
     what: 'A second row of loudspeakers part-way back, electronically delayed so their sound arrives with the mains — and many engineers add a few milliseconds more, so the mains stay the perceived source.',
     when: 'Deep rooms and outdoor fields where the back rows would otherwise get a quiet, muddy, late main system.',
-    changes: 'Level is restored at the back without raising the front; set the delay to the distance and the two arrivals fuse into one.',
+    changes: 'Level is restored at the back without raising the front; set the delay to the distance, plus those few milliseconds, and the two arrivals fuse into one.',
   },
   {
     id: 'feeds',

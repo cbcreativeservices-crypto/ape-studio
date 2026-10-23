@@ -140,7 +140,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Long full-kit passes, again and again, for room-mic comparisons. What protects your hearing?',
     options: ['Keeping level and time down where you are, and hearing protection', 'Comparing on headphones, which keep the kit out entirely', 'Nothing more — the mics’ maximum SPL keeps things in a safe range'],
     correct: 'Keeping level and time down where you are, and hearing protection',
-    explain: 'Hearing risk depends on the level where you are and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more. A mic’s maximum SPL is its own distortion limit.',
+    explain: 'Hearing risk depends on the level where you are and for how long: NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. A mic’s maximum SPL is its own distortion limit.',
     why: {
       'Comparing on headphones, which keep the kit out entirely': 'Headphones add their own level on top of the kit leaking in. Keep them at a safe, comfortable level, and limit the time.',
       'Nothing more — the mics’ maximum SPL keeps things in a safe range': 'Maximum SPL says when a MIC distorts. It says nothing about your ears.',
@@ -286,7 +286,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No — real nulls are not that deep, and reflections arrive all round',
     explain: 'A null is infinitely deep only on paper; real mics reject far less, often least in the lows, and the room returns the PA from every side. Do not assume it is safe in the house system.',
     why: {
-      'Yes — a null removes the PA from the mic': 'A null reduces one direct path, a little; the room still brings the PA back.',
+      'Yes — a null removes the PA from the mic': 'A null turns down one direct path, but not to silence; the room still brings the PA back.',
       'Yes, as long as it stays a supercardioid aimed at the kit the whole time': 'The pattern helps a little; it does not make a distant mic safe to push in the PA.',
     },
   },
@@ -493,15 +493,15 @@ const orderTasks: OrderTask[] = [
     page: 'practice',
     prompt: 'Tap the steps of a room-mic comparison in the order you would do them.',
     steps: [
-      { text: 'Define the target: intimate kit, natural room, wide ambience, or a separate feed', early: 'Start with what the room feed is for.' },
-      { text: 'Hear the kit and the room; mark safe spots, exits and walkways', early: 'Listen and mark the safe spots once you know the target.' },
-      { text: 'Set one mono baseline on a floor stand; log its position, height and aim', early: 'You need safe spots marked before you set a mic.' },
+      { text: 'Hear the kit and the room; mark safe spots, exits and walkways', early: 'Start by listening to the kit and the room.' },
+      { text: 'Define the target: intimate kit, natural room, wide ambience, or a separate feed', early: 'Decide what the feed is for once you have heard the room.' },
+      { text: 'Set one mono baseline on a floor stand; log its position, height and aim', early: 'Know the safe spots and the target before you set a mic.' },
       { text: 'Mute the outputs and lower monitoring; then switch phantom, per the manual', early: 'Power comes after the mic is set and cabled — with the outputs muted first.' },
       { text: 'Set input gain on the loudest full-kit passage, with headroom', early: 'Gain is set once the mic is powered.' },
       { text: 'Compare a second spot, changing only the distance, at the same level', early: 'Compare only once the level is safe — one change at a time.' },
       { text: 'Add it to the overheads and close mics; check mono; choose — or omit it', early: 'Blend and decide last, after comparing.' },
     ],
-    explain: 'A sensible order: the target, safe spots, one baseline, power and gain, one change at a time, then the blend and the decision — which may be to leave it out.',
+    explain: 'A sensible order: hear the room and mark the safe spots, then the target, one baseline, power and gain, one change at a time, then the blend and the decision — which may be to leave it out.',
   },
 ];
 
@@ -519,7 +519,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A low omni pair about 1 m in front of the kick, checked in mono', ok: true, power: 'phantom', feedback: 'An integrated, kick-rich room picture; the mono check covers the pair.' },
       { id: 'b', label: 'One large condenser 1–2 m in front of the kit, facing it', ok: true, power: 'phantom', feedback: 'A mono room-and-kit picture with more kick; simple and mono-safe.' },
       { id: 'c', label: 'A coincident pair farther out, facing the kit, compared with a mono spot', ok: true, power: 'phantom', feedback: 'Width with a stable mono sum inside the pair — then the blend with the close mics.' },
-      { id: 'd', label: 'Two mics taped to the side walls, as far apart as the room allows', ok: false, power: 'phantom', feedback: 'Nothing is fixed to the walls without the owner’s yes; and the widest pair is not automatically the best.' },
+      { id: 'd', label: 'Two mics taped to the side walls, as far apart as the room allows', ok: false, power: 'phantom', feedback: 'Nothing is fixed to the walls without the studio’s okay and qualified people. And the widest pair is not always the best.' },
       { id: 'e', label: 'A mic in the doorway, where the room sounds most open', ok: false, power: 'phantom', feedback: 'A doorway is an exit and a walkway: keep it clear.' },
     ],
     reasons: [DOC, CLEAR, { id: 'r.mono', label: 'It is checked with the other mics, in stereo and in mono', role: 'required', feedback: 'Say how it will be checked with the overheads and close mics.' }, { id: 'r.track', label: 'It is kept on its own track for later decisions', role: 'optional', feedback: 'A fair studio reason.' }, BRAND, FAR],
@@ -546,7 +546,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front, close up'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a room mic a long stride farther from the kit. What changes?', options: ['More room, less direct kit', 'More direct kit, less room', 'It depends on this room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is behind and to one side of a room mic that faces the kit. How can its pattern help?', options: ['Turn it, or choose a pattern, so a null faces the PA', 'It cannot help — the PA is behind it', 'Only turning the PA down helps'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip the room mic’s polarity, what happens to its delay behind the overhead?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the room mic’s polarity, what happens to its delay behind the overhead?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -617,7 +617,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your room mic is rated to 140 dB SPL. What does that tell you about sitting in the room through long full-kit passes?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the kit stays below the mic’s 140 dB', 'It is safe as long as you sit near the room mic'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
       'It is safe for a while, as long as the kit stays below the mic’s 140 dB': 'A mic’s rating is about the mic. Hearing risk depends on the level where you are and for how long.',
       'It is safe as long as you sit near the room mic': 'Where the mic is says nothing about your ears. Measure where you listen, and limit the time.',
@@ -655,7 +655,7 @@ export const M10_LESSON: Lesson = {
   setting: {
     items: [
       { id: 'kit', label: 'the kit', short: 'KIT', tag: 'THE SOURCE', note: 'Near the back wall. A room mic usually faces the kit’s middle — the line from the kick through the snare is a useful centre.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan' } },
-      { id: 'walls', label: 'the walls', short: 'WALLS', tag: 'REFLECTIONS', note: 'They send the kit’s sound back. Near a wall, a mic hears that reflection strongly — a boom or a hollow sound can come from a nearby boundary. Nothing is fixed to them.', scene: 'all', prov: { kind: 'illustrative', reason: 'room drawing default' } },
+      { id: 'walls', label: 'the walls', short: 'WALLS', tag: 'REFLECTIONS', note: 'They send the kit’s sound back. Near a wall, a mic hears that reflection strongly — a boom or a hollow sound can come from a nearby boundary. Nothing is fixed to them without the venue’s approval.', scene: 'all', prov: { kind: 'illustrative', reason: 'room drawing default' } },
       { id: 'floor', label: 'the floor', short: 'FLOOR', tag: 'FIRST ECHO', note: 'Often the first reflection to arrive: a mic near the floor hears the direct sound and its floor echo almost together.', scene: 'studio', prov: { kind: 'illustrative', reason: 'room drawing default' } },
       { id: 'ceiling', label: 'the ceiling', short: 'CEILING', tag: 'ABOVE', note: 'About 3 m up here. High mics hear its reflection sooner; nothing hangs from it without the venue’s approval and qualified people.', scene: 'studio', prov: { kind: 'illustrative', reason: 'room drawing default (3 m)' } },
       { id: 'corners', label: 'the front corners', short: 'CORNERS', tag: 'FAR', note: 'The farthest spots from the kit here — about 4.6 m (15 ft). Mostly room: width and decay, and the room’s faults too.', scene: 'studio', prov: { kind: 'illustrative', reason: 'room sized so 15 ft reaches the corners' } },

@@ -50,7 +50,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Two positions, one moving source',
     goal: 'A shotgun at M and a second at M2 overlap at B: watch the delay and the comb change as the source walks from A to C, and what polarity does and does not change.',
-    credit: { scenarios: ['cl.two.1', 'cl.two.2', 'cl.two.3'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND walk the source, then answer the three checks.' },
+    credit: { scenarios: ['cl.two.1', 'cl.two.2', 'cl.two.3'], interactive: 'polarityVsDelay', note: 'Flip the second mic’s polarity both ways AND walk the source, then answer the three checks.' },
     takeaway: 'An alignment that helps at one point can worsen another: choose a dominant feed per sector, or hand off smoothly — and check mono.',
   },
   troubleshoot: {
@@ -387,8 +387,8 @@ const symptoms: Symptom[] = [
     id: 'cl.sym.raised',
     observation: 'A comb-like colour on a mic just above the floor',
     firstChecks: 'How high is the capsule above the hard surface? Is it meant to be a boundary mic?',
-    options: ['Use a true boundary, or raise it', 'EQ the notch out at the console', 'Turn the mic up to cover it'],
-    correct: 'Use a true boundary, or raise it',
+    options: ['Use a true boundary mic instead', 'EQ the notch out at the console', 'Turn the mic up to cover it'],
+    correct: 'Use a true boundary mic instead',
     explain: 'A capsule a little above the floor combs with its reflection. At the surface, in its intended geometry, the notch leaves the audio band.',
     why: { 'EQ the notch out at the console': 'The notches move with the source; EQ cannot follow them.', 'Turn the mic up to cover it': 'Gain keeps the comb in place.' },
   },
@@ -487,7 +487,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Which hears the boards’ vibration rather than the air?', options: ['A contact sensor', 'A short shotgun', 'An ambience pair'], after: 'Now step through each METHOD.' },
   placement: { prompt: 'Predict: you aim the shotgun at the floor in front of B instead of at the clap’s height. What changes?', options: ['It points under the source', 'Nothing', 'It gets louder'], after: 'Rest a mic in two zones and read what each one suggests.' },
   context: { prompt: 'A capsule 1 cm above a hard floor: where is the first notch for sound from straight above?', options: ['High in the treble', 'In the low bass', 'There is none'], after: 'Now try each HEIGHT.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then walk the source.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then walk the source.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

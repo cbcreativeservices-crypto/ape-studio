@@ -211,7 +211,7 @@ describe('the body-worn family (bodyWorn.ts)', () => {
     assert.match(BODY_SAFETY.skin, /made for skin/);
     assert.match(BODY_SAFETY.consent, /Ask the wearer first/);
     assert.match(BOOM_SAFETY.overPeople, /above people/);
-    assert.match(BOOM_SAFETY.rigged, /qualified crew/);
+    assert.match(BOOM_SAFETY.rigged, /qualified rigger/);
     assert.match(BOOM_SAFETY.powerLines, /power lines/);
   });
 });

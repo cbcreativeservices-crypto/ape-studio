@@ -61,7 +61,7 @@ describe('review 2026-10-07 — physics corrections', () => {
     assert.equal(minutes(97), 30);
     assert.equal(minutes(94), 60);
     assert.equal(minutes(100), 15);
-    assert.match(learner(byId('mpb-bossa-nova')), /about 30 minutes at 97 dBA/);
+    assert.match(learner(byId('mpb-bossa-nova')), /about 30 minutes a day at 97 dBA/);
     assert.doesNotMatch(learner(byId('mpb-bossa-nova')), /1 hour at 97 dBA/);
   });
   it('the 140 dB peak limit is C-weighted peak, not LAmax', () => {

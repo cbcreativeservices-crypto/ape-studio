@@ -21,7 +21,7 @@ export const TUBA_COPY: Partial<LessonCopy> = {
     partsBadge: 'A tuba, played seated · tap a part to name it',
     partsLooking: { side: 'Side view · from the player’s right', top: 'Top view · from above' },
     partsIdle: 'The lips buzz into the mouthpiece; the air in the long, widening tube vibrates; the sound leaves from the bell. Switch BELL: an upward bell and a front bell need different mic positions.',
-    variantNotes: { up: 'Bell up: the usual orchestral tuba. A mic goes above and to the side of the opening — never lowered into it.', front: 'Bell front: first made for early recording studios, now seen mostly in marching bands. Point the stand in the bell’s real direction.' },
+    variantNotes: { up: 'Bell up: the usual orchestral tuba. A mic goes above and to the side of the opening — seldom lowered into it.', front: 'Bell front: first made for early recording studios, now seen mostly in marching bands. Point the stand in the bell’s real direction.' },
   },
   placement: {
     workedZone: { up: 'tu.above', front: 'tu.sideF' },

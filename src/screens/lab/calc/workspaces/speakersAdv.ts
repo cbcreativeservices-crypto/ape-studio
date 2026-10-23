@@ -7,7 +7,7 @@
  * LABELS carry the unit; compute converts from base F/H.
  */
 import type { Workspace } from '../calcTypes';
-import { P_REF_PA, RHO_AIR_20C, fmt, speedOfSoundAir } from '../calcUnits';
+import { AIR_TEMP_FIELD, fmt, overAirCeiling, P_REF_PA, RHO_AIR_20C, SPL_CEILING_WHY, SPL_FIELD_RANGE, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const TWO_PI = 2 * Math.PI;
@@ -72,8 +72,8 @@ const CROSSOVER: Workspace = {
     'flatten the impedance first (Zobel), then measure and adjust.',
   glossary: ['Crossover', 'Filter', 'Inductor', 'Capacitor', 'Cutoff frequency', 'Impedance'],
   fields: [
-    { key: 'fx', name: 'CROSSOVER FREQUENCY', quantity: 'frequency', placeholder: '2500', help: 'The frequency where the two drivers hand off.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
-    { key: 'z', name: 'DRIVER IMPEDANCE', quantity: 'impedance', placeholder: '8', help: 'Nominal impedance of the driver (typically 4, 6, or 8 Ω).', warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
+    { key: 'fx', name: 'CROSSOVER FREQUENCY', quantity: 'frequency', placeholder: '2500', help: 'The frequency where the two drivers hand off.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'z', name: 'DRIVER IMPEDANCE', quantity: 'impedance', placeholder: '8', help: 'Nominal impedance of the driver (typically 4, 6, or 8 Ω).', positive: true, warn: { test: (x) => x <= 0, msg: 'Impedance must be greater than zero.' } },
   ],
   functions: [
     {
@@ -165,12 +165,12 @@ const LINEARRAY: Workspace = {
     '~6 dB for a point source. Real array behaviour (steering, curvature) needs manufacturer data.',
   glossary: ['Directivity', 'Inverse square law', 'Wavelength', 'Sound Pressure Level', 'Comb Filtering'],
   fields: [
-    { key: 'arrayLen', name: 'ARRAY LENGTH', quantity: 'length', placeholder: '2', help: 'Top-to-bottom acoustic length of the array.', warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },
-    { key: 'spacing', name: 'ELEMENT SPACING', quantity: 'length', defaultUnit: 'cm', placeholder: '25', help: 'Centre-to-centre distance between array elements.', warn: { test: (x) => x <= 0, msg: 'Spacing must be greater than zero.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound.' },
-    { key: 'splRef', name: 'SPL AT REFERENCE', quantity: 'spl', signed: true, placeholder: '100', help: 'Measured SPL at the reference distance.' },
-    { key: 'refDist', name: 'REFERENCE DISTANCE', quantity: 'length', placeholder: '4', help: 'Distance where the reference SPL was measured.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
-    { key: 'farDist', name: 'LISTENER DISTANCE', quantity: 'length', placeholder: '16', help: 'Distance to evaluate the SPL at.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'arrayLen', name: 'ARRAY LENGTH', quantity: 'length', placeholder: '2', help: 'Top-to-bottom acoustic length of the array.', positive: true, warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },
+    { key: 'spacing', name: 'ELEMENT SPACING', quantity: 'length', defaultUnit: 'cm', placeholder: '25', help: 'Centre-to-centre distance between array elements.', positive: true, warn: { test: (x) => x <= 0, msg: 'Spacing must be greater than zero.' } },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
+    { key: 'splRef', name: 'SPL AT REFERENCE', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '100', help: 'Measured SPL at the reference distance.' },
+    { key: 'refDist', name: 'REFERENCE DISTANCE', quantity: 'length', placeholder: '4', help: 'Distance where the reference SPL was measured.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'farDist', name: 'LISTENER DISTANCE', quantity: 'length', placeholder: '16', help: 'Distance to evaluate the SPL at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
   ],
   functions: [
     {
@@ -234,6 +234,13 @@ const LINEARRAY: Workspace = {
       explain:
         'How level falls with distance for the two source types. A point source drops about 6 dB per doubling of distance; a line source in its near field drops only about 3 dB per doubling, giving it more reach — but only while the near field lasts, after which it reverts to point-source behaviour.',
       keySymbols: ['−', 'log₁₀', '/', 'x₁'],
+      // A level past the ceiling of air is never printed (D53, audit R2).
+      refuse: (v) => {
+        const ratio = n(v.farDist) / n(v.refDist);
+        return overAirCeiling(n(v.splRef) - 20 * Math.log10(ratio)) || overAirCeiling(n(v.splRef) - 10 * Math.log10(ratio))
+          ? `${SPL_CEILING_WHY} Check the level and distances you entered.`
+          : null;
+      },
       compute: (v) => {
         const ratio = n(v.farDist) / n(v.refDist);
         const point = n(v.splRef) - 20 * Math.log10(ratio);
@@ -288,18 +295,18 @@ const DRIVER: Workspace = {
     'L_eff = Lv + 1.46·√(Av/π). Thiele–Small small-signal theory; real drivers compress at Xmax.',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Resonance', 'Loudspeaker', 'Q factor'],
   fields: [
-    { key: 'sd', name: 'CONE AREA (Sd)', quantity: 'area', defaultUnit: 'm2', placeholder: '0.05', help: 'Effective radiating area of the cone.', warn: { test: (x) => x <= 0, msg: 'Area must be greater than zero.' } },
-    { key: 'xmax', name: 'PEAK EXCURSION (Xmax)', quantity: 'length', defaultUnit: 'mm', placeholder: '5', help: 'One-way peak linear cone travel.', warn: { test: (x) => x <= 0, msg: 'Excursion must be greater than zero.' } },
-    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '40', help: 'The frequency to evaluate output at.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
-    { key: 'dist', name: 'DISTANCE', quantity: 'length', placeholder: '1', help: 'Listening distance (half-space).', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
-    { key: 'fs', name: 'DRIVER RESONANCE (fs)', quantity: 'frequency', placeholder: '25', help: 'Free-air resonance of the driver.', warn: { test: (x) => x <= 0, msg: 'fs must be greater than zero.' } },
-    { key: 'qts', name: 'TOTAL Q (Qts)', quantity: 'number', nonNegative: true, placeholder: '0.4', help: 'Total driver Q at resonance.', warn: { test: (x) => x <= 0, msg: 'Qts must be greater than zero.' } },
-    { key: 'vas', name: 'COMPLIANCE VOLUME (Vas)', quantity: 'volume', defaultUnit: 'l', placeholder: '50', help: 'Volume of air with the same compliance as the suspension.', warn: { test: (x) => x <= 0, msg: 'Vas must be greater than zero.' } },
-    { key: 'vb', name: 'BOX VOLUME (Vb)', quantity: 'volume', defaultUnit: 'l', placeholder: '30', help: 'Internal net volume of the enclosure.', warn: { test: (x) => x <= 0, msg: 'Box volume must be greater than zero.' } },
-    { key: 'av', name: 'PORT AREA', quantity: 'area', defaultUnit: 'm2', placeholder: '0.005', help: 'Cross-sectional area of the vent.', warn: { test: (x) => x <= 0, msg: 'Port area must be greater than zero.' } },
-    { key: 'lv', name: 'PORT LENGTH', quantity: 'length', defaultUnit: 'cm', placeholder: '15', help: 'Physical length of the vent tube.', warn: { test: (x) => x <= 0, msg: 'Port length must be greater than zero.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound (vented tuning).' },
-    { key: 'fbTarget', name: 'TARGET BOX TUNING (fb)', quantity: 'frequency', placeholder: '35', help: 'The vented tuning frequency you want.', warn: { test: (x) => x <= 0, msg: 'fb must be greater than zero.' } },
+    { key: 'sd', name: 'CONE AREA (Sd)', quantity: 'area', defaultUnit: 'm2', placeholder: '0.05', help: 'Effective radiating area of the cone.', positive: true, warn: { test: (x) => x <= 0, msg: 'Area must be greater than zero.' } },
+    { key: 'xmax', name: 'PEAK EXCURSION (Xmax)', quantity: 'length', defaultUnit: 'mm', placeholder: '5', help: 'One-way peak linear cone travel.', positive: true, warn: { test: (x) => x <= 0, msg: 'Excursion must be greater than zero.' } },
+    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '40', help: 'The frequency to evaluate output at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'dist', name: 'DISTANCE', quantity: 'length', placeholder: '1', help: 'Listening distance (half-space).', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'fs', name: 'DRIVER RESONANCE (fs)', quantity: 'frequency', placeholder: '25', help: 'Free-air resonance of the driver.', positive: true, warn: { test: (x) => x <= 0, msg: 'fs must be greater than zero.' } },
+    { key: 'qts', name: 'TOTAL Q (Qts)', quantity: 'number', nonNegative: true, placeholder: '0.4', help: 'Total driver Q at resonance.', positive: true, warn: { test: (x) => x <= 0, msg: 'Qts must be greater than zero.' } },
+    { key: 'vas', name: 'COMPLIANCE VOLUME (Vas)', quantity: 'volume', defaultUnit: 'l', placeholder: '50', help: 'Volume of air with the same compliance as the suspension.', positive: true, warn: { test: (x) => x <= 0, msg: 'Vas must be greater than zero.' } },
+    { key: 'vb', name: 'BOX VOLUME (Vb)', quantity: 'volume', defaultUnit: 'l', placeholder: '30', help: 'Internal net volume of the enclosure.', positive: true, warn: { test: (x) => x <= 0, msg: 'Box volume must be greater than zero.' } },
+    { key: 'av', name: 'PORT AREA', quantity: 'area', defaultUnit: 'm2', placeholder: '0.005', help: 'Cross-sectional area of the vent.', positive: true, warn: { test: (x) => x <= 0, msg: 'Port area must be greater than zero.' } },
+    { key: 'lv', name: 'PORT LENGTH', quantity: 'length', defaultUnit: 'cm', placeholder: '15', help: 'Physical length of the vent tube.', positive: true, warn: { test: (x) => x <= 0, msg: 'Port length must be greater than zero.' } },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound (vented tuning).' },
+    { key: 'fbTarget', name: 'TARGET BOX TUNING (fb)', quantity: 'frequency', placeholder: '35', help: 'The vented tuning frequency you want.', positive: true, warn: { test: (x) => x <= 0, msg: 'fb must be greater than zero.' } },
   ],
   functions: [
     {
@@ -312,6 +319,12 @@ const DRIVER: Workspace = {
       explain:
         'Low-frequency output is displacement-limited: a cone makes bass by moving air, and the air moved is cone area times excursion. This finds the maximum SPL a driver’s travel can produce at a frequency and distance. Dropping an octave needs four times the excursion for the same level — the physics behind big subwoofers. Model: a rigid piston in a large baffle (half-space), on axis, in the far field, at its linear Xmax; real cones compress near Xmax.',
       keySymbols: ['·', 'π', '/', '√', 'x²', 'f', 'µ', 'log₁₀', 'Sd'],
+      refuse: (v) => {
+        const p = (RHO0 * TWO_PI * n(v.f) * n(v.f) * n(v.sd) * (n(v.xmax) / Math.SQRT2)) / n(v.dist);
+        return overAirCeiling(20 * Math.log10(p / P_REF_PA))
+          ? `${SPL_CEILING_WHY} Check the cone area, excursion, frequency and distance you entered.`
+          : null;
+      },
       compute: (v) => {
         const near = pistonNearField(n(v.sd), n(v.f), n(v.dist), speedOfSoundAir(20));
         if (near) return [{ label: 'INSIDE THE NEAR FIELD', text: near, refusal: true }];
@@ -397,7 +410,8 @@ const DRIVER: Workspace = {
               refusal: true,
             },
             { label: 'THE FIGURES', text: `Even a zero-length port of this area tunes to about ${fmt(fb0)} Hz, below the target.` },
-            { label: 'EFFECTIVE (ACOUSTIC) LENGTH', value: leff, quantity: 'length', unit: 'cm', chainable: false },
+            // No length figure on a refused card (audit R2, 2026-10-23): it
+            // printed an EFFECTIVE LENGTH of "4.060e-11 cm" beside the refusal.
           ];
         }
         const lambda = c / n(v.fbTarget);
@@ -411,12 +425,18 @@ const DRIVER: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         const leff = (c * c * n(v.av)) / (Math.pow(TWO_PI * n(v.fbTarget), 2) * n(v.vb));
         const corr = 1.46 * Math.sqrt(n(v.av) / Math.PI);
+        // A port shorter than nothing is said in words, never as a negative
+        // length (audit R2, 2026-10-23: "physical port -0.05825 m").
+        if (n(v.fbTarget) > 0 && leff - corr < 0) {
+          return [
+            `Even a zero-length port of this area tunes BELOW the target — to about ${fmt((c / TWO_PI) * Math.sqrt(n(v.av) / (n(v.vb) * corr)))} Hz — so no port length works.`,
+            `The tuning rises with a larger port area or a smaller box: use one of those to reach ${fmt(n(v.fbTarget))} Hz.`,
+          ];
+        }
         return [
           `Effective length L_eff = ${fmt(c)}²·${fmt(n(v.av))} ÷ ((2π·${fmt(n(v.fbTarget))})²·${fmt(n(v.vb))}) = ${fmt(leff)} m.`,
           `Subtract the end correction 1.46·√(Av/π) = ${fmt(corr)} m → physical port ${fmt(leff - corr)} m (${fmt((leff - corr) * 100)} cm).`,
-          n(v.fbTarget) > 0 && leff - corr < 0
-            ? `Result is negative — even at zero length this port area tunes BELOW the target (about ${fmt((c / TWO_PI) * Math.sqrt(n(v.av) / (n(v.vb) * corr)))} Hz), so no port length works; use a larger port area or a smaller box.`
-            : `A longer or narrower port tunes LOWER.`,
+          `A longer or narrower port tunes LOWER.`,
         ];
       },
     },

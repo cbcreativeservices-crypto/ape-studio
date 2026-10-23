@@ -139,7 +139,7 @@ export const STAGE3_PEOPLE: StageDef = {
         {
           fieldId: "rigger",
           showWhen: { field: "rigging_required", notEquals: ["no"] },
-          label: "Certified rigger",
+          label: "Qualified rigger",
           kind: "text",
           help: "Rigging is skilled, safety-critical work: most venues, unions and insurers require a recognised certification and state which they accept. That includes ground-supported towers and roofs (ANSI E1.21 in the US). Name the qualified person and confirm it before the day. This app does not qualify anyone to rig.",
           required: false,

@@ -17,7 +17,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "90–140 BPM (power ballads 60–80; shuffles and fast rockers 150–170)",
     "ensemble": "4–5 piece band: drums, bass, 1–2 electric guitars, lead vocal (keys optional) plus 1–3 backing vocals; modern acts often add click and backing tracks",
     "priority": "The riff: big, mid-forward guitars locked to kick, snare and bass, with a lead vocal that cuts through without being buried",
-    "liveSpl": "98–103 dBA Leq (LAeq-15 min); about 115–125 dBC; regulated venues often 99–102 dBA",
+    "liveSpl": "98–103 dBA Leq (LAeq-15 min); about 112–122 dBC LCeq; regulated venues often 99–102 dBA",
     "studioLoudness": "Masters commonly −9 to −6 LUFS-I (classic-era remasters −12 to −9); streaming normalizes to about −14"
   },
   "purpose": [
@@ -277,11 +277,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and theater hard rock commonly runs 98–102 dBA LAeq-15 at FOH; arena tours 100–104 dBA, with peaks around 110–115 dBA and C-weighted levels of 115–125 dBC. Backline can exceed 120 dB on stage, so in small rooms the PA may add only vocals, kick and low end. Sub is moderate: a C-minus-A gap above 20 dB is too much. German rules set 99 dBA over 30 minutes and 135 dBC peak; UK and EU festivals often run 100–105 dBA LAeq-15. Some top FOH engineers mix near 98 dBA and rely on compression and clarity for power. Offer earplugs; by common hearing-safety guidance, 100 dBA is safe for about 15 minutes a day."
+      "text": "Club and theater hard rock commonly runs 98–102 dBA LAeq-15 at FOH; arena tours 100–104 dBA, with peaks around 110–115 dBA and C-weighted LCeq of 112–122 dBC. Backline can exceed 120 dB on stage, so in small rooms the PA may add only vocals, kick and low end. Sub is moderate: a C-minus-A gap above 20 dB is too much. German rules set 99 dBA over 30 minutes and 135 dBC peak; UK and EU festivals often run 100–105 dBA LAeq-15. Some top FOH engineers mix near 98 dBA and rely on compression and clarity for power. Offer earplugs; NIOSH advises no more than about 15 minutes a day at 100 dBA."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern active rock masters land around −9 to −6 LUFS-I; a recent rock/alternative chart analysis averaged about −8 LUFS-I with loudness range under 5 LU. Classic-styled hard rock suits −11 to −9 LUFS-I. Aim for −1 dBTP (−2 dBTP if louder than −14 LUFS); services normalize to about −14, so extra loudness only costs punch. A PLR of 8–11 dB keeps drums hitting (at −2 dBTP that means a master at about −10 LUFS-I or quieter)."
+      "text": "Modern active rock masters land around −9 to −6 LUFS-I; a recent rock/alternative chart analysis averaged about −8 LUFS-I with loudness range under 5 LU. Classic-styled hard rock suits −11 to −9 LUFS-I. Aim for −1 dBTP (−2 dBTP if louder than −14 LUFS); services normalize to about −14, so extra loudness only costs punch. A PLR of 8–11 dB keeps drums hitting; at −2 dBTP that means about −10 LUFS-I or quieter, nearer the classic-styled range than modern masters."
     }
   ],
   "liveStudio": {

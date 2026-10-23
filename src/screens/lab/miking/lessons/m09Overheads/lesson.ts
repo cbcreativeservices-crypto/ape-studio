@@ -147,7 +147,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You will sit beside a loud kit through a long soundcheck. What protects your hearing?',
     options: ['Keeping the level and time down where you are, and hearing protection', 'Standing behind the overhead stands, which block most of the kit’s sound', 'Nothing more — the mics’ maximum SPL keeps the level in a safe range'],
     correct: 'Keeping the level and time down where you are, and hearing protection',
-    explain: 'Hearing risk depends on the level where you are and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more. A mic’s maximum SPL is its own distortion limit.',
+    explain: 'Hearing risk depends on the level where you are and for how long: NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. A mic’s maximum SPL is its own distortion limit.',
     why: {
       'Standing behind the overhead stands, which block most of the kit’s sound': 'Thin stands block almost nothing. Limit the level and the time where you are, and use hearing protection.',
       'Nothing more — the mics’ maximum SPL keeps the level in a safe range': 'Maximum SPL says when a MIC distorts. It has nothing to do with what your ears can take.',
@@ -327,7 +327,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip the side mic’s polarity and the kick sounds fuller. Has the delay been removed?',
     options: ['No: polarity flips the sign; the delay stays', 'Yes: inverting polarity lines the mics up', 'Yes, but only for the kick’s lowest notes'],
     correct: 'No: polarity flips the sign; the delay stays',
-    explain: 'Polarity inversion reverses the signal’s sign. It moves the notches; it does not remove a delay caused by different distances. Compare both states at matched levels.',
+    explain: 'Polarity inversion reverses the signal’s sign. The notches and peaks swap places; it does not remove a delay caused by different distances. Compare both states at matched levels.',
     why: {
       'Yes: inverting polarity lines the mics up': 'Polarity is not a time alignment: the later arrival is still later.',
       'Yes, but only for the kick’s lowest notes': 'The delay is the same at every pitch; polarity only moves where the notches fall.',
@@ -411,7 +411,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The overheads and the close snare make the snare hollow together. Which change removes the arrival difference itself?',
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity of the close snare mic', 'Raising the snare mic to cover the overheads'],
     correct: 'Moving a mic so the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth; neither removes the delay.',
+    explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth; neither removes the delay.',
     why: {
       'Flipping the polarity of the close snare mic': 'Polarity flips the sign; the snare still arrives at the overheads later.',
       'Raising the snare mic to cover the overheads': 'Level changes how deep the notches are, not where the delay comes from.',
@@ -474,7 +474,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Lower or omit unnecessary overhead gain, test pattern and position relative to monitors and other sources, and assess what the PA needs.',
     options: ['Overhead gain, the pattern and position against the monitors, and what the PA needs', 'Raise the overheads until the cymbals cut through the rest of the band', 'Point the overheads at the wedges briefly to hear what they pick up'],
     correct: 'Overhead gain, the pattern and position against the monitors, and what the PA needs',
-    explain: 'Lower or leave out overhead gain the PA does not need; check the pattern and position against the monitors. Never push past the needed level to find it.',
+    explain: 'Lower or leave out overhead gain the PA does not need; check the pattern and position against the monitors. Do not push the gain past what the PA needs just to find where it feeds back.',
     why: {
       'Raise the overheads until the cymbals cut through the rest of the band': 'More gain is exactly what brings feedback closer. Start from what the PA needs.',
       'Point the overheads at the wedges briefly to hear what they pick up': 'That invites uncontrolled feedback.',
@@ -626,7 +626,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your overheads are rated to 140 dB SPL. What does that tell you about sitting by the kit through a long soundcheck?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the kit stays below the mics’ 140 dB', 'It is safe as long as the mics are above the kit'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
       'It is safe for a while, as long as the kit stays below the mics’ 140 dB': 'A mic’s rating is about the mic. Hearing risk depends on the level where you are and for how long.',
       'It is safe as long as the mics are above the kit': 'Where the mics are says nothing about your ears. Measure where you listen, and limit the time.',

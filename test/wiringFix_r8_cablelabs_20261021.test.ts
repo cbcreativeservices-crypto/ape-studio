@@ -534,7 +534,8 @@ describe('R7-CI-10 the connector-pull rule reads plainly', () => {
   it('no "Where inappropriate, never…"', () => {
     const r = CI_RULES.find((x) => x.id === 'mech-no-connector-pull')!;
     assert.doesNotMatch(r.studentText, /inappropriate/i);
-    assert.match(r.studentText, /^Never pull a cable by its connector\./);
+    // audit R2 R051507: stated as the professional rule (2026-10-23)
+    assert.match(r.studentText, /not on its connector\./);
   });
 });
 

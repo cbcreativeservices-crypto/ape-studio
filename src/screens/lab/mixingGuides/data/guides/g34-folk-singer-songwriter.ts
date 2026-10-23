@@ -22,7 +22,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "60–120 BPM (ballads 55–75; fingerpicked mid-tempo 80–100; strummed “stomp” indie folk to 130)",
     "ensemble": "Solo voice + acoustic guitar or piano; duo; up to a 4–6 piece band (bass, light drums/percussion, keys, fiddle, mandolin, harmony singers)",
     "priority": "The lyric: a clear, natural, close-feeling lead vocal with the acoustic instrument wrapped around it",
-    "liveSpl": "80–90 dBA Leq (LAeq-15 min) solo/duo; 88–96 dBA with a band; roughly 95–105 dBC",
+    "liveSpl": "80–90 dBA Leq (LAeq-15 min) solo/duo; 88–96 dBA with a band; C-weighted about 5–10 dB higher",
     "studioLoudness": "Masters commonly −16 to −11 LUFS-I (sparse solo records often −18 to −14); streaming normalizes to about −14"
   },
   "purpose": [
@@ -275,11 +275,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Solo and duo shows sound best around 80–90 dBA LAeq at FOH, with C-weighted levels of about 95–100 dBC; band shows reach 88–96 dBA, with peaks near 100–102 dBA. Many listening rooms and theaters prefer the lower end; folk festivals with tents and noisy crowds push toward the top. Sub content is minimal—many acoustic shows run without subs or with subs well down, and a C-minus-A gap above about 12–15 dB usually signals boom. In small rooms the PA should only fill in what the room cannot carry; feedback, not hearing safety, is usually the main limit."
+      "text": "Solo and duo shows sound best around 80–90 dBA LAeq at FOH, with C-weighted levels about 5–10 dB higher; band shows reach 88–96 dBA, with peaks near 100–102 dBA. Many listening rooms and theaters prefer the lower end; folk festivals with tents and noisy crowds push toward the top. Sub content is minimal—many acoustic shows run without subs or with subs well down, and a C-minus-A gap above about 12–15 dB usually signals boom. In small rooms the PA should only fill in what the room cannot carry; feedback, not hearing safety, is usually the main limit."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Folk tolerates and needs wide dynamics. Solo acoustic masters often sit at −18 to −14 LUFS-I; band-driven indie folk at −13 to −10. Keep true peak at −1 dBTP (−2 dBTP for masters louder than −14 LUFS or with sharp fingerpicked transients). Aim for a PLR of 12–16 dB and a loudness range of 6–12 LU. Because services normalize to around −14 LUFS, a loud master gains nothing and loses the quiet details the genre lives on."
+      "text": "Folk tolerates and needs wide dynamics. Solo acoustic masters often sit at −18 to −14 LUFS-I; band-driven indie folk at −13 to −11. Keep true peak at −1 dBTP (−2 dBTP for masters louder than −14 LUFS or with sharp fingerpicked transients). Solo masters often keep a PLR of 12–16 dB; louder band masters have less. Aim for a loudness range of 6–12 LU. Because services normalize to around −14 LUFS, a loud master gains nothing and loses the quiet details the genre lives on."
     }
   ],
   "liveStudio": {

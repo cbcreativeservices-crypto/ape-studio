@@ -15,7 +15,7 @@ export function metalWords(noun: string, player: string): FamilyWords {
     axis: `the line straight out of the ${noun}`,
     facing: `facing the ${noun}`,
     shield: `${noun} in path`,
-    mountStand: 'Mount: a stand of its own, clear of the whole playing motion — never clipped to the instrument, its line or its frame',
+    mountStand: 'Mount: a stand of its own, clear of the whole playing motion — not clipped to the instrument, its line or its frame without the owner’s agreement',
     mountClip: 'Mount: nothing is clipped to the instrument, its line or its frame without the owner’s agreement',
     sheet: 'For a real instrument, with the player’s agreement and the player stopped while anything moves. Write tendencies in words — what you heard, not a promised result.',
     viewSide: 'Side view,',

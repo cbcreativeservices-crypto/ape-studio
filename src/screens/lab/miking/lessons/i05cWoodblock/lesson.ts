@@ -50,7 +50,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s real rejection faces a loud unwanted source — and decide between a shared overhead and a spot.',
     credit: { scenarios: ['wb.ctx.1', 'wb.ctx.2', 'wb.ctx.studio', 'wb.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the downstage wedge sits in the rejection. STUDIO: answer the decision card. Then the checks.' },
-    takeaway: 'A shared overhead may carry it on a quiet stage; a spot on a loud one — if it hears more block than spill. Never add gain to beat feedback.',
+    takeaway: 'A shared overhead may carry it on a quiet stage; a spot on a loud one — if it hears more block than spill. Do not keep adding gain to beat the spill: that invites feedback.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -406,7 +406,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: toward the opening, or toward the playing surface — which sounds fuller?', options: ['The opening', 'The surface', 'It depends on this block'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

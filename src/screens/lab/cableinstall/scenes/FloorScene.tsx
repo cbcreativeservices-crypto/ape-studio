@@ -92,7 +92,7 @@ const CRAFT_DECISIONS: CraftDecision[] = [
     prompt: '② The spare mic-cable length:',
     options: [
       { id: 'loops', label: 'LEAVE LOOSE LOOPS ON DECK', ok: false, short: 'Loose loops migrate into lanes and snag feet, stands and wheels.' },
-      { id: 'dressed', label: 'DRESS THE SLACK AT THE BOX', ok: true, short: 'Working slack lives coiled at the box with its end capped — reachable, never underfoot, and never plugged into a return.' },
+      { id: 'dressed', label: 'DRESS THE SLACK AT THE BOX', ok: true, short: 'Working slack lives coiled at the box with its end capped — reachable, kept out from underfoot, and not plugged into a return.' },
     ],
   },
   {
@@ -100,7 +100,7 @@ const CRAFT_DECISIONS: CraftDecision[] = [
     prompt: '③ Monitor feeds from MON to the three wedges:',
     options: [
       { id: 'bare', label: 'RUN THEM BARE ACROSS THE DECK', ok: false, short: 'Bare lines where performers walk get stepped on all show — and fail at the downbeat.' },
-      { id: 'dressed', label: 'DRESS THE LIP + PROTECT THE STAIR CROSSING', ok: true, short: 'Taped along the lip behind the wedges; where feet come up the stair, a low-profile cover and glow tape — never a hump at the head of a stair.' },
+      { id: 'dressed', label: 'DRESS THE LIP + PROTECT THE STAIR CROSSING', ok: true, short: 'Taped along the lip behind the wedges; where feet come up the stair, a low-profile cover and glow tape. Keep any hump off the top of the stair.' },
     ],
   },
 ];

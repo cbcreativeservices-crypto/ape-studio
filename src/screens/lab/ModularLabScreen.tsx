@@ -61,7 +61,7 @@ const SHAPES = [
   { v: 0, label: 'SAW', blurb: 'Every harmonic — the richest raw material. The filter has the most to carve; sweeps sound biggest here.' },
   { v: 1, label: 'SQUARE', blurb: 'Odd harmonics only: hollow and woody. The filter still has plenty to grab.' },
   { v: 2, label: 'TRI', blurb: 'Weak, fast-fading harmonics — the filter has little to remove, so sweeps are subtle.' },
-  { v: 3, label: 'SINE', blurb: 'No harmonics at all. The filter can only change its level, not its tone — sweep and the brightness never changes. That IS the lesson.' },
+  { v: 3, label: 'SINE', blurb: 'One harmonic only: the fundamental, with no overtones. The filter can only change its level, not its tone — sweep and the brightness never changes. That IS the lesson.' },
 ] as const;
 // CUTOFF is the dock's pre-bound fader (2026-08-23): a LOG sweep 250 Hz →
 // 8 kHz replacing the old discrete chips — the native cutoff target ramps, so

@@ -103,7 +103,7 @@ export const GUIDE: MixingGuide = {
         "source": "Amplified harmonica",
         "cut": "HPF 120–150 Hz; −3–6 dB narrow at feedback points (often 2–4 kHz)",
         "boost": "+2 dB at 300–500 Hz (warmth); +1–2 dB around 1 kHz (honk)",
-        "notes": "Most energy is roughly 150 Hz–3.5 kHz; LPF 6–8 kHz kills hiss and squeal"
+        "notes": "Most energy is roughly 150 Hz–3.5 kHz; an LPF at 6–8 kHz cuts hiss and the highest squeal, but feedback at 2–4 kHz still needs the notches"
       },
       {
         "source": "Acoustic harmonica",
@@ -277,11 +277,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Small clubs and bars usually run 92–98 dBA LAeq-15 at FOH; theater and festival shows 96–102 dBA, with C-weighted levels around 108–118 dBC. Sub demand is moderate; a C-minus-A gap above 20 dB means too much low end for the style. Stage volume often sets the floor: two cranked tube amps can push 100 dBA onstage before the PA adds anything, so in small rooms you may only reinforce vocals, harp and kick. Solo peaks reach 105–110 dBA. By common hearing-safety guidance, 100 dBA is safe for only 15 minutes; blues crowds skew older and prefer warm to punishing. Large festivals use line arrays plus delays for long throws at controlled level."
+      "text": "Small clubs and bars usually run 92–98 dBA LAeq-15 at FOH; theater and festival shows 96–102 dBA, with C-weighted levels around 108–118 dBC. Sub demand is moderate; a C-minus-A gap above 20 dB means too much low end for the style. Stage volume often sets the floor: two cranked tube amps can push 100 dBA onstage before the PA adds anything, so in small rooms you may only reinforce vocals, harp and kick. Solo peaks reach 105–110 dBA. NIOSH advises no more than about 15 minutes a day at 100 dBA; blues crowds skew older and prefer warm to punishing. Large festivals use line arrays plus delays for long throws at controlled level."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Traditional and acoustic blues masters commonly sit at −14 to −11 LUFS-I; electric and blues-rock at −11 to −9. Keep true peak at −1 dBTP (−2 dBTP if louder than −14 LUFS). Most streaming services normalize to −14 LUFS (−11 on some loud settings), so heavy limiting buys nothing. For traditional masters, aim for a PLR of 11–15 dB (at −2 dBTP that means a master at about −13 LUFS-I or quieter); louder electric masters land nearer 7–9 dB. Use a loudness range of 6–10 LU to keep solo builds and quiet verses alive."
+      "text": "Traditional and acoustic blues masters commonly sit at −14 to −11 LUFS-I; electric and blues-rock at −11 to −9. Keep true peak at −1 dBTP (−2 dBTP if louder than −14 LUFS). Most streaming services normalize to −14 LUFS (−11 on some loud settings), so heavy limiting buys nothing. For traditional masters, aim for a PLR of 11–15 dB; at −2 dBTP that means about −13 LUFS-I or quieter, the quiet end of the usual range. Louder electric masters land nearer 7–9 dB. Use a loudness range of 6–10 LU to keep solo builds and quiet verses alive."
     }
   ],
   "liveStudio": {

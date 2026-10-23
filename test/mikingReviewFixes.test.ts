@@ -125,10 +125,12 @@ describe('hearing safety is taught where it matters (audio C1, cognitive C2)', (
     // hearing warning sits on "Before any mic", where soundcheck begins.
     const p1 = read('src/screens/lab/miking/pages/PSetting.tsx');
     assert.match(p1, /85 dBA averaged over an 8-hour day/);
-    assert.match(p1, /every 3 dBA/);
+    assert.match(p1, /every 3 dB\b/);
+    assert.match(p1, /NIOSH advises/);
+    assert.match(p1, /\(OSHA\) is 90 dBA with a 5 dB rule/);
     assert.match(p1, /nothing to do with a microphone’s maximum SPL rating/);
     assert.ok(lesson.pages.setting.credit.scenarios.includes('k.inst.2'));
-    // The guideline's source stays on the internal record (owner ruling 2026-10-04).
+    // The guideline's source is named on screen (owner ruling 2026-10-23) and stays on the record.
     assert.match(read('docs/labs/miking/kick/SOURCES.md'), /NIOSH/);
   });
   it('the max-SPL figures sit next to the caveat on page 2', () => {

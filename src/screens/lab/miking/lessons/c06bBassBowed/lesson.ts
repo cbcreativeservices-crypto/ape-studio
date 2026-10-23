@@ -447,7 +447,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Small condenser 15–30 cm in front, a little above the bridge, outside the bow’s sweep', ok: true, power: 'phantom', feedback: 'A suggested starting point: body, pitch and bow together — then compare lower and broader.' },
       { id: 'b', label: 'An omni in front at a moderate distance, for the whole bass and the room', ok: true, power: 'phantom', feedback: 'A fair choice in a good quiet room — no proximity lift, the bow blended in.' },
       { id: 'c', label: 'A mic a few centimetres from the strings where the bow plays', ok: false, power: 'phantom', feedback: 'In the bow’s path: it will be hit, and it hears mostly scrape.' },
-      { id: 'd', label: 'A clip pressed onto the bridge for the most definition', ok: false, power: 'phantom', feedback: 'Never on the bridge: it can impede its vibration and risk the instrument.' },
+      { id: 'd', label: 'A clip pressed onto the bridge for the most definition', ok: false, power: 'phantom', feedback: 'Not on the bridge unless the owner approves: a clamped clip can impede its vibration and risk the instrument.' },
       { id: 'e', label: 'A mic at the f-hole and another at the bridge, out of habit', ok: false, power: 'phantom', feedback: 'Two mics by rote add combing; start from one balanced mic as the reference.' },
     ],
     reasons: [docReason('the strings just above the bridge'), clearReason('the bow’s whole path, the endpin and the feet, where it cannot tip onto the bass'), POWER_REASON, { id: 'r.room', label: 'The good, quiet room is worth hearing', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON('bass'), LOUD_REASON],
@@ -474,14 +474,14 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the front mic closer to where the bow plays. What changes?', options: ['More bow scrape', 'More body', 'It depends on this bass'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The drum kit sits off to the bassist’s right. Will aiming the mic away remove it?', options: ['Yes, completely', 'Partly — often least in the lows', 'No difference at all'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.1',
     covers: 'instrument',
-    prompt: 'Which part should never have a mic or clip clamped to it?',
+    prompt: 'Which part should not have a mic or clip clamped to it unless the owner approves?',
     options: ['The two outer strings below the bridge', 'A stable stand in front of the bass', 'The bridge'],
     correct: 'The bridge',
     explain: 'Clamping the bridge can impede its vibration. A clip made for the bass usually grips the strings below it instead.',

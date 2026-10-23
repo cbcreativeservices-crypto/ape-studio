@@ -714,12 +714,12 @@ const flangerConfig: FxLabConfig = {
       question: 'You push flanger FEEDBACK toward the maximum. What happens?',
       options: [
         'The sweep gets faster',
-        'The notches deepen and the peaks ring — the metallic jet builds toward runaway',
+        'The notches sharpen and the peaks ring — the metallic jet builds toward runaway',
         'The effect gets quieter',
       ],
       correctIdx: 1,
       reveal:
-        'Feedback re-circulates the delayed copy, sharpening the comb: deeper notches, resonant peaks, the classic metallic scream at the extreme. Rate is untouched — that is the LFO\u2019s job.',
+        'Feedback re-circulates the delayed copy and sharpens the comb: narrower notches and taller resonant peaks, the classic metallic scream at the extreme. Rate is untouched — that is the LFO\u2019s job.',
       wrongHint: 'Step FDBK from 0% to −70% HOLLOW and watch the comb\u2019s teeth.',
     },
   ],
@@ -1214,7 +1214,7 @@ const limiterConfig: FxLabConfig = {
     {
       question: 'A limiter is best described as…',
       options: [
-        'A compressor with a very high ratio — a ceiling nothing passes',
+        'A compressor with a very high ratio — peaks held at a ceiling',
         'A volume control that works faster',
         'An EQ for loud frequencies',
       ],

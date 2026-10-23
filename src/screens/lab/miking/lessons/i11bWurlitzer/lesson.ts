@@ -316,10 +316,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip the auxiliary output’s polarity. What happens to the arrival-time difference?',
     options: ['Nothing — polarity flips the sign, not the timing', 'It drops to zero, so the two arrivals line up exactly', 'It doubles, because the copy is inverted'],
     correct: 'Nothing — polarity flips the sign, not the timing',
-    explain: 'Polarity reverses the sign. Only moving the mic, or delaying its channel, changes when the sound arrives: the notches move, the delay does not.',
+    explain: 'Polarity reverses the sign, not the timing. A flip swaps the notches and peaks, but the delay stays the same. Only moving the mic, or delaying one channel to line them up, changes the time gap.',
     why: {
       'It drops to zero, so the two arrivals line up exactly': 'The paths are unchanged, so the delay stays.',
-      'It doubles, because the copy is inverted': 'Polarity has no time in it. Only a position changes the delay.',
+      'It doubles, because the copy is inverted': 'Polarity has no time in it. Only moving the mic, or delaying one channel, changes the delay.',
     },
   },
   {

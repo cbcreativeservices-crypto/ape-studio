@@ -146,4 +146,4 @@ export function bassSetting(kind: BassKind): SettingItem[] {
   ];
 }
 
-export const BASS_HEARING = 'Protect your hearing on loud stages and during soundcheck. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Manage the exposure time, keep monitoring sensible, and use hearing protection where it is loud.';
+export const BASS_HEARING = 'Protect your hearing on loud stages and during soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about them. Manage the exposure time, keep monitoring sensible, and use hearing protection where it is loud.';

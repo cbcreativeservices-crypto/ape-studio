@@ -84,7 +84,7 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.snd.2`,
     page: 'sound',
-    prompt: 'On a soprano, the neck meets the body at the 12th fret. A strum right there drives which shapes of the open string?',
+    prompt: 'On this soprano, the neck meets the body at the 12th fret. A strum right there drives which shapes of the open string?',
     options: ['All of them equally, because the whole string moves', 'Only the even ones; the odd shapes stay silent', 'Only the odd ones; the even shapes stay silent'],
     correct: 'Only the odd ones; the even shapes stay silent',
     explain: 'The 12th fret is the exact middle of the open string, where every even shape has a still point — a rounder, softer tone there.',
@@ -213,7 +213,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A broad position often gives a better picture of a small body than two extremely close spots — in a room worth hearing.',
     why: {
       'Two very close mics on small spots': 'Two local views add combining problems and miss the whole.',
-      'A mic right inside the sound hole': 'Never insert a mic into the hole; it hears one resonance.',
+      'A mic right inside the sound hole': 'Do not push a mic into the hole: it hears one resonance. Only a mount made for that goes inside, with the owner’s OK.',
     },
   },
   {
@@ -287,7 +287,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Small condenser, cardioid, 20–40 cm from the neck joint, off the strumming arc, rear to the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point, clear of the hands, its rejection toward the wedge.' },
       { id: 'b', label: 'Instrument dynamic at the upper body, close end of the band, clear of the vocal mic', ok: true, power: 'none', feedback: 'A robust close option at a suggested starting point.' },
       { id: 'c', label: 'Clip-on mini on a clip whose range fits the measured body', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the player — with the owner’s OK.' },
-      { id: 'd', label: 'Small condenser pushed into the sound hole for the most level', ok: false, power: 'phantom', feedback: 'Never insert a mic into the hole: it favours one resonance and risks the instrument.' },
+      { id: 'd', label: 'Small condenser pushed into the sound hole for the most level', ok: false, power: 'phantom', feedback: 'Do not push a mic into the hole: it favours one resonance and can harm the instrument. Only a mount made for that goes inside, with the owner’s OK.' },
       { id: 'e', label: 'Rely on the vocal mic’s bleed as the ukulele’s only mic', ok: false, power: 'phantom', feedback: 'A vocal mic’s bleed is not a reliable dedicated ukulele mic.' },
     ],
     reasons: [DOC_REASON, clearReason('the strumming arc, the fretting hand and the vocal mic'), POWER_REASON, { id: 'r.null', label: 'Aiming its rejection toward the wedge helps against feedback', role: 'optional', feedback: 'A fair live reason — though no position alone prevents feedback.' }, brandReason(UKE), LOUD_REASON],
@@ -319,7 +319,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.1',
     covers: 'instrument',
-    prompt: 'On a soprano ukulele, where does the neck meet the body?',
+    prompt: 'On the soprano drawn here, where does the neck meet the body?',
     options: ['At the 14th fret, like a steel-string guitar', 'At the sound hole, where the fingerboard ends', 'At the 12th fret — the middle of the open string'],
     correct: 'At the 12th fret — the middle of the open string',
     explain: 'This soprano’s neck joins at the 12th fret. Other sizes join at different places: use the actual instrument.',

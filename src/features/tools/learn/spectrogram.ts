@@ -19,7 +19,7 @@ export const SPECTROGRAM_LEARN: ToolLearnContent = {
     {
       head: 'COLOR IS RELATIVE',
       body:
-        'The color scale maps a range of decibel values to a range of colors, and that mapping is set by the dynamic range control — it is not an absolute loudness reference. The same signal can look intense on a 40 dB scale and faint on a 90 dB scale without anything about the sound changing. Before you interpret color, check the scale; before you compare two spectrograms, confirm they were captured with the same dynamic range and floor settings. Reading level from color is only precise to a few dB even under ideal conditions.',
+        'The color scale maps a range of decibel values to a range of colors, and that mapping is set by the dynamic range control — it is not an absolute loudness reference. With the top of the scale fixed, the same signal can look bright on a 90 dB scale and dim on a 40 dB scale without anything about the sound changing. Before you interpret color, check the scale; before you compare two spectrograms, confirm they were captured with the same dynamic range and floor settings. Reading level from color is only precise to a few dB even under ideal conditions.',
     },
     {
       head: 'THE TIME-FREQUENCY TRADE-OFF',
@@ -51,7 +51,7 @@ export const SPECTROGRAM_LEARN: ToolLearnContent = {
     {
       claim: 'Brighter color means the sound is louder.',
       truth:
-        'Color only shows level relative to the selected scale. The dynamic range setting decides which dB values map to which colors, so the same sound can look intense on a narrow scale and faint on a wide one. To judge actual level you need the scale settings — or an SPL tool, which measures loudness directly.',
+        'Color only shows level relative to the selected scale. The dynamic range setting decides which dB values map to which colors, so the same sound can look bright on a wide scale and dim on a narrow one. To judge actual level you need the scale settings — or an SPL meter, which measures sound level directly.',
     },
     {
       claim: 'The spectrogram and the RTA show the same thing.',

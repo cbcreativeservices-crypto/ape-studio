@@ -38,9 +38,9 @@ export function quickHearing(w: Words): { id: string; covers: SourcePageId; crit
     prompt: `A spot mic on ${w.the} is rated far above any level in the hall. What does that tell you about a long rehearsal next to it?`,
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the hall stays below the mic’s rating', 'It is safe as long as the mic is much closer to the drum than you are'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the hall stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the hall stays below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is much closer to the drum than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   };
@@ -80,7 +80,7 @@ export function louderIsNotBetter(w: Words): MikingScenario {
   return {
     id: `${w.p}.two.4`,
     page: 'twoMic',
-    prompt: 'You flip B’s polarity and the drum suddenly sounds bigger; the sum reads 3 dB louder. What do you conclude?',
+    prompt: 'You flip mic B’s polarity and the drum suddenly sounds bigger; the sum reads 3 dB louder. What do you conclude?',
     options: ['Not yet: match the levels, then compare both states again in mono', 'Inverted is the better setting, so keep it that way for the whole concert', 'Normal polarity was wrong, because it was the quieter one'],
     correct: 'Not yet: match the levels, then compare both states again in mono',
     explain: 'A louder version almost always sounds “better” at first. Compare at matched level, in mono and with the whole ensemble, before you decide.',
@@ -98,9 +98,9 @@ export function moveRemovesDelay(w: Words, id = `${w.p}.mix.3`): MikingScenario 
     prompt: `The spot and the ensemble mics sound thin together on ${w.the}. Which change removes the arrival-time difference itself?`,
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on one of the mics', 'Turning the later mic up until it matches the earlier one'],
     correct: 'Moving a mic so the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth; neither removes the delay. (A delay set on the desk is another tool — judged by ear in the whole ensemble.)',
+    explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes how deep the notches are; neither removes the delay. (A delay set on the desk is another tool — judged by ear in the whole ensemble.)',
     why: {
-      'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
+      'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
       'Turning the later mic up until it matches the earlier one': 'Level changes the depth of the notches, not where they are or the delay behind them.',
     },
   };

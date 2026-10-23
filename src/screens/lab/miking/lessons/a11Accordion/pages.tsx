@@ -144,7 +144,7 @@ const HAND: HandSpec = {
       { id: 'room', box: { u0: -1300, u1: 1700, v0: 900, v1: 1040 }, scene: 'studio', label: { u: 200, v: 820 } },
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the accordionist facing the audience, the bass side reaching toward the band, a wedge downstage, a side-fill on the bass side, the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the accordionist, no monitors on the floor.${sel ? ` Highlighted: ${sel}.` : ''}`),
-    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'),
+    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience to the right' : 'Plan · a studio room from above'),
     first: 'The player faces the audience with the accordion on their chest: the treble side on their right, the bass side on their left — moving out and in with the bellows.',
     before: [
       { title: 'ASK THE PLAYER', text: 'Which accordion and registers? Are the bass notes and chords essential to the arrangement, or does a bass player carry them? Will they stand, sit or move — and how far do the bellows and the bass side travel?' },
@@ -195,7 +195,7 @@ const HAND: HandSpec = {
     B: { zone: 'ac.bass', mic: 'sdcCard' },
     names: { A: 'TREBLE MIC', B: 'BASS MIC' },
     looking: 'Two mics · A on the keyboard side, B beyond the bass side',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Then switch BELLOWS (below) and choose the bass SOURCE: watch the delay move.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then switch BELLOWS (below) and choose the bass SOURCE: watch the delay move.',
     label: 'The accordion with a treble mic (A) and a bass mic (B)',
     warn: 'This simplified graph shows one point source and straight paths, no reflections. A real accordion sounds from two sides at once, and one of them moves — so the comb changes all through the phrase. Read the notch depths as illustrative only, and judge the pair by ear, in mono, over full opening and closing strokes.',
     learn: [
@@ -239,7 +239,7 @@ const SPEC: FreeReedSpec = {
     ],
     seqLooking: 'One reed cut open · its cell in the reed block, the plate and its slot',
     useWhere: useBellows,
-    shapesNote: 'A real accordion reed is tapered, and low reeds carry a weight at the tip, so its numbers differ — the picture shows which parts move. Each note has its own pair of reeds, one for push and one for pull (and a register can add more, tuned together).',
+    shapesNote: 'A real accordion reed is tapered, and low reeds carry a weight at the tip, so its numbers differ. The picture shows which parts move. Each note has its own pair of reeds, one for push and one for pull. A register can add more sets: an octave apart, or tuned a little apart for a wavering sound.',
     silentNote: 'This lab never plays a sound and draws no frequency curve: how a real accordion sounds depends on the instrument, its registers, the player and the room. The pictures show where the sound comes from and where it leaves.',
   },
   hand: HAND,

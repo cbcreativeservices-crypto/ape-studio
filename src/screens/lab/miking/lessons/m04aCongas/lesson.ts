@@ -102,7 +102,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The player stands at two congas resting on the floor. Can you put a mic under each drum’s open end?',
     options: ['No — the ends rest on the floor; work with the setup as it is', 'Yes — tip each drum back a little so a small mic fits under it', 'Yes — slide a thin mic under the rim where the floor is clear'],
     correct: 'No — the ends rest on the floor; work with the setup as it is',
-    explain: 'On the floor, nothing goes under the drums. Never change the player’s floor or stand setup, or block the open end, to fit a mic: a bottom mic is an option only when the player already raises the drums.',
+    explain: 'On the floor, nothing goes under the drums. Don’t change the player’s floor or stand setup, or block the open end, to fit a mic: a bottom mic is an option only when the player chooses to raise the drums.',
     why: {
       'Yes — tip each drum back a little so a small mic fits under it': 'The setup is the player’s. Tipping the drums to fit a mic changes their playing and their sound — work with the drums as they are.',
       'Yes — slide a thin mic under the rim where the floor is clear': 'That blocks the open end and puts a mic where the drum rests. A bottom mic is an option only on drums the player raises.',
@@ -306,7 +306,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip the polarity of mic B. What happens to the arrival-time difference?',
     options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals now line up in time again', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
-    explain: 'Polarity inversion reverses the signal’s sign. It does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
+    explain: 'Polarity inversion reverses the signal’s sign. It does not remove a delay caused by sound reaching the mics at different times. The notches and peaks swap places; Δt does not.',
     why: {
       'It drops to zero, so the two arrivals now line up in time again': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
       'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
@@ -402,9 +402,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two conga mics sound thin together. Which change removes the arrival-time difference itself?',
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on one of the mics', 'Turning the later mic up until it matches the earlier one'],
     correct: 'Moving a mic so the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth; neither removes the delay.',
+    explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth; neither removes the delay.',
     why: {
-      'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
+      'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
       'Turning the later mic up until it matches the earlier one': 'Level changes the depth of the notches, not where they are or the delay behind them.',
     },
   },
@@ -546,7 +546,7 @@ const predictions: HandLesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the shared mic from just above the heads to higher up. What changes?', options: ['More of both drums blended, and more room', 'More slap from the nearer drum', 'Nothing until it is a metre away'], after: 'Higher and farther tends to blend the pair and bring in more of the room — a tendency to check by ear, with every stroke.' },
   context: { prompt: 'Where can this mic, aimed at the tumba, best reject the floor wedge in front of the drums?', options: ['Straight behind the mic', 'Toward its rear, off to one side', 'At the sides of the mic'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 /* THE QUICK CHECK: 6 items, two per foundation page; q.6 (hearing) critical. */
@@ -618,9 +618,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated to a very high maximum SPL. What does that tell you about standing by the congas through a long soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the drums stay below the mic’s rating', 'It is safe as long as the mic is nearer the drums than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the drums stay below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the drums stay below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is nearer the drums than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -647,7 +647,7 @@ export const M04A_LESSON: HandLesson = {
   predictions,
   orient: [
     { title: 'WHAT IT IS', text: 'Congas are tall, single-headed hand drums, open at the bottom, played with the hands. Players use a pair or several sizes — commonly a quinto (smallest), a conga and a tumba (largest), though the names vary with tradition and setup.', src: 'RM-CONGA' },
-    { title: 'WHERE YOU MEET THEM', text: 'In Latin, Afro-Cuban and popular music, on stage and in the studio. They may be played seated, or standing with the drums mounted on stands. This lesson covers studio recording and live sound.', src: 'WP-CONGA' },
+    { title: 'WHERE YOU MEET THEM', text: 'In Latin, Afro-Cuban and popular music, on stage and in the studio. They may be played seated or standing, with the drums on the floor or mounted on stands. This lesson covers studio recording and live sound.', src: 'WP-CONGA' },
     { title: 'WHAT THEY DO IN THE MUSIC', text: 'A whole part in strokes: open tones, slaps, bass and muted strokes, across two or more drums. Which drum carries what — and which strokes matter most — decides a lot about the mics, so ask before you start.', src: 'LESSON' },
     { title: 'THEIR SIZE', text: `Common heads run from about 11 to 12½ in across, on drums about 30 in tall. This lab draws an 11¾ in conga and a 12½ in tumba, side by side.`, src: 'LP-CLASSIC' },
   ],
@@ -769,7 +769,7 @@ export const M04A_LESSON: HandLesson = {
       label: 'The band from above: the congas in the middle with the player behind them, a drum kit and a bass amp behind the player, other percussion to the player’s right and a vocal mic in front.',
     },
     before: {
-      ask: 'Which drum is which, what does each one play — open tones, slaps, bass, muted strokes — and will they stand at drums on stands or play seated? Ask for the whole part at performance level, and hear it in the room first. Check the heads, tuning, hardware and stands for rattles with the player before changing any mic.',
+      ask: 'Which drum is which, what does each one play — open tones, slaps, bass, muted strokes — and will they stand or sit, with the drums on the floor or on stands? Ask for the whole part at performance level, and hear it in the room first. Check the heads, tuning, hardware and stands for rattles with the player before changing any mic.',
       asIs: 'The drums and their setup are the player’s. Don’t change how they stand or sit, tilt or raise a drum, or block the open lower end to fit a diagram.',
     },
     worked: { default: 'cg.shared' },
@@ -820,7 +820,7 @@ export const M04A_LESSON: HandLesson = {
     pairLearn: [
       'Two mics on the same drums capture overlapping sound at different times. Bring up one mic as a reference, then add the second at a useful level, and listen to the blend in mono across every stroke.',
       'If the lows or the attack thin out, move or re-aim a mic first, then compare its polarity switch — a diagnostic step, not a cure. Keep whichever arrangement best represents the whole part; live, use the fewest open mics that give the control you need.',
-      'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity inversion flips the sign — it moves the notches; it does not remove the delay. No fixed spacing ratio makes a pair on one set of drums coherent.',
+      'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity inversion flips the sign — the notches and peaks swap places; it does not remove the delay. No fixed spacing ratio makes a pair on one set of drums coherent.',
     ],
     pairWarn: 'The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone (1/r) — that does not hold this close to a drumhead, so read the depths as illustrative only. Judge the pair by ear, in mono, at matched levels.',
   },

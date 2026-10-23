@@ -797,10 +797,10 @@ export const STAGE1_DEFINE: StageDef = {
       severity: "attention",
       kind: "mismatch",
       title: "A livestream destination with no livestream feed in scope",
-      detail: "Livestream is selected as a destination, but neither a livestream feed nor a live recording is among the included services. A stream needs its own mix, its own output and usually its own person, and none of that is in the plan yet.",
+      detail: "Livestream is selected as a destination, but no livestream feed is among the included services. A stream needs its own mix, its own output and usually its own person, and none of that is in the plan yet.",
       fixHint: "Add the livestream feed to the included services, or record in the exclusions that someone else is providing the stream mix and say who.",
       needsLogic: true,
-      logicIntent: "Fire when the platform selection includes livestream and the services selection includes neither livestream_feed nor live_recording. Do not fire when out_of_scope text mentions the stream being handled by another party; ccode decides whether to attempt that text check or leave it as a simple selection comparison."
+      logicIntent: "Fire when the platform selection includes livestream and the services selection does not include livestream_feed (a live recording is not a stream). Do not fire when out_of_scope text mentions the stream being handled by another party; ccode decides whether to attempt that text check or leave it as a simple selection comparison."
     },
     {
       ruleId: "define-sources-unknown",

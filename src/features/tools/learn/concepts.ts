@@ -28,11 +28,11 @@ export const CONCEPT_MODULES: ConceptModule[] = [
       },
       {
         head: 'WHY THE DIFFERENCE MATTERS',
-        body: 'EQing a room from an RTA conflates the spectrum of the source with the response of the system, so you end up correcting the music instead of the PA. A flat RTA with pink noise is a useful sanity check, but it still bakes in one microphone position and every reflection arriving at it. RTA alone does not equal system tuning, and no amount of averaging changes that.',
+        body: 'EQing a room from an RTA conflates the spectrum of the source with the response of the system, so you end up correcting the music instead of the PA. A flat 1/3-octave RTA with pink noise is a useful sanity check, but it still bakes in one microphone position and every reflection arriving at it. RTA alone does not equal system tuning, and no amount of averaging changes that.',
       },
       {
         head: 'WHERE THE RTA STILL SHINES',
-        body: 'None of this makes the RTA useless — it is the right tool for seeing where energy lives. Ringing identification, noise hunting, tonal-balance study, and checking that pink noise reads flat are all legitimate single-channel jobs. Use it as a seeing tool, not a judging tool.',
+        body: 'None of this makes the RTA useless — it is the right tool for seeing where energy lives. Ringing identification, noise hunting, tonal-balance study, and checking that pink noise reads flat on the 1/3-octave bands are all legitimate single-channel jobs. Use it as a seeing tool, not a judging tool.',
       },
     ],
     keyPoints: [

@@ -583,7 +583,7 @@ export function BassLabScreen() {
       />
       <CheckQuestion
         spec={{
-          question: 'The 5th harmonic\u2019s bezel reads \u2248G\u26AF3 \u221214\u00A2. Why the \u2248?',
+          question: 'The 5th harmonic\u2019s bezel reads \u2248G\u266F3 \u221214\u00A2. Why the \u2248?',
           options: [
             '5 \u00D7 the fundamental lands 14 cents flat of the equal-tempered note',
             'The string is out of tune',
@@ -592,7 +592,7 @@ export function BassLabScreen() {
           correctIdx: 0,
           reveal:
             'Harmonics are EXACT integer multiples — it is the piano\u2019s equal-tempered grid that bends notes to fit 12 keys. H5 (a pure major third) sits 14\u00A2 flat of the tempered third: the string is honest, the keyboard compromises.',
-          wrongHint: 'Compare 5 \u00D7 41.2 = 206.0 Hz with the tempered G\u26AF3 at 207.65 Hz.',
+          wrongHint: 'Compare 5 \u00D7 41.2 = 206.0 Hz with the tempered G\u266F3 at 207.65 Hz.',
         }}
       />
 

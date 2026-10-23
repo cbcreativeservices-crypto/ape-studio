@@ -62,7 +62,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Two microphones',
     goal: 'Add a farther mic to the close speaker mic on the harp amp: see the delay between them, what polarity does and does not change, and judge the blend in mono.',
-    credit: { scenarios: ['hm.two.1', 'hm.two.2', 'hm.two.3', 'hm.two.4'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
+    credit: { scenarios: ['hm.two.1', 'hm.two.2', 'hm.two.3', 'hm.two.4'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
     takeaway: 'Two mics hear the amp at different times. Polarity flips the sign; it does not remove a delay. Check each feed alone and the sum in mono — and remember a “clean” acoustic mic near the amp hears it too.',
   },
   troubleshoot: {
@@ -460,7 +460,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: this harp mic is omni. Where does it pick up LEAST?', options: ['Nowhere: much the same all round', 'Straight behind it', 'At its sides'], after: 'Sweep SOURCE ANGLE round a cardioid, then choose the harp mic’s TYPE and sweep again.' },
   placement: { prompt: 'Predict: you move the stand mic from 15 cm back to 30 cm. What changes most?', options: ['More room, less breath and detail', 'More breath', 'Nothing'], after: 'Rest the mic in two zones — switch PATH to try the amp — and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits downstage, behind the stand mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION. Then pick the harp amp as the MONITOR.' },
-  twoMic: { prompt: 'A close speaker mic and one 75 cm back. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'A close speaker mic and one 75 cm back. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

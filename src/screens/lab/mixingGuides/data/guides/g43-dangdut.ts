@@ -13,18 +13,18 @@ export const GUIDE: MixingGuide = {
   "id": "dangdut",
   "num": 43,
   "title": "Dangdut",
-  "expects": "Audiences want to feel the kendang (two-headed hand drum) in the body, follow every word (they sing along and know the cengkok, the vocal ornaments), and hear suling (bamboo flute) and keyboard hooks answer the singer.",
+  "expects": "Audiences want to feel the kendang (hand drums) in the body, follow every word (they sing along and know the cengkok, the vocal ornaments), and hear suling (bamboo flute) and keyboard hooks answer the singer.",
   "glance": {
     "origin": "Indonesia: grew from Orkes Melayu (Malay orchestra) in Jakarta and Surabaya (1950s–60s) into dangdut in the late 1960s–70s; dangdut koplo (fast East-Java style) developed in East Java (Surabaya/Sidoarjo area) in the late 1990s–2000s",
-    "tempo": "Classic dangdut 120–140 BPM; koplo (fast East-Java style) feels faster (130–160 BPM) because the kendang (two-headed hand drum) packs in more strokes per bar; slow ballads 70–90 BPM",
-    "ensemble": "Orkes (OM, “orchestra”): 7–12 players — kendang (two-headed hand drum), suling (bamboo flute), 1–2 keyboards, 2 electric guitars, bass, mandolin, drum kit or tambourine, plus 2–6 rotating singers; solo “organ tunggal” (one-keyboardist band) keyboardist + kendang + singer",
-    "priority": "The kendang (two-headed hand drum): the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
-    "liveSpl": "96–102 dBA LAeq-15 for village stages and festivals; 115–125 dBC; East Java caps static systems at 120 dBA (2025 rule)",
+    "tempo": "Classic dangdut 120–140 BPM; koplo (fast East-Java style) feels faster (130–160 BPM) because the kendang (hand drums) packs in more strokes per bar; slow ballads 70–90 BPM",
+    "ensemble": "Orkes (OM, “orchestra”): 7–12 players — kendang (hand drums), suling (bamboo flute), 1–2 keyboards, 2 electric guitars, bass, mandolin, drum kit or tambourine, plus 2–6 rotating singers; solo “organ tunggal” (one-keyboardist band) keyboardist + kendang + singer",
+    "priority": "The kendang (hand drums): the low “dhut” and the crisp “tak” must punch through with the lead vocal riding on top",
+    "liveSpl": "96–102 dBA LAeq-15 for village stages and festivals; 112–120 dBC LCeq; East Java caps static systems at 120 dBA (2025 rule)",
     "studioLoudness": "Masters commonly −10 to −7 LUFS-I (video uploads often louder); streaming services normalize to about −14"
   },
   "purpose": [
     {
-      "text": "Dangdut is dance music for crowds. Joget (free dancing) in front of the stage is the point, and koplo (fast East-Java style) shows add saweran: fans hand money to the singer mid-song. Born among the urban working class and turned into a national sound by Rhoma Irama, it now plays at weddings, circumcision feasts, Independence Day stages, election rallies, TV shows and stadiums. Audiences want to feel the kendang (two-headed hand drum) in the body, follow every word (they sing along and know the cengkok, the vocal ornaments), and hear suling (bamboo flute) and keyboard hooks answer the singer. It “sounds wrong” when the kendang is buried under the kit, the sub turns the dhut to mush, the vocal is harsh or unclear, or the band sounds polite. Koplo “jos” breaks and fills are cue points where the dancing jumps."
+      "text": "Dangdut is dance music for crowds. Joget (free dancing) in front of the stage is the point, and koplo (fast East-Java style) shows add saweran: fans hand money to the singer mid-song. Born among the urban working class and turned into a national sound by Rhoma Irama, it now plays at weddings, circumcision feasts, Independence Day stages, election rallies, TV shows and stadiums. Audiences want to feel the kendang (hand drums) in the body, follow every word (they sing along and know the cengkok, the vocal ornaments), and hear suling (bamboo flute) and keyboard hooks answer the singer. It “sounds wrong” when the kendang is buried under the kit, the sub turns the dhut to mush, the vocal is harsh or unclear, or the band sounds polite. Koplo “jos” breaks and fills are cue points where the dancing jumps."
     }
   ],
   "instruments": [
@@ -71,7 +71,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "On a typical OM stage the kendang (two-headed hand drum) sits center on a riser near the front, keyboards to one side, guitars and bass on the other, suling (bamboo flute) near the singers, who take turns at center front. The kendang player is the real band leader: his fills cue starts, breaks, tempo shifts and endings. Classic dangdut runs intro (suling or guitar), a slower sung opening, then the full groove, with “dang” on beat 4 and “dhut” on beat 1. Koplo (fast East-Java style) reverses this, fills each bar with five or more strokes, and adds a “reff” (chorus) where the drums double up and the crowd sings. Guitar or suling solos between verses. Harmony: keyboards and rhythm guitar; melody: vocal, suling, keyboard lead, lead guitar; rhythm: kendang, bass, kit."
+      "text": "On a typical OM stage the kendang (hand drums) sits center on a riser near the front, keyboards to one side, guitars and bass on the other, suling (bamboo flute) near the singers, who take turns at center front. The kendang player is the real band leader: his fills cue starts, breaks, tempo shifts and endings. Classic dangdut runs intro (suling or guitar), a slower sung opening, then the full groove, with “dang” on beat 4 and “dhut” on beat 1. Koplo (fast East-Java style) reverses this, fills each bar with five or more strokes, and adds a “reff” (chorus) where the drums double up and the crowd sings. Guitar or suling solos between verses. Harmony: keyboards and rhythm guitar; melody: vocal, suling, keyboard lead, lead guitar; rhythm: kendang, bass, kit."
     }
   ],
   "dynamics": [
@@ -81,7 +81,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: lead vocal and kendang (two-headed hand drum; roughly equal; the dhut is often the loudest low element), bass, suling (bamboo flute) and keyboard lead in their fills, lead guitar in solos, kick and hats, rhythm guitar and pads, mandolin, backing vocals, effects returns. Low end: the dhut lives around 80–150 Hz with a pitch bend, so the bass sits under it (40–90 Hz); keep the kit kick short and never let sub mask the kendang. Panning: vocal, kendang, suling, bass, kick and lead guitar center; keyboards and rhythm guitar left/right; mandolin, tambourine and backing vocals wide, with keyboard lows kept mono."
+      "text": "Hierarchy, loudest to quietest: lead vocal and kendang (hand drums; roughly equal; the dhut is often the loudest low element), bass, suling (bamboo flute) and keyboard lead in their fills, lead guitar in solos, kick and hats, rhythm guitar and pads, mandolin, backing vocals, effects returns. Low end: the dhut lives around 80–150 Hz with a pitch bend, so the bass sits under it (40–90 Hz); keep the kit kick short and never let sub mask the kendang. Panning: vocal, kendang, suling, bass, kick and lead guitar center; keyboards and rhythm guitar left/right; mandolin, tambourine and backing vocals wide, with keyboard lows kept mono."
     }
   ],
   "eq": {
@@ -272,11 +272,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Village stages, kampung festivals and touring OM shows usually run 96–102 dBA LAeq-15 at FOH, peaks 110–115 dBA, around 115–125 dBC. East Java’s “sound horeg” speaker-truck events, often playing koplo (fast East-Java style) remixes, have measured 120–130 dB; in August 2025 the province capped stationary systems at 120 dBA and moving units at 85 dBA. A C-minus-A gap of 20 dB or more at 100 dBA signals excessive sub; dangdut needs controlled low-mids for the dhut, not EDM sub. Common hearing-safety guidance rates 100 dBA safe for about 15 minutes, and outdoor shows run 3–5 hours, so offer earplugs and protect your own hearing."
+      "text": "Village stages, kampung festivals and touring OM shows usually run 96–102 dBA LAeq-15 at FOH, peaks 110–115 dBA, C-weighted LCeq around 112–120 dBC. East Java’s “sound horeg” speaker-truck events, often playing koplo (fast East-Java style) remixes, have measured 120–130 dB; in August 2025 the province capped stationary systems at 120 dBA and moving units at 85 dBA. A C-minus-A gap of 20 dB or more at 100 dBA signals excessive sub; dangdut needs controlled low-mids for the dhut, not EDM sub. NIOSH advises no more than about 15 minutes a day at 100 dBA, and outdoor shows run 3–5 hours, so offer earplugs and protect your own hearing."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Masters typically land at −10 to −7 LUFS-I, true peak −1 dBTP (−2 dBTP when hotter than −14). Most listening is video streaming on phones, normalized to about −14 LUFS, so very loud masters just lose kendang (two-headed hand drum) punch. A PLR of 8–11 dB (about −10 to −13 LUFS-I at −2 dBTP) and LRA of 5–8 LU keep the intro-to-groove jump. On phone speakers the dhut must still read through its 2–3 kHz slap."
+      "text": "Masters typically land at −10 to −7 LUFS-I, true peak −1 dBTP (−2 dBTP when hotter than −14). Most listening is video streaming on phones, normalized to about −14 LUFS, so very loud masters just lose kendang (hand drums) punch. A PLR of 8–11 dB (about −10 to −13 LUFS-I at −2 dBTP, the quiet end of that range or below) and LRA of 5–8 LU keep the intro-to-groove jump. On phone speakers the dhut must still read through its 2–3 kHz slap."
     }
   ],
   "liveStudio": {
@@ -314,14 +314,14 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "96–102 dBA LAeq-15, local caps (e.g., 120 dBA East Java static systems)",
-        "studio": "−10 to −7 LUFS-I, −2 dBTP"
+        "studio": "Often −10 to −7 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],
     "notes": []
   },
   "notes": [
     {
-      "text": "Build the mix from kendang (two-headed hand drum) and vocal, then bass, then the rest.",
+      "text": "Build the mix from kendang (hand drums) and vocal, then bass, then the rest.",
       "bullet": true
     },
     {

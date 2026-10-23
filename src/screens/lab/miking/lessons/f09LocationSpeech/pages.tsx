@@ -330,7 +330,7 @@ function F09Sound(p: PageProps) {
 
 /** Hearing, for location work (BEFORE ANY MIC). */
 export const F09_HEARING =
-  'Protect hearing — the talker’s, the crew’s and yours. Keep headphone and monitor levels comfortable: a useful balance should never need a dangerous level. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that — a limit for PEOPLE, measured where a person listens. If anyone reports pain, ringing or a change in their hearing, stop and deal with the level.';
+  'Protect hearing — the talker’s, the crew’s and yours. Keep headphone and monitor levels comfortable: a useful balance should never need a dangerous level. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — limits for PEOPLE, measured where a person listens. If anyone reports pain, ringing or a change in their hearing, stop and deal with the level.';
 
 const F09Setting = makeVoiceSetting({
   hearing: F09_HEARING,

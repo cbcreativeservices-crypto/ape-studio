@@ -689,7 +689,7 @@ export const CONNECTORS_RECOGNITION: ConnectorRecord[] = [
         otherId: 'xlr3',
         otherName: '3-pin XLR',
         why: 'Different pin counts do not intermate directly, but adapters exist and make audio and lighting-control lines physically compatible.',
-        consequence: 'A mismatched patch most often fails to work or gives erratic, flickering control. It can also do harm: +48 V phantom power from a mic input can damage a DMX port. Keep phantom off and confirm what each line carries first.',
+        consequence: 'A mismatched patch most often fails to work or gives erratic, flickering control. It can also do harm: +48 V phantom power from a mic input can damage a DMX port, and DMX data sent into a mic input can put a loud, harsh buzz through the speakers. Keep phantom off, keep the channel down, and confirm what each line carries first.',
       },
       {
         otherName: '5-pin XLR wired for a different job (intercom vs DMX vs stereo mic)',

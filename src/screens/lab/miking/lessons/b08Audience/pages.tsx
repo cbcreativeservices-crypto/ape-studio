@@ -145,7 +145,7 @@ function B08Placement(p: PageProps) {
     mic: MONO,
     title: 'one crowd mic on the bar, aimed at the faces',
     pieces: [
-      { key: 'WHERE', value: 'THE BAR', title: 'WHERE TO BEGIN', text: 'On the approved rigging bar above the front rows — hung by qualified crew — a little in front of the section.' },
+      { key: 'WHERE', value: 'THE BAR', title: 'WHERE TO BEGIN', text: 'On the approved rigging bar above the front rows — hung by a qualified rigger — a little in front of the section.' },
       { key: 'HEIGHT', value: '≈ 3.2 m', title: 'THE HEIGHT', text: 'Raised about 3 m above the floor (a drawing default): high enough that the front row is not much nearer than the middle.' },
       { key: 'AIM', value: 'THE FACES', title: 'THE AIM', text: 'Down at the faces and upper bodies of the section — not at the stage, not over the heads.' },
       { key: 'PA', value: 'OFF ITS FRONT', title: 'THE PA', text: 'The loudspeakers at the stage’s corners sit well off the mic’s front, toward its sides and back.' },

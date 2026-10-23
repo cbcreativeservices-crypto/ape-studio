@@ -7,7 +7,7 @@
  * compute) rather than adding MHz to the audio frequency picker.
  */
 import type { Workspace } from '../calcTypes';
-import { DBU_REF_V, P_REF_PA, fmt, speedOfSoundAir } from '../calcUnits';
+import { AIR_TEMP_FIELD, DBU_REF_V, fmt, P_REF_PA, SPL_FIELD_RANGE, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const DEG = Math.PI / 180;
@@ -70,10 +70,10 @@ const STEREOMIC: Workspace = {
     'result; this is the direct-path geometry only.',
   glossary: ['Stereo', 'Comb Filtering', 'Microphone (Mic)', 'Phase', 'Polar Pattern'],
   fields: [
-    { key: 'spacing', name: 'MIC SPACING', quantity: 'length', defaultUnit: 'cm', placeholder: '40', help: 'Distance between the two microphone capsules.', warn: { test: (x) => x <= 0, msg: 'Spacing must be greater than zero.' } },
+    { key: 'spacing', name: 'MIC SPACING', quantity: 'length', defaultUnit: 'cm', placeholder: '40', help: 'Distance between the two microphone capsules.', positive: true, warn: { test: (x) => x <= 0, msg: 'Spacing must be greater than zero.' } },
     { key: 'angle', name: 'SOURCE ANGLE', quantity: 'angle', signed: true, placeholder: '30', help: 'Angle of the source off the array’s centre line.', warn: { test: (x) => x < 0 || x > 90, msg: 'Use 0–90° off centre.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound.' },
-    { key: 'micDist', name: 'MIC-TO-SOURCE DISTANCE', quantity: 'length', placeholder: '0.3', help: 'Distance from a spot mic to its source, for the 3:1 rule.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
+    { key: 'micDist', name: 'MIC-TO-SOURCE DISTANCE', quantity: 'length', placeholder: '0.3', help: 'Distance from a spot mic to its source, for the 3:1 rule.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
   ],
   functions: [
     {
@@ -139,7 +139,9 @@ const STEREOMIC: Workspace = {
       steps: (v) => {
         return [
           `Minimum spacing = 3 × ${fmt(n(v.micDist))} m = ${fmt(3 * n(v.micDist))} m.`,
-          `At 3× the distance the bleed arrives about ${fmt(-20 * Math.log10(3))} dB down. Summing still combs a little, but the dips are shallow and hard to hear.`,
+          // The magnitude beside "down" (audit R2, 2026-10-23): "−9.542 dB down"
+          // was a double negative that said the bleed is louder.
+          `At 3× the distance the bleed arrives about ${fmt(20 * Math.log10(3))} dB down. Summing still combs a little, but the dips are shallow and hard to hear.`,
         ];
       },
     },
@@ -173,9 +175,9 @@ const MICSENS: Workspace = {
     'sensitivity(V/Pa)·p. dBu referenced to 0.7746 V, dBV to 1 V. Ideal, pre-loading figures.',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Microphone (Mic)', 'dBu'],
   fields: [
-    { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '15', help: 'Output in millivolts for a 1 Pa (≈ 94 dB SPL) input.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
+    { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '15', help: 'Output in millivolts for a 1 Pa (≈ 94 dB SPL) input.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
     { key: 'dbvpa', name: 'SENSITIVITY (dBV/Pa)', quantity: 'number', signed: true, placeholder: '-36.5', help: 'Output in dB relative to 1 V/Pa.' },
-    { key: 'spl', name: 'SOUND PRESSURE LEVEL', quantity: 'spl', signed: true, placeholder: '94', help: 'SPL at the capsule to find the output for.', warn: { test: (x) => x < 0, msg: 'Below 0 dB SPL is quieter than the threshold of hearing — check the value.' } },
+    { key: 'spl', name: 'SOUND PRESSURE LEVEL', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '94', help: 'SPL at the capsule to find the output for.', warn: { test: (x) => x < 0, msg: 'Below 0 dB SPL is quieter than the threshold of hearing — check the value.' } },
   ],
   functions: [
     {
@@ -205,6 +207,15 @@ const MICSENS: Workspace = {
       explain:
         'The reverse conversion — from decibels relative to 1 V/Pa back to millivolts per pascal. It undoes the twenty-times-log by raising ten to the value over twenty, then multiplies by 1000 to express the result in millivolts.',
       keySymbols: ['·', 'x²', '÷'],
+      // A value so low its mV/Pa underflows to 0 (or so high it overflows) is
+      // refused in words, never printed as "0 mV/Pa" (audit R2, 2026-10-23).
+      refuse: (v) => {
+        const r = Math.pow(10, n(v.dbvpa) / 20);
+        if (Number.isFinite(r) && r > 0) return null;
+        return r > 0
+          ? 'That sensitivity is too large to turn into mV/Pa — no microphone comes near it. Check the spec sheet value.'
+          : 'That sensitivity is too far below 1 V/Pa to turn into mV/Pa — no microphone comes near it. Check the spec sheet value.';
+      },
       compute: (v) => {
         return [{ label: 'SENSITIVITY (mV/Pa)', value: 1000 * Math.pow(10, n(v.dbvpa) / 20), quantity: 'number' }];
       },
@@ -276,11 +287,13 @@ const RFLINK: Workspace = {
     'keep margin well above zero. Enter frequency in MHz; powers in dBm.',
   glossary: ['Radio Frequency', 'Wireless microphone system', 'Decibel', 'Antenna', 'Gain'],
   fields: [
-    { key: 'dist', name: 'LINK DISTANCE', quantity: 'length', placeholder: '50', help: 'Transmitter-to-receiver distance.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
-    { key: 'freqMHz', name: 'FREQUENCY (MHz)', quantity: 'number', nonNegative: true, placeholder: '550', help: 'RF carrier frequency in megahertz.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'dist', name: 'LINK DISTANCE', quantity: 'length', placeholder: '50', help: 'Transmitter-to-receiver distance.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
+    { key: 'freqMHz', name: 'FREQUENCY (MHz)', quantity: 'number', nonNegative: true, placeholder: '550', help: 'RF carrier frequency in megahertz.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
     { key: 'ptx', name: 'TRANSMIT POWER (dBm)', quantity: 'number', signed: true, placeholder: '10', help: 'Transmitter output power in dBm (10 dBm = 10 mW).' },
-    { key: 'gtx', name: 'TX ANTENNA GAIN', quantity: 'db', signed: true, placeholder: '2', help: 'Transmit antenna gain (dBi), minus any cable loss.' },
-    { key: 'grx', name: 'RX ANTENNA GAIN', quantity: 'db', signed: true, placeholder: '2', help: 'Receive antenna gain (dBi), minus any cable loss.' },
+    // dBi named on the field (audit R2, 2026-10-23): the free-space formula
+    // assumes gain relative to an isotropic antenna.
+    { key: 'gtx', name: 'TX ANTENNA GAIN (dBi)', quantity: 'db', signed: true, placeholder: '2', help: 'Transmit antenna gain in dBi, minus any cable loss. If a spec gives dBd, add 2.15 to get dBi.' },
+    { key: 'grx', name: 'RX ANTENNA GAIN (dBi)', quantity: 'db', signed: true, placeholder: '2', help: 'Receive antenna gain in dBi, minus any cable loss. If a spec gives dBd, add 2.15 to get dBi.' },
     { key: 'rxsens', name: 'RECEIVER SENSITIVITY (dBm)', quantity: 'number', signed: true, placeholder: '-95', help: 'The weakest signal the receiver works with, in dBm.' },
   ],
   functions: [

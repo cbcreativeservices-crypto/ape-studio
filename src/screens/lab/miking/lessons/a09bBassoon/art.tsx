@@ -63,14 +63,14 @@ export const BASSOON_ART: LessonArt = windLessonArt({
     notesNote: 'A simplified fingering: real bassoon fingerings use half-holes, flick keys and many thumb keys — but the place most of the note leaves still moves farther along the folded tube as the pitch rises: down from the bell, round the boot, up the wing joint.',
     pipeNote: 'The bassoon’s bore is close to a long cone with its tip near the reed, folded in two: it sounds every multiple and overblows an octave — compare the clarinet’s closed cylinder with PIPE.',
     silentNote: 'This lab never plays a sound and draws no frequency curve for the bassoon: how a real bassoon sounds depends on the instrument, the reed, the player and the room. The pictures show where the sound is made and where it leaves.',
-    reveal: 'The very lowest note leaves from the bell; every note above it leaves farther down the folded tube.',
+    reveal: 'The very lowest note leaves from the bell. Each note above it leaves from a hole closer to the reed.',
   },
   setting: {
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'Seat strap or harness, and how much does the bassoon move? Which notes does the part use — the lowest B♭, the top? What sound do they want: the section’s foundation, a solo line, a separated part over a band? Hear the bassoon unamplified first, across its range, quiet and loud.' },
       { title: 'WORK WITH THE BASSOON AS IT IS', text: 'The bocal is delicate, and the instrument is the player’s. Ask before touching it; nothing is clamped or taped to the bocal, a joint, a rod or a pad, and no clip goes on without their agreement.' },
     ],
-    hearing: 'Protect your hearing during rehearsals and soundcheck: the brass and percussion behind a woodwind section can be loud for long stretches. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Keep monitor levels down and use hearing protection where it is loud.',
+    hearing: 'Protect your hearing during rehearsals and soundcheck: the brass and percussion behind a woodwind section can be loud for long stretches. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Keep monitor levels down and use hearing protection where it is loud.',
     sectionLanding: 'Tap anything in the section — or step through ITEM — to see what it means for a bassoon mic. There is nothing to answer yet.',
     sectionIdle: 'The bassoons sit in the back row behind the oboes, their bells above the players’ heads. Everything near the bassoon is either the player’s space or a neighbour its mic will hear.',
     stageIdle: 'Two floor monitors: the player’s own wedge in front and another player’s to the side. Monitors, the PA and a loud band all reach a bassoon mic.',

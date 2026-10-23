@@ -268,7 +268,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Hall shows typically run 92–98 dBA LAeq-15 at FOH; arenas and domes 96–102 dBA with C-weighted levels around 110–118 dBC and peaks to about 110 dBA. Tokyo Dome reaches 150–160 m to the upper tier, with notorious reflections; recent tours use long line arrays, flown subs and immersive systems rather than delay towers. Outdoor festivals near Tokyo Bay and residential Chiba face strict neighbourhood noise management. Idol crowds often include young fans—keep levels moderate and encourage ear protection. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes."
+      "text": "Hall shows typically run 92–98 dBA LAeq-15 at FOH; arenas and domes 96–102 dBA with C-weighted levels around 110–118 dBC and peaks to about 110 dBA. Tokyo Dome reaches 150–160 m to the upper tier, with notorious reflections; recent tours use long line arrays, flown subs and immersive systems rather than delay towers. Outdoor festivals near Tokyo Bay and residential Chiba face strict neighbourhood noise management. Idol crowds often include young fans—keep levels moderate and encourage ear protection. NIOSH advises no more than about 15 minutes a day at 100 dBA."
     },
     {
       "label": "Studio / streaming:",

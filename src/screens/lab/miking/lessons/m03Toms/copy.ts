@@ -27,7 +27,7 @@ export const TOMS_COPY: LessonCopy = {
     partsBadge: 'Switch DRUM for the rack pair or the floor tom · tap a part to name it',
     partsLooking: { side: 'Side view · the tom cut open', top: 'Top view · the toms from above' },
     partsIdle: 'The sticks strike the batter head on top. The air inside drives the resonant head below — no wires, unlike a snare. Switch DRUM to see the floor tom.',
-    variantNotes: { open: 'BOTTOM HEAD OFF: some players run a tom this way, and a mic can then go inside. It changes the drum — never take a head off to match a lesson; it is the player’s choice.' },
+    variantNotes: { open: 'BOTTOM HEAD OFF: some players run a tom this way, and a mic can then go inside. It changes the drum. Do not take a head off to match a lesson; it is the player’s choice.' },
   },
   sound: {
     strikes: [
@@ -79,7 +79,7 @@ export const TOMS_COPY: LessonCopy = {
     typeNotes: {
       tomDynSuper: 'Ideas to try: keep the distance and swing the aim from the rim toward the centre; then, separately, change the height. On a crowded rack, notice where its rear points — toward a crash, or not.',
       clipDynCard: 'Ideas to try with a clip-on: keep the clamp clear of the rim the sticks hit and of the tuning rods, then change only the angle.',
-      rimCondenser: 'Ideas to try: keep the head angled at the drumhead — never flat to it — and within the gooseneck’s bend limit; listen for how much cymbal it hears.',
+      rimCondenser: 'Ideas to try: keep the head angled at the drumhead, usually not flat to it, and within the gooseneck’s bend limit; listen for how much cymbal it hears.',
     },
     note: 'Clearance comes first: stop the drummer before moving a real mic. Tom fills sweep across all the drums — and the cymbals swing — so check the whole motion, not one stroke.',
     availableLead: 'Starting points for this mic on this drum',
@@ -142,7 +142,7 @@ export const TOMS_COPY: LessonCopy = {
       'A bottom mic on a tom hears the resonant head — its ring and low end — not wires: a different choice from a snare’s bottom mic. Keep it only if it helps the tom in the whole kit.',
       'The same check applies whenever two mics hear one drum — a top and a bottom mic, or a tom mic and the overheads: bring in one channel at a time, compare both polarity states in mono at matched levels, and move or leave out a mic if the tom loses body. The polarity switch flips the sign; it does not remove a delay.',
     ],
-    warn: 'The top and bottom mics hear DIFFERENT heads, so this simplified graph shows only the shared part of the sound — not what the pair will sound like. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone — read the depths as illustrative. Judge the pair by ear, in mono, at matched levels.',
+    warn: 'The top and bottom mics hear DIFFERENT heads, so this simplified graph shows only the shared part of the sound — not what the pair will sound like. The notch POSITIONS follow from the arrival-time difference and the polarity setting; their DEPTH depends on the two levels, which this model takes from distance alone — read the depths as illustrative. Judge the pair by ear, in mono, at matched levels.',
   },
   practice: {
     gain: 'tm.prac.gain',

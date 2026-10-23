@@ -145,7 +145,7 @@ const B06Setting = makeBroadcastSetting({
         done: 'The question reaches the stream, the recording, the press and the remote contributor; the ambience stays out of the PA; the reporter’s input matches the box’s mic-level output: a clean plan.',
       },
       points: [
-        { title: 'THE BOX IS A COPY OF THE MIX', text: 'A press feed box takes one mix from the event mixer, often at line level, and gives each reporter an isolated output, usually at mic level. It is a signal path, not another mic: it carries only what is routed into it.' },
+        { title: 'THE BOX IS A COPY OF THE MIX', text: 'A press feed box takes one mix from the event mixer, often at line level, and gives each reporter an isolated output, often at mic level; some boxes offer line level too. It is a signal path, not another mic: it carries only what is routed into it.' },
         { title: 'CHECK THE PORT', text: 'With the event audio lead: the connector, the level, the isolation and the phantom-power policy of that exact port. No phantom power into a feed nobody has verified.' },
         { title: 'THE REMOTE CONTRIBUTOR', text: 'Their return carries the room’s voices but not their own (mix-minus), and the stream carries them on purpose.' },
       ],

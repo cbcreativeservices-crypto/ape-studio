@@ -111,7 +111,7 @@ export function ampMatch(ampWattsIntoLoad: number, speakerContinuousW: number, s
 export function ampMatchCopy(v: MatchVerdict, ampW: number, contW: number, progW: number): string {
   switch (v) {
     case 'under':
-      return `${ampW} W is below the cabinet’s ${contW} W continuous rating. It will reach level only by clipping — and a clipped amplifier is the usual killer of high-frequency drivers. An underpowered amplifier is not the safe choice.`;
+      return `${ampW} W is below the cabinet’s ${contW} W continuous rating. Pushed for the cabinet’s full level, it will clip — and hard clipping adds heat and harsh highs that can kill high-frequency drivers. An underpowered amplifier is not the safe choice.`;
     case 'over':
       return `${ampW} W is well above the cabinet’s ${progW} W program rating. It can deliver more than the voice coils will dissipate; run it with the processor’s limiter set for the cabinet, or choose a smaller amplifier.`;
     default:

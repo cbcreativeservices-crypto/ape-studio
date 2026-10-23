@@ -212,7 +212,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
               </Card>
             );
           })}
-          <Note tone="warn">Max SPL figures are distortion limits for the MIC, each measured under its maker’s own test conditions, so they do not compare one-to-one. None of them is a safe listening level: for people, keep to about 85 dBA averaged over 8 hours, measured where they listen.</Note>
+          <Note tone="warn">Max SPL figures are distortion limits for the MIC, each measured under its maker’s own test conditions, so they do not compare one-to-one. None of them is a safe listening level: for people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB more, and the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where they listen.</Note>
           <Note>Before connecting, disconnecting or switching phantom power: mute the outputs, lower the monitoring and turn the channel gain down, and follow the manual for your own equipment. Check that the mute really covers every output in your setup, and avoid plugging or unplugging a mic cable while phantom power is on.</Note>
         </>
       ),

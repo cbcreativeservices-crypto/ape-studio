@@ -400,9 +400,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Top and bottom floor-tom mics sound thin together. Which change removes the arrival-time difference itself?',
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on the bottom mic', 'Turning the bottom mic up until it matches the top'],
     correct: 'Moving a mic so the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth; neither removes the delay.',
+    explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth; neither removes the delay.',
     why: {
-      'Flipping the polarity switch on the bottom mic': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
+      'Flipping the polarity switch on the bottom mic': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
       'Turning the bottom mic up until it matches the top': 'Level changes the depth of the notches, not where they are.',
     },
   },
@@ -519,7 +519,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A clip-on dynamic on each tom’s rim, 3 to 5 cm above the head, angled 30 to 60°', ok: true, power: 'none', feedback: 'Suggested starting points, low and out of the cymbals’ way — with clamps that suit the hoops.' },
       { id: 'c', label: 'A rim condenser on each tom, its head angled at the drumhead, phantom on', ok: true, power: 'phantom', feedback: 'A suggested starting point with the power it needs — check how much crash it hears.' },
       { id: 'd', label: 'One mic raised up level with the crashes, to catch all three toms at once', ok: false, power: 'none', feedback: 'Up among the cymbals it hears mostly cymbal — and the cymbals swing. Stay close over the toms.' },
-      { id: 'e', label: 'A mic resting on each head, so nothing can move', ok: false, power: 'none', feedback: 'Never on the head: it is a moving part, and the sticks land there.' },
+      { id: 'e', label: 'A mic resting on each head, so nothing can move', ok: false, power: 'none', feedback: 'Not on the head: it is a moving part, and the sticks land there.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.iso', label: 'Close, tight patterns help against the loud crashes and the stage', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, NAME_REASON],
     explain: 'More than one plan passes this brief. What passes is the reasoning: sensible starting points from each head, clearance from the sticks and cymbals, and power that matches each mic.',
@@ -546,7 +546,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you swing the mic’s aim from the rim toward the centre of the head. What changes?', options: ['More attack', 'More low end and body', 'It depends on this drum'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The crash hangs above the tom mic. Where will this supercardioid reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
-  twoMic: { prompt: 'If you flip the bottom mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the bottom mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 /* THE QUICK CHECK (LESSON_JOURNEY §2.5): two per foundation; q.6 critical. */
@@ -596,7 +596,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The batter head squeezes the air, and the air pushes the bottom head out: the heads are coupled through the air.',
     why: {
       'Pulls it inward, toward the batter': 'Squeezed air pushes, it does not pull: the bottom head moves outward.',
-      'Nothing — the air escapes through the shell': 'The shell is closed. The air pushes the bottom head outward.',
+      'Nothing — the air escapes through the shell': 'The shell is closed except for a small vent hole. The air pushes the bottom head outward.',
     },
   },
   {
@@ -618,9 +618,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your tom mic is rated to a very high maximum SPL. What does that tell you about standing by the kit through a long soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the toms stay below the mic’s rating', 'It is safe as long as the mic is nearer the drum than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the toms stay below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the toms stay below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is nearer the drum than you': 'Where the mic sits says nothing about your ears. Measure where the person listens.',
     },
   },

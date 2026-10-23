@@ -47,7 +47,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'The pair and a bass spot',
     goal: 'The main pair and the bass spot: see how much earlier the spot hears the bass, what polarity changes and what it does not, and judge the sum in mono.',
-    credit: { scenarios: ['jz.first', 'jz.two.1', 'jz.two.2'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
+    credit: { scenarios: ['jz.first', 'jz.two.1', 'jz.two.2'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
     takeaway: 'The relevant distance is the difference in paths from the bass to each mic. Polarity changes the sign, never the time. Lower or move the overlapping mic before reaching for polarity or a delay.',
   },
   troubleshoot: {
@@ -410,7 +410,7 @@ const setupTasks: SetupTask[] = [
       POWER_REASON,
       BRAND_REASON,
     ],
-    explain: 'More than one setup passes. What passes is the reasoning: ensemble-first, supports only for a named need, nothing fixed to an instrument.',
+    explain: 'More than one setup passes. What passes is the reasoning: ensemble-first, supports only for a named need, nothing fixed to an instrument without the owner’s approval.',
   },
   {
     id: 'jz.prac.setup2',
@@ -437,7 +437,7 @@ const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern rejects most of the stage behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from 1.5 m to 3 m in front. What changes most?', options: ['More blend and more room', 'Only the level', 'The soloist dominates more'], after: 'Farther back, the distances to the front and back players even out: NEAR / FAR shrinks, and the room comes up. Compare at matched level.' },
   context: { prompt: 'The wedge sits in front of the bassist, below the bass mic. Can the mic’s rejection reach it?', options: ['Yes — aim the mic’s back toward it', 'No — only an omni can', 'It already sits in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'The main pair and a bass spot. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
+  twoMic: { prompt: 'The main pair and a bass spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

@@ -28,7 +28,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know the space round a resonator player — the bar, the picking hand, the posture — what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: [`${P}.set.1`, `${P}.set.2`, `${P}.set.3`], note: 'Answer the three checks.' },
-    takeaway: 'The bar, the picking hand and the player’s posture set the keep-clear space. Never touch the cone or the coverplate. Ask the player first, and protect your hearing.',
+    takeaway: 'The bar, the picking hand and the player’s posture set the keep-clear space. Do not touch the cone or the coverplate: that is for the owner or a qualified repairer. Ask the player first, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -199,7 +199,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The bar’s path, the picking hand and the leaning player',
     explain: 'The bar travels the whole neck, the picking hand works over the coverplate, and the player leans over the instrument. A bar or an arm must never be able to hit the mic.',
     why: {
-      'The front of the instrument, so the audience can see it': 'The front side is usually where the boom comes in. The space to protect is the player’s.',
+      'The front of the instrument, so the audience can see it': 'The boom usually comes in from the side, on the audience side. The space to protect is the player’s.',
       'The floor by the chair, which belongs to the DI box': 'Cables need a route, but the safety question is the bar, the hand and the player.',
     },
   },

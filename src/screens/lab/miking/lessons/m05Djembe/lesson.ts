@@ -307,7 +307,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'dj.two.2',
     page: 'twoMic',
-    prompt: 'The low mic hears a stroke 1 ms after the top mic. Summed at equal level, same polarity: the first notch (simplified model)?',
+    prompt: 'The low mic hears a stroke 1 ms after the top mic. The two copies reach the mixer with the same polarity and at equal level. Where is the first notch (simplified model)?',
     options: ['500 Hz, then 1.5 kHz, 2.5 kHz …', '1 kHz, then 2 kHz, 3 kHz, 4 kHz …', '250 Hz, then 750 Hz, 1.25 kHz …'],
     correct: '500 Hz, then 1.5 kHz, 2.5 kHz …',
     explain: 'The first cancellation is where the delay is half a period: f = 1 ÷ (2 × 0.001 s) = 500 Hz, then odd multiples. Inverted, the notches sit at 0, 1 kHz, 2 kHz … instead.',
@@ -394,9 +394,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'The top and low mics sound thin together. Which change removes the arrival-time difference itself?',
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on one of the mics', 'Turning the later mic up until it matches the earlier one'],
     correct: 'Moving a mic so the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth; neither removes the delay.',
+    explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth; neither removes the delay.',
     why: {
-      'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
+      'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
       'Turning the later mic up until it matches the earlier one': 'Level changes the depth of the notches, not where they are or the delay behind them.',
     },
   },
@@ -449,7 +449,7 @@ const symptoms: Symptom[] = [
     explain: 'Reposition for reliable coverage or choose a one-mic approach; discuss the stance with the player.',
     why: {
       'Ask the player to keep the drum perfectly still': 'A freely played drum is not immobilised to suit a mic diagram.',
-      'Tape the drum to its support so it cannot move': 'Never alter how the player supports the drum to fit a mic.',
+      'Tape the drum to its support so it cannot move': 'Don’t change how the player supports the drum to fit a mic. Ask first, and raise it only if they agree.',
     },
   },
   {
@@ -523,7 +523,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A loud stage; the player sits with the djembe on the floor between the knees. The spare inputs have NO phantom power.',
     setups: [
       { id: 'a', label: 'One compact dynamic close above the head, angled, outside the hands', ok: true, power: 'none', feedback: 'A stable directional top mic, outside all motion; a dynamic needs no phantom.' },
-      { id: 'b', label: 'A compact hypercardioid dynamic farther above the outer edge', ok: true, power: 'none', feedback: 'A suggested starting point, its narrow pattern helping against spill; no phantom needed.' },
+      { id: 'b', label: 'A compact hypercardioid dynamic farther above the outer edge', ok: true, power: 'none', feedback: 'A workable top mic, and no phantom needed. Its narrow pattern helps, but farther back it hears more of the loud stage, so check spill at show level.' },
       { id: 'c', label: 'A low mic under the drum for the bass', ok: false, power: 'none', feedback: 'The drum rests on the floor: nothing goes under it.' },
       { id: 'd', label: 'A slim condenser close above the head', ok: false, power: 'phantom', feedback: 'It needs phantom power these inputs lack.' },
       { id: 'e', label: 'A mic clipped to the rope ring', ok: false, power: 'none', feedback: 'Clamp nothing to the ropes; a clip must be made for the drum and approved by its owner.' },
@@ -538,7 +538,7 @@ const predictions: HandLesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the top mic from 5 cm above the head to about 40 cm away. What changes?', options: ['More of the whole drum and the room', 'More slap', 'It depends on this drum and room'], after: 'Farther tends to integrate the strokes with more room — and drums and rooms vary, so “it depends” is fair too.' },
   context: { prompt: 'Where can this mic, aimed at the head, best reject the floor wedge in front?', options: ['Straight behind the mic', 'Toward its rear, off to one side', 'At the sides of the mic'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -609,9 +609,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated to a very high maximum SPL. What does that tell you about sitting beside the djembe through a long soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the drum stays below the mic’s rating', 'It is safe as long as the mic is nearer the drum than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the drum stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the drum stays below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is nearer the drum than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -811,7 +811,7 @@ export const M05_LESSON: HandLesson = {
     pairLearn: [
       'The upper and lower mics receive different parts of the sound field, at different times and with possibly different pressure directions. Bring up the upper mic alone, then the lower at a musically useful level; test bass, tones and slaps in mono — not just one stroke.',
       'If the blend loses body or changes attack, move or aim one mic, compare the polarity switch, and evaluate again with any other open mics. Never reverse a channel just because it sits below the drum.',
-      'What you just saw: sound reaches two mics at different times; summed, the delayed copy cancels where it is half a period late. A 180° polarity flip moves the notches; it does not remove the travel-time difference or align every frequency.',
+      'What you just saw: sound reaches two mics at different times; summed, the delayed copy cancels where it is half a period late. A 180° polarity flip swaps the notches and peaks; it does not remove the travel-time difference or align every frequency.',
     ],
     pairWarn: 'The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone (1/r) — that does not hold this close to a drumhead, so read the depths as illustrative only. Judge the pair by ear, in mono, at matched levels.',
   },

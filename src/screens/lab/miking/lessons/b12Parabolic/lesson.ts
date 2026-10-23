@@ -51,7 +51,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'The dish and a fixed mic',
     goal: 'The dish at M and a fixed shotgun at F hear one source at different times: watch the delay and the comb change as the source walks, and what polarity does and does not change.',
-    credit: { scenarios: ['pb.two.1', 'pb.two.2', 'pb.two.3'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND walk the source, then answer the three checks.' },
+    credit: { scenarios: ['pb.two.1', 'pb.two.2', 'pb.two.3'], interactive: 'polarityVsDelay', note: 'Flip the second mic’s polarity both ways AND walk the source, then answer the three checks.' },
     takeaway: 'A delay that fits one point is wrong at the next: hand off rather than blend, and check the sum in mono. Polarity flips the sign; it never removes the delay.',
   },
   troubleshoot: {
@@ -467,7 +467,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A close perimeter mic at the approved position, plus ambience', ok: true, power: 'phantom', feedback: 'A suggested start: indoors a close mic can sound more natural than a long-distance dish.' },
       { id: 'b', label: 'A dish from the approved end place, compared with the close mic', ok: true, power: 'phantom', feedback: 'A fair start — keep whichever gives the better target against the room.' },
       { id: 'c', label: 'The largest dish, because it is the most directional', ok: false, power: 'phantom', feedback: 'Decide by what you hear, not the label.' },
-      { id: 'd', label: 'The dish carried onto the court’s edge between plays', ok: false, power: 'phantom', feedback: 'Never into the playing area or its clear space.' },
+      { id: 'd', label: 'The dish carried onto the court’s edge between plays', ok: false, power: 'phantom', feedback: 'Stay out of the playing area and its clear space unless the venue approves it.' },
       { id: 'e', label: 'Two dishes on the same end, both open', ok: false, power: 'phantom', feedback: 'Doubled transients and hollow tone.' },
     ],
     reasons: [
@@ -485,7 +485,7 @@ const predictions: Lesson['predictions'] = {
   meet: { prompt: 'Before you try it: which does the bowl help more — the highs or the lows?', options: ['The highs', 'The lows', 'Both equally'], after: 'Now try each AIM ERROR and each SIZE.' },
   microphone: { prompt: 'In a hard-walled indoor venue, which might sound more natural?', options: ['A close perimeter mic', 'A long-distance dish', 'No difference'], after: 'Now step through each METHOD.' },
   placement: { prompt: 'Predict: you turn the dish from A to B. What must stay true?', options: ['The aim stays inside the arc', 'The gain goes up', 'Nothing'], after: 'Rest a mic in two zones and read what each one suggests.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then walk the source.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then walk the source.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

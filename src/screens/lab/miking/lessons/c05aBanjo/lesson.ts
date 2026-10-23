@@ -41,7 +41,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — aimed at where the neck meets the pot, or close in front of the head — then move the mic and see what changes.',
     credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'Different starting points are different places for different jobs: the neck junction for a blend, about 3 in from the head for attack and projection. Change one thing at a time, and keep clear of both hands.',
+    takeaway: 'Different starting points are different places for different jobs: the neck junction for a blend, about 3 in from the head’s centre or edge for attack and projection. Change one thing at a time, and keep clear of both hands.',
   },
   context: {
     title: 'Studio or live',

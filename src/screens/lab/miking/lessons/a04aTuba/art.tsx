@@ -77,7 +77,7 @@ export const TUBA_ART: LessonArt = {
         { title: 'WORK WITH THE TUBA AS IT IS', text: 'The tuba is heavy and its slides bend easily. Never use a slide as a handle or a mic mount, and let the player manage the horn while any hardware goes near it. A bell clip only if its maker confirms it fits this bell.' },
         { title: 'DO NOT SET A FILTER FROM THE WORD “TUBA”', text: 'A low-cut filter can thin the lowest written note and its harmonics. Choose any filter with the part playing — not from a table.' },
       ],
-      hearing: 'Protect your hearing in loud rehearsals and on loud stages. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Keep levels and time sensible, and use hearing protection.',
+      hearing: 'Protect your hearing in loud rehearsals and on loud stages. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Keep levels and time sensible, and use hearing protection.',
     }),
   },
 };

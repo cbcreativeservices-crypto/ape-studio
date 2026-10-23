@@ -167,4 +167,4 @@ export function veenaPlan(sc: LuteScene): LutePlanObject[] {
 
 /** The plain hearing line (the research's "add the hearing line" fix, C13–C15). */
 export const LUTE_HEARING =
-  'Protect your hearing during soundcheck and long sessions. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. It is a limit for PEOPLE, measured where a person listens — not a microphone’s rating. Monitors and a percussion section reach far higher than the instrument alone: keep levels and time down, and use hearing protection.';
+  'Protect your hearing during soundcheck and long sessions. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — not a microphone’s rating. Monitors and a percussion section reach far higher than the instrument alone: keep levels and time down, and use hearing protection.';

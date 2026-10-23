@@ -259,7 +259,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and arena reggaeton runs about 98–103 dBA LAeq-15 at FOH, with peaks at drops of 108–112 dBA and C-weighted levels of 118–128 dBC; the genre’s sub expectations sit between hip-hop and EDM. A C-minus-A gap above 20 dB at 100+ dBA signals sub-heavy exposure, worth tracking. Large tours use cardioid sub arrays (flown and ground-stacked) to deliver musical, pitched low end to the audience and keep it off a thrust stage. HPF the subs around 30 Hz to save headroom. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes; offer earplugs, respect venue limits (often 100 dBA over 60 minutes or 102–103 dBA LAeq-15 at festivals) and protect your own ears across long sets."
+      "text": "Club and arena reggaeton runs about 98–103 dBA LAeq-15 at FOH, with peaks at drops of 108–112 dBA and C-weighted levels of 118–128 dBC; the genre’s sub expectations sit between hip-hop and EDM. A C-minus-A gap above 20 dB at 100+ dBA signals sub-heavy exposure, worth tracking. Large tours use cardioid sub arrays (flown and ground-stacked) to deliver musical, pitched low end to the audience and keep it off a thrust stage. HPF the subs around 30 Hz to save headroom. NIOSH advises no more than about 15 minutes a day at 100 dBA; offer earplugs, respect venue limits (often 100 dBA over 60 minutes or 102–103 dBA LAeq-15 at festivals) and protect your own ears across long sets."
     },
     {
       "label": "Studio / streaming:",
@@ -301,7 +301,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "98–103 dBA LAeq-15, venue limits",
-        "studio": "−8 to −5 LUFS-I, −1 to −2 dBTP"
+        "studio": "−8 to −5 LUFS-I, −2 dBTP"
       }
     ],
     "notes": []

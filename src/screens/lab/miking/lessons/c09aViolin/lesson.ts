@@ -438,7 +438,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A miniature on a holder behind the bridge, under the strings, checked for harshness', ok: true, power: 'phantom', feedback: 'A suggested starting point: steady as the player moves — compare under and over the strings.' },
       { id: 'c', label: 'Small condenser 1 m in front, for a natural blended sound', ok: false, power: 'phantom', feedback: 'On a loud stage a metre away hears the band and the monitors more than the fiddle.' },
       { id: 'd', label: 'A clip pushed onto the bridge, where the sound starts', ok: false, power: 'phantom', feedback: 'No mic goes on the bridge: it can damp it and risk the instrument.' },
-      { id: 'e', label: 'A miniature taped to the top, by the f-hole', ok: false, power: 'phantom', feedback: 'Never improvise on the varnish or the f-hole edge: use a mount made for the violin.' },
+      { id: 'e', label: 'A miniature taped to the top, by the f-hole', ok: false, power: 'phantom', feedback: 'Do not tape or stick a mic to the varnish or the f-hole edge. Use a mount made for the violin, with the player’s OK.' },
     ],
     reasons: [docReason('the bridge’s foot or the strings behind the bridge'), clearReason('the bow, the bow arm, the chin rest and the player’s face'), POWER_REASON, { id: 'r.move', label: 'A mic that moves with the fiddle holds the sound as the player moves', role: 'optional', feedback: 'A fair live reason for a miniature.' }, BRAND_REASON('violin'), { id: 'r.loudest', label: 'Turn it up until the fiddle is louder than the banjo', role: 'wrong', feedback: 'More gain raises the stage in that mic too, and brings feedback closer.' }],
     explain: 'Two miniatures pass. What passes is the reasoning: a mount made for the violin, clearance from the bow and the face, the power it needs — and the movement it allows.',
@@ -450,7 +450,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you bring the mic from a metre to about 30 cm. What changes?', options: ['More bow and detail', 'More of the room', 'It depends on this violin'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the player. Where will a supercardioid aimed at the violin reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

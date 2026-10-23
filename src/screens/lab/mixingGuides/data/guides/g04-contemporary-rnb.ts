@@ -267,7 +267,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Mix 94–100 dBA LAeq-15 min (the widely used safe-listening limit caps the average at 100 dBA); ballads 90–95 dBA. C-weighted levels run high in this genre because of 808s: plan 110–118 dBC LCeq and watch front-row LCpeak, which can exceed 140 dBC with ground-stacked subs. Venues range from clubs and theaters to arenas. Use cardioid sub arrays, offer earplugs and monitor levels continuously."
+      "text": "Mix 94–100 dBA LAeq-15 min (the WHO safe-listening limit caps the average at 100 dBA); ballads 90–95 dBA. C-weighted levels run high in this genre because of 808s: plan 110–118 dBC LCeq and watch front-row LCpeak, which can exceed 140 dBC with ground-stacked subs. Venues range from clubs and theaters to arenas. Use cardioid sub arrays, offer earplugs and monitor levels continuously."
     },
     {
       "label": "Studio / streaming:",

@@ -59,7 +59,7 @@ const SPEC = ensembleHandSpec({
     B: { zone: 'bb.sax', mic: 'saxDynSuper' },
     names: { A: 'MAIN PAIR', B: 'ALTO MIC' },
     looking: 'Two mics · A the main pair’s centre, B the lead alto’s mic',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE: each player reaches the two mics at its own times.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each player reaches the two mics at its own times.',
     label: 'The big band with the main pair (A) and the lead alto’s mic (B)',
     warn: 'This simplified graph shows one point source and straight paths, no room. Real players move and the room adds its own arrivals, so one delay never suits them all — judge by ear, in mono, against the plain version.',
     learn: [
@@ -79,7 +79,7 @@ const SPEC = ensembleHandSpec({
     placeBadge: 'Blue = suggested starting points · grey dashes = the players’ space · pinch to zoom',
     clearance: 'Clearance comes first: slides at full extension, mute changes, standing soloists, chairs and pedals, and the band’s way in and out.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A close mic aimed at the alto turns its rear toward the floor in front — where a wedge can sit in its rejection.',
-    sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each player gives its own delay.',
+    sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each player gives its own delay.',
   },
 });
 

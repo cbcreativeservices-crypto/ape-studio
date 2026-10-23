@@ -52,7 +52,7 @@ export function voiceRegions(V: VoiceAnchor, opts: { mouthPart: string; nosePart
   const vs = opts.variants ? { variants: opts.variants } : {};
   return [
     { id: `${pre}.mouth`, partId: opts.mouthPart, label: 'the mouth', anchor: V.lip, prov: ill('the lip point stands for the mouth’s opening'), note: 'Almost all of the voice leaves through the open mouth — the vowels, the consonants and the breath. Every starting point here is measured from it.', ...vs },
-    { id: `${pre}.nose`, partId: opts.nosePart, label: 'the nose', anchor: onAnchor(V, NOSE), prov: ill('the nose tip stands for the nostrils (a drawing default)'), note: 'On m, n and ng the mouth closes or narrows and the sound leaves through the nose — a smaller part of the voice, close to the mouth.', ...vs },
+    { id: `${pre}.nose`, partId: opts.nosePart, label: 'the nose', anchor: onAnchor(V, NOSE), prov: ill('the nose tip stands for the nostrils (a drawing default)'), note: 'On m, n and ng the lips or the tongue close off the mouth, and the sound leaves through the nose — a smaller part of the voice, close to the mouth.', ...vs },
   ];
 }
 

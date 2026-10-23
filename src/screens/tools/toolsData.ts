@@ -215,7 +215,7 @@ TOOLS.push({
     'Frequency content over time (compact scrolling spectrogram)',
     'Amplitude vs time with clipping markers (compact oscilloscope)',
     'Dominant frequency, musical note and cents deviation (A4 = 440 Hz)',
-    'Likely signal conditions — mains hum family, 120 Hz harmonics, pink-noise character, clipping, possible mic overload, feedback onset, LF rumble, narrowband whistle',
+    'Likely signal conditions — mains hum (50 or 60 Hz family), supply buzz at twice the mains (100 or 120 Hz), pink-noise character, clipping, possible mic overload, feedback onset, LF rumble, narrowband whistle',
   ],
   notMeasures: [
     'Certified dB SPL — the levels are ESTIMATES from an uncalibrated phone microphone',

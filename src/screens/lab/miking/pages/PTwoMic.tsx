@@ -97,7 +97,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
     {
       kind: 'toggle',
       id: 'polarity',
-      label: B.polarity === 1 ? 'B POLARITY +' : 'B POLARITY −',
+      label: B.polarity === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
       value: B.polarity === -1,
       onToggle: () => {
         const next = B.polarity === 1 ? -1 : 1;
@@ -122,11 +122,11 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
     { k: 'PATH Δd B−A', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
     { k: 'DELAY Δt B−A', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? 'no comb' : dt > 0 ? 'B later' : 'B earlier', flex: 1.35 },
     { k: '1ST NOTCH', v: equal ? 'NO COMB' : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.2 },
-    { k: 'POLARITY', v: `B ${B.polarity === 1 ? '+' : '−'}`, sub: sideFlip ? 'heads: −' : rearFlip ? 'rear lobe: −' : 'switch', flex: 0.95 },
+    { k: 'POLARITY', v: `MIC B ${B.polarity === 1 ? '+' : '−'}`, sub: sideFlip ? 'heads: −' : rearFlip ? 'rear lobe: −' : 'switch', flex: 0.95 },
   ];
   const [wellW, setWellW] = useState(0);
   const label = useMemo(
-    () => `Ideal two-mic sum, ${equal ? 'no path difference, no comb' : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}, mic B polarity switch ${B.polarity === 1 ? 'normal' : 'inverted'}${sideFlip ? ', and the mics face opposite heads, so the sum behaves as ' + (sEff === 1 ? 'same-polarity' : 'inverted') : rearFlip ? ', but the source is in a rear lobe, so the sum behaves as inverted' : ''}.`,
+    () => `Ideal two-mic sum, ${equal ? 'no path difference, no comb' : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}, mic B’s channel polarity ${B.polarity === 1 ? 'normal' : 'inverted'}${sideFlip ? ', and the mics face opposite heads, so the sum behaves as ' + (sEff === 1 ? 'same-polarity' : 'inverted') : rearFlip ? ', but the source is in a rear lobe, so the sum behaves as inverted' : ''}.`,
     [equal, dMm, dt, first, B.polarity, rearFlip, sideFlip, sEff],
   );
   const labelFor = (v: ViewId) => sceneLabel(rig, v, ['A', 'B'], `Paths from the ${regions.find((r) => r.id === srcId)?.label ?? 'source'} are drawn as an overlay.`);
@@ -150,7 +150,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`Two mics · paths from the ${regions.find((r) => r.id === srcId)?.label ?? 'source'}`} prompt="Flip B POLARITY both ways, then move a mic. Watch which readout each action changes." />
+          <Landing looking={`Two mics · paths from the ${regions.find((r) => r.id === srcId)?.label ?? 'source'}`} prompt="Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes." />
           <Text style={styles.activity} accessibilityLabel={`Activity: polarity to minus ${flips.toInv ? 'done' : 'not yet'}, back to plus ${flips.toNorm ? 'done' : 'not yet'}, mic moved ${moved ? 'done' : 'not yet'}.`}>
             {`Activity: polarity → − ${tick(flips.toInv)} · back to + ${tick(flips.toNorm)} · mic moved ${tick(moved)}`}
           </Text>
@@ -158,10 +158,10 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
           <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>
             {wellW > 0 ? <CombPanel rig={rig} source={src} w={wellW} h={150} label={label} opposite={plane} /> : null}
           </View>
-          <Body>{equal ? 'No path difference, no comb: the source reaches both mics at the same instant.' : `B hears it ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
+          <Body>{equal ? 'No path difference, no comb: the source reaches both mics at the same instant.' : `Mic B hears it ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} mic A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
           {sideFlip && T.opposite ? <Note>{T.opposite.note}</Note> : null}
           {rearFlip ? <Note>{`The source is in a mic’s rear lobe: a rear lobe is polarity-inverted, so the notches follow the ${sEff === 1 ? 'same-polarity' : 'inverted'} set even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
-          {predicted != null && flipped ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: it moves the notches, it does not remove the delay.`}</Note> : null}
+          {predicted != null && flipped ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: the notches and peaks swap places, but the delay stays.`}</Note> : null}
           <Note tone="warn">{T.warn}</Note>
           {micType(A.typeId).mount === 'surface' ? <Body>Mic A’s pattern is a half-cardioid boundary — not modelled; its level here follows distance only.</Body> : null}
         </>
@@ -177,7 +177,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
           {T.learn.map((t) => (
             <Body key={t.slice(0, 24)}>{t}</Body>
           ))}
-          <Note>What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity inversion flips the sign — it moves the notches; it does not remove the delay. 0 dB on the graph is the two arrivals in step: at equal level that is 6 dB above either mic alone, so a comb both lifts and cuts.</Note>
+          <Note>What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity inversion flips the sign — the notches and peaks swap places, and the lows thin out; it does not remove the delay. 0 dB on the graph is the two arrivals in step: at equal level that is 6 dB above either mic alone, so a comb both lifts and cuts.</Note>
         </>
       ),
     },

@@ -58,7 +58,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Two microphones',
     goal: 'A main pair and a division spot: see each division’s delay between them, what polarity does and does not change, and judge the pair in mono.',
-    credit: { scenarios: ['org.two.1', 'org.two.2', 'org.two.3', 'org.two.4'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
+    credit: { scenarios: ['org.two.1', 'org.two.2', 'org.two.3', 'org.two.4'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
     takeaway: 'Mains and spots hear each division at different times: a polarity flip or a fixed delay may help one registration and hurt another. Move or rebalance first; check soft and full registrations in mono.',
   },
   troubleshoot: {
@@ -131,9 +131,9 @@ const scenarios: MikingScenario[] = [
     id: 'org.set.2',
     page: 'setting',
     prompt: 'A beam above the nave looks perfect for hanging a pair. What do you do?',
-    options: ['Ask the venue: competent people, rated supports', 'Hang it carefully from the beam yourself', 'Tie it to the organ case instead, which is strong'],
-    correct: 'Ask the venue: competent people, rated supports',
-    explain: 'Any suspended mic or work at height needs venue approval and competent people using the site’s rated supports and fall protection. Never an unverified beam, never the organ.',
+    options: ['Ask the venue: a qualified rigger, rated supports', 'Hang it carefully from the beam yourself', 'Tie it to the organ case instead, which is strong'],
+    correct: 'Ask the venue: a qualified rigger, rated supports',
+    explain: 'Any suspended mic or work at height needs venue approval and a qualified rigger using the site’s rated supports and fall protection. Never an unverified beam, never the organ.',
     why: {
       'Hang it carefully from the beam yourself': 'An unverified beam and work at height are not yours to decide.',
       'Tie it to the organ case instead, which is strong': 'Never hang anything from pipes, the case or its ornament.',
@@ -167,12 +167,12 @@ const scenarios: MikingScenario[] = [
     id: 'org.mic.3',
     page: 'microphone',
     prompt: 'The room, or its bass balance, is less favourable. What pattern might help?',
-    options: ['A wide cardioid, taking in less of the room', 'An omni, to hear even more of the room', 'A figure-eight pair, facing the two side walls'],
+    options: ['A wide cardioid, taking in less of the room', 'An omni, to hear even more of the room', 'A Figure-8 (Bidirectional) pair, facing the two side walls'],
     correct: 'A wide cardioid, taking in less of the room',
     explain: 'A wide cardioid narrows the view a little — less room, a different low balance — when the room is not helping.',
     why: {
       'An omni, to hear even more of the room': 'More room is the opposite of what a poor room needs.',
-      'A figure-eight pair, facing the two side walls': 'Its lobes would hear the walls’ reflections, not the organ.',
+      'A Figure-8 (Bidirectional) pair, facing the two side walls': 'Its lobes would hear the walls’ reflections, not the organ.',
     },
   },
   {
@@ -444,7 +444,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A room pair for the stream, the organ kept out of the PA', ok: true, power: 'phantom', feedback: 'Fair: the organ fills the room; the PA carries speech.' },
       { id: 'c', label: 'The distant room pair sent to the PA at high gain', ok: false, power: 'phantom', feedback: 'A feedback loop and a wash: never at high gain.' },
       { id: 'd', label: 'Stands in the aisles for a better view', ok: false, power: 'phantom', feedback: 'The aisles and exits are in use during a service.' },
-      { id: 'e', label: 'A pair suspended from a ceiling hook, put up by yourself', ok: false, power: 'phantom', feedback: 'Elevated rigging is the venue’s installation, by competent people.' },
+      { id: 'e', label: 'A pair suspended from a ceiling hook, put up by yourself', ok: false, power: 'phantom', feedback: 'Elevated rigging is the venue’s installation, by a qualified rigger.' },
     ],
     reasons: [PAIR_REASON, ACCESS_REASON, { id: 'r.sep', label: 'Stream and PA feeds are kept on separate channels', role: 'required', feedback: 'Separate channels let you build scenes and keep the room pair out of the PA.' }, POWER_REASON, BRAND_REASON, TOUCH_REASON],
     explain: 'Two setups pass. What passes is the reasoning: the room pair for scale, safe access, and stream and PA kept apart.',
@@ -456,7 +456,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from the fourth pew to the back. What changes most?', options: ['More room, a blended organ', 'More attack', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA sits high on the arch, behind the spot mic. Can a pattern’s null reach it?', options: ['Yes — aim the rejection toward it', 'No — only an omni can', 'It is directly in front'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'A main pair and a Great spot. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE to another division.' },
+  twoMic: { prompt: 'A main pair and a Great spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another division.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -517,7 +517,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'Use a floor position or a qualified install',
     explain: 'Stop if a placement cannot be achieved safely: choose a floor position, or arrange a qualified installation with the venue later. Never climb or hang anything from the organ.',
     why: {
-      'Climb the case carefully to reach the spot': 'Work at height needs approval, competent people and rated supports — and never the organ.',
+      'Climb the case carefully to reach the spot': 'Work at height needs approval, a qualified rigger and rated supports — and never the organ.',
       'Hang the mic from the nearest pipe or ornament': 'Never hang anything from pipes or ornament.',
     },
   },
@@ -591,6 +591,6 @@ export const A12_LESSON: Lesson = {
   ],
   live: { wedges: A12_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A pipe organ has no universal mic distance: start with a main pair in the body of the room aimed at the main ranks, walk, listen and compare; the fourth-pew position is one search’s result in one room, shown as a case study. Every organ and room is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: a stylised organ and church, ideal pipes, straight paths, one ideal room resonance, mic patterns as textbook shapes. Distances are rounded. Floor stands only where people do not walk; anything elevated is the venue’s installation by competent people; never touch or hang anything from the organ; protect hearing.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A pipe organ has no universal mic distance: start with a main pair in the body of the room aimed at the main ranks, walk, listen and compare; the fourth-pew position is one search’s result in one room, shown as a case study. Every organ and room is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: a stylised organ and church, ideal pipes, straight paths, one ideal room resonance, mic patterns as textbook shapes. Distances are rounded. Floor stands only where people do not walk; anything elevated is the venue’s installation by a qualified rigger; never touch or hang anything from the organ; protect hearing.',
   copy: { words: metalWords('organ', 'organist') },
 };

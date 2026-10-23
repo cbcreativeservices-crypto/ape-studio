@@ -58,7 +58,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Two microphones',
     goal: 'Add a room mic to the front mic: see the long delay between them, what polarity does and does not change, and judge the blend in mono through the whole decay.',
-    credit: { scenarios: ['gg.two.1', 'gg.two.2', 'gg.two.3', 'gg.two.4'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
+    credit: { scenarios: ['gg.two.1', 'gg.two.2', 'gg.two.3', 'gg.two.4'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
     takeaway: 'Two spaced mics hear the gong at different times — whatever their patterns. Polarity flips the sign; it does not remove a delay. Collapse to mono and compare the attack and the decay; a coincident pair keeps the timing together.',
   },
   troubleshoot: {
@@ -131,9 +131,9 @@ const scenarios: MikingScenario[] = [
     id: 'gg.set.2',
     page: 'setting',
     prompt: 'A clamp would hold a mic right on the gong’s frame. Is that a good idea?',
-    options: ['Only with the maker’s and the owner’s approval', 'Yes — on the frame the mic stays at the same distance', 'Yes, if the clamp is small and light'],
-    correct: 'Only with the maker’s and the owner’s approval',
-    explain: 'A mic stand must be separately stable; nothing is attached to the gong, its cords or the frame without the maker’s and the owner’s approval — and the gong must still hang freely.',
+    options: ['Only with the owner’s approval', 'Yes — on the frame the mic stays at the same distance', 'Yes, if the clamp is small and light'],
+    correct: 'Only with the owner’s approval',
+    explain: 'Keep the mic on a stand of its own. Nothing is fixed to the gong, its cords or the frame without the owner’s approval, and the gong must still hang freely.',
     why: {
       'Yes — on the frame the mic stays at the same distance': 'Approval comes first, and a clamp can add noise or load the frame.',
       'Yes, if the clamp is small and light': 'Size is not the question: approval and the open swing are.',
@@ -178,12 +178,12 @@ const scenarios: MikingScenario[] = [
   {
     id: 'gg.mic.4',
     page: 'microphone',
-    prompt: 'A figure-eight ribbon faces the gong. What else does it hear?',
+    prompt: 'A Figure-8 ribbon faces the gong. What else does it hear?',
     options: ['The room behind it, as strongly as the front', 'Nothing: ribbons only hear straight ahead', 'Only the gong’s back face, through the frame'],
     correct: 'The room behind it, as strongly as the front',
-    explain: 'A figure-eight has two lobes: what is behind it matters as much as what is in front. Mind the stand position and wind, and follow the maker’s power and wiring instructions.',
+    explain: 'A Figure-8 has two lobes: what is behind it matters as much as what is in front. Mind the stand position and wind, and follow the maker’s power and wiring instructions.',
     why: {
-      'Nothing: ribbons only hear straight ahead': 'A figure-eight hears its rear as strongly as its front.',
+      'Nothing: ribbons only hear straight ahead': 'A Figure-8 hears its rear as strongly as its front.',
       'Only the gong’s back face, through the frame': 'Its rear lobe hears whatever is behind the mic, not the gong’s back.',
     },
   },
@@ -301,11 +301,11 @@ const scenarios: MikingScenario[] = [
     id: 'gg.two.3',
     page: 'twoMic',
     prompt: 'Someone says a ribbon’s pattern means two spaced mics will have no phasing. True?',
-    options: ['No — spaced mics still hear it at different times', 'Yes — a figure-eight pattern cancels out the phasing', 'Yes, as long as both mics are ribbons'],
+    options: ['No — spaced mics still hear it at different times', 'Yes — a Figure-8 pattern cancels out the phasing', 'Yes, as long as both mics are ribbons'],
     correct: 'No — spaced mics still hear it at different times',
     explain: 'Two differently placed mics receive the shared sound at different times, whatever their patterns. Verify the combination in mono and adjust placement and balance.',
     why: {
-      'Yes — a figure-eight pattern cancels out the phasing': 'A pattern sets how much each mic hears from each direction, not when the sound arrives.',
+      'Yes — a Figure-8 pattern cancels out the phasing': 'A pattern sets how much each mic hears from each direction, not when the sound arrives.',
       'Yes, as long as both mics are ribbons': 'Matched mics do not remove different arrival times.',
     },
   },
@@ -443,7 +443,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you back the mic away from 60 cm to 120 cm. What changes most?', options: ['More bloom and room', 'More presence', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits downstage, behind the mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'A front mic and a room mic about 2 m apart. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'A front mic and a room mic about 2 m apart. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

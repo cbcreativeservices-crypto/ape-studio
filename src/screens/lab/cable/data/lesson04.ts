@@ -57,7 +57,7 @@ export const PLUG_COMPARISONS: PlugComparison[] = [
     question: 'Interchangeable?',
     answer: 'no',
     why:
-      'Instrument cable is one small shielded conductor for instrument-level signal; speaker cable is two heavier unshielded conductors for amplifier current. Older amplifiers and loudspeakers used TS jacks for speaker connections, so both cables exist in the field.',
+      'Instrument cable is one small shielded conductor for instrument-level signal; speaker cable is two heavier unshielded conductors for amplifier current. Many amplifiers and cabinets use TS jacks for the speaker link — most guitar and bass amps still do — so both cables turn up in the field.',
     consequence:
       'An instrument cable carrying loudspeaker current can heat, lose level, and fail — reduced reliability, and with some amplifier designs a failed loudspeaker line risks equipment damage. A speaker cable used for an instrument picks up hum and noise because it has no shield.',
   },

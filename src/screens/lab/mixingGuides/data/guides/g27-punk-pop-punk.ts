@@ -15,7 +15,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "Mostly 140–200 BPM (classic punk 150–180; skate punk and hardcore 180–240+; pop-punk choruses often 160–200 with half-time breakdowns)",
     "ensemble": "3–5 piece: drums, bass, 1–2 electric guitars, lead vocal, with band members singing backing and gang vocals",
     "priority": "A tight, driving drums-guitars wall with the lead vocal and its hooks always intelligible on top",
-    "liveSpl": "98–104 dBA Leq (LAeq-15 min) in clubs; roughly 112–122 dBC; common safe-listening guidance and many festivals cap at 100 dBA LAeq-15",
+    "liveSpl": "98–103 dBA Leq (LAeq-15 min) in theaters and festivals; small clubs often 100–106 dBA; roughly 112–122 dBC; common safe-listening guidance and many festivals cap at 100 dBA LAeq-15",
     "studioLoudness": "Masters commonly −9 to −6 LUFS-I (1990s CD-era records around −10 to −8); streaming normalizes to about −14"
   },
   "purpose": [
@@ -244,7 +244,7 @@ export const GUIDE: MixingGuide = {
     ],
     "notes": [
       {
-        "text": "Classic punk runs dry—Dookie was first mixed with almost no reverb at the band’s request. Long tails turn fast songs to mush."
+        "text": "Classic punk runs fairly dry, but not bone-dry: the band wanted Dookie dry, found the first mix unsatisfying, and had it remixed. Long tails turn fast songs to mush."
       }
     ]
   },
@@ -256,7 +256,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Small clubs and DIY rooms often run 100–106 dBA at FOH simply because stage volume is already high—sometimes the PA carries little more than vocals and kick. Theaters and festivals sit at 98–103 dBA LAeq-15 and 112–122 dBC; a C-minus-A gap above about 20 dB means too much sub for this style, which needs punch more than deep bass. Peaks run 110–115 dBA. A widely used safe-listening standard for venues sets 100 dBA LAeq-15 as the average limit, along with earplug availability and quiet zones, and many festivals enforce similar caps. Audiences skew young; offer earplugs, and plan for stage divers."
+      "text": "Small clubs and DIY rooms often run 100–106 dBA at FOH simply because stage volume is already high—sometimes the PA carries little more than vocals and kick. Theaters and festivals sit at 98–103 dBA LAeq-15 and 112–122 dBC; a C-minus-A gap above about 20 dB means too much sub for this style, which needs punch more than deep bass. Peaks run 110–115 dBA. The WHO safe-listening standard for venues sets 100 dBA LAeq-15 as the average limit, along with earplug availability and quiet zones, and many festivals enforce similar caps. Audiences skew young; offer earplugs, and plan for stage divers."
     },
     {
       "label": "Studio / streaming:",
@@ -298,7 +298,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "98–104 dBA Leq, venue or festival limits",
-        "studio": "−9 to −6 LUFS-I, −2 dBTP"
+        "studio": "Often −9 to −6 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],
     "notes": []

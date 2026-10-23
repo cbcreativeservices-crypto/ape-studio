@@ -251,7 +251,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Favela (hillside neighborhood) bailes (dance parties) and street paredões (walls of speakers) routinely exceed any regulation: 105–115 dBA and 125–135+ dBC near ground-stacked walls are common, and sub exposure in the front rows is a serious hearing risk. In managed venues and festivals, run 100–103 dBA LAeq-15 (the widely used safe-listening limit is 100 dBA LAeq-15) with C-weighted levels around 120–128 dBC; a C-minus-A gap of 20–25 dB is typical for this genre, more signals excessive sub. Brazilian cities increasingly restrict paredões (Fortaleza, for example, applies 70 dB day and 60 dB night limits outside venues, with seizures and fines), so respect curfew and boundary limits. Fly or cardioid-array subs where possible, offer earplugs, and limit your own exposure."
+      "text": "Favela (hillside neighborhood) bailes (dance parties) and street paredões (walls of speakers) routinely exceed any regulation: 105–115 dBA and 125–135+ dBC near ground-stacked walls are common, and sub exposure in the front rows is a serious hearing risk. In managed venues and festivals, run 100–103 dBA LAeq-15 (the WHO safe-listening limit is 100 dBA LAeq-15) with C-weighted levels around 120–128 dBC; a C-minus-A gap of 20–25 dB is typical for this genre, more signals excessive sub. Brazilian cities increasingly restrict paredões (Fortaleza, for example, applies 70 dB day and 60 dB night limits outside venues, with seizures and fines), so respect curfew and boundary limits. Fly or cardioid-array subs where possible, offer earplugs, and limit your own exposure."
     },
     {
       "label": "Studio / streaming:",
@@ -288,7 +288,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "100–103 dBA LAeq-15 in regulated venues; far higher at street bailes (dance parties)",
-        "studio": "−7 to −4 LUFS-I, −1 to −2 dBTP"
+        "studio": "−7 to −4 LUFS-I, −2 dBTP"
       }
     ],
     "notes": []

@@ -11,6 +11,11 @@ export type UnitDef = {
   label: string;
   toBase: (x: number) => number;
   fromBase: (x: number) => number;
+  /** An ALIAS label for the same base value (dBA on the SPL scale): offered
+   *  only where a field or output names it (`unitIds` / `unit`), never in the
+   *  tap-to-cycle list of a plain result — an unweighted SPL must never be
+   *  relabelled dBA (audit R2, 2026-10-23: the exposure fields said dB SPL). */
+  alias?: boolean;
 };
 
 const lin = (k: number): Pick<UnitDef, 'toBase' | 'fromBase'> => ({
@@ -76,7 +81,10 @@ export const QUANTITIES: Record<QuantityKind, UnitDef[]> = {
     { id: 'ftps', label: 'ft/s', ...lin(0.3048) },
   ],
   db: [{ id: 'db', label: 'dB', ...ident }],
-  spl: [{ id: 'dbspl', label: 'dB SPL', ...ident }],
+  spl: [
+    { id: 'dbspl', label: 'dB SPL', ...ident },
+    { id: 'dba', label: 'dBA', ...ident, alias: true },
+  ],
   voltage: [
     { id: 'v', label: 'V', ...ident },
     { id: 'mv', label: 'mV', ...lin(1e-3) },
@@ -116,6 +124,9 @@ export const QUANTITIES: Record<QuantityKind, UnitDef[]> = {
     { id: 'kbps', label: 'kbit/s', ...lin(1e3) },
     { id: 'bps', label: 'bit/s', ...ident },
     { id: 'mbps', label: 'Mbit/s', ...lin(1e6) },
+    // Bytes per second, for a rate quoted in bytes (alias: shown only where an
+    // output names it — Raw bytes per second, audit R2 2026-10-23).
+    { id: 'mbyteps', label: 'MB/s', ...lin(8e6), alias: true },
   ],
   area: [
     { id: 'm2', label: 'm²', ...ident },
@@ -133,9 +144,17 @@ export const QUANTITIES: Record<QuantityKind, UnitDef[]> = {
 
 export function unitsFor(q: QuantityKind, subset?: string[]): UnitDef[] {
   const all = QUANTITIES[q];
-  if (!subset || subset.length === 0) return all;
+  const plain = all.filter((u) => !u.alias);
+  if (!subset || subset.length === 0) return plain;
   const picked = subset.map((id) => all.find((u) => u.id === id)).filter((u): u is UnitDef => !!u);
-  return picked.length ? picked : all;
+  return picked.length ? picked : plain;
+}
+
+/** The units a numeric OUTPUT cycles through: the plain units of its kind, or
+ *  only its own unit when that unit is an alias (a dBA Leq stays dBA). */
+export function outputUnits(q: QuantityKind, unitId?: string): UnitDef[] {
+  const own = unitId ? QUANTITIES[q].find((u) => u.id === unitId) : undefined;
+  return own?.alias ? [own] : unitsFor(q);
 }
 
 /**
@@ -213,6 +232,43 @@ export function fmtCount(x: number, sig = 4): string {
   return Number.isInteger(s) && Math.abs(s) < 1e7 ? String(s) : fmt(x, sig);
 }
 
+/** A value that is NOT whole, shown with enough figures that it never reads as
+ *  the whole number beside it (audit R2, 2026-10-23): worked steps printed
+ *  "log10(1) = 4.343e-6 dB", "√1 ÷ (1 − 1)" and "K = 1" for ratios of
+ *  1.0000005 — each step false as written. Whole values print as fmt does. */
+export function fmtNotWhole(x: number, sig = 4): string {
+  if (!Number.isFinite(x)) return '—';
+  const w = Math.round(x);
+  if (x === w) return fmt(x, sig);
+  // Enough figures that what is printed sits within 1% of the true
+  // distance to the whole number — so log10 or (K − 1) of it still holds.
+  const gap = Math.abs(x - w);
+  const e = Math.floor(Math.log10(Math.abs(x)));
+  // x rounded to s significant figures — what fmt(x, s) prints — computed
+  // numerically (no string is parsed back; P16 R5 ratchet).
+  const shown = (s: number) => {
+    const q = Math.pow(10, e - s + 1);
+    return Math.round(x / q) * q;
+  };
+  let s = sig;
+  while (s < 15 && Math.abs(shown(s) - x) > 1e-2 * gap) s++;
+  return fmt(x, s);
+}
+
+/** A SAMPLE count for display (audit R2, 2026-10-23): exact when whole; else
+ *  never fewer than 2 decimals — 4 figures printed 87.4 ms × 48 kHz = 4195.2
+ *  as "4195 samples" and a 16782.5 table entry as "16780", less precise than
+ *  the NEAREST WHOLE column beside it. Tiny or huge values keep fmt. */
+export function fmtSamples(x: number, sig = 4): string {
+  if (!Number.isFinite(x)) return '—';
+  const s = snapWhole(x);
+  if (Number.isInteger(s) && Math.abs(s) < 1e7) return String(s);
+  if (Math.abs(x) < 1 || Math.abs(x) >= 1e7) return fmt(x, sig);
+  const a = fmt(x, sig);
+  const b = x.toFixed(2).replace(/\.?0+$/, '');
+  return a.length >= b.length ? a : b;
+}
+
 /** Format a whole-number count for interpolation into text/steps/labels —
  *  '—' for a non-finite value, same convention as fmt(). Use this instead of
  *  `${Math.round(x)}` / `${x}` so a zero input never prints NaN/Infinity. */
@@ -242,6 +298,37 @@ export const DBU_REF_V = Math.sqrt(0.6);
 export const P_REF_PA = 2e-5;
 /** The SPL of exactly 1 Pa: 20·log10(1 Pa / 20 µPa) = 93.979 dB SPL. */
 export const SPL_OF_1_PA = 20 * Math.log10(1 / P_REF_PA);
+
+/**
+ * The loudest sound air can carry (D53, audit R2 2026-10-23): about 194 dB SPL
+ * at sea-level pressure — an RMS pressure of one atmosphere (20 µPa ·
+ * 10^(194/20) ≈ 100 kPa); past it the rarefaction would need a pressure below
+ * zero. A typed or computed level above it is refused in words, never printed
+ * (a calculator once showed "210.1 dB SPL" and "1.000e8 dB SPL").
+ */
+export const SPL_MAX_AIR_DB = 194;
+export const SPL_CEILING_WHY =
+  'Sound in air at normal pressure cannot get louder than about 194 dB SPL — past that the pressure swing would have to dip below zero.';
+/** True when a level is past the ceiling of air (or not a number at all). */
+export function overAirCeiling(db: number): boolean {
+  return !(db <= SPL_MAX_AIR_DB);
+}
+/** Field declaration for an SPL INPUT: refused above the ceiling of air. Only
+ *  the ceiling is a physical limit, so the floor is left open. */
+export const SPL_FIELD_RANGE = {
+  range: [-Infinity, SPL_MAX_AIR_DB] as const,
+  rangeMsg: `${SPL_CEILING_WHY} Check the level you entered.`,
+};
+/** Absolute zero: no air, no speed of sound, at or below it (D53). The
+ *  dry-air model is a classroom model; only this floor is a physical limit. */
+export const ABS_ZERO_C = -273.15;
+/** Field declaration for every AIR TEMPERATURE input: refused at or below
+ *  absolute zero (where c = 331.3·√(1 + T/273.15) reaches 0 and then has no
+ *  real value). The upper end is left open — no physical limit applies. */
+export const AIR_TEMP_FIELD = {
+  range: [ABS_ZERO_C + 0.01, Infinity] as const,
+  rangeMsg: 'AIR TEMPERATURE must be above absolute zero (−273.15 °C) — below it there is no air to carry sound.',
+};
 
 // ── Shared physical constants (calc accuracy audit, 2026-10-04) ───────────
 // Each lived as a rounded literal in one or more workspaces. One place, full
@@ -554,16 +641,22 @@ export const WHOLE_MSG = 'Must be a whole number.';
 export function rangeMsg(range: readonly [number, number]): string {
   return `Must be from ${fmt(range[0], 6)} to ${fmt(range[1], 6)}.`;
 }
+/** The sentence for a 0 in a `positive` field (D53, audit R2 2026-10-23). */
+export function positiveMsg(f: Pick<FieldDef, 'name' | 'positive'>): string {
+  return typeof f.positive === 'string' ? f.positive : `${f.name} must be above 0.`;
+}
 /** A value is whole up to float noise (a carried 1023.9999999999999 is 1024). */
 const isWholeish = (x: number) => Number.isFinite(x) && Number.isInteger(snapWhole(x));
 
-type DomainField = Pick<FieldDef, 'key' | 'name' | 'quantity' | 'nonNegative' | 'integer' | 'range'>;
+type DomainField = Pick<FieldDef, 'key' | 'name' | 'quantity' | 'nonNegative' | 'integer' | 'range' | 'rangeMsg' | 'positive'>;
 /** The live warning one typed BASE value earns from its field's `integer` /
- *  `range` declaration, or null. (Negatives keep NEGATIVE_MSG — see FieldRow.) */
-export function domainMsg(f: Pick<FieldDef, 'integer' | 'range'>, x: number): string | null {
+ *  `range` declaration, or null. (Negatives keep NEGATIVE_MSG — see FieldRow.)
+ *  A `positive` field's 0 keeps its own `warn` sentence when it has one. */
+export function domainMsg(f: Pick<FieldDef, 'integer' | 'range' | 'rangeMsg' | 'positive' | 'name' | 'warn'>, x: number): string | null {
   if (!Number.isFinite(x)) return null;
   if (f.integer && !isWholeish(x)) return WHOLE_MSG;
-  if (f.range && (x < f.range[0] || x > f.range[1])) return rangeMsg(f.range);
+  if (f.range && (x < f.range[0] || x > f.range[1])) return f.rangeMsg ?? rangeMsg(f.range);
+  if (f.positive && x <= 0 && !(f.warn && f.warn.test(x))) return positiveMsg(f);
   return null;
 }
 /**
@@ -579,7 +672,8 @@ export function domainError(fn: Pick<CalcFunction, 'inputs'>, values: CalcValues
     const v = values[key];
     if (!f || typeof v !== 'number') continue;
     if (f.integer && !isWholeish(v)) return `${f.name} must be a whole number.`;
-    if (f.range && (v < f.range[0] || v > f.range[1])) return `${f.name} must be from ${fmt(f.range[0], 6)} to ${fmt(f.range[1], 6)}.`;
+    if (f.range && (v < f.range[0] || v > f.range[1])) return f.rangeMsg ?? `${f.name} must be from ${fmt(f.range[0], 6)} to ${fmt(f.range[1], 6)}.`;
+    if (f.positive && v <= 0) return positiveMsg(f);
   }
   return null;
 }

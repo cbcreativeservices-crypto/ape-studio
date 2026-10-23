@@ -103,7 +103,7 @@ const caseProv = WURLI.w.prov;
 function parts(): Part[] {
   const lid = lidSolids();
   const out: Part[] = [
-    { id: 'wur.lid', label: 'lid', short: 'lid', role: 'The plastic lid over the action. On the later model the two speakers are screwed to it, so the lid becomes the speakers’ baffle — and a loose speaker can rattle. Never clamp or lean anything on it.', solid: lid[0], clearance: { mm: 5, prov: ill('keep the mic off the lid: 5 mm is the lab’s margin (no source gives one)') }, prov: WURLI.mountProv },
+    { id: 'wur.lid', label: 'lid', short: 'lid', role: 'The plastic lid over the action. On the later model the two speakers are screwed to it, so the lid becomes the speakers’ baffle — and a loose speaker can rattle. Do not clamp or lean anything on it.', solid: lid[0], clearance: { mm: 5, prov: ill('keep the mic off the lid: 5 mm is the lab’s margin (no source gives one)') }, prov: WURLI.mountProv },
     ...lid.slice(1).map((s, i): Part => ({ id: `wur.lid.${i + 1}`, label: 'lid', short: 'lid', role: 'The lid’s front slope.', solid: s, clearance: { mm: 5, prov: ill('the lab’s margin') }, listIn: [], prov: caseProv })),
     { id: 'wur.grille', label: 'speaker grille', short: 'grille', role: 'The slotted front of the lid in front of each speaker. Two grilles, two small oval speakers — find the one that sounds best from outside, without lifting the lid.', prov: WURLI.countProv },
     { id: 'wur.cone', label: 'oval speaker (4 × 8 in)', short: 'speaker', role: 'A small oval speaker behind each grille, facing the player. Its cone pushes the air toward the player: this is what the mic hears.', prov: OV.major.prov },

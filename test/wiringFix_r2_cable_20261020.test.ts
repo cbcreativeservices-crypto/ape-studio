@@ -98,7 +98,7 @@ describe('Patchbay', () => {
     assert.doesNotMatch(d, /genuine half-normalled-TOP design/);
     assert.doesNotMatch(d, /manufacturers document both/);
     assert.match(d, /Real top-breaking bays are usually wired with their INPUTS on top, so the input jack still breaks/);
-    assert.match(d, /on a half-normal pair the INPUT jack breaks and the output jack taps/);
+    assert.match(d, /on a well-wired half-normal pair, the INPUT jack breaks and the output jack taps/);
     // the engine still models the drawn case: outputs on top, top breaks → the clash
     assert.equal(resolvePair({ config: 'half', breakSide: 'top', topPlugged: false, bottomPlugged: true }).isMerge, true);
   });

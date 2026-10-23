@@ -87,7 +87,7 @@ const DRILL_COPY: Record<string, { use: string; pathway: string; risk: string }>
   },
   'dante-perm': {
     use: 'Permanent network infrastructure — installed, documented and serviceable like any telecom run.',
-    pathway: 'Data rides the telecom pathway system the project designed — never another trade’s pipes or ducts.',
+    pathway: 'Data rides the telecom pathway system the project designed — not another trade’s pipes or ducts.',
     risk: 'The pairs’ geometry IS the performance — crush and over-tension quietly degrade the link long before anything looks broken.',
   },
 };

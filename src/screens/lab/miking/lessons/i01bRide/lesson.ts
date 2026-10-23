@@ -334,7 +334,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A small condenser 8–15 cm under the ride, aimed up, its rear toward the floor', ok: true, power: 'phantom', feedback: 'A suggested starting point out of the stick’s way, its rejection toward the monitors.' },
       { id: 'c', label: 'A small dynamic over the bow on the far side, aimed at the bow', ok: true, power: 'none', feedback: 'A suggested starting point that needs no power.' },
       { id: 'd', label: 'A mic a few centimetres from the edge on the player’s side', ok: false, power: 'none', feedback: 'That is the stick’s side, inside the swing. Start on the far side.' },
-      { id: 'e', label: 'A mic resting on the ride’s bell, so it cannot move', ok: false, power: 'none', feedback: 'Never on the cymbal: it is a moving part, struck all song.' },
+      { id: 'e', label: 'A mic resting on the ride’s bell, so it cannot move', ok: false, power: 'none', feedback: 'Keep mics off the cymbal: it is a moving part, struck all song.' },
     ],
     reasons: [docReason(W), CLEAR_REASON, POWER_REASON, { id: 'r.iso', label: 'Close, and with the rear toward the floor, helps on a loud stage', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, nameReason(W)],
     explain: 'More than one plan passes this brief. What passes is the reasoning: a sensible starting point measured from the ride, clearance from the stick, the swing and the player, and power that matches the mic.',
@@ -348,7 +348,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A small dynamic over the bow on the far side, aimed at the bow', ok: true, power: 'none', feedback: 'A suggested starting point, powered by what this input can supply.' },
       { id: 'c', label: 'A small condenser a foot or two above, for all the cymbals', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A small condenser under the ride, aimed up', ok: false, power: 'phantom', feedback: 'A fair position — but this condenser needs phantom power, and this input has none.' },
-      { id: 'e', label: 'A mic hanging from the ride’s wing nut by its cable', ok: false, power: 'none', feedback: 'Never on the cymbal or its wing nut: they swing and are struck. Use a stand.' },
+      { id: 'e', label: 'A mic hanging from the ride’s wing nut by its cable', ok: false, power: 'none', feedback: 'Keep it off the cymbal and its wing nut: they swing and are struck. Use a stand.' },
     ],
     reasons: [{ ...docReason(W), label: 'The plan starts from what the overheads give, and any mic from a suggested starting point' }, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'In a good room, the overheads are part of the ride’s sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, nameReason(W)],
     explain: 'Two plans pass: no ride mic, or a dynamic spot. What passes is the reasoning: start from the overheads, keep clear, and power what this input can supply.',
@@ -360,7 +360,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you swing the spot mic’s aim from the bow toward the bell. What changes?', options: ['More of the wash', 'A brighter, cutting sound', 'It depends on this ride'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The mic under the ride points up. Where will a cardioid reject the floor monitor best?', options: ['Straight below the mic', 'Below, off to one side', 'Level with the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
-  twoMic: { prompt: 'If you flip the under mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the under mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

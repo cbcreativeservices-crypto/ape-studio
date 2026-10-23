@@ -565,7 +565,7 @@ export const SPL_MATCH: Record<string, Record<string, { v: MatchVerdict; note: s
   loud: {
     cond: { v: 'watch', note: 'Check the max SPL spec (and use the pad if fitted) — many handle it; the SPEC decides, not the "condenser" label.' },
     dyn: { v: 'good', note: 'Classic use: very high SPL capability and low sensitivity are exactly right.' },
-    lav: { v: 'caution', note: 'Approaching its limits — miniature capsules distort earlier.' },
+    lav: { v: 'caution', note: 'Approaching its limits — many lavalier capsules distort earlier, so check the max SPL spec.' },
   },
   vloud: {
     cond: { v: 'caution', note: 'Only with a documented very-high max SPL rating and the pad engaged.' },
@@ -615,7 +615,7 @@ export const POWER_NUANCE =
   '"Condenser" does not necessarily mean "48 V only." Some run on batteries, lower-voltage phantom ' +
   'schemes, plug-in power from a camera or recorder, or proprietary powering. For professional audio, ' +
   'however, 48 V phantom is extremely common — the selection question is simply: can the rig on THIS job power THIS mic? ' +
-  'A tube (valve) condenser is the clear exception: it does not run on phantom but on its own power supply, joined to the mic ' +
+  'Most tube (valve) condensers are the clear exception: they do not run on phantom but on their own power supply, joined to the mic ' +
   'by a dedicated multi-pin cable, with the supply’s output going on to the mic input.';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -749,11 +749,11 @@ export const CHALLENGE_BASE = {
   title: 'Outdoor interview',
   conditions: ['One speaker', 'Moderate traffic noise', 'Wind', 'Camera must stay several feet away', 'Boom operator available'],
   correct: 'B',
-  accept: [] as string[],
+  accept: ['E'] as string[],
   explain:
     'With a boom operator and a distant camera, the shotgun’s directivity reaches the speaker, rejects the traffic, ' +
-    'and takes proper wind protection. The LDC is too sensitive to wind and handling; the measurement omni hears the ' +
-    'whole street; the handheld would be in the shot.',
+    'and takes proper wind protection. A wireless lavalier with a windscreen is also a fair choice, and many crews run both. ' +
+    'The LDC is too sensitive to wind and handling; the measurement omni hears the whole street; the handheld would be in the shot.',
 };
 
 export const CHALLENGE_FACTORS: { key: string; label: string; correct: boolean }[] = [

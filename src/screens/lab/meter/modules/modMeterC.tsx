@@ -955,8 +955,8 @@ const CASES: DetectiveCase[] = [
       ],
       correctIdx: 1,
       reveal:
-        'Two-part fix: a narrow notch drops the loop gain below 1 at the ringing frequency (ringing out). Then fix the GEOMETRY — mic behind the speakers, a tighter pickup pattern, and the mic closer to the source so it needs less gain — so the loop cannot find the next frequency.',
-      wrongHint: 'You must break the LOOP: attack the frequency, then the acoustics feeding it.',
+        'First pull the gain down until the ring stops. Then fix the GEOMETRY — mic behind the speakers, a tighter pickup pattern, and the mic closer to the source so it needs less gain. Then a narrow notch at the ringing frequency (ringing out) drops the loop gain below 1 there, for a little more margin. A notch adds margin; it does not cure a bad layout.',
+      wrongHint: 'You must break the LOOP: stop the ring with the fader, fix the layout that feeds it, then notch what is left.',
     },
   },
   {

@@ -292,11 +292,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Voice-and-guitar bossa in clubs and theaters works at 82–90 dBA LAeq-15 at FOH, peaks under 100 dBA; the audience is often seated and silent. Full-band MPB in theaters runs 88–95 dBA, festival stages 95–100 dBA (big MPB festival rigs use L/C/R arrays mainly for vocal clarity, not level). Pagode (informal party samba) and samba shows run 95–100 dBA, about 110–118 dBC, with moderate sub for surdo (deep samba bass drum) and bass; a C-minus-A gap above 20 dB means too much sub. Gain-before-feedback on nylon guitar and soft vocals is the real limit; keep stage levels low. Common hearing-safety guidance allows only about 30 minutes at 97 dBA, so offer earplugs at pagode shows."
+      "text": "Voice-and-guitar bossa in clubs and theaters works at 82–90 dBA LAeq-15 at FOH, peaks under 100 dBA; the audience is often seated and silent. Full-band MPB in theaters runs 88–95 dBA, festival stages 95–100 dBA (big MPB festival rigs use L/C/R arrays mainly for vocal clarity, not level). Pagode (informal party samba) and samba shows run 95–100 dBA, about 110–118 dBC, with moderate sub for surdo (deep samba bass drum) and bass; a C-minus-A gap above 20 dB means too much sub. Gain-before-feedback on nylon guitar and soft vocals is the real limit; keep stage levels low. NIOSH advises no more than about 30 minutes a day at 97 dBA, so offer earplugs at pagode shows."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Bossa and MPB masters typically land at −16 to −12 LUFS-I with a peak-to-loudness ratio of 12–16 dB and true peak at −1 dBTP; classic reissues are often quieter. Modern pagode and samba-pop masters run −10 to −8 LUFS-I, true peak −1 to −2 dBTP. Most streaming services normalize to about −14, so a loud bossa master gains nothing and loses the batida’s (guitar rhythm’s) detail. A loudness range of 6–10 LU is normal for MPB."
+      "text": "Bossa and MPB masters typically land at −16 to −12 LUFS-I with a peak-to-loudness ratio of about 11–15 dB and true peak at −1 dBTP; classic reissues are often quieter. Modern pagode and samba-pop masters run −10 to −8 LUFS-I, true peak −2 dBTP. Most streaming services normalize to about −14, so a loud bossa master gains nothing and loses the batida’s (guitar rhythm’s) detail. A loudness range of 6–10 LU is normal for MPB."
     }
   ],
   "liveStudio": {

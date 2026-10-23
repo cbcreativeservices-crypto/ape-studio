@@ -35,7 +35,7 @@ const HAND: HandSpec = {
       { id: 'room', box: { u0: -1300, u1: 1700, v0: -1000, v1: -860 }, scene: 'studio', label: { u: 200, v: -780 } },
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the triangle player standing, the triangle held in front of the chest; a wedge downstage on the audience side, the drums and louder players upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the triangle player standing, no monitors on the floor, the room's walls around.${sel ? ` Highlighted: ${sel}.` : ''}`),
-    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'),
+    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience to the right' : 'Plan · a studio room from above'),
     first: 'The player stands with the triangle in front of the chest; the beater and both hands work round it. Everything else fits round that.',
     before: [
       { title: 'ASK FOR THE WHOLE PASSAGE', text: 'Soft and strong strokes, rolls and the cutoffs — held or mounted, and the moves to other instruments. Which beater, and where on the bar? The source changes before the mic does.' },
@@ -103,7 +103,7 @@ const HAND: HandSpec = {
     B: { zone: 'tri.C', mic: 'sdcCard' },
     names: { A: 'SPOT MIC', B: 'WIDER MIC' },
     looking: 'Two mics · A the spot, B a wider view farther back',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes — and try each SOURCE.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes — and try each SOURCE.',
     label: 'The triangle with a spot mic (A) and a wider mic (B)',
     warn: 'This simplified graph shows one point source and straight paths. A real triangle rings all along its rod and hangs on a line that can turn, so the delay between two mics is not one number. Read the notch depths as illustrative only, and judge the pair by ear, in mono.',
     learn: [
@@ -130,7 +130,7 @@ const SPEC: MetalSpec = {
     partsBadge: 'An 8 in steel triangle, face-on · tap a part to name it',
     partsLooking: (v) => (v === 'mounted' ? 'From the audience · the triangle on its stand' : 'From the audience · the triangle face-on, the player behind'),
     partsNote: 'One steel rod, bent round two closed corners, with one corner left open. It hangs freely so the whole bar can ring. Switch PLAYED to see it mounted.',
-    partsWarn: 'The triangle and its clip and lines are the player’s: never clip a mic to them, and never hold the metal — a hand on it stops the ring.',
+    partsWarn: 'The triangle, its clip and its lines are the player’s. Do not clip a mic to them without the player’s okay, and do not hold the metal yourself: a hand on it stops the ring.',
     variantKey: 'PLAYED',
   },
   sound: {

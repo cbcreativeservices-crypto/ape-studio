@@ -142,7 +142,7 @@ export const PREP_ITEMS: readonly { id: PrepFault; label: string; where: string;
 /** The CAUTION card (Chapters 2 and 3): the ways a drum gets damaged while
  *  being tuned. One card, two places. */
 export const CAUTION_TITLE = 'CAUTION · a head has a working range';
-export const CAUTION_TEXT = 'Past it the collar can split, the hoop can go out of round and a lug insert can strip. Drum key and fingers only — never a wrench or pliers. If a rod binds, stop and look; if the pitch stops rising as you turn, stop. Big turns on one rod are how hoops go out of round.';
+export const CAUTION_TEXT = 'Past it the collar can split, the hoop can go out of round and a lug insert can strip. Use a drum key and your fingers, not a wrench or pliers. If a rod binds, stop and look; if the pitch stops rising as you turn, stop. Big turns on one rod are how hoops go out of round.';
 
 /** The lab's ordered method (Chapter 3). */
 export const METHOD_STEPS: readonly { id: string; title: string; short: string; detail: string }[] = [

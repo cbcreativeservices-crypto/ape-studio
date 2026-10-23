@@ -638,7 +638,7 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
         </SvgText>
         {/* The reference gauge always reads the 5-second average. */}
         <SvgText x={CX} y={CY + 50} fill={INK_DIM} fontFamily={fonts.oswaldSemiBold} fontSize={14} letterSpacing={2} textAnchor="middle">
-          dB SPL · 5s AVG
+          dB SPL (EST) · 5s AVG
         </SvgText>
         {band && (
           <SvgText x={CX} y={CY + 100} fill={ZONE_HEX[band.zone]} fontFamily={fonts.oswaldSemiBold} fontSize={33} letterSpacing={1.2} textAnchor="middle">

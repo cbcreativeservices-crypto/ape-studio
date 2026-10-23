@@ -167,8 +167,8 @@ const V: [string, string, Record<string, unknown>, Record<string, number> | stri
   ['electronics', 'seriesR', { rlist: [0] }, { 'TOTAL RESISTANCE': 0 }],
   ['electronics', 'parallelR', { rlist: [8, 8] }, { 'TOTAL RESISTANCE': 4 }],
   ['electronics', 'parallelR', { rlist: [8, 0] }, { 'TOTAL RESISTANCE': 0 }],
-  ['electronics', 'divider', { vin: 1, r1: 10000, r2: 10000 }, { 'OUTPUT VOLTAGE': 0.5, ATTENUATION: -6.020599913279624 }],
-  ['electronics', 'divider', { vin: 0, r1: 9000, r2: 1000 }, { 'OUTPUT VOLTAGE': 0, ATTENUATION: -20 }],
+  ['electronics', 'divider', { vin: 1, r1: 10000, r2: 10000 }, { 'OUTPUT VOLTAGE': 0.5, ATTENUATION: 6.020599913279624 }], // a magnitude (audit R2, 2026-10-23)
+  ['electronics', 'divider', { vin: 0, r1: 9000, r2: 1000 }, { 'OUTPUT VOLTAGE': 0, ATTENUATION: 20 }],
   ['electronics', 'xc', { f: 1000, cap: 1 }, { 'CAPACITIVE REACTANCE': 1 / (2 * PI * 1000 * 1e-6) }],
   ['electronics', 'xc', { f: 20, cap: 1000 }, { 'CAPACITIVE REACTANCE': 1 / (2 * PI * 20 * 1e-3) }],
   ['electronics', 'xl', { f: 1000, ind: 10 }, { 'INDUCTIVE REACTANCE': 2 * PI * 10 }],
@@ -449,7 +449,8 @@ const V: [string, string, Record<string, unknown>, Record<string, number> | stri
   ['loudtp', 'windows', { sr: 48000 }, { 'MOMENTARY WINDOW (400 ms)': 19200, 'SHORT-TERM WINDOW (3 s)': 144000 }],
   ['loudtp', 'windows', { sr: 44100 }, { 'BLOCK STEP (75% overlap)': 4410 }],
   ['loudtp', 'loudnessDelta', { lufsA: -14, lufsB: -20 }, { 'DIFFERENCE (LU)': 6, 'PERCEIVED LOUDNESS RATIO': pw(2, 0.6) }],
-  ['loudtp', 'loudnessDelta', { lufsA: -24, lufsB: -14 }, { 'PERCEIVED LOUDNESS RATIO': 2 }],
+  // WITH its sign (audit R2, 2026-10-23 — a MISMATCH): A 10 LU quieter than B is 0.5×, not 2×.
+  ['loudtp', 'loudnessDelta', { lufsA: -24, lufsB: -14 }, { 'PERCEIVED LOUDNESS RATIO': 0.5 }],
   ['loudtp', 'truePeakMargin', { samplePeak: -0.1, lossy: 0 }, { 'SUGGESTED CEILING (dBTP)': -1, 'OVER CEILING BY': 0.9 }],
   ['loudtp', 'truePeakMargin', { samplePeak: -3, lossy: 1 }, { 'SUGGESTED CEILING (dBTP)': -2, 'MARGIN TO CEILING': 1 }],
   // ── align

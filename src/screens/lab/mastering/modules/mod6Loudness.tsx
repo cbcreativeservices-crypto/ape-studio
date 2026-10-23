@@ -170,12 +170,12 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <Body>The Visual Audio Analysis lab's own meters on the glass. Ride GAIN: PEAK, TRUE PK and LUFS on the bezel all move by the same amount — a gain change is the one thing that moves every number together — and the face moves with them. Switch FACE between the sample peak meter and the loudness meter; change SIGNAL to see how the GAP between peak and loudness depends on the material (that gap is what a limiter spends). The loudness meter here draws no target line on purpose.</Body>
+              <Body>The Visual Audio Analysis lab's own meters on the glass. Ride GAIN: PEAK, TRUE PK and LUFS on the bezel all move by the same amount — a gain change moves these three together and leaves the gap between them alone — and the face moves with them. Switch FACE between the sample peak meter and the loudness meter; change SIGNAL to see how the GAP between peak and loudness depends on the material (that gap is what a limiter spends). The loudness meter here draws no target line on purpose.</Body>
               <Card>
                 <Point title="Peak level (dBFS)">The highest sample. It tells you about one instant, not about how loud the piece is.</Point>
                 <Point title="True peak (dBTP)">An estimate of the reconstructed waveform BETWEEN samples (oversampled). It can exceed the sample peak; converters and lossy encoders see it.</Point>
                 <Point title="Integrated loudness (LUFS / LKFS)">A gated, frequency-weighted average of the whole programme — the ITU-R BS.1770 measurement the loudness world shares. One number for how loud the piece is.</Point>
-                <Point title="Dynamic range">How far the peaks sit above the average (PLR, crest factor) and how much the loudness moves over time (loudness range). Limiting spends it.</Point>
+                <Point title="Dynamic range">How far the peaks sit above the average (PLR, crest factor) and how much the loudness moves over time (loudness range). Limiting spends mostly the first; compression is what shrinks the second.</Point>
               </Card>
             </>
           ),

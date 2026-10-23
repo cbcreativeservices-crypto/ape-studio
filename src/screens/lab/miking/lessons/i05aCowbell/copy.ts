@@ -82,7 +82,7 @@ export const BELL_COPY: LessonCopy = spCopy({
     before: [
       { title: 'MARK THE STICK’S PATH', text: 'Watch every strike point, the fills, the rebound and the crossover motions. A mic is never a target in the player’s groove.' },
       { title: 'THE BELL FIRST', text: 'Shell, shape, alloy, mount, beater and touch all shape the sound. If the ring is too long, try the bell or a compatible, secure mute before processing.' },
-      { title: 'HEARING AND HANDS', text: 'Struck metal is bright and loud beside the player’s ear. Never reach into an active striking area to adjust a mic; secure the bell, mount, boom and cable.' },
+      { title: 'HEARING AND HANDS', text: 'Struck metal is bright and loud beside the player’s ear. Stop the player before you reach into the striking area to adjust a mic. Secure the bell, mount, boom and cable.' },
     ],
     planTitle: 'On the kit and the percussion rig',
   },

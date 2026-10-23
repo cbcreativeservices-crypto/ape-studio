@@ -118,7 +118,8 @@ describe('R7-SS-04..06 — wording', () => {
   });
   it('a microphone never stands in the mains’ coverage', () => {
     const c = src('screens/lab/soundsystems/pagesLearnC.tsx');
-    assert.match(c, /A microphone should never stand in the mains’ coverage;/);
+    // audit R2 R018559: the absolute became the professional rule (2026-10-23)
+    assert.match(c, /Keep microphones out of the mains’ coverage where you can\./);
     assert.doesNotMatch(c, /never stand in a loudspeaker’s coverage/);
   });
 });

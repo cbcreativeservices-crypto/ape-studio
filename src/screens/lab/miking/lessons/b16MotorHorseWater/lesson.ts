@@ -131,8 +131,8 @@ const scenarios: MikingScenario[] = [
     correct: 'Use a perimeter feed instead',
     explain: 'Never a mic on a horse, its tack or its rider as a stand-in for a refused plant. Use an approved perimeter feed or the wider coverage.',
     why: {
-      'A small clip mic on the bridle': 'No mic goes on a horse or its tack.',
-      'A mic on the rider’s jacket': 'No mic goes on the rider either — tack and athlete devices have their own restrictions.',
+      'A small clip mic on the bridle': 'Not as a stand-in. A mic on a horse or its tack goes on only with the rider’s, the owner’s and the organizer’s approval.',
+      'A mic on the rider’s jacket': 'Not as a stand-in. A rider mic goes on only with the rider’s and the organizer’s approval, and athlete devices have their own rules.',
     },
   },
   {
@@ -330,7 +330,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'mo.prac.gain',
     page: 'practice',
-    prompt: 'A gentle clap peaks at −28 dBFS; the real pass-by will be far louder. Your gain?',
+    prompt: 'In the practice, a gentle clap peaks at −28 dBFS. Your strongest repeatable clap is louder. Your gain?',
     options: ['The loudest safe peak near −12 dBFS', 'Bring the gentle clap right up to −6 dBFS', 'Leave it as it is and normalise it later'],
     correct: 'The loudest safe peak near −12 dBFS',
     explain: 'In this quiet practice the loudest safe peak is your strongest repeatable gentle clap: near −12 dBFS is a trial starting point, with more margin for live peaks. No practice gain certifies a real pass-by.',
@@ -644,6 +644,6 @@ export const B16_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every course, arena and pool is different: get approval, listen, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the practice room and its marks are the lesson’s own; the venue plans, the car and the horse are typical drawings; ranges, levels and delays along the walk are calculated from the drawing, and no pitch or speed is ever calculated. Safety is exact: never into a course, a run-off, an arena or a deck route; hearing protection near loud engines; no mic on a horse, its tack or its rider; wet-area electrics by a qualified person; with thunder, shelter at once and wait 30 minutes after the last thunder.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every course, arena and pool is different: get approval, listen, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the practice room and its marks are the lesson’s own; the venue plans, the car and the horse are typical drawings; ranges, levels and delays along the walk are calculated from the drawing, and no pitch or speed is ever calculated. Safety is exact: never into a course, a run-off, an arena or a deck route; hearing protection near loud engines; a mic on a horse, its tack or its rider only with the approval of the rider, the owner and the organizer; wet-area electrics by a qualified person; with thunder, shelter at once and wait 30 minutes after the last thunder.',
   copy: B16_COPY,
 };

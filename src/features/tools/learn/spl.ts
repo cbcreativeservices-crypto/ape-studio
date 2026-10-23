@@ -22,7 +22,7 @@ export const SPL_LEARN: ToolLearnContent = {
     {
       head: 'PEAK VS RMS',
       body:
-        'Peak is the single highest instantaneous excursion of the signal; RMS is the average energy over a short window, and it tracks much closer to how loud something feels. A snare hit can post a very high Peak while barely moving the RMS value, and a steady sine tone can do the opposite. The gap between them is the crest factor, and it tells you about the character of the signal, not just its level. Read both: Peak protects equipment and headroom, RMS relates to loudness and exposure.',
+        'Peak is the single highest instantaneous excursion of the signal; RMS is the average energy over a short window, and it tracks much closer to how loud something feels. A snare hit can post a very high Peak while barely moving the RMS value, while a steady sine keeps the two only about 3 dB apart. The gap between them is the crest factor, and it tells you about the character of the signal, not just its level. Read both: Peak protects equipment and headroom, RMS relates to loudness and exposure.',
     },
     {
       head: 'WEIGHTING AND RESPONSE',
@@ -79,7 +79,7 @@ export const SPL_LEARN: ToolLearnContent = {
     {
       claim: 'If it does not feel painfully loud, it cannot be damaging my hearing.',
       truth:
-        'Damage risk is set by dose — level combined with exposure time — and levels far below the pain threshold are hazardous over hours. Occupational limits treat 85 dB(A) over an eight-hour day as the action level, with safe time roughly halving for every few dB above it. Ears also adapt during a long session, so "feels fine" is precisely the judgment a logged measurement exists to replace.',
+        'Damage risk is set by dose — level combined with exposure time — and levels far below the pain threshold are hazardous over hours. NIOSH recommends 85 dBA for 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Ears also adapt during a long session, so "feels fine" is precisely the judgment a logged measurement exists to replace.',
     },
   ],
   warnings: [

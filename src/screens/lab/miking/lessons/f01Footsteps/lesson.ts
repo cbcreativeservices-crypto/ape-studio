@@ -42,7 +42,7 @@ const pages: LessonPages = {
     title: 'Before any mic',
     goal: 'Know what else reaches a footstep mic — clothing, breath, the room, a hollow floor, and on a live stage the PA — and what to settle before any stand goes up: the shoe, the surface, the movement marked, the exit path clear.',
     credit: { scenarios: ['f01.set.1', 'f01.set.2', 'f01.set.hear'], note: 'Answer the three checks.' },
-    takeaway: 'Define the step, walk the cue, mark the movement and the exit path, secure the surface — then put up a stable stand in a shock mount outside all of it. Hearing comes first, and feedback is never provoked.',
+    takeaway: 'Define the step, walk the cue, mark the movement and the exit path, secure the surface — then put up a stable stand in a shock mount outside all of it. Protect everyone’s hearing, and leave ringing out to the system operator.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -60,7 +60,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the footstep mic so its rejection faces the wedge in a live booth — and know why a quiet Foley stage and a theatre with a PA need different first plans.',
     credit: { scenarios: ['f01.ctx.1', 'f01.ctx.2', 'f01.ctx.ring', 'f01.ctx.studio', 'f01.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the wedge sits in the rejection. STUDIO: answer the decision card. Then the four checks.' },
-    takeaway: 'On a quiet stage, one directional mic and the room are a place to begin. Live, one protected mic close enough to keep the PA down in it, the wedge in its rejection, the open mics few — and feedback never provoked.',
+    takeaway: 'On a quiet stage, one directional mic and the room are a place to begin. Live, one protected mic close enough to keep the PA down in it, the wedge in its rejection, the open mics few — and ringing out left to the system operator.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -168,7 +168,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You can only offer the shotgun’s channel without phantom power. What happens?',
     options: ['It will not work: this condenser needs phantom', 'It works, a little quieter than with phantom on', 'It works if the gain is turned up to make up'],
     correct: 'It will not work: this condenser needs phantom',
-    explain: 'A shotgun is a condenser: it needs phantom power (or its own supply) to work. Mute the outputs and lower the monitors before switching phantom on, and follow the mic’s manual.',
+    explain: 'Most shotguns are condensers, and this one needs phantom power (or its own supply) to work. Mute the outputs and lower the monitors before switching phantom on, and follow the mic’s manual.',
     why: {
       'It works, a little quieter than with phantom on': 'A condenser without its power does not just get quieter — it does not work.',
       'It works if the gain is turned up to make up': 'Gain cannot power a condenser. It needs phantom power from the desk or its own supply.',
@@ -391,7 +391,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'Push the gain until it rings, then back it off', ok: false, power: 'phantom', feedback: 'Not until it rings. Check the gain with the operator, short of any ring.' },
       { id: 'e', label: 'Three mics round the pit, all open on the PA', ok: false, power: 'phantom', feedback: 'Each open mic takes margin away and adds spill. Start with one.' },
     ],
-    reasons: [DOC_REASON('the middle of the steps'), CLEAR_REASON('the movement and the exit path'), { id: 'r.null', label: 'The pattern’s rejection faces the wedge', role: 'required', feedback: 'Say where the wedge sits against the pattern.' }, { id: 'r.op', label: 'The gain is checked with the operator at show level', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Feedback is never provoked — not even to find the edge.' }],
+    reasons: [DOC_REASON('the middle of the steps'), CLEAR_REASON('the movement and the exit path'), { id: 'r.null', label: 'The pattern’s rejection faces the wedge', role: 'required', feedback: 'Say where the wedge sits against the pattern.' }, { id: 'r.op', label: 'The gain is checked with the operator at show level', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Not during the cue. Feedback is made on purpose only to ring out a system, by its operator, at a controlled level.' }],
     explain: 'Two setups pass. What passes is the reasoning: one close, protected pickup, the wedge in its rejection, clearance of the movement, and gain checked with the operator — never by making it ring.',
   },
 ];
@@ -401,7 +401,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will the supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 1.8 m to 1 m from the steps. What changes?', options: ['More contact, uneven steps', 'More room', 'It depends on this floor'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the performer. Where will a supercardioid aimed at the steps reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -421,11 +421,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'sound',
     prompt: 'Why is a footstep mic aimed down at the middle of the steps?',
-    options: ['The contact starts at the floor, all over the pit', 'The walker’s voice must stay out of the mic', 'Sound rises straight up from the floor in a narrow beam'],
+    options: ['The contact starts at the floor, all over the pit', 'So the mic hears the walker’s knees and hips best', 'Sound rises straight up from the floor in a narrow beam'],
     correct: 'The contact starts at the floor, all over the pit',
     explain: 'Every step lands at floor level, somewhere in the pit. Aiming at the middle of the steps covers them and keeps the body and clothing off the mic’s axis.',
     why: {
-      'The walker’s voice must stay out of the mic': 'Breath and voice matter, but the aim follows where the steps start: the floor.',
+      'So the mic hears the walker’s knees and hips best': 'Aiming down keeps the knees and hips off the mic’s axis. The aim follows where the steps start: the floor.',
       'Sound rises straight up from the floor in a narrow beam': 'Sound spreads from each step; it does not rise as a beam. The aim follows where the steps land.',
     },
   },

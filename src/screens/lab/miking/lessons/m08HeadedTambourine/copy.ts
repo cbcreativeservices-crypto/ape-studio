@@ -96,8 +96,8 @@ export const TAMB_COPY: LessonCopy = {
     studioIdle: 'No monitors. The main pair over the conductor hears the whole orchestra — the tambourine included — and the hall is part of the sound.',
     before: [
       { title: 'ASK FOR THE WHOLE PHRASE', text: 'Fingertip strikes, loud accents, shakes, thumb or finger rolls, any knee or fist strokes, a mount, and the moves between stations. Is it a headed tambourine at all? The head changes the balance a lot.' },
-      { title: 'WORK WITH THE PLAYER’S MOTION', text: 'Place the mic for the motion the player uses — never ask for a different grip, roll or stroke to suit a mic. A sideways shake can keep the level steadier, but it is the player’s choice.' },
-      { title: 'HANDS OFF THE INSTRUMENT', text: 'Nothing is clipped to the frame unless the hardware is made for it and the owner agrees. Loose jingles or a damaged frame go back to the player — never fix them yourself.' },
+      { title: 'WORK WITH THE PLAYER’S MOTION', text: 'Place the mic for the motion the player uses — don’t ask for a different grip, roll or stroke just to suit a mic. You may mention that a sideways shake can keep the level steadier, but it is the player’s choice.' },
+      { title: 'HANDS OFF THE INSTRUMENT', text: 'Nothing is clipped to the frame unless the hardware is made for it and the owner agrees. Loose jingles or a damaged frame go back to the player or owner — don’t fix them yourself unless they ask.' },
     ],
     plan: {
       title: 'In the orchestra',

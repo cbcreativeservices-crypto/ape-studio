@@ -216,7 +216,7 @@ Object.assign(MIC_TYPES, {
     clip: { reach: { mm: 160, prov: { kind: 'trial', src: 'EW-DM20', note: 'the 120.65 mm gooseneck plus a drawing default for the rim mount' } } },
     examples: [{ model: 'Earthworks DM20 on RM1', fact: '"Cardioid"; 282.44 × 22 mm; gooseneck 120.65 × 9.53 mm; "Peak Acoustic Input 150dB SPL"; "24-48V Phantom"; RM1 rim mount, top or bottom of a tom or snare.', src: 'EW-DM20' }],
     art: 'gooseneck',
-    blurb: 'A slim condenser on a short gooseneck that clamps to the hoop. Needs phantom power. Keep its head angled toward the drumhead, never flat to it.',
+    blurb: 'A slim condenser on a short gooseneck that clamps to the hoop. Needs phantom power. Keep its head angled toward the drumhead, not lying flat against it.',
   },
 } satisfies Record<string, MicType>);
 

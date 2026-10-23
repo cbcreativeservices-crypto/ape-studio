@@ -105,7 +105,7 @@ export const F04_COPY: Partial<LessonCopy> = foleyCopy({
     points: [
       { title: 'SMALL, CONTAINED EFFECTS', text: 'Studio: props, surfaces and distance can change between takes. Live: a small contained effect at a fixed station hits its cue once, inside a PA and monitor field.' },
       { title: 'NO WET EFFECT WITHOUT A PLAN', text: 'Avoid a wet effect in a live stage area unless the venue has approved containment, cleanup and equipment separation.' },
-      { title: 'THE WEDGE IN THE REJECTION', text: 'An operator-controlled channel, the wedge in the mic’s rejection, the gain before feedback tested at normal rehearsal level.' },
+      { title: 'THE WEDGE IN THE REJECTION', text: 'An operator-controlled channel. The wedge sits in the mic’s rejection. The gain before feedback is checked with the operator at show level.' },
       { title: 'ON LOCATION', text: 'Wind, traffic, wet footing and changing levels: keep stands, crew and electronics outside the action and the spray zone, with permission for the site — never into a road, an unstable bank or active machinery for a closer sound.' },
     ],
     cardioidReveal: 'What you just saw: a cardioid rejects most directly behind it. Aimed down at the impact, its rear points up and away — the wedge, on the floor ahead and to one side, sits off that line, nearer a supercardioid’s deeper rejection.',

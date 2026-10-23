@@ -80,7 +80,7 @@ export const A01_ART: LessonArt = {
         },
       },
       tubeNote: {
-        trumpet: 'The trumpet’s tube is about 1.4 m long, unwound; the valves add loops to it. The loop lengths here are the ideal ones — a real horn’s slides are set by the player’s ear.',
+        trumpet: 'The trumpet’s tube is about 1.5 m long, unwound; the valves add loops to it. The loop lengths here are the ideal ones — a real horn’s slides are set by the player’s ear.',
         flugelhorn: 'The flugelhorn works the same way: three valves, each adding a loop. Its tube widens gradually along most of its length — part of its rounder sound.',
       },
       silentNote: 'This lab never plays a sound and draws no frequency curve for the horn: how a real trumpet or flugelhorn sounds depends on the horn, the mouthpiece, the player and the room. The pictures show where the sound comes from and where it goes.',
@@ -99,7 +99,7 @@ export const A01_ART: LessonArt = {
         { title: 'WORK WITH THE HORN AS IT IS', text: 'The horn is the player’s. Nothing clamps to the bell or its finish without their agreement and a clip made for it; nothing touches the valves, the slides or the mute’s path. The player puts mutes in and takes them out.' },
         { title: 'ONE HORN HERE', text: 'This lesson is one trumpet. Miking a whole horn section — several horns sharing mics, their spacing and their blend — is a topic of its own, with ensembles and voice. Here, when other horns play, hear the section first and treat this mic as a spot.' },
       ],
-      hearing: 'Protect your hearing during soundcheck and on loud stages. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens — a mic’s maximum SPL rating and the input meter say nothing about it. A trumpet can be very loud close to its bell: keep the bell from firing at anyone’s ear, and use hearing protection where it is loud.',
+      hearing: 'Protect your hearing during soundcheck and on loud stages. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating and the input meter say nothing about it. A trumpet can be very loud close to its bell: keep the bell from firing at anyone’s ear, and use hearing protection where it is loud.',
     }),
   },
   stepCounts: { sound: 5 },

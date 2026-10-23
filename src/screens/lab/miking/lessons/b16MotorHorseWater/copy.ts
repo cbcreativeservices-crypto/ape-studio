@@ -51,7 +51,7 @@ export const B16_COPY: Partial<LessonCopy> = {
     A: { typeId: 'shotgunShort', pattern: 'supercardioid', zone: 'mo.sg.B' },
     B: { typeId: 'shotgunShort', pattern: 'supercardioid', zone: 'mo.m2.B' },
     learn: [
-      'A moving source changes its path difference to two fixed mics, so an alignment made at one pass-by point does not hold everywhere.',
+      'A moving source changes its path to each of two fixed mics. Unless the mics are mirror images across its path, the two paths stop being equal, so an alignment made at one pass-by point does not hold everywhere.',
       'Choose a dominant detail feed per sector and reduce the overlap before adding delay. Polarity flips the sign; it never removes a delay.',
     ],
     warn: 'This simplified picture treats the source as one point and both mics as hearing it along straight paths; a real venue adds the crowd, the PA and reflections.',

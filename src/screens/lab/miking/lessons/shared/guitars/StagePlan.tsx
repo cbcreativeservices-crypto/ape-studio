@@ -516,4 +516,4 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
 /** The plain hearing line every string lesson carries (the research's
  *  "missing hearing note" fix, in starting-points words). */
 export const STRINGS_HEARING =
-  'Protect your hearing during soundcheck and long sessions. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. It is a limit for PEOPLE, measured where a person listens — not a microphone’s rating. Stage monitors and a loud band reach far higher than the instrument alone: keep levels and time down, and use hearing protection.';
+  'Protect your hearing during soundcheck and long sessions. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — not a microphone’s rating. Stage monitors and a loud band reach far higher than the instrument alone: keep levels and time down, and use hearing protection.';

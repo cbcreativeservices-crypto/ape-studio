@@ -4,7 +4,7 @@
  * Section 'waves'. Same pattern as wave.ts.
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, snapWhole, speedOfSoundAir } from '../calcUnits';
+import { AIR_TEMP_FIELD, fmt, snapWhole, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -38,9 +38,9 @@ const ALIGN: Workspace = {
   glossary: ['Phase', 'Delay', 'Comb Filtering', 'Crossover', 'Wavelength'],
   fields: [
     { key: 'offset', name: 'PATH OFFSET', quantity: 'length', placeholder: '1.2', help: 'How much farther one source is than the other.', warn: { test: (x) => x < 0, msg: 'Offset cannot be negative.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound.' },
-    { key: 'freq', name: 'FREQUENCY', quantity: 'frequency', placeholder: '80', help: 'Frequency to evaluate the phase relationship at (e.g. the crossover).', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'For the delay expressed in samples.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
+    { key: 'freq', name: 'FREQUENCY', quantity: 'frequency', placeholder: '80', help: 'Frequency to evaluate the phase relationship at (e.g. the crossover).', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'For the delay expressed in samples.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'delay', name: 'DELAY', quantity: 'time', defaultUnit: 'ms', placeholder: '3.5', help: 'A delay time to convert back into a path distance.', warn: { test: (x) => x < 0, msg: 'Delay cannot be negative.' } },
   ],
   functions: [
@@ -92,12 +92,28 @@ const ALIGN: Workspace = {
       steps: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const wl = c / n(v.freq);
-        const phase = snapWhole((360 * n(v.offset)) / wl) % 360;
+        const total = (360 * n(v.offset)) / wl;
+        const phase = snapWhole(total) % 360;
+        // The sum of two EQUAL sources at this phase, in dB over one alone:
+        // 20·log₁₀|2·cos(φ/2)| — +6 dB in phase, +3 dB at 90°, 0 dB at 120°.
+        // The verdict follows it (audit R2, 2026-10-23): 50° (still +5.2 dB)
+        // was called "partly cancel".
+        const sum = 20 * Math.log10(Math.abs(2 * Math.cos((phase * Math.PI) / 360)));
         const near = Math.min(phase, 360 - phase);
         return [
           `Wavelength at ${fmt(n(v.freq))} Hz = ${fmt(c)} ÷ ${fmt(n(v.freq))} = ${fmt(wl)} m.`,
-          `Phase = 360 × ${fmt(n(v.offset))} ÷ ${fmt(wl)} = ${fmt(phase)}° (${fmt(n(v.offset) / wl)} wavelengths).`,
-          near < 45 ? `Close to in-phase — sources reinforce here.` : near > 135 ? `Close to 180° — sources cancel here until aligned.` : `Partially out of phase — the sources partly cancel here.`,
+          // The wrap step said, not skipped (audit R2): "360 × 1200000 ÷ 4.29
+          // = 130.4°" was false as written.
+          Math.abs(total) >= 360
+            ? `Phase = 360 × ${fmt(n(v.offset))} ÷ ${fmt(wl)} = ${fmt(total)}°, which is ${fmt(phase)}° after removing whole turns (${fmt(n(v.offset) / wl)} wavelengths).`
+            : `Phase = 360 × ${fmt(n(v.offset))} ÷ ${fmt(wl)} = ${fmt(phase)}° (${fmt(n(v.offset) / wl)} wavelengths).`,
+          near <= 90
+            ? `Mostly in phase — two equal sources still add well here (about +${fmt(sum, 2)} dB over one alone).`
+            : near <= 120
+              ? `Partly out of phase — some loss: two equal sources add only about +${fmt(sum, 2)} dB over one alone.`
+              : near > 179.9
+                ? `Close to 180° — equal sources cancel almost completely here until aligned.`
+                : `Mostly cancelling — two equal sources come out about ${fmt(-sum, 2)} dB quieter than one alone; align them.`,
         ];
       },
     },
@@ -154,8 +170,8 @@ const IMD: Workspace = {
     'frequencies, not their amplitudes.',
   glossary: ['Intermodulation', 'Distortion', 'Harmonics', 'nonlinear distortion', 'Frequency'],
   fields: [
-    { key: 'f1', name: 'TONE 1 (f₁)', quantity: 'frequency', placeholder: '19000', help: 'First input frequency.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
-    { key: 'f2', name: 'TONE 2 (f₂)', quantity: 'frequency', placeholder: '20000', help: 'Second input frequency.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'f1', name: 'TONE 1 (f₁)', quantity: 'frequency', placeholder: '19000', help: 'First input frequency.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'f2', name: 'TONE 2 (f₂)', quantity: 'frequency', placeholder: '20000', help: 'Second input frequency.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
   functions: [
     {
@@ -166,8 +182,11 @@ const IMD: Workspace = {
       plainFormula:
         'Second-order tones appear at the sum and difference of the two frequencies; third-order tones appear at twice one frequency plus or minus the other.',
       explain:
-        'A nonlinearity mixes two tones into new tones at their sums and differences. The second-order products are the simple sum and difference; the third-order products (twice one tone, minus the other) are often the worst, because with close tones they land right beside the originals where no filter can remove them. This locates the frequencies, not their levels.',
+        'A nonlinearity mixes two tones into new tones at their sums and differences. The second-order products are the simple sum and difference; the third-order products are twice one tone, plus or minus the other. The “minus” pair is often the worst, because with close tones it lands right beside the originals, where no practical filter can remove it. This locates the frequencies, not their levels.',
       keySymbols: ['±', 'x₁', 'f'],
+      // One tone is no intermodulation (audit R2, 2026-10-23).
+      refuse: (v) =>
+        n(v.f1) === n(v.f2) ? 'Two identical tones make no intermodulation — enter two different frequencies.' : null,
       compute: (v) => {
         const f1 = n(v.f1);
         const f2 = n(v.f2);

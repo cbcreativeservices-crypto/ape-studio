@@ -231,7 +231,7 @@ export const TOM_ZONES: DocumentedZone[] = [
   {
     id: 'floor.bottom',
     label: 'Below the floor tom, on its bottom hoop',
-    band: 'Start with a rim-mounted condenser on the bottom hoop, about 3–8 cm (1–3 in) below the resonant head, aimed up at it.',
+    band: 'Start with a rim-mounted condenser on the bottom hoop, about 3–8 cm (1.2–3 in) below the resonant head, aimed up at it.',
     kind: 'sourced',
     src: 'EW-DM20',
     quote: 'The RM1 can also be used on the top or bottom of a tom or snare.',

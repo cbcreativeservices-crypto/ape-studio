@@ -3,7 +3,7 @@
  * first-beat placement, wrong grids, half/double BPM, synchronization and
  * quantized actions. Two waveforms (the real audio) carry their ANALYSED
  * grids: when a grid is wrong you can SEE the kicks miss the lines — and SYNC,
- * which trusts the grid, makes the real beats flam. The learner moves the
+ * which trusts the grid, puts B's kicks between A's. The learner moves the
  * grid and fixes the BPM; SYNC then locks for real. The fault: loops twice as
  * long as asked (a half-BPM reading).
  */
@@ -37,7 +37,7 @@ const TERMS = [
   { term: 'SYNC', def: 'Matches one deck’s tempo and beat phase to the other, using their GRIDS. With a wrong grid, sync faithfully lines up the wrong thing.' },
 ] as const;
 
-export const GOALS_GRID = ['SYNC on a wrong grid — hear the flam', 'Put the first beat right', 'SYNC again — locked', 'Loop with QUANTIZE on, then off', 'Fix a half-BPM reading', 'Pass the check'] as const;
+export const GOALS_GRID = ['SYNC on a wrong grid — hear the kicks clash', 'Put the first beat right', 'SYNC again — locked', 'Loop with QUANTIZE on, then off', 'Fix a half-BPM reading', 'Pass the check'] as const;
 
 const LOOK = 'You are looking at deck A’s and deck B’s waveforms (Night Ferry on both — its kicks are easy to see), about two bars each, with their beat grids drawn over them (thin white beat lines, bold amber bar lines) and the kicks tinted violet; below, deck B’s SYNC and QUANTIZE keys.';
 
@@ -253,7 +253,7 @@ function PageGrid({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open DECKS and play both. Press SYNC B and listen as the CROWD: the tempos match, yet every kick flams — sync lined up the GRIDS, and B’s grid was wrong.</Do>
+        <Do>Open DECKS and play both. Press SYNC B and listen as the CROWD: the tempos match, yet each of B’s kicks lands between A’s kicks — sync lined up the GRIDS, and B’s grid was wrong.</Do>
       </Step>
       <Step n={3}>
         <P>Open GRID and move B’s grid until its lines sit on the kicks (◀ ½ BEAT). The readout strip says ON THE KICK when it is right. Press SYNC B again: now the real beats lock.</P>

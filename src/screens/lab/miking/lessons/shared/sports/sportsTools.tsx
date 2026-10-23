@@ -284,7 +284,7 @@ export function usePlantStep({ onInteractive, done }: { onInteractive: (id: stri
           <Point title="WHAT IT HEARS">{W.hears}</Point>
           <Point title="CHECK">{W.check}</Point>
         </Card>
-        <Note tone="warn">A plant needs express approval and a reviewed fixture, installed by qualified venue people. Never drill, loosen or pad over protective equipment to fit one; never tap venue glass, boards, goals or baskets to test it.</Note>
+        <Note tone="warn">A plant needs express approval and a reviewed fixture, installed by qualified venue people. Do not drill, loosen or pad over protective gear to fit one: that needs the approval of the athlete and the team. Do not tap venue glass, boards, goals or baskets to test it; that is for the venue’s own people.</Note>
       </>
     ),
   };

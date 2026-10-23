@@ -809,7 +809,7 @@ export const STAGE4_SCHEDULE: StageDef = {
       kind: "unrealistic",
       title: "The recording may not fit on the drive",
       detail: "Storage runs out in the last hour, because that is when the drive is fullest. Multitrack recording at high sample rates fills drives faster than people expect, and the backup needs the same space again.",
-      fixHint: "Work out the space the session needs from the channel count, sample rate, bit depth and hours, double it for the backup, and compare with the drives you actually have.",
+      fixHint: "Work out the space the session needs from the channel count, sample rate, bit depth and hours. The backup needs the same space again, so check that each drive you actually have can hold one full copy.",
       needsLogic: true,
       logicIntent: "Estimate the uncompressed PCM storage required as channels multiplied by sample rate multiplied by bit depth in bytes multiplied by recording seconds, using the stage 1 source_count, the stage 2 session sample rate and bit depth, and recording_hours. Treat 32-bit float as four bytes per sample. Compare with storage_available, allowing for a full second copy and for a margin that ccode chooses. Fire when the available space is insufficient. Do not fire when any input is missing."
     },
@@ -964,6 +964,6 @@ export const STAGE4_SCHEDULE: StageDef = {
       ]
     },
     passWhen: "The day schedule contains setup, a line check before soundcheck, a changeover between each act, at least one break, a file verification block and a backup block before strike, and the blocks fit between the call and the hard out; the recording channels available are at least the source count, whether by hiring channels or by reducing inputs with the acts' agreement, and at least one spare is listed; a backup method is described; the budget lines include a contingency and total no more than the budget, or the total has been raised with a named approver; and the live recording remains in the services.",
-    debrief: "Nothing you added was exotic. A line check, changeovers, a break, a verification window and a backup are the blocks every experienced crew writes in without thinking, and every first-time planner leaves out without noticing. The channel shortage was the problem most likely to cost money to fix, and, like a missing line check, it was one you would likely have found with the audience in. The pattern is that the omissions are cheap to fix on paper and ruinous to fix on the day, so the whole value of this stage is in finding them here. The seed amounts and times in this exercise are illustrative; your real numbers come from your quotes and your venue."
+    debrief: "Nothing you added was exotic. A line check, changeovers, a break, a verification window and a backup are the blocks every experienced crew writes in without thinking, and every first-time planner leaves out without noticing. The channel shortage was the problem most likely to cost money to fix. You would likely have found it at load-in, with no time left to hire more. The pattern is that the omissions are cheap to fix on paper and ruinous to fix on the day, so the whole value of this stage is in finding them here. The seed amounts and times in this exercise are illustrative; your real numbers come from your quotes and your venue."
   }
 };

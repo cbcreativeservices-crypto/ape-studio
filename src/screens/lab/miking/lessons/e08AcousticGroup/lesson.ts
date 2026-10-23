@@ -43,12 +43,12 @@ const pages: LessonPages = {
     title: 'Reinforcement and recording',
     goal: 'Turn the guitar spot so the guitarist’s wedge sits in its rejection — and decide what a small room really needs from a PA.',
     credit: { scenarios: ['ac.ctx.1', 'ac.ctx.2', 'ac.ctx.studio', 'ac.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: turn the guitar spot (or change its pattern) until the wedge sits in its rejection. STUDIO: answer the decision card. Then the checks.' },
-    takeaway: 'Live favours close directional mics, pickups or DIs, a stereo pair only where it is safe. In a small room, less reinforcement may sound more natural. Stop the group before moving equipment; never chase feedback.',
+    takeaway: 'Live favours close directional mics, pickups or DIs, a stereo pair only where it is safe. In a small room, less reinforcement may sound more natural. Stop the group before moving equipment; do not push the system into feedback during a performance.',
   },
   twoMic: {
     title: 'The pair and a spot',
     goal: 'The main pair and the guitar spot: see how much earlier the spot hears the guitar, what polarity changes and what it does not, and judge the sum in mono.',
-    credit: { scenarios: ['ac.first', 'ac.two.1', 'ac.two.2'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
+    credit: { scenarios: ['ac.first', 'ac.two.1', 'ac.two.2'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
     takeaway: 'The relevant distance is the difference in paths from the player to each mic. Polarity changes the sign, never the time. Do not assume a polarity switch or a delay fixes poor geometry.',
   },
   troubleshoot: {
@@ -408,8 +408,8 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'The guitar by DI, a close spot on the fiddle, the wedge in its null', ok: true, power: 'phantom', feedback: 'Stable reinforcement: the DI for the guitar, a close spot for the fiddle.' },
       { id: 'b', label: 'Two close spots at least 3:1 apart, the guitar DI blended under its mic', ok: true, power: 'phantom', feedback: 'Fair, with the DI and the mic checked in polarity and mono.' },
       { id: 'c', label: 'A wide spaced pair into the mono PA', ok: false, power: 'phantom', feedback: 'Thin in mono and short of gain before feedback.' },
-      { id: 'd', label: 'Push the wedge until it rings, then back off', ok: false, power: 'phantom', feedback: 'Never chase feedback; start low.' },
-      { id: 'e', label: 'A stand where the bow and the walkway cross', ok: false, power: 'phantom', feedback: 'Never place a stand where a performer or a bow can strike it.' },
+      { id: 'd', label: 'Push the wedge until it rings, then back off', ok: false, power: 'phantom', feedback: 'Do not push the wedge into feedback in a show; start low. Ringing out is a careful check done before the show.' },
+      { id: 'e', label: 'A stand where the bow and the walkway cross', ok: false, power: 'phantom', feedback: 'Keep stands out of reach of a performer or a bow.' },
     ],
     reasons: [
       { id: 'r.close', label: 'Close mics or the pickup for gain before feedback', role: 'required', feedback: 'Say why: live favours stable gain.' },
@@ -425,7 +425,7 @@ const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern rejects most of the room behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from the arc’s centre toward the guitarist. What changes most?', options: ['The guitar gets louder than the rest', 'Only the overall level', 'Every player gets louder equally'], after: 'Off the centre, the players are no longer equally far: SPREAD grows, and the nearest one leads. Compare at matched level.' },
   context: { prompt: 'The wedge sits in front of the guitarist, below the guitar spot. Can the spot’s rejection reach it?', options: ['Yes — aim the mic’s back toward it', 'No — only an omni can', 'It already sits in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'A main pair and a guitar spot. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE to the other player.' },
+  twoMic: { prompt: 'A main pair and a guitar spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to the other player.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -479,10 +479,10 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setups',
     critical: true,
     prompt: 'You need to move a mic stand during the set. What do you do?',
-    options: ['Wait for a break or a stop, then move it', 'Reach in between the songs quickly', 'Slide it while they keep playing'],
+    options: ['Wait for a break or a stop, then move it', 'Reach in quickly during a quiet verse', 'Slide it while they keep playing'],
     correct: 'Wait for a break or a stop, then move it',
-    explain: 'Never place a stand where a performer, a bow, a case or a stagehand can strike it — and wait for a break or stop the group before moving equipment.',
-    why: { 'Reach in between the songs quickly': 'A quick reach near bows and hands is how accidents happen.', 'Slide it while they keep playing': 'A moving stand near a bow or a hand is a hazard.' },
+    explain: 'Keep stands out of reach of a performer, a bow, a case or a stagehand — and wait for a break or stop the group before moving equipment.',
+    why: { 'Reach in quickly during a quiet verse': 'A quick reach mid-song, near bows and hands, is how accidents happen.', 'Slide it while they keep playing': 'A moving stand near a bow or a hand is a hazard.' },
   },
 ];
 
@@ -537,7 +537,7 @@ export const E08_LESSON: EnsembleLesson = {
       { id: 'seating', label: 'the seating and each player’s angle', short: 'SEATING', note: 'Move a loud instrument farther, raise a quiet one, rotate a directional source — before EQ or compression. Mark chairs, stands and mic bases so a second take returns to the same geometry.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Physical arrangement is part of the mix (L6); Mark chairs, stands, and microphone bases (L16)' }, tag: 'BALANCE', scene: 'all' },
       { id: 'bright', label: 'the bright instruments', short: 'BRIGHT', note: 'Keep a mandolin, fiddle or cymbal from dominating a guitar or vocal mic: out of its direct line, or a little farther away.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Keep high-frequency sources such as mandolin, violin, or cymbals from dominating a guitar or vocal microphone (L16)' }, tag: 'SPILL', scene: 'all' },
       { id: 'floor', label: 'the floor and the bass', short: 'FLOOR', note: 'An upright bass excites room modes and floor vibration: isolate the stands from the floor.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Low instruments and upright bass often need more attention to room modes and floor vibration (L16)' }, tag: 'NOISE', scene: 'all' },
-      { id: 'stands', label: 'bows, hands, cases and walkways', short: 'KEEP CLEAR', note: 'Never place a stand where a performer, a bow, a case or a stagehand can strike it — and wait for a break or stop the group before moving equipment.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Never place a microphone stand where a performer, bow, instrument case, or stagehand can strike it (L38)' }, tag: 'KEEP CLEAR', scene: 'all' },
+      { id: 'stands', label: 'bows, hands, cases and walkways', short: 'KEEP CLEAR', note: 'Keep stands out of reach of a performer, a bow, a case or a stagehand — and wait for a break or stop the group before moving equipment.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Never place a microphone stand where a performer, bow, instrument case, or stagehand can strike it (L38)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'pa', label: 'the PA and the wedges', short: 'PA', note: 'Close directional mics, pickups or DIs for gain; a stereo pair only where the PA is stereo, the group small and the pair close enough. Monitors in each mic’s real null.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Use a stereo pair only when the PA is stereo, the group is small enough for useful coverage (L37)' }, tag: 'FEEDBACK', scene: 'stage' },
       { id: 'pickup', label: 'pickups and DI boxes', short: 'DI', note: 'A pickup or DI often gives the stable live foundation, with a mic blended for detail — each path useful alone before they are blended.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'a pickup or DI often provides the stable foundation (L39)' }, tag: 'ROLES', scene: 'stage' },
       { id: 'noise', label: 'chairs, pages and the room', short: 'NOISE', note: 'Listen for chair noise, page turns, foot movement, ventilation and the room’s reflections when you set the gain.', prov: { kind: 'sourced', src: 'LESSON-ACOUSTIC', quote: 'Monitor chair noise, page turns, foot movement, HVAC, and room reflections (L34)' }, tag: 'LISTEN', scene: 'studio' },
@@ -564,7 +564,7 @@ export const E08_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E08_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A small group has no single right setup: seat the players, start with one pair where they are about equally far, and add a spot only for a clear reason, 3:1 between spots. The readouts are calculated from the drawing — straight paths, ideal patterns, no room — to compare setups, not to measure a room. Every group, room and production is different: experiment, compare at matched level, and trust your ears. Keep stands clear of bows, hands and walkways; protect your hearing; never chase feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A small group has no single right setup: seat the players, start with one pair where they are about equally far, and add a spot only for a clear reason, 3:1 between spots. The readouts are calculated from the drawing — straight paths, ideal patterns, no room — to compare setups, not to measure a room. Every group, room and production is different: experiment, compare at matched level, and trust your ears. Keep stands clear of bows, hands and walkways; protect your hearing; do not push the system into feedback during a performance.',
   copy: { words: ensembleWords('group') },
   ensemble: {
     seatings: { duo: 'acoustic.duo', trio: 'acoustic.trio' },
@@ -584,7 +584,7 @@ export const E08_LESSON: EnsembleLesson = {
       { title: 'SEAT THEM', text: 'About the same distance from where the main pair will go; a loud instrument farther, a quiet one nearer; bright instruments off their neighbours’ mics.' },
       { title: 'MARK IT', text: 'Mark the chairs, stands and mic bases so a second take or the interval returns to the same geometry.' },
     ],
-    safety: 'Never place a stand where a performer, a bow, a case or a stagehand can strike it; wait for a break or stop the group before moving equipment. Keep cables secured and walkways clear. Protect your hearing; never chase feedback.',
+    safety: 'Keep stands out of reach of a performer, a bow, a case or a stagehand; wait for a break or stop the group before moving equipment. Keep cables secured and walkways clear. Protect your hearing; do not push the system into feedback during a performance.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a small group: one pair where the players are about equally far from it — a place to start and compare, not a rule.',
       clearance: 'The boom stand reaches in from the audience side, its base clear of the players’ feet, the bows and the walkway; its cable dressed flat.',

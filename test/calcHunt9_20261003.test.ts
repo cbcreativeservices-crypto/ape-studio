@@ -112,9 +112,14 @@ describe('H9-3 — a refused result shares with no PRIMARY RESULT', async () => 
   const { buildReportFromCalc, reportToText } = await import('../src/screens/lab/calc/calcReport.ts');
   const v = { av: 0.005, vb: 0.05, fbTarget: 200, temp: 20 };
   const outs = fnOf('driver', 'portLength').compute(v) as Out[];
-  const results = outs.map((o) =>
-    o.value != null ? { label: o.label, formattedValue: `${fmt(o.value * 100)} cm`, isText: false } : { label: o.label, formattedValue: o.text ?? '', isText: true },
-  );
+  const results = [
+    ...outs.map((o) =>
+      o.value != null ? { label: o.label, formattedValue: `${fmt(o.value * 100)} cm`, isText: false } : { label: o.label, formattedValue: o.text ?? '', isText: true },
+    ),
+    // Audit R2 (2026-10-23) removed the refused card's own length figure; a
+    // supporting numeric row stands in so the report rule is still exercised.
+    { label: 'EFFECTIVE (ACOUSTIC) LENGTH', formattedValue: '2.1 cm', isText: false },
+  ];
   const base = { workspaceName: 'Driver & Enclosure', functionName: 'Vented port length for a target tuning', inputs: [], results, createdAtISO: '2026-10-03T12:00:00.000Z' };
 
   it('refused: no primary result, the rows still listed', () => {

@@ -308,7 +308,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       prompt: 'You flip mic B’s polarity. What happens to the arrival-time difference between the two mics?',
       options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so both arrivals line up in time once more', 'It doubles, because the flipped copy now arrives later'],
       correct: 'Nothing: polarity flips the sign; the delay stays the same',
-      explain: 'Polarity reverses the signal’s sign. It does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
+      explain: 'Polarity reverses the signal’s sign. It does not remove a delay caused by sound reaching the mics at different times. The notches and peaks swap places; Δt does not.',
       why: {
         'It drops to zero, so both arrivals line up in time once more': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
         'It doubles, because the flipped copy now arrives later': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
@@ -388,9 +388,9 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       prompt: 'Two mics on one horn sound thin together. Which change removes the arrival-time difference itself?',
       options: ['Moving a mic so that the two paths are closer to equal', 'Flipping the polarity switch on one of the two mics', 'Turning the later mic up until it matches the first'],
       correct: 'Moving a mic so that the two paths are closer to equal',
-      explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth; neither removes the delay.',
+      explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth; neither removes the delay.',
       why: {
-        'Flipping the polarity switch on one of the two mics': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
+        'Flipping the polarity switch on one of the two mics': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
         'Turning the later mic up until it matches the first': 'Level changes the depth of the notches, not where they are or the delay behind them.',
       },
     }),
@@ -505,7 +505,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
     microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
     placement: { prompt: 'Predict: you move the mic from above the bell toward the middle of the key stack. What changes?', options: ['Brighter', 'Warmer, with more key noise', 'It depends on this horn'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
     context: { prompt: 'Where will this supercardioid reject the player’s wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
-    twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+    twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
   };
 
   /* THE QUICK CHECK: 6 items, two per foundation; q.6 (hearing) is critical. */
@@ -566,9 +566,9 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       prompt: `Your ${s} mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck?`,
       options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the stage stays below the rating', 'It is safe as long as the mic is nearer the bell than you are'],
       correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-      explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+      explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
       why: {
-        'It is safe for a while, as long as the stage stays below the rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+        'It is safe for a while, as long as the stage stays below the rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
         'It is safe as long as the mic is nearer the bell than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
       },
     },
@@ -800,7 +800,7 @@ export function saxSetupTasks(pfx: string, s: string, R: Reasons): SetupTask[] {
       setups: [
         { id: 'a', label: 'A cardioid dynamic a few centimetres above the bell, aimed at the sound holes', ok: true, power: 'none', feedback: 'A suggested starting point for a natural tone — and a dynamic needs no phantom.' },
         { id: 'b', label: 'A cardioid dynamic a few centimetres from the sound holes, for a warmer, fuller tone', ok: true, power: 'none', feedback: 'A suggested starting point with a warmer tendency — listen for key noise; a dynamic needs no phantom.' },
-        { id: 'c', label: 'A large condenser 50 cm in front, aimed between the bell and the keys', ok: false, power: 'phantom', feedback: 'A fine place to begin in a good room — but this input has no phantom power, and a condenser needs it.' },
+        { id: 'c', label: 'A large condenser 50 cm in front, aimed between the bell and the keys', ok: false, power: 'phantom', feedback: 'A fine place to begin in a good room — but this input has no phantom power, and this condenser needs it.' },
         { id: 'd', label: 'A bell clip angled between the bell and the keys', ok: false, power: 'phantom', feedback: 'The miniature is a condenser: it needs phantom power through its adapter, and this input has none.' },
         { id: 'e', label: 'A dynamic pushed right into the bell for the most level', ok: false, power: 'none', feedback: 'Inside the bell the mic can be struck, and it hears only part of the horn. Level comes from gain.' },
       ],

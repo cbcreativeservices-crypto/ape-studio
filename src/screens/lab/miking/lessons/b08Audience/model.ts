@@ -69,7 +69,7 @@ export const B08_ZONES: DocumentedZone[] = [
     hr: [2.8, 3.8],
     dist: [3000, 5000],
     tendency: 'The section’s laughter and applause together, the PA off to the side of its pattern. One position can still over-represent a few people, an aisle or the nearest clapper — and it gives no width.',
-    checks: ['Quiet speech, applause and the PA at full level', 'One nearby person dominating', 'Mounted safely by qualified crew'],
+    checks: ['Quiet speech, applause and the PA at full level', 'One nearby person dominating', 'Mounted safely by a qualified rigger'],
   }),
   crowdZone({
     id: 'b8.xy',
@@ -140,7 +140,7 @@ export const B08_SETUPS: SportSetup[] = [
     role: 'ONE MIC',
     core: true,
     title: 'One crowd mic above the front of the section',
-    type: 'a small cardioid condenser, hung from the rigging bar by qualified crew',
+    type: 'a small cardioid condenser, hung from the rigging bar by a qualified rigger',
     start: 'Raised above and somewhat in front of the section, aimed down at the faces and upper bodies, the PA at the stage’s corners well off its front.',
     line: 'The section’s response together, the PA to the side of its pattern — but no width, and one nearby clapper can still dominate.',
     mics: [MONO],

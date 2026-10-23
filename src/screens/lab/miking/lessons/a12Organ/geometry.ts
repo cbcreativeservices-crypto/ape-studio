@@ -45,7 +45,7 @@ const parts: Part[] = [
     solid: { kind: 'box', min: v3(CONSOLE.x0, -CONSOLE.h, CONSOLE.z0), max: v3(CONSOLE.x1, 0, CONSOLE.z1) },
     prov: ill('a detached console in the chancel: a drawing default'),
   },
-  { id: 'org.antiphonal', label: 'antiphonal division (rear gallery)', short: 'antiphonal', role: 'Some organs have a division far from the main case — here on the rear gallery. A spot on the main case cannot hear it; the main pair may.', listIn: [], prov: src('S-HOW', 'located on opposite sides of the worship facility, as is the case with antiphonal ranks') },
+  { id: 'org.antiphonal', label: 'antiphonal division (rear gallery)', short: 'antiphonal', role: 'Some organs have a division far from the main case — here on the rear gallery. A spot on the main case hears it only faintly; the main pair may.', listIn: [], prov: src('S-HOW', 'located on opposite sides of the worship facility, as is the case with antiphonal ranks') },
   wall('org.wallL', -NAVE.zHalf - 300, -NAVE.zHalf),
   wall('org.wallR', NAVE.zHalf, NAVE.zHalf + 300),
   ...([-1, 1] as const).map((s) => ({

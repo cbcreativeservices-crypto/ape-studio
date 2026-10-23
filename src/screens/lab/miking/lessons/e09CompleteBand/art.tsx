@@ -61,7 +61,7 @@ const SPEC = ensembleHandSpec({
     B: { zone: 'bd.kick', mic: 'kickDynCard' },
     names: { A: 'VOCAL MIC', B: 'KICK MIC' },
     looking: 'Two mics · A the vocal mic, B the kick mic',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE: the singer and the kit each reach the two mics at their own times.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: the singer and the kit each reach the two mics at their own times.',
     label: 'The band with the vocal mic (A) and the kick mic (B)',
     warn: 'This simplified graph shows one point source and straight paths, no room. A band is many large sources at once, so one delay never suits them all — judge by ear, in the complete mix, in mono.',
     learn: [
@@ -81,7 +81,7 @@ const SPEC = ensembleHandSpec({
     placeBadge: 'Blue = suggested starting points · grey dashes = the players’ space · pinch to zoom',
     clearance: 'Clearance comes first: the players, their pedals and the sticks’ reach, hot amps and their ventilation, cables and walkways.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A vocal mic aimed level at the mouth turns its back toward the audience — the wedge, on the floor in front, sits low behind it.',
-    sourceNote: 'What you just saw: a source reaches the two mics at different times. Summed, the late copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: the kit and the singer each give their own delay.',
+    sourceNote: 'What you just saw: a source reaches the two mics at different times. Summed, the late copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: the kit and the singer each give their own delay.',
   },
 });
 

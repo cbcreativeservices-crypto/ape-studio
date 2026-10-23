@@ -438,7 +438,7 @@ const symptoms: Symptom[] = [
     correct: 'A steady grip, the cable slack, the flag clear',
     explain: 'Handling noise starts at the hand: a steady grip, a cable with slack, a flag that touches nothing.',
     why: {
-      'Cut the low end hard on the channel and carry on': 'A filter thins the voice and leaves the knocks.',
+      'Cut the low end hard on the channel and carry on': 'A hard cut thins the voice and only softens the knocks. Fix the grip and the cable first.',
       'Hand the mic over to the guest to hold themselves': 'An untrained hand usually adds more handling, and the mic drops away.',
     },
   },
@@ -511,7 +511,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: which handheld forgives a little aim?', options: ['An omni', 'A supercardioid', 'Neither of them'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you leave the handheld halfway between the two mouths. What changes?', options: ['More crowd against the voice', 'A closer voice', 'It depends on this guest'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is high beyond the camera. Where will a supercardioid aimed at the guest reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip the guest’s mic polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the guest’s mic polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

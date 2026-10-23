@@ -55,7 +55,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'A pair or two zones',
     goal: 'Two zone mics hear the same laugh at different times: watch the delay and the comb change as it moves across the seats, and see why a coincident pair does not.',
-    credit: { scenarios: ['b8.two.1', 'b8.two.2', 'b8.two.3'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND walk the source, then answer the three checks.' },
+    credit: { scenarios: ['b8.two.1', 'b8.two.2', 'b8.two.3'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND walk the source, then answer the three checks.' },
     takeaway: 'Two zones are not a stereo pair: the delay changes from seat to seat, so no single time alignment fixes it. Check the mono sum; polarity is not time alignment.',
   },
   troubleshoot: {
@@ -509,7 +509,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Which coverage gives the most predictable mono sum?', options: ['A coincident XY pair', 'Two zones far apart', 'A spaced pair'], after: 'Now step through each METHOD.' },
   placement: { prompt: 'Predict: the crowd mic moves from the bar to the stage’s corner. What changes?', options: ['More of one side, and the PA beside it', 'Nothing', 'Only the height'], after: 'Rest the mic in two zones and read what each one suggests.' },
   context: { prompt: 'Where should the PA cluster sit against a crowd mic’s cardioid pattern?', options: ['Toward its back', 'In front of it', 'At its side'], after: 'Now TURN and TILT the crowd mic.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then walk the source.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then walk the source.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -634,6 +634,6 @@ export const B08_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every audience, room and PA is different: listen at several approved places, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the two venues are typical layouts; the PA’s wedges show where it points, not how it spreads; patterns are textbook shapes; levels and delays are calculated from the drawing. Safety is exact: crowd mics never into the main PA, nothing hung over people without a qualified rigger, aisles and exits clear.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every audience, room and PA is different: listen at several approved places, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the two venues are typical layouts; the wedge shape drawn in front of each PA shows where it points, not how it spreads; patterns are textbook shapes; levels and delays are calculated from the drawing. Safety is exact: crowd mics never into the main PA, nothing hung over people without a qualified rigger, aisles and exits clear.',
   copy: B08_COPY,
 };

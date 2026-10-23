@@ -59,7 +59,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Two microphones',
     goal: 'A treble mic and a bass mic: see the delay between them change as the bellows move, what polarity does and does not change, and judge the pair in mono.',
-    credit: { scenarios: ['ac.two.1', 'ac.two.2', 'ac.two.3', 'ac.two.4'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the four checks. Switch BELLOWS to see the bass side’s delay move.' },
+    credit: { scenarios: ['ac.two.1', 'ac.two.2', 'ac.two.3', 'ac.two.4'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the four checks. Switch BELLOWS to see the bass side’s delay move.' },
     takeaway: 'The moving sides change each mic’s distance to each side, so no fixed delay or polarity setting holds for the whole phrase. Solo, sum in mono over full opening and closing phrases, and move or rebalance if it hollows.',
   },
   troubleshoot: {
@@ -307,7 +307,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The moving sides change each mic’s distance to each side, so a fixed phase correction or a calculated delay cannot hold for the whole phrase. Move or rebalance if the sum hollows.',
     why: {
       'A delay only ever works with electric instruments': 'A delay works on any signal; it just cannot follow a moving source.',
-      'Polarity alone is the cause, not the timing': 'Polarity flips the sign; the changing delay is what moves the notches.',
+      'Polarity alone is the cause, not the timing': 'Polarity flips the sign. It cannot follow a delay that keeps changing as the sides move.',
     },
   },
   louderIsNotBetter(W),
@@ -439,7 +439,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage: the accordionist walks while playing; wedges in front. The spare input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'The instrument’s own built-in mics, routed as the player asks', ok: true, power: 'none', feedback: 'A practical live choice that moves with the player — compare its tone and noise if you can.' },
+      { id: 'a', label: 'The instrument’s own built-in mics, routed as the player asks', ok: true, power: 'none', feedback: 'A practical live choice that moves with the player. Many built-in systems need phantom power or their own supply, and this input has none, so check how it is powered. Compare its tone and noise if you can.' },
       { id: 'b', label: 'A small dynamic on a stand about 45 cm in front, its null toward the wedge', ok: true, power: 'none', feedback: 'Fair if the player stays near it; check the bass side’s travel and the wedge.' },
       { id: 'c', label: 'A miniature condenser on a mount, on this input', ok: false, power: 'phantom', feedback: 'This one needs phantom power, which this input does not have.' },
       { id: 'd', label: 'A stand mic just clear of the closed bellows', ok: false, power: 'none', feedback: 'The bass side would reach it on every pull.' },
@@ -455,7 +455,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: the bellows open fully. What happens to a fixed mic’s distance to the bass side?', options: ['It changes', 'It stays the same', 'Only the treble side moves'], after: 'Rest the mic in two zones, then switch BELLOWS and watch the bass side move.' },
   context: { prompt: 'The wedge sits downstage, behind the mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'A treble mic and a bass mic. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic — and switch BELLOWS to see the bass side’s delay move.' },
+  twoMic: { prompt: 'A treble mic and a bass mic. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic — and switch BELLOWS to see the bass side’s delay move.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -543,7 +543,7 @@ export const A11_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A reed instrument worn on the chest: a treble side with a piano keyboard (or buttons) for the right hand, a bass side with buttons for the left, and the bellows between them that move the air through the reeds.', src: 'HOH-XS' },
     { title: 'WHERE YOU MEET IT', text: 'Solo, in folk and dance bands and in larger ensembles — on stage, where the player may walk and turn, and in the studio. (The full ensemble setup comes later, in Lab 5.)', src: 'LESSON-AC' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'The treble side carries the melody; the bass side plays bass notes and chords — often both at once. With a bass player in the band, the bass side may matter less.', src: 'S-ACC' },
-    { title: 'ITS SIZE', text: 'A full-size piano accordion has 41 treble keys and 120 or more bass buttons. This lab draws one about 48 cm (19 in) tall, its bellows opening up to about 60 cm (2 ft) at the bottom.', src: 'S-ACC' },
+    { title: 'ITS SIZE', text: 'A full-size piano accordion has 41 treble keys and 120 bass buttons. This lab draws one about 48 cm (19 in) tall, its bellows opening up to about 60 cm (2 ft) at the bottom.', src: 'S-ACC' },
   ],
   sound: {
     stages: [

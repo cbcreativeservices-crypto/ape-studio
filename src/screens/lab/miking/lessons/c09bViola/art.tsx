@@ -77,7 +77,7 @@ export const VIOLA_ART: LessonArt = {
         { title: 'ASK THE PLAYER FIRST', text: 'Which passage — the low C and the high A, quiet and forceful bows, string changes, pizzicato? Standing or seated, and how do they sway? Where are the chin and shoulder rests? Hear the viola in the room first, and change position before reaching for EQ.' },
         { title: 'WORK WITH THE VIOLA AS IT IS', text: 'The viola is the player’s, and often valuable. Ask before touching it; nothing presses the bridge, the f-hole edges or the varnish, and no clip goes on without their agreement.' },
       ],
-      hearing: 'Protect your hearing during soundcheck and on loud stages. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Keep monitoring at a safe level, turn the system down before moving a live mic, and use hearing protection where it is loud.',
+      hearing: 'Protect your hearing during soundcheck and on loud stages. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Keep monitoring at a safe level, turn the system down before moving a live mic, and use hearing protection where it is loud.',
     }),
   },
 };

@@ -279,11 +279,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Theatre shows run 96–102 dBA LAeq-15; arenas and stadiums 100–106 dBA. Stadium K-pop shows have run 108–109 dBA and about 130 dBC from 50-plus subs—a target few venue limits allow. Screams and fanchants hit 100–110 dBA at FOH, so measure during songs and remember the crowd adds to exposure. Many fans are teenagers: offer earplugs, keep C-minus-A under about 20 dB, and avoid fatiguing 2–5 kHz. Some tours skip ultra-deep EDM sub in favour of punch and vocal clarity in the back rows."
+      "text": "Theatre shows run 96–102 dBA LAeq-15; arenas and stadiums 100–106 dBA. Stadium K-pop shows have peaked at 108–109 dBA and about 130 dBC from 50-plus subs—levels few venue limits allow. Screams and fanchants hit 100–110 dBA at FOH, so measure during songs and remember the crowd adds to exposure. Many fans are teenagers: offer earplugs, keep C-minus-A under about 20 dB, and avoid fatiguing 2–5 kHz. Some tours skip ultra-deep EDM sub in favour of punch and vocal clarity in the back rows."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Title tracks often land at −8 to −5 LUFS-I, true peak −2 dBTP (a common streaming recommendation for masters louder than −14 LUFS); chart pop generally measures −9 to −7. Most streaming services normalize to about −14 LUFS (some −16), so very loud masters get turned down; keep PLR around 7–9 dB to protect kick and vocal transients (at −2 dBTP that means a master at about −9 LUFS-I or quieter). Loudness range is only 3–6 LU; contrast lives in the arrangement."
+      "text": "Title tracks often land at −8 to −5 LUFS-I; chart pop generally measures −9 to −7. For masters louder than −14 LUFS, a common streaming recommendation is a true peak of −2 dBTP. Most streaming services normalize to about −14 LUFS (some −16), so very loud masters get turned down. A PLR of about 7–9 dB protects kick and vocal transients; at −2 dBTP that means about −9 LUFS-I or quieter, below the loudest title tracks. Loudness range is only 3–6 LU; contrast lives in the arrangement."
     }
   ],
   "liveStudio": {

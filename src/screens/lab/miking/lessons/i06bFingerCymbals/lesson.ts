@@ -57,7 +57,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Two microphones',
     goal: 'Add a second mic: see what polarity does and does not change, and judge the pair in mono.',
-    credit: { scenarios: ['fc.two.1', 'fc.two.2', 'fc.two.3', 'fc.two.4'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
+    credit: { scenarios: ['fc.two.1', 'fc.two.2', 'fc.two.3', 'fc.two.4'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
     takeaway: 'Polarity flips the sign; it does not remove a delay. Two cymbals do not need two mics — a pair is optional, for a broad image or a moving performer. Judge any pair in mono.',
   },
   troubleshoot: {
@@ -290,7 +290,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The level, as the distance changes',
     explain: 'Nearer is louder at the mic. Along a route the level rises and falls — the reason for a wider or higher view that covers it.',
     why: {
-      'The pitch of the cymbals': 'Distance changes the level at the mic, not the cymbals’ pitch.',
+      'The pitch of the cymbals': 'Distance changes the level at the mic; a walking dancer barely shifts the pitch.',
       'Nothing: the cymbals are the same': 'The cymbals are the same; their distance to the mic is not.',
     },
   },
@@ -430,7 +430,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 30 cm to 60 cm. What changes most?', options: ['More room, steadier level', 'More attack', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits downstage, behind the mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

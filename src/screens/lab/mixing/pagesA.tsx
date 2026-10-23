@@ -178,7 +178,7 @@ function PageSignalFlow({ ctx }: { ctx: PageCtx }) {
     if (next.length === STATION_ORDER.length) {
       if (isChannelOrderCorrect(next)) {
         setSolved(true);
-        setFeedback('✓ That is the path every DAW and every console shares. Say it until it is boring.');
+        setFeedback('✓ That is the path most DAWs and consoles share. Some let you reorder it. Say it until it is boring.');
       } else {
         const m = firstOrderMistake(next);
         const s = CHANNEL_PATH.find((x) => x.id === m!.station)!;
@@ -190,7 +190,7 @@ function PageSignalFlow({ ctx }: { ctx: PageCtx }) {
 
   return (
     <View style={styles.page}>
-      <Lead>One path, every mixer, every DAW. Audio flows through a channel in a fixed order — and every later lesson in this lab hangs on knowing it cold.</Lead>
+      <Lead>One path, most mixers, most DAWs. Audio flows through a channel in a set order — some digital desks and DAWs let you change it, so check the one you use — and every later lesson in this lab hangs on knowing it cold.</Lead>
       <Card>
         <Eyebrow>THE EIGHT STATIONS — STUDY THEM (ORDER HIDDEN)</Eyebrow>
         {shuffled.map((s) => (

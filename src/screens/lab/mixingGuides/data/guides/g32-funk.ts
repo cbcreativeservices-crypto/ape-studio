@@ -17,7 +17,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "90–120 BPM (slow grinds 80–90; up-tempo and go-go 105–125), almost always on a straight or lightly swung 16th-note grid",
     "ensemble": "6–12 piece band: drums, bass, 1–2 guitars, keys (clav, electric piano, organ, synth), 2–5 horns, percussion, lead vocal plus 2–4 backing vocals",
     "priority": "The interlocking groove: kick, snare/ghost notes, hi-hat and bass landing hard on “the one,” with every rhythm part audible as its own voice",
-    "liveSpl": "95–101 dBA Leq (LAeq-15 min); roughly 110–118 dBC",
+    "liveSpl": "95–102 dBA Leq (LAeq-15 min); roughly 110–118 dBC",
     "studioLoudness": "Modern masters commonly −10 to −8 LUFS-I (classic catalog and revival records −14 to −11); streaming normalizes to about −14"
   },
   "purpose": [
@@ -279,7 +279,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Clubs and theatres run 95–100 dBA LAeq-15 at FOH, festivals 98–102 dBA, about 110–118 dBC. Funk needs solid kick and bass, not EDM sub; a C-minus-A gap above 18–20 dB means too much sub. Horn stabs and hits peak at 108–112 dBA. In-ears help tame stage volume from big horn lines. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes — offer earplugs."
+      "text": "Clubs and theatres run 95–100 dBA LAeq-15 at FOH, festivals 98–102 dBA, about 110–118 dBC. Funk needs solid kick and bass, not EDM sub; a C-minus-A gap above 18–20 dB means too much sub. Horn stabs and hits peak at 108–112 dBA. In-ears help tame stage volume from big horn lines. NIOSH advises no more than about 15 minutes a day at 100 dBA — offer earplugs."
     },
     {
       "label": "Studio / streaming:",
@@ -320,7 +320,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "95–101 dBA Leq",
+        "live": "95–102 dBA Leq",
         "studio": "−10 to −8 LUFS-I (modern), −2 dBTP"
       }
     ],

@@ -19,7 +19,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "100–115 BPM (median around 108–110; mellow Ghanaian and R&B-leaning cuts 93–100)",
     "ensemble": "Solo artist + tracks (most common); touring headliners carry 6–10 piece bands plus percussion section, horns, BVs and sometimes a choir",
     "priority": "The percussion groove (rimshot, shakers, clave (a one- or two-bar rhythm key) pattern) bright and forward, with the lead vocal hook riding on it",
-    "liveSpl": "96–102 dBA LAeq-15 min; roughly 115–124 dBC in clubs and arenas",
+    "liveSpl": "96–102 dBA LAeq-15 min; roughly 112–120 dBC LCeq in clubs and arenas",
     "studioLoudness": "Masters commonly −10 to −7 LUFS-I; streaming normalizes to about −14"
   },
   "purpose": [
@@ -279,11 +279,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and diaspora party shows run about 96–100 dBA LAeq-15 at FOH; arena and festival headliners 100–102 dBA, with C-weighted levels around 115–124 dBC. Afrobeats wants solid but warm sub, less than EDM, more than rock; a C-minus-A gap above 20 dB signals excessive low end. Many UK/EU venues cap around 100 dBA LAeq-15. By common hearing-safety guidance, 100 dBA is safe for about 15 minutes; where no limits are enforced, self-police and protect your ears. Plan for unstable mains power at some venues (UPS on consoles and racks)."
+      "text": "Club and diaspora party shows run about 96–100 dBA LAeq-15 at FOH; arena and festival headliners 100–102 dBA, with C-weighted LCeq around 112–120 dBC. Afrobeats wants solid but warm sub, less than EDM, more than rock; a C-minus-A gap above 20 dB signals excessive low end. Many UK/EU venues cap around 100 dBA LAeq-15. NIOSH advises no more than about 15 minutes a day at 100 dBA; where no limits are enforced, self-police and protect your ears. Plan for unstable mains power at some venues (UPS on consoles and racks)."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Commercial masters typically land at −10 to −7 LUFS-I, true peak −1 dBTP (−2 dBTP for masters louder than −14, a common streaming recommendation). Platforms normalize to about −14 LUFS, so extra loudness buys nothing and costs percussion snap. Aim for a PLR of roughly 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP) and a loudness range of 3–6 LU. Stack several small clip and limiting stages (each 0.5–2 dB) rather than one heavy limiter."
+      "text": "Commercial masters typically land at −10 to −7 LUFS-I, true peak −1 dBTP (−2 dBTP for masters louder than −14, a common streaming recommendation). Platforms normalize to about −14 LUFS, so extra loudness buys nothing and costs percussion snap. Aim for a PLR of roughly 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP, the quiet end of that range or below) and a loudness range of 3–6 LU. Stack several small clip and limiting stages (each 0.5–2 dB) rather than one heavy limiter."
     }
   ],
   "liveStudio": {
@@ -321,7 +321,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "96–102 dBA LAeq-15",
-        "studio": "−10 to −7 LUFS-I, −2 dBTP"
+        "studio": "Often −10 to −7 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],
     "notes": []

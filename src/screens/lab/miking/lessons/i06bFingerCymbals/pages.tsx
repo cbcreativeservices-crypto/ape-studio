@@ -47,7 +47,7 @@ const HELD: HandSpec = {
       { id: 'room', box: { u0: -1300, u1: 1700, v0: -1000, v1: -860 }, scene: 'studio', label: { u: 200, v: -780 } },
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the player with finger cymbals in front of the chest; a wedge downstage on the audience side, louder players upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the player standing, no monitors on the floor, the room's walls around.${sel ? ` Highlighted: ${sel}.` : ''}`),
-    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'),
+    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience to the right' : 'Plan · a studio room from above'),
     first: 'The player stands with the cymbals in front of the chest — or dances across the stage. Everything else fits round the hands, and the route.',
     before: [
       { title: 'ASK FOR THE WHOLE PASSAGE — OR DANCE', text: 'Accents, fast figures, soft notes and deliberate cutoffs; held still or danced; turns, body position and where the player moves. Do not assume a dancer stands still at chest height.' },
@@ -100,7 +100,7 @@ const HELD: HandSpec = {
     learn: [
       { title: 'STUDIO', text: 'A still player: one moderate-distance spot, compared with a wider view in a good room. Record the silence after an accent too. In an ensemble, listen to the main pair and overheads first.' },
       { title: 'LIVE', text: 'A fixed station: a stand-mounted directional mic clear of both hands. A dancer: the stage mics or a broader, higher pickup — more spill, less feedback margin. A wearable mic is not a default: it changes with every move.' },
-      { title: 'THE WEDGE', text: 'Keep the finger cymbals low in, or out of, the monitor unless the player needs them: they are quiet, so the mic needs a lot of gain, and that raises the feedback risk.' },
+      { title: 'THE WEDGE', text: 'Keep the finger cymbals low in the monitor, or out of it, unless the player needs them. On a loud stage they are quiet, so the mic runs a lot of gain, and that raises the feedback risk.' },
     ],
   },
   two: {
@@ -108,7 +108,7 @@ const HELD: HandSpec = {
     B: { zone: 'fc.B', mic: 'sdcCard' },
     names: { A: 'CLOSER MIC', B: 'FARTHER MIC' },
     looking: 'Two mics · A closer, B farther back',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.',
     label: 'Finger cymbals with a closer mic (A) and a farther mic (B)',
     warn: 'This simplified graph shows one point source and straight paths. Real cymbals move with the hands, so the delay between two mics changes as they play. Read the notch depths as illustrative only, and judge the pair by ear, in mono.',
     learn: [

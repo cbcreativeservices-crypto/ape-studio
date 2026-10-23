@@ -65,7 +65,7 @@ const KIT_NAMES = [
   'DW',
 ];
 const NAME_RE = new RegExp(`\\b(?:${KIT_NAMES.join('|')})\\b`);
-const BANNED: RegExp[] = [NAME_RE, /\bfree\b/i, /\b(classroom|instructor|student)s?\b/i, /\bSOURCED\b|\bTRIAL\b|\bILLUSTRATIVE\b/, /\bSources\b/, /\bdocumented\b/i, /\bcited\b/i];
+const BANNED: RegExp[] = [NAME_RE, /\bfree\b(?![- ]field)/i, /\b(classroom|instructor|student)s?\b/i, /\bSOURCED\b|\bTRIAL\b|\bILLUSTRATIVE\b/, /\bSources\b/, /\bdocumented\b/i, /\bcited\b/i];
 const INTERNAL_KEYS = new Set(['src', 'quote', 'prov', 'bandProv', 'strikeSrc', 'unknowns', 'examples', 'kind', 'id']);
 
 function strings(v: unknown, path: string, out: { path: string; text: string }[], seen = new Set<unknown>()): void {

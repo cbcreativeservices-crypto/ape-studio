@@ -83,7 +83,7 @@ export function useDecayStep({ words, onDone }: { words: DecayWords; onDone: () 
           <Point title={`${focus} · ${fmtS(f)}`}>
             {f.ok
               ? `Fitted from ${METRIC_RANGE[focus].from} to ${METRIC_RANGE[focus].to} dB and extended to 60 dB (×${METRIC_RANGE[focus].factor}): an estimate of the time for a 60 dB decay, not the time it took to fall 20 or 30 dB.`
-              : `Refused: its end, ${METRIC_RANGE[focus].to} dB, would sit within ${FLOOR_MARGIN_DB} dB of the floor (${model.floorDb} dB). It needs ${-METRIC_RANGE[focus].to + FLOOR_MARGIN_DB} dB of range; this band has ${-model.floorDb}. Try a valid shorter fit, a quieter time — never a louder source just to force a result.`}
+              : `Refused: its end, ${METRIC_RANGE[focus].to} dB, would sit within ${FLOOR_MARGIN_DB} dB of the floor (${model.floorDb} dB). It needs ${-METRIC_RANGE[focus].to + FLOOR_MARGIN_DB} dB of range; this band has ${-model.floorDb}. Try a valid shorter fit, a quieter time, or a louder source within safe levels. Do not fit into the noise just to force a result.`}
           </Point>
           <Point title="EDT IS ITS OWN MEASURE">The early decay — the first 10 dB — can be shorter or longer than T20 and T30 in the same room: report it separately, never as a stand-in for them.</Point>
         </Card>

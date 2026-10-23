@@ -57,7 +57,7 @@ const RATIOS = [
   { v: 1, label: '1', blurb: 'Modulator = carrier: sidebands land exactly on the harmonic series. Bright but fully pitched — the vintage FM electric-piano zone.' },
   { v: 1.41, label: '1.41 ✳', blurb: '√2 — irrational, so the sidebands fall BETWEEN the harmonics. Nothing lines up: instant bell / metallic clang.' },
   { v: 2, label: '2', blurb: 'One octave up: only odd-ish partials survive — hollow, square-like, still pitched.' },
-  { v: 3.5, label: '3.5', blurb: 'A half-integer ratio: the sidebands fall between the carrier’s harmonics, on a thin, gappy series an octave down. Still harmonic, but it sounds clangorous and gong-like. Compare with 2 or 7.' },
+  { v: 3.5, label: '3.5', blurb: 'A half-integer ratio: some sidebands land on the carrier’s harmonics and some fall halfway between them, on a thin, gappy series an octave down. Still harmonic, but it can sound hollow and clangy. Compare with 2 or 7.' },
   { v: 7, label: '7', blurb: 'A high integer: sidebands spray far up the series — thin, glassy, but still harmonic.' },
 ] as const;
 // INDEX range for the lane (continuous — J_k(I) is exact to I = 8 and the
@@ -364,8 +364,9 @@ export function FmLabScreen() {
             </>
           ) : (
             <Text style={styles.caption}>
-              FM audio needs the v7 engine build — this dev client predates it. The sideband graph and
-              lessons are fully functional; install the v7 build to hear the voice.
+              {__DEV__
+                ? 'FM audio needs the v7 engine build — this dev client predates it. The sideband graph and lessons are fully functional; install the v7 build to hear the voice.'
+                : 'This version of the app cannot play the FM voice yet. The sideband graph and lessons work fully; update the app to hear the voice.'}
             </Text>
           )
         ) : null}

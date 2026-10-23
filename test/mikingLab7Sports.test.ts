@@ -233,7 +233,8 @@ describe('the one safety card (safety.ts)', () => {
     assert.match(SPORTS_SAFETY.lightning.text, /30 minutes after the last thunder/);
     assert.match(SPORTS_SAFETY.lightning.text, /Dugouts and open rain shelters are not safe/);
     assert.match(SPORTS_SAFETY.play.text, /medical route/);
-    assert.match(SPORTS_SAFETY.protective.text, /Never alter/);
+    assert.match(SPORTS_SAFETY.protective.text, /Do not alter/);
+    assert.match(SPORTS_SAFETY.protective.text, /only with the approval of the athlete and the team/);
     assert.match(SPORTS_SAFETY.animals.text, /No mic on a horse, its tack or its rider/);
     assert.match(SPORTS_SAFETY.electrics.text, /qualified person/);
     assert.match(SPORTS_SAFETY.hearing.text, /Start the headphone level low/);

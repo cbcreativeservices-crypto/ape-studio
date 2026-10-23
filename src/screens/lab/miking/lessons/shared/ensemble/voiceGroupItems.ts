@@ -111,7 +111,7 @@ export const hearingCheck = (p: string, page: SourcePageId, loud: string): Mikin
   prompt: `You monitor ${loud} on headphones for a long session. What protects your hearing?`,
   options: ['Sensible levels and short breaks', 'The highest level rating of the mics', 'Turning up to hear the detail'],
   correct: 'Sensible levels and short breaks',
-  explain: 'A widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — a limit for people where they listen. Keep monitoring sensible and take breaks.',
+  explain: 'NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are limits for people, measured where they listen. Keep monitoring sensible and take breaks.',
   why: {
     'The highest level rating of the mics': 'That is about the microphone, not your ears.',
     'Turning up to hear the detail': 'Louder raises your exposure; detail comes from placement, not level.',
@@ -127,7 +127,7 @@ export const overHeads = (p: string, page: SourcePageId, who = 'the singers'): M
   correct: 'In front of the mouths, put up by the venue',
   explain: `Hang it a little in front of the singers’ mouths, aimed at the back row — not over their heads — and only with the venue’s approved rigging and crew. Signal cable is not a suspension.`,
   why: {
-    [`Straight over ${who}, tied on by you`]: 'Not over the heads unless the venue’s qualified crew rigs it, and never your own tie.',
+    [`Straight over ${who}, tied on by you`]: 'Not over the heads unless a qualified rigger rigs it, and never your own tie.',
     'From a lighting bar above them, on its own cable': 'Signal cable is not suspension hardware, and a lighting bar is the venue’s to rig.',
   },
 });
@@ -139,9 +139,9 @@ export const hangDiag = (p: string, who = 'the singers'): DiagnosticItem => ({
   prompt: 'The best place for a choir mic needs it hung above the stage. What do you do?',
   options: ['Ask the venue: its crew, its rated plan', `Hang it over ${who} on its own cable`, 'Tie it to a lighting bar yourself'],
   correct: 'Ask the venue: its crew, its rated plan',
-  explain: 'Anything hung or attached to the building is the venue’s: an approved rigging plan, rated hardware and qualified crew — and never over the singers’ heads. Otherwise choose a safe floor stand.',
+  explain: 'Anything hung or attached to the building is the venue’s: an approved rigging plan, rated hardware and a qualified rigger. Most hung mics go a little in front of the singers, not over their heads. Otherwise choose a safe floor stand.',
   why: {
-    [`Hang it over ${who} on its own cable`]: 'Signal cable is not suspension, and nothing hangs over the singers’ heads.',
+    [`Hang it over ${who} on its own cable`]: 'Signal cable is not suspension. Nothing hangs over the singers’ heads unless a qualified rigger rigs it.',
     'Tie it to a lighting bar yourself': 'An attachment to the venue’s structure is never yours to make.',
   },
 });
@@ -170,7 +170,7 @@ export const phaseySymptom = (id: string, what = 'The group sounds hollow or pha
   explain: 'Overlapping mics hear one voice twice, a little apart in time: a comb. Listen to each alone, then in mono; space them 3:1 as a start, move them, or use fewer.',
   why: {
     'Boost the low mids on the bus until it sounds full': 'EQ cannot fill a comb notch; the overlap is the cause.',
-    'Flip the polarity on half of the mics': 'Polarity changes the sign, not the delay — it moves the notches.',
+    'Flip the polarity on half of the mics': 'Polarity changes the sign, not the delay — the notches and peaks swap places.',
   },
 });
 

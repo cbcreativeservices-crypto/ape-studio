@@ -183,7 +183,7 @@ const SCENES = [
     body:
       'Pink noise carries equal energy per octave, so a third-octave RTA draws it flat — ' +
       'that is exactly why pink is the standard alignment source: any tilt or bump you see ' +
-      'came from the system, the room, or the mic position, never the source. White noise ' +
+      'came from the system, the room, or the mic position, as long as the source is clean. White noise ' +
       'carries equal energy per hertz, and each octave up spans twice as many hertz, so its ' +
       'bars climb about +3 dB per octave — roughly +27 dB across the 31 Hz–16 kHz span shown here.',
     note: 'If your pink reference does not read flat, fix the source or the input chain before you judge the room.',

@@ -35,9 +35,9 @@ const SPEC = ensembleHandSpec({
     prompt: 'The low monitor stays in front of the children, facing them, below the area mic. Turn the mic (AIM) or change its PATTERN until the monitor sits in its rejection — and keep its front on the children’s mouths.',
     label: 'the children’s choir from above with a cardioid area mic in front of its left half and a low floor monitor in front of it,',
     learn: [
-      { title: 'LIVE', text: 'Begin with the fewest open choir mics, in front, a little above the mouths, aimed at the group. Keep monitors low, in the mics’ rejection, never carrying the choir mics, and never pointed into an open choir mic. Mute and unmute to compare the natural choir with the reinforced one.' },
+      { title: 'LIVE', text: 'Begin with the fewest open choir mics, in front, a little above the mouths, aimed at the group. Keep monitors low, in the mics’ rejection, carrying little or none of the choir mics, and never pointed into an open choir mic. Mute and unmute to compare the natural choir with the reinforced one.' },
       { title: 'A RECORDING', text: 'One pair or a carefully placed area mic first — not a close mic on every child; several short takes; spots only for a section the pair cannot carry.' },
-      { title: 'THEIR HEARING', text: 'Measure at the children’s positions and lower the level at the source first; quiet, short soundchecks. A child who cannot hear instructions means it is too loud.' },
+      { title: 'THEIR HEARING', text: 'Measure at the children’s positions and lower the level at the source first; quiet, short soundchecks. A child who cannot hear instructions often means it is too loud.' },
     ],
   },
   two: {
@@ -45,7 +45,7 @@ const SPEC = ensembleHandSpec({
     B: { zone: 'cc.solo', mic: 'vocDynCard' },
     names: { A: 'MAIN PAIR', B: 'SOLO MIC' },
     looking: 'Two mics · A the choir’s pair, B the featured child’s stand mic',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE: the soloist and each section reach the two mics at their own times.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: the soloist and each section reach the two mics at their own times.',
     label: 'The children’s choir from above with the pair (A) and the soloist’s stand mic (B)',
     warn: 'This simplified graph shows one point source and straight paths, no room. Judge the soloist with both mics by ear, in mono, against each mic alone.',
     learn: [
@@ -65,7 +65,7 @@ const SPEC = ensembleHandSpec({
     placeBadge: 'Blue = suggested starting points · from above only · pinch to zoom',
     clearance: 'Clearance comes first: the children’s feet, the way out, the cable routes — and nothing over their heads. Stop the group before moving any stand.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. An area mic aimed at the children turns its back toward the hall — turn it, or try a tighter pattern, until the low monitor sits in its rejection.',
-    sourceNote: 'What you just saw: a voice reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay.',
+    sourceNote: 'What you just saw: a voice reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay.',
   },
 });
 

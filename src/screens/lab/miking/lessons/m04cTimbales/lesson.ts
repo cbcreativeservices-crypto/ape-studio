@@ -394,9 +394,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two timbale mics sound thin together. Which change removes the arrival-time difference itself?',
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on one of the mics', 'Turning the later mic up until it matches the earlier one'],
     correct: 'Moving a mic so the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth; neither removes the delay.',
+    explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth; neither removes the delay.',
     why: {
-      'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
+      'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
       'Turning the later mic up until it matches the earlier one': 'Level changes the depth of the notches, not where they are or the delay behind them.',
     },
   },
@@ -538,7 +538,7 @@ const predictions: HandLesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from above the heads to between the shells. What changes?', options: ['More cáscara, less head', 'More head, less cáscara', 'Nothing — it is the same pair'], after: 'Near the shells the cáscara tends to rise against the heads — a tendency to check by ear, with the whole phrase.' },
   context: { prompt: 'Where can this mic, aimed at the 15 in head, best reject the floor wedge in front?', options: ['Straight behind the mic', 'Toward its rear, off to one side', 'At the sides of the mic'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -609,9 +609,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated to a very high maximum SPL. What does that tell you about standing by the timbales through a long soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the drums stay below the mic’s rating', 'It is safe as long as the mic is nearer the drums than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the drums stay below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the drums stay below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is nearer the drums than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -776,7 +776,7 @@ export const M04C_LESSON: HandLesson = {
       hdClip: 'Ideas to try with this kind of mic: one on each drum’s far rim, out of the stick path, with the player’s OK. Check for stand or clamp noise, and the bell in both.',
     },
     placeLearn: [
-      'What you just did, in words. After our research, each blue zone is a region where we suggest you begin with that kind of mic. We could not find a published timbale distance, so these are regions to begin in: out of every stick path, then listen. Starting points, not rules.',
+      'What you just did, in words. After our research, each blue zone is a region where we suggest you begin with that kind of mic. We could not find a published timbale distance, so the distances shown are our own rough guides: begin out of every stick path, then listen. Starting points, not rules.',
       'The shell-oriented and above-head starting points differ because they favour different surfaces: a part mostly on heads and rimshots may suit a top mic; a continuous cáscara may need a mic nearer the shells. Change one thing at a time and ask for the whole phrase again.',
       'Clearance comes first. Stop the player before moving a stand, clamp or cable; keep every mic and boom outside the widest head, rim, shell and accessory strokes, and nothing where it could drop onto the player. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where; recheck after the full-intensity passage.',
       'A separate percussion overhead — one starting point is a pair about 91–107 cm (3–3½ ft) above the drums — can cover bells and the whole setup when the part needs it. Bring each extra mic in only for a demonstrated need, and check mono.',
@@ -814,7 +814,7 @@ export const M04C_LESSON: HandLesson = {
     pairLearn: [
       'With a pair of spots, each mic may hear both drums and the accessories at different times and levels. Begin with one mic at a realistic level, add the second, and check the complete phrase in mono — watch for thin drum tone, shifted attacks, or a bell that becomes surprisingly prominent.',
       'Move or re-aim a mic first, then compare the polarity switch. Add any overhead, shell or accessory mic one at a time and repeat the check. In stereo, keep the image right for the arrangement — a mono PA may need a centred feed.',
-      'What you just saw: sound reaches two mics at different times; summed, the delayed copy cancels where it is half a period late. Polarity inversion is not a time-alignment control: it moves the notches; it does not remove the delay. No fixed “correct” polarity exists for every rig.',
+      'What you just saw: sound reaches two mics at different times; summed, the delayed copy cancels where it is half a period late. Polarity inversion is not a time-alignment control: the notches and peaks swap places; it does not remove the delay. No fixed “correct” polarity exists for every rig.',
     ],
     pairWarn: 'The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone (1/r) — that does not hold this close to a drumhead, so read the depths as illustrative only. Judge the pair by ear, in mono, at matched levels.',
   },

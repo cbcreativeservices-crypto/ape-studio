@@ -1711,7 +1711,7 @@ const D_OPTIONS: { title: string; body: string; verdict: string; ok: boolean }[]
   {
     title: 'FORCE IT',
     body: 'Leave everything connected and muscle the switch out past the dressed looms — cable flexes, it will be fine.',
-    verdict: 'Cable has almost no give — terminations and connectors tear, often unseen. Forcing gear past the dressing damages the exact cables that still work.',
+    verdict: 'A dressed loom has almost no spare length — terminations and connectors tear, often unseen. Forcing gear past the dressing damages the exact cables that still work.',
     ok: false,
   },
 ];
@@ -2327,7 +2327,7 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
       {/* ═══════════ PHASE C — serviceability test ═══════════ */}
       {phase === 'c' ? (
         <CiSection title="PHASE C — SERVICE: THE 30-SECOND SWAP">
-          <SpecCard text="WORK ORDER — DSP INPUT 7 reads dead at the console. Identify that one cable end-to-end and replace it. Nothing else may be disturbed: the system is live." />
+          <SpecCard text="WORK ORDER — DSP INPUT 7 reads dead at the console. Mute input 7, then identify that one cable end-to-end and replace it. Nothing else may be disturbed: the system is live." />
           <ExpandableFigure
             width={width}
             aspect={VB_W / VB_H}

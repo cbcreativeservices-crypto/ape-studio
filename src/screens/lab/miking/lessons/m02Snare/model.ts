@@ -189,7 +189,7 @@ export const SNARE_ZONES: DocumentedZone[] = [
   {
     id: 'bottom',
     label: 'Below, near the bottom rim',
-    band: 'Start just below the bottom rim — about 3–8 cm (1–3 in) below the snare-side head — aimed up at the head and wires.',
+    band: 'Start just below the bottom rim — about 3–8 cm (1.2–3 in) below the snare-side head — aimed up at the head and wires.',
     kind: 'sourced',
     src: 'S-SM57-UG',
     quote: 'If desired, place a second mic just below rim of bottom head.',
@@ -208,7 +208,7 @@ export const SNARE_ZONES: DocumentedZone[] = [
   {
     id: 'bottom.clip',
     label: 'Clamped to the bottom rim',
-    band: 'Start with the mic clamped to the bottom rim, about 3–8 cm (1–3 in) below the snare-side head, angled up at it.',
+    band: 'Start with the mic clamped to the bottom rim, about 3–8 cm (1.2–3 in) below the snare-side head, angled up at it.',
     kind: 'sourced',
     src: 'SN-904-2019',
     quote: 'Use of a second e 904 for picking up the bottom of the drumskin and the snares.',

@@ -152,4 +152,4 @@ export function usefulShare(c: PassCase, m: PassMic, withinDb = 6, n = 400): num
 }
 
 /** The words for the pitch: a static note, never a number (B16 L257). */
-export const PITCH_NOTE = 'A passing source’s pitch seems to rise as it comes toward a mic and fall as it goes away. A walking source is not a speed measurement, and a change in pitch can also come from the source itself, from reflections and from the mic’s off-axis tone — so the lab draws no pitch number.';
+export const PITCH_NOTE = 'A passing source sounds a little higher in pitch while it comes toward a mic, and lower once it has passed and goes away. The drop happens as it passes. A walking source is not a speed measurement, and a change in pitch can also come from the source itself, from reflections and from the mic’s off-axis tone — so the lab draws no pitch number.';

@@ -132,7 +132,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Inspect how the face actually points in the player’s normal posture — never ask them to rotate the instrument or give up normal bends to hold an angle for a mic.',
     why: {
       'Ask them to turn it, since the mic position matters most': 'The player’s posture and playing come first. The mic adapts to them.',
-      'Turn the veena yourself while the player is resting': 'Never handle the player’s instrument. Fit the mic round their posture.',
+      'Turn the veena yourself while the player is resting': 'Do not handle the player’s instrument unless they ask you to. Fit the mic round their posture.',
     },
   },
   {

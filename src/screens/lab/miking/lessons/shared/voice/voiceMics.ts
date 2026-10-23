@@ -65,7 +65,7 @@ export const VOICE_MIC_TYPES = {
     mount: 'stand',
     examples: [{ model: 'supercardioid handheld vocal dynamics (generic)', fact: 'S-LIVE: supercardioid least sensitive "at 126 degrees off-axis", rear "-12 dB"; S-VOC-TIPS: a hypercardioid wedge "slightly to one side or the other".', src: 'S-LIVE' }],
     art: 'vocalDynamic',
-    blurb: 'The same handheld shape with a tighter, supercardioid pattern: its least-sensitive directions sit toward the rear, about 125° off the front, with a small lobe straight behind — so a floor wedge goes a little to one side of its rear, not straight behind. Needs no power.',
+    blurb: 'The same handheld shape with a tighter, supercardioid pattern: its least-sensitive directions sit toward the rear, about 125° off the front, with a small lobe straight behind — so a floor wedge goes well to one side of its rear, not straight behind. Needs no power.',
   },
   vocLdc: {
     id: 'vocLdc',

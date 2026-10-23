@@ -26,7 +26,7 @@ import { feedbackSymptom, fewerMics, GROUP_BRAND, hangDiag, NO_PROVOKE_REASON, n
 import { E06_31, E06_MODEL, E06_PLACE, E06_SETUPS, E06_WEDGES, E06_ZONES, PAIR_FAR } from './geometry.ts';
 
 /** The exposure line (research childrens_choir/SOURCES.md §b, proposed L7/L106 wording, no names). */
-export const EXPOSURE = 'Lower the level at the source first. Measure at the children’s own positions with a sound level meter — an A-weighted 15-minute average and a C-weighted peak. Limits used for events aimed at young children are about 94 dB averaged over 15 minutes, and peaks under 120 dB: keep well below both. Keep soundchecks short and quiet; a child’s discomfort, ringing ears or not hearing instructions is never a normal part of a soundcheck.';
+export const EXPOSURE = 'Lower the level at the source first. Measure at the children’s own positions with a sound level meter — an A-weighted 15-minute average and a C-weighted peak. Some rules for shows aimed at children under six set about 94 dB, A-weighted, over 15 minutes, and a common guide keeps children’s peaks under 120 dB: keep well below both. Keep soundchecks short and quiet; a child’s discomfort, ringing ears or not hearing instructions is never a normal part of a soundcheck.';
 /** The safeguarding line (childrens_choir/SOURCES.md §a, no names). */
 export const SAFEGUARDING = 'Children are supervised at all times. A responsible adult or qualified crew member controls the setup, the access and every change to a mic; a headset or a transmitter is fitted only by an authorised adult, with the child’s agreement and comfort first, and with a quick way to mute or remove it. Follow the venue’s child-safeguarding policy and the local law.';
 
@@ -57,14 +57,14 @@ const pages: LessonPages = {
   },
   context: {
     title: 'Live and recording',
-    goal: 'Turn an area mic so a low floor monitor sits in its rejection — and know why a children’s choir needs the fewest open mics, quiet monitors and no choir mics in their own monitor.',
+    goal: 'Turn an area mic so a low floor monitor sits in its rejection — and know why a children’s choir needs the fewest open mics, quiet monitors, and little or none of the choir mics in their own monitor.',
     credit: { scenarios: ['cc.ctx.1', 'cc.mon', 'cc.ctx.studio', 'cc.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: turn the area mic (or change its pattern) until the monitor sits in its rejection. STUDIO: answer the decision card. Then the checks.' },
     takeaway: 'Live, a children’s choir is a feedback and a supervision problem: the fewest open mics, quiet monitors in the mics’ nulls, little or none of the choir mics in the choir monitor. A small room may need little or no reinforcement.',
   },
   twoMic: {
     title: 'A pair and a soloist’s mic',
     goal: 'The choir’s pair and the soloist’s stand mic: see how much earlier the close mic hears the child, what polarity changes and what it does not.',
-    credit: { scenarios: ['cc.first', 'cc.two.1', 'cc.two.2'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
+    credit: { scenarios: ['cc.first', 'cc.two.1', 'cc.two.2'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
     takeaway: 'The close mic hears the soloist long before the pair: summed, the late copy can comb. Balance the soloist with the close mic’s level, keep the pair as the choir’s reference, and judge in mono.',
   },
   troubleshoot: {
@@ -103,7 +103,7 @@ const scenarios: MikingScenario[] = [
     correct: 'It sounds dull and distant',
     explain: 'Too high, the mic aims at the tops of the children’s heads: dull and distant. Too low, it hears the riser and the front row. Aim at the mouths.',
     why: {
-      'It hears the back row best of all': 'Too high, it aims past everyone’s mouths — the back row included.',
+      'It hears the back row best of all': 'Too high, it aims past every row’s mouths. The rows may even out, but all of them sound dull and distant.',
       'It hears only the conductor’s voice': 'The conductor is behind it and quiet; the problem is the angle to the children.',
     },
   },
@@ -385,7 +385,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A 17 cm pair farther back, the choir filling its angle', ok: true, power: 'phantom', feedback: 'Fair: a wider picture; check the outer children and mono.' },
       { id: 'c', label: 'A close mic on each child', ok: false, power: 'phantom', feedback: 'Stands among children, every breath exposed, no blend.' },
       { id: 'd', label: 'A pair at adult head height, aimed level', ok: false, power: 'phantom', feedback: 'Too high for children: it aims over their heads and sounds dull.' },
-      { id: 'e', label: 'A mic hung straight over the back row', ok: false, power: 'phantom', feedback: 'Never over children’s heads; in front of the mouths, only on the venue’s rigging.' },
+      { id: 'e', label: 'A mic hung straight over the back row', ok: false, power: 'phantom', feedback: 'Not over the children’s heads: hang it in front of their mouths, on the venue’s rigging, put up by a qualified rigger.' },
     ],
     reasons: [PAIR_REASON, SAFEGUARD_REASON, SAFE_REASON, POWER_REASON, EVERY_CHILD, GROUP_BRAND],
     explain: 'More than one setup passes. What passes is the reasoning: supervision, a safe stage, one main pair first, aimed at the children’s mouths.',
@@ -410,7 +410,7 @@ const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern rejects most of the PA behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from 0.9 m to 1.7 m in front. What changes most?', options: ['More blend and more room', 'Only the level', 'The front row dominates more'], after: 'Farther back, the distances to the front and back rows even out: the NEAR / FAR readout shrinks.' },
   context: { prompt: 'A low monitor sits in front of the children, below the area mic. Can the mic’s rejection reach it?', options: ['Yes — turn the mic or tighten its pattern', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'The pair and the soloist’s mic. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE.' },
+  twoMic: { prompt: 'The pair and the soloist’s mic. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -515,7 +515,7 @@ export const E06_LESSON: EnsembleLesson = {
       { id: 'children', label: 'the children, their feet and the way out', short: 'CHILDREN', note: 'Stable stands with wide bases and sandbags, cable ramps at crossings, clear exit paths; stop the group before moving any stand, boom or cable.', prov: { kind: 'sourced', src: 'LESSON-CHILD', quote: 'stop the group before moving a stand, boom, cable, or hanging microphone. Secure stands with appropriate bases, sandbags (L8)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'adults', label: 'supervision', short: 'SUPERVISION', note: SAFEGUARDING, prov: { kind: 'sourced', src: 'NSPCC-PA', quote: 'It’s vital that children are appropriately supervised at all times.' }, tag: 'SAFEGUARDING', scene: 'all' },
       { id: 'hearing', label: 'the children’s hearing', short: 'HEARING', note: EXPOSURE, prov: { kind: 'sourced', src: 'AAO-NIHL', quote: '"120 dB LCpeak" and "94 dB LAeq, 15min" for venues targeted specifically at children (quoting the WHO 2022 standard)' }, tag: 'SAFETY', scene: 'all' },
-      { id: 'rig', label: 'anything hung above the stage', short: 'RIGGING', note: 'Nothing hangs over the children’s heads. A hung mic goes in front of the mouths, aimed at the back row — put up only by a competent rigger, with the venue’s approval.', prov: { kind: 'sourced', src: 'LESSON-CHILD', quote: 'Never hang a microphone over children’s heads without a competent rigger and venue approval (L38)' }, tag: 'VENUE ONLY', scene: 'all' },
+      { id: 'rig', label: 'anything hung above the stage', short: 'RIGGING', note: 'Nothing hangs over the children’s heads. A hung mic goes in front of the mouths, aimed at the back row — put up only by a qualified rigger, with the venue’s approval.', prov: { kind: 'sourced', src: 'LESSON-CHILD', quote: 'Never hang a microphone over children’s heads without a competent rigger and venue approval (L38)' }, tag: 'VENUE ONLY', scene: 'all' },
       { id: 'monitor', label: 'the children’s monitor', short: 'MONITOR', note: 'Low in level, in the mics’ rejection, carrying the piano or the band — little or none of the choir’s own mics, never pointed into an open choir mic.', prov: { kind: 'sourced', src: 'S-CHOIR', quote: 'never mix choir mic channels into the choir monitors' }, tag: 'FEEDBACK', scene: 'stage' },
       { id: 'pa', label: 'the PA and the band', short: 'PA · BAND', note: 'The fewest open mics, quiet monitors; compare the natural choir with the reinforced one by muting — a small room may need little or none.', prov: { kind: 'sourced', src: 'LESSON-CHILD', quote: 'compare the natural acoustic level with the reinforced level by muting and unmuting the choir channels (L37)' }, tag: 'SPILL', scene: 'stage' },
       { id: 'room', label: 'the room and its noise', short: 'ROOM', note: 'Air handling, riser movement, page turns and feet: a distant pair hears them. Several short takes beat one long, loud one.', prov: { kind: 'sourced', src: 'LESSON-CHILD', quote: 'Capture several short takes rather than forcing a long, loud rehearsal (L33)' }, tag: 'PART OF THE SOUND', scene: 'studio' },
@@ -564,7 +564,7 @@ export const E06_LESSON: EnsembleLesson = {
       { title: 'A SAFE STAGE', text: 'Stable stands with appropriate bases or sandbags, ramps over cable crossings, water, costumes and moving scenery kept away from connectors and power; nothing that restricts breathing, movement or a safe exit.' },
       { title: 'LISTEN FIRST', text: 'Hear the children unamplified from the audience or the recording position; the director can often fix the balance with the layout or the risers before any gain.' },
     ],
-    safety: 'Supervision at all times; a responsible adult controls every mic. Stable stands, sandbags and cable ramps; exits clear; stop the group before moving anything. Nothing hangs over the children’s heads; a hung mic goes in front of the mouths, only by a competent rigger with the venue’s approval. Quiet monitors, the level measured where the children stand; avoid uncontrolled feedback.',
+    safety: 'Supervision at all times; a responsible adult controls every mic. Stable stands, sandbags and cable ramps; exits clear; stop the group before moving anything. Nothing hangs over the children’s heads. A hung mic goes in front of the mouths, put up only by a qualified rigger with the venue’s approval. Quiet monitors, the level measured where the children stand; avoid uncontrolled feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a children’s choir: one pair, centred, a few feet in front and a little above their heads, aimed at their mouths — a place to start and compare, not a rule.',
       clearance: 'The stand’s wide base in front of the first row, clear of the children’s feet and the way out; a sandbag on its base, its cable taped flat or under a ramp, away from the children’s path.',

@@ -53,9 +53,9 @@ export function hearingDiag(w: FoleyWords, id = `${w.p}.q.hear`): DiagnosticItem
     prompt: 'Your Foley mic is rated far above any level on the stage. What does that tell you about long takes on loud headphones?',
     options: ['Nothing — that is the mic’s limit, not a hearing limit', 'They are safe while the stage stays below the mic’s rating', 'They are safe if the mic is nearer the action than you'],
     correct: 'Nothing — that is the mic’s limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens. Keep headphones and monitors comfortable.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens. Keep headphones and monitors comfortable.',
     why: {
-      'They are safe while the stage stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'They are safe while the stage stays below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'They are safe if the mic is nearer the action than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   };
@@ -120,7 +120,7 @@ export function foleyGain(w: FoleyWords, id = `${w.p}.prac.gain`): MikingScenari
     explain: 'Set the input gain on the strongest action the cue really has, and look for overload at the mic, the preamp and the recorder. A fader after the overload cannot repair clipping already made earlier in the chain.',
     why: {
       'Pull the channel fader down until it sounds clean': 'The overload happens before the fader. A lower fader only makes the clipped sound quieter.',
-      'Ask the performer to make that moment softer': 'The cue sets the performance. Set gain for the strongest moment it needs — never ask for less, or for unsafe force.',
+      'Ask the performer to make that moment softer': 'The cue sets the performance. Set gain for the strongest moment it needs rather than asking for less — and never ask for unsafe force.',
     },
   };
 }
@@ -133,7 +133,7 @@ export function feedbackFoley(w: FoleyWords): Symptom {
     firstChecks: 'Lower that send at once; then the wedge and PA against the mic’s pattern, the distance to the action, and how many mics are open — with the operator.',
     options: ['Lower it, then the wedge, the distance and the open mics', 'Add more gain so the effect covers the ringing', 'Swap to an omni so the effect is heard from all round the booth'],
     correct: 'Lower it, then the wedge, the distance and the open mics',
-    explain: 'Feedback is a sound-system condition: lower the level first, then aim the rejection at the wedge, work a little closer within clearance and close the mics you do not need. Never provoke it to find out where it starts.',
+    explain: 'Feedback is a sound-system condition: lower the level first, then aim the rejection at the wedge, work a little closer within clearance and close the mics you do not need. Do not make it ring to find where it starts: only the system operator rings out a system, with care.',
     why: {
       'Add more gain so the effect covers the ringing': 'More gain feeds the loop. Lower the level first.',
       'Swap to an omni so the effect is heard from all round the booth': 'An omni hears the PA and the wedge from every side: it usually rings sooner.',

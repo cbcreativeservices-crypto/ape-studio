@@ -78,7 +78,7 @@ export const F15_ZONES: DocumentedZone[] = [
     drawn: RING(-100, -80),
     requires: { micTypeIds: AIR },
     start: toward(S.B, HUB),
-    tendency: 'The fan from its side: less of the blades’ whoosh, more of the housing. A difference from A belongs to the angle — if the cycle and the room stayed the same.',
+    tendency: 'The fan from its side: less of the blades’ whoosh, more of the housing. A difference from A comes from the new position — the fan’s direction and the room’s bounces there — if the cycle stayed the same.',
     checks: ['Only the angle changed', 'The same gain and the same cycle', 'The fan’s speed unchanged'],
   },
   {

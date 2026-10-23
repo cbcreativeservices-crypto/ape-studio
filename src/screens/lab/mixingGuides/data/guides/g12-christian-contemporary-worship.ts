@@ -268,11 +268,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Many churches settle on 88–94 dBA slow, averaged over the worship set; one large multisite church measures about 93–94 dBA over roughly 18 minutes of worship with quick peaks capped at 99–100 dBA. Guidance from church tech trainers suggests keeping an hour-long service at or under about 94 dBA, and newer volunteer mixers are often limited to the mid-to-high 80s. Soft songs land near 80–85 dBA. C-weighted levels of 105–112 dBC are typical when synth sub is in play; a C-minus-A gap above about 15–18 dB means too much sub for a mixed-age room. Measure at the loudest seats and walk the room during the service; offer earplugs, since children and elderly members attend."
+      "text": "Many churches settle on 88–94 dBA slow, averaged over the worship set; one large multisite church measures about 93–94 dBA over roughly 18 minutes of worship with quick peaks capped at 99–100 dBA. Guidance from church tech trainers suggests keeping an hour-long service at or under about 94 dBA, and newer volunteer mixers are often limited to the mid-to-high 80s. Soft songs land near 80–85 dBA. With synth sub in play, C-weighted LCeq can reach about 105–110 dBC; check the gap: a C reading more than about 15–18 dB above the A reading means too much sub for a mixed-age room. Measure at the loudest seats and walk the room during the service; offer earplugs, since children and elderly members attend."
     },
     {
       "label": "Studio / streaming:",
-      "text": "CCM singles mastered for Christian radio typically land around −10 to −8 LUFS-I with −1 dBTP; live worship albums are more open at −12 to −10 LUFS-I and a loudness range of 6–10 LU to keep the build alive. Most streaming services normalize to −14 LUFS, and −2 dBTP or lower is recommended for masters louder than that. For church livestreams, aim for about −16 to −14 LUFS-I, a −1 dBTP ceiling, and keep quiet moments from falling more than 6–10 dB below the loud ones."
+      "text": "CCM singles mastered for Christian radio typically land around −10 to −8 LUFS-I with −1 dBTP; live worship albums are more open at −12 to −10 LUFS-I and a loudness range of 6–10 LU to keep the build alive. Most streaming services normalize to −14 LUFS, and −2 dBTP or lower is recommended for masters louder than that, so the streaming version of a loud radio single needs the lower ceiling. For church livestreams, aim for about −16 to −14 LUFS-I, a −1 dBTP ceiling, and keep quiet moments from falling more than 6–10 dB below the loud ones."
     }
   ],
   "liveStudio": {

@@ -219,7 +219,7 @@ export const SCENARIOS: readonly Scenario[] = [
     choices: [
       { id: 'a', name: 'The interface’s own USB-C data cable', a: 'usb_c', b: 'usb_c', verdict: 'correct', explain: 'A cable KNOWN to carry data at the needed rate — audio is data here, and the manufacturer shipped a cable that carries it.' },
       { id: 'b', name: 'A charge-only USB-C cable from a phone charger', a: 'usb_c', b: 'usb_c', verdict: 'fits_but_verify', explain: 'Identical plugs — but some USB-C cables are wired for power only, with no data wires. The interface may not even appear. All USB-C cables are NOT the same; verify the cable’s capability.' },
-      { id: 'c', name: 'USB-A to USB-B printer-style cable', a: 'usb_a', b: 'usb_b', verdict: 'no_fit', explain: 'Neither end matches this laptop or this interface. USB’s shapes exist to stop wrong topologies.' },
+      { id: 'c', name: 'USB-A to USB-B printer-style cable', a: 'usb_a', b: 'usb_b', verdict: 'no_fit', explain: 'The USB-B end does not fit this interface’s USB-C port. USB’s shapes exist to stop wrong topologies.' },
       { id: 'd', name: 'HDMI cable', a: 'hdmi', b: 'hdmi', verdict: 'no_fit', explain: 'HDMI and USB do not mate — different connectors for different protocols.' },
     ],
   },

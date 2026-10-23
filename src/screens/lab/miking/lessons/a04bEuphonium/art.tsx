@@ -51,7 +51,7 @@ export const EUPH_ART: LessonArt = {
         { title: 'HEAR THE LINE', text: 'Is it a lyrical melody, an inner part or a low foundation? Ask for quiet and loud phrases, the lowest note the part needs, tongued attacks, legato, the high notes, any mute — and whether the player stands.' },
         { title: 'WORK WITH THE EUPHONIUM AS IT IS', text: 'The euphonium and its finish are the player’s. A clip only if its maker confirms it fits this bell — a trumpet or trombone clip may not — and never tape on the finish.' },
       ],
-      hearing: 'Protect your hearing in loud rehearsals and on loud stages. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Keep levels and time sensible, and use hearing protection.',
+      hearing: 'Protect your hearing in loud rehearsals and on loud stages. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Keep levels and time sensible, and use hearing protection.',
     }),
   },
 };

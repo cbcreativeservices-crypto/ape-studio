@@ -139,7 +139,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Twelve channels means many full-kit passes at soundcheck. What protects your hearing?',
     options: ['Limiting level and time where you are, and hearing protection', 'The desk’s meters, which show when it is too loud for people', 'Nothing more — the mics’ maximum SPL keeps things in a safe range'],
     correct: 'Limiting level and time where you are, and hearing protection',
-    explain: 'Hearing risk depends on the level where you are and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more. Limit unnecessary loud repetitions.',
+    explain: 'Hearing risk depends on the level where you are and for how long: NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Limit unnecessary loud repetitions.',
     why: {
       'The desk’s meters, which show when it is too loud for people': 'Desk meters show signal level, not the level at your ears.',
       'Nothing more — the mics’ maximum SPL keeps things in a safe range': 'Maximum SPL says when a MIC distorts. It says nothing about your ears.',
@@ -322,7 +322,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Polarity flips the sign; it does not remove a delay. Compare both states at matched levels — and check the rest of the kit too.',
     why: {
       'Yes: the two mics are now lined up in time': 'Polarity is not a time alignment.',
-      'Yes, but only for the low notes of the kick': 'The delay is the same at every pitch; polarity moves the notches.',
+      'Yes, but only for the low notes of the kick': 'The delay is the same at every pitch; polarity swaps the notches and peaks.',
     },
   },
   {
@@ -545,7 +545,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front, close up'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you add a close tom mic to a four-mic base. What else gets louder in that new channel?', options: ['The rest of the kit, later and quieter', 'Only the tom it is aimed at', 'It depends on the tom’s tuning'], after: 'Now build the two plans and count what each added channel costs.' },
   context: { prompt: 'Predict: on a loud small stage, which drum channels does the PA need first?', options: ['The ones the audience cannot already hear', 'Every drum and cymbal, all equally', 'Only the overhead pair'], after: 'Now route each channel and read where it goes.' },
-  twoMic: { prompt: 'If you flip the overhead’s polarity, what happens to its delay behind the kick mic?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the overhead’s polarity, what happens to its delay behind the kick mic?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -616,7 +616,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your kit mics are rated to 140 dB SPL or more. What does that tell you about standing by the kit through a long soundcheck?',
     options: ['Nothing — it is the mics’ distortion limit, not a hearing limit', 'It is safe for a while, as long as the kit stays below the mics’ rating', 'It is safe as long as the mics are between you and the kit'],
     correct: 'Nothing — it is the mics’ distortion limit, not a hearing limit',
-    explain: 'Max SPL says when a MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when a MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
       'It is safe for a while, as long as the kit stays below the mics’ rating': 'A mic’s rating is about the mic. Hearing risk depends on the level where you are and for how long.',
       'It is safe as long as the mics are between you and the kit': 'Mics do not shield your ears. Limit the level and the time, and use hearing protection.',

@@ -17,7 +17,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "90–110 BPM for most modern Punjabi pop and trap-leaning tracks; classic bhangra/chaal grooves 150–180 BPM (often felt in half time); ballads 70–85",
     "ensemble": "Wedding/club: singer + dhol (big two-headed barrel drum) player + DJ or tracks. Touring pop: lead singer, 1–2 dhol, tumbi (one-string plucked lute)/guitar/keys, drummer, bass, 2–3 backing vocals plus timecoded playback (40–60 inputs)",
     "priority": "Dhol-driven groove locked to the low end (808 or bass), with the Punjabi lead vocal riding clearly on top",
-    "liveSpl": "98–104 dBA Leq (LAeq-15 min) at arena/stadium shows, peaks regularly past 108 dBA; 115–125 dBC; weddings and banquet halls 92–100 dBA",
+    "liveSpl": "98–104 dBA Leq (LAeq-15 min) at arena/stadium shows, peaks regularly past 108 dBA; 115–122 dBC LCeq; weddings and banquet halls 92–100 dBA",
     "studioLoudness": "Masters commonly −9 to −6 LUFS-I (older bhangra catalog around −11 to −9); streaming normalizes to about −14"
   },
   "purpose": [
@@ -84,7 +84,7 @@ export const GUIDE: MixingGuide = {
       {
         "source": "808 / sub bass",
         "cut": "HPF 25–30 Hz; dip 2–3 dB at kick fundamental (often 55–65 Hz)",
-        "boost": "Saturation for 100–200 Hz harmonics; +1–2 dB at 50–60 Hz",
+        "boost": "Saturation for 100–200 Hz harmonics; +1–2 dB at the 808’s own note, below the kick (often 40–50 Hz)",
         "notes": "Keep mono below 120 Hz so it translates to phones"
       },
       {
@@ -260,7 +260,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Arena and stadium Punjabi pop shows run hot. Big Punjabi stadium tours run SPL regularly above 108 dB, and stadium shows in India now deploy large flown-plus-ground sub arrays for 75,000-plus crowds. As a sensible target, run 98–104 dBA LAeq-15 at FOH with C-weighted levels of 115–125 dBC; a C-minus-A gap of over 20 dB means too much sub. Weddings, banquet halls and gurdwara-adjacent venues are smaller, reflective rooms: 92–100 dBA is plenty, and the dhol (big two-headed barrel drum) alone can exceed 105 dBA at a metre, so you may barely need to amplify it. UK workplace rules set action values of 80 and 85 dBA daily exposure for staff; earplugs for crew, dholis (dhol players) and family members dancing next to the subs are strongly advised."
+      "text": "Arena and stadium Punjabi pop shows run hot. At big Punjabi stadium tours, peaks often pass 108 dBA, and stadium shows in India now deploy large flown-plus-ground sub arrays for 75,000-plus crowds. As a sensible target, run 98–104 dBA LAeq-15 at FOH with C-weighted LCeq of 115–122 dBC; a C-minus-A gap of over 20 dB means too much sub. Weddings, banquet halls and gurdwara-adjacent venues are smaller, reflective rooms: 92–100 dBA is plenty, and the dhol (big two-headed barrel drum) alone can exceed 105 dBA at a metre, so you may barely need to amplify it. UK workplace rules set action values of 80 and 85 dBA daily exposure for staff; earplugs for crew, dholis (dhol players) and family members dancing next to the subs are strongly advised."
     },
     {
       "label": "Studio / streaming:",
@@ -302,7 +302,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "98–104 dBA LAeq-15, peaks above 108 dBA",
-        "studio": "−9 to −6 LUFS-I, −2 dBTP"
+        "studio": "Often −9 to −6 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],
     "notes": []

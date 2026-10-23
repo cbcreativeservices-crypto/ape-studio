@@ -471,7 +471,7 @@ export function ExposureMonitorScreen() {
             </Pressable>
           </View>
           <Text style={styles.note}>
-            To set the reference: play a steady tone through your MONITORS at a level a trusted SPL meter reads at
+            To set the reference: play steady pink noise through your MONITORS at a level a trusted SPL meter reads at
             the listening position, and adjust until the two agree — the app also uses that offset for headphones,
             but only as a rough start. For headphones there is no way to verify it at your ear without a measurement coupler, so treat
             headphone figures as the rougher of the two. The reference is limited to 70–115 dB. Model selection alone

@@ -224,12 +224,12 @@ const scenarios: MikingScenario[] = [
     id: 'bg.place.3',
     page: 'placement',
     prompt: 'A starting point says “just above the heads”. How far above is that?',
-    options: ['No set number — start safely clear of the hands, then listen', 'Exactly 5 cm above the heads, measured to the grille', 'A hand’s width above the heads, about 10 cm, on a pair of bongos'],
+    options: ['No set number — start safely clear of the hands, then listen', 'Exactly 5 cm above the heads, measured to the grille', 'One hand’s width, about 10 cm, whatever the player does'],
     correct: 'No set number — start safely clear of the hands, then listen',
     explain: '“Just above” does not supply a safe number of inches. The player’s hand arc and the mic’s size set the minimum clearance; move and re-aim after hearing the full passage.',
     why: {
       'Exactly 5 cm above the heads, measured to the grille': 'There is no set number. Clearance from the hands comes first, then listening.',
-      'A hand’s width above the heads, about 10 cm, on a pair of bongos': 'Players and mics differ. Start safely clear of this player’s hands, then listen.',
+      'One hand’s width, about 10 cm, whatever the player does': 'Players and mics differ. Start safely clear of this player’s hands, then listen.',
     },
   },
   {
@@ -331,7 +331,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'bg.two.4',
     page: 'twoMic',
-    prompt: 'With two spots, flipping B’s polarity makes the bongos sound bigger — and 3 dB louder. What do you conclude?',
+    prompt: 'With two spots, flipping mic B’s polarity makes the bongos sound bigger — and 3 dB louder. What do you conclude?',
     options: ['Not yet: match the levels, then compare both states in mono', 'Inverted is better, so keep it that way for the rest of the show', 'Normal polarity was wrong, because it was quieter'],
     correct: 'Not yet: match the levels, then compare both states in mono',
     explain: 'A louder version almost always sounds “better” at first. Compare at matched level, in mono, with the other open mics, before you decide.',
@@ -394,9 +394,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two bongo spots sound thin together. Which change removes the arrival-time difference itself?',
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on one of the mics', 'Turning the later mic up until it matches the earlier one'],
     correct: 'Moving a mic so the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth; neither removes the delay.',
+    explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth; neither removes the delay.',
     why: {
-      'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
+      'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
       'Turning the later mic up until it matches the earlier one': 'Level changes the depth of the notches, not where they are or the delay behind them.',
     },
   },
@@ -538,7 +538,7 @@ const predictions: HandLesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you shift the shared mic a little toward the hembra. What changes?', options: ['More hembra against the macho', 'More macho attack', 'Nothing until it is over the hembra'], after: 'Moving toward a drum tends to raise it against the other — a tendency to check by ear, with every stroke.' },
   context: { prompt: 'Where can this mic, aimed at the hembra, best reject the floor wedge in front?', options: ['Straight behind the mic', 'Toward its rear, off to one side', 'At the sides of the mic'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -609,9 +609,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated to a very high maximum SPL. What does that tell you about sitting beside the bongos through a long soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the drums stay below the mic’s rating', 'It is safe as long as the mic is nearer the drums than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the drums stay below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the drums stay below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is nearer the drums than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -813,7 +813,7 @@ export const M04B_LESSON: HandLesson = {
     pairLearn: [
       'A shared single mic avoids interaction between two bongo channels. With two mics, each picks up both heads at different levels and delays. Hear each alone, combine at the intended level, and sum to mono.',
       'If the high drum thins, the low drum loses weight or the image jumps, move or re-aim the mics first; a polarity switch is a diagnostic comparison, not a guarantee. If the pair also reaches the overheads or vocal mics, include them at realistic levels.',
-      'What you just saw: a close coincident pair keeps its own arrival difference near zero — it gives an image, not isolation, and still interacts with other mics and the room. Spaced spots comb; polarity moves the notches, it does not remove the delay.',
+      'What you just saw: a close coincident pair keeps its own arrival difference near zero — it gives an image, not isolation, and still interacts with other mics and the room. Spaced spots comb; polarity swaps the notches and peaks, it does not remove the delay.',
     ],
     pairWarn: 'The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone (1/r) — that does not hold this close to a drumhead, so read the depths as illustrative only. Judge the pair by ear, in mono, at matched levels.',
   },

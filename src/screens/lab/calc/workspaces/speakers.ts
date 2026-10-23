@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { copperOhmPerM, fmt, fmtInt, snapWhole } from '../calcUnits';
+import { copperOhmPerM, fmt, fmtInt, fmtNotWhole, overAirCeiling, SPL_CEILING_WHY, SPL_FIELD_RANGE, snapWhole } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]) => (typeof v === 'number' ? [v] : v);
@@ -22,6 +22,13 @@ const impedances = (v: number | number[]): number[] => {
  *  The 1e-9 keeps float noise (three 12 Ω boxes = 3.9999999999999996) from
  *  flagging an exact 4 Ω load. */
 const belowFourOhms = (z: number) => z < 4 - 1e-9;
+/** D53 (audit R2, 2026-10-23): a 0 Ω speaker is a short — said in words, not
+ *  the generic "check for zeros" error. */
+const ZERO_OHM_SPEAKER = 'Each impedance must be above 0 Ω — a 0 Ω speaker is a short circuit.';
+const zeroOhmRefusal = (v: number | number[]) => (arr(v).some((z) => !(z > 0)) ? ZERO_OHM_SPEAKER : null);
+/** No SPL past the ceiling of air is ever printed (D53, audit R2 2026-10-23):
+ *  a 194 dB sensitivity predicted "215 dB SPL" at 1 m. */
+const SPL_PAST_AIR = `${SPL_CEILING_WHY} Check the sensitivity, power and distance you entered.`;
 
 /* ------------------------------------------------------------------ */
 /* 1 · Loudspeaker SPL & Amplifier Power                              */
@@ -65,6 +72,7 @@ const WS_SPEAKERPOWER: Workspace = {
       name: 'SENSITIVITY',
       quantity: 'sensitivity',
       signed: true,
+      ...SPL_FIELD_RANGE,
       placeholder: '97',
       help: 'SPL the speaker produces at 1 m from 1 W input (per its spec sheet).',
       warn: { test: (x) => x < 80 || x > 115, msg: 'That is outside the usual 80–115 dB (1W/1m) span for passive boxes — check the spec sheet.' },
@@ -89,6 +97,7 @@ const WS_SPEAKERPOWER: Workspace = {
       name: 'TARGET SPL',
       quantity: 'spl',
       signed: true,
+      ...SPL_FIELD_RANGE,
       placeholder: '105',
       help: 'The continuous level you need AT the listener, before headroom.',
     },
@@ -109,7 +118,7 @@ const WS_SPEAKERPOWER: Workspace = {
       integer: true,
       nonNegative: true,
       placeholder: '1',
-      help: 'Identical boxes covering the same listener. Bonus assumes UNCORRELATED sources.',
+      help: 'Identical boxes covering the same listener. The bonus is an average power sum, as if the boxes were uncorrelated. Boxes playing the same signal can add more where they couple and comb in other places.',
       warn: { test: (x) => x < 1 || !Number.isInteger(x), msg: 'Enter a whole number of speakers, 1 or more.' },
     },
   ],
@@ -126,6 +135,12 @@ const WS_SPEAKERPOWER: Workspace = {
       keySymbols: ['·', 'log₁₀', '−'],
       note: 'Free-field inverse-square model; rooms add reverberant support this does not count.',
       primaryResultLabel: 'PREDICTED SPL (one speaker, after headroom)',
+      refuse: (v) => {
+        const N = Math.max(1, Math.floor(snapWhole(n(v.nspk))));
+        const at1m = n(v.sens) + 10 * Math.log10(n(v.power)) - n(v.headroom);
+        const atListener = at1m - 20 * Math.log10(n(v.dist)) + 10 * Math.log10(N);
+        return overAirCeiling(at1m) || overAirCeiling(atListener) ? SPL_PAST_AIR : null;
+      },
       compute: (v) => {
         const sens = n(v.sens);
         const p = n(v.power);
@@ -135,7 +150,7 @@ const WS_SPEAKERPOWER: Workspace = {
         const one = sens + 10 * Math.log10(p) - 20 * Math.log10(d) - hr;
         const out = [
           { label: 'PREDICTED SPL (one speaker, after headroom)', value: one, quantity: 'spl' as const },
-          { label: 'SPL AT 1 m (before distance loss)', value: sens + 10 * Math.log10(p) - hr, quantity: 'spl' as const, chainable: false },
+          { label: 'SPL AT 1 m (after headroom, before distance loss)', value: sens + 10 * Math.log10(p) - hr, quantity: 'spl' as const, chainable: false },
         ];
         if (N > 1) {
           out.push({
@@ -179,6 +194,11 @@ const WS_SPEAKERPOWER: Workspace = {
         'Runs the SPL prediction backwards: how much amplifier power a target level actually demands at a given distance. One speaker carries the whole target; with several uncorrelated boxes the demand splits. It exposes when no single amplifier can save an insensitive box at the back of the room.',
       keySymbols: ['x²', '·', 'log₁₀', '−', '/'],
       note: 'Solves the SPL prediction backwards for power — one speaker carries the whole target; with N speakers the demand is split.',
+      // The box would have to make more than air can carry at 1 m (audit R2).
+      refuse: (v) =>
+        overAirCeiling(n(v.target) + 20 * Math.log10(n(v.dist)) + n(v.headroom))
+          ? 'No speaker can do this — at 1 m it would have to make more than about 194 dB SPL, the loudest sound air can carry. Lower the target or move the listener closer.'
+          : null,
       compute: (v) => {
         const sens = n(v.sens);
         const t = n(v.target);
@@ -231,6 +251,10 @@ const WS_SPEAKERPOWER: Workspace = {
         'The loudest a given amplifier and speaker can reach at a distance — the same prediction with no headroom reserve. It is a cold-spec ceiling: real drivers give back 2–4 dB to power compression as the voice coils heat at full output.',
       keySymbols: ['·', 'log₁₀', '−'],
       note: 'Cold-spec ceiling — real drivers lose 2–4 dB to power compression before reaching it.',
+      refuse: (v) => {
+        const at1m = n(v.sens) + 10 * Math.log10(n(v.power));
+        return overAirCeiling(at1m) || overAirCeiling(at1m - 20 * Math.log10(n(v.dist))) ? SPL_PAST_AIR : null;
+      },
       compute: (v) => {
         const sens = n(v.sens);
         const p = n(v.power);
@@ -324,6 +348,7 @@ const WS_IMPEDANCE: Workspace = {
         'Wiring speakers in parallel lowers the load the amplifier sees — always below the lowest single box — so it demands more current. All branches share the amp’s voltage, so the lowest-impedance speaker draws the biggest power share. Below about 4 Ω many amplifiers run hot or current-limit.',
       keySymbols: ['/', 'Σ', 'Z', 'x₁'],
       note: 'Parallel branches all see the amplifier’s full voltage — lower impedances draw a bigger power share.',
+      refuse: (v) => zeroOhmRefusal(v.zlist),
       compute: (v) => {
         const zs = impedances(v.zlist);
         if (zs.length < 1) return [{ label: 'INPUT', text: 'Enter at least one impedance (e.g. "8, 8").', refusal: true }];
@@ -348,6 +373,9 @@ const WS_IMPEDANCE: Workspace = {
         const zs = impedances(v.zlist);
         if (zs.length < 1) return ['Enter at least one impedance to combine.'];
         const inv = zs.reduce((s, z) => s + 1 / z, 0);
+        // One value is no combination (audit R2, 2026-10-23): "always lower
+        // than the lowest branch" was false beside an 8 Ω total for one 8 Ω box.
+        if (zs.length === 1) return [`Only one speaker, so the total is just its impedance: ${fmt(zs[0]!)} Ω. Add more values to combine them.`];
         return [
           `Sum the reciprocals: ${zs.map((z) => `1/${fmt(z)}`).join(' + ')} = ${fmt(inv)} S.`,
           `Ztot = 1 ÷ ${fmt(inv)} = ${fmt(1 / inv)} Ω — always lower than the lowest branch.`,
@@ -365,6 +393,7 @@ const WS_IMPEDANCE: Workspace = {
         'Wiring speakers in series raises the load — always above the highest single box — so the amplifier delivers less total power. The same current flows through every speaker, so one open voice coil silences the whole string, and the raised impedance degrades the amp’s damping of each driver.',
       keySymbols: ['Σ', 'Z', 'x₁'],
       note: 'Series speakers share the amplifier’s current; the amp delivers LESS total power into the raised load.',
+      refuse: (v) => zeroOhmRefusal(v.zlist),
       compute: (v) => {
         const zs = impedances(v.zlist);
         if (zs.length < 1) return [{ label: 'INPUT', text: 'Enter at least one impedance (e.g. "8, 8").', refusal: true }];
@@ -380,6 +409,7 @@ const WS_IMPEDANCE: Workspace = {
       steps: (v) => {
         const zs = impedances(v.zlist);
         if (zs.length < 1) return ['Enter at least one impedance to combine.'];
+        if (zs.length === 1) return [`Only one speaker, so the total is just its impedance: ${fmt(zs[0]!)} Ω. Add more values to combine them.`];
         return [`Ztot = ${zs.map((z) => fmt(z)).join(' + ')} = ${fmt(zs.reduce((s, z) => s + z, 0))} Ω — always higher than the highest single speaker.`];
       },
     },
@@ -394,11 +424,15 @@ const WS_IMPEDANCE: Workspace = {
         'The classic four-speaker wiring: two parallel pairs placed in series. Four 8-ohm boxes land back at 8 ohms — a load-friendly way to run four speakers off one amplifier. Each parallel pair halves, and the two pairs in series add back up.',
       keySymbols: ['∥', 'Z', 'x₁'],
       note: 'The classic four-speaker wiring: two parallel pairs placed in series — four 8 Ω boxes land back at 8 Ω.',
+      // The count first, then the zeros, each in its own words (audit R2,
+      // 2026-10-23): "8, 8, 8, 8, 0" got the generic "check for zeros" error.
+      refuse: (v) => (arr(v.z4).length === 4 ? zeroOhmRefusal(v.z4) : null),
       compute: (v) => {
-        const zs = impedances(v.z4);
-        if (zs.length !== 4) {
-          return [{ label: 'INPUT', text: `This wiring needs exactly FOUR impedances (you entered ${zs.length}). Example: "8, 8, 8, 8".`, refusal: true }];
+        const count = arr(v.z4).length;
+        if (count !== 4) {
+          return [{ label: 'INPUT', text: `This wiring needs exactly FOUR impedances (you entered ${count}). Example: "8, 8, 8, 8".`, refusal: true }];
         }
+        const zs = impedances(v.z4);
         const [z1, z2, z3, z4] = zs as [number, number, number, number];
         const pairA = (z1 * z2) / (z1 + z2);
         const pairB = (z3 * z4) / (z3 + z4);
@@ -417,8 +451,8 @@ const WS_IMPEDANCE: Workspace = {
         return out;
       },
       steps: (v) => {
+        if (arr(v.z4).length !== 4) return ['Enter exactly four impedances — speakers 1+2 make one parallel pair, 3+4 the other.'];
         const zs = impedances(v.z4);
-        if (zs.length !== 4) return ['Enter exactly four impedances — speakers 1+2 make one parallel pair, 3+4 the other.'];
         const [z1, z2, z3, z4] = zs as [number, number, number, number];
         const pairA = (z1 * z2) / (z1 + z2);
         const pairB = (z3 * z4) / (z3 + z4);
@@ -510,6 +544,7 @@ const WS_CABLE: Workspace = {
       key: 'z',
       name: 'LOAD IMPEDANCE',
       quantity: 'impedance',
+      positive: 'LOAD IMPEDANCE must be above 0 Ω — a 0 Ω load is a short circuit.',
       placeholder: '8',
       help: 'Nominal impedance of the speaker (or combined load) at the far end.',
     },
@@ -557,7 +592,10 @@ const WS_CABLE: Workspace = {
           { label: 'WATTS HEATING THE CABLE', value: (p * lostPct) / 100, quantity: 'power', chainable: false },
           {
             label: 'DAMPING-FACTOR CEILING',
-            text: `The cable alone limits system damping factor to ~${fmt(z / rloop, 3)} — regardless of the amplifier’s rating.`,
+            text:
+              rloop === 0
+                ? 'No cable, so the cable puts no limit on damping factor.'
+                : `The cable alone limits system damping factor to ~${fmt(z / rloop, 3)} — regardless of the amplifier’s rating.`,
           },
         ];
       },
@@ -573,8 +611,8 @@ const WS_CABLE: Workspace = {
         if (g !== gIn) s.push(`Gauge rounded to the nearest whole gauge: ${fmt(gIn)} → ${g} AWG.`);
         s.push(
           `Current travels out AND back: Rloop = 2 × ${fmt(L)} m × ${fmt(rpm)} Ω/m = ${fmt(rloop)} Ω.`,
-          `The speaker gets Z/(Z+Rloop) = ${fmt(z)}/${fmt(z + rloop)} = ${fmt(frac)} of the voltage → 20·log10(${fmt(frac)}) = ${fmt(20 * Math.log10(frac))} dB.`,
-          `Power lost = 1 − ${fmt(frac)} = ${fmt((1 - frac) * 100, 3)}% of the amplifier’s output, spent heating copper.`
+          `The speaker gets Z/(Z+Rloop) = ${fmt(z)}/${fmtNotWhole(z + rloop)} = ${fmtNotWhole(frac)} of the voltage → 20·log10(${fmtNotWhole(frac)}) = ${fmt(20 * Math.log10(frac))} dB.`,
+          `Power lost = 1 − ${fmtNotWhole(frac)} = ${fmt((1 - frac) * 100, 3)}% of the amplifier’s output, spent heating copper.`
         );
         return s;
       },
@@ -619,7 +657,7 @@ const WS_CABLE: Workspace = {
       key: 'recgauge',
       name: 'Suggested gauge for a run (reverse)',
       inputs: ['len', 'z', 'maxloss'],
-      formula: 'smallest listed gauge with 20·log10(Z/(Z+2·L·R/m)) within budget',
+      formula: 'thinnest (highest AWG number) listed gauge with 20·log10(Z/(Z+2·L·R/m)) within budget',
       plainFormula:
         'The suggested gauge is the thinnest listed wire whose level loss — twenty times the log of the load over the load plus the loop resistance — stays within the budget.',
       explain:
@@ -655,7 +693,7 @@ const WS_CABLE: Workspace = {
         const dB = Math.abs(n(v.maxloss));
         return {
           title: `All listed gauges over ${fmt(L)} m into ${fmt(z)} Ω (budget ${fmt(dB)} dB)`,
-          cols: ['AWG', 'Loop Ω', 'Loss dB', 'Power lost', 'Verdict'],
+          cols: ['AWG', 'Loop Ω', 'Level change dB', 'Power lost', 'Verdict'],
           rows: AWG_LIST.map((g) => {
             const rloop = 2 * L * ohmPerM(g);
             const frac = z / (z + rloop);
@@ -663,7 +701,9 @@ const WS_CABLE: Workspace = {
             return [
               String(g),
               fmt(rloop, 3),
-              fmt(loss, 3),
+              // The same sign as ITS LOSS ON THIS RUN above (audit R2,
+              // 2026-10-23): the card said −0.333 dB, this column 0.333.
+              fmt(-loss, 3),
               // Finite-guarded (edge-case QA 2026-09-11): a 0 Ω load with a 0 m
               // run makes `frac` 0/0 = NaN, and this cell printed "NaN%".
               // Every other numeric cell in this table already reads '—' there.
@@ -749,6 +789,7 @@ const WS_CV70: Workspace = {
       key: 'prated',
       name: 'AMPLIFIER RATED POWER',
       quantity: 'power',
+      positive: true,
       placeholder: '250',
       help: 'The distributed amplifier’s rated output at this line voltage.',
     },
@@ -797,7 +838,7 @@ const WS_CV70: Workspace = {
         const recommended = load * Math.pow(10, hr / 10);
         const remaining = prated - load;
         return [
-          { label: `SYSTEM LOAD (${taps.length} speakers)`, value: load, quantity: 'power' },
+          { label: `SYSTEM LOAD (${taps.length} speaker${taps.length === 1 ? '' : 's'})`, value: load, quantity: 'power' },
           { label: `SUGGESTED AMP ≥ (with ${fmt(hr)} dB headroom)`, value: recommended, quantity: 'power', chainable: false },
           // An overloaded amp has no capacity left, not a NEGATIVE capacity
           // (calc check A, 2026-10-03): 330 W of taps on a 250 W amp read

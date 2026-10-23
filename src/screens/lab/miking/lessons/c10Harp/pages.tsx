@@ -116,7 +116,7 @@ const SETTING = makeStagePage({
   nearBadge: 'From above · a typical layout · the harpist at the left, the audience to the right',
   audience: () => HARP_AUDIENCE,
   nearLooking: 'Plan · the harp and the harpist from above',
-  hearing: 'Protect your hearing: the harp itself is gentle, but the band or orchestra around it, and the monitors at soundcheck, are loud. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens — it has nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.',
+  hearing: 'Protect your hearing: the harp itself is gentle, but the band or orchestra around it, and the monitors at soundcheck, are loud. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — it has nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.',
 });
 
 export const HARP_ART: LessonArt = {

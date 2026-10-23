@@ -74,7 +74,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Loudest to quietest in a drop: sub and snare (roughly equal impact), kick, mid/Reese bass, vocal or hook, hats and ride, pads, FX returns. The D&B kick is short and high-passed (40–85 Hz) so the sub owns 30–90 Hz while the kick owns attack at 2–5 kHz plus a small thump. Sidechain sub and mid-bass to kick and snare for 3–6 dB of ducking. Sub, kick, snare and vocal stay center and mono below 100–150 Hz; mid-bass widens above 200–300 Hz; hats, percussion and pads are panned or widened. Liquid pushes vocals and pianos forward; in neurofunk the mid-bass sits almost level with the snare."
+      "text": "Loudest to quietest in a drop: sub and snare (roughly equal impact), kick, mid/Reese bass, vocal or hook, hats and ride, pads, FX returns. The D&B kick is short and high-passed (often 35–50 Hz, up to 85 Hz on 909-style kicks) so the sub owns 30–90 Hz while the kick owns attack at 2–5 kHz plus a small thump. Sidechain sub and mid-bass to kick and snare for 3–6 dB of ducking. Sub, kick, snare and vocal stay center and mono below 100–150 Hz; mid-bass widens above 200–300 Hz; hats, percussion and pads are panned or widened. Liquid pushes vocals and pianos forward; in neurofunk the mid-bass sits almost level with the snare."
     }
   ],
   "eq": {
@@ -270,7 +270,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and arena D&B typically runs 100–105 dBA LAeq-15 at FOH, with peaks to about 106–110 dBA; A big arena all-nighter can average about 102 dBA and peak near 106 dBA. Large sub arrays reach roughly 120–130 dBC; a C-minus-A gap above about 20–25 dB means the sub is out of balance. Cardioid or end-fire sub arrays cut rear spill by about 10–15 dB, helping neighbours and MC stage clarity. Expect dBA and dBC caps at late-night or residential venues. Offer earplugs; common hearing-safety guidance allows only about 15 minutes a day at 100 dBA unprotected."
+      "text": "Club and arena D&B typically runs 100–105 dBA LAeq-15 at FOH, with peaks to about 106–110 dBA; A big arena all-nighter can average about 102 dBA and peak near 106 dBA. Large sub arrays reach roughly 120–130 dBC LCeq; in D&B a C-minus-A gap of about 20–25 dB is normal, and a wider gap means the sub is out of balance. Cardioid or end-fire sub arrays cut rear spill by about 10–15 dB, helping neighbours and MC stage clarity. Expect dBA and dBC caps at late-night or residential venues. Offer earplugs; NIOSH advises no more than about 15 minutes a day at 100 dBA unprotected."
     },
     {
       "label": "Studio / streaming:",

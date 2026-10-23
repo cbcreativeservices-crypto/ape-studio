@@ -134,7 +134,7 @@ export const CI_RULES: CiRule[] = [
     category: 'mechanical',
     authorityClass: 'manufacturer',
     severity: 'major',
-    studentText: 'Pull smoothly within the cable\'s rated tension; never yank through resistance.',
+    studentText: 'Pull smoothly within the cable\'s rated tension. If it binds, stop and find the snag instead of yanking it through.',
     whyText:
       'Exceeding pull tension stretches conductors, deforms pairs, and breaks fiber — damage you cannot see from outside the jacket. Sharp turns under tension multiply sidewall pressure at the bend.',
     correctionText: 'Stop, find the snag, add a pulling aid or re-feed — do not force it.',
@@ -147,7 +147,7 @@ export const CI_RULES: CiRule[] = [
     category: 'mechanical',
     authorityClass: 'professional_practice',
     severity: 'major',
-    studentText: 'Never pull a cable by its connector. Pull on the cable itself, or on a pulling grip made for the job.',
+    studentText: 'Pull on the cable itself, or on a pulling grip made for the job — not on its connector.',
     whyText:
       'Termination joints are the weakest mechanical point of most assemblies. Pulling on them stresses solder/crimp joints and strain reliefs invisibly, creating the intermittent faults that take longest to find.',
     sourceRefs: ['mfr_cable', 'bicsi_itsimm'],
@@ -208,7 +208,7 @@ export const CI_RULES: CiRule[] = [
     authorityClass: 'code',
     jurisdiction: 'US',
     severity: 'critical',
-    studentText: 'Use purpose-built, appropriately rated supports — never other trades\' pipes, ceilings or equipment.',
+    studentText: 'Use purpose-built, appropriately rated supports — not other trades\' pipes, ceilings or equipment.',
     whyText:
       'Where adopted, the electrical code requires cabling to be supported by approved means and prohibits using ceiling grids/support wires and other systems as carriers. Sprinkler pipes, conduit belonging to another system, and ductwork are life-safety or licensed systems — hanging cable on them creates hazards in both directions.',
     correctionText: 'Move the cable onto a listed support (J-hook, tray, strap) anchored to structure.',
@@ -269,7 +269,7 @@ export const CI_RULES: CiRule[] = [
     category: 'rack',
     authorityClass: 'manufacturer',
     severity: 'major',
-    studentText: 'Never dress bundles across intakes, exhausts or fan paths — equipment cooling is a manufacturer requirement.',
+    studentText: 'Keep bundles clear of intakes, exhausts and fan paths — each unit\'s maker sets its cooling needs.',
     whyText:
       'A beautiful loom across a vent is a heat failure on a schedule. Equipment thermal requirements come from its manufacturer; rack design standards require preserving the cooling plan.',
     correctionText: 'Re-route the bundle around the ventilation path, using managers/side rails.',
@@ -317,7 +317,7 @@ export const CI_RULES: CiRule[] = [
     authorityClass: 'code',
     jurisdiction: 'US',
     severity: 'critical',
-    studentText: 'Unknown wall? VERIFY the assembly before drilling — never penetrate first and ask later.',
+    studentText: 'Unknown wall? VERIFY the assembly before drilling — find out first, penetrate after.',
     whyText:
       'Fire-resistance-rated assemblies are life-safety construction; an unapproved penetration defeats them and is a code violation where adopted. Verification (drawings, markings, the project team, the AHJ) comes before the drill.',
     correctionText: 'Stop. Identify the assembly from documents or the responsible party, then use the penetration method the assembly requires.',
@@ -341,7 +341,7 @@ export const CI_RULES: CiRule[] = [
     category: 'floor',
     authorityClass: 'professional_practice',
     severity: 'major',
-    studentText: 'Never let a door pinch a cable — go over, under (protected), around, or through a proper pathway.',
+    studentText: 'Keep cable out of door pinch points — go over, under (protected), around, or through a proper pathway.',
     whyText:
       'A door cycles thousands of times; a pinched cable fails and can hold the door itself out of its safe operation. Temporary events may protect a threshold crossing properly; permanent runs belong in building pathways, and flexible cord is not permanent building wiring.',
     correctionText: 'Reroute via a pathway, or protect a temporary crossing with a suitable threshold solution.',

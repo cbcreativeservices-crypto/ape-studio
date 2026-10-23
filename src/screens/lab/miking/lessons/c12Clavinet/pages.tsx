@@ -122,7 +122,7 @@ const SETTING = makeStagePage({
   nearBadge: 'From above · a typical layout · the amp behind the keyboardist, the audience to the right',
   audience: () => CLAV_AUDIENCE,
   nearLooking: 'Plan · the amp, the clavinet and the keyboardist from above',
-  hearing: 'Protect your hearing: an amp turned up for the stage is loud right where a close mic and your ears go, and so are the soundcheck and the monitors. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens — it has nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.',
+  hearing: 'Protect your hearing: an amp turned up for the stage is loud right where a close mic and your ears go, and so are the soundcheck and the monitors. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — it has nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.',
 });
 
 export const CLAV_ART: LessonArt = {

@@ -50,7 +50,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'A main pair and a spot',
     goal: 'The main pair and a soprano spot: see how much earlier the spot hears its section, what polarity changes and what it does not, and why a spot can pull the image.',
-    credit: { scenarios: ['ch.first', 'ch.two.1', 'ch.two.2'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
+    credit: { scenarios: ['ch.first', 'ch.two.1', 'ch.two.2'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
     takeaway: 'A spot is closer, so it hears its section first: brought up too far it pulls the image toward it and can comb with the pair. Keep spots low, pan them where the pair places the section, and judge in mono.',
   },
   troubleshoot: {
@@ -300,10 +300,10 @@ const symptoms: Symptom[] = [
   {
     id: 'ch.s.outer',
     observation: 'The outer sections are weak',
-    firstChecks: 'Does the choir fill the array’s angle? Move the pair back, widen it, or bring the group in — before adding level.',
+    firstChecks: 'Does the choir fill the array’s angle? Move the pair back or bring the group in — before adding level.',
     options: ['Move the pair back or bring the group in', 'Raise the outer sections with EQ on the bus', 'Add a spot on each outer singer'],
     correct: 'Move the pair back or bring the group in',
-    explain: 'Close in, the outer sections sit outside the pair’s angle. Move back, widen the pair, or rearrange the group so it fills the angle.',
+    explain: 'Close in, the outer sections sit outside the pair’s angle. Move the pair back, or bring the group in, so the choir fills the angle. Widening the angle between the mics makes that angle smaller, not larger.',
     why: { 'Raise the outer sections with EQ on the bus': 'EQ cannot separate one section from another in a pair.', 'Add a spot on each outer singer': 'Spots first add overlap; fix the coverage.' },
   },
   {
@@ -360,7 +360,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'An X/Y pair a few feet out, plus a spot for a weak section', ok: true, power: 'phantom', feedback: 'Fair: a main pair, one spot for a stated need.' },
       { id: 'c', label: 'A close mic on every singer', ok: false, power: 'phantom', feedback: 'Dozens of channels, breath and timing exposed, no shared blend.' },
       { id: 'd', label: 'A spaced pair 2 m apart right at the first row', ok: false, power: 'phantom', feedback: 'Too close and too wide: the first row on top, a hole in the middle.' },
-      { id: 'e', label: 'One mic hung straight over the middle rows', ok: false, power: 'phantom', feedback: 'Never over the heads: in front of the mouths, and only on the venue’s rigging.' },
+      { id: 'e', label: 'One mic hung straight over the middle rows', ok: false, power: 'phantom', feedback: 'Not over the heads: in front of the mouths, and only on the venue’s approved rigging, put up by a qualified rigger.' },
     ],
     reasons: [PAIR_REASON, SAFE_REASON, POWER_REASON, GROUP_BRAND, SPOTS_EVERY],
     explain: 'More than one setup passes. What passes is the reasoning: a main pair first, safely placed, spots only for a stated need.',
@@ -385,7 +385,7 @@ const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern rejects most of the PA behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from 1 m to 2 m in front. What changes most?', options: ['More blend and more room', 'Only the level', 'The first row dominates more'], after: 'Farther back, the distances to the first and back rows even out: the NEAR / FAR readout shrinks, and more sections fall inside the pair’s angle.' },
   context: { prompt: 'The floor monitor sits in front of the choir, below the area mic. Can the mic’s rejection reach it?', options: ['Yes — tilt the mic or tighten its pattern', 'No — only an omni can', 'It is already in the null'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'A main pair and a soprano spot. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE to another section.' },
+  twoMic: { prompt: 'A main pair and a soprano spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another section.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

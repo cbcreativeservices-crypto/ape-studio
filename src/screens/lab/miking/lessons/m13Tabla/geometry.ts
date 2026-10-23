@@ -53,7 +53,7 @@ const parts: Part[] = [
   { id: 'ta.bayanHead', label: 'bayan head', short: 'bayan head', role: 'The larger drum’s head, on the player’s left here. The player presses it with the heel of the hand to bend the pitch — the hand moves across it all the time.', prov: D.bayanHeadD.prov },
   { id: 'ta.bayanPatch', label: 'black patch (bayan, off-centre)', short: 'bayan patch', role: 'The bayan’s black patch sits OFF-centre (drawn here toward the player) — unlike the dayan’s.', prov: D.bayanOffset.prov },
   { id: 'ta.bayanBody', label: 'bayan body (metal kettle)', short: 'bayan body', role: 'The bayan’s kettle-shaped body — metal in the museum’s pair; clay in some others.', solid: { kind: 'cyl', a: BAYAN.B, b: BAYAN.H, r: BAYAN.maxR }, clearance: CLEAR, prov: D.bayanW.prov },
-  { id: 'ta.rings', label: 'support rings', short: 'rings', role: 'Cloth rings the drums sit in, steady and tilted toward the player. Keep cables away from them.', prov: D.ringH.prov },
+  { id: 'ta.rings', label: 'support rings', short: 'rings', role: 'Cloth rings the drums sit in, holding each one steady at the tilt the player chooses. Keep cables away from them.', prov: D.ringH.prov },
 ];
 
 const handBox = (d: TablaDrum, half: number) => ({ kind: 'box' as const, min: v3(d.H.x - 230, d.H.y - 160, d.H.z - half), max: v3(d.H.x + 30, d.H.y + 10, d.H.z + half) });
@@ -167,7 +167,7 @@ export const TABLA_ZONES: DocumentedZone[] = [
     a: [30, 85],
     aim: 35,
     start: [1050, 65],
-    tendency: 'The room around the pair. If it blurs the rhythm or turns the sound hollow, lower it, move it or leave it out. On stage it is a capture-only channel, not a PA feed.',
+    tendency: 'The room around the pair. If it blurs the rhythm or turns the sound hollow, lower it, move it or leave it out. On stage it is most often a capture-only channel, not a PA feed.',
     checks: ['Rhythmic detail kept', 'The blend in mono', 'Kept out of the PA live'],
   }),
 ];

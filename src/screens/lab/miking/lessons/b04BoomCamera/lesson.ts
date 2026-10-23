@@ -46,7 +46,7 @@ const pages: LessonPages = {
     title: 'Before any mic',
     goal: 'Know where each mic goes — the program, the recorder, the earpiece, a PA — and what to settle before any boom goes up: the widest frame, the light, safe rigging, power lines and weather, and a live check without feedback.',
     credit: { scenarios: ['b4.set.1', 'b4.set.2', 'b4.set.3', 'b4.set.4'], note: 'Answer the four checks.' },
-    takeaway: 'Ask for the widest frame, never swing gear over people, leave overhead rigs to qualified crew, keep a pole away from power lines, put one mic on air per voice, and bring live mics up to their working level only.',
+    takeaway: 'Ask for the widest frame, never swing gear over the audience, leave anything hung overhead to a qualified rigger, keep a pole away from power lines, put one mic on air per voice, and bring live mics up to their working level only.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -137,7 +137,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The boom has to pass over the audience to reach the talker. What do you do?',
     options: ['Find another path — never swing gear over people', 'Move it quickly so it is over them only briefly', 'Hold the cable tight so nothing can fall'],
     correct: 'Find another path — never swing gear over people',
-    explain: 'Never let a mic, a clamp or a cable swing above people. Find a path round them; an overhead rig is set and secured by qualified crew before anyone sits beneath it.',
+    explain: 'Never let a mic, a clamp or a cable swing over the audience. Find a path round them; anything hung overhead is set and secured by a qualified rigger before anyone sits beneath it.',
     why: {
       'Move it quickly so it is over them only briefly': 'Speed adds risk; a dropped part falls just the same.',
       'Hold the cable tight so nothing can fall': 'A tight cable does not secure a clamp, a joint or the mic.',
@@ -489,7 +489,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Rehearse turns, the second talker and a reframe', early: 'Check the movement once the level is set.' },
       { text: 'Trace every route; keep a tested fallback', early: 'Routing and the fallback come last.' },
     ],
-    explain: 'A sensible order. Never swing gear over people; no conductive pole near power lines; live, leave any ring-out to the system’s operator.',
+    explain: 'A sensible order. Never swing gear over the audience; keep every pole away from power lines, whatever it is made of; live, leave any ring-out to the system’s operator.',
   },
 ];
 
@@ -529,7 +529,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you choose: which mic is as far from the talker as the camera?', options: ['The boom', 'The camera’s own mic', 'The lav'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you move the boom from above the frame to below it. What changes?', options: ['A different perspective', 'Nothing at all', 'It depends on this room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is at the stage’s front corner. Where will a hypercardioid boom mic reject it best?', options: ['Straight in front', 'Off to the rear, about 110°', 'At its side'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip the lav’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the lav’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -564,7 +564,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The quickest boom path crosses above seated people. What do you do?',
     options: ['Take another path — never over people', 'Go over quickly while they are seated', 'Hold the pole high so nothing touches them'],
     correct: 'Take another path — never over people',
-    explain: 'Never swing a mic, a clamp or a cable above people. An overhead rig is set by qualified crew before anyone sits beneath it.',
+    explain: 'Never swing a mic, a clamp or a cable over the audience. Anything hung overhead is set and secured by a qualified rigger before anyone sits beneath it.',
     why: {
       'Go over quickly while they are seated': 'Seated or not, a dropped part falls on them.',
       'Hold the pole high so nothing touches them': 'Height is not safety: a dropped part falls farther.',
@@ -677,6 +677,6 @@ export const B04_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every shot, room, mic and voice is different: move the boom, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a talker in a typical standing pose, the cameras and their shots as drawing defaults, each boom start calculated from the frame, the shotgun’s pattern as a simplified shape, the two-mic comb as a textbook graph. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s front (a shotgun’s capsule, about 20 cm behind its tip). Never swing gear over people; no pole near power lines; avoid uncontrolled feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every shot, room, mic and voice is different: move the boom, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a talker in a typical standing pose, the cameras and their shots as drawing defaults, each boom start calculated from the frame, the shotgun’s pattern as a simplified shape, the two-mic comb as a textbook graph. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m. They are measured from the lips to the mic’s capsule — a shotgun’s capsule, about 20 cm behind its tip. Never swing gear over the audience; no pole near power lines; avoid uncontrolled feedback.',
   copy: B04_COPY,
 };

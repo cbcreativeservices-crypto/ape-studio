@@ -32,7 +32,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know where the tambourine sits in the orchestra — its neighbours, the player’s space and moves, what an amplified stage and a recording add — and what to do before any mic.',
     credit: { scenarios: ['tb.set.1', 'tb.set.hear', 'tb.set.2'], note: 'Answer the three checks.' },
-    takeaway: 'Ask for the whole phrase and every station the player uses. The player’s motion sets the clearance; nothing is clipped to the instrument. Protect your hearing.',
+    takeaway: 'Ask for the whole phrase and every station the player uses. The player’s motion sets the clearance; nothing is clipped to the instrument without hardware made for it and the owner’s agreement. Protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -287,7 +287,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · The player switches from striking to shaking. What does a fixed mic hear change?',
     options: ['Less head body, more jingle — and a moving distance', 'Nothing: the same instrument makes the same sound', 'More head body, because the frame now moves more'],
     correct: 'Less head body, more jingle — and a moving distance',
-    explain: 'Shaking barely moves the head and drives the jingles — and the frame now swings toward and away from the mic.',
+    explain: 'Shaking barely moves the head and drives the jingles — and the frame now moves, so its distance to a fixed mic changes.',
     why: {
       'Nothing: the same instrument makes the same sound': 'Striking and shaking drive different parts: head versus jingles.',
       'More head body, because the frame now moves more': 'The frame moving does not bend the head; the jingles lead a shake.',
@@ -429,7 +429,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you aim the mic from straight at the instrument to edge-on at the rim. What changes?', options: ['More head body', 'More bright jingle', 'It depends on this tambourine'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

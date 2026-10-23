@@ -108,7 +108,7 @@ export const B11_ZONES: DocumentedZone[] = [
     'b11.athlete',
     'athlete',
     'A body mic on an athlete — at the approved place only',
-    'Only where the event, the team and the athlete approve: a miniature at the exact approved place — here the breastbone, clear of the pads — never drilled into, taped to or displacing protective equipment.',
+    'Only where the event, the team and the athlete approve: a miniature at the exact approved place — here the breastbone, clear of the pads. Protective equipment is never drilled into or displaced, and nothing is taped to it without that approval.',
     'Close speech and breathing during play — and impact, rub, sweat and heat. Many sports or positions refuse a mount entirely.',
     ['The equipment reviewer’s and the medical authority’s approval', 'Retention, comfort and snag risk on safe movement', 'A stop condition named: loose pack, displaced pad, heat'],
   ),

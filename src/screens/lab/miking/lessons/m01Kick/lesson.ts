@@ -31,7 +31,7 @@ const pages: LessonPages = {
   sound: {
     title: 'How it makes its sound',
     goal: 'See how a strike becomes sound — the beater, the heads, the air inside — and where the sound leaves the drum.',
-    credit: { scenarios: ['k.snd.1', 'k.snd.2', 'k.snd.3'], interactive: 'soundPath', note: 'Step the strike through to the end (or play it once), and answer the three checks.' },
+    credit: { scenarios: ['k.snd.1', 'k.snd.2', 'k.snd.3'], interactive: 'soundPath', note: 'Step the strike through to the end (or tap PLAY ONCE to run it, without sound), and answer the three checks.' },
     takeaway: 'Attack starts where the beater meets the batter head. The body — both heads, the air inside and the shell ringing together — leaves mostly through the front head and the port. A mic hears more of whichever it is closer to and faces: a tendency, and drums vary.',
   },
   setting: {
@@ -311,7 +311,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip the polarity of mic B. What happens to the arrival-time difference?',
     options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals now line up in time again', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
-    explain: 'Polarity inversion reverses the signal’s sign. It does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
+    explain: 'Polarity inversion reverses the signal’s sign. It does not remove a delay caused by sound reaching the mics at different times. The notches and peaks swap places; Δt does not.',
     why: {
       'It drops to zero, so the two arrivals now line up in time again': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still the same distance apart.',
       'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
@@ -344,7 +344,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'k.two.4',
     page: 'twoMic',
-    prompt: 'You flip B’s polarity and the kick suddenly sounds bigger; the sum reads 3 dB louder. What do you conclude?',
+    prompt: 'You flip mic B’s polarity and the kick suddenly sounds bigger; the sum reads 3 dB louder. What do you conclude?',
     options: ['Not yet: match the levels, then compare both states again in mono', 'Inverted is the better setting, so keep it that way for the whole show', 'Normal polarity was wrong, because it was quieter'],
     correct: 'Not yet: match the levels, then compare both states again in mono',
     explain: 'A louder version almost always sounds “better” at first. Compare at matched level, in mono and with the kit, before you decide.',
@@ -407,9 +407,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two kick mics sound thin together. Which change removes the arrival-time difference itself?',
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on one of the mics', 'Turning the later mic up until it matches the earlier one'],
     correct: 'Moving a mic so the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth; neither removes the delay.',
+    explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth; neither removes the delay.',
     why: {
-      'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
+      'Flipping the polarity switch on one of the mics': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
       'Turning the later mic up until it matches the earlier one': 'Level changes the depth of the notches, not where they are or the delay behind them.',
     },
   },
@@ -554,7 +554,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from near the batter head toward the front head. What changes?', options: ['More attack', 'More resonance', 'It depends on this drum'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this supercardioid reject the downstage wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
-  twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 /*
@@ -630,9 +630,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The kick mic is rated to 174 dB SPL. What does that tell you about standing by the drum through a long soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the drum stays below the mic’s 174 dB', 'It is safe as long as the mic itself is inside the drum'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the drum stays below the mic’s 174 dB': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the drum stays below the mic’s 174 dB': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic itself is inside the drum': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },

@@ -20,8 +20,8 @@ export const GUIDE: MixingGuide = {
     "tempo": "60–80 BPM (ballads, 6/8 and 12/8 worship), 90–120 BPM (mid-tempo praise), 130–160+ BPM (shout music / praise breaks)",
     "ensemble": "Lead singer + praise team (3–8) or choir (20–200), with organ, piano/keys, bass, drums, often guitar, percussion and occasional horns",
     "priority": "Lead vocal and choir intelligible and on top of a loud, busy rhythm section — the words are the point",
-    "liveSpl": "Sunday services 88–96 dBA Leq (LAeq-15 min); concerts and live recordings 95–101 dBA; 110–120 dBC",
-    "studioLoudness": "Masters commonly −14 to −9 LUFS-I (traditional and live-choir releases −18 to −14); streaming normalizes to about −14"
+    "liveSpl": "Sunday services 88–96 dBA Leq (LAeq-15 min); concerts and live recordings 95–101 dBA; C-weighted Leq usually 10–20 dB above that",
+    "studioLoudness": "Masters commonly −14 to −9 LUFS-I (traditional and live-choir releases −16 to −13); streaming normalizes to about −14"
   },
   "purpose": [
     {
@@ -121,7 +121,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "source": "Bass",
-        "cut": "HPF 30–35 Hz (low B fundamental ≈ 31 Hz); −2–3 dB at 200–300 Hz",
+        "cut": "HPF about 25 Hz, just under the low B fundamental (≈ 31 Hz); −2–3 dB at 200–300 Hz",
         "boost": "+2–3 dB at 700 Hz–1 kHz (growl); +1–2 dB at 2–3 kHz (slap and fills)",
         "notes": "Busy lines need mid definition, not more lows"
       },
@@ -272,17 +272,17 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "Gospel is a singer’s music. Lead vocals sit clearly above the band — often 3–5 dB louder in perceived level than in rock — with every melisma, growl and run audible. Keep the tone warm and present; harshness on big belts is the top complaint, so use dynamic EQ at 2.5–4 kHz rather than static cuts. Use a supercardioid handheld, since leaders roam in front of loud wedges. Pitch correction is light; audible tuning on a gospel lead robs the runs of feeling. Ad-libs over the vamp are featured, not tucked. Choirs: one cardioid condenser covers roughly 15–20 singers; place at or above back-row height, 2–3 ft in front, spaced by the 3:1 rule, and keep choir mics out of the choir wedges (in-ears, or a little added with care, are the exceptions)."
+      "text": "Gospel is a singer’s music. Lead vocals sit clearly above the band — often 3–5 dB louder in perceived level than in rock — with every melisma, growl and run audible. Keep the tone warm and present; harshness on big belts is the top complaint, so use dynamic EQ at 2.5–4 kHz rather than static cuts. A supercardioid handheld helps, since leaders roam in front of loud wedges, but its nulls sit to the sides of its rear (about 125° off axis), so place wedges there, not straight behind it. Pitch correction is light; audible tuning on a gospel lead robs the runs of feeling. Ad-libs over the vamp are featured, not tucked. Choirs: one cardioid condenser covers roughly 15–20 singers; place at or above back-row height, 2–3 ft in front, spaced by the 3:1 rule, and keep choir mics out of the choir wedges (in-ears, or a little added with care, are the exceptions)."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Sunday services typically run 88–96 dBA LAeq-15 at FOH, with praise breaks and concert or live-recording events reaching 98–101 dBA and peaks of 108–112 dBA; C-weighted levels usually sit 110–120 dBC because of bass, kick and organ. Many churches set targets around 90–95 dB and allow brief peaks near 100 dB. Stage volume is often the real problem; absorptive drum shields, in-ears and amps aimed away from the choir help."
+      "text": "Sunday services typically run 88–96 dBA LAeq-15 at FOH, with praise breaks and concert or live-recording events reaching 98–101 dBA and peaks of 108–112 dBA. Bass, kick and organ lift C-weighted levels: a C-weighted Leq about 10–20 dB above the A level is normal, and a bigger gap means too much low end. Many churches set targets around 90–95 dB and allow brief peaks near 100 dB. Stage volume is often the real problem; absorptive drum shields, in-ears and amps aimed away from the choir help."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Contemporary studio gospel commonly lands at −11 to −9 LUFS-I; live-choir albums and traditional gospel often sit at −16 to −13 to keep the room’s dynamics and reverb tail intact. Keep true peak at −1 dBTP (−2 dBTP for masters louder than −14). The genre benefits from a PLR of 10–14 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter) and loudness range of 6–10 LU so modulations and vamps still build. Limit gently (about 3 dB maximum)."
+      "text": "Contemporary studio gospel commonly lands at −11 to −9 LUFS-I; live-choir albums and traditional gospel often sit at −16 to −13 to keep the room’s dynamics and reverb tail intact. Keep true peak at −1 dBTP (−2 dBTP for masters louder than −14). The genre benefits from a PLR of 10–14 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter, below most contemporary studio masters) and loudness range of 6–10 LU so modulations and vamps still build. Limit gently (about 3 dB maximum)."
     }
   ],
   "liveStudio": {

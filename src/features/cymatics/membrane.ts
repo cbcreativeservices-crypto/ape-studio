@@ -238,7 +238,7 @@ export const CONE_STAGE_LABEL: Record<ConeStage, string> = {
   resonance: 'AT RESONANCE — MAXIMUM EXCURSION',
   piston: 'PISTON BAND — THE CONE MOVES AS ONE',
   edge: 'EDGE FLEXING — SURROUND DECOUPLES',
-  radial: 'RADIAL MODES — BELL-LIKE CONE MODES',
+  radial: 'CIRCUMFERENTIAL MODES — BELL-LIKE CONE MODES',
   breakup: 'BREAKUP — THE CONE NO LONGER MOVES AS ONE',
 };
 export const CONE_STAGE_NUM: Record<ConeStage, number> = { stiffness: 1, resonance: 2, piston: 3, edge: 4, radial: 5, breakup: 6 };
@@ -292,7 +292,7 @@ export function readCone(driver: Driver, f: number): ConeRead {
   } else if (b < 1) {
     stage = 'radial';
     drawMode = 2 + Math.min(3, Math.floor((b - 0.55) / 0.15));
-    why = 'Radial (bell-like) modes: the cone rim splits into lobes that move in opposite directions — the same J_n cos nθ family as the drumhead, on a stiff shell. Response ripples; off-axis output falls apart.';
+    why = 'Circumferential (bell-like) modes: the cone rim splits into lobes that move in opposite directions — the same J_n cos nθ family as the drumhead, on a stiff shell. Response ripples; off-axis output falls apart.';
   } else {
     stage = 'breakup';
     drawMode = 5;

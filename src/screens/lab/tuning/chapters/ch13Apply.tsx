@@ -205,13 +205,13 @@ export function Ch13Apply({ ctx }: ChapterProps) {
       <Eyebrow>3 · IDENTIFY NON-CLOSURE</Eyebrow>
       <UnderstandingCheck
         question="Twelve pure fifths and seven octaves do not meet. What is the gap called, and how big is it?"
-        options={['The syntonic comma, about 21.51 cents', 'The Pythagorean comma, about 23.46 cents', 'The wolf fifth, about 41 cents', 'Rounding error, about 1 cent']}
+        options={['The syntonic comma, about 21.51 cents', 'The Pythagorean comma, about 23.46 cents', 'The wolf fifth, about 36 cents wide', 'Rounding error, about 1 cent']}
         correct={1}
         explain={`The Pythagorean comma: (3/2)¹² ÷ 2⁷ = ${PYTHAGOREAN_COMMA.exactLabel} ≈ ${PYTHAGOREAN_COMMA.cents.toFixed(2)} cents.`}
         wrong={[
           'The syntonic comma (81/80) is the gap between a Pythagorean third and a Just third — a different mismatch, from Chapter 8.',
           undefined,
-          'The wolf is where MEANTONE parks its leftover. Twelve PURE fifths miss by a comma, not by 41 ¢.',
+          'The wolf is where MEANTONE parks its leftover: about 36 ¢ wider than a pure fifth. Twelve PURE fifths miss by a comma, not by 36 ¢.',
           'Chapter 6: 3¹² and 2¹⁹ are different whole numbers. Nothing was rounded, and the gap is far more than a cent.',
         ]}
         onCorrect={() => mark(2)}

@@ -660,15 +660,15 @@ function TypesSection(p: SectionProps) {
 // ── 7 · Bias ────────────────────────────────────────────────────────────────
 
 const BIAS_CHECK: CheckSpec = {
-  question: 'A tube biased FAR too negative sits in cutoff. What does the output do?',
+  question: 'A tube biased FAR too negative sits in cutoff. What happens to the signal?',
   options: [
-    'It distorts with a bright, fizzy edge',
-    'Little or nothing — the stream is already shut off',
+    'It gets cleaner, because the tube rests',
+    'Part or all of the wave is shut off',
     'It gets louder, because the tube works harder',
   ],
   correctIdx: 1,
   reveal:
-    'Bias sets WHERE on the transfer curve the tube idles. Too negative and the stream is already cut off — the input wiggles a closed valve (the output flatlines, or only half the wave sneaks through). Correct bias parks the idle point mid-curve so the whole swing stays on the straight part. Too positive and it slams into saturation instead.',
+    'Bias sets WHERE on the transfer curve the tube idles. Too negative and the stream is shut off for much of the swing — the input wiggles a closed valve, so part of the wave (or all of it) is lost. Correct bias parks the idle point mid-curve so the whole swing stays on the straight part. Too positive and it slams into saturation instead.',
   wrongHint: 'Ride the BIAS lane to the far left and watch the output wave on the right of the display.',
 };
 
@@ -770,8 +770,9 @@ function SaturationSection(p: SectionProps) {
     >
       <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
         <Text style={styles.caption}>
-          WHY it rounds: the valve can only open so far. Near full swing there are no more electrons
-          to give (and at the other extreme the stream pinches off), so each extra dB of input buys
+          WHY it rounds: the valve can only open so far. Near full swing the plate voltage cannot fall
+          much lower and the grid starts to draw current (and at the other extreme the stream pinches
+          off), so each extra dB of input buys
           less and less output — the straight line bends over. Watch the left plot: at low DRIVE the
           wave rides the straight middle of the curve; push harder and the peaks reach into the bend.
         </Text>

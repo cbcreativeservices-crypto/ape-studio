@@ -88,8 +88,8 @@ function Legend() {
           level scale, the distance law and the rated-angle meaning are real. */}
       <Text style={styles.caption}>
         Red to deep blue spans about 20 dB; BLACK is below that — the pattern has not arrived. Each
-        time the distance doubles, a seat drops about 6 dB down the ramp, and a box’s rated angle
-        (90°, 60°…) is where it is already 6 dB quieter than straight ahead. Overlapping speakers read
+        time the distance doubles, a seat drops about 6 dB down the ramp, and the edges of a box’s
+        rated angle (90°, 60°…) are where it is already 6 dB quieter than straight ahead. Overlapping speakers read
         as hot ridges where their beams cross.
       </Text>
       <Text style={styles.caption}>
@@ -122,7 +122,7 @@ const READING_CHECK: CheckSpec = {
   ],
   correctIdx: 1,
   reveal:
-    'BLACK means the pattern never reaches that seat at a workable level — a dead zone. Distance alone paints cool blues; black is geometry failing. The fixes are aim, fills, or a delay speaker — never just level.',
+    'BLACK means the pattern never reaches that seat at a workable level — a dead zone. Distance alone paints cool blues; black is geometry failing. The fixes are aim, fills, or a delay speaker — turning the level up alone rarely fixes it.',
   wrongHint: 'Check the legend: which end of the ramp is black on?',
 };
 

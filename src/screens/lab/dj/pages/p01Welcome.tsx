@@ -54,7 +54,7 @@ function ExposureTile({ onFound }: { onFound: () => void }) {
   return (
     <View style={styles.tile}>
       <Text style={styles.tileHead}>A LOUD NIGHT, IN NUMBERS</Text>
-      <Text style={styles.tileBody}>A widely used workplace guideline allows 85 dBA for 8 hours, and HALVES the time for every 3 dB more.</Text>
+      <Text style={styles.tileBody}>NIOSH recommends 85 dBA for 8 hours, HALVING the time for every 3 dB more. The US legal limit (OSHA) is 90 dBA, with a 5 dB rule.</Text>
       <Text style={styles.tileDo}>Pick a 4 h set, then find the LOUDEST level that stays at 100 % or less.</Text>
       <View style={styles.chips}>
         {LEVELS.map((L) => (
@@ -66,7 +66,7 @@ function ExposureTile({ onFound }: { onFound: () => void }) {
           <LabChip key={x} label={`${x} h set`} selected={h === x} onPress={() => (setH(x), pick(db, x))} compact />
         ))}
       </View>
-      <Text style={[styles.dose, { color: dose > 100 ? '#ff5a48' : dose > 50 ? colors.amber : colors.green }]}>{`${Math.round(dose)} % of a day’s allowance`}</Text>
+      <Text style={[styles.dose, { color: dose > 100 ? '#ff5a48' : dose > 50 ? colors.amber : colors.green }]}>{`${Math.round(dose)} % of a day’s allowance (NIOSH)`}</Text>
       <Text style={styles.tileFine}>A model for learning, not a guarantee for any one person’s ears. Booths and clubs are often louder than you think — measure with a calibrated meter, and use earplugs made for music.</Text>
     </View>
   );
@@ -203,7 +203,7 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
         <P>Open LISTEN to choose whose ears the phone plays: the CROWD (the PA speakers), the BOOTH monitors, or your PHONES (headphones).</P>
       </Step>
       <Step n={3}>
-        <P>Each time you switch, the playback starts LOW again. Turn it up slowly with LOUDER until it is comfortable — never to the top.</P>
+        <P>Each time you switch, the playback starts LOW again. Turn it up slowly with LOUDER until it is comfortable, and keep it well below the top.</P>
         <Note tone="safety">The PLAYBACK number is how loud the lab asks the phone to play. It is not a calibrated or safe level: the same number is much louder in some headphones than others. A phone’s microphone cannot measure what reaches your ears in headphones.</Note>
       </Step>
       <Step n={4}>

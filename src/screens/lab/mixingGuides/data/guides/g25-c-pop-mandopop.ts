@@ -271,7 +271,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Arena and stadium C-pop typically runs 94–100 dBA LAeq-15 at FOH, with ballad sections 88–94 dBA and up-tempo encores to about 102 dBA, around 110–118 dBC. Some tours run loud and bass-rich, but sub should never mask the vocal. Fans singing famous choruses can rival the PA; pull the band slightly rather than push the vocal into feedback. In Hong Kong, outdoor events are limited to 10 dBA above background at nearby residences (LAeq-15) before 11 p.m. and must be inaudible after; cardioid subs help. By common hearing-safety guidance, 100 dBA is safe for about 15 minutes."
+      "text": "Arena and stadium C-pop typically runs 94–100 dBA LAeq-15 at FOH, with ballad sections 88–94 dBA and up-tempo encores to about 102 dBA, around 110–118 dBC. Some tours run loud and bass-rich, but sub should never mask the vocal. Fans singing famous choruses can rival the PA; pull the band slightly rather than push the vocal into feedback. In Hong Kong, outdoor events are limited to 10 dBA above background at nearby residences (LAeq-15) before 11 p.m. and must be inaudible after; cardioid subs help. NIOSH advises no more than about 15 minutes a day at 100 dBA."
     },
     {
       "label": "Studio / streaming:",

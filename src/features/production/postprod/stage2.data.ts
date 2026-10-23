@@ -314,7 +314,7 @@ export const STAGE2_MEDIA: StageDef = {
       severity: "attention",
       kind: "unsafe",
       title: "The originals are protected only by good intentions",
-      detail: "Nothing prevents somebody opening the original media folder and renaming, editing or processing a file in place. That is the one mistake in post-production that cannot be undone.",
+      detail: "Nothing prevents somebody opening the original media folder and renaming, editing or processing a file in place. That ruins the originals, and they are the one thing in post that cannot be made again.",
       fixHint: "Set the folder or volume read-only. It takes a moment and it removes a whole class of accident.",
       needsLogic: true,
       logicIntent: "Fire when originals_read_only is convention or no."

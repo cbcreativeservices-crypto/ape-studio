@@ -49,7 +49,7 @@ import { itemRules, learnerStrings, RESEARCH_NAMES } from './_mikingItemRules.ts
 
 const IDS = ['E02', 'E04', 'E05', 'E06'] as const;
 const LESSONS = IDS.map((id) => lessonById(id) as EnsembleLesson);
-const GROUP_NAMES = /\b(SM ?58|SM ?4|Neumann|Shure|DPA|AKG|Wenger|NSPCC|WHO|World Health Organization|NIOSH|OSHA|CDC|NIDCD|Sound On Sound|KSM ?\d+|C ?414)\b/;
+const GROUP_NAMES = /\b(SM ?58|SM ?4|Neumann|Shure|DPA|AKG|Wenger|NSPCC|WHO|World Health Organization|CDC|NIDCD|Sound On Sound|KSM ?\d+|C ?414)\b/;
 const near = (a: number, b: number, tol = 0.5) => Math.abs(a - b) <= tol;
 
 describe('singers on the seating builder (seatingVoices.ts)', () => {
@@ -216,7 +216,7 @@ describe('E06: children drawn from above only; safeguarding and exposure in word
     assert.match(SAFEGUARDING, /supervised at all times/);
     assert.match(SAFEGUARDING, /authorised adult/);
     assert.match(SAFEGUARDING, /child-safeguarding policy and the local law/);
-    assert.match(EXPOSURE, /about 94 dB averaged over 15 minutes, and peaks under 120 dB/);
+    assert.match(EXPOSURE, /about 94 dB, A-weighted, over 15 minutes, and a common guide keeps children’s peaks under 120 dB/);
     assert.match(EXPOSURE, /at the source first/);
     assert.doesNotMatch(SAFEGUARDING + EXPOSURE, GROUP_NAMES);
   });

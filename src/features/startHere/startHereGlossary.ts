@@ -58,7 +58,7 @@ export const STARTER_GLOSSARY: Record<string, StarterGlossaryEntry> = {
   loudness: {
     term: 'Loudness',
     definition: 'Loudness is the perceptual attribute of sound by which listeners order sounds from quiet to loud. It depends not only on signal amplitude but also on frequency content, duration and spectral distribution, which is why measured level in dBFS does not by itself predict how loud something sounds; program loudness is quantified in LUFS per ITU-R BS.1770.',
-    plain_english: 'Loudness is how loud something actually seems to your ears. That is not the same as the numbers on the meter. This is because your ears are more sensitive to some frequencies than others.',
+    plain_english: 'Loudness is how loud something actually seems to your ears. That is not the same as the numbers on the meter. One reason is that your ears are more sensitive to some frequencies than others.',
   },
   'loudspeaker (speaker)': {
     term: 'Loudspeaker (Speaker)',

@@ -12,7 +12,7 @@ import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 import type { GuitarScene } from './guitarModel.ts';
 export type Noun = { one: string; the: string; player: string };
 
-export const HEARING_EXPLAIN = 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time.';
+export const HEARING_EXPLAIN = 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.';
 
 export function hearingCheck(p: string, n: Noun): MikingScenario {
   return micRatingCheck({ id: `${p}.set.1`, page: 'setting', mic: `${n.one} mic`, loudest: `the loudest ${n.one} playing` });
@@ -26,9 +26,9 @@ export function hearingDiag(n: Noun): DiagnosticItem {
     prompt: `Your ${n.one} mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck?`,
     options: ['It is safe for as long as the stage stays below the mic’s rated level', 'Nothing — that is the mic’s distortion limit, not a hearing limit', `It is safe as long as the mic is nearer the ${n.one} than you`],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
-      'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       [`It is safe as long as the mic is nearer the ${n.one} than you`]: 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   };
@@ -127,7 +127,7 @@ export function twoMicChecks(p: string, n: Noun): MikingScenario[] {
       prompt: 'You flip mic B’s polarity. What happens to the arrival-time difference?',
       options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so both of the arrivals now line up again', 'Cut in half: the flipped copy cancels half of it'],
       correct: 'Nothing: polarity flips the sign; the delay stays the same',
-      explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
+      explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches and peaks swap places; Δt does not.',
       why: {
         'It drops to zero, so both of the arrivals now line up again': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
         'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
@@ -217,9 +217,9 @@ export function practiceChecks(p: string, n: Noun, refExample: { quote: string; 
       prompt: `Two ${n.one} mics sound thin together. Which change removes the arrival-time difference itself?`,
       options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on one of the two mics', 'Turning the quieter of the two mics up until both match'],
       correct: 'Moving a mic so the two paths are closer to equal',
-      explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth; neither removes the delay.',
+      explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth; neither removes the delay.',
       why: {
-        'Flipping the polarity switch on one of the two mics': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
+        'Flipping the polarity switch on one of the two mics': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
         'Turning the quieter of the two mics up until both match': 'Level changes the depth of the notches, not where they are or the delay behind them.',
       },
     },
@@ -237,7 +237,7 @@ export function sharedSymptoms(p: string, n: Noun): Symptom[] {
       correct: 'Solo each, sum in mono, then move or rebalance a mic',
       explain: 'The comb comes from the timing between the paths. Changing a position fixes the cause; a switch is a test, not a cure. A pickup has its own timing and response, too.',
       why: {
-        'Flip a polarity switch and leave it there for the show': 'Polarity moves the notches; it does not remove the delay. Check by ear.',
+        'Flip a polarity switch and leave it there for the show': 'Polarity swaps the notches and peaks; it does not remove the delay. Check by ear.',
         'Pan the two paths hard apart so that they do not mix': 'They still mix in mono and in the room. Fix the timing.',
       },
     },
@@ -296,7 +296,7 @@ export const LOUD_REASON: SetupReason = { id: 'r.loud', label: 'It will give the
 export const STRINGS_PREDICT = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   context: { prompt: 'Where will this supercardioid reject the floor wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 } as const;
 
 export const ACCURACY = (n: Noun, picture: string) =>
@@ -331,7 +331,7 @@ export function stringsWedges(sc: GuitarScene, n: Noun, opts: { wedgeZ?: number;
       p: m,
       lift: 0,
       faces: { x: 0, y: 0, z: 1 },
-      note: `Just above and behind the ${n.one} mic’s front: in the front half of any pattern aimed at the ${n.one}, so no null reaches it. Plan the balance instead.`,
+      note: `Just above the ${n.one}, nearer the player than the mic: in the front half of a cardioid or supercardioid aimed at the ${n.one}, so its null cannot reach it. Plan the balance instead — or, in a studio, tilt a Figure-8 so its side null faces the mouth.`,
       prov: STAGE,
       glyph: 'none',
     });

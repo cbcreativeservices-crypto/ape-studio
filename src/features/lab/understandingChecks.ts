@@ -443,13 +443,13 @@ const PHASER: readonly Q[] = [
     id: 'resonance',
     prompt: 'What does raising the phaser’s RESONANCE (feedback) do?',
     options: [
-      'Sharpens and deepens the notches',
+      'Sharpens the peaks between the notches, so the sweep rings',
       'Adds more notches',
       'Moves the notches to higher frequencies',
       'Speeds up the sweep',
     ],
-    correct: 'Sharpens and deepens the notches',
-    explanation: 'Resonance feeds the output back in, making the notches more pronounced. Too much whistles and rings. The number of notches comes from STAGES, the position from CENTER and the speed from RATE.',
+    correct: 'Sharpens the peaks between the notches, so the sweep rings',
+    explanation: 'Resonance feeds the output back in, lifting sharp peaks between the notches so the sweep stands out more. Too much whistles and rings. The number of notches comes from STAGES, the position from CENTER and the speed from RATE.',
   },
 ];
 
@@ -1315,7 +1315,7 @@ const AMP: readonly Q[] = [
     prompt: 'Going from a 100 W amplifier to a 200 W amplifier gains you about…',
     options: ['+3 dB', '+6 dB', '+10 dB', 'Twice the loudness'],
     correct: '+3 dB',
-    explanation: '10 × log₁₀(200 ÷ 100) ≈ 3 dB — clearly audible, but far from twice as loud, which takes roughly ten times the power.',
+    explanation: '10 × log₁₀(200 ÷ 100) ≈ 3 dB — small but clearly audible, but far from twice as loud, which takes roughly ten times the power.',
   },
   {
     id: 'crossover',

@@ -405,8 +405,9 @@ export function BinauralLabScreen() {
             </>
           ) : (
             <Text style={styles.caption}>
-              Binaural audio needs the v7 engine build — this dev client predates it. The stage
-              and lessons are fully functional; install the v7 build to hear the mix.
+              {__DEV__
+                ? 'Binaural audio needs the v7 engine build — this dev client predates it. The stage and lessons are fully functional; install the v7 build to hear the mix.'
+                : 'This version of the app cannot play the binaural mix yet. The stage and lessons work fully; update the app to hear the mix.'}
             </Text>
           )
         ) : null}

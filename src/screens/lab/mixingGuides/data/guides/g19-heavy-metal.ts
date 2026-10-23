@@ -15,7 +15,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "50–220+ BPM (doom 50–80; traditional 100–150; thrash 160–220; blast beats feel like 200–280+; djent often mid-tempo 90–140 with odd-meter riffs)",
     "ensemble": "4–6 piece: drums (usually double kick), bass, 1–2 rhythm/lead guitars, lead vocal (sung, screamed or growled), sometimes keys or backing tracks",
     "priority": "Note definition in the low end: kick, palm-muted guitars and bass must stay distinct at speed, with the vocal still audible on top",
-    "liveSpl": "100–106 dBA Leq (LAeq-15 min); roughly 118–128 dBC; large open-air festivals have run near 110 dBA at FOH",
+    "liveSpl": "100–106 dBA Leq (LAeq-15 min); roughly 115–124 dBC LCeq; large open-air festivals have run near 110 dBA at FOH",
     "studioLoudness": "Masters commonly −8 to −5 LUFS-I (some extreme releases louder); streaming normalizes to about −14"
   },
   "purpose": [
@@ -262,7 +262,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and theater metal often runs 100–104 dBA LAeq-15 at FOH, with arenas and festivals at 102–106 dBA and C-weighted levels around 118–128 dBC. Large open-air events have reported around 110 dBA at FOH with 100 dB delivered 100 m back. Peaks easily reach 115–120 dBA. Many European venues cap levels at 100–103 dBA LAeq over 15–60 minutes, so aim for density and clarity, not volume. A C-minus-A gap above 20 dB usually means sub mud that kills kick definition. By common hearing-safety guidance, 100 dBA is safe for about 15 minutes; encourage earplugs and protect your own hearing."
+      "text": "Club and theater metal often runs 100–104 dBA LAeq-15 at FOH, with arenas and festivals at 102–106 dBA and C-weighted LCeq around 115–124 dBC. Large open-air events have reported around 110 dBA at FOH with 100 dB delivered 100 m back. Peaks easily reach 115–120 dBA. Many European venues cap levels at 100–103 dBA LAeq over 15–60 minutes, so aim for density and clarity, not volume. A C-minus-A gap above 20 dB usually means sub mud that kills kick definition. NIOSH advises no more than about 15 minutes a day at 100 dBA; encourage earplugs and protect your own hearing."
     },
     {
       "label": "Studio / streaming:",
@@ -304,7 +304,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "100–106 dBA Leq within venue limits",
-        "studio": "−8 to −5 LUFS-I master, −1 to −2 dBTP"
+        "studio": "−8 to −5 LUFS-I master, −2 dBTP"
       }
     ],
     "notes": []

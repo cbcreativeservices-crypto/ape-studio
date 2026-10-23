@@ -16,6 +16,6 @@ export const MATERIAL_PHOTOS: Partial<Record<MaterialKey, { file: string; captio
   fiberglass: {
     file: 'fiberglass-panel.webp',
     caption:
-      'A rigid fiberglass broadband absorber — thicker and denser than foam, often on an air gap, so it keeps absorbing lower in frequency. Real bass control means thickness and air gaps, not thin panels.',
+      'A rigid fiberglass broadband absorber — thicker and denser than foam, often on an air gap, so it keeps absorbing lower in frequency. For this kind of absorber, bass control means more thickness and air gap, not a thinner sheet.',
   },
 };

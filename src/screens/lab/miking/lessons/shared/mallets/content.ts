@@ -162,9 +162,9 @@ export function quickHearingM(w: MW): DiagnosticItem {
     prompt: `A mic over ${w.the} is rated far above any level on stage. What does that tell you about a long, loud rehearsal next to it?`,
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the stage stays below the mic’s rating', 'It is safe as long as the mic is much nearer the bars than you are'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
-      'It is safe while the stage stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe while the stage stays below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is much nearer the bars than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   };
@@ -252,7 +252,7 @@ export function rattleSymptom(w: MW, what: string): Symptom {
     firstChecks: `Does it happen in the room with the PA muted? Then the instrument, not the mic: ${what} — have the player or a technician inspect it.`,
     options: ['Whether it happens without the PA, then the instrument is inspected', 'Gate the channel so that the rattle is cut out between all the notes', 'Tighten the cords and posts yourself, between two songs'],
     correct: 'Whether it happens without the PA, then the instrument is inspected',
-    explain: 'A rattle you hear in the room is mechanical. Find it — a loose part, a stand touching the frame — and have the player or a technician fix it; never adjust the instrument yourself.',
+    explain: 'A rattle you hear in the room is mechanical. Find it — a loose part, a stand touching the frame — and have the player or a technician fix it. Do not adjust the instrument yourself unless the player asks.',
     why: {
       'Gate the channel so that the rattle is cut out between all the notes': 'A gate hides it between notes and can chop the ring. Find the cause.',
       'Tighten the cords and posts yourself, between two songs': 'The instrument is the player’s: ask them or a technician.',

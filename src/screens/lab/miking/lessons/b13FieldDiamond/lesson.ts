@@ -52,7 +52,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Two mics, one moving play',
     goal: 'An action mic at M and the ambience at E hear the same play at different times: watch the delay and the comb change as the source walks from A to C, and what polarity does and does not change.',
-    credit: { scenarios: ['fd.two.1', 'fd.two.2', 'fd.two.3'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND walk the source, then answer the three checks.' },
+    credit: { scenarios: ['fd.two.1', 'fd.two.2', 'fd.two.3'], interactive: 'polarityVsDelay', note: 'Flip the second mic’s polarity both ways AND walk the source, then answer the three checks.' },
     takeaway: 'A delay set for one point is wrong at the next. Choose a dominant mic per zone or hand off smoothly, and check the sum in mono — polarity is not time alignment.',
   },
   troubleshoot: {
@@ -149,12 +149,12 @@ const scenarios: MikingScenario[] = [
     id: 'fd.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · A mic is wanted on a soccer goal’s net. What applies?',
-    options: ['Nothing may be attached to it', 'It is fine if the clip is small', 'Only with the referee’s nod'],
-    correct: 'Nothing may be attached to it',
-    explain: 'Goals, nets and flagposts carry nothing extra — no mic, no camera. A goal-area pickup needs a separately approved place.',
+    options: ['Only with the competition’s approval', 'It is fine if the clip is small', 'Only with the referee’s nod on the day'],
+    correct: 'Only with the competition’s approval',
+    explain: 'Goals, nets and flagposts are part of the field of play. Some top events fit a small net camera, but only with the competition’s approval — never a referee’s nod or the crew’s call. A goal-area pickup needs its own approved place.',
     why: {
-      'It is fine if the clip is small': 'Size does not matter: nothing is attached there.',
-      'Only with the referee’s nod': 'A nod is not the rule; the rule says no attachments.',
+      'It is fine if the clip is small': 'Size does not matter: without the competition’s approval, nothing is attached.',
+      'Only with the referee’s nod on the day': 'A referee’s nod does not approve a mount; the competition does.',
     },
   },
   {
@@ -466,7 +466,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Fixed perimeter mics into the near and goal sectors, plus ambience', ok: true, power: 'phantom', feedback: 'A suggested start: overlapping fixed sectors and a bed — accept less isolated goal detail.' },
       { id: 'b', label: 'A dish from an approved place, plus a fixed ambience pair', ok: true, power: 'phantom', feedback: 'A suggested start, where the operator stays clear of officials, players and cameras.' },
-      { id: 'c', label: 'A mic clipped to the goal net for the goalmouth', ok: false, power: 'phantom', feedback: 'Nothing is attached to goals, nets or flagposts.' },
+      { id: 'c', label: 'A mic clipped to the goal net for the goalmouth', ok: false, power: 'phantom', feedback: 'The goal area was refused here. Nothing goes on a goal, net or flagpost without the competition’s approval.' },
       { id: 'd', label: 'The operator follows play along the touchline', ok: false, power: 'phantom', feedback: 'That is the officials’ and players’ space: stay on the approved place.' },
       { id: 'e', label: 'One shotgun aimed broadly at the whole pitch', ok: false, power: 'phantom', feedback: 'Aim into a named sector; a view of the field is not coverage of it.' },
     ],
@@ -506,7 +506,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Which method gives the steadiest sense of the venue?', options: ['The fixed ambience pair', 'The tracked dish', 'The perimeter shotgun'], after: 'Now step through each METHOD.' },
   placement: { prompt: 'Predict: you lower the shotgun to about 0.6 m. What else do you change?', options: ['The aim', 'The gain', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests.' },
   context: { prompt: 'The converter reads −6 dBFS on the loudest peak. Is the chain safe?', options: ['It may not be', 'It is safe', 'Only with a low fader'], after: 'Now find the first overloaded stage.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then walk the source.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then walk the source.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

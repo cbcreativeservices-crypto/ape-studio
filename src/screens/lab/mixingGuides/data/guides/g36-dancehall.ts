@@ -263,7 +263,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Concerts and festivals typically run 98–104 dBA LAeq-15 at FOH, with C-weighted levels of 120–130 dBC; a C-minus-A gap of 20 dB or more is normal here, and that means serious low-frequency exposure. Peaks run 110–118 dBA during drops and rewinds. Cardioid or end-fired subs help control stage and neighbor spill. In Jamaica, the Noise Abatement Act sets curfews (generally midnight weekdays, 2 a.m. weekends, with periodic extensions) and police have shut systems audible beyond about 100 m, so outdoor events need off-site monitoring. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes: offer earplugs and protect your own ears."
+      "text": "Concerts and festivals typically run 98–104 dBA LAeq-15 at FOH, with C-weighted levels of 120–130 dBC; a C-minus-A gap of 20 dB or more is normal here, and that means serious low-frequency exposure. Peaks run 110–118 dBA during drops and rewinds. Cardioid or end-fired subs help control stage and neighbor spill. In Jamaica, the Noise Abatement Act sets curfews (generally midnight weekdays, 2 a.m. weekends, with periodic extensions) and police have shut systems audible beyond about 100 m, so outdoor events need off-site monitoring. NIOSH advises no more than about 15 minutes a day at 100 dBA: offer earplugs and protect your own ears."
     },
     {
       "label": "Studio / streaming:",

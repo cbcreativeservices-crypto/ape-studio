@@ -48,7 +48,7 @@ import { assertJourneyPages } from './_mikingPages.ts';
 
 const IDS = ['F01', 'F02', 'F03', 'F04'];
 const L = (id: string): Lesson => lessonById(id)!;
-const RESEARCH = /\b(Rode|RØDE|Rycote|KMR|NTG|CMIT|TLM|U67|Schoeps|SCHOEPS|Foley First|NoiseFloor|Krotos|Hensley|Hecker|Roesch|Malcolm|Valasis|Hayes|Sound Devices|Warner|Shure|Sennheiser|Neumann|DPA|NIOSH)\b/;
+const RESEARCH = /\b(Rode|RØDE|Rycote|KMR|NTG|CMIT|TLM|U67|Schoeps|SCHOEPS|Foley First|NoiseFloor|Krotos|Hensley|Hecker|Roesch|Malcolm|Valasis|Hayes|Sound Devices|Warner|Shure|Sennheiser|Neumann|DPA)\b/;
 
 describe('frame F and the Foley stage (lessons/shared/foley)', () => {
   it('frame F turns into frame S and back (the stereo-array tool drops in)', () => {

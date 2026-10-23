@@ -539,8 +539,9 @@ export function SignalChainLabScreen() {
           </>
         ) : (
           <Text style={styles.caption}>
-            Chain AUDIO needs the v6 engine build — this dev client predates the effects path. The
-            diagram, scenarios, and lessons are fully live; install the next dev build to hear it.
+            {__DEV__
+              ? 'Chain AUDIO needs the v6 engine build — this dev client predates the effects path. The diagram, scenarios, and lessons are fully live; install the next dev build to hear it.'
+              : 'This version of the app cannot play the chain audio yet. The diagram, scenarios and lessons work fully; update the app to hear it.'}
           </Text>
         )
       ) : null}

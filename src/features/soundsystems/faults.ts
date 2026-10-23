@@ -519,7 +519,7 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'ok', note: 'Hollow and thin down the middle; fuller off to either side.', flags: ['polarity'] },
       },
     ),
-    options: ['One loudspeaker cable has pins 2 and 3 reversed — a polarity flip', 'The crossover is set wrong', 'A delay is set on one side', 'The amplifier is clipping'],
+    options: ['The signal cable to one powered top has pins 2 and 3 reversed — a polarity flip', 'The crossover is set wrong', 'A delay is set on one side', 'The amplifier is clipping'],
     correct: 0,
     explain: 'Two sources in opposite polarity cancel where they arrive together — the centre — and mostly at low frequencies, where the wavelengths are long enough to cancel over a wide area of the audience. Every electrical station reads normal because a reversed cable IS a normal signal, upside down. The walk finds it at the loudspeaker station; the cable INTO the right cabinet is the cause — which is why the fix is the cable, not the box.',
     fix: 'Replace or re-terminate the cable. Test every cable in the case for pin order before it goes out again.',

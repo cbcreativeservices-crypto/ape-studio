@@ -58,7 +58,6 @@ export const BRAND_NAMES: readonly string[] = [
   'e ?902',
   'D112',
   '4055',
-  'NIOSH',
   'Rossing',
   // Lab 1 snare and toms research (docs/labs/miking/snare, toms, kit).
   'SM ?57',
@@ -91,7 +90,6 @@ export const BRAND_NAMES: readonly string[] = [
   'Dobro',
   'KSM ?\\d+',
   'PGA ?27',
-  'OSHA',
   // Lab 2 suspended-metal research (docs/labs/miking/triangle, finger_cymbals, bar_chimes, gong).
   'Grover',
   'Meinl',
@@ -214,7 +212,7 @@ export const BRAND_NAMES: readonly string[] = [
   'DPA ?5100',
   // Lab 7 part 2, group 1 research (docs/labs/miking/commentators, sideline_interviews, athletes_officials): the
   // headset, lip-mic and intercom makers and models, and the league named. ('Shure', 'Sennheiser', 'DPA', 'RØDE',
-  // 'Sound Devices', 'NIOSH' and 'NWS' are in the lists above.)
+  // 'Sound Devices' and 'NWS' are in the lists above. NIOSH and OSHA are NAMED in hearing guidance — owner ruling 2026-10-23.)
   'Coles',
   'SM ?2',
   'SM ?35',
@@ -245,7 +243,7 @@ export const BRAND_NAMES: readonly string[] = [
   'MX391',
   // Lab 7 part 2, group 3 research (docs/labs/miking/track_gym_combat, motorsport_equestrian_aquatic, crowd_complete):
   // the federations whose rules were read, the standards bodies and the products named. ('Sennheiser', 'Shure', 'DPA',
-  // 'Aquarian', 'Rycote', 'SCHOEPS', 'AMBEO', 'MKH ?416', 'OSHA', 'NWS' and 'FIBA' are in the lists above.)
+  // 'Aquarian', 'Rycote', 'SCHOEPS', 'AMBEO', 'MKH ?416', 'NWS' and 'FIBA' are in the lists above.)
   'World Athletics',
   'World Gymnastics',
   'FIG',
@@ -332,7 +330,7 @@ describe('learner-facing text names no source and carries no badge (owner ruling
 
   it('the patterns catch what the ruling removed, and pass plain starting-point words', () => {
     for (const s of ['SOURCED*', 'TRIAL reading', 'PEDAL · ILLUSTRATIVE', 'Beta 52A guide · near', 'kick L39 (L39)', 'Sources', 'a documented zone', 'No published source gives it', 'one engineer’s account']) assert.ok(ALL.some((re) => re.test(s)), s);
-    for (const s of ['Inside, near the batter head', 'Start about 5–7.5 cm (2–3 in) from the batter head.', 'After our research, here is where we recommend you begin.', 'follow the manual for your own equipment', 'A widely used guideline: 85 dBA']) assert.deepEqual(ALL.filter((re) => re.test(s)), [], s);
+    for (const s of ['Inside, near the batter head', 'Start about 5–7.5 cm (2–3 in) from the batter head.', 'After our research, here is where we recommend you begin.', 'follow the manual for your own equipment', 'A widely used guideline: 85 dBA', 'NIOSH recommends no more than 85 dBA averaged over 8 hours; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.']) assert.deepEqual(ALL.filter((re) => re.test(s)), [], s);
   });
 
   for (const meta of LESSONS) {

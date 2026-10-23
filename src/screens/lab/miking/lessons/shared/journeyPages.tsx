@@ -224,7 +224,7 @@ export function GMicrophone({ lesson, answers, onAnswered }: PageProps, spec: Mi
             );
           })}
           {spec.extra ?? null}
-          <Note tone="warn">A mic’s max SPL is the level at which the MIC distorts, measured under its maker’s own conditions — never a safe listening level. For people, keep to about 85 dBA averaged over 8 hours, measured where they listen.</Note>
+          <Note tone="warn">A mic’s max SPL is the level at which the MIC distorts, measured under its maker’s own conditions — never a safe listening level. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB more, and the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where they listen.</Note>
           <Note>Before connecting, disconnecting or switching phantom power: mute the outputs, lower the monitoring and turn the channel gain down, and follow the manual for your own equipment. Do not judge compatibility by the connector’s shape: a miniature mic may need its own adapter.</Note>
         </>
       ),

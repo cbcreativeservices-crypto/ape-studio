@@ -136,7 +136,7 @@ function F15Microphone({ lesson, answers, onAnswered, onInteractive, interactive
       onAnswered,
       <Card>
         <Point title="CLUES, NOT A PATH">With a mic and a contact sensor side by side, compare the timing and the frequencies as clues. A peak in both is suggestive — proving where a sound travels needs more sensors and a transfer study.</Point>
-        <Point title="A SENSOR’S CABLE">Secure it only after the device has been isolated and checked by someone authorized; never attach, move or retrieve a sensor by hand on a running, energized or guarded device.</Point>
+        <Point title="A SENSOR’S CABLE">Fit it only after the device is isolated and checked by someone authorized. Never fit, move or take off a sensor by hand on a running or live device, or reach past a guard to do it.</Point>
       </Card>,
     ),
   ];

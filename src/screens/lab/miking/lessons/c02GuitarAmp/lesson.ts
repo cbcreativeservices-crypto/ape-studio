@@ -331,7 +331,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip one mic’s polarity. What happens to the arrival-time difference between the two?',
     options: ['It drops to zero, so the two arrivals now line up exactly', 'It doubles, because the copy is now inverted', 'Nothing — polarity flips the sign, not the timing'],
     correct: 'Nothing — polarity flips the sign, not the timing',
-    explain: 'Polarity inversion reverses the signal’s sign. Only moving a mic changes when the sound arrives: the notches move, the delay does not.',
+    explain: 'Polarity inversion reverses the signal’s sign: the notches move, but the delay does not. Only moving a mic, or a channel delay, changes when the sound arrives.',
     why: {
       'It drops to zero, so the two arrivals now line up exactly': 'The mics are still the same distances from the cone: the delay stays.',
       'It doubles, because the copy is now inverted': 'Polarity has no time in it. Only a mic’s position, or a channel delay, changes the delay.',
@@ -644,9 +644,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about standing by a loud amp all through soundcheck?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the amp stays below the level of the mic’s rating', 'It is safe as long as the mic is closer than you are'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is closer than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens.',
     },
   },

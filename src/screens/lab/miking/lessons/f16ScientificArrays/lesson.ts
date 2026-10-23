@@ -391,7 +391,7 @@ const symptoms: Symptom[] = [
     explain: 'Independent recorders drift apart: use one synchronized clock for every element.',
     why: {
       'The source, which is moving away': 'The source is on a fixed stand: check the clock before the geometry.',
-      'The room, which is warming up': 'Warming changes both paths alike; drift between clocks is the commoner cause.',
+      'The room, which is warming up': 'Warming speeds up sound, so the time difference shrinks a tiny bit — it does not grow; drift between clocks is the commoner cause.',
     },
   },
   {
@@ -499,7 +499,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'paper', label: 'An enclosing surface drawn with outward normals and a safe scan path', ok: true, power: 'none', feedback: 'A layout a qualified operator can use: honest about what it is.' },
       { id: 'plan', label: 'The surface, its normals, and the probe’s spacer and checks listed', ok: true, power: 'none', feedback: 'The prerequisites written down too: a fuller plan.' },
-      { id: 'probe', label: 'Borrow a probe and scan the running device yourself', ok: false, power: 'none', feedback: 'Specialist equipment needs a qualified operator — and never near moving parts.' },
+      { id: 'probe', label: 'Borrow a probe and scan the running device yourself', ok: false, power: 'none', feedback: 'Specialist equipment needs a qualified operator. Nothing goes through a guard or into moving parts.' },
     ],
     reasons: [
       R('normals', 'The outward normals marked on the surface', 'required', 'Intensity is read along the normal.'),

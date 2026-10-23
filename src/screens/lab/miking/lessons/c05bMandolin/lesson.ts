@@ -302,7 +302,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Instrument dynamic about 20 cm from the oval hole, a little off it', ok: true, power: 'none', feedback: 'A suggested starting point; it needs no phantom. Listen for boom.' },
       { id: 'c', label: 'Small omni condenser at the neck junction', ok: false, power: 'phantom', feedback: 'A fair idea in a good room — but this input has no phantom power.' },
       { id: 'd', label: 'Clip-on mini between the joint and the hole', ok: false, power: 'phantom', feedback: 'This miniature condenser needs phantom power, which this input does not have.' },
-      { id: 'e', label: 'Instrument dynamic 2 cm into the oval hole', ok: false, power: 'none', feedback: 'Never insert a mic into an opening: it favours one resonance and risks the instrument.' },
+      { id: 'e', label: 'Instrument dynamic 2 cm into the oval hole', ok: false, power: 'none', feedback: 'Do not push a mic into an opening: it favours one resonance and can harm the instrument. Only a mount made for that goes inside, with the owner’s OK.' },
     ],
     reasons: [DOC_REASON, clearReason('the picking arc, the fretting hand and the player’s turn'), POWER_REASON, { id: 'r.record', label: 'I will note the exact position so I can find it again', role: 'optional', feedback: 'A fair reason on a small instrument.' }, brandReason(MANDO), LOUD_REASON],
     explain: 'Two positions pass. What passes is the reasoning: a sensible starting point, clear of the player, powered by what this input can supply.',
@@ -398,7 +398,7 @@ export const C05B_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A small, bright string instrument with eight steel strings in four pairs over an arched top, most often carved. A floating bridge drives the top. A-style bodies are teardrops, often with an oval hole; F-style bodies have a scroll and points, often with f-holes.', src: 'EASTMAN' },
     { title: 'WHERE YOU MEET IT', text: 'Bluegrass, folk, country and classical music, on stage — often round a shared mic — and in the studio.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'The percussive offbeat chop, tremolo melodies, fast single-note leads. Ask which they will play, and at what level.', src: 'LESSON' },
-    { title: 'ITS SIZE', text: 'This lab draws a mandolin about 66 cm (26 in) long and 26 cm (10 in) across the body, about 4.5 cm deep (drawn sizes for the depth and string length).', src: 'MET-A4' },
+    { title: 'ITS SIZE', text: 'This lab draws a mandolin about 66 cm (26 in) long, 26 cm (10 in) across the body and about 4.5 cm (1.8 in) deep. These are drawn sizes.', src: 'MET-A4' },
   ],
   sound: {
     stages: [

@@ -1029,7 +1029,7 @@ export const STAGE5_TECHNICAL: StageDef = {
       kind: "mismatch",
       title: "Phantom power does not match the source",
       detail: "Most condenser microphones and active ribbon microphones need phantom power and are silent without it. Phantom sent to a passive ribbon microphone, a line output or a playback device can damage some of them, and should be a deliberate decision rather than a default left on.",
-      fixHint: "Set phantom on for condensers, active ribbons and other active devices that need it, off for line and playback sources, and check each ribbon's requirement before the day.",
+      fixHint: "Set phantom on for the condensers, active ribbons and other active devices that need it (a tube condenser has its own supply). Leave it off for line and playback sources, and check each ribbon's needs before the day.",
       needsLogic: true,
       logicIntent: "Fire for each input_list row where in_capture is condenser_mic or active_ribbon_mic and in_phantom is off, or where in_capture is ribbon_mic (passive), line or playback and in_phantom is on. Do not fire when in_phantom is empty or na, and do not fire for di or wireless rows, since those vary by device.",
       learnMore: {
@@ -1238,7 +1238,7 @@ export const STAGE5_TECHNICAL: StageDef = {
   activity: {
     activityId: "build-the-input-list",
     title: "Build the input list",
-    prompt: "A five-piece band with a lead vocalist has sent a stage plot, and a first input list has been drafted from it by someone in a hurry. The console and recorder have sixteen channels. Fix the list so that every source is captured correctly, every stereo source has two inputs, phantom is right on every row, the bass has a proper path to the console, and the whole thing fits the channels you actually have.",
+    prompt: "A five-piece band with a lead singer has sent a stage plot. Someone in a hurry drafted a first input list from it. The console and recorder have sixteen channels. Fix the list. Every source must be captured the right way, and every stereo source needs two inputs. Phantom must be right on every row. The bass and the acoustic guitar pickup each need a DI path to the console. The click must reach at least one cue mix. The whole list must fit the channels you have.",
     onlyFor: [
       "music",
       "live"

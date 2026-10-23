@@ -50,7 +50,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'An array and a close mic',
     goal: 'An Ambisonic mic at the listener’s point and a close mic on the singer: see how much earlier the close mic hears the singer, what polarity does and does not change, and why the two stay separate layers.',
-    credit: { scenarios: ['sp.two.1', 'sp.two.2', 'sp.two.3', 'sp.two.4'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
+    credit: { scenarios: ['sp.two.1', 'sp.two.2', 'sp.two.3', 'sp.two.4'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
     takeaway: 'The close mic hears the source milliseconds before the array. Summed as they are, they comb or echo; kept as two layers, each does its job. Polarity flips the sign, never the time.',
   },
   troubleshoot: {
@@ -89,7 +89,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Can a surround or Ambisonic capture later pull out one source on its own?',
     options: ['It cannot: it hears everything at its place', 'It can: each source has its own capsule in the array', 'It can, if the capture uses four or more channels'],
     correct: 'It cannot: it hears everything at its place',
-    explain: 'A spatial mic records what arrives at that place: the traffic, the wind and the walls with the source. Record a separate close mic if a source must be clear.',
+    explain: 'A spatial mic records what arrives at that place: the traffic, the wind and the walls with the source. A decoder can point a virtual mic toward a source, but the rest of the place still comes with it. Record a separate close mic if a source must be clear.',
     why: {
       'It can: each source has its own capsule in the array': 'The capsules point in directions, not at sources: each hears the whole place.',
       'It can, if the capture uses four or more channels': 'More channels give direction, not isolation.',
@@ -516,7 +516,7 @@ const predictions: Lesson['predictions'] = {
   meet: { prompt: 'Before you move the walker: as it passes on the left, which ear hears it first?', options: ['The left ear', 'The right ear', 'Both at once'], after: 'Now move WALK and watch the readout.' },
   microphone: { prompt: 'Which system would you choose for a listener on headphones?', options: ['A binaural head', 'A spaced five-channel array', 'Either one'], after: 'Now step through each SYSTEM.' },
   placement: { prompt: 'Predict: you move the rig 4 m toward the singer. What changes?', options: ['More singer, less square', 'More square', 'It depends on the place'], after: 'Rest the rig in two zones and read what each one suggests.' },
-  twoMic: { prompt: 'If you flip the close mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the close mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -612,7 +612,7 @@ export const F10_LESSON: Lesson = {
   setting: {
     items: [
       { id: 'traffic', label: 'traffic and wind', short: 'TRAFFIC · WIND', note: 'What reaches the place stays in the capture. Cover every exposed capsule against wind; a windscreen is not waterproofing.', prov: { kind: 'illustrative', reason: 'the lesson L6, L39' }, tag: 'SPILL', scene: 'all' },
-      { id: 'walls', label: 'walls and hard surfaces', short: 'REFLECTIONS', note: 'They return the scene a few milliseconds late — part of the place. Note them in the log.', prov: { kind: 'illustrative', reason: 'the lesson L6' }, tag: 'ROOM SOUND', scene: 'all' },
+      { id: 'walls', label: 'walls and hard surfaces', short: 'REFLECTIONS', note: 'They return the scene a little late — the extra path sets how late. Part of the place. Note them in the log.', prov: { kind: 'illustrative', reason: 'the lesson L6' }, tag: 'ROOM SOUND', scene: 'all' },
       { id: 'speech', label: 'conversations nearby', short: 'PEOPLE', note: 'Speech that may be recognised needs the right permission for the place and the use.', prov: { kind: 'illustrative', reason: 'the lesson L6, L43' }, tag: 'PRIVACY', scene: 'all' },
       { id: 'route', label: 'the public footpath', short: 'THE WAY', note: 'Never block it with a stand or a wide array; never leave stands unattended where people walk.', prov: { kind: 'illustrative', reason: 'the lesson L43' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'pa', label: 'the PA at an event', short: 'PA', note: 'An open array near a PA hears it; fed back into it, a feedback path. Keep the array on the stream path.', prov: { kind: 'illustrative', reason: 'the lesson L41' }, tag: 'FEEDBACK', scene: 'stage' },
@@ -641,6 +641,6 @@ export const F10_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every place and listener is different: walk, listen, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: example scenes, example array layouts with no spacing claimed, the four-track conversion and capsule patterns as textbook shapes. Heights are read from the ground. Safety is exact: at least 3 m (10 ft) from overhead power lines, more for high-voltage ones, and 30 minutes after the last lightning or thunder. A spatial recording is not a calibrated measurement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every place and listener is different: walk, listen, experiment, and trust your ears and the place. The lab is silent and draws a simplified picture: example scenes, example array layouts with no spacing claimed, the four-track conversion and capsule patterns as textbook shapes. Heights are read from the ground. Safety is exact: at least 3 m (10 ft) from overhead power lines, more for higher voltages or if unsure, and 30 minutes after the last lightning or thunder. A spatial recording is not a calibrated measurement.',
   copy: F10_COPY,
 };

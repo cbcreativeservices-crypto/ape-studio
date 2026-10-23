@@ -22,7 +22,7 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "Reggae is music for slow dancing, meditation and message. Roots reggae carries Rastafari faith and anti-oppression themes; lovers rock, born in 1970s London, is romance; dub (echo-heavy remix style) makes the engineer the composer, stripping songs to drum and bass and rebuilding them with echo. Underneath all three is sound-system culture: selectors (sound-system DJs), operators and MCs playing to crowds who come to feel the bass. Hedley Jones’s 1940s Kingston systems already split the signal into low, mid and high bands for live tone shaping, and that “play the controls” attitude runs through the genre. Audiences expect bass felt in the chest but never boomy, a relaxed groove behind the beat, and words they can follow. They will say “that sounded wrong” if the bass is thin or flabby, the skank (offbeat chord chop) buried, the snare fat and rock-tuned, the drums pumping, or the mix harsh. At dances, crowd “forwards” (surges toward the booth, calls for a rewind) tell you a tune landed."
+      "text": "Reggae is music for slow dancing, meditation and message. Roots reggae carries Rastafari faith and anti-oppression themes; lovers rock, born in 1970s London, is romance; dub (echo-heavy remix style) makes the engineer the composer, stripping songs to drum and bass and rebuilding them with echo. Underneath all three is sound-system culture: selectors (who pick and play the records), operators (who run the rig) and DJs or MCs (who toast over the music) playing to crowds who come to feel the bass. Hedley Jones’s 1940s Kingston systems already split the signal into low, mid and high bands for live tone shaping, and that “play the controls” attitude runs through the genre. Audiences expect bass felt in the chest but never boomy, a relaxed groove behind the beat, and words they can follow. They will say “that sounded wrong” if the bass is thin or flabby, the skank (offbeat chord chop) buried, the snare fat and rock-tuned, the drums pumping, or the mix harsh. At dances, crowd “forwards” (surges toward the booth, calls for a rewind) tell you a tune landed."
     }
   ],
   "instruments": [
@@ -255,11 +255,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Theater and festival reggae typically runs 97–103 dBA LAeq-15 at FOH with 118–128 dBC; a C-minus-A gap of 20–25 dB is normal here, and more usually means boom. Peaks 108–112 dBA. Sound-system dances push the sub harder, so cardioid or end-fire sub arrays (10–15 dB less rear energy) and trimming 40–63 Hz rather than the master help meet boundary limits of about 55–65 dBA. Reggae needs more sub than rock but less top; outdoors, a high-shelf trim after dark may help. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes, so offer earplugs."
+      "text": "Theater and festival reggae typically runs 97–103 dBA LAeq-15 at FOH with 118–128 dBC; a C-minus-A gap of 20–25 dB is normal here, and more usually means boom. Peaks 108–112 dBA. Sound-system dances push the sub harder, so cardioid or end-fire sub arrays (10–15 dB less rear energy) and trimming 40–63 Hz rather than the master help meet boundary limits of about 55–65 dBA. Reggae needs more sub than rock but less top; outdoors, a high-shelf trim after dark may help. NIOSH advises no more than about 15 minutes a day at 100 dBA, so offer earplugs."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Roots and lovers rock masters land around −12 to −9 LUFS-I, true peak −1 dBTP (−2 if louder than −14). Streaming normalizes to −14 LUFS, so loud masters gain nothing. Keep limiting light (PLR 10–13 dB, about −12 to −15 LUFS-I at −2 dBTP) and distortion low so the bass stays round. Check on a sub, in a car and on a phone, where only the bass’s 600–800 Hz overtones carry the line."
+      "text": "Roots and lovers rock masters land around −12 to −9 LUFS-I, with true peak at −2 dBTP, since they are louder than −14. Streaming normalizes to −14 LUFS, so loud masters gain nothing. Keep limiting light and distortion low so the bass stays round: at −2 dBTP, −12 to −9 LUFS-I is a PLR of 7–10 dB, and a PLR of 10–13 dB (−12 to −15 LUFS-I) keeps more punch. Check on a sub, in a car and on a phone, where only the bass’s 600–800 Hz overtones carry the line."
     }
   ],
   "liveStudio": {

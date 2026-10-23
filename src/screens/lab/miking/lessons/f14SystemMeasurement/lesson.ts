@@ -147,8 +147,8 @@ const scenarios: MikingScenario[] = [
     correct: 'Measure it as it is; tell the crew',
     explain: 'Do not move flown or energized equipment for a practice run. Measure what is there, and raise the aim with the people responsible for it.',
     why: {
-      'Re-aim it once it is switched off': 'Off is not the point: flown equipment is rigged by qualified crew, and practice is no reason to touch it.',
-      'Nudge it from a ladder while it plays': 'Flown and energized: leave it to the qualified crew.',
+      'Re-aim it once it is switched off': 'Off is not the point: flown equipment is rigged by qualified riggers, and practice is no reason to touch it.',
+      'Nudge it from a ladder while it plays': 'Flown and energized: leave it to the qualified rigger and the system crew.',
     },
   },
   {

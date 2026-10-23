@@ -333,7 +333,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip the rear mic’s polarity. What happens to the arrival-time difference between the two mics?',
     options: ['Nothing — polarity flips the sign, not the timing', 'It drops to zero, so the two arrivals line up', 'It doubles, because the copy is now inverted'],
     correct: 'Nothing — polarity flips the sign, not the timing',
-    explain: 'Polarity inversion reverses the signal’s sign: the notches move, the delay does not. Only moving a mic, or delaying its channel, changes when the sound arrives.',
+    explain: 'Polarity inversion reverses the signal’s sign: the notches and peaks swap places, but the delay does not change. Only moving a mic, or delaying its channel, changes when the sound arrives.',
     why: {
       'It drops to zero, so the two arrivals line up': 'The mics are still the same distance from the cone: the delay stays.',
       'It doubles, because the copy is now inverted': 'Polarity has no time in it. Only a mic’s position changes the delay.',
@@ -417,9 +417,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two cabinet mics sound thin together. Which change removes the arrival-time difference itself?',
     options: ['Moving a mic so that the two paths are closer to equal', 'Flipping the polarity switch on one of the two mics', 'Turning the later mic up until it matches the earlier'],
     correct: 'Moving a mic so that the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth; neither removes the delay.',
+    explain: 'Only the paths set the delay. Polarity swaps the notches and peaks; level changes their depth; neither removes the delay.',
     why: {
-      'Flipping the polarity switch on one of the two mics': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
+      'Flipping the polarity switch on one of the two mics': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
       'Turning the later mic up until it matches the earlier': 'Level changes the depth of the notches, not where they are or the delay behind them.',
     },
   },
@@ -635,9 +635,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about standing by a loud amp all through soundcheck?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the amp stays below the level of the mic’s rating', 'It is safe as long as the mic is closer than you are'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is closer than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens.',
     },
   },

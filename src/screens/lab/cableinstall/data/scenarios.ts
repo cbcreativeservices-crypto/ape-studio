@@ -211,7 +211,7 @@ export const CI_BEND_EXERCISES: CiBendExercise[] = [
   { id: 'bend-mic', cable: 'mic', cableName: 'Copper audio (mic) cable', specText: 'SIMULATED SPEC — flexible audio cable, installed bend radius: ≥ 6× cable diameter.', minRadiusDia: 6 },
   { id: 'bend-utp', cable: 'network', cableName: 'Twisted-pair data cable', specText: 'SIMULATED SPEC — 4-pair data cable, installed bend radius: ≥ 4× cable diameter (pull-in: larger).', minRadiusDia: 4, note: 'Under pulling tension the same cable\'s limit is larger — this exercise is the INSTALLED condition.' },
   { id: 'bend-coax', cable: 'coax', cableName: 'Coaxial cable', specText: 'SIMULATED SPEC — flexible coax, installed bend radius: ≥ 10× cable diameter. Kinks are permanent damage.', minRadiusDia: 10 },
-  { id: 'bend-fiber', cable: 'fiber', cableName: 'Fiber-optic cable', specText: 'SIMULATED SPEC — indoor fiber, installed bend radius: ≥ 15× cable diameter; never load the fiber in tension.', minRadiusDia: 15 },
+  { id: 'bend-fiber', cable: 'fiber', cableName: 'Fiber-optic cable', specText: 'SIMULATED SPEC — indoor fiber, installed bend radius: ≥ 15× cable diameter; pull by the strength members, never by the glass.', minRadiusDia: 15 },
 ];
 
 export const CI_PULL_SPEC = {
@@ -267,7 +267,7 @@ export const CI_SUPPORT_ITEMS: CiSupportItem[] = [
 ];
 
 export const CI_SUPPORT_SPACING_SPEC =
-  'SIMULATED SUPPORT SYSTEM SPEC — this J-hook system, at this load: supports every 4 span units, max sag ½ unit. (Real spacing comes from the support manufacturer + applicable standard.)';
+  'SIMULATED SUPPORT SYSTEM SPEC — this J-hook system, at this load: supports no more than 4 span units apart, max sag ½ unit. (Real spacing comes from the support manufacturer + applicable standard.)';
 
 /* ── M6 — rack ─────────────────────────────────────────────────────────── */
 export type CiRackIssue = { id: string; mistakeId: string; label: string; /** rear-view zone 0..1 y */ zone: number };

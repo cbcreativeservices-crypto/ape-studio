@@ -172,7 +172,7 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
               </Point>
             ))}
           </Card>
-          <Note tone="warn">Protect your hearing during repeated hits and soundcheck. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens. It has nothing to do with a microphone’s maximum SPL rating, and a mic inside a drum is not a hearing meter. Keep levels and repetitions down, and use hearing protection.</Note>
+          <Note tone="warn">Protect your hearing during repeated hits and soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens. They have nothing to do with a microphone’s maximum SPL rating, and a mic inside a drum is not a hearing meter. Keep levels and repetitions down, and use hearing protection.</Note>
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />
         </>
       ),

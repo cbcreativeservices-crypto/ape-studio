@@ -624,7 +624,7 @@ export function HarmonographLabScreen() {
           {isExact
             ? `A clean ${ratio.label} ratio (${ratio.interval.toLowerCase()}) — the pendulums repeat together and the figure closes.`
             : detune !== 0
-              ? `Detuned +${detune * 100}% — the near-miss never closes; the slow precession IS beating.`
+              ? `Detuned +${detune * 100}% — the near-miss never closes; the slow precession is the picture of beating.`
               : `Between simple ratios — the figure precesses and never quite closes, just like a slight detune.`}
         </Text>
       </View>

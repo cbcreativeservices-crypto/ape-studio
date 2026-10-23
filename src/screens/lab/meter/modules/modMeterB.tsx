@@ -340,7 +340,7 @@ export function SpectrumModule(p: MeterModuleProps) {
 
 const SPECTROGRAM_KEYS = Object.keys(SPECTROGRAM_LABELS) as SpectrogramKey[];
 const SPECTROGRAM_BLURBS: Record<SpectrogramKey, string> = {
-  speech: 'Syllable bursts painted as striped bands — the formants — with pitch striations underneath. The fingerprint reading of talking.',
+  speech: 'Syllable bursts painted as striped bands — the formants — with thin pitch lines (the harmonics) running through them. The fingerprint reading of talking.',
   birdsong: 'Short rising chirps: thin lines that sweep upward, high in the band, with silence between them.',
   cymbal: 'A bright splash lighting the whole top of the band, then fading — decay drawn over time.',
   feedback: 'A single horizontal line that grows hotter and hotter: one frequency building second by second. Kill it before it howls.',
@@ -350,7 +350,7 @@ const SPECTROGRAM_BLURBS: Record<SpectrogramKey, string> = {
 
 const SPECTROGRAM_CAPTIONS: Record<SpectrogramKey, string> = {
   speech:
-    'Speech: stacked horizontal FORMANT BANDS that jump with each syllable, with fine PITCH STRIATIONS underneath. Syllables read as bursts marching left → right.',
+    'Speech: stacked horizontal FORMANT BANDS that jump with each syllable, with fine PITCH LINES (the harmonics) running through them. Syllables read as bursts marching left → right.',
   birdsong:
     'Birdsong: thin CHIRP SWEEPS — lines that rise and fall quickly. A line with SLOPE means the pitch itself is moving.',
   cymbal:

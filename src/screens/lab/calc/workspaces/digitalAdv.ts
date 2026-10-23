@@ -6,6 +6,20 @@
 import type { Workspace } from '../calcTypes';
 import { DB_PER_BIT, FULL_SCALE_SINE_DB, fmt, fmtCount, snapWhole } from '../calcUnits';
 
+/** 0 ppm is two clocks that match exactly (audit R2, 2026-10-23): it printed
+ *  "TIME PER 1-SAMPLE SLIP — ms" beside "must be greater than zero". */
+const NEVER_SLIPS = 'With 0 ppm the clocks match exactly, so no samples ever slip.';
+const BUDGET_NEVER_USED = 'Never — with 0 ppm the clocks match exactly, so the slip budget is never used up.';
+
+/** The SMPTE timecode frame rates (non-drop and the 1000/1001 rates). A frame
+ *  label HH:MM:SS:FF needs one of them (audit R2, 2026-10-23: 9000 frames at
+ *  12.5 fps read TOTAL TIME 720 s beside a 00:11:32:04 table). */
+const TC_RATES = [24000 / 1001, 24, 25, 30000 / 1001, 30, 48000 / 1001, 48, 50, 60000 / 1001, 60];
+const tcRateRefusal = (fps: number): string | null =>
+  TC_RATES.some((r) => Math.abs(fps - r) < 0.005)
+    ? null
+    : `Timecode needs a standard frame rate — 23.976, 24, 25, 29.97, 30, 47.952, 48, 50, 59.94 or 60 fps. ${fmt(fps, 6)} fps has no HH:MM:SS:FF labels.`;
+
 /** TPDF dither (the standard choice) adds twice the quantization noise power:
  *  10·log10(3) = 4.77 dB more noise (Lipshitz, Wannamaker & Vanderkooy, JAES
  *  1992). A properly dithered converter's ideal SNR is therefore 6.02·N − 3.01. */
@@ -62,10 +76,11 @@ const CLOCKDRIFT: Workspace = {
     '(ppm×10⁻⁶) × time. Real clocks also jitter and wander; this is the steady-state drift only.',
   glossary: ['Sample Rate', 'Word Clock', 'Jitter', 'Synchronization'],
   fields: [
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate of the digital link.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
-    { key: 'ppm', name: 'CLOCK ERROR (ppm)', quantity: 'number', nonNegative: true, placeholder: '50', help: 'Frequency error in parts per million between the two clocks.', warn: { test: (x) => x <= 0, msg: 'Clock error must be greater than zero.' } },
-    { key: 'dur', name: 'DURATION', quantity: 'time', defaultUnit: 'min', placeholder: '60', help: 'How long the two devices run unsynced.', warn: { test: (x) => x <= 0, msg: 'Duration must be greater than zero.' } },
-    { key: 'maxSlip', name: 'SLIP BUDGET', quantity: 'samples', placeholder: '1', help: 'How many samples of slip you can tolerate before it matters.', warn: { test: (x) => x <= 0, msg: 'Slip budget must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate of the digital link.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    // 0 ppm is a real answer ("never slips"), so no zero warning (audit R2).
+    { key: 'ppm', name: 'CLOCK ERROR (ppm)', quantity: 'number', nonNegative: true, placeholder: '50', help: 'Frequency error in parts per million between the two clocks (0 = locked to the same clock).' },
+    { key: 'dur', name: 'DURATION', quantity: 'time', defaultUnit: 'min', placeholder: '60', help: 'How long the two devices run unsynced.', positive: true, warn: { test: (x) => x <= 0, msg: 'Duration must be greater than zero.' } },
+    { key: 'maxSlip', name: 'SLIP BUDGET', quantity: 'samples', placeholder: '1', help: 'How many samples of slip you can tolerate before it matters.', positive: true, warn: { test: (x) => x <= 0, msg: 'Slip budget must be greater than zero.' } },
   ],
   functions: [
     {
@@ -84,12 +99,15 @@ const CLOCKDRIFT: Workspace = {
         return [
           { label: 'SAMPLES SLIPPED', value: slip, quantity: 'samples' },
           { label: 'TIME ERROR', value: drift * n(v.dur), quantity: 'time' },
-          { label: 'TIME PER 1-SAMPLE SLIP', value: 1 / (n(v.sr) * drift), quantity: 'time', chainable: false },
+          drift === 0
+            ? { label: 'TIME PER 1-SAMPLE SLIP', text: `Never. ${NEVER_SLIPS}` }
+            : { label: 'TIME PER 1-SAMPLE SLIP', value: 1 / (n(v.sr) * drift), quantity: 'time', chainable: false },
         ];
       },
       steps: (v) => {
         const drift = n(v.ppm) * 1e-6;
         const slip = n(v.sr) * drift * n(v.dur);
+        if (drift === 0) return [NEVER_SLIPS];
         return [
           `Drift fraction = ${fmt(n(v.ppm))} ppm = ${fmt(drift)}.`,
           `Slip = ${fmt(n(v.sr))} × ${fmt(drift)} × ${fmt(n(v.dur))} s = ${fmt(slip)} samples.`,
@@ -109,10 +127,12 @@ const CLOCKDRIFT: Workspace = {
       keySymbols: ['/', '·', '×', 'x⁻¹'],
       compute: (v) => {
         const drift = n(v.ppm) * 1e-6;
+        if (drift === 0) return [{ label: 'TIME TO REACH SLIP BUDGET', text: BUDGET_NEVER_USED }];
         return [{ label: 'TIME TO REACH SLIP BUDGET', value: n(v.maxSlip) / (n(v.sr) * drift), quantity: 'time' }];
       },
       steps: (v) => {
         const drift = n(v.ppm) * 1e-6;
+        if (drift === 0) return [BUDGET_NEVER_USED];
         const t = n(v.maxSlip) / (n(v.sr) * drift);
         return [
           `t = ${fmt(n(v.maxSlip))} samples ÷ (${fmt(n(v.sr))} × ${fmt(drift)}) = ${fmt(t)} s (${fmt(t / 60)} min).`,
@@ -152,10 +172,10 @@ const NETAUDIO: Workspace = {
     'and switch; treat the wire figure as an estimate.',
   glossary: ['Sample Rate', 'Bit Depth', 'Bandwidth', 'Latency', 'Packet'],
   fields: [
-    { key: 'channels', name: 'CHANNELS', quantity: 'number', nonNegative: true, integer: true, placeholder: '64', help: 'Number of audio channels in one direction.', warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate of each channel.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
-    { key: 'bitdepth', name: 'BIT DEPTH', quantity: 'bitdepth', integer: true, placeholder: '24', help: 'Bits per sample carried on the wire.', warn: { test: (x) => x <= 0, msg: 'Bit depth must be greater than zero.' } },
-    { key: 'packetms', name: 'PACKET TIME', quantity: 'time', defaultUnit: 'ms', placeholder: '1', help: 'Audio time carried per packet — smaller = lower latency, more overhead.', warn: { test: (x) => x <= 0, msg: 'Packet time must be greater than zero.' } },
+    { key: 'channels', name: 'CHANNELS', quantity: 'number', nonNegative: true, integer: true, placeholder: '64', help: 'Number of audio channels in one direction.', positive: true, warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate of each channel.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'bitdepth', name: 'BIT DEPTH', quantity: 'bitdepth', integer: true, placeholder: '24', help: 'Bits per sample carried on the wire.', positive: true, warn: { test: (x) => x <= 0, msg: 'Bit depth must be greater than zero.' } },
+    { key: 'packetms', name: 'PACKET TIME', quantity: 'time', defaultUnit: 'ms', placeholder: '1', help: 'Audio time carried per packet — smaller = lower latency, more overhead.', positive: true, warn: { test: (x) => x <= 0, msg: 'Packet time must be greater than zero.' } },
   ],
   functions: [
     {
@@ -172,7 +192,8 @@ const NETAUDIO: Workspace = {
         return [
           { label: 'RAW DATA RATE', value: raw, quantity: 'datarate', unit: 'mbps' },
           { label: 'PER-CHANNEL RATE', value: n(v.sr) * n(v.bitdepth), quantity: 'datarate', unit: 'mbps', chainable: false },
-          { label: 'RAW BYTES PER SECOND', value: raw / 8, quantity: 'datasize', unit: 'mb', chainable: false },
+          // A RATE, in MB/s (audit R2, 2026-10-23): it printed "9.216 MB".
+          { label: 'RAW BYTES PER SECOND', value: raw, quantity: 'datarate', unit: 'mbyteps', chainable: false },
         ];
       },
       steps: (v) => {
@@ -187,9 +208,9 @@ const NETAUDIO: Workspace = {
       key: 'packetize',
       name: 'Packets & on-the-wire rate',
       inputs: ['channels', 'sr', 'bitdepth', 'packetms'],
-      formula: 'packets = ⌈audio ÷ ~1460 B⌉; wire = (audio + packets × ~78 B) ÷ packet time',
+      formula: 'packets = ⌈audio ÷ ~1460 B⌉; wire = (audio + packets × ~78 B) × 8 ÷ packet time',
       plainFormula:
-        'The audio for one packet time is split into packets of at most about 1460 bytes each. The on-the-wire rate equals that audio plus about 78 bytes of header for every packet, divided by the packet time.',
+        'The audio for one packet time is split into packets of at most about 1460 bytes each. The on-the-wire rate equals that audio plus about 78 bytes of header for every packet, times eight bits per byte, divided by the packet time.',
       explain:
         'The wire carries packet headers many times a second on top of the audio. One standard Ethernet packet holds only about 1460 bytes of audio, so a large channel count needs several packets every packet time. Smaller packet times mean lower latency but more packets — and more header overhead. This estimates the realistic on-the-wire rate, showing why very low latency costs bandwidth.',
       keySymbols: ['×', '/'],
@@ -207,9 +228,11 @@ const NETAUDIO: Workspace = {
       steps: (v) => {
         const p = netPackets(n(v.channels), n(v.sr), n(v.bitdepth), n(v.packetms));
         return [
-          `${fmt(n(v.packetms) * 1000)} ms per packet time → ${fmt(p.spp)} samples per channel; audio = ${fmt(p.spp)} × ${fmtCount(n(v.channels))} ch × ${fmt(n(v.bitdepth) / 8)} B = ${fmt(p.audio)} B.`,
-          `${fmt(p.audio)} B ÷ ~${MAX_AUDIO_PER_PACKET} B per packet → ${fmtCount(p.pkts)} packet${p.pkts === 1 ? '' : 's'} per packet time, ${fmt(p.pps)} packets/s.`,
-          `Wire rate ≈ (${fmt(p.audio)} B + ${fmtCount(p.pkts)} × 78 B) × 8 ÷ ${fmt(n(v.packetms) * 1000)} ms = ${fmt(p.wireBps / 1e6)} Mbit/s.`,
+          // Byte, sample and packet counts exact (audit R2, 2026-10-23): 4 figures
+          // printed 18432 B as "18430 B".
+          `${fmt(n(v.packetms) * 1000)} ms per packet time → ${fmtCount(p.spp)} samples per channel; audio = ${fmtCount(p.spp)} × ${fmtCount(n(v.channels))} ch × ${fmt(n(v.bitdepth) / 8)} B = ${fmtCount(p.audio)} B.`,
+          `${fmtCount(p.audio)} B ÷ ~${MAX_AUDIO_PER_PACKET} B per packet → ${fmtCount(p.pkts)} packet${p.pkts === 1 ? '' : 's'} per packet time, ${fmtCount(p.pps)} packets/s.`,
+          `Wire rate ≈ (${fmtCount(p.audio)} B + ${fmtCount(p.pkts)} × 78 B) × 8 ÷ ${fmt(n(v.packetms) * 1000)} ms = ${fmt(p.wireBps / 1e6)} Mbit/s.`,
         ];
       },
     },
@@ -244,11 +267,11 @@ const TIMECODE: Workspace = {
   glossary: ['Timecode', 'Frame Rate', 'Synchronization', 'Sample Rate'],
   fields: [
     { key: 'frames', name: 'FRAME COUNT', quantity: 'number', nonNegative: true, integer: true, placeholder: '9000', help: 'Total number of frames.', warn: { test: (x) => x < 0, msg: 'Frame count cannot be negative.' } },
-    { key: 'fps', name: 'FRAME RATE (fps)', quantity: 'number', nonNegative: true, placeholder: '25', help: 'Frames per second: 24, 25, 29.97, or 30.', warn: { test: (x) => x <= 0, msg: 'Frame rate must be greater than zero.' } },
+    { key: 'fps', name: 'FRAME RATE (fps)', quantity: 'number', nonNegative: true, placeholder: '25', help: 'Frames per second: 24, 25, 29.97, or 30.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frame rate must be greater than zero.' } },
     { key: 'hours', name: 'HOURS', quantity: 'number', nonNegative: true, placeholder: '0', help: 'Hours component of the timecode.' },
     { key: 'mins', name: 'MINUTES', quantity: 'number', nonNegative: true, placeholder: '6', help: 'Minutes component of the timecode.' },
     { key: 'secs', name: 'SECONDS', quantity: 'number', nonNegative: true, placeholder: '0', help: 'Seconds component of the timecode.' },
-    { key: 'dur', name: 'NOMINAL DURATION', quantity: 'time', defaultUnit: 'min', placeholder: '60', help: 'Program duration to evaluate the pulldown offset over.', warn: { test: (x) => x <= 0, msg: 'Duration must be greater than zero.' } },
+    { key: 'dur', name: 'NOMINAL DURATION', quantity: 'time', defaultUnit: 'min', placeholder: '60', help: 'Program duration to evaluate the pulldown offset over.', positive: true, warn: { test: (x) => x <= 0, msg: 'Duration must be greater than zero.' } },
   ],
   functions: [
     {
@@ -260,6 +283,7 @@ const TIMECODE: Workspace = {
       explain:
         'SMPTE timecode counts hours, minutes, seconds, and frames. This converts a frame count into a clock time and breaks it into HH:MM:SS:FF. A frame number means nothing without its frame rate, since 24, 25, 29.97, and 30 fps all count differently.',
       keySymbols: ['÷'],
+      refuse: (v) => tcRateRefusal(n(v.fps)),
       compute: (v) => {
         const totS = n(v.frames) / n(v.fps);
         return [
@@ -288,7 +312,7 @@ const TIMECODE: Workspace = {
       steps: (v) => {
         const totS = n(v.frames) / n(v.fps);
         return [
-          `Time = ${fmt(n(v.frames), 9)} frames ÷ ${fmt(n(v.fps), 6)} fps = ${fmt(totS)} s.`,
+          `Time = ${fmtCount(n(v.frames))} frames ÷ ${fmt(n(v.fps), 6)} fps = ${fmt(totS)} s.`,
           `Broken out into HH:MM:SS:FF in the table below (frame remainder uses the whole-frame rate).`,
         ];
       },
@@ -307,6 +331,7 @@ const TIMECODE: Workspace = {
       explain:
         'The reverse: turns an HH:MM:SS timecode into a total frame count. It converts the timecode to seconds, then multiplies by the whole-number frame rate — non-drop 29.97 timecode still counts 30 frame labels per timecode second, so it runs slightly behind the wall clock. Used to locate an exact frame or line up audio to a picture edit.',
       keySymbols: ['·'],
+      refuse: (v) => tcRateRefusal(n(v.fps)),
       compute: (v) => {
         const totS = n(v.hours) * 3600 + n(v.mins) * 60 + n(v.secs);
         const frames = Math.round(totS * Math.round(n(v.fps)));
@@ -384,10 +409,10 @@ const FIRLEN: Workspace = {
     '(N−1)/2 samples, exactly. A transition band wider than half the sample rate is refused.',
   glossary: ['FIR Filter', 'Linear Phase', 'Latency', 'Sample Rate', 'Transition Band'],
   fields: [
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
-    { key: 'trans', name: 'TRANSITION WIDTH', quantity: 'frequency', placeholder: '100', help: 'Hz between passband edge and stopband edge.', warn: { test: (x) => x <= 0, msg: 'Transition width must be greater than zero.' } },
-    { key: 'atten', name: 'STOPBAND ATTENUATION', quantity: 'db', nonNegative: true, placeholder: '60', help: 'How deep the stopband rejection must be, in dB.', warn: { test: (x) => x <= 0, msg: 'Attenuation must be greater than zero.' } },
-    { key: 'taps', name: 'TAP COUNT', quantity: 'number', nonNegative: true, integer: true, placeholder: '1024', help: 'Filter length in taps, for the reverse latency calc.', warn: { test: (x) => x <= 0, msg: 'Tap count must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'trans', name: 'TRANSITION WIDTH', quantity: 'frequency', placeholder: '100', help: 'Hz between passband edge and stopband edge.', positive: true, warn: { test: (x) => x <= 0, msg: 'Transition width must be greater than zero.' } },
+    { key: 'atten', name: 'STOPBAND ATTENUATION', quantity: 'db', nonNegative: true, placeholder: '60', help: 'How deep the stopband rejection must be, in dB.', positive: true, warn: { test: (x) => x <= 0, msg: 'Attenuation must be greater than zero.' } },
+    { key: 'taps', name: 'TAP COUNT', quantity: 'number', nonNegative: true, integer: true, placeholder: '1024', help: 'Filter length in taps, for the reverse latency calc.', positive: true, warn: { test: (x) => x <= 0, msg: 'Tap count must be greater than zero.' } },
   ],
   functions: [
     {
@@ -484,10 +509,10 @@ const CONVOLUTION: Workspace = {
     'convolution — orders of magnitude cheaper than these direct-form numbers.',
   glossary: ['Convolution', 'Impulse Response', 'Latency', 'Sample Rate', 'FFT'],
   fields: [
-    { key: 'irSec', name: 'IR LENGTH', quantity: 'time', defaultUnit: 's', placeholder: '2', help: 'Duration of the impulse response.', warn: { test: (x) => x <= 0, msg: 'IR length must be greater than zero.' } },
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
-    { key: 'channels', name: 'CHANNELS', quantity: 'number', nonNegative: true, integer: true, placeholder: '2', help: 'Number of channels processed.', warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
-    { key: 'block', name: 'BLOCK SIZE', quantity: 'samples', integer: true, placeholder: '512', help: 'Processing block / FFT partition size, for the latency figure.', warn: { test: (x) => x <= 0, msg: 'Block size must be greater than zero.' } },
+    { key: 'irSec', name: 'IR LENGTH', quantity: 'time', defaultUnit: 's', placeholder: '2', help: 'Duration of the impulse response.', positive: true, warn: { test: (x) => x <= 0, msg: 'IR length must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'channels', name: 'CHANNELS', quantity: 'number', nonNegative: true, integer: true, placeholder: '2', help: 'Number of channels processed.', positive: true, warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
+    { key: 'block', name: 'BLOCK SIZE', quantity: 'samples', integer: true, placeholder: '512', help: 'Processing block / FFT partition size, for the latency figure.', positive: true, warn: { test: (x) => x <= 0, msg: 'Block size must be greater than zero.' } },
   ],
   functions: [
     {
@@ -500,8 +525,12 @@ const CONVOLUTION: Workspace = {
       explain:
         'Direct convolution multiplies your signal by every sample of an impulse response. This shows the raw multiply-accumulate load and the memory an IR needs — numbers so large they explain why real convolution reverbs use partitioned FFT convolution instead of brute force.',
       keySymbols: ['·', 'fs', '/'],
+      // A tap count is whole, and an IR needs at least one sample (audit R2,
+      // 2026-10-23): a 2 µs IR at 48 kHz printed "0.096 samples".
+      refuse: (v) =>
+        n(v.irSec) * n(v.sr) < 1 ? 'The IR is shorter than one sample at this rate — enter a longer IR.' : null,
       compute: (v) => {
-        const taps = n(v.irSec) * n(v.sr);
+        const taps = Math.ceil(snapWhole(n(v.irSec) * n(v.sr)));
         const macs = taps * n(v.sr) * n(v.channels);
         return [
           { label: 'IR LENGTH IN TAPS', value: taps, quantity: 'samples', chainable: false },
@@ -510,10 +539,13 @@ const CONVOLUTION: Workspace = {
         ];
       },
       steps: (v) => {
-        const taps = n(v.irSec) * n(v.sr);
+        const exact = n(v.irSec) * n(v.sr);
+        const taps = Math.ceil(snapWhole(exact));
         const macs = taps * n(v.sr) * n(v.channels);
         return [
-          `Taps = ${fmt(n(v.irSec))} s × ${fmt(n(v.sr))} Hz = ${fmtCount(taps)} per channel.`,
+          Number.isInteger(snapWhole(exact))
+            ? `Taps = ${fmt(n(v.irSec))} s × ${fmt(n(v.sr))} Hz = ${fmtCount(taps)} per channel.`
+            : `Taps = ${fmt(n(v.irSec))} s × ${fmt(n(v.sr))} Hz = ${fmt(exact, 6)}, rounded up to ${fmtCount(taps)} whole taps per channel.`,
           `Direct MAC/s = ${fmtCount(taps)} × ${fmt(n(v.sr))} × ${fmtCount(n(v.channels))} ch = ${fmt(macs / 1e9)} GMAC/s.`,
           `Memory = ${fmtCount(taps)} × 4 B × ${fmtCount(n(v.channels))} = ${fmt((taps * 4 * n(v.channels)) / 1e6)} MB — and this is why real plug-ins partition with FFTs.`,
         ];
@@ -560,9 +592,9 @@ const BITDEPTH: Workspace = {
     'ratio, its dynamic range, and how many distinct code values it can store — or solve backward ' +
     'for the bit depth a target dynamic range needs.',
   whyItMatters:
-    'It explains why 24-bit recording is standard (≈ 146 dB of theoretical range is far more than ' +
+    'It explains why 24-bit recording is standard (≈ 144 dB of theoretical range is far more than ' +
     'any room or converter, so headroom costs nothing), why 16-bit is fine for a finished master ' +
-    '(≈ 98 dB comfortably exceeds most playback environments), and where the "6 dB per bit" rule ' +
+    '(≈ 96 dB comfortably exceeds most playback environments), and where the "6 dB per bit" rule ' +
     'of thumb comes from.',
   example:
     '16-bit: SNR ≈ 6.02 × 16 + 1.76 ≈ 98.1 dB, from 2¹⁶ = 65,536 levels. 24-bit: 6.02 × 24 + 1.76 ' +
@@ -582,8 +614,8 @@ const BITDEPTH: Workspace = {
     'as the physics limit, not a spec you will measure.',
   glossary: ['Bit Depth', 'Dynamic Range', 'Quantization', 'Dither', 'Signal-to-Noise Ratio'],
   fields: [
-    { key: 'bits', name: 'BIT DEPTH', quantity: 'number', nonNegative: true, integer: true, placeholder: '24', help: 'Bits per sample — common PCM depths are 16, 24 and 32.', warn: { test: (x) => x <= 0 || x > 64, msg: 'Bit depth should be a positive number of bits (common values: 16, 24, 32).' } },
-    { key: 'dr', name: 'TARGET DYNAMIC RANGE', quantity: 'db', nonNegative: true, placeholder: '96', help: 'A dynamic range in dB you want to find the required bit depth for.', warn: { test: (x) => x <= 0, msg: 'Dynamic range must be positive.' } },
+    { key: 'bits', name: 'BIT DEPTH', quantity: 'number', nonNegative: true, integer: true, positive: 'BIT DEPTH must be at least 1 bit (common values: 16, 24, 32).', placeholder: '24', help: 'Bits per sample — common PCM depths are 16, 24 and 32.', warn: { test: (x) => x <= 0 || x > 64, msg: 'Bit depth should be a positive number of bits (common values: 16, 24, 32).' } },
+    { key: 'dr', name: 'TARGET DYNAMIC RANGE', quantity: 'db', nonNegative: true, placeholder: '96', help: 'A dynamic range in dB you want to find the required bit depth for.', positive: true, warn: { test: (x) => x <= 0, msg: 'Dynamic range must be positive.' } },
   ],
   functions: [
     {
@@ -596,6 +628,11 @@ const BITDEPTH: Workspace = {
       explain:
         'What one more bit buys. Each bit doubles the quantization levels and adds 6.02 dB of theoretical dynamic range; a full-scale sine’s SNR adds 1.76 dB on top. That is the undithered ideal (quantization noise only); TPDF dither adds 4.77 dB of noise, and real converters fall lower still. Bit depth sets how far below full scale the noise floor sits, not the maximum level.',
       keySymbols: ['·', 'x²'],
+      // 2^N overflows past 1023 bits (audit R2, 2026-10-23): LEVELS read "—".
+      refuse: (v) =>
+        Number.isFinite(Math.pow(2, n(v.bits)))
+          ? null
+          : 'That many bits has more code values than any number this app can show — real PCM uses 16, 24 or 32 bits.',
       compute: (v) => {
         const N = n(v.bits);
         return [
@@ -640,7 +677,7 @@ const BITDEPTH: Workspace = {
         const need = Math.ceil(snapWhole(exact));
         return [
           `Each bit adds 6.0206 dB (20·log₁₀2), so bits = range ÷ 6.0206 = ${fmt(dr)} ÷ 6.0206 = ${fmt(exact)}.`,
-          `Bits come in whole numbers, so round UP to ${fmtCount(need)} bits — which delivers 6.0206 × ${fmtCount(need)} = ${fmt(DB_PER_BIT * need)} dB of range.`,
+          `Bits come in whole numbers, so round UP to ${fmtCount(need)} bit${need === 1 ? '' : 's'} — which delivers 6.0206 × ${fmtCount(need)} = ${fmt(DB_PER_BIT * need)} dB of range.`,
           `(For example, a 90 dB target needs 15 bits of range → in practice you would pick 16-bit, the nearest standard depth.)`,
         ];
       },

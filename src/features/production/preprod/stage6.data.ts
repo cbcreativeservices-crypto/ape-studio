@@ -163,7 +163,7 @@ export const STAGE6_READINESS: StageDef = {
         },
         {
           kind: "qualified",
-          text: "Rigging and temporary power are signed off by the certified rigger and the licensed electrician named in stage 3, not by the production. Record their sign-off here; do not substitute your own."
+          text: "Rigging and temporary power are signed off by the qualified rigger and the licensed electrician named in stage 3, not by the production. Record their sign-off here; do not substitute your own."
         }
       ],
       fields: [
@@ -256,7 +256,7 @@ export const STAGE6_READINESS: StageDef = {
           label: "Rigging inspection and sign-off",
           kind: "status",
           showWhen: { field: "people.rigging_required", notEquals: ["no"] },
-          help: "Approved means the certified rigger named in stage 3 has inspected and signed off everything that is flown or held up by a ground-supported structure. Only that person can approve it; this training does not qualify anyone to.",
+          help: "Approved means the qualified rigger named in stage 3 has inspected and signed off everything that is flown or held up by a ground-supported structure. Only that person can approve it; this training does not qualify anyone to.",
           required: false,
           onlyFor: [
             "live"
@@ -985,8 +985,8 @@ export const STAGE6_READINESS: StageDef = {
       severity: "blocker",
       kind: "unsafe",
       title: "Something is flown and the rigging has not been signed off",
-      detail: "Stage 3 says something is rigged above people. Until the certified rigger has inspected it and signed it off, nobody should be under it. Audio experience does not substitute for that sign-off, and neither does this lab.",
-      fixHint: "Have the certified rigger named in stage 3 inspect and sign off everything that is flown, and record the sign-off as approved.",
+      detail: "Stage 3 says something is rigged above people. Until the qualified rigger has inspected it and signed it off, nobody should be under it. Audio experience does not substitute for that sign-off, and neither does this lab.",
+      fixHint: "Have the qualified rigger named in stage 3 inspect and sign off everything that is flown, and record the sign-off as approved.",
       needsLogic: true,
       logicIntent: "Fire when people.rigging_required is yes and rigging_signoff is anything other than Approved, including empty.",
       onlyFor: [

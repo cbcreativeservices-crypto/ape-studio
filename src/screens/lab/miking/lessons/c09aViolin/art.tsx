@@ -83,7 +83,7 @@ export const VIOLIN_ART: LessonArt = {
         { title: 'ASK THE PLAYER FIRST', text: 'Standing or seated, and how do they move? Where does the bow go — long strokes, string crossings, pizzicato? What sound do they want: a classical line with the room, or a separated fiddle in a band? Hear the violin unamplified first, from the low G to the high E, quiet and loud.' },
         { title: 'WORK WITH THE VIOLIN AS IT IS', text: 'The violin is delicate and often valuable, and it is the player’s. Ask before touching it; nothing presses the bridge, the f-hole edges or the varnish, and no clip goes on without their agreement.' },
       ],
-      hearing: 'Protect your hearing during soundcheck and on loud stages. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Control monitor levels, and use hearing protection where it is loud.',
+      hearing: 'Protect your hearing during soundcheck and on loud stages. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Control monitor levels, and use hearing protection where it is loud.',
     }),
   },
 };

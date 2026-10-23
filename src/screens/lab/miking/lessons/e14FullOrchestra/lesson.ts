@@ -46,7 +46,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Main pair and a support',
     goal: 'A main pair and a woodwind support: see how much earlier the support hears its players, what polarity does and does not change, and judge the sum in mono.',
-    credit: { scenarios: ['orc.first', 'orc.two.1', 'orc.two.2'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
+    credit: { scenarios: ['orc.first', 'orc.two.1', 'orc.two.2'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
     takeaway: 'A support hears its players first; the main pair later. Polarity flips the sign, never the time. Bring a support up only as far as the need asks; a delay is a trial judged by ear, never set by distance alone.',
   },
   troubleshoot: {
@@ -402,7 +402,7 @@ const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern hears the most of the hall?', options: ['Omni', 'Cardioid', 'Figure-8'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the main pair from 3 m to 4 m. What changes most?', options: ['The back rows come forward', 'Only the level', 'The front desks get louder'], after: 'Higher, the distances to the rows even out: the NEAR / FAR readout shrinks, and the back rows and the hall come up against the front desks. Compare at matched level.' },
   context: { prompt: 'The side-fill monitor sits in front of the support, off to the side. Can its rejection reach it?', options: ['Yes — turn the mic’s back toward it', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'A main pair and a woodwind support. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE to another section.' },
+  twoMic: { prompt: 'A main pair and a woodwind support. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another section.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -508,7 +508,7 @@ export const E14_LESSON: EnsembleLesson = {
       { id: 'bows', label: 'bows, slides, music stands and breathing room', short: 'PLAYERS', note: 'Every stand and cable stays clear of the bows’ sweep, the trombone slides, the music stands and the players’ way in and out.', prov: { kind: 'sourced', src: 'LESSON-ORCH', quote: 'Never block the conductor, players’ bows, breathing, music stands, exits or audience access (L54)' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'brass', label: 'the brass and percussion behind', short: 'BRASS', note: 'Loud sections reach every mic on stage: a support on the woodwinds hears the brass behind them too.', prov: { kind: 'illustrative', reason: 'the seating: a drawing default' }, tag: 'SPILL', scene: 'all' },
       { id: 'hall', label: 'the audience and the ventilation', short: 'HALL', note: 'A distant pair hears the audience and the air handling: check the quiet passages for both.', prov: { kind: 'sourced', src: 'LESSON-ORCH', quote: 'Audience or HVAC noise dominates (L67)' }, tag: 'NOISE', scene: 'all' },
-      { id: 'rig', label: 'anything flown over the stage', short: 'RIGGING', note: 'A flown array, anything attached to the building or reached over players is the venue’s: an approved plan, rated hardware and qualified crew.', prov: { kind: 'sourced', src: 'LESSON-ORCH', quote: 'no one should fly a main array … without the venue’s approved rigging plan and qualified crew (L54, wording per the house rule)' }, tag: 'VENUE ONLY', scene: 'all' },
+      { id: 'rig', label: 'anything flown over the stage', short: 'RIGGING', note: 'A flown array, anything attached to the building or reached over players is the venue’s: an approved plan, rated hardware and a qualified rigger.', prov: { kind: 'sourced', src: 'LESSON-ORCH', quote: 'no one should fly a main array … without the venue’s approved rigging plan and a qualified rigger (L54, wording per the house rule)' }, tag: 'VENUE ONLY', scene: 'all' },
       { id: 'pa', label: 'the PA loudspeakers and monitors', short: 'PA', note: 'Live, every directional mic is aimed with the loudspeakers and monitors in mind; the distant pair stays on its own bus.', prov: { kind: 'sourced', src: 'S-LIVE', quote: 'aim each directional microphone with the actual loudspeaker and monitor locations in mind (L51)' }, tag: 'FEEDBACK', scene: 'stage' },
       { id: 'cams', label: 'the cameras', short: 'CAMERAS', note: 'A broadcast needs clear camera lines: stands placed where a camera does not look, cables dressed flat and away from walkways.', prov: { kind: 'sourced', src: 'LESSON-ORCH', quote: 'Camera sightlines and stage resets may constrain a broadcast setup (L48)' }, tag: 'SIGHTLINES', scene: 'stage' },
       { id: 'room', label: 'the hall’s own sound', short: 'THE ROOM', note: 'In a good hall the room is part of the music: the main pair’s height and distance set how much of it you hear.', prov: { kind: 'sourced', src: 'DPA-AB-ORCH', quote: 'the main position balances ensemble coverage and hall sound' }, tag: 'PART OF THE SOUND', scene: 'studio' },
@@ -537,7 +537,7 @@ export const E14_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E14_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. An orchestra has no single right setup: start with one main perspective above or just behind the podium, listen, move it one change at a time, and add a support only for a named need. Every orchestra, hall and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: a typical seating, ideal patterns, straight paths and distances read from the drawing. Anything flown or reached over players is the venue’s rigging, by qualified crew; protect your hearing.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. An orchestra has no single right setup: start with one main perspective above or just behind the podium, listen, move it one change at a time, and add a support only for a named need. Every orchestra, hall and production is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: a typical seating, ideal patterns, straight paths and distances read from the drawing. Anything flown or reached over players is the venue’s rigging, by a qualified rigger; protect your hearing.',
   copy: { words: ensembleWords('orchestra') },
   ensemble: {
     seatings: { american: 'orch.american', german: 'orch.german' },
@@ -557,10 +557,10 @@ export const E14_LESSON: EnsembleLesson = {
       { title: 'DECIDE WHAT IT IS FOR', text: 'A hall recording, a broadcast, live reinforcement — or several at once, each with its own path.' },
       { title: 'SAFE PLACES', text: 'Ground-supported stands with stable bases and protected cable routes; anything flown or attached to the building is the venue’s, by its crew.' },
     ],
-    safety: 'No one flies a main array, attaches anything to the venue’s structure, climbs above the ensemble or routes a boom over players without the venue’s approved rigging plan and qualified crew. Stands need stable bases and protected cable routes; exits, aisles and sightlines stay clear. Protect your hearing during loud passages.',
+    safety: 'No one flies a main array, attaches anything to the venue’s structure, climbs above the ensemble or routes a boom over players without the venue’s approved rigging plan and a qualified rigger. Stands need stable bases and protected cable routes; exits, aisles and sightlines stay clear. Protect your hearing during loud passages.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with an orchestra: one main perspective over or just behind the podium — a place to start and compare, not a rule.',
-      clearance: 'The stand behind the podium, out of the conductor’s and the players’ way and off the walkways; nothing over the players. Higher and safer is fine — a flown array is the venue’s rigging, by qualified crew.',
+      clearance: 'The stand behind the podium, out of the conductor’s and the players’ way and off the walkways; nothing over the players. Higher and safer is fine — a flown array is the venue’s rigging, by a qualified rigger.',
     },
     learnZones: [
       'What you just did, in words. After our research, each blue zone is where we suggest you begin with the main array’s centre: over the podium, or just behind it, about 3–4 m up. They are places to start and compare — the best place for a mic need not be the best seat for a person.',

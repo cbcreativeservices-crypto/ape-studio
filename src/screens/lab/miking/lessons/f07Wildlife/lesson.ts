@@ -66,7 +66,7 @@ const pages: LessonPages = {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
     credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
-    takeaway: 'Check the aim, the position, the wind protection and the handling first — never close the distance to an animal, and never chase a lost target with gain.',
+    takeaway: 'Check the aim, the position, the wind protection and the handling first. Never cross the setback ring, and never chase a lost target with gain.',
   },
   practice: {
     title: 'Practice',
@@ -131,8 +131,8 @@ const scenarios: MikingScenario[] = [
     id: 'wl.set.2',
     page: 'setting',
     prompt: 'The bird has gone quiet. Can you play its call to bring it back?',
-    options: ['No — never play calls or use lures', 'Yes — but only quietly, from far off', 'Yes — if it is a common species'],
-    correct: 'No — never play calls or use lures',
+    options: ['No — no calls or lures in this lab', 'Yes — but only quietly, from far off', 'Yes — if it is a common species'],
+    correct: 'No — no calls or lures in this lab',
     explain: 'No recorded calls, playback, lures or attractants. Wait, or come back at another time.',
     why: {
       'Yes — but only quietly, from far off': 'Even quiet playback can disturb the animal, and many sites ban it.',
@@ -544,10 +544,10 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'May you play a call to attract a bird?',
-    options: ['Never: no calls or lures', 'Quietly, if it is rare', 'Once, to start it singing'],
-    correct: 'Never: no calls or lures',
+    options: ['Not here: many sites ban it', 'Quietly, if it is rare', 'Once, to start it singing'],
+    correct: 'Not here: many sites ban it',
     explain: 'No recorded calls, playback, lures or attractants.',
-    why: { 'Quietly, if it is rare': 'Not at any level, for any species.', 'Once, to start it singing': 'Not even once, for any reason.' },
+    why: { 'Quietly, if it is rare': 'Not in this lab, at any level or for any species. Many sites ban it.', 'Once, to start it singing': 'Not in this lab, not even once. Many sites ban it.' },
   },
   {
     id: 'wl.q.3',

@@ -131,9 +131,9 @@ export type KeepOut = { id: string; label: string; short: string; shape: Shape3 
 export function keepOutsOf(w: Wearer): KeepOut[] {
   if (w !== 'athlete') return [];
   return [
-    { id: 'ko.helmet', label: 'the helmet — never drilled, altered or moved for a mic', short: 'HELMET', shape: { kind: 'capsule', a: HEAD_C, b: HEAD_C, r: HEAD_R + 34 } },
-    { id: 'ko.padsR', label: 'the shoulder pads — never displaced to make room', short: 'PADS', shape: { kind: 'capsule', a: v3(N.x - 40, N.y + 40, 60), b: v3(N.x - 40, N.y + 60, 250), r: 92 } },
-    { id: 'ko.padsL', label: 'the shoulder pads — never displaced to make room', short: 'PADS', shape: { kind: 'capsule', a: v3(N.x - 40, N.y + 40, -60), b: v3(N.x - 40, N.y + 60, -250), r: 92 } },
+    { id: 'ko.helmet', label: 'the helmet — not drilled, altered or moved for a mic without the team’s approval', short: 'HELMET', shape: { kind: 'capsule', a: HEAD_C, b: HEAD_C, r: HEAD_R + 34 } },
+    { id: 'ko.padsR', label: 'the shoulder pads — not displaced to make room without the team’s approval', short: 'PADS', shape: { kind: 'capsule', a: v3(N.x - 40, N.y + 40, 60), b: v3(N.x - 40, N.y + 60, 250), r: 92 } },
+    { id: 'ko.padsL', label: 'the shoulder pads — not displaced to make room without the team’s approval', short: 'PADS', shape: { kind: 'capsule', a: v3(N.x - 40, N.y + 40, -60), b: v3(N.x - 40, N.y + 60, -250), r: 92 } },
     { id: 'ko.shins', label: 'the shin pads and the contact zones of the legs', short: 'SHIN PADS', shape: { kind: 'box', min: v3(N.x - 40, N.y + 1000, -170), max: v3(N.x + 150, FLOOR_Y - 90, 170) } },
   ];
 }

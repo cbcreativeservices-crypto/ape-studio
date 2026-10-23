@@ -41,7 +41,7 @@ export const FREE_REED_MIC_TYPES = {
     address: 'end',
     patterns: [{ id: 'hypercardioid', label: 'hypercardioid', prov: { kind: 'sourced', src: 'AKG-416', quote: 'The C 416III is a miniature hypercardioid condenser microphone' } }],
     body: { length: placeholder(25, 'the miniature capsule’s length'), radius: placeholder(5, 'the miniature capsule’s radius') },
-    power: 'phantom power (through its own adapter or bodypack)',
+    power: 'phantom power through its own adapter, or power from a wireless pack',
     mount: 'clip',
     clip: { reach: placeholder(150, 'the gooseneck’s reach from its mount to the capsule') },
     examples: [{ model: 'AKG C 416III', fact: 'miniature hypercardioid condenser; mounted on the bass side, aimed at a sound hole', src: 'AKG-416' }],

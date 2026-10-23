@@ -65,7 +65,7 @@ function PageDirectional({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>THE RULE THAT TRAVELS</Eyebrow>
         <Body>
           On most bays the top row is outputs (a tap) and the bottom row is inputs (the break) — but some bays are wired
-          inputs-on-top. What travels: on a half-normal pair the INPUT jack breaks and the output jack taps. Never treat the
+          inputs-on-top. The rule that holds: on a well-wired half-normal pair, the INPUT jack breaks and the output jack taps. Never treat the
           top/bottom shortcut as electrical law: on an unfamiliar bay, VERIFY the configuration (label, manual, or a quick
           detective test like page twelve) before a session depends on it.
         </Body>

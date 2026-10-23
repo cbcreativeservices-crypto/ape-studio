@@ -254,11 +254,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club studies show averages around 96 dBA, with busy peak hours at 100–105 dBA and C-weighted levels near 112–122 dBC; a C-minus-A gap above about 20 dB is a sign of too much sub. UK guidance tops out near 107 dBA for audiences with a 140 dBC peak, but well-run clubs aim lower: one London venue starts near 95 dBA and peaks at 102–103 dBA with live meters in view of the DJ, and some booths post a 100 dB ceiling. Clarity sells volume: keep the DJ mixer in the green, because red lights only add distortion, and a distorting rig clears a floor. Watch booth monitor levels too — loud booths push DJs to overdrive the mains. At 100 dBA, safe exposure is about 15 minutes, so offer earplugs and wear your own."
+      "text": "Club studies show averages around 96 dBA, with busy peak hours at 100–105 dBA and C-weighted levels near 112–122 dBC; a C-minus-A gap above about 20 dB is a sign of too much sub. UK guidance tops out near 107 dBA for audiences with a 140 dBC peak, but well-run clubs aim lower: one London venue starts near 95 dBA and peaks at 102–103 dBA with live meters in view of the DJ, and some booths post a 100 dB ceiling. Clarity sells volume: keep the DJ mixer in the green, because red lights only add distortion, and a distorting rig clears a floor. Watch booth monitor levels too — loud booths push DJs to overdrive the mains. NIOSH advises no more than about 15 minutes a day at 100 dBA, so offer earplugs and wear your own."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club-label masters often reach −7 to −6 LUFS at the drop (Toolroom- and Dirtybird-style tech house), while deep house sits around −10 to −8. Aim for true peak at or below −1 dBTP (−2 dBTP when mastering louder than −14 LUFS), even though many store releases clip above 0. Most streaming services normalize to −14 LUFS, so extra loudness buys nothing there. A PLR of 7–9 dB keeps the kick punchy (at −2 dBTP that means a master at about −9 LUFS-I or quieter)."
+      "text": "Club-label masters often reach −7 to −6 LUFS at the drop (Toolroom- and Dirtybird-style tech house), while deep house sits around −10 to −8. Aim for true peak at or below −1 dBTP (−2 dBTP when mastering louder than −14 LUFS), even though many store releases clip above 0. Most streaming services normalize to −14 LUFS, so extra loudness buys nothing there. A PLR of 7–9 dB keeps the kick punchy; at −2 dBTP that means about −9 LUFS-I or quieter, so the loud end of the club range trades some punch for level."
     }
   ],
   "liveStudio": {
@@ -296,7 +296,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "96–103 dBA Leq, venue caps",
-        "studio": "−9 to −6 LUFS-I, −2 dBTP"
+        "studio": "Often −9 to −6 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],
     "notes": []

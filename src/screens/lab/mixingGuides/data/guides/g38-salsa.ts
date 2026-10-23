@@ -27,7 +27,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "About 160–220 BPM counted in quarter notes (felt in cut time, roughly 80–110); romántica (smooth romantic salsa) sits at the slower end, descargas (jam sessions) and Cali-style tunes push past 220",
     "ensemble": "10–16 piece orquesta (dance orchestra): piano, baby bass, timbales (two metal-shelled drums with cymbal and cowbells), congas, bongó (small pair of hand drums, doubling campana, the hand-held cowbell), 2–3 trumpets, 2–3 trombones (sometimes sax), lead singer (sonero) plus 2–4 coro (vocal chorus) singers",
     "priority": "The rhythm-section lock (piano montuno (the piano's repeating syncopated pattern), bass tumbao (the bass's repeating rhythm pattern), congas, bells) with the sonero (lead improvising singer) and coro (vocal chorus) clearly on top",
-    "liveSpl": "94–100 dBA Leq (LAeq-15 min) in dance halls; 98–102 dBA at festivals and arenas; about 110–118 dBC",
+    "liveSpl": "94–100 dBA Leq (LAeq-15 min) in dance halls; 98–102 dBA at festivals and arenas; about 108–115 dBC LCeq",
     "studioLoudness": "Modern masters commonly −10 to −8 LUFS-I (classic Fania reissues around −13 to −10); streaming normalizes to about −14"
   },
   "purpose": [
@@ -290,7 +290,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Salsa clubs and dance halls typically run 94–100 dBA LAeq-15 at FOH, festivals and arenas 98–102 dBA, with C-weighted levels around 110–118 dBC. Because there is usually no kick and the low end is bass, piano and tumba (the lowest conga), sub energy is moderate; a C-minus-A gap of more than about 15–18 dB suggests too much sub for this style, and a gap of 20 dB or more is a hearing-risk flag. Hard-floored halls get harsh fast at 2–4 kHz. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes, so long dance nights favor the lower end of the range."
+      "text": "Salsa clubs and dance halls typically run 94–100 dBA LAeq-15 at FOH, festivals and arenas 98–102 dBA, with C-weighted LCeq around 108–115 dBC. Because there is usually no kick and the low end is bass, piano and tumba (the lowest conga), sub energy is moderate; a C-minus-A gap of more than about 15–18 dB suggests too much sub for this style. Hard-floored halls get harsh fast at 2–4 kHz. NIOSH advises no more than about 15 minutes a day at 100 dBA, so long dance nights favor the lower end of the range."
     },
     {
       "label": "Studio / streaming:",

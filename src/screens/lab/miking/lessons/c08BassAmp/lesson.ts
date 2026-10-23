@@ -301,7 +301,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The room adds something the close mic and DI lack',
     explain: 'Try it only once the close mic and the DI are stable, and only if the room helps. It arrives later: check the low end in mono.',
     why: {
-      'A farther mic reaches lower notes than a close one does': 'Farther back, a directional mic usually hears LESS low end.',
+      'A farther mic reaches lower notes than a close one does': 'Distance does not extend a mic’s low range. A directional mic also loses its close-up bass boost as it backs off.',
       'It replaces the need for a DI on the session': 'It is another perspective, not a replacement; record the paths separately.',
     },
   },
@@ -635,7 +635,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'No — a speaker output never feeds either',
     explain: 'Speaker outputs carry high power: to a speaker, by a speaker cable, only.',
     why: {
-      'Yes, through the DI’s pad': 'A DI’s pad is not made for speaker-level power.',
+      'Yes, through the DI’s pad': 'An ordinary DI’s pad is not made for speaker-level power.',
       'Yes, if the head is turned all the way down first': 'A lower level does not make the connection safe.',
     },
   },
@@ -646,7 +646,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about standing by a loud bass rig all soundcheck?',
     options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the rig stays below the level of the mic’s rating', 'It is safe as long as the mic is closer than you'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — measured where the person listens.',
     why: {
       'It is safe for a while, as long as the rig stays below the level of the mic’s rating': 'A mic rating is not a hearing limit.',
       'It is safe as long as the mic is closer than you': 'Where the mic sits says nothing about your ears.',

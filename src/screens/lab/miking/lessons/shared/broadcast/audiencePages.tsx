@@ -74,7 +74,7 @@ const LAYERS: Readonly<Record<Layer, { label: string; short: string; words: Reco
     label: 'Seats, aisles and exits',
     short: 'SEATS',
     words: {
-      studio: 'One raked section, an aisle down each side, an exit at each back corner. A stand, a cable or a mic never goes in an aisle or an exit.',
+      studio: 'One raked section, an aisle down each side, an exit at each back corner. A stand or a mic stays out of every aisle and exit. A cable crosses an aisle only where the venue approves, under a ramp or taped flat, and never blocks an exit.',
       event: 'Three sections round the stage, aisles between them, a cross-aisle and exits at the back. One mic cannot stand for every section.',
     },
   },
@@ -98,7 +98,7 @@ const LAYERS: Readonly<Record<Layer, { label: string; short: string; words: Reco
     label: 'The approved places',
     short: 'PLACES',
     words: {
-      studio: 'The rigging bar above the front rows (rigged by qualified crew) and the stage’s front corners: where a crowd mic may hang or stand.',
+      studio: 'The rigging bar above the front rows (rigged by a qualified rigger) and the stage’s front corners: where a crowd mic may hang or stand.',
       event: 'A rail at the front of each section, and a truss over the hall — anything over people is flown only by a qualified rigger with approved hardware.',
     },
   },

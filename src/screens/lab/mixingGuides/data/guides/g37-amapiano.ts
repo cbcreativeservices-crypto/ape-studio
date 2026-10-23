@@ -17,7 +17,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "108–115 BPM (112 is a common default); “private school” piano sits at the slower end",
     "ensemble": "DJ/producer plus 1–4 vocalists and hype MCs; often a featured sax, keys or guitar player; dancers on stage; bigger shows add a band or orchestra",
     "priority": "The log drum: weighty in the sub, woody and pitched in the mids, landing between the kicks without masking them",
-    "liveSpl": "98–103 dBA Leq (LAeq-15 min), roughly 118–128 dBC; sub-heavy, so watch the C-minus-A gap",
+    "liveSpl": "98–103 dBA Leq (LAeq-15 min), roughly 115–122 dBC LCeq; sub-heavy, so watch the C-minus-A gap",
     "studioLoudness": "Masters commonly −9 to −6 LUFS-I (soulful/private school around −10 to −8); streaming normalizes to about −14"
   },
   "purpose": [
@@ -268,11 +268,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club, tavern and festival amapiano typically runs 98–103 dBA LAeq-15 at FOH, peaking at 108–112 dBA on log drum returns. Being sub-led, 118–128 dBC is common; a C-minus-A gap above 20 dB at already-high A levels means the sub is too hot. Cardioid sub arrays keep the log drum tight and off the stage and neighbors. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes, and amapiano nights run for hours — offer earplugs and check venue or municipal limits."
+      "text": "Club, tavern and festival amapiano typically runs 98–103 dBA LAeq-15 at FOH, peaking at 108–112 dBA on log drum returns. Being sub-led, C-weighted LCeq of about 115–122 dBC is common, close to 20 dB above the A level; a C-minus-A gap above 20 dB at already-high A levels means the sub is too hot. Cardioid sub arrays keep the log drum tight and off the stage and neighbors. NIOSH advises no more than about 15 minutes a day at 100 dBA, and amapiano nights run for hours — offer earplugs and check venue or municipal limits."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Club-oriented masters typically land at −9 to −6 LUFS-I, soulful releases nearer −10 to −8. True peak −1 dBTP, or −2 dBTP if louder than −14 LUFS (common streaming guidance). Services normalize to about −14 LUFS, so extra loudness buys nothing and can flatten the log drum’s bounce. Aim for a PLR of about 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP) and check phones and small wireless speakers, where the log drum must still read through its harmonics."
+      "text": "Club-oriented masters typically land at −9 to −6 LUFS-I, soulful releases nearer −10 to −8. True peak −1 dBTP, or −2 dBTP if louder than −14 LUFS (common streaming guidance). Services normalize to about −14 LUFS, so extra loudness buys nothing and can flatten the log drum’s bounce. For more bounce than the club norm, aim for a PLR of about 8–10 dB (about −10 to −12 LUFS-I at −2 dBTP) and check phones and small wireless speakers, where the log drum must still read through its harmonics."
     }
   ],
   "liveStudio": {
@@ -309,8 +309,8 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "98–103 dBA Leq, 118–128 dBC",
-        "studio": "−9 to −6 LUFS-I, −2 dBTP"
+        "live": "98–103 dBA Leq, 115–122 dBC LCeq",
+        "studio": "Often −9 to −6 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],
     "notes": []

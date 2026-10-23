@@ -732,7 +732,7 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
             <Point title="WORK WITH THE AMP AS IT IS">The amp’s settings and the speaker are the player’s sound. Mic the cabinet they bring; leave the tone controls to them.</Point>
             <Point title="A ROTARY CABINET STAYS CLOSED">Plan the stands while it is off. Keep every mic, stand and cable outside, clear of the openings, the vents, the power cord, the organ pedals and the walkways. Never push anything through a louver; never touch connector pins; leave the organ’s cable and any switch on the cabinet alone. Make sure the cabinet stands steady.</Point>
           </Card>
-          <Note tone="warn">Protect your hearing at soundcheck. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens. It has nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
+          <Note tone="warn">Protect your hearing at soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens. They have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />
         </>
       ),
@@ -1314,7 +1314,7 @@ export function SpkTwoMic({ lesson, answers, onAnswered, onInteractive, interact
           <NowLine text={cabNow(rig, ['A', 'B'])} />
           <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>{wellW > 0 ? <PairComb w={wellW} h={150} dtMs={dt} gA={gA} gB={gB} sEff={sEff} label={combLabel} /> : null}</View>
           <Body>{B.polarity === 1 ? 'With the rear switch at +, the two arrive OPPOSED: the back of the cone is the same motion, inverted. The lows cancel most — thin.' : 'With the rear switch at −, the inversion is undone: the two arrive in step, and only the delay is left — its notches sit higher up.'}</Body>
-          {predicted != null && (flips.toInv || flips.toNorm) ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: it moves the notches, it does not remove the delay.`}</Note> : null}
+          {predicted != null && (flips.toInv || flips.toNorm) ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: the notches and peaks swap places, but the delay stays.`}</Note> : null}
           <Note tone="warn">Each mic really hears its own side of the cone AND the room, so this graph shows only the shared part, not what the pair will sound like. Judge it by ear, in mono, at matched levels.</Note>
         </>
       ),

@@ -122,7 +122,7 @@ const F12Before = makeBeforePage({
   ],
   safety: [
     'Overhead power lines: keep any pole, mast or stand at least 3 m (10 ft) away from them — farther if you are unsure, and if you cannot be sure, do not raise it.',
-    'Lightning: when thunder is heard or the sky looks threatening, get inside a safe place immediately, and wait 30 minutes after the last lightning or thunder before going back out.',
+    'Lightning: if you hear thunder or the sky looks bad, get into a solid building or a hard-topped car at once — not under a tree, a tent or an open shelter. Wait 30 minutes after the last lightning or thunder before you go back out.',
   ],
 });
 

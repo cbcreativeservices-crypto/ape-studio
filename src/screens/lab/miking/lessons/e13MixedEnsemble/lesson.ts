@@ -46,7 +46,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Main array and a spot',
     goal: 'The main pair and the cello spot: see how much earlier the spot hears the cello, what polarity changes and what it does not, and judge the sum in mono.',
-    credit: { scenarios: ['mix.first', 'mix.two.1', 'mix.two.2'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
+    credit: { scenarios: ['mix.first', 'mix.two.1', 'mix.two.2'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
     takeaway: 'The relevant distance is the difference in paths from the player to each mic, not the distance between the mics. Polarity changes the sign, never the time. Try level, placement or angle before a delay; judge any delay by ear.',
   },
   troubleshoot: {
@@ -354,7 +354,7 @@ const symptoms: Symptom[] = [
     options: ['Lower gain; revise the geometry', 'Notch the ring and push the level', 'Send the main pair to the PA too'],
     correct: 'Lower gain; revise the geometry',
     explain: 'Lower the gain at once; then aim the mics with the loudspeakers in mind and close the mics that are not needed.',
-    why: { 'Notch the ring and push the level': 'Never work at the edge of feedback.', 'Send the main pair to the PA too': 'A distant pair in the PA makes ringing likelier.' },
+    why: { 'Notch the ring and push the level': 'Keep a safe margin below feedback; lower the gain first.', 'Send the main pair to the PA too': 'A distant pair in the PA makes ringing likelier.' },
   },
 ];
 
@@ -393,7 +393,7 @@ const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern rejects most of the room behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from 1.5 m to 3 m in front. What changes most?', options: ['More blend and more room', 'Only the level', 'The front players dominate more'], after: 'Farther back, the distances to the front and back players even out: the NEAR / FAR readout shrinks, and the room comes up. Compare at matched level.' },
   context: { prompt: 'The monitor sits in front of the cello spot, a little to the side. Can its rejection reach it?', options: ['Yes — turn the mic’s back toward it', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'A main pair and a cello spot. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
+  twoMic: { prompt: 'A main pair and a cello spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -547,7 +547,7 @@ export const E13_LESSON: EnsembleLesson = {
       { title: 'DEFINE THE PERSPECTIVE', text: 'Blended and spacious, closer and more articulate, dry and individually controlled, or just enough reinforcement — in plain words, before choosing mics.' },
       { title: 'BALANCE AT THE SOURCE', text: 'Resolve avoidable imbalance with the musicians first: orientation, seating depth, reflective walls, the piano lid — with their approval.' },
     ],
-    safety: 'Stable stands, protected cable routes and the players’ movement come first. A tree needs safe support for its span and reach: manufacturer-rated hardware and qualified venue personnel for anything suspended — never ordinary cable as suspension. Protect your hearing; avoid uncontrolled feedback.',
+    safety: 'Stable stands, safe cable routes and the players’ movement come first. A tree needs safe support for its span and reach: rated hardware, and a qualified rigger for anything hung up. Ordinary cable is not a suspension line. Protect your hearing; avoid uncontrolled feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a chamber group: one main pair in front and a little above — a place to start and compare, not a rule.',
       clearance: 'The stand in front of the group, clear of the players’ sightlines, bows and slides, and of the audience’s way; its cable dressed flat and out of the walkways.',

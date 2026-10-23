@@ -899,7 +899,7 @@ export function usePlacementStep({ p, scene, zones, starts, box, ranges, arc: ar
         {prediction ? <PredictCard p={prediction} value={predicted} onPick={setPredicted} /> : null}
         <Landing looking={`${start.title} · from above`} prompt="MOVE the mic (ALONG, OUT · IN or HEIGHT) and AIM it, then let go to rest it. Rest it in two different blue starting points; TARGET chooses what the readouts measure to." />
         <NowLine text={nowWords} />
-        {refused ? <Note tone="warn">{`It would stand in ${refused.label}. ${refuseWords ?? 'Never into play, keep-clear space or a route — and only on an approved place.'}`}</Note> : null}
+        {refused ? <Note tone="warn">{`It would stand in ${refused.label}. ${refuseWords ?? 'Only on an approved place: not in play, keep-clear space or a route, unless the event approves that one spot.'}`}</Note> : null}
         {outOfArc && arc ? <Note tone="warn">Outside the approved turn arc: stop tracking and hand off to a fixed mic or the ambience — never step or lean out of the operating box.</Note> : null}
         {zone ? (
           <Card>
@@ -1157,7 +1157,7 @@ export function useOverlapStep({ scene, a, b, box, onInteractive, done, predicti
   const gA = 1 / Math.max(0.5, o.dA);
   const gB = 1 / Math.max(0.5, o.dB);
   const lvl = rangeDb(o.dA, o.dB);
-  const words = `The source ${fmtM1(o.dA)} from mic A and ${fmtM1(o.dB)} from mic B: B hears it ${Math.abs(o.dtMs).toFixed(1)} ms ${o.dtMs >= 0 ? 'later' : 'earlier'}; the first notch of the sum near ${o.notches[0] ? `${Math.round(o.notches[0])} Hz` : 'none'}; polarity ${pol === 1 ? 'normal' : 'flipped'}.`;
+  const words = `The source ${fmtM1(o.dA)} from mic A and ${fmtM1(o.dB)} from mic B: mic B hears it ${Math.abs(o.dtMs).toFixed(1)} ms ${o.dtMs >= 0 ? 'later' : 'earlier'}; the first notch of the sum near ${o.notches[0] ? `${Math.round(o.notches[0])} Hz` : 'none'}; polarity ${pol === 1 ? 'normal' : 'flipped'}.`;
   return {
     key: 'overlap',
     title: 'Two mics, one moving source',
@@ -1181,8 +1181,8 @@ export function useOverlapStep({ scene, a, b, box, onInteractive, done, predicti
       bezel: [
         { k: 'Δt', v: `${Math.abs(o.dtMs).toFixed(1)} ms`, flex: 1 },
         { k: '1ST NOTCH', v: o.notches[0] ? `${Math.round(o.notches[0])} Hz` : '—', flex: 1.1 },
-        { k: 'B LEVEL', v: `${lvl > 0 ? '−' : '+'}${Math.abs(lvl).toFixed(1)} dB`, flex: 1 },
-        { k: 'B POL', v: pol === 1 ? 'NORMAL' : 'FLIPPED', tint: pol === -1 ? AMBER : undefined, flex: 1 },
+        { k: 'MIC B LEVEL', v: `${lvl > 0 ? '−' : '+'}${Math.abs(lvl).toFixed(1)} dB`, flex: 1 },
+        { k: 'MIC B POL.', v: pol === 1 ? 'NORMAL' : 'FLIPPED', tint: pol === -1 ? AMBER : undefined, flex: 1 },
       ],
       params: [
         {
@@ -1200,7 +1200,7 @@ export function useOverlapStep({ scene, a, b, box, onInteractive, done, predicti
         {
           kind: 'toggle',
           id: 'pol',
-          label: 'B POLARITY',
+          label: 'MIC B POLARITY',
           value: pol === -1,
           onToggle: () => {
             setPol((p0) => (p0 === 1 ? -1 : 1));
@@ -1216,10 +1216,10 @@ export function useOverlapStep({ scene, a, b, box, onInteractive, done, predicti
         <Landing looking="Two mics on one source · from above" prompt={intro} />
         <NowLine text={words} />
         <Card>
-          <Point title="THE DELAY">{`B hears the source ${Math.abs(o.dtMs).toFixed(1)} ms ${o.dtMs >= 0 ? 'after' : 'before'} A — from the drawing’s distances and the speed of sound. Walk the source: the delay changes, so a delay set for one point is wrong at the next.`}</Point>
-          <Point title="POLARITY">{pol === 1 ? 'Normal. Flip B’s polarity and watch what changes: the notches move — the delay does not.' : 'Flipped: the notches moved, the delay stayed exactly the same. Polarity flips the sign, never the time.'}</Point>
+          <Point title="THE DELAY">{`Mic B hears the source ${Math.abs(o.dtMs).toFixed(1)} ms ${o.dtMs >= 0 ? 'after' : 'before'} mic A — from the drawing’s distances and the speed of sound. Walk the source: the delay changes, so a delay set for one point is wrong at the next.`}</Point>
+          <Point title="POLARITY">{pol === 1 ? 'Normal. Flip mic B’s polarity and watch what changes: the notches and peaks swap places — the delay does not change.' : 'Flipped: the notches and peaks swapped places, and the delay stayed exactly the same. Polarity flips the sign, never the time.'}</Point>
         </Card>
-        {flipped.a && flipped.b && walked ? <Note tone="ok">{`Polarity is not time alignment. With two open action mics, pick a dominant mic per zone or hand off smoothly — and check the sum in mono. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : <Body>Flip B’s polarity both ways AND walk the source.</Body>}
+        {flipped.a && flipped.b && walked ? <Note tone="ok">{`Polarity is not time alignment. With two open action mics, pick a dominant mic per zone or hand off smoothly — and check the sum in mono. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : <Body>Flip mic B’s polarity both ways AND walk the source.</Body>}
       </>
     ),
   };

@@ -250,7 +250,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Large-club dancefloors commonly sit at 98–103 dBA LAeq with 115–125 dBC; a C-minus-A gap above about 20 dB means the sub is doing most of the work, which suits techno up to a point. Nightclubs commonly average about 96 dBA, with energy concentrated at 1–4 kHz, where hearing is most vulnerable. German rules set 99 dBA LAeq-30 at the loudest audience position and 135 dBC peak. Small venues may use cut-off limiters set at 85–100 dB, so check before the night. Keep booth monitors low; they leak into the room and push DJs to redline. Nights of 6–10 hours make cumulative dose the real risk: offer earplugs and run quieter at opening and closing."
+      "text": "Large-club dancefloors commonly sit at 98–103 dBA LAeq with 115–125 dBC; a C-minus-A gap above about 20 dB means the sub is doing most of the work, which suits techno up to a point. Nightclubs commonly average about 96 dBA. Hearing is most easily harmed at about 1–4 kHz, so harsh upper mids cost the most. German rules set 99 dBA LAeq-30 at the loudest audience position and 135 dBC peak. Small venues may use cut-off limiters set at 85–100 dB, so check before the night. Keep booth monitors low; they leak into the room and push DJs to redline. Nights of 6–10 hours make cumulative dose the real risk: offer earplugs and run quieter at opening and closing."
     },
     {
       "label": "Studio / streaming:",
@@ -286,13 +286,13 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Duration",
-        "live": "2–10 hour nights; ear fatigue and harshness creep up over time",
+        "live": "Sets of 2–8 hours in nights of up to 10; ear fatigue and harshness creep up over time",
         "studio": "6–8 minute tracks built for mixing, with DJ-friendly intro/outro beats"
       },
       {
         "area": "Loudness",
         "live": "98–103 dBA LAeq, legal caps such as 99 dBA LAeq-30",
-        "studio": "−9 to −6 LUFS-I, −1 dBTP (−2 for streaming); vinyl and streaming versions may differ"
+        "studio": "Often −9 to −6 LUFS-I; aim near −8 or quieter at −1 dBTP (−2 for streaming); vinyl and streaming versions may differ"
       }
     ],
     "notes": []

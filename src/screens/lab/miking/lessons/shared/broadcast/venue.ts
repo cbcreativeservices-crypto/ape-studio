@@ -15,7 +15,7 @@
  *             a stage, an aisle down each side, an exit at each back corner,
  *             a PA loudspeaker at each front corner of the stage, a camera on
  *             a riser at the back; the approved places — a rigging bar above
- *             the front rows (rigged by qualified crew) and the stage's front
+ *             the front rows (rigged by a qualified rigger) and the stage's front
  *             corners.
  *   EVENT     a larger multi-section event: three sections fanned round a
  *             wider stage, aisles between them, exits, PA clusters high at the
@@ -91,7 +91,7 @@ export const STUDIO_SCENE: VenueScene = {
     { id: 'exitR', label: 'the exit at the back right', short: 'EXIT', pts: [p2(5.2, 8.6), p2(6.4, 9.6)], kind: 'exit' },
   ],
   footprints: [
-    { id: 'bar', label: 'the rigging bar above the front rows (qualified crew)', short: 'RIGGING BAR', rect: STUDIO.bar },
+    { id: 'bar', label: 'the rigging bar above the front rows (qualified rigger)', short: 'RIGGING BAR', rect: STUDIO.bar },
     { id: 'cornerL', label: 'the stage’s front corner on the left', short: 'STAGE CORNER', rect: STUDIO.cornerL },
     { id: 'cornerR', label: 'the stage’s front corner on the right', short: 'STAGE CORNER', rect: STUDIO.cornerR },
   ],

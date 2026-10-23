@@ -57,7 +57,7 @@ export const CSN_COPY: LessonCopy = {
     leftHanded: 'Percussion sections are laid out differently from one orchestra to the next — check the real stage plan before you place anything.',
     stageA11y: 'The orchestra on an amplified stage, from above: the percussion at the back, the conductor and the audience at the front, PA stacks at the front corners, and two floor monitors near the percussion.',
     studioA11y: 'The orchestra recorded in a hall, from above: the main pair of microphones over the conductor, the hall’s walls around the stage, no monitors.',
-    stageIdle: 'Two floor monitors: one downstage of the percussion, facing back toward it, and the section’s own monitor beside the players. The PA faces the audience.',
+    stageIdle: 'Two floor monitors: one downstage of the percussion, facing back toward it, and the section’s own monitor behind the players. The PA faces the audience.',
     studioIdle: 'No monitors. The main pair over the conductor hears the whole orchestra — the concert snare included — and the hall is part of the sound.',
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'Have the percussionist play the real passage: the softest strokes, the buzz roll, the accents, any rim strokes and every snare on/off change. Ask what the part should sound like — a sustained roll, a crisp figure, or both.' },
@@ -127,7 +127,7 @@ export const CSN_COPY: LessonCopy = {
         { title: 'HOW MANY MICS', text: 'Each extra open mic adds spill and another arrival time. A bottom mic earns its channel only if it adds something the top mic and the main pickup do not.' },
         { title: 'THE IMAGE', text: 'A spot raised too far pulls the snare to the front of the orchestra. Bring it up under the main pickup and check where the drum seems to sit.' },
       ],
-      body: 'On an amplified stage the monitors stay where the players need them: turn the mic or choose its pattern so that a null faces a loud unwanted source. The section’s own monitor beside the players sits in front of a mic aimed at the drum, where no pattern rejects it.',
+      body: 'On an amplified stage the monitors stay where the players need them: turn the mic or choose its pattern so that a null faces a loud unwanted source. The section’s own monitor sits behind the players, in front of a mic aimed at the drum, where no pattern rejects it.',
       warn: 'No mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Work it out with the system operator, and avoid uncontrolled feedback.',
     },
   },

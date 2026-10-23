@@ -330,7 +330,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Instrument dynamic about 20 cm from the face, between the roses', ok: true, power: 'none', feedback: 'A suggested closer start; it needs no phantom. Watch the proximity bass.' },
       { id: 'c', label: 'Small condenser on the upper face, cardioid', ok: false, power: 'phantom', feedback: 'A fair position — but this input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'Small condenser with an omni capsule, farther back in the room', ok: false, power: 'phantom', feedback: 'A nice idea in this room — but this condenser needs phantom power, which this input does not have.' },
-      { id: 'e', label: 'Instrument dynamic resting on the face under the strings', ok: false, power: 'none', feedback: 'Never rest a mic on the instrument: it damps the face, rattles and can mark the finish.' },
+      { id: 'e', label: 'Instrument dynamic resting on the face under the strings', ok: false, power: 'none', feedback: 'Do not rest a mic on the oud: it damps the face, rattles and can mark the finish. Use a stand, clear of the player.' },
     ],
     reasons: [DOC_REASON, clearReason(CLEAR), POWER_REASON, { id: 'r.room', label: 'I will also try farther back, since the room is pleasing', role: 'optional', feedback: 'A fair studio reason: a good room can add to the oud.' }, brandReason(OUD_N), LOUD_REASON],
     explain: 'Two positions pass. What passes is the reasoning: a sensible starting point, clear of the player, powered by what this input can supply.',

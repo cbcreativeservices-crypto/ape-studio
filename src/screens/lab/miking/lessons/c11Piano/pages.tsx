@@ -156,7 +156,7 @@ const SETTING = makeStagePage({
   nearBadge: 'From above · a typical layout · the pianist at the left, the treble side toward the bottom',
   audience: pianoAudience,
   nearLooking: 'Plan · the piano and the pianist from above',
-  hearing: 'Protect your hearing during soundcheck and repeated loud passages: close to the hammers a piano can pass 130 dB. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens — it has nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.',
+  hearing: 'Protect your hearing during soundcheck and repeated loud passages: close to the hammers a piano can pass 130 dB. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — it has nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.',
 });
 
 export const PIANO_ART: LessonArt = {

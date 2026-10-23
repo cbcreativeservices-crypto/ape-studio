@@ -193,7 +193,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "2:1 (VCA bus-style)",
         "attackRelease": "10–30 ms / auto",
         "gainReduction": "1–3 dB (up to 4)",
-        "notes": "HPF the sidechain at 30–60 Hz so the kick doesn’t drive it"
+        "notes": "HPF the sidechain at about 60–120 Hz so the kick and sub don’t drive it"
       }
     ],
     "notes": [
@@ -258,11 +258,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "A typical arena or stadium pop show runs about 95–100 dBA LAeq over 15 minutes at FOH, and some shows peak higher when the crowd sings along. A packed, singing house can push the level several dB above the soundcheck level. Low end usually measures 105–115 dBC LCeq. Keep the sub energy controlled so the vocal stays clear. A widely used safe-listening limit for venues is 100 dBA LAeq-15 min, and local rules differ in averaging time (for example, 1 minute vs. 60 minutes), so learn the local rule before the show. Offer earplugs, keep the loudest seats away from subs, and remember that many pop audiences include children and teenagers."
+      "text": "A typical arena or stadium pop show runs about 95–100 dBA LAeq over 15 minutes at FOH, and some shows peak higher when the crowd sings along. A packed, singing house can push the level several dB above the soundcheck level. Low end usually measures 105–115 dBC LCeq. Keep the sub energy controlled so the vocal stays clear. The WHO safe-listening limit for venues is 100 dBA LAeq-15 min, and local rules differ in averaging time (for example, 1 minute vs. 60 minutes), so learn the local rule before the show. Offer earplugs, keep the loudest seats away from subs, and remember that many pop audiences include children and teenagers."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Commercial pop masters usually land around −9 to −7 LUFS-I (chart pop ranges from about −10.7 to −6 LUFS). Aim for a true peak of −1 dBTP, or −2 dBTP if the master is louder than −14 LUFS, to avoid codec distortion. Most streaming services normalize to about −14 LUFS, some to −16, so very loud masters are turned down and only gain density, not extra volume. A PLR (peak-to-loudness ratio) of around 7–9 dB is typical (at −2 dBTP that means a master at about −9 LUFS-I or quieter). Ballads can sit at −11 to −10 LUFS."
+      "text": "Commercial pop masters usually land around −9 to −7 LUFS-I (chart pop ranges from about −10.7 to −6 LUFS). Aim for a true peak of −1 dBTP, or −2 dBTP if the master is louder than −14 LUFS, to avoid codec distortion. Most streaming services normalize to about −14 LUFS, some to −16, so very loud masters are turned down and only gain density, not extra volume. PLR (peak-to-loudness ratio) is the true peak minus the loudness: at −2 dBTP, a −9 LUFS-I master has a PLR of 7 dB, and a −7 LUFS-I master only 5 dB. For more punch, aim for 7–9 dB, which means about −9 LUFS-I or quieter. Ballads can sit at −11 to −10 LUFS."
     }
   ],
   "liveStudio": {
@@ -323,7 +323,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Sidechain the bus compressor.",
-      "text": "HPF at 30–60 Hz so the kick doesn’t pump the whole mix.",
+      "text": "HPF the sidechain at about 60–120 Hz so the kick doesn’t pump the whole mix.",
       "bullet": true
     },
     {

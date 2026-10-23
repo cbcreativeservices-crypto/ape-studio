@@ -39,7 +39,7 @@ export const C05C_COPY = stringsCopy({
     studioIdle: 'No monitors on the floor. The room is part of the picture now; a broad position can show a small body well.',
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'Fingertips or a pick? Strummed rhythm or a picked melody? Do they sing, use a strap, move? Which size — soprano, concert, tenor or baritone? Hear it unamplified, from the front. Sizes and tunings differ: do not assume they behave alike.' },
-      { title: 'NOTHING ON OR IN IT', text: 'Never press a mic against the ukulele, insert one into the sound hole, or attach a clip to an unsuitable finish. Check the body’s real depth against a clip’s range, and ask the owner.' },
+      { title: 'NOTHING ON OR IN IT', text: 'Do not press a mic against the ukulele, push one into the sound hole, or attach a clip to an unsuitable finish. Only a mount made to go inside belongs there, with the owner’s OK. Check the body’s real depth against a clip’s range, and ask the owner.' },
     ],
   },
   workedZone: { soprano: 'upper.soprano' },

@@ -291,11 +291,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Halls, ballrooms and festival stages typically run 94–100 dBA LAeq-15 at FOH with peaks to 108–110 dBA; C-weighted levels around 110–120 dBC. Crowds span children to grandparents; 96–98 dBA is usually plenty. Sonidero (sound-system DJ) street systems lean on subs; a C-minus-A gap above 20 dB signals that low frequencies may be excessive. By common hearing-safety guidance, 100 dBA is safe for about 15 minutes, and every 3 dB more halves that; parties often run 4–6 hours, so offer earplugs and watch your own exposure."
+      "text": "Halls, ballrooms and festival stages typically run 94–100 dBA LAeq-15 at FOH with peaks to 108–110 dBA; C-weighted levels around 110–120 dBC. Crowds span children to grandparents; 96–98 dBA is usually plenty. Sonidero (sound-system DJ) street systems lean on subs; a C-minus-A gap above 20 dB signals that low frequencies may be excessive. NIOSH advises no more than about 15 minutes a day at 100 dBA, and every 3 dB more halves that; parties often run 4–6 hours, so offer earplugs and watch your own exposure."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Modern cumbia and tecnocumbia (keyboard-driven cumbia) masters land around −10 to −8 LUFS-I, with true peak at −1 dBTP (−2 dBTP for masters louder than −14). Most streaming services normalize to −14 LUFS, so very loud masters gain nothing. A PLR of 9–11 dB keeps the bass bounce and güiro (scraped gourd) transients alive (at −2 dBTP that means a master at about −11 LUFS-I or quieter). Vintage-style productions (Ondatrópica, chicha (Peruvian psychedelic cumbia) revival) sit happily at −12 to −11."
+      "text": "Modern cumbia and tecnocumbia (keyboard-driven cumbia) masters land around −10 to −8 LUFS-I, with true peak at −1 dBTP (−2 dBTP for masters louder than −14). Most streaming services normalize to −14 LUFS, so very loud masters gain nothing. At −2 dBTP those masters have a PLR of only 6–8 dB; a PLR of 9–11 dB, meaning about −11 to −13 LUFS-I, keeps the bass bounce and güiro (scraped gourd) transients more alive. Vintage-style productions (Ondatrópica, chicha (Peruvian psychedelic cumbia) revival) sit happily at −12 to −11."
     }
   ],
   "liveStudio": {

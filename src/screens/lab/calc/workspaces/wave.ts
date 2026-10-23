@@ -4,7 +4,7 @@
  * Consolidates spec calculators 1, 2, 3, 4 and 12 (owner inventory 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, snapWhole, speedOfSoundAir } from '../calcUnits';
+import { AIR_TEMP_FIELD, fmt, snapWhole, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -37,14 +37,15 @@ export const WS_WAVE: Workspace = {
     'domain of ISO 3382, not this teaching tool.',
   glossary: ['Frequency', 'Wavelength', 'Period', 'Sound Wave', 'Speed of sound', 'Standing wave'],
   fields: [
-    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '100', help: 'Cycles per second of the tone or band of interest.' },
-    { key: 't', name: 'PERIOD', quantity: 'time', defaultUnit: 'ms', placeholder: '10', help: 'Time for ONE complete cycle.' },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound in the classroom dry-air model.' },
-    { key: 'dist', name: 'DISTANCE', quantity: 'length', placeholder: '3.43', help: 'A physical distance — boundary gap, driver spacing, room dimension.' },
+    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', positive: 'FREQUENCY must be above 0 — a 0 Hz tone has no cycles, so it has no period or wavelength.', placeholder: '100', help: 'Cycles per second of the tone or band of interest.' },
+    { key: 't', name: 'PERIOD', quantity: 'time', defaultUnit: 'ms', positive: true, placeholder: '10', help: 'Time for ONE complete cycle.' },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound in the classroom dry-air model.' },
+    { key: 'dist', name: 'DISTANCE', quantity: 'length', positive: true, placeholder: '3.43', help: 'A physical distance — boundary gap, driver spacing, room dimension.' },
     {
       key: 'fKnown',
       name: 'FREQUENCY',
       quantity: 'frequency',
+      positive: 'FREQUENCY must be above 0 — at 0 Hz nothing cycles, so there are no cycles to count.',
       placeholder: '1000',
       help: 'The frequency whose cycles you are counting over the distance.',
     },

@@ -101,7 +101,7 @@ const VIEWS: { id: MembraneViewMode; label: string; short: string; blurb: string
   { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The nodal diameters and circles of the nearest mode — the lines a pinch of sand would gather on.' },
   { id: 'head3d', label: '3D head', short: '3D', blurb: 'Exaggerated head motion, strobed so you can see it (the real head moves at the drive frequency).' },
   { id: 'section', label: 'Cross-section', short: 'Slice', blurb: 'A slice through the head. Drag on the drum to move the slice.' },
-  { id: 'speaker', label: 'Loudspeaker', short: 'Cone', blurb: 'A cutaway of a driver playing this frequency, plus the cone seen from the front: piston, edge flexing, radial modes, breakup.' },
+  { id: 'speaker', label: 'Loudspeaker', short: 'Cone', blurb: 'A cutaway of a driver playing this frequency, plus the cone seen from the front: piston, edge flexing, circumferential (bell) modes, breakup.' },
 ];
 const HEAT_KEY = Array.from({ length: 9 }, (_, i) => heatColor(i / 8)) as [string, string, ...string[]];
 

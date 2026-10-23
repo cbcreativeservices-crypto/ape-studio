@@ -677,7 +677,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
               selectedId: patch,
               onSelect: (id) => setPatch(id as 'cab' | 'desk'),
               options: [
-                { id: 'cab', label: 'SPEAKER OUT → THE CABINET', blurb: 'By a speaker cable, as the amp’s manual says — the only place a speaker output goes.' },
+                { id: 'cab', label: 'SPEAKER OUT → THE CABINET', blurb: 'By a speaker cable, as the amp’s manual says — to a speaker, or to a load or DI made for speaker level.' },
                 { id: 'desk', label: 'SPEAKER OUT → A DESK INPUT', blurb: 'Shown so you can recognise it — never do it: a speaker output carries high power.' },
               ],
             },
@@ -773,7 +773,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
               <Point title="WORK WITH THE AMP AS IT IS">The amp’s settings and its speaker are the player’s sound. Keep them as set while you compare positions; mic the amp they bring.</Point>
               <Point title="ELECTRICAL SAFETY">Do not open a chassis, defeat a safety ground (the mains earth — a DI’s ground-lift switch, which lifts only the audio ground at its XLR, is a different, normal control: use it as its manual says), change speaker wiring or block an amp’s vents for a miking exercise. Follow the amp’s own manual for its speaker load and direct outputs. Stop for hum from damaged cable, a hot smell, smoke or any shock, and involve a qualified technician.</Point>
             </Card>
-            <Note tone="warn">Protect your hearing at soundcheck. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dBA above that — and below it is not a promise of safety. That is a limit for PEOPLE, measured where a person listens, and it has nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
+            <Note tone="warn">Protect your hearing at soundcheck. NIOSH advises no more than 85 dBA averaged over an 8-hour day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Staying below them is not a promise of safety. These are limits for PEOPLE, measured where a person listens, and they have nothing to do with a microphone’s maximum SPL rating. Keep levels and repetitions down, and use hearing protection.</Note>
             <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />
           </>
         ),
@@ -1214,7 +1214,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             ) : (
               <Body>{`The DI reaches the desk at once; the mic hears the speaker only after the sound crosses the air — about ${fmtMs(dt).replace('≈ ', '')} here. Every centimetre the mic moves back adds about 0.03 ms. Flipping the DI's polarity changes where the notches fall, not that delay.`}</Body>
             )}
-            {predicted != null && (flips.toInv || flips.toNorm) ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: it moves the notches; it does not remove the delay.`}</Note> : null}
+            {predicted != null && (flips.toInv || flips.toNorm) ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: the notches and peaks swap places, but the delay stays.`}</Note> : null}
             {!rearMode ? <Note>Whether the amp and speaker invert the signal is not known for any real amp from here — so try BOTH polarity settings by ear, in mono, and keep the fuller one. In a fixed studio setup the DI can also be delayed to line up; no single delay or polarity fixes every frequency.</Note> : null}
             <Note tone="warn">{rearMode ? 'Each mic really hears its own side of the cone AND the room, so this graph shows only the shared part. Judge it by ear, in mono, at matched levels.' : 'A real DI and mic differ in more than delay: the amp, the speaker and the room shape the mic’s sound. This graph shows only the shared part — judge the blend by ear, in mono, at matched levels.'}</Note>
           </>

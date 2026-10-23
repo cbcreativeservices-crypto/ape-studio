@@ -49,7 +49,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s rejection faces the floor wedge — and know what a pattern cannot do, from a singing player to the top’s reflections.',
     credit: { scenarios: ['ag.ctx.1', 'ag.ctx.2', 'ag.ctx.studio', 'ag.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the wedge sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'A cardioid rejects most behind; a supercardioid off to each side of the rear. Real nulls are shallower than the picture, the top reflects stage sound, and a voice above the guitar is in front of any guitar mic. No mic position alone prevents feedback.',
+    takeaway: 'A cardioid rejects most behind; a supercardioid off to each side of the rear. Real nulls are shallower than the picture, the top reflects stage sound, and a voice above the guitar is in front of most guitar mics; a Figure-8’s side null can turn it down. No mic position alone prevents feedback.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -132,8 +132,8 @@ const scenarios: MikingScenario[] = [
     id: 'ag.set.3',
     page: 'setting',
     prompt: 'The guitarist also sings. What else does the guitar mic hear?',
-    options: ['Nothing else, as long as it is close to the guitar', 'Their voice, from just above and behind it', 'Only the PA, because it faces the audience'],
-    correct: 'Their voice, from just above and behind it',
+    options: ['Nothing else, as long as it is close to the guitar', 'Their voice, from just above, in front of the mic', 'Only the PA, because it faces the audience'],
+    correct: 'Their voice, from just above, in front of the mic',
     explain: 'The mouth is a short way above the guitar, so the voice reaches the guitar mic — and the guitar reaches the vocal mic. Plan the balance of the two; no pattern removes the voice from a mic aimed at the guitar.',
     why: {
       'Nothing else, as long as it is close to the guitar': 'Closer helps the ratio, but the voice is right there: some of it always arrives. Plan for it.',
@@ -544,7 +544,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you slide the mic from near the 12th fret toward the sound hole. What changes?', options: ['More string detail', 'More body and low end', 'It depends on this guitar'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this supercardioid reject the floor wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 /* THE QUICK CHECK (LESSON_JOURNEY §2.5): two items per foundation page;
@@ -617,9 +617,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your guitar mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the stage stays below the mic’s rated level', 'It is safe as long as the mic is nearer the guitar than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — measured where the person listens.',
     why: {
-      'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is nearer the guitar than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },

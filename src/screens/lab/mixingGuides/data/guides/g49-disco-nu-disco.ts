@@ -286,7 +286,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Theater and arena disco-pop typically runs 97–102 dBA LAeq-15 at FOH, with C-weighted levels around 112–120 dBC; club nights and DJ sets average around 96–100 dBA. The kick and bass need solid sub, but disco wants punch more than EDM-style sub weight, so keep C-minus-A gaps under about 18–20 dB. Respect venue and festival limits (often 100 dBA over 15–60 minutes) and keep peaks below about 115 dBA. A 96 dBA club over four hours far exceeds an 85 dBA 8-hour workplace limit; offer earplugs and protect staff."
+      "text": "Theater and arena disco-pop typically runs 97–102 dBA LAeq-15 at FOH, with C-weighted levels around 112–120 dBC; club nights and DJ sets average around 96–100 dBA. The kick and bass need solid sub, but disco wants punch more than EDM-style sub weight, so keep C-minus-A gaps under about 18–20 dB. Respect venue and festival limits (often 100 dBA over 15–60 minutes) and keep peaks below about 115 dBA. A 96 dBA club over four hours is far past NIOSH advice (85 dBA for 8 hours, halving the time for every 3 dB above that) and past the US legal limit (OSHA: 90 dBA with a 5 dB rule); offer earplugs and protect staff."
     },
     {
       "label": "Studio / streaming:",

@@ -276,7 +276,7 @@ const symptoms: Symptom[] = [
     correct: 'Aim off the bridge or move back, keeping the intended buzz',
     explain: 'Close on the bridge, its buzz dominates. Change the aim or distance; the buzz itself is part of the instrument, set by the player and their bridge maker.',
     why: {
-      'Ask the player to adjust the bridge so it buzzes less': 'The bridge is the player’s instrument and sound. Never ask for it to be changed for a mic.',
+      'Ask the player to adjust the bridge so it buzzes less': 'The bridge is the player’s instrument and sound. Ask what buzz is intended; do not ask for the bridge to be changed just to suit a mic.',
       'Cut the high frequencies hard until the buzz is gone': 'EQ dulls the whole sitar. Fix the position first.',
     },
   },

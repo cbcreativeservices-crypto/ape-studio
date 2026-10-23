@@ -301,7 +301,7 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
       : startMsg === 'armed'
         ? 'Armed: it starts on deck A’s next bar line, exactly on the one.'
         : startMsg === 'armedInt'
-          ? 'Armed on INTERNAL: it starts exactly on deck A’s next bar line — then runs on its own tempo. Watch ITS BAR 1.'
+          ? 'Armed on INTERNAL: the lab sends its START on deck A’s next bar line — then it runs on its own tempo. (Many real machines on internal sync ignore an incoming start; then you press START by ear.) Watch ITS BAR 1.'
           : startMsg;
 
   const DT = (x: number, y: number) => ({ x: DMT.x + x, y: DMT.y + y });

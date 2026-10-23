@@ -52,7 +52,7 @@ const { LESSONS, lessonsOf } = await import('../src/screens/lab/miking/data/regi
 
 const near = (a: number, b: number, tol = 1e-9) => Math.abs(a - b) <= tol;
 /** Makers, models and sources met in THIS research (beside the shared lists). */
-const AMP_NAMES = /\b(Peavey|Nashville|Radial|J48|Carter|Jensen|C12K|Deluxe|Venture|SVT|Sennheiser|e ?906|OSHA|NIOSH|Fender|Ampeg|Mills|PGA27|SM57|KSM\d*)\b/;
+const AMP_NAMES = /\b(Peavey|Nashville|Radial|J48|Carter|Jensen|C12K|Deluxe|Venture|SVT|Sennheiser|e ?906|Fender|Ampeg|Mills|PGA27|SM57|KSM\d*)\b/;
 
 const AMP_LESSONS = ['C02', 'C08', 'C04'].filter((id) => !!lessonById(id));
 

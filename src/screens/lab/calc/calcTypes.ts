@@ -50,6 +50,15 @@ export type FieldDef = {
   /** P16 — inclusive bounds of a RANGED value, in BASE units (MIDI 0–127, a
    *  0/1 flag, AWG −3…40 where −1 is 2/0). Outside the range is an ERROR. */
   range?: readonly [number, number];
+  /** D53 — the sentence shown when the value is outside `range`, instead of the
+   *  bare "must be from X to Y" (e.g. why about 194 dB SPL is the ceiling of
+   *  air). An open bound (±Infinity) is never printed — give this sentence. */
+  rangeMsg?: string;
+  /** D53 (audit R2, 2026-10-23) — 0 has no answer here: a 0 Hz period, a 0 Ω
+   *  load, a room with no volume. A value of 0 is an ERROR in words ("SAMPLE
+   *  RATE must be above 0."), never a result card of "— ms" or "0 Ω" beside a
+   *  "must be greater than zero" warning. A string is the full sentence. */
+  positive?: true | string;
 };
 
 export type OutputVal =
@@ -122,6 +131,12 @@ export type CalcFunction = {
   keySymbols?: string[];
   /** Per-function caveat (model limits, standards note). */
   note?: string;
+  /** D53 (audit R2, 2026-10-23) — inputs THIS function has no answer for,
+   *  explained in words (a 0 Ω branch, a level too large to turn into a ratio,
+   *  a frequency outside the MIDI range). Returns the sentence, or null. Run
+   *  by runCompute after the field checks and before compute: a refused input
+   *  shows "⚠ <sentence>", costs nothing and feeds no workflow step. */
+  refuse?: (v: CalcValues) => string | null;
   compute: (v: CalcValues) => OutputVal[];
   /** Worked calculation steps, plain language, values already substituted. */
   steps?: (v: CalcValues) => string[];

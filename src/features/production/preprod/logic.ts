@@ -144,7 +144,7 @@ registerRuleLogic({
   'define-livestream-not-in-scope': (ctx) => {
     if (!many(ctx.get('define', 'platform')).includes('livestream')) return false;
     const services = many(ctx.get('define', 'services'));
-    if (services.includes('livestream_feed') || services.includes('live_recording')) return false;
+    if (services.includes('livestream_feed')) return false; // a live recording is not a stream (audit R2, R060162)
     // C's note: do not fire when the exclusions say someone else runs the stream.
     const out = str(ctx.get('define', 'out_of_scope')).toLowerCase();
     return !/stream/.test(out);

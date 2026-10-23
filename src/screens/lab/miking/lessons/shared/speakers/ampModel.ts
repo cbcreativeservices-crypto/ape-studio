@@ -79,7 +79,7 @@ function parts(rig: AmpRig): Part[] {
   const boxSolid = { kind: 'box' as const, min: { x: c.box.x0, y: c.box.y0, z: c.box.z0 }, max: { x: c.box.x1, y: c.box.y1, z: c.box.z1 } };
   const out: Part[] = [
     { id: 'spk.cabinet', label: rig === 'combo' ? 'combo cabinet' : 'cabinet', short: 'cabinet', role: rig === 'combo' ? 'The wooden box that holds the amplifier at the top and the speaker below it.' : 'The wooden box that holds the four speakers and the horn.', solid: boxSolid, clearance: { mm: 5, prov: ill('keep the mic off the cabinet and its cloth: 5 mm is the lab’s margin (no source gives one)') }, prov: spec.w.prov },
-    { id: 'spk.grille', label: 'grille cloth', short: 'grille', role: 'Woven cloth in front of the speaker. It hides the speaker — find the speaker before you place a mic, and never press a mic against the cloth.', prov: GRILLE_X.prov },
+    { id: 'spk.grille', label: 'grille cloth', short: 'grille', role: 'Woven cloth in front of the speaker. It hides the speaker — find the speaker before you place a mic, and keep the mic just off the cloth, not pressed against it.', prov: GRILLE_X.prov },
     { id: 'spk.baffle', label: 'baffle', short: 'baffle', role: 'The front board the speaker is mounted to, behind a round cut-out.', prov: PANEL.prov },
     { id: 'spk.cone', label: 'cone', short: 'cone', role: 'The paper cone. The voice coil drives it back and forth, and it pushes the air: this is what the mic hears.', prov: SPEAKER_12.dCut.prov },
     { id: 'spk.dust', label: 'dust cap', short: 'dust cap', role: 'The dome in the middle of the cone, over the voice coil. Its edge is a common first aiming point.', prov: SPEAKER_12.rDust.prov },

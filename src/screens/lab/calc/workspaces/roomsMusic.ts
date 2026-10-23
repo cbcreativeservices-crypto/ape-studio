@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar pattern (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { SABINE_K, fmt, fmtCount, fmtInt, snapWhole, speedOfSoundAir } from '../calcUnits';
+import { AIR_TEMP_FIELD, fmt, fmtCount, fmtInt, SABINE_K, snapWhole, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]): number[] => (typeof v === 'number' ? [v] : v);
@@ -48,6 +48,22 @@ function intervalName(semitones: number): string {
   return `${oct} octave${oct > 1 ? 's' : ''} + ${INTERVAL_NAMES[rem] ?? 'unison'}`;
 }
 
+/** The nearest interval as a phrase with its article (audit R2, 2026-10-23):
+ *  "is a 19 octaves + major 3rd" → "is 19 octaves plus a major 3rd". */
+function intervalPhrase(semitones: number): string {
+  const r = Math.round(Math.abs(semitones));
+  const art = (name: string) => `${/^[aeiou]/i.test(name) ? 'an' : 'a'} ${name}`;
+  if (!Number.isFinite(semitones)) return '—';
+  if (r <= 12) return art(INTERVAL_NAMES[r] ?? 'unison');
+  const rem = r % 12;
+  const oct = (r - rem) / 12;
+  const octs = `${oct} octave${oct > 1 ? 's' : ''}`;
+  return rem === 0 ? `exactly ${octs}` : `${octs} plus ${art(INTERVAL_NAMES[rem] ?? 'unison')}`;
+}
+
+/** A tempo below 1 BPM has no whole-BPM value. */
+const NO_WHOLE_BPM = 'Below 1 BPM — that interval is far too long to be a beat. Check the units.';
+
 /** Note-value divisions in beats (quarter = one beat in 4/4). */
 const NOTE_DIVS: { label: string; beats: number }[] = [
   { label: 'Whole', beats: 4 },
@@ -78,7 +94,7 @@ const WS_BPM: Workspace = {
     'dotted 8th is 500 × 0.5 × 1.5 = 375 ms — THE classic U2 delay: play straight 8ths and the ' +
     'repeats fill in the syncopation for you.',
   mistakes: [
-    'Setting delays in round numbers (250, 300, 400 ms) that miss the song’s tempo divisions — close-but-off repeats smear the groove instead of reinforcing it.',
+    'Picking a round delay time (300 or 400 ms) by habit instead of from the song’s tempo — if it does not fit the tempo, the repeats land close but off and smear the groove.',
     'Forgetting dotted vs triplet: a dotted 8th (×1.5) and a triplet quarter (×2/3 of a quarter — three in the space of a half) feel completely different against the same straight 8ths.',
     'Assuming the tap tempo captured the grid exactly — a few taps can land 1–2 BPM off; check against the session tempo or a longer measured interval.',
   ],
@@ -88,6 +104,7 @@ const WS_BPM: Workspace = {
       key: 'bpm',
       name: 'TEMPO',
       quantity: 'bpm',
+      positive: 'TEMPO must be above 0 BPM.',
       placeholder: '120',
       help: 'Beats per minute — the quarter note gets the beat in 4/4.',
       warn: { test: (x) => x < 20 || x > 400, msg: 'Outside the usual 20–400 BPM musical range — check the value.' },
@@ -97,6 +114,7 @@ const WS_BPM: Workspace = {
       name: 'MEASURED INTERVAL',
       quantity: 'time',
       defaultUnit: 'ms',
+      positive: true,
       placeholder: '500',
       help: 'Time between two beats — from tap tempo, a delay time, or a measured loop.',
     },
@@ -105,6 +123,7 @@ const WS_BPM: Workspace = {
       name: 'BEATS PER CYCLE',
       quantity: 'number',
       nonNegative: true,
+      positive: 'BEATS PER CYCLE must be above 0 — one LFO cycle has to span some part of a beat.',
       placeholder: '4',
       help: 'How many beats one full LFO cycle should span (4 = whole note in 4/4, 0.5 = 8th note).',
     },
@@ -165,14 +184,19 @@ const WS_BPM: Workspace = {
         const bpm = 60000 / ms;
         return [
           { label: 'TEMPO', value: bpm, quantity: 'bpm' },
-          { label: 'NEAREST WHOLE BPM', text: `${fmtInt(bpm)} BPM (exact: ${fmt(bpm)})` },
+          // Never a "0 BPM" tempo (audit R2, 2026-10-23): a 500 000 s interval
+          // rounded to a nearest whole tempo of 0 BPM.
+          { label: 'NEAREST WHOLE BPM', text: Math.round(bpm) < 1 ? NO_WHOLE_BPM : `${fmtInt(bpm)} BPM (exact: ${fmt(bpm)})` },
+          ...(bpm < 20 || bpm > 400 ? [{ label: 'CHECK THE UNITS', text: 'That is outside the usual 20–400 BPM musical range — check the interval and its unit.' }] : []),
         ];
       },
       steps: (v) => {
         const ms = n(v.interval) * 1000;
         return [
           `BPM = 60000 ÷ ${fmt(ms)} ms = ${fmt(60000 / ms)} BPM.`,
-          `Most sessions run on whole (or half) BPM values — the nearest whole tempo is ${fmtInt(60000 / ms)} BPM.`,
+          Math.round(60000 / ms) < 1
+            ? NO_WHOLE_BPM
+            : `Most sessions run on whole (or half) BPM values — the nearest whole tempo is ${fmtInt(60000 / ms)} BPM.`,
         ];
       },
     },
@@ -274,6 +298,7 @@ const WS_PITCH: Workspace = {
       key: 'f',
       name: 'FREQUENCY',
       quantity: 'frequency',
+      positive: 'FREQUENCY must be above 0 Hz — a 0 Hz tone has no pitch.',
       placeholder: '452',
       help: 'The measured or intended frequency of the tone.',
     },
@@ -300,6 +325,7 @@ const WS_PITCH: Workspace = {
       key: 'f2',
       name: 'SECOND FREQUENCY',
       quantity: 'frequency',
+      positive: 'SECOND FREQUENCY must be above 0 Hz — a 0 Hz tone has no pitch.',
       placeholder: '678',
       help: 'The other tone of the interval you are measuring.',
     },
@@ -307,6 +333,7 @@ const WS_PITCH: Workspace = {
       key: 'ref',
       name: 'A4 REFERENCE',
       quantity: 'frequency',
+      positive: 'The A4 reference must be above 0 Hz. Most music uses 440 Hz.',
       placeholder: '440',
       help: 'tuning reference',
       warn: { test: (x) => x < 400 || x > 480, msg: 'A4 references outside 400–480 Hz are historically unusual — check the value.' },
@@ -331,6 +358,15 @@ const WS_PITCH: Workspace = {
       explain:
         'Translates a frequency into a note name and tuning offset. Because pitch is logarithmic, twelve times the base-two log of the ratio to A4 gives the position in semitones, and MIDI 69 anchors A4. The gap to the nearest whole note, times 100, is how many cents sharp or flat the tone sits.',
       keySymbols: ['·', '−', '×', '/'],
+      // No note name outside MIDI 0–127 (audit R2, 2026-10-23): 452 MHz was
+      // "A24 (MIDI 309)" and 0.000452 Hz "A#-16 (MIDI -170)".
+      refuse: (v) => {
+        const ref = n(v.ref);
+        const r = Math.round(69 + 12 * Math.log2(n(v.f) / ref));
+        return r >= 0 && r <= 127
+          ? null
+          : `${fmt(n(v.f))} Hz is outside the MIDI note range (MIDI 0–127: about ${fmt(ref * Math.pow(2, -69 / 12), 3)} Hz to ${fmt(ref * Math.pow(2, 58 / 12) / 1000, 3)} kHz at A4 = ${fmt(ref)} Hz), so it has no note name.`;
+      },
       compute: (v) => {
         const f = n(v.f);
         const ref = n(v.ref);
@@ -437,7 +473,7 @@ const WS_PITCH: Workspace = {
         return [
           `Ratio = ${fmt(f2)} ÷ ${fmt(f1)} = ${fmt(f2 / f1)} — pitch intervals live in ratios, not differences.`,
           `Semitones = 12·log₂(${fmt(f2 / f1)}) = ${fmt(st)}; cents = ×100 = ${fmt(st * 100)}.`,
-          `The nearest equal-tempered interval is a ${intervalName(st)}.`,
+          `The nearest equal-tempered interval is ${intervalPhrase(st)}.`,
         ];
       },
     },
@@ -452,6 +488,14 @@ const WS_PITCH: Workspace = {
         'Turns a transposition in semitones and cents into the ratio every frequency is multiplied by. As pure varispeed that ratio is also the playback speed, so a clip’s pitch and length change together; keeping the length while shifting pitch needs a separate time-stretch DSP process.',
       keySymbols: ['x²', '/'],
       note: 'Pure varispeed: pitch and playback length change together. Pitch-shift with preserved duration is a separate DSP process.',
+      // A shift whose ratio overflows (audit R2, 2026-10-23) printed "— ×" and
+      // a "0 %" clip length — said in words instead.
+      refuse: (v) => {
+        const ratio = Math.pow(2, (n(v.semi) + n(v.cents) / 100) / 12);
+        return Number.isFinite(ratio) && ratio > 0
+          ? null
+          : 'That shift is far too large for varispeed — the ratio is beyond any number this app can show. Enter a smaller shift.';
+      },
       compute: (v) => {
         const total = n(v.semi) + n(v.cents) / 100;
         const ratio = Math.pow(2, total / 12);
@@ -522,6 +566,7 @@ const WS_FILESIZE: Workspace = {
       name: 'SAMPLE RATE',
       quantity: 'samplerate',
       defaultUnit: 'srkhz',
+      positive: true,
       placeholder: '48',
       help: 'Samples per second per channel (44.1 kHz CD, 48 kHz video/broadcast, 96/192 kHz hi-res).',
     },
@@ -530,6 +575,7 @@ const WS_FILESIZE: Workspace = {
       name: 'BIT DEPTH',
       quantity: 'bitdepth',
       integer: true,
+      positive: 'BIT DEPTH must be at least 1 bit (common values: 16, 24, 32).',
       placeholder: '24',
       help: '16/24/32',
       warn: { test: (x) => ![8, 16, 24, 32, 64].includes(x), msg: 'Unusual bit depth — common PCM depths are 16, 24, and 32 bit.' },
@@ -540,6 +586,7 @@ const WS_FILESIZE: Workspace = {
       quantity: 'number',
       integer: true,
       nonNegative: true,
+      positive: true,
       placeholder: '2',
       help: 'Channels in the file: 1 = mono, 2 = stereo.',
     },
@@ -565,6 +612,7 @@ const WS_FILESIZE: Workspace = {
       quantity: 'number',
       integer: true,
       nonNegative: true,
+      positive: true,
       placeholder: '24',
       help: 'Simultaneously recording tracks in the session (each at the channel count above).',
     },
@@ -694,8 +742,8 @@ const WS_ROOMMODES: Workspace = {
     'Cube-ish rooms (or 2:1 ratios) stacking coincident modes — equal dimensions put multiple modes on the same frequency and multiply the damage.',
   ],
   warnings:
-    'Axial modes only — tangential and oblique modes (weaker but real) are in the Advanced ' +
-    'tier roadmap. Mode presence ≠ audibility: level depends on source/listener position and ' +
+    'Axial modes only — tangential and oblique modes are weaker but real, and this tool does not ' +
+    'list them. Mode presence ≠ audibility: level depends on source/listener position and ' +
     'surface absorption. Treat modes with bass traps and placement; EQ can trim a peak at one seat but cannot fill a null — formal room ' +
     'measurement is the domain of ISO 3382.',
   glossary: ['Room Mode', 'Standing wave', 'Frequency', 'Wavelength'],
@@ -703,7 +751,7 @@ const WS_ROOMMODES: Workspace = {
     { key: 'len', name: 'ROOM LENGTH', quantity: 'length', placeholder: '5', help: 'Longest floor dimension, wall to wall.' },
     { key: 'wid', name: 'ROOM WIDTH', quantity: 'length', placeholder: '4', help: 'Shorter floor dimension, wall to wall.' },
     { key: 'hei', name: 'CEILING HEIGHT', quantity: 'length', placeholder: '2.5', help: 'Floor to ceiling.' },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound in the classroom dry-air model.' },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound in the classroom dry-air model.' },
     {
       key: 'dist',
       name: 'SURFACE-TO-SURFACE DISTANCE',
@@ -868,7 +916,7 @@ const WS_SABINE: Workspace = {
     'frequency band under ISO 354, and real rooms under ISO 3382.',
   glossary: ['Reverberation Time', 'RT60', 'Absorption Coefficient', 'Room Mode'],
   fields: [
-    { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '100', help: 'Length × width × height of the room.' },
+    { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', positive: 'ROOM VOLUME must be above 0 — enter length × width × height.', placeholder: '100', help: 'Length × width × height of the room.' },
     {
       key: 'absA',
       name: 'TOTAL ABSORPTION A',
@@ -969,7 +1017,7 @@ const WS_SABINE: Workspace = {
             ? [
                 {
                   label: 'CHECK INPUTS',
-                  text: `You entered ${S.length} areas but ${al.length} coefficients — only the first ${Math.min(S.length, al.length)} pairs are counted.`,
+                  text: `You entered ${S.length} area${S.length === 1 ? '' : 's'} but ${al.length} coefficient${al.length === 1 ? '' : 's'} — only the first ${m === 1 ? 'pair is' : `${m} pairs are`} counted.`,
                 },
               ]
             : []),
@@ -978,8 +1026,11 @@ const WS_SABINE: Workspace = {
         ];
       },
       steps: (v) => {
-        const S = arr(v.surfaces);
-        const al = arr(v.coeffs);
+        // Only the counted pairs (audit R2, 2026-10-23): an unpaired surface
+        // was listed as "0 × 0 = 0" while CHECK INPUTS said it was not counted.
+        const m = Math.min(arr(v.surfaces).length, arr(v.coeffs).length);
+        const S = arr(v.surfaces).slice(0, m);
+        const al = arr(v.coeffs).slice(0, m);
         const A = S.reduce((sum, s, i) => sum + s * (al[i] ?? 0), 0);
         return [
           `Each surface contributes area × α: ${S.map((s, i) => `${fmt(s)} × ${fmt(al[i] ?? 0)} = ${fmt(s * (al[i] ?? 0))}`).join('; ')} m².`,
@@ -988,8 +1039,9 @@ const WS_SABINE: Workspace = {
         ];
       },
       table: (v) => {
-        const S = arr(v.surfaces);
-        const al = arr(v.coeffs);
+        const m = Math.min(arr(v.surfaces).length, arr(v.coeffs).length);
+        const S = arr(v.surfaces).slice(0, m);
+        const al = arr(v.coeffs).slice(0, m);
         return {
           title: 'Absorption contribution per surface',
           cols: ['Surface', 'Area (m²)', 'α', 'S·α (m²)'],
@@ -1035,7 +1087,7 @@ const WS_SABINE: Workspace = {
         if (Number.isFinite(cur)) {
           s.push(
             alreadyEnough(needed, cur)
-              ? `The room already has ${fmt(cur)} m² — more than the ${fmt(needed)} m² needed — so there is nothing to add: ${surplusText(V, needed, cur, rt)}`
+              ? `The room already has ${fmt(cur)} m², ${fmt(cur - needed)} m² more than the ${fmt(needed)} m² needed, so there is nothing to add.`
               : `The room already has ${fmt(cur)} m², so ΔA = ${fmt(needed)} − ${fmt(cur)} = ${fmt(needed - cur)} m² of absorption to add.`,
           );
         }
@@ -1078,7 +1130,7 @@ const WS_TREATMENT: Workspace = {
     'needs absorbing down low.',
   glossary: ['Reverberation Time', 'RT60', 'Absorption Coefficient', 'Room Mode'],
   fields: [
-    { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '150', help: 'Length × width × height of the room.' },
+    { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', positive: 'ROOM VOLUME must be above 0 — enter length × width × height.', placeholder: '150', help: 'Length × width × height of the room.' },
     {
       key: 'rtCur',
       name: 'CURRENT RT60',
@@ -1148,7 +1200,7 @@ const WS_TREATMENT: Workspace = {
           { label: 'ABSORPTION TO ADD ΔA', value: surplus ? 0 : dA, quantity: 'area' },
           ...(surplus ? [{ label: 'ALREADY ENOUGH ABSORPTION', text: surplusText(V, aTgt, aCur, n(v.rtTgt)) }] : []),
           { label: 'PANELS NEEDED', value: panels, quantity: 'number', chainable: false },
-          { label: `PREDICTED RT60 WITH ${fmtInt(panels)} PANELS`, value: predicted, quantity: 'time', unit: 's' },
+          { label: `PREDICTED RT60 WITH ${fmtInt(panels)} PANEL${panels === 1 ? '' : 'S'}`, value: predicted, quantity: 'time', unit: 's' },
         ];
       },
       steps: (v) => {
@@ -1173,7 +1225,7 @@ const WS_TREATMENT: Workspace = {
           `Shortfall ΔA = ${fmt(aTgt)} − ${fmt(aCur)} = ${fmt(dA)} m².`,
           `Each panel supplies ${fmt(n(v.panelArea))} m² × α ${fmt(n(v.alpha))} = ${fmt(perPanel)} m² of absorption.`,
           `Panels = ceil(${fmt(dA)} ÷ ${fmt(perPanel)}) = ${fmtInt(panels)} — rounding UP, because a fraction of a panel does not exist.`,
-          `With ${fmtInt(panels)} whole panels the room lands at RT60 = 0.161 × ${fmt(V)} ÷ ${fmt(aCur + panels * perPanel)} = ${fmt((SABINE_K * V) / (aCur + panels * perPanel))} s.`,
+          `With ${fmtInt(panels)} whole panel${panels === 1 ? '' : 's'} the room lands at RT60 = 0.161 × ${fmt(V)} ÷ ${fmt(aCur + panels * perPanel)} = ${fmt((SABINE_K * V) / (aCur + panels * perPanel))} s.`,
         ];
       },
     },

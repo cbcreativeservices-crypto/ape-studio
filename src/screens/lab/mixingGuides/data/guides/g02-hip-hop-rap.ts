@@ -242,7 +242,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Club and arena hip-hop typically runs 98–103 dBA LAeq-15 min at FOH, with 115–125 dBC LCeq because of heavy sub content. Common hearing-safety advice is to stay below 100 dBA LAeq-15 min, with peaks under 140 dB LCpeak; some European festivals cap at 100 dBA over 60 minutes or 105 dBA over 15. US venues set their own limits, often for neighbors rather than hearing. Large tours often fly all the subs to deliver even, high-impact bass without crushing the front rows. Offer earplugs, watch the dBC number, and keep 10 dB of headroom on the vocal channel for crowd moments."
+      "text": "Club and arena hip-hop typically runs 98–103 dBA LAeq-15 min at FOH, with 115–125 dBC LCeq because of heavy sub content. Common hearing-safety advice is to stay below 100 dBA LAeq-15 min, with peaks under 140 dB LCpeak; some European countries and festivals cap at 100–103 dBA over 15 minutes or 100 dBA over 60. US venues set their own limits, often for neighbors rather than hearing. Many large tours fly some or all of the subs to spread the bass evenly without crushing the front rows. Offer earplugs, watch the dBC number, and keep 10 dB of headroom on the vocal channel for crowd moments."
     },
     {
       "label": "Studio / streaming:",

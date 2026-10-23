@@ -205,7 +205,7 @@ const SPEC: HandSpec = {
   partsBadge: 'A wooden tonbak · tap a part to name it · the posture is a drawing choice',
   partsLooking: (v) => (v === 'top' ? 'From above · the drum across the lap' : 'From the player’s right · the head nearly face-on'),
   partsNote: 'The fingers and hands strike the head; the bowl and the air inside shape the sound; some leaves the open lower end. Switch the view to see the head face-on.',
-  partsWarn: 'The drum is the player’s: never clamp the rim, never put anything inside the opening, and never move the drum to suit a microphone.',
+  partsWarn: 'The drum is the player’s. Clamp nothing to the rim unless they agree, put nothing inside the opening, and do not move the drum to suit a mic.',
   plan: {
     items: [
       { id: 'drum', box: { u0: -200, u1: 200, v0: -440, v1: 120 }, scene: 'all', label: { u: 330, v: -200, align: 'left' } },
@@ -217,7 +217,7 @@ const SPEC: HandSpec = {
       { id: 'room', box: { u0: -1300, u1: 1700, v0: -1000, v1: -860 }, scene: 'studio', label: { u: 200, v: -780 } },
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the tonbak player seated with the drum across the lap, the head to the player's right; the player's wedge downstage on the audience side, a side fill to the right, louder players upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the tonbak player seated, no monitors on the floor, the room's walls around.${sel ? ` Highlighted: ${sel}.` : ''}`),
-    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the bottom' : 'Plan · a studio room from above'),
+    looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience to the right' : 'Plan · a studio room from above'),
     first: 'The player sits with the drum across the lap; the hands move over the head and its edge. Everything else fits round that.',
     before: [
       { title: 'ASK THE PLAYER FIRST', text: 'How do they hold the drum, and how do they move? Ask for their deep, edge and quiet strokes, rolls, and a short real passage — in their own terms. What is the tonbak’s role here, and what must stay audible?' },
@@ -284,7 +284,7 @@ const SPEC: HandSpec = {
     B: { zone: 'tb.D', mic: 'sdcCard' },
     names: { A: 'HEAD MIC', B: 'OPENING MIC' },
     looking: 'Two mics · A at the head, B outside the lower opening',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes — and try each SOURCE.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes — and try each SOURCE.',
     label: 'The tonbak with a head mic (A) and an opening mic (B)',
     warn: 'The two mics hear DIFFERENT places on the drum, so this simplified graph shows only the shared part of one source — not what the pair will sound like. Judge the pair by ear, in mono, at matched levels, with deep, edge and roll strokes and the player’s normal movement. 3:1 is a spill guideline for mics on different sources; it says nothing about this pair.',
     learn: [

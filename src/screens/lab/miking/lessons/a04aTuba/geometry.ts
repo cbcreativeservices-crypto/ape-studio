@@ -17,7 +17,7 @@ export const TUBA_MODEL: InstrumentModel = lowBrassModel(SPEC, {
     front: { label: 'BELL FRONT', blurb: 'The bell turns to face the audience — a form first made for early recording studios. (Older military tubas pointed back; a sousaphone wraps round the player.)', phrase: 'the bell to the front' },
   },
   words: {
-    bell: 'The flared end of the tube — about 44 cm across here. Nearly all of the sound leaves from its opening: no mic goes in it or right over it.',
+    bell: 'The flared end of the tube — about 44 cm across here. Nearly all of the sound leaves from its opening: a mic seldom goes in it or close over it.',
     body: { label: 'body and bows', short: 'body', role: 'About 5.5 m of widening tube in a B♭ tuba, folded into the big body that rests on the lap. The air inside vibrates; the metal gives off very little sound.' },
     valves: 'Four piston valves under the right hand switch extra lengths of tube in or out. The fingers move on top of them all the time: keep mics and cables clear.',
     leadpipe: 'Where the player’s lips buzz into the large mouthpiece; the leadpipe carries the air into the valves. Nothing goes near the face.',

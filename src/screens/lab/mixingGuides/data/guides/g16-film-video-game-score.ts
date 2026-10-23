@@ -274,7 +274,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Film-in-concert and game-music shows usually average 85–92 dBA Leq at FOH, with tutti (full ensemble) peaks near 100 dBA and sub-heavy cues touching 110–115 dBC; a C-minus-A gap above 20 dB signals too much sub. Time-align fills to the orchestra (big arena shows have used 15–17 delay zones) so the PA reinforces rather than replaces the acoustic sound."
+      "text": "Film-in-concert and game-music shows usually average 85–92 dBA Leq at FOH, with tutti (full ensemble) peaks near 100 dBA and sub-heavy cues touching 110–115 dBC. Compare like with like: if the C-weighted Leq runs more than about 20 dB above the A-weighted Leq, there is too much sub. Time-align fills to the orchestra (big arena shows have used 15–17 delay zones) so the PA reinforces rather than replaces the acoustic sound."
     },
     {
       "label": "Studio / streaming:",

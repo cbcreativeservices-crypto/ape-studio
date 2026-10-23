@@ -31,7 +31,7 @@ export const B08_COPY: Partial<LessonCopy> = {
     workedZone: { studio: 'b8.mono' },
     workedLine: 'This starting point also reads how high the mic is above the floor.',
     workedAim: 'Aim it at the faces of the section — the lab counts it within about {tol}°.',
-    workedClear: 'On an approved place, hung by qualified crew, out of the aisles, the exits and the cameras’ view.',
+    workedClear: 'On an approved place, hung by a qualified rigger, out of the aisles, the exits and the cameras’ view.',
     blocked: {},
     reveal: '',
     typeNotes: {
@@ -67,7 +67,7 @@ export const B08_COPY: Partial<LessonCopy> = {
     refTitle: 'MEASURED TO',
     otherRef: 'Distances are read from the capsule to the faces of the section, at a seated head’s height.',
     noAim: 'This starting point gives no aim: aim at the faces of a section.',
-    clipMount: 'Mount: an approved fixture, rigged by qualified crew',
+    clipMount: 'Mount: an approved fixture, rigged by a qualified rigger',
     standMount: 'Mount: a stand on an approved place, out of every aisle and exit',
     inPath: 'in the way',
     facing: 'facing the faces',

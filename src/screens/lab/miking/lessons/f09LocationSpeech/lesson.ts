@@ -39,7 +39,7 @@ const pages: LessonPages = {
     title: 'Before any mic',
     goal: 'Know what to settle before any mic goes up on location: the scene map, permission and privacy, asking before touching anyone, separate channels, power lines and weather.',
     credit: { scenarios: ['loc.set.1', 'loc.set.2', 'loc.set.3', 'loc.set.4'], note: 'Answer the four checks.' },
-    takeaway: 'Map the scene, ask first, keep each mic on its own channel, never hide a mic to record anyone secretly, keep at least 3 m (10 ft) from power lines (more for high-voltage ones), and stop for lightning.',
+    takeaway: 'Map the scene, ask first, keep each mic on its own channel, never hide a mic to record anyone secretly, keep at least 3 m (10 ft) from power lines (more for higher voltages, or if unsure), and stop for lightning.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -88,7 +88,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'loc.snd.1',
     page: 'sound',
-    prompt: 'On a set, what is every distance in this lesson measured from?',
+    prompt: 'On a set, what is every distance from the talker to a mic measured from?',
     options: ['The talker’s lips, to the mic’s capsule', 'The camera’s lens, to the mic’s capsule', 'The talker’s chest, where a body mic goes'],
     correct: 'The talker’s lips, to the mic’s capsule',
     explain: 'Speech leaves through the mouth, so the distances start at the lips. The camera decides where a mic may go, but the voice is measured from the mouth.',
@@ -163,7 +163,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The boom mic is rated to a very high maximum level. What does that say about a long, loud day on location?',
     options: ['Nothing about ears: it is the mic’s limit', 'The crew is safe up to the mic’s rated level', 'The crew is safe while the mic is nearer the noise'],
     correct: 'Nothing about ears: it is the mic’s limit',
-    explain: 'A mic’s maximum level says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'A mic’s maximum level says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
       'The crew is safe up to the mic’s rated level': 'A mic rating is not a hearing limit.',
       'The crew is safe while the mic is nearer the noise': 'Where the mic sits says nothing about your ears.',
@@ -509,7 +509,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: which mic keeps one distance from the mouth in a wide shot?', options: ['The boom', 'The body mic', 'The camera mic'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you bring the boom’s capsule from 110 cm to 80 cm from the lips. What changes?', options: ['More voice, less room', 'More room', 'It depends on this scene'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the presenter. Where will a supercardioid aimed at the mouth reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip the body mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the body mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -528,7 +528,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.2',
     covers: 'sound',
-    prompt: 'The talker turns the head. Which mic stays at the same place relative to the chest?',
+    prompt: 'The talker turns the head. Which mic is fixed to the talker, so it moves with the chest and not the head?',
     options: ['The body mic on the chest', 'The boom held above the head', 'The mic on top of the camera'],
     correct: 'The body mic on the chest',
     explain: 'A body mic is clipped to the chest; it does not follow the head. The boom is re-aimed with the head.',
@@ -661,6 +661,6 @@ export const F09_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every talker, place and shot is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one talker in a typical standing pose, a camera with three example shot sizes, mic patterns and the two-mic comb as textbook shapes, the shotgun drawn as a supercardioid. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s capsule. Safety is exact: at least 3 m (10 ft) from overhead power lines, more for high-voltage ones, and 30 minutes after the last lightning or thunder. Put a mic on a person only with their agreement, and never record anyone secretly.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every talker, place and shot is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one talker in a typical standing pose, a camera with three example shot sizes, mic patterns and the two-mic comb as textbook shapes, the shotgun drawn as a supercardioid. Distances are rounded to about 5 mm below 1 m and more coarsely above it, with feet from 3 m and measured from the lips to the mic’s capsule. Safety is exact: at least 3 m (10 ft) from overhead power lines, more for higher voltages or if unsure, and 30 minutes after the last lightning or thunder. Put a mic on a person only with their agreement, and never record anyone secretly.',
   copy: F09_COPY,
 };

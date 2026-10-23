@@ -41,7 +41,7 @@ const pages: LessonPages = {
     title: 'Before any mic',
     goal: 'Know that approval is the first mic position — who may be miked, where the pack sits, where the audio may go — and where each mic goes, with the officials’ private circuit kept closed.',
     credit: { scenarios: ['b11.set.1', 'b11.set.2', 'b11.set.3', 'b11.set.4'], note: 'Answer the four checks.' },
-    takeaway: 'Approval first; protective equipment never touched; a broadcast mic kept apart from the team’s and the officials’ own systems; every route written down — and the private circuit never on air.',
+    takeaway: 'Approval first; protective equipment never altered, and used for a mic only with the approval of the athlete and the team; a broadcast mic kept apart from the team’s and the officials’ own systems; every route written down — and the private circuit never on air.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -108,7 +108,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The pack sits in its approved low-profile place, retained so it cannot move, no hard edge pressing in; the antenna as the maker says — never coiled or folded.',
     why: {
       'In a pocket, the antenna coiled up neatly': 'A loose pack moves, and a coiled antenna loses range.',
-      'Taped under a shoulder pad, out of the way': 'Never put anything under or on protective equipment.',
+      'Taped under a shoulder pad, out of the way': 'Nothing goes under or on protective equipment without the approval of the athlete and the team.',
     },
   },
   {
@@ -511,7 +511,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: which mic keeps one distance as the head turns?', options: ['A chest mic', 'A headset boom', 'Both of them'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you move the chest mic from the breastbone down to the belt. What changes?', options: ['More distance, more crowd', 'A closer voice', 'It depends on this person'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is high in front of the official. Where will a supercardioid headset reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the capsule with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip the headset’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the headset’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

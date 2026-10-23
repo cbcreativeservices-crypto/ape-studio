@@ -318,7 +318,7 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
       <Body>
         Nearfield monitors are meant to be heard from about 1–1.5 m, midfields from about 2–4 m; further away the room takes over from the speaker. Tweeters at or slightly above ear height, with the speakers toed in so their axes cross at or just behind your head, is where most people begin — then they listen, and move things.
       </Body>
-      <Caption>A stand must be rated for the monitor's mass with a wide or weighted base; midfields and anything on a wall bracket go into structure with rated hardware. Route cables along the wall, never across a walkway.</Caption>
+      <Caption>A stand must be rated for the monitor's mass with a wide or weighted base; midfields and anything on a wall bracket go into structure with rated hardware. Route cables along the wall; if one must cross a walkway, use a cable ramp or tape it flat.</Caption>
       <Caption>{SAFETY_LEVEL_NOTE}</Caption>
       <Caption>{`The cancellation guide above comes from the image-source path difference at the seat: the bounce arrives Δ = path − direct late and cancels where Δ is half a wavelength, f = c ÷ (2 × Δ). Only straight out from the wall does that reduce to the familiar c ÷ (4 × distance).`}</Caption>
     </RoomRackLayout>

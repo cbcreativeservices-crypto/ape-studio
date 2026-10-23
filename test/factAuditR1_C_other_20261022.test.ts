@@ -161,7 +161,8 @@ describe('F086703 / F086753: muffling hurts S and F first, not nasals', () => {
 
 describe('F088672: hearing risk starts near 85, not 96', () => {
   it('the SPL legend states the 85 / 3 dB rule', () => {
-    assert.ok(SPL.includes('Hearing risk starts near 85 over a full day, and the safe time halves with every 3 dB more'));
+    assert.ok(SPL.includes('Hearing risk starts near 85 over a full day:'));
+    assert.ok(SPL.includes('NIOSH recommends 85 dBA for 8 hours, halving'));
     assert.ok(!SPL.includes('the point where sustained levels get into hearing-risk territory'));
   });
 });

@@ -24,7 +24,7 @@ export function addVoice(model: InstrumentModel, V: VoiceAnchor, ids: VoiceIds, 
     parts: [
       ...model.parts,
       { id: ids.mouth, label: 'the singer’s mouth', short: 'mouth', role: 'Where the voice leaves the singer. Every vocal starting point is measured from the lips to the front of the mic — and every instrument mic hears this voice too.', prov: ill('the host player’s mouth (a drawing default)'), variants },
-      { id: ids.nose, label: 'the singer’s nose', short: 'nose', role: 'On m, n and ng the mouth is closed, so the voice leaves through the nose.', prov: ill('the host player’s nose (a drawing default)'), variants, listIn: [] },
+      { id: ids.nose, label: 'the singer’s nose', short: 'nose', role: 'On m, n and ng the lips or the tongue close the mouth, so the voice leaves through the nose.', prov: ill('the host player’s nose (a drawing default)'), variants, listIn: [] },
     ],
     surfaces: [...model.surfaces, mouthSurface(V, { id: ids.surface, partId: ids.mouth, variants })],
     lines: [...model.lines, mouthLine(V, { id: ids.line, surface: ids.surface, variants })],

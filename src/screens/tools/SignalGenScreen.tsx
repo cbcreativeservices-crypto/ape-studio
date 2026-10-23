@@ -97,7 +97,7 @@ const SIGNALS: { key: GenModeName; label: string; blurb: string }[] = [
   { key: 'white', label: 'WHITE', blurb: 'Equal energy per Hz. The top octaves dominate (each octave holds twice the frequencies) — bright, hissy.' },
   { key: 'pink', label: 'PINK', blurb: 'Equal energy per OCTAVE — matches how hearing and RTAs divide the spectrum. The most common measuring and tuning noise.' },
   { key: 'brown', label: 'BROWN', blurb: 'Energy falling 6 dB per octave — deep rumble, like distant surf. All weight, no sizzle.' },
-  { key: 'blue', label: 'BLUE', blurb: 'Pink’s mirror: energy RISING per octave. Thin and airy — mostly a dither/testing curiosity.' },
+  { key: 'blue', label: 'BLUE', blurb: 'Pink’s mirror: energy RISING 3 dB per octave. Thin and airy — mostly a dither/testing curiosity.' },
   { key: 'violet', label: 'VIOLET', blurb: 'Brown’s mirror, rising 6 dB per octave — almost pure sizzle. The extreme end of the noise family.' },
   { key: 'sweepLin', label: 'SWEEP LIN', blurb: 'A tone gliding at constant Hz per second — it races through the bass and crawls through the highs.' },
   { key: 'sweepLog', label: 'SWEEP LOG', blurb: 'A tone gliding at constant OCTAVES per second — equal time in every octave. The sweep that sounds even, and the one most measurement uses.' },
@@ -114,9 +114,9 @@ const CLICK_BPM_PRESETS = [60, 90, 120, 150];
 /** Required warnings (spec Tool 6) — fixed amber list, always visible. */
 const WARNINGS = [
   'Very low frequencies can damage loudspeakers, especially at high level.',
-  'High frequencies can damage hearing — keep levels low and exposure short.',
+  'Loud tones at any frequency can damage hearing, and high tones can also harm tweeters. Keep levels low and exposure short.',
   'Start at low volume, every time. Raise it only as far as the task needs.',
-  'Never connect the output directly to a power amplifier without understanding the gain structure in between.',
+  'Before you connect the output to a power amplifier, check the gain in between. Start with the amplifier turned down.',
   'Generator output is not a calibrated laboratory reference.',
 ];
 

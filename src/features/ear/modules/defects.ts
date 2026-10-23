@@ -88,7 +88,7 @@ const DEFECTS: Defect[] = [
   },
   {
     key: 'ground', label: 'Ground loop (emulation)', confusableWith: ['hum'],
-    truth: 'Ground-loop buzz (emulation) — this drill doubles the mains tone and stacks even harmonics; real loops vary.',
+    truth: 'Ground-loop buzz (emulation) — this drill uses supply buzz at twice the mains (100/120 Hz) with even harmonics, so you can tell it from hum. Real loops vary; many hum at the mains frequency (50/60 Hz) itself.',
     solo: (rng) => groundLoop(1.6, mains(rng)),
     onBed: (b, rng, mix) => addUnder(b, groundLoop(b.length / SR, mains(rng)), mix),
   },
@@ -162,7 +162,7 @@ export const M5_DEFECTS: EarModule = {
   phones: 'any',
   playbackNote: 'Hum fundamentals are weak on phone speakers — the harmonics carry it.',
   // NEW COPY
-  listenFor: 'Steady or one-off? Steady (hum, buzz, hiss) or impulsive (click, pop, dropout)? Then how rough — smooth hum versus edgy buzz.',
+  listenFor: 'Steady or one-off? Steady (hum, buzz, hiss) or one-off (click, pop, dropout)? Then how rough — smooth hum versus edgy buzz.',
   levels: 4,
   levelNames: ['Six common defects, solo', 'All twelve, solo', 'Under a program bed', 'Buried in the program'],
   makeTrial: (level, seed) => {

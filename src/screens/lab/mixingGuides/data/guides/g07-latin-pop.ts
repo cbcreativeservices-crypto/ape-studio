@@ -274,17 +274,17 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The lead vocal is the product: warm low mids, clean presence, smooth air. Spanish has five pure vowels and syllable-timed delivery, so consonants (d, t, tapped r, final s) carry intelligibility; presence at 2–4 kHz matters more than extra top. Belted ballad climaxes are the danger zone; a dynamic EQ dip of 2–4 dB around 3–5 kHz that responds only when the singer pushes is the usual fix. Pitch correction is normal and expected in contemporary releases but should stay transparent on ballads; overtly tuned effects belong only in urban-pop crossovers. Doubles and harmonies are common in choruses, panned wide and tucked 6–10 dB under the lead. Live, artists use premium handheld condensers; with dancing singers on thrust stages, ring out every vocal position. A mic with a mute switch helps a singer who works near the PA avoid feedback. Keep a spare mic on a mirrored channel."
+      "text": "The lead vocal is the product: warm low mids, clean presence, smooth air. Spanish has five pure vowels and syllable-timed delivery, so consonants (d, t, tapped r, final s) carry intelligibility; presence at 2–4 kHz matters more than extra top. Belted ballad climaxes are the danger zone; a dynamic EQ dip of 2–4 dB around 3–5 kHz that responds only when the singer pushes is the usual fix. Pitch correction is normal and expected in contemporary releases but should stay transparent on ballads; overtly tuned effects belong only in urban-pop crossovers. Doubles and harmonies are common in choruses, panned wide and tucked 6–10 dB under the lead. Live, many artists use top handheld condensers and many use top dynamics; with dancing singers on thrust stages, ring out every vocal position. A mic with a mute switch helps a singer who works near the PA avoid feedback. Keep a spare mic on a mirrored channel."
     }
   ],
   "loudness": [
     {
       "label": "Live:",
-      "text": "Theater and arena shows usually run 96–102 dBA LAeq-15 at FOH with C-weighted levels near 112–120 dBC; dance-pop segments carry more sub, ballads less. Audience singing is extremely loud: arena shows have measured around 112–113 dBA at the console. Don’t chase the crowd; the audience is part of the mix. A widely used safe-listening limit caps average levels at 100 dBA LAeq-15, and common hearing-safety guidance allows only about 15 minutes at 100 dBA. Provide earplugs and protect your own hearing."
+      "text": "Theater and arena shows usually run 96–102 dBA LAeq-15 at FOH with C-weighted levels near 112–120 dBC; dance-pop segments carry more sub, ballads less. Audience singing is extremely loud: arena shows have measured around 112–113 dBA at the console. Don’t chase the crowd; the audience is part of the mix. The WHO safe-listening limit caps average levels at 100 dBA LAeq-15, and NIOSH advises no more than about 15 minutes a day at 100 dBA. Provide earplugs and protect your own hearing."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Dance-oriented Latin pop masters typically land at −9 to −7 LUFS-I, ballads at −12 to −9, with true peak at −1 dBTP (−2 dBTP when mastering louder than −14). Most streaming services normalize to −14 LUFS, so overly loud masters only lose punch. Played back at matched loudness, a louder, more limited version usually sounds less punchy and narrower."
+      "text": "Dance-oriented Latin pop masters typically land at −10 to −7 LUFS-I, ballads at −12 to −9, with true peak at −1 dBTP (−2 dBTP when mastering louder than −14). Most streaming services normalize to −14 LUFS, so overly loud masters only lose punch. Played back at matched loudness, a louder, more limited version usually sounds less punchy and narrower."
     }
   ],
   "liveStudio": {
@@ -322,7 +322,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "96–102 dBA Leq, venue limits",
-        "studio": "−10 to −7 LUFS-I, −2 dBTP"
+        "studio": "Often −10 to −7 LUFS-I, −2 dBTP (the loud end trades punch for level)"
       }
     ],
     "notes": []

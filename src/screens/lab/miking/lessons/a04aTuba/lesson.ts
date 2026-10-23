@@ -46,7 +46,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — about two feet above an upward bell aimed at its edge, or a foot or two from the bell a little off its axis — clear of the bell’s sway; then move the mic and see what changes.',
     credit: { scenarios: ['tu.place.1', 'tu.place.2', 'tu.place.3', 'tu.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A suggested zone is a place to begin, measured from a named part — the bell, or the tuba — not a rule. Aim across an upward bell, never down into it. Clearance comes first.',
+    takeaway: 'A suggested zone is a place to begin, measured from a named part — the bell, or the tuba — not a rule. Aim across an upward bell, seldom down into it. Clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -412,7 +412,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'A mic lowered into the bell, for the strongest signal', ok: false, power: 'none', feedback: 'Not into the bell: one local part, the air stream and the valves — and a risk to the tuba.' },
       { id: 'e', label: 'A clip on a tuning slide, close to the valves', ok: false, power: 'phantom', feedback: 'Slides bend easily and must never hold anything — and the valves are noise, not tuba.' },
     ],
-    reasons: [docReason('the bell'), clearReason('the bell’s sway, the valve hand and the slides'), POWER_REASON, { id: 'r.sub', label: 'I will listen with the player silent for the PA’s low end in the mic', role: 'optional', feedback: 'A fair live reason: the lowest octaves get past most patterns.' }, BRAND_REASON('tuba'), LOUD_REASON],
+    reasons: [docReason('the bell'), clearReason('the bell’s sway, the valve hand and the slides'), POWER_REASON, { id: 'r.sub', label: 'I will listen with the player silent for the PA’s low end in the mic', role: 'optional', feedback: 'A fair live reason: in the lowest octaves, many patterns reject little.' }, BRAND_REASON('tuba'), LOUD_REASON],
     explain: 'More than one setup passes this brief. What passes is the reasoning: a sensible starting point from its named part, clearance from the bell and the hands, and the power the mic needs.',
   },
   {
@@ -436,7 +436,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a mic from about 30 cm to about 60 cm from the bell. What changes?', options: ['More attack and valve noise', 'More of the whole tuba and the room', 'It depends on this tuba'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the player. Where will a supercardioid facing back at a front bell reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -458,7 +458,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Which way does a concert tuba’s bell point?',
     options: ['Up or to the front — it depends on the tuba', 'Only up, on concert and band tubas alike', 'Only forward, toward the audience'],
     correct: 'Up or to the front — it depends on the tuba',
-    explain: 'Orchestral tubas usually point up; tubas made for recording point to the front; older military ones pointed back. Find the bell before placing a mic.',
+    explain: 'Orchestral tubas usually point up; bell-front tubas, first made for early recording studios, point to the front; older military ones pointed back. Find the bell before placing a mic.',
     why: {
       'Only up, on concert and band tubas alike': 'Up is the usual orchestral form, but bell-front tubas are made too.',
       'Only forward, toward the audience': 'Front is one form; the usual concert tuba points up.',
@@ -522,7 +522,7 @@ const wedges: Wedge[] = [
     p: { x: 1250, y: 0, z: -1400 },
     lift: 150,
     faces: { x: -1, y: 0, z: 0 },
-    note: 'Off to one side, facing another player: well off the mic’s axis — and in the lowest octaves most patterns do not reject it much.',
+    note: 'Off to one side, facing another player: well off the mic’s axis. In the lowest octaves, many patterns do not reject it much.',
     prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' },
   },
 ];

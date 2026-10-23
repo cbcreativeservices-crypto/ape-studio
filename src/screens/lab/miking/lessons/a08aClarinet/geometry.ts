@@ -79,7 +79,7 @@ export const WORDS: WindPartWords = {
     lower: 'The lower joint, under the right hand: the lower tone holes and their keys. One third of the way up from the bell sits on this joint.',
     bell: 'The flared end. Only the lowest notes — every hole closed — leave mainly from here; most notes leave from open holes up the body.',
   },
-  keys: 'About twenty tone holes along the body, closed by the fingers, ring keys and padded keys on rods. As the player fingers each note, the first open hole moves — and the sound leaves there.',
+  keys: 'About two dozen tone holes along the body, closed by the fingers, ring keys and padded keys on rods. As the player fingers each note, the first open hole moves — and the sound leaves there.',
   exciter: { label: 'mouthpiece and reed', short: 'reed', role: 'The cane reed vibrates against the mouthpiece. Its edge, the player’s breath and the tonguing are heard close up.' },
   hands: 'Both hands cover the holes and work the keys — the left above, the right below, the thumbs behind. Nothing may sit in the fingers’ way.',
   player: 'The clarinettist, seated or standing. They breathe, phrase and move the bell — leave room.',

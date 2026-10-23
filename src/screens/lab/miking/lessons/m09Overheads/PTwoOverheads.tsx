@@ -120,7 +120,7 @@ export function PTwoOverheads({ lesson, art, answers, onAnswered, onInteractive,
     {
       kind: 'toggle',
       id: 'polarity',
-      label: B.polarity === 1 ? 'B POLARITY +' : 'B POLARITY −',
+      label: B.polarity === 1 ? 'MIC B POLARITY +' : 'MIC B POLARITY −',
       value: B.polarity === -1,
       onToggle: () => rig.setPolarity('B', B.polarity === 1 ? -1 : 1),
     },
@@ -129,7 +129,7 @@ export function PTwoOverheads({ lesson, art, answers, onAnswered, onInteractive,
     { k: 'SNARE B−A', v: signedMs(dSnare), sub: Math.abs(dSnare) <= 10 ? 'matched' : fmtLen(Math.abs(dSnare)), tint: Math.abs(dSnare) <= 10 ? '#5bff85' : undefined, flex: 1.15 },
     { k: 'KICK B−A', v: signedMs(dKick), sub: fmtLen(Math.abs(dKick)), flex: 1.1 },
     { k: '1ST NOTCH', v: equal ? 'NO COMB' : first == null ? '> 20 kHz' : `≈ ${fmtHz(first)}`, sub: srcRegion.label, flex: 1.2 },
-    { k: 'POLARITY', v: `B ${B.polarity === 1 ? '+' : '−'}`, flex: 0.8 },
+    { k: 'POLARITY', v: `MIC B ${B.polarity === 1 ? '+' : '−'}`, flex: 0.8 },
   ];
   const [wellW, setWellW] = useState(0);
   const combLabel = `Simplified two-mic sum for the ${srcRegion.label}: ${equal ? 'no path difference, no comb' : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}.`;
@@ -222,7 +222,7 @@ export function PTwoOverheads({ lesson, art, answers, onAnswered, onInteractive,
           </Card>
           <NowLine text={nowText(rig, ['A', 'B'])} />
           <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>{wellW > 0 ? <CombPanel rig={rig} source={src} w={wellW} h={150} label={combLabel} /> : null}</View>
-          <Body>{equal ? `No path difference for the ${srcRegion.label}: it reaches both mics at the same instant — no comb for this source.` : `B hears the ${srcRegion.label} ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} A. ${sEff === 1 ? 'Summed, notches fall at odd multiples of 1 ÷ (2 Δt).' : 'Summed as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
+          <Body>{equal ? `No path difference for the ${srcRegion.label}: it reaches both mics at the same instant — no comb for this source.` : `Mic B hears the ${srcRegion.label} ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} A. ${sEff === 1 ? 'Summed, notches fall at odd multiples of 1 ÷ (2 Δt).' : 'Summed as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
           {predicted != null && kickSeen ? <Note tone="ok">{`You predicted “${predicted}”. ${TWO_WORDS.reveal}`}</Note> : null}
           <Note tone="warn">{T.warn}</Note>
         </>

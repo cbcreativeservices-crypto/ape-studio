@@ -606,7 +606,7 @@ function F10Setups(p: PageProps) {
         <>
           <Card>
             <Point title="PERMISSION AND PRIVACY">Get permission for the place and the use — especially where people’s speech may be heard and recognised. A spatial take can hear conversations nearby.</Point>
-            <Point title="KEEP THE WAY CLEAR">Never block a public route with a stand or a wide array, and never leave stands unattended where people walk. Cables run out of the way and are secured.</Point>
+            <Point title="KEEP THE WAY CLEAR">Do not block a public route with a stand or a wide array unless the site has approved it and someone keeps the way safe. Do not leave stands unattended where people walk. Cables run out of the way and are secured.</Point>
             <Point title="STANDS, WIND AND WATER">Check the ground, weight or guy the stand in wind, strain-relieve the cables, cover every exposed capsule against wind — a windscreen is not waterproofing; follow the maker’s moisture limits.</Point>
             <Point title="POWER LINES">{SAFETY_WORDS.powerLine}</Point>
             <Point title="LIGHTNING">{SAFETY_WORDS.lightning}</Point>
@@ -884,7 +884,7 @@ function F10Placement(p: PageProps) {
     { title: 'WHERE TO BEGIN', text: 'At the listener’s point: where a listener would be for the experience you are making — in the middle of the square here, clear of the footpath.', view: 'top' as ViewId },
     { title: 'THE HEIGHT', text: `The ears about ${fmtMFt(EAR_STANDING)} up for a standing listener, about ${fmtMFt(EAR_SEATED)} seated — on a stable stand.`, view: 'side' as ViewId },
     { title: 'THE FRONT', text: 'The face (or the front mark, or the front Mid) toward the scene front: left and right labelled, the front written in the log.', view: 'top' as ViewId },
-    { title: 'CLEARANCE', text: 'Clear of the public footpath and of people, the stand weighted against wind, the cables secured — and nothing within 3 m (10 ft) of a power line, more for high-voltage lines.', view: 'top' as ViewId },
+    { title: 'CLEARANCE', text: 'Clear of the public footpath and of people, the stand weighted against wind, the cables secured — and nothing within 3 m (10 ft) of a power line, more for higher voltages or if unsure.', view: 'top' as ViewId },
     { title: 'THE DESTINATION', text: 'For a binaural head: headphones. Check the take on them before moving on — a pleasing headphone image is not proof of accurate direction for every listener.', view: 'top' as ViewId },
   ];
   const pc = pieces[ex];
@@ -1093,7 +1093,7 @@ function F10Placement(p: PageProps) {
         <>
           <Body>After our research, each blue zone is where we suggest you begin for that point of view — measured from the ground, facing the scene front. They are starting points, not rules: walk and listen at other places, and use your ears and the place. Experimentation is encouraged.</Body>
           <Body>Height, place and facing are separate decisions; change one at a time and log each — the front, the height, the channel map — with the take.</Body>
-          <Note tone="warn">{`Clearance comes first: never in a public route, the stand weighted against wind, nothing within 3 m (10 ft) of a power line (more for high-voltage lines), and inside at once if you hear thunder — ${SAFETY_WORDS.lightning.split(' — ')[0].toLowerCase()}.`}</Note>
+          <Note tone="warn">{`Clearance comes first: never in a public route, the stand weighted against wind, nothing within 3 m (10 ft) of a power line (more for higher voltages, or if unsure), and inside at once if you hear thunder — ${SAFETY_WORDS.lightning.split(' — ')[0].toLowerCase()}.`}</Note>
         </>
       ),
     },

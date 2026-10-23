@@ -34,7 +34,7 @@ const pages: LessonPages = {
     title: 'Where it sits',
     goal: 'Know the snare’s neighbours on the kit — the hi-hat above all — the player’s space and the sticks’ path, what a stage and a studio add, and what to do before any mic.',
     credit: { scenarios: ['sn.set.1', 'sn.set.2', 'sn.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'The near half of the snare is the sticks’ path: no mic, stand or cable goes there. The hi-hat sits just behind and above it. Ask the player first, and protect your hearing.',
+    takeaway: 'The near half of the snare is the sticks’ path: no mic, stand or cable goes there. The hi-hat sits just beside and above it. Ask the player first, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
@@ -140,7 +140,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The hi-hat sits close, beside and a little above the snare on the player’s left — which is why it is the neighbour a snare mic hears most, and why a top mic usually comes in from the front, between the hi-hat and the rack tom.',
     why: {
       'In front of it, out toward the audience side': 'The audience side, in front of the snare, is usually where a top mic comes in. The hi-hat is beside it, to the left.',
-      'Below it, down beside the snare stand on the floor': 'Its pedal is on the floor, but its cymbals sit above the snare, just behind it.',
+      'Below it, down beside the snare stand on the floor': 'Its pedal is on the floor, but its cymbals sit beside the snare and a little above it.',
     },
   },
   {
@@ -317,7 +317,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You flip the bottom mic’s polarity. What happens to the arrival-time difference?',
     options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so both of the arrivals now line up again', 'Cut in half: the flipped copy cancels half of it'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
-    explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
+    explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches and peaks swap places; Δt does not.',
     why: {
       'It drops to zero, so both of the arrivals now line up again': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
       'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
@@ -401,9 +401,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Top and bottom snare mics sound thin together. Which change removes the arrival-time difference itself?',
     options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on the bottom mic', 'Turning the bottom mic up until it matches the top'],
     correct: 'Moving a mic so the two paths are closer to equal',
-    explain: 'Only the paths set the delay. Polarity moves the notches (and answers the heads’ opposite start); level changes their depth; neither removes the delay.',
+    explain: 'Only the paths set the delay. Polarity swaps the notches and peaks (and answers the heads’ opposite start); level changes their depth; neither removes the delay.',
     why: {
-      'Flipping the polarity switch on the bottom mic': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
+      'Flipping the polarity switch on the bottom mic': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
       'Turning the bottom mic up until it matches the top': 'Level changes the depth of the notches, not where they are or the delay behind them.',
     },
   },
@@ -520,7 +520,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Supercardioid dynamic over the rim, aimed at the head, the hi-hat off to one side of its rear', ok: true, power: 'none', feedback: 'A suggested starting point; the hi-hat sits where a supercardioid rejects most.' },
       { id: 'c', label: 'Clip-on dynamic clamped to the rim, 3 to 5 cm above the head, angled 30 to 60° from straight down', ok: true, power: 'none', feedback: 'A suggested starting point, low and clear of the rimshots — with a clamp that suits the hoop.' },
       { id: 'd', label: 'Small dynamic 3 cm over the middle of the head, for the most crack', ok: false, power: 'none', feedback: 'The middle of the head is the sticks’ path: the mic would be struck. Stay over the rim.' },
-      { id: 'e', label: 'Rim condenser laid flat on the head so that it cannot move', ok: false, power: 'phantom', feedback: 'Never on the head: it touches a moving part, and its head should be angled, not flat to the drum.' },
+      { id: 'e', label: 'Rim condenser laid flat on the head so that it cannot move', ok: false, power: 'phantom', feedback: 'Not on the drumhead: the mic would touch a moving part. Angle the mic at the head instead of laying it flat.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.null', label: 'Aiming its rejection toward the hi-hat helps separation', role: 'optional', feedback: 'A fair live reason — though some hi-hat is not automatically a defect.' }, BRAND_REASON, LOUD_REASON],
     explain: 'More than one setup passes this brief. What passes is the reasoning: a sensible starting point from its named surface, clearance from the sticks and the hi-hat, and power that matches the mic.',
@@ -547,7 +547,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the mic from close over the rim to a little farther away. What changes?', options: ['More snap from the stick', 'More of the whole drum and the kit', 'It depends on this drum'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this supercardioid reject the hi-hat best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
-  twoMic: { prompt: 'If you flip the bottom mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the bottom mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 /* THE QUICK CHECK (LESSON_JOURNEY §2.5): two items per foundation page;
@@ -620,9 +620,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your snare mic is rated to a very high maximum SPL. What does that tell you about standing by the kit through a long soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the snare stays below the mic’s rating', 'It is safe as long as the mic is nearer the drum than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the snare stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the snare stays below the mic’s rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is nearer the drum than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -633,12 +633,12 @@ const toLesson = (x: number, y: number, z: number) => ({ x: x - S0_KIT.x, y: y -
 const wedges: Wedge[] = [
   {
     id: 'hihat',
-    label: 'the hi-hat, just behind and above the snare',
+    label: 'the hi-hat, just beside and above the snare',
     short: 'HI-HAT',
     p: NEIGHBOURS.hihat.c,
     lift: 0,
     faces: { x: 0, y: -1, z: 0 },
-    note: 'It sits close to the snare, a little behind and above it — the case a pattern’s rejection can help with.',
+    note: 'It sits close to the snare, just beside and a little above it — the case a pattern’s rejection can help with.',
     prov: { kind: 'illustrative', reason: 'the shared 5-piece kit (kit/GEOMETRY_PROPOSAL.md §2)' },
     glyph: 'none',
   },

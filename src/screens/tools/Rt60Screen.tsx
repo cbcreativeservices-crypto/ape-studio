@@ -669,7 +669,7 @@ export function Rt60Screen({ navigation }: Props) {
                 {rtState === 2
                   ? 'Capturing 3.5 seconds of decay. Keep quiet and keep the phone still.'
                   : rtState === 1
-                    ? 'Clap hard, pop a balloon, or use a clapper — one loud, SHORT sound. Recording starts by itself at the trigger (about −35 dBFS).'
+                    ? 'Clap hard, pop a balloon held at arm’s length and away from anyone’s ears, or use a clapper — one loud, SHORT sound. Recording starts by itself at the trigger (about −35 dBFS).'
                     : 'Arm the capture, then make one loud, short sound.'}
               </Text>
               {meter && (

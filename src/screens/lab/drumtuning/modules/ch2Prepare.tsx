@@ -365,13 +365,13 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
               ]} />
               <SectionTitle>SAY IT BEFORE YOU READ IT</SectionTitle>
               <RecallCard q="A drum will not hold tuning. Name two hardware causes to check before you retune." a="A rod backing out under vibration; a worn or missing washer, a stripped lug insert, a cracked casing." />
-              <RecallCard q="Why tighten in an opposing (star) pattern?" a="Opposite pairs keep the hoop parallel to the edge, so the head rises evenly and never wrinkles on one side." />
+              <RecallCard q="Why tighten in an opposing (star) pattern?" a="Opposite pairs keep the hoop parallel to the edge, so the head rises evenly instead of wrinkling on one side." />
               <RecallCard q="What is the known condition, and when do you go back to it?" a="Every rod finger-tight, the head flat. Go back to it when a drum is a mess instead of chasing one lug at a time." />
               <SectionTitle>KEY IDEAS</SectionTitle>
               <Card>
                 <Body>• Know the drum and the goal before turning a rod.</Body>
                 <Body>• Rods, lugs, hoops, head, bearing edge — hardware faults masquerade as tuning faults.</Body>
-                <Body>• A head has a working range; drum key and fingers only.</Body>
+                <Body>• A head has a working range; turn rods with a drum key and your fingers only, not pliers or a drill.</Body>
               </Card>
               <KeyTerms terms={DRUM_KEY_TERMS.prepare} />
               <Body>TRY NEXT: on the checklist, walk every rod BEFORE you read the map — the loose rod and the uneven head look alike on the map and nowhere else.</Body>

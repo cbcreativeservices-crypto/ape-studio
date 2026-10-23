@@ -236,7 +236,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Can the screened condenser start 10 cm from the lips?',
     options: ['No — its screen, 10 cm ahead, would reach the face', 'Yes — the screen can rest against the singer’s lips', 'Yes — as long as the boom reaches far enough'],
     correct: 'No — its screen, 10 cm ahead, would reach the face',
-    explain: 'The screen sits at least 10 cm in front of the mic, so the mic itself starts about 15 cm out. Closer than that, use a mic with its own windscreen — the handheld’s ball grille is one.',
+    explain: 'Here the screen sits 10 cm in front of the mic, so the mic itself starts about 15 cm out. Some setups use a smaller gap, but for a much closer sound use a mic with its own windscreen — the handheld’s ball grille is one.',
     why: {
       'Yes — the screen can rest against the singer’s lips': 'Nothing touches the face — and a screen on the lips would block the voice it is there to protect.',
       'Yes — as long as the boom reaches far enough': 'A boom reaches easily; it is the screen in front that runs out of room.',
@@ -476,7 +476,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a screened mic from 25 cm to 15 cm on the mouth’s axis. What changes?', options: ['More low end', 'More room', 'It depends on this voice'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the singer. Where will a supercardioid aimed at the mouth reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

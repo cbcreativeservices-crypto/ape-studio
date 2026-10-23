@@ -16,7 +16,7 @@ import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 /** The words an item needs: "hi-hat", "the hi-hats", "a hi-hat mic". */
 export type CymWords = { pfx: string; one: string; the: string; mic: string };
 
-export const HEARING_EXPLAIN = 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens. Cymbals are among the loudest things on a stage: keep soundcheck short and use hearing protection.';
+export const HEARING_EXPLAIN = 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens. Cymbals are among the loudest things on a stage: keep soundcheck short and use hearing protection.';
 
 /** THE SETTING: a mic's max SPL is not a hearing limit. */
 export function hearingCheck(w: CymWords): MikingScenario {

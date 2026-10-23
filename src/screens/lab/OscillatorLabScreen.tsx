@@ -81,7 +81,7 @@ const WAVE_BLURBS: Record<string, string> = {
   square: 'Odd harmonics at 1/n: hollow, reedy, strong. Watch the recipe bars — every even slot is empty.',
   triangle: 'Odd harmonics fading fast (1/n²): the softest of the classic shapes, barely more than a sine.',
   saw: 'Every harmonic at 1/n — the brightest, fullest classic wave. The go-to raw material for filtering.',
-  pulse: 'A 25% pulse: the duty cycle CANCELS every 4th harmonic. Compare it to square and hear what goes missing.',
+  pulse: 'A 25% pulse: the duty cycle CANCELS every 4th harmonic. Compare it to saw and see which bars go missing.',
 };
 
 const WAVES: { key: PresetKey; label: string; lessonKey: string }[] = [
@@ -365,7 +365,9 @@ export function OscillatorLabScreen() {
             <Text style={styles.caption}>
               {additiveReady
                 ? `PLAY (header ▶) outputs ${GEN_LEVEL_DB} dBFS · uncalibrated. Band-limited by construction — harmonics at/above Nyquist are omitted, never aliased (that omission is the anti-aliasing lesson).`
-                : `This engine build predates the additive generator — audio is the fundamental SINE only; square/saw/triangle/pulse stay visual until the v3 dev build is installed.`}
+                : __DEV__
+                  ? `This engine build predates the additive generator — audio is the fundamental SINE only; square/saw/triangle/pulse stay visual until the v3 dev build is installed.`
+                  : `This version of the app plays the fundamental SINE only; square, saw, triangle and pulse stay visual. Update the app to hear them.`}
             </Text>
             <Text style={styles.advisory}>{LOW_FREQ_ADVISORY}</Text>
             {genError ? <Text style={styles.error}>{genError}</Text> : null}
@@ -375,11 +377,13 @@ export function OscillatorLabScreen() {
 
       {/* FM / AM — honest status, no dead controls (§1.7). */}
       <View style={styles.devNote}>
-        <Text style={styles.devNoteHead}>FM · AM — NEEDS NEW NATIVE DSP</Text>
+        <Text style={styles.devNoteHead}>{__DEV__ ? 'FM · AM — NEEDS NEW NATIVE DSP' : 'FM · AM — NOT IN THIS LAB'}</Text>
         <Text style={styles.caption}>
-          Frequency and amplitude modulation are not in the current ape-dsp engine, so they have no
-          controls here yet. The theory is in this lab’s lesson (ⓘ) — sidebands at fc ± n·fm (FM,
-          Bessel amplitudes) vs one pair at fc ± fm (AM).
+          {__DEV__
+            ? 'Frequency and amplitude modulation are not in the current ape-dsp engine, so they have no controls here yet. '
+            : 'Frequency and amplitude modulation have no controls in this lab. '}
+          The theory is in this lab’s lesson (ⓘ) — sidebands at fc ± n·fm (FM, Bessel amplitudes) vs
+          one pair at fc ± fm (AM).
         </Text>
       </View>
 

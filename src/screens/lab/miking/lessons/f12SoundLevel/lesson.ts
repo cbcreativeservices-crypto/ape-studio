@@ -36,7 +36,7 @@ const pages: LessonPages = {
     title: 'Before any meter',
     goal: 'Settle the question, the descriptor and the safety of every position before the tripod goes up.',
     credit: { scenarios: ['sl.set.1', 'sl.set.2', 'sl.set.3'], note: 'Answer the three checks.' },
-    takeaway: 'The question, the receiver, the descriptor and the window first. Positions you may use and can reach safely; at least 3 m (10 ft) from power lines, more for high-voltage ones; inside at once when thunder is heard.',
+    takeaway: 'The question, the receiver, the descriptor and the window first. Positions you may use and can reach safely; at least 3 m (10 ft) from power lines, more for higher voltages or if unsure; inside at once when thunder is heard.',
   },
   microphone: {
     title: 'The meter’s settings',
@@ -250,7 +250,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'sl.ctx.1',
     page: 'context',
-    prompt: 'Total 62 dB with the source running, 56 dB with it stopped. What is the source alone?',
+    prompt: 'Total LAeq 62 dB with the source running, 56 dB with it stopped. What is the source alone?',
     options: ['About 60.7 dB, by energy subtraction', 'Exactly 6 dB, the total minus the background', 'About 59 dB: the total minus half the difference'],
     correct: 'About 60.7 dB, by energy subtraction',
     explain: 'The total holds both energies: 10·log10(10^6.2 − 10^5.6) ≈ 60.7 dB. Plain dB subtraction is not a level at all.',

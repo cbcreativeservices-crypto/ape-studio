@@ -266,11 +266,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Most indie pop plays clubs, theaters and festival side stages. Aim for about 90–97 dBA LAeq-15 at FOH, with C-weighted levels around 105–115 dBC and a C-minus-A gap well under 20 dB; this music needs body, not sub pressure. Peaks of 105–108 dBA are plenty; quiet sections may drop to the low 80s. Front fills help vocal clarity at the barrier. Festivals and support slots often enforce A-weighted limits, so control 1–4 kHz energy. By common hearing-safety guidance, 94 dBA is safe for about an hour."
+      "text": "Most indie pop plays clubs, theaters and festival side stages. Aim for about 90–97 dBA LAeq-15 at FOH, with C-weighted levels around 105–115 dBC and a C-minus-A gap of no more than about 15–18 dB; this music needs body, not sub pressure. Peaks of 105–108 dBA are plenty; quiet sections may drop to the low 80s. Front fills help vocal clarity at the barrier. Festivals and support slots often enforce A-weighted limits, so control 1–4 kHz energy. NIOSH advises no more than about an hour a day at 94 dBA."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Typical integrated loudness is −12 to −9 LUFS-I; lo-fi and dream pop often land at −13 to −10, keeping transients and reverb tails open. Use true peak −1 dBTP, or −2 dBTP if louder than −14 LUFS. Most streaming services normalize to about −14 LUFS, so loud masters gain nothing. A PLR of 10–14 dB (at −2 dBTP that means a master at about −12 LUFS-I or quieter) and a loudness range of 5–9 LU suit the style."
+      "text": "Typical integrated loudness is −12 to −9 LUFS-I; lo-fi and dream pop often land at −13 to −10, keeping transients and reverb tails open. Use true peak −1 dBTP, or −2 dBTP if louder than −14 LUFS. Most streaming services normalize to about −14 LUFS, so loud masters gain nothing. At −2 dBTP these levels give a PLR of about 7–11 dB, and quieter masters keep more punch; a loudness range of 5–9 LU suits the style."
     }
   ],
   "liveStudio": {

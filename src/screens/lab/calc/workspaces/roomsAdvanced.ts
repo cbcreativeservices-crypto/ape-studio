@@ -5,7 +5,7 @@
  * are teaching models, not standards-compliant measurements.
  */
 import type { Workspace } from '../calcTypes';
-import { RHO_AIR_20C, SABINE_K, fmt, speedOfSoundAir } from '../calcUnits';
+import { AIR_TEMP_FIELD, fmt, RHO_AIR_20C, SABINE_K, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -29,6 +29,18 @@ function isPrime(x: number): boolean {
   if (!Number.isInteger(x) || x < 2 || x > QRD_MAX_N) return false;
   for (let i = 2; i * i <= x; i++) if (x % i === 0) return false;
   return true;
+}
+
+/** The smallest surface that can enclose a volume is a sphere's:
+ *  S = (36π)^(1/3)·V^(2/3) ≈ 4.836·V^(2/3) (the isoperimetric inequality). Less
+ *  surface than that is no room at all (D53, audit R2 2026-10-23: 80 m² was
+ *  accepted as the whole boundary of a 120 m³ room). */
+const MIN_SURFACE_K = Math.cbrt(36 * Math.PI);
+function surfaceTooSmall(V: number, S: number): string | null {
+  const sMin = MIN_SURFACE_K * Math.pow(V, 2 / 3);
+  return S < sMin
+    ? `${fmt(S)} m² of surface cannot enclose ${fmt(V)} m³ — even a sphere needs about ${fmt(sMin)} m², and a box room at least ${fmt(6 * Math.pow(V, 2 / 3))} m². Check both numbers.`
+    : null;
 }
 
 /** Well count for the QRD formulas — throws (→ runCompute's "no valid result"
@@ -87,10 +99,10 @@ const EYRING: Workspace = {
     'ignore air absorption. Formal RT60 is measured per ISO 3382.',
   glossary: ['Reverberation Time', 'RT60', 'Absorption Coefficient', 'Reverberation', 'Sabine equation'],
   fields: [
-    { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '120', help: 'Length × width × height of the room.', warn: { test: (x) => x <= 0, msg: 'Volume must be greater than zero.' } },
-    { key: 'surf', name: 'TOTAL SURFACE AREA', quantity: 'area', placeholder: '160', help: 'Sum of all boundary surfaces (walls, floor, ceiling).', warn: { test: (x) => x <= 0, msg: 'Surface area must be greater than zero.' } },
+    { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '120', help: 'Length × width × height of the room.', positive: true, warn: { test: (x) => x <= 0, msg: 'Volume must be greater than zero.' } },
+    { key: 'surf', name: 'TOTAL SURFACE AREA', quantity: 'area', placeholder: '160', help: 'Sum of all boundary surfaces (walls, floor, ceiling).', positive: true, warn: { test: (x) => x <= 0, msg: 'Surface area must be greater than zero.' } },
     { key: 'aBar', name: 'AVERAGE ABSORPTION (ā)', quantity: 'number', nonNegative: true, placeholder: '0.3', help: 'Area-weighted mean absorption coefficient, 0 (reflective) to ~1 (fully absorptive).', warn: { test: (x) => x <= 0 || x >= 1, msg: 'Average absorption must be between 0 and 1 (exclusive).' } },
-    { key: 'rtTarget', name: 'TARGET RT60', quantity: 'time', defaultUnit: 's', placeholder: '0.3', help: 'A reverberation time you want to design toward.', warn: { test: (x) => x <= 0, msg: 'RT60 must be greater than zero.' } },
+    { key: 'rtTarget', name: 'TARGET RT60', quantity: 'time', defaultUnit: 's', placeholder: '0.3', help: 'A reverberation time you want to design toward.', positive: true, warn: { test: (x) => x <= 0, msg: 'RT60 must be greater than zero.' } },
   ],
   functions: [
     {
@@ -103,6 +115,7 @@ const EYRING: Workspace = {
       explain:
         'Sabine’s reverberation formula reads long once a room is fairly dead. Eyring corrects it by using −ln(1−ā) in place of the raw average absorption, which matters as absorption climbs. This gives the Eyring RT60 and how far Sabine over-estimates it for the same room. It assumes a diffuse field and ignores air absorption.',
       keySymbols: ['·', '/', '−', 'ln', 'ā'],
+      refuse: (v) => surfaceTooSmall(n(v.vol), n(v.surf)),
       compute: (v) => {
         const V = n(v.vol);
         const S = n(v.surf);
@@ -145,9 +158,19 @@ const EYRING: Workspace = {
       plainFormula:
         'The required average absorption equals one minus e raised to the power of negative 0.161 times the volume, divided by the surface area times the target reverberation time.',
       explain:
-        'The reverse of the Eyring model: the area-averaged absorption a room needs to reach your target RT60. It rearranges the Eyring equation to solve for absorption, then expresses that as a total absorption area (metric sabins) spread over the room’s surface.',
+        'The reverse of the Eyring model: the area-averaged absorption a room needs to reach your target RT60. It rearranges the Eyring equation to solve for absorption, then multiplies it by the room’s surface — the sum of area × α the surfaces must add up to.',
       keySymbols: ['ā', '−', 'e', '·', '/'],
       note: 'The area-averaged absorption the room needs to hit your target RT60, by the Eyring model.',
+      refuse: (v) => {
+        const V = n(v.vol);
+        const S = n(v.surf);
+        const small = surfaceTooSmall(V, S);
+        if (small) return small;
+        // ā = 1 is every surface absorbing all sound (audit R2, 2026-10-23):
+        // a target that short printed "ā 1" as if it could be built.
+        const a = 1 - Math.exp((-SABINE_K * V) / (S * n(v.rtTarget)));
+        return a >= 1 ? 'That target needs every surface to absorb all the sound that hits it (ā = 1). No treatment can reach it — lengthen the target RT60.' : null;
+      },
       compute: (v) => {
         const V = n(v.vol);
         const S = n(v.surf);
@@ -156,7 +179,7 @@ const EYRING: Workspace = {
         const sabines = S * a; // total absorption in sabins (metric)
         return [
           { label: 'REQUIRED AVERAGE ABSORPTION ā', value: a, quantity: 'number' },
-          { label: 'TOTAL ABSORPTION', value: sabines, quantity: 'area', unit: 'm2', chainable: false },
+          { label: 'SUM OF AREA × α NEEDED (S·ā)', value: sabines, quantity: 'area', unit: 'm2', chainable: false },
         ];
       },
       steps: (v) => {
@@ -166,7 +189,7 @@ const EYRING: Workspace = {
         const a = 1 - Math.exp((-SABINE_K * V) / (S * rt));
         return [
           `Rearranging Eyring: ā = 1 − exp(−0.161 × ${fmt(V)} ÷ (${fmt(S)} × ${fmt(rt)})) = ${fmt(a)}.`,
-          `That is ${fmt(S * a)} m² of total (metric) absorption spread over ${fmt(S)} m² of surface.`,
+          `That is ${fmt(S * a)} m² of area × α spread over ${fmt(S)} m² of surface. Sabine would ask for ${fmt((SABINE_K * V) / rt)} m² for the same room and target — Eyring needs less because it does not over-count a dead room.`,
         ];
       },
     },
@@ -202,9 +225,9 @@ const DIFFUSER: Workspace = {
   glossary: ['Diffusion', 'Reflection (acoustics)', 'Wavelength', 'Comb Filtering', 'Standing wave'],
   fields: [
     { key: 'N', name: 'PRIME N (well count)', quantity: 'number', nonNegative: true, integer: true, placeholder: '7', help: 'Number of wells per period — MUST be prime (7, 11, 13, 17, 23…).', warn: { test: (x) => !isPrime(x), msg: 'N must be a prime number for a quadratic-residue diffuser — QRDs use small primes (7…199).' } },
-    { key: 'f0', name: 'DESIGN (LOW) FREQUENCY', quantity: 'frequency', placeholder: '500', help: 'Lowest frequency you want diffused — sets the deepest well.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
-    { key: 'w', name: 'WELL WIDTH', quantity: 'length', defaultUnit: 'cm', placeholder: '5', help: 'Width of each well — sets the high-frequency diffusion limit.', warn: { test: (x) => x <= 0, msg: 'Well width must be greater than zero.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound.' },
+    { key: 'f0', name: 'DESIGN (LOW) FREQUENCY', quantity: 'frequency', placeholder: '500', help: 'Lowest frequency you want diffused — sets the deepest well.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'w', name: 'WELL WIDTH', quantity: 'length', defaultUnit: 'cm', placeholder: '5', help: 'Width of each well — sets the high-frequency diffusion limit.', positive: true, warn: { test: (x) => x <= 0, msg: 'Well width must be greater than zero.' } },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
   ],
   functions: [
     {
@@ -217,6 +240,12 @@ const DIFFUSER: Workspace = {
       explain:
         'A quadratic-residue diffuser is a row of wells whose depths follow the number-theory sequence n² mod N for a prime N, which scatters sound evenly over a band. The well DEPTHS set the low edge of diffusion (the design frequency); the well WIDTH sets the high edge. N must be prime for the pattern to spread energy evenly.',
       keySymbols: ['λ', '·', '/', 'c', 'x²', 'x₁'],
+      // Not a QRD unless N is prime (audit R2, 2026-10-23): N = 14 printed a
+      // full well table beside "N must be a prime number".
+      refuse: (v) =>
+        isPrime(n(v.N))
+          ? null
+          : `${fmt(n(v.N))} is not a prime number (or is above ${QRD_MAX_N}), so this is no quadratic-residue diffuser. Use a prime such as 7, 11, 13 or 17.`,
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const N = qrdN(v.N);
@@ -290,13 +319,15 @@ const ABSORBER: Workspace = {
     'and construction — measure the built absorber.',
   glossary: ['Absorption Coefficient', 'Resonance', 'Room Mode', 'Standing wave', 'Reverberation'],
   fields: [
-    { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', nonNegative: true, placeholder: '5', help: 'Surface mass of the membrane, kilograms per square metre.', warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
-    { key: 'gap', name: 'AIR GAP DEPTH', quantity: 'length', defaultUnit: 'cm', placeholder: '5', help: 'Depth of the sealed air cavity behind the panel.', warn: { test: (x) => x <= 0, msg: 'Gap must be greater than zero.' } },
-    { key: 'openPct', name: 'PERFORATION (open area)', quantity: 'percent', nonNegative: true, placeholder: '5', help: 'Fraction of the panel that is open holes, in percent.', warn: { test: (x) => x <= 0 || x >= 100, msg: 'Open area must be between 0 and 100%.' } },
-    { key: 'depth', name: 'CAVITY DEPTH', quantity: 'length', defaultUnit: 'cm', placeholder: '10', help: 'Depth of the air cavity behind the perforated panel.', warn: { test: (x) => x <= 0, msg: 'Depth must be greater than zero.' } },
-    { key: 'thick', name: 'PANEL THICKNESS', quantity: 'length', defaultUnit: 'mm', placeholder: '12', help: 'Thickness of the perforated panel.', warn: { test: (x) => x <= 0, msg: 'Thickness must be greater than zero.' } },
-    { key: 'hole', name: 'HOLE DIAMETER', quantity: 'length', defaultUnit: 'mm', placeholder: '8', help: 'Diameter of each perforation.', warn: { test: (x) => x <= 0, msg: 'Hole diameter must be greater than zero.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound (Helmholtz).' },
+    { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', nonNegative: true, placeholder: '5', help: 'Surface mass of the membrane, kilograms per square metre.', positive: true, warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
+    { key: 'gap', name: 'AIR GAP DEPTH', quantity: 'length', defaultUnit: 'cm', placeholder: '5', help: 'Depth of the sealed air cavity behind the panel.', positive: true, warn: { test: (x) => x <= 0, msg: 'Gap must be greater than zero.' } },
+    // D53 (audit R2, 2026-10-23): 0 % is no Helmholtz absorber, and no panel is
+    // more than 100 % holes — both refused in words, never "0 Hz" / "284700 Hz".
+    { key: 'openPct', name: 'PERFORATION (open area)', quantity: 'percent', nonNegative: true, positive: 'A Helmholtz absorber needs holes — enter an open area above 0 %, or use the panel absorber card.', range: [0, 100], rangeMsg: 'Open area cannot be more than 100 % — the holes cannot add up to more than the panel. Most perforated panels are 1 to 20 % open.', placeholder: '5', help: 'Fraction of the panel that is open holes, in percent.', warn: { test: (x) => x <= 0 || x >= 100, msg: 'Open area must be between 0 and 100%.' } },
+    { key: 'depth', name: 'CAVITY DEPTH', quantity: 'length', defaultUnit: 'cm', placeholder: '10', help: 'Depth of the air cavity behind the perforated panel.', positive: true, warn: { test: (x) => x <= 0, msg: 'Depth must be greater than zero.' } },
+    { key: 'thick', name: 'PANEL THICKNESS', quantity: 'length', defaultUnit: 'mm', placeholder: '12', help: 'Thickness of the perforated panel.', positive: true, warn: { test: (x) => x <= 0, msg: 'Thickness must be greater than zero.' } },
+    { key: 'hole', name: 'HOLE DIAMETER', quantity: 'length', defaultUnit: 'mm', placeholder: '8', help: 'Diameter of each perforation.', positive: true, warn: { test: (x) => x <= 0, msg: 'Hole diameter must be greater than zero.' } },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound (Helmholtz).' },
   ],
   functions: [
     {
@@ -386,7 +417,7 @@ const TRANSMISSION: Workspace = {
   mistakes: [
     'Expecting mass law to hold everywhere — near the panel’s coincidence (critical) frequency TL dips sharply below the prediction.',
     'Adding a second identical leaf tight against the first — you gain mass (~6 dB) but not the far bigger benefit of a decoupled, air-gapped double wall.',
-    'Quoting one TL number as if isolation were flat — it rises ~6 dB/octave; bass is always the weakest link.',
+    'Quoting one TL number as if isolation were flat — by the mass law it rises ~6 dB/octave, so bass is most often the weakest link.',
   ],
   warnings:
     'Field-incidence mass law: TL = 20·log₁₀(m·f) − 47 (m in kg/m², f in Hz) — the normal-incidence ' +
@@ -399,9 +430,9 @@ const TRANSMISSION: Workspace = {
     'performance is measured (ASTM E90 / STC, ISO 10140), not computed here.',
   glossary: ['Transmission Loss', 'Decibel', 'Sound Isolation', 'Mass Law', 'Frequency'],
   fields: [
-    { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', nonNegative: true, placeholder: '25', help: 'Surface mass of the wall/panel, kilograms per square metre.', warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
-    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '125', help: 'The frequency you want the isolation at.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
-    { key: 'tlTarget', name: 'TARGET TRANSMISSION LOSS', quantity: 'db', nonNegative: true, placeholder: '40', help: 'An isolation figure (in dB) you want to achieve.', warn: { test: (x) => x <= 0, msg: 'Target TL must be greater than zero.' } },
+    { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', nonNegative: true, placeholder: '25', help: 'Surface mass of the wall/panel, kilograms per square metre.', positive: true, warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
+    { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '125', help: 'The frequency you want the isolation at.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
+    { key: 'tlTarget', name: 'TARGET TRANSMISSION LOSS', quantity: 'db', nonNegative: true, placeholder: '40', help: 'An isolation figure (in dB) you want to achieve.', positive: true, warn: { test: (x) => x <= 0, msg: 'Target TL must be greater than zero.' } },
   ],
   functions: [
     {
@@ -457,6 +488,12 @@ const TRANSMISSION: Workspace = {
       explain:
         'The reverse of the mass-law calculation: the surface mass a wall needs to reach a target isolation at a given frequency. If the mass it demands is impractical, the fix isn’t more drywall — it’s decoupling and an air gap, which the mass law alone cannot describe.',
       keySymbols: ['x²', '/', 'f'],
+      // A target whose mass overflows (audit R2, 2026-10-23) got the generic
+      // "check for zeros" error, which names the wrong cause.
+      refuse: (v) =>
+        Number.isFinite(Math.pow(10, (n(v.tlTarget) + 47) / 20))
+          ? null
+          : 'That target is far beyond any real wall — the mass it needs is larger than any number this app can show. Enter a smaller target.',
       compute: (v) => {
         const tl = n(v.tlTarget);
         const f = n(v.f);

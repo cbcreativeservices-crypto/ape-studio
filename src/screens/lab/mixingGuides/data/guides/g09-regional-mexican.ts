@@ -246,7 +246,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Pitch correction",
         "appliedTo": "Tumbado (trap-flavored corrido) and modern banda (Mexican brass band) vocals",
-        "setting": "Fast retune (10–30 ms) on tumbados (trap-flavored corridos); slow/transparent elsewhere",
+        "setting": "Fast retune (about 0–20 ms) on tumbados (trap-flavored corridos); slow/transparent elsewhere",
         "amount": "Audible on tumbados is genre-appropriate; inaudible on mariachi"
       },
       {
@@ -266,11 +266,11 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Mariachi restaurants and weddings run 88–95 dBA; theater mariachi and norteño (northern Mexican accordion music) 92–98 dBA LAeq-15; banda (Mexican brass band), palenque (cockfight-arena venue) and arena shows 98–103 dBA with 112–120 dBC and peaks of 110–115 dBA. The low end is tuba-and-tambora driven, not EDM sub; a C-minus-A gap over about 18 dB means too much sub. A banda horn line on stage is already loud, so in small rooms you may be reinforcing only the vocal and tuba. Cardioid sub arrays help monitor engineers working with 17-plus musicians. Common hearing-safety guidance sets 85 dBA over 8 hours as the hazard threshold with a 3 dB exchange rate, so 100 dBA is safe for only about 15 minutes; offer earplugs and wear your own."
+      "text": "Mariachi restaurants and weddings run 88–95 dBA; theater mariachi and norteño (northern Mexican accordion music) 92–98 dBA LAeq-15; banda (Mexican brass band), palenque (cockfight-arena venue) and arena shows 98–103 dBA with 112–120 dBC and peaks of 110–115 dBA. The low end is tuba-and-tambora driven, not EDM sub; a C-minus-A gap over about 18 dB means too much sub. A banda horn line on stage is already loud, so in small rooms you may be reinforcing only the vocal and tuba. Cardioid sub arrays help monitor engineers working with 17-plus musicians. NIOSH recommends 85 dBA for 8 hours, halving the time for every 3 dB above that, so it allows about 15 minutes a day at 100 dBA; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Offer earplugs and wear your own."
     },
     {
       "label": "Studio / streaming:",
-      "text": "Banda and norteño masters typically land at −10 to −8 LUFS-I, tumbados (trap-flavored corridos) −9 to −7, mariachi and traditional recordings −14 to −11. Use −1 dBTP, or −2 dBTP for masters louder than −14 LUFS (a common streaming recommendation). Streaming normalizes to about −14 LUFS, so excess limiting only dulls the brass. Aim for a PLR of 9–12 dB on acoustic styles to keep horn transients alive."
+      "text": "Banda and norteño masters typically land at −10 to −8 LUFS-I, tumbados (trap-flavored corridos) −9 to −7, mariachi and traditional recordings −14 to −11. Use −1 dBTP, or −2 dBTP for masters louder than −14 LUFS (a common streaming recommendation). Streaming normalizes to about −14 LUFS, so excess limiting only dulls the brass. On mariachi and traditional recordings, aim for a PLR of 9–12 dB to keep horn transients alive; louder banda masters at −2 dBTP leave only 6–8 dB."
     }
   ],
   "liveStudio": {

@@ -55,7 +55,7 @@ const { LESSONS, lessonsOf, readyLabs, labMeta } = await import('../src/screens/
 
 const near = (a: number, b: number, tol = 1e-9) => Math.abs(a - b) <= tol;
 /** Makers, models and sources met in THIS research (beside the shared lists). */
-const KEYS_NAMES = /\b(MK ?8|Stage ?61|Fender|Vintage Vibe|Tropical Fish|Vari-?Pan|Deluxe|200A|Shure|PGA ?27|SM ?57|NIOSH|OSHA|CBS|V8)\b/;
+const KEYS_NAMES = /\b(MK ?8|Stage ?61|Fender|Vintage Vibe|Tropical Fish|Vari-?Pan|Deluxe|200A|Shure|PGA ?27|SM ?57|CBS|V8)\b/;
 const KEYS_LESSONS = ['I11a', 'I11b'];
 
 describe('the sourced numbers, converted exactly; drawing defaults flagged', () => {

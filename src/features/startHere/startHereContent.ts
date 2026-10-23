@@ -276,7 +276,7 @@ export const STATIONS: readonly Station[] = [
     name: 'Speaker',
     form: 'sound',
     follow: 'The speaker does the microphone’s job in reverse: the signal drives its cone back and forth, and the moving cone makes sound in the air again. Audio becomes sound here.',
-    job: 'A speaker converts an audio signal back into sound. Many speakers have the amplifier that powers them built in; others are driven by a separate amplifier.',
+    job: 'A speaker converts an audio signal back into sound. The speaker in this path is a powered speaker: its amplifier is built in, so the mixer can feed it directly. Other speakers need a separate amplifier between the mixer and the speaker.',
     io: 'The speaker has an INPUT: the cable from the mixer plugs in here. Sound comes out of the front.',
   },
   {
@@ -788,7 +788,7 @@ export const SECTIONS: readonly StartSection[] = [
           'Before you go, one habit that protects everything else you will learn:',
           'Keep headphones and speakers at a comfortable level. If you have to raise your voice to talk over the sound, or your ears ring or feel dull afterwards, it was too loud.',
           'Loud sound can damage hearing permanently, and the damage adds up over time. Turn it down, take breaks, and use hearing protection around loud music and machinery.',
-          'A rule of thumb technicians use: 85 dBA for 8 hours is a common workplace limit, and every 3 dB louder halves the safe time (the NIOSH guideline). Measure with a calibrated meter, not a phone.',
+          'A rule of thumb technicians use: NIOSH recommends 85 dBA for 8 hours, halving the time for every 3 dB above that. The US legal limit (OSHA) is 90 dBA with a 5 dB rule. Measure with a calibrated meter, not a phone.',
           'The Pro Audio Safety topic, right next to this one on the Home screen, covers safe listening in depth.',
         ],
       },

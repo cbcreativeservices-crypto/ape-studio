@@ -46,7 +46,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Main pair and a spot',
     goal: 'The main pair and the cello spot: see how much earlier the spot hears the cello, what polarity does and does not change, and judge the sum in mono.',
-    credit: { scenarios: ['sq.first', 'sq.two.1', 'sq.two.2'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
+    credit: { scenarios: ['sq.first', 'sq.two.1', 'sq.two.2'], interactive: 'polarityVsDelay', note: 'Flip mic B’s polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
     takeaway: 'A spot’s delay is the difference in path from the player, divided by the speed of sound — one source’s estimate, not a section’s. Lowering or moving the spot often beats aligning everything electronically.',
   },
   troubleshoot: {
@@ -122,7 +122,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Use a mount made for the instrument, with the player’s approval: check the full bow sweep, the left hand’s travel, chair movement and cable slack. No adhesive on varnish, no cable pulling on the instrument.',
     why: {
       'Only that the clip holds tight on the rib': 'Tight is not enough: the bow, the hand and the cable must stay clear.',
-      'That it sits right on top of the bridge itself': 'Not on the bridge: a clip mount stays off the bridge and the varnish.',
+      'That it sits right on top of the bridge itself': 'Not on top of the bridge: use a mount made for the instrument, and no adhesive on the varnish.',
     },
   },
   hearingCheck('sq', 'setups', 'a loud band stage'),
@@ -404,7 +404,7 @@ const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern hears the most of the room around a quartet?', options: ['Omni', 'Cardioid', 'Figure-8'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the pair from 1 m to 2 m in front. What changes most?', options: ['More room, the players evened out', 'Only the level', 'The first violin dominates more'], after: 'Farther back, the distances to the four players even out: the NEAR / FAR readout shrinks, and the room comes up. Compare at matched level.' },
   context: { prompt: 'The monitor sits in front of the cello spot. Can its rejection reach it?', options: ['Yes — turn the mic’s back toward it', 'No — only an omni can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'A main pair and a cello spot. If you flip B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
+  twoMic: { prompt: 'A main pair and a cello spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to another player.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -537,7 +537,7 @@ export const E11_LESSON: EnsembleLesson = {
   ],
   live: { wedges: E11_WEDGES },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A quartet has no single right setup: seat the players as they like, start with a pair in front of and above them, change height and distance one at a time, and add a support only for a line that needs it. Every group, room and stage is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical seatings, ideal patterns, straight paths and distances read from the drawing. Mounts only with the players’ approval and never on varnish; protect your hearing; avoid uncontrolled feedback.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. A quartet has no single right setup: seat the players as they like, start with a pair in front of and above them, change height and distance one at a time, and add a support only for a line that needs it. Every group, room and stage is different: experiment, compare at matched level, and trust your ears. The lab is silent and draws a simplified picture: typical seatings, ideal patterns, straight paths and distances read from the drawing. Mounts only with the players’ approval, and no adhesive on the varnish; protect your hearing; avoid uncontrolled feedback.',
   copy: { words: ensembleWords('string quartet') },
   ensemble: {
     seatings: { quartet: 'quartet.arc', quartetVa: 'quartet.arcVa', sections: 'strings.american' },
@@ -557,7 +557,7 @@ export const E11_LESSON: EnsembleLesson = {
       { title: 'DECIDE WHAT IT IS FOR', text: 'The quartet blending in the room, or separate sources for reinforcement and production control — neither is best everywhere.' },
       { title: 'CLEARANCES', text: 'The bow’s sweep, the left hand, the chair, the cello’s endpin and the cable slack — checked with the players, before anything is final.' },
     ],
-    safety: 'Mounts only with the player’s approval: none on the varnish, none on the bridge unless made for it, no cable pulling on the instrument, every bow sweep left clear. Stands stable and clear of the players’ movement; anything over the players is the venue’s rigging. Protect your hearing; avoid uncontrolled feedback.',
+    safety: 'Mounts only with the player’s approval: no adhesive on the varnish, none on the bridge unless made for it, no cable pulling on the instrument, every bow sweep left clear. Stands stable and clear of the players’ movement; anything over the players is the venue’s rigging. Protect your hearing; avoid uncontrolled feedback.',
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a quartet: a central pair in front of and above the group, with a view across all four — a trial to start from, not a published best place.',
       clearance: 'The stand in front of the quartet, clear of the bows’ sweep, the cello’s endpin and the players’ sightlines; its cable dressed flat and out of the way.',

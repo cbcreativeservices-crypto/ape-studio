@@ -83,7 +83,7 @@ function PageGate({ ctx }: { ctx: PageCtx }) {
               'That moves the faders together — but what would the one compressor be inserted ON?',
               undefined,
               'Linked CONTROLS are not merged AUDIO.',
-              'Three private compressors can never share one envelope.',
+              'Separate compressors each react to their own drum, so they do not share one envelope unless you link them.',
             ]}
             onCorrect={() => setPassed((n) => n + 1)}
           />

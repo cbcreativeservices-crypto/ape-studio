@@ -549,9 +549,9 @@ export function dailyLimitLabel(levelDbSpl: number): string {
  *  in, so this scale errs on the safe side. */
 export function monitoringAdvice(levelDbSpl: number): { tone: 'low' | 'sensible' | 'hot' | 'unsafe'; note: string } {
   if (levelDbSpl < 70) return { tone: 'low', note: 'Quiet: a useful check for what survives at low level — but make tonal decisions at your reference level, because a quiet listen reads thin.' };
-  if (levelDbSpl <= 83) return { tone: 'sensible', note: 'A sensible, repeatable working level, under the daily exposure limit: comparisons mean something and a full day is survivable.' };
-  if (levelDbSpl <= 88) return { tone: 'hot', note: 'Hot: at 85 dBA the NIOSH recommended daily limit is 8 hours; every 3 dB above halves it. Everything sounds bigger here and fatigue sets in within the hour. Turn it down for decisions.' };
-  return { tone: 'unsafe', note: 'Unsafe for working: two hours or less a day at this level, and the hearing damage risk rises quickly. Nothing in mastering needs this level.' };
+  if (levelDbSpl <= 83) return { tone: 'sensible', note: 'A sensible, repeatable working level, under the NIOSH daily recommended limit: comparisons mean something and a full day is survivable.' };
+  if (levelDbSpl <= 88) return { tone: 'hot', note: 'Hot: NIOSH recommends 85 dBA for 8 hours, halving the time for every 3 dB above; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Everything sounds bigger here and fatigue sets in within the hour. Turn it down for decisions.' };
+  return { tone: 'unsafe', note: 'Unsafe for working: about three hours or less a day at this level (NIOSH), and the hearing damage risk rises quickly. Nothing in mastering needs this level.' };
 }
 
 /* ── monitoring path (Module 3) ──────────────────────────────────────────── */

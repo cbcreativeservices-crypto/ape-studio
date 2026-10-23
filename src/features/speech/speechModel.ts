@@ -43,7 +43,7 @@ export const ANATOMY: AnatomyPart[] = [
   { id: 'nasal', name: 'Nasal cavity', short: 'Nasal cavity', role: 'A second resonator, used only when the soft palate lets air in. Too much of it and the voice sounds "nasal".', x: 24, y: 62, ax: 100, ay: 103 },
   { id: 'palate', name: 'Hard palate', short: 'Hard palate', role: 'The roof of the mouth. The tongue presses or nearly presses on its front ridge for T, D and S, and further back for SH and Y.', x: 24, y: 106, ax: 100, ay: 118 },
   { id: 'tongue', name: 'Tongue', short: 'Tongue', role: 'The main articulator. Its height and front-back position set the vowel; its tip and body make most consonants.', x: 110, y: 146, ax: 110, ay: 146 },
-  { id: 'teeth', name: 'Teeth', short: 'Teeth', role: 'The edge that air is forced past for S and Z (the sibilants); the lower lip meets the upper teeth for F and V.', x: 24, y: 150, ax: 72, ay: 130 },
+  { id: 'teeth', name: 'Teeth', short: 'Teeth', role: 'The edge that air is forced past for S and Z, the brightest sibilants; the lower lip meets the upper teeth for F and V.', x: 24, y: 150, ax: 72, ay: 130 },
   { id: 'lips', name: 'Lips', short: 'Lips', role: 'Round for O and U, spread for E; close and burst apart for P and B — the source of plosive pops.', x: 24, y: 194, ax: 64, ay: 140 },
   { id: 'jaw', name: 'Jaw', short: 'Jaw', role: 'Opens to enlarge the mouth cavity — open vowels like AH need it low.', x: 24, y: 238, ax: 80, ay: 162 },
 ];

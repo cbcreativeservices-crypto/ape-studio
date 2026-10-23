@@ -234,7 +234,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tp.rec.2',
     page: 'placement',
-    prompt: 'FROM EARLIER · Besides the player, what must a trumpet mic, stand and cable stay clear of?',
+    prompt: 'FROM EARLIER · For safety, besides the player, what must a trumpet mic, stand and cable stay clear of?',
     options: ['The bell’s movement, the mutes and the valve hands', 'The music stand, so the player can see the part', 'The front of the bell, so the audience can see it'],
     correct: 'The bell’s movement, the mutes and the valve hands',
     explain: 'Clearance comes first: whatever moves — the bell as the player turns, a mute or plunger going in and out, the hands on the valves. Stop the player before anything moves.',
@@ -443,7 +443,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you swing the mic from on the bell’s axis to well off to one side. What changes?', options: ['A brighter sound', 'A softer top', 'It depends on this horn'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the player. Where will a supercardioid aimed at the bell reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -499,7 +499,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.5',
     covers: 'setting',
     critical: true,
-    prompt: 'What must a stand mic and its cable stay clear of around a trumpeter?',
+    prompt: 'For safety, what must a stand mic and its cable stay clear of around a trumpeter?',
     options: ['The bell’s movement, the mutes and the hands', 'The music stand, so the player can read the part', 'The audience’s view of the bell and the player'],
     correct: 'The bell’s movement, the mutes and the hands',
     explain: 'Clearance comes first: the bell as the player turns, a mute or plunger going in and out, the valve hands — and the player’s face.',
@@ -551,7 +551,7 @@ export const A01_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'The trumpet is a brass instrument: the player buzzes their lips into a cup mouthpiece, and the air column in about 1.4 m of tube, wound into a loop, sets the note. Three valves add extra loops of tube for the notes between. The flugelhorn is its close relative: usually the same three valves, a wider, more gradually widening tube and a larger bell — a rounder, mellower sound.', src: 'PL-2010' },
+    { title: 'WHAT IT IS', text: 'The trumpet is a brass instrument. The player buzzes their lips into a cup mouthpiece, and the air in about 1.5 m of tube, wound into a loop, sets the note. Three valves add extra loops of tube for the notes between. The flugelhorn is its close relative: usually the same three valves, a wider tube that widens more gradually, and a larger bell. It sounds rounder and mellower.', src: 'PL-2010' },
     { title: 'WHERE YOU MEET IT', text: 'Jazz and big bands, horn sections in pop, soul, funk and Latin music, orchestras and brass bands, solos and studio overdubs — and players often switch between trumpet and flugelhorn within one set. This lesson covers one horn: a studio overdub, a live solo, and a spot in a section.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'It carries melodies and bright accents and can be very loud. Ask what the part needs: a focused solo, more edge, a softer blend, a muted colour — and remember the player moves and turns with the music.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'A trumpet’s bell is about 12 cm across; a flugelhorn’s about 15 cm. A trumpet’s lowest note is around 165 Hz, but its sound reaches far higher — and its peaks close to the bell are very loud. This lab draws both horns about that size, played standing.', src: 'Y-YTR2330' },

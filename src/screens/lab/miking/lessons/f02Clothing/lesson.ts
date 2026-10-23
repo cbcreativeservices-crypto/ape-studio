@@ -57,7 +57,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the cloth mic so its rejection faces the wedge at a live station — and know why a quiet Foley stage and a theatre with a PA need different first plans for a quiet sound.',
     credit: { scenarios: ['f02.ctx.1', 'f02.ctx.2', 'f02.ctx.ring', 'f02.ctx.studio', 'f02.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the wedge sits in the rejection. STUDIO: answer the decision card. Then the four checks.' },
-    takeaway: 'On a quiet stage, about 1–1.5 m out and the room part of the sound. Live, a close directional mic at a fixed station, the wedge in its rejection, one open channel if that is what works — and feedback never provoked.',
+    takeaway: 'On a quiet stage, about 1–1.5 m out and the room part of the sound. Live, a close directional mic at a fixed station, the wedge in its rejection, one open channel if that is what works — and ringing out left to the system operator.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -410,7 +410,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'Push the gain until it rings, then back it off', ok: false, power: 'phantom', feedback: 'Not until it rings. Check with the operator, short of any ring.' },
       { id: 'e', label: 'A lav on the artist’s chest under the coat', ok: false, power: 'phantom', feedback: 'That records rustle at the capsule, not the coat’s movement.' },
     ],
-    reasons: [DOC_REASON('the active fabric'), CLEAR_REASON('the whole gesture'), { id: 'r.null', label: 'The pattern’s rejection faces the wedge', role: 'required', feedback: 'Say where the wedge sits against the pattern.' }, { id: 'r.op', label: 'The gain is checked with the operator at show level', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Feedback is never provoked — not even to find the edge.' }],
+    reasons: [DOC_REASON('the active fabric'), CLEAR_REASON('the whole gesture'), { id: 'r.null', label: 'The pattern’s rejection faces the wedge', role: 'required', feedback: 'Say where the wedge sits against the pattern.' }, { id: 'r.op', label: 'The gain is checked with the operator at show level', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, { id: 'r.ring', label: 'Find the edge of feedback, then back off', role: 'wrong', feedback: 'Not during the cue. Feedback is made on purpose only to ring out a system, by its operator, at a controlled level.' }],
     explain: 'Two setups pass. What passes is the reasoning: a close, repeatable pickup, the wedge in its rejection, clearance of the whole gesture, and gain checked with the operator — never by making it ring.',
   },
 ];
@@ -420,7 +420,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will the supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move from about 1.25 m to about 60 cm from the fabric. What changes?', options: ['More detail and finger rub', 'More room', 'It depends on this garment'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the artist. Where will a supercardioid aimed at the fabric reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

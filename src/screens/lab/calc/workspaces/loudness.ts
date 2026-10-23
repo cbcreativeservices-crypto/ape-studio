@@ -39,7 +39,7 @@ export const LOUDNESS_TARGETS: readonly { who: string; loudness: string; truePea
   { who: 'TIDAL', loudness: '−14 LUFS (album normalization)', truePeak: 'Not published', kind: PLAYBACK, source: 'TIDAL, as reported (normalization on by default)' },
   { who: 'Broadcast — EBU R 128', loudness: '−23 LUFS ±0.5 LU (±1 LU live)', truePeak: 'Max −1 dBTP', kind: 'Delivery requirement', source: 'EBU R 128 (2020)' },
   { who: 'Broadcast — ATSC A/85 (US)', loudness: '−24 LKFS ±2 dB', truePeak: '−2 dBTP recommended', kind: 'Delivery requirement (CALM Act)', source: 'ATSC A/85:2013' },
-  { who: 'Apple Podcasts', loudness: '−16 LKFS ±1 dB', truePeak: 'Max −1 dBFS true peak', kind: 'Delivery recommendation', source: 'Apple Podcasts, “Audio requirements” (read 2026-10-04)' },
+  { who: 'Apple Podcasts', loudness: '−16 LKFS ±1 dB', truePeak: 'Max −1 dBTP', kind: 'Delivery recommendation', source: 'Apple Podcasts, “Audio requirements” (read 2026-10-04)' },
   { who: 'AES TD1008 streaming', loudness: '−16 LUFS music; −18 LUFS speech', truePeak: '—', kind: 'Distribution recommendation', source: 'AES TD1008 (2021)' },
 ];
 /** The one-line honesty note under the table. */
@@ -147,10 +147,10 @@ const LOUDTP: Workspace = {
   warnings:
     'Teaching mechanics only. Window lengths: momentary 400 ms, short-term 3 s; integrated loudness uses 400 ms blocks with 75% overlap. ' +
     'Perceived-loudness doubling ≈ +10 LU is a psychoacoustic rule of thumb. Real BS.1770 loudness ' +
-    'requires the full gated K-weighted algorithm on the audio; true peak requires ≥4× oversampling.',
+    'requires the full gated K-weighted algorithm on the audio; true peak requires oversampling to at least 192 kHz (4× at 48 kHz).',
   glossary: ['LUFS', 'True Peak', 'K-weighting', 'Loudness', 'Gating'],
   fields: [
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate, to size the measurement windows.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate, to size the measurement windows.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'lufsA', name: 'LOUDNESS A (LUFS)', quantity: 'number', signed: true, placeholder: '-14', help: 'First loudness value to compare, in LUFS.' },
     { key: 'lufsB', name: 'LOUDNESS B (LUFS)', quantity: 'number', signed: true, placeholder: '-20', help: 'Second loudness value to compare, in LUFS.' },
     { key: 'samplePeak', name: 'SAMPLE PEAK (dBFS)', quantity: 'number', signed: true, placeholder: '-0.1', help: 'The peak read by a sample-based meter, in dBFS.' },
@@ -167,6 +167,12 @@ const LOUDTP: Workspace = {
       explain:
         'BS.1770 and the EBU meter spec measure loudness over fixed time windows. This turns those windows — 400 ms for the fast momentary meter and 3 s for the smoothed short-term meter — into a count of samples at your sample rate, and shows the 100 ms step between 400 ms blocks (75% overlap). The window length, not the step, is what makes the two meters react at different speeds.',
       keySymbols: ['×'],
+      // A window must hold whole samples (audit R2, 2026-10-23): 0.048 Hz
+      // printed a "0.0192 samples" momentary window.
+      refuse: (v) =>
+        0.1 * n(v.sr) < 1
+          ? `At ${fmt(n(v.sr))} Hz a 100 ms block step holds less than one sample — enter a real sample rate (for example 48 kHz).`
+          : null,
       compute: (v) => {
         return [
           { label: 'MOMENTARY WINDOW (400 ms)', value: 0.4 * n(v.sr), quantity: 'samples', chainable: false },
@@ -189,18 +195,31 @@ const LOUDTP: Workspace = {
       explain:
         'Compares two loudness values (one LU equals one dB) and estimates how much louder one sounds. Because a change of roughly ten LU is heard as about twice as loud, the perceived ratio is two raised to the difference over ten — a psychoacoustic rule of thumb, not an exact law.',
       keySymbols: ['Δ', '−', '/', '≈', 'x²'],
+      // A difference whose ratio overflows or underflows (audit R2) printed
+      // "— ×" — said in words instead.
+      refuse: (v) => {
+        const r = Math.pow(2, (n(v.lufsA) - n(v.lufsB)) / 10);
+        return Number.isFinite(r) && r > 0
+          ? null
+          : 'Those loudness values are far apart beyond any real programme — check both readings (integrated loudness of real audio sits above about −70 LUFS).';
+      },
       compute: (v) => {
         const d = n(v.lufsA) - n(v.lufsB);
+        // WITH its sign (audit R2, 2026-10-23 — a real MISMATCH): A at −28 and
+        // B at −20 LUFS read "1.741×", as if the quieter A were the louder.
+        const r = Math.pow(2, d / 10);
         return [
           { label: 'DIFFERENCE (LU)', value: d, quantity: 'number' },
-          { label: 'PERCEIVED LOUDNESS RATIO', value: Math.pow(2, Math.abs(d) / 10), quantity: 'ratio', chainable: false },
+          { label: 'PERCEIVED LOUDNESS RATIO', value: r, quantity: 'ratio', chainable: false },
+          { label: 'WHICH SOUNDS LOUDER', text: louderText(d, r) },
         ];
       },
       steps: (v) => {
         const d = n(v.lufsA) - n(v.lufsB);
+        const r = Math.pow(2, d / 10);
         return [
           `ΔLU = ${fmt(n(v.lufsA))} − (${fmt(n(v.lufsB))}) = ${fmt(d)} LU (1 LU = 1 dB).`,
-          `Rough perceived ratio ≈ 2^(${fmt(Math.abs(d))}/10) = ${fmt(Math.pow(2, Math.abs(d) / 10))}× — the +10 LU ≈ twice-as-loud rule of thumb.`,
+          `Rough perceived ratio of A to B ≈ 2^(${fmt(d)}/10) = ${fmt(r)}× — the +10 LU ≈ twice-as-loud rule of thumb. ${louderText(d, r)}`,
         ];
       },
     },
@@ -212,9 +231,9 @@ const LOUDTP: Workspace = {
       plainFormula:
         'A commonly quoted true-peak margin is minus one dBTP; lossy delivery often uses minus two dBTP. Check the destination’s current spec.',
       explain:
-        'Suggests a starting true-peak ceiling and shows your margin to it: −1 dBTP is a commonly quoted margin, and lossy delivery often uses −2 dBTP. A sample-peak meter can under-read: true inter-sample peaks can sit up to about 3 dB higher, and lossy encoding (MP3/AAC) adds overshoot. Check the destination’s current spec, and measure true peak with an oversampling meter to be sure.',
+        'Suggests a starting true-peak ceiling and shows your margin to it: −1 dBTP is a commonly quoted margin, and lossy delivery often uses −2 dBTP. A sample-peak meter can under-read: true inter-sample peaks can sit higher, sometimes by 3 dB or more, and lossy encoding (MP3/AAC) adds overshoot. Check the destination’s current spec, and measure true peak with an oversampling meter to be sure.',
       keySymbols: ['−'],
-      note: 'Inter-sample peaks can exceed the sample peak by up to ~3 dB; lossy encoding adds overshoot, so lossy delivery often drops the ceiling to −2 dBTP. Check the destination’s current spec.',
+      note: 'Inter-sample peaks can exceed the sample peak, sometimes by 3 dB or more; lossy encoding adds overshoot, so lossy delivery often drops the ceiling to −2 dBTP. Check the destination’s current spec.',
       compute: (v) => {
         const ceiling = n(v.lossy) >= 1 ? -2 : -1;
         return [
@@ -228,7 +247,7 @@ const LOUDTP: Workspace = {
         const cm = ceilingMargin(ceiling - n(v.samplePeak));
         return [
           `${n(v.lossy) >= 1 ? 'Lossy' : 'Lossless'} delivery → suggested true-peak ceiling ${fmt(ceiling)} dBTP (a commonly quoted margin — check the destination’s current spec).`,
-          `Your sample peak of ${fmt(n(v.samplePeak))} dBFS is ${fmt(-n(v.samplePeak))} dB below full scale — but true peak can sit up to ~3 dB higher.`,
+          `Your sample peak of ${fmt(n(v.samplePeak))} dBFS is ${fmt(-n(v.samplePeak))} dB below full scale — but true peak can sit higher, sometimes by 3 dB or more.`,
           cm.label === 'OVER CEILING BY'
             ? `Sample peak − ceiling = ${fmt(n(v.samplePeak))} − (${fmt(ceiling)}) = ${fmt(cm.value)} dB OVER the ceiling — lower the level or limit before export; measure true peak with an oversampling meter to be sure.`
             : `Margin from sample peak to the ceiling = ${fmt(cm.value)} dB; measure true peak with an oversampling meter to be sure.`,
@@ -237,5 +256,13 @@ const LOUDTP: Workspace = {
     },
   ],
 };
+
+/** Which of A and B sounds louder, in words, from ΔLU = A − B. */
+function louderText(d: number, r: number): string {
+  if (d === 0) return 'A and B sound equally loud.';
+  return d > 0
+    ? `A sounds about ${fmt(r)}× as loud as B.`
+    : `A sounds quieter — about ${fmt(r)}× as loud as B (B sounds about ${fmt(1 / r)}× as loud as A).`;
+}
 
 export const WORKSPACES_LOUDNESS: Workspace[] = [LOUDNORM, LOUDTP];

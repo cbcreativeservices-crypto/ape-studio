@@ -396,7 +396,7 @@ export const M4_NOISE: EarModule = {
   title: 'Noise & Waveform ID',
   blurb: 'White, pink, brown — sine, square, saw, triangle. Learn the seven basic colors of sound.',
   phones: 'any',
-  playbackNote: 'Spectral slopes survive even small speakers.',
+  playbackNote: 'Spectral slopes mostly survive small speakers, but brown noise loses its rumble there. Headphones at a low volume help.',
   // NEW COPY
   listenFor: 'Noise: how much rumble versus hiss — flat, tilted, or all rumble. Tones: hollow (square), buzzy (saw), or soft (triangle)?',
   levels: 3,

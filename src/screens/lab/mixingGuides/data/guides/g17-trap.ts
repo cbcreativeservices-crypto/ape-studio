@@ -36,7 +36,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Snare/clap:",
-      "text": "crisp, often layered, on beat 3 of the half-time bar (2 and 4 at double time), with rimshots and syncopated ghost hits.",
+      "text": "crisp, often layered, on beat 3 of each bar at the session tempo (2 and 4 if you count the half-time feel), with rimshots and syncopated ghost hits.",
       "bullet": true
     },
     {
@@ -61,7 +61,7 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Macro-dynamics are small and arrangement-driven: mutes, filter sweeps and 808 drop-outs rather than performance swells. Masters are dense, with crest factors often 6–8 dB. Micro-dynamics matter more: the kick transient must survive the 808, and the hats must stay crisp. Cut incoming track levels deeply to make headroom; never trade the song’s dynamics for a louder 808. Live, keep 6–10 dB of headroom so drops can hit; the DJ often supplies the dynamics by cutting the music for crowd sing-alongs."
+      "text": "Macro-dynamics are small and arrangement-driven: mutes, filter sweeps and 808 drop-outs rather than performance swells. Masters are dense, with crest factors often 6–8 dB. Micro-dynamics matter more: the kick transient must survive the 808, and the hats must stay crisp. Cut incoming track levels deeply to make headroom; avoid trading the song’s dynamics for a louder 808. Live, keep 6–10 dB of headroom so drops can hit; the DJ often supplies the dynamics by cutting the music for crowd sing-alongs."
     }
   ],
   "balance": [
@@ -262,7 +262,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Trap shows are among the loudest in the low end. Club shows run around 100–103 dBA LAeq-15 with 118–125 dBC; arena tours have reported around 130 dBC at FOH, with huge sub arrays (from about 20 double-18 subs to more than 60 in two rows). A C-minus-A gap of 20 dB or more is common and signals hearing-risk sub energy. By common hearing-safety guidance, 100 dBA is safe for only about 15 minutes; mosh-pit crowds stand near subs, so manage sub levels near the barricade and offer earplugs. Cardioid or end-fired sub arrays keep the stage and vocal mics clear."
+      "text": "Trap shows are among the loudest in the low end. Club shows run around 100–103 dBA LAeq-15 with 118–125 dBC; arena tours have reported around 130 dBC at FOH, with huge sub arrays (from about 20 double-18 subs to more than 60 in two rows). A C-minus-A gap of 20 dB or more is common and signals hearing-risk sub energy. NIOSH advises no more than about 15 minutes a day at 100 dBA; mosh-pit crowds stand near subs, so manage sub levels near the barricade and offer earplugs. Cardioid or end-fired sub arrays keep the stage and vocal mics clear."
     },
     {
       "label": "Studio / streaming:",
@@ -304,7 +304,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Loudness",
         "live": "100–104 dBA, 120–130 dBC",
-        "studio": "−8 to −5 LUFS-I, −1 to −2 dBTP"
+        "studio": "−8 to −5 LUFS-I, −2 dBTP"
       }
     ],
     "notes": []

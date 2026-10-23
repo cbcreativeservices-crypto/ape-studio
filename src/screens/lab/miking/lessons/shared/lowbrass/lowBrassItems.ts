@@ -31,9 +31,9 @@ export const hearingDiag = (id: string, w: Words): DiagnosticItem => ({
   prompt: `Your ${w.noun} mic is rated to a very high maximum SPL. What does that tell you about a long, loud rehearsal?`,
   options: ['Nothing about ears — it is only where the mic itself distorts', 'It is safe for a while, as long as the stage stays below that rating', 'It is safe as long as you stand farther away than the mic does'],
   correct: 'Nothing about ears — it is only where the mic itself distorts',
-  explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+  explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA averaged over 8 hours, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. Both are measured where the person listens.',
   why: {
-    'It is safe for a while, as long as the stage stays below that rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+    'It is safe for a while, as long as the stage stays below that rating': 'A mic rating is not a hearing limit. For people, NIOSH advises no more than 85 dBA over 8 hours, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
     'It is safe as long as you stand farther away than the mic does': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
   },
 });
@@ -54,10 +54,10 @@ export const superNull = (id: string, page: SourcePageId, target: string): Mikin
 export const polarityDelay = (id: string): MikingScenario => ({
   id,
   page: 'twoMic',
-  prompt: 'You flip mic B’s polarity. What happens to the arrival-time difference between the two mics?',
+  prompt: 'You flip one mic’s polarity. What happens to the arrival-time difference between the two mics?',
   options: ['Nothing: polarity flips the sign; the delay stays', 'It drops to zero, so the two arrivals line up', 'Cut in half: the flipped copy cancels half of it'],
   correct: 'Nothing: polarity flips the sign; the delay stays',
-  explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
+  explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches and peaks swap places; Δt does not.',
   why: {
     'It drops to zero, so the two arrivals line up': 'Flipping polarity changes the sign, not when the sound arrives — the mics are still where they were.',
     'Cut in half: the flipped copy cancels half of it': 'Polarity has no time in it. Only moving a mic changes when the sound arrives.',
@@ -67,7 +67,7 @@ export const polarityDelay = (id: string): MikingScenario => ({
 export const matchedLevels = (id: string, noun: string): MikingScenario => ({
   id,
   page: 'twoMic',
-  prompt: 'With mic B inverted, the pair sounds fuller — and reads 2 dB louder. Is that enough to keep it?',
+  prompt: 'With one mic inverted, the pair sounds fuller — and reads 2 dB louder. Is that enough to keep it?',
   options: ['Not yet: match the levels, then compare in mono', `Yes: inverted is the right setting for a ${noun}`, 'Yes: the quieter, normal state was the wrong one'],
   correct: 'Not yet: match the levels, then compare in mono',
   explain: 'A louder state sounds “better” at first. Compare at matched level, in mono, across the instrument’s range — and move a mic before trusting a switch.',
@@ -96,9 +96,9 @@ export const removeDelay = (id: string): MikingScenario => ({
   prompt: 'Two mics on one instrument sound thin together. Which change removes the arrival-time difference itself?',
   options: ['Moving a mic so the two paths are closer to equal', 'Flipping the polarity switch on one of the two mics', 'Turning the farther mic up until the two match'],
   correct: 'Moving a mic so the two paths are closer to equal',
-  explain: 'Only the paths set the delay. Polarity moves the notches; level changes their depth; neither removes the delay.',
+  explain: 'Only the paths set the delay, though a channel delay can line them up later. Polarity swaps the notches and peaks; level changes their depth; neither removes the delay.',
   why: {
-    'Flipping the polarity switch on one of the two mics': 'Polarity flips the sign; it moves the notches but does not remove the delay.',
+    'Flipping the polarity switch on one of the two mics': 'Polarity flips the sign; it swaps the notches and peaks but does not remove the delay.',
     'Turning the farther mic up until the two match': 'Level changes the depth of the notches, not where they are or the delay behind them.',
   },
 });

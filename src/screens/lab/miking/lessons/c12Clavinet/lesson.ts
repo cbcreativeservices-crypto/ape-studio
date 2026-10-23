@@ -130,9 +130,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Your amp mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck at the amp?',
     options: ['Everyone is safe while the amp stays below the mic’s rated level', 'Nothing — a mic’s max SPL is a distortion limit, not a hearing limit', 'You are safe as long as the mic is nearer the amp than you'],
     correct: 'Nothing — a mic’s max SPL is a distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time — and a stage amp is loud.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — and a stage amp is loud.',
     why: {
-      'Everyone is safe while the amp stays below the mic’s rated level': 'Max SPL tells you when the mic distorts, not what your ears can take. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'Everyone is safe while the amp stays below the mic’s rated level': 'Max SPL tells you when the mic distorts, not what your ears can take. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'You are safe as long as the mic is nearer the amp than you': 'A mic is not a hearing meter. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -537,7 +537,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A close dynamic at the grille, its null aimed toward the wedge, plus the DI', ok: true, power: 'none', feedback: 'A suggested combination, with the null pointed at the loudest monitor.' },
       { id: 'c', label: 'A close mic with its null aimed away from the wedge', ok: false, power: 'none', feedback: 'That points the pickup at the wedge. The null goes TOWARD the loudest monitor.' },
       { id: 'd', label: 'A room mic 2 m in front of the amp', ok: false, power: 'none', feedback: 'On a loud stage a distant mic hears the band and the monitors more than the amp.' },
-      { id: 'e', label: 'A mic taped to the grille cloth', ok: false, power: 'none', feedback: 'Never tape a mic to the grille cloth; use a stand or an approved clip.' },
+      { id: 'e', label: 'A mic taped to the grille cloth', ok: false, power: 'none', feedback: 'Do not tape a mic to the grille cloth: it can come loose into the speaker. Use a stand or an approved clip.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.null', label: 'The mic’s null points toward the loudest monitor', role: 'optional', feedback: 'A fair live reason — with the level down before any move.' }, BRAND_REASON, CLOSE_REASON],
     explain: 'Two setups pass. What passes is the reasoning: the direct path where it serves, a close mic with its null toward the monitor, safe connections and clearance.',
@@ -549,7 +549,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the close mic from the centre of the speaker to its edge. What changes?', options: ['More bite', 'A rounder sound', 'It depends on this amp'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Which way should the mic’s rejection point?', options: ['Toward the loudest monitor', 'Away from the loudest monitor', 'Straight up'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
-  twoMic: { prompt: 'If you flip one mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip one mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -620,9 +620,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Your amp mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck at the amp?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the amp stays below the mic’s rated level', 'It is safe as long as the mic is nearer the amp than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH advises no more than 85 dBA over 8 hours a day, halving the time for every 3 dB more; the US legal limit (OSHA) is 90 dBA with a 5 dB rule — measured where the person listens.',
     why: {
-      'It is safe for as long as the amp stays below the mic’s rated level': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for as long as the amp stays below the mic’s rated level': 'A mic rating is not a hearing limit. For people, NIOSH advises 85 dBA for 8 hours a day, halving the time every 3 dB; the US legal limit (OSHA) is 90 dBA with a 5 dB rule.',
       'It is safe as long as the mic is nearer the amp than you': 'Where the mic sits says nothing about your ears.',
     },
   },

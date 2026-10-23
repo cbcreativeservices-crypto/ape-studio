@@ -15,7 +15,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "70–95 BPM (some chillhop up to 100), heavily swung 16ths",
     "ensemble": "Solo producer with sampler/laptop; live sets 1–2 people (sampler + keys), occasionally a 3–5 piece band (keys, guitar, bass, drums, horn)",
     "priority": "The warm, swung drum-and-keys pocket: a soft, round kick and dusty snare under a mellow, filtered chord loop, with nothing harsh",
-    "liveSpl": "85–95 dBA Leq (LAeq-15 min); roughly 100–110 dBC; café/lounge sets 75–85 dBA",
+    "liveSpl": "85–98 dBA Leq (LAeq-15 min); roughly 100–110 dBC; café/lounge sets 75–85 dBA",
     "studioLoudness": "Masters commonly −14 to −10 LUFS-I, true peak −1 dBTP (−2 if louder than −14); streaming normalizes to about −14"
   },
   "purpose": [
@@ -300,7 +300,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "area": "Loudness",
-        "live": "85–95 dBA Leq; seated/lounge sets lower",
+        "live": "85–98 dBA Leq; seated/lounge sets lower",
         "studio": "−14 to −10 LUFS-I, matched across release"
       },
       {

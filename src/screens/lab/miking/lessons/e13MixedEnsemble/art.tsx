@@ -19,7 +19,7 @@ const SPEC = ensembleHandSpec({
   firstZone: 'ch.main',
   firstMic: 'arrCard',
   mic: {
-    intro: 'A transducer category alone does not decide tone, spill or headroom: read the real mic’s specifications. For the main array, matched cardioids (X/Y, the 17 cm pair) or omnis (a spaced pair, a tree); a figure-8 for an M/S Side; cardioids for supports and spots. Each needs phantom power and a stable stand.',
+    intro: 'A transducer category alone does not decide tone, spill or headroom: read the real mic’s specifications. For the main array, matched cardioids (X/Y, the 17 cm pair) or omnis (a spaced pair, a tree); a figure-8 for an M/S Side; cardioids for supports and spots. The condensers here need phantom power; if the Side mic is a ribbon, check its manual first. Each needs a stable stand.',
     mountLine: () => 'Mount: a tall stand with a wide base, clear of the players, their bows, slides and pedals; anything suspended is the venue’s rated rigging',
     extra: ARRAY_CARDS,
   },
@@ -43,7 +43,7 @@ const SPEC = ensembleHandSpec({
     B: { zone: 'ch.spot', mic: 'arrCard' },
     names: { A: 'MAIN PAIR', B: 'CELLO SPOT' },
     looking: 'Two mics · A the main pair’s centre, B the cello spot',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE: each player reaches the two mics at its own times.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each player reaches the two mics at its own times.',
     label: 'The chamber group with the main pair (A) and a cello spot (B)',
     warn: 'This simplified graph shows one point source and straight paths, no room. Real players are large sources at different distances, so one delay never suits them all — judge by ear, in mono, against the plain version.',
     learn: [
@@ -63,7 +63,7 @@ const SPEC = ensembleHandSpec({
     placeBadge: 'Blue = suggested starting points · grey dashes = the players’ space · pinch to zoom',
     clearance: 'Clearance comes first: the players’ sightlines, breathing, bowing, slides, pedals and the way in and out. Anything suspended is the venue’s, by qualified personnel.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A spot aimed down at the cello turns its back up and toward the hall — where a monitor can sit in its rejection.',
-    sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each player gives its own delay.',
+    sourceNote: 'What you just saw: sound reaches the two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each player gives its own delay.',
   },
 });
 

@@ -31,7 +31,7 @@ const pages: LessonPages = {
     title: 'How it makes its sound',
     goal: 'See how a breath becomes a bassoon note — the double reed, the folded air column, the first open hole — and where the sound leaves.',
     credit: { scenarios: ['bsn.snd.1', 'bsn.snd.2', 'bsn.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'The lowest note leaves from the bell at the top; every note above it leaves farther DOWN the folded tube — the long joint, the boot, the wing joint. A mic sees one part of a picture that moves with every note.',
+    takeaway: 'The lowest note leaves from the bell at the top; every note above it leaves from a hole closer to the reed along the folded tube — the long joint, the boot, the wing joint. A mic sees one part of a picture that moves with every note.',
   },
   setting: {
     title: 'Where it sits',
@@ -43,7 +43,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for the bassoon by its properties — pattern, power, size and mount — not by its brand.',
     credit: { scenarios: ['bsn.mic.1', 'bsn.mic.2', 'bsn.mic.3', 'bsn.rec.1'], note: 'Answer the four checks (one reaches back to how the bassoon sounds).' },
-    takeaway: 'A source that radiates from many places welcomes an omni where the room allows; a cardioid separates. A miniature on the bell joint moves with it. Both need phantom power.',
+    takeaway: 'A source that radiates from many places welcomes an omni where the room allows; a cardioid separates. A miniature on the bell joint moves with it. This page’s stand condenser and miniature both need phantom power.',
   },
   placement: {
     title: 'Placement Studio',
@@ -100,9 +100,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why can a mic aimed only into the bell overstate one note?',
     options: ['The bell filters out the bassoon’s higher notes', 'Only the lowest note leaves mainly by the bell', 'The bell is the loudest part of each phrase'],
     correct: 'Only the lowest note leaves mainly by the bell',
-    explain: 'With every hole closed, the sound leaves the bell; each note above opens a hole farther down, and most of the sound leaves there. A bell-only mic hears the lowest note well and the rest from afar.',
+    explain: 'With every hole closed, the sound leaves the bell; each note above opens a hole closer to the reed, and most of the sound leaves there. A bell-only mic hears the lowest note well and the rest from afar.',
     why: {
-      'The bell filters out the bassoon’s higher notes': 'Nothing is filtered: higher notes simply leave lower down, from open holes.',
+      'The bell filters out the bassoon’s higher notes': 'Nothing is filtered: higher notes simply leave from open holes, closer to the reed.',
       'The bell is the loudest part of each phrase': 'Loudness is not the point; most notes leave from the holes.',
     },
   },
@@ -135,9 +135,9 @@ const scenarios: MikingScenario[] = [
     id: 'bsn.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · As the bassoon plays higher, where does the sound leave?',
-    options: ['From the bell, whatever the note', 'From farther down the folded tube', 'From the reed, closer to the player'],
-    correct: 'From farther down the folded tube',
-    explain: 'The lowest note leaves from the bell; through the low register, each note up opens a hole farther down — the long joint, round the boot, up the wing joint.',
+    options: ['From the bell, whatever the note', 'From open holes nearer the reed', 'From the reed, closer to the player'],
+    correct: 'From open holes nearer the reed',
+    explain: 'The lowest note leaves from the bell. In the low range, each note up opens a hole closer to the reed: down the long joint, round the boot, up the wing joint.',
     why: {
       'From the bell, whatever the note': 'Only the lowest note, every hole closed, leaves mainly from the bell.',
       'From the reed, closer to the player': 'The reed starts the sound; it leaves where the tube meets the open air.',
@@ -376,7 +376,7 @@ const predictions: WindLesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from the keys up toward the bell. What changes?', options: ['More of the lowest note', 'More of the high notes', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the bassoon reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [

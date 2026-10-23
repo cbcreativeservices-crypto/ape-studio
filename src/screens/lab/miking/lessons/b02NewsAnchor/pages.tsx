@@ -182,7 +182,7 @@ const B02Setting = makeBroadcastSetting({
       points: [
         { title: 'A CHANNEL FOR EACH SPEAKER', text: 'Label each mic and channel; rehearse each speaker alone, then a natural overlap, looking across the desk and into the camera. Mute unused channels as the format permits.' },
         { title: 'TWO UNCHECKED MICS ARE NOT A BACKUP', text: 'A fallback is a second mic, checked on its own, with a clear cue for switching. Summed with the first, it combs.' },
-        { title: 'THE RADIO AND THE PA', text: 'Wireless lavs are coordinated — transmitters, receivers, power and frequencies — by the responsible technician. A news set may not reinforce the anchor; a public interview can, and then every open mic hears the PA.' },
+        { title: 'THE RADIO AND THE PA', text: 'The technician in charge coordinates wireless lavs: transmitters, receivers, power and frequencies. A news set often does not put the anchor through a PA; a public interview can, and then every open mic hears the PA.' },
       ],
     }),
 });

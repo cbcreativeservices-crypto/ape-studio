@@ -51,7 +51,7 @@ const pages: LessonPages = {
   twoMic: {
     title: 'Two mics, one moving action',
     goal: 'Two mics at different distances hear one walking source at different times: watch the delay and the comb change from A to C, and what polarity does and does not change.',
-    credit: { scenarios: ['tg.two.1', 'tg.two.2', 'tg.two.3'], interactive: 'polarityVsDelay', note: 'Flip B’s polarity both ways AND walk the source, then answer the three checks.' },
+    credit: { scenarios: ['tg.two.1', 'tg.two.2', 'tg.two.3'], interactive: 'polarityVsDelay', note: 'Flip the second mic’s polarity both ways AND walk the source, then answer the three checks.' },
     takeaway: 'Movement changes the path difference, so one delay cannot align every point. Choose a dominant detail feed, reduce the overlap, and check the sum in mono.',
   },
   troubleshoot: {
@@ -286,7 +286,7 @@ const scenarios: MikingScenario[] = [
     explain: 'On an independent stand at an assigned position, aimed through a permitted path — the apron, the corners, the steps and the ropes stay untouched unless the event’s plan puts a mic there.',
     why: {
       'On the apron, by a neutral corner': 'The apron and the corners are not audio space unless the event’s plan says so.',
-      'Under the bottom rope, out of sight': 'Nothing goes through or under the ropes.',
+      'Under the bottom rope, out of sight': 'No mic, stand or cable goes through or under the ropes.',
     },
   },
   {
@@ -317,7 +317,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tg.prac.gain',
     page: 'practice',
-    prompt: 'A gentle clap peaks at −30 dBFS; the event will be much louder. Where do you set the gain?',
+    prompt: 'In the practice, a gentle clap peaks at −30 dBFS. Your strongest repeatable clap is louder. Where do you set the gain?',
     options: ['The loudest safe peak near −12 dBFS', 'Bring the quiet clap up to −6 dBFS', 'Leave it as it is, and normalise it later'],
     correct: 'The loudest safe peak near −12 dBFS',
     explain: 'In this quiet practice the loudest safe peak is your strongest repeatable gentle clap: set it near −12 dBFS, then keep more margin for an unpredictable event — a trial starting point, not a broadcast standard.',
@@ -506,7 +506,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Which method gives the steadiest sense of the venue?', options: ['The ambience pair', 'The fixed shotgun', 'The low plant'], after: 'Now step through each METHOD.' },
   placement: { prompt: 'Predict: you move M1 from 2 m to 4 m from B. What happens to the source against the room?', options: ['About 6 dB less', 'About the same', 'About 6 dB more'], after: 'Rest the mic in two zones and read what each one suggests.' },
   context: { prompt: 'The converter reads −8 dBFS on the bell. Is the chain safe?', options: ['It may not be', 'It is safe', 'Only with a low fader'], after: 'Now find the first overloaded stage.' },
-  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then walk the source.' },
+  twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then walk the source.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -532,10 +532,10 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'meet',
     prompt: 'How does a shotgun’s off-axis rejection behave?',
-    options: ['It changes with frequency', 'It is a fixed reach', 'It is the same indoors and out'],
+    options: ['It changes with frequency', 'It is a fixed reach', 'It cancels the room equally indoors and out'],
     correct: 'It changes with frequency',
     explain: 'Its rejection depends on frequency and angle; it gives no universal reach, and the room changes the result.',
-    why: { 'It is a fixed reach': 'No mic has a fixed reach.', 'It is the same indoors and out': 'Reflections change what reaches it.' },
+    why: { 'It is a fixed reach': 'No mic has a fixed reach.', 'It cancels the room equally indoors and out': 'Indoors, reflections reach it from every side, so it cannot cancel the room.' },
   },
   {
     id: 'q.4',
@@ -631,6 +631,6 @@ export const B15_LESSON: Lesson = {
   ],
   live: { wedges: [] },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every venue and event is different: get approval, listen, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the practice room and its marks are the lesson’s own; the venue outlines, their routes and approved places are typical layouts; ranges and delays are calculated from the drawing; the headroom chain is an example. A sport’s clear zone is typical — check your event’s rules. Safety is exact: never into the performance space, a route or the apparatus; with thunder, shelter at once and wait 30 minutes after the last thunder.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every venue and event is different: get approval, listen, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: the practice room and its marks are the lesson’s own; the venue outlines, their routes and approved places are typical layouts; ranges and delays are calculated from the drawing; the headroom chain is an example. A sport’s clear zone is typical — check your event’s rules. Safety is exact: nothing goes into the performance space, a route or the apparatus unless the event’s plan approves it; with thunder, shelter at once and wait 30 minutes after the last thunder.',
   copy: B15_COPY,
 };

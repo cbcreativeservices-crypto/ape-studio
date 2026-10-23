@@ -176,7 +176,7 @@ describe('review pass — readouts answer to the engine, controls change the pic
   });
   test('module 7: the loudness note carries both rules — +3 dB per doubling, about +10 dB for twice as loud', () => {
     const m7 = read(`${AMP}/modules/mod7RealWorld.tsx`);
-    assert.match(m7, /\+3 dB is clearly audible/);
+    assert.match(m7, /\+3 dB is small but clearly audible/);
     assert.match(m7, /\+10 dB — ten times the power — is what most listeners call twice as loud/);
   });
 });

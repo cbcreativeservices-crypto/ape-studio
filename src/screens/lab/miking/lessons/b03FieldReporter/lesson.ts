@@ -351,12 +351,12 @@ const scenarios: MikingScenario[] = [
     id: 'b3.prac.gain',
     page: 'practice',
     prompt: 'The guest suddenly shouts and the recorder clips. What should have been done first?',
-    options: ['Gain set on the loudest likely speech', 'A compressor added afterwards to fix it', 'The automatic level switched on'],
+    options: ['Gain set on the loudest likely speech', 'A compressor added afterwards to fix it', 'Leave it all to the automatic level'],
     correct: 'Gain set on the loudest likely speech',
     explain: 'Set gain with the loudest likely speech or reaction, leaving headroom at the transmitter, the receiver, the preamp and the recorder. A later compressor or an automatic level cannot repair an overloaded input.',
     why: {
       'A compressor added afterwards to fix it': 'A compressor after the input cannot undo the clipping.',
-      'The automatic level switched on': 'An automatic level cannot save a mic or input that is already overloaded.',
+      'Leave it all to the automatic level': 'An automatic level or limiter can catch some peaks, but it lifts the street too and cannot save a mic or transmitter that overloads before it. Set the gain first.',
     },
   },
   {
@@ -515,7 +515,7 @@ const predictions: Lesson['predictions'] = {
   microphone: { prompt: 'Before you move anything: does a dynamic mic, by itself, pick out one voice from a crowd?', options: ['Yes', 'No', 'Only when held close'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: the omni moves from the shared place to 20 cm from the guest. What changes?', options: ['More of the guest, less of the street', 'More of the street', 'It depends on this street'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The loudspeaker is beyond the reporter. Where will a cardioid held at the guest’s mouth reject it best?', options: ['Straight behind the mic', 'In front of the mic', 'At the mic’s sides'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
-  twoMic: { prompt: 'If you flip the lav’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
+  twoMic: { prompt: 'If you flip the lav’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
 const diagnostic: DiagnosticItem[] = [
@@ -615,7 +615,7 @@ export const B03_LESSON: Lesson = {
   predictions,
   orient: [
     { title: 'WHAT IT IS', text: 'An interview on location: a reporter and the person they question, one handheld mic between them — on a street, at an event, wherever the story is. Wind, traffic, a camera and little time to set up.', src: 'LESSON' },
-    { title: 'WHERE YOU MEET IT', text: 'News reports and quick interviews: a rugged handheld with a flag, a foam or a fur on it, the reporter moving it between two mouths — or, with more time, a mic each.', src: 'LESSON' },
+    { title: 'WHERE YOU MEET IT', text: 'News reports and quick interviews: a rugged handheld with a foam or a fur on it, often with a flag (the logo box on its handle), the reporter moving it between two mouths — or, with more time, a mic each.', src: 'LESSON' },
     { title: 'THE JOB', text: 'Both voices intelligible on the program, the speaking turns clear, the wind and the handling under control — and everyone safe, out of traffic and weather.', src: 'LESSON' },
     { title: 'NO SINGLE RIGHT PLACE', text: 'A shared place between the two works in a quiet spot; a loud street calls for the mic at whoever is speaking. Begin there, listen, and adjust. Experimentation is encouraged.', src: 'LESSON' },
   ],

@@ -45,7 +45,7 @@ const SPEC = ensembleHandSpec({
     B: { zone: 'bv.hand2', mic: 'vocDynCard' },
     names: { A: 'MIDDLE SINGER’S MIC', B: 'HIGH SINGER’S MIC' },
     looking: 'Two mics · A the middle singer’s handheld, B the high singer’s',
-    prompt: 'Flip B POLARITY both ways, then move a mic. Then change SOURCE: each singer reaches their own mic first and the other one later.',
+    prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each singer reaches their own mic first and the other one later.',
     label: 'Two backing singers, each with a handheld: A the middle singer’s, B the high singer’s',
     warn: 'This simplified graph shows one point source and straight paths, no room. Real voices move and turn: listen to each mic alone, then the sum in mono.',
     learn: [
@@ -65,7 +65,7 @@ const SPEC = ensembleHandSpec({
     placeBadge: 'Blue = suggested starting points · grey dashes = the singers’ space · pinch to zoom',
     clearance: 'Clearance comes first: the singers’ faces, hands and feet as they move, and their way in and out of a shared mic.',
     cardioidTried: 'What you just saw: a cardioid rejects most directly behind it. A handheld aimed level at the mouth has its back toward the wedge — but the wedge is low, so tilt or a tighter pattern decides how much it hears.',
-    sourceNote: 'What you just saw: a voice reaches two mics at different times. Summed, the late copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each singer gives their own delay.',
+    sourceNote: 'What you just saw: a voice reaches two mics at different times. Summed, the late copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — the notches and peaks swap places; it does not remove the delay. Change the SOURCE: each singer gives their own delay.',
   },
 });
 
