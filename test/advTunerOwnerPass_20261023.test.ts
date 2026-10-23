@@ -12,6 +12,9 @@ describe('Advanced Tuner owner pass 2026-10-23', () => {
   it('portrait: the close key shares the instrument row only; rows have air', () => {
     assert.match(src, /<View style=\{styles\.barRow1\}>[\s\S]{0,400}\{closeKey\}/);
     assert.match(src, /barRows: \{ gap: 14 \}/);
+    // The tuning row is a ROW (a flex: 1 ChipRow in a heightless column collapsed to 0 on a phone).
+    assert.match(src, /<View style=\{\[styles\.barRow2, \{ opacity/);
+    assert.match(src, /barRow2: \{ flexDirection: 'row' \}/);
     assert.match(src, /\(landscape \? 6 : 14\)/);
   });
   it('piano only: a HOW TO TUNE chip opens the owner text verbatim', () => {

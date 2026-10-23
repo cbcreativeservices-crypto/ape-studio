@@ -398,7 +398,10 @@ export function CenterLockTuner() {
               </View>
               {closeKey}
             </View>
-            <View style={{ opacity: controlsShown ? 1 : CHIPS_REST_OPACITY }}>
+            {/* A ROW, not a plain View (owner 2026-10-23, Pixel): ChipRow's wrap is
+                flex: 1, which in a column parent with no height collapses to
+                ZERO on a phone — the whole tuning row vanished. Web drew it. */}
+            <View style={[styles.barRow2, { opacity: controlsShown ? 1 : CHIPS_REST_OPACITY }]}>
               <ChipRow>{setupChips}</ChipRow>
             </View>
           </View>
@@ -1413,6 +1416,7 @@ const styles = StyleSheet.create({
   barPortrait: { flexDirection: 'column', alignItems: 'stretch', paddingBottom: 12 },
   barRows: { gap: 14 },
   barRow1: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  barRow2: { flexDirection: 'row' },
   chipRowWrap: { flex: 1 },
   // paddingVertical: the horizontal ScrollView clipped the chips' top and
   // bottom borders on iOS, so they read as bare side lines, not buttons.
