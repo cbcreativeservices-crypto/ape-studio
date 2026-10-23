@@ -510,6 +510,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-22 17:15 · ccode · 4ef375bb
+changed: web: /verify and /verify/<code> open without the site key (owner H-A)
+affects other side: nothing yet — web-launch-day branch is LOCAL ONLY (not pushed); goes live only on the owner's launch-day go
+needs: nothing
+
+
 ### 2026-10-08 08:55 · ccode · b4b6138c
 changed: web: subline on two lines with a hard break (phones too)
 affects other side: nothing (website copy; requested by Comp A)
