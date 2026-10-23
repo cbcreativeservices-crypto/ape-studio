@@ -33,7 +33,7 @@ describe('H9-2 readableError: a member deleted under an open sheet', () => {
   });
 
   it('existing mappings are unchanged', () => {
-    assert.equal(readableError('no account'), 'Sign in to use the Audio Community Directory.');
+    assert.equal(readableError('no account'), 'Sign in to use the Pro Registry.');
     assert.equal(readableError('that is your own profile'), 'That is your own profile.');
     assert.equal(readableError('Network request failed'), 'No connection. Try again.');
   });

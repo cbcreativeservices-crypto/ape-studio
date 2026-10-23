@@ -698,7 +698,7 @@ export function ProfileScreen() {
       if (v && registryGuest) {
         askYesNo(
           'Listing needs an account',
-          'Guests can’t be listed in the Professional Registry. Create an account to publish your profile.',
+          'Guests can’t be listed in the Pro Registry. Create an account to publish your profile.',
           'Create an account',
           () => (navigation as any).navigate('Auth'),
         );
@@ -1423,7 +1423,7 @@ export function ProfileScreen() {
             style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
             onPress={() => (navigation as any).navigate('AudioCommunityDirectory')}
             accessibilityRole="button"
-            accessibilityLabel="Open the Audio Community Directory"
+            accessibilityLabel="Open the Pro Registry"
             accessibilityHint="Explore members, edit your community profile, and see contact requests"
           >
             <View style={styles.rowMain}>
@@ -1475,10 +1475,10 @@ export function ProfileScreen() {
           ) : null}
 
           <View style={styles.switchRow}>
-            <Text style={styles.switchLabel}>List me in the Professional Registry</Text>
+            <Text style={styles.switchLabel}>List me in the Pro Registry</Text>
             <Toggle
               on={pub.showInRegistry}
-              label="List me in the Professional Registry"
+              label="List me in the Pro Registry"
               disabled={!profileComplete}
               onChange={onRegistryToggle}
             />
@@ -1492,7 +1492,7 @@ export function ProfileScreen() {
           ) : null}
           {registryGuest ? (
             <Text style={styles.fieldError}>
-              Listing needs an account. Guests can’t be listed in the Professional Registry.
+              Listing needs an account. Guests can’t be listed in the Pro Registry.
             </Text>
           ) : null}
           <Text style={styles.rowHint}>

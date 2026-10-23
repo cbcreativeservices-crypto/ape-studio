@@ -178,7 +178,7 @@ describe('Server errors become something a member can act on', () => {
     // directory showed "permission denied for function directory_search".
     assert.equal(
       readableError('permission denied for function directory_search'),
-      'Sign in to use the Audio Community Directory.',
+      'Sign in to use the Pro Registry.',
     );
   });
 

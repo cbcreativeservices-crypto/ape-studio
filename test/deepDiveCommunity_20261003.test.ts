@@ -52,9 +52,9 @@ describe('B1 readableError: specific server refusals are not swallowed by the ge
   it('a guest with the anonymous session is told to sign in, not that the server broke', () => {
     assert.equal(
       readableError('sign in to browse the directory'),
-      'Sign in to use the Audio Community Directory.',
+      'Sign in to use the Pro Registry.',
     );
-    assert.equal(readableError('no account'), 'Sign in to use the Audio Community Directory.');
+    assert.equal(readableError('no account'), 'Sign in to use the Pro Registry.');
   });
 
   it('a second request while one is pending is not "something went wrong, try again"', () => {

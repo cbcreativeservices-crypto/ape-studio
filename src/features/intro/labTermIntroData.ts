@@ -252,7 +252,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Limiter",
     term: "Limiter",
     plainEnglish:
-      "A limiter is an extreme compressor with a very high ratio, from about 10:1 up to infinite. You set a threshold, and signal above it is held at or near that level. This protects against surprise clipping. Limiters are common on the master bus and for safety on inputs. Used right, they are invisible. Used wrong, they squash the sound.",
+      "A limiter is an extreme compressor with a very high or infinite ratio. You set a threshold, and signal above it is held from going much higher. This protects against surprise clipping. Very fast peaks can still slip a little past unless the limiter uses lookahead. Limiters are common on the master bus and as a safety net on inputs. Used right, they are invisible. Used wrong, they squash the sound.",
     glossaryId: "7f621dc4-6d04-4c29-bc61-e6352f8afcd8",
   },
   SmartProcessorsLab: {

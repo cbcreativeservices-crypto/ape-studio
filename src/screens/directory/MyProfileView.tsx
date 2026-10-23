@@ -837,11 +837,11 @@ export function MyProfileView() {
       </Helper>
 
       <View style={st.switchRow}>
-        <Text style={st.switchLabel}>Include me in the Audio Community Directory</Text>
+        <Text style={st.switchLabel}>Include me in the Pro Registry</Text>
         <Toggle
           on={p.discoverable}
           disabled={!p.published}
-          label="Include me in the Audio Community Directory"
+          label="Include me in the Pro Registry"
           onChange={(v) => flipSwitch('discoverable', () => setDiscoverable(v))}
         />
       </View>

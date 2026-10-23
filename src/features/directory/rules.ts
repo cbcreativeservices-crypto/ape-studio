@@ -185,7 +185,7 @@ export function readableError(message: string | undefined): string {
   // one thing: no account. (Found 2026-08-31 by opening the directory as a
   // guest during the lab sweep.)
   if (m.includes('permission denied for function'))
-    return 'Sign in to use the Audio Community Directory.';
+    return 'Sign in to use the Pro Registry.';
   // …but a guest who has the app's ANONYMOUS session (the glossary meter makes
   // one) IS `authenticated`, gets past the grant, and is refused inside the
   // function instead: "sign in to browse the directory" from the search,
@@ -193,7 +193,7 @@ export function readableError(message: string | undefined): string {
   // through to "Something went wrong on our side… try again" — a guest told
   // the server was broken, with a RETRY that can only fail the same way.
   if (m.includes('sign in to browse the directory') || m.includes('no account'))
-    return 'Sign in to use the Audio Community Directory.';
+    return 'Sign in to use the Pro Registry.';
   if (m.includes('at most')) return 'That is more than you can select here.';
   if (m.includes('needs one of its areas')) return 'Add the matching area first, or remove that specialty.';
   // ── SPECIFIC BEFORE GENERIC (deep dive B, 2026-10-03) ───────────────────

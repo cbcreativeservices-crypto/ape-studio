@@ -205,7 +205,7 @@ describe('2. the right term — and the right meaning — per lab', () => {
     assert.equal(wired('EqLab')?.plainEnglish, 'An equalizer boosts or cuts chosen frequencies. It shapes the tone of a sound.');
     assert.equal(
       wired('LimiterLab')?.plainEnglish,
-      'A limiter is an extreme compressor with a very high ratio, from about 10:1 up to infinite. You set a threshold, and signal above it is held at or near that level. This protects against surprise clipping. Limiters are common on the master bus and for safety on inputs. Used right, they are invisible. Used wrong, they squash the sound.',
+      'A limiter is an extreme compressor with a very high or infinite ratio. You set a threshold, and signal above it is held from going much higher. This protects against surprise clipping. Very fast peaks can still slip a little past unless the limiter uses lookahead. Limiters are common on the master bus and as a safety net on inputs. Used right, they are invisible. Used wrong, they squash the sound.',
     );
     // A real em dash, as stored — not a replacement character.
     assert.match(wired('ModularLab')?.plainEnglish ?? '', /On most hardware modulars nothing is fixed and nothing is saved \u2014 that is the appeal\.$/);
