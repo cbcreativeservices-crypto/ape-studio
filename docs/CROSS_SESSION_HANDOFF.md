@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-22 17:00 · ccode · cff3f25b
+changed: Help + Registry intro: membership is not needed to stay listed and verified
+affects other side: same promise as a39f1ef8, now in Help + the Registry intro — keep registry/verify free of membership checks
+needs: nothing
+
+
 ### 2026-10-22 16:48 · ccode · e60d44e1
 changed: About: say plainly an ongoing membership is not needed to stay listed and verified
 affects other side: app now PROMISES registry listing + employer search/verify never depend on membership — keep directory_search, public_verify_*, set_registry_listing free of any membership check
