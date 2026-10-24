@@ -866,5 +866,5 @@ const styles = StyleSheet.create({
   captionBox: { minHeight: 60, marginTop: 12, gap: 4 },
   watchFor: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
-  fieldNote: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 12.5, lineHeight: 17, color: colors.textMuted },
+  fieldNote: { fontFamily: fonts.barlowItalic, fontSize: 12.5, lineHeight: 17, color: colors.textMuted },
 });

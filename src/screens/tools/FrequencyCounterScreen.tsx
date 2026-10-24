@@ -27,7 +27,7 @@
  * Results (Tap): frequency (Hz), events/sec, period (ms), BPM, stability, and
  * the min/max readings, with Reset + Hold controls.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { BackHandler, PermissionsAndroid, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -393,6 +393,25 @@ function LightPulseMode({ blurb, help, helpAll }: { blurb: string; help: (key: s
 // the horizontal edgewise VU face on the amber skin, ±30¢ printed scale, plus
 // the TuneChevrons correction cue. (Replaced the 2026-08-05 arc "gas gauge".)
 
+/**
+ * Freeze wrapper (Adv Tuner soak fix 2026-09-13, ported 2026-10-24): while a
+ * fullscreen overlay (CenterLock / VU) covers the screen, LivePitchMode must
+ * keep RUNNING — its poll is what feeds the tuner-frame store the overlays
+ * read, so the overlays still update every frame — but its own UI (the
+ * skinned VU, stat cells, trays) is invisible behind the opaque overlay, and
+ * reconciling it at frame rate for as long as the overlay sits open is the
+ * steady hidden churn the soak freeze fed on. Returning the PREVIOUS element
+ * while frozen makes React bail out of the whole subtree (element-identity
+ * short-circuit); the moment the overlay closes a fresh element is returned
+ * and the UI resumes with its state intact — no unmount, no layout change,
+ * no scroll jump. The overlays render at the SCREEN root, outside this tree.
+ */
+function FrozenWhileCovered({ frozen, children }: { frozen: boolean; children: ReactElement }) {
+  const last = useRef(children);
+  if (!frozen) last.current = children;
+  return last.current;
+}
+
 function LivePitchMode({
   kind,
   help,
@@ -422,6 +441,12 @@ function LivePitchMode({
   useEffect(() => {
     setTunerFloor(pitchFloor);
   }, [pitchFloor]);
+  // A fullscreen tuner overlay is covering this screen — see
+  // FrozenWhileCovered. Both hooks are called on every render (never
+  // short-circuited); they re-render only on open/close, never per frame.
+  const centerLockCovering = useCenterLockOpen();
+  const vuCovering = useVuTunerOpen();
+  const coveredByOverlay = centerLockCovering || vuCovering;
   // A failed / denied mic renders EngineGate (TRY AGAIN) here — UNDER a tuner
   // full screen, which kept saying "PLAY A STRING" as if it were listening.
   // Close the overlays so the honest gate is what the user sees.
@@ -694,6 +719,7 @@ function LivePitchMode({
     return <Text style={styles.intro}>Starting the {kind === 'sound' ? 'counter' : 'tuner'}…</Text>;
   }
   return (
+    <FrozenWhileCovered frozen={coveredByOverlay}>
     <>
       {/* Running, but the mic never delivered a frame (iPad pass 2026-10-07). */}
       {noSignal ? <EngineGate state={state} lastError={lastError} onRetry={start} noSignal /> : null}
@@ -1036,6 +1062,7 @@ function LivePitchMode({
         )}
       <Text style={styles.disclaimer}>{DISCLAIMER}</Text>
     </>
+    </FrozenWhileCovered>
   );
 }
 

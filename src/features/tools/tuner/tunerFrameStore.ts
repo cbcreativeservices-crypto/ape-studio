@@ -36,17 +36,28 @@ const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
 
 export function publishTunerFrame(frame: TunerFrame): void {
+  // Quantize the two noise-floor jitter fields BEFORE the dedup (Adv Tuner
+  // soak fix 2026-09-13, ported 2026-10-24): raw confidence/levelDb differ on
+  // virtually every engine frame even in silence, so the dedup below never
+  // fired and both fullscreen overlays re-rendered at frame rate for as long
+  // as they sat open. No display changes: the only reader of the store's
+  // confidence is CenterLock's SIGNAL bar, which rounds to a whole percent
+  // (same value from the 0.01-quantized number), and no store reader renders
+  // levelDb. The accept thresholds (PITCH_CONF_MIN, PITCH_LOW_SIGNAL_DB) read
+  // the RAW engine frame in the tuner mode, never this store.
+  const confidence = Math.round(frame.confidence * 100) / 100;
+  const levelDb = Math.round(frame.levelDb);
   const f = state.frame;
   if (
     f.freq === frame.freq &&
     f.accepted === frame.accepted &&
-    f.confidence === frame.confidence &&
-    f.levelDb === frame.levelDb &&
+    f.confidence === confidence &&
+    f.levelDb === levelDb &&
     f.a4 === frame.a4
   ) {
     return;
   }
-  state = { ...state, frame };
+  state = { ...state, frame: { ...frame, confidence, levelDb } };
   emit();
 }
 

@@ -579,5 +579,5 @@ const styles = StyleSheet.create({
   watchFor: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amber },
   watchForBody: { fontFamily: fonts.barlowMedium, fontSize: 12.5, letterSpacing: 0.2, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
-  fieldNote: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 12.5, lineHeight: 17, color: colors.textMuted },
+  fieldNote: { fontFamily: fonts.barlowItalic, fontSize: 12.5, lineHeight: 17, color: colors.textMuted },
 });

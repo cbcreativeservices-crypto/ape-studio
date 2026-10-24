@@ -727,8 +727,8 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   fieldNote: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
+    // True italic face: Android draws a synthesized italic on a custom font UPRIGHT.
+    fontFamily: fonts.barlowItalic,
     fontSize: 12.5,
     lineHeight: 18,
     color: colors.textMuted,

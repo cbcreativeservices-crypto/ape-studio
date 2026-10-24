@@ -945,8 +945,8 @@ const styles = StyleSheet.create({
   watchFor: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amber },
   captionBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
   fieldNote: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
+    // True italic face: Android draws a synthesized italic on a custom font UPRIGHT.
+    fontFamily: fonts.barlowItalic,
     fontSize: 12.5,
     lineHeight: 17,
     color: colors.textMuted,

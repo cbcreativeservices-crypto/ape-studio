@@ -110,6 +110,12 @@ export const fonts = {
   oswaldBold: 'Oswald_700Bold',
   // Barlow — body copy, questions, definitions
   barlowRegular: 'Barlow_400Regular',
+  // True italic face — Android does not synthesize italics for a custom font
+  // (fontStyle:'italic' on barlowRegular silently renders UPRIGHT there while
+  // iOS slants it), so italic copy that must look the same on both platforms
+  // uses this face with NO fontStyle (tool-demo FIELD NOTE, 2026-09-13 fix
+  // ported 2026-10-24). Ships in the installed @expo-google-fonts/barlow.
+  barlowItalic: 'Barlow_400Regular_Italic',
   barlowMedium: 'Barlow_500Medium',
   barlowSemiBold: 'Barlow_600SemiBold',
   // Barlow Condensed — small captions / meta
@@ -146,6 +152,7 @@ export const fontAssets = {
   Oswald_600SemiBold: require('@expo-google-fonts/oswald/600SemiBold/Oswald_600SemiBold.ttf'),
   Oswald_700Bold: require('@expo-google-fonts/oswald/700Bold/Oswald_700Bold.ttf'),
   Barlow_400Regular: require('@expo-google-fonts/barlow/400Regular/Barlow_400Regular.ttf'),
+  Barlow_400Regular_Italic: require('@expo-google-fonts/barlow/400Regular_Italic/Barlow_400Regular_Italic.ttf'),
   Barlow_500Medium: require('@expo-google-fonts/barlow/500Medium/Barlow_500Medium.ttf'),
   Barlow_600SemiBold: require('@expo-google-fonts/barlow/600SemiBold/Barlow_600SemiBold.ttf'),
   BarlowCondensed_400Regular: require('@expo-google-fonts/barlow-condensed/400Regular/BarlowCondensed_400Regular.ttf'),
