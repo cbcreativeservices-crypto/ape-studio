@@ -932,25 +932,22 @@ export function AwardsScreen({ navigation, route }: Props) {
       <CompactBrandBar />
       {/* The whole title area (below the logo, above the page buttons) is still a
           return action (user request 2026-07-18). */}
-      <Pressable
-        style={styles.header}
-        onPress={() => safeGoBack(navigation)}
-        accessibilityRole="button"
-        accessibilityLabel="Return"
-      >
-        <View style={{ flex: 1 }}>
+      <View style={styles.header}>
+        <Pressable style={{ flex: 1 }} onPress={() => safeGoBack(navigation)} accessibilityRole="button" accessibilityLabel="Return">
           {/* Amber titles; now full sentence headlines (user request 2026-07-22)
               so they wrap / shrink to fit. */}
           <Text style={[styles.title, { color: AMBER }]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7}>
             {pageHeadline(currentKey)}
           </Text>
-        </View>
+        </Pressable>
         {/* Consistent per-screen help (Pillar C), Enrollments page only —
             lands in the hub with the enrollment answers surfaced (LOADED/
             UNLOADED, add/remove, reorder, meters, HOME SETUP). */}
-        {/* Enrollments' ? is a small menu: the intro again, or Help (owner 2026-10-15). */}
+        {/* Enrollments' ? is a small menu: the intro again, or Help (owner 2026-10-15).
+            A SIBLING of the Return press, never inside it (2026-10-23: nested,
+            TalkBack could not reach ? and a near miss left the screen). */}
         {currentKey === 'enrollment' ? <EnrollmentHelpMenu /> : null}
-      </Pressable>
+      </View>
       {/* What to do here, under the title (owner 2026-10-23, wording approved).
           A reveal triangle can hide it — offered only from the learner's
           ENROLL_INTRO_MIN_VISITS-th visit, so a newcomer always reads it. */}
