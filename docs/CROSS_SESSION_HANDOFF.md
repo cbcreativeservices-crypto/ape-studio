@@ -634,6 +634,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 20:08 · ccode · 0c61cfe7
+changed: IAP: buyPlan tags each new purchase with the buyer's auth id (appAccountToken / obfuscatedAccountId) — Comp A #3 app half; no tag when the session can't be read
+affects other side: new purchases carry the tag from this update on (preview channel now; production with the next release)
+needs: nothing
+
 ### 2026-10-23 20:07 · ccode · d88c4e64
 changed: validate-purchase: repo copy = deployed v18 (Comp A, 2026-10-23)
 affects other side: nothing — repo now matches deployed v18
