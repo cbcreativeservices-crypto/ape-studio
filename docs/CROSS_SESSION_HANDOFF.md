@@ -643,6 +643,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 11:44 · ccode · 12a60901
+changed: Build 39: 'Redeem an offer code' on the Paywall and Settings › MEMBERSHIP opens the store's own screen (Apple Offer Codes / Google Play redeem; owner GO 2026-10-24); the store-not-responding line names Google Play on Android (both phones identical)
+affects other side: Paywall, Settings MEMBERSHIP, purchase module
+needs: nothing
+
+
 ### 2026-10-24 11:06 · ccode · 036078b8
 changed: Pre-resubmission audit fixes: paywall StoreKit calls bounded (15 s) + 'Prices didn't load · TRY AGAIN' + App Store not-responding wording (owner-approved); Terms of Use / Privacy Policy rows in Settings for every user; Android Oboe output error callback → onOutputLost (native queue item 1, owner GO); Swift iPad-mic type-check + output-restart guard; last synthetic italic; duplicate Tape baking term
 affects other side: Paywall (all users), Settings › Feedback & Support, tone tools on Android, iPad mic; NATIVE parts store-build only
