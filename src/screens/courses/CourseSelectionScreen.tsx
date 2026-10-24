@@ -512,6 +512,13 @@ function EnrollmentsCue() {
 
 /** MY ENROLLMENTS card art (owner 2026-10-14) — bundled, see the card. */
 const ENROLLMENTS_CARD_ART = require('../../../assets/home-cards/enrollments_card.webp');
+/** Study-area art shipped IN the app (owner 2026-10-23: new Commercial 70V
+ *  art). Bundled rather than re-uploaded: the bucket's files are cached
+ *  `immutable` for a year by URL, so a same-name replacement would never
+ *  reach a phone that already has the old one. Wins over CARD_IMAGE. */
+const SHOWCASE_LOCAL_ART: Record<string, number> = {
+  'Commercial 70V Systems': require('../../../assets/home-cards/area_commercial-70v.webp'),
+};
 
 function cardImageUrl(key: string): string | null {
   const f = CARD_IMAGE[key];
@@ -1119,7 +1126,25 @@ function CourseCardView({
   // credential's popup when there is only one (StudyAreaExplore).
   if (item.kind === 'showcase') {
     const showUrl = cardImageUrl(item.name);
+    const localArt = SHOWCASE_LOCAL_ART[item.name];
     const openArea = () => onOpenShowcase(item.name);
+    const showBody = (
+      <>
+        <LinearGradient
+          colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
+          locations={[0, 0.3, 0.58, 1]}
+          style={StyleSheet.absoluteFill}
+        />
+        <View>
+          <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{item.name}</Text>
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <View style={{ width: cd.btnW }}>
+            <GlassButton maxFontSizeMultiplier={HOME_MAX} label="CERTIFICATES & PROGRAMS ›" tint="gold" height={50} fontSize={13} onPress={openArea} />
+          </View>
+        </View>
+      </>
+    );
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
@@ -1129,21 +1154,15 @@ function CourseCardView({
           <View style={[styles.cardAboveRule, { backgroundColor: '#ffc64d' }]} />
         </View>
         <Pressable onPress={openArea} accessible={false}>
-          <CardArt uri={showUrl} style={[styles.card, cd.card, { borderColor: 'rgba(255,198,77,.55)' }]} imageStyle={styles.cardImg}>
-            <LinearGradient
-              colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
-              locations={[0, 0.3, 0.58, 1]}
-              style={StyleSheet.absoluteFill}
-            />
-            <View>
-              <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{item.name}</Text>
-            </View>
-            <View style={{ alignItems: 'center' }}>
-              <View style={{ width: cd.btnW }}>
-                <GlassButton maxFontSizeMultiplier={HOME_MAX} label="CERTIFICATES & PROGRAMS ›" tint="gold" height={50} fontSize={13} onPress={openArea} />
-              </View>
-            </View>
-          </CardArt>
+          {localArt ? (
+            <ImageBackground source={localArt} style={[styles.card, cd.card, { borderColor: 'rgba(255,198,77,.55)' }]} imageStyle={styles.cardImg}>
+              {showBody}
+            </ImageBackground>
+          ) : (
+            <CardArt uri={showUrl} style={[styles.card, cd.card, { borderColor: 'rgba(255,198,77,.55)' }]} imageStyle={styles.cardImg}>
+              {showBody}
+            </CardArt>
+          )}
         </Pressable>
       </View>
     );
