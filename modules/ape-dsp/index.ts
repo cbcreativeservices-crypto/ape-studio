@@ -135,6 +135,9 @@ export type EngineConfig = {
   pitchMinHz?: number;
 };
 
+/** The engine's default pitch floor (EngineHub.hpp / ApeDspModule.kt: 40 Hz). */
+const DEFAULT_PITCH_MIN_HZ = 40;
+
 /**
  * What a LEARNER is told when the engine is not there.
  *
@@ -433,7 +436,11 @@ export const ApeDsp = {
 
   // ---- Engine surface (all no-op/null below engineVersion 2) ----
   setEngineConfig(cfg: EngineConfig): void {
-    if (this.engineVersion() >= 2) native?.setEngineConfig(cfg);
+    // pitchMinHz always travels (toddler night 2026-10-24): Android defaults a
+    // missing key to 40 Hz but iOS MERGES the config, so a tool that omits it
+    // (hub tuner mini, Multimeter) kept the piano/bass tuner's long low-note
+    // window on iOS only. A caller's own value wins.
+    if (this.engineVersion() >= 2) native?.setEngineConfig({ pitchMinHz: DEFAULT_PITCH_MIN_HZ, ...cfg });
   },
   getMeterFrame(): MeterFrame | null {
     return this.engineVersion() >= 2 ? native!.getMeterFrame() : null;

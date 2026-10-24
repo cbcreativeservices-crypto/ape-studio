@@ -81,6 +81,13 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
 
   const choose = (c: OnboardingChoice) => {
     if (onChoose) return onChoose(c);
+    // ONE CHOICE PER VISIT (toddler night 2026-10-24). Every choice leaves this
+    // page, and the navigation store updates synchronously — so a second tap in
+    // the same moment (double tap, two fingers) finds the page no longer
+    // focused. It used to carry on past the refused safeGoBack and open its
+    // destination too (GLOSSARY + LABS stacked; the Paywall re-armed over a
+    // destination, whose purchase then put this one-time page back).
+    if (!navigation.isFocused()) return;
     if (c === 'membership') {
       // Over this page, not from the menu: closing the Paywall — or finishing a
       // purchase — comes back HERE to make a choice (owner 2026-10-09).

@@ -193,3 +193,14 @@ These three passes follow the pattern hunt, which closed the major classes centr
   - LABS A: Production projectStore guest carry (same pattern as patternStore carryIn: holdSessionWork guestOnly + registerSessionCarry merge by id, newer updatedAt wins, never over unreadable).
   - STUDY: fetchStudyRowsByIds (starred deck) on glossary_study_v can pass the 1000-row page → page it (readAllPages pattern, fixed order).
 - Test files: `<area>Hunt13_20261004.test.ts`.
+
+# ===== OVERNIGHT 2026-10-24 — TWO FULL-APP TODDLER PASSES (owner asleep) =====
+- WORK ONLY IN `C:\Users\profe\dev\ape-workbench` (branch `workbench`, renamed from dj-lab today). NEVER edit `C:\Users\profe\dev\ape-studio` (the owner's own uncommitted work) or `C:\Users\profe\dev\ape-build-snap` (the ship branch). Run every command with `cd C:\Users\profe\dev\ape-workbench` first.
+- Base: a7a9b4aa = what is in iOS build 38 on TestFlight and Android build 22. Fixes ship to those builds ONLY by OTA later, so: NO native code (`modules/**/ios`, `modules/**/android`, `*.hpp`, `*.mm`, `*.kt`, `*.cpp`), NO app.json / eas.json / package.json edits, NO new packages. A native change would break the OTA path.
+- Newest code (re-audit FIRST where it touches your area): `git log --since=2026-10-22 --stat` (read-only). Tonight's commits: legal lines + restore reasons + new-account onboarding + Android transitions + Miking lesson/art loaders (68ba71b2 and parents), x86/location tag (cb849459), certificate share-as-image (5b153779), Miking art per lesson (2bd1fba1), tuner phase 2 JS (3d9a5d59: tunerFrameStore floor, CenterLockTuner low note, FrequencyCounterScreen live reconfig).
+- No web previews and no Pixel/device use tonight (token budget). Read and prove with tests.
+- While working run ONLY targeted tests (`node --test --test-timeout=120000 test/<file>.test.ts`) plus `npx tsc --noEmit -p .` once at the end. The lead runs the full suite.
+- Test files: `<area>Night{1|2}_20261024.test.ts`. CRLF rule: tests that read source use `.replace(/\r\n/g, '\n')`.
+- No git state changes (the lead commits). Do not launch sub-agents.
+- Pass 2: FIRST re-audit pass 1's fixes in your area (`git show <PASS1_SHA> -- <your paths>` — the lead gives the sha), then go deeper into paths pass 1 did not touch.
+- Report honestly; only REAL bugs with receipts. Zero is a fine answer.

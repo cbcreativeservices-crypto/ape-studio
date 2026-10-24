@@ -9,6 +9,7 @@
  * SESSION state only (a module map, like the shared booth): nothing here is
  * the learner's record, so it is never saved.
  */
+import { registerLocalStoreReset } from '../../../../features/storage/localStoreRegistry.ts';
 
 const reported = new Map<string, readonly string[]>();
 
@@ -58,6 +59,11 @@ export function leftLine(page: string, allLabels: readonly string[]): string {
 export function clearGoalReports(): void {
   reported.clear();
 }
+// The account wipe drops them too (toddler night 1, 2026-10-24): after a
+// sign-out and another account's sign-in, the next learner's what's-left rows
+// read the PREVIOUS learner's unmet goals — "Every goal is met" for a screen
+// they had never opened.
+registerLocalStoreReset(clearGoalReports);
 
 /* ── is a screen's setup still waiting? ──────────────────────────────────
  * A screen's FIRST render still sees the booth the previous screen left

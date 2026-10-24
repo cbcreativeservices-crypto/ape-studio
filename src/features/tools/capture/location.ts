@@ -53,8 +53,18 @@ export async function currentStatus(): Promise<'granted' | 'denied' | 'undetermi
 export async function getFix(): Promise<GeoFix | null> {
   const L = lib();
   if (!L) return null;
+  // Bounded (toddler night 2026-10-24): getCurrentPositionAsync has no timeout
+  // of its own, and a fix that never settles held the screen's press latch
+  // forever (TAG LOCATION dead). A timeout reads as a failed fix.
+  let timer: ReturnType<typeof setTimeout> | null = null;
   try {
-    const pos = await L.getCurrentPositionAsync({ accuracy: L.Accuracy?.Balanced });
+    const pos = await Promise.race([
+      L.getCurrentPositionAsync({ accuracy: L.Accuracy?.Balanced }),
+      new Promise<null>((resolve) => {
+        timer = setTimeout(() => resolve(null), FIX_TIMEOUT_MS);
+      }),
+    ]);
+    if (pos == null) return null;
     return {
       latitude: pos.coords.latitude,
       longitude: pos.coords.longitude,
@@ -63,5 +73,10 @@ export async function getFix(): Promise<GeoFix | null> {
     };
   } catch {
     return null;
+  } finally {
+    if (timer) clearTimeout(timer);
   }
 }
+
+/** How long one TAG LOCATION waits for a fix before saying it failed. */
+const FIX_TIMEOUT_MS = 20000;

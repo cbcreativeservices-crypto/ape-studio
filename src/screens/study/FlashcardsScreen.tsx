@@ -725,6 +725,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const elapsedRef = useRef(0);
   const recordedRef = useRef(false);
   const paceShown = pace.enabled || trial.active || !!trial.result;
+  // Cards already counted toward the running time trial (see toggleKnown).
+  // Emptied when a trial starts or restarts: active with nothing counted yet.
+  const trialCountedRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (trial.active && trial.correctCount === 0) trialCountedRef.current = new Set();
+  }, [trial.active, trial.correctCount]);
 
   // Fresh visit = fresh pace session (B-138, as Fill-in-Blank / Matching): the
   // brain-output tally and the running flag live in the module-level store and
@@ -1423,7 +1429,13 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       setInTermList('known', card.id, true);
       // Marking a card KNOWN is the flashcard "correct" signal: it advances the
       // time trial and counts one brain output (the 1.5s dwell guards it).
-      registerTrialAnswer('flashcards', true, achievementId);
+      // ONE CARD COUNTS ONCE PER TRIAL (night pass 2026-10-24): where a known
+      // card stays on screen (Bookmarked / Custom views) the dwell is not
+      // re-armed, so MARK KNOWN / MARK UNKNOWN mashing cleared the trial.
+      if (!trialCountedRef.current.has(card.id)) {
+        trialCountedRef.current.add(card.id);
+        registerTrialAnswer('flashcards', true, achievementId);
+      }
       incBrainOutput('flashcards');
       if (!states[card.id]?.known) {
         session.current?.addEvent({ item: card.id, kind: 'known', value: true });
@@ -2391,7 +2403,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           simply waits and shows when the learner is back here. */}
       {tutorialBlocked ? null : <SessionTimerBanner timer={sessionTimer} />}
       {/* Pace timer settings (header timer button). */}
-      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="flashcards" topicId={achievementId} />
+      {/* No topicId on My Custom List (night pass 2026-10-24): the trial's pass
+          credits a topic row, and 'flagged' has none — credit_time_trial can
+          only fail, and there is no list quiz to unlock. */}
+      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="flashcards" topicId={flaggedMode ? undefined : achievementId} />
 
     </View>
   );

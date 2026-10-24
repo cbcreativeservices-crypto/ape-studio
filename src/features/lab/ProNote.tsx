@@ -14,10 +14,10 @@
  * It is long, so the body scrolls and GOT IT is pinned below it — never a
  * tap-anywhere sheet like the other intros.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
-import { Modal } from '../../components/DimModal';
+import { Modal, rootModalHoldMs } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { useScreenIntro } from '../intro/ScreenIntroOverlay';
 import { SCREEN_INTROS } from '../intro/screenIntros';
@@ -66,7 +66,25 @@ export function ProNoteIntro({ onOwed }: { onOwed?: (owed: boolean) => void }) {
   useEffect(() => {
     onOwed?.(owed);
   }, [owed, onOwed]);
-  if (!visible) return null;
+  // ⛔ NEVER DURING A DISMISS (labKit night 1, 2026-10-24; catalog K10). The
+  // lab's glossary TERM popup goes first, and its CONTINUE lifts the hold in
+  // the same commit that closes its Modal — so this note presented while that
+  // one was still fading out. iOS refuses that: nothing showed, the note was
+  // never marked seen, and its refused Modal stayed an open host that the
+  // next root popup (the audio gate on ▶) was drawn into, invisibly. Wait the
+  // closing fade out first (the TopicWelcomeSheet rule); once up, it stays.
+  const presentedRef = useRef(false);
+  if (!visible) presentedRef.current = false;
+  const holdMs = visible && !presentedRef.current ? rootModalHoldMs() : 0;
+  const [, setHoldTick] = useState(0);
+  useEffect(() => {
+    if (holdMs <= 0) return undefined;
+    const t = setTimeout(() => setHoldTick((n) => n + 1), holdMs);
+    return () => clearTimeout(t);
+  }, [holdMs]);
+  const show = visible && (presentedRef.current || holdMs <= 0);
+  if (show) presentedRef.current = true;
+  if (!show) return null;
   return <ProNoteSheet onClose={dismiss} />;
 }
 

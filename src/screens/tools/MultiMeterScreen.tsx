@@ -929,6 +929,9 @@ export function MultiMeterScreen({ navigation }: Props) {
   const [geo, setGeo] = useState<GeoFix | null>(null);
   const [photoBlocked, setPhotoBlocked] = useState(false);
   const [locationBlocked, setLocationBlocked] = useState(false);
+  const [locationFailed, setLocationFailed] = useState(false);
+  // Bumped by each fresh snapshot sheet (see tagLocationNow).
+  const sheetGenRef = useRef(0);
 
   const addPhotoNow = useCallback(async () => {
     const r = await photoFlow.request();
@@ -942,11 +945,21 @@ export function MultiMeterScreen({ navigation }: Props) {
   }, [photoFlow]);
 
   const tagLocationNow = useCallback(async () => {
+    // A fix can take seconds: one for a sheet the user has since replaced
+    // must not tag the next snapshot (toddler night 2026-10-24).
+    const sheet = sheetGenRef.current;
     const r = await locationFlow.request();
+    if (sheet !== sheetGenRef.current) return;
     if (r === 'granted') {
       setLocationBlocked(false);
       const fix = await location.getFix();
-      if (fix) setGeo(fix);
+      if (sheet !== sheetGenRef.current) return;
+      // A failed fix (Location services off, no fix indoors, timeout) used to
+      // do nothing at all — say so instead.
+      if (fix) {
+        setLocationFailed(false);
+        setGeo(fix);
+      } else setLocationFailed(true);
     } else if (r === 'blocked') {
       setLocationBlocked(true);
     }
@@ -1029,10 +1042,12 @@ export function MultiMeterScreen({ navigation }: Props) {
     });
     setNotes('');
     // Fresh sheet = fresh optional capture (a prior photo/fix would mis-tag).
+    sheetGenRef.current++;
     setPhotoUri(null);
     setGeo(null);
     setPhotoBlocked(false);
     setLocationBlocked(false);
+    setLocationFailed(false);
   }, [state, chips, sgHistory, specView, splOffset, calibrated, meterFlags, rms3sDb]);
 
   const saveGate = useSaveGate();
@@ -1968,6 +1983,11 @@ export function MultiMeterScreen({ navigation }: Props) {
             {locationAvailable && locationBlocked && (
               <Text style={styles.captureBlocked}>
                 Location access is off — enable it in your device Settings to tag this snapshot.
+              </Text>
+            )}
+            {locationAvailable && locationFailed && !geo && (
+              <Text style={styles.captureBlocked}>
+                Couldn’t get a location fix — check that Location is turned on, then tap TAG LOCATION again.
               </Text>
             )}
             <View style={styles.sheetBtnRow}>

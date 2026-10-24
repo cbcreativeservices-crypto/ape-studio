@@ -693,7 +693,10 @@ export function MatchingScreen({ navigation, route }: Props) {
         <View style={styles.columns}>{columnsBody}</View>
       </StudyFsOverlay>
 
-      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="matching" topicId={achievementId} />
+      {/* No topicId on My Custom List (night pass 2026-10-24): the trial's pass
+          credits a topic row, and 'flagged' has none — credit_time_trial can
+          only fail, and there is no list quiz to unlock. */}
+      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="matching" topicId={customMode ? undefined : achievementId} />
     </View>
   );
 }

@@ -648,7 +648,10 @@ export function FillInBlankScreen({ navigation, route }: Props) {
         {questionBody}
       </StudyFsOverlay>
 
-      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="fill_in_blank" topicId={achievementId} />
+      {/* No topicId on My Custom List (night pass 2026-10-24): the trial's pass
+          credits a topic row, and 'flagged' has none — credit_time_trial can
+          only fail, and there is no list quiz to unlock. */}
+      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="fill_in_blank" topicId={customMode ? undefined : achievementId} />
     </View>
   );
 }

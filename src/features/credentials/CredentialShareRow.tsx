@@ -101,20 +101,40 @@ export function CredentialShareRow({
     };
   }, [loadNonce]);
 
+  // A LATE RESULT FROM A CLOSED CERTIFICATE (toddler night 1, 2026-10-24).
+  // SHARE IMAGE can run for seconds (two reads, a WebView load with an 8 s
+  // timeout, a paint beat). Closed meanwhile and another certificate opened,
+  // this row is gone but its "Could not share…" still reached the wall's
+  // setMessage and showed under a certificate nobody had touched. A row that
+  // has unmounted reports nothing.
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  const say = useCallback(
+    (text: string | null) => {
+      if (mounted.current) onMessage(text);
+    },
+    [onMessage],
+  );
+
   const copyNow = useCallback(async () => {
     setBusy('copy');
     const res = await copyRegistryLink();
     setBusy(null);
-    onMessage(res.ok ? 'Link copied.' : shareOutcomeMessage(res, 'link'));
-  }, [onMessage]);
+    say(res.ok ? 'Link copied.' : shareOutcomeMessage(res, 'link'));
+  }, [say]);
 
   const linkNow = useCallback(async () => {
     setBusy('link');
     const res = await shareRegistryLink(credentialName ?? undefined);
     setBusy(null);
     // A dismissed sheet reports null — the user closed it on purpose.
-    onMessage(res.ok ? null : shareOutcomeMessage(res, 'link'));
-  }, [credentialName, onMessage]);
+    say(res.ok ? null : shareOutcomeMessage(res, 'link'));
+  }, [credentialName, say]);
 
   const qrNow = useCallback(async () => {
     /**
@@ -127,14 +147,14 @@ export function CredentialShareRow({
      */
     if (!token) {
       setLoadNonce((n) => n + 1);
-      onMessage(shareOutcomeMessage({ ok: false, reason: tokenFailed ? 'failed' : 'no_token' }, 'QR'));
+      say(shareOutcomeMessage({ ok: false, reason: tokenFailed ? 'failed' : 'no_token' }, 'QR'));
       return;
     }
     // …and no card carrying a stand-in name because the name read FAILED
     // (full-app run 2): read again, and say so honestly.
     if (nameFailed) {
       setLoadNonce((n) => n + 1);
-      onMessage(shareOutcomeMessage({ ok: false, reason: 'failed' }, 'QR'));
+      say(shareOutcomeMessage({ ok: false, reason: 'failed' }, 'QR'));
       return;
     }
     setBusy('qr');
@@ -147,16 +167,16 @@ export function CredentialShareRow({
     // captureAndShare returns false for both "no native module" and "user
     // cancelled", so this cannot distinguish them — it says the one thing that
     // is true either way rather than guessing.
-    onMessage(ok ? null : 'Could not share the QR image. You can copy the link instead.');
-  }, [token, tokenFailed, nameFailed, url, onMessage]);
+    say(ok ? null : 'Could not share the QR image. You can copy the link instead.');
+  }, [token, tokenFailed, nameFailed, url, say]);
 
   const imageNow = useCallback(async () => {
     if (!certificate) return;
     setBusy('image');
     const res = await certImage.share(certificate);
     setBusy(null);
-    onMessage(res.ok ? null : 'Could not share the certificate image. You can download the certificate instead.');
-  }, [certificate, certImage, onMessage]);
+    say(res.ok ? null : 'Could not share the certificate image. You can download the certificate instead.');
+  }, [certificate, certImage, say]);
 
   // ONE share at a time across all three buttons (pattern P9, 2026-10-02).
   // `busy` is state, so a same-frame double tap — or SHARE LINK then SHARE QR —

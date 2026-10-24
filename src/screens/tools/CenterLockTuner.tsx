@@ -45,6 +45,7 @@ import { createLocalStore } from '../../features/storage/localStore';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { optionalModule } from '../../features/tools/capture/optionalModule';
 import { lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
+import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import { closeCenterLock, readTunerFrame, setTunerLowNote, useTunerFloor, useTunerFrame, type TunerFrame } from '../../features/tools/tuner/tunerFrameStore';
 import {
   buildTargets,
@@ -163,6 +164,14 @@ export function CenterLockTuner() {
   const [strobe, setStrobe] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pianoGuideOpen, setPianoGuideOpen] = useState(false);
+  // Android BACK closes an open popup first (toddler night 2026-10-24): the
+  // screen's handler used to close the whole full screen from under it.
+  const popupBack = useCallback(() => {
+    if (pianoGuideOpen) setPianoGuideOpen(false);
+    else setPickerOpen(false);
+    return true;
+  }, [pianoGuideOpen]);
+  useBackWhileFocused(pianoGuideOpen || pickerOpen, popupBack);
   const recents = prefsStore.use().recents;
   const inst = INSTRUMENTS[instrument];
   const targets = useMemo(() => buildTargets(instrument, tuningKey, a4, capo, temperament), [instrument, tuningKey, a4, capo, temperament]);
