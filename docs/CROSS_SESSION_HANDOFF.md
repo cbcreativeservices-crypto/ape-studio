@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 08:33 · ccode · b9f41d97
+changed: Flashcards: bookmarking a term or adding/removing it on the Custom list flashes that list's filter icon once, like Glossary (shared AckFlash); the card's custom-list toggle refuses while the list is unreadable
+affects other side: Flashcards + Glossary (shared list-icon flash); OTA-safe JS only
+needs: nothing
+
+
 ### 2026-10-24 01:43 · ccode · b0dd689a
 changed: Overnight toddler pass 2: iPad landscape (Advanced Tuner note column, Calculator Lab popup), star/bookmark refused while the list is unreadable (+ Glossary flash gated), certificate download failure under the right certificate
 affects other side: Tuner full screen on iPad landscape, Calculator Lab popup on iPad landscape, Glossary/Flashcards star + bookmark, Credential wall download; OTA-safe JS only
