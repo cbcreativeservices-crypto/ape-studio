@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 22:29 · ccode · 50102df5
+changed: Miking: load only the opened lesson (first-open freeze, unmeasured on device)
+affects other side: nothing (client-only; dj-lab only, not merged)
+needs: nothing
+
+
 ### 2026-10-23 21:29 · ccode · ce95f18a
 changed: Next-build checklist: Android transitions ready on branch android-transitions (merge at build time)
 affects other side: nothing (build-list row)
