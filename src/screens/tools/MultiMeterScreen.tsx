@@ -2255,7 +2255,7 @@ const styles = StyleSheet.create({
   detectLabelRed: { color: '#ff8d7a' },
   detectDetail: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary, ...readingText },
   detectEmpty: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textMuted },
-  detectCaption: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 12, lineHeight: 16, color: colors.textSub },
+  detectCaption: { fontFamily: fonts.barlowItalic, fontSize: 12, lineHeight: 16, color: colors.textSub },
 
   // 8 ── snapshot.
   snapBtn: {
@@ -2278,8 +2278,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   reminder: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
+    fontFamily: fonts.barlowItalic,
     fontSize: 12.5,
     lineHeight: 18,
     color: colors.textMuted,
@@ -2348,7 +2347,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     textAlignVertical: 'top',
   },
-  sheetFuture: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 12, lineHeight: 16, color: colors.textMuted },
+  sheetFuture: { fontFamily: fonts.barlowItalic, fontSize: 12, lineHeight: 16, color: colors.textMuted },
 
   // Optional photo + GPS capture (gated).
   captureBtn: {

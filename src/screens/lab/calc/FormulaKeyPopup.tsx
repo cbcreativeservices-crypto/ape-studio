@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   body: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: colors.textSecondary },
   // App glossary-link blue (matches GlossaryText / the glossary screen).
   glossaryLink: { color: '#9fbede', textDecorationLine: 'underline', textDecorationColor: 'rgba(159,190,222,0.4)' },
-  note: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub, fontStyle: 'italic' },
+  note: { fontFamily: fonts.barlowItalic, fontSize: 12.5, lineHeight: 18, color: colors.textSub },
 
   elementRow: {
     borderRadius: 9,

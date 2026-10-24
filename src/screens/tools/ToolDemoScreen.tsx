@@ -112,8 +112,7 @@ const styles = StyleSheet.create({
   authoringBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
 
   footNote: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
+    fontFamily: fonts.barlowItalic,
     fontSize: 12.5,
     lineHeight: 18,
     color: colors.textMuted,

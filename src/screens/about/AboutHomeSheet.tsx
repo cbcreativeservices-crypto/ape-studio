@@ -225,12 +225,11 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   tagline: {
-    fontFamily: fonts.barlowMedium,
+    fontFamily: fonts.barlowMediumItalic,
     fontSize: 14,
     lineHeight: 20,
     color: colors.amberLabel,
     textAlign: 'center',
-    fontStyle: 'italic',
   },
 
   section: { gap: 8, marginTop: 6 },

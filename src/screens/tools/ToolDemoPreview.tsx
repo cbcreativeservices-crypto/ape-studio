@@ -93,8 +93,7 @@ const styles = StyleSheet.create({
   },
   demoBadgeText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.6, color: '#ff8d7a' },
   footNote: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
+    fontFamily: fonts.barlowItalic,
     fontSize: 12.5,
     lineHeight: 18,
     color: colors.textMuted,

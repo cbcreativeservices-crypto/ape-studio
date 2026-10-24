@@ -2516,7 +2516,7 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
 
 const styles = StyleSheet.create({
   lead: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
-  tintNote: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15.5, color: colors.textSub, fontStyle: 'italic' },
+  tintNote: { fontFamily: fonts.barlowItalic, fontSize: 11.5, lineHeight: 15.5, color: colors.textSub },
   phaseRow: { flexDirection: 'row', gap: 6 },
   phaseChip: {
     flex: 1,
@@ -2547,7 +2547,7 @@ const styles = StyleSheet.create({
   phaseChipInner: { alignItems: 'center', justifyContent: 'center', gap: 1 },
   phaseChipTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.5, color: colors.textSecondary },
   phaseChipName: { fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1, color: colors.textSub },
-  missNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, fontStyle: 'italic' },
+  missNote: { fontFamily: fonts.barlowItalic, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   foundLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.6, color: colors.amberLabel },
   fixLine: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17.5, color: colors.green },
   suspectBtn: {

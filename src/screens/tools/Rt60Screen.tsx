@@ -862,7 +862,7 @@ const styles = StyleSheet.create({
   bandCell: { flex: 1, fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSecondary },
   bandCellLit: { color: '#5bff85' },
   bandTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, color: colors.amberLabel },
-  bandInvalid: { color: '#8a8a8a', fontStyle: 'italic', fontFamily: fonts.barlowRegular },
+  bandInvalid: { color: '#8a8a8a', fontFamily: fonts.barlowItalic },
 
   controls: { flexDirection: 'row', gap: 12 },
   libraryLink: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: '#4dd0e1', textAlign: 'center' },

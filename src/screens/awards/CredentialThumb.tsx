@@ -229,8 +229,7 @@ const styles = StyleSheet.create({
   },
   imgLg: { borderRadius: 14 },
   caption: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
+    fontFamily: fonts.barlowItalic,
     fontSize: 12,
     letterSpacing: 0.3,
     color: colors.textMutedDeep,

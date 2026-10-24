@@ -117,7 +117,9 @@ export const fonts = {
   // ported 2026-10-24). Ships in the installed @expo-google-fonts/barlow.
   barlowItalic: 'Barlow_400Regular_Italic',
   barlowMedium: 'Barlow_500Medium',
+  barlowMediumItalic: 'Barlow_500Medium_Italic',
   barlowSemiBold: 'Barlow_600SemiBold',
+  barlowSemiBoldItalic: 'Barlow_600SemiBold_Italic',
   // Barlow Condensed — small captions / meta
   barlowCondensedRegular: 'BarlowCondensed_400Regular',
   barlowCondensedMedium: 'BarlowCondensed_500Medium',
@@ -154,6 +156,8 @@ export const fontAssets = {
   Barlow_400Regular: require('@expo-google-fonts/barlow/400Regular/Barlow_400Regular.ttf'),
   Barlow_400Regular_Italic: require('@expo-google-fonts/barlow/400Regular_Italic/Barlow_400Regular_Italic.ttf'),
   Barlow_500Medium: require('@expo-google-fonts/barlow/500Medium/Barlow_500Medium.ttf'),
+  Barlow_500Medium_Italic: require('@expo-google-fonts/barlow/500Medium_Italic/Barlow_500Medium_Italic.ttf'),
+  Barlow_600SemiBold_Italic: require('@expo-google-fonts/barlow/600SemiBold_Italic/Barlow_600SemiBold_Italic.ttf'),
   Barlow_600SemiBold: require('@expo-google-fonts/barlow/600SemiBold/Barlow_600SemiBold.ttf'),
   BarlowCondensed_400Regular: require('@expo-google-fonts/barlow-condensed/400Regular/BarlowCondensed_400Regular.ttf'),
   BarlowCondensed_500Medium: require('@expo-google-fonts/barlow-condensed/500Medium/BarlowCondensed_500Medium.ttf'),

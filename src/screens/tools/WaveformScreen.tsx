@@ -1269,8 +1269,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   footnote: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
+    fontFamily: fonts.barlowItalic,
     fontSize: 13,
     lineHeight: 18.5,
     color: colors.textSub, ...readingText },

@@ -681,7 +681,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 6,
   },
-  naText: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, fontStyle: 'italic' },
+  naText: { flex: 1, fontFamily: fonts.barlowItalic, fontSize: 12.5, color: colors.textSub },
   naUndo: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.8, color: colors.amber },
   /**
    * ── A TAP TARGET HAS TO LOOK LIKE ONE (2026-09-18, browser pass) ───────────

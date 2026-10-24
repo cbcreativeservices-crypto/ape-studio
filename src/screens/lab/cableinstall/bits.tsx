@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   whyBody: { gap: 6, borderTopWidth: 1, borderTopColor: '#26262c', paddingTop: 8 },
   whyText: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
   correctionText: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 18, color: colors.green },
-  scenarioNote: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 16, color: colors.textSub, fontStyle: 'italic' },
+  scenarioNote: { fontFamily: fonts.barlowItalic, fontSize: 11.5, lineHeight: 16, color: colors.textSub },
   srcBtn: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1, color: colors.textSub },
   specCard: {
     borderRadius: 9,

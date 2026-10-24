@@ -1853,7 +1853,7 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
 
 const s = StyleSheet.create({
   lead: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
-  caption: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 16, color: colors.textSub, fontStyle: 'italic' },
+  caption: { fontFamily: fonts.barlowItalic, fontSize: 11.5, lineHeight: 16, color: colors.textSub },
   replayNote: { fontFamily: fonts.barlowMedium, fontSize: 12.5, color: colors.green },
   prompt: { fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 19, color: colors.textPrimary },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
@@ -1900,7 +1900,7 @@ const s = StyleSheet.create({
   keyCard: { gap: 5, borderRadius: 10, borderLeftWidth: 3, borderLeftColor: colors.amber, backgroundColor: '#151310', padding: 12 },
   keyHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
   keyBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
-  coach: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.amberLabel, fontStyle: 'italic' },
+  coach: { fontFamily: fonts.barlowMediumItalic, fontSize: 13, lineHeight: 18, color: colors.amberLabel },
   dockVerdict: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17 },
   loopCount: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
   twistRow: { flexDirection: 'row', alignItems: 'center', gap: 9 },

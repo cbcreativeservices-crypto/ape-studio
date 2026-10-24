@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   point: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
   myth: { borderRadius: 12, borderWidth: 1, borderColor: colors.steelBorder, backgroundColor: '#15121a', padding: 12, gap: 4, minHeight: 44 },
   mythSeen: { borderColor: colors.hairline, backgroundColor: '#111114' },
-  mythStatement: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 14, fontStyle: 'italic' },
+  mythStatement: { color: colors.textPrimary, fontFamily: fonts.barlowMediumItalic, fontSize: 14 },
   mythFix: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
   tap: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 11.5 },
   count: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1 },

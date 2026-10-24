@@ -961,5 +961,5 @@ const styles = StyleSheet.create({
   lessonHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: colors.amber },
   lessonBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
   pendingNote: { fontFamily: fonts.barlowMedium, fontSize: 12.5, color: colors.amberLabel },
-  scopeNote: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 16, color: colors.textSub, fontStyle: 'italic' },
+  scopeNote: { fontFamily: fonts.barlowItalic, fontSize: 11.5, lineHeight: 16, color: colors.textSub },
 });

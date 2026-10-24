@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   eyebrowGap: { marginTop: 8 },
   expects: { fontFamily: fonts.barlowMedium, fontSize: 16, lineHeight: 23, color: colors.textPrimary },
   priority: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
-  startingPoints: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub, fontStyle: 'italic' },
+  startingPoints: { fontFamily: fonts.barlowItalic, fontSize: 13, lineHeight: 18, color: colors.textSub },
   blockHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.4, color: colors.amber, marginTop: 4 },
   glance: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 10, backgroundColor: '#111215' },
   glanceRow: { paddingHorizontal: 12, paddingVertical: 9, gap: 2 },

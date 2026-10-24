@@ -615,7 +615,7 @@ const styles = StyleSheet.create({
   rowValue: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.4, color: colors.textPrimary },
   toggleText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary, ...readingText },
-  note: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16.5, color: colors.textSub, fontStyle: 'italic' },
+  note: { fontFamily: fonts.barlowItalic, fontSize: 12, lineHeight: 16.5, color: colors.textSub },
   doseTrack: { height: 10, borderRadius: 5, backgroundColor: '#1b1c20', overflow: 'hidden' },
   doseFill: { height: '100%', borderRadius: 5 },
   sessTrack: { height: 5, borderRadius: 2.5, backgroundColor: '#1b1c20', overflow: 'hidden' },

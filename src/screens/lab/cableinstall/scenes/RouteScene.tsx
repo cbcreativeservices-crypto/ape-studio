@@ -743,7 +743,7 @@ const styles = StyleSheet.create({
   cableRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   cableSwatch: { width: 13, height: 13, borderRadius: 4, borderWidth: 1, borderColor: 'rgba(255,255,255,.25)' },
   cableName: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.8, color: colors.textSecondary },
-  tintNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub, fontStyle: 'italic' },
+  tintNote: { fontFamily: fonts.barlowItalic, fontSize: 12, lineHeight: 16, color: colors.textSub },
   chipRow: { flexDirection: 'row', gap: 7 },
   mapFrame: { borderRadius: 12, borderWidth: 1, borderColor: '#232329', backgroundColor: '#0e0e12', padding: 5, alignSelf: 'flex-start' },
   legendLine: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub },

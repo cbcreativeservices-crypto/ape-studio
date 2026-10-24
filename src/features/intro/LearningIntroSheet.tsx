@@ -129,8 +129,7 @@ const styles = StyleSheet.create({
 
   scroll: { gap: 14, paddingTop: 8 },
   draftNote: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
+    fontFamily: fonts.barlowItalic,
     fontSize: 13.5,
     lineHeight: 20,
     color: colors.textSub,
@@ -138,7 +137,7 @@ const styles = StyleSheet.create({
   section: { gap: 5 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amberLabel },
   sectionBody: { fontFamily: fonts.barlowMedium, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },
-  comingSoon: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 13.5, color: colors.textMuted },
+  comingSoon: { fontFamily: fonts.barlowItalic, fontSize: 13.5, color: colors.textMuted },
   bulletRow: { flexDirection: 'row', gap: 9, alignItems: 'flex-start' },
   bullet: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.amber, lineHeight: 22 },
   bulletText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 15.5, lineHeight: 23, color: colors.textSecondary },

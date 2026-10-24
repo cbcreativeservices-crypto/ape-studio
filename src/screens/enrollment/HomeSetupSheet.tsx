@@ -551,7 +551,7 @@ const styles = StyleSheet.create({
   scroll: { padding: 16, gap: 8, paddingBottom: 20 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amberLabel, marginTop: 6 },
   hint: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textSub },
-  empty: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 13.5, color: colors.textSub },
+  empty: { fontFamily: fonts.barlowItalic, fontSize: 13.5, color: colors.textSub },
 
   lockedRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 12, borderWidth: 1, borderColor: '#2a2a2a', borderRadius: 9, backgroundColor: '#141414' },
   lockedName: { fontFamily: fonts.oswaldMedium, fontSize: 15.5, color: colors.textPrimary },
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
   placedNameOff: { color: colors.textSecondary },
   placedSubject: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub, marginTop: 1 },
   dragHandle: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, color: '#6a6a72', paddingHorizontal: 2, letterSpacing: -2 },
-  defaultHint: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 12, color: colors.textSub, marginTop: 2 },
+  defaultHint: { fontFamily: fonts.barlowItalic, fontSize: 12, color: colors.textSub, marginTop: 2 },
   defaultBtn: { borderWidth: 1, borderColor: '#3a3a3a', borderRadius: 8, paddingVertical: 4, paddingHorizontal: 8 },
   defaultBtnOn: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: 'rgba(255,198,77,.14)' },
   defaultText: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 0.6, color: colors.textSub },

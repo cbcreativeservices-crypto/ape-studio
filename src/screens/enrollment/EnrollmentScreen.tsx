@@ -3098,7 +3098,7 @@ const styles = StyleSheet.create({
   clTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: CUSTOM_CYAN, marginBottom: 2 },
   clRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, borderTopWidth: 1, borderTopColor: '#1e1e1e' },
   clItem: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15, color: CUSTOM_CYAN },
-  clEmpty: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 14, color: colors.textSub, paddingVertical: 10 },
+  clEmpty: { fontFamily: fonts.barlowItalic, fontSize: 14, color: colors.textSub, paddingVertical: 10 },
   clClose: { marginTop: 8, alignItems: 'center', paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#3a3a3a' },
   clCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.textSubAlt },
 
@@ -3151,7 +3151,7 @@ const styles = StyleSheet.create({
   chipOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,.12)' },
   chipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: colors.textSub },
   chipTextOn: { color: colors.amber },
-  empty: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 13.5, color: colors.textSub },
+  empty: { fontFamily: fonts.barlowItalic, fontSize: 13.5, color: colors.textSub },
 
   // Collapse control + collapsed (thin title + %) row (user request 2026-07-22).
   collapseBtn: { paddingRight: 2, paddingVertical: 2 },
@@ -3373,7 +3373,7 @@ const styles = StyleSheet.create({
   topicName: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 14.5, color: colors.textSecondary },
   topicNameOn: { color: colors.textPrimary },
   // "(in progress)" marker — amber italic (user request 2026-07-22).
-  inProgress: { fontFamily: fonts.barlowMedium, fontStyle: 'italic', fontSize: 11.5, color: colors.amber },
+  inProgress: { fontFamily: fonts.barlowMediumItalic, fontSize: 11.5, color: colors.amber },
   // Explicit remove-from-enrollment ✕ on browse rows.
   topicRemove: { paddingHorizontal: 6, paddingVertical: 2 },
   topicRemoveText: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: '#ff6b6b' },

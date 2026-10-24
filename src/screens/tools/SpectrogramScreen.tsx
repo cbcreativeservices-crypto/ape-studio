@@ -1087,8 +1087,7 @@ const styles = StyleSheet.create({
   },
 
   reminder: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
+    fontFamily: fonts.barlowItalic,
     fontSize: 12.5,
     lineHeight: 18,
     color: colors.textMuted,

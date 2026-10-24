@@ -1058,7 +1058,7 @@ const styles = StyleSheet.create({
   ctxValCalibrated: { color: '#5bff85' },
   ctxDivider: { height: 1, backgroundColor: '#26262c', marginVertical: 4 },
   ctxWarn: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.amber },
-  ctxNotes: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 12.5, color: colors.textMuted, marginTop: 4 },
+  ctxNotes: { fontFamily: fonts.barlowItalic, fontSize: 12.5, color: colors.textMuted, marginTop: 4 },
 
   rowActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 10 },
   shareBtn: {

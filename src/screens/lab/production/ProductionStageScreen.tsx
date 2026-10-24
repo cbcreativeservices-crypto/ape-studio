@@ -593,7 +593,7 @@ const styles = StyleSheet.create({
 
   /** The question WHAT'S LEFT sent the learner to. */
   focused: { borderLeftWidth: 2, borderLeftColor: colors.amber, paddingLeft: 9 },
-  hiddenNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted, fontStyle: 'italic', marginBottom: 10 },
+  hiddenNote: { fontFamily: fonts.barlowItalic, fontSize: 12, lineHeight: 17, color: colors.textMuted, marginBottom: 10 },
   leftLink: {
     marginTop: 14,
     borderWidth: 1,

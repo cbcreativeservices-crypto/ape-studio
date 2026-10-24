@@ -874,7 +874,7 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
 
 const styles = StyleSheet.create({
   lead: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
-  tintNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub, fontStyle: 'italic' },
+  tintNote: { fontFamily: fonts.barlowItalic, fontSize: 12, lineHeight: 16, color: colors.textSub },
   roleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   roleCard: { gap: 6, borderRadius: 10, borderWidth: 1, backgroundColor: '#131316', padding: 10, alignItems: 'flex-start' },
   roleTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.2 },

@@ -363,7 +363,7 @@ const s = StyleSheet.create({
   sub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub },
   prior: { fontFamily: fonts.barlowMedium, fontSize: 12.5, color: colors.textSub, marginTop: 6 },
   priorHot: { color: colors.red },
-  detail: { fontFamily: fonts.barlowRegular, fontSize: 13.5, color: colors.textSecondary, marginTop: 6, fontStyle: 'italic' },
+  detail: { fontFamily: fonts.barlowItalic, fontSize: 13.5, color: colors.textSecondary, marginTop: 6 },
 
   link: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1, color: colors.amber, paddingVertical: 10, marginTop: 4 },
   thread: { borderLeftWidth: 2, borderLeftColor: colors.hairline, paddingLeft: 10, gap: 5, marginTop: 8 },

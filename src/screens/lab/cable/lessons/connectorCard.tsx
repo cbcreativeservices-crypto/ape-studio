@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
   caret: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, color: colors.amberLabel },
   sectionBody: { gap: 6, paddingBottom: 8 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
-  hint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, fontStyle: 'italic' },
+  hint: { fontFamily: fonts.barlowItalic, fontSize: 12.5, color: colors.textSub },
   kv: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
   k: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.amberLabel },
   pinoutCard: { borderRadius: 8, borderWidth: 1, borderColor: '#232329', backgroundColor: '#0c0d11', padding: 9, gap: 5 },

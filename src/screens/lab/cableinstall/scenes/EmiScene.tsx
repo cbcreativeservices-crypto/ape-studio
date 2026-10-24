@@ -796,7 +796,7 @@ export function EmiScene({ width, completed, onComplete, openSources }: CiModule
 
 const s = StyleSheet.create({
   lead: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
-  caption: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 16, color: colors.textSub, fontStyle: 'italic' },
+  caption: { fontFamily: fonts.barlowItalic, fontSize: 11.5, lineHeight: 16, color: colors.textSub },
   replayNote: { fontFamily: fonts.barlowMedium, fontSize: 12.5, color: colors.green },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 7 },
   exposureRow: { flexDirection: 'row', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' },

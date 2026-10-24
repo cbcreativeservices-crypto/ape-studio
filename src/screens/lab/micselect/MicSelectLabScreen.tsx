@@ -1071,9 +1071,8 @@ export function MicSelectLabScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   coreQ: {
-    fontFamily: fonts.barlowMedium,
+    fontFamily: fonts.barlowMediumItalic,
     fontSize: 13,
-    fontStyle: 'italic',
     color: colors.amberLabel,
   },
 
@@ -1084,7 +1083,7 @@ const styles = StyleSheet.create({
 
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   bullet: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
-  hint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, fontStyle: 'italic' },
+  hint: { fontFamily: fonts.barlowItalic, fontSize: 12.5, color: colors.textSub },
   panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textSecondary },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
 

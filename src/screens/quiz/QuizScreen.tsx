@@ -819,7 +819,7 @@ const styles = StyleSheet.create({
   },
   timerLow: { color: colors.red, textShadowColor: 'rgba(255,75,58,.6)' },
   scroll: { padding: 16, gap: 12, ...readingColumn },
-  finalNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textSubAlt, fontStyle: 'italic' },
+  finalNote: { fontFamily: fonts.barlowItalic, fontSize: 12, lineHeight: 17, color: colors.textSubAlt },
   media: { width: '80%', aspectRatio: 4 / 3, alignSelf: 'center', borderRadius: 6 },
   questionText: { fontFamily: fonts.barlowRegular, fontSize: 16, lineHeight: 26, color: colors.textPrimary },
   stem: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 24, color: colors.textSecondary },

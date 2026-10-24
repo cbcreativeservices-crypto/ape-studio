@@ -178,9 +178,8 @@ export function CableLabScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   coreQ: {
-    fontFamily: fonts.barlowMedium,
+    fontFamily: fonts.barlowMediumItalic,
     fontSize: 13,
-    fontStyle: 'italic',
     color: colors.amberLabel,
   },
   tagRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },

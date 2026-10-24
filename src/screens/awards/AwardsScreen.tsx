@@ -1308,7 +1308,7 @@ const styles = StyleSheet.create({
   },
   intro: { fontFamily: fonts.barlowMedium, fontSize: 16.5, lineHeight: 26, color: colors.textSecondary },
   // Small, upfront certificate-grant requirement (user request 2026-07-22).
-  grantNote: { fontFamily: fonts.barlowMedium, fontStyle: 'italic', fontSize: 12.5, lineHeight: 18, color: colors.textSub, marginTop: 2 },
+  grantNote: { fontFamily: fonts.barlowMediumItalic, fontSize: 12.5, lineHeight: 18, color: colors.textSub, marginTop: 2 },
 
   tier: {
     borderRadius: 14,
@@ -1330,11 +1330,10 @@ const styles = StyleSheet.create({
   rowText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 15.5, lineHeight: 24, color: colors.textSecondary },
 
   note: {
-    fontFamily: fonts.barlowMedium,
+    fontFamily: fonts.barlowMediumItalic,
     fontSize: 14.5,
     lineHeight: 22,
     color: colors.textSecondary,
-    fontStyle: 'italic',
     marginTop: 2,
   },
   // Collapsible policy section, set off by a rule.

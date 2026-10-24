@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   blockTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textSecondary },
   blockTitleAccent: { color: colors.amber },
   paragraph: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
-  paragraphMuted: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub, fontStyle: 'italic' },
+  paragraphMuted: { fontFamily: fonts.barlowItalic, fontSize: 13.5, lineHeight: 19, color: colors.textSub },
 
   // Tier-1 → tier-2 expander
   learnMore: {

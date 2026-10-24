@@ -592,7 +592,7 @@ const styles = StyleSheet.create({
   takeawayText: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 14.5, lineHeight: 20 },
   miscon: { borderRadius: 12, borderWidth: 1, borderColor: colors.steelBorder, backgroundColor: '#15121a', padding: 12, gap: 5 },
   misconVerdict: { color: colors.purple, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 2 },
-  misconStatement: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 14, fontStyle: 'italic' },
+  misconStatement: { color: colors.textPrimary, fontFamily: fonts.barlowMediumItalic, fontSize: 14 },
   misconCorrection: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
   misconDetail: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   misconMore: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 11 },

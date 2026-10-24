@@ -2670,7 +2670,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#202022',
     paddingVertical: 2,
   },
-  tlEmpty: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 14, color: colors.textMuted },
+  tlEmpty: { fontFamily: fonts.barlowItalic, fontSize: 14, color: colors.textMuted },
   tlClose: { marginTop: 12, alignItems: 'center', paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#3a3a3a' },
   tlCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.textSubAlt },
   fsTerm: { fontFamily: fonts.oswaldMedium, fontSize: 36, letterSpacing: 0.5, color: colors.textPrimary, textAlign: 'center' },

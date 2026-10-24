@@ -831,7 +831,7 @@ const styles = StyleSheet.create({
   /** Rack-layout stage: the RackUnit takes the whole height under the strip. */
   rackFill: { flex: 1 },
   introLead: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20.5, color: colors.textSecondary },
-  governNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textSub, fontStyle: 'italic' },
+  governNote: { fontFamily: fonts.barlowItalic, fontSize: 12, lineHeight: 17, color: colors.textSub },
   progressLine: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.6, color: colors.amberLabel },
   objectives: { gap: 6, borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12 },
   objective: { fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },

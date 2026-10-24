@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 5,
   },
-  misClaim: { fontFamily: fonts.barlowSemiBold, fontStyle: 'italic', fontSize: 14, color: '#ff8d7a' },
+  misClaim: { fontFamily: fonts.barlowSemiBoldItalic, fontSize: 14, color: '#ff8d7a' },
   misTruth: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19.5, color: colors.textSecondary },
 
   warnCard: {

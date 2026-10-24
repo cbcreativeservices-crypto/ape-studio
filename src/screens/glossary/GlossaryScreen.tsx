@@ -5044,7 +5044,7 @@ const styles = StyleSheet.create({
   // Formula shown on a row in the Equations & Formulas view.
   formulaWrap: { marginTop: 8, gap: 2 },
   formulaSymbolic: { fontFamily: fonts.mono, fontSize: 16, lineHeight: 24, color: colors.cyanBright },
-  formulaWords: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 14, lineHeight: 20, color: colors.textSub },
+  formulaWords: { fontFamily: fonts.barlowItalic, fontSize: 14, lineHeight: 20, color: colors.textSub },
   topicRowText: { flexShrink: 1, fontFamily: fonts.barlowMedium, fontSize: 15, color: colors.textSecondary },
   // View-only topic overlay header: title + ✕ (rows no longer close it).
   topicLockedHeader: {
@@ -5072,8 +5072,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   topicLockHint: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
+    fontFamily: fonts.barlowItalic,
     fontSize: 12.5,
     lineHeight: 17,
     color: '#7fd4ff',
@@ -5480,8 +5479,7 @@ const styles = StyleSheet.create({
   },
   // CM4: entitlement-locked section body (verbatim §2 copy).
   lockedBody: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
+    fontFamily: fonts.barlowItalic,
     fontSize: 14.5,
     lineHeight: 21,
     color: colors.textSub,
@@ -5517,8 +5515,7 @@ const styles = StyleSheet.create({
     height: 34,
   },
   veilLock: {
-    fontFamily: fonts.barlowRegular,
-    fontStyle: 'italic',
+    fontFamily: fonts.barlowItalic,
     fontSize: 13.5,
     lineHeight: 19,
     color: colors.amber,
@@ -5556,7 +5553,7 @@ const styles = StyleSheet.create({
   },
   tlItem: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 26, color: '#7fbfff' },
   tlCount: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSecondary, marginLeft: 8 },
-  tlEmpty: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 14, color: colors.textMuted },
+  tlEmpty: { fontFamily: fonts.barlowItalic, fontSize: 14, color: colors.textMuted },
   // "OTHER LISTS" switcher inside the single bookmark popup (user request 2026-07-25).
   bmOtherWrap: { marginTop: 14, borderTopWidth: 1, borderTopColor: '#242427', paddingTop: 10 },
   bmOtherLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textMuted, marginBottom: 4 },

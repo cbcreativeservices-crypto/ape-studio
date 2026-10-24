@@ -1187,7 +1187,7 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
 
 const styles = StyleSheet.create({
   lead: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
-  tintNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub, fontStyle: 'italic' },
+  tintNote: { fontFamily: fonts.barlowItalic, fontSize: 12, lineHeight: 16, color: colors.textSub },
   card: { gap: 10, borderRadius: 12, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12 },
   cardDone: { borderColor: 'rgba(55,224,95,.4)' },
   cardHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amberLabel },
@@ -1220,7 +1220,7 @@ const styles = StyleSheet.create({
   lessonCard: { gap: 6, borderRadius: 10, borderLeftWidth: 3, borderLeftColor: colors.amber, backgroundColor: '#151310', padding: 12 },
   lessonHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.6, color: colors.amber },
   lessonBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSecondary },
-  conceptNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16.5, color: colors.textSub, fontStyle: 'italic' },
+  conceptNote: { fontFamily: fonts.barlowItalic, fontSize: 12, lineHeight: 16.5, color: colors.textSub },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
   zoneLine: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18.5, color: colors.textSecondary },
   zoneWord: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2 },

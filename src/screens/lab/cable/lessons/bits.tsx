@@ -209,7 +209,7 @@ export function CheckDoneBanner({ text }: { text: string }) {
 export const lessonStyles = StyleSheet.create({
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
-  hint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, fontStyle: 'italic' },
+  hint: { fontFamily: fonts.barlowItalic, fontSize: 12.5, color: colors.textSub },
   cardTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.6, color: colors.textPrimary },
   cardHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.3, color: colors.amberLabel, marginTop: 4 },
 });

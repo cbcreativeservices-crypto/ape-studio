@@ -489,7 +489,7 @@ export function KnowScene({ completed, onComplete, openSources }: CiModuleProps)
 }
 
 const styles = StyleSheet.create({
-  tintNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub, fontStyle: 'italic' },
+  tintNote: { fontFamily: fonts.barlowItalic, fontSize: 12, lineHeight: 16, color: colors.textSub },
   lead: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
   browseLine: { fontFamily: fonts.barlowMedium, fontSize: 12.5, color: colors.textSub },
   /* workbench */

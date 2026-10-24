@@ -646,7 +646,7 @@ const styles = StyleSheet.create({
   score: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 13.5, marginTop: 4 },
   appTitle: { color: colors.textPrimary, fontFamily: fonts.oswaldMedium, fontSize: 15 },
   note: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
-  mythStatement: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 15, fontStyle: 'italic' },
+  mythStatement: { color: colors.textPrimary, fontFamily: fonts.barlowMediumItalic, fontSize: 15 },
   checkBtn: { minHeight: 48, borderRadius: 12, borderWidth: 1, borderColor: colors.green, backgroundColor: '#173021', alignItems: 'center', justifyContent: 'center' },
   checkBtnText: { color: colors.green, fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.5 },
   dimRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-start' },

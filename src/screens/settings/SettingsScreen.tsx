@@ -1501,7 +1501,7 @@ const styles = StyleSheet.create({
   catRow: { paddingLeft: 12, paddingVertical: 9, gap: 8 },
   catName: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 13.5, color: colors.textSecondary },
   catNameOff: { color: colors.textMuted },
-  thanks: { fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 13, color: colors.amber, marginTop: 10, paddingVertical: 4 },
+  thanks: { fontFamily: fonts.barlowItalic, fontSize: 13, color: colors.amber, marginTop: 10, paddingVertical: 4 },
   // Amber means INTERACTIVE or ON — nothing else (design review 2026-08-30).
   // `mono` used to default to amber, so inert data (student id, version) had to
   // override it inline and everything looked equally tappable.
