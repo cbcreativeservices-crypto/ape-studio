@@ -643,6 +643,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 11:06 · ccode · 036078b8
+changed: Pre-resubmission audit fixes: paywall StoreKit calls bounded (15 s) + 'Prices didn't load · TRY AGAIN' + App Store not-responding wording (owner-approved); Terms of Use / Privacy Policy rows in Settings for every user; Android Oboe output error callback → onOutputLost (native queue item 1, owner GO); Swift iPad-mic type-check + output-restart guard; last synthetic italic; duplicate Tape baking term
+affects other side: Paywall (all users), Settings › Feedback & Support, tone tools on Android, iPad mic; NATIVE parts store-build only
+needs: nothing
+
+
 ### 2026-10-24 10:33 · ccode · f9e1e6cb
 changed: Miking hands: researched grips — claves striker and güiro scraper in a stick (pencil) grip, claves receiving hand cupped palm-up over a resonating air pocket, güiro held with thumb + middle finger in the sound holes, tambourine MOUNTED stick grip
 affects other side: Miking lab Claves, Güiro, Tambourine lessons; OTA-safe JS
