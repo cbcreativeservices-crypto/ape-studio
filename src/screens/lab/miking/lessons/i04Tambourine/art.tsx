@@ -20,7 +20,7 @@ import { BlurMask, DashPathEffect, FillType, Group, LinearGradient, Path, Radial
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { arrow, INK, make, oval, rrect, seg, type SkPath } from '../shared/concert/paths.ts';
-import { gripCylinder, h3, openHandOn, type Cylinder, type HandSkeleton } from '../shared/hand/anatomy/anatomy.ts';
+import { gripCylinder, h3, openHandOn, stickGripNear, type Cylinder, type HandSkeleton } from '../shared/hand/anatomy/anatomy.ts';
 import { HeldHand } from '../shared/smallperc/HeldHand';
 import { Arm2D, PlayerSide, PlayerTop } from '../shared/smallperc/Player';
 import { v3 } from '../shared/smallperc/geom.ts';
@@ -189,8 +189,9 @@ export function tambourineHands(s: TmbState): Hands {
   let cyl: Cylinder;
   let main: HandSkeleton;
   if (s.stick) {
-    cyl = { c: s.stick.a, axis: h3.sub(s.stick.b, s.stick.a), r: 6.5, tipward: true, slide: 10 };
-    main = gripCylinder(cyl, { thumbSign: 1, wrist: a.W, elbow: a.E, angle: [42, 60], back: v3(0, -1, 0.3) }).sk;
+    // The stick grip (thumb and index the fulcrum, not a fist), turned to the model's wrist.
+    cyl = { c: s.stick.a, axis: h3.sub(s.stick.b, s.stick.a), r: 6.5 };
+    main = stickGripNear(s.stick.a, s.stick.b, 1, a.W, v3(0, -1, 0.3), 6.5);
   } else {
     // The band (45 mm deep, 7 mm thick) runs across the hand along z here: the
     // fist closes round it as round a ≈ Ø 26 mm bar.

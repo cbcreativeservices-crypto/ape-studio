@@ -94,3 +94,44 @@ describe('the hand-held percussion lessons draw the shared hand', () => {
     assert.match(d, /ring\(24, wr \+ 5, 17\)/);
   });
 });
+
+describe('grips pass (owner: "holding the clave sticks, the guiro stick … wrong")', () => {
+  it('claves: the receiving clave rests on the fingertips and thumb over a HOLLOW palm (no fist)', async () => {
+    const { cupUnder } = await import('../src/screens/lab/miking/lessons/shared/hand/anatomy/anatomy.ts');
+    const { STATES } = await import('../src/screens/lab/miking/lessons/i05bClaves/model.ts');
+    const s = STATES.solid;
+    const sk = cupUnder(s.rest, v3(0, 0, 1), 12.5, v3(1, 0, 0), 1, { gap: 22 });
+    // The palm's face is well below the clave: the resonating chamber.
+    const palmFace = h3.add(sk.frame.o, h3.add(h3.mul(sk.frame.x, 58), h3.mul(sk.frame.z, -14)));
+    assert.ok(palmFace.y - (s.rest.y + 12.5) >= 18, `air under the clave ${(palmFace.y - s.rest.y - 12.5).toFixed(0)} mm`);
+    // Every fingertip near the clave's surface on its far side; palm up.
+    for (const f of sk.fingers) {
+      const t = f.joints[3];
+      const d = Math.hypot(t.x - s.rest.x, t.y - s.rest.y);
+      assert.ok(d < 12.5 + 16, `${f.name} tip ${d.toFixed(0)} mm from the clave's axis`);
+      assert.ok(t.x > s.rest.x, `${f.name} on the far side`);
+    }
+    assert.ok(sk.frame.z.y > 0.9, 'the back of the hand down: palm up');
+  });
+  it('striker and scraper: the stick grip — thumb pad on the stick against the index, not a fist', async () => {
+    const { stickGripNear } = await import('../src/screens/lab/miking/lessons/shared/hand/anatomy/anatomy.ts');
+    const { STATES } = await import('../src/screens/lab/miking/lessons/i05bClaves/model.ts');
+    const s = STATES.solid;
+    const sk = stickGripNear(s.strike.G, s.striker.b, 1, s.strike.W, v3(0, -1, 0.3), 12.5);
+    const ax = h3.unit(h3.sub(s.striker.b, s.strike.G));
+    const off = (q: { x: number; y: number; z: number }) => {
+      const d = h3.sub(q, s.strike.G);
+      return h3.len(h3.sub(d, h3.mul(ax, h3.dot(d, ax))));
+    };
+    assert.ok(off(sk.thumb.joints[3]) < 12.5 + 14, 'the thumb pad on the stick');
+    assert.ok(off(sk.fingers[0].joints[2]) < 12.5 + 20, 'the index middle bone against it (the fulcrum)');
+    assert.ok(h3.len(h3.sub(sk.frame.o, s.strike.W)) < 60, 'the wrist stays with the lesson arm');
+  });
+  it('the lessons use the researched grips', () => {
+    assert.match(L('i05bClaves', 'art.tsx'), /cupUnder\(s\.rest, v3\(0, 0, 1\), CR, v3\(1, 0, 0\), 1, \{ gap: 22 \}\)/);
+    assert.match(L('i05bClaves', 'art.tsx'), /stickGripNear\(s\.strike\.G, s\.striker\.b/);
+    assert.match(L('i05dGuiro', 'art.tsx'), /cupUnder\(v3\(c\.x, c\.y, z0\), v3\(0, 0, 1\), GR, v3\(1, 0, 0\.1\), 1, \{ gap: 0, into: 6 \}\)/);
+    assert.match(L('i05dGuiro', 'art.tsx'), /stickGripNear\(s\.scrape\.G, s\.scraper\.a/);
+    assert.match(L('i04Tambourine', 'art.tsx'), /stickGripNear\(s\.stick\.a, s\.stick\.b/);
+  });
+});

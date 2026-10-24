@@ -15,8 +15,7 @@ import { DashPathEffect, Group, Path, Skia } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { make } from '../shared/concert/paths.ts';
-import { gripCylinder, h3, type Cylinder, type HandSkeleton } from '../shared/hand/anatomy/anatomy.ts';
-import { cradleHand } from '../shared/smallperc/percGrip.ts';
+import { cupUnder, h3, stickGripNear, type Cylinder, type HandSkeleton } from '../shared/hand/anatomy/anatomy.ts';
 import { HeldHand } from '../shared/smallperc/HeldHand';
 import { Arm2D, PlayerSide, PlayerTop } from '../shared/smallperc/Player';
 import { Clave } from '../shared/smallperc/objects';
@@ -45,29 +44,28 @@ function StrikerArc({ s }: { s: ClvState }) {
 }
 
 /**
- * THE HANDS (hands redesign 2026-10-24) — the shared Miking hand, posed in 3-D:
- *   CRADLE   the LEFT hand palm up under the supported clave, the fingertips
- *            curled up its far side and the thumb's pad on its near side, so
- *            it rests on the pads over the hollow of the cupped palm (the
- *            resonating chamber) — never on the palm itself;
- *   STRIKER  the RIGHT hand round the striker near its end, thumb on top,
- *            the fingers closed round it, the tip out past the thumb.
+ * THE HANDS (grips pass 2026-10-24, owner: "holding the clave sticks … wrong").
+ * Real technique (Wikipedia: Claves; Kopf Percussion): the receiving clave is
+ * held LIGHTLY by the thumb and fingertips, palm up, so the hollow of the hand
+ * is a resonating chamber; the other clave is held near one end like a
+ * drumstick and strikes the middle of the first.
+ *   CRADLE   the LEFT hand cupped palm up UNDER the supported clave (≈ 22 mm
+ *            of air between palm and clave), the fingertips touching its far
+ *            side, the thumb its near side — never gripped in a fist;
+ *   STRIKER  the RIGHT hand's stick grip near the striker's end: the thumb's
+ *            pad on top against the index finger's side (the fulcrum), the
+ *            other fingers loosely round it, the striking end out past the
+ *            thumb — turned to meet the model's wrist.
  */
 type ClvHands = { cradle: HandSkeleton; strike: HandSkeleton; restCyl: Cylinder; strikeCyl: Cylinder };
 const handsCache = new Map<ClvState, ClvHands>();
 export function clavesHands(s: ClvState): ClvHands {
   const hit = handsCache.get(s);
   if (hit) return hit;
-  const r = s.rest;
-  // The pads round the clave's front-lower side, ≈ 19 mm apart along it (the
-  // index nearest the thumb, toward the player's middle); the thumb's pad on
-  // its near (player) side.
-  const pads = [22, 3, -16, -34].map((dz) => v3(r.x + CR * 0.72, r.y + CR * 0.62, r.z + dz));
-  const thumb = v3(r.x - CR - 4, r.y + 4, r.z + 30);
-  const cradle = cradleHand(v3(r.x - 18, r.y + 34, r.z - 6), v3(1, 0, 0.12), pads, thumb);
-  const strikeCyl: Cylinder = { c: s.strike.G, axis: h3.sub(s.striker.b, s.striker.a), r: CR, tipward: true, slide: 8 };
-  const strike = gripCylinder(strikeCyl, { thumbSign: 1, wrist: s.strike.W, elbow: s.strike.E, angle: [45, 70], back: v3(-0.2, -1, 0.3), close: 0.9 }).sk;
-  const h = { cradle, strike, restCyl: { c: r, axis: v3(0, 0, 1), r: CR }, strikeCyl };
+  const cradle = cupUnder(s.rest, v3(0, 0, 1), CR, v3(1, 0, 0), 1, { gap: 22 });
+  const strikeCyl: Cylinder = { c: s.strike.G, axis: h3.sub(s.striker.b, s.striker.a), r: CR };
+  const strike = stickGripNear(s.strike.G, s.striker.b, 1, s.strike.W, v3(-0.2, -1, 0.3), CR, 0.3);
+  const h = { cradle, strike, restCyl: { c: s.rest, axis: v3(0, 0, 1), r: CR }, strikeCyl };
   handsCache.set(s, h);
   return h;
 }
@@ -96,7 +94,16 @@ export function ClavesArt({ view, variant }: { view: ViewId; variant: VariantId 
     <Group>
       <Arm2D s={side(L.S)} e={side(L.E)} w={side(H.cradle.frame.o)} />
       <PlayerSide />
-      <HeldHand view="side" S={L.S} E={L.E} sk={H.cradle} cyl={H.restCyl} halfLength={CL / 2} armElsewhere held={<Clave c={side(s.rest)} angle={0} len={CL} d={CLV_DIMS.d.mm} hollow={hollow} endOn />} />
+      <HeldHand
+        view="side"
+        S={L.S}
+        E={L.E}
+        sk={H.cradle}
+        cyl={H.restCyl}
+        halfLength={CL / 2}
+        armElsewhere
+        held={<Clave c={side(s.rest)} angle={0} len={CL} d={CLV_DIMS.d.mm} hollow={hollow} endOn />}
+      />
       <StrikerArc s={s} />
       <HeldHand view="side" S={R.S} E={R.E} sk={H.strike} cyl={H.strikeCyl} held={striker} />
     </Group>
@@ -123,7 +130,8 @@ export function clavesLabels(view: ViewId, variant: VariantId): ArtLabel[] {
 export function clavesHitTest(view: ViewId, variant: VariantId, u: number, v: number, tol: number): string | null {
   const s = stateOf(variant);
   const rest = view === 'side' ? side(s.rest) : top(s.rest);
-  if (view === 'side' ? Math.hypot(u - rest[0], v - rest[1]) <= CR + tol : Math.abs(u - rest[0]) <= CR + tol && Math.abs(v - rest[1]) <= CL / 2 + tol) return s.id === 'hollow' && view === 'top' && Math.abs(u - rest[0]) < 5 ? `clv.slot.${s.id}` : `clv.rest.${s.id}`;
+  if (view === 'side' ? Math.hypot(u - rest[0], v - rest[1]) <= CR + tol : Math.abs(u - rest[0]) <= CR + tol && Math.abs(v - rest[1]) <= CL / 2 + tol)
+    return s.id === 'hollow' && view === 'top' && Math.abs(u - rest[0]) < 5 ? `clv.slot.${s.id}` : `clv.rest.${s.id}`;
   const a = view === 'side' ? side(s.striker.a) : top(s.striker.a);
   const b = view === 'side' ? side(s.striker.b) : top(s.striker.b);
   const t = Math.max(0, Math.min(1, ((u - a[0]) * (b[0] - a[0]) + (v - a[1]) * (b[1] - a[1])) / ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2)));

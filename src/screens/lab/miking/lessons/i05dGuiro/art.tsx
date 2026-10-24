@@ -16,8 +16,7 @@ import { DashPathEffect, Group, Path } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { make } from '../shared/concert/paths.ts';
-import { gripCylinder, h3, type Cylinder, type HandSkeleton } from '../shared/hand/anatomy/anatomy.ts';
-import { cradleHand } from '../shared/smallperc/percGrip.ts';
+import { cupUnder, h3, stickGripNear, type Cylinder, type HandSkeleton } from '../shared/hand/anatomy/anatomy.ts';
 import { HeldHand } from '../shared/smallperc/HeldHand';
 import { Arm2D, PlayerSide, PlayerTop } from '../shared/smallperc/Player';
 import { Guiro, Stick, WOOD_HANDLE } from '../shared/smallperc/objects';
@@ -52,12 +51,18 @@ function Travel() {
 }
 
 /**
- * THE HANDS (hands redesign 2026-10-24) — the shared Miking hand, posed in 3-D:
- *   HOLD    the LEFT hand palm up under the body's left end, the fingertips
- *           curled up round its front and the thumb on its near side;
- *   SCRAPE  the RIGHT hand holding the scraper near its end like a pencil
- *           held loosely — thumb on top, the fingers closed round it, the
- *           tip out past the thumb onto the ridges.
+ * THE HANDS (grips pass 2026-10-24, owner: "the guiro stick … wrong"). Real
+ * technique (ipassio güiro guide; Grinnell instrument collection; Wikipedia:
+ * Güiro): the body rests in the palm of the LEFT hand with the THUMB in the
+ * sound hole on its back (on two-hole models a finger in the second hole); the
+ * scraper is held LIGHTLY in the right hand, like a pencil or a drumstick,
+ * and drawn along the ridges in long and short strokes.
+ *   HOLD    the left hand palm up under the body's left end, the body in the
+ *           palm, the thumb into the hole on the player's side, the middle
+ *           finger into the hole on the far side, the others curled round;
+ *   SCRAPE  the right hand's light stick grip near the scraper's end (thumb
+ *           and the side of the index finger, the other fingers barely
+ *           closed), the tip out past the thumb onto the ridges.
  */
 type GuHands = { hold: HandSkeleton; scrape: HandSkeleton; bodyCyl: Cylinder; scrapeCyl: Cylinder };
 const handsCache = new Map<GuState, GuHands>();
@@ -66,11 +71,9 @@ export function guiroHands(s: GuState): GuHands {
   if (hit) return hit;
   const c = s.c;
   const z0 = s.hold.G.z;
-  const pads = [22, 3, -16, -34].map((dz) => v3(c.x + GR * 0.72, c.y + GR * 0.66, z0 + dz));
-  const thumb = v3(c.x - GR * 0.8, c.y + GR * 0.55, z0 + 30);
-  const hold = cradleHand(v3(c.x - 22, c.y + GR + 30, z0 - 4), v3(1, 0, 0.12), pads, thumb);
-  const scrapeCyl: Cylinder = { c: s.scrape.G, axis: h3.sub(s.scraper.a, s.scraper.b), r: 4.5, tipward: true, slide: 8 };
-  const scrape = gripCylinder(scrapeCyl, { thumbSign: 1, wrist: s.scrape.W, elbow: s.scrape.E, angle: [40, 62], back: v3(-0.2, -1, 0.3), close: 0.95 }).sk;
+  const hold = cupUnder(v3(c.x, c.y, z0), v3(0, 0, 1), GR, v3(1, 0, 0.1), 1, { gap: 0, into: 6 });
+  const scrapeCyl: Cylinder = { c: s.scrape.G, axis: h3.sub(s.scraper.a, s.scraper.b), r: 4.5 };
+  const scrape = stickGripNear(s.scrape.G, s.scraper.a, 1, s.scrape.W, v3(-0.2, -1, 0.3), 4.5, 0.45);
   const h = { hold, scrape, bodyCyl: { c, axis: v3(0, 0, 1), r: GR }, scrapeCyl };
   handsCache.set(s, h);
   return h;

@@ -321,3 +321,129 @@ export function openHandOn(wrist: V3, along: V3, palmToward: V3, thumbSign: 1 | 
 }
 
 export { HAND, HAND_LENGTH };
+
+/* ── strikers and cupped hands (grips pass 2026-10-24, owner: "some hand
+ *    positions continue to be wrong (holding the clave sticks, the guiro
+ *    stick, etc.)") ── */
+
+/**
+ * THE STICK GRIP (a drumstick, a striking clave, a güiro scraper, a beater):
+ * NOT a fist. The stick lies diagonally across the fingers' base at ≈ 50° to
+ * the hand's length, pinched between the THUMB's pad (on its top) and the
+ * side of the INDEX finger's middle bone — the fulcrum; the middle, ring and
+ * little fingers curl loosely round it ("held lightly … much like a
+ * drumstick", Wikipedia: Claves); the butt runs out under the heel of the
+ * hand, the tip past the thumb and index. `grip` is where the fulcrum sits on
+ * the stick, `tip` the striking end, `back` which way the back of the hand
+ * faces (a hint, made square to the stick). `r` the stick's radius.
+ * `loose` 0 … 1 opens the back three fingers off the stick (a scraper held
+ * lightly: 0.5).
+ */
+export function stickGrip(grip: V3, tip: V3, back: V3, thumbSign: 1 | -1, r = 7, loose = 0): HandSkeleton {
+  const s = unit(sub(tip, grip));
+  const z = unit(sub(back, mul(s, dot(back, s))));
+  // q: in the palm's plane, square to the stick, toward the thumb's side.
+  const q = mul(unit(cross(s, z)), thumbSign);
+  const ang = 50 * DEG;
+  const c = Math.cos(ang);
+  const sn = Math.sin(ang);
+  // The hand's length: back from the tip's direction, turned toward the little finger.
+  const x = sub(mul(s, c), mul(q, sn));
+  const f0 = handFrame(v3(0, 0, 0), x, z, q);
+  // The stick's axis passes under the knuckle row against the palm.
+  const A = v3(82, 2, -(HAND.thick / 2 + r + 1.5));
+  const o = sub(grip, add(mul(f0.x, A.x), add(mul(f0.y, A.y), mul(f0.z, A.z))));
+  const f: HandFrame = { ...f0, o };
+  // Along the stick from the fulcrum, in the hand's own numbers.
+  const along = (t: number) => add(grip, mul(s, t));
+  // The point of the stick nearest a finger's knuckle (where it crosses the stick).
+  const crossAt = (i: number) => {
+    const F = HAND.fingers[i];
+    const m = add(f.o, add(mul(f.x, F.mcp.x), mul(f.y, F.mcp.y)));
+    return dot(sub(m, grip), s);
+  };
+  // Each pad on the stick's far side (away from the palm), a little back toward the wrist.
+  const wrapDir = unit(add(mul(z, -0.95), mul(f.x, -0.3)));
+  const fingers: DigitGoal[] = [0, 1, 2, 3].map((i) => {
+    if (i > 0 && loose > 0) return { curl: 0.55 + 0.35 * (1 - loose), abd: (i - 1.5) * 0.05 };
+    const t = crossAt(i) + (i === 0 ? 6 : 0);
+    // The index: its middle bone's side against the stick (the fulcrum), its pad curled round it.
+    return add(along(t), mul(wrapDir, r + 7.5));
+  });
+  // The thumb's pad on the stick's top, just past the index finger: the pinch.
+  const thumb = add(add(along(crossAt(0) + 14), mul(z, r + 6)), mul(q, 3));
+  return handOn(f, fingers, thumb, 0.7);
+}
+
+/**
+ * THE CUPPED HAND UNDER AN OBJECT (palm up):
+ *   • CLAVES (gap ≈ 22 mm): the receiving clave lies ACROSS the palm, held
+ *     lightly by the FINGERTIPS on its far side and the THUMB on its near
+ *     side, the palm cupped beneath it — not touching — so the hollow hand is
+ *     the resonating chamber (Wikipedia: Claves; Kopf Percussion);
+ *   • GÜIRO (gap 0): the body resting in the palm, the THUMB into the sound
+ *     hole on its back and a FINGER into the second hole (`into`: the pads
+ *     a few mm inside the surface there).
+ * `c` the object's axis point over the palm's middle, `axis` its direction
+ * (across the hand), `r` its radius; `toward` the direction the fingers
+ * point (horizontal, square to the axis). The thumb lies on the axis's
+ * `thumbSign` side of the hand.
+ */
+export function cupUnder(c: V3, axis: V3, r: number, toward: V3, thumbSign: 1 | -1, opts: { gap?: number; into?: number; up?: V3 } = {}): HandSkeleton {
+  const gap = opts.gap ?? 22;
+  const up = unit(opts.up ?? v3(0, -1, 0));
+  const a = unit(axis);
+  const x = unit(sub(sub(toward, mul(a, dot(toward, a))), mul(up, dot(toward, up))));
+  const z = mul(up, -1); // the back of the hand down: palm up
+  // The thumb's side: along ±axis.
+  const f0 = handFrame(v3(0, 0, 0), x, z, mul(a, thumbSign));
+  // The palm's face (z = −thick/2 in the hand) `gap` below the object's underside, its middle under the axis.
+  const palmMid = add(c, mul(up, -(r + gap + HAND.thick / 2)));
+  const o = sub(palmMid, add(mul(f0.x, 58), mul(f0.y, 2)));
+  const f: HandFrame = { ...f0, o };
+  const into = opts.into ?? 0;
+  // The pads: round the far side, just below the axis (a clave rests on the fingertips there).
+  const fingers: DigitGoal[] = HAND.fingers.map((F, i) => {
+    const m = add(f.o, add(mul(f.x, F.mcp.x), mul(f.y, F.mcp.y)));
+    const t = dot(sub(m, c), a);
+    const rho = r + (into > 0 && i === 1 ? -into : F.r[3] * 0.7);
+    return add(add(c, mul(a, t * 0.92)), add(mul(f.x, rho * 0.62), mul(up, -rho * 0.78)));
+  });
+  // The thumb: across the near side of the object, a little above its middle.
+  const tm = add(f.o, add(mul(f.x, 40), mul(f.y, -30)));
+  const tt = dot(sub(tm, c), a);
+  const rt = r + (into > 0 ? -into : 7);
+  const thumb = add(add(c, mul(a, tt)), add(mul(f.x, -rt * 0.85), mul(up, into > 0 ? -rt * 0.5 : -r * 0.25)));
+  return handOn(f, fingers, thumb, 0.62);
+}
+
+/**
+ * The stick grip turned round the stick until its wrist lands nearest the
+ * lesson's wrist (`wrist`), the back of the hand kept near `back` (soft):
+ * the same pinch and wrap, posed to the lesson's own arm.
+ */
+export function stickGripNear(grip: V3, tip: V3, thumbSign: 1 | -1, wrist: V3, back: V3, r = 7, loose = 0): HandSkeleton {
+  const s = unit(sub(tip, grip));
+  const ref0 = Math.abs(s.y) < 0.9 ? v3(0, 1, 0) : v3(1, 0, 0);
+  const e1 = unit(sub(ref0, mul(s, dot(ref0, s))));
+  const e2 = unit(cross(s, e1));
+  const b0 = unit(sub(back, mul(s, dot(back, s))));
+  let best = { cost: Infinity, b: b0 };
+  for (let phi = 0; phi < 360; phi += 4) {
+    const b = add(mul(e1, Math.cos(phi * DEG)), mul(e2, Math.sin(phi * DEG)));
+    const sk0 = stickFrameOnly(grip, s, b, thumbSign, r);
+    const cost = len(sub(sk0, wrist)) ** 2 + 5000 * (1 - dot(b, b0));
+    if (cost < best.cost) best = { cost, b };
+  }
+  return stickGrip(grip, tip, best.b, thumbSign, r, loose);
+}
+/** Only the wrist of stickGrip's frame (for the search). */
+function stickFrameOnly(grip: V3, s: V3, back: V3, thumbSign: 1 | -1, r: number): V3 {
+  const z = unit(sub(back, mul(s, dot(back, s))));
+  const q = mul(unit(cross(s, z)), thumbSign);
+  const c = Math.cos(50 * DEG);
+  const sn = Math.sin(50 * DEG);
+  const x = sub(mul(s, c), mul(q, sn));
+  const f0 = handFrame(v3(0, 0, 0), x, z, q);
+  return sub(grip, add(mul(f0.x, 82), add(mul(f0.y, 2), mul(f0.z, -(HAND.thick / 2 + r + 1.5)))));
+}
