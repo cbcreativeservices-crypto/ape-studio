@@ -7,7 +7,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { googleImagesUrlFor, googleUrlFor, safeWikipediaUrl, wikipediaUrlFor } from '../src/features/research/researchUrls.ts';
+import { googleImagesUrlFor, googleScholarUrlFor, googleUrlFor, safeWikipediaUrl, wikipediaUrlFor } from '../src/features/research/researchUrls.ts';
 
 const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
@@ -34,6 +34,7 @@ test('Wikipedia: stored article first, else a search for the bare term; Google a
   assert.equal(wikipediaUrlFor('AED', null), 'https://en.wikipedia.org/w/index.php?search=AED');
   assert.equal(wikipediaUrlFor('Gain & headroom', 'https://bad.example/x'), 'https://en.wikipedia.org/w/index.php?search=Gain%20%26%20headroom');
   assert.equal(googleUrlFor(' Phantom power '), 'https://www.google.com/search?q=Phantom%20power%20audio');
+  assert.equal(googleScholarUrlFor('Phantom power'), 'https://scholar.google.com/scholar?q=Phantom%20power%20audio');
 });
 
 test('View images: Google Images with SafeSearch ON, opened directly', () => {
@@ -53,7 +54,8 @@ test('the popup is the owner-approved wording, opened in the system browser', ()
   assert.match(s, /'Research and learn more',/);
   assert.match(s, /Keep exploring “\$\{name\}” — see pictures, history and other explanations\. These open in your browser, outside the Academy\./);
   assert.match(s, /'Wikipedia',/);
-  assert.match(s, /alt: \{ text: 'Google'/);
+  assert.match(s, /\{ text: 'Google', onPress: \(\) => open\(googleUrlFor\(name\), 'google\.com'\) \}/);
+  assert.match(s, /\{ text: 'Google Scholar', onPress: \(\) => open\(googleScholarUrlFor\(name\), 'scholar\.google\.com'\) \}/);
   assert.match(s, /cancelText: 'Not now'/);
   assert.match(s, /Linking\.openURL\(url\)/);
   assert.doesNotMatch(s, /expo-web-browser|openBrowserAsync/);
@@ -76,8 +78,8 @@ test('the flashcard link read is separate and non-fatal (never in the study SELE
 
 test('the shared dialog has an optional second choice, through the same answer guard', () => {
   const d = read('src/components/AppDialog.tsx');
-  assert.match(d, /function resolve\(which: 'confirm' \| 'cancel' \| 'alt'\): void \{\s*\/\/[^\n]*\n[^\n]*\n\s*if \(current && Date\.now\(\) - shownAt < ANSWER_GUARD_MS\) return;/);
-  assert.match(d, /\{!isNotice && req\.altText \? \(/);
+  assert.match(d, /function resolve\(which: 'confirm' \| 'cancel' \| number\): void \{\s*\/\/[^\n]*\n[^\n]*\n\s*if \(current && Date\.now\(\) - shownAt < ANSWER_GUARD_MS\) return;/);
+  assert.match(d, /\(req\.extras \?\? \[\]\)\.map\(\(x, i\) => \(/);
   const c = read('src/lib/confirm.ts');
-  assert.match(c, /altText: opts\?\.alt\?\.text,\s*onAlt: opts\?\.alt\?\.onPress,/);
+  assert.match(c, /extras: opts\?\.extras,/);
 });

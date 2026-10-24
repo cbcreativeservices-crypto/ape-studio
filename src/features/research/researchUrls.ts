@@ -20,6 +20,11 @@ export function googleUrlFor(term: string): string {
   return `https://www.google.com/search?q=${encodeURIComponent(`${term.trim()} audio`)}`;
 }
 
+/** Google Scholar (owner 2026-10-24): papers and research on the term. */
+export function googleScholarUrlFor(term: string): string {
+  return `https://scholar.google.com/scholar?q=${encodeURIComponent(`${term.trim()} audio`)}`;
+}
+
 /** View images (owner 2026-10-24): Google Images for the term, SafeSearch ON
  *  (`safe=active`) — a learning app's link must not land on explicit results. */
 export function googleImagesUrlFor(term: string): string {

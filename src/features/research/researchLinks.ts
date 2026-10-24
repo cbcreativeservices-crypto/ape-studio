@@ -17,7 +17,7 @@
 import { Linking } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
 
-import { googleImagesUrlFor, googleUrlFor, wikipediaUrlFor } from './researchUrls';
+import { googleImagesUrlFor, googleScholarUrlFor, googleUrlFor, wikipediaUrlFor } from './researchUrls';
 
 function open(url: string, host: string): void {
   Linking.openURL(url).catch(() => {
@@ -31,7 +31,7 @@ export function openViewImages(term: string): void {
   if (name) open(googleImagesUrlFor(name), 'google.com');
 }
 
-/** The owner-approved popup (2026-10-24): Wikipedia · Google · Not now. */
+/** The owner-approved popup (2026-10-24): Wikipedia · Google · Google Scholar · Not now. */
 export function openResearchMore(term: string, storedWikipediaUrl?: unknown): void {
   const name = term.trim();
   if (!name) return;
@@ -42,7 +42,10 @@ export function openResearchMore(term: string, storedWikipediaUrl?: unknown): vo
     () => open(wikipediaUrlFor(name, storedWikipediaUrl), 'en.wikipedia.org'),
     {
       cancelText: 'Not now',
-      alt: { text: 'Google', onPress: () => open(googleUrlFor(name), 'google.com') },
+      extras: [
+        { text: 'Google', onPress: () => open(googleUrlFor(name), 'google.com') },
+        { text: 'Google Scholar', onPress: () => open(googleScholarUrlFor(name), 'scholar.google.com') },
+      ],
     },
   );
 }
