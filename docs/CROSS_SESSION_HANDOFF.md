@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 10:33 · ccode · f9e1e6cb
+changed: Miking hands: researched grips — claves striker and güiro scraper in a stick (pencil) grip, claves receiving hand cupped palm-up over a resonating air pocket, güiro held with thumb + middle finger in the sound holes, tambourine MOUNTED stick grip
+affects other side: Miking lab Claves, Güiro, Tambourine lessons; OTA-safe JS
+needs: nothing
+
+
 ### 2026-10-24 10:25 · ccode · de0ce674
 changed: Final build: location removed (expo-location uninstalled, iOS string + Android permissions out; next-build item 1); owner wording approvals — Log out dialog sentence, exit-flow copy approved, Stereo lab hides stereo-only text while PINK·MONO is selected
 affects other side: MultiMeter (no TAG LOCATION), Settings › Log out dialog, exit flow (comments only), Stereo lab text; app.json/package.json change (store build)
