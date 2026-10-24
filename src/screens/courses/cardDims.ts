@@ -85,6 +85,37 @@ export function cardDimsFor(windowW: number, windowH: number, screenW: number, s
 }
 
 /**
+ * ⛔ THE CARD FITS THE ROW IT IS DRAWN IN (owner iPad report 2026-10-24: "the
+ * titles above the course cards aren't showing … they show in iPad portrait,
+ * but disappear in landscape").
+ *
+ * Everything above budgets the deck's chrome as a fixed 394 pt measured on a
+ * phone. The carousel row itself is a horizontal FlatList, which flex-fills
+ * whatever height is really left. On an iPad in landscape the real chrome (tab
+ * bar, safe areas) left a row shorter than caption + card, and the list centres
+ * its items, so the overflow was cut equally top and bottom: the caption strip
+ * ("INCLUDED FOR EVERYONE", "SET UP WHAT YOU STUDY") went first. Measured in
+ * the web preview at 1194 × 834 WITHOUT the tab bar: unit 472 pt (32 caption +
+ * 440 card) in a 483 pt row — 11 pt of margin before any tab bar.
+ *
+ * So the screen MEASURES the row (onLayout) and the card is never taller than
+ * the row minus the caption strip. A card that already fits is returned
+ * unchanged, so no phone or portrait iPad moves.
+ */
+export const CAPTION_STRIP_H = 32; // cardAbove: 17 text + 5 + 1 rule + 9 margin
+const ROW_BREATH = 4;
+export function fitCardToRow(cd: CardDims, rowH: number | null, tablet: boolean): CardDims {
+  if (rowH == null || !(rowH > 0)) return cd;
+  const maxH = Math.floor(rowH - CAPTION_STRIP_H - ROW_BREATH);
+  if (cd.h <= maxH) return cd;
+  const h = Math.max(160, maxH);
+  // A tablet's card width was derived from its height; keep it a card, not a
+  // banner. A phone keeps its width (the screen's own centring uses it).
+  const w = tablet ? Math.min(cd.w, Math.max(220, Math.round(h / PHONE_CARD_RATIO))) : cd.w;
+  return dims(w, h);
+}
+
+/**
  * The carousel's dot row ALWAYS fits one line (small-screen pass 2026-09-30).
  * Adding the Calculator + Career Finder cards made 7-pt dots with 6-pt gaps
  * wrap on a 375-wide phone; the second row pushed the carousel down and

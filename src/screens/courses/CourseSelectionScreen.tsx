@@ -12,7 +12,7 @@
  * Snap-to-center, side peek, dot indicator. Tab bar visible (Home tab — the
  * app's opening tab).
  */
-import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, memo, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
 import {
   AccessibilityInfo,
@@ -44,7 +44,8 @@ import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { SUPABASE_URL } from '../../lib/env';
 import { BRAND_MAX_FONT_SCALE, colors, fonts } from '../../theme/tokens';
-import { dotRowFit, cardDimsFor, isCompactHeader, type CardDims } from './cardDims';
+import { dotRowFit, cardDimsFor, fitCardToRow, isCompactHeader, type CardDims } from './cardDims';
+import { isTabletWindow } from '../../theme/tablet';
 import { confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useUpsellAllowed } from '../../features/commercial/useTier';
@@ -238,6 +239,10 @@ function useCardDims(): CardDims {
   const { bottom } = useSafeAreaInsets(); // a solid Android button bar (cardDims.ts)
   return useMemo(() => cardDimsFor(width, height, screen.width, screen.height, bottom), [width, height, screen.width, screen.height, bottom]);
 }
+/** The deck's card size AFTER fitting the measured carousel row (fitCardToRow,
+ *  iPad landscape 2026-10-24). The screen provides it; every card reads it, so
+ *  the cards, the centring pad and the snap interval agree. */
+const DeckDimsContext = createContext<CardDims | null>(null);
 /**
  * The line above the carousel names what the CENTRED card is for (TestFlight
  * feedback 2026-09-30: "Start learning over the labs, Measure audio over audio
@@ -764,7 +769,8 @@ function CourseCardView({
   // alone also matched the boot window and a member whose membership read
   // FAILED (no remembered tier) — they were marketed the membership they hold.
   const upsell = useUpsellAllowed();
-  const cd = useCardDims();
+  const ownDims = useCardDims();
+  const cd = useContext(DeckDimsContext) ?? ownDims;
 
   // "+ XX other" tally card — its own compact look, far right of the deck.
   // (After the hook above so hook order stays stable.)
@@ -1414,7 +1420,12 @@ export function CourseSelectionScreen() {
   // eyebrow line and "Start Learning" so the card fits (owner 2026-09-29).
   const screenDims = Dimensions.get('screen');
   const compactHeader = isCompactHeader(windowW, windowH, screenDims.width, screenDims.height);
-  const cd = useCardDims();
+  // The carousel row's REAL height (onLayout) — the card never outgrows it,
+  // or the caption strip above each card is cut off (iPad landscape 2026-10-24).
+  const [deckRowH, setDeckRowH] = useState<number | null>(null);
+  const baseDims = useCardDims();
+  const tabletWindow = isTabletWindow(windowW, windowH);
+  const cd = useMemo(() => fitCardToRow(baseDims, deckRowH, tabletWindow), [baseDims, deckRowH, tabletWindow]);
   const sidePad = Math.max(0, Math.round((windowW - cd.w) / 2));
   const navigation = useNavigation();
   const [cards, setCards] = useState<Card[] | null>(null);
@@ -2116,8 +2127,13 @@ export function CourseSelectionScreen() {
           stranded (owner ruling 2026-09-05, see DashboardScreen); it self-heals
           to the usable public catalog below, which is the intended behaviour. */}
 
+      <DeckDimsContext.Provider value={cd}>
       <FlatList
         ref={listRef}
+        onLayout={(e) => {
+          const h = Math.round(e.nativeEvent.layout.height);
+          setDeckRowH((prev) => (prev === h ? prev : h));
+        }}
         data={displayDeck}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -2162,6 +2178,7 @@ export function CourseSelectionScreen() {
           </View>
         )}
       />
+      </DeckDimsContext.Provider>
 
       {/* Study Area EXPLORE (owner 2026-09-16): the area's credential picker /
           popup. Fallback = the curriculum browser EXPLORE opened before. */}
