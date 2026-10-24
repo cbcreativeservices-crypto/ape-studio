@@ -19,3 +19,9 @@ export function wikipediaUrlFor(term: string, stored?: unknown): string {
 export function googleUrlFor(term: string): string {
   return `https://www.google.com/search?q=${encodeURIComponent(`${term.trim()} audio`)}`;
 }
+
+/** View images (owner 2026-10-24): Google Images for the term, SafeSearch ON
+ *  (`safe=active`) — a learning app's link must not land on explicit results. */
+export function googleImagesUrlFor(term: string): string {
+  return `https://www.google.com/search?tbm=isch&safe=active&q=${encodeURIComponent(`${term.trim()} audio`)}`;
+}

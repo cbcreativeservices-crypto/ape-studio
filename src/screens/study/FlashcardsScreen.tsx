@@ -112,7 +112,7 @@ import { StudyHeader } from './StudyHeader';
 import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import type { StudyStackParamList } from '../../navigation/types';
 import { safeGoBack } from '../../lib/safeGoBack';
-import { openResearchMore } from '../../features/research/researchLinks';
+import { ResearchMoreLink } from '../../features/research/ResearchMoreLink';
 import { fsShouldClaim, fsSwipeAction, relatedTermsText, stepSectionLevel } from '../../features/study/flashcardGestures';
 
 /**
@@ -2017,15 +2017,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                 {/* Research more (owner 2026-10-24) — on the answer side only,
                     bottom-LEFT, as quiet as "Suggest a correction" opposite. */}
                 {soloReveal || level !== 0 ? (
-                  <Pressable
+                  <ResearchMoreLink
+                    term={card.term}
+                    wikipediaUrl={card.wikipedia_url}
                     style={styles.cardResearch}
-                    onPress={() => openResearchMore(card.term, card.wikipedia_url)}
-                    hitSlop={8}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Research and learn more about ${card.term}`}
-                  >
-                    <Text style={styles.cardReportText}>Research and learn more ↗</Text>
-                  </Pressable>
+                    textStyle={styles.cardReportText}
+                  />
                 ) : null}
                 {/* Subtle error-report affordance, bottom-right of the card
                     (owner 2026-08-13). Small, low-contrast text. */}

@@ -7,7 +7,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { googleUrlFor, safeWikipediaUrl, wikipediaUrlFor } from '../src/features/research/researchUrls.ts';
+import { googleImagesUrlFor, googleUrlFor, safeWikipediaUrl, wikipediaUrlFor } from '../src/features/research/researchUrls.ts';
 
 const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
@@ -36,6 +36,18 @@ test('Wikipedia: stored article first, else a search for the bare term; Google a
   assert.equal(googleUrlFor(' Phantom power '), 'https://www.google.com/search?q=Phantom%20power%20audio');
 });
 
+test('View images: Google Images with SafeSearch ON, opened directly', () => {
+  assert.equal(
+    googleImagesUrlFor('XLR connector'),
+    'https://www.google.com/search?tbm=isch&safe=active&q=XLR%20connector%20audio',
+  );
+  const link = read('src/features/research/ResearchMoreLink.tsx');
+  assert.match(link, />Research and learn more ↗<\/Text>/);
+  assert.match(link, />View images ↗<\/Text>/);
+  assert.match(link, /onPress=\{\(\) => openViewImages\(name\)\}/);
+  assert.match(read('src/features/research/researchLinks.ts'), /export function openViewImages\(term: string\): void \{\s*const name = term\.trim\(\);\s*if \(name\) open\(googleImagesUrlFor\(name\), 'google\.com'\);/);
+});
+
 test('the popup is the owner-approved wording, opened in the system browser', () => {
   const s = read('src/features/research/researchLinks.ts');
   assert.match(s, /'Research and learn more',/);
@@ -50,8 +62,7 @@ test('the popup is the owner-approved wording, opened in the system browser', ()
 test('glossary term page and flashcard back carry it', () => {
   assert.match(read('src/screens/glossary/GlossaryScreen.tsx'), /<ResearchMoreLink term=\{term \?\? ''\} wikipediaUrl=/);
   const f = read('src/screens/study/FlashcardsScreen.tsx');
-  assert.match(f, /\{soloReveal \|\| level !== 0 \? \(\s*<Pressable\s+style=\{styles\.cardResearch\}\s+onPress=\{\(\) => openResearchMore\(card\.term, card\.wikipedia_url\)\}/);
-  assert.match(f, /<Text style=\{styles\.cardReportText\}>Research and learn more ↗<\/Text>/);
+  assert.match(f, /\{soloReveal \|\| level !== 0 \? \(\s*<ResearchMoreLink\s+term=\{card\.term\}\s+wikipediaUrl=\{card\.wikipedia_url\}\s+style=\{styles\.cardResearch\}\s+textStyle=\{styles\.cardReportText\}/);
 });
 
 test('the flashcard link read is separate and non-fatal (never in the study SELECT)', () => {

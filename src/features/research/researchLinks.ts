@@ -17,12 +17,18 @@
 import { Linking } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
 
-import { googleUrlFor, wikipediaUrlFor } from './researchUrls';
+import { googleImagesUrlFor, googleUrlFor, wikipediaUrlFor } from './researchUrls';
 
 function open(url: string, host: string): void {
   Linking.openURL(url).catch(() => {
     notify('Page unavailable', `We couldn’t open the page — visit ${host} in your browser.`);
   });
+}
+
+/** View images ↗ (owner 2026-10-24): straight to Google Images, no popup. */
+export function openViewImages(term: string): void {
+  const name = term.trim();
+  if (name) open(googleImagesUrlFor(name), 'google.com');
 }
 
 /** The owner-approved popup (2026-10-24): Wikipedia · Google · Not now. */
