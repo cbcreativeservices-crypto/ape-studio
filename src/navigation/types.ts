@@ -74,6 +74,12 @@ export type RootStackParamList = {
   /** CM7: academy membership paywall. `plan` pre-selects a plan — set only by
    *  the guest sign-up return (owner H9/H-E, 2026-10-22); it never buys. */
   Paywall: { plan?: import('../features/commercial/iapProducts').PlanId } | undefined;
+  /** Exit flow (2026-10-15, EXIT_FLOW_ENABLED — ON 2026-10-24): Settings › Membership and billing. */
+  MembershipBilling: undefined;
+  /** Exit flow: cancel a store subscription (C1→C4). The provider is the VERIFIED billing source. */
+  CancelMembership: { provider: 'apple' | 'google'; endsAt: string | null };
+  /** Exit flow: Settings › Account and privacy › Delete account and personal data (D1→D3). */
+  DeleteAccountFlow: undefined;
   Main: NavigatorScreenParams<MainTabParamList> | undefined;
   // Root-level (bottom nav hidden — S7 is modal per the locked spec):
   Results: ResultsParams;

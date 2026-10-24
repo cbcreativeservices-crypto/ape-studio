@@ -318,13 +318,17 @@ const REVIEWED_PLAIN: Record<string, { count: number; why: string }> = {
   },
   'src/screens/curriculum/CurriculumScreen.tsx': { count: 1, why: 'Membership button in the screen\'s about row' },
   'src/screens/exam/FinalExamScreen.tsx': { count: 1, why: '"See membership plans" on the exam\'s refusal card (in-screen)' },
+  // Exit flow (2026-10-15; ON 2026-10-24): plain buttons on the screen body.
+  'src/screens/exit/DeleteAccountFlowScreen.tsx': { count: 1, why: 'Cancel membership and keep my account link on D1 (replace, in-screen)' },
+  'src/screens/exit/MembershipBillingScreen.tsx': { count: 3, why: 'Cancel membership (renewing + renewal-not-confirmed cards) and Delete account rows on the screen body' },
   'src/screens/glossary/GlossaryScreen.tsx': { count: 1, why: 'offline-save panel button, in the screen body' },
   'src/screens/lab/cableinstall/CableInstallLabScreen.tsx': { count: 1, why: 'in-flow end-screen JOIN button, not a popup' },
   'src/screens/lab/tube/TubeCardScreen.tsx': { count: 1, why: 'UPGRADE button on the screen body' },
   'src/screens/lab/tube/TubeReferenceScreen.tsx': { count: 1, why: 'UPGRADE button on the locked screen body' },
   'src/screens/profile/ProfileScreen.tsx': { count: 2, why: 'gear and UPGRADE button on the screen body' },
   'src/screens/settings/SettingsScreen.tsx': {
-    count: 4,
+    count: 6,
+    // +2 (2026-10-15): the exit flow's Membership and billing / Delete account rows (EXIT_FLOW_ENABLED, ON 2026-10-24).
     why: 'MEMBERSHIP / Help / About rows on Settings itself (a stacked modal screen, not a DimModal)',
   },
   'src/screens/tools/ConceptModuleScreen.tsx': { count: 1, why: 'ToolAcademyLock is an in-screen panel' },

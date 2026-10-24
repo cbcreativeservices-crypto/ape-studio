@@ -151,6 +151,10 @@ const Lazy = {
   StartHereTerms: lazyScreen(() => require('../screens/startHere/StartHereTermsScreen').StartHereTermsScreen),
   PublicGlossary: lazyScreen(() => require('../screens/landing/PublicGlossaryScreen').PublicGlossaryScreen),
   Paywall: lazyScreen(() => require('../screens/commercial/PaywallScreen').PaywallScreen),
+  // Exit flow (2026-10-15) — reachable only while EXIT_FLOW_ENABLED is on (config/exitFlow; ON 2026-10-24).
+  MembershipBilling: lazyScreen(() => require('../screens/exit/MembershipBillingScreen').MembershipBillingScreen),
+  CancelMembership: lazyScreen(() => require('../screens/exit/CancelMembershipScreen').CancelMembershipScreen),
+  DeleteAccountFlow: lazyScreen(() => require('../screens/exit/DeleteAccountFlowScreen').DeleteAccountFlowScreen),
 } as const;
 
 // Members-only Training-Lab gate at the SCREEN (navigation bug hunt 2026-09-14,
@@ -586,6 +590,11 @@ export function RootNavigator() {
       <Stack.Screen name="PublicGlossary" getComponent={Lazy.PublicGlossary} />
       {/* CM7: academy paywall (modal; UI only). */}
       <Stack.Screen name="Paywall" getComponent={Lazy.Paywall} options={{ presentation: 'modal' }} />
+      {/* Exit flow (2026-10-15; EXIT_FLOW_ENABLED, ON 2026-10-24). Deletion cannot be swiped away:
+          after the account is gone the only way on is Done → Splash. */}
+      <Stack.Screen name="MembershipBilling" getComponent={Lazy.MembershipBilling} options={{ presentation: 'modal' }} />
+      <Stack.Screen name="CancelMembership" getComponent={Lazy.CancelMembership} options={{ presentation: 'modal' }} />
+      <Stack.Screen name="DeleteAccountFlow" getComponent={Lazy.DeleteAccountFlow} options={{ presentation: 'modal', gestureEnabled: false }} />
     </Stack.Navigator>
   );
 }

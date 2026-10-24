@@ -64,6 +64,7 @@ import {
 } from '../../features/settings/store';
 import { NotifyScheduleModal } from '../../features/settings/NotifyScheduleModal';
 import { DeleteAccountButton } from '../../features/settings/DeleteAccountButton';
+import { exitFlowEnabled } from '../../config/exitFlow';
 import { registerAndSavePushToken, registerAndSavePushTokenChecked } from '../../features/notifications/push';
 import { setPhoneNotificationsEnabled } from '../../features/notifications/localSchedule';
 import { releaseCommunityDevice } from '../../features/notifications/communityPush';
@@ -1135,6 +1136,25 @@ ${LOCAL_LOSS}`
               members' page only for a KNOWN member, so a member running on the
               offline cached tier tapped this and landed on plan cards and
               prices. Same gate as the Status row above. */}
+          {/* EXIT FLOW (2026-10-15, config/exitFlow — ON 2026-10-24). ON:
+              "Membership and billing" for every account holder (not a known
+              guest), the page that shows plan, renewal and the cancel path —
+              no plans or prices on it, so a member never meets an upsell.
+              OFF (rollback): the Manage membership row below, unchanged. */}
+          {exitFlowEnabled() ? (
+            tierKnown && isGuest ? null : (
+              <Pressable
+                style={[styles.row, styles.rowBorder]}
+                onPress={() => (navigation as any).navigate('MembershipBilling')}
+                accessibilityRole="button"
+                accessibilityLabel="Membership and billing"
+              >
+                <Text style={styles.rowLabel}>Membership and billing</Text>
+                <Text style={styles.chevron}>›</Text>
+              </Pressable>
+            )
+          ) : (
+          <>
           {tierKnown && isMember ? (
             <Pressable
               style={[styles.row, styles.rowBorder]}
@@ -1146,6 +1166,8 @@ ${LOCAL_LOSS}`
               <Text style={styles.chevron}>›</Text>
             </Pressable>
           ) : null}
+          </>
+          )}
           <Pressable
             style={styles.row}
             onPress={() => {
@@ -1277,7 +1299,21 @@ ${LOCAL_LOSS}`
             connection. When the tier is not known, show it: a guest who taps it
             gets an honest failure, which is far better than a member who cannot
             find it. */}
-        {tierKnown && isGuest ? null : (
+        {/* EXIT FLOW ON: "Account and privacy" replaces this section — same
+            visibility rule, and deletion never requires the cancel flow. */}
+        {tierKnown && isGuest ? null : exitFlowEnabled() ? (
+        <SettingsSection title="ACCOUNT AND PRIVACY">
+          <Pressable
+            style={styles.row}
+            onPress={() => (navigation as any).navigate('DeleteAccountFlow')}
+            accessibilityRole="button"
+            accessibilityLabel="Delete account and personal data"
+          >
+            <Text style={styles.rowLabel}>Delete account and personal data</Text>
+            <Text style={styles.chevron}>›</Text>
+          </Pressable>
+        </SettingsSection>
+        ) : (
         <SettingsSection title="DELETE ACCOUNT" danger>
           <View style={{ paddingVertical: 10 }}>
             <Text style={[styles.rowHint, { marginBottom: 10 }]}>
