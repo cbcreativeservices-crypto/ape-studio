@@ -42,6 +42,9 @@ skills-lock.json
 
 # ── not needed for the native build (the upload bloat) ───────────────────────
 audio_app_archive/
+# The git pack (~570 MB of history incl. old website videos) — a native build
+# never reads it (checklist "PARKED FOR THE NEXT NATIVE BUILD", 2026-09-18).
+.git/
 machineA_ingest/
 FLAGGED_TERMS/
 HANDOFF_2026_08_01_SUB90/
