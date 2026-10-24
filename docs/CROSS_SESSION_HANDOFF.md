@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 17:18 · ccode · c90b20c1
+changed: Home: free topics' caption above the card — green Free · blue headphones + Study Topic
+affects other side: nothing (client-only Home caption)
+needs: nothing
+
+
 ### 2026-10-23 14:24 · ccode · e1821279
 changed: Home, Glossary, My Enrollments polish (owner 2026-10-23)
 affects other side: nothing (client-only UI copy/layout; enrollIntro is a device-local store)
