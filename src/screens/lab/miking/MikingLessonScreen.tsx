@@ -49,7 +49,7 @@ import { forgetFirstMisses } from './engine/progress/firstTryMemo';
 import { bankPage, lessonProgress, recordAnswer, recordInteractive, recordPath, recordPlace, recordQuickCheck, recordQuickPick, clearMikingPracticeRun, setMikingSaveBlocked, useMikingHydrated, useMikingProgress, useMikingUnreadable } from './engine/progress/mikingProgress';
 import { banksOnNext, pageComplete } from './engine/progress/credit.ts';
 import { creditedPages } from './engine/progress/creditMap.ts';
-import { lessonById } from './data/lessons';
+import { lessonById } from './data/lessonLoader';
 import { isFoundation, journeyPageOf, pageGate, STANDARD_LINE, STANDARD_LINE_PAGES, type LearnerPath, type QuickCheckResult } from './engine/journey.ts';
 import { meetKeep, pageOf, restructureLesson } from './engine/restructure.ts';
 import { ComposedPage, type PagePart } from './engine/compose';
