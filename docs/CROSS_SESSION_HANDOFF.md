@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 01:43 · ccode · b0dd689a
+changed: Overnight toddler pass 2: iPad landscape (Advanced Tuner note column, Calculator Lab popup), star/bookmark refused while the list is unreadable (+ Glossary flash gated), certificate download failure under the right certificate
+affects other side: Tuner full screen on iPad landscape, Calculator Lab popup on iPad landscape, Glossary/Flashcards star + bookmark, Credential wall download; OTA-safe JS only
+needs: nothing
+
+
 ### 2026-10-24 01:28 · ccode · ea21ec1b
 changed: iPad landscape: Home card fits the measured carousel row, so the caption strip above each card is never cut off (owner report from a real iPad)
 affects other side: Home screen carousel on tablets (iPad landscape, Split View); phones and portrait unchanged when the card already fits
