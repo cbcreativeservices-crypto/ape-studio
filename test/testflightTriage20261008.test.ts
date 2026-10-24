@@ -148,7 +148,7 @@ test('#30 the line above the carousel names the centred card (owner copy)', () =
     ["case 'glossary'", 'Look Up a Term'],
     ["case 'startHere'", 'Begin Here'],
     ["case 'homeTopic'", 'Start Learning a Topic'],
-    ["case 'showcase'", 'Explore Topics to Enroll In'],
+    ["case 'showcase'", 'Learn About the Academy’s Curriculum'], // owner 2026-10-23
   ];
   for (const [c, words] of want) {
     const i = fn.indexOf(c);

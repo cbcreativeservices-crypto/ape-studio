@@ -242,7 +242,8 @@ function useCardDims(): CardDims {
  * feedback 2026-09-30: "Start learning over the labs, Measure audio over audio
  * tools, Look up a term over glossary, Begin here over the new intro to audio
  * lab, Start learning a topic over Pro Audio Safety and DAW Fundamentals,
- * Explore topics to enroll in over the study area cards").
+ * Explore topics to enroll in over the study area cards" — that one became
+ * "Learn About the Academy’s Curriculum" on 2026-10-23).
  */
 export function deckHeadline(kind: Card['kind'] | undefined): string {
   switch (kind) {
@@ -265,7 +266,7 @@ export function deckHeadline(kind: Card['kind'] | undefined): string {
     case 'homeTopic':
       return 'Start Learning a Topic';
     case 'showcase':
-      return 'Explore Topics to Enroll In';
+      return 'Learn About the Academy’s Curriculum'; // owner 2026-10-23
     default:
       return 'Start Learning';
   }
