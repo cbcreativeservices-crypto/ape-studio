@@ -32,6 +32,7 @@ import { HELP_HUB_ENABLED } from '../../features/help/helpContent';
 import { resetScreenIntros } from '../../features/intro/screenIntros';
 import { resetOnboarding } from '../../features/intro/onboardingFlow';
 import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientation';
+import { retryUnsentLabCredit, unsentLabCreditCount } from '../../features/lab/labCompletion';
 import { resetAskModes } from '../../features/permissions/permissionStore';
 import { hasCrowdsourceConsent, setCrowdsourceConsent } from '../../features/tools/measure/deviceProfile';
 import { sendFeedback } from '../../lib/feedback';
@@ -355,14 +356,15 @@ export function SettingsScreen({ navigation }: Props) {
       // what is still unsent (the sends carry on behind it).
       await softDeadline(
         async () => {
-          await Promise.allSettled([replayQueue(), replayQuizSubmissions(), flushScenarioQueue()]);
+          await Promise.allSettled([replayQueue(), replayQuizSubmissions(), flushScenarioQueue(), retryUnsentLabCredit()]);
         },
         undefined,
         'logout/flush',
         15000,
       );
       const stranded =
-        getQueuedBatches().length + getQueuedSubmissions().length + (await pendingScenarioCount().catch(() => 0));
+        getQueuedBatches().length + getQueuedSubmissions().length + (await pendingScenarioCount().catch(() => 0)) +
+        unsentLabCreditCount(); // finished labs not yet credited (audit 2026-10-24)
 
       const LOCAL_LOSS =
         'This device will lose anything kept only on it — saved measurements, your term lists, your settings, and your microphone calibration. Signing back into the same account does not bring them back.';

@@ -69,7 +69,7 @@ test('the form is held through the post-redeem claim, and cannot be left mid-req
 });
 
 test('Log out: the queue flush and the sign-out are both bounded', () => {
-  assert.match(settings, /softDeadline\(\s*async \(\) => \{\s*await Promise\.allSettled\(\[replayQueue\(\), replayQuizSubmissions\(\), flushScenarioQueue\(\)\]\);/);
+  assert.match(settings, /softDeadline\(\s*async \(\) => \{\s*await Promise\.allSettled\(\[replayQueue\(\), replayQuizSubmissions\(\), flushScenarioQueue\(\)(, retryUnsentLabCredit\(\))?\]\);/);
   assert.match(settings, /'logout\/flush',\s*15000,/);
 });
 

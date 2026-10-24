@@ -149,6 +149,7 @@ import { flushScenarioQueue, pendingScenarioCount } from '../../features/study/s
 import { getQueuedBatches } from '../../features/study/studyQueueStorage';
 import { getQueuedSubmissions } from '../../features/quiz/submissionQueueStorage';
 import { softDeadline } from '../../lib/boundedCall';
+import { retryUnsentLabCredit, unsentLabCreditCount } from '../../features/lab/labCompletion';
 import { useScenarioExempt } from '../../features/study/scenarioExempt';
 import { useTermsExempt } from '../../features/study/termsExempt';
 import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/localProgress';
@@ -641,7 +642,7 @@ async function signOutOrSay(onDone: () => void): Promise<void> {
    */
   await softDeadline(
     async () => {
-      await Promise.allSettled([replayQueue(), replayQuizSubmissions(), flushScenarioQueue()]);
+      await Promise.allSettled([replayQueue(), replayQuizSubmissions(), flushScenarioQueue(), retryUnsentLabCredit()]);
     },
     undefined,
     'dashboard/logout-flush',
@@ -657,7 +658,8 @@ async function signOutOrSay(onDone: () => void): Promise<void> {
    * Settings does; NOT NOW keeps the work queued for the next launch.
    */
   const stranded =
-    getQueuedBatches().length + getQueuedSubmissions().length + (await pendingScenarioCount().catch(() => 0));
+    getQueuedBatches().length + getQueuedSubmissions().length + (await pendingScenarioCount().catch(() => 0)) +
+        unsentLabCreditCount(); // finished labs not yet credited (audit 2026-10-24)
   if (stranded > 0) {
     const them = stranded === 1 ? 'it' : 'them';
     confirmDialog(

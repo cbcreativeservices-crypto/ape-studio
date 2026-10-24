@@ -593,7 +593,6 @@ async function handleApple(admin: Store, signedPayload: string): Promise<Respons
     ? peekJwtPayload<AppleTx & { transactionId?: string }>(outer.data.signedTransactionInfo)
     : null;
   const transactionId = tx?.transactionId ?? '';
-  const originalId = tx?.originalTransactionId ?? '';
   if (!transactionId) return ok('apple: no transaction id, ignored');
 
   // Now ask Apple directly. Everything below acts on THIS, not on the payload.
@@ -606,7 +605,14 @@ async function handleApple(admin: Store, signedPayload: string): Promise<Respons
   // `store_ref` is whatever validate-purchase wrote: the transaction id for
   // Apple. Try the original id too — a renewed subscription refunds against a
   // later transaction than the one we first stored.
-  const refs = [transactionId, originalId, truth.originalTransactionId ?? ''];
+  //
+  // ⛔ ONLY IDS APPLE CONFIRMED (audit 2026-10-24). The original id used to be
+  // taken from the request body as well. The body is a rumour: a forged
+  // notification could carry a REAL transaction id of the attacker's own (which
+  // Apple then verifies) next to SOMEONE ELSE'S original id, and that second id
+  // went straight into the WHERE clause of the refund / renewal / status writes.
+  // Apple's own answer already carries the true original id.
+  const refs = [transactionId, truth.originalTransactionId ?? ''];
 
   if (truth.revocationDate) {
     const n = await markRefunded(admin, refs, `apple ${type}`);
@@ -619,14 +625,14 @@ async function handleApple(admin: Store, signedPayload: string): Promise<Respons
   if (APPLE_RENEW_TYPES.has(type)) {
     // The expiry comes from Apple's own API, never from the notification.
     const n = await markRenewed(admin, refs, truth.expiresDate ?? null);
-    const wr = await appleAutoRenew(transactionId, truth.originalTransactionId || originalId);
+    const wr = await appleAutoRenew(transactionId, truth.originalTransactionId ?? '');
     const s = await setRenewal(admin, refs, wr, truth.productId);
     return ok('apple: renewal confirmed, entitlement extended', { rows: n, type, will_renew: wr, status_rows: s });
   }
   if (APPLE_STATUS_TYPES.has(type)) {
     // EXPIRED / DID_FAIL_TO_RENEW: access is NOT changed here (expires_at
     // already says when it ends); only renewal on/off is recorded.
-    const wr = await appleAutoRenew(transactionId, truth.originalTransactionId || originalId);
+    const wr = await appleAutoRenew(transactionId, truth.originalTransactionId ?? '');
     const s = await setRenewal(admin, refs, wr, truth.productId);
     return ok('apple: renewal status recorded', { type, will_renew: wr, status_rows: s });
   }

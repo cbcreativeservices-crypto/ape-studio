@@ -474,9 +474,21 @@ async function retryUnsent(): Promise<void> {
   }
 }
 
-/** Tests / the backfill: send whatever is complete and unsent now. */
+/** Tests / the backfill / sign-out: send whatever is complete and unsent now. */
 export function retryUnsentLabCredit(): Promise<void> {
   return hydrate().then(retryUnsent);
+}
+
+/**
+ * How many labs are complete on this device but NOT yet credited on the
+ * server (offline at the finish, or a training key whose server row has not
+ * landed). Sign-out counts these (audit 2026-10-24): the SIGNED_OUT wipe
+ * deletes `ape:labProgress`, so after Log out nothing is left to send and the
+ * certificate credit is gone — the dialog must not call the progress safe.
+ */
+export function unsentLabCreditCount(): number {
+  const keys = [...Object.keys(LAB_UNITS), ...Object.keys(cleared).filter(isTrainingKey)];
+  return keys.filter((k) => isServerLabKey(k) && isLabComplete(k) && !sent.has(k)).length;
 }
 
 // A completion held back while an identity's wipe was pending (fireComplete)

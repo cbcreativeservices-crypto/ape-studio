@@ -37,7 +37,7 @@ const viewShot = (): ViewShotLib | null => {
   return vsCached;
 };
 const mediaLib = (): MediaLibraryLib | null => {
-  if (mlCached === undefined) mlCached = optionalModule<MediaLibraryLib>('expo-media-library');
+  if (mlCached === undefined) mlCached = optionalModule<MediaLibraryLib>('expo-media-library/legacy');
   return mlCached;
 };
 const printLib = (): PrintLib | null => {

@@ -20,7 +20,8 @@ const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'u
 test('[R2] Dashboard sign-out counts what the flush could not send and asks before discarding it', () => {
   const src = read('src/screens/dashboard/DashboardScreen.tsx');
   const fn = src.slice(src.indexOf('async function signOutOrSay'), src.indexOf('export function DashboardScreen'));
-  const flush = fn.indexOf('Promise.allSettled([replayQueue(), replayQuizSubmissions(), flushScenarioQueue()])');
+  // + retryUnsentLabCredit (finished-lab credit, audit 2026-10-24)
+  const flush = fn.indexOf('Promise.allSettled([replayQueue(), replayQuizSubmissions(), flushScenarioQueue()');
   const count = fn.search(
     /getQueuedBatches\(\)\.length \+ getQueuedSubmissions\(\)\.length \+ \(await pendingScenarioCount\(\)\.catch\(\(\) => 0\)\)/,
   );

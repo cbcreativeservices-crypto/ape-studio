@@ -27,7 +27,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const LOADERS: Record<string, () => unknown> = {
   'react-native-view-shot': () => require('react-native-view-shot'),
-  'expo-media-library': () => require('expo-media-library'),
+  // ⛔ The LEGACY entry (2026-10-24 audit): in expo-media-library 57 the root
+  // import's saveToLibraryAsync / requestPermissionsAsync are stubs that THROW
+  // ("import this method from expo-media-library/legacy"), so every iOS SAVE
+  // read "Saving failed" in builds 36 and 38. /legacy calls the same native
+  // module the builds already contain — JS only, OTA-safe.
+  'expo-media-library/legacy': () => require('expo-media-library/legacy'),
   'expo-print': () => require('expo-print'),
   'expo-sharing': () => require('expo-sharing'),
   'expo-clipboard': () => require('expo-clipboard'),

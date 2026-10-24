@@ -21,7 +21,7 @@ const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'u
 test('[R2] Dashboard sign-out sends the queued study/quiz/scenario work BEFORE signing out', () => {
   const src = read('src/screens/dashboard/DashboardScreen.tsx');
   const fn = src.slice(src.indexOf('async function signOutOrSay'), src.indexOf('export function DashboardScreen'));
-  const flush = fn.search(/Promise\.allSettled\(\[replayQueue\(\), replayQuizSubmissions\(\), flushScenarioQueue\(\)\]\)/);
+  const flush = fn.search(/Promise\.allSettled\(\[replayQueue\(\), replayQuizSubmissions\(\), flushScenarioQueue\(\)(, retryUnsentLabCredit\(\))?\]\)/);
   const signOut = fn.indexOf("supabase.auth.signOut({ scope: 'local' })");
   assert.ok(flush >= 0, 'the queues are flushed in the sign-out path');
   assert.ok(signOut > flush, 'the flush comes before the sign-out');
