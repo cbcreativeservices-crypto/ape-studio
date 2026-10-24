@@ -526,6 +526,9 @@ const ENROLLMENTS_CARD_ART = require('../../../assets/home-cards/enrollments_car
 const SHOWCASE_LOCAL_ART: Record<string, number> = {
   'Commercial 70V Systems': require('../../../assets/home-cards/area_commercial-70v.webp'),
   'Vehicle Audio': require('../../../assets/home-cards/area_vehicle-audio.webp'), // owner 2026-10-23
+  // Owner 2026-10-24: replaces course_music-production.webp (its AI-drawn piano
+  // keyboard had the wrong black-key layout).
+  'Music Production': require('../../../assets/home-cards/area_music-production.webp'),
 };
 
 function cardImageUrl(key: string): string | null {
