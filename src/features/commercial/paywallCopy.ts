@@ -26,6 +26,13 @@ export function storeNameFor(os: string): string {
   return 'app store';
 }
 
+/** The owner-approved "store isn't responding" line (2026-10-24), naming the
+ *  phone's own store: Android said "The App Store" (both phones identical). */
+export function storeNotResponding(os: string): string {
+  const name = os === 'ios' ? 'The App Store' : os === 'android' ? 'Google Play' : 'The app store';
+  return `${name} isn’t responding right now. Please try again in a moment.`;
+}
+
 /** The buy button's label (H5 plan-named buttons, H6 gold). */
 export function buyLabel(plan: PlanId, storePrice: string | undefined, guest: boolean): string {
   if (guest) return COPY.createAccountToContinue;

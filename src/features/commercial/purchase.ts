@@ -39,6 +39,9 @@ type IapApi = {
   getAvailablePurchases: () => Promise<unknown[]>;
   purchaseUpdatedListener: (cb: (p: IapPurchase) => void) => Sub;
   purchaseErrorListener: (cb: (e: { code?: string; message?: string }) => void) => Sub;
+  /** The store's OWN code-redemption screen (Apple Offer Codes sheet / Google
+   *  Play redeem page). Optional: absent on an older expo-iap. */
+  openRedeemOfferCode?: () => Promise<unknown>;
 };
 
 type IapPurchase = {
@@ -391,6 +394,32 @@ export async function retryStoreConnection(): Promise<boolean> {
   } catch (e) {
     console.warn('[iap] initConnection retry failed:', (e as Error).message);
     return false;
+  }
+}
+
+/**
+ * Open the STORE's own offer-code screen (owner 2026-10-24, build 39): Apple's
+ * Offer Codes sheet on iOS, Google Play's redeem page on Android. This is the
+ * store's mechanism, not ours (Guideline 3.1.1) — the store charges or grants,
+ * and the redeemed transaction arrives through the purchase listener above,
+ * which validates and finishes it like any purchase.
+ *
+ * 'opened' also covers a deadline: the iOS sheet can stay up while the person
+ * types, and a latched button must never wait on it forever.
+ */
+export type OfferCodeResult = 'opened' | 'unavailable' | 'error';
+export async function openStoreOfferCode(): Promise<OfferCodeResult> {
+  const iap = getIap();
+  if (!iap?.openRedeemOfferCode) return 'unavailable';
+  if (!(await retryStoreConnection())) return 'unavailable';
+  try {
+    await withDeadline(() => iap.openRedeemOfferCode!(), 'iap/openRedeemOfferCode', 10000);
+    return 'opened';
+  } catch (e) {
+    const message = (e as Error).message ?? '';
+    if (/timeout/.test(message)) return 'opened';
+    console.warn('[iap] openRedeemOfferCode failed:', message);
+    return 'error';
   }
 }
 

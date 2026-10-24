@@ -40,6 +40,7 @@ import {
   initPurchases,
   LINKED_MESSAGE,
   loadStoreProducts,
+  openStoreOfferCode,
   retryStoreConnection,
   PENDING_MESSAGE,
   restorePurchases,
@@ -47,7 +48,7 @@ import {
 } from '../../features/commercial/purchase';
 import { PLANS as IAP_PLANS, type PlanId } from '../../features/commercial/iapProducts';
 import { localizePlans, type PlanCopy } from '../../features/commercial/storePrices';
-import { buyLabel, planIdOf, purchaseDisclosure, storeNameFor } from '../../features/commercial/paywallCopy';
+import { buyLabel, planIdOf, purchaseDisclosure, storeNameFor, storeNotResponding } from '../../features/commercial/paywallCopy';
 import { fitValue } from '../../theme/legibility';
 import { useLatchedPress } from '../../lib/latch';
 import type { RootStackParamList } from '../../navigation/types';
@@ -344,7 +345,7 @@ export function PaywallScreen({ navigation, route }: Props) {
     if (!available) {
       notify(
         'Purchasing unavailable',
-        'The App Store isn’t responding right now. Please try again in a moment.',
+        storeNotResponding(Platform.OS),
       );
       return;
     }
@@ -452,7 +453,7 @@ export function PaywallScreen({ navigation, route }: Props) {
             notify(
               'Purchasing unavailable',
               // Ratified by the owner 2026-09-14
-              'The App Store isn’t responding right now. Please try again in a moment.',
+              storeNotResponding(Platform.OS),
             );
             return;
           default:
@@ -529,6 +530,15 @@ export function PaywallScreen({ navigation, route }: Props) {
   // store round-trip, which a latch released in `finally` cannot.
   const onBuyPress = useLatchedPress(onContinue);
   const onRestorePress = useLatchedPress(onRestore);
+  // The STORE's own offer-code screen (owner 2026-10-24, build 39) — Apple's
+  // Offer Codes sheet / Google Play's redeem page, never our own unlock. The
+  // redeemed purchase arrives through the shared purchase listener. Signed-in
+  // people only: a redemption is attached to an account, as Restore explains.
+  const onOfferCode = async () => {
+    const r = await openStoreOfferCode();
+    if (r !== 'opened') notify('Purchasing unavailable', storeNotResponding(Platform.OS));
+  };
+  const onOfferCodePress = useLatchedPress(onOfferCode);
 
   // The selected plan drives the buy button and the disclosure above it.
   const current = plans.find((p) => p.id === selected) ?? plans[0];
@@ -724,6 +734,12 @@ export function PaywallScreen({ navigation, route }: Props) {
         <Pressable onPress={busy ? undefined : onRestorePress} accessibilityRole="button" hitSlop={8}>
           <Text style={styles.restore}>Restore purchases</Text>
         </Pressable>
+        {!guestBuyer && (
+          <Pressable onPress={busy ? undefined : onOfferCodePress} accessibilityRole="button" hitSlop={8}>
+            {/* Owner 2026-10-24: the store's own code screen. */}
+            <Text style={styles.restore}>Redeem an offer code</Text>
+          </Pressable>
+        )}
         {showManage && (
           <Pressable onPress={onManage} accessibilityRole="link" hitSlop={8}>
             {/* Ratified by the owner 2026-09-14 */}

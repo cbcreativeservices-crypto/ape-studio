@@ -17,6 +17,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
+import { useLatchedPress } from '../../lib/latch';
+import { openStoreOfferCode } from '../../features/commercial/purchase';
+import { storeNotResponding } from '../../features/commercial/paywallCopy';
 import { Modal } from '../../components/DimModal';
 import Constants from 'expo-constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -138,6 +141,13 @@ export function SettingsScreen({ navigation }: Props) {
   // and hid DELETE ACCOUNT entirely — the one control a store reviewer looks
   // for. `resolved` still governs the first-paint neutral beat.
   const { entitlement, refreshEntitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
+  // The STORE's own offer-code screen (owner 2026-10-24, build 39) — the same
+  // control as the Paywall's; the redeemed purchase arrives through the shared
+  // purchase listener started at the app root.
+  const onOfferCodePress = useLatchedPress(async () => {
+    const r = await openStoreOfferCode();
+    if (r !== 'opened') notify('Purchasing unavailable', storeNotResponding(Platform.OS));
+  });
   const [redeemOpen, setRedeemOpen] = useState(false);
   const [redeemCode, setRedeemCode] = useState('');
   const [redeemBusy, setRedeemBusy] = useState(false);
@@ -1190,7 +1200,7 @@ ${LOCAL_LOSS}`
           </>
           )}
           <Pressable
-            style={styles.row}
+            style={[styles.row, styles.rowBorder]}
             onPress={() => {
               setRedeemCode('');
               setRedeemOpen(true);
@@ -1201,6 +1211,17 @@ ${LOCAL_LOSS}`
             <Text style={styles.rowLabel}>Redeem access or promo code</Text>
             <Text style={styles.chevron}>›</Text>
           </Pressable>
+          {tierKnown && isGuest ? null : (
+            <Pressable
+              style={styles.row}
+              onPress={onOfferCodePress}
+              accessibilityRole="button"
+              accessibilityLabel="Redeem an offer code"
+            >
+              <Text style={styles.rowLabel}>Redeem an offer code</Text>
+              <Text style={styles.chevron}>›</Text>
+            </Pressable>
+          )}
         </SettingsSection>
 
         {/* ACCOUNT */}
