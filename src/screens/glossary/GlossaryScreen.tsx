@@ -2869,8 +2869,10 @@ ${COPY.glossaryFreeAllowance}`,
    * official definition. While BEG is on, the plain-English text of the rows on
    * screen is fetched in one coalesced read and kept here. Every term HAS one
    * (all 32,119, checked 2026-10-14); the study view returns it to members and,
-   * for everyone, on the two free topics — other rows answer NULL and keep
-   * their definition.
+   * for everyone, on the two free topics. Everyone else gets
+   * `plain_english_preview` (Comp A #15, live 2026-10-23: a half-length
+   * teaser + "…", the same shape as the definition preview — owner: "free
+   * users get both definitions"), so their previews switch too.
    */
   const [plainById, setPlainById] = useState<ReadonlyMap<string, string>>(() => new Map());
   const plainAskedRef = useRef<Set<string>>(new Set());
@@ -2888,11 +2890,12 @@ ${COPY.glossaryFreeAllowance}`,
       plainPendingRef.current.clear();
       for (const i of ids) plainAskedRef.current.add(i);
       const gen = plainGenRef.current;
-      void softDeadline<{ data: { glossary_id: string; plain_english: string | null }[] | null }>(
+      type PlainRow = { glossary_id: string; plain_english: string | null; plain_english_preview: string | null };
+      void softDeadline<{ data: PlainRow[] | null }>(
         async () => ({
           data: (
-            await supabase.from('glossary_study_v').select('glossary_id, plain_english').in('glossary_id', ids)
-          ).data as { glossary_id: string; plain_english: string | null }[] | null,
+            await supabase.from('glossary_study_v').select('glossary_id, plain_english, plain_english_preview').in('glossary_id', ids)
+          ).data as PlainRow[] | null,
         }),
         { data: null },
         'glossary_study_v plain previews',
@@ -2903,11 +2906,11 @@ ${COPY.glossaryFreeAllowance}`,
           for (const i of ids) plainAskedRef.current.delete(i); // retry when redrawn
           return;
         }
-        const found = data.filter((r) => r.plain_english);
+        const found = data.filter((r) => r.plain_english ?? r.plain_english_preview);
         if (!found.length) return;
         setPlainById((prev) => {
           const next = new Map(prev);
-          for (const r of found) next.set(r.glossary_id, r.plain_english as string);
+          for (const r of found) next.set(r.glossary_id, (r.plain_english ?? r.plain_english_preview) as string);
           return next;
         });
       });
