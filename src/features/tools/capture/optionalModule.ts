@@ -15,7 +15,7 @@
  * try/catch. Metro sees the literal and bundles the module; on a client built
  * BEFORE the package's native half existed, evaluating it throws ("Cannot find
  * native module …") and the catch returns null exactly as before. Packages that
- * are NOT installed (expo-location, expo-image-picker) must stay off
+ * are NOT installed (expo-image-picker) must stay off
  * this table — a literal require of an absent package fails the whole bundle —
  * so they keep the dynamic path and resolve to null until they are installed
  * AND added here.
@@ -38,6 +38,9 @@ const LOADERS: Record<string, () => unknown> = {
   // In-app purchases (OpenIAP). Installed 2026-09-06; the paywall's lazy loader
   // in features/commercial/purchase.ts resolves it through here.
   'expo-iap': () => require('expo-iap'),
+  // MultiMeter snapshot TAG LOCATION (owner 2026-10-24: in the iOS 37 / Android 21
+  // build; the owner files the Play location declaration). location.ts gates itself.
+  'expo-location': () => require('expo-location'),
   // Ships inside the `expo` package (autolinked in every build); the CenterLock
   // stage tuner keeps the screen awake while it is open (2026-09-06).
   'expo-keep-awake': () => require('expo-keep-awake'),

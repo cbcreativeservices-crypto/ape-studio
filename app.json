@@ -25,6 +25,7 @@
         "ITSAppUsesNonExemptEncryption": false,
         "NSMicrophoneUsageDescription": "Used to measure sound levels in the measurement tools, and — only when you tap the mic — to dictate a glossary search. Audio is processed on this device and is not recorded or uploaded.",
         "NSCameraUsageDescription": "Used by the Light-Pulse frequency counter to measure how fast a light flashes (overall image brightness only). No photo or video is recorded or uploaded.",
+        "NSLocationWhenInUseUsageDescription": "Used only when you choose to tag a measurement snapshot with where it was taken. Location is stored with the snapshot on this device and never shared automatically.",
         "NSMotionUsageDescription": "Used only for the shake-to-mute gesture, so you can silence a tone by shaking the phone. Motion is read on this device and is never recorded or uploaded."
       }
     },
@@ -95,7 +96,9 @@
         }
       ],
       "permissions": [
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ],
       "blockedPermissions": [
         "android.permission.ACTIVITY_RECOGNITION",
@@ -109,6 +112,14 @@
     },
     "plugins": [
       "./plugins/withAndroidNavTransitions",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "abiFilters": ["arm64-v8a", "armeabi-v7a"]
+          }
+        }
+      ],
       [
         "expo-notifications",
         {

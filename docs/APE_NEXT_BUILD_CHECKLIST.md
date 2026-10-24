@@ -40,7 +40,7 @@ even though iOS never builds with that profile. Do not assume a change is
 | **Deep links** — `proaudio://…` scheme; App Links for `proaudiotrainingacademy.com` (2026-09-05 discoverability pass) | `app.json` `scheme` + `android.intentFilters` (native config → needs the build); the URL→screen map is JS (`src/navigation/linking.ts`) | n/a | ✅ added 2026-09-05 | scheme works in any build after 2026-09-05; https links stay inert until the website hosts `/.well-known/apple-app-site-association` + `assetlinks.json`. **iOS `associatedDomains` is NOT in the build yet** — needs one interactive `eas build` (Apple login) to add the capability; step in `docs/APE_WEBSITE_SEO_NOTES_2026_09_05.md` §A |
 | Light-Pulse frequency counter (camera luma) + MultiMeter snapshot photo | camera path inside `ape-dsp` (no `expo-camera` package) | in-tree module | `NSCameraUsageDescription` + `android.permission.CAMERA` ✅ | ready |
 | **Certificate shared as an IMAGE** (owner 2026-09-18: "their printed certificate (image)"; the QR card and the link ship OTA and work now — this is only the certificate itself as a PNG) | `react-native-webview` + the existing `react-native-view-shot`: render `certificateHtml.ts`'s HTML in an offscreen WebView and photograph it | ❌ **not installed** — and deliberately NOT installed yet, see the note under this table | none expected (autolinked) | **parked — needs a decision on ORDERING, not on design** |
-| **MultiMeter snapshot — TAG LOCATION** (`src/features/tools/capture/location.ts`, wired in `MultiMeterScreen`) | `expo-location` | ❌ **not installed** — `optionalModule()` resolves it to `null`, so `isAvailable()` is false and the control stays hidden | **permissions REMOVED from `app.json` 2026-09-11** — see below | **parked** — needs the package installed AND the manifest keys put back |
+| **MultiMeter snapshot — TAG LOCATION** (`src/features/tools/capture/location.ts`, wired in `MultiMeterScreen`) | `expo-location` | ❌ **not installed** — `optionalModule()` resolves it to `null`, so `isAvailable()` is false and the control stays hidden | **permissions REMOVED from `app.json` 2026-09-11** — see below | **IN the iOS 37 / Android 21 build (owner 2026-10-24)** — `expo-location` installed, LOADERS line added, both Android permissions + the ratified iOS string restored. ⚠️ Owner files the Play Console location declaration. |
 | **Store review prompt** — asks for a rating only after real successes (lab completed, quiz passed, certificate earned), thresholds in `src/features/review/reviewEligibility.ts` | `expo-store-review` ~57.0.2 + `expo-application` ~57.0.2 (version for once-per-version) | ✅ installed 2026-09-06 | none required | **needs the next build** — no-op on current clients |
 | **In-app purchases** — the paywall's real store connection (OpenIAP) | `expo-iap` ^5.5.1 (plugin auto-added); loader re-enabled in `features/commercial/purchase.ts` | ✅ installed 2026-09-06 | `expo-iap` plugin ✅ | **needs the next build** — purchases report "unavailable" on current clients; store products + validate-purchase must be configured before a real purchase can succeed |
 | **Installed app name** — the home-screen name is `Pro Audio` (owner 2026-09-06, clarified: abbreviate on the device rather than let iOS/Android truncate "Training Academy"); the STORE listing name is the full `Pro Audio Training Academy` | `app.json` `expo.name` unchanged | ✅ | n/a | no build needed for this — store name is console work |
@@ -205,7 +205,7 @@ never offered as a dead button.
 
 ---
 
-## 📦 PARKED FOR THE NEXT NATIVE BUILD: exclude `.git` from the upload (found 2026-09-18)
+## ✅ DONE 2026-10-24 (5c3556f1): exclude `.git` from the upload (found 2026-09-18)
 
 The 2026-09-18 build uploaded a **572 MB** archive and spent ~8 minutes on it.
 Measured, not guessed — the included set after `.easignore` is 836 MB, and:
@@ -335,6 +335,8 @@ squares are all fetched from Supabase Storage at runtime (`src/data/topicImages.
 and friends). The ~129 MB under `assets/` is master art: it slows every EAS
 upload and is worth pruning for that reason, but it is NOT app weight. Do not
 "optimise" the app by compressing it.
+
+### ✅ DONE 2026-10-24 — `expo-build-properties` installed, `abiFilters: [arm64-v8a, armeabi-v7a]` in app.json
 
 ### The fix, when a native build is happening anyway
 Drop the two x86 architectures. This needs `expo-build-properties`, which is
