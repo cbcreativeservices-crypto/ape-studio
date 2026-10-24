@@ -1,0 +1,58 @@
+-- SNAPSHOT ONLY. DO NOT RUN. (exit-flow brief item 6)
+-- public.delete_my_account() exactly as it was LIVE on 2026-10-23 before Package 8
+-- (md5 of pg_get_functiondef = 289d1ce89ac9cfd6d70a2a4168122cc2).
+-- Package 8 moved this body into delete_my_account(p_keep_credentials boolean); the no-argument
+-- version now just calls it with false.
+-- Tables it deletes from: quiz_attempts, student_achievement_progress, student_method_progress,
+-- student_badges, performance_metrics, entitlements, notification_preferences, notification_log,
+-- tool_usage_log, audit_log, users, auth.users (best effort); nulls quiz_questions.reviewed_by,
+-- student_badges.granted_by / revoked_by. Everything else cascades from users (see the comment inside).
+
+-- CREATE OR REPLACE FUNCTION public.delete_my_account()
+--  RETURNS jsonb
+--  LANGUAGE plpgsql
+--  SECURITY DEFINER
+--  SET search_path TO 'public', 'pg_temp'
+-- AS $function$
+-- DECLARE v_user uuid; v_auth uuid; v_auth_deleted boolean := false;
+-- BEGIN
+--   v_auth := auth.uid();
+--   IF v_auth IS NULL THEN RAISE EXCEPTION 'not_authenticated'; END IF;
+--   SELECT id INTO v_user FROM users WHERE auth_id = v_auth;
+--   IF v_user IS NULL THEN
+--     BEGIN DELETE FROM auth.users WHERE id = v_auth; v_auth_deleted := true; EXCEPTION WHEN OTHERS THEN NULL; END;
+--     RETURN jsonb_build_object('user_deleted', false, 'auth_deleted', v_auth_deleted);
+--   END IF;
+--
+--   -- Personal records + PII (quiz_attempt_items cascades from quiz_attempts).
+--   DELETE FROM quiz_attempts WHERE user_id = v_user;
+--   DELETE FROM student_achievement_progress WHERE user_id = v_user;
+--   DELETE FROM student_method_progress WHERE user_id = v_user;
+--   DELETE FROM student_badges WHERE user_id = v_user;
+--   DELETE FROM performance_metrics WHERE user_id = v_user;
+--   -- The legacy course-enrolment delete was removed 2026-09-03 (table dropped, stage 60).
+--   DELETE FROM entitlements WHERE user_id = v_user;
+--   DELETE FROM notification_preferences WHERE user_id = v_user;
+--   DELETE FROM notification_log WHERE user_id = v_user;
+--   -- The legacy study-session-log delete was removed 2026-09-03 (table dropped, stage 40).
+--   DELETE FROM tool_usage_log WHERE user_id = v_user;
+--   DELETE FROM audit_log WHERE actor_id = v_user;
+--   -- Defensive for admin self-deletes. The legacy instructor-section delete was
+--   -- removed 2026-09-03 (table dropped, stage 70 - the instructor role is retired).
+--   UPDATE quiz_questions SET reviewed_by = NULL WHERE reviewed_by = v_user;
+--   UPDATE student_badges SET granted_by = NULL WHERE granted_by = v_user;
+--   UPDATE student_badges SET revoked_by = NULL WHERE revoked_by = v_user;
+--
+--   -- Identity row. Every remaining FK into public.users is either handled above
+--   -- or ON DELETE CASCADE (community_profiles, contact_*, credential_awards,
+--   -- entitlements, final_exam_attempts, registry_consent_events,
+--   -- student_lab_progress, study_pace_records, tool_usage_log,
+--   -- user_bundle_enrollments, user_enrollment_state, user_home_cards,
+--   -- user_topic_enrollments).
+--   DELETE FROM users WHERE id = v_user;
+--
+--   -- Auth login (best-effort).
+--   BEGIN DELETE FROM auth.users WHERE id = v_auth; v_auth_deleted := true; EXCEPTION WHEN OTHERS THEN NULL; END;
+--
+--   RETURN jsonb_build_object('user_deleted', true, 'auth_deleted', v_auth_deleted);
+-- END; $function$
