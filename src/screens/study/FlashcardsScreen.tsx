@@ -2020,6 +2020,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                   <ResearchMoreLink
                     term={card.term}
                     wikipediaUrl={card.wikipedia_url}
+                    searchQuery={card.search_query}
                     style={styles.cardResearch}
                     textStyle={styles.cardReportText}
                   />

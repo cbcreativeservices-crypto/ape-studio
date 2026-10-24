@@ -7,7 +7,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { googleImagesUrlFor, googleScholarUrlFor, googleUrlFor, safeWikipediaUrl, wikipediaUrlFor } from '../src/features/research/researchUrls.ts';
+import { googleImagesUrlFor, googleScholarUrlFor, googleUrlFor, searchPhraseFor, safeWikipediaUrl, wikipediaUrlFor } from '../src/features/research/researchUrls.ts';
 
 const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
@@ -45,8 +45,8 @@ test('View images: Google Images with SafeSearch ON, opened directly', () => {
   const link = read('src/features/research/ResearchMoreLink.tsx');
   assert.match(link, />Research and learn more ↗<\/Text>/);
   assert.match(link, />View images ↗<\/Text>/);
-  assert.match(link, /onPress=\{\(\) => openViewImages\(name\)\}/);
-  assert.match(read('src/features/research/researchLinks.ts'), /export function openViewImages\(term: string\): void \{\s*const name = term\.trim\(\);\s*if \(name\) open\(googleImagesUrlFor\(name\), 'google\.com'\);/);
+  assert.match(link, /onPress=\{\(\) => openViewImages\(name, searchQuery\)\}/);
+  assert.match(read('src/features/research/researchLinks.ts'), /export function openViewImages\(term: string, searchQuery\?: unknown\): void \{\s*const name = term\.trim\(\);\s*if \(name\) open\(googleImagesUrlFor\(name, searchQuery\), 'google\.com'\);/);
 });
 
 test('the popup is the owner-approved wording, opened in the system browser', () => {
@@ -54,17 +54,17 @@ test('the popup is the owner-approved wording, opened in the system browser', ()
   assert.match(s, /'Research and learn more',/);
   assert.match(s, /Keep exploring “\$\{name\}” — see pictures, history and other explanations\. These open in your browser, outside the Academy\./);
   assert.match(s, /'Wikipedia',/);
-  assert.match(s, /\{ text: 'Google', onPress: \(\) => open\(googleUrlFor\(name\), 'google\.com'\) \}/);
-  assert.match(s, /\{ text: 'Google Scholar', onPress: \(\) => open\(googleScholarUrlFor\(name\), 'scholar\.google\.com'\) \}/);
+  assert.match(s, /\{ text: 'Google', onPress: \(\) => open\(googleUrlFor\(name, searchQuery\), 'google\.com'\) \}/);
+  assert.match(s, /\{ text: 'Google Scholar', onPress: \(\) => open\(googleScholarUrlFor\(name, searchQuery\), 'scholar\.google\.com'\) \}/);
   assert.match(s, /cancelText: 'Not now'/);
   assert.match(s, /Linking\.openURL\(url\)/);
   assert.doesNotMatch(s, /expo-web-browser|openBrowserAsync/);
 });
 
 test('glossary term page and flashcard back carry it', () => {
-  assert.match(read('src/screens/glossary/GlossaryScreen.tsx'), /<ResearchMoreLink term=\{term \?\? ''\} wikipediaUrl=/);
+  assert.match(read('src/screens/glossary/GlossaryScreen.tsx'), /<ResearchMoreLink\s+term=\{term \?\? ''\}\s+wikipediaUrl=/);
   const f = read('src/screens/study/FlashcardsScreen.tsx');
-  assert.match(f, /\{soloReveal \|\| level !== 0 \? \(\s*<ResearchMoreLink\s+term=\{card\.term\}\s+wikipediaUrl=\{card\.wikipedia_url\}\s+style=\{styles\.cardResearch\}\s+textStyle=\{styles\.cardReportText\}/);
+  assert.match(f, /\{soloReveal \|\| level !== 0 \? \(\s*<ResearchMoreLink\s+term=\{card\.term\}\s+wikipediaUrl=\{card\.wikipedia_url\}\s+searchQuery=\{card\.search_query\}\s+style=\{styles\.cardResearch\}\s+textStyle=\{styles\.cardReportText\}/);
 });
 
 test('the flashcard link read is separate and non-fatal (never in the study SELECT)', () => {
@@ -72,8 +72,8 @@ test('the flashcard link read is separate and non-fatal (never in the study SELE
   const selects = [...s.matchAll(/\.select\(\s*'glossary_id, term, definition[^']*'/g)].map((m) => m[0]);
   assert.ok(selects.length >= 2);
   for (const sel of selects) assert.doesNotMatch(sel, /wikipedia_url/);
-  assert.match(s, /select\('glossary_id, wikipedia_url'\)/);
-  assert.match(s, /if \(\/wikipedia_url\/\.test\(error\.message \?\? ''\)\) wikipediaColumnAbsent = true;\s*return items;/);
+  assert.match(s, /select\('glossary_id, wikipedia_url, search_query'\)/);
+  assert.match(s, /if \(\/wikipedia_url\|search_query\/\.test\(error\.message \?\? ''\)\) wikipediaColumnAbsent = true;\s*return items;/);
 });
 
 test('the shared dialog has an optional second choice, through the same answer guard', () => {
@@ -82,4 +82,16 @@ test('the shared dialog has an optional second choice, through the same answer g
   assert.match(d, /\(req\.extras \?\? \[\]\)\.map\(\(x, i\) => \(/);
   const c = read('src/lib/confirm.ts');
   assert.match(c, /extras: opts\?\.extras,/);
+});
+
+test('Comp B search context: a stored plain phrase drives Google / Scholar / Images', () => {
+  assert.equal(searchPhraseFor('Phantom', 'phantom power microphone'), 'phantom power microphone');
+  assert.equal(googleUrlFor('Phantom', 'phantom power microphone'), 'https://www.google.com/search?q=phantom%20power%20microphone');
+  assert.equal(googleScholarUrlFor('Bus', 'mixing console bus'), 'https://scholar.google.com/scholar?q=mixing%20console%20bus');
+  assert.equal(googleImagesUrlFor('Gain', 'preamp gain knob'), 'https://www.google.com/search?tbm=isch&safe=active&q=preamp%20gain%20knob');
+  for (const bad of ['', ' ', 'x', 'https://evil.example', 'a\nb', 'q'.repeat(121), null, 7]) {
+    assert.equal(searchPhraseFor('Gain', bad), 'Gain audio', String(bad));
+  }
+  assert.match(read('src/screens/glossary/GlossaryScreen.tsx'), /searchQuery=\{\(d as \{ search_query\?: string \| null \}\)\.search_query\}/);
+  assert.match(read('src/screens/study/FlashcardsScreen.tsx'), /searchQuery=\{card\.search_query\}/);
 });

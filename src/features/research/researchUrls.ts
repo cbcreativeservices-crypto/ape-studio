@@ -16,17 +16,31 @@ export function wikipediaUrlFor(term: string, stored?: unknown): string {
   );
 }
 
-export function googleUrlFor(term: string): string {
-  return `https://www.google.com/search?q=${encodeURIComponent(`${term.trim()} audio`)}`;
+/**
+ * The search phrase for Google / Scholar / Images: the server's per-term
+ * `search_query` (Comp B's context, e.g. "phantom power microphone") when it is
+ * a plain phrase, otherwise the term + "audio" so a general search stays on
+ * topic. Never a URL, never control characters, never longer than 120.
+ */
+export function searchPhraseFor(term: string, stored?: unknown): string {
+  if (typeof stored === 'string') {
+    const q = stored.trim();
+    if (q.length >= 2 && q.length <= 120 && !/[\u0000-\u001f]|:\/\//.test(q)) return q;
+  }
+  return `${term.trim()} audio`;
+}
+
+export function googleUrlFor(term: string, stored?: unknown): string {
+  return `https://www.google.com/search?q=${encodeURIComponent(searchPhraseFor(term, stored))}`;
 }
 
 /** Google Scholar (owner 2026-10-24): papers and research on the term. */
-export function googleScholarUrlFor(term: string): string {
-  return `https://scholar.google.com/scholar?q=${encodeURIComponent(`${term.trim()} audio`)}`;
+export function googleScholarUrlFor(term: string, stored?: unknown): string {
+  return `https://scholar.google.com/scholar?q=${encodeURIComponent(searchPhraseFor(term, stored))}`;
 }
 
 /** View images (owner 2026-10-24): Google Images for the term, SafeSearch ON
  *  (`safe=active`) — a learning app's link must not land on explicit results. */
-export function googleImagesUrlFor(term: string): string {
-  return `https://www.google.com/search?tbm=isch&safe=active&q=${encodeURIComponent(`${term.trim()} audio`)}`;
+export function googleImagesUrlFor(term: string, stored?: unknown): string {
+  return `https://www.google.com/search?tbm=isch&safe=active&q=${encodeURIComponent(searchPhraseFor(term, stored))}`;
 }

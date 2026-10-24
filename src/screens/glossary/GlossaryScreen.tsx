@@ -1187,7 +1187,12 @@ function TermDetails({
       )}
       {/* Research more (owner 2026-10-24): Wikipedia / Google in the browser.
           The exact article when the server has one (`wikipedia_url`). */}
-      <ResearchMoreLink term={term ?? ''} wikipediaUrl={(d as { wikipedia_url?: string | null }).wikipedia_url} style={styles.researchRow} />
+      <ResearchMoreLink
+        term={term ?? ''}
+        wikipediaUrl={(d as { wikipedia_url?: string | null }).wikipedia_url}
+        searchQuery={(d as { search_query?: string | null }).search_query}
+        style={styles.researchRow}
+      />
       {/* Suggest a correction — auto-tags the term so it's clear which one
           (Booth 2026-07-11). Opens the mail composer pre-filled. */}
       <Pressable

@@ -10,11 +10,14 @@ import { openResearchMore, openViewImages } from './researchLinks';
 export function ResearchMoreLink({
   term,
   wikipediaUrl,
+  searchQuery,
   style,
   textStyle,
 }: {
   term: string;
   wikipediaUrl?: string | null;
+  /** Per-term search phrase from the server (Comp B context); optional. */
+  searchQuery?: string | null;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
 }) {
@@ -23,7 +26,7 @@ export function ResearchMoreLink({
   return (
     <View style={[styles.row, style]}>
       <Pressable
-        onPress={() => openResearchMore(name, wikipediaUrl)}
+        onPress={() => openResearchMore(name, wikipediaUrl, searchQuery)}
         hitSlop={8}
         accessibilityRole="button"
         accessibilityLabel={`Research and learn more about ${name}`}
@@ -34,7 +37,7 @@ export function ResearchMoreLink({
         {'  ·  '}
       </Text>
       <Pressable
-        onPress={() => openViewImages(name)}
+        onPress={() => openViewImages(name, searchQuery)}
         hitSlop={8}
         accessibilityRole="button"
         accessibilityLabel={`View images of ${name}`}

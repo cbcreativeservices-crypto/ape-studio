@@ -26,13 +26,13 @@ function open(url: string, host: string): void {
 }
 
 /** View images ↗ (owner 2026-10-24): straight to Google Images, no popup. */
-export function openViewImages(term: string): void {
+export function openViewImages(term: string, searchQuery?: unknown): void {
   const name = term.trim();
-  if (name) open(googleImagesUrlFor(name), 'google.com');
+  if (name) open(googleImagesUrlFor(name, searchQuery), 'google.com');
 }
 
 /** The owner-approved popup (2026-10-24): Wikipedia · Google · Google Scholar · Not now. */
-export function openResearchMore(term: string, storedWikipediaUrl?: unknown): void {
+export function openResearchMore(term: string, storedWikipediaUrl?: unknown, searchQuery?: unknown): void {
   const name = term.trim();
   if (!name) return;
   confirmDialog(
@@ -43,8 +43,8 @@ export function openResearchMore(term: string, storedWikipediaUrl?: unknown): vo
     {
       cancelText: 'Not now',
       extras: [
-        { text: 'Google', onPress: () => open(googleUrlFor(name), 'google.com') },
-        { text: 'Google Scholar', onPress: () => open(googleScholarUrlFor(name), 'scholar.google.com') },
+        { text: 'Google', onPress: () => open(googleUrlFor(name, searchQuery), 'google.com') },
+        { text: 'Google Scholar', onPress: () => open(googleScholarUrlFor(name, searchQuery), 'scholar.google.com') },
       ],
     },
   );

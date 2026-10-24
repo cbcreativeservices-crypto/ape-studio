@@ -38,6 +38,8 @@ export type GlossaryItem = {
    *  Read by `attachWikipediaUrls`, NEVER in the study SELECT above: until the
    *  server has the column, naming it would fail the whole fetch. */
   wikipedia_url?: string | null;
+  /** Per-term search phrase for Google / Scholar / Images — same separate read. */
+  search_query?: string | null;
 };
 
 /**
@@ -52,19 +54,19 @@ async function attachWikipediaUrls(items: GlossaryItem[], achievementIds: string
   try {
     const { data, error } = await withDeadline(
       async () =>
-        await supabase.from('glossary_study_v').select('glossary_id, wikipedia_url').in('achievement_id', achievementIds),
+        await supabase.from('glossary_study_v').select('glossary_id, wikipedia_url, search_query').in('achievement_id', achievementIds),
       'study/wikipedia_url',
       8000,
     );
     if (error) {
-      if (/wikipedia_url/.test(error.message ?? '')) wikipediaColumnAbsent = true;
+      if (/wikipedia_url|search_query/.test(error.message ?? '')) wikipediaColumnAbsent = true;
       return items;
     }
-    const byId = new Map<string, string>();
-    for (const r of (data ?? []) as { glossary_id: string; wikipedia_url: string | null }[]) {
-      if (r.wikipedia_url) byId.set(r.glossary_id, r.wikipedia_url);
+    const byId = new Map<string, { wikipedia_url: string | null; search_query: string | null }>();
+    for (const r of (data ?? []) as { glossary_id: string; wikipedia_url: string | null; search_query: string | null }[]) {
+      if (r.wikipedia_url || r.search_query) byId.set(r.glossary_id, { wikipedia_url: r.wikipedia_url, search_query: r.search_query });
     }
-    return byId.size ? items.map((it) => (byId.has(it.id) ? { ...it, wikipedia_url: byId.get(it.id) } : it)) : items;
+    return byId.size ? items.map((it) => (byId.has(it.id) ? { ...it, ...byId.get(it.id) } : it)) : items;
   } catch {
     return items;
   }

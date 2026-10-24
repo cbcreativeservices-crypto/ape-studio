@@ -135,6 +135,8 @@ export type GatewayDefinition = {
   /** English Wikipedia article for the term (Comp A / Comp B, 2026-10-24).
    *  Optional: absent until the server returns it. Research more uses it. */
   wikipedia_url?: string | null;
+  /** Per-term search phrase for Google / Scholar / Images (same source). */
+  search_query?: string | null;
   used?: number | null;
   lim?: number | null;
   window_start?: string | null;
