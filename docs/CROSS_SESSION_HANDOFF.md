@@ -643,6 +643,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 12:31 · ccode · c357ec83
+changed: Build 39: Google Scholar added to the Research and learn more popup (Wikipedia · Google · Google Scholar · Not now; owner 2026-10-24); shared dialog takes a short list of extra choices
+affects other side: Glossary detail, Flashcards, shared AppDialog/confirm
+needs: nothing
+
+
 ### 2026-10-24 12:27 · ccode · 63c6e387
 changed: Build 39: 'View images ↗' beside 'Research and learn more ↗' (glossary term page + flashcard back) — opens Google Images for the term in the phone's browser with SafeSearch on (owner 2026-10-24)
 affects other side: Glossary detail, Flashcards
