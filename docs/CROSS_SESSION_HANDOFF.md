@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 17:35 · ccode · e251c2da
+changed: Mixing Guides: a tap on a style opens it at once
+affects other side: nothing (client-only Mixing Guides hub tap)
+needs: nothing
+
+
 ### 2026-10-23 17:18 · ccode · c90b20c1
 changed: Home: free topics' caption above the card — green Free · blue headphones + Study Topic
 affects other side: nothing (client-only Home caption)
