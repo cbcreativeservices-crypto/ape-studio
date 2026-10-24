@@ -515,8 +515,8 @@ const ENROLLMENTS_CARD_ART = require('../../../assets/home-cards/enrollments_car
 /** Study-area art shipped IN the app (owner 2026-10-23: new Commercial 70V
  *  art). Bundled rather than re-uploaded: the bucket's files are cached
  *  `immutable` for a year by URL, so a same-name replacement would never
- *  reach a phone that already has the old one. Wins over CARD_IMAGE, and
- *  shows UNPROCESSED with no legibility wash (owner 2026-10-23). */
+ *  reach a phone that already has the old one. Wins over CARD_IMAGE; the
+ *  image is the owner's, unprocessed, under the same wash as every card. */
 const SHOWCASE_LOCAL_ART: Record<string, number> = {
   'Commercial 70V Systems': require('../../../assets/home-cards/area_commercial-70v.webp'),
 };
@@ -1131,16 +1131,14 @@ function CourseCardView({
     const openArea = () => onOpenShowcase(item.name);
     const showBody = (
       <>
-        {/* The legibility wash — not on bundled owner art, which shows in its
-            own colours and brightness (owner 2026-10-23: "do not apply any
-            additional dimming/graying"; the title keeps its dark shadow). */}
-        {localArt ? null : (
-          <LinearGradient
-            colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
-            locations={[0, 0.3, 0.58, 1]}
-            style={StyleSheet.absoluteFill}
-          />
-        )}
+        {/* The legibility wash, on every study-area card — bundled art too
+            (owner 2026-10-23, the warmer 70V art: "Same art WITH the wash the
+            other cards get"). */}
+        <LinearGradient
+          colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
+          locations={[0, 0.3, 0.58, 1]}
+          style={StyleSheet.absoluteFill}
+        />
         <View>
           <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{item.name}</Text>
         </View>
