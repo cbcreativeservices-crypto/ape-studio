@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 00:14 · ccode · 985a4d9c
+changed: Miking: load each lesson's ART on demand (generated per-lesson loader)
+affects other side: nothing (client-only)
+needs: nothing
+
+
 ### 2026-10-24 00:10 · ccode · 6a355d69
 changed: Trophy Case: share the certificate itself as an image
 affects other side: nothing (client-only)
