@@ -92,6 +92,7 @@ import {
 import { collapsedDefinitionLines } from '../../features/glossary/collapsedLines';
 import { recordRecentTerm, useRecentTerms, useRecentTermsUnreadable } from '../../features/glossary/recentTerms';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
+import { AckFlash } from '../../components/AckFlash';
 import { GlossaryLockView } from '../../features/glossary/GlossaryLockView';
 import { GlossaryDeviceKeyView } from '../../features/glossary/GlossaryDeviceKeyView';
 import {
@@ -1198,29 +1199,7 @@ function TermDetails({
   );
 }
 
-/**
- * One acknowledgement flash on a filter chip's icon (owner 2026-10-23): when a
- * term is added to or removed from Bookmarks / the Custom Study List, that
- * list's icon in the filter row grows and settles ONCE, so the action is seen
- * to have landed there. Reduced motion / Low-Light: a brief dim instead.
- * `n` counts actions; each new value plays the flash once.
- */
-function AckFlash({ n, children }: { n: number; children: ReactNode }) {
-  const motion = useDecorativeMotion();
-  const v = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (!n) return;
-    v.setValue(0);
-    Animated.sequence([
-      Animated.timing(v, { toValue: 1, duration: 170, useNativeDriver: true }),
-      Animated.timing(v, { toValue: 0, duration: 330, useNativeDriver: true }),
-    ]).start();
-  }, [n, v]);
-  const style = motion
-    ? { transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [1, 1.45] }) }] }
-    : { opacity: v.interpolate({ inputRange: [0, 1], outputRange: [1, 0.35] }) };
-  return <Animated.View style={style}>{children}</Animated.View>;
-}
+// AckFlash (the list-icon acknowledgement) is shared: src/components/AckFlash.tsx.
 
 function Chip({
   label,

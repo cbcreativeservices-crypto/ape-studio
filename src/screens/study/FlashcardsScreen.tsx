@@ -46,6 +46,7 @@ import { GlassButton } from '../../components/GlassButton';
 import { LedMeterWell, segmentsForPct } from '../../components/LedMeter';
 import { StudioButton } from '../../components/StudioButton';
 import { DeckIcon } from '../../components/DeckIcon';
+import { AckFlash } from '../../components/AckFlash';
 import { useCoachMark } from '../../lib/coachMark';
 import { isHazardTerm } from '../../lib/hazard';
 import { useShake } from '../../lib/useShake';
@@ -68,6 +69,7 @@ import {
   readTermList,
   setInTermList,
   toggleBookmark,
+  toggleTermList,
   removeBookmarks,
   useBookmarks,
   useTermList,
@@ -457,6 +459,27 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // the user actually reviews terms in it (2 term-changes); open+close without
   // reviewing does NOT count.
   const [fullscreen, setFullscreen] = useState(false);
+  // List-icon acknowledgement (owner 2026-10-24, "like in Glossary"): adding or
+  // removing a term on Bookmarks / the Custom list flashes that list's icon in
+  // the filter row once. In full screen the row is hidden, so the flash waits
+  // and plays once when the row is back.
+  const [ack, setAck] = useState<{ fav: number; custom: number }>({ fav: 0, custom: 0 });
+  const pendingAck = useRef<'fav' | 'custom' | null>(null);
+  const rowHiddenRef = useRef(false);
+  rowHiddenRef.current = fullscreen;
+  const ackList = useCallback((k: 'fav' | 'custom') => {
+    if (rowHiddenRef.current) {
+      pendingAck.current = k;
+      return;
+    }
+    setAck((a) => ({ ...a, [k]: a[k] + 1 }));
+  }, []);
+  useEffect(() => {
+    if (fullscreen || !pendingAck.current) return;
+    const k = pendingAck.current;
+    pendingAck.current = null;
+    setAck((a) => ({ ...a, [k]: a[k] + 1 }));
+  }, [fullscreen]);
   // Reveal SOLO (user request 2026-07-18): the red "eye" button opens an inline
   // study view — term + primary definition shown together. Like a mixer solo:
   // it overrides the reveal filters and locks the FILTERS button until cleared.
@@ -1146,16 +1169,19 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const toggleBookmarkTerm = useCallback(() => {
     if (!card) return;
     if (!dwellOk()) return; // 1.5s dwell before tagging (Booth 2026-07-16)
-    toggleBookmark(achievementId, card.id);
-  }, [card]);
+    // null = refused (the saved list could not be read; the shared notice is up).
+    if (toggleBookmark(achievementId, card.id) !== null) ackList('fav');
+  }, [card, ackList]);
 
   /** Toggle the current card on the ★ CUSTOM LIST (starred) — so each term can
    *  be assigned to either list from the card (user request 2026-07-23). */
   const toggleStarTerm = useCallback(() => {
     if (!card) return;
     if (!dwellOk()) return;
-    setInTermList('starred', card.id, !starred.has(card.id));
-  }, [card, starred]);
+    // toggleTermList (not setInTermList): it refuses while the list is
+    // unreadable instead of queueing an edit that looks done (night pass 2).
+    if (toggleTermList('starred', card.id) !== null) ackList('custom');
+  }, [card, ackList]);
 
   // A full round trip = reveal this card's definition, THEN move to another
   // card (term→definition→next term). Counted in goCard, not on reveal alone.
@@ -1791,7 +1817,11 @@ export function FlashcardsScreen({ navigation, route }: Props) {
               flag). Filters the deck to bookmarked terms; hold shows the list. */}
           <FilterChip
             label="Bookmarks"
-            icon={(c) => <BookmarkIcon color={c} filled={bookmarkedOnly} />}
+            icon={(c) => (
+              <AckFlash n={ack.fav}>
+                <BookmarkIcon color={c} filled={bookmarkedOnly} />
+              </AckFlash>
+            )}
             active={bookmarkedOnly}
             activeTint="purple"
             onPress={() => { setBookmarkedOnly((v) => !v); resetToStart(); }}
@@ -1802,7 +1832,11 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           <FilterChip
             label="Custom list"
             // Icon always the list's light blue; the chip's frame shows "selected" (owner 2026-10-16).
-            icon={() => <DeckIcon color={colors.customList} size={17} />}
+            icon={() => (
+              <AckFlash n={ack.custom}>
+                <DeckIcon color={colors.customList} size={17} />
+              </AckFlash>
+            )}
             active={starredOnly}
             activeTint="customList"
             onPress={() => { setStarredOnly((v) => !v); resetToStart(); }}
