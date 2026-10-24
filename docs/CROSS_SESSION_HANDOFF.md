@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 23:20 · ccode · 26d90ccb
+changed: Restore: say 'expired' / 'refunded' from the server's reason (Comp A #6)
+affects other side: nothing — consumes #6 reasons as posted
+needs: nothing
+
+
 ### 2026-10-23 23:17 · ccode · 48567e5f
 changed: Paywall + redeem: approved legal lines L4 / L12 / L15 (owner rulings 2026-10-23)
 affects other side: nothing (app copy; website Terms/Privacy stay on web-launch-day)
