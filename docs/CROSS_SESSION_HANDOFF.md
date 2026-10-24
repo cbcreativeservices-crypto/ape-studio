@@ -643,6 +643,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 12:22 · ccode · 5da9e6ae
+changed: Build 39: 'Research and learn more' on the glossary term page and the flashcard back — popup opens Wikipedia (exact article from wikipedia_url when the server has one, else a search) or Google in the phone's browser (owner 2026-10-24); shared dialog gains an optional second choice; flashcard link read is separate and non-fatal
+affects other side: Glossary detail, Flashcards, shared AppDialog/confirm, study fetch
+needs: nothing
+
+
 ### 2026-10-24 11:48 · ccode · 4390760e
 changed: Test: offer-code test normalises CRLF (house ratchet)
 affects other side: test only
