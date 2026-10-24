@@ -151,14 +151,25 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
   // the second refused by iOS — and its failure put "Could not prepare the
   // certificate" under the sheet that had actually worked.
   const exportingRef = useRef(false);
+  // THE CERTIFICATE THAT IS OPEN NOW (toddler night 2, 2026-10-24). The export
+  // makes two network reads and a PDF render before any sheet appears —
+  // seconds offline. Close this certificate meanwhile and open another, and
+  // its late "Could not prepare the certificate" landed in the shared message
+  // slot under the certificate the learner had NOT tried to download (the
+  // same class night 1 closed in CredentialShareRow). A result reports only
+  // while the certificate it was for is still the one open.
+  const openIdRef = useRef<string | null>(null);
+  openIdRef.current = open ? String(open.id) : null;
   const download = useCallback(async () => {
     if (!open || exportingRef.current) return;
     exportingRef.current = true;
+    const forId = String(open.id);
     setBusy(true);
     const res = await exportCertificate({ credentialName: open.name, awardType: open.type, earnedAt: open.awardedAt });
     exportingRef.current = false;
     setBusy(false);
     if (res.ok) return;
+    if (openIdRef.current !== forId) return;
     setMessage(
       res.reason === 'needs_build'
         ? 'Certificate download isn’t available on this device. Your certificate is safely recorded on your account.'

@@ -25,6 +25,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSyncExternalStore } from 'react';
 import { createLocalStore, type LocalStore } from '../storage/localStore';
 import { CUSTOM_LIST_ID } from '../commercial/studyGate';
+import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 
 // Storage key for the BOOKMARK list (renamed from "flagged" — user request
 // 2026-07-18); the VALUE is unchanged so existing saved terms carry over.
@@ -99,11 +100,29 @@ export async function readTermList(kind: TermListKind): Promise<ReadonlySet<stri
 
 /** Toggle membership. The intent (add / remove) is decided from what the
  *  screen shows NOW and applied to the stored list once it has loaded —
- *  replaying a toggle against a list that loaded meanwhile would undo it. */
-export function toggleTermList(kind: TermListKind, id: string): boolean {
-  const member = !stores[kind].get().has(id);
-  void stores[kind].mutate((s) => withId(s, id, member));
+ *  replaying a toggle against a list that loaded meanwhile would undo it.
+ *  Answers the new membership, or `null` when the stored list could not be
+ *  read and the tap was refused (see `refusedWhileUnreadable`). */
+export function toggleTermList(kind: TermListKind, id: string): boolean | null {
+  const s = stores[kind];
+  if (refusedWhileUnreadable(s)) return null;
+  const member = !s.get().has(id);
+  void s.mutate((set) => withId(set, id, member));
   return member;
+}
+
+/** UNREADABLE REFUSES A TOGGLE (toddler night 2 2026-10-24). After a read that
+ *  FAILED, `get()` is the empty stand-in, not the saved list — so a toggle's
+ *  intent was always ADD (even for a term already saved), it was only queued
+ *  behind a read that keeps failing, and the screen flashed it as done. Now
+ *  the tap changes nothing, the store tries the read again, and the shared
+ *  "couldn't be saved" notice says so. Answers true when the tap was refused
+ *  (the caller returns `null`: not added, not removed). */
+function refusedWhileUnreadable(s: LocalStore<IdSet>): boolean {
+  if (!s.isUnreadable()) return false;
+  void s.hydrate();
+  reportUnhandledSaveFailure();
+  return true;
 }
 
 /** Force-set membership (e.g. the ✓/✗ known–unknown pair in term lists). */
@@ -176,8 +195,9 @@ export function isBookmarked(ctx: string, id: string): boolean {
   return bookmarkStore(ctx).get().has(id);
 }
 
-export function toggleBookmark(ctx: string, id: string): boolean {
+export function toggleBookmark(ctx: string, id: string): boolean | null {
   const s = bookmarkStore(ctx);
+  if (refusedWhileUnreadable(s)) return null;
   const member = !s.get().has(id);
   void s.mutate((set) => withId(set, id, member));
   return member;

@@ -1932,9 +1932,9 @@ ${COPY.glossaryFreeAllowance}`,
   const ctxName = (ctx: string) =>
     ctx === 'glossary' ? 'Glossary' : ctx === 'flagged' ? 'My Custom List' : topicsById.get(ctx) ?? 'Topic';
 
-  const toggleFav = useCallback((id: string) => {
-    toggleBookmark('glossary', id);
-  }, []);
+  // null = refused (the saved list could not be read; flaggedStore raised the
+  // shared notice) — the row must not flash as if it worked (night pass 2).
+  const toggleFav = useCallback((id: string) => toggleBookmark('glossary', id), []);
 
   // Share a term — opens the SHARE HUB (owner spec 2026-08-06): section toggles,
   // text/image/copy, and multi-term selection from lists/related. The actual
@@ -3760,8 +3760,7 @@ ${COPY.glossaryFreeAllowance}`,
                   bookmark shows what it does before you commit. */}
               <HoldHintPressable
                 onPress={() => {
-                  toggleFav(item.id);
-                  ackList('fav');
+                  if (toggleFav(item.id) !== null) ackList('fav');
                 }}
                 hint={bookmarks.has(item.id) ? 'Removes from Bookmarks' : 'Adds to Bookmarks'}
                 selected={bookmarks.has(item.id)}
@@ -3780,8 +3779,7 @@ ${COPY.glossaryFreeAllowance}`,
                   missing from the glossary row. */}
               <HoldHintPressable
                 onPress={() => {
-                  toggleTermList('starred', item.id);
-                  ackList('custom');
+                  if (toggleTermList('starred', item.id) !== null) ackList('custom');
                 }}
                 hint={starred.has(item.id) ? 'Removes from Custom list' : 'Adds to Custom list'}
                 selected={starred.has(item.id)}

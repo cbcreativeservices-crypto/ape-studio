@@ -47,6 +47,12 @@ export function CalcLabScreen() {
   const wide = useWideOnTablet();
   const { width: winW } = useWindowDimensions();
   const tabletTile = winW >= 1100 ? styles.tileFrameTabletWide : styles.tileFrameTablet;
+  // The popup that holds those tiles is capped at 720 pt (popCardTablet) — the
+  // same box in iPad portrait and landscape — so four 24 % tiles in it were
+  // ~163 pt against portrait's ~218 pt and the names/taglines (2 lines) were
+  // cut to "…" in landscape only (toddler pass 2, 2026-10-24). The popup
+  // widens exactly when the tiles go four across.
+  const popWide = winW >= 1100;
   const { isMember, resolved, tierKnown, tierReadFailed } = useEntitlement();
 
   // ALL workflows are ACADEMY-ONLY (owner 2026-08-13): running a guided
@@ -312,7 +318,7 @@ export function CalcLabScreen() {
         <View style={[StyleSheet.absoluteFill, styles.popBackdrop]} accessibilityViewIsModal>
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpenSec(null)} accessibilityRole="button" accessibilityLabel="Close" />
           {openMeta ? (
-            <View style={[styles.popCard, tablet && styles.popCardTablet]}>
+            <View style={[styles.popCard, tablet && styles.popCardTablet, tablet && popWide && styles.popCardTabletWide]}>
               <View style={styles.popHead}>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.popTitle}>{openMeta.title}</Text>
@@ -392,6 +398,8 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   popCardTablet: { maxWidth: 720 },
+  // 720 × 32 / 24: four 24 % tiles as wide as three 32 % tiles in 720.
+  popCardTabletWide: { maxWidth: 960 },
   popHead: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   popTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.2, color: colors.amber },
   popClose: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSub, paddingHorizontal: 4 },

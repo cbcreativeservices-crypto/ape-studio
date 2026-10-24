@@ -68,6 +68,7 @@ import {
   IN_TUNE_CENTS,
   INITIAL_HOLD,
   INITIAL_LOCK,
+  landscapeNoteFit,
   INSTRUMENT_KEYS,
   INSTRUMENTS,
   instrumentsByFamily,
@@ -900,7 +901,6 @@ const LiveReadout = memo(function LiveReadout({
   // and signal bar stack in the right column (design review 2026-09-06 — a
   // single centred row overflowed and clipped the note off the left edge; the
   // usability review moved the cents beside the note so the eye stays put).
-  const NOTE_COL_W = 280;
   const dirRowH = landscape ? 36 : 48;
   // The note's line box is 1.05 em. On iOS/Android the font's tall ascender
   // (Oswald: 1.19 em) overflows ABOVE that box and collided with the identity
@@ -932,11 +932,16 @@ const LiveReadout = memo(function LiveReadout({
   const estimatedMainH = height - padTop - padBottom - bar - 32 - stripH - inputH;
   const mainAvail = mainH > 0 ? mainH : estimatedMainH;
   const landscapeAvail = height - padTop - padBottom - bar - 32;
-  const bigSize = Math.max(64, -Math.round(trim / NOTE_ROW_EM) + Math.round(
+  const bigSizeRaw = Math.max(64, -Math.round(trim / NOTE_ROW_EM) + Math.round(
     landscape
       ? Math.max(96, Math.min(height * 0.45, (landscapeAvail - 24 - dirRowH - 44) / NOTE_ROW_EM))
       : Math.max(96, Math.min(180, Math.min(width * 0.48, (mainAvail - FIXED_ABOVE_NOTE) / NOTE_ROW_EM))),
   ));
+  // iPad landscape (toddler night 2026-10-24): the phone's fixed 280 pt column
+  // could not hold a note sized off an iPad's height (see landscapeNoteFit).
+  const noteFit = landscapeNoteFit(width, height, bigSizeRaw);
+  const NOTE_COL_W = noteFit.colW;
+  const bigSize = landscape ? noteFit.size : bigSizeRaw;
   // One gutter: meter, keys, hold box and SIGNAL share the same width.
   const meterW = landscape ? Math.min(Math.max(240, width - NOTE_COL_W - 76), 720) : Math.min(width - 24, 720);
   const pointerX = (view.shownCents / METER_RANGE) * (meterW / 2);

@@ -18,6 +18,34 @@
  * No React, no native imports: node:test covers it (test/centerLock.test.ts).
  */
 
+// Explicit `.ts` so the node test runner resolves it (tsconfig note).
+import { isTabletWindow } from '../../../theme/tablet.ts';
+
+/** The landscape note column on a PHONE (design review 2026-09-06). */
+export const NOTE_COL_W_PHONE = 280;
+/**
+ * The note row's width in em of the note's font size: the widest name "D♯"
+ * (Oswald Bold D 0.59 em + a fallback-font ♯ ~0.6 em) + the octave digit at
+ * 0.42 em (~0.21 em) + its 6 pt margin, rounded up.
+ */
+export const NOTE_ROW_W_EM = 1.5;
+
+/**
+ * The landscape note column and note size (toddler night 2026-10-24, owner
+ * iPad report). The note's size grows with the window HEIGHT, but the column
+ * was a fixed 280 measured on a phone: on an iPad in landscape a 369-461 pt
+ * note sat centred in it and spilled off the left edge and over the meter.
+ * A tablet's column grows to the note, never past what leaves the meter its
+ * 240 pt minimum (16 x 2 padding + 24 gap + the screen's 20 pt slack), and the
+ * note never outgrows the column. A PHONE gets exactly the old values.
+ */
+export function landscapeNoteFit(windowW: number, windowH: number, size: number): { colW: number; size: number } {
+  if (!isTabletWindow(windowW, windowH)) return { colW: NOTE_COL_W_PHONE, size };
+  const maxCol = Math.max(NOTE_COL_W_PHONE, windowW - 76 - 240);
+  const colW = Math.max(NOTE_COL_W_PHONE, Math.min(maxCol, Math.ceil(size * NOTE_ROW_W_EM)));
+  return { colW, size: Math.min(size, Math.floor(colW / NOTE_ROW_W_EM)) };
+}
+
 export const IN_TUNE_CENTS = 2; // owner: ±2 ¢ confirmation zone
 export const CLOSE_CENTS = 5; // the visible "close" band
 export const CONFIRM_MS = 350; // owner: stable inside the zone before IN TUNE
