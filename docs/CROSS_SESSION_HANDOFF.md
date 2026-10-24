@@ -510,6 +510,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 11:03 · ccode · 7d8d6821
+changed: web: privacy §13.3 no longer says the app won't request camera access (the Light-Pulse counter does) — owner GO 2026-10-24
+affects other side: website only — privacy §13.3 sentence no longer lists camera (app's Light-Pulse counter uses it). Live on Vercel.
+needs: nothing
+
+
 ### 2026-10-08 08:55 · ccode · b4b6138c
 changed: web: subline on two lines with a hard break (phones too)
 affects other side: nothing (website copy; requested by Comp A)
