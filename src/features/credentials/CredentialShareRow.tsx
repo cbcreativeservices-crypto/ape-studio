@@ -32,13 +32,19 @@ import {
 } from './shareCredential';
 import { fetchMyQrTokenOrThrow, fetchMyRegistryName } from '../profile/api';
 import { registryUrl } from '../profile/registry';
+import type { CertificateRequest } from './certificatePdf';
+import { certificateImageAvailable, useCertificateImage } from './useCertificateImage';
 
 export function CredentialShareRow({
   credentialName,
+  certificate,
   onMessage,
 }: {
   /** The credential being shared, or null to share the record as a whole. */
   credentialName: string | null;
+  /** An EARNED certificate open here: adds SHARE IMAGE, the certificate itself
+   *  as a picture (owner 2026-10-24, useCertificateImage). */
+  certificate?: CertificateRequest | null;
   /** Where to surface a one-line result. The row never renders its own toast. */
   onMessage: (text: string | null) => void;
 }) {
@@ -46,7 +52,8 @@ export function CredentialShareRow({
   const [holderName, setHolderName] = useState('Academy Member');
   const [token, setToken] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
-  const [busy, setBusy] = useState<null | 'copy' | 'link' | 'qr'>(null);
+  const [busy, setBusy] = useState<null | 'copy' | 'link' | 'qr' | 'image'>(null);
+  const certImage = useCertificateImage();
   /** Re-runs the reads below — SHARE QR asks for it when the token is missing. */
   const [loadNonce, setLoadNonce] = useState(0);
   /** The holder-name read FAILED (as opposed to "no name set"). */
@@ -143,6 +150,14 @@ export function CredentialShareRow({
     onMessage(ok ? null : 'Could not share the QR image. You can copy the link instead.');
   }, [token, tokenFailed, nameFailed, url, onMessage]);
 
+  const imageNow = useCallback(async () => {
+    if (!certificate) return;
+    setBusy('image');
+    const res = await certImage.share(certificate);
+    setBusy(null);
+    onMessage(res.ok ? null : 'Could not share the certificate image. You can download the certificate instead.');
+  }, [certificate, certImage, onMessage]);
+
   // ONE share at a time across all three buttons (pattern P9, 2026-10-02).
   // `busy` is state, so a same-frame double tap — or SHARE LINK then SHARE QR —
   // started a second share while the first sheet was opening; iOS refused it
@@ -152,6 +167,7 @@ export function CredentialShareRow({
   const copy = useLatchedPress(copyNow, shareLatch);
   const link = useLatchedPress(linkNow, shareLatch);
   const qr = useLatchedPress(qrNow, shareLatch);
+  const image = useLatchedPress(imageNow, shareLatch);
 
   const imageAvailable = canShareImage();
 
@@ -164,7 +180,10 @@ export function CredentialShareRow({
         ) : null}
         <ShareBtn label="SHARE LINK" onPress={link} busy={busy === 'link'} />
         {imageAvailable ? <ShareBtn label="SHARE QR" onPress={qr} busy={busy === 'qr'} /> : null}
+        {certificate && certificateImageAvailable() ? <ShareBtn label="SHARE IMAGE" onPress={image} busy={busy === 'image'} /> : null}
       </View>
+      {/* The certificate's own off-screen render, mounted only while sharing. */}
+      {certImage.node}
       {!imageAvailable ? (
         // Honest, not silent: the button is absent and the reason is given,
         // rather than a control that does nothing.

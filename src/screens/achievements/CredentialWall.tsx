@@ -328,7 +328,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
             {/* Copy / share the verified-record link, and share the QR as an image
                 (owner 2026-09-18). The printed certificate keeps the button above:
                 that path builds a PDF and already existed. */}
-            {open ? <CredentialShareRow credentialName={open.name} onMessage={setMessage} /> : null}
+            {open ? <CredentialShareRow credentialName={open.name} certificate={{ credentialName: open.name, awardType: open.type, earnedAt: open.awardedAt }} onMessage={setMessage} /> : null}
             {/* Download / share feedback lives INSIDE the modal (bug hunt
                 2026-09-29): on the page it rendered underneath the open modal, so
                 "Could not prepare the certificate" was never seen. */}
