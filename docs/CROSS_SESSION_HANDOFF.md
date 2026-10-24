@@ -634,6 +634,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 20:30 · ccode · session handoff
+changed: docs/SESSION_HANDOFF_2026-10-23_NIGHT.md — everything shipped tonight (all on the Android preview channel), device-test status, owner HOLDs (#6 wording, onboarding for new accounts, Cable stage 8)
+affects other side: nothing new — #15, #11, #3 app halves already listed above
+needs: nothing
+
 ### 2026-10-23 20:08 · ccode · 0c61cfe7
 changed: IAP: buyPlan tags each new purchase with the buyer's auth id (appAccountToken / obfuscatedAccountId) — Comp A #3 app half; no tag when the session can't be read
 affects other side: new purchases carry the tag from this update on (preview channel now; production with the next release)
