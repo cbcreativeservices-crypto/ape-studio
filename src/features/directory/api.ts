@@ -666,12 +666,27 @@ export async function fetchContactAllowance(requestId?: string): Promise<Contact
   }
 }
 
-export async function sendThreadMessage(requestId: string, body: string): Promise<SaveResult> {
+/** Send one composed message. `clientMsgId` (the pending send's id, reused on
+ *  every retry of the same text) goes to the 3-argument RPC — Comp A #11,
+ *  live 2026-10-23: a repeat id saves nothing and answers the first message's
+ *  id, so a retry after a lost reply can never double-send. A server without
+ *  it (PGRST202 / 42883) gets the original 2-argument call, unchanged. */
+export async function sendThreadMessage(requestId: string, body: string, clientMsgId?: string): Promise<SaveResult> {
   try {
-    const { error } = await supabase.rpc('contact_message_send', {
-      p_request_id: requestId,
-      p_body: body,
-    });
+    let error: { code?: string; message: string } | null = null;
+    if (clientMsgId) {
+      ({ error } = await supabase.rpc('contact_message_send', {
+        p_request_id: requestId,
+        p_body: body,
+        p_client_msg_id: clientMsgId,
+      }));
+    }
+    if (!clientMsgId || (error && (error.code === 'PGRST202' || error.code === '42883'))) {
+      ({ error } = await supabase.rpc('contact_message_send', {
+        p_request_id: requestId,
+        p_body: body,
+      }));
+    }
     return error ? { ok: false, error: readableError(error.message) } : { ok: true };
   } catch {
     // supabase-js RESOLVES with `{ error }` on a network failure — that path

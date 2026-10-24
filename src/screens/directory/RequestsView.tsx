@@ -886,10 +886,10 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
                   const seen = await fetchThreadMessages(thread.id);
                   if (seen.ok && landedAlready(pending, seen.rows)) return { ok: true } as const;
                 }
-                // `pending.clientId` stays on the device until the RPC takes a
-                // client id (see sendOnce.ts) — an undeclared argument would
-                // make the server refuse every message.
-                return sendThreadMessage(thread.id, pending.body);
+                // `pending.clientId` goes to the server (Comp A #11, live
+                // 2026-10-23): a repeat id saves nothing. sendThreadMessage
+                // falls back to the 2-argument call on a server without it.
+                return sendThreadMessage(thread.id, pending.body, pending.clientId);
               };
               runSendIn(thread.id, () =>
                 sendOnce().then(async (r) => {

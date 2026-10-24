@@ -51,10 +51,15 @@ describe('#11 one composed message is sent once', () => {
     assert.match(sheet, /msgsFor\.current = null;/, 'switching conversations drops the snapshot source');
   });
 
-  it('the RPC call is unchanged — no undeclared client-id argument reaches the live server', () => {
+  // Comp A #11 went live 2026-10-23 (Variant B): the client id now reaches the
+  // server, and the 2-argument call stays as the fallback for a server
+  // without the 3-argument function (PGRST202 / 42883).
+  it('the client id goes to the 3-argument RPC; the 2-argument call is the fallback', () => {
     const send = api.slice(api.indexOf('export async function sendThreadMessage'), api.indexOf('export async function blockThread'));
+    assert.match(send, /p_request_id: requestId,\s*p_body: body,\s*p_client_msg_id: clientMsgId,/);
+    assert.match(send, /error\.code === 'PGRST202' \|\| error\.code === '42883'/);
     assert.match(send, /supabase\.rpc\('contact_message_send', \{\s*p_request_id: requestId,\s*p_body: body,\s*\}\)/);
-    assert.doesNotMatch(send, /client_id/);
+    assert.match(requests, /return sendThreadMessage\(thread\.id, pending\.body, pending\.clientId\);/);
   });
 });
 
