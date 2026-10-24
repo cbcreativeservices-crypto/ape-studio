@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 10:01 · ccode · f53bdfde
+changed: Home: new DAW Fundamentals & Session Management card art (owner's corrected image), bundled with the standard wash; replaces the bucket's free_daw.webp (AI piano-keyboard errors)
+affects other side: Home carousel + My-topic card for DAW Fundamentals; OTA-safe asset
+needs: nothing
+
+
 ### 2026-10-24 09:58 · ccode · 6fb3ca32
 changed: Both phones identical: italic Barlow text now uses the true italic faces (Regular/Medium/SemiBold Italic, preloaded) — Android drew fontStyle:'italic' on a custom font upright; 64 styles in 47 files + ratchet
 affects other side: App-wide italic notes/captions on Android; adds 2 preloaded font faces; OTA-safe JS/asset
