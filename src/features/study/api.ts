@@ -11,6 +11,7 @@ import { withSessionRetry } from './sessionRetry';
 import { myUserId } from '../account/myUserRow';
 import { SUPABASE_URL } from '../../lib/env';
 import { readAllPages } from '../../data/v3Curriculum';
+import { withDeadline } from '../../lib/boundedCall';
 
 export type GlossaryItem = {
   id: string;
@@ -33,7 +34,41 @@ export type GlossaryItem = {
    *  non-fatal query (see GlossaryScreen.loadAllGlossaryFormulas). */
   formula_symbolic: string | null;
   formula_words: string | null;
+  /** English Wikipedia article for the term (Research more, owner 2026-10-24).
+   *  Read by `attachWikipediaUrls`, NEVER in the study SELECT above: until the
+   *  server has the column, naming it would fail the whole fetch. */
+  wikipedia_url?: string | null;
 };
+
+/**
+ * Research more's exact-article links, in their OWN non-fatal read (the
+ * formula-columns pattern above). Until Computer A adds `wikipedia_url` to
+ * glossary_study_v the read errors; that is remembered for the session and the
+ * items come back unchanged — Research more then opens a Wikipedia search.
+ */
+let wikipediaColumnAbsent = false;
+async function attachWikipediaUrls(items: GlossaryItem[], achievementIds: string[]): Promise<GlossaryItem[]> {
+  if (wikipediaColumnAbsent || items.length === 0 || achievementIds.length === 0) return items;
+  try {
+    const { data, error } = await withDeadline(
+      async () =>
+        await supabase.from('glossary_study_v').select('glossary_id, wikipedia_url').in('achievement_id', achievementIds),
+      'study/wikipedia_url',
+      8000,
+    );
+    if (error) {
+      if (/wikipedia_url/.test(error.message ?? '')) wikipediaColumnAbsent = true;
+      return items;
+    }
+    const byId = new Map<string, string>();
+    for (const r of (data ?? []) as { glossary_id: string; wikipedia_url: string | null }[]) {
+      if (r.wikipedia_url) byId.set(r.glossary_id, r.wikipedia_url);
+    }
+    return byId.size ? items.map((it) => (byId.has(it.id) ? { ...it, wikipedia_url: byId.get(it.id) } : it)) : items;
+  } catch {
+    return items;
+  }
+}
 
 export type ItemState = { views?: number; known?: boolean; attempts?: number; correct?: number };
 export type ItemStates = Record<string, ItemState>;
@@ -97,7 +132,7 @@ async function fetchTopicItemsOnce(achievementId: string): Promise<GlossaryItem[
       .eq('achievement_id', achievementId)
       .order('term');
     if (!error && data && data.length > 0) {
-      return (data as any[]).map((g) => ({
+      return attachWikipediaUrls((data as any[]).map((g) => ({
         id: g.glossary_id,
         term: g.term,
         definition: g.definition,
@@ -111,7 +146,7 @@ async function fetchTopicItemsOnce(achievementId: string): Promise<GlossaryItem[
         difficulty: g.difficulty ?? null,
         formula_symbolic: g.formula_symbolic ?? null,
         formula_words: g.formula_words ?? null,
-      }));
+      })), [achievementId]);
     }
     if (error) console.warn('[study] glossary_study_v unavailable, falling back:', error.message);
   } catch (e) {
@@ -164,7 +199,7 @@ async function fetchTopicItemsOnce(achievementId: string): Promise<GlossaryItem[
               formula_words: null,
             });
           }
-          if (out.length > 0) return out;
+          if (out.length > 0) return attachWikipediaUrls(out, sibIds);
         }
       }
     }

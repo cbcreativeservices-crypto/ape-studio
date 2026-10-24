@@ -87,6 +87,8 @@ export function confirmDialog(
      *  Settings, Help…): run it after this dialog has faded — afterDialogCloses.
      *  Opt-in (pattern P5, 2026-10-02). */
     opensModalScreen?: boolean;
+    /** A second choice beside YES (owner 2026-10-24, Research more). */
+    alt?: { text: string; onPress: () => void };
   },
 ): void {
   const onYes = opts?.opensModalScreen ? afterDialogCloses(yes) : yes;
@@ -99,6 +101,8 @@ export function confirmDialog(
       destructive: opts?.destructive,
       onConfirm: onYes,
       onCancel: opts?.onCancel,
+      altText: opts?.alt?.text,
+      onAlt: opts?.alt?.onPress,
     });
     return;
   }
@@ -110,6 +114,7 @@ export function confirmDialog(
   }
   Alert.alert(title, body, [
     { text: opts?.cancelText ?? 'Cancel', style: 'cancel', onPress: opts?.onCancel },
+    ...(opts?.alt ? [{ text: opts.alt.text, onPress: opts.alt.onPress }] : []),
     { text: yesText, style: opts?.destructive ? 'destructive' : undefined, onPress: onYes },
   ]);
 }

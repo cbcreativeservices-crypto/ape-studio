@@ -112,6 +112,7 @@ import { StudyHeader } from './StudyHeader';
 import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import type { StudyStackParamList } from '../../navigation/types';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { openResearchMore } from '../../features/research/researchLinks';
 import { fsShouldClaim, fsSwipeAction, relatedTermsText, stepSectionLevel } from '../../features/study/flashcardGestures';
 
 /**
@@ -2013,6 +2014,19 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     </DefinitionScroll>
                   </>
                 )}
+                {/* Research more (owner 2026-10-24) — on the answer side only,
+                    bottom-LEFT, as quiet as "Suggest a correction" opposite. */}
+                {soloReveal || level !== 0 ? (
+                  <Pressable
+                    style={styles.cardResearch}
+                    onPress={() => openResearchMore(card.term, card.wikipedia_url)}
+                    hitSlop={8}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Research and learn more about ${card.term}`}
+                  >
+                    <Text style={styles.cardReportText}>Research and learn more ↗</Text>
+                  </Pressable>
+                ) : null}
                 {/* Subtle error-report affordance, bottom-right of the card
                     (owner 2026-08-13). Small, low-contrast text. */}
                 <Pressable
@@ -2737,6 +2751,7 @@ const styles = StyleSheet.create({
   cardLink: { position: 'absolute', top: 7, right: 70, zIndex: 2 },
   // Subtle bottom-right "Report Error" text button (owner 2026-08-13).
   cardReport: { position: 'absolute', bottom: 6, right: 10, zIndex: 2, paddingVertical: 2, paddingHorizontal: 2 },
+  cardResearch: { position: 'absolute', bottom: 6, left: 10, zIndex: 2, paddingVertical: 2, paddingHorizontal: 2 },
   cardReportText: {
     fontFamily: fonts.oswaldMedium,
     fontSize: 10,

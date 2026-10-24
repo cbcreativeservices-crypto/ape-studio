@@ -43,6 +43,10 @@ export type AppDialogRequest = {
   /** Tints the confirm control red rather than amber. */
   destructive?: boolean;
   onConfirm?: () => void;
+  /** An optional SECOND choice, drawn as a button under the confirm (owner
+   *  2026-10-24: Research more → Wikipedia / Google). Same answer guard. */
+  altText?: string;
+  onAlt?: () => void;
   /**
    * Runs on Cancel, on the scrim, and on Android BACK. Load-bearing: the
    * single-device flow signs the user back out when they decline, so a
@@ -165,7 +169,7 @@ function drainQueue(): void {
 }
 
 /** Close the open dialog, run ONE of its handlers, then drain the queue. */
-function resolve(which: 'confirm' | 'cancel'): void {
+function resolve(which: 'confirm' | 'cancel' | 'alt'): void {
   // Too soon after this dialog appeared — the tail of a double-tap meant for
   // the one before it, not an answer to this one (see ANSWER_GUARD_MS).
   if (current && Date.now() - shownAt < ANSWER_GUARD_MS) return;
@@ -174,7 +178,7 @@ function resolve(which: 'confirm' | 'cancel'): void {
   emit();
   // Handler AFTER clearing, so a handler that opens another dialog is queued
   // against an empty slot rather than colliding with the one closing.
-  if (req) (which === 'confirm' ? req.onConfirm : req.onCancel)?.();
+  if (req) (which === 'confirm' ? req.onConfirm : which === 'alt' ? req.onAlt : req.onCancel)?.();
   // …and only drain if that handler did not open one of its own. Draining
   // unconditionally sent the next request back through showAppDialog, which
   // saw the handler's dialog in `current` and pushed it onto the BACK of the
@@ -275,6 +279,16 @@ export function AppDialogHost() {
               {(isNotice ? 'OK' : req.confirmText ?? '').toUpperCase()}
             </Text>
           </Pressable>
+          {!isNotice && req.altText ? (
+            <Pressable
+              style={[styles.cta, styles.ctaAlt]}
+              onPress={() => resolve('alt')}
+              accessibilityRole="button"
+              accessibilityLabel={req.altText}
+            >
+              <Text style={styles.ctaText}>{req.altText.toUpperCase()}</Text>
+            </Pressable>
+          ) : null}
           {isNotice ? null : (
             <Pressable
               onPress={() => resolve('cancel')}
@@ -350,6 +364,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   ctaDestructive: { borderColor: 'rgba(255,90,72,.6)', backgroundColor: '#1e0f0d' },
+  ctaAlt: { marginTop: 10 },
   ctaText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.4, color: colors.amber },
   ctaTextDestructive: { color: '#ff7a68' },
   dismiss: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textMuted, paddingVertical: 6 },

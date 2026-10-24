@@ -143,6 +143,7 @@ import type { StudyStackParamList } from '../../navigation/types';
 import { readingColumn, cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { relatedTermList, relatedTermsText } from '../../features/study/flashcardGestures';
+import { ResearchMoreLink } from '../../features/research/ResearchMoreLink';
 
 /** The STUDY tab's headphones (same bundled art as the nav bar). */
 const STUDY_NAV_ICON = require('../../../assets/icons/nav/nav-study.png');
@@ -1184,6 +1185,9 @@ function TermDetails({
           text={relatedTermList(d).length ? relatedTermsText(d) : null}
         />
       )}
+      {/* Research more (owner 2026-10-24): Wikipedia / Google in the browser.
+          The exact article when the server has one (`wikipedia_url`). */}
+      <ResearchMoreLink term={term ?? ''} wikipediaUrl={(d as { wikipedia_url?: string | null }).wikipedia_url} style={styles.researchRow} />
       {/* Suggest a correction — auto-tags the term so it's clear which one
           (Booth 2026-07-11). Opens the mail composer pre-filled. */}
       <Pressable
@@ -5444,6 +5448,7 @@ const styles = StyleSheet.create({
   calcLinkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.5, color: colors.purple },
   detailBody: { fontFamily: fonts.barlowMedium, fontSize: 16, lineHeight: 25, color: colors.textSecondary },
   // "Suggest a correction" affordance at the foot of each detail reveal.
+  researchRow: { marginTop: 14 },
   suggestRow: {
     flexDirection: 'row',
     alignItems: 'center',
