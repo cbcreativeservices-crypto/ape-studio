@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 09:57 · ccode · 5991d089
+changed: Native engine v10 (final store build): Delay ping-pong really alternates L/R; Stereo lab gets a real stereo source (PINK/SINE STEREO + PINK MONO comparison); Android 'mic silenced by another app' detection; iOS AVAudioEngineConfigurationChange restart; iPad picks the best built-in omni mic. Golden 201/0
+affects other side: Delay + Stereo labs; all mic tools (Android silenced mic, iOS format change, iPad mic level). NATIVE — store build only; needs on-device checks
+needs: nothing
+
+
 ### 2026-10-24 09:57 · ccode · de040841
 changed: Home: new Music Production study-area card art, bundled (old art had AI piano-keyboard layout errors)
 affects other side: Home carousel — Music Production card; OTA-safe asset
