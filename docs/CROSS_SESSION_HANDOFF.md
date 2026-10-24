@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 09:58 · ccode · 6fb3ca32
+changed: Both phones identical: italic Barlow text now uses the true italic faces (Regular/Medium/SemiBold Italic, preloaded) — Android drew fontStyle:'italic' on a custom font upright; 64 styles in 47 files + ratchet
+affects other side: App-wide italic notes/captions on Android; adds 2 preloaded font faces; OTA-safe JS/asset
+needs: nothing
+
+
 ### 2026-10-24 09:57 · ccode · 5991d089
 changed: Native engine v10 (final store build): Delay ping-pong really alternates L/R; Stereo lab gets a real stereo source (PINK/SINE STEREO + PINK MONO comparison); Android 'mic silenced by another app' detection; iOS AVAudioEngineConfigurationChange restart; iPad picks the best built-in omni mic. Golden 201/0
 affects other side: Delay + Stereo labs; all mic tools (Android silenced mic, iOS format change, iPad mic level). NATIVE — store build only; needs on-device checks
