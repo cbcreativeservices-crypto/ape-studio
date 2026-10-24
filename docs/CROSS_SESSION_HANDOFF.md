@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 09:32 · ccode · b182fa68
+changed: Ported never-merged fixes: Advanced Tuner soak freeze (quantized store dedup + FrozenWhileCovered, hook-rule safe) and tool-demo FIELD NOTE in the true Barlow italic face (Android drew it upright)
+affects other side: Advanced Tuner full screen (soak/freeze); all 7 tool demos' field notes on Android; adds one preloaded font face (~104 KB); OTA-safe JS/asset
+needs: nothing
+
+
 ### 2026-10-24 09:21 · ccode · 44249b94
 changed: Fact-audit test F097178 follows the Fall-off rename (same fact: no 'doink' claim, the doit swoops up)
 affects other side: Tests only
