@@ -643,6 +643,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 12:58 · ccode · 65c9fa8b
+changed: Build 39: links read an optional per-term search_query (Comp B context) for Google / Scholar / Images, beside wikipedia_url — same separate non-fatal read; falls back to term + 'audio' (owner 2026-10-24)
+affects other side: Glossary detail, Flashcards
+needs: nothing
+
+
 ### 2026-10-24 12:31 · ccode · c357ec83
 changed: Build 39: Google Scholar added to the Research and learn more popup (Wikipedia · Google · Google Scholar · Not now; owner 2026-10-24); shared dialog takes a short list of extra choices
 affects other side: Glossary detail, Flashcards, shared AppDialog/confirm
