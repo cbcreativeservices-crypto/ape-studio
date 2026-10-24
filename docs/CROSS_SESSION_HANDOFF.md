@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 09:09 · ccode · b2601b4f
+changed: Pre-resubmission fixes: iOS SAVE to Photos (expo-media-library/legacy — root import throws in v57); Log out retries + counts unsent finished-lab credit (Settings + Dashboard); store-notifications matches Apple rows only on Apple-confirmed ids
+affects other side: iPhone/iPad Harmonograph + Cymatics SAVE; Settings › Log out + Dashboard sign-out; store-notifications edge function (needs a deploy on owner GO). App parts OTA-safe JS
+needs: nothing
+
+
 ### 2026-10-24 09:02 · ccode · 35d9a71c
 changed: Billing: repo now holds the LIVE source of validate-purchase v19 and store-notifications v10 (deployed 2026-10-23, exit-flow server half) — downloaded verbatim, no changes
 affects other side: Server only (edge functions); no app or OTA impact; a redeploy from the repo no longer rolls back the exit-flow server half
