@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 23:17 · ccode · 48567e5f
+changed: Paywall + redeem: approved legal lines L4 / L12 / L15 (owner rulings 2026-10-23)
+affects other side: nothing (app copy; website Terms/Privacy stay on web-launch-day)
+needs: nothing
+
+
 ### 2026-10-23 22:29 · ccode · 50102df5
 changed: Miking: load only the opened lesson (first-open freeze, unmeasured on device)
 affects other side: nothing (client-only; dj-lab only, not merged)
