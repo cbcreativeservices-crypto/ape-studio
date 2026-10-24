@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 23:24 · ccode · 9c37b91f
+changed: Every new account gets the onboarding on its first sign-in
+affects other side: nothing (client-only)
+needs: nothing
+
+
 ### 2026-10-23 23:20 · ccode · 26d90ccb
 changed: Restore: say 'expired' / 'refunded' from the server's reason (Comp A #6)
 affects other side: nothing — consumes #6 reasons as posted
