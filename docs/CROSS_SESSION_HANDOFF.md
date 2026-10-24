@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 09:21 · ccode · 3e07a8f9
+changed: Comp A final-build §2: glossary names pointing at retired entries — drop 'dither' (learning profile), remove Duduk subtone / Spot bloom / Spot localization pull / papery, rename Baking→Tape baking, Fall-off/doink→Fall-off, Harman Target→Harman Target (in-room)
+affects other side: Glossary learning profile + weekly 'term of the day' notification lists; OTA-safe data
+needs: nothing
+
+
 ### 2026-10-24 09:21 · ccode · f83146b8
 changed: Comp A final-build §1: add live community-flag-digest v1 and the delete_my_account() snapshot (do not run) to the repo, verbatim (validate-purchase v19 / store-notifications v10 already captured in 35d9a71c)
 affects other side: Server files only; not bundled; no OTA/fingerprint impact; nothing deployed
