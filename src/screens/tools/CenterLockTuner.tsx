@@ -45,7 +45,7 @@ import { createLocalStore } from '../../features/storage/localStore';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { optionalModule } from '../../features/tools/capture/optionalModule';
 import { lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
-import { closeCenterLock, readTunerFrame, useTunerFrame, type TunerFrame } from '../../features/tools/tuner/tunerFrameStore';
+import { closeCenterLock, readTunerFrame, setTunerLowNote, useTunerFloor, useTunerFrame, type TunerFrame } from '../../features/tools/tuner/tunerFrameStore';
 import {
   buildTargets,
   centsBetween,
@@ -168,6 +168,14 @@ export function CenterLockTuner() {
   const targets = useMemo(() => buildTargets(instrument, tuningKey, a4, capo, temperament), [instrument, tuningKey, a4, capo, temperament]);
   const transposeSemis = inst.piano ? 0 : TRANSPOSITIONS.find((t) => t.key === transpose)?.semis ?? 0;
   const stretchAmount = STRETCH_LEVELS.find((s) => s.key === stretch)?.amount ?? 1;
+  // Tuner phase 2: tell the tuner mode the lowest note this instrument needs,
+  // so the engine's pitch window reaches it (piano A0; low B on a 5/6-string
+  // bass). Chromatic has no fixed low note and keeps the default window.
+  const lowestHz = inst.piano ? a4 * Math.pow(2, (PIANO_LOW_MIDI - 69) / 12) : targets.length ? Math.min(...targets.map((t) => t.hz)) : null;
+  useEffect(() => {
+    setTunerLowNote(lowestHz);
+  }, [lowestHz]);
+  useEffect(() => () => setTunerLowNote(null), []);
 
   // The stored values only apply while the user has not touched anything yet.
   const chosen = useRef(false);
@@ -609,6 +617,7 @@ const LiveReadout = memo(function LiveReadout({
   onTouch,
 }: LiveReadoutProps) {
   const frame = useTunerFrame();
+  const floorHz = useTunerFloor(); // the engine's pitch floor (tuner phase 2)
   const inst = INSTRUMENTS[instrument];
   const chromatic = !!inst.chromatic;
   const piano = !!inst.piano;
@@ -859,7 +868,7 @@ const LiveReadout = memo(function LiveReadout({
   const lowHint = piano ? null : lowStringHint(target.hz, view.quietMs);
   const hint = piano
     ? lockedMidi != null
-      ? pianoRangeHint(target.hz, view.partial) ?? PIANO_UNISON_HINT
+      ? pianoRangeHint(target.hz, view.partial, floorHz) ?? PIANO_UNISON_HINT
       : PIANO_WORKFLOW_HINT
     : lowHint ?? (chromatic ? null : courseHint(target, targets));
   const showNote = !chromatic || view.hadNote;

@@ -56,7 +56,10 @@ namespace apedsp {
 /// 8 (2026-09-16, Cymatics Lab): GenMode::Dual — two independent sines summed
 /// MONO (real acoustic beats / dual-frequency drive through one speaker), set
 /// via genSet({ dual: { freqB, levelB } }). JS gates the dual surface on >= 8.
-constexpr uint32_t kEngineVersion = 8;
+/// 9 (2026-10-24, tuner phase 2): pitch every ~15 ms while pitch is on (FFT-based
+/// YIN), EngineConfig.pitchMinHz sizes the low-note window, PitchSnapshot.timeSec
+/// stamps each estimate with its audio time. JS reads timeSec when present.
+constexpr uint32_t kEngineVersion = 9;
 
 struct EngineConfig {
   uint32_t fftSize = 4096;      // ≤16384 (Q5 ruling)
@@ -65,6 +68,7 @@ struct EngineConfig {
   bool pitchEnabled = false;    // tuner / counter sound mode
   bool waveformEnabled = false; // waveform viewer
   double bandAvgAlpha = 0.35;   // exponential averaging weight per tick (new fraction)
+  double pitchMinHz = 40.0;     // lowest fundamental the pitch window must read (Hz, 20..200)
 };
 
 struct MeterFrame {
@@ -110,6 +114,7 @@ struct PitchSnapshot {
   float confidence = 0.0f;
   bool voiced = false;
   float levelDb = -120.0f;  // Z-fast level, for low-signal gating in UI
+  double timeSec = 0.0;     // audio time of the newest analyzed sample (s since configure)
 };
 
 /// RT60 guided-capture states (spec §13 staged rollout — engine side).
@@ -131,8 +136,11 @@ class EngineHub {
     aSlow_.configure(1.0, fs);
     cFast_.configure(0.125, fs);
     cSlow_.configure(1.0, fs);
-    // Pitch: 50 ms window, 25 ms max lag → ~40 Hz floor at 48 kHz.
-    pitch_ = PitchDetector(static_cast<size_t>(fs * 0.05), static_cast<size_t>(fs * 0.025));
+    // Pitch: sized from the config's low-note floor (default 40 Hz → the original
+    // 50 ms window / 25 ms max lag at 48 kHz).
+    rebuildPitch(cfg_.pitchMinHz);
+    sampleClock_ = 0;
+    lastSpectrumClock_ = 0;
     wave_.configure(static_cast<size_t>(fs * 0.005), 1200);  // 5 ms × 1200 = 6 s (fine trace)
     roll_.assign(kRollSize, 0.0f);
     rollHead_ = 0;
@@ -180,6 +188,8 @@ class EngineHub {
       cfg_.fftSize = p2;
     }
     if (cfg_.fraction != 1) cfg_.fraction = 3;
+    if (!(cfg_.pitchMinHz >= 20.0)) cfg_.pitchMinHz = 20.0;  // also catches NaN
+    if (cfg_.pitchMinHz > 200.0) cfg_.pitchMinHz = 200.0;
     meter_.settingsEpoch++;
     bandAvg_.clear();       // averaging state restarts on reconfig
     bandPeakHold_.clear();
@@ -266,6 +276,7 @@ class EngineHub {
         }
       }
       leqCount_ += n;
+      sampleClock_ += n;
       if (rollFilled_ < kRollSize) rollFilled_ = std::min(rollFilled_ + n, kRollSize);
 
       // RT60 capture (analysis thread owns the buffer; state is atomic).
@@ -338,12 +349,25 @@ class EngineHub {
       std::lock_guard<std::mutex> lock(mu_);
       cfg = cfg_;
     }
-    if (cfg.spectrumEnabled && rollFilled_ >= cfg.fftSize) {
+    // While pitch runs, the tick is ~15 ms (tickIntervalMs); the spectrum keeps
+    // its ~50 ms pace so the faster tick does not triple the FFT work.
+    if (cfg.spectrumEnabled && rollFilled_ >= cfg.fftSize &&
+        (!cfg.pitchEnabled || sampleClock_ - lastSpectrumClock_ >= static_cast<uint64_t>(fs_ * 0.045))) {
+      lastSpectrumClock_ = sampleClock_;
       computeSpectrum(cfg);
     }
-    if (cfg.pitchEnabled && rollFilled_ >= pitch_.needed()) {
-      computePitch();
+    if (cfg.pitchEnabled) {
+      if (cfg.pitchMinHz != pitchMinHzBuilt_) rebuildPitch(cfg.pitchMinHz);
+      if (rollFilled_ >= pitch_.needed()) computePitch();
     }
+  }
+
+  // The analysis thread's sleep between drains (tuner phase 2): ~15 ms while
+  // pitch runs, so an estimate is never more than ~15 ms older than the audio;
+  // the original 50 ms otherwise.
+  int tickIntervalMs() const {
+    std::lock_guard<std::mutex> lock(mu_);
+    return cfg_.pitchEnabled ? 15 : 50;
   }
 
   // ---- Bridge thread: snapshots ----
@@ -460,7 +484,18 @@ class EngineHub {
     pitchSnap_.confidence = static_cast<float>(est.confidence);
     pitchSnap_.voiced = est.voiced;
     pitchSnap_.levelDb = meter_.zFastDb;
+    pitchSnap_.timeSec = static_cast<double>(sampleClock_) / fs_;
     pitchSnap_.sequence++;
+  }
+
+  // Size the detector for the lowest note it must read: max lag = one period of
+  // minHz, window = two periods but never shorter than the original 50 ms.
+  // Analysis thread (or configure, with the thread quiesced) only.
+  void rebuildPitch(double minHz) {
+    const size_t maxLag = static_cast<size_t>(std::ceil(fs_ / minHz));
+    const size_t window = std::max(static_cast<size_t>(fs_ * 0.05), 2 * maxLag);
+    pitch_ = PitchDetector(window, maxLag);
+    pitchMinHzBuilt_ = minHz;
   }
 
   static constexpr size_t kRollSize = 32768;  // power of two ≥ max FFT + pitch window
@@ -509,6 +544,11 @@ class EngineHub {
   std::vector<float> roll_ = std::vector<float>(kRollSize, 0.0f);
   size_t rollHead_ = 0;
   size_t rollFilled_ = 0;
+  // Audio clock (samples since configure) — pitch timestamps and the spectrum
+  // pace (analysis thread only).
+  uint64_t sampleClock_ = 0;
+  uint64_t lastSpectrumClock_ = 0;
+  double pitchMinHzBuilt_ = 40.0;
 
   // Leq reset flag (bridge sets, analysis thread services — review 2026-07-23).
   std::atomic<bool> leqResetPending_{false};

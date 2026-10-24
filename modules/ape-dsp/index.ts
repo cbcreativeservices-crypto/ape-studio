@@ -110,6 +110,8 @@ export type PitchFrame = {
   confidence: number;
   voiced: boolean;
   levelDb: number;
+  /** Engine v9+: audio time (s since configure) of the newest analyzed sample. */
+  timeSec?: number;
 };
 
 export type SpectrumMeta = {
@@ -129,6 +131,8 @@ export type EngineConfig = {
   pitchEnabled?: boolean;
   waveformEnabled?: boolean;
   bandAvgAlpha?: number; // 0..1 exponential band averaging per tick
+  /** Engine v9+: lowest fundamental the pitch window must read (Hz, 20..200; default 40). */
+  pitchMinHz?: number;
 };
 
 /**

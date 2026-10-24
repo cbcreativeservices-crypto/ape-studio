@@ -401,7 +401,8 @@ class NativeEngine {
           lastReopenAt = now;
           reopenInputStream();
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        // ~15 ms while pitch runs (tuner phase 2), 50 ms otherwise.
+        std::this_thread::sleep_for(std::chrono::milliseconds(engine->tickIntervalMs()));
       }
     });
   }
@@ -504,7 +505,8 @@ JNIEXPORT void JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeSetEngineConfig(JNIEnv*, jobject, jlong h,
                                                             jint fftSize, jint fraction,
                                                             jboolean spectrum, jboolean pitch,
-                                                            jboolean waveform, jdouble bandAvgAlpha) {
+                                                            jboolean waveform, jdouble bandAvgAlpha,
+                                                            jdouble pitchMinHz) {
   apedsp::EngineConfig cfg;
   cfg.fftSize = static_cast<uint32_t>(fftSize);
   cfg.fraction = fraction;
@@ -512,6 +514,7 @@ Java_expo_modules_apedsp_ApeDspModule_nativeSetEngineConfig(JNIEnv*, jobject, jl
   cfg.pitchEnabled = pitch == JNI_TRUE;
   cfg.waveformEnabled = waveform == JNI_TRUE;
   cfg.bandAvgAlpha = bandAvgAlpha;
+  cfg.pitchMinHz = pitchMinHz;
   eng(h)->engine_.setConfig(cfg);
 }
 
@@ -568,10 +571,10 @@ Java_expo_modules_apedsp_ApeDspModule_nativeBandsPacked(JNIEnv* env, jobject, jl
 JNIEXPORT jdoubleArray JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativePitchFrame(JNIEnv* env, jobject, jlong h) {
   const apedsp::PitchSnapshot p = eng(h)->engine_.pitchSnapshot();
-  double v[5] = {static_cast<double>(p.sequence), p.freq, p.confidence, p.voiced ? 1.0 : 0.0,
-                 p.levelDb};
-  jdoubleArray a = env->NewDoubleArray(5);
-  env->SetDoubleArrayRegion(a, 0, 5, v);
+  double v[6] = {static_cast<double>(p.sequence), p.freq, p.confidence, p.voiced ? 1.0 : 0.0,
+                 p.levelDb, p.timeSec};
+  jdoubleArray a = env->NewDoubleArray(6);
+  env->SetDoubleArrayRegion(a, 0, 6, v);
   return a;
 }
 

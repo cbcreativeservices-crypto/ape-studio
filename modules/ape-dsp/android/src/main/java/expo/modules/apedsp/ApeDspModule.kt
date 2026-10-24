@@ -63,7 +63,7 @@ class ApeDspModule : Module() {
   private external fun nativeHealthProbe(h: Long): DoubleArray  // C1: [stuck, dcOffset, ready]
   private external fun nativeSetEngineConfig(
     h: Long, fftSize: Int, fraction: Int, spectrum: Boolean, pitch: Boolean,
-    waveform: Boolean, bandAvgAlpha: Double,
+    waveform: Boolean, bandAvgAlpha: Double, pitchMinHz: Double,
   )
   private external fun nativeMeterFrame(h: Long): DoubleArray
   private external fun nativeBandsPacked(h: Long): FloatArray
@@ -230,6 +230,7 @@ class ApeDspModule : Module() {
         (config["pitchEnabled"] as? Boolean) ?: false,
         (config["waveformEnabled"] as? Boolean) ?: false,
         (config["bandAvgAlpha"] as? Number)?.toDouble() ?: 0.35,
+        (config["pitchMinHz"] as? Number)?.toDouble() ?: 40.0,
       )
     }
 
@@ -266,10 +267,10 @@ class ApeDspModule : Module() {
     }
 
     Function("getPitchFrame") {
-      val p = if (handle != 0L) nativePitchFrame(handle) else DoubleArray(5)
+      val p = if (handle != 0L) nativePitchFrame(handle) else DoubleArray(6)
       mapOf<String, Any?>(
         "sequence" to p[0], "freq" to p[1], "confidence" to p[2],
-        "voiced" to (p[3] == 1.0), "levelDb" to p[4],
+        "voiced" to (p[3] == 1.0), "levelDb" to p[4], "timeSec" to p.getOrElse(5) { 0.0 },
       )
     }
 

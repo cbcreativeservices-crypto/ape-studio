@@ -156,6 +156,41 @@ int main() {
     truthy("YIN white noise NOT voiced", !en.voiced);
   }
 
+  // ---- 5b) Tuner phase 2: FFT difference function == direct, low-note window --
+  {
+    PitchDetector det(static_cast<size_t>(fs * 0.05), static_cast<size_t>(fs * 0.025));
+    std::vector<float> x(det.needed());
+    const double tones[] = {82.41, 110.0, 196.0, 440.0, 1000.0, 3520.0};
+    double worstHz = 0.0, worstConf = 0.0;
+    bool voicedSame = true;
+    for (double f : tones) {
+      for (size_t i = 0; i < x.size(); ++i)
+        x[i] = static_cast<float>(0.3 * std::sin(2.0 * 3.14159265358979323846 * f * i / fs) +
+                                  0.1 * std::sin(2.0 * 3.14159265358979323846 * 2 * f * i / fs));
+      PitchEstimate a = det.estimate(x.data(), fs);
+      PitchEstimate d = det.estimateDirect(x.data(), fs);
+      worstHz = std::max(worstHz, std::fabs(a.freq - d.freq));
+      worstConf = std::max(worstConf, std::fabs(a.confidence - d.confidence));
+      voicedSame = voicedSame && a.voiced == d.voiced;
+    }
+    near("YIN FFT == direct: freq (worst Hz)", worstHz, 0.0, 1e-6);
+    near("YIN FFT == direct: confidence (worst)", worstConf, 0.0, 1e-6);
+    truthy("YIN FFT == direct: voiced flags agree", voicedSame);
+    // Silence: the FFT path must not invent a pitch from rounding.
+    std::fill(x.begin(), x.end(), 0.0f);
+    truthy("YIN FFT silence NOT voiced", !det.estimate(x.data(), fs).voiced);
+
+    // A0 (27.5 Hz) needs a 25 Hz floor: max lag one period, window two periods.
+    const size_t lag = static_cast<size_t>(std::ceil(fs / 25.0));
+    PitchDetector low(std::max(static_cast<size_t>(fs * 0.05), 2 * lag), lag);
+    std::vector<float> y(low.needed());
+    for (size_t i = 0; i < y.size(); ++i)
+      y[i] = static_cast<float>(0.3 * std::sin(2.0 * 3.14159265358979323846 * 27.5 * i / fs));
+    PitchEstimate a0 = low.estimate(y.data(), fs);
+    near("YIN A0 27.5 Hz with a 25 Hz floor", a0.freq, 27.5, 0.1);
+    truthy("YIN A0 voiced", a0.voiced);
+  }
+
   // ---- 6) Generator: levels + Q4 cap + spectral tilts ---------------------
   {
     Generator gen;
@@ -499,12 +534,50 @@ int main() {
     PitchSnapshot ps = hub.pitchSnapshot();
     near("Hub pitch @1 kHz", ps.freq, 1000.0, 2.0);
     truthy("Hub pitch voiced", ps.voiced);
+    // Tuner phase 2: the estimate carries the audio time of its newest sample,
+    // and the tick runs at ~15 ms while pitch is on.
+    near("Hub pitch timeSec = audio fed", ps.timeSec, static_cast<double>(chunks * chunk.size()) / fs, 1e-9);
+    truthy("Hub tick 15 ms with pitch on", hub.tickIntervalMs() == 15);
 
     SpectrumSnapshot ss = hub.spectrumSnapshot();
     truthy("Hub spectrum bins = fft/2+1", ss.binsDb.size() == 4096 / 2 + 1);
 
     std::vector<WaveBucket> wb(120);
     truthy("Hub waveform buckets", hub.waveSnapshot(wb.data(), wb.size()) > 20);
+  }
+
+  // ---- 8b) Hub pitchMinHz: A0 through the engine, spectrum keeps its pace ---
+  {
+    EngineHub hub;
+    hub.configureSampleRate(fs);
+    EngineConfig cfg;
+    cfg.fftSize = 4096;
+    cfg.spectrumEnabled = true;
+    cfg.pitchEnabled = true;
+    cfg.pitchMinHz = 25.0;
+    hub.setConfig(cfg);
+    std::vector<float> chunk(720);  // 15 ms @ 48 kHz — one tick's worth
+    double phase = 0.0;
+    uint64_t spectra = 0, lastSeq = 0;
+    const size_t ticks = static_cast<size_t>(2.0 * fs) / chunk.size();
+    for (size_t c = 0; c < ticks; ++c) {
+      for (size_t i = 0; i < chunk.size(); ++i) {
+        phase += 27.5 / fs;
+        chunk[i] = static_cast<float>(0.3 * std::sin(2.0 * 3.14159265358979323846 * phase));
+      }
+      hub.processChunk(chunk.data(), chunk.size(), 0, true);
+      hub.analysisTick();
+      const uint64_t seq = hub.spectrumSnapshot().sequence;
+      if (seq != lastSeq) { ++spectra; lastSeq = seq; }
+    }
+    PitchSnapshot ps = hub.pitchSnapshot();
+    near("Hub A0 27.5 Hz with pitchMinHz 25", ps.freq, 27.5, 0.15);
+    truthy("Hub A0 voiced", ps.voiced);
+    // 2 s of 15 ms ticks = 133 ticks; the spectrum stays at ~one per 45–60 ms.
+    truthy("Hub spectrum throttled while pitch runs (<= 45 per 2 s)", spectra > 20 && spectra <= 45);
+    cfg.pitchEnabled = false;
+    hub.setConfig(cfg);
+    truthy("Hub tick back to 50 ms with pitch off", hub.tickIntervalMs() == 50);
   }
 
   // ---- 9) RT60: synthetic decays with known reverb time -------------------

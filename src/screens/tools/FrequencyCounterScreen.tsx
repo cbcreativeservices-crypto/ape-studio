@@ -37,9 +37,9 @@ import { centsSnap, SkinnedTunerVu, TuneChevrons, VuTunerFullScreen } from './Sk
 import { GlassButton } from '../../components/GlassButton';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
-import { closeCenterLock, closeVuTuner, openCenterLock, openVuTuner, publishTunerFrame, useCenterLockOpen, useVuTunerOpen } from '../../features/tools/tuner/tunerFrameStore';
+import { closeCenterLock, closeVuTuner, openCenterLock, openVuTuner, publishTunerFrame, setTunerFloor, useCenterLockOpen, useTunerLowNote, useVuTunerOpen } from '../../features/tools/tuner/tunerFrameStore';
 import { useSteadyTuner } from '../../features/tools/tuner/useSteadyTuner';
-import { stepDigits, type DigitsState } from '../../features/tools/tuner/centerLock';
+import { pitchFloorFor, stepDigits, type DigitsState } from '../../features/tools/tuner/centerLock';
 import { CenterLockTuner } from './CenterLockTuner';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { TunerDiagram } from '../../components/ColorTargetDiagrams';
@@ -47,6 +47,7 @@ import { useToolColorPref } from '../../features/tools/waveColorPref';
 import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED, ToolGatePending, useFullScreenGate, useSaveGate, useToolsLocked } from './ToolLockUi';
 import { useToolUsage } from '../../features/tools/telemetry';
 import { frameIsLive, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
+import { ApeDsp } from '../../../modules/ape-dsp';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
@@ -403,10 +404,24 @@ function LivePitchMode({
   helpAll: () => void;
   onOpenLibrary: () => void;
 }) {
+  // Tuner phase 2: the pitch window reaches the instrument's lowest note
+  // (CenterLock publishes it). Sound mode keeps the default 40 Hz floor.
+  const lowNote = useTunerLowNote();
+  const pitchFloor = kind === 'tuner' ? pitchFloorFor(lowNote, ApeDsp.engineVersion()) : 40;
+  const pitchConfig = useMemo(() => ({ pitchEnabled: true, pitchMinHz: pitchFloor }), [pitchFloor]);
   const { state, frames, start, stop, lastError, noSignal, meterFlags } = useDspEngine(
-    { pitchEnabled: true },
+    pitchConfig,
     { meter: true, pitch: true },
   );
+  // START pushes the current config; a change of instrument while listening
+  // is a live reconfig (never restarts capture).
+  const configLive = state === 'running';
+  useEffect(() => {
+    if (configLive) ApeDsp.setEngineConfig(pitchConfig);
+  }, [configLive, pitchConfig]);
+  useEffect(() => {
+    setTunerFloor(pitchFloor);
+  }, [pitchFloor]);
   // A failed / denied mic renders EngineGate (TRY AGAIN) here — UNDER a tuner
   // full screen, which kept saying "PLAY A STRING" as if it were listening.
   // Close the overlays so the honest gate is what the user sees.
@@ -428,6 +443,9 @@ function LivePitchMode({
   // the user narrows it to force an octave.
   const [lowCut, setLowCut] = useState(TUNER_LOW_CUT_HZ[0]); // 40 Hz
   const [highCut, setHighCut] = useState(TUNER_HIGH_CUT_HZ[TUNER_HIGH_CUT_HZ.length - 1]); // 4 kHz
+  // The lowest low-cut is "unrestricted": it follows the engine's floor, so an
+  // instrument below 40 Hz (tuner phase 2) is not cut off by the default.
+  const bandLow = lowCut === TUNER_LOW_CUT_HZ[0] ? Math.min(lowCut, pitchFloor) : lowCut;
   const [justSaved, setJustSaved] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
@@ -486,8 +504,8 @@ function LivePitchMode({
   // Tuner detection band — Sound mode is never band-limited (it counts any
   // frequency); only the Tuner locks within [lowCut, highCut].
   const inBand = useCallback(
-    (f: number) => kind !== 'tuner' || (f >= lowCut && f <= highCut),
-    [kind, lowCut, highCut],
+    (f: number) => kind !== 'tuner' || (f >= bandLow && f <= highCut),
+    [kind, bandLow, highCut],
   );
   const accepted =
     live != null &&
@@ -933,7 +951,7 @@ function LivePitchMode({
           {/* Honesty note (owner 2026-07-31 band spec): what the band limits do
               and do not do — always visible, whatever tray is open. */}
           <Text style={styles.gridNote}>
-            DETECTION BAND: the tuner locks only to pitches between {fmtCut(lowCut)} and{' '}
+            DETECTION BAND: the tuner locks only to pitches between {fmtCut(bandLow)} and{' '}
             {fmtCut(highCut)}. Narrow it to force the correct octave and ignore rumble or harmonics.
             This limits the detection range, not the microphone signal itself.
           </Text>
@@ -1012,7 +1030,7 @@ function LivePitchMode({
         live.freq > 0 &&
         !inBand(live.freq) && (
           <Text style={styles.liveWarn}>
-            ⚠ A pitch at {fmtHz(live.freq)} Hz is outside the detection band ({fmtCut(lowCut)}–
+            ⚠ A pitch at {fmtHz(live.freq)} Hz is outside the detection band ({fmtCut(bandLow)}–
             {fmtCut(highCut)}). Widen or move the band to include your note.
           </Text>
         )}

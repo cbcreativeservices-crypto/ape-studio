@@ -88,7 +88,7 @@ function pitch(): PitchFrame {
   const t = Date.now() / 1000;
   const semis = Math.round(4 * Math.sin(t * 0.3));
   const freq = 220 * Math.pow(2, semis / 12 + 0.02 * Math.sin(t * 1.5));
-  return { sequence: nextSeq(), freq, confidence: 0.92, voiced: true, levelDb: -18 };
+  return { sequence: nextSeq(), freq, confidence: 0.92, voiced: true, levelDb: -18, timeSec: t };
 }
 
 function spectrumMeta(): SpectrumMeta {

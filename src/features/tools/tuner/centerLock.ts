@@ -462,6 +462,22 @@ export const PIANO_LOW_MIDI = 21; // A0
 export const PIANO_HIGH_MIDI = 108; // C8
 /** Below this the app's pitch tracker cannot follow a fundamental. */
 export const TRACKER_FLOOR_HZ = 40;
+/** Engine build that sizes its pitch window from a low-note floor (v9). */
+export const LOW_WINDOW_ENGINE_VERSION = 9;
+/** The lowest floor the tuner asks for (A0 is 27.5 Hz). */
+export const LOW_WINDOW_MIN_HZ = 25;
+
+/**
+ * The pitch floor to run the engine at (tuner phase 2): the default 40 Hz,
+ * lowered just under the instrument's lowest note when that note sits below
+ * it and the engine can size its window for it. Only the instruments that
+ * need it pay for the longer window (it adds latency).
+ */
+export function pitchFloorFor(lowestHz: number | null, engineVersion: number): number {
+  if (engineVersion < LOW_WINDOW_ENGINE_VERSION || lowestHz == null || !(lowestHz < TRACKER_FLOOR_HZ)) return TRACKER_FLOOR_HZ;
+  return Math.max(LOW_WINDOW_MIN_HZ, Math.floor(lowestHz * 0.9));
+}
+
 /** Above this the 50 ms analysis window resolves pitch poorly. */
 export const TRACKER_TREBLE_HZ = 2100;
 
@@ -541,8 +557,8 @@ export function readAgainstPartials(hz: number, targetHz: number, maxPartial = 2
 }
 
 /** Honesty line for the current piano key. */
-export function pianoRangeHint(targetHz: number, partial: number): string | null {
-  if (targetHz < TRACKER_FLOOR_HZ) return partial > 1 ? `Reading the ${partial === 2 ? '2nd' : '3rd'} partial · real strings run it a cent or two sharp` : 'Below the tracker floor: play the key and the display follows its 2nd partial';
+export function pianoRangeHint(targetHz: number, partial: number, floorHz: number = TRACKER_FLOOR_HZ): string | null {
+  if (targetHz < floorHz) return partial > 1 ? `Reading the ${partial === 2 ? '2nd' : '3rd'} partial · real strings run it a cent or two sharp` : 'Below the tracker floor: play the key and the display follows its 2nd partial';
   if (targetHz > TRACKER_TREBLE_HZ) return 'Treble: the phone resolves fundamentals poorly up here — tune by octave from the key below';
   if (partial > 1) return `Reading the ${partial === 2 ? '2nd' : '3rd'} partial · real strings run it a cent or two sharp`;
   return null;
@@ -561,7 +577,8 @@ export function steadinessText(spread: number): string {
  * Cents from a string target, reading a string BELOW the tracker floor (low B
  * on a 5/6-string bass, 30.9 Hz) against the partial the phone actually hears
  * — the YIN window cannot follow a fundamental under TRACKER_FLOOR_HZ (owner
- * tuner phase 1, 2026-10-23; the native fix is phase 2 on the build list).
+ * tuner phase 1, 2026-10-23). With engine v9 (phase 2) the window reaches the
+ * instrument's lowest note and the fundamental itself matches as partial 1.
  */
 export function centsToTarget(hz: number, t: StringTarget): { cents: number; partial: number } {
   if (t.hz < TRACKER_FLOOR_HZ) {

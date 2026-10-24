@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)configureSampleRate:(double)sampleRate;
 
 /// Analysis configuration from JS: fftSize, fraction (1|3), spectrumEnabled,
-/// pitchEnabled, waveformEnabled, bandAvgAlpha. Unknown keys ignored.
+/// pitchEnabled, waveformEnabled, bandAvgAlpha, pitchMinHz. Unknown keys ignored.
 - (void)setEngineConfig:(NSDictionary<NSString *, id> *)config;
 
 /// RT AUDIO THREAD ONLY: mix deinterleaved channels to mono into the ring.

@@ -145,7 +145,12 @@ iOS and Android identical.
 | Timestamps | frames carry a sequence number, no audio timestamp | stamp each pitch frame with its audio time so the bench can measure true data age / end-to-end delay |
 | Bench on device | phase 1 bench measures the JS display path only | rerun with the native hop change on both test phones; record T50/T90, jitter, acquisition, CPU |
 
-Status: **PLANNED — not started.** Ships only on the owner's explicit build GO.
+Status: **BUILT 2026-10-24 (engine v9), in the iOS 37 / Android 21 build.**
+- Hop: the analysis thread ticks every ~15 ms while pitch is on (`EngineHub::tickIntervalMs`, both platform loops); the spectrum keeps its ~50 ms pace.
+- YIN difference function through the FFT (`Pitch.hpp`), checked equal to the original direct loop by the golden suite (183/183 pass).
+- Low notes: `EngineConfig.pitchMinHz` (20–200 Hz, default 40). The tuner sends 0.9 × the instrument's lowest note (floor 25 Hz) only for instruments below 40 Hz (5/6-string bass, piano A0). Golden: A0 27.5 Hz reads through the hub.
+- Timestamps: `PitchFrame.timeSec` (audio time of the newest analyzed sample) on iOS, Android and the web sim.
+- **Still needs the owner (cannot be done in code):** the on-device bench (CPU, data age, T50/T90) on both test phones, and the confidence calibration against recorded instruments. `PITCH_CONF_MIN` stays 0.5 until then.
 
 ## What the owner does
 

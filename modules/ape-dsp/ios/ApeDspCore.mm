@@ -113,6 +113,7 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
   if (NSNumber *v = config[@"pitchEnabled"]) cfg.pitchEnabled = v.boolValue;
   if (NSNumber *v = config[@"waveformEnabled"]) cfg.waveformEnabled = v.boolValue;
   if (NSNumber *v = config[@"bandAvgAlpha"]) cfg.bandAvgAlpha = v.doubleValue;
+  if (NSNumber *v = config[@"pitchMinHz"]) cfg.pitchMinHz = v.doubleValue;
   _engine->setConfig(cfg);
 }
 
@@ -143,7 +144,8 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
       }
       // FFT / banding / pitch on the freshly drained rolling buffer.
       engine->analysisTick();
-      std::this_thread::sleep_for(std::chrono::milliseconds(50));
+      // ~15 ms while pitch runs (tuner phase 2), 50 ms otherwise.
+      std::this_thread::sleep_for(std::chrono::milliseconds(engine->tickIntervalMs()));
     }
   });
 }
@@ -253,6 +255,7 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
     @"confidence" : @(p.confidence),
     @"voiced" : @(p.voiced),
     @"levelDb" : @(p.levelDb),
+    @"timeSec" : @(p.timeSec),
   };
 }
 

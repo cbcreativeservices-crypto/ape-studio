@@ -94,6 +94,11 @@ class Fft {
     }
   }
 
+  // Raw access to the complex work buffers (tuner phase 2, 2026-10-24: YIN's
+  // FFT-based difference function fills them, transforms, and reads back).
+  double* re() { return re_.data(); }
+  double* im() { return im_.data(); }
+
  private:
   static constexpr double kPi = 3.14159265358979323846;
   size_t n_;

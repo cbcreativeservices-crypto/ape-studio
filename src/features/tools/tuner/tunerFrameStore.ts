@@ -100,3 +100,41 @@ export function useCenterLockOpen(): boolean {
 export function useVuTunerOpen(): boolean {
   return useSyncExternalStore(subscribe, () => state.vuOpen, () => state.vuOpen);
 }
+
+// ── Low-note window (tuner phase 2, 2026-10-24) ──────────────────────────────
+// CenterLock knows the instrument (its lowest target); the tuner mode owns the
+// engine. CenterLock publishes the lowest note, the mode sizes the engine's
+// pitch window from it and publishes the floor it actually got, which
+// CenterLock's honesty lines read. Kept apart from `state` so a frame publish
+// never re-renders these readers.
+let lowNoteHz: number | null = null;
+let floorHz = 40;
+const lowListeners = new Set<() => void>();
+const subscribeLow = (cb: () => void) => {
+  lowListeners.add(cb);
+  return () => {
+    lowListeners.delete(cb);
+  };
+};
+
+/** The lowest note the chosen instrument needs (Hz), or null for none. */
+export function setTunerLowNote(hz: number | null): void {
+  if (hz === lowNoteHz) return;
+  lowNoteHz = hz;
+  lowListeners.forEach((l) => l());
+}
+
+export function useTunerLowNote(): number | null {
+  return useSyncExternalStore(subscribeLow, () => lowNoteHz, () => lowNoteHz);
+}
+
+/** The pitch floor the engine is running with (Hz). */
+export function setTunerFloor(hz: number): void {
+  if (hz === floorHz) return;
+  floorHz = hz;
+  lowListeners.forEach((l) => l());
+}
+
+export function useTunerFloor(): number {
+  return useSyncExternalStore(subscribeLow, () => floorHz, () => floorHz);
+}
