@@ -58,10 +58,10 @@ describe('Mixing Guides world map', () => {
     assert.match(hub, /onScrollEndDrag=\{onFingerUp\}/);
     assert.doesNotMatch(hub, /onTouchCancel=/, 'Android cancels on scroll — never clear on cancel');
     assert.match(hub, /Coming back to the list: no country is lit/);
-    assert.match(hub, /onOpen=\{selectGuide\}/, 'a tap selects: flash, then open');
-    assert.match(hub, /SELECT_FLASH_MS = 1000/, 'the flash lasts 1 s');
-    // (hunt 2026-10-08: a second tap on the flashing style also opens at once.)
-    assert.match(hub, /if \(mapHidden \|\| flashRef\.current === id\) \{ openNow\(id\); return; \}/, 'map hidden: opens at once');
+    assert.match(hub, /onOpen=\{selectGuide\}/);
+    // Owner 2026-10-23: a tap OPENS at once — the 1 s map flash before opening is gone.
+    assert.doesNotMatch(hub, /SELECT_FLASH_MS|setTimeout\(/, 'no delayed open');
+    assert.match(hub, /lastSelect\.current = \{ id, t: now \};\s*openGuide\(id\);/, 'a tap opens the guide now');
     const map = readFileSync(new URL('../src/screens/lab/mixingGuides/GuideWorldMap.tsx', import.meta.url), 'utf8');
     assert.match(map, /useDecorativeMotion\(\)/, 'reduced motion swaps instantly');
     assert.match(map, /accessibilityLiveRegion="polite"/, 'the caption is read');

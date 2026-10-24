@@ -11,26 +11,21 @@ const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'u
 describe('toddler/timing 2026-10-08 — Mixing Guides hub', () => {
   const hub = read('src/screens/lab/mixingGuides/MixingGuidesHubScreen.tsx');
 
-  it('T-1: the tile callbacks never depend on the flash (a tap re-rendered all 50 tiles)', () => {
-    assert.match(hub, /const onTilePoint = useCallback\([^\n]*flashRef\.current[^\n]*\}, \[\]\);/);
-    assert.match(hub, /const onTileHoverOut = useCallback\([^\n]*flashRef\.current[^\n]*, \[\]\);/);
-    assert.doesNotMatch(hub, /\[flashId\]|flashId, shownIds/, 'no callback lists flashId as a dependency');
-    // The ref and the state move together.
-    assert.match(hub, /const setFlash = useCallback\(\(id: string \| null\) => \{ flashRef\.current = id; setFlashId\(id\); \}, \[\]\);/);
+  // Owner 2026-10-23 replaced the flash-then-open with an immediate open, so
+  // T-1..T-3 (all about the 1 s flash) now pin that there is no flash at all.
+  it('T-1: the tile callbacks are stable (a tap re-rendered all 50 tiles)', () => {
+    assert.match(hub, /const onTilePoint = useCallback\(\(id: string\) => setActiveId\(id\), \[\]\);/);
+    assert.match(hub, /const onTileHoverOut = useCallback\(\(\) => setActiveId\(null\), \[\]\);/);
   });
 
-  it('T-2: a second tap on the flashing style opens it now (it used to restart the 1.5 s)', () => {
-    assert.match(hub, /if \(mapHidden \|\| flashRef\.current === id\) \{ openNow\(id\); return; \}/);
-    assert.match(hub, /openTimer\.current = setTimeout\(\(\) => openNow\(id\), SELECT_FLASH_MS\);/);
-    // openNow cancels the timer and ends the flash before navigating.
-    const body = hub.slice(hub.indexOf('const openNow'), hub.indexOf('const selectGuide'));
-    assert.ok(body.indexOf('clearTimeout') < body.indexOf('openGuide(id)'));
-    assert.match(body, /setFlash\(null\)/);
+  it('T-2: a tap opens the guide at once — no flash, no timer to restart', () => {
+    assert.doesNotMatch(hub, /flashRef|openTimer|SELECT_FLASH_MS/);
+    assert.match(hub, /lastSelect\.current = \{ id, t: now \};\s*openGuide\(id\);/);
   });
 
-  it('T-3: hiding the map mid-flash opens the chosen guide at once', () => {
+  it('T-3: hiding the map just hides it', () => {
     assert.match(hub, /onHide=\{hideMap\}/);
-    assert.match(hub, /const hideMap = useCallback\(\(\) => \{\s*setMapHidden\(true\);\s*if \(flashRef\.current\) openNow\(flashRef\.current\);/);
+    assert.match(hub, /const hideMap = useCallback\(\(\) => setMapHidden\(true\), \[\]\);/);
   });
 
   it('T-5: the map caption is not held to the (small, landscape) map width', () => {

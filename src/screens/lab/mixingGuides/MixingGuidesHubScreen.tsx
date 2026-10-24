@@ -15,7 +15,7 @@
  * progress read says so (D51) and every guide still opens. Members-only
  * gating is the navigator's (MemberGated + withMembershipPreview).
  */
-import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useDeferredValue, useMemo, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions, type GestureResponderEvent, type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -37,9 +37,6 @@ import { GuideWorldMap, ShowMapButton } from './GuideWorldMap';
 import { WORLD_ASPECT } from './data/worldMap';
 
 const TOUCH = Platform.OS !== 'web';
-/** A deliberate tap: the countries flash this long, then the guide opens (owner 2026-10-08). */
-export const SELECT_FLASH_MS = 1000;
-
 export function MixingGuidesHubScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -66,11 +63,10 @@ export function MixingGuidesHubScreen() {
   // ── The world map (owner 2026-10-07/08): pinned above the list.
   //  - PRESS / SWIPE: only the card the finger is pressing is lit, held for
   //    the whole drag; lifting the finger clears the map.
-  //  - TAP: a deliberate press SELECTS — the countries flash for 1 s (owner 2026-10-08; was 1.5 s) while the
-  //    map is showing, then the guide opens. With the map hidden it opens at once.
+  //  - TAP: opens the guide at once (owner 2026-10-23: "opening needs to be
+  //    more straight forward" — the 1 s map flash before opening is gone).
   //  - HOVER (web / iPad pointer) lights the card under the pointer.
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [flashId, setFlashId] = useState<string | null>(null);
   const [mapHidden, setMapHidden] = useState(false);
   const mapW = Math.round(Math.min(winW - 32, 560, winH * 0.26 * WORLD_ASPECT));
   const activeTitle = activeId ? MIXING_GUIDE_INDEX.find((g) => g.id === activeId)?.title ?? null : null;
@@ -79,32 +75,10 @@ export function MixingGuidesHubScreen() {
   const scrollBox = useRef<View>(null);
   const scrollWin = useRef({ x: 0, y: 0 });
   const scrollY = useRef(0);
-  const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // The style flashing now, read by the tile callbacks through a ref so they
-  // stay STABLE (hunt 2026-10-08 T-1: they depended on `flashId`, so a tap
-  // re-rendered all 50 memoised tiles — ~145 ms to the flash on desktop dev —
-  // and again when the flash ended).
-  const flashRef = useRef<string | null>(null);
-  const setFlash = useCallback((id: string | null) => { flashRef.current = id; setFlashId(id); }, []);
-  useEffect(() => () => { if (openTimer.current) clearTimeout(openTimer.current); }, []);
-  // Leaving mid-flash (BACK, a tab switch) cancels the pending open.
+  // Coming back to the list: no country is lit until a finger is on a card.
   useFocusEffect(useCallback(() => {
-    // Coming back to the list: no country is lit until a finger is on a card.
     setActiveId(null);
-    return () => {
-      if (openTimer.current) clearTimeout(openTimer.current);
-      openTimer.current = null;
-      flashRef.current = null;
-      setFlashId(null);
-    };
   }, []));
-  /** Open now: the flash (if any) ends and its timer is cancelled. */
-  const openNow = useCallback((id: string) => {
-    if (openTimer.current) clearTimeout(openTimer.current);
-    openTimer.current = null;
-    setFlash(null);
-    openGuide(id);
-  }, [openGuide, setFlash]);
   // One tap can reach selectGuide twice — from the list's own tap detector
   // and from the card's press — so a repeat for the same card within 450 ms is
   // the same tap, not a second one (owner 2026-10-08: "clicking … is being
@@ -114,27 +88,15 @@ export function MixingGuidesHubScreen() {
     const now = Date.now();
     if (lastSelect.current.id === id && now - lastSelect.current.t < 450) return;
     lastSelect.current = { id, t: now };
-    // Hunt 2026-10-08 T-2: a second tap on the style already flashing opens
-    // it now. It used to RESTART the flash, so tapping again and again (an
-    // impatient learner, a toddler) put the guide off for as long as they tapped.
-    if (mapHidden || flashRef.current === id) { openNow(id); return; }
-    if (openTimer.current) clearTimeout(openTimer.current);
-    setActiveId(id);
-    setFlash(id);
-    openTimer.current = setTimeout(() => openNow(id), SELECT_FLASH_MS);
-  }, [mapHidden, openNow, setFlash]);
-  // Hunt 2026-10-08 T-3: hiding the map mid-flash opens the chosen guide at
-  // once (as a tap does with the map hidden) instead of a blank wait.
-  const hideMap = useCallback(() => {
-    setMapHidden(true);
-    if (flashRef.current) openNow(flashRef.current);
-  }, [openNow]);
+    openGuide(id);
+  }, [openGuide]);
+  const hideMap = useCallback(() => setMapHidden(true), []);
   const onTileLayout = useCallback((id: string, e: LayoutChangeEvent) => {
     const { x, y, width, height } = e.nativeEvent.layout;
     tileBox.set(id, { x, y, w: width, h: height });
   }, [tileBox]);
-  const onTileHoverOut = useCallback(() => setActiveId((cur) => (flashRef.current ? cur : null)), []);
-  const onTilePoint = useCallback((id: string) => { if (!flashRef.current) setActiveId(id); }, []);
+  const onTileHoverOut = useCallback(() => setActiveId(null), []);
+  const onTilePoint = useCallback((id: string) => setActiveId(id), []);
   const measureScroll = useCallback(() => {
     scrollBox.current?.measureInWindow((x, y) => { scrollWin.current = { x, y }; });
   }, []);
@@ -152,7 +114,7 @@ export function MixingGuidesHubScreen() {
   // under it (it used to follow whichever card slid under the finger); lifting
   // the finger clears the map (touch end, or the end of a drag — not touch
   // CANCEL, which Android sends when the scroll takes the gesture over). Read on touch-down, not press-in: a quick swipe
-  // never fires press-in. A tap's 1 s flash is not cleared by the lift.
+  // never fires press-in.
   // TAPS THAT GOT LOST: a finger that moves a few pixels during a tap makes the
   // list take the gesture as a scroll, which cancels the card's press — the tap
   // was ignored. The list now recognises a tap itself (lands and lifts on the
@@ -162,7 +124,7 @@ export function MixingGuidesHubScreen() {
     const { pageX, pageY } = e.nativeEvent;
     const hit = tileAt(pageX, pageY);
     down.current = { x: pageX, y: pageY, t: Date.now(), id: hit ? hit.id : null };
-    if (mapHidden || flashRef.current) return;
+    if (mapHidden) return;
     setActiveId(hit ? hit.id : null);
   }, [mapHidden, tileAt]);
   const onFingerEnd = useCallback((e: GestureResponderEvent) => {
@@ -175,10 +137,7 @@ export function MixingGuidesHubScreen() {
     }
     onFingerUp();
   }, [selectGuide]); // eslint-disable-line react-hooks/exhaustive-deps
-  const onFingerUp = useCallback(() => {
-    // Let a tap's press (which starts the flash) land first.
-    setTimeout(() => { if (!flashRef.current) setActiveId(null); }, 120);
-  }, []);
+  const onFingerUp = useCallback(() => setActiveId(null), []);
   const onDragStart = measureScroll;
   const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     scrollY.current = e.nativeEvent.contentOffset.y;
@@ -189,7 +148,7 @@ export function MixingGuidesHubScreen() {
       {mapHidden ? (
         <ShowMapButton onShow={() => setMapHidden(false)} />
       ) : (
-        <GuideWorldMap activeId={activeId} activeTitle={activeTitle} flashing={flashId !== null} width={mapW} touch={TOUCH} onHide={hideMap} />
+        <GuideWorldMap activeId={activeId} activeTitle={activeTitle} width={mapW} touch={TOUCH} onHide={hideMap} />
       )}
       <View ref={scrollBox} style={styles.scrollBox} onLayout={measureScroll}>
       <ScrollView
