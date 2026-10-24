@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 21:20 · ccode · 1f50504f
+changed: Next-build checklist: Android transitions at the iOS/browser pace
+affects other side: nothing (build-list row)
+needs: nothing
+
+
 ### 2026-10-23 21:12 · ccode · 220f4574
 changed: Home: new card art for the Vehicle Audio study-area card
 affects other side: nothing (bundled art; bucket topic_vehicle.webp untouched)
