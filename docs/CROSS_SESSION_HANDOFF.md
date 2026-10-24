@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 17:47 · ccode · 76cd7765
+changed: Home: headline over the study-area cards reads 'Learn About the Academy’s Curriculum'
+affects other side: nothing (client-only Home headline copy)
+needs: nothing
+
+
 ### 2026-10-23 17:35 · ccode · e251c2da
 changed: Mixing Guides: a tap on a style opens it at once
 affects other side: nothing (client-only Mixing Guides hub tap)
