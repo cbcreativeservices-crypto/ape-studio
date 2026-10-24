@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 09:21 · ccode · 44249b94
+changed: Fact-audit test F097178 follows the Fall-off rename (same fact: no 'doink' claim, the doit swoops up)
+affects other side: Tests only
+needs: nothing
+
+
 ### 2026-10-24 09:21 · ccode · 3e07a8f9
 changed: Comp A final-build §2: glossary names pointing at retired entries — drop 'dither' (learning profile), remove Duduk subtone / Spot bloom / Spot localization pull / papery, rename Baking→Tape baking, Fall-off/doink→Fall-off, Harman Target→Harman Target (in-room)
 affects other side: Glossary learning profile + weekly 'term of the day' notification lists; OTA-safe data
