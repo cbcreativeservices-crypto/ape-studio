@@ -12,7 +12,7 @@
  * Snap-to-center, side peek, dot indicator. Tab bar visible (Home tab — the
  * app's opening tab).
  */
-import { createContext, memo, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, memo, useCallback, useContext, useEffect, useMemo, useRef, useState, type ComponentProps, type ReactNode } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
 import {
   AccessibilityInfo,
@@ -530,6 +530,30 @@ const SHOWCASE_LOCAL_ART: Record<string, number> = {
   // keyboard had the wrong black-key layout).
   'Music Production': require('../../../assets/home-cards/area_music-production.webp'),
 };
+/** Topic-card art shipped IN the app, keyed like CARD_IMAGE (same reason as
+ *  SHOWCASE_LOCAL_ART). Owner 2026-10-24: new DAW Fundamentals & Session
+ *  Management art — the bucket's free_daw.webp had AI piano-keyboard errors. */
+const LOCAL_CARD_ART: Record<string, number> = {
+  free3970: require('../../../assets/home-cards/topic_daw-fundamentals.webp'),
+};
+/** Bundled art when the app ships it, else the bucket image (CardArt). */
+function CardArtOrLocal({ local, uri, style, imageStyle, children }: {
+  local: number | undefined;
+  uri: string | null;
+  style: ComponentProps<typeof ImageBackground>['style'];
+  imageStyle: ComponentProps<typeof ImageBackground>['imageStyle'];
+  children: ReactNode;
+}) {
+  return local ? (
+    <ImageBackground source={local} style={style} imageStyle={imageStyle}>
+      {children}
+    </ImageBackground>
+  ) : (
+    <CardArt uri={uri} style={style} imageStyle={imageStyle}>
+      {children}
+    </CardArt>
+  );
+}
 
 function cardImageUrl(key: string): string | null {
   const f = CARD_IMAGE[key];
@@ -882,7 +906,7 @@ function CourseCardView({
           <View style={[styles.cardAboveRule, { backgroundColor: '#c4a2ff' }]} />
         </View>
         <Pressable onPress={() => onOpenTopic(item.gs)} accessibilityRole="button" accessibilityLabel={`Study ${item.name}`}>
-          <CardArt uri={topicArt} style={[styles.card, cd.card, { borderColor: 'rgba(196,162,255,.65)' }]} imageStyle={styles.cardImg}>
+          <CardArtOrLocal local={LOCAL_CARD_ART[`free${item.gs}`]} uri={topicArt} style={[styles.card, cd.card, { borderColor: 'rgba(196,162,255,.65)' }]} imageStyle={styles.cardImg}>
             <LinearGradient
               colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
               locations={[0, 0.3, 0.58, 1]}
@@ -895,7 +919,7 @@ function CourseCardView({
             <View style={{ alignItems: 'center' }}>
               <Text style={styles.homeTopicCta} maxFontSizeMultiplier={HOME_MAX}>STUDY ›</Text>
             </View>
-          </CardArt>
+          </CardArtOrLocal>
         </Pressable>
       </View>
     );
@@ -1329,8 +1353,10 @@ function CourseCardView({
     </>
   );
 
-  const cardBody = url ? (
-    <CardArt
+  const localArt = LOCAL_CARD_ART[key];
+  const cardBody = url || localArt ? (
+    <CardArtOrLocal
+      local={localArt}
       uri={url}
       style={[styles.card, cd.card, { borderColor: accent }]}
       // Locked: no color wash — show the art but clearly grayed-out: image dimmed
@@ -1339,7 +1365,7 @@ function CourseCardView({
       imageStyle={[styles.cardImg, locked && { opacity: 0.7 }]}
     >
       {inner}
-    </CardArt>
+    </CardArtOrLocal>
   ) : (
     <View style={[styles.card, cd.card, styles.cardNoImg, { borderColor: accent }, locked && { opacity: 0.55 }]}>
       {inner}
