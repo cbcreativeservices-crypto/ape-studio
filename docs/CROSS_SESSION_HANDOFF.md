@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 23:32 · ccode · ecced859
+changed: Next-build checklist: Android transitions merged
+affects other side: nothing (build-list row)
+needs: nothing
+
+
 ### 2026-10-23 23:29 · ccode · 15777ddd
 changed: Build config (B3): preview autoIncrement; untrack audio_app_archive/
 affects other side: audio_app_archive/ is no longer tracked (files stay on disk; pulling this commit REMOVES them from other checkouts — copy from history if needed)
