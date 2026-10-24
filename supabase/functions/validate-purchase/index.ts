@@ -35,6 +35,10 @@ type VerifyResult = {
   ackState?: number; // Google acknowledgementState: 0 = not yet, 1 = done (#2)
   paymentState?: number; // Google subscription paymentState: 0 = pending (#2)
   accountTag?: string | null; // app user id the purchase was tagged with (#3)
+  // Exit flow (2026-10-23): renewal on/off, read from the STORE, never the client.
+  // true / false when the store said so; null when it could not be read (then
+  // will_renew is left as it was — never defaulted to true).
+  autoRenew?: boolean | null;
 };
 
 const json = (body: unknown, status = 200) =>
@@ -102,6 +106,31 @@ async function appleLookup(host: string, jwt: string, transactionId: string): Pr
   return { status: res.status, signed: body.signedTransactionInfo ?? null };
 }
 
+/**
+ * Exit flow (2026-10-23): is auto-renew on? Apple's Get All Subscription
+ * Statuses, using the same host that just answered for the transaction.
+ * Returns null on any failure, so the caller leaves will_renew unchanged.
+ */
+async function appleAutoRenew(host: string, jwt: string, transactionId: string, originalId: string): Promise<boolean | null> {
+  try {
+    const res = await fetch(`${host}/inApps/v1/subscriptions/${transactionId}`, {
+      headers: { Authorization: `Bearer ${jwt}` },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) return null;
+    const body = (await res.json()) as {
+      data?: { lastTransactions?: { originalTransactionId?: string; signedRenewalInfo?: string }[] }[];
+    };
+    const all = (body.data ?? []).flatMap((g) => g.lastTransactions ?? []);
+    const m = all.find((t) => !!originalId && t.originalTransactionId === originalId) ?? (all.length === 1 ? all[0] : undefined);
+    if (!m?.signedRenewalInfo) return null;
+    const r = decodeJwtPayload<{ autoRenewStatus?: number }>(m.signedRenewalInfo);
+    return r.autoRenewStatus === 1 ? true : r.autoRenewStatus === 0 ? false : null;
+  } catch {
+    return null;
+  }
+}
+
 async function verifyApple(transactionId: string, expectedSku: string, kind: 'subs' | 'in-app'): Promise<VerifyResult> {
   if (!transactionId) return { valid: false, expiresAtMs: null, reason: 'not_found' };
   let jwt: string | null = null;
@@ -115,12 +144,16 @@ async function verifyApple(transactionId: string, expectedSku: string, kind: 'su
   // what App Review needs: reviewers buy in the SANDBOX against the production
   // build. APPLE_ENV=sandbox forces sandbox only (local testing).
   const env = (Deno.env.get('APPLE_ENV') ?? 'production').toLowerCase();
-  let hit = await appleLookup(env === 'sandbox' ? APPLE_SANDBOX : APPLE_PROD, jwt, transactionId);
-  if (!hit.signed && env !== 'sandbox' && hit.status === 404) hit = await appleLookup(APPLE_SANDBOX, jwt, transactionId);
+  let host = env === 'sandbox' ? APPLE_SANDBOX : APPLE_PROD;
+  let hit = await appleLookup(host, jwt, transactionId);
+  if (!hit.signed && env !== 'sandbox' && hit.status === 404) {
+    host = APPLE_SANDBOX;
+    hit = await appleLookup(host, jwt, transactionId);
+  }
   if (!hit.signed) return { valid: false, expiresAtMs: null, reason: hit.status === 404 ? 'not_found' : 'store_unreachable' };
   // signedTransactionInfo is a JWS from Apple's authenticated endpoint — decode
   // its payload (transport already authenticated by our TLS + bearer JWT).
-  const tx = decodeJwtPayload<{ productId?: string; bundleId?: string; expiresDate?: number; revocationDate?: number; appAccountToken?: string }>(hit.signed);
+  const tx = decodeJwtPayload<{ productId?: string; bundleId?: string; expiresDate?: number; revocationDate?: number; appAccountToken?: string; originalTransactionId?: string }>(hit.signed);
   const bundleOk = tx.bundleId === Deno.env.get('APPLE_BUNDLE_ID');
   const skuOk = tx.productId === expectedSku;
   const notRevoked = !tx.revocationDate;
@@ -135,7 +168,9 @@ async function verifyApple(transactionId: string, expectedSku: string, kind: 'su
       : !notRevoked
         ? 'refunded'
         : 'expired';
-  return { valid, expiresAtMs: tx.expiresDate ?? null, reason, accountTag: tx.appAccountToken ?? null };
+  // Lifetime never renews. A subscription asks Apple (only once it is valid).
+  const autoRenew = kind === 'in-app' ? false : valid ? await appleAutoRenew(host, jwt, transactionId, tx.originalTransactionId ?? '') : null;
+  return { valid, expiresAtMs: tx.expiresDate ?? null, reason, accountTag: tx.appAccountToken ?? null, autoRenew };
 }
 
 // ── Google: Play Developer API (OAuth2 service account) ──────────────────────
@@ -213,6 +248,7 @@ async function verifyGoogle(purchaseToken: string, sku: string, kind: 'subs' | '
     paymentState?: number;
     acknowledgementState?: number;
     obfuscatedExternalAccountId?: string;
+    autoRenewing?: boolean;
   };
   const extra = {
     ackState: body.acknowledgementState,
@@ -224,7 +260,8 @@ async function verifyGoogle(purchaseToken: string, sku: string, kind: 'subs' | '
     if (!expiresAtMs || expiresAtMs <= Date.now()) console.warn('[validate-purchase] google subs not current:', sku, { expiresAtMs, now: Date.now() });
     const valid = !!expiresAtMs && expiresAtMs > Date.now();
     // Validity rule unchanged (expiry only). The reason is reported only when invalid.
-    return { valid, expiresAtMs, reason: valid ? undefined : 'expired', ...extra };
+    const autoRenew = typeof body.autoRenewing === 'boolean' ? body.autoRenewing : null;
+    return { valid, expiresAtMs, reason: valid ? undefined : 'expired', ...extra, autoRenew };
   }
   // in-app (lifetime): purchaseState 0 = purchased, 1 = cancelled/refunded, 2 = pending.
   const valid = body.purchaseState === 0;
@@ -235,7 +272,7 @@ async function verifyGoogle(purchaseToken: string, sku: string, kind: 'subs' | '
       : body.purchaseState === 2
         ? 'pending'
         : 'not_found';
-  return { valid, expiresAtMs: null, reason, ...extra };
+  return { valid, expiresAtMs: null, reason, ...extra, autoRenew: false };
 }
 
 // #2 Part A (2026-10-23): acknowledge Google purchases on the server too, so a
@@ -536,6 +573,10 @@ Deno.serve(async (req) => {
     // restarted for it, so this cannot hand back tenure that was never earned.
     refunded_at: null,
     updated_at: nowIso,
+    // Exit flow (2026-10-23): the plan comes from the verified product id.
+    plan,
+    // Renewal status only when the store answered; otherwise left as it was.
+    ...(typeof verified.autoRenew === 'boolean' ? { will_renew: verified.autoRenew, renewal_checked_at: nowIso } : {}),
   };
   // When the prior row could not be READ, we still do not know whether one
   // exists — and a plain insert would hit UNIQUE (user_id, product), fail the

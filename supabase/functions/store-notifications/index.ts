@@ -81,7 +81,7 @@ function peekJwtPayload<T>(jwt: string): T | null {
   }
 }
 
-// ── Apple ────────────────────────────────────────────────────────────────────
+// ── Apple ──────────────────────────────────────────────────────────────────────
 async function appleAccessJwt(): Promise<string | null> {
   const issuer = Deno.env.get('APPLE_ISSUER_ID');
   const keyId = Deno.env.get('APPLE_KEY_ID');
@@ -141,7 +141,7 @@ async function appleTruth(transactionId: string): Promise<AppleTx | null> {
   return peekJwtPayload<AppleTx>(hit.signed);
 }
 
-// ── Google ───────────────────────────────────────────────────────────────────
+// ── Google ─────────────────────────────────────────────────────────────────────
 async function googleAccessToken(): Promise<string | null> {
   const raw = Deno.env.get('GOOGLE_SERVICE_ACCOUNT');
   if (!raw) return null;
@@ -178,7 +178,7 @@ async function googleTruth(
   purchaseToken: string,
   sku: string,
   kind: 'subs' | 'in-app',
-): Promise<{ revoked: boolean; expiresAtMs: number | null } | null> {
+): Promise<{ revoked: boolean; expiresAtMs: number | null; autoRenew: boolean | null; sku: string } | null> {
   const pkg = Deno.env.get('ANDROID_PACKAGE_NAME');
   const token = await googleAccessToken();
   if (!pkg || !token || !purchaseToken) return null;
@@ -194,6 +194,7 @@ async function googleTruth(
     purchaseState?: number;
     userCancellationTimeMillis?: string;
     cancelReason?: number;
+    autoRenewing?: boolean;
   };
   if (kind === 'subs') {
     const expiresAtMs = body.expiryTimeMillis ? Number(body.expiryTimeMillis) : null;
@@ -210,10 +211,13 @@ async function googleTruth(
     // after Google has sent a voided-purchase or SUBSCRIPTION_REVOKED notice.
     const cancelled = body.cancelReason !== undefined && body.cancelReason !== null;
     const ended = expiresAtMs !== null && expiresAtMs <= Date.now();
-    return { revoked: cancelled && ended, expiresAtMs };
+    // Exit flow (2026-10-23): renewal on/off straight from Google, never inferred
+    // from the notification type.
+    const autoRenew = typeof body.autoRenewing === 'boolean' ? body.autoRenewing : null;
+    return { revoked: cancelled && ended, expiresAtMs, autoRenew, sku };
   }
-  // in-app (lifetime): 0 purchased, 1 cancelled, 2 pending.
-  return { revoked: body.purchaseState === 1, expiresAtMs: null };
+  // in-app (lifetime): 0 purchased, 1 cancelled, 2 pending. Lifetime never renews.
+  return { revoked: body.purchaseState === 1, expiresAtMs: null, autoRenew: false, sku };
 }
 
 /** The products we sell. A voided-purchase notification does not say which one
@@ -278,7 +282,7 @@ async function googleWasVoided(purchaseToken: string): Promise<boolean | null> {
  *  effect of verifying it. */
 async function googleTruthAnySku(
   purchaseToken: string,
-): Promise<{ revoked: boolean; expiresAtMs: number | null } | null> {
+): Promise<{ revoked: boolean; expiresAtMs: number | null; autoRenew: boolean | null; sku: string } | null> {
   for (const sku of GOOGLE_SUBS) {
     const t = await googleTruth(purchaseToken, sku, 'subs');
     if (t) return t;
@@ -354,8 +358,8 @@ type RefundedRow = { id: string; user_id: string; member_since: string | null; c
  * certificates, from a previous paid run, are left alone.
  *
  * Skipped when the member still has academy access some other way (another
- * active academy entitlement): those certificates were not paid for only by
- * the refunded purchase.
+ * active academy entitlement, or an institutional account): those certificates
+ * were not paid for only by the refunded purchase.
  *
  * Never throws. A failure here is logged and the refund itself still stands.
  */
@@ -370,6 +374,15 @@ async function revokeRefundedCertificates(admin: Store, rows: RefundedRow[], why
       if (!prev || start < prev) startByUser.set(r.user_id, start);
     }
     for (const [userId, start] of startByUser) {
+      const { data: u, error: uErr } = await admin.from('users').select('audience').eq('id', userId).maybeSingle();
+      if (uErr) {
+        console.error('[store-notifications] certificate revoke skipped, user lookup failed:', uErr.message, why);
+        continue;
+      }
+      if ((u as { audience?: string } | null)?.audience === 'institutional') {
+        console.log(`[store-notifications] ${why}: certificates kept (institutional account)`);
+        continue;
+      }
       const nowIso = new Date().toISOString();
       const { data: other } = await admin
         .from('entitlements')
@@ -477,6 +490,78 @@ async function markReinstated(admin: Store, storeRefs: string[], expiresAtMs: nu
   return (data ?? []).length;
 }
 
+// ── exit flow (2026-10-23): renewal on/off and plan ──────────────────────────
+const PLAN_BY_SKU: Record<string, 'monthly' | 'annual' | 'lifetime'> = {
+  academy_monthly: 'monthly',
+  academy_annual: 'annual',
+  academy_lifetime: 'lifetime',
+};
+
+/**
+ * Record whether the subscription will renew, as the STORE reports it, so the
+ * app's cancel screen can say "renewal is off, access until <date>". Same row
+ * scope as every other write here: store purchases only, matched on store_ref.
+ * `willRenew` null (the store could not say) writes nothing for that field —
+ * never a default. Never throws; a failure is logged and the notice still 200s.
+ */
+async function setRenewal(admin: Store, storeRefs: string[], willRenew: boolean | null, sku: string | null | undefined): Promise<number> {
+  const refs = storeRefs.filter(Boolean);
+  const plan = sku ? PLAN_BY_SKU[sku] : undefined;
+  if (refs.length === 0 || (willRenew === null && !plan)) return 0;
+  const patch: Record<string, unknown> = {};
+  if (willRenew !== null) {
+    patch.will_renew = willRenew;
+    patch.renewal_checked_at = new Date().toISOString();
+  }
+  if (plan) patch.plan = plan;
+  try {
+    const { data, error } = await admin
+      .from('entitlements')
+      .update(patch)
+      .in('store_ref', refs)
+      .in('source', ['app_store', 'play_store'])
+      .select('id');
+    if (error) {
+      console.error('[store-notifications] renewal-status write failed:', error.message);
+      return 0;
+    }
+    const n = (data ?? []).length;
+    console.log(`[store-notifications] renewal status: will_renew=${willRenew} on ${n} row(s)`);
+    return n;
+  } catch (e) {
+    console.error('[store-notifications] renewal-status write error:', (e as Error).message);
+    return 0;
+  }
+}
+
+/** Apple's Get All Subscription Statuses → autoRenewStatus for this purchase.
+ *  Production first, then sandbox on 404, like appleTruth. null on any failure. */
+async function appleAutoRenew(transactionId: string, originalId: string): Promise<boolean | null> {
+  try {
+    const jwt = await appleAccessJwt();
+    if (!jwt || !transactionId) return null;
+    const env = (Deno.env.get('APPLE_ENV') ?? 'production').toLowerCase();
+    const look = async (host: string) =>
+      await fetch(`${host}/inApps/v1/subscriptions/${transactionId}`, {
+        headers: { Authorization: `Bearer ${jwt}` },
+        signal: AbortSignal.timeout(10000),
+      });
+    let res = await look(env === 'sandbox' ? APPLE_SANDBOX : APPLE_PROD);
+    if (res.status === 404 && env !== 'sandbox') res = await look(APPLE_SANDBOX);
+    if (!res.ok) return null;
+    const body = (await res.json()) as {
+      data?: { lastTransactions?: { originalTransactionId?: string; signedRenewalInfo?: string }[] }[];
+    };
+    const all = (body.data ?? []).flatMap((g) => g.lastTransactions ?? []);
+    const m = all.find((t) => !!originalId && t.originalTransactionId === originalId) ?? (all.length === 1 ? all[0] : undefined);
+    if (!m?.signedRenewalInfo) return null;
+    const r = peekJwtPayload<{ autoRenewStatus?: number }>(m.signedRenewalInfo);
+    return r?.autoRenewStatus === 1 ? true : r?.autoRenewStatus === 0 ? false : null;
+  } catch {
+    return null;
+  }
+}
+
 // ── request handling ─────────────────────────────────────────────────────────
 
 /** Apple notification types that mean money went back, or access was pulled. */
@@ -486,6 +571,9 @@ const APPLE_REINSTATE_TYPES = new Set(['REFUND_REVERSED']);
  *  renewal; SUBSCRIBED covers a resubscribe after a lapse; DID_CHANGE_RENEWAL_
  *  STATUS arrives with a fresh expiry when auto-renew is turned back on. */
 const APPLE_RENEW_TYPES = new Set(['DID_RENEW', 'SUBSCRIBED', 'DID_CHANGE_RENEWAL_STATUS']);
+/** Exit flow (2026-10-23): notices after which renewal on/off is re-read from
+ *  Apple. EXPIRED and DID_FAIL_TO_RENEW only update that status. */
+const APPLE_STATUS_TYPES = new Set(['DID_CHANGE_RENEWAL_STATUS', 'EXPIRED', 'DID_FAIL_TO_RENEW', 'SUBSCRIBED', 'DID_RENEW']);
 
 async function handleApple(admin: Store, signedPayload: string): Promise<Response> {
   const outer = peekJwtPayload<{
@@ -497,7 +585,7 @@ async function handleApple(admin: Store, signedPayload: string): Promise<Respons
 
   const type = outer.notificationType ?? '';
   const interesting =
-    APPLE_REFUND_TYPES.has(type) || APPLE_REINSTATE_TYPES.has(type) || APPLE_RENEW_TYPES.has(type);
+    APPLE_REFUND_TYPES.has(type) || APPLE_REINSTATE_TYPES.has(type) || APPLE_RENEW_TYPES.has(type) || APPLE_STATUS_TYPES.has(type);
   if (!interesting) return ok(`apple: ${type || 'unknown'} is not an event we act on, ignored`);
 
   // The transaction id is the ONLY thing taken from the rumour.
@@ -531,7 +619,16 @@ async function handleApple(admin: Store, signedPayload: string): Promise<Respons
   if (APPLE_RENEW_TYPES.has(type)) {
     // The expiry comes from Apple's own API, never from the notification.
     const n = await markRenewed(admin, refs, truth.expiresDate ?? null);
-    return ok('apple: renewal confirmed, entitlement extended', { rows: n, type });
+    const wr = await appleAutoRenew(transactionId, truth.originalTransactionId || originalId);
+    const s = await setRenewal(admin, refs, wr, truth.productId);
+    return ok('apple: renewal confirmed, entitlement extended', { rows: n, type, will_renew: wr, status_rows: s });
+  }
+  if (APPLE_STATUS_TYPES.has(type)) {
+    // EXPIRED / DID_FAIL_TO_RENEW: access is NOT changed here (expires_at
+    // already says when it ends); only renewal on/off is recorded.
+    const wr = await appleAutoRenew(transactionId, truth.originalTransactionId || originalId);
+    const s = await setRenewal(admin, refs, wr, truth.productId);
+    return ok('apple: renewal status recorded', { type, will_renew: wr, status_rows: s });
   }
   // Apple said REFUND but its own API shows no revocation — believe the API.
   return ok('apple: store reports no revocation, nothing changed');
@@ -603,7 +700,26 @@ async function handleGoogle(admin: Store, body: unknown): Promise<Response> {
       if (!rt) return ok('google: could not verify the renewal with the store, nothing changed');
       if (rt.revoked) return ok('google: store reports this purchase revoked, not renewing');
       const n = await markRenewed(admin, [sub.purchaseToken], rt.expiresAtMs);
-      return ok('google: renewal confirmed, entitlement extended', { rows: n, type: sub.notificationType });
+      const s = await setRenewal(admin, [sub.purchaseToken], rt.autoRenew, rt.sku);
+      return ok('google: renewal confirmed, entitlement extended', {
+        rows: n,
+        type: sub.notificationType,
+        will_renew: rt.autoRenew,
+        status_rows: s,
+      });
+    }
+    /**
+     * Exit flow (2026-10-23): 3 = CANCELED (renewal turned off; access continues
+     * to the paid end), 13 = EXPIRED. Only renewal on/off is recorded, read from
+     * Google. Tenure and expires_at are NOT touched (13 is a normal ending).
+     */
+    if (sub.notificationType === 3 || sub.notificationType === 13) {
+      const st =
+        (sub.subscriptionId ? await googleTruth(sub.purchaseToken, sub.subscriptionId, 'subs') : null) ??
+        (await googleTruthAnySku(sub.purchaseToken));
+      if (!st) return ok('google: could not verify renewal status with the store, nothing changed');
+      const s = await setRenewal(admin, [sub.purchaseToken], st.autoRenew, st.sku);
+      return ok('google: renewal status recorded', { type: sub.notificationType, will_renew: st.autoRenew, status_rows: s });
     }
     if (sub.notificationType !== 12) {
       return ok(`google: subscription notification ${sub.notificationType} is not a revocation, ignored`);
