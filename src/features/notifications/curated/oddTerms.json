@@ -1236,10 +1236,6 @@
     "body": "Loaders are hired fresh in each city just for load-in and load-out - the best ones build a reputation for packing a truck tightly, in exactly the right order."
   },
   {
-    "term": "Duduk subtone",
-    "body": "The Armenian duduk can be played in a soft, breathy subtone - relaxing the embouchure so audible air blends into the pitch, like speaking in a low whisper."
-  },
-  {
     "term": "Liturgical Acoustic",
     "body": "The same soaring reverb that makes a cathedral's choir and organ sound magnificent is exactly what makes the sermon from its pulpit hard to understand."
   },
@@ -1708,7 +1704,7 @@
     "body": "Big stage houses keep a whole second stage hidden right behind the first - a full-size wagon holding an entire preset scene, ready to roll forward on cue."
   },
   {
-    "term": "Baking",
+    "term": "Tape baking",
     "body": "When old tape gets sticky and sheds oxide, engineers literally bake it at low heat in a controlled oven - just long enough to play it once and copy it."
   },
   {
@@ -3348,7 +3344,7 @@
     "body": "A pit crossover is a hidden passage beneath the orchestra pit that lets performers and crew cross the stage completely unseen by the audience."
   },
   {
-    "term": "Fall-off/doink",
+    "term": "Fall-off",
     "body": "A jazz brass note can end with a fall-off: a downward smear where the pitch trails away instead of stopping clean. Its opposite, the doit, swoops up."
   },
   {
@@ -3488,10 +3484,6 @@
     "body": "Djent names a whole metal-guitar subgenre after the sound itself - the word imitates the tight, muted, percussive 'chug' of a heavily palm-muted low string."
   },
   {
-    "term": "Spot bloom",
-    "body": "Push a spot mic too high and its instrument doesn't just get louder - it swells, sounding unnaturally close, big and diffuse against the rest of the ensemble."
-  },
-  {
     "term": "Faraday Instability",
     "body": "Shake a shallow dish of liquid hard enough and its surface breaks into standing ripples oscillating at exactly half the shaking frequency."
   },
@@ -3506,10 +3498,6 @@
   {
     "term": "time-reversal focusing",
     "body": "Record a sound, play it back reversed from the same array, and it retraces its echoes to its source - used in ultrasound therapy and murky underwater channels."
-  },
-  {
-    "term": "Spot localization pull",
-    "body": "Ears trust whichever mic signal arrives first and loudest, so an unaligned spot mic can drag a player's stereo position toward itself - delay it, don't re-pan."
   },
   {
     "term": "Streamer-and-punch system",

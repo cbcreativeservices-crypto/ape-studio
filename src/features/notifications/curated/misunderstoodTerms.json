@@ -3492,10 +3492,6 @@
     "body": "A bright speaker cabinet looks like an EQ problem. Often the horn attenuator (L-pad) is just set too high -- check that before reaching for EQ."
   },
   {
-    "term": "papery",
-    "body": "Myth: a papery sound just means it needs more treble. Actually papery describes missing low-end body, so boosting highs alone only makes it thinner."
-  },
-  {
     "term": "Bias calibration",
     "body": "Myth: any tape can use the same bias setting. Actually bias current must be calibrated for each tape formulation and speed, or distortion and noise suffer."
   },
@@ -3632,7 +3628,7 @@
     "body": "Myth: clicks and dropouts on networked audio mean a bad converter or gain stage. Actually they're often lost or late Ethernet packets, not an analog fault."
   },
   {
-    "term": "Harman Target",
+    "term": "Harman Target (in-room)",
     "body": "Myth: the Harman target is a perfectly flat response. Actually it adds a bass shelf below about 200 Hz and an upper-mid lift, then falls gently in the treble."
   },
   {

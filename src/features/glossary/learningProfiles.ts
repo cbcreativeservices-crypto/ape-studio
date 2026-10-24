@@ -154,7 +154,7 @@ const READY_TERMS_SPEAKER = [
 const READY_TERMS_DIGITAL = [
   'ADC', 'DAC', 'Analog-to-digital converter stage', 'Digital-to-analog converter stage',
   'Aliasing', 'Anti-aliasing filter', 'Reconstruction filter', 'Bit Depth', 'dBFS',
-  'dither', 'Dithering', 'Noise Shaping', 'Nyquist frequency', 'Pulse-Code Modulation',
+  'Dithering', 'Noise Shaping', 'Nyquist frequency', 'Pulse-Code Modulation',
   'quantization', 'Quantization Noise', 'Sample and hold', 'Sample Rate',
   'Sample Rate Conversion', 'oversampling', 'Upsampling', 'Downsampling',
   'Inter-Sample Peak', 'Inter-sample peaks', 'jitter', 'Effective number of bits',
