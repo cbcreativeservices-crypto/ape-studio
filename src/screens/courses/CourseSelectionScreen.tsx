@@ -56,6 +56,7 @@ import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledB
 import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { BookIcon } from '../../components/BookIcon';
 import { useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
+import { onScreenIntrosReset } from '../../features/intro/screenIntros';
 import Svg, { Path } from 'react-native-svg';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
@@ -1396,6 +1397,11 @@ const MemoCourseCardView = memo(CourseCardView);
 
 /** The onboarding video is launched at most once per app session. */
 let introVideoLaunched = false;
+// A reset of the screen intros (Settings, or a brand-new account — owner
+// 2026-10-23) owes the video again, even within this app session.
+onScreenIntrosReset(() => {
+  introVideoLaunched = false;
+});
 
 export function CourseSelectionScreen() {
   const insets = useSafeAreaInsets();

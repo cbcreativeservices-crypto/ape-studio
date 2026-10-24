@@ -151,7 +151,7 @@ describe('#7 half-created account: checkAccountRecord', () => {
     const fn = body(ca, 'export async function registerCommercialUser', '\n}\n');
     // The stall is caught here, not thrown past the sign-out.
     assert.match(fn, /try \{\s*\(\{ data, error \} = await withDeadline\(/);
-    assert.match(fn, /if \(status === 'ok' \|\| status === 'already_registered'\) return \{ success: true \};/);
+    assert.match(fn, /if \(status === 'ok' \|\| status === 'already_registered'\) return \{ success: true, created: status === 'ok' \};/);
     const success = fn.indexOf("return { success: true }");
     const out = fn.indexOf('await signOutHalfCreatedAccount();');
     assert.ok(out > success, 'every non-success after the session exists signs out');

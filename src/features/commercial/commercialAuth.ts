@@ -42,7 +42,9 @@ export async function collectFavoritesMigration(): Promise<FavoritesMigration> {
   return { favorites: safeList(f), recent: safeList(r) };
 }
 
-export type CommercialSignupResult = { success: true } | { success: false; error: string };
+/** `created`: the server made a NEW account just now (status 'ok'), not an
+ *  existing one signing back in ('already_registered'). */
+export type CommercialSignupResult = { success: true; created: boolean } | { success: false; error: string };
 
 /**
  * Create a commercial account: real auth session, then the registration RPC.
@@ -76,7 +78,7 @@ export async function registerCommercialUser(email: string, password: string): P
   }
   const status = error ? null : (data as { status?: string } | null)?.status;
   // 'already_registered' = an existing commercial user re-authenticating — fine.
-  if (status === 'ok' || status === 'already_registered') return { success: true };
+  if (status === 'ok' || status === 'already_registered') return { success: true, created: status === 'ok' };
   if (error) console.warn('[commercial] register_commercial_user failed:', error.message);
   else console.warn('[commercial] register_commercial_user status:', status);
   /**

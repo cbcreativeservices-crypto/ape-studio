@@ -432,6 +432,20 @@ export function AuthScreen({ navigation }: Props) {
         return;
       }
       setSignupRefused(false);
+      // EVERY NEW ACCOUNT GETS THE ONBOARDING (owner 2026-10-23: video, landing,
+      // first-run guide on its first sign-in, even on a phone that has seen it).
+      // The same reset as Settings → "Reset onboarding hints"; only for a
+      // brand-new account, never one signing back in. Best-effort: a reset
+      // that fails never blocks the finished sign-up.
+      // Loaded on demand: app start stays inside its module cap (perfStartTrim).
+      if (result.created) {
+        await Promise.all([
+          require('../../lib/coachMark').resetCoachMarks(),
+          require('../../features/intro/screenIntros').resetScreenIntros(),
+          require('../../features/lab/amplitudeOrientation').resetAmplitudeOrientation(),
+          require('../../features/intro/onboardingFlow').resetOnboarding(),
+        ]).catch(() => {});
+      }
       // Optional access/promo code (owner 2026-08-21: comp accounts / event
       // offers). Best-effort AFTER the account exists — a bad or not-yet-live
       // code never blocks the finished signup; the user just lands as free.
