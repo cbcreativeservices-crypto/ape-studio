@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 09:57 · ccode · de040841
+changed: Home: new Music Production study-area card art, bundled (old art had AI piano-keyboard layout errors)
+affects other side: Home carousel — Music Production card; OTA-safe asset
+needs: nothing
+
+
 ### 2026-10-24 09:38 · ccode · 96b90d79
 changed: Exit flow ported from the exit-flow branch (f76a8ef9/37c781a6/52f967f7) and switched ON: Membership and billing, Cancel membership C1-C4 (feedback then the store's own subscription page), Delete account D1-D3 with keep-a-verification-record choice
 affects other side: Settings › MEMBERSHIP › Membership and billing; Settings › ACCOUNT AND PRIVACY › Delete account; live RPCs submit_exit_feedback + delete_my_account(p_keep_credentials); OTA-safe JS
