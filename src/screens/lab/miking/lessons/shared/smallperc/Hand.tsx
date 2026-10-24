@@ -13,7 +13,8 @@
  */
 import { useMemo, type ReactNode } from 'react';
 import { Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
-import { drawHand3, FIGURE_SKIN, FigureMass, forearmPath, NAIL as FIGURE_NAIL, Nails } from '../players/PlayerFigure';
+import { FIGURE_SKIN, forearmPath, NAIL as FIGURE_NAIL } from '../players/PlayerFigure';
+import { AnatomicalHand } from '../hand/anatomy/AnatomicalHand';
 import type { HandSkeleton, HandView, V3 } from '../players/handModel.ts';
 import { pt } from '../players/playerPose';
 import { nailOutline, placePt, smoothPathD, tubeOutline, type HandGeo, type Placement, type Pt } from './hands.ts';
@@ -196,17 +197,8 @@ export const TOP_VIEW: HandView = (p) => ({ u: p.x, v: p.z, d: -p.y });
  * paints what lies behind it (before the object), 'front' the rest.
  */
 export function Hand3({ sk, view, fore, cut, part = 'all' }: { sk: HandSkeleton; view: HandView; fore?: number; cut?: { p: V3; n: V3 }; part?: 'all' | 'behind' | 'front' }) {
-  const d = useMemo(() => drawHand3(sk, view, { fore, cut }), [sk, view, fore, cut]);
-  return (
-    <Group>
-      {part !== 'front' && d.behind ? <FigureMass path={d.behind} tone="skin" contour={1.8} /> : null}
-      {part !== 'behind' ? (
-        <>
-          <FigureMass path={d.path} tone="skin" contour={1.8} />
-          <Path path={d.lines} style="stroke" strokeWidth={1.7} strokeCap="round" color={FIGURE_SKIN.edge} opacity={0.7} />
-          <Nails path={d.nails} />
-        </>
-      ) : null}
-    </Group>
-  );
+  // Hands redesign 2026-10-24: the one anatomical Miking hand (hand/anatomy) —
+  // each finger its own lit form, the palm mass with its knuckle heads, the
+  // oval wrist, nails and creases — in place of the single flat silhouette.
+  return <AnatomicalHand sk={sk} view={view} fore={fore} cut={cut} part={part} />;
 }

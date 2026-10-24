@@ -20,9 +20,10 @@ import { BlurMask, DashPathEffect, FillType, Group, LinearGradient, Path, Radial
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { arrow, INK, make, oval, rrect, seg, type SkPath } from '../shared/concert/paths.ts';
-import { Hand } from '../shared/smallperc/Hand';
-import { dorsalFist, openHand, placeBetween, profileFist, type Pt } from '../shared/smallperc/hands.ts';
+import { gripCylinder, h3, openHandOn, type Cylinder, type HandSkeleton } from '../shared/hand/anatomy/anatomy.ts';
+import { HeldHand } from '../shared/smallperc/HeldHand';
 import { Arm2D, PlayerSide, PlayerTop } from '../shared/smallperc/Player';
+import { v3 } from '../shared/smallperc/geom.ts';
 import { PercStand, Stick } from '../shared/smallperc/objects';
 import { JOUT, R, stateOf, TMB_DIMS, type TmbState } from './model.ts';
 
@@ -32,9 +33,7 @@ const JD = TMB_DIMS.jingleD.mm;
 const CR = TMB_DIMS.crescentR.mm;
 const WOOD = ['#d6a061', '#a96f36', '#784a1d', '#4a2a12'];
 const JINGLE = ['#ffffff', '#e2e5ec', '#a3a9b4', '#5d616c'];
-const FIST = profileFist(10);
-const BACK = dorsalFist();
-const OPEN = openHand(16);
+type Pt = readonly [number, number];
 const side = (p: { x: number; y: number }): Pt => [p.x, p.y];
 const top = (p: { x: number; z: number }): Pt => [p.x, p.z];
 
@@ -170,32 +169,58 @@ function Shake({ s, view }: { s: TmbState; view: ViewId }) {
   );
 }
 
+/**
+ * THE HANDS (hands redesign 2026-10-24) — the shared Miking hand, posed in
+ * 3-D and seen in both views:
+ *   HELD     the right fist round the frame at its player-side edge, the
+ *            back of the hand up and back, the fingers wrapped over the band
+ *            to its inside;
+ *   STRUCK   + the LEFT hand open, its palm turned to the ring's face,
+ *            waiting for the stroke;
+ *   MOUNTED  the right hand holding the stick (thumb and the side of the
+ *            index finger the fulcrum, the other fingers closed round it).
+ */
+type Hands = { main: HandSkeleton; cyl: Cylinder; off: HandSkeleton | null };
+const handsCache = new Map<TmbState, Hands>();
+export function tambourineHands(s: TmbState): Hands {
+  const hit = handsCache.get(s);
+  if (hit) return hit;
+  const a = s.arm;
+  let cyl: Cylinder;
+  let main: HandSkeleton;
+  if (s.stick) {
+    cyl = { c: s.stick.a, axis: h3.sub(s.stick.b, s.stick.a), r: 6.5, tipward: true, slide: 10 };
+    main = gripCylinder(cyl, { thumbSign: 1, wrist: a.W, elbow: a.E, angle: [42, 60], back: v3(0, -1, 0.3) }).sk;
+  } else {
+    // The band (45 mm deep, 7 mm thick) runs across the hand along z here: the
+    // fist closes round it as round a ≈ Ø 26 mm bar.
+    cyl = { c: s.grip, axis: v3(0, 0, 1), r: 13, slide: 10 };
+    main = gripCylinder(cyl, { thumbSign: 1, wrist: a.W, elbow: a.E, angle: [65, 90], back: h3.mul(s.pose.e1, -1) }).sk;
+  }
+  const o = s.off;
+  const off = o ? openHandOn(o.W, h3.sub(o.G, o.W), h3.mul(s.pose.n, -1), -1, 0.22) : null;
+  const h = { main, cyl, off };
+  handsCache.set(s, h);
+  return h;
+}
+
 export function TambourineArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   const s = stateOf(variant);
   const a = s.arm;
   const mounted = s.id === 'mounted';
-  const plSide = useMemo(() => placeBetween(mounted ? BACK : FIST, side(a.W), side(a.G)), [a, mounted]);
-  const plTop = useMemo(() => placeBetween(BACK, top(a.W), top(a.G)), [a]);
+  const H = tambourineHands(s);
   const off = s.off;
-  const plFreeSide = useMemo(() => (off ? { at: side(off.W), angle: (Math.atan2(off.G.y - off.W.y, off.G.x - off.W.x) * 180) / Math.PI - 50, mirror: true } : null), [off]);
-  const plFreeTop = useMemo(() => (off ? placeBetween(OPEN, top(off.W), top(off.G)) : null), [off]);
   if (view === 'top') {
     return (
       <Group>
         <PlayerTop />
         {mounted ? <PercStand x={-R - 30} top={0} to={[-R - 30, 0]} z /> : null}
         {s.id === 'shaken' || s.id === 'crescent' ? <Shake s={s} view="top" /> : null}
-        {off && plFreeTop ? (
-          <>
-            <Arm2D s={top(off.S)} e={top(off.E)} w={top(off.W)} />
-            <Hand geo={OPEN} pl={plFreeTop} />
-          </>
-        ) : null}
-        <Arm2D s={top(a.S)} e={top(a.E)} w={top(a.W)} />
+        {off && H.off ? <HeldHand view="top" S={off.S} E={off.E} sk={H.off} /> : null}
         {mounted ? (
-          <Hand geo={BACK} pl={plTop} heldBehind held={<Stick a={top(s.stick!.a)} b={top(s.stick!.b)} w={13} />} />
+          <HeldHand view="top" S={a.S} E={a.E} sk={H.main} cyl={H.cyl} held={<Stick a={top(s.stick!.a)} b={top(s.stick!.b)} w={13} />} />
         ) : (
-          <Hand geo={BACK} pl={plTop} heldBehind held={<FromAbove s={s} />} />
+          <HeldHand view="top" S={a.S} E={a.E} sk={H.main} cyl={H.cyl} held={<FromAbove s={s} />} />
         )}
         {mounted ? <FromAbove s={s} /> : null}
       </Group>
@@ -203,24 +228,19 @@ export function TambourineArt({ view, variant }: { view: ViewId; variant: Varian
   }
   return (
     <Group>
-      {off && plFreeSide ? (
-        <>
-          <Arm2D s={side(off.S)} e={side(off.E)} w={side(off.W)} />
-        </>
-      ) : null}
+      {off ? <Arm2D s={side(off.S)} e={side(off.E)} w={side(off.W)} /> : null}
       <PlayerSide />
       {mounted ? <PercStand x={-R - 30} top={s.pose.c.y + 20} to={[-R + 10, s.pose.c.y + 16]} /> : null}
       {s.id === 'struck' ? <Shake s={s} view="side" /> : null}
-      <Arm2D s={side(a.S)} e={side(a.E)} w={side(a.W)} />
       {mounted ? (
         <>
           <EdgeOn s={s} />
-          <Hand geo={BACK} pl={plSide} heldBehind held={<Stick a={side(s.stick!.a)} b={side(s.stick!.b)} w={13} />} />
+          <HeldHand view="side" S={a.S} E={a.E} sk={H.main} cyl={H.cyl} held={<Stick a={side(s.stick!.a)} b={side(s.stick!.b)} w={13} />} />
         </>
       ) : (
-        <Hand geo={FIST} pl={plSide} held={<EdgeOn s={s} />} />
+        <HeldHand view="side" S={a.S} E={a.E} sk={H.main} cyl={H.cyl} held={<EdgeOn s={s} />} />
       )}
-      {off && plFreeSide ? <Hand geo={OPEN} pl={plFreeSide} /> : null}
+      {off && H.off ? <HeldHand view="side" S={off.S} E={off.E} sk={H.off} armElsewhere /> : null}
     </Group>
   );
 }

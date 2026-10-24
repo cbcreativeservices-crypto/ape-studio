@@ -16,15 +16,15 @@ import { DashPathEffect, Group, Path } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { make } from '../shared/concert/paths.ts';
-import { Hand } from '../shared/smallperc/Hand';
-import { cradle, dorsalFist, placeBetween, type Pt } from '../shared/smallperc/hands.ts';
+import { gripCylinder, h3, type Cylinder, type HandSkeleton } from '../shared/hand/anatomy/anatomy.ts';
+import { cradleHand } from '../shared/smallperc/percGrip.ts';
+import { HeldHand } from '../shared/smallperc/HeldHand';
 import { Arm2D, PlayerSide, PlayerTop } from '../shared/smallperc/Player';
 import { Guiro, Stick, WOOD_HANDLE } from '../shared/smallperc/objects';
-import { P0 } from '../shared/smallperc/geom.ts';
-import { GL, GR, GU_DIMS, RIDGE_HALF, stateOf } from './model.ts';
+import { P0, v3 } from '../shared/smallperc/geom.ts';
+import { GL, GR, GU_DIMS, RIDGE_HALF, stateOf, type GuState } from './model.ts';
 
-const CUP = cradle(GR, 120);
-const BACK = dorsalFist();
+type Pt = readonly [number, number];
 const PLASTIC = ['#f2f4f7', '#c9ced6', '#8d939d', '#565b64'];
 const side = (p: { x: number; y: number }): Pt => [p.x, p.y];
 const top = (p: { x: number; z: number }): Pt => [p.x, p.z];
@@ -51,36 +51,56 @@ function Travel() {
   );
 }
 
+/**
+ * THE HANDS (hands redesign 2026-10-24) — the shared Miking hand, posed in 3-D:
+ *   HOLD    the LEFT hand palm up under the body's left end, the fingertips
+ *           curled up round its front and the thumb on its near side;
+ *   SCRAPE  the RIGHT hand holding the scraper near its end like a pencil
+ *           held loosely — thumb on top, the fingers closed round it, the
+ *           tip out past the thumb onto the ridges.
+ */
+type GuHands = { hold: HandSkeleton; scrape: HandSkeleton; bodyCyl: Cylinder; scrapeCyl: Cylinder };
+const handsCache = new Map<GuState, GuHands>();
+export function guiroHands(s: GuState): GuHands {
+  const hit = handsCache.get(s);
+  if (hit) return hit;
+  const c = s.c;
+  const z0 = s.hold.G.z;
+  const pads = [22, 3, -16, -34].map((dz) => v3(c.x + GR * 0.72, c.y + GR * 0.66, z0 + dz));
+  const thumb = v3(c.x - GR * 0.8, c.y + GR * 0.55, z0 + 30);
+  const hold = cradleHand(v3(c.x - 22, c.y + GR + 30, z0 - 4), v3(1, 0, 0.12), pads, thumb);
+  const scrapeCyl: Cylinder = { c: s.scrape.G, axis: h3.sub(s.scraper.a, s.scraper.b), r: 4.5, tipward: true, slide: 8 };
+  const scrape = gripCylinder(scrapeCyl, { thumbSign: 1, wrist: s.scrape.W, elbow: s.scrape.E, angle: [40, 62], back: v3(-0.2, -1, 0.3), close: 0.95 }).sk;
+  const h = { hold, scrape, bodyCyl: { c, axis: v3(0, 0, 1), r: GR }, scrapeCyl };
+  handsCache.set(s, h);
+  return h;
+}
+
 export function GuiroArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   const s = stateOf(variant);
   const glass = s.id === 'fiberglass';
   const L = s.hold;
   const R = s.scrape;
+  const H = guiroHands(s);
   const P = view === 'side' ? side : top;
-  const plCup = useMemo(() => placeBetween(CUP, P(L.W), P(s.c), view === 'top'), [L, s.c, view]); // eslint-disable-line react-hooks/exhaustive-deps
-  const plScrape = useMemo(() => placeBetween(BACK, P(R.W), P(R.G)), [R, view]); // eslint-disable-line react-hooks/exhaustive-deps
   const scraper = <Stick a={P(s.scraper.b)} b={P(s.scraper.a)} w={9} colors={glass ? PLASTIC : WOOD_HANDLE} />;
   const body = { len: GL, dMax: GU_DIMS.dMax.mm, dMin: GU_DIMS.dMin.mm, fiberglass: glass };
   if (view === 'top') {
     return (
       <Group>
         <PlayerTop />
-        <Arm2D s={top(L.S)} e={top(L.E)} w={top(L.W)} />
-        <Hand geo={CUP} pl={plCup} />
-        <Guiro c={top(s.c)} angle={90} {...body} />
+        <HeldHand view="top" S={L.S} E={L.E} sk={H.hold} cyl={H.bodyCyl} halfLength={GL / 2} held={<Guiro c={top(s.c)} angle={90} {...body} />} />
         <Travel />
-        <Arm2D s={top(R.S)} e={top(R.E)} w={top(R.W)} />
-        <Hand geo={BACK} pl={plScrape} heldBehind held={scraper} />
+        <HeldHand view="top" S={R.S} E={R.E} sk={H.scrape} cyl={H.scrapeCyl} held={scraper} />
       </Group>
     );
   }
   return (
     <Group>
-      <Arm2D s={side(L.S)} e={side(L.E)} w={side(L.W)} />
+      <Arm2D s={side(L.S)} e={side(L.E)} w={side(H.hold.frame.o)} />
       <PlayerSide />
-      <Hand geo={CUP} pl={plCup} held={<Guiro c={side(s.c)} angle={0} {...body} endOn />} />
-      <Arm2D s={side(R.S)} e={side(R.E)} w={side(R.W)} />
-      <Hand geo={BACK} pl={plScrape} heldBehind held={scraper} />
+      <HeldHand view="side" S={L.S} E={L.E} sk={H.hold} cyl={H.bodyCyl} halfLength={GL / 2} armElsewhere held={<Guiro c={side(s.c)} angle={0} {...body} endOn />} />
+      <HeldHand view="side" S={R.S} E={R.E} sk={H.scrape} cyl={H.scrapeCyl} held={scraper} />
     </Group>
   );
 }

@@ -113,6 +113,9 @@ import { MikingHubScreen } from '../screens/lab/miking/MikingHubScreen';
 // tapped through to its lesson menu (2026-10-06).
 import { EarLabScreen } from '../screens/lab/EarLabScreen';
 import { MikingLessonScreen } from '../screens/lab/miking/MikingLessonScreen';
+// Miking hands redesign (2026-10-24): `#labpreview/MikingHands/<id>[~u~v~w]`
+// draws one lesson's art large, cropped round its hands.
+import { MikingHandStudio } from './MikingHandStudio';
 // Mixing Guides (2026-10-07): `#labpreview/MixingGuides`, `#labpreview/MixingGuide/pop`.
 import { MixingGuidesHubScreen } from '../screens/lab/mixingGuides/MixingGuidesHubScreen';
 import { MixingGuideScreen } from '../screens/lab/mixingGuides/MixingGuideScreen';
@@ -220,6 +223,7 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   MikingHub: MikingHubScreen as ComponentType,
   EarLab: EarLabScreen as ComponentType,
   MikingLesson: MikingLessonScreen as ComponentType,
+  MikingHands: MikingHandStudio as ComponentType,
   MixingGuides: MixingGuidesHubScreen as ComponentType,
   MixingGuide: MixingGuideScreen as ComponentType,
 };

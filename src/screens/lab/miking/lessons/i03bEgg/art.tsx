@@ -15,18 +15,36 @@ import { DashPathEffect, Group, Path } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { arrow, make } from '../shared/concert/paths.ts';
-import { Hand } from '../shared/smallperc/Hand';
-import { dorsalFist, placeBetween, profileFist, type Pt } from '../shared/smallperc/hands.ts';
-import { Arm2D, PlayerSide, PlayerTop } from '../shared/smallperc/Player';
+import { gripCylinder, type Cylinder, type Grip } from '../shared/hand/anatomy/anatomy.ts';
+import { HeldHand } from '../shared/smallperc/HeldHand';
+import { PlayerSide, PlayerTop } from '../shared/smallperc/Player';
 import { EggShell } from '../shared/smallperc/objects';
+import { v3 } from '../shared/smallperc/geom.ts';
 import { EGG_DIMS, stateOf, type Egg } from './model.ts';
 
+type Pt = readonly [number, number];
 const R = EGG_DIMS.d.mm / 2;
 const LEN = EGG_DIMS.len.mm;
-const FIST = profileFist(R - 2);
-const BACK = dorsalFist();
 const side = (p: { x: number; y: number }): Pt => [p.x, p.y];
 const top = (p: { x: number; z: number }): Pt => [p.x, p.z];
+
+/**
+ * THE GRIP (hands redesign 2026-10-24): the shared Miking hand closed LOOSELY
+ * round the egg, palm down — the egg in the curl of the fingers, the fingers
+ * over its front and under it, the thumb closing round its near end. The egg
+ * is near round across (58 × 45 mm): the hand closes round its 45 mm girth
+ * (an axis across the hand), turned until its wrist meets the model's wrist.
+ */
+const cylOf = (e: Egg): Cylinder => ({ c: e.c, axis: v3(0, 0, 1), r: R + 1.5 });
+const grips = new Map<Egg, Grip>();
+export function eggGrip(e: Egg): Grip {
+  const hit = grips.get(e);
+  if (hit) return hit;
+  const a = e.arm;
+  const g = gripCylinder(cylOf(e), { thumbSign: e.side === 'R' ? 1 : -1, wrist: a.W, elbow: a.E, angle: [65, 90], back: v3(0.2, -1, 0), close: 0.9 });
+  grips.set(e, g);
+  return g;
+}
 
 function Shake({ c, view }: { c: Pt; view: ViewId }) {
   const p = useMemo(() => {
@@ -44,25 +62,11 @@ function Shake({ c, view }: { c: Pt; view: ViewId }) {
 }
 
 function EggHandSide({ e }: { e: Egg }) {
-  const a = e.arm;
-  const pl = useMemo(() => placeBetween(FIST, side(a.W), side(a.G)), [a]);
-  return (
-    <Group>
-      <Arm2D s={side(a.S)} e={side(a.E)} w={side(a.W)} />
-      <Hand geo={FIST} pl={pl} farThumb={e.side === 'L'} held={<EggShell c={side(e.c)} angle={0} len={LEN} d={EGG_DIMS.d.mm} />} />
-    </Group>
-  );
+  return <HeldHand view="side" S={e.arm.S} E={e.arm.E} sk={eggGrip(e).sk} cyl={cylOf(e)} halfLength={R} held={<EggShell c={side(e.c)} angle={0} len={LEN} d={EGG_DIMS.d.mm} />} />;
 }
 
 function EggHandTop({ e }: { e: Egg }) {
-  const a = e.arm;
-  const pl = useMemo(() => placeBetween(BACK, top(a.W), top(a.G), e.side === 'L'), [a, e.side]);
-  return (
-    <Group>
-      <Arm2D s={top(a.S)} e={top(a.E)} w={top(a.W)} />
-      <Hand geo={BACK} pl={pl} heldBehind held={<EggShell c={[e.c.x + 18, e.c.z]} angle={0} len={LEN} d={EGG_DIMS.d.mm} />} />
-    </Group>
-  );
+  return <HeldHand view="top" S={e.arm.S} E={e.arm.E} sk={eggGrip(e).sk} cyl={cylOf(e)} halfLength={R} held={<EggShell c={top(e.c)} angle={0} len={LEN} d={EGG_DIMS.d.mm} />} />;
 }
 
 export function EggArt({ view, variant }: { view: ViewId; variant: VariantId }) {

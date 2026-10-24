@@ -17,27 +17,61 @@ import { DashPathEffect, Group, Path } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { arrow, make } from '../shared/concert/paths.ts';
-import { Hand } from '../shared/smallperc/Hand';
-import { dorsalFist, dorsalFlat, openHand, placeBetween, profileFist, type Pt } from '../shared/smallperc/hands.ts';
-import { Arm2D, PlayerSide, PlayerTop } from '../shared/smallperc/Player';
+import { gripCylinder, type Cylinder, type Grip } from '../shared/hand/anatomy/anatomy.ts';
+import { HeldHand } from '../shared/smallperc/HeldHand';
+import { PlayerSide, PlayerTop } from '../shared/smallperc/Player';
 import { ShakerTube } from '../shared/smallperc/objects';
-import { P0 } from '../shared/smallperc/geom.ts';
-import { HALF, R_SHELL, SHK_DIMS, stateOf } from './model.ts';
+import { P0, v3 } from '../shared/smallperc/geom.ts';
+import { HALF, R_SHELL, SHK_DIMS, stateOf, STATES } from './model.ts';
 
-const FIST = profileFist(R_SHELL);
-const BACK = dorsalFist();
-/** TOWARD: the shell points at the mic and the forearm comes from behind, so
- *  the shell lies ALONG the fingers (held from its right side, the fingers
- *  slightly curled round it, the thumb on top) — never through a closed fist
- *  (clash sweep 2026-10-10: the shell ran lengthwise through the folded
- *  fingers). From the side: the back of that hand, fingers forward along the
- *  shell. From above: the hand's thumb side beside the shell, palm against it. */
-/** Curled 70° round the shell (art fix round 3: at 50° the fingers read as a
- *  flat paddle along it), the fingertips turned under, out of sight. */
-const ALONG_BACK = dorsalFlat(70);
-const ALONG_EDGE = openHand(22);
-const side = (p: { x: number; y: number }): Pt => [p.x, p.y];
-const top = (p: { x: number; z: number }): Pt => [p.x, p.z];
+type Pt = readonly [number, number];
+
+/**
+ * THE GRIP (hands redesign 2026-10-24, owner: "four fingers drawn as
+ * identical parallel sausages lying ON TOP of the shaker, no visible grip"):
+ * the shared Miking hand closes round the shell in a POWER GRIP — the shell
+ * across the palm at the base of the fingers, the four fingers wrapped round
+ * it (their tips on its far side, hidden behind it), the thumb closing round
+ * the near side — turned round the shell until its wrist meets the model's
+ * wrist (the arm and every keep-out stay as they were).
+ *   TOWARD        the shell along x: the fingers wrap it from the right, the
+ *                 back of the hand toward the viewer from the side.
+ *   SIDE TO SIDE  the shell along z (end-on from the side): the fist round
+ *                 its middle, the end cap in front.
+ */
+const CYL: Record<'toward' | 'side', Cylinder> = {
+  toward: { c: P0, axis: STATES.toward.axis, r: R_SHELL, slide: 34 },
+  side: { c: P0, axis: STATES.side.axis, r: R_SHELL, slide: 34 },
+};
+const grips: Partial<Record<'toward' | 'side', Grip>> = {};
+export function shakerGrip(id: 'toward' | 'side'): Grip {
+  const hit = grips[id];
+  if (hit) return hit;
+  const a = STATES[id].arm;
+  const g =
+    id === 'toward'
+      ? // The back of the hand toward the player's right (the side view sees it), the shell
+        // diagonal across the palm, the thumb lying along its top.
+        gripCylinder(CYL.toward, {
+          thumbSign: 1,
+          wrist: a.W,
+          elbow: a.E,
+          maxWrist: 65,
+          angle: [50, 70],
+          back: v3(0, -0.5, 0.9),
+          thumb: 'along',
+        })
+      : // Palm down over the shell, the fingers round its front and under it.
+        gripCylinder(CYL.side, {
+          thumbSign: 1,
+          wrist: a.W,
+          elbow: a.E,
+          angle: [68, 90],
+          back: v3(0.15, -1, 0),
+        });
+  grips[id] = g;
+  return g;
+}
 
 /** A pale double arrow along the shake (drawn larger than a real stroke's
  *  detail; it says WHERE, not how far). */
@@ -60,35 +94,23 @@ export function ShakerArt({ view, variant }: { view: ViewId; variant: VariantId 
   const a = s.arm;
   const len = SHK_DIMS.len.mm;
   const d = SHK_DIMS.d.mm;
+  const g = shakerGrip(s.id);
+  const along = s.id === 'toward';
+  const reach = SHK_DIMS.sweep.mm;
   if (view === 'top') {
-    const along = s.id === 'toward';
-    // TOWARD from above: the thumb-side view beside the shell (palm toward −z,
-    // up the screen: mirrored), its wrist on the arm's wrist, along the shell.
-    // (the palm on the shell's side: the wrist drawn just beside it)
-    const wTop: Pt = along ? [a.W.x, R_SHELL + 21] : top(a.W);
-    const pl = along ? { at: wTop, angle: 0, scale: 0.95, mirror: true } : placeBetween(BACK, top(a.W), top(a.G));
-    const reach = SHK_DIMS.sweep.mm;
     return (
       <Group>
         <PlayerTop />
         <MotionMark a={along ? [P0.x - reach - 40, P0.z - 70] : [P0.x + 130, -reach - 40]} b={along ? [P0.x + reach + 40, P0.z - 70] : [P0.x + 130, reach + 40]} />
-        <Arm2D s={top(a.S)} e={top(a.E)} w={wTop} />
-        <Hand geo={along ? ALONG_EDGE : BACK} pl={pl} heldBehind held={<ShakerTube c={top(P0)} angle={along ? 0 : 90} len={len} d={d} />} />
+        <HeldHand view="top" S={a.S} E={a.E} sk={g.sk} cyl={CYL[s.id]} halfLength={HALF} held={<ShakerTube c={[P0.x, P0.z]} angle={along ? 0 : 90} len={len} d={d} />} />
       </Group>
     );
   }
-  const along = s.id === 'toward';
-  const reach = SHK_DIMS.sweep.mm;
   return (
     <Group>
       <PlayerSide />
       <MotionMark a={along ? [P0.x - reach - 40, P0.y - 110] : [P0.x + 140, P0.y - 120]} b={along ? [P0.x + reach + 40, P0.y - 110] : [P0.x + 140, P0.y - 120]} />
-      <Arm2D s={side(a.S)} e={side(a.E)} w={side(a.W)} />
-      {along ? (
-        <Hand geo={ALONG_BACK} pl={{ at: side(a.W), angle: 0, scale: 0.92 }} heldBehind held={<ShakerTube c={side(P0)} angle={0} len={len} d={d} />} />
-      ) : (
-        <Hand geo={FIST} pl={placeBetween(FIST, side(a.W), side(a.G))} farThumb held={<ShakerTube c={side(P0)} angle={0} len={len} d={d} endOn />} />
-      )}
+      <HeldHand view="side" S={a.S} E={a.E} sk={g.sk} cyl={CYL[s.id]} halfLength={HALF} held={<ShakerTube c={[P0.x, P0.y]} angle={0} len={len} d={d} endOn={!along} />} />
     </Group>
   );
 }
@@ -98,15 +120,59 @@ export function shakerLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const along = s.id === 'toward';
   if (view === 'top') {
     return [
-      { id: 'shell', text: 'SHAKER', u: along ? P0.x + HALF + 30 : P0.x + 60, v: along ? P0.z + 50 : P0.z + HALF + 40, align: along ? 'left' : 'left' },
-      { id: 'motion', text: along ? '↔ THE SHAKE' : '↕ THE SHAKE', short: '↔', u: along ? P0.x : P0.x + 170, v: along ? P0.z - 120 : -SHK_DIMS.sweep.mm - 70, align: along ? 'center' : 'left', tone: 'illustrative' },
-      { id: 'player', text: 'PLAYER', u: -380, v: 300, align: 'center', tone: 'muted' },
+      {
+        id: 'shell',
+        text: 'SHAKER',
+        u: along ? P0.x + HALF + 30 : P0.x + 60,
+        v: along ? P0.z + 50 : P0.z + HALF + 40,
+        align: along ? 'left' : 'left',
+      },
+      {
+        id: 'motion',
+        text: along ? '↔ THE SHAKE' : '↕ THE SHAKE',
+        short: '↔',
+        u: along ? P0.x : P0.x + 170,
+        v: along ? P0.z - 120 : -SHK_DIMS.sweep.mm - 70,
+        align: along ? 'center' : 'left',
+        tone: 'illustrative',
+      },
+      {
+        id: 'player',
+        text: 'PLAYER',
+        u: -380,
+        v: 300,
+        align: 'center',
+        tone: 'muted',
+      },
     ];
   }
   return [
-    { id: 'shell', text: along ? 'SHAKER' : 'SHAKER (END-ON)', short: 'SHAKER', u: along ? P0.x + HALF + 24 : P0.x + 50, v: along ? P0.y + 50 : P0.y + 70, align: 'left' },
-    { id: 'motion', text: along ? '↔ THE SHAKE' : '⊙ SHAKEN ACROSS', short: '↔', u: along ? P0.x : P0.x + 170, v: P0.y - 160, align: along ? 'center' : 'left', tone: 'illustrative' },
-    { id: 'player', text: '← PLAYER', u: -380, v: -900, align: 'center', tone: 'muted', point: { u: -6000, v: -900 } },
+    {
+      id: 'shell',
+      text: along ? 'SHAKER' : 'SHAKER (END-ON)',
+      short: 'SHAKER',
+      u: along ? P0.x + HALF + 24 : P0.x + 50,
+      v: along ? P0.y + 50 : P0.y + 70,
+      align: 'left',
+    },
+    {
+      id: 'motion',
+      text: along ? '↔ THE SHAKE' : '⊙ SHAKEN ACROSS',
+      short: '↔',
+      u: along ? P0.x : P0.x + 170,
+      v: P0.y - 160,
+      align: along ? 'center' : 'left',
+      tone: 'illustrative',
+    },
+    {
+      id: 'player',
+      text: '← PLAYER',
+      u: -380,
+      v: -900,
+      align: 'center',
+      tone: 'muted',
+      point: { u: -6000, v: -900 },
+    },
   ];
 }
 
@@ -129,4 +195,8 @@ export function shakerHitTest(view: ViewId, variant: VariantId, u: number, v: nu
   return `shk.shell.${id}`;
 }
 
-export const SHK_ART: LessonArt = { Instrument: ShakerArt, labels: shakerLabels, hitTest: shakerHitTest };
+export const SHK_ART: LessonArt = {
+  Instrument: ShakerArt,
+  labels: shakerLabels,
+  hitTest: shakerHitTest,
+};

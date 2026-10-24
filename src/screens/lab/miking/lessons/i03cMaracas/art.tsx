@@ -16,17 +16,17 @@ import { DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { INK, make, seg } from '../shared/concert/paths.ts';
-import { Hand } from '../shared/smallperc/Hand';
-import { dorsalFist, placeBetween, profileFist, type Pt } from '../shared/smallperc/hands.ts';
-import { Arm2D, PlayerSide, PlayerTop } from '../shared/smallperc/Player';
+import { gripCylinder, type Cylinder, type Grip } from '../shared/hand/anatomy/anatomy.ts';
+import { HeldHand } from '../shared/smallperc/HeldHand';
+import { PlayerSide, PlayerTop } from '../shared/smallperc/Player';
+import { v3 } from '../shared/smallperc/geom.ts';
 import { Maraca, BELL_CHROME } from '../shared/smallperc/objects';
 import { HANDLE, MAR_DIMS, stateOf, VOCAL, type Maraca as M } from './model.ts';
 
 const HW = MAR_DIMS.headW.mm;
 const HH = MAR_DIMS.headH.mm;
 const HD = MAR_DIMS.handleD.mm;
-const BACK = dorsalFist();
-const FIST = profileFist(HD / 2);
+type Pt = readonly [number, number];
 const side = (p: { x: number; y: number }): Pt => [p.x, p.y];
 const top = (p: { x: number; z: number }): Pt => [p.x, p.z];
 
@@ -59,27 +59,32 @@ function Arc({ m }: { m: M }) {
   );
 }
 
+/**
+ * THE GRIP (hands redesign 2026-10-24): the shared Miking hand closed round
+ * the handle in a hammer grip — the handle upright through the fist, the
+ * thumb on its head side, the four fingers wrapped round it — the back of
+ * each hand turned outward (the right hand's toward the viewer of the side
+ * view), solved so its wrist meets the model's wrist.
+ */
+const cylOf = (m: M): Cylinder => ({ c: m.arm.G, axis: v3(0, -1, 0), r: HD / 2, slide: 12, tipward: true });
+/** From the grip up to the top of the head (the end-on plane seen from above). */
+const ABOVE = HH + 70;
+const grips = new Map<M, Grip>();
+export function maracaGrip(m: M): Grip {
+  const hit = grips.get(m);
+  if (hit) return hit;
+  const s = m.side === 'R' ? 1 : -1;
+  const g = gripCylinder(cylOf(m), { thumbSign: s, wrist: m.arm.W, elbow: m.arm.E, angle: [72, 90], back: v3(0, 0, s) });
+  grips.set(m, g);
+  return g;
+}
+
 function SideMaraca({ m }: { m: M }) {
-  const a = m.arm;
-  const pl = useMemo(() => placeBetween(BACK, side(a.W), side(a.G)), [a]);
-  return (
-    <Group>
-      <Arm2D s={side(a.S)} e={side(a.E)} w={side(a.W)} />
-      <Hand geo={BACK} pl={pl} heldBehind held={<Maraca c={side(m.head)} angle={90} headW={HW} headH={HH} handle={HANDLE} handleD={HD} />} />
-    </Group>
-  );
+  return <HeldHand view="side" S={m.arm.S} E={m.arm.E} sk={maracaGrip(m).sk} cyl={cylOf(m)} halfLength={ABOVE} held={<Maraca c={side(m.head)} angle={90} headW={HW} headH={HH} handle={HANDLE} handleD={HD} />} />;
 }
 
 function TopMaraca({ m }: { m: M }) {
-  const a = m.arm;
-  const pl = useMemo(() => placeBetween(FIST, top(a.W), top(a.G), m.side === 'L'), [a, m.side]);
-  return (
-    <Group>
-      <Arm2D s={top(a.S)} e={top(a.E)} w={top(a.W)} />
-      <Hand geo={FIST} pl={pl} />
-      <Maraca c={top(m.head)} angle={0} headW={HW} headH={HH} handle={HANDLE} handleD={HD} endOn />
-    </Group>
-  );
+  return <HeldHand view="top" S={m.arm.S} E={m.arm.E} sk={maracaGrip(m).sk} cyl={cylOf(m)} halfLength={ABOVE} held={<Maraca c={top(m.head)} angle={0} headW={HW} headH={HH} handle={HANDLE} handleD={HD} endOn />} />;
 }
 
 /** The singer's vocal mic on its boom (side view): body, boom, stand. */

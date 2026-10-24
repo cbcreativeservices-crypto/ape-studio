@@ -73,7 +73,12 @@ describe('Cajón & hand percussion — the shared figure, true limbs, no white d
   it('a curled hand seen from its back shows no fingernails; the hands wear the figure nail tone', () => {
     assert.equal(dorsalFlat(70).nails?.length, 1, 'only the thumb nail');
     assert.equal(dorsalFlat(0).nails?.length, 5);
-    assert.match(read('i03aShaker/art.tsx'), /const ALONG_BACK = dorsalFlat\(70\);/);
+    // Hands redesign 2026-10-24: the shaker's hand is the shared anatomical hand
+    // posed round the shell (gripCylinder); a nail is drawn only on a last bone
+    // whose back faces the viewer (drawAnatomy: facing(n) > 0.15), so a curled
+    // finger seen from the back of the hand still shows none.
+    assert.match(read('i03aShaker/art.tsx'), /gripCylinder\(CYL\.toward/);
+    assert.match(read('shared/hand/anatomy/drawAnatomy.ts'), /if \(facing\(n\) > 0\.15\) \{/);
     assert.match(read('shared/smallperc/Hand.tsx'), /const NAIL = FIGURE_NAIL\.fill;/);
   });
 });

@@ -15,15 +15,15 @@ import { DashPathEffect, Group, Path, Skia } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { make } from '../shared/concert/paths.ts';
-import { Hand } from '../shared/smallperc/Hand';
-import { cradle, dorsalFist, placeBetween, type Pt } from '../shared/smallperc/hands.ts';
+import { gripCylinder, h3, type Cylinder, type HandSkeleton } from '../shared/hand/anatomy/anatomy.ts';
+import { cradleHand } from '../shared/smallperc/percGrip.ts';
+import { HeldHand } from '../shared/smallperc/HeldHand';
 import { Arm2D, PlayerSide, PlayerTop } from '../shared/smallperc/Player';
 import { Clave } from '../shared/smallperc/objects';
-import { P0 } from '../shared/smallperc/geom.ts';
+import { P0, v3 } from '../shared/smallperc/geom.ts';
 import { CL, CLV_DIMS, CR, stateOf, type ClvState } from './model.ts';
 
-const CUP = cradle(CR, 115);
-const BACK = dorsalFist();
+type Pt = readonly [number, number];
 const side = (p: { x: number; y: number }): Pt => [p.x, p.y];
 const top = (p: { x: number; z: number }): Pt => [p.x, p.z];
 const D = 180 / Math.PI;
@@ -44,15 +44,41 @@ function StrikerArc({ s }: { s: ClvState }) {
   );
 }
 
+/**
+ * THE HANDS (hands redesign 2026-10-24) — the shared Miking hand, posed in 3-D:
+ *   CRADLE   the LEFT hand palm up under the supported clave, the fingertips
+ *            curled up its far side and the thumb's pad on its near side, so
+ *            it rests on the pads over the hollow of the cupped palm (the
+ *            resonating chamber) — never on the palm itself;
+ *   STRIKER  the RIGHT hand round the striker near its end, thumb on top,
+ *            the fingers closed round it, the tip out past the thumb.
+ */
+type ClvHands = { cradle: HandSkeleton; strike: HandSkeleton; restCyl: Cylinder; strikeCyl: Cylinder };
+const handsCache = new Map<ClvState, ClvHands>();
+export function clavesHands(s: ClvState): ClvHands {
+  const hit = handsCache.get(s);
+  if (hit) return hit;
+  const r = s.rest;
+  // The pads round the clave's front-lower side, ≈ 19 mm apart along it (the
+  // index nearest the thumb, toward the player's middle); the thumb's pad on
+  // its near (player) side.
+  const pads = [22, 3, -16, -34].map((dz) => v3(r.x + CR * 0.72, r.y + CR * 0.62, r.z + dz));
+  const thumb = v3(r.x - CR - 4, r.y + 4, r.z + 30);
+  const cradle = cradleHand(v3(r.x - 18, r.y + 34, r.z - 6), v3(1, 0, 0.12), pads, thumb);
+  const strikeCyl: Cylinder = { c: s.strike.G, axis: h3.sub(s.striker.b, s.striker.a), r: CR, tipward: true, slide: 8 };
+  const strike = gripCylinder(strikeCyl, { thumbSign: 1, wrist: s.strike.W, elbow: s.strike.E, angle: [45, 70], back: v3(-0.2, -1, 0.3), close: 0.9 }).sk;
+  const h = { cradle, strike, restCyl: { c: r, axis: v3(0, 0, 1), r: CR }, strikeCyl };
+  handsCache.set(s, h);
+  return h;
+}
+
 export function ClavesArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   const s = stateOf(variant);
   const hollow = s.id === 'hollow';
   const L = s.cradle;
   const R = s.strike;
+  const H = clavesHands(s);
   const P = view === 'side' ? side : top;
-  // The cradle's hold is the supported clave itself.
-  const plCup = useMemo(() => placeBetween(CUP, P(L.W), P(s.rest), view === 'top'), [L, s.rest, view]); // eslint-disable-line react-hooks/exhaustive-deps
-  const plStrike = useMemo(() => placeBetween(BACK, P(R.W), P(R.G)), [R, view]); // eslint-disable-line react-hooks/exhaustive-deps
   const sa = P(s.striker.a);
   const sb = P(s.striker.b);
   const sAng = Math.atan2(sb[1] - sa[1], sb[0] - sa[0]) * D;
@@ -61,22 +87,18 @@ export function ClavesArt({ view, variant }: { view: ViewId; variant: VariantId 
     return (
       <Group>
         <PlayerTop />
-        <Arm2D s={top(L.S)} e={top(L.E)} w={top(L.W)} />
-        <Hand geo={CUP} pl={plCup} />
-        <Clave c={top(s.rest)} angle={90} len={CL} d={CLV_DIMS.d.mm} hollow={hollow} />
-        <Arm2D s={top(R.S)} e={top(R.E)} w={top(R.W)} />
-        <Hand geo={BACK} pl={plStrike} heldBehind held={striker} />
+        <HeldHand view="top" S={L.S} E={L.E} sk={H.cradle} cyl={H.restCyl} halfLength={CL / 2} held={<Clave c={top(s.rest)} angle={90} len={CL} d={CLV_DIMS.d.mm} hollow={hollow} />} />
+        <HeldHand view="top" S={R.S} E={R.E} sk={H.strike} cyl={H.strikeCyl} held={striker} />
       </Group>
     );
   }
   return (
     <Group>
-      <Arm2D s={side(L.S)} e={side(L.E)} w={side(L.W)} />
+      <Arm2D s={side(L.S)} e={side(L.E)} w={side(H.cradle.frame.o)} />
       <PlayerSide />
-      <Hand geo={CUP} pl={plCup} held={<Clave c={side(s.rest)} angle={0} len={CL} d={CLV_DIMS.d.mm} hollow={hollow} endOn />} />
+      <HeldHand view="side" S={L.S} E={L.E} sk={H.cradle} cyl={H.restCyl} halfLength={CL / 2} armElsewhere held={<Clave c={side(s.rest)} angle={0} len={CL} d={CLV_DIMS.d.mm} hollow={hollow} endOn />} />
       <StrikerArc s={s} />
-      <Arm2D s={side(R.S)} e={side(R.E)} w={side(R.W)} />
-      <Hand geo={BACK} pl={plStrike} heldBehind held={striker} />
+      <HeldHand view="side" S={R.S} E={R.E} sk={H.strike} cyl={H.strikeCyl} held={striker} />
     </Group>
   );
 }
