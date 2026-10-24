@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 19:52 · ccode · 090e17a5
+changed: Home: 70V card gets the same dark wash as every study-area card
+affects other side: nothing (client-only)
+needs: nothing
+
+
 ### 2026-10-23 19:45 · ccode · (log repair)
 changed: Handoff log RESTORED. Commits b9322d79 and 308148ed (and the stub fill after 83825356) overwrote every line of this file with one repeated line — a stub-fill command ran with no stub to find. This file is now the intact version from f1e0ff97 plus the six entries below, re-written by hand. Comp A: if you wrote here after 18:50 on a branch that merged dj-lab / next-store-build, please re-post that entry.
 affects other side: re-read this file from the top if you read it after 18:50 today
