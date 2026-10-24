@@ -634,6 +634,33 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 20:07 · ccode · d88c4e64
+changed: validate-purchase: repo copy = deployed v18 (Comp A, 2026-10-23)
+affects other side: nothing — repo now matches deployed v18
+needs: nothing
+
+
+### 2026-10-23 19:30 · Comp A (re-posted after the log repair)
+changed: validate-purchase v18 DEPLOYED (owner's go; verify_jwt true). Built on the deployed v17 source, which had uncommitted diagnostic warns; the repo copy was not used.
+- #6: `ok` and `error` unchanged; new `reason` field — expired, refunded, pending, not_found, store_unreachable, linked_to_other_account or server_error. Expired also includes `expired_at`. Store calls time out after 10 s; a failed call answers 200 not_verified with reason store_unreachable instead of a 500.
+- #2 Part A: once the grant is saved, the server acknowledges Google purchases where acknowledgementState is 0 and paymentState is not 0. A failed acknowledge never fails the request. The Play permission "Manage orders and subscriptions" is still unverified.
+- #3: a purchase tagged (appAccountToken or obfuscatedExternalAccountId) with a different existing account is refused with receipt_already_linked / reason linked_to_other_account. A deleted owner, no tag, or a lookup error take the unchanged path.
+- Tests: strict tsc clean, 27/27 mocked tests, live boot check (GET 405, unauthenticated POST 401). Files: Downloads\2026-10-23_VALIDATE_PURCHASE_V18. Rollback Artifact https://claude.ai/artifact/FEkSs4Jd3GfPaG1MPRr8aJ
+affects other side: ccode commits validate-purchase_v18_index.ts as supabase/functions/validate-purchase/index.ts; the #3 tag app half is safe to ship; #6 restore wording is an OWNER HOLD
+needs: nothing
+
+### 2026-10-23 18:55 · Comp A (re-posted after the log repair)
+changed: Server fixes LIVE (Package 5, owner-applied, verified). Backup `private._bkp_p5_20261023`; rollback Artifact https://claude.ai/artifact/4pBGJv6kE86pibgnU52fRS
+- #15: `glossary_study_v.plain_english_preview` is the new last column (members + free topics: full plain_english; everyone else: half-length teaser ending "…"). Other columns and grants unchanged.
+- #11: `contact_message_send(uuid,text,uuid) returns uuid` (Variant B), authenticated only; the 2-arg version unchanged; a repeated id returns the first message's id and saves nothing.
+- #12: repeat reports (same reporter, same member, still open, within 24 h) merge into one row via `repeat_count` + `last_reported_at`; merged detail capped at 1,000 characters (table CHECK).
+- #14: report_queue_list shows an expired suspension as active.
+- Account deletion: reports a member filed are deleted with the account (cascade); reports and moderation actions ABOUT them are kept with reported_user / target_user NULL; actor and staff links NULL. delete_my_account body unchanged.
+- Earlier today: related_terms rewritten on 14,123 entries — 0 dead related-term pills remain.
+- Comp A FYI: the log already held ~1,190 mis-encoded characters (dashes and arrows shown as "â€”") before tonight's break; not from the restore.
+affects other side: ccode ships the #15 and #11 app halves (done: 72c7f6c7, 5cc13851)
+needs: nothing
+
 ### 2026-10-23 19:52 · ccode · 090e17a5
 changed: Home: 70V card gets the same dark wash as every study-area card
 affects other side: nothing (client-only)

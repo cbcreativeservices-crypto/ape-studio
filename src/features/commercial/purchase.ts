@@ -481,8 +481,18 @@ export async function buyPlan(planId: PlanId): Promise<void> {
   const iap = getIap();
   if (!iap) throw new Error('In-app purchases are not available in this build.');
   const plan = PLANS[planId];
+  // Tag the purchase with the buyer's account id (Comp A #3, live 2026-10-23:
+  // validate-purchase v18 refuses a purchase tagged with a DIFFERENT existing
+  // account). Apple's appAccountToken must be a UUID — auth ids are. No tag
+  // when the session cannot be read: the server then takes its unchanged path.
+  const { data } = await safeSession(supabase.auth.getSession(), 'iap/buy-tag');
+  const uid = data.session?.user?.id;
+  const tag = uid && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uid) ? uid : undefined;
   await iap.requestPurchase({
-    request: { apple: { sku: plan.sku }, google: { skus: [plan.sku] } },
+    request: {
+      apple: { sku: plan.sku, ...(tag ? { appAccountToken: tag } : {}) },
+      google: { skus: [plan.sku], ...(tag ? { obfuscatedAccountId: tag } : {}) },
+    },
     type: plan.kind,
   });
 }
