@@ -89,7 +89,7 @@ describe('weekly notification facts', () => {
     assert.ok(!body(ODD, 'upfader').includes('stage-lighting'));
   });
   it('F097178: no unverified "doink" claim; the doit rises', () => {
-    const b = body(ODD, 'Fall-off/doink');
+    const b = body(ODD, 'Fall-off'); // renamed from 'Fall-off/doink' (glossary R2, 2026-10-24)
     assert.ok(!b.includes('doink') && b.includes('the doit, swoops up'));
   });
   it('F096353: a few tube mics do run on phantom', () => {
