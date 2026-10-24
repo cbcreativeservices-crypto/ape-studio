@@ -13,7 +13,7 @@ const swift = readFileSync('modules/ape-dsp/ios/ApeDspModule.swift', 'utf8');
 const kt = readFileSync('modules/ape-dsp/android/src/main/java/expo/modules/apedsp/ApeDspModule.kt', 'utf8');
 
 test('iOS: unplug stops voices then emits onOutputLost', () => {
-  assert.match(swift, /Events\("onOutputLost"\)/);
+  assert.match(swift, /Events\("onOutputLost"[,)]/); // engine 10 adds "onInputSilenced"
   assert.match(swift, /== \.oldDeviceUnavailable,\s*self\.core\.anyOutputRunning\(\)/);
   assert.match(swift, /self\.core\.genStop\(\)\s*self\.core\.binStop\(\)\s*self\.core\.modStop\(\)[\s\S]{0,200}self\.sendEvent\("onOutputLost"/);
 });
@@ -29,7 +29,7 @@ test('iOS: js-stop on main; no inputNode access without an input route', () => {
 });
 
 test('Android: removal of a private output stops voices then emits', () => {
-  assert.match(kt, /Events\("onOutputLost"\)/);
+  assert.match(kt, /Events\("onOutputLost"[,)]/); // engine 10 adds "onInputSilenced"
   assert.match(kt, /it\.isSink && PRIVATE_OUTPUTS\.contains\(it\.type\)/);
   assert.match(kt, /nativeGenStop\(handle\)\s*nativeBinStop\(handle\)\s*nativeModStop\(handle\)\s*sendEvent\("onOutputLost"/);
   assert.equal((kt.match(/companion object/g) ?? []).length, 1);

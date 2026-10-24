@@ -59,7 +59,16 @@ namespace apedsp {
 /// 9 (2026-10-24, tuner phase 2): pitch every ~15 ms while pitch is on (FFT-based
 /// YIN), EngineConfig.pitchMinHz sizes the low-note window, PitchSnapshot.timeSec
 /// stamps each estimate with its audio time. JS reads timeSec when present.
-constexpr uint32_t kEngineVersion = 9;
+/// 10 (2026-10-24, store-build native queue): Generator::setStereoSpread — a
+/// genuinely two-channel version of the sine/white/pink source (correlation
+/// cos(rad)) so the Stereo Imaging lab's WIDTH has a side signal to widen,
+/// genSet({ stereoSpreadRad }); the Delay's PING-PONG now alternates L, R, L
+/// on a mono source (input into one line + cross-feed); the iOS engine
+/// restarts after an AVAudioEngineConfigurationChange; Android reports a mic
+/// SILENCED by another app (onInputSilenced event, API 29+); iPad capture
+/// prefers the built-in mic's omni data source. JS gates the spread sources on
+/// >= 10.
+constexpr uint32_t kEngineVersion = 10;
 
 struct EngineConfig {
   uint32_t fftSize = 4096;      // ≤16384 (Q5 ruling)

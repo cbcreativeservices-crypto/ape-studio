@@ -361,6 +361,10 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
 - (void)genSetDual:(double)freqB levelB:(double)levelB {
   _gen->setDual(freqB, levelB);
 }
+// Stereo spread (engine 10, Stereo Imaging lab): 0 = mono; see Generator.hpp.
+- (void)genSetStereoSpread:(double)rad {
+  _gen->setStereoSpread(rad);
+}
 // ADDITIVE (HV-2): flat [f0, a1..a12, p1..p12] — 25 doubles (Hz, 0..1, degrees).
 // Copy out of the NSArray and forward; the core NaN-proofs/clamps and ignores
 // short arrays (count < 25). NOTE: genSetFrequency does NOT retune the additive

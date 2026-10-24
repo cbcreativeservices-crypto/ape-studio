@@ -119,6 +119,15 @@ class NativeEngine {
   apedsp::ModularVoice mod_;
   apedsp::SpscRing* ring_ = nullptr;
   std::atomic<double> lastWriteAt_;
+  // Last input buffer with a non-zero sample (engine 10 — see InputCallback).
+  std::atomic<double> lastNonZeroAt_{0.0};
+  /// Seconds the running input has delivered nothing but exact zeros (0 when
+  /// capture is not running). Kotlin pairs it with the OS "silenced" report.
+  double inputZeroSeconds() const {
+    if (!running_.load(std::memory_order_relaxed)) return 0.0;
+    const double d = nowSeconds() - lastNonZeroAt_.load(std::memory_order_relaxed);
+    return d > 0.0 ? d : 0.0;
+  }
 
   // ---- Output voices (generator + wave-2 binaural/modular) ---------------
   // ONE shared output stream: every start ensures it; every stop tears it
@@ -187,7 +196,17 @@ class NativeEngine {
       const float* in = static_cast<const float*>(data);  // mono float
       const float* ch[1] = {in};
       eng->ring_->writeChannels(ch, 1, static_cast<size_t>(numFrames));
-      eng->lastWriteAt_.store(nowSeconds(), std::memory_order_relaxed);
+      const double t = nowSeconds();
+      eng->lastWriteAt_.store(t, std::memory_order_relaxed);
+      // Engine 10 (mic silenced by another app): stamp the last buffer that
+      // carried ANY non-zero sample. An OS-silenced recording is delivered as
+      // exact zeros; a real mic's self-noise never is. One compare per sample.
+      for (int32_t i = 0; i < numFrames; ++i) {
+        if (in[i] != 0.0f) {
+          eng->lastNonZeroAt_.store(t, std::memory_order_relaxed);
+          break;
+        }
+      }
       return oboe::DataCallbackResult::Continue;
     }
   };
@@ -258,6 +277,7 @@ class NativeEngine {
     engine_.configureSampleRate(inRate_);  // analysis thread not running yet — safe
     ring_->clear();
     lastWriteAt_.store(nowSeconds());
+    lastNonZeroAt_.store(nowSeconds());  // a fresh stream starts "not zeros yet"
 
     running_.store(true);
     startAnalysisThread();
@@ -350,6 +370,7 @@ class NativeEngine {
       return false;
     }
     lastWriteAt_.store(nowSeconds());  // grace period before the next stall check
+    lastNonZeroAt_.store(nowSeconds());
     return true;
   }
 
@@ -620,6 +641,13 @@ Java_expo_modules_apedsp_ApeDspModule_nativeCaptureRunning(JNIEnv*, jobject, jlo
   return eng(h)->captureRunning() ? JNI_TRUE : JNI_FALSE;
 }
 
+// Engine 10: seconds of exact-zero input (0 when not capturing) — Kotlin's
+// inputSilencedNow() pairs it with the OS AudioRecordingConfiguration report.
+JNIEXPORT jdouble JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeInputZeroSeconds(JNIEnv*, jobject, jlong h) {
+  return eng(h)->inputZeroSeconds();
+}
+
 // ---- Generator ----
 JNIEXPORT jboolean JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeGenStart(JNIEnv*, jobject, jlong h) {
@@ -671,6 +699,12 @@ JNIEXPORT void JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeGenSetDual(JNIEnv*, jobject, jlong h, jdouble freqB,
                                                        jdouble levelB) {
   eng(h)->gen_.setDual(freqB, levelB);
+}
+// Stereo spread (engine 10, Stereo Imaging lab): radians, 0 = mono (Generator.hpp).
+JNIEXPORT void JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeGenSetStereoSpread(JNIEnv*, jobject, jlong h,
+                                                               jdouble rad) {
+  eng(h)->gen_.setStereoSpread(rad);
 }
 // ---- Effects chain (one scalar setter for the whole roster; see fx::Id) ----
 JNIEXPORT void JNICALL

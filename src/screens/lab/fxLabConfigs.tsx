@@ -63,6 +63,25 @@ const SOURCE_PEAK_DB = -20;
 const SRC_PINK = { label: 'PINK NOISE', short: 'PINK', gen: { mode: GEN_MODES.pink }, blurb: 'Steady broadband noise, equal energy per octave — the best source for HEARING a tone change.' };
 const SRC_WHITE = { label: 'WHITE NOISE', short: 'WHITE', gen: { mode: GEN_MODES.white }, blurb: 'Equal energy per Hz — brighter than pink. The top octaves dominate, so high-end changes leap out.' };
 const srcSine = (hz: number) => ({ label: `SINE ${hz} Hz`, short: `${hz} Hz`, gen: { mode: GEN_MODES.sine, frequency: hz }, steadyPeakDb: SOURCE_PEAK_DB });
+// Stereo Imaging lab, engine 10 (stereo spread): two-channel versions of the
+// lab sources whose L/R correlation matches the scope's model input (cos 1.1 =
+// +0.45), plus the mono comparison. Labels + blurbs: NEW COPY — owner review.
+const SRC_PINK_STEREO = {
+  label: 'PINK NOISE · STEREO', short: 'ST PINK',
+  gen: { mode: GEN_MODES.pink, stereoSpreadRad: STEREO_TEST_LR_RAD },
+  blurb: 'Pink noise that differs between left and right — a real SIDE signal, so WIDTH has something to widen.',
+};
+const SRC_SINE_STEREO = {
+  label: 'SINE 440 Hz · STEREO', short: 'ST 440',
+  gen: { mode: GEN_MODES.sine, frequency: 440, stereoSpreadRad: STEREO_TEST_LR_RAD },
+  blurb: 'The tone the scope draws: right lags left, so the channels differ and WIDTH moves the trace.',
+};
+const SRC_PINK_MONO = {
+  label: 'PINK NOISE · MONO', short: 'MONO',
+  gen: { mode: GEN_MODES.pink },
+  monoCompare: true,
+  blurb: 'The same noise in both channels: the SIDE is zero, so WIDTH has nothing to widen. The comparison.',
+};
 const srcClick = (bpm: number) => ({ label: `CLICK ${bpm}`, short: `${bpm} BPM`, gen: { mode: GEN_MODES.click, clickBpm: bpm }, blurb: 'A dry click with silence between hits — echoes, tails and pumping have nowhere to hide.' });
 
 /** What a dynamics hero draws coming IN, from the selected source (fix pass
@@ -1473,6 +1492,13 @@ const stereoConfig: FxLabConfig = {
     'you fold to mono and the sides vanish. The correlation meter is the safety gauge.',
   exploreCaption: 'Widen, then hit MONO-FOLD: what survives is what a mono listener gets.',
   sources: [SRC_PINK, srcSine(440)],
+  // Engine 10 (next-build queue item 11): every source above is MONO (L = R),
+  // so the side is zero and WIDTH changes nothing you can hear. A build that
+  // can render the stereo spread offers genuinely two-channel sources — the
+  // SAME stereo test signal the scope and the flow draw (R lags L by
+  // STEREO_TEST_LR_RAD, correlation +0.45) — and keeps a mono one as the
+  // "nothing to widen" comparison. Older builds keep the list above.
+  stereoSources: [SRC_PINK_STEREO, SRC_SINE_STEREO, SRC_PINK_MONO],
   // See the note on the other shared-node configs: FX.stereo is shared with the
   // PHASE lab, so leaving POLARITY out let an INVERTED Ø from that lab follow
   // the student here, where it silently makes WIDTH act anti-phase.
@@ -1526,8 +1552,12 @@ const stereoConfig: FxLabConfig = {
     { k: 'PAN', paramId: P.pan },
     { k: 'FOLD', paramId: P.monoFold },
   ],
-  Hero: (v) => <LissajousGraph widthPct={v[P.widthPct]} invertR={false} delayRms={0} toneHz={440} inputLrRad={STEREO_TEST_LR_RAD} />,
-  anim: (v) => ({
+  // The MONO comparison source draws as it sounds: L = R, a vertical line at
+  // every width (engine 10). Every other source is the stereo test tone.
+  Hero: (v, src) => (
+    <LissajousGraph widthPct={v[P.widthPct]} invertR={false} delayRms={0} toneHz={440} inputLrRad={src?.monoCompare ? 0 : STEREO_TEST_LR_RAD} />
+  ),
+  anim: (v, src) => ({
     kind: 'stereo',
     flavor: 'width',
     widthPct: v[P.widthPct],
@@ -1535,6 +1565,7 @@ const stereoConfig: FxLabConfig = {
     invertR: false,
     delayRms: 0,
     monoFold: v[P.monoFold] > 0.5,
+    monoIn: src?.monoCompare === true,
   }),
   heroBadge: 'GONIOMETER + CORRELATION — 440 Hz STEREO TEST TONE (model)',
   heroCaption: (v) =>

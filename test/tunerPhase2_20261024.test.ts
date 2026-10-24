@@ -29,7 +29,8 @@ test('the piano honesty line follows the engine floor actually in use', () => {
 
 test('every bridge carries pitchMinHz and timeSec; v9 engine; 15 ms tick', () => {
   const hub = read('modules/ape-dsp/ios/core/EngineHub.hpp');
-  assert.match(hub, /constexpr uint32_t kEngineVersion = 9;/);
+  // v9 brought these fields; later engines keep them (v10 = store-build native queue).
+  assert.match(hub, /constexpr uint32_t kEngineVersion = (9|[1-9]\d);/);
   assert.match(hub, /double pitchMinHz = 40\.0;/);
   assert.match(hub, /return cfg_\.pitchEnabled \? 15 : 50;/);
   const mm = read('modules/ape-dsp/ios/ApeDspCore.mm');

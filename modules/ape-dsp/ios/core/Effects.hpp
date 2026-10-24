@@ -143,7 +143,8 @@ class EqEffect {
 // ──────────────────────────────────────────────────────── Delay (Lab 2) ──
 // Stereo delay: fractional-interpolated read, glided delay time (a time change
 // pitch-bends tape-style instead of clicking), feedback with one-pole HF
-// damping in the loop (repeats recede), optional ping-pong (cross-feedback).
+// damping in the loop (repeats recede), optional ping-pong (mono input into the
+// LEFT line + cross-feedback, so the repeats alternate L, R, L — engine 10).
 // Params: 1 timeMs · 2 feedback · 3 mix · 4 pingpong · 5 dampHz.
 class DelayEffect {
  public:
@@ -194,9 +195,20 @@ class DelayEffect {
       lpL_ += dampC * (dl - lpL_);
       lpR_ += dampC * (dr - lpR_);
       const double inL = L[i], inR = R[i];
-      // Ping-pong: each side's repeat feeds the OTHER side's line.
-      bufL_[w_] = static_cast<float>(inL + (pp ? lpR_ : lpL_) * fb);
-      bufR_[w_] = static_cast<float>(inR + (pp ? lpL_ : lpR_) * fb);
+      if (pp) {
+        // PING-PONG (engine 10, next-build queue item 10). The input enters ONE
+        // line only — summed to mono, as a ping-pong delay does — and each
+        // side's repeat feeds the OTHER side's line. So repeat 1 lands LEFT,
+        // repeat 2 RIGHT, repeat 3 LEFT… The old form wrote inL into the left
+        // line AND inR into the right one: every lab source is mono (L == R),
+        // so both sides echoed together on every repeat and the image never
+        // bounced, while the Delay lab's timeline drew L, R, L.
+        bufL_[w_] = static_cast<float>((inL + inR) * 0.5 + lpR_ * fb);
+        bufR_[w_] = static_cast<float>(lpL_ * fb);
+      } else {
+        bufL_[w_] = static_cast<float>(inL + lpL_ * fb);
+        bufR_[w_] = static_cast<float>(inR + lpR_ * fb);
+      }
       w_ = (w_ + 1) % cap;
       L[i] = static_cast<float>(inL * (1.0 - mix) + dl * mix);
       R[i] = static_cast<float>(inR * (1.0 - mix) + dr * mix);

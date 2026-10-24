@@ -18,6 +18,7 @@ import { runSoon } from '../../../lib/afterInteractions';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import {
   ApeDsp,
+  onInputSilenced,
   type BandsFrame,
   type DspInfo,
   type EngineConfig,
@@ -311,6 +312,7 @@ export function useDspEngine(config: EngineConfig, poll: {
   // first live frame (then the screens' own staleness rules take over), and
   // reset by every new start. Hosts hand it to EngineGate's `noSignal`.
   const [noSignal, setNoSignal] = useState(false);
+  const silenceCheckRef = useRef<(() => void) | null>(null);
   useEffect(() => {
     if (state !== 'running') {
       setNoSignal(false);
@@ -319,7 +321,7 @@ export function useDspEngine(config: EngineConfig, poll: {
     const since = Date.now();
     let sawLive = false;
     let lastSound = 0;
-    const id = setInterval(() => {
+    const check = () => {
       let m: MeterFrame | null = null;
       try {
         m = ApeDsp.getMeterFrame();
@@ -327,6 +329,15 @@ export function useDspEngine(config: EngineConfig, poll: {
         m = null; // a failed read is not a live frame
       }
       const now = Date.now();
+      // MIC SILENCED BY ANOTHER APP (engine 10, Android 10+): the OS has
+      // silenced our recording and the stream is pure zeros. The same NO SOUND
+      // banner, at once — no NO_SIGNAL_MS wait, since this is not a guess. A
+      // quiet room never sets the flag; the first real sound clears the banner
+      // below as before.
+      if (m?.inputSilenced) {
+        setNoSignal(true);
+        return;
+      }
       if (frameIsLive(m)) {
         sawLive = true;
         // DIGITAL SILENCE (emulator pass 2026-10-13): live frames of pure
@@ -342,8 +353,20 @@ export function useDspEngine(config: EngineConfig, poll: {
       }
       // After a live frame, staleness is the screens' own rule (as before).
       if (!sawLive && noSignalVerdict(since, now, false)) setNoSignal(true);
-    }, 500);
+    };
+    silenceCheckRef.current = check;
+    const id = setInterval(check, 500);
     return () => clearInterval(id);
+  }, [state]);
+  // The native "silenced" report (Android, engine 10) is a prompt to look NOW
+  // rather than at the next 2 Hz tick; the frame stays the verdict. Only while
+  // running — the ref is cleared with the check above.
+  useEffect(() => {
+    if (state !== 'running') {
+      silenceCheckRef.current = null;
+      return undefined;
+    }
+    return onInputSilenced(() => silenceCheckRef.current?.());
   }, [state]);
   // Mirrored for start() (declared above it) — see retryFreshRef.
   noSignalRef.current = state === 'running' && noSignal;
@@ -596,8 +619,11 @@ export function useReleaseMicOnBackground(state: EngineState, stop: () => void):
  * This is the SAME verdict the hub watchdog and micSession already use,
  * exported once so a screen cannot invent a third version of it.
  */
+// inputSilenced (engine 10, Android 10+): the OS silenced our recording for
+// another app — the frames are zeros, not a measurement. Never set on iOS (an
+// interruption stops capture there) or on older builds.
 export function frameIsLive(m: MeterFrame | null | undefined): m is MeterFrame {
-  return !!m && m.running && !m.captureStalled;
+  return !!m && m.running && !m.captureStalled && !m.inputSilenced;
 }
 
 /** Map live native conditions → the Phase-2 quality flags (spec §6). The SAME
@@ -618,7 +644,7 @@ export function meterWarningFlags(m: MeterFrame | null, clip?: ClipBaseline): Wa
   // (peak-hold, Leq, exposure) may have spanned a gap (Phase 1 A2). Sticky for
   // the session by design; a fresh capture (restart) clears it.
   if (m.droppedFrames > 0) flags.push('capture_dropout');
-  if (m.captureStalled || !m.running) flags.push('engine_inactive');
+  if (m.captureStalled || !m.running || m.inputSilenced) flags.push('engine_inactive');
   return flags;
 }
 

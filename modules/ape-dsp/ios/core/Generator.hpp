@@ -147,6 +147,27 @@ class Generator {
     stereoOn_.store(on);
   }
   bool stereoOn() const { return stereoOn_.load(); }
+  /// STEREO SPREAD (engine 10, Stereo Imaging Lab — next-build queue item 11).
+  /// Every lab source used to be mono (L == R), so the side signal was zero and
+  /// a mid/side WIDTH control had nothing to widen. `rad` turns the selected
+  /// mono source into a genuinely two-channel one whose L/R correlation is
+  /// cos(rad):
+  ///   SINE         → R is the same tone lagging L by `rad` (a phase-offset
+  ///                  copy: same frequency, same level);
+  ///   WHITE / PINK → R = cos(rad)·L + sin(rad)·(an INDEPENDENT noise of the
+  ///                  same colour) — same spectrum, same level, partly
+  ///                  decorrelated;
+  ///   other modes  → stay mono.
+  /// 0 = off: L == R, byte-identical to the mono path. The hard-panned stereo
+  /// pair (setStereo) wins when both are on. On/off is a ~20 ms crossfade on the
+  /// RIGHT channel only (render thread), so a source switch or a stop never
+  /// clicks. The value PERSISTS like every generator target — the Stereo lab
+  /// sets it on its stereo sources and clears it on every other source and on
+  /// stop. Clamped 0..π, NaN → 0. No retrigger; safe at UI rate.
+  void setStereoSpread(double rad) {
+    spreadRad_.store(!(rad > 0.0) ? 0.0 : (rad > kPi ? kPi : rad));
+  }
+  double stereoSpread() const { return spreadRad_.load(std::memory_order_relaxed); }
   /// DUAL (engine 8, Cymatics Lab 2026-09-16): GenMode::Dual renders TWO
   /// independent, phase-continuous sines SUMMED INTO ONE MONO SIGNAL —
   /// A = freq_ (the ordinary `frequency`), B = freqB at relative level levelB
@@ -296,6 +317,17 @@ class Generator {
       else hpfMix_ = hpfMixTarget;
       prevHpfHz_ = hpfHz;
     }
+    // Stereo spread (engine 10): only on a two-channel caller, never under the
+    // hard-panned pair. The angle in use is latched while the spread is up, so a
+    // fade-out after a clear (rad → 0) still renders the old R and crossfades it
+    // back into L. While silent there is nothing to fade, so snap.
+    const double spreadReq = R ? spreadRad_.load(std::memory_order_relaxed) : 0.0;
+    const double spreadTarget = (spreadReq > 0.0 && !stereo) ? 1.0 : 0.0;
+    if (spreadTarget > 0.0) spreadRadCur_ = spreadReq;
+    if (env_ <= 0.0) spreadMix_ = spreadTarget;
+    const bool spreadLive = spreadTarget > 0.0 || spreadMix_ > 0.0;
+    const double spreadC = std::cos(spreadRadCur_), spreadS = std::sin(spreadRadCur_);
+    const double spreadStep = 1.0 / (fs * 0.020 < 1.0 ? 1.0 : fs * 0.020);  // ~20 ms
     const double gateOutStep = 1.0 / (fs * 0.004 < 1.0 ? 1.0 : fs * 0.004);  // ~4 ms mute
     const double gateInStep = 1.0 / (fs * 0.120 < 1.0 ? 1.0 : fs * 0.120);   // ~120 ms rolloff back
     const int gateHoldSamples = static_cast<int>(fs * 0.030);                 // ~30 ms silent hold
@@ -326,19 +358,29 @@ class Generator {
       } else {
         rawL = sample(modeCur_, fs);
         rawR = rawL;
+        if (spreadLive) {
+          // Crossfade R from the mono copy (mix 0) to the spread copy (mix 1).
+          spreadMix_ = ramp(spreadMix_, spreadTarget, spreadStep);
+          if (spreadMix_ > 0.0)
+            rawR = rawL + spreadMix_ * (spreadSample(modeCur_, rawL, spreadC, spreadS) - rawL);
+        }
       }
       // HPF sits on the raw signal, BEFORE the Q4 level/cap gain (the cap chain
       // ampCur_*env_ stays the single amplitude authority). Raw↔filtered is
       // crossfaded by hpfMix_ (shared) for click-free route on/off; the biquad
       // STATE is per-channel (hpf_ / hpfR_).
+      // A two-channel caller runs the R filter on EVERY sample (engine 10): with
+      // mono content rawR == rawL and hpfR_ == hpf_ (same coefficients, both
+      // reset per trigger), so sR is bit-identical to sL — and the R state is
+      // already warm when a stereo spread fades in, so the HPF never steps.
       double sL = rawL, sR = rawR;
       if (hpfDesigned) {
         hpfMix_ = hpfMix_ < hpfMixTarget
                       ? (hpfMix_ + hpfMixStep > hpfMixTarget ? hpfMixTarget : hpfMix_ + hpfMixStep)
                       : (hpfMix_ - hpfMixStep < hpfMixTarget ? hpfMixTarget : hpfMix_ - hpfMixStep);
         sL = rawL * (1.0 - hpfMix_) + static_cast<double>(hpf_.process(static_cast<float>(rawL))) * hpfMix_;
-        sR = stereo ? rawR * (1.0 - hpfMix_) + static_cast<double>(hpfR_.process(static_cast<float>(rawR))) * hpfMix_
-                    : sL;
+        sR = R ? rawR * (1.0 - hpfMix_) + static_cast<double>(hpfR_.process(static_cast<float>(rawR))) * hpfMix_
+               : sL;
       }
       // Route-change gate envelope: fast out → silent hold (snap the HPF here,
       // masked) → slow fade in.
@@ -411,6 +453,25 @@ class Generator {
     envSettled_ = false;  // block the gate until this new tone's onset completes
     prevHpfHz_ = hpfHz_.load();
     trigPending_ = false;
+  }
+
+  // The RIGHT channel of a spread source (engine 10) — see setStereoSpread.
+  // `l` is this sample's LEFT (mono) value; c/s = cos/sin of the spread angle.
+  // Sine reads the shared accumulator AFTER sample() stepped it, so R is the
+  // same tone exactly `rad` behind L. Noise mixes in an independent stream of
+  // the same colour (white2/pink2 — their own state, so the mono L stream is
+  // untouched). Every other mode stays mono.
+  double spreadSample(GenMode mode, double l, double c, double s) {
+    switch (mode) {
+      case GenMode::Sine:
+        return std::sin(2.0 * kPi * phase_ - spreadRadCur_);
+      case GenMode::White:
+        return c * l + s * white2();
+      case GenMode::Pink:
+        return c * l + s * pink2();
+      default:
+        return l;
+    }
   }
 
   // One stereo-channel sine sample; advances `phase` (in cycles) in place.
@@ -680,6 +741,30 @@ class Generator {
     return p * 0.11;  // scale into ~[-1,1]
   }
 
+  // Independent second noise stream for the stereo spread (engine 10): the
+  // SAME xorshift32 + Kellet pink filter as white()/pink(), on its own seed and
+  // state — uncorrelated with the L stream, identical in level and colour.
+  inline double white2() {
+    uint32_t x = rng2_;
+    x ^= x << 13;
+    x ^= x >> 17;
+    x ^= x << 5;
+    rng2_ = x;
+    return (static_cast<double>(x) / 2147483648.0) - 1.0;
+  }
+  inline double pink2() {
+    const double w = white2();
+    q0_ = 0.99886 * q0_ + w * 0.0555179;
+    q1_ = 0.99332 * q1_ + w * 0.0750759;
+    q2_ = 0.96900 * q2_ + w * 0.1538520;
+    q3_ = 0.86650 * q3_ + w * 0.3104856;
+    q4_ = 0.55000 * q4_ + w * 0.5329522;
+    q5_ = -0.7616 * q5_ - w * 0.0168980;
+    const double p = q0_ + q1_ + q2_ + q3_ + q4_ + q5_ + q6_ + w * 0.5362;
+    q6_ = w * 0.115926;
+    return p * 0.11;
+  }
+
   // Brown (red, −6 dB/oct): leaky integration of white.
   inline double brown() {
     br_ = 0.998 * br_ + 0.02 * white();
@@ -721,6 +806,8 @@ class Generator {
   std::atomic<double> stereoFreqL_{440.0}, stereoFreqR_{440.0};
   // Dual (engine 8): second sine frequency + its level relative to A (0..1).
   std::atomic<double> dualFreqB_{444.0}, dualLevelB_{1.0};
+  // Stereo spread (engine 10): L/R spread angle in radians, 0 = mono (L == R).
+  std::atomic<double> spreadRad_{0.0};
 
   // Additive (HV-2) control atomics — TARGETS only; render ramps toward them.
   // Defaults: fundamental only (a1=1), phases 0, f0 1 kHz.
@@ -775,6 +862,10 @@ class Generator {
   double hpfMix_ = 0.0;  // raw↔filtered crossfade (0 = bypassed, 1 = filtered)
   double stereoPhL_ = 0.0, stereoPhR_ = 0.0;  // stereo sine accumulators (cycles)
   double dualPhB_ = 0.0;                      // dual-mode B accumulator (cycles)
+  // Stereo spread render state (engine 10): R crossfade 0..1 + the latched angle.
+  double spreadMix_ = 0.0, spreadRadCur_ = 0.0;
+  uint32_t rng2_ = 0x2545f491;  // independent noise stream (white2/pink2)
+  double q0_ = 0, q1_ = 0, q2_ = 0, q3_ = 0, q4_ = 0, q5_ = 0, q6_ = 0;
   // Route-change GATE: a mid-tone cutoff change (headphone plug/unplug) mutes
   // the output fast, holds silent while the HPF swaps + the OS route settles,
   // then fades back in slowly — masking the filter transition AND the hardware

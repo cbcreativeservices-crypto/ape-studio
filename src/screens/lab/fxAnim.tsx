@@ -147,7 +147,7 @@ export type FxAnimModel =
       signal?: DynSignal;
     }
   | { kind: 'distortion'; type: 'hard' | 'soft' | 'tube'; driveDb: number; mix: number }
-  | { kind: 'stereo'; flavor: 'phase' | 'width'; widthPct: number; pan: number; invertR: boolean; delayRms: number; monoFold: boolean };
+  | { kind: 'stereo'; flavor: 'phase' | 'width'; widthPct: number; pan: number; invertR: boolean; delayRms: number; monoFold: boolean; monoIn?: boolean };
 
 function stageLabel(model: FxAnimModel): string {
   switch (model.kind) {
@@ -2161,12 +2161,15 @@ function StereoFlow({
   invertR,
   delayRms,
   monoFold,
+  monoIn = false,
 }: {
   w: number;
   h: number;
   active: boolean;
   label: string;
   flavor: 'phase' | 'width';
+  /** Width lab's MONO comparison source (engine 10): L = R going in. */
+  monoIn?: boolean;
   widthPct: number;
   pan: number;
   invertR: boolean;
@@ -2185,7 +2188,10 @@ function StereoFlow({
   // The width lab's input carries a built-in L/R difference (otherwise SIDE
   // would be zero and width invisible); the phase lab's input is identical L=R.
   // The SAME stereo test tone the well's Lissajous draws (fxViz).
-  const d0 = flavor === 'width' ? STEREO_TEST_LR_RAD : 0;
+  // The width lab's MONO comparison source (engine 10) is L = R as well —
+  // nothing to widen, drawn as it sounds.
+  const stereoIn = flavor === 'width' && !monoIn;
+  const d0 = stereoIn ? STEREO_TEST_LR_RAD : 0;
   const ampK = flavor === 'width' ? STEREO_A : 0.3;
 
   const inL = useDerivedValue(() => {
@@ -2278,7 +2284,7 @@ function StereoFlow({
       w={w}
       h={h}
       label={label}
-      note={flavor === 'width' ? 'STEREO TEST TONE · L ≠ R' : 'SAME TONE IN L AND R'}
+      note={stereoIn ? 'STEREO TEST TONE · L ≠ R' : 'SAME TONE IN L AND R'}
       noteColor={colors.textSub}
       legend={[{ label: 'L', color: AMBER }, { label: 'R', color: BLUE }]}
     >
@@ -2290,7 +2296,7 @@ function StereoFlow({
           under L. A thin R line drawn on TOP keeps both channels visible —
           one line with a blue core when they agree, two lines when Ø or the
           delay pulls R away (art grading 2026-10-16). */}
-      {flavor === 'phase' ? <Path path={outR} color={BLUE} style="stroke" strokeWidth={1.1} opacity={0.95} /> : null}
+      {!stereoIn ? <Path path={outR} color={BLUE} style="stroke" strokeWidth={1.1} opacity={0.95} /> : null}
     </FlowScene>
   );
 }
@@ -2419,6 +2425,7 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
           invertR={model.invertR}
           delayRms={model.delayRms}
           monoFold={model.monoFold}
+          monoIn={model.monoIn}
         />
       );
   }

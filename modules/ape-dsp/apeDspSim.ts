@@ -168,6 +168,10 @@ export function makeApeDspSim() {
     genStart: () => Promise.resolve({ running: true, capUnlocked: false, effectiveLevelDb: -20, defaultLevelDb: -20, capDb: -12 }),
     genStop: () => Promise.resolve(),
     genSet: () => {},
+    // Engine-10 source lists (Stereo Imaging lab's stereo-spread sources) show
+    // in the web preview the way the store build shows them. Visual only — the
+    // sim renders no audio, and the effects path stays off (engineVersion 2).
+    stereoSpreadAvailable: () => true,
     genUnlockCap: () => {},
     genRelockCap: () => {},
     rt60Arm: () => {},

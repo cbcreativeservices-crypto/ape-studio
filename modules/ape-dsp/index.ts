@@ -90,6 +90,13 @@ export type MeterFrame = {
   processedInput: boolean;
   bluetoothInput: boolean;
   interrupted: boolean;
+  /** ANDROID, engine 10+ (API 29+): another app (a call, an assistant, a
+   *  recorder) holds the microphone and the OS has SILENCED our recording —
+   *  the OS reports our input source silenced AND the stream is delivering
+   *  exact digital zeros. A quiet room never sets it (a real mic's self-noise
+   *  is never exact zero). Undefined on iOS (there the OS interrupts the
+   *  session instead) and on older builds. */
+  inputSilenced?: boolean;
 };
 
 export type BandsFrame = {
@@ -205,6 +212,15 @@ export type GenParams = {
    *  native-side so the Q4 cap still bounds the peak. Phase-continuous
    *  retune (no retrigger) — safe at UI rate. No-op below v8. */
   dual?: { freqB: number; levelB?: number };
+  /** STEREO SPREAD (engineVersion ≥ 10 — Stereo Imaging lab): turns the
+   *  SINE / WHITE / PINK source into a genuinely two-channel one with L/R
+   *  correlation cos(rad) — sine: R lags L by `rad`; noise: R partly
+   *  decorrelated, same colour and level. 0 = mono (L == R). Without it every
+   *  lab source is mono, the SIDE is zero and a width control has nothing to
+   *  widen. PERSISTS like every generator target: a screen that sets it must
+   *  clear it (0) on its other sources and on stop. Crossfaded native-side
+   *  (~20 ms) — click-free at UI rate. Ignored below v10. */
+  stereoSpreadRad?: number;
 };
 
 export type GenStatus = {
@@ -382,6 +398,27 @@ export function onOutputLost(cb: () => void): () => void {
   }
 }
 
+/**
+ * MIC SILENCED BY ANOTHER APP (Android, engine 10+, API 29+). Fires when the
+ * OS's view changes: `silenced: true` = a recording on OUR input source has
+ * been silenced (a call, an assistant or a recorder took the mic). It is the
+ * PROMPT to re-check; the per-frame verdict is MeterFrame.inputSilenced, which
+ * additionally requires our stream to be delivering exact zeros. iOS and older
+ * builds never call it. Returns an unsubscribe.
+ */
+export function onInputSilenced(cb: (silenced: boolean) => void): () => void {
+  const emitter = native as unknown as {
+    addListener?: (e: string, f: (p: { silenced?: boolean }) => void) => { remove(): void };
+  } | null;
+  if (!emitter?.addListener) return () => {};
+  try {
+    const sub = emitter.addListener('onInputSilenced', (p) => cb(p?.silenced === true));
+    return () => sub.remove();
+  } catch {
+    return () => {};
+  }
+}
+
 /** Decode a native byte payload into a Float32Array (little-endian). */
 function toFloat32(bytes: Uint8Array | null | undefined): Float32Array {
   if (!bytes || bytes.byteLength < 4) return new Float32Array(0);
@@ -503,6 +540,12 @@ export const ApeDsp = {
    *  fall back to the sine-only behavior. */
   genSetAdditive(values: number[]): void {
     if (this.engineVersion() >= 3) native?.genSet({ additive: values });
+  },
+  /** True when the generator can render a STEREO-SPREAD source (engine ≥ 10,
+   *  GenParams.stereoSpreadRad). Below v10 the key is ignored natively and the
+   *  source stays mono, so a screen must not offer a "stereo" source then. */
+  stereoSpreadAvailable(): boolean {
+    return this.engineVersion() >= 10;
   },
   genUnlockCap(): void {
     if (this.engineVersion() >= 2) native?.genUnlockCap();

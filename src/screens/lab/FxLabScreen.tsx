@@ -184,7 +184,19 @@ export type FxSourceSpec = {
    *  never occupies, and the drawing then contradicts the live GR meter
    *  beside it. */
   steadyPeakDb?: number;
+  /** The MONO comparison beside stereo-spread sources (Stereo Imaging lab,
+   *  engine 10): L == R, so the side is zero — the hero draws it that way
+   *  ("nothing to widen") instead of the stereo test tone. */
+  monoCompare?: boolean;
 };
+
+/** Every generator write from an effect lab: the lab level, the stereo spread
+ *  CLEARED unless this source sets it (engine 10 — the spread persists
+ *  natively like every generator target, so a source without it must not
+ *  inherit the Stereo lab's), then the source's own params. */
+function genParamsFor(src: FxSourceSpec): GenParams {
+  return { levelDb: GEN_LEVEL_DB, stereoSpreadRad: 0, ...src.gen };
+}
 
 export type FxLabConfig = {
   labId: LabId;
@@ -195,6 +207,10 @@ export type FxLabConfig = {
   intro: string;
   exploreCaption: string;
   sources: FxSourceSpec[];
+  /** Engine 10+ (ApeDsp.stereoSpreadAvailable): REPLACES `sources` when the
+   *  generator can render a stereo-spread source. Older builds keep `sources`
+   *  exactly, so a label never promises stereo the audio cannot play. */
+  stereoSources?: FxSourceSpec[];
   params: FxParamSpec[];
   /** Fixed params pushed on start before the user params (e.g. mod mode). */
   fixed?: { paramId: number; value: number }[];
@@ -376,6 +392,11 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   });
   const engineReady = gate === 'idle';
   const fxReady = engineReady && ApeDsp.fxAvailable();
+  // The source list this build can actually play (engine 10 stereo sources).
+  const sources = useMemo(
+    () => (config.stereoSources && ApeDsp.stereoSpreadAvailable() ? config.stereoSources : config.sources),
+    [config.stereoSources, config.sources],
+  );
 
   const [sourceIdx, setSourceIdx] = useState(0);
   const [values, setValues] = useState<Record<number, number>>(() =>
@@ -399,10 +420,10 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   // in the shared SOURCE lesson; everything else is a lab-lesson control key.
   const openHelp = useCallback(
     (key?: string) => {
-      if (key === 'src') openSourceHelp(config.sources[sourceIdx].gen);
+      if (key === 'src') openSourceHelp(sources[sourceIdx].gen);
       else openLesson(key);
     },
-    [config.sources, sourceIdx, openSourceHelp, openLesson],
+    [sources, sourceIdx, openSourceHelp, openLesson],
   );
 
   // The gated animated-hero module (null on pre-Skia clients).
@@ -434,7 +455,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     const ok = await requestAudioOutput();
     if (!ok || gen !== genRef.current) return;
     setGenError('');
-    ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...config.sources[sourceIdx].gen });
+    ApeDsp.genSet(genParamsFor(sources[sourceIdx]));
     pushAllParams(values);
     try {
       // The fence (startFenced): a mute, a stop, or a stop-all that lands
@@ -446,6 +467,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           if (why === 'superseded' && wantRef.current) return;
           void ApeDsp.genStop();
           ApeDsp.fxReset();
+          ApeDsp.genSet({ stereoSpreadRad: 0 });
         },
         isCurrent: () => gen === genRef.current,
       });
@@ -454,7 +476,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       // push (running was still false) — send the newest now, so the display
       // and the audio agree (bug hunt 2026-09-30 day; Oscillator's fix).
       const latest = latestRef.current;
-      if (latest.sourceIdx !== sourceIdx) ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...config.sources[latest.sourceIdx].gen });
+      if (latest.sourceIdx !== sourceIdx) ApeDsp.genSet(genParamsFor(sources[latest.sourceIdx]));
       if (latest.values !== values) pushAllParams(latest.values);
       setRunning(true);
       noteAudioActivity();
@@ -465,13 +487,17 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       // effect — ■ lit, the faders set, the tone playing dry.
       if (gen === genRef.current || !wantRef.current) ApeDsp.fxReset();
     }
-  }, [fxReady, requestAudioOutput, config, sourceIdx, values, pushAllParams]);
+  }, [fxReady, requestAudioOutput, config, sources, sourceIdx, values, pushAllParams]);
 
   const stop = useCallback(() => {
     genRef.current++;
     wantRef.current = false;
     void ApeDsp.genStop();
     ApeDsp.fxReset(); // leave NOTHING armed for the next lab
+    // …including the Stereo lab's stereo spread (engine 10): it persists
+    // natively, and a tool that never heard of it must get mono. Cleared
+    // during the 10 ms fade — the native crossfade keeps that click-free.
+    ApeDsp.genSet({ stereoSpreadRad: 0 });
     setRunning(false);
     setGrDb(0);
   }, []);
@@ -516,7 +542,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   const pickSource = (i: number) => {
     setSourceIdx(i);
     if (running) {
-      ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...config.sources[i].gen });
+      ApeDsp.genSet(genParamsFor(sources[i]));
       noteAudioActivity();
     }
   };
@@ -615,8 +641,8 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     kind: 'options',
     id: 'src',
     label: 'SOURCE',
-    valueLabel: config.sources[sourceIdx].short ?? config.sources[sourceIdx].label,
-    options: config.sources.map((s, i) => ({
+    valueLabel: sources[sourceIdx].short ?? sources[sourceIdx].label,
+    options: sources.map((s, i) => ({
       id: String(i),
       label: s.label,
       blurb: s.blurb,
@@ -674,8 +700,8 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
               running={running}
               pollGr={config.pollGr}
               grDb={grDb}
-              anim={AnimHero ? <AnimHero model={config.anim!(values, config.sources[sourceIdx])} active={focused} grDb={running ? grDb : 0} /> : null}
-              staticHero={AnimHero ? null : config.Hero(values, config.sources[sourceIdx])}
+              anim={AnimHero ? <AnimHero model={config.anim!(values, sources[sourceIdx])} active={focused} grDb={running ? grDb : 0} /> : null}
+              staticHero={AnimHero ? null : config.Hero(values, sources[sourceIdx])}
             />
           ),
         },
@@ -738,7 +764,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
               printing twice on every Skia FX-rack lab). */}
           <Text style={styles.sectionHead}>DESIGNED RESPONSE</Text>
           <Text style={styles.badge}>{config.heroBadge}</Text>
-          {config.Hero(values, config.sources[sourceIdx])}
+          {config.Hero(values, sources[sourceIdx])}
           {config.heroCaption ? <Text style={styles.caption}>{config.heroCaption(values)}</Text> : null}
         </View>
       ) : config.heroCaption ? (
@@ -755,7 +781,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           fxReady ? (
             <>
               <Text style={styles.caption}>
-                {`▶ (top right) plays real audio: ${config.sources[sourceIdx].label.toLowerCase()} → ${config.title.replace(' LAB', '').toLowerCase()} → output. ${GEN_LEVEL_DB} dBFS · uncalibrated. Change any control while it plays.`}
+                {`▶ (top right) plays real audio: ${sources[sourceIdx].label.toLowerCase()} → ${config.title.replace(' LAB', '').toLowerCase()} → output. ${GEN_LEVEL_DB} dBFS · uncalibrated. Change any control while it plays.`}
               </Text>
               {genError ? <Text style={styles.error}>{genError}</Text> : null}
             </>

@@ -1099,6 +1099,155 @@ int main() {
         if (std::fabs(L2[i] + R2[i]) > 1e-4f) { anti = false; break; }
       truthy("Stereo: R-polarity invert → L = -R (cancels in mono)", anti);
     }
+    // 12k. PING-PONG on a MONO source (engine 10, next-build queue item 10):
+    //      the repeats ALTERNATE L, R, L — each repeat on one side only. Off:
+    //      unchanged, both sides echo together on every repeat.
+    {
+      auto runDelay = [&](bool pp, std::vector<float>& L, std::vector<float>& R) {
+        DelayEffect d;
+        d.setParam(1, 100.0);  // 100 ms
+        d.setParam(2, 0.5);
+        d.setParam(3, 1.0);    // full wet: taps only
+        d.setParam(4, pp ? 1.0 : 0.0);
+        d.setParam(5, 20000.0);
+        d.configure(fs);
+        d.setEnabled(true);
+        L.assign(static_cast<size_t>(fs * 0.45), 0.0f);
+        R.assign(L.size(), 0.0f);
+        L[0] = R[0] = 1.0f;  // MONO impulse (L == R), like every lab source
+        d.processStereo(L.data(), R.data(), (uint32_t)L.size());
+      };
+      auto energyNear = [&](const std::vector<float>& b, double tSec) {
+        const size_t c = static_cast<size_t>(tSec * fs);
+        double e = 0.0;
+        for (size_t i = c - 200; i < c + 200 && i < b.size(); ++i) e += (double)b[i] * b[i];
+        return e;
+      };
+      std::vector<float> L, R;
+      runDelay(true, L, R);
+      const double l1 = energyNear(L, 0.1), r1 = energyNear(R, 0.1);
+      const double l2 = energyNear(L, 0.2), r2 = energyNear(R, 0.2);
+      const double l3 = energyNear(L, 0.3), r3 = energyNear(R, 0.3);
+      truthy("Ping-pong mono: repeat 1 is LEFT only", l1 > 0.2 && r1 < 1e-6 * l1);
+      truthy("Ping-pong mono: repeat 2 is RIGHT only", r2 > 1e-3 && l2 < 1e-6 * r2);
+      truthy("Ping-pong mono: repeat 3 is LEFT only", l3 > 1e-4 && r3 < 1e-6 * l3);
+      near("Ping-pong mono: repeat 2 / 1 = feedback (energy fb^2)", r2 / (l1 + 1e-30), 0.25, 0.06);
+      std::vector<float> Ln, Rn;
+      runDelay(false, Ln, Rn);
+      bool same = true;
+      for (size_t i = 0; i < Ln.size(); ++i)
+        if (Ln[i] != Rn[i]) { same = false; break; }
+      truthy("Ping-pong OFF: mono in → L == R on every repeat (unchanged)", same);
+      truthy("Ping-pong OFF: repeat 2 still on both sides", energyNear(Ln, 0.2) > 1e-3 && energyNear(Rn, 0.2) > 1e-3);
+    }
+    // 12l. STEREO SPREAD source (engine 10, next-build queue item 11): a mono
+    //      lab source with the spread on has a real SIDE signal, so WIDTH 200%
+    //      widens it; the mono comparison source has S = 0 at any width.
+    {
+      auto renderGen = [&](GenMode mode, double spreadRad, std::vector<float>& L, std::vector<float>& R) {
+        Generator g;
+        g.configure(fs);
+        g.setMode(mode);
+        g.setFrequency(440.0);
+        g.setLevelDb(-20.0);
+        g.setStereoSpread(spreadRad);
+        g.start();
+        L.assign(static_cast<size_t>(fs * 0.6), 0.0f);
+        R.assign(L.size(), 0.0f);
+        g.renderStereo(L.data(), R.data(), (uint32_t)L.size());
+      };
+      const size_t skip = static_cast<size_t>(fs * 0.1);
+      auto stats = [&](const std::vector<float>& L, const std::vector<float>& R, double& corr,
+                       double& sideE, double& midE, double& lE, double& rE) {
+        double sLL = 0.0, sRR = 0.0, sLR = 0.0, sS = 0.0, sM = 0.0;
+        for (size_t i = skip; i < L.size(); ++i) {
+          const double l = L[i], r = R[i];
+          sLL += l * l; sRR += r * r; sLR += l * r;
+          sS += 0.25 * (l - r) * (l - r);
+          sM += 0.25 * (l + r) * (l + r);
+        }
+        corr = sLR / std::sqrt(sLL * sRR + 1e-30);
+        sideE = sS; midE = sM; lE = sLL; rE = sRR;
+      };
+      auto widen = [&](std::vector<float>& L, std::vector<float>& R, double widthPct) {
+        StereoEffect st;
+        st.configure(fs);
+        st.setEnabled(true);
+        st.setParam(1, widthPct);
+        st.processStereo(L.data(), R.data(), (uint32_t)L.size());
+      };
+      const double rad = 1.1;  // fxViz STEREO_TEST_LR_RAD (the lab's model input)
+      double c, sE, mE, lE, rE;
+      // Spread PINK: correlation cos(1.1) ≈ +0.45, equal L/R level.
+      std::vector<float> L, R;
+      renderGen(GenMode::Pink, rad, L, R);
+      stats(L, R, c, sE, mE, lE, rE);
+      near("Spread pink: L/R correlation = cos(1.1)", c, std::cos(rad), 0.06);
+      near("Spread pink: R level = L level (dB)", 10.0 * std::log10(rE / lE), 0.0, 0.5);
+      const double side100 = sE;
+      widen(L, R, 200.0);
+      stats(L, R, c, sE, mE, lE, rE);
+      truthy("Spread pink + WIDTH 200%: side energy > 0", sE > 0.2 * mE);
+      near("Spread pink: WIDTH 200% = side x2 (energy x4)", sE / (side100 + 1e-30), 4.0, 0.2);
+      // Spread SINE 440: R lags L by 1.1 rad — the lab's stereo test tone.
+      std::vector<float> Ls, Rs;
+      renderGen(GenMode::Sine, rad, Ls, Rs);
+      stats(Ls, Rs, c, sE, mE, lE, rE);
+      near("Spread sine: L/R correlation = cos(1.1)", c, std::cos(rad), 0.01);
+      near("Spread sine: R level = L level (dB)", 10.0 * std::log10(rE / lE), 0.0, 0.05);
+      widen(Ls, Rs, 200.0);
+      stats(Ls, Rs, c, sE, mE, lE, rE);
+      truthy("Spread sine + WIDTH 200%: side energy > 0", sE > 0.2 * mE);
+      // MONO comparison source (spread 0): L == R exactly, S = 0 at 200%.
+      std::vector<float> Lm, Rm;
+      renderGen(GenMode::Pink, 0.0, Lm, Rm);
+      bool same = true;
+      for (size_t i = 0; i < Lm.size(); ++i)
+        if (Lm[i] != Rm[i]) { same = false; break; }
+      truthy("Mono comparison source: L == R (spread 0)", same);
+      widen(Lm, Rm, 200.0);
+      stats(Lm, Rm, c, sE, mE, lE, rE);
+      truthy("Mono comparison + WIDTH 200%: side ~ 0 (nothing to widen)", sE < 1e-9 * (mE + 1e-30));
+      // Spread is a two-channel feature: the hard-panned pair wins, and a
+      // mono caller (render()) is untouched.
+      Generator gm;
+      gm.configure(fs);
+      gm.setMode(GenMode::Pink);
+      gm.setLevelDb(-20.0);
+      gm.setStereoSpread(rad);
+      gm.start();
+      Generator g0;
+      g0.configure(fs);
+      g0.setMode(GenMode::Pink);
+      g0.setLevelDb(-20.0);
+      g0.start();
+      std::vector<float> m1(4800), m0(4800);
+      gm.render(m1.data(), (uint32_t)m1.size());
+      g0.render(m0.data(), (uint32_t)m0.size());
+      truthy("Spread: mono render() path unchanged (L stream identical)", m1 == m0);
+      // Clearing the spread mid-tone crossfades R back into L — no step, and
+      // L == R exactly once the ~20 ms fade is done.
+      Generator gx;
+      gx.configure(fs);
+      gx.setMode(GenMode::Sine);
+      gx.setFrequency(440.0);
+      gx.setLevelDb(-20.0);
+      gx.setStereoSpread(rad);
+      gx.start();
+      std::vector<float> a(9600), b(9600);
+      gx.renderStereo(a.data(), b.data(), (uint32_t)a.size());
+      gx.setStereoSpread(0.0);
+      std::vector<float> a2(4800), b2(4800);
+      gx.renderStereo(a2.data(), b2.data(), (uint32_t)a2.size());
+      double maxStep = std::fabs((double)b2[0] - (double)b.back());
+      for (size_t i = 1; i < b2.size(); ++i) maxStep = std::max(maxStep, std::fabs((double)b2[i] - (double)b2[i - 1]));
+      // A 440 Hz sine at -20 dBFS moves at most 0.1·2π·440/48000 ≈ 0.0058 per sample.
+      truthy("Spread clear: R crossfades (no step > the tone's own slope)", maxStep < 0.0065);
+      bool back = true;
+      for (size_t i = static_cast<size_t>(fs * 0.03); i < a2.size(); ++i)
+        if (a2[i] != b2[i]) { back = false; break; }
+      truthy("Spread clear: L == R after the crossfade", back);
+    }
     // 12j. CHAIN — scalar dispatch + reset.
     {
       EffectChain ch;

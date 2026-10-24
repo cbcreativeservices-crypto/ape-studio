@@ -13,6 +13,8 @@ import android.content.pm.PackageManager
 import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
+import android.media.AudioRecordingConfiguration
+import android.media.MediaRecorder
 import android.media.MicrophoneInfo
 import android.os.Build
 import androidx.core.content.ContextCompat
@@ -36,6 +38,16 @@ class ApeDspModule : Module() {
   // speaker-safety high-pass (built-in speaker → HPF on; else full range).
   private var outputRoute = "unknown"
   private var deviceCallback: AudioDeviceCallback? = null
+  // MIC SILENCED BY ANOTHER APP (engine 10, next-build queue item 6). Android
+  // 10+ SILENCES a recording when a call / assistant / recorder takes the mic:
+  // Oboe keeps delivering buffers — of zeros — so the stall watchdog never
+  // fires and a meter could show a believable quiet number. `osSilenced` = the
+  // OS reports a recording on OUR input source silenced (main looper writes,
+  // bridge reads). The frame flag also requires our stream to be delivering
+  // exact zeros, so it can never be another app's silenced recording, and a
+  // quiet room (real mic self-noise is never exact zero) never trips it.
+  private var recordingCallback: AudioManager.AudioRecordingCallback? = null
+  @Volatile private var osSilenced = false
 
   companion object {
     init { System.loadLibrary("apedspjni") }
@@ -72,6 +84,9 @@ class ApeDspModule : Module() {
   private external fun nativeSpectrumData(h: Long): ByteArray
   private external fun nativeWaveformData(h: Long): ByteArray
   private external fun nativeCaptureRunning(h: Long): Boolean
+  // Seconds since the input stream last delivered a NON-zero sample (0 when
+  // capture is not running) — the "exact digital zeros" half of inputSilenced.
+  private external fun nativeInputZeroSeconds(h: Long): Double
   private external fun nativeGenStart(h: Long): Boolean
   private external fun nativeGenStop(h: Long)
   private external fun nativeGenSetMode(h: Long, mode: Int)
@@ -83,6 +98,8 @@ class ApeDspModule : Module() {
   private external fun nativeGenSetStereo(h: Long, on: Boolean, fL: Double, fR: Double)
   // DUAL mono pair (engine 8): second sine frequency + level relative to A.
   private external fun nativeGenSetDual(h: Long, freqB: Double, levelB: Double)
+  // STEREO SPREAD (engine 10): L/R spread angle in radians, 0 = mono.
+  private external fun nativeGenSetStereoSpread(h: Long, rad: Double)
   private external fun nativeFxSet(h: Long, effectId: Int, paramId: Int, v: Double)
   private external fun nativeFxReset(h: Long)
   private external fun nativeFxGrStatus(h: Long): DoubleArray
@@ -116,7 +133,7 @@ class ApeDspModule : Module() {
     // HEADPHONES UNPLUGGED / BLUETOOTH DROPPED (next-build queue, 2026-09-30).
     // Sent after every output voice has been stopped natively; the JS side
     // (AudioOutputGate) silences the app so each screen shows STOPPED.
-    Events("onOutputLost")
+    Events("onOutputLost", "onInputSilenced")
 
     OnCreate {
       handle = nativeCreate()
@@ -145,12 +162,31 @@ class ApeDspModule : Module() {
         deviceCallback = cb
         am.registerAudioDeviceCallback(cb, null)
         refreshOutputRouteAndHpf()
+        // isClientSilenced exists from API 29 (Android 10) — the release that
+        // introduced silencing a recording instead of failing it. Below that
+        // the existing paths (stall watchdog, JS digital-silence check) stand.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          val rc = object : AudioManager.AudioRecordingCallback() {
+            override fun onRecordingConfigChanged(configs: MutableList<AudioRecordingConfiguration>?) {
+              updateInputSilenced(configs)
+            }
+          }
+          recordingCallback = rc
+          try {
+            am.registerAudioRecordingCallback(rc, null)  // null = main looper
+          } catch (e: Exception) {
+            recordingCallback = null
+          }
+        }
       }
     }
     OnDestroy {
       val am = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
       deviceCallback?.let { am?.unregisterAudioDeviceCallback(it) }
       deviceCallback = null
+      recordingCallback?.let { try { am?.unregisterAudioRecordingCallback(it) } catch (e: Exception) {} }
+      recordingCallback = null
+      osSilenced = false
       if (handle != 0L) {
         nativeStopCapture(handle)
         nativeGenStop(handle)
@@ -196,6 +232,7 @@ class ApeDspModule : Module() {
     AsyncFunction("stop") { promise: Promise ->
       if (handle != 0L) nativeStopCapture(handle)
       bluetoothInput = false
+      osSilenced = false  // a fresh capture re-learns it from the next callback
       promise.resolve(null)
     }
 
@@ -216,6 +253,7 @@ class ApeDspModule : Module() {
         "droppedFrames" to m[15], "running" to (m[16] == 1.0), "captureStalled" to (m[17] == 1.0),
         "processedInput" to !measurementMode, "bluetoothInput" to bluetoothInput, "interrupted" to false,
         "engineVersion" to nativeEngineVersion(),
+        "inputSilenced" to inputSilencedNow(),
       )
     }
 
@@ -245,6 +283,8 @@ class ApeDspModule : Module() {
         // Android has no OS "processed input" query beyond the preset we got; if
         // Unprocessed wasn't honored the input is processed (uncalibrated warning).
         "processedInput" to !measurementMode, "bluetoothInput" to bluetoothInput, "interrupted" to false,
+        // Engine 10: the OS silenced our recording (another app has the mic).
+        "inputSilenced" to inputSilencedNow(),
       )
     }
 
@@ -371,6 +411,9 @@ class ApeDspModule : Module() {
         val fB = (d["freqB"] as? Number)?.toDouble()
         if (fB != null) nativeGenSetDual(handle, fB, (d["levelB"] as? Number)?.toDouble() ?: 1.0)
       }
+      // STEREO SPREAD (engine 10, Stereo Imaging lab) — radians, 0 = mono.
+      // Targets-first (before mode). Same key on iOS/JS.
+      (params["stereoSpreadRad"] as? Number)?.let { nativeGenSetStereoSpread(handle, it.toDouble()) }
       // FM voice (wave-2, engineVersion 7) — { ratio, index, decaySec }.
       // Targets-first like the rest (before mode). Same shape on iOS/JS.
       (params["fm"] as? Map<*, *>)?.let { fm ->
@@ -459,6 +502,32 @@ class ApeDspModule : Module() {
     return am.getDevices(AudioManager.GET_DEVICES_INPUTS)
       .any { it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO }
   }
+
+  /** AudioRecordingCallback (main looper, API 29+): does the OS report a
+   *  recording on OUR input source silenced? Our source is one of the two
+   *  presets ApeDspJni.cpp opens with (Unprocessed when the device supports
+   *  it, else VoiceRecognition) — both are matched, because this callback can
+   *  land before `start` has stored which one was honored. The callback lists
+   *  every app's recordings (anonymized), so this alone could be another
+   *  app's: the frame flag (inputSilencedNow) also needs OUR stream to be
+   *  delivering exact zeros. JS is told on every change, as a prompt to
+   *  re-check the frame. */
+  private fun updateInputSilenced(configs: List<AudioRecordingConfiguration>?) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
+    val capturing = handle != 0L && nativeCaptureRunning(handle)
+    val oursSources = intArrayOf(MediaRecorder.AudioSource.UNPROCESSED, MediaRecorder.AudioSource.VOICE_RECOGNITION)
+    val now = capturing && configs?.any { it.isClientSilenced && oursSources.contains(it.clientAudioSource) } == true
+    if (now != osSilenced) {
+      osSilenced = now
+      sendEvent("onInputSilenced", mapOf("silenced" to now))
+    }
+  }
+
+  /** The per-frame verdict: the OS says our source is silenced AND our stream
+   *  has delivered nothing but exact zeros for 0.25 s. Genuine silence never
+   *  meets the second half (a real mic's self-noise is never exact zero). */
+  private fun inputSilencedNow(): Boolean =
+    osSilenced && handle != 0L && nativeInputZeroSeconds(handle) > 0.25
 
   private fun anyVoiceRunning(): Boolean =
     genStatusMap()["running"] == true || binStatusMap()["running"] == true || modStatusMap()["running"] == true

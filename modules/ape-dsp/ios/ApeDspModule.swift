@@ -75,7 +75,10 @@ public class ApeDspModule: Module {
     // HEADPHONES UNPLUGGED / BLUETOOTH DROPPED (next-build queue, 2026-09-30).
     // Sent after every output voice has been stopped natively; the JS side
     // (AudioOutputGate) silences the app so each screen shows STOPPED.
-    Events("onOutputLost")
+    // "onInputSilenced" is Android's (engine 10: another app silenced the mic);
+    // declared here too so both platforms expose the same surface. iOS never
+    // sends it — there the OS INTERRUPTS the session instead (handled below).
+    Events("onOutputLost", "onInputSilenced")
 
     AsyncFunction("start") { (promise: Promise) in
       self.desiredRunning = true
@@ -215,6 +218,12 @@ public class ApeDspModule: Module {
       // first like the rest (before mode). Same shape on Android/JS.
       if let d = params["dual"] as? [String: Any], let fB = d["freqB"] as? Double {
         self.core.genSetDual(fB, levelB: (d["levelB"] as? Double) ?? 1.0)
+      }
+      // STEREO SPREAD (engine 10, Stereo Imaging lab) — radians, 0 = mono.
+      // NSNumber like "mode": a JS 0 must clear it on every bridge type.
+      // Targets-first (before mode). Same key on Android/JS.
+      if let sp = (params["stereoSpreadRad"] as? NSNumber)?.doubleValue {
+        self.core.genSetStereoSpread(sp)
       }
       // FM voice (wave-2, engineVersion 7) — { ratio, index, decaySec }.
       // Targets-first like the rest (before mode). Same shape on Android/JS.
@@ -474,6 +483,10 @@ public class ApeDspModule: Module {
     try? session.setPreferredSampleRate(48_000)
     try? session.setPreferredIOBufferDuration(0.01)
     try session.setActive(true, options: [])
+    // iPad: the built-in mic's best data source, omni (engine 10). Never
+    // throws; a no-op on iPhone, on an external mic, or when iOS offers no
+    // choice. Before refreshRouteInfo so the route snapshot reflects it.
+    preferIPadOmniMic(session)
 
     refreshRouteInfo()
 
@@ -598,6 +611,127 @@ public class ApeDspModule: Module {
 
   private var stopping = false
 
+  /**
+   iPad MIC "BARELY REGISTERS" (owner 2026-10-09, next-build queue; engine 10).
+   An iPad's built-in mic port carries several DATA SOURCES (the separate
+   capsules — front, top, back…) and iOS may hand capture one that faces away
+   from the user, or a beam-formed (cardioid) pattern, so a meter on the iPad
+   read far lower than the same sound on an iPhone. On an iPad, while the
+   BUILT-IN mic is the route, prefer its FRONT (else TOP, else any) data source
+   with the OMNIDIRECTIONAL pattern — one plain capsule, the most measurement-
+   like choice. Measurement mode is untouched (it is the session's mode; a data
+   source is a choice within the port).
+
+   Never throws and never blocks a start: an iPhone (one choice), an external
+   or headset mic, a model that lists no data sources, or a refusal from iOS
+   all leave capture exactly as before. Called on main from startCapture,
+   before the engine exists — it never touches `inputNode`. When the choice is
+   already in place it does nothing, so a capture restart can't loop on it.
+   */
+  private func preferIPadOmniMic(_ session: AVAudioSession) {
+    // The hardware model id (uname) — not UIDevice, which is main-actor UI API.
+    guard apeDeviceModel.hasPrefix("iPad") else { return }
+    guard let current = session.currentRoute.inputs.first, current.portType == .builtInMic else { return }
+    guard let builtIn = session.availableInputs?.first(where: { $0.portType == .builtInMic }),
+          let sources = builtIn.dataSources, !sources.isEmpty else { return }
+    let omni = AVAudioSession.PolarPattern.omnidirectional
+    let hasOmni: (AVAudioSessionDataSourceDescription) -> Bool = {
+      $0.supportedPolarPatterns?.contains(omni) ?? false
+    }
+    let ranked = sources.filter { $0.orientation == .front }
+      + sources.filter { $0.orientation == .top }
+      + sources
+    guard let pick = ranked.first(where: hasOmni) else {
+      logEvent("iPad mic: no omni data source — left as is")
+      return
+    }
+    let alreadySelected = builtIn.selectedDataSource?.dataSourceID == pick.dataSourceID
+      && pick.selectedPolarPattern == omni
+    if alreadySelected { return }
+    do {
+      try pick.setPreferredPolarPattern(omni)
+      try builtIn.setPreferredDataSource(pick)
+      logEvent("iPad mic: \(pick.dataSourceName) · omni")
+    } catch {
+      logEvent("iPad mic: data source not set (\(error.localizedDescription))")
+    }
+  }
+
+  /**
+   ⛔ ENGINE CONFIGURATION CHANGE (next-build queue item 8; engine 10).
+   AVAudioEngine STOPS ITSELF when the hardware's sample rate or channel count
+   changes under it, and posts AVAudioEngineConfigurationChange — with or
+   without a route-change notification. Before this observer existed the
+   output graph simply went silent (a dead tone while the screen read RUN) and
+   the mic tap stopped until the 2 s stall watchdog noticed (a flat meter).
+
+   Both handlers run on MAIN (the observer's queue), like every other engine
+   start/stop in this file, and both throw the stopped engine away and build a
+   new one — a self-stopped engine is never restarted in place and its
+   `inputNode` is never asked for (the stopCapture rule above).
+   */
+  private var lastConfigRestartAt: Date?
+
+  private func handleCaptureConfigChange() {
+    logEvent("engine config CHANGED (capture)")
+    guard running, !restarting, !inBackground else { return }
+    // A rebuilt engine that changes the configuration AGAIN must not spin a
+    // restart loop: within 1 s of the last one, leave it to the stall
+    // watchdog (it restarts a dead tap within ~2 s).
+    if let last = lastConfigRestartAt, Date().timeIntervalSince(last) < 1.0 {
+      logEvent("config restart skipped (<1 s) — watchdog recovers")
+      return
+    }
+    lastConfigRestartAt = Date()
+    // The same path as the route restart: full stop, fresh engine at the NEW
+    // format, fresh meters; retry once after 0.4 s.
+    restarting = true
+    stopCapture(reason: "config-change")
+    do {
+      try startCapture()
+      lastError = ""
+      restarting = false
+    } catch {
+      lastError = "config restart: \(error.localizedDescription)"
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+        do {
+          try self.startCapture()
+          self.lastError = ""
+        } catch {
+          self.lastError = "config restart retry: \(error.localizedDescription)"
+        }
+        self.restarting = false
+      }
+    }
+  }
+
+  private func handleOutputConfigChange() {
+    logEvent("engine config CHANGED (output)")
+    // The graph stopped itself: release it (stop() on a stopped engine is a
+    // no-op; never reuse its nodes). The next start, or the rebuild below,
+    // makes a fresh one at the new format.
+    if let e = outEngine, e.isRunning { e.stop() }
+    outEngine = nil
+    outNode = nil
+    guard core.anyOutputRunning() else { return }
+    if !inBackground {
+      do {
+        try startGeneratorOutput()
+        logEvent("generator output RESTARTED (config change)")
+        return
+      } catch {
+        lastError = "output config restart: \(error.localizedDescription)"
+      }
+    }
+    // Could not rebuild (or the app is in the background): stop every voice so
+    // no screen reads RUN over silence, and tell JS (each screen → STOPPED).
+    core.genStop()
+    core.binStop()
+    core.modStop()
+    logEvent("output LOST (config change) — voices stopped")
+    sendEvent("onOutputLost", ["reason": "config-change"])
+  }
+
   /// The AVAudio objects are DEAD (media services were reset, Apple: "all
   /// AVAudio objects must be recreated"): drop every reference WITHOUT calling
   /// into any of them — even engine.stop() on a reset engine is undefined.
@@ -719,6 +853,20 @@ public class ApeDspModule: Module {
       nc.addObserver(forName: AVAudioSession.mediaServicesWereResetNotification, object: nil, queue: .main) {
         [weak self] _ in
         self?.dropAudioObjectsAfterReset()
+      })
+    // Engine configuration change (engine 10) — see handleCaptureConfigChange.
+    // object: nil, then matched by IDENTITY: other modules run their own
+    // AVAudioEngines (dictation), and their changes are not ours to act on.
+    // queue: .main — AVFoundation posts this on an internal thread.
+    observers.append(
+      nc.addObserver(forName: .AVAudioEngineConfigurationChange, object: nil, queue: .main) {
+        [weak self] note in
+        guard let self, let changed = note.object as? AVAudioEngine else { return }
+        if let cap = self.engine, changed === cap {
+          self.handleCaptureConfigChange()
+        } else if let out = self.outEngine, changed === out {
+          self.handleOutputConfigChange()
+        }
       })
     observers.append(
       nc.addObserver(forName: AVAudioSession.routeChangeNotification, object: nil, queue: .main) {
