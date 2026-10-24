@@ -108,6 +108,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      "./plugins/withAndroidNavTransitions",
       [
         "expo-notifications",
         {
