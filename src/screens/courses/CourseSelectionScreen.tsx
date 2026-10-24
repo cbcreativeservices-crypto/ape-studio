@@ -1231,8 +1231,6 @@ function CourseCardView({
       {locked && <View style={styles.lockTint} />}
       <View>
         <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{keyedTitle(title, item.kind)}</Text>
-        {/* The two free topics say what they are (owner 2026-10-14). */}
-        {free ? <Text style={styles.cardStudyTopic} maxFontSizeMultiplier={HOME_MAX}>Study Topic</Text> : null}
         {/* Tools tutorial line lives INSIDE the card, below the title (Booth
             2026-07-15) — blue, over the art. */}
         {isTools && upsell ? (
@@ -1336,7 +1334,19 @@ function CourseCardView({
   // a thin rule, keeping the per-type font colour (Booth 2026-07-11).
   return (
     <View style={[styles.cardOuter, cd.outer]}>
-      {eyebrow ? (
+      {free ? (
+        // The two free topics (owner 2026-10-23): green "Free", then the Study
+        // tab's blue headphones + "Study Topic" — replaces the in-card amber
+        // "Study Topic" line. Members never see "Free" (owner 2026-09-29).
+        <View style={styles.cardAbove}>
+          <View style={styles.freeTopicRow} accessible accessibilityLabel={upsell ? 'Free. Study topic' : 'Study topic'}>
+            {upsell ? <Text style={[styles.freeTopicText, styles.freeTopicFree]} maxFontSizeMultiplier={HOME_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>Free</Text> : null}
+            <Image source={STUDY_NAV_ICON} style={styles.freeTopicIcon} resizeMode="contain" accessibilityIgnoresInvertColors />
+            <Text style={[styles.freeTopicText, styles.freeTopicStudy]} maxFontSizeMultiplier={HOME_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>Study Topic</Text>
+          </View>
+          <View style={[styles.cardAboveRule, { backgroundColor: eyebrowColor }]} />
+        </View>
+      ) : eyebrow ? (
         <View style={styles.cardAbove}>
           <Eyebrow color={eyebrowColor} w={cd.w} text={eyebrow} />
           <View style={[styles.cardAboveRule, { backgroundColor: eyebrowColor }]} />
@@ -2403,9 +2413,13 @@ const styles = StyleSheet.create({
   },
   // The gold key word inside a card title (owner 2026-10-14).
   cardTitleKey: { color: colors.gold },
-  // "Explore Certificate Programs" under each Study Area title — amber (owner 2026-10-14).
-  // "Study Topic" under the two free topic titles (owner 2026-10-14).
-  cardStudyTopic: { fontFamily: fonts.oswaldMedium, fontSize: 15, letterSpacing: 0.6, color: colors.gold, marginTop: 2, textShadowColor: 'rgba(0,0,0,0.75)', textShadowRadius: 4, textShadowOffset: { width: 0, height: 1 } },
+  // The free topics' caption above the card: green Free · blue headphones + Study Topic (owner 2026-10-23).
+  freeTopicRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 5 },
+  // Same face as the Eyebrow caption; three short words, so one line at every width.
+  freeTopicText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6 },
+  freeTopicFree: { color: '#5bff85', marginRight: 10 },
+  freeTopicIcon: { width: 15, height: 15, marginRight: 5 },
+  freeTopicStudy: { color: '#2f9bff' },
   cardTitle: {
     fontFamily: fonts.oswaldMedium,
     fontSize: 26,
