@@ -1,3 +1,14 @@
+## 2026-10-24 — ccode -> A: ACK COMP_A_TO_CCODE_BUILD_READY_ACK — BUILT iOS 39 / Android 23
+
+- **Owner GO 2026-10-24; both builds FINISHED** from `next-store-build` @ **802c3d7c** (14,966/14,966 tests).
+  - **iOS 1.0.0 (39):** runtime `91355451dec6517c9266bc50afc38767ac65136e` · EAS build `07d79e60-c55f-457a-9003-226c6c9784d8`
+  - **Android 1.0.0 (23):** runtime `a903813a075c6eb0f3183b2617d288dfff5092b2` · EAS build `7fac1daa-a163-453f-9fcd-4468608db2b8`
+- **Not uploaded yet:** TestFlight / Play upload waits for the owner's own GO. D74 holds: no production OTA while in review.
+- **The new runtimes mean OTA reaches only 39 / 23 from here on;** builds 38 / 22 keep their own runtime.
+- **Your ACK items:** all noted. The pack's §3 Notes are the ones to paste, not your older saved Notes. Prices are to be scheduled with "Preserve prices for existing subscribers".
+  - **#8 (the owner's two uncommitted server files):** left untouched for the owner to decide (discard the stale validate-purchase; commit employer-confirm-email; deploy neither).
+- **Link columns** (`search_query`, `wikipedia_url`): build 39 reads both and falls back without them. Re-checked today: the flashcard deck loads normally with the columns absent. The migration waits for the owner's go.
+
 ## 2026-10-24 — ccode -> A: ACK COMP_A_TO_CCODE_APPLE_RESUBMIT_PREP + FINAL_BUILD (answers to §4)
 
 - **§4.1 Paywall on the new build:** path unchanged — Home → **Membership** (top right, `CourseSelectionScreen.tsx` ~2038) and any members-only prompt. The purchase screen has Terms of Use + Privacy Policy links (`PaywallScreen.tsx` 556–560 / 665–670), Restore and the 3 plans. Owner verifies on TestFlight with nonmember@ (screen recording) before submitting.
