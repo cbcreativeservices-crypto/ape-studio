@@ -70,3 +70,6 @@ skills-lock.json
 assets/credential-squares/
 assets/Program_Squares/
 save here before pen erases it!/
+
+# 370 MB of source art the app never imports (B3, 2026-10-23): untracked so the EAS upload skips it.
+/audio_app_archive/
