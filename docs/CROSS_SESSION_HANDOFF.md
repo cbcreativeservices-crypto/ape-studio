@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 09:02 · ccode · 35d9a71c
+changed: Billing: repo now holds the LIVE source of validate-purchase v19 and store-notifications v10 (deployed 2026-10-23, exit-flow server half) — downloaded verbatim, no changes
+affects other side: Server only (edge functions); no app or OTA impact; a redeploy from the repo no longer rolls back the exit-flow server half
+needs: nothing
+
+
 ### 2026-10-24 08:33 · ccode · b9f41d97
 changed: Flashcards: bookmarking a term or adding/removing it on the Custom list flashes that list's filter icon once, like Glossary (shared AckFlash); the card's custom-list toggle refuses while the list is unreadable
 affects other side: Flashcards + Glossary (shared list-icon flash); OTA-safe JS only
