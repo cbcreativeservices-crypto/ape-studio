@@ -176,11 +176,11 @@ export function deleteFollowUpFor(reason: ReasonCode | null): FollowUp | null {
 /** Question 3 — optional comment. */
 export const COMMENT_MAX = 500;
 export const Q3_PROMPT = 'What is one thing we could improve?';
-// INVENTED COPY (spec: "warn briefly not to include payment information or other sensitive details").
+// OWNER-APPROVED COPY (2026-10-24) (spec: "warn briefly not to include payment information or other sensitive details").
 export const Q3_WARNING = 'Please do not include payment details or other sensitive information.';
 /** Spec §9 suggested post-feedback copy. */
 export const COMMENT_THANKS = 'Thank you for explaining what happened. We review feedback to decide where improvements are needed.';
-// INVENTED COPY.
+// OWNER-APPROVED COPY (2026-10-24).
 export const COMMENT_FAILED = 'We could not send that. You can try again, or leave it.';
 
 export const FEEDBACK_NOTICE = 'Your selected answers are shared with us when you continue or cancel.';
@@ -193,7 +193,7 @@ export const PROVIDER_NAME: Record<Provider, string> = { apple: 'Apple', google:
 export function continueToCancelLabel(p: Provider): string {
   return `Continue to ${PROVIDER_NAME[p]} to cancel`;
 }
-// INVENTED COPY (spec C1: "explain that cancellation must be completed there").
+// OWNER-APPROVED COPY (2026-10-24) (spec C1: "explain that cancellation must be completed there").
 export function completeThereNote(p: Provider): string {
   return `Cancelling is finished on ${PROVIDER_NAME[p]}'s subscription page. We check the result when you come back.`;
 }
@@ -206,7 +206,7 @@ export const C3_TITLE = 'Choose what works for you';
 export function c3Body(accessEnd: string | null): string {
   return accessEnd
     ? `If you cancel, your paid access continues until ${accessEnd}. Your account and saved learning progress will remain, and you can return when you are ready.`
-    : // INVENTED fallback when no end date is known: the dated clause is dropped.
+    : // OWNER-APPROVED fallback (2026-10-24) when no end date is known: the dated clause is dropped.
       'If you cancel, your account and saved learning progress will remain, and you can return when you are ready.';
 }
 export const C4_NOT_CONFIRMED = 'We have not confirmed your membership change yet';
@@ -216,7 +216,7 @@ export function c4Body(accessEnd: string | null): string {
     'After that, your account will remain available with free access. Your saved learning progress will stay with your account under our retention policy.';
   return accessEnd
     ? `You can use your paid features until ${accessEnd}. ${rest}`
-    : // INVENTED fallback when no end date is known.
+    : // OWNER-APPROVED fallback (2026-10-24) when no end date is known.
       'After your paid period ends, your account will remain available with free access. Your saved learning progress will stay with your account under our retention policy.';
 }
 
@@ -249,7 +249,7 @@ export const CERT_CHOICES: readonly Choice<KeepChoice>[] = [
     label: 'Keep a verification record: only your name, certificate, date and code stay, so employers can still check it.',
   },
 ] as const;
-// INVENTED COPY.
+// OWNER-APPROVED COPY (2026-10-24).
 export const CERT_QUESTION = 'What should happen to your certificates?';
 
 export function subscriptionWarning(p: Provider): string {

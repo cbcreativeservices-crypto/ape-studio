@@ -180,7 +180,7 @@ export function DeleteAccountFlowScreen({ navigation }: Props) {
     if (!alive.current) return;
     setBusy(false);
     if (outcome === 'keep_unavailable') {
-      // INVENTED COPY — the server cannot keep a record yet; nothing was deleted.
+      // OWNER-APPROVED COPY (2026-10-24) — the server cannot keep a record yet; nothing was deleted.
       notify(
         'Verification record not available yet',
         'We can’t keep a verification record right now, so nothing was deleted. Try again later, or choose Delete everything.',
@@ -202,7 +202,7 @@ export function DeleteAccountFlowScreen({ navigation }: Props) {
         : needsCertChoice
           ? ' Your certificates can no longer be verified.'
           : '';
-    // INVENTED COPY (spec: "one explicit Delete my account confirmation").
+    // OWNER-APPROVED COPY (2026-10-24) (spec: "one explicit Delete my account confirmation").
     confirmDialog(
       'Delete your account?',
       `Your account and saved learning data will be removed.${certLine} This cannot be undone.`,
@@ -275,7 +275,7 @@ export function DeleteAccountFlowScreen({ navigation }: Props) {
 
           {step === 'd2' ? (
             <>
-              {/* INVENTED title (spec names the screen "Billing and identity confirmation"). */}
+              {/* OWNER-APPROVED title (2026-10-24) (spec names the screen "Billing and identity confirmation"). */}
               <Text style={ui.title} accessibilityRole="header">
                 Billing and identity
               </Text>
@@ -291,14 +291,14 @@ export function DeleteAccountFlowScreen({ navigation }: Props) {
 
               {needsCertChoice ? (
                 <Section>
-                  {/* INVENTED COPY — the D1 choice, restated before the final button. */}
+                  {/* OWNER-APPROVED COPY (2026-10-24) — the D1 choice, restated before the final button. */}
                   <Text style={ui.strong}>Your certificates</Text>
                   <Text style={ui.body}>{certLabel ?? 'Choose what happens to your certificates before deleting.'}</Text>
                   <Btn label={certLabel ? 'Change' : 'Choose'} kind="link" onPress={() => setStep('d1')} />
                 </Section>
               ) : null}
 
-              {/* INVENTED COPY. */}
+              {/* OWNER-APPROVED COPY (2026-10-24). */}
               <Text style={ui.body}>Enter your password to confirm it is you.</Text>
               <TextField
                 label="Password"

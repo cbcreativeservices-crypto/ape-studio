@@ -428,3 +428,7 @@ plus **3** that name no specific role at all ("every audio role").
 ⛔ Do NOT reintroduce a gated-role detector for this screen. Two attempts were
 found inert (the second fired on 6 of 44 lists); `CurriculumScreen` now prints
 the disclosure unconditionally, which is what the hard rule actually requires.
+
+## ⏭️ NEXT BUILD (after the 2026-10-24 final store build) — owner list
+
+1. **MultiMeter snapshot TAG LOCATION** — REMOVED from the final store build (owner 2026-10-24: "remove location so it is not an issue and we can return to that in a future build"). To restore: `npx expo install expo-location`; add `'expo-location': () => require('expo-location')` to LOADERS in `src/features/tools/capture/optionalModule.ts`; restore in app.json the iOS `NSLocationWhenInUseUsageDescription` ("Used only when you choose to tag a measurement snapshot with where it was taken. Location is stored with the snapshot on this device and never shared automatically.") and Android `ACCESS_COARSE_LOCATION` + `ACCESS_FINE_LOCATION`; update the Privacy Policy (§5 + §13.3 wording drafted in Downloads/2026-10-24_PRIVACY_LOCATION_AND_LOGOUT_WORDING.md, items 1–2); file the Play location declaration. `location.ts` and the MultiMeter control are kept and gate themselves off.

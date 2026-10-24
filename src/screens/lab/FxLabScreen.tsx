@@ -243,6 +243,11 @@ export type FxLabConfig = {
    *  2026-08-31: the FX fleet was the app's sole zero-retrieval holdout —
    *  35 other lab files import CheckQuestion). Auto-shuffled. */
   checks?: CheckSpec[];
+  /** While a `monoCompare` source is selected, text that only holds for the
+   *  stereo sources is left out (owner 2026-10-24, Stereo lab): the badge, the
+   *  caption in the states `caption` returns true for, and the wrong-answer
+   *  hint of the listed check indexes. No replacement text. */
+  monoCompareHides?: { badge?: boolean; caption?: (values: Record<number, number>) => boolean; wrongHintChecks?: number[] };
 };
 
 /** The currently selected choice's chip label (bezel/valueLabel source). */
@@ -416,6 +421,10 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   const labLesson = useMemo(() => getLabLesson(config.labId), [config.labId]);
   const openLesson = useCallback((key?: string) => setHelp({ lesson: labLesson, key }), [labLesson]);
   const openSourceHelp = useCallback((gen: GenParams) => setHelp({ lesson: SOURCE_LESSON, key: sourceKeyForGen(gen) }), []);
+  // MONO comparison source: hide text that only holds in stereo (monoCompareHides).
+  const monoSelected = sources[sourceIdx]?.monoCompare === true;
+  const heroBadgeText = monoSelected && config.monoCompareHides?.badge ? undefined : config.heroBadge;
+  const showCaption = !!config.heroCaption && !(monoSelected && config.monoCompareHides?.caption?.(values));
   // The rack's single help router: 'src' routes to the CURRENT source's entry
   // in the shared SOURCE lesson; everything else is a lab-lesson control key.
   const openHelp = useCallback(
@@ -681,7 +690,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           size: animOnStage ? 'S' : 'M',
           // Honesty badge verbatim (§1.7). The strip may ellipsize the long
           // animated-model badge — its full text prints in the well below.
-          badge: animOnStage ? ANIM_BADGE : config.heroBadge,
+          badge: animOnStage ? ANIM_BADGE : heroBadgeText,
           onGuide: () => openLesson('display'),
           bezel,
           // FULL SCREEN (owner 2026-09-30, D35): the rack's button + viewer,
@@ -763,14 +772,14 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
               its own heroBadge (device pass 2026-09-14b: the animated badge was
               printing twice on every Skia FX-rack lab). */}
           <Text style={styles.sectionHead}>DESIGNED RESPONSE</Text>
-          <Text style={styles.badge}>{config.heroBadge}</Text>
+          {heroBadgeText ? <Text style={styles.badge}>{heroBadgeText}</Text> : null}
           {config.Hero(values, sources[sourceIdx])}
-          {config.heroCaption ? <Text style={styles.caption}>{config.heroCaption(values)}</Text> : null}
+          {showCaption ? <Text style={styles.caption}>{config.heroCaption!(values)}</Text> : null}
         </View>
-      ) : config.heroCaption ? (
+      ) : showCaption ? (
         <View style={{ gap: 6 }}>
           <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
-          <Text style={styles.caption}>{config.heroCaption(values)}</Text>
+          <Text style={styles.caption}>{config.heroCaption!(values)}</Text>
         </View>
       ) : null}
 
@@ -803,7 +812,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
         // (owner 2026-08-31) — a section head above them read twice.
         <View style={{ gap: 10 }}>
           {config.checks.map((c, i) => (
-            <CheckQuestion key={i} spec={c} />
+            <CheckQuestion key={i} spec={monoSelected && config.monoCompareHides?.wrongHintChecks?.includes(i) ? { ...c, wrongHint: undefined } : c} />
           ))}
         </View>
       ) : null}

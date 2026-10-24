@@ -1568,6 +1568,9 @@ const stereoConfig: FxLabConfig = {
     monoIn: src?.monoCompare === true,
   }),
   heroBadge: 'GONIOMETER + CORRELATION — 440 Hz STEREO TEST TONE (model)',
+  // Owner 2026-10-24: with PINK · MONO selected these three hold only for the
+  // stereo sources, so they are hidden (badge, the >100% caption, check 1's hint).
+  monoCompareHides: { badge: true, caption: (v) => v[P.monoFold] <= 0.5 && v[P.widthPct] > 100, wrongHintChecks: [0] },
   heroCaption: (v) =>
     v[P.monoFold] > 0.5
       ? 'MONO CHECK: everything wide is gone — only the MID survives the fold.'

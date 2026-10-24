@@ -165,7 +165,7 @@ export function MembershipBillingScreen({ navigation }: Props) {
         {view?.state === 'lapsed' ? (
           <Section>
             <Text style={ui.strong}>No active payment</Text>
-            {/* INVENTED COPY — the store's own terms, never "cancelled". */}
+            {/* OWNER-APPROVED COPY (2026-10-24) — the store's own terms, never "cancelled". */}
             <Text style={ui.body}>
               {view.provider
                 ? `Your paid access has ended. If a payment did not go through, ${PROVIDER_NAME[view.provider]} shows the details in your subscription settings.`

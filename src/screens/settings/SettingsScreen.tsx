@@ -368,7 +368,7 @@ export function SettingsScreen({ navigation }: Props) {
         unsentLabCreditCount(); // finished labs not yet credited (audit 2026-10-24)
 
       const LOCAL_LOSS =
-        'This device will lose anything kept only on it — saved measurements, your term lists, your settings, and your microphone calibration. Signing back into the same account does not bring them back.';
+        'This device will lose anything kept only on it — saved measurements, your term lists, your settings, lab progress, room designs and calculator projects. Signing back into the same account does not bring them back.';
 
       confirmDialog(
         'Log out?',
