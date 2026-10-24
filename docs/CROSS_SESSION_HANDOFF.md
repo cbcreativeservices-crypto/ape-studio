@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 21:29 · ccode · fd5ddaee
+changed: Android transitions match iOS: fade 280 ms, push 490 ms (config plugin)
+affects other side: nothing (client build config; branch android-transitions, merges at build time)
+needs: nothing
+
+
 ### 2026-10-23 21:20 · ccode · 1f50504f
 changed: Next-build checklist: Android transitions at the iOS/browser pace
 affects other side: nothing (build-list row)
