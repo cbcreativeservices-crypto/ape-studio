@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 00:27 · ccode · 3d9a5d59
+changed: Tuner phase 2: native pitch every ~15 ms (FFT YIN), low-note window from pitchMinHz, pitch timestamps (engine v9)
+affects other side: Tuner (Frequency Counter tuner mode, CenterLock, VU tuners) on the iOS 37 / Android 21 store build; native engine v9
+needs: nothing
+
+
 ### 2026-10-24 00:14 · ccode · 985a4d9c
 changed: Miking: load each lesson's ART on demand (generated per-lesson loader)
 affects other side: nothing (client-only)
