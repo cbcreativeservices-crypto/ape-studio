@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 23:28 · ccode · a9843ddd
+changed: Merge branch 'android-transitions' into dj-lab
+affects other side: nothing (Android transitions plugin now on dj-lab; changes both fingerprints — rides the iOS 37 / Android 21 build)
+needs: nothing
+
+
 ### 2026-10-23 23:28 · ccode · 6df2f942
 changed: Miking: pre-warm the lesson screen while the lesson list is read
 affects other side: nothing (client-only)
