@@ -24,7 +24,18 @@ const PLAN_SKUS: Record<string, 'monthly' | 'annual' | 'lifetime'> = {
   academy_lifetime: 'lifetime',
 };
 
-type VerifyResult = { valid: boolean; expiresAtMs: number | null };
+// #6 (2026-10-23): a failed verification now says WHY, in an added `reason`
+// field. `ok` and `error` are unchanged, so builds that read only those behave
+// exactly as before.
+type FailReason = 'expired' | 'refunded' | 'pending' | 'not_found' | 'store_unreachable';
+type VerifyResult = {
+  valid: boolean;
+  expiresAtMs: number | null;
+  reason?: FailReason;
+  ackState?: number; // Google acknowledgementState: 0 = not yet, 1 = done (#2)
+  paymentState?: number; // Google subscription paymentState: 0 = pending (#2)
+  accountTag?: string | null; // app user id the purchase was tagged with (#3)
+};
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
@@ -77,34 +88,54 @@ const APPLE_PROD = 'https://api.storekit.itunes.apple.com';
 const APPLE_SANDBOX = 'https://api.storekit-sandbox.itunes.apple.com';
 
 async function appleLookup(host: string, jwt: string, transactionId: string): Promise<{ status: number; signed: string | null }> {
-  const res = await fetch(`${host}/inApps/v1/transactions/${transactionId}`, {
-    headers: { Authorization: `Bearer ${jwt}` },
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${host}/inApps/v1/transactions/${transactionId}`, {
+      headers: { Authorization: `Bearer ${jwt}` },
+      signal: AbortSignal.timeout(10000),
+    });
+  } catch {
+    return { status: 0, signed: null }; // network failure / timeout → store_unreachable
+  }
   if (!res.ok) return { status: res.status, signed: null };
   const body = (await res.json()) as { signedTransactionInfo?: string };
   return { status: res.status, signed: body.signedTransactionInfo ?? null };
 }
 
 async function verifyApple(transactionId: string, expectedSku: string, kind: 'subs' | 'in-app'): Promise<VerifyResult> {
-  const jwt = await appleAccessJwt();
-  if (!jwt || !transactionId) return { valid: false, expiresAtMs: null };
+  if (!transactionId) return { valid: false, expiresAtMs: null, reason: 'not_found' };
+  let jwt: string | null = null;
+  try {
+    jwt = await appleAccessJwt();
+  } catch {
+    jwt = null;
+  }
+  if (!jwt) return { valid: false, expiresAtMs: null, reason: 'store_unreachable' };
   // Production first, then sandbox on "not found" — Apple's own guidance, and
   // what App Review needs: reviewers buy in the SANDBOX against the production
   // build. APPLE_ENV=sandbox forces sandbox only (local testing).
   const env = (Deno.env.get('APPLE_ENV') ?? 'production').toLowerCase();
   let hit = await appleLookup(env === 'sandbox' ? APPLE_SANDBOX : APPLE_PROD, jwt, transactionId);
   if (!hit.signed && env !== 'sandbox' && hit.status === 404) hit = await appleLookup(APPLE_SANDBOX, jwt, transactionId);
-  if (!hit.signed) return { valid: false, expiresAtMs: null };
+  if (!hit.signed) return { valid: false, expiresAtMs: null, reason: hit.status === 404 ? 'not_found' : 'store_unreachable' };
   // signedTransactionInfo is a JWS from Apple's authenticated endpoint — decode
   // its payload (transport already authenticated by our TLS + bearer JWT).
-  const tx = decodeJwtPayload<{ productId?: string; bundleId?: string; expiresDate?: number; revocationDate?: number }>(hit.signed);
+  const tx = decodeJwtPayload<{ productId?: string; bundleId?: string; expiresDate?: number; revocationDate?: number; appAccountToken?: string }>(hit.signed);
   const bundleOk = tx.bundleId === Deno.env.get('APPLE_BUNDLE_ID');
   const skuOk = tx.productId === expectedSku;
   const notRevoked = !tx.revocationDate;
   // A subscription transaction is only good while its expiry is in the future;
   // a lifetime (non-consumable) purchase has no expiry.
   const current = kind === 'in-app' ? true : !!tx.expiresDate && tx.expiresDate > Date.now();
-  return { valid: !!(bundleOk && skuOk && notRevoked && current), expiresAtMs: tx.expiresDate ?? null };
+  const valid = !!(bundleOk && skuOk && notRevoked && current);
+  const reason: FailReason | undefined = valid
+    ? undefined
+    : !bundleOk || !skuOk
+      ? 'not_found'
+      : !notRevoked
+        ? 'refunded'
+        : 'expired';
+  return { valid, expiresAtMs: tx.expiresDate ?? null, reason, accountTag: tx.appAccountToken ?? null };
 }
 
 // ── Google: Play Developer API (OAuth2 service account) ──────────────────────
@@ -138,28 +169,105 @@ async function googleAccessToken(): Promise<string | null> {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${assertion}`,
   });
-  if (!res.ok) return null;
+  if (!res.ok) {
+    // DIAGNOSTIC (A 2026-09-29): Google's reason, never the token or key.
+    console.warn('[validate-purchase] google token exchange failed:', res.status, (await res.text()).slice(0, 300));
+    return null;
+  }
   return ((await res.json()) as { access_token?: string }).access_token ?? null;
 }
 
 async function verifyGoogle(purchaseToken: string, sku: string, kind: 'subs' | 'in-app'): Promise<VerifyResult> {
   const pkg = Deno.env.get('ANDROID_PACKAGE_NAME');
-  const token = await googleAccessToken();
-  if (!pkg || !token || !purchaseToken) return { valid: false, expiresAtMs: null };
+  let token: string | null = null;
+  try {
+    token = await googleAccessToken();
+  } catch {
+    token = null;
+  }
+  if (!pkg || !token || !purchaseToken) {
+    console.warn('[validate-purchase] google precheck failed:', { pkg: !!pkg, token: !!token, purchaseToken: !!purchaseToken });
+    return { valid: false, expiresAtMs: null, reason: purchaseToken ? 'store_unreachable' : 'not_found' };
+  }
   const base = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${pkg}`;
   const url =
     kind === 'subs'
       ? `${base}/purchases/subscriptions/${sku}/tokens/${purchaseToken}`
       : `${base}/purchases/products/${sku}/tokens/${purchaseToken}`;
-  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-  if (!res.ok) return { valid: false, expiresAtMs: null };
-  const body = (await res.json()) as { expiryTimeMillis?: string; purchaseState?: number };
+  let res: Response;
+  try {
+    res = await fetch(url, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(10000) });
+  } catch {
+    console.warn('[validate-purchase] google purchase lookup unreachable:', kind, sku);
+    return { valid: false, expiresAtMs: null, reason: 'store_unreachable' };
+  }
+  if (!res.ok) {
+    console.warn('[validate-purchase] google purchase lookup failed:', kind, sku, res.status, (await res.text()).slice(0, 300));
+    const reason: FailReason =
+      res.status === 410 ? 'expired' : res.status === 400 || res.status === 404 ? 'not_found' : 'store_unreachable';
+    return { valid: false, expiresAtMs: null, reason };
+  }
+  const body = (await res.json()) as {
+    expiryTimeMillis?: string;
+    purchaseState?: number;
+    paymentState?: number;
+    acknowledgementState?: number;
+    obfuscatedExternalAccountId?: string;
+  };
+  const extra = {
+    ackState: body.acknowledgementState,
+    paymentState: body.paymentState,
+    accountTag: body.obfuscatedExternalAccountId ?? null,
+  };
   if (kind === 'subs') {
     const expiresAtMs = body.expiryTimeMillis ? Number(body.expiryTimeMillis) : null;
-    return { valid: !!expiresAtMs && expiresAtMs > Date.now(), expiresAtMs };
+    if (!expiresAtMs || expiresAtMs <= Date.now()) console.warn('[validate-purchase] google subs not current:', sku, { expiresAtMs, now: Date.now() });
+    const valid = !!expiresAtMs && expiresAtMs > Date.now();
+    // Validity rule unchanged (expiry only). The reason is reported only when invalid.
+    return { valid, expiresAtMs, reason: valid ? undefined : 'expired', ...extra };
   }
-  // in-app (lifetime): purchaseState 0 = purchased.
-  return { valid: body.purchaseState === 0, expiresAtMs: null };
+  // in-app (lifetime): purchaseState 0 = purchased, 1 = cancelled/refunded, 2 = pending.
+  const valid = body.purchaseState === 0;
+  const reason: FailReason | undefined = valid
+    ? undefined
+    : body.purchaseState === 1
+      ? 'refunded'
+      : body.purchaseState === 2
+        ? 'pending'
+        : 'not_found';
+  return { valid, expiresAtMs: null, reason, ...extra };
+}
+
+// #2 Part A (2026-10-23): acknowledge Google purchases on the server too, so a
+// purchase whose grant landed is never auto-refunded by Google for want of an
+// acknowledgement (the phone's finishTransaction stays as the backstop). Never
+// throws; a failure is logged and the request still answers ok.
+async function acknowledgeGoogle(purchaseToken: string, sku: string, kind: 'subs' | 'in-app'): Promise<boolean> {
+  const pkg = Deno.env.get('ANDROID_PACKAGE_NAME');
+  let token: string | null = null;
+  try {
+    token = await googleAccessToken();
+  } catch {
+    token = null;
+  }
+  if (!pkg || !token) return false;
+  const base = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${pkg}`;
+  const url =
+    kind === 'subs'
+      ? `${base}/purchases/subscriptions/${sku}/tokens/${purchaseToken}:acknowledge`
+      : `${base}/purchases/products/${sku}/tokens/${purchaseToken}:acknowledge`;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      signal: AbortSignal.timeout(8000),
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: '{}',
+    });
+    if (!res.ok) console.warn('[validate-purchase] server acknowledge refused:', res.status, (await res.text()).slice(0, 200));
+    return res.ok;
+  } catch {
+    return false;
+  }
 }
 
 // ── entitlement window ───────────────────────────────────────────────────────
@@ -206,13 +314,44 @@ Deno.serve(async (req) => {
     ? await verifyApple(body.transactionId ?? '', sku, kind)
     : await verifyGoogle(body.purchaseToken ?? '', sku, kind);
 
-  if (!verified.valid) return json({ ok: false, error: 'not_verified' });
+  if (!verified.valid) {
+    const reason = verified.reason ?? 'not_found';
+    console.warn('[validate-purchase] not_verified:', { sku, apple: isApple, reason });
+    return json({
+      ok: false,
+      error: 'not_verified',
+      reason,
+      ...(reason === 'expired' && verified.expiresAtMs ? { expired_at: new Date(verified.expiresAtMs).toISOString() } : {}),
+    });
+  }
 
   // Verified — write the entitlement with the service role (bypasses RLS).
   const admin = createClient(supabaseUrl, serviceKey);
   const { data: userRow } = await admin.from('users').select('id').eq('auth_id', authUid).maybeSingle();
   const userId = (userRow as { id?: string } | null)?.id;
-  if (!userId) return json({ ok: false, error: 'no_user_row' });
+  if (!userId) {
+    console.warn('[validate-purchase] no_user_row');
+    return json({ ok: false, error: 'no_user_row', reason: 'server_error' });
+  }
+
+  // ── #3 (2026-10-23): a purchase tagged with a DIFFERENT app account ─────────
+  // The app tags each new purchase with the buyer's auth.uid() (Apple
+  // appAccountToken / Google obfuscatedAccountId). If the tag names another
+  // account that still exists, refuse: the purchase is theirs. If that account
+  // was deleted, the purchase may move. No tag (every purchase made before the
+  // app sets it) → unchanged behaviour. A lookup we cannot perform never blocks
+  // a paying customer: it falls back to the store_ref binding check below.
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+  const tag = (verified.accountTag ?? '').toLowerCase();
+  if (tag && UUID_RE.test(tag) && tag !== authUid.toLowerCase()) {
+    const { data: owner, error: ownerErr } = await admin.from('users').select('id').eq('auth_id', tag).maybeSingle();
+    if (ownerErr) {
+      console.warn('[validate-purchase] tag owner unreadable — falling back to the store_ref check:', ownerErr.message);
+    } else if (owner) {
+      console.warn('[validate-purchase] purchase tagged with another existing account — refusing');
+      return json({ ok: false, error: 'receipt_already_linked', reason: 'linked_to_other_account' });
+    }
+  }
 
   const computed = expiresAtFor(plan, verified);
   // MUST match the entitlements_source_check constraint (app_store / play_store).
@@ -381,7 +520,7 @@ Deno.serve(async (req) => {
     console.warn('[validate-purchase] store_ref binding check failed, relying on the index:', bindErr.message);
   } else if (boundElsewhere) {
     console.warn('[validate-purchase] receipt already bound to another account — refusing');
-    return json({ ok: false, error: 'receipt_already_linked' });
+    return json({ ok: false, error: 'receipt_already_linked', reason: 'linked_to_other_account' });
   }
 
   const row = {
@@ -414,7 +553,14 @@ Deno.serve(async (req) => {
   // it succeeded, or it will finishTransaction and the paid user gets nothing.
   if (write.error) {
     console.error('[validate-purchase] entitlement write failed:', write.error.message);
-    return json({ ok: false, error: 'grant_failed' });
+    return json({ ok: false, error: 'grant_failed', reason: 'server_error' });
+  }
+
+  // #2 Part A: only AFTER the grant is saved; never for a pending payment
+  // (Google refuses those), never when already acknowledged.
+  if (!isApple && verified.ackState === 0 && verified.paymentState !== 0) {
+    const acked = await acknowledgeGoogle(body.purchaseToken!, sku, kind);
+    console.log(`[validate-purchase] server acknowledge ${acked ? 'done' : 'FAILED (the app still finishes it)'}`);
   }
 
   return json({ ok: true, tier: 'academy', expires_at });
