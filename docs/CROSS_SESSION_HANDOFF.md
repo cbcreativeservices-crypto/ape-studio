@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 01:28 · ccode · ea21ec1b
+changed: iPad landscape: Home card fits the measured carousel row, so the caption strip above each card is never cut off (owner report from a real iPad)
+affects other side: Home screen carousel on tablets (iPad landscape, Split View); phones and portrait unchanged when the card already fits
+needs: nothing
+
+
 ### 2026-10-24 01:26 · ccode · bed314cd
 changed: Overnight toddler pass 1: 11 fixes with receipts (DJ goals wipe, ProNote over term popup, location tag timeout/silent fail/stale sheet, tuner BACK in popups, pitch floor bridge default, time-trial credit on custom list + mash, landing double tap, certificate share say guard)
 affects other side: Labs (DJ, Mixing family ProNote), Tools (MultiMeter TAG LOCATION, Advanced Tuner), Study time trials, onboarding landing, certificate share row; OTA-safe JS only
