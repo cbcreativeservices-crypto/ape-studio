@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 09:21 · ccode · f83146b8
+changed: Comp A final-build §1: add live community-flag-digest v1 and the delete_my_account() snapshot (do not run) to the repo, verbatim (validate-purchase v19 / store-notifications v10 already captured in 35d9a71c)
+affects other side: Server files only; not bundled; no OTA/fingerprint impact; nothing deployed
+needs: nothing
+
+
 ### 2026-10-24 09:09 · ccode · b2601b4f
 changed: Pre-resubmission fixes: iOS SAVE to Photos (expo-media-library/legacy — root import throws in v57); Log out retries + counts unsent finished-lab credit (Settings + Dashboard); store-notifications matches Apple rows only on Apple-confirmed ids
 affects other side: iPhone/iPad Harmonograph + Cymatics SAVE; Settings › Log out + Dashboard sign-out; store-notifications edge function (needs a deploy on owner GO). App parts OTA-safe JS
