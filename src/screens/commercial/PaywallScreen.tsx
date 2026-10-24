@@ -40,6 +40,7 @@ import {
   initPurchases,
   LINKED_MESSAGE,
   loadStoreProducts,
+  retryStoreConnection,
   PENDING_MESSAGE,
   restorePurchases,
   storeErrorMessage,
@@ -95,6 +96,22 @@ export function PaywallScreen({ navigation, route }: Props) {
   // Has the store answered? 'none' = it cannot (no store in this build) or
   // returned nothing — the cards then say the price is shown at checkout.
   const [priceState, setPriceState] = useState<'loading' | 'ready' | 'none'>('loading');
+  // TRY AGAIN when prices did not load: reconnect if the first connection
+  // failed, then fetch the products again (pre-resubmission audit 2026-10-24).
+  const [priceRetrying, setPriceRetrying] = useState(false);
+  const retryPrices = async () => {
+    setPriceRetrying(true);
+    try {
+      const ok = available || (await retryStoreConnection());
+      if (ok) setAvailable(true);
+      const products = ok ? await loadStoreProducts() : [];
+      setPlans(localizePlans(PLANS, products, IAP_PLANS));
+      setPriceState(products.length ? 'ready' : 'none');
+    } finally {
+      setPriceRetrying(false);
+    }
+  };
+  const onRetryPrices = useLatchedPress(retryPrices);
   // Left for sign-up / sign-in with the plan held (H9). Coming BACK here without
   // signing in drops that hold, so a later sign-in elsewhere does not reopen it.
   const leftForAccount = useRef(false);
@@ -327,7 +344,7 @@ export function PaywallScreen({ navigation, route }: Props) {
     if (!available) {
       notify(
         'Purchasing unavailable',
-        'In-app purchases aren’t available in this build yet. Please update the app, or restore a previous purchase.',
+        'The App Store isn’t responding right now. Please try again in a moment.',
       );
       return;
     }
@@ -435,7 +452,7 @@ export function PaywallScreen({ navigation, route }: Props) {
             notify(
               'Purchasing unavailable',
               // Ratified by the owner 2026-09-14
-              'In-app purchases aren’t available in this build yet. Please update the app and try Restore again.',
+              'The App Store isn’t responding right now. Please try again in a moment.',
             );
             return;
           default:
@@ -633,6 +650,22 @@ export function PaywallScreen({ navigation, route }: Props) {
           <View style={styles.guestNote}>
             <Text style={styles.guestNoteText}>{COPY.guestAccountStep}</Text>
           </View>
+        ) : null}
+
+        {/* Prices did not arrive (StoreKit slow, offline, or timed out): never
+            leave the plans without prices and no way forward — App Review
+            judges this screen under 3.1.2 (pre-resubmission audit 2026-10-24). */}
+        {priceState === 'none' ? (
+          <Pressable
+            onPress={onRetryPrices}
+            disabled={priceRetrying}
+            accessibilityRole="button"
+            accessibilityLabel="Prices didn’t load. Try again."
+            hitSlop={8}
+            style={styles.priceRetry}
+          >
+            <Text style={styles.priceRetryText}>{priceRetrying ? 'Loading prices…' : 'Prices didn’t load · TRY AGAIN'}</Text>
+          </Pressable>
         ) : null}
 
         <View style={styles.plans} accessibilityRole="radiogroup">
@@ -904,6 +937,8 @@ const styles = StyleSheet.create({
   deadline: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.amberLabel, textAlign: 'center' },
   // The renewal disclosure: ≥ 13 pt in textSub (compliance row 6).
   disclosure: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub, textAlign: 'center' },
+  priceRetry: { alignSelf: 'center', paddingVertical: 8, paddingHorizontal: 14, borderRadius: 8, borderWidth: 1, borderColor: colors.amber },
+  priceRetryText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.amber },
   lifetimeNote: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub, textAlign: 'center', marginTop: 6 },
   accreditNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted, textAlign: 'center', marginTop: 18 },
 

@@ -17,6 +17,8 @@ import android.media.AudioRecordingConfiguration
 import android.media.MediaRecorder
 import android.media.MicrophoneInfo
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import androidx.core.content.ContextCompat
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -87,6 +89,20 @@ class ApeDspModule : Module() {
   // Seconds since the input stream last delivered a NON-zero sample (0 when
   // capture is not running) — the "exact digital zeros" half of inputSilenced.
   private external fun nativeInputZeroSeconds(h: Long): Double
+  private external fun nativeTakeOutputLost(h: Long): Boolean
+  // Output stream lost to an Oboe error (native queue item 1, owner 2026-10-24):
+  // the native side stops the voices and raises a flag; this once-a-second check
+  // turns it into the same onOutputLost event a removed device sends, so every
+  // tone screen reads STOPPED instead of a silent RUN.
+  private val outputLostPoll = Handler(Looper.getMainLooper())
+  private val outputLostCheck = object : Runnable {
+    override fun run() {
+      if (handle != 0L && nativeTakeOutputLost(handle)) {
+        sendEvent("onOutputLost", mapOf("reason" to "stream-error"))
+      }
+      outputLostPoll.postDelayed(this, 1000)
+    }
+  }
   private external fun nativeGenStart(h: Long): Boolean
   private external fun nativeGenStop(h: Long)
   private external fun nativeGenSetMode(h: Long, mode: Int)
@@ -137,6 +153,7 @@ class ApeDspModule : Module() {
 
     OnCreate {
       handle = nativeCreate()
+      outputLostPoll.postDelayed(outputLostCheck, 1000)
       // React to output route changes (headphone plug/unplug, BT connect) so the
       // speaker-safety HPF follows the route even when only the generator runs.
       val ctx = appContext.reactContext
@@ -181,6 +198,7 @@ class ApeDspModule : Module() {
       }
     }
     OnDestroy {
+      outputLostPoll.removeCallbacks(outputLostCheck)
       val am = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
       deviceCallback?.let { am?.unregisterAudioDeviceCallback(it) }
       deviceCallback = null

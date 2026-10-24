@@ -258,7 +258,10 @@ export async function initPurchases(h: PurchaseHandlers): Promise<boolean> {
   const iap = getIap();
   if (!iap) return false;
   try {
-    await iap.initConnection();
+    // Bounded (pre-resubmission audit 2026-10-24): a StoreKit that never
+    // answers left the paywall on "Loading price…" forever — the screen
+    // App Review judges under 3.1.2.
+    await withDeadline(() => iap.initConnection(), 'iap/initConnection', 15000);
   } catch (e) {
     console.warn('[iap] initConnection failed:', (e as Error).message);
     return false;
@@ -376,14 +379,29 @@ export async function teardownPurchases(): Promise<void> {
   }
 }
 
+/** Re-open the store connection after a failed or timed-out first attempt
+ *  (the paywall's TRY AGAIN). The purchase listeners and handlers set up by
+ *  initPurchases stay as they are. */
+export async function retryStoreConnection(): Promise<boolean> {
+  const iap = getIap();
+  if (!iap) return false;
+  try {
+    await withDeadline(() => iap.initConnection(), 'iap/initConnection', 15000);
+    return true;
+  } catch (e) {
+    console.warn('[iap] initConnection retry failed:', (e as Error).message);
+    return false;
+  }
+}
+
 /** Fetch localized store products (both subs + in-app). Best-effort. */
 export async function loadStoreProducts(): Promise<unknown[]> {
   const iap = getIap();
   if (!iap) return [];
   try {
     const [subs, inapp] = await Promise.all([
-      iap.fetchProducts({ skus: SUBSCRIPTION_SKUS, type: 'subs' }).catch(() => []),
-      iap.fetchProducts({ skus: INAPP_SKUS, type: 'in-app' }).catch(() => []),
+      withDeadline(() => iap.fetchProducts({ skus: SUBSCRIPTION_SKUS, type: 'subs' }), 'iap/fetchSubs', 15000).catch(() => []),
+      withDeadline(() => iap.fetchProducts({ skus: INAPP_SKUS, type: 'in-app' }), 'iap/fetchInApp', 15000).catch(() => []),
     ]);
     return [...(subs as unknown[]), ...(inapp as unknown[])];
   } catch {

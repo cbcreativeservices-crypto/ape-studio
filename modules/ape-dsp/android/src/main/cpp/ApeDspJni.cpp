@@ -121,6 +121,11 @@ class NativeEngine {
   std::atomic<double> lastWriteAt_;
   // Last input buffer with a non-zero sample (engine 10 — see InputCallback).
   std::atomic<double> lastNonZeroAt_{0.0};
+  // OUTPUT STREAM ERROR (native queue item 1, Android half — owner 2026-10-24):
+  // Oboe closed the output stream itself (audio server restart, route
+  // disconnect). Set from Oboe's error thread; read on the bridge thread.
+  std::atomic<bool> outputDead_{false};    // the stream object is closed — reopen on next start
+  std::atomic<bool> outputLostPending_{false};  // tell JS once (nativeTakeOutputLost)
   /// Seconds the running input has delivered nothing but exact zeros (0 when
   /// capture is not running). Kotlin pairs it with the OS "silenced" report.
   double inputZeroSeconds() const {
@@ -137,8 +142,13 @@ class NativeEngine {
   bool anyVoiceRunning() { return gen_.running() || bin_.running() || mod_.running(); }
   bool ensureOutput() {
     std::lock_guard<std::mutex> lk(outStreamMu_);
+    // A stream Oboe closed after an error is dead: drop it and open fresh.
+    if (outputDead_.exchange(false)) outStream_.reset();
     return outStream_ ? true : openOutput();
   }
+  /** True once after Oboe closed the output on an error (Kotlin polls it and
+   *  sends onOutputLost, so the screen reads STOPPED, never a silent RUN). */
+  bool takeOutputLost() { return outputLostPending_.exchange(false); }
   bool genStart() {
     const bool ok = ensureOutput();
     if (ok) gen_.start();
@@ -210,9 +220,20 @@ class NativeEngine {
       return oboe::DataCallbackResult::Continue;
     }
   };
-  // Output data callback — RT-safe: generator render only.
-  struct OutputCallback : oboe::AudioStreamDataCallback {
+  // Output data callback — RT-safe: generator render only. Also the stream's
+  // ERROR callback: Oboe calls onErrorAfterClose on its own thread once it has
+  // closed a broken stream. Only atomics and the voices' stop() fades here —
+  // the stream object itself is released by the next ensureOutput (under the
+  // mutex), never from this thread.
+  struct OutputCallback : oboe::AudioStreamDataCallback, oboe::AudioStreamErrorCallback {
     NativeEngine* eng;
+    void onErrorAfterClose(oboe::AudioStream*, oboe::Result) override {
+      eng->gen_.stop();
+      eng->bin_.stop();
+      eng->mod_.stop();
+      eng->outputDead_.store(true);
+      eng->outputLostPending_.store(true);
+    }
     oboe::DataCallbackResult onAudioReady(oboe::AudioStream*, void* data, int32_t numFrames) override {
       float* out = static_cast<float*>(data);
       const uint32_t nf = static_cast<uint32_t>(numFrames);
@@ -299,8 +320,10 @@ class NativeEngine {
         ->setSampleRateConversionQuality(oboe::SampleRateConversionQuality::None)
         ->setUsage(oboe::Usage::Media)
         ->setContentType(oboe::ContentType::Sonification)
-        ->setDataCallback(&outputCb_);
+        ->setDataCallback(&outputCb_)
+        ->setErrorCallback(&outputCb_);
     outputCb_.eng = this;
+    outputDead_.store(false);
     // Preallocate the deinterleave scratch generously (bursts are far smaller).
     outL_.assign(8192, 0.0f);
     outR_.assign(8192, 0.0f);
@@ -646,6 +669,12 @@ Java_expo_modules_apedsp_ApeDspModule_nativeCaptureRunning(JNIEnv*, jobject, jlo
 JNIEXPORT jdouble JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeInputZeroSeconds(JNIEnv*, jobject, jlong h) {
   return eng(h)->inputZeroSeconds();
+}
+
+// Output stream lost to an error since the last call (native queue item 1).
+JNIEXPORT jboolean JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeTakeOutputLost(JNIEnv*, jobject, jlong h) {
+  return eng(h)->takeOutputLost() ? JNI_TRUE : JNI_FALSE;
 }
 
 // ---- Generator ----

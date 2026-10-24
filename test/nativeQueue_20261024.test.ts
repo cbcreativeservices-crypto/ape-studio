@@ -156,7 +156,9 @@ test('iPad: front/top omni data source preferred; never throws; no-op off iPad',
   const fn = s.slice(s.indexOf('private func preferIPadOmniMic('), s.indexOf('⛔ ENGINE CONFIGURATION CHANGE'));
   assert.match(fn, /guard apeDeviceModel\.hasPrefix\("iPad"\) else \{ return \}/);
   assert.match(fn, /current\.portType == \.builtInMic else \{ return \}/);
-  assert.match(fn, /sources\.filter \{ \$0\.orientation == \.front \}\n\s*\+ sources\.filter \{ \$0\.orientation == \.top \}/);
+  assert.match(fn, /sources\.filter \{ \$0\.orientation == AVAudioSession\.Orientation\.front \}/);
+  assert.match(fn, /sources\.filter \{ \$0\.orientation == AVAudioSession\.Orientation\.top \}/);
+  assert.match(fn, /let ranked: \[AVAudioSessionDataSourceDescription\] = front \+ top \+ sources/);
   assert.match(fn, /try pick\.setPreferredPolarPattern\(omni\)\n\s*try builtIn\.setPreferredDataSource\(pick\)/);
   assert.match(fn, /\} catch \{\n\s*logEvent\("iPad mic: data source not set/);
   assert.doesNotMatch(fn, /\bthrow\b(?!s)/, 'never throws out of startCapture');

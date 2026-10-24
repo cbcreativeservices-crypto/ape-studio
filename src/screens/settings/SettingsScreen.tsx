@@ -15,7 +15,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { Modal } from '../../components/DimModal';
 import Constants from 'expo-constants';
@@ -1092,11 +1092,32 @@ ${LOCAL_LOSS}`
           ).map(([kind, label], i, arr) => (
             <Pressable
               key={kind}
-              style={({ pressed }) => [styles.row, i < arr.length - 1 && styles.rowBorder, pressed && styles.rowPressed]}
+              style={({ pressed }) => [styles.row, styles.rowBorder, pressed && styles.rowPressed]}
               // Every feedback submission carries locating data (owner rule
               // 2026-08-13): screen, tier, student id (Bug+Hater night C1-04).
               onPress={() => sendFeedback(kind, undefined, { screen: 'Settings', tier: entitlement, studentId: apeId || undefined })}
               accessibilityRole="button"
+            >
+              <Text style={styles.rowLabel}>{label}</Text>
+              <Text style={styles.chevron}>›</Text>
+            </Pressable>
+          ))}
+          {/* The Terms of Use and Privacy Policy, reachable from Settings by every
+              user — signed in, member or guest (pre-resubmission audit
+              2026-10-24, Apple 5.1.1 / 3.1.2: before, only the sign-in and
+              purchase screens linked them). Same pages as the paywall's links. */}
+          {(
+            [
+              ['terms', 'Terms of Use'],
+              ['privacy', 'Privacy Policy'],
+            ] as const
+          ).map(([path, label], i, arr) => (
+            <Pressable
+              key={path}
+              style={({ pressed }) => [styles.row, i < arr.length - 1 && styles.rowBorder, pressed && styles.rowPressed]}
+              onPress={() => void Linking.openURL(`https://www.proaudiotrainingacademy.com/${path}`).catch(() => {})}
+              accessibilityRole="link"
+              accessibilityLabel={label}
             >
               <Text style={styles.rowLabel}>{label}</Text>
               <Text style={styles.chevron}>›</Text>

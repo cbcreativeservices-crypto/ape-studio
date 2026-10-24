@@ -638,9 +638,11 @@ public class ApeDspModule: Module {
     let hasOmni: (AVAudioSessionDataSourceDescription) -> Bool = {
       $0.supportedPolarPatterns?.contains(omni) ?? false
     }
-    let ranked = sources.filter { $0.orientation == .front }
-      + sources.filter { $0.orientation == .top }
-      + sources
+    // Explicitly typed (pre-build audit 2026-10-24): an optional compared to an
+    // implicit member inside chained `+` can stall Swift's type checker.
+    let front: [AVAudioSessionDataSourceDescription] = sources.filter { $0.orientation == AVAudioSession.Orientation.front }
+    let top: [AVAudioSessionDataSourceDescription] = sources.filter { $0.orientation == AVAudioSession.Orientation.top }
+    let ranked: [AVAudioSessionDataSourceDescription] = front + top + sources
     guard let pick = ranked.first(where: hasOmni) else {
       logEvent("iPad mic: no omni data source — left as is")
       return
@@ -671,6 +673,10 @@ public class ApeDspModule: Module {
    `inputNode` is never asked for (the stopCapture rule above).
    */
   private var lastConfigRestartAt: Date?
+  /// Same once-a-second guard for the OUTPUT rebuild (pre-build audit
+  /// 2026-10-24): a rebuilt graph that immediately posts another change must
+  /// not rebuild in a loop on main — it falls through to stop + onOutputLost.
+  private var lastOutConfigRestartAt: Date?
 
   private func handleCaptureConfigChange() {
     logEvent("engine config CHANGED (capture)")
@@ -714,7 +720,9 @@ public class ApeDspModule: Module {
     outEngine = nil
     outNode = nil
     guard core.anyOutputRunning() else { return }
-    if !inBackground {
+    let tooSoon = lastOutConfigRestartAt.map { Date().timeIntervalSince($0) < 1.0 } ?? false
+    if !inBackground && !tooSoon {
+      lastOutConfigRestartAt = Date()
       do {
         try startGeneratorOutput()
         logEvent("generator output RESTARTED (config change)")

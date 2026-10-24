@@ -410,7 +410,7 @@ const st = StyleSheet.create({
   sum: { gap: 2 },
   sumTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.1, color: colors.textMuted },
   sumBody: { fontFamily: fonts.barlowRegular, fontSize: 14.5, color: colors.textPrimary },
-  sumEmpty: { color: colors.textSub, fontStyle: 'italic' },
+  sumEmpty: { color: colors.textSub, fontFamily: fonts.barlowItalic }, // true italic (Android draws a synthetic one upright)
 
   nav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 14, minHeight: 44 },
   navRight: { flexDirection: 'row', alignItems: 'center', gap: 18 },
