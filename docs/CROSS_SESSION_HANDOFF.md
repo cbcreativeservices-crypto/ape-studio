@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 00:05 · ccode · fb1e5758
+changed: Build upload: exclude .git/ (~570 MB) from the EAS archive
+affects other side: nothing (build upload config)
+needs: nothing
+
+
 ### 2026-10-23 23:32 · ccode · ecced859
 changed: Next-build checklist: Android transitions merged
 affects other side: nothing (build-list row)
