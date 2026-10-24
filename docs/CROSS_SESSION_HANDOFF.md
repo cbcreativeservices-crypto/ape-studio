@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 21:12 · ccode · 220f4574
+changed: Home: new card art for the Vehicle Audio study-area card
+affects other side: nothing (bundled art; bucket topic_vehicle.webp untouched)
+needs: nothing
+
+
 ### 2026-10-23 20:30 · ccode · session handoff
 changed: docs/SESSION_HANDOFF_2026-10-23_NIGHT.md — everything shipped tonight (all on the Android preview channel), device-test status, owner HOLDs (#6 wording, onboarding for new accounts, Cable stage 8)
 affects other side: nothing new — #15, #11, #3 app halves already listed above
