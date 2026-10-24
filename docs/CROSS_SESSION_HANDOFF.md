@@ -643,6 +643,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 11:48 · ccode · 4390760e
+changed: Test: offer-code test normalises CRLF (house ratchet)
+affects other side: test only
+needs: nothing
+
+
 ### 2026-10-24 11:44 · ccode · 12a60901
 changed: Build 39: 'Redeem an offer code' on the Paywall and Settings › MEMBERSHIP opens the store's own screen (Apple Offer Codes / Google Play redeem; owner GO 2026-10-24); the store-not-responding line names Google Play on Android (both phones identical)
 affects other side: Paywall, Settings MEMBERSHIP, purchase module
