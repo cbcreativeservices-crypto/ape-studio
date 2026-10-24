@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 23:29 · ccode · 15777ddd
+changed: Build config (B3): preview autoIncrement; untrack audio_app_archive/
+affects other side: audio_app_archive/ is no longer tracked (files stay on disk; pulling this commit REMOVES them from other checkouts — copy from history if needed)
+needs: nothing
+
+
 ### 2026-10-23 23:28 · ccode · a9843ddd
 changed: Merge branch 'android-transitions' into dj-lab
 affects other side: nothing (Android transitions plugin now on dj-lab; changes both fingerprints — rides the iOS 37 / Android 21 build)
