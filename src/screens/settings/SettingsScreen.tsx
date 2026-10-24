@@ -87,6 +87,7 @@ import type { RootStackParamList } from '../../navigation/types';
 import { cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { useGlossaryLinksPref } from '../../features/glossary/linksPref';
+import { LEGAL_ASSENT_REDEEM } from '../../features/commercial/legalCopy';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 
@@ -1337,6 +1338,8 @@ ${LOCAL_LOSS}`
               returnKeyType="done"
               onSubmitEditing={submitRedeem}
             />
+            {/* Owner legal ruling L4 (2026-10-23): assent beside the redeem button. */}
+            <Text style={[styles.modalBody, { fontSize: 13, marginTop: 4 }]}>{LEGAL_ASSENT_REDEEM}</Text>
             {redeemBusy ? (
               <View style={{ height: 48, alignItems: 'center', justifyContent: 'center' }}>
                 <ActivityIndicator color={colors.amber} />

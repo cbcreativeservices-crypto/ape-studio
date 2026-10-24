@@ -53,10 +53,12 @@ import type { RootStackParamList } from '../../navigation/types';
 import { readingColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { dropPaywallReturn, holdPaywallReturn, takeLandingReturn } from '../../features/onboarding/landingReturn';
+import { LEGAL_ASSENT_SUBSCRIBE, LEGAL_LIFETIME, LEGAL_NOT_ACCREDITED } from '../../features/commercial/legalCopy';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Paywall'>;
 
 type Plan = PlanCopy;
+
 // The plans BEFORE the store answers (Apple 3.1.2, 2026-10-15; no fallback
 // price since 2026-10-22). localizePlans() in features/commercial/storePrices.ts
 // fills in the store's localized price — and derives "SAVE n%" from the
@@ -627,7 +629,11 @@ export function PaywallScreen({ navigation, route }: Props) {
 
         <View style={styles.plans} accessibilityRole="radiogroup">
           {plans.map((p) => (
-            <PlanCard key={p.id} plan={p} active={selected === p.id} priceState={priceState} onPress={() => setSelected(p.id)} />
+            <View key={p.id}>
+              <PlanCard plan={p} active={selected === p.id} priceState={priceState} onPress={() => setSelected(p.id)} />
+              {/* Owner legal ruling L15 (2026-10-23), word for word, under the Lifetime button. */}
+              {p.id === 'lifetime' ? <Text style={styles.lifetimeNote}>{LEGAL_LIFETIME}</Text> : null}
+            </View>
           ))}
         </View>
 
@@ -656,6 +662,8 @@ export function PaywallScreen({ navigation, route }: Props) {
             <Text style={styles.policyLink}>Privacy Policy</Text>
           </Pressable>
         </View>
+        {/* Owner legal ruling L4 (2026-10-23): the assent sentence beside the buy button, word for word. */}
+        <Text style={styles.disclosure}>{LEGAL_ASSENT_SUBSCRIBE}</Text>
         {busy ? (
           <View style={styles.busyWrap}>
             <ActivityIndicator color={colors.amber} accessibilityLabel="Working, please wait" />
@@ -707,6 +715,8 @@ export function PaywallScreen({ navigation, route }: Props) {
             </View>
           </View>
         </View>
+        {/* Owner legal ruling L12 (2026-10-23): the paywall footer, small text, word for word. */}
+        <Text style={styles.accreditNote}>{LEGAL_NOT_ACCREDITED}</Text>
       </ScrollView>
     </View>
   );
@@ -886,6 +896,8 @@ const styles = StyleSheet.create({
   deadline: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.amberLabel, textAlign: 'center' },
   // The renewal disclosure: ≥ 13 pt in textSub (compliance row 6).
   disclosure: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub, textAlign: 'center' },
+  lifetimeNote: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub, textAlign: 'center', marginTop: 6 },
+  accreditNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted, textAlign: 'center', marginTop: 18 },
 
   busyWrap: { height: 56, alignItems: 'center', justifyContent: 'center' },
   // Terms/Privacy pair above the buy button — quiet, so it reads as disclosure,
