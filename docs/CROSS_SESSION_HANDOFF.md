@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 00:07 · ccode · 175f1ff5
+changed: Build payload: drop x86 Android ABIs; MultiMeter location tag in
+affects other side: nothing (native build payload)
+needs: nothing
+
+
 ### 2026-10-24 00:05 · ccode · fb1e5758
 changed: Build upload: exclude .git/ (~570 MB) from the EAS archive
 affects other side: nothing (build upload config)
