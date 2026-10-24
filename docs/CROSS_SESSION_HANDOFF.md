@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 18:50 · ccode · 5c737257
+changed: Home: new card art for the Commercial 70V Systems study-area card
+affects other side: nothing (art bundled in the app; bucket topic_commercial.webp untouched, still used by the 70/100V topic card)
+needs: nothing
+
+
 ### 2026-10-23 18:10 · ccode · d5f76aea
 changed: My Enrollments: the ? help button is no longer inside the Return button
 affects other side: nothing (client-only header layout)

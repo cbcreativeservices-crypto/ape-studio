@@ -133,6 +133,13 @@ const SAMPLE_X = Array.from({ length: SAMPLES }, (_, s) => X0 + s * SAMPLE_U * U
 /** Once every span is inside the spec the whole run settles level — bouncier. */
 const LEVEL_SPRING = { damping: 12, stiffness: 150, mass: 1 } as const;
 const HOOK_LEN = 34; // approximate J-hook path length, for the draw-in
+/** The hook's saddle: its top is the cable's UNDERSIDE (jacket stroke 3.5),
+ *  so the run is carried BY the hook, not drawn across it (owner 2026-10-23:
+ *  "they are just drawn across the image like the supporting hooks didn't
+ *  matter"). The cable lies flat over the saddle's width. */
+const SADDLE_Y = CABLE_Y + 2.2;
+const SADDLE_HALF = 7.5;
+const SADDLE_HALF_U = SADDLE_HALF / UNIT;
 
 function anchorsFor(placed: Set<number>): number[] {
   const units = [...placed].sort((a, b) => a - b).map((i) => POS_UNITS[i] as number);
@@ -156,7 +163,12 @@ function sagProfile(anchors: number[]): number[] {
     }
     const span = b - a;
     const depthPx = span > 0 ? Math.min(27, SAG_LIMIT_UNITS * Math.pow(span / SPEC_EVERY, 2) * UNIT) : 0;
-    const f = span > 0 ? (u - a) / span : 0;
+    // A hook carries the cable across its saddle's width: the curve hangs
+    // between the saddle EDGES and lies flat on the saddle (the walls' bushed
+    // openings at 0 and the span's end hold a point).
+    const lo = a > 0 ? a + SADDLE_HALF_U : a;
+    const hi = b < SPAN_UNITS ? b - SADDLE_HALF_U : b;
+    const f = hi > lo ? Math.min(1, Math.max(0, (u - lo) / (hi - lo))) : 0;
     ys.push(CABLE_Y + depthPx * 4 * f * (1 - f));
   }
   return ys;
@@ -210,8 +222,12 @@ function HookStroke({ d, p, color, width, opacity = 1, on }: { d: string; p: Sha
   );
 }
 
-/** A candidate position: a J-hook (drop rod from the slab + formed J saddle)
- *  draws itself in over the dashed ghost. */
+/** A candidate position: a J-hook draws itself in over the dashed ghost.
+ *  This is a SIDE view along the run, so the hook is seen edge-on (owner
+ *  2026-10-23: the old J outline stood in front of the cable and "was not
+ *  supporting the cable at all"): its anchor at the soffit, the drop strap
+ *  BEHIND the cable, and the saddle UNDER it with its curled edges. The cable
+ *  is drawn after the hooks and lies flat on each saddle (sagProfile). */
 function PosMark({ u, on }: { u: number; on: boolean }) {
   const p = useTween(on ? 1 : 0, on ? CI_MOTION.base : CI_MOTION.quick);
   const x = xOf(u);
@@ -219,12 +235,14 @@ function PosMark({ u, on }: { u: number; on: boolean }) {
     opacity: Math.max(0, 1 - p.value * 1.4),
     r: 7 - 1.6 * Math.min(1, p.value),
   }));
-  const d = `M${x - 5.2} 22 V37.4 A5.2 5.2 0 0 0 ${x + 5.2} 37.4 V34`;
+  const s = SADDLE_HALF;
+  const strap = `M${x} 22.8 V${SADDLE_Y}`;
+  const saddle = `M${x - s} ${SADDLE_Y - 2.6} Q${x - s} ${SADDLE_Y + 0.8} ${x - s + 3} ${SADDLE_Y + 0.8} H${x + s - 3} Q${x + s} ${SADDLE_Y + 0.8} ${x + s} ${SADDLE_Y - 2.6}`;
   return (
     <>
       <ACircle
         cx={x}
-        cy={38}
+        cy={CABLE_Y}
         r={on ? 5.4 : 7}
         fill="none"
         stroke="#54565c"
@@ -233,11 +251,13 @@ function PosMark({ u, on }: { u: number; on: boolean }) {
         opacity={on ? 0 : 1}
         animatedProps={ghost}
       />
-      {/* the anchor at the soffit, then the formed J */}
-      <HookStroke d={`M${x - 8.2} 22.8 H${x - 2.2}`} p={p} color="#80868f" width={1.8} on={on} />
-      <HookStroke d={d} p={p} color="#23262b" width={2.6} on={on} />
-      <HookStroke d={d} p={p} color="#b9bec5" width={1.7} on={on} />
-      <HookStroke d={`M${x - 5.8} 23 V37`} p={p} color="#ffffff" width={0.45} opacity={0.6} on={on} />
+      {/* the anchor plate at the soffit, the strap down, the saddle under the run */}
+      <HookStroke d={`M${x - 4} 22.8 H${x + 4}`} p={p} color="#80868f" width={1.8} on={on} />
+      <HookStroke d={strap} p={p} color="#23262b" width={2.8} on={on} />
+      <HookStroke d={strap} p={p} color="#b9bec5" width={1.8} on={on} />
+      <HookStroke d={saddle} p={p} color="#23262b" width={2.8} on={on} />
+      <HookStroke d={saddle} p={p} color="#b9bec5" width={1.8} on={on} />
+      <HookStroke d={`M${x - 0.5} 23.6 V${SADDLE_Y - 1}`} p={p} color="#ffffff" width={0.45} opacity={0.6} on={on} />
     </>
   );
 }
@@ -422,6 +442,11 @@ const SpanArt = memo(function SpanArt({ w, placed }: { w: number; placed: Set<nu
       >
         MAX SAG ½ UNIT
       </SvgText>
+      {/* candidate positions: placed = J-hook, empty = dashed ghost — drawn
+          BEHIND the run, so the cable lies IN each saddle (owner 2026-10-23) */}
+      {POS_UNITS.map((u, i) => (
+        <PosMark key={u} u={u} on={placed.has(i)} />
+      ))}
       {/* strained spans: a hot halo UNDER the cable, glued to the same samples
           so it rides the settle — the jacket stays readable on top */}
       <APath
@@ -441,10 +466,6 @@ const SpanArt = memo(function SpanArt({ w, placed }: { w: number; placed: Set<nu
       <SpanLayer from={from} to={to} k={k} dx={0} dy={0} color={shade(CI_CLASS_TINTS.analog, 0.28)} width={2.7} />
       <SpanLayer from={from} to={to} k={k} dx={0} dy={-0.6} color={lighten(shade(CI_CLASS_TINTS.analog, 0.28), 0.5)} width={0.9} opacity={0.8} />
       <APath d={restD} stroke="none" fill="none" animatedProps={cableProps} />
-      {/* candidate positions: placed = J-hook, empty = dashed ghost */}
-      {POS_UNITS.map((u, i) => (
-        <PosMark key={u} u={u} on={placed.has(i)} />
-      ))}
       {/* grid ruler, marked and numbered */}
       <Line x1={X0} y1={100} x2={X1} y2={100} stroke="#2c2c33" strokeWidth={1.5} />
       {Array.from({ length: SPAN_UNITS + 1 }, (_, u) => (
