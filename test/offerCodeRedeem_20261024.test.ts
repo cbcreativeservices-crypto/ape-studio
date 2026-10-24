@@ -10,7 +10,7 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { storeNotResponding } from '../src/features/commercial/paywallCopy.ts';
 
-const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
+const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
 test('the not-responding line names each phone’s own store', () => {
   assert.equal(storeNotResponding('ios'), 'The App Store isn’t responding right now. Please try again in a moment.');
