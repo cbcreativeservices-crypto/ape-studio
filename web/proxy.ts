@@ -139,7 +139,13 @@ export function proxy(request: NextRequest) {
     // employer sign-up button and a certificate's QR / share link must not land
     // a reviewer or an employer on the key screen. Exact match / one-segment
     // only — no cookie, not a site-wide unlock.
-    if (legalPublic === "/employers/apply" || /^\/registry\/[^/]+$/.test(legalPublic)) {
+    // /institutions (owner GO 2026-10-24): the App Review notes link to it to
+    // explain institutional licensing and its access codes.
+    if (
+      legalPublic === "/employers/apply" ||
+      legalPublic === "/institutions" ||
+      /^\/registry\/[^/]+$/.test(legalPublic)
+    ) {
       return NextResponse.next();
     }
   }
