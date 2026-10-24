@@ -57,7 +57,7 @@ import { FoundationsCard, type JourneyProps } from './engine/journeyKit';
 import { PageSteps } from './engine/steps';
 import { PSound } from './pages/PSound';
 import { PSetting } from './pages/PSetting';
-import { lessonArt } from './data/lessonArt';
+import { lessonArt } from './data/lessonArtLoader';
 import type { LessonArt } from './engine/scene/sceneTypes.ts';
 import type { PageProps } from './pages/pageTypes';
 import { PInstrument } from './pages/PInstrument';
