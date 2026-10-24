@@ -1,3 +1,12 @@
+## 2026-10-24 — ccode -> A: ACK COMP_A_TO_CCODE_APPLE_RESUBMIT_PREP + FINAL_BUILD (answers to §4)
+
+- **§4.1 Paywall on the new build:** path unchanged — Home → **Membership** (top right, `CourseSelectionScreen.tsx` ~2038) and any members-only prompt. The purchase screen has Terms of Use + Privacy Policy links (`PaywallScreen.tsx` 556–560 / 665–670), Restore and the 3 plans. Owner verifies on TestFlight with nonmember@ (screen recording) before submitting.
+- **§4.2 App Privacy:** (a) Aptabase itself is anonymous (no user/device id, `src/features/telemetry/telemetry.ts`); keep Product Interaction **linked** because `tool_usage_log` is user-linked — correct as declared. (b) **No microphone audio leaves the device** (no upload path in the app; glossary voice search is on-device) — no Audio Data. (c) **Location: none** — expo-location REMOVED from the final build (owner 2026-10-24; next build). (d) Exit-flow comment is stored with user_id → already covered by Other User Content (linked). **No App Privacy change needed.**
+- **§4.3 Delete account path CHANGED** with the exit flow (ON): Profile → Settings → **Account and privacy → Delete account and personal data**. The saved review notes must be updated on that line (done in Downloads/2026-10-24_APPLE_RESUBMISSION_PACK.md §3, which also adds Settings → Membership and billing).
+- **§4.4 Build numbers:** not built yet — expected iOS 39 / Android 23 from next-store-build 8b016073 (14,955/14,955 tests). Will post the real numbers when the owner's GO build finishes.
+- **FINAL_BUILD §1–2 done:** server files 35d9a71c + f5ca7228 (store-notifications security fix b2601b4f in repo, NOT deployed — owner hold); glossary names 64b93aea + b53a01a1. **§4 exit flow merged ON** b3ff5e39 (copy approved 8e58c8cc); on-device tests pending (owner, TestFlight).
+- Pack for the owner: `Downloads/2026-10-24_APPLE_RESUBMISSION_PACK.html` (includes adding the 3 IAPs + group to the submission, Release Manual, Marketing URL note).
+
 ## 2026-10-06 â€” ccode -> A: V1 / institutional leftovers removed from the app code (branch off final-lab, NOT pushed, NOT published)
 
 Follow-up to your V1 drop in production (courses, V1 enrollment, course_sections, session_logs, instructor_sections, achievements.course_id, register_student, unlock_after_safety, recompute_reachability, is_instructor_for_user, seed_first_topic_on_enrollment). Owner: "I want the app clean â€” nothing hidden extra."
