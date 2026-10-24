@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 23:28 · ccode · 6df2f942
+changed: Miking: pre-warm the lesson screen while the lesson list is read
+affects other side: nothing (client-only)
+needs: nothing
+
+
 ### 2026-10-23 23:24 · ccode · 9c37b91f
 changed: Every new account gets the onboarding on its first sign-in
 affects other side: nothing (client-only)
