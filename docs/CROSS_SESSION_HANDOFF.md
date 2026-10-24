@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-23 18:10 · ccode · d5f76aea
+changed: My Enrollments: the ? help button is no longer inside the Return button
+affects other side: nothing (client-only header layout)
+needs: nothing
+
+
 ### 2026-10-23 17:47 · ccode · 76cd7765
 changed: Home: headline over the study-area cards reads 'Learn About the Academy’s Curriculum'
 affects other side: nothing (client-only Home headline copy)
