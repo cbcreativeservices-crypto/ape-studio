@@ -41,7 +41,7 @@ describe('Restore: a still-pending purchase is "pending", not "store unreachable
     const skip = restore.indexOf("p.purchaseState === 'pending'");
     assert.ok(skip > 0 && skip < restore.indexOf('await validateWithServer(p)'));
     assert.match(restore, /if \(pendingSeen && !validationFailed\) return 'pending';/);
-    assert.match(purchase, /\| 'linked' \| 'pending';/);
+    assert.match(purchase, /\| 'linked' \| 'pending'/);
   });
   test('the Paywall states it with the pending copy', () => {
     assert.match(paywall, /case 'pending':\s*notify\('Purchase', PENDING_MESSAGE\);/);

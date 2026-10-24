@@ -129,7 +129,9 @@ export function storeErrorMessage(err: { code?: unknown; message?: unknown } | n
  * verification failed sends them to Restore Purchases, which cannot help, or
  * to buying it a second time.
  */
-type ValidationResult = { ok: true } | { ok: false; reason: string | null };
+/** `detail` = the server's #6 reason (validate-purchase v18): expired, refunded,
+ *  pending, not_found, store_unreachable, linked_to_other_account, server_error. */
+type ValidationResult = { ok: true } | { ok: false; reason: string | null; detail?: string | null };
 
 /** HTTP status of a functions.invoke error (FunctionsHttpError carries the Response). */
 function invokeStatus(error: unknown): number | null {
@@ -186,9 +188,9 @@ async function validateRequest(p: IapPurchase): Promise<{ status: number | null;
       console.warn('[iap] validate-purchase failed:', error.message);
       return { status: invokeStatus(error), result: { ok: false, reason: null } };
     }
-    const body = data as { ok?: boolean; error?: string } | null;
+    const body = data as { ok?: boolean; error?: string; reason?: string } | null;
     if (body?.ok) return { status: 200, result: { ok: true } };
-    return { status: 200, result: { ok: false, reason: body?.error ?? null } };
+    return { status: 200, result: { ok: false, reason: body?.error ?? null, detail: body?.reason ?? null } };
   } catch (e) {
     console.warn('[iap] validate-purchase threw:', (e as Error).message);
     return { status: null, result: { ok: false, reason: null } };
@@ -507,8 +509,11 @@ export async function buyPlan(planId: PlanId): Promise<void> {
  *  - 'error'       the store or the validation call failed — retryable, NOT "none"
  *  - 'unavailable' IAP native module missing in this build (needs a rebuild)
  *  - 'linked'      verified, but already linked to ANOTHER account (not an error to retry)
+ *  - 'expired' / 'refunded'  the store answered: the held subscription ended, or
+ *                    the purchase was refunded (server #6 reason, 2026-10-23) —
+ *                    nothing to retry; the honest next step is a plan
  */
-export type RestoreResult = 'restored' | 'none' | 'error' | 'unavailable' | 'linked' | 'pending';
+export type RestoreResult = 'restored' | 'none' | 'error' | 'unavailable' | 'linked' | 'pending' | 'expired' | 'refunded';
 
 /** The linked-receipt copy, for the Paywall's restore result. */
 export const LINKED_MESSAGE = purchaseErrorMessage('receipt_already_linked');
@@ -543,6 +548,9 @@ export async function restorePurchases(): Promise<RestoreResult> {
     // sending it made the server refuse it and the person was told the STORE
     // was unreachable (toddler pass 2026-10-13). It is 'pending', not 'error'.
     let pendingSeen = false;
+    // The server's #6 reasons for the failed ones (2026-10-23): when EVERY
+    // failure says expired (or refunded), say that — not "check your connection".
+    const details: (string | null | undefined)[] = [];
     for (const p of purchases) {
       if (!p.productId || !planIdForSku(p.productId)) continue;
       if (p.purchaseState === 'pending') {
@@ -560,11 +568,15 @@ export async function restorePurchases(): Promise<RestoreResult> {
         }
       } else {
         validationFailed = true;
+        details.push(v.detail);
       }
     }
     if (restored) return 'restored';
     if (pendingSeen && !validationFailed) return 'pending';
     if (validationFailed && linkedOnly) return 'linked';
+    if (details.length && details.every((d) => d === 'expired')) return 'expired';
+    if (details.length && details.every((d) => d === 'refunded')) return 'refunded';
+    if (details.length && details.every((d) => d === 'pending')) return 'pending';
     return validationFailed ? 'error' : 'none';
   } catch (e) {
     console.warn('[iap] restore failed:', (e as Error).message);

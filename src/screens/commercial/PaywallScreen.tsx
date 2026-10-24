@@ -423,6 +423,14 @@ export function PaywallScreen({ navigation, route }: Props) {
             // connection problem either (toddler pass 2026-10-13).
             notify('Purchase', PENDING_MESSAGE);
             return;
+          case 'expired':
+            // The store answered: the subscription ended (server #6, 2026-10-23).
+            notify('Your membership has ended', 'The store says your last Academy subscription has expired, so there is nothing to restore. Choose a plan above to join again.');
+            return;
+          case 'refunded':
+            // The store answered: the purchase was refunded (server #6, 2026-10-23).
+            notify('Purchase was refunded', 'The store says this Academy purchase was refunded, so it can’t restore access. Choose a plan above to join again.');
+            return;
           case 'unavailable':
             notify(
               'Purchasing unavailable',
