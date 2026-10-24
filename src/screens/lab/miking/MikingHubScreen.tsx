@@ -22,7 +22,9 @@
  * on a tablet). Members-only gating is the navigator's (MemberGated +
  * withMembershipPreview), unchanged.
  */
+import { useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { prewarmLessonScreen } from './engine/prewarmLesson';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -41,6 +43,8 @@ import { lessonsOf, readyLabs, type MikingLabMeta } from './data/registry';
 
 export function MikingHubScreen() {
   const insets = useSafeAreaInsets();
+  // Pre-warm the lesson screen while this list is read (engine/prewarmLesson.ts).
+  useEffect(() => prewarmLessonScreen(), []);
   const route = useRoute();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const tablet = useIsTablet();
