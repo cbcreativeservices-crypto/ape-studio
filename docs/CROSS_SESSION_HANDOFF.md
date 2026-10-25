@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-25 13:05 · ccode · 102879cc
+changed: Sample certificate: seal blur +13% (owner 2026-10-25)
+affects other side: app: every sample certificate — OTA after approval
+needs: nothing
+
+
 ### 2026-10-25 12:59 · ccode · 931a0ff7
 changed: Certificate download: readable file name (Holder - Credential Certificate - Pro Audio Training Academy.pdf) instead of expo-print's random id
 affects other side: app: DOWNLOAD CERTIFICATE share sheet — OTA after approval (expo-file-system already in 39/23)
