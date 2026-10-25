@@ -11,7 +11,7 @@
  * `Directory` modal route that wrapped it was unreachable and removed 2026-09-10.
  */
 import { memo, useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -21,12 +21,13 @@ import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { loadPublicProfile } from '../../features/profile/publicProfile';
 import { fetchMyQrToken, fetchMyRegistryName } from '../../features/profile/api';
-import { REGISTRY_BASE_URL } from '../../features/profile/registry';
+import { registryUrl } from '../../features/profile/registry';
 import { CredentialQr } from '../../components/CredentialQr';
 import { fetchMyCredentials } from '../../features/credentials/api';
 import { readingColumn } from '../../theme/readingColumn';
 import { CommunityBadge } from '../../features/directory/CommunityBadge';
 import { CredentialBlurb } from '../curriculum/CredentialBlurb';
+import { notify } from '../../lib/confirm';
 
 const DIRECTORY_INTRO_TITLE = 'Get Discovered';
 
@@ -292,9 +293,22 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
               "Graduate" (user request 2026-07-22). */}
           {credCount != null ? <Text style={styles.registryStatus}>{isGraduate ? 'GRADUATE' : 'USER'}</Text> : null}
           {qrToken ? (
-            <Text style={styles.registryLink} numberOfLines={1}>
-              Scan to verify, or enter your code at{' '}
-              {REGISTRY_BASE_URL.replace(/^https?:\/\//, '')}/verify
+            // A REAL link (owner 2026-10-25): opens the SAME page the QR encodes —
+            // this member's own /registry/<qr_token> credential page — so they can
+            // show it on their phone or have it scanned, either way.
+            <Text
+              style={styles.registryLink}
+              numberOfLines={1}
+              suppressHighlighting
+              onPress={() => {
+                Linking.openURL(registryUrl(qrToken)).catch(() => {
+                  notify('Page unavailable', 'We couldn’t open your verification page. Check your connection, or scan the QR instead.');
+                });
+              }}
+              accessibilityRole="link"
+              accessibilityLabel="Open your verification page"
+            >
+              Scan or tap to open your verification page
             </Text>
           ) : qrFailed ? (
             <Text style={styles.registryPending}>
