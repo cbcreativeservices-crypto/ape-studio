@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-25 12:44 · ccode · 6d29a85c
+changed: Sample certificate: SAMPLE · NOT FOR PRINT sash through the seal (option B, seal softened at 33%), QR kept; re-rendered 3x from the vector PDF
+affects other side: app: every sample certificate (Progress, wall, full view, Get Discovered) — OTA after approval
+needs: nothing
+
+
 ### 2026-10-25 12:33 · ccode · a8cf616a
 changed: Registry: the verify line under the QR is a real link to the member's own /registry/<token> page (same URL the QR encodes)
 affects other side: app: Awards > Pro Registry (Get Discovered) — OTA after approval
