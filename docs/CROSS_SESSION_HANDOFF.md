@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-25 12:33 · ccode · a8cf616a
+changed: Registry: the verify line under the QR is a real link to the member's own /registry/<token> page (same URL the QR encodes)
+affects other side: app: Awards > Pro Registry (Get Discovered) — OTA after approval
+needs: nothing
+
+
 ### 2026-10-24 21:12 · ccode · 99ab8484
 changed: OTA (post-approval): remove the Time Trial quiz shortcut — no TIME TRIAL panel in OPEN PACE SETTINGS, no trial HUD/scoring in Flashcards / Fill in / Matching / Scenarios, timeTrial.ts deleted, the gate formula no longer counts trial_passed (owner 2026-10-24: 'no way for a person to pass without doing the work'); ratchet test added; server half handed to Comp A
 affects other side: on branch ota-after-approval-39-23 (post-approval OTA, not in builds 39/23). The app no longer calls credit_time_trial or reads trial_passed. Server half: Downloads/2026-10-24_CCODE_TO_COMP_A_REMOVE_TIME_TRIAL_SERVER.md
