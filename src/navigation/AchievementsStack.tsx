@@ -12,6 +12,7 @@ import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import { NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
 import { useNavOrientation } from './navOrientation'; // bug hunt 2026-09-29 — see that file
 import { AchievementsHomeScreen } from '../screens/achievements/AchievementsHomeScreen';
+import { withTabEdgeSwipeBack } from './TabEdgeSwipeBack';
 import { TopicsScreen } from '../screens/achievements/TopicsScreen';
 import { GalleryScreen } from '../screens/achievements/GalleryScreen';
 import { CertificatesScreen } from '../screens/achievements/CertificatesScreen';
@@ -19,6 +20,8 @@ import { ProgramsScreen } from '../screens/achievements/ProgramsScreen';
 import type { AchievementsStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<AchievementsStackParamList>();
+// The hub only: iPhone edge swipe-back to the previous tab / Home (owner 2026-10-25).
+const AchievementsHomeSwipe = withTabEdgeSwipeBack(AchievementsHomeScreen);
 
 export function AchievementsStack() {
   // Transition standard (owner 2026-08-16): opening contained content = PUSH
@@ -39,7 +42,7 @@ export function AchievementsStack() {
         </ScreenErrorBoundary>
       )}
     >
-      <Stack.Screen name="AchievementsHome" component={AchievementsHomeScreen} />
+      <Stack.Screen name="AchievementsHome" component={AchievementsHomeSwipe} />
       <Stack.Screen name="Topics" component={TopicsScreen} />
       <Stack.Screen name="Gallery" component={GalleryScreen} />
       <Stack.Screen name="Certificates" component={CertificatesScreen} />

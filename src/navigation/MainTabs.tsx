@@ -13,6 +13,7 @@ import { CourseSelectionScreen } from '../screens/courses/CourseSelectionScreen'
 import type { MainTabParamList } from './types';
 import { lazyScreen, TAB_HOME, tabBackRouter } from './lazyScreen';
 
+import { withTabEdgeSwipeBack } from './TabEdgeSwipeBack';
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 // Lazy tabs (perf decision B, 2026-10-04): Home is the first paint and Study
@@ -21,7 +22,8 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 /* eslint-disable @typescript-eslint/no-var-requires */
 const LazyTab = {
   Achievements: lazyScreen(() => require('./AchievementsStack').AchievementsStack),
-  Profile: lazyScreen(() => require('../screens/profile/ProfileScreen').ProfileScreen),
+  // iPhone edge swipe-back to the previous tab / Home (owner 2026-10-25) — see TabEdgeSwipeBack.
+  Profile: lazyScreen(() => withTabEdgeSwipeBack(require('../screens/profile/ProfileScreen').ProfileScreen)),
 } as const;
 
 /**
