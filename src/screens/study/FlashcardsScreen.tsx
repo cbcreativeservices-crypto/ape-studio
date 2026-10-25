@@ -106,7 +106,6 @@ import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunni
 import { recordPaceSession } from '../../features/study/paceRecords';
 import { PaceTimerBar } from '../../features/study/PaceTimerBar';
 import { PaceTimerModal } from '../../features/study/PaceTimerModal';
-import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { StudyHeader } from './StudyHeader';
 import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
@@ -738,23 +737,16 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // stays: the StudyHeader timer button opens the pace modal, the blue clock in
   // the filter row opens the session length. Flashcards have no graded answer,
   // so answered = a per-window advance counter (each move to another card), and
-  // marking a card KNOWN is the brain output / time-trial "correct" signal.
+  // marking a card KNOWN is the brain output.
   const { settings: pace, setEnabled, setPreset } = usePaceSettings('flashcards');
   const running = useRunning('flashcards');
-  const trial = useTimeTrial('flashcards', achievementId);
   const [timerOpen, setTimerOpen] = useState(false);
   const [paceAnswered, setPaceAnswered] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const startRef = useRef<number | null>(null);
   const elapsedRef = useRef(0);
   const recordedRef = useRef(false);
-  const paceShown = pace.enabled || trial.active || !!trial.result;
-  // Cards already counted toward the running time trial (see toggleKnown).
-  // Emptied when a trial starts or restarts: active with nothing counted yet.
-  const trialCountedRef = useRef<Set<string>>(new Set());
-  useEffect(() => {
-    if (trial.active && trial.correctCount === 0) trialCountedRef.current = new Set();
-  }, [trial.active, trial.correctCount]);
+  const paceShown = pace.enabled;
 
   // Fresh visit = fresh pace session (B-138, as Fill-in-Blank / Matching): the
   // brain-output tally and the running flag live in the module-level store and
@@ -1454,15 +1446,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     } else {
       next.add(card.id);
       setInTermList('known', card.id, true);
-      // Marking a card KNOWN is the flashcard "correct" signal: it advances the
-      // time trial and counts one brain output (the 1.5s dwell guards it).
-      // ONE CARD COUNTS ONCE PER TRIAL (night pass 2026-10-24): where a known
-      // card stays on screen (Bookmarked / Custom views) the dwell is not
-      // re-armed, so MARK KNOWN / MARK UNKNOWN mashing cleared the trial.
-      if (!trialCountedRef.current.has(card.id)) {
-        trialCountedRef.current.add(card.id);
-        registerTrialAnswer('flashcards', true, achievementId);
-      }
+      // Marking a card KNOWN is the flashcard "correct" signal: it counts one
+      // brain output (the 1.5s dwell guards it). (The TIME TRIAL it also fed
+      // was removed 2026-10-24 — no pass without doing the work.)
       incBrainOutput('flashcards');
       if (!states[card.id]?.known) {
         session.current?.addEvent({ item: card.id, kind: 'known', value: true });
@@ -2449,9 +2435,6 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           simply waits and shows when the learner is back here. */}
       {tutorialBlocked ? null : <SessionTimerBanner timer={sessionTimer} />}
       {/* Pace timer settings (header timer button). */}
-      {/* No topicId on My Custom List (night pass 2026-10-24): the trial's pass
-          credits a topic row, and 'flagged' has none — credit_time_trial can
-          only fail, and there is no list quiz to unlock. */}
       <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="flashcards" topicId={flaggedMode ? undefined : achievementId} />
 
     </View>

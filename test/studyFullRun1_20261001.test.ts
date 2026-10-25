@@ -39,63 +39,6 @@ const flush = async () => {
   for (let i = 0; i < 20; i++) await Promise.resolve();
 };
 
-describe('Time Trial: a pass is not reported as cleared until the server has it', () => {
-  it('saving → saved when it lands; saving → failed after the last retry', async () => {
-    mock.timers.enable({ apis: ['setInterval', 'setTimeout', 'Date'], now: 1_000_000 });
-    try {
-      const tt = await import('../src/features/study/timeTrial.ts');
-      // Read the live snapshot through the real hook (server render uses the
-      // hook's getServerSnapshot, which is the same getter).
-      const credit = (m: 'flashcards' | 'matching') => {
-        let out: unknown = 'none';
-        const Probe = () => {
-          const s = tt.useTimeTrial(m, 'topic-a');
-          out = s.result ? (s.result.credit ?? 'unset') : 'no-result';
-          return null;
-        };
-        renderToStaticMarkup(createElement(Probe));
-        return out;
-      };
-      const runToPass = (m: 'flashcards' | 'matching') => {
-        tt.startTimeTrial(m, 'topic-a');
-        for (let i = 0; i < tt.TIME_TRIAL_NEEDED; i++) tt.registerTrialAnswer(m, true, 'topic-a');
-        mock.timers.tick(tt.TIME_TRIAL_SECONDS * 1000 + 1000);
-      };
-
-      // 1. The server records it.
-      let release!: () => void;
-      setRpc(() => new Promise((r) => (release = () => r({ data: null, error: null }))));
-      runToPass('flashcards');
-      await flush(); // run 2: the account check comes first
-      assert.equal(credit('flashcards'), 'saving', 'before the credit lands the pass must not read as saved');
-      release();
-      await flush();
-      assert.equal(credit('flashcards'), 'saved');
-
-      // 2. The server never takes it (offline / no account), through every retry.
-      setRpc(() => ({ data: null, error: { message: 'Failed to fetch' } }));
-      runToPass('matching');
-      await flush();
-      assert.equal(credit('matching'), 'saving');
-      for (const ms of [5_000, 15_000, 45_000, 120_000, 300_000]) {
-        mock.timers.tick(ms);
-        await flush();
-      }
-      assert.equal(credit('matching'), 'failed', 'a pass the server never recorded must say so');
-
-      tt.resetTimeTrials();
-    } finally {
-      mock.timers.reset();
-    }
-  });
-
-  it('the result panel only claims "cleared" once the credit is saved', () => {
-    const src = read('features', 'study', 'PaceReadout.tsx');
-    assert.match(src, /trial\.result\.credit === 'failed'/);
-    assert.match(src, /trial\.result\.credit === 'saving'/);
-  });
-});
-
 describe('Credential share: SHARE QR never sends a card with no QR', () => {
   it('the QR share refuses (and reloads) while the token has not arrived', () => {
     const src = read('features', 'credentials', 'CredentialShareRow.tsx');

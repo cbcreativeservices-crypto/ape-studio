@@ -216,7 +216,6 @@ const NOT_ANIMATION: Record<string, string> = {
   'src/features/intro/FirstRunCoordinator.tsx': 'state poll',
   'src/features/study/SessionTimer.tsx': 'study clock',
   'src/features/study/sync.ts': 'active-time accrual + sync clock',
-  'src/features/study/timeTrial.ts': 'time-trial clock',
   'src/features/tools/capture/opticalCounter.ts': 'camera sample poll',
   'src/features/tools/engine/useDspEngine.ts': 'engine frame poll',
   'src/screens/tools/hubPreviewEngine.ts': 'engine frame poll + watchdog',

@@ -49,7 +49,6 @@ import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { recordPaceSession } from '../../features/study/paceRecords';
 import { PaceTimerBar } from '../../features/study/PaceTimerBar';
 import { PaceTimerModal } from '../../features/study/PaceTimerModal';
-import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { StudyHeader } from './StudyHeader';
 import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import type { StudyStackParamList } from '../../navigation/types';
@@ -145,14 +144,12 @@ export function MatchingScreen({ navigation, route }: Props) {
   // SUBSCRIBED (P10b 2026-10-02) so the Settings modal's toggle reaches a
   // mounted board. One-shot transitions, not a loop: Low-Light leaves them.
   const motionOk = useAnimationsAllowed();
-  // Time trial (opt-in 15:00 challenge) — the readout switches to its HUD while live.
   // The tier the topic terms are cached under (perf decisions 2026-10-04):
   // common_mistakes is membership-masked, so the session cache is keyed by it.
   // A ref, so a tier landing mid-session never reloads the deck.
   const tierForTerms = useTier();
   const tierForTermsRef = useRef(tierForTerms);
   tierForTermsRef.current = tierForTerms;
-  const trial = useTimeTrial('matching', achievementId);
   const [timerOpen, setTimerOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const startRef = useRef<number | null>(null);
@@ -393,7 +390,6 @@ export function MatchingScreen({ navigation, route }: Props) {
       if (locked.has(rightId) || lockedRef.current.has(rightId)) return;
       if (wrongPair || wrongPairRef.current) return;
       const correct = rightId === selectedLeft;
-      registerTrialAnswer('matching', correct, achievementId); // time trial: only correct advances pace
       if (correct) incBrainOutput('matching'); // one brain output per correct PAIR match (not per board)
       session.current?.addEvent({ item: selectedLeft, kind: 'answer', correct });
       const answeredId = selectedLeft;
@@ -595,7 +591,7 @@ export function MatchingScreen({ navigation, route }: Props) {
           title="MATCHING · PAIR EACH"
           subtitle={`Topic · ${topicName}`}
           onOpenTimer={() => setTimerOpen(true)}
-          hideTimerButton={!!(pace.enabled || trial.active || trial.result)}
+          hideTimerButton={pace.enabled}
         />
         {/* A known guest: progress here is not saved or carried (owner 2026-10-04). */}
         <GuestStartReminder activity="study:matching" kind="study" />
@@ -610,7 +606,7 @@ export function MatchingScreen({ navigation, route }: Props) {
           <FsButton onPress={() => setFullscreen(true)} />
         </View>
 
-        {pace.enabled || trial.active || trial.result ? (
+        {pace.enabled ? (
           <PaceTimerBar
             method="matching"
             topicId={achievementId}
@@ -671,7 +667,7 @@ export function MatchingScreen({ navigation, route }: Props) {
       <StudyFsOverlay
         visible={fullscreen}
         topSlot={
-          pace.enabled || trial.active || trial.result ? (
+          pace.enabled ? (
             <PaceTimerBar
               method="matching"
             topicId={achievementId}
@@ -693,9 +689,6 @@ export function MatchingScreen({ navigation, route }: Props) {
         <View style={styles.columns}>{columnsBody}</View>
       </StudyFsOverlay>
 
-      {/* No topicId on My Custom List (night pass 2026-10-24): the trial's pass
-          credits a topic row, and 'flagged' has none — credit_time_trial can
-          only fail, and there is no list quiz to unlock. */}
       <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="matching" topicId={customMode ? undefined : achievementId} />
     </View>
   );

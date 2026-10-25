@@ -140,27 +140,3 @@ describe('Credentials: a FAILED holder-name read never prints "Academy Member"',
   });
 });
 
-describe('Time Trial (run-1 correction): a guest is not told "saving…" for eight minutes', () => {
-  it('a pass with no account settles at once as no_account, and the panel says so', async () => {
-    mock.timers.enable({ apis: ['setInterval', 'Date'], now: 2_000_000 });
-    try {
-      const tt = await import('../src/features/study/timeTrial.ts');
-      tt.startTimeTrial('flashcards', 'topic-g');
-      for (let i = 0; i < tt.TIME_TRIAL_NEEDED; i++) tt.registerTrialAnswer('flashcards', true, 'topic-g');
-      mock.timers.tick(tt.TIME_TRIAL_SECONDS * 1000 + 1000);
-      await flush();
-      let credit: unknown = 'none';
-      const Probe = () => {
-        credit = tt.useTimeTrial('flashcards', 'topic-g').result?.credit;
-        return null;
-      };
-      renderToStaticMarkup(createElement(Probe));
-      assert.equal(credit, 'no_account');
-      tt.resetTimeTrials();
-    } finally {
-      mock.timers.reset();
-    }
-    const panel = read('features', 'study', 'PaceReadout.tsx');
-    assert.match(panel, /trial\.result\.credit === 'no_account'/);
-  });
-});

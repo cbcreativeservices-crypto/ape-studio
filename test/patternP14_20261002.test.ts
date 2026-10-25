@@ -175,7 +175,7 @@ const ONE_LINE_ALLOWED: Record<string, { n: number; why: string }> = {
   'components/ShareTermSheet.tsx': { n: 2, why: 'glossary term headings' },
   'components/tooldemos/SignalGenDemo.tsx': { n: 3, why: 'fixed caption words' },
   'components/tooldemos/SplDemo.tsx': { n: 1, why: 'fixed caption' },
-  'features/study/PaceReadout.tsx': { n: 5, why: 'status words and captions (the three value lines use fitValue)' },
+  'features/study/PaceReadout.tsx': { n: 2, why: 'status words and captions (the pace tag uses fitValue; the time-trial HUD lines went with the trial, 2026-10-24)' },
   'features/study/PresetFader.tsx': { n: 5, why: 'preset names and hints' },
   'screens/awards/AwardsScreen.tsx': { n: 1, why: 'award label' },
   'screens/careerfinder/kit.tsx': { n: 1, why: 'kicker label' },
@@ -305,10 +305,8 @@ describe('the value sites migrated on 2026-10-02 stay on fitValue', () => {
   it('SplMeter: all three control-bar values', () => {
     assert.equal(read('src/screens/tools/SplMeterScreen.tsx').match(/styles\.ctrlBarValue\} \{\.\.\.fitValue\(14\)\}>\{b\.value\}/g)?.length, 3);
   });
-  it('PaceReadout: the pace tag, the average and the projection', () => {
+  it('PaceReadout: the pace tag (the time-trial average / projection lines were removed with the trial, 2026-10-24)', () => {
     const s = read('src/features/study/PaceReadout.tsx');
     assert.match(s, /styles\.trackPaceLabel\} \{\.\.\.fitValue\(10\)\}>/);
-    assert.match(s, /styles\.metricLine\} \{\.\.\.fitValue\(12\)\}>/);
-    assert.match(s, /styles\.metricMeta\} \{\.\.\.fitValue\(11\)\}>/);
   });
 });

@@ -70,27 +70,6 @@ registerHooks({
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const rpcs = () => g.__H8_RPC__ as { fn: string; args: unknown }[];
 
-test('a time-trial pass that ends offline (token refresh unreachable) is still credited', async () => {
-  const tt = await import('../src/features/study/timeTrial.ts');
-  rpcs().length = 0;
-  (g.__H8_SESSIONS__ as unknown[]).push(OFFLINE_REFRESH);
-  tt.startTimeTrial('fill_in_blank', 'topic-A');
-  for (let i = 0; i < tt.TIME_TRIAL_NEEDED; i++) tt.registerTrialAnswer('fill_in_blank', true, 'topic-A');
-  const realNow = Date.now;
-  Date.now = () => realNow() + (tt.TIME_TRIAL_SECONDS + 5) * 1000; // the clock reaches 0:00
-  try {
-    await sleep(1300); // the trial's 1 s tick finalizes it
-  } finally {
-    Date.now = realNow;
-  }
-  await sleep(50);
-  tt.resetTimeTrials();
-  assert.ok(
-    rpcs().some((c) => c.fn === 'credit_time_trial'),
-    'an unreadable session is "could not tell", not "no account" — the pass must be sent',
-  );
-});
-
 test('an ENROLL tapped while the session read cannot refresh still reaches the server list', async () => {
   const es = await import('../src/features/enrollment/enrollmentStore.ts');
   await es.getEnrollment(); // hydrate (seeded free topics)

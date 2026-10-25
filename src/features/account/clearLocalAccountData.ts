@@ -35,7 +35,6 @@ import { resetLocal as resetSettingsMirrors } from '../settings/store';
 import { resetLocal as resetPublicProfile } from '../profile/publicProfile';
 import { setChainValue } from '../../screens/lab/calc/chainStore';
 import { resetSoundSafetyAck } from '../audio/soundSafetyAck';
-import { resetTimeTrials } from '../study/timeTrial';
 import { resetAskModeCache } from '../permissions/permissionStore';
 import { resetPopupSuppression } from '../dev/popupSuppressStore';
 import { resetLowLight } from '../settings/lowLight';
@@ -339,11 +338,6 @@ export function resetAllLocalStores(): void {
   // is not - so the NEXT person on this phone got sound with no warning, and no
   // acceptance record of their own was ever written. This is the safety gate;
   // it is the one entry here that must never be missed.
-  // A LIVE TIMER, not just a cache (2026-09-17). A time trial started by the
-  // departing user kept ticking through the sign-out and fired
-  // `credit_time_trial` under whoever arrived next — study credit written to the
-  // wrong account, which is the exact failure this registry exists to prevent.
-  resetTimeTrials();
   // Consent decisions belong to a PERSON, not a handset: the departing user's
   // "never ask me again" for the camera, mic, photos or location was inherited
   // by the next account (2026-09-17).

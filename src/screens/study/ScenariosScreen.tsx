@@ -52,7 +52,6 @@ import {
 import { SuggestCorrectionButton } from '../../features/study/SuggestCorrectionButton';
 import type { ItemStates } from '../../features/study/api';
 import { incBrainOutput, resetBrainOutput, setRunning, usePaceSettings, useRunning } from '../../features/study/paceStore';
-import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { PaceTimerBar } from '../../features/study/PaceTimerBar';
 import { PaceTimerModal } from '../../features/study/PaceTimerModal';
 import { StudyHeader } from './StudyHeader';
@@ -138,7 +137,6 @@ export function ScenariosScreen({ route }: Props) {
   // the 3 HOMEWORK methods, Scenarios included (owner 2026-08-13).
   const { settings: pace, setEnabled, setPreset } = usePaceSettings('scenarios');
   const running = useRunning('scenarios');
-  const trial = useTimeTrial('scenarios', achievementId);
   const [timerOpen, setTimerOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const startRef = useRef<number | null>(null);
@@ -395,7 +393,6 @@ export function ScenariosScreen({ route }: Props) {
       };
       mirrorAnswered();
       void saveLocalMethodStates(achievementId, 'scenarios', scenarioStatesRef.current);
-      registerTrialAnswer('scenarios', correct, achievementId); // time trial: only correct advances pace
       if (correct) incBrainOutput('scenarios');
       setFeedback({ correct, text: item.explanation });
       /* ── THE VERDICT AND THE TEACHING WERE BOTH SILENT ───────────────────
@@ -444,7 +441,7 @@ export function ScenariosScreen({ route }: Props) {
     // answeredItemRef, not `feedback`: only the single-choice path had the
     // synchronous latch, so a double tap on CONFIRM judged a multi-select
     // question twice — two record_scenario_answer writes, attempts +2 and two
-    // time-trial ticks for one decision.
+    // pace ticks for one decision.
     if (!item || multiSel.size === 0 || feedback || answeredItemRef.current === item.id) return;
     answeredItemRef.current = item.id;
     const sel = [...multiSel].sort();
@@ -673,7 +670,7 @@ export function ScenariosScreen({ route }: Props) {
           method="scenarios"
           title="SCENARIO"
           onOpenTimer={() => setTimerOpen(true)}
-          hideTimerButton={!!(pace.enabled || trial.active || trial.result)}
+          hideTimerButton={pace.enabled}
         />
         {/* A known guest: progress here is not saved or carried (owner 2026-10-04). */}
         <GuestStartReminder activity="study:scenarios" kind="study" style={{ alignSelf: 'stretch' }} />
@@ -685,7 +682,7 @@ export function ScenariosScreen({ route }: Props) {
           />
         </View>
 
-        {pace.enabled || trial.active || trial.result ? (
+        {pace.enabled ? (
           <PaceTimerBar
             method="scenarios"
             topicId={achievementId}

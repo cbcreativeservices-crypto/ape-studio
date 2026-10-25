@@ -53,7 +53,6 @@ import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { recordPaceSession } from '../../features/study/paceRecords';
 import { PaceTimerBar } from '../../features/study/PaceTimerBar';
 import { PaceTimerModal } from '../../features/study/PaceTimerModal';
-import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { StudyHeader } from './StudyHeader';
 import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import type { StudyStackParamList } from '../../navigation/types';
@@ -124,14 +123,12 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   // Pace timer (practice aid — device-local settings, never blocks study).
   const { settings: pace, setEnabled, setPreset } = usePaceSettings('fill_in_blank');
   const running = useRunning('fill_in_blank');
-  // Time trial (opt-in 15:00 challenge) — the readout switches to its HUD while live.
   // The tier the topic terms are cached under (perf decisions 2026-10-04):
   // common_mistakes is membership-masked, so the session cache is keyed by it.
   // A ref, so a tier landing mid-session never reloads the deck.
   const tierForTerms = useTier();
   const tierForTermsRef = useRef(tierForTerms);
   tierForTermsRef.current = tierForTerms;
-  const trial = useTimeTrial('fill_in_blank', achievementId);
   const [timerOpen, setTimerOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const startRef = useRef<number | null>(null);
@@ -359,7 +356,6 @@ export function FillInBlankScreen({ navigation, route }: Props) {
       AccessibilityInfo.announceForAccessibility(
         correct ? 'Correct.' : `Not quite. The answer is ${question.item.term}.`,
       );
-      registerTrialAnswer('fill_in_blank', correct, achievementId); // time trial: only correct advances pace
       if (correct) incBrainOutput('fill_in_blank'); // one brain output per correct answer press
       session.current?.addEvent({ item: question.item.id, kind: 'answer', correct });
       setStates((prev) => ({
@@ -532,7 +528,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           title="FILL IN THE BLANK"
           subtitle={`Topic · ${topicName}`}
           onOpenTimer={() => setTimerOpen(true)}
-          hideTimerButton={!!(pace.enabled || trial.active || trial.result)}
+          hideTimerButton={pace.enabled}
         />
         {/* A known guest: progress here is not saved or carried (owner 2026-10-04). */}
         <GuestStartReminder activity="study:fill_in_blank" kind="study" />
@@ -556,7 +552,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           <FsButton onPress={() => setFullscreen(true)} />
         </View>
 
-        {pace.enabled || trial.active || trial.result ? (
+        {pace.enabled ? (
           <PaceTimerBar
             method="fill_in_blank"
             topicId={achievementId}
@@ -620,7 +616,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
       <StudyFsOverlay
         visible={fullscreen}
         topSlot={
-          pace.enabled || trial.active || trial.result ? (
+          pace.enabled ? (
             <PaceTimerBar
               method="fill_in_blank"
             topicId={achievementId}
@@ -648,9 +644,6 @@ export function FillInBlankScreen({ navigation, route }: Props) {
         {questionBody}
       </StudyFsOverlay>
 
-      {/* No topicId on My Custom List (night pass 2026-10-24): the trial's pass
-          credits a topic row, and 'flagged' has none — credit_time_trial can
-          only fail, and there is no list quiz to unlock. */}
       <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="fill_in_blank" topicId={customMode ? undefined : achievementId} />
     </View>
   );

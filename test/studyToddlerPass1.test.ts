@@ -1,9 +1,8 @@
 /**
  * GUARD — study-area fixes from "toddler + cat" bug pass 1 of 2026-09-30 (day).
  *
- * The time-trial credit retry is tested behaviourally (the module loads under
- * node with its Supabase / AsyncStorage / sync imports stubbed). The screen
- * fixes are source-reading checks: the screens import React Native, which
+ * (The time-trial credit-retry tests were removed with the time trial,
+ * 2026-10-24.) The screen fixes are source-reading checks: the screens import React Native, which
  * node --test cannot load.
  */
 import { test, mock } from 'node:test';
@@ -34,81 +33,6 @@ registerHooks({
 });
 
 const read = (...p: string[]) => readFileSync(join(process.cwd(), 'src', ...p), 'utf8');
-
-const { startTimeTrial, registerTrialAnswer, resetTimeTrials, TIME_TRIAL_NEEDED, TIME_TRIAL_SECONDS } = await import(
-  '../src/features/study/timeTrial.ts'
-);
-
-const settle = async () => {
-  for (let i = 0; i < 10; i++) await Promise.resolve();
-};
-
-/** Run one PASSED trial to 0:00 with every credit call answered by `reply`. */
-async function passTrial(reply: (n: number) => { error: unknown }): Promise<{ calls: () => number }> {
-  let calls = 0;
-  (globalThis as Record<string, unknown>).__RPC__ = (name: string) => {
-    assert.equal(name, 'credit_time_trial');
-    calls += 1;
-    return { data: null, ...reply(calls) };
-  };
-  startTimeTrial('matching', 'topic-a');
-  for (let i = 0; i < TIME_TRIAL_NEEDED; i++) registerTrialAnswer('matching', true, 'topic-a');
-  mock.timers.tick(TIME_TRIAL_SECONDS * 1000 + 1000);
-  await settle();
-  return { calls: () => calls };
-}
-
-test('time trial: a pass whose credit call fails is retried until it lands', async () => {
-  mock.timers.enable({ apis: ['setInterval', 'setTimeout', 'Date'] });
-  try {
-    const t = await passTrial((n) => ({ error: n < 3 ? { message: 'fetch failed' } : null }));
-    assert.equal(t.calls(), 1, 'credited once at 0:00');
-    mock.timers.tick(5_000);
-    await settle();
-    assert.equal(t.calls(), 2, 'first retry');
-    mock.timers.tick(15_000);
-    await settle();
-    assert.equal(t.calls(), 3, 'second retry lands');
-    mock.timers.tick(10 * 60_000);
-    await settle();
-    assert.equal(t.calls(), 3, 'nothing more once it has landed');
-  } finally {
-    resetTimeTrials();
-    mock.timers.reset();
-  }
-});
-
-test('time trial: retries are bounded', async () => {
-  mock.timers.enable({ apis: ['setInterval', 'setTimeout', 'Date'] });
-  try {
-    const t = await passTrial(() => ({ error: { message: 'not_enrolled' } }));
-    for (let i = 0; i < 20; i++) {
-      mock.timers.tick(300_000);
-      await settle();
-    }
-    assert.ok(t.calls() <= 6, `expected a bounded number of attempts, got ${t.calls()}`);
-  } finally {
-    resetTimeTrials();
-    mock.timers.reset();
-  }
-});
-
-test('time trial: an account wipe cancels a pending credit retry', async () => {
-  mock.timers.enable({ apis: ['setInterval', 'setTimeout', 'Date'] });
-  try {
-    const t = await passTrial(() => ({ error: { message: 'fetch failed' } }));
-    assert.equal(t.calls(), 1);
-    resetTimeTrials(); // sign-out / account switch
-    for (let i = 0; i < 20; i++) {
-      mock.timers.tick(300_000);
-      await settle();
-    }
-    assert.equal(t.calls(), 1, 'a retry must never land under the next account');
-  } finally {
-    resetTimeTrials();
-    mock.timers.reset();
-  }
-});
 
 test('Dashboard: offline-replay notices only when focused and not in Low-Light', () => {
   const src = read('screens', 'dashboard', 'DashboardScreen.tsx');

@@ -27,8 +27,6 @@ export type MethodPctRow =
   | {
       item_states?: unknown;
       completion_pct?: number | null;
-      /** Set by `credit_time_trial` when a Time Trial is passed — see below. */
-      trial_passed?: boolean | null;
     }
   | undefined;
 
@@ -104,26 +102,12 @@ export function smoothMethodPct(
   requiredPasses: number,
 ): number {
   /**
-   * ⛔ A PASSED TIME TRIAL CLEARS THE METHOD — and this is where the app has to
-   * agree, because this is the formula the Dashboard, Enrollments, Profile and
-   * Directory all actually use.
-   *
-   * The server already treats it that way: `start_quiz_attempt` reads
-   * `trial_passed`, and `build_study_snapshot` returns
-   *   gate_pass = COALESCE(trial_passed,false) OR (completion AND time AND accuracy)
-   * So without this the learner passes a trial, is told the method is cleared
-   * toward the quiz, and watches the meter sit at the percentage they had —
-   * with the power sequencing still refusing to light the next stage, while the
-   * server would have let them straight through.
-   *
-   * ⚠️ IT WAS "FIXED" IN THE WRONG FILE FIRST (2026-09-22). The same change went
-   * into `features/dashboard/gates.ts`, whose header calls itself the
-   * Dashboard's mirror of the server gate — and which nothing imports. It was
-   * dead code, so the fix and its tests were real and changed nothing anyone
-   * could see. If you are here to adjust gate behaviour, this file is the live
-   * one; check for callers before trusting a name.
+   * NO SHORTCUT (owner 2026-10-24): "There should be no way for a person to
+   * pass without doing the work." A passed TIME TRIAL used to return 100 here
+   * (mirroring `trial_passed` in `start_quiz_attempt`). The trial is removed
+   * from the app; the server half (stop honouring `trial_passed`, retire
+   * `credit_time_trial`) is Comp A's — handoff 2026-10-24.
    */
-  if (row?.trial_passed === true) return 100;
 
   /**
    * ⛔ A TOPIC CONFIRMED TO HAVE NO TERMS CANNOT SATISFY ANY ITEM-BASED METHOD.

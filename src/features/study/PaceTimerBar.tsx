@@ -6,9 +6,7 @@
  * StudyHeader stopwatch button. `onOpenSettings` is retained on the prop type
  * for backward compatibility with callers that still pass it, but is unused.
  *
- * TIME TRIAL (2026-07-25): the bar also subscribes to the method's time-trial
- * snapshot. When a trial is live the PaceReadout takes over with the trial HUD;
- * otherwise the normal pace readout renders exactly as before.
+ * (The TIME TRIAL HUD this bar used to switch to was removed 2026-10-24.)
  */
 import { useCallback, useRef } from 'react';
 import { PaceReadout } from './PaceReadout';
@@ -23,7 +21,6 @@ import {
   type PaceMethodKey,
   type PacePreset,
 } from './paceStore';
-import { dismissTimeTrial, restartTimeTrial, useTimeTrial } from './timeTrial';
 
 export function PaceTimerBar({
   method,
@@ -41,7 +38,7 @@ export function PaceTimerBar({
   onPresetChange,
   variant,
 }: {
-  /** The study method — drives the time-trial subscription. */
+  /** The study method. */
   method: PaceMethodKey;
   preset: PacePreset;
   answered: number;
@@ -53,8 +50,7 @@ export function PaceTimerBar({
   /** @deprecated the header on/off Switch was removed 2026-07-25. */
   onToggle?: (enabled: boolean) => void;
   onReset?: () => void;
-  /** The topic on screen. A time trial started against a DIFFERENT topic is
-   *  not this screen's — see useTimeTrial (owner 2026-09-20 bug pass). */
+  /** The topic on screen (kept for the callers' shared props). */
   topicId?: string;
   /** Whether the clock is ticking — drives the flip button glyph. */
   running?: boolean;
@@ -71,7 +67,6 @@ export function PaceTimerBar({
   const secPerQ = SEC_PER_Q[preset];
   const isStopwatch = secPerQ == null;
 
-  const trial = useTimeTrial(method, topicId);
   const brainOutputs = useBrainOutputs(method);
   const autoTrack = useAutoTrack(method);
   // Pace advances on CORRECT answers only (user 2026-07-25): a wrong answer must
@@ -127,9 +122,6 @@ export function PaceTimerBar({
       onRemove={onRemove}
       preset={preset}
       onPresetChange={onPresetChange}
-      trial={trial}
-      onTrialRestart={() => restartTimeTrial(method)}
-      onTrialExit={() => dismissTimeTrial(method)}
       variant={variant}
       autoTrack={autoTrack}
       onToggleAutoTrack={onToggleAutoTrack}

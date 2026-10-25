@@ -25,7 +25,6 @@ import { TimerIcon } from '../../components/TimerIcon';
 import { colors, fonts } from '../../theme/tokens';
 import { fmtClock, fmtSigned, quantizeOffset, type PaceStatus, type PacePreset } from './paceStore';
 import { PresetFader } from './PresetFader';
-import type { TimeTrialSnapshot } from './timeTrial';
 
 /** Play triangle — shown on the flip button while the timer is PAUSED. */
 function PlayGlyph({ color, size = 16 }: { color: string; size?: number }) {
@@ -59,7 +58,7 @@ function FaderGlyph({ color, size = 16 }: { color: string; size?: number }) {
 }
 
 // Ahead = GREEN, behind = AMBER (owner request 2026-07-25) — consistent across
-// the normal readout, the trial HUD, and the fullscreen strip (all read here).
+// the normal readout and the fullscreen strip (both read here).
 // On-pace stays neutral amber; overtime stays gold.
 const STATUS_COLOR: Record<PaceStatus, string> = {
   // GREEN on-pace/ahead (dot starts green at center), AMBER only once you fall
@@ -75,14 +74,6 @@ const STATUS_WORD: Record<PaceStatus, string> = {
   onpace: 'ON PACE',
   behind: 'BEHIND',
   overtime: "TIME'S UP",
-};
-
-/** Trial HUD reuses the status colors but a slightly different vocabulary. */
-const TRIAL_STATUS_WORD: Record<PaceStatus, string> = {
-  ahead: 'AHEAD',
-  onpace: 'ON TRACK',
-  behind: 'BEHIND',
-  overtime: 'ON TRACK',
 };
 
 /** Compact pace-multiplier tag for the track-center label: a large number + a
@@ -126,9 +117,6 @@ export function PaceReadout({
   onRemove,
   preset,
   onPresetChange,
-  trial,
-  onTrialRestart,
-  onTrialExit,
   variant = 'full',
   autoTrack,
   onToggleAutoTrack,
@@ -163,13 +151,6 @@ export function PaceReadout({
   preset?: PacePreset;
   /** Apply a pace preset from the hold-press fader; renders the fader button. */
   onPresetChange?: (preset: PacePreset) => void;
-  /** When an official TIME TRIAL is running (or its result is on screen), the
-   *  readout switches to the trial HUD instead of the normal pace readout. */
-  trial?: TimeTrialSnapshot;
-  /** Restart a finished trial (reuses the same topic + method). */
-  onTrialRestart?: () => void;
-  /** Dismiss a finished trial's result panel / exit the HUD. */
-  onTrialExit?: () => void;
   /** 'full' (default) = the normal container. 'fullscreen' = a very thin,
    *  border-less strip showing ONLY elapsed + signed offset + the marker line,
    *  for mounting at the top of a study screen's full-screen mode. */
@@ -184,7 +165,7 @@ export function PaceReadout({
 
   // FULLSCREEN variant — a thin, seamless, border-less strip: elapsed + signed
   // AHEAD/BEHIND offset (green/amber) + the marker line only. No status words,
-  // no metrics, no buttons. Takes precedence over the trial HUD so it always
+  // no metrics, no buttons. Takes precedence so it always
   // stays thin. Reuses the same 5s-quantized marker + grace-centered offset.
   if (variant === 'fullscreen') {
     const fsStopwatch = mode === 'stopwatch';
@@ -236,11 +217,6 @@ export function PaceReadout({
         ) : null}
       </View>
     );
-  }
-
-  // A live trial takes over the readout entirely (big countdown HUD).
-  if (trial && (trial.active || trial.result)) {
-    return <TrialHud trial={trial} onRestart={onTrialRestart} onExit={onTrialExit} />;
   }
 
   // AUTO TRACK on → collapse to a minimal, silent "AUTO ●" chip. The elapsed
@@ -460,129 +436,6 @@ export function PaceReadout({
   );
 }
 
-/**
- * TrialHud — the TIME TRIAL takeover: a big 15:00→0:00 countdown, the live
- * CORRECT count, current average pace vs target, an AHEAD/ON TRACK/BEHIND marker
- * on the same scale as the normal readout, and a PROJECTED pass/short hint.
- * At 0:00 it swaps to a friendly PASS / "keep at it" result with a restart.
- */
-function TrialHud({
-  trial,
-  onRestart,
-  onExit,
-}: {
-  trial: TimeTrialSnapshot;
-  onRestart?: () => void;
-  onExit?: () => void;
-}) {
-  const tint = STATUS_COLOR[trial.status];
-  const pos = Math.max(-1, Math.min(1, trial.markerPos));
-  const leftPct = ((pos + 1) / 2) * 100;
-
-  // ---- Result panel (fired at 0:00) ----
-  if (trial.result) {
-    const passed = trial.result.passed;
-    const resTint = passed ? colors.green : colors.orange;
-    return (
-      <View style={[styles.wrap, styles.trialWrap, { borderColor: passed ? 'rgba(55,224,95,.5)' : 'rgba(255,138,30,.45)' }]}>
-        <View style={styles.headerRow}>
-          <Text style={[styles.trialTitle, { color: resTint }]} numberOfLines={1}>
-            TIME TRIAL · {passed ? 'CLEARED' : 'RESULT'}
-          </Text>
-          {onExit ? (
-            <Pressable onPress={onExit} hitSlop={8} accessibilityRole="button" accessibilityLabel="Close time trial">
-              <Text style={styles.trialExit}>✕</Text>
-            </Pressable>
-          ) : null}
-        </View>
-
-        <Text style={[styles.resultWord, { color: resTint }]}>
-          {passed ? 'PASS' : 'NOT THIS TIME'}
-        </Text>
-        <Text style={styles.resultBody}>
-          {/* The "cleared" claim waits for the server (full-app run 1,
-              2026-10-01): it was printed whether or not credit_time_trial
-              ever landed. */}
-          {passed
-            ? trial.result.credit === 'no_account'
-              ? `You held quiz pace — ${trial.result.correctCount} correct in 15:00. Passes are saved to an account, so this one was not recorded — sign in before your next run to have it count toward the quiz.`
-              : trial.result.credit === 'failed'
-              ? `You held quiz pace — ${trial.result.correctCount} correct in 15:00 — but the pass could not be saved to your account, so this study method is not cleared yet. Check your connection and run it again.`
-              : trial.result.credit === 'saving'
-                ? `You held quiz pace — ${trial.result.correctCount} correct in 15:00. Saving the pass to your account…`
-                : `You held quiz pace — ${trial.result.correctCount} correct in 15:00. This study method is cleared toward unlocking the quiz.`
-            : `${trial.result.correctCount} correct in 15:00 — just short of quiz pace. No penalty. Keep at it and run it again.`}
-        </Text>
-
-        {onRestart ? (
-          <Pressable
-            style={[styles.trialBtn, { borderColor: resTint }]}
-            onPress={onRestart}
-            accessibilityRole="button"
-            accessibilityLabel="Restart 15-minute time trial"
-          >
-            <Text style={[styles.trialBtnText, { color: resTint }]}>RUN IT AGAIN</Text>
-          </Pressable>
-        ) : null}
-      </View>
-    );
-  }
-
-  // ---- Live HUD (countdown running) ----
-  const projStr = trial.projectedPass ? 'PASS' : 'short';
-  const projColor = trial.projectedPass ? colors.green : colors.orange;
-  return (
-    <View style={[styles.wrap, styles.trialWrap, { borderColor: 'rgba(47,155,255,.35)' }]}>
-      <View style={styles.headerRow}>
-        <Text style={[styles.trialTitle, { color: colors.cyanBright }]} numberOfLines={1}>
-          TIME TRIAL
-        </Text>
-        <Text style={[styles.trialStatus, { color: tint }]} numberOfLines={1}>
-          {TRIAL_STATUS_WORD[trial.status]}
-        </Text>
-        {onExit ? (
-          <Pressable onPress={onExit} hitSlop={8} accessibilityRole="button" accessibilityLabel="End time trial">
-            <Text style={styles.trialExit}>✕</Text>
-          </Pressable>
-        ) : null}
-      </View>
-
-      {/* Big countdown. */}
-      <Text style={styles.countdown} accessibilityLabel={`Time remaining ${fmtClock(trial.remainingSeconds)}`}>
-        {fmtClock(trial.remainingSeconds)}
-      </Text>
-
-      {/* BEHIND ◄──●──► AHEAD scale vs target (same visual language). */}
-      <View style={styles.scaleWrap}>
-        <Text style={styles.scaleEnd}>BEHIND</Text>
-        <View style={styles.track}>
-          <View style={styles.trackLine} />
-          <View style={styles.centerTick} />
-          <View style={[styles.marker, { left: `${leftPct}%`, backgroundColor: tint }]} />
-        </View>
-        <Text style={styles.scaleEnd}>AHEAD</Text>
-      </View>
-
-      {/* Correct count + average vs target + projection. */}
-      <View style={styles.metricsRow}>
-        <View style={styles.clockCol}>
-          <Text style={[styles.clockBig, { color: tint }]}>{trial.correctCount}</Text>
-          <Text style={styles.clockCaption}>CORRECT</Text>
-        </View>
-        <View style={styles.metricsCol}>
-          <Text style={styles.metricsLabel}>AVG PACE · TARGET {trial.targetPace.toFixed(1)}</Text>
-          <Text style={styles.metricLine} {...fitValue(12)}>
-            <Text style={[styles.metricNum, { color: tint }]}>{trial.averagePace.toFixed(1)}</Text> / {trial.targetPace.toFixed(1)} Q/min
-          </Text>
-          <Text style={styles.metricMeta} {...fitValue(11)}>
-            PROJECTED: <Text style={{ color: projColor }}>{projStr}</Text> · {trial.needed} to clear
-          </Text>
-        </View>
-      </View>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   wrap: {
     alignSelf: 'stretch',
@@ -731,41 +584,4 @@ const styles = StyleSheet.create({
   metricNum: { fontFamily: fonts.mono, fontSize: 13, color: colors.textSecondary },
   metricUnit: { fontFamily: fonts.barlowCondensedMedium, fontSize: 10, color: colors.textSubAlt },
   metricMeta: { fontFamily: fonts.mono, fontSize: 11, color: colors.textMuted },
-
-  // ---- TIME TRIAL HUD ----
-  trialWrap: { borderWidth: 1.5, gap: 8 },
-  trialTitle: { flex: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4 },
-  trialStatus: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1 },
-  trialExit: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.textMuted, paddingHorizontal: 4 },
-  countdown: {
-    fontFamily: fonts.mono,
-    fontSize: 40,
-    lineHeight: 46,
-    letterSpacing: 1,
-    textAlign: 'center',
-    color: colors.textPrimary,
-  },
-  resultWord: {
-    fontFamily: fonts.oswaldBold,
-    fontSize: 26,
-    letterSpacing: 1.5,
-    textAlign: 'center',
-    marginTop: 2,
-  },
-  resultBody: {
-    fontFamily: fonts.barlowRegular,
-    fontSize: 13,
-    lineHeight: 19,
-    color: colors.textSub,
-    textAlign: 'center',
-  },
-  trialBtn: {
-    marginTop: 2,
-    alignSelf: 'center',
-    borderWidth: 1.5,
-    borderRadius: 8,
-    paddingVertical: 9,
-    paddingHorizontal: 18,
-  },
-  trialBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1 },
 });

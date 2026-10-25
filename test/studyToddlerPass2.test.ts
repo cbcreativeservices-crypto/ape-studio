@@ -136,34 +136,6 @@ test('last study location: resetLocal fences an in-flight hydrate', () => {
   assert.doesNotMatch(src, /AsyncStorage\.getItem\(/);
 });
 
-test('time trial: a credit call in flight during the wipe does not arm a retry for the next account', async () => {
-  mock.timers.enable({ apis: ['setInterval', 'setTimeout', 'Date'] });
-  const tt = await import('../src/features/study/timeTrial.ts');
-  try {
-    let calls = 0;
-    let answer!: (v: { data: null; error: { message: string } }) => void;
-    g.__RPC__ = () => {
-      calls += 1;
-      return new Promise((r) => (answer = r));
-    };
-    tt.startTimeTrial('matching', 'topic-a');
-    for (let i = 0; i < tt.TIME_TRIAL_NEEDED; i++) tt.registerTrialAnswer('matching', true, 'topic-a');
-    mock.timers.tick(tt.TIME_TRIAL_SECONDS * 1000 + 1000);
-    await settle();
-    assert.equal(calls, 1, 'credited at 0:00');
-    tt.resetTimeTrials(); // sign-out while the call is still out
-    answer({ data: null, error: { message: 'JWT expired' } });
-    for (let i = 0; i < 20; i++) {
-      mock.timers.tick(300_000);
-      await settle();
-    }
-    assert.equal(calls, 1, 'no retry may land under the next account');
-  } finally {
-    tt.resetTimeTrials();
-    mock.timers.reset();
-  }
-});
-
 test('Celebration: one exit per screen — a double tap cannot reset the shell twice', () => {
   const src = read('screens', 'results', 'CelebrationScreen.tsx');
   assert.match(src, /const leavingRef = useRef\(false\);/);
