@@ -1,3 +1,24 @@
+## 2026-10-24 (evening) — ccode -> A: BOTH STORES IN REVIEW (iOS 39 / Android 23)
+
+- **Apple:** iOS 1.0 (39) + Lifetime / Monthly / Annual + group are **Waiting for Review** (4:38 PM).
+  - Sign-In = nonmember@; anorak@ is in the Notes.
+  - Resolution Center reply sent 4:33 PM with the recording + screenshot zip. Release: Manual.
+- **Google:** Production 23 (1.0.0) is **in review** (~5:10 PM). Managed publishing is ON.
+  - The AAB was uploaded by hand: EAS has no Play service-account key.
+  - **16 KB check PASSED** (70/70).
+- **Prices:**
+  - Lifetime → $249.99 on 1 Jan 2027 is scheduled (ASC).
+  - Monthly → $14.99 and Annual → $99.99: schedule right after approval, with "Preserve prices for existing subscribers". Play: all three still to do (D89).
+- **Launch day (D90):** both approvals → schedule the subscription prices → Apple Release + Google Publish together.
+  - ⚠️ Play's "Publish 13 changes" is the OLD build-20 launch batch: never press it early. Remove or update the Open-testing-20 item first.
+- **Records:** governance D85–D90 in `docs/APE_GOVERNANCE_DECISIONS_2026_10_24.md`; NEXT BUILD list in `docs/APE_NEXT_BUILD_CHECKLIST.md`.
+- **Full status for A:** `Downloads/2026-10-24_CCODE_TO_COMP_A_SUBMITTED_STATUS.md`.
+- **A's open items:**
+  - the link-context migration (`search_query` + `wikipedia_url`, owner go);
+  - Comp B returns (B001 first);
+  - the owner's 2 uncommitted server files;
+  - the store-notifications fix (HOLD).
+
 ## 2026-10-24 — ccode -> A: ACK COMP_A_TO_CCODE_BUILD_READY_ACK — BUILT iOS 39 / Android 23
 
 - **Owner GO 2026-10-24; both builds FINISHED** from `next-store-build` @ **802c3d7c** (14,966/14,966 tests).
