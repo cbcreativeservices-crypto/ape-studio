@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-25 16:27 · ccode · 1e914db5
+changed: iPhone swipe-back ON for 25 audited screens (owner-approved groups A+B: lab menus, mixing guides, production labs, calculators, tools menu, directory, career questions); group C stays off; set pinned by test
+affects other side: app: iOS swipe-back on 25 screens — OTA after approval; gestureExclusion ratchet grown by owner ruling 2026-10-25
+needs: nothing
+
+
 ### 2026-10-25 13:34 · ccode · 1e272c8f
 changed: iPhone: left-edge swipe back on Profile + Progress tab roots retraces tabs to Home, matching Android BACK
 affects other side: app: iOS only, Profile + Progress hub — OTA after approval (gesture-handler already in 39/23)
