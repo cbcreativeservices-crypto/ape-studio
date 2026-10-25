@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-24 21:12 · ccode · 99ab8484
+changed: OTA (post-approval): remove the Time Trial quiz shortcut — no TIME TRIAL panel in OPEN PACE SETTINGS, no trial HUD/scoring in Flashcards / Fill in / Matching / Scenarios, timeTrial.ts deleted, the gate formula no longer counts trial_passed (owner 2026-10-24: 'no way for a person to pass without doing the work'); ratchet test added; server half handed to Comp A
+affects other side: on branch ota-after-approval-39-23 (post-approval OTA, not in builds 39/23). The app no longer calls credit_time_trial or reads trial_passed. Server half: Downloads/2026-10-24_CCODE_TO_COMP_A_REMOVE_TIME_TRIAL_SERVER.md
+needs: A: start_quiz_attempt + build_study_snapshot stop honouring trial_passed; revoke credit_time_trial; reset trial_passed rows (owner go)
+
+
 ### 2026-10-24 12:58 · ccode · 65c9fa8b
 changed: Build 39: links read an optional per-term search_query (Comp B context) for Google / Scholar / Images, beside wikipedia_url — same separate non-fatal read; falls back to term + 'audio' (owner 2026-10-24)
 affects other side: Glossary detail, Flashcards
