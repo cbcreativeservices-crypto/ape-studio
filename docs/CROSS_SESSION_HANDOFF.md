@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-25 12:52 · ccode · 0bbfde4b
+changed: Certificate signatory: Channing “Cháno” Booth, Founder & Curriculum Director (printed certificate + sample image re-rendered)
+affects other side: app: printed certificates + every sample certificate — OTA after approval
+needs: nothing
+
+
 ### 2026-10-25 12:44 · ccode · 6d29a85c
 changed: Sample certificate: SAMPLE · NOT FOR PRINT sash through the seal (option B, seal softened at 33%), QR kept; re-rendered 3x from the vector PDF
 affects other side: app: every sample certificate (Progress, wall, full view, Get Discovered) — OTA after approval
