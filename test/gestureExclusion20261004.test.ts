@@ -75,6 +75,14 @@ describe('iOS: the interactive pop stays off on lab drag routes', () => {
       'AmplitudeLab', 'AudioLearning', 'AwardProgress', 'CareerFamily', 'CareerFamilyList', 'CareerFinder',
       'CareerFinderAbout', 'CareerFinderResults', 'ConceptModule', 'EarLab', 'LabCategory', 'StartHereTerms',
       'ToolInfo', 'ToolLearn', 'ToolLibrary', 'TubeReference',
+      // OWNER-APPROVED GROWTH 2026-10-25 ("Turn on groups A and B"), after a
+      // per-screen audit for sliders/knobs/drags/sideways lists
+      // (Downloads/2026-10-25_IPHONE_SWIPE_BACK_AUDIT; test/iosSwipeBackSet_20261025
+      // pins the exact set). Ratchet resumes: shrink only, unless the owner rules again.
+      'AudioCommunityDirectory', 'CalcLab', 'CalcProjects', 'CalcResults', 'CalcSymbolsKey', 'CalcWorkflowEdit',
+      'CalcWorkflowRun', 'CalcWorkflows', 'CareerFinderQuiz', 'DigitalLab', 'EarTrainingLab', 'EqLabHome',
+      'GainLabHome', 'MeterLab', 'MixingGuide', 'MixingGuides', 'PostProdLab', 'PreProdLab', 'ProductionLab',
+      'ProductionPacket', 'ProductionStage', 'SmartProcessorsLab', 'SoundSystemsLab', 'ToolsHub', 'WaveLab',
     ];
     // TubeCard left the set 2026-10-04: its card is a drag surface (sheet swipe + zoomed pan).
     assert.ok(!optedIn.includes('TubeCard'), 'TubeCard carries a horizontal drag surface — no iOS swipe-back');

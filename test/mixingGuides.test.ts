@@ -312,8 +312,8 @@ describe('wiring (Training Labs → Mixing, members only)', () => {
     const nav = strip(read('src/navigation/RootNavigator.tsx'));
     assert.match(nav, /MixingGuides: lazyScreen\(\(\) => withMembershipPreview\(require\('\.\.\/screens\/lab\/mixingGuides\/MixingGuidesHubScreen'\)\.MixingGuidesHubScreen\)\)/);
     assert.match(nav, /MixingGuide: lazyScreen\(\(\) => withMembershipPreview\(require\('\.\.\/screens\/lab\/mixingGuides\/MixingGuideScreen'\)\.MixingGuideScreen\)\)/);
-    assert.match(nav, /<Stack\.Screen name="MixingGuides" getComponent=\{MemberGated\.MixingGuides\} \/>/);
-    assert.match(nav, /<Stack\.Screen name="MixingGuide" getComponent=\{MemberGated\.MixingGuide\} \/>/);
+    assert.match(nav, /<Stack\.Screen name="MixingGuides" getComponent=\{MemberGated\.MixingGuides\}(?: options=\{swipe\})? \/>/);
+    assert.match(nav, /<Stack\.Screen name="MixingGuide" getComponent=\{MemberGated\.MixingGuide\}(?: options=\{swipe\})? \/>/);
     const types = read('src/navigation/types.ts');
     assert.match(types, /MixingGuides: undefined;/);
     assert.match(types, /MixingGuide: \{ id: string \};/);

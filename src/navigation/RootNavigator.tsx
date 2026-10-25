@@ -329,7 +329,10 @@ export function RootNavigator() {
   const push = reduceMotion ? NAV_PUSH_REDUCED : NAV_PUSH;
   // Portrait on phones, free on tablets (owner 2026-09-29, Android large-screen pass).
   const navOrientation = useNavOrientation();
-  const swipe = { gestureEnabled: true } as const; // safe pilot set only
+  // Swipe-back set: the read-only pilot pages, plus 23 screens audited clean of
+  // sliders/knobs/drags and approved by the owner 2026-10-25 (groups A+B of
+  // Downloads/2026-10-25_IPHONE_SWIPE_BACK_AUDIT). Locked by test/iosSwipeBackSet_20261025.
+  const swipe = { gestureEnabled: true } as const;
   return (
     <Stack.Navigator
       initialRouteName="Splash"
@@ -414,13 +417,13 @@ export function RootNavigator() {
           a modal: it has three destinations of its own and a member sheet on
           top, and a modal-in-modal is the black-screen trap this codebase has
           hit before. */}
-      <Stack.Screen name="AudioCommunityDirectory" getComponent={Lazy.AudioCommunityDirectory} />
+      <Stack.Screen name="AudioCommunityDirectory" getComponent={Lazy.AudioCommunityDirectory} options={swipe} />
       <Stack.Screen name="EmployerAdmin" getComponent={Lazy.EmployerAdmin} />
       <Stack.Screen name="ReportsAdmin" getComponent={Lazy.ReportsAdmin} />
       {/* Measurement & Analysis tools (Booth 2026-07-09v) — bottom nav hidden.
           The TOOLS AREA root (Dashboard ⇄ Tools) → fade; everything inside it
           pushes. */}
-      <Stack.Screen name="ToolsHub" getComponent={Lazy.ToolsHub} options={NAV_FADE} />
+      <Stack.Screen name="ToolsHub" getComponent={Lazy.ToolsHub} options={{ ...NAV_FADE, ...swipe }} />
       <Stack.Screen name="ToolInfo" getComponent={Lazy.ToolInfo} options={swipe} />
       {/* Phase-1 training layer (spec of record 2026-07-23): Learn/Demo per
           tool + Smaart concept modules. Academy-gated at content level. */}
@@ -493,15 +496,15 @@ export function RootNavigator() {
           both of which start at the left edge as often as anywhere, where the
           iOS interactive pop would take them. The ‹ back button stays. */}
       <Stack.Screen name="TubeCard" getComponent={MemberGated.TubeCard} />
-      <Stack.Screen name="CalcLab" getComponent={Lazy.CalcLab} />
+      <Stack.Screen name="CalcLab" getComponent={Lazy.CalcLab} options={swipe} />
       <Stack.Screen name="CalcWorkspace" getComponent={Lazy.CalcWorkspace} />
-      <Stack.Screen name="CalcSymbolsKey" getComponent={Lazy.CalcSymbolsKey} />
-      <Stack.Screen name="CalcWorkflows" getComponent={Lazy.CalcWorkflows} />
-      <Stack.Screen name="CalcWorkflowEdit" getComponent={Lazy.CalcWorkflowEdit} />
-      <Stack.Screen name="CalcWorkflowRun" getComponent={Lazy.CalcWorkflowRun} />
-      <Stack.Screen name="CalcProjects" getComponent={Lazy.CalcProjects} />
-      <Stack.Screen name="CalcResults" getComponent={Lazy.CalcResults} />
-      <Stack.Screen name="DigitalLab" getComponent={MemberGated.DigitalLab} />
+      <Stack.Screen name="CalcSymbolsKey" getComponent={Lazy.CalcSymbolsKey} options={swipe} />
+      <Stack.Screen name="CalcWorkflows" getComponent={Lazy.CalcWorkflows} options={swipe} />
+      <Stack.Screen name="CalcWorkflowEdit" getComponent={Lazy.CalcWorkflowEdit} options={swipe} />
+      <Stack.Screen name="CalcWorkflowRun" getComponent={Lazy.CalcWorkflowRun} options={swipe} />
+      <Stack.Screen name="CalcProjects" getComponent={Lazy.CalcProjects} options={swipe} />
+      <Stack.Screen name="CalcResults" getComponent={Lazy.CalcResults} options={swipe} />
+      <Stack.Screen name="DigitalLab" getComponent={MemberGated.DigitalLab} options={swipe} />
       <Stack.Screen name="DigitalModule" getComponent={MemberGated.DigitalModule} />
       <Stack.Screen name="CymaticsLab" getComponent={MemberGated.CymaticsLab} />
       {/* Both production labs share one screen; the route just fixes the param.
@@ -510,24 +513,26 @@ export function RootNavigator() {
         name="PreProdLab"
         getComponent={MemberGated.ProductionLab}
         initialParams={{ lab: 'preprod' }}
+        options={swipe}
       />
       <Stack.Screen
         name="PostProdLab"
         getComponent={MemberGated.ProductionLab}
         initialParams={{ lab: 'postprod' }}
+        options={swipe}
       />
-      <Stack.Screen name="ProductionLab" getComponent={MemberGated.ProductionLab} />
-      <Stack.Screen name="ProductionStage" getComponent={MemberGated.ProductionStage} />
+      <Stack.Screen name="ProductionLab" getComponent={MemberGated.ProductionLab} options={swipe} />
+      <Stack.Screen name="ProductionStage" getComponent={MemberGated.ProductionStage} options={swipe} />
       <Stack.Screen name="ProductionActivity" getComponent={MemberGated.ProductionActivity} />
-      <Stack.Screen name="ProductionPacket" getComponent={MemberGated.ProductionPacket} />
+      <Stack.Screen name="ProductionPacket" getComponent={MemberGated.ProductionPacket} options={swipe} />
       <Stack.Screen name="CymaticsModule" getComponent={MemberGated.CymaticsModule} />
       <Stack.Screen name="CymaticsPlateStudio" getComponent={MemberGated.CymaticsPlateStudio} />
       <Stack.Screen name="CymaticsLiquidStudio" getComponent={MemberGated.CymaticsLiquidStudio} />
       <Stack.Screen name="CymaticsMembraneStudio" getComponent={MemberGated.CymaticsMembraneStudio} />
       <Stack.Screen name="CymaticsGallery" getComponent={MemberGated.CymaticsGallery} />
-      <Stack.Screen name="WaveLab" getComponent={Lazy.WaveLab} />
+      <Stack.Screen name="WaveLab" getComponent={Lazy.WaveLab} options={swipe} />
       <Stack.Screen name="WaveModule" getComponent={Gated.WaveModule} />
-      <Stack.Screen name="EarTrainingLab" getComponent={MemberGated.EarTrainingLab} />
+      <Stack.Screen name="EarTrainingLab" getComponent={MemberGated.EarTrainingLab} options={swipe} />
       <Stack.Screen name="EarModule" getComponent={MemberGated.EarModule} />
       <Stack.Screen name="AmpLab" getComponent={MemberGated.AmpLab} />
       <Stack.Screen name="AmpModule" getComponent={MemberGated.AmpModule} />
@@ -535,7 +540,7 @@ export function RootNavigator() {
       <Stack.Screen name="EnvelopeLab" getComponent={MemberGated.EnvelopeLab} />
       <Stack.Screen name="PatchbayLab" getComponent={MemberGated.PatchbayLab} />
       <Stack.Screen name="ConnectorSelectLab" getComponent={MemberGated.ConnectorSelectLab} />
-      <Stack.Screen name="SoundSystemsLab" getComponent={MemberGated.SoundSystemsLab} />
+      <Stack.Screen name="SoundSystemsLab" getComponent={MemberGated.SoundSystemsLab} options={swipe} />
       <Stack.Screen name="RoomDesignLab" getComponent={MemberGated.RoomDesignLab} />
       <Stack.Screen name="SoundSystemsLearn" getComponent={MemberGated.SoundSystemsLearn} />
       <Stack.Screen name="SoundSystemsBuild" getComponent={MemberGated.SoundSystemsBuild} />
@@ -549,16 +554,16 @@ export function RootNavigator() {
       <Stack.Screen name="DJSystemsLab" getComponent={MemberGated.DJSystemsLab} />
       <Stack.Screen name="MikingHub" getComponent={MemberGated.MikingHub} />
       <Stack.Screen name="MikingLesson" getComponent={MemberGated.MikingLesson} />
-      <Stack.Screen name="MixingGuides" getComponent={MemberGated.MixingGuides} />
-      <Stack.Screen name="MixingGuide" getComponent={MemberGated.MixingGuide} />
+      <Stack.Screen name="MixingGuides" getComponent={MemberGated.MixingGuides} options={swipe} />
+      <Stack.Screen name="MixingGuide" getComponent={MemberGated.MixingGuide} options={swipe} />
       <Stack.Screen name="SpeechLab" getComponent={MemberGated.SpeechLab} />
-      <Stack.Screen name="SmartProcessorsLab" getComponent={MemberGated.SmartProcessorsLab} />
+      <Stack.Screen name="SmartProcessorsLab" getComponent={MemberGated.SmartProcessorsLab} options={swipe} />
       <Stack.Screen name="DeEsserLab" getComponent={MemberGated.DeEsserLab} />
-      <Stack.Screen name="MeterLab" getComponent={MemberGated.MeterLab} />
+      <Stack.Screen name="MeterLab" getComponent={MemberGated.MeterLab} options={swipe} />
       <Stack.Screen name="MeterModule" getComponent={MemberGated.MeterModule} />
-      <Stack.Screen name="EqLabHome" getComponent={MemberGated.EqLabHome} />
+      <Stack.Screen name="EqLabHome" getComponent={MemberGated.EqLabHome} options={swipe} />
       <Stack.Screen name="EqModule" getComponent={MemberGated.EqModule} />
-      <Stack.Screen name="GainLabHome" getComponent={MemberGated.GainLabHome} />
+      <Stack.Screen name="GainLabHome" getComponent={MemberGated.GainLabHome} options={swipe} />
       <Stack.Screen name="GainModule" getComponent={MemberGated.GainModule} />
       {/* Understanding Level & Amplitude — the first lab in Audio Fundamentals
           (owner 2026-08-12). UNGATED: it IS the orientation, so it must never
@@ -573,7 +578,7 @@ export function RootNavigator() {
           the questions do not (a stray swipe mid-answer is the one gesture
           that would surprise). */}
       <Stack.Screen name="CareerFinder" getComponent={Lazy.CareerFinder} options={swipe} />
-      <Stack.Screen name="CareerFinderQuiz" getComponent={Lazy.CareerFinderQuiz} />
+      <Stack.Screen name="CareerFinderQuiz" getComponent={Lazy.CareerFinderQuiz} options={swipe} />
       <Stack.Screen name="CareerFinderResults" getComponent={Lazy.CareerFinderResults} options={swipe} />
       <Stack.Screen name="CareerFamily" getComponent={Lazy.CareerFamily} options={swipe} />
       <Stack.Screen name="CareerFamilyList" getComponent={Lazy.CareerFamilyList} options={swipe} />

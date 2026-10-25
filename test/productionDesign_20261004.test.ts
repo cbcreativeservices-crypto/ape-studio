@@ -324,7 +324,7 @@ describe('#5 the packet has a screen, drawn from the same model as the PDF', () 
   it('the route exists, is lazy and members-only, and the share stays behind the honesty gate', () => {
     const nav = read('src/navigation/RootNavigator.tsx');
     assert.match(nav, /ProductionPacket: lazyScreen\(\(\) => withMembershipPreview\(require\('\.\.\/screens\/lab\/production\/ProductionPacketScreen'\)\.ProductionPacketScreen\)\)/);
-    assert.match(nav, /<Stack\.Screen name="ProductionPacket" getComponent=\{MemberGated\.ProductionPacket\} \/>/);
+    assert.match(nav, /<Stack\.Screen name="ProductionPacket" getComponent=\{MemberGated\.ProductionPacket\}(?: options=\{swipe\})? \/>/);
     assert.match(read('src/navigation/types.ts'), /ProductionPacket: \{\s*\n\s*lab: import/);
     const scr = read('src/screens/lab/production/ProductionPacketScreen.tsx');
     assert.match(scr, /\{isPdfAvailable\(\) \? \(/);
