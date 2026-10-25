@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-25 13:34 · ccode · 1e272c8f
+changed: iPhone: left-edge swipe back on Profile + Progress tab roots retraces tabs to Home, matching Android BACK
+affects other side: app: iOS only, Profile + Progress hub — OTA after approval (gesture-handler already in 39/23)
+needs: nothing
+
+
 ### 2026-10-25 13:05 · ccode · 102879cc
 changed: Sample certificate: seal blur +13% (owner 2026-10-25)
 affects other side: app: every sample certificate — OTA after approval
