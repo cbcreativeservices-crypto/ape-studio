@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-25 12:59 · ccode · 931a0ff7
+changed: Certificate download: readable file name (Holder - Credential Certificate - Pro Audio Training Academy.pdf) instead of expo-print's random id
+affects other side: app: DOWNLOAD CERTIFICATE share sheet — OTA after approval (expo-file-system already in 39/23)
+needs: nothing
+
+
 ### 2026-10-25 12:52 · ccode · 0bbfde4b
 changed: Certificate signatory: Channing “Cháno” Booth, Founder & Curriculum Director (printed certificate + sample image re-rendered)
 affects other side: app: printed certificates + every sample certificate — OTA after approval
