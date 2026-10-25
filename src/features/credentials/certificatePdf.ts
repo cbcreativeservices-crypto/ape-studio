@@ -13,10 +13,12 @@
  * import calls requireNativeModule at startup and hard-crashes dev clients built
  * before the module shipped.
  */
+import * as FileSystem from 'expo-file-system/legacy';
 import { optionalModule } from '../tools/capture/optionalModule';
 import { fetchMyQrTokenOrThrow, fetchMyRegistryName } from '../profile/api';
 import { registryUrl } from '../profile/registry';
 import { buildCertificateHtml } from './certificateHtml';
+import { certificateFileName } from './certificateFileName';
 
 type PrintLib = {
   printToFileAsync: (opts: { html: string; width?: number; height?: number; base64?: false }) => Promise<{ uri: string }>;
@@ -56,6 +58,21 @@ export type CertificateRequest = {
   earnedAt: string | null;
 };
 
+/** Copy the printed file to its readable name; on any failure keep the original. */
+async function withReadableName(uri: string, name: string): Promise<string> {
+  try {
+    const dir = FileSystem.cacheDirectory ? `${FileSystem.cacheDirectory}certificates/` : null;
+    if (!dir) return uri;
+    await FileSystem.makeDirectoryAsync(dir, { intermediates: true }).catch(() => {});
+    const dest = `${dir}${encodeURIComponent(name)}`;
+    await FileSystem.deleteAsync(dest, { idempotent: true });
+    await FileSystem.copyAsync({ from: uri.startsWith('file://') ? uri : `file://${uri}`, to: dest });
+    return dest;
+  } catch {
+    return uri;
+  }
+}
+
 /**
  * Build the PDF and open the share sheet. Never throws.
  *
@@ -85,8 +102,9 @@ export async function exportCertificate(req: CertificateRequest): Promise<Certif
       verifyUrl: qrToken ? registryUrl(qrToken) : null,
     });
 
-    const { uri } = await print.printToFileAsync({ html, width: PAGE_W, height: PAGE_H });
-    if (!uri) return { ok: false, reason: 'failed' };
+    const { uri: printed } = await print.printToFileAsync({ html, width: PAGE_W, height: PAGE_H });
+    if (!printed) return { ok: false, reason: 'failed' };
+    const uri = await withReadableName(printed, certificateFileName(holderName, req.credentialName, req.awardType));
 
     if (!(await share.isAvailableAsync())) return { ok: false, reason: 'no_share_target' };
     await share.shareAsync(uri.startsWith('file://') ? uri : `file://${uri}`, {
