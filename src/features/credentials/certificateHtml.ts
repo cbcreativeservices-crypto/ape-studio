@@ -343,7 +343,7 @@ ${glyphHtml}
 <p class="statement">has satisfied every requirement and is hereby awarded the</p>
 <div class="credential">${linesHtml(credentialLayout.lines)}</div>
 ${metaHtml}
-<div class="signature"><div class="signature-rule"></div><div class="signature-name">Professor Channing “Cháno” Booth</div><div class="signature-role">Program Director</div></div>
+<div class="signature"><div class="signature-rule"></div><div class="signature-name">Channing “Cháno” Booth</div><div class="signature-role">Founder &amp; Curriculum Director</div></div>
 <div class="footer-note">Pro Audio<br>Training Academy</div>
 <div class="verification">${qrHtml}<div class="qr-label">${escapeHtml(verifyLabel)}</div>${verifyHost}</div>
 </main></body></html>`;
