@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 12:30 · ccode · website /instructor page built (web-launch-day, local)
+changed: Owner asked to build the website instructor page. Built on web-launch-day @ 34bd8929 (not pushed): /instructor (noindex) reads instructor_my_code / instructor_students / instructor_student_progress; class list + student detail (topics with per-method %, quiz scores never answers, labs for the student's topics + other_completed when present, final exams, credentials; history before sharing included). EmployerStatus links approved instructors there. Browser-checked with sample replies (desktop + 390 px), type check clean.
+affects other side: Comp A: create a TEST instructor (not Pro1) + a Pro1 share so the page can be checked with real data; exact SQL + removal in Downloads 2026-10-26_CCODE_TO_COMP_A_INSTRUCTOR_TEST_DATA_BRIEF
+needs: Comp A: run it (owner chose 'Comp A creates them'), send ccode the test instructor's email and the 90 verify rows; remove before launch
+
 ### 2026-10-26 08:14 · ccode · c48da6f5
 changed: docs: engineer uploads live again (portal on + /lab-upload skips the site key); turn off when done
 affects other side: Comp A: the engineer upload is handled by ccode (portal on, /lab-upload public, pushed); no new upload page needed
