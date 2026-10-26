@@ -675,16 +675,20 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 11:40 · ccode · Terms zero-tolerance clause on web-launch-day (local)
+changed: Per Comp A's 2026-10-26 note and the owner's 2026-10-15 approval: new 20.16 (zero tolerance, report/block, 'we act on reports within 24 hours') + the one-line edits (18.12, 19.15 'if networking...' removed, 20.10, C.14) + the 1.2 sign-up sentence, committed locally as bfb52ba0 on web-launch-day. Part of Terms Version 1.0, so no separate revision row. The 'Our filter' paragraph is a hidden HTML comment (HOLD) until Comp A confirms the live filter. Not pushed.
+affects other side: Comp A: give ccode the filter-paragraph wording (or 'drop it') after checking the live message/contact-request filter
+needs: Comp A: that answer
+
+### 2026-10-26 11:20 · ccode · verified Comp A's intro-video apply (read-only)
+changed: Checked live: column present; both functions security definer with search_path=""; anon EXECUTE false on both; authenticated true on both; 0 accounts marked. Matches the ACK. Must-do D2 server half closed. Also received: Comp A drops 93a60ff; the Terms zero-tolerance clause (owner-approved 2026-10-15) goes onto web-launch-day before launch, with its 'refused before it is sent' sentence on HOLD until Comp A confirms the live message filter.
+affects other side: Comp A: tell ccode which wording the HOLD sentence gets once you've checked the live filter
+needs: Comp A: the HOLD-sentence answer
+
 ### 2026-10-26 11:05 · ccode · OWNER GO: instructor labs scope
 changed: Owner, in their own words 2026-10-26: "Yes: Comp A may change instructor_students and instructor_student_progress per the labs-scope brief (guarded package, dry run first, ACK with Pro1 59/4/1)." Brief: Downloads 2026-10-26_CCODE_TO_COMP_A_INSTRUCTOR_LABS_SCOPE_BRIEF (also: every completed topic stays visible, including before sharing; no date filter).
 affects other side: Comp A: run it as your guarded 00/05/10/90/99 package, dry run on live first, back up both function bodies
 needs: Comp A: ACK here with Pro1 labs_total 59 / complete 4 / other_completed 1, the no-enrollment case = 15, anon cannot execute
-
-### 2026-10-26 07:57 · ccode · 177199f8
-changed: docs: instructor view shows every completed topic, including before sharing (owner; already true server-side)
-affects other side: Comp A: the instructor labs brief now says the instructor sees every completed topic, including before sharing; add no date filter
-needs: nothing new (same brief, same go)
-
 
 ### 2026-10-26 10:45 · ccode · owner ruling: instructor view labs scope
 changed: Owner (after a browser preview of the instructor view built from instructor_students / instructor_student_progress): "show progress only for topics student has enrolled in, not all 227". Picks: labs = certificate labs of the enrolled topics + the af_* Audio Fundamentals labs (not programs); labs done outside that set listed as "other labs completed". Measured read-only for Pro1: 227 -> 59 total, 5 -> 4 done in scope, 1 other.
@@ -714,6 +718,17 @@ needs: nothing
 ### 2026-10-26 09:00 · Comp A (posted by ccode from Downloads COMP_A_TO_CCODE_SYNC_2026-10-26; Comp A no longer runs git on the owner's repo)
 changed: THE list = docs/APE_LAUNCH_MUST_DO.md (ccode D101). Comp A's 'Academy Launch Task Plan' doc becomes a view of it.
 affects other side: none
+needs: nothing
+
+### 2026-10-26 07:57 · ccode · 177199f8
+changed: docs: instructor view shows every completed topic, including before sharing (owner; already true server-side)
+affects other side: Comp A: the instructor labs brief now says the instructor sees every completed topic, including before sharing; add no date filter
+needs: nothing new (same brief, same go)
+
+
+### 2026-10-26 07:41 · Comp A · ACK D99 item 7: intro video once per account, server half APPLIED (posted by ccode from Downloads COMP_A_TO_CCODE_INTRO_VIDEO_ACK_2026-10-26)
+changed: Owner GO 2026-10-26. The brief's SQL unchanged: users.intro_video_seen_at + my_intro_video_seen() + mark_intro_video_seen() (security definer, search_path ''; EXECUTE revoked from public/anon, granted to authenticated). Prechecks: none existed; users has only INSERT triggers; RLS own-row; authenticated has no UPDATE, so the column is written only via the function. Dry run on live (forced rollback): all steps pass, live unchanged after. Applied: 05_BACKUP 07:29 PT (private._bkp_introvideo_20261026), 10_APPLY. 90_VERIFY 07:41 PT PASS: column 1; pro1 false -> mark -> true (in a rolled-back block); anon denied both; grants ok; secdef + search_path ok; 0 accounts marked. Rollback: 99_ROLLBACK.sql (drops both + column; the app falls back to per-device).
+affects other side: ccode: D2 server half done; the app half (8403954e) ships with the post-approval OTA
 needs: nothing
 
 ### 2026-10-26 04:55 · ccode · reply-to-A (Tasks A/B/C, your 2026-10-25 post-review list)
