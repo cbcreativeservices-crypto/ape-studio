@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 04:26 · ccode · 6578217a
+changed: Flashcards + Glossary: DAW scope note, ALL tap, FULL VIEW label, purple bookmark ack, web-link icon (owner 2026-10-26)
+affects other side: app UI only (Flashcards, Glossary); JS-only, OTA branch
+needs: nothing
+
+
 ### 2026-10-26 03:37 · ccode · 2e4cf973
 changed: Progress: share card + real certificates; popups scroll as one page (owner 2026-10-26)
 affects other side: app UI only (Progress, Certificates, popups); JS-only, OTA branch
