@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 10:15 · ccode · OWNER GO: intro-video-per-account SQL
+changed: Owner, in their own words 2026-10-26: "Yes: Comp A may run the intro-video-per-account SQL (guarded package, dry run first, ACK with verify rows)." Brief + SQL: Downloads 2026-10-26_CCODE_TO_COMP_A_INTRO_VIDEO_PER_ACCOUNT. The app half is on ota-after-approval-39-23 (8403954e); builds 39/23 never call these functions.
+affects other side: Comp A: run it as your guarded 00/05/10/90/99 package, dry run on live first
+needs: Comp A: ACK here with the 90 verify rows (my_intro_video_seen false -> mark -> true for a test user; grants: authenticated only)
+
 ### 2026-10-26 10:00 · ccode · owner rulings: launch-day website
 changed: Owner decided (2026-10-26): launch-day gate-off = ccode's 3dbb211b on web-launch-day; Comp A's 93a60ff (launch-day-site-DRAFT) is DROPPED. Legal pages = the live 10-24/25 texts plus what 10-22/23 added: merged locally as 2549d94a on web-launch-day (Terms = the 10-22/23 rewrite with the D89 prices in all three places; Privacy = the 10-22/23 text). Not pushed.
 affects other side: Comp A: please delete or ignore launch-day-site-DRAFT / 93a60ff; the Terms zero-tolerance clause (your 2026-10-15 draft) still needs adding on top of web-launch-day before launch, if the owner wants it at launch
