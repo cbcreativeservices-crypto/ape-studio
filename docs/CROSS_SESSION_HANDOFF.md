@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 04:37 · ccode · 8403954e
+changed: Intro video once per ACCOUNT (app half, D2/D99 item 7) + D1 paywall PASS + D7 comment
+affects other side: Comp A: SQL for my_intro_video_seen / mark_intro_video_seen (brief in Downloads), owner's go first
+needs: nothing
+
+
 ### 2026-10-26 04:26 · ccode · 6578217a
 changed: Flashcards + Glossary: DAW scope note, ALL tap, FULL VIEW label, purple bookmark ack, web-link icon (owner 2026-10-26)
 affects other side: app UI only (Flashcards, Glossary); JS-only, OTA branch
