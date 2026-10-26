@@ -20,6 +20,8 @@ import { clearLocalAccountData, resetAllLocalStores } from './clearLocalAccountD
 import { isDisplaced } from './singleDevice';
 import { markIntentionalSignOut } from '../auth/intentionalSignOut';
 import { signOutThisDevice } from '../auth/api';
+import { softDeadline } from '../../lib/boundedCall';
+import { replayQueue } from '../study/sync';
 
 /** Foreground displacement-poll interval — now just a BACKSTOP to the realtime
  *  subscription (which carries the instant case), so it runs slowly to reduce RPC
@@ -66,6 +68,13 @@ export function SingleDeviceGuard() {
         // session, so the wipe + Splash below found it still there, walked back
         // in, and the next poll displaced and wiped the device again. The
         // server has already moved the account on; this device goes regardless.
+        // Send queued study time FIRST (Comp A launch audit 2026-10-24, item 4).
+        // clearLocalAccountData wipes the offline study queue, so minutes
+        // studied offline on this phone were lost when another device signed
+        // in. One bounded pass while the session is still here; whatever does
+        // not go through in 5 s is lost exactly as before. Graded exam work is
+        // not at risk: its queue survives the wipe (clearLocalAccountData KEEP).
+        await softDeadline(() => replayQueue(), undefined, 'forced sign-out study flush', 5000);
         await signOutThisDevice();
         await clearLocalAccountData();
         resetAllLocalStores();

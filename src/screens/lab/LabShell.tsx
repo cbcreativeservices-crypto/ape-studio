@@ -617,7 +617,9 @@ export function LabShell({
         subtitle={subtitle}
         headerRef={headerRef}
         onTouchStart={probeOn ? () => stamp('H') : undefined}
-        onTitlePress={titleTap}
+        // TEMP touch probe: dev builds only (Comp A launch audit 2026-10-24,
+        // item 3: a triple-tap on the title opened debug text in STORE builds).
+        onTitlePress={__DEV__ ? titleTap : undefined}
         right={
           // Consistent per-screen help (Pillar C) — lands in the hub with lab
           // answers surfaced.

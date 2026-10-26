@@ -11,6 +11,8 @@ let lines: string[] = [];
 const listeners = new Set<() => void>();
 
 export function labProbe(msg: string): void {
+  // Store builds never collect probe lines (Comp A launch audit 2026-10-24, item 3).
+  if (!__DEV__) return;
   const t = new Date();
   const stamp = `${t.getMinutes()}:${String(t.getSeconds()).padStart(2, '0')}`;
   lines = [...lines, `${stamp} ${msg}`].slice(-6);

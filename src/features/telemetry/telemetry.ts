@@ -29,9 +29,31 @@
  */
 import * as Sentry from '@sentry/react-native';
 import * as Aptabase from '@aptabase/react-native';
+import * as Updates from 'expo-updates';
 import type { ComponentType } from 'react';
 import { TELEMETRY_ENABLED } from '../../config/telemetry';
 import { sanitizeProps, scrubBreadcrumb, scrubEvent } from './scrub';
+
+/**
+ * Sentry environment = the build's EAS update channel (Comp A launch audit
+ * 2026-10-24, item 2). It was '__DEV__ ? development : production', so a
+ * TestFlight / internal PREVIEW build reported as production and polluted the
+ * store builds' crash-free numbers. eas.json channels: development / preview /
+ * production. No channel (web, an unexpected build) falls back to production,
+ * the old behaviour.
+ */
+export function sentryEnvironment(dev: boolean, channel: string | null | undefined): string {
+  if (dev) return 'development';
+  const c = (channel ?? '').trim();
+  return c === 'preview' || c === 'development' ? c : 'production';
+}
+function updatesChannel(): string | null {
+  try {
+    return Updates.channel ?? null;
+  } catch {
+    return null;
+  }
+}
 
 const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN ?? '';
 const APTABASE_APP_KEY = process.env.EXPO_PUBLIC_APTABASE_APP_KEY ?? '';
@@ -75,7 +97,7 @@ export function initTelemetry(): void {
     try {
       Sentry.init({
         dsn: SENTRY_DSN,
-        environment: __DEV__ ? 'development' : 'production',
+        environment: sentryEnvironment(__DEV__, updatesChannel()),
         // ── privacy pins ──────────────────────────────────────────────────
         sendDefaultPii: false,
         attachScreenshot: false,
