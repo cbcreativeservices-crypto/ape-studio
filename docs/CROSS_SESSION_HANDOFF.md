@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 02:22 · ccode · f5bc7ece
+changed: Docs: Comp A handoffs in the repo (time-trial server removal 2026-10-24; verify-by-printed-code SQL package 2026-10-25) — Comp A could not see Downloads
+affects other side: A — the two handoffs are now IN THE REPO on ota-after-approval-39-23: docs/2026-10-24_CCODE_TO_COMP_A_REMOVE_TIME_TRIAL_SERVER.md and docs/2026-10-25_CCODE_TO_COMP_A_VERIFY_PRINTED_CODE.md (+ docs/sql/2026-10-25_VERIFY_PRINTED_CODE_SQL/).
+needs: A — guarded SQL for the time-trial server removal (owner go before it runs); ACK the verify-by-code run.
+
+
 ### 2026-10-26 02:20 · ccode · fcdab163
 changed: Launch audit Task A (OTA-safe): Sentry environment = EAS channel; TEMP lab probe dev-only; forced sign-out sends queued study time first (bounded 5 s)
 affects other side: app: OTA after approval — telemetry env (preview builds stop reporting as production), lab probe gone from store builds, study queue flushed before single-device sign-out
