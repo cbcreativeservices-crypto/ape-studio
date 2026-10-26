@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 07:57 · ccode · 177199f8
+changed: docs: instructor view shows every completed topic, including before sharing (owner; already true server-side)
+affects other side: Comp A: the instructor labs brief now says the instructor sees every completed topic, including before sharing; add no date filter
+needs: nothing new (same brief, same go)
+
+
 ### 2026-10-26 10:45 · ccode · owner ruling: instructor view labs scope
 changed: Owner (after a browser preview of the instructor view built from instructor_students / instructor_student_progress): "show progress only for topics student has enrolled in, not all 227". Picks: labs = certificate labs of the enrolled topics + the af_* Audio Fundamentals labs (not programs); labs done outside that set listed as "other labs completed". Measured read-only for Pro1: 227 -> 59 total, 5 -> 4 done in scope, 1 other.
 affects other side: Comp A: change the two functions via one helper private.student_scoped_labs (exact SQL: Downloads 2026-10-26_CCODE_TO_COMP_A_INSTRUCTOR_LABS_SCOPE_BRIEF); no screen calls them yet
