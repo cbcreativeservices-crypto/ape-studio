@@ -139,7 +139,19 @@ export function proxy(request: NextRequest) {
     // employer sign-up button and a certificate's QR / share link must not land
     // a reviewer or an employer on the key screen. Exact match / one-segment
     // only — no cookie, not a site-wide unlock.
-    if (legalPublic === "/employers/apply" || /^\/registry\/[^/]+$/.test(legalPublic)) {
+    // /institutions (owner GO 2026-10-24): the App Review notes link to it to
+    // explain institutional licensing and its access codes.
+    // /verify + /verify/<code> (owner GO 2026-10-25): the public credential
+    // page's "Verify by code" link opened the key screen, and the form submits
+    // to /verify/<code>. Both show only the holder's name and credentials (the
+    // same public RPCs as /registry/<token>).
+    if (
+      legalPublic === "/employers/apply" ||
+      legalPublic === "/institutions" ||
+      legalPublic === "/verify" ||
+      /^\/verify\/[^/]+$/.test(legalPublic) ||
+      /^\/registry\/[^/]+$/.test(legalPublic)
+    ) {
       return NextResponse.next();
     }
     // Credential verification (owner H-A 2026-10-22): the app tells people
