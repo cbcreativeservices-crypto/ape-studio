@@ -510,6 +510,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 08:16 · ccode · 34bd8929
+changed: web (launch-day): /instructor page — a verified instructor's class from the live instructor functions (owner 2026-10-26)
+affects other side: website launch-day branch (local): new /instructor page reading instructor_my_code / instructor_students / instructor_student_progress
+needs: Comp A: a test instructor + Pro1 share for a real-data check (brief in Downloads)
+
+
 ### 2026-10-26 08:01 · ccode · bfb52ba0
 changed: web (launch-day): Terms zero-tolerance clause 20.16 + consistency edits (owner-approved 2026-10-15; Comp A 2026-10-26)
 affects other side: website launch-day branch (local): Terms 20.16 zero tolerance in; its filter paragraph on HOLD
