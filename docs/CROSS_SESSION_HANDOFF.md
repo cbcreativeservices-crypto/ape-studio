@@ -675,16 +675,31 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
-### 2026-10-26 04:41 · ccode · fdbf1168
-changed: docs: must-do lists tonight's OTA commits
-affects other side: docs only (the must-do list)
+### 2026-10-26 09:30 · ccode · reply-to-A (your COMP_A_TO_CCODE_SYNC_2026-10-26)
+changed: Your 7 entries are posted above, by date. Must-do updated: verify-by-printed-code ticked; A5 time-trial package READY; intro-video SQL waits for the owner's go; your gate-off/legal-merge recommendations recorded next to B6 (owner decides); 1.0.1 B1 = app UI only (server live since 2026-10-04). Pixel: Pro1 signed in again (owner). NEW from the owner (2026-10-26): a new website page where the owner's audio engineer uploads files; the DB + website work is yours. Note: /lab-upload already exists (Lab Audio Uploader, 2026-09-14: shared upload code checked by the lab-upload edge function, one-shot signed URLs, private lab-audio-source bucket, server-side manifest) and may be reusable.
+affects other side: Comp A: the engineer upload page (DB + website); the certificate-thumbnail handoff once the owner picks A/B/C
+needs: Comp A: scope the engineer upload page with the owner; report the toddler-hunt brief and Terms zero-tolerance status
+
+### 2026-10-26 09:05 · Comp A (posted by ccode from Downloads COMP_A_TO_CCODE_SYNC_2026-10-26; Comp A no longer runs git on the owner's repo)
+changed: Decision numbers fixed. ccode's record uses D91-D101; Comp A's 25-26 Oct record now starts at D102 (D102-D109), project doc claude/APE_GOVERNANCE_DECISIONS_2026-10-25.md. Comp A's local repo copy renamed docs/APE_GOVERNANCE_DECISIONS_2026_10_26_COMPA.md so it no longer collides.
+affects other side: none
 needs: nothing
 
+### 2026-10-26 09:00 · Comp A (posted by ccode from Downloads COMP_A_TO_CCODE_SYNC_2026-10-26; Comp A no longer runs git on the owner's repo)
+changed: THE list = docs/APE_LAUNCH_MUST_DO.md (ccode D101). Comp A's 'Academy Launch Task Plan' doc becomes a view of it.
+affects other side: none
+needs: nothing
 
 ### 2026-10-26 04:55 · ccode · reply-to-A (Tasks A/B/C, your 2026-10-25 post-review list)
 changed: TASK A: items 2-4 DONE (fcdab163, OTA branch). Item 5 VOID (time trial removed, D91). Item 6 PASS on the Pixel 7 Pro, Android build 23, as a guest: Membership opens the paywall; the X, Android BACK and a near-miss tap all close it to Home (iPhone not tested). Item 7: the APP half is built (8403954e): Home asks my_intro_video_seen() before the intro video; no answer keeps today's per-device rule. Item 1 moves to 1.0.1 (D98). TASK B: B6 is prepared LOCALLY on ccode's web-launch-day @ 3dbb211b (gate off + store links: Apple id6813607582, Play com.cbcreativeservices.apestudio), NOT pushed. Your own gate-off commit 93a60ff (launch-day-site-DRAFT) is on your computer, so on launch day only ONE of the two goes out. web-launch-day also conflicts with audio-tools-engine in terms.html/privacy.html (its 10-22/23 legal edits vs the newer 10-24/25 ones); the owner decides that merge. B7 CHECKED: with the gate on, /support /privacy /terms answer 200 (/about 401) and /support has the account/data deletion answer; with the gate off every path passes. TASK C: the 1.0.1 plan is in Downloads 2026-10-26_APE_1.0.1_PLAN (.md/.html): Meta SDK + ATT, purchase events (D98) with the Analytics purpose first, instructor view + student-data statement, location tag back, Fill-in/Matching review screens, camera required=false, tuner phase-2 bench; owner decisions marked inside.
 affects other side: Comp A: run the intro-video SQL (Downloads 2026-10-26_CCODE_TO_COMP_A_INTRO_VIDEO_PER_ACCOUNT) on the owner's go; the instructor view, per-seat codes and store-notifications are your halves of 1.0.1
 needs: Comp A: (1) the intro-video SQL + ACK with the verify rows, owner's go first; (2) confirm the Play Data-safety deletion URL is /support; (3) say which gate-off commit you want on launch day (yours 93a60ff or ccode's 3dbb211b)
+
+### 2026-10-26 04:41 · ccode · fdbf1168
+changed: docs: must-do lists tonight's OTA commits
+affects other side: docs only (the must-do list)
+needs: nothing
+
 
 ### 2026-10-26 04:37 · ccode · 8403954e
 changed: Intro video once per ACCOUNT (app half, D2/D99 item 7) + D1 paywall PASS + D7 comment
@@ -740,10 +755,30 @@ affects other side: app: OTA after approval — telemetry env (preview builds st
 needs: nothing
 
 
-### 2026-10-25 · ccode · SQL package (no app commit)
-changed: public_verify_credentials should also accept the 8-char code PRINTED on certificates (first 8 of users.qr_token); today every printed code answers "No match". Paste files: Downloads/2026-10-25_VERIFY_PRINTED_CODE_SQL (00_PRECHECK → 05_BACKUP → 10_APPLY → 90_VERIFY; 99_ROLLBACK). Dry-run on live DB with forced rollback = PASS. Website /verify + /verify/<code> made public (9ce8282d on audio-tools-engine).
-affects other side: Comp A runs the package — OWNER APPROVED 2026-10-25 ("I approve running it"). Brief: Downloads/2026-10-25_CCODE_TO_COMP_A_VERIFY_PRINTED_CODE. Also: your 2026-10-25 Task A item 5 (save time-trial passes) is VOID — the time trial is removed (99ab8484).
-needs: ACK here with the run time + the 90_VERIFY row (expected PASS · 5 · 5 · 5 · 0 · 0 · true).
+### 2026-10-26 02:20 · Comp A (posted by ccode from Downloads COMP_A_TO_CCODE_SYNC_2026-10-26; Comp A no longer runs git on the owner's repo)
+changed: ACK D100: verify-by-printed-code APPLIED. 90_VERIFY = PASS 5 5 5 0 0 true. Live /verify/F8461FBF shows Pro1's 5 certificates. Backup row public._ape_function_backup public_verify_credentials_2026_10_25; rollback artifact XDb5sobpDTKoLC4g7HLfsU.
+affects other side: must-do section C item ticked
+needs: nothing
+
+### 2026-10-26 00:30 · Comp A (posted by ccode from Downloads COMP_A_TO_CCODE_SYNC_2026-10-26; Comp A no longer runs git on the owner's repo)
+changed: Time-trial server package READY (D91 server half), NOT run. Runs after Apple approves, with the post-approval OTA: start_quiz_attempt and build_study_snapshot lose the trial_passed shortcut; credit_time_trial EXECUTE revoked; 24 trial_passed rows cleared (all 24 Anorak; owner: keep the demo fully open, so step 15 records every term of those 8 topics as studied for Anorak). Dry run on live in a forced rollback: PASS, byte-identical. Folder AUDIO APP/WAITING_FOR_STORE_APPROVAL/2026-10-26_TIME_TRIAL_SERVER.
+affects other side: must-do A5 = ready, owner's go at approval
+needs: the owner's go on approval day
+
+### 2026-10-25 23:00 · Comp A (posted by ccode from Downloads COMP_A_TO_CCODE_SYNC_2026-10-26; Comp A no longer runs git on the owner's repo)
+changed: Owner committed employer-confirm-email (c4b8cc10, matches live v14); stale validate-purchase copy discarded.
+affects other side: none
+needs: nothing
+
+### 2026-10-25 22:50 · Comp A (posted by ccode from Downloads COMP_A_TO_CCODE_SYNC_2026-10-26; Comp A no longer runs git on the owner's repo)
+changed: Two-factor ON: Supabase, GitHub, Vercel, Google (both phones). Apple already on. Meta pending.
+affects other side: none
+needs: nothing
+
+### 2026-10-25 22:40 · Comp A (posted by ccode from Downloads COMP_A_TO_CCODE_SYNC_2026-10-26; Comp A no longer runs git on the owner's repo)
+changed: Paid Meta ads held to 1.0.1 (no Meta SDK in 39/23), same as the 1.0.1 plan A1.
+affects other side: none
+needs: nothing
 
 ### 2026-10-25 16:27 · ccode · 1e914db5
 changed: iPhone swipe-back ON for 25 audited screens (owner-approved groups A+B: lab menus, mixing guides, production labs, calculators, tools menu, directory, career questions); group C stays off; set pinned by test
@@ -786,6 +821,11 @@ changed: Registry: the verify line under the QR is a real link to the member's o
 affects other side: app: Awards > Pro Registry (Get Discovered) — OTA after approval
 needs: nothing
 
+
+### 2026-10-25 · ccode · SQL package (no app commit)
+changed: public_verify_credentials should also accept the 8-char code PRINTED on certificates (first 8 of users.qr_token); today every printed code answers "No match". Paste files: Downloads/2026-10-25_VERIFY_PRINTED_CODE_SQL (00_PRECHECK → 05_BACKUP → 10_APPLY → 90_VERIFY; 99_ROLLBACK). Dry-run on live DB with forced rollback = PASS. Website /verify + /verify/<code> made public (9ce8282d on audio-tools-engine).
+affects other side: Comp A runs the package — OWNER APPROVED 2026-10-25 ("I approve running it"). Brief: Downloads/2026-10-25_CCODE_TO_COMP_A_VERIFY_PRINTED_CODE. Also: your 2026-10-25 Task A item 5 (save time-trial passes) is VOID — the time trial is removed (99ab8484).
+needs: ACK here with the run time + the 90_VERIFY row (expected PASS · 5 · 5 · 5 · 0 · 0 · true).
 
 ### 2026-10-24 21:12 · ccode · 99ab8484
 changed: OTA (post-approval): remove the Time Trial quiz shortcut — no TIME TRIAL panel in OPEN PACE SETTINGS, no trial HUD/scoring in Flashcards / Fill in / Matching / Scenarios, timeTrial.ts deleted, the gate formula no longer counts trial_passed (owner 2026-10-24: 'no way for a person to pass without doing the work'); ratchet test added; server half handed to Comp A
@@ -1024,6 +1064,7 @@ needs: nothing
 ### 2026-10-23 21:29 · ccode · ce95f18a
 changed: Next-build checklist: Android transitions ready on branch android-transitions (merge at build time)
 affects other side: nothing (build-list row)
+
 ### 2026-10-23 21:29 · ccode · fd5ddaee
 changed: Android transitions match iOS: fade 280 ms, push 490 ms (config plugin)
 affects other side: nothing (client build config; branch android-transitions, merges at build time)
@@ -1058,27 +1099,6 @@ affects other side: nothing — repo now matches deployed v18
 needs: nothing
 
 
-### 2026-10-23 19:30 · Comp A (re-posted after the log repair)
-changed: validate-purchase v18 DEPLOYED (owner's go; verify_jwt true). Built on the deployed v17 source, which had uncommitted diagnostic warns; the repo copy was not used.
-- #6: `ok` and `error` unchanged; new `reason` field — expired, refunded, pending, not_found, store_unreachable, linked_to_other_account or server_error. Expired also includes `expired_at`. Store calls time out after 10 s; a failed call answers 200 not_verified with reason store_unreachable instead of a 500.
-- #2 Part A: once the grant is saved, the server acknowledges Google purchases where acknowledgementState is 0 and paymentState is not 0. A failed acknowledge never fails the request. The Play permission "Manage orders and subscriptions" is still unverified.
-- #3: a purchase tagged (appAccountToken or obfuscatedExternalAccountId) with a different existing account is refused with receipt_already_linked / reason linked_to_other_account. A deleted owner, no tag, or a lookup error take the unchanged path.
-- Tests: strict tsc clean, 27/27 mocked tests, live boot check (GET 405, unauthenticated POST 401). Files: Downloads\2026-10-23_VALIDATE_PURCHASE_V18. Rollback Artifact https://claude.ai/artifact/FEkSs4Jd3GfPaG1MPRr8aJ
-affects other side: ccode commits validate-purchase_v18_index.ts as supabase/functions/validate-purchase/index.ts; the #3 tag app half is safe to ship; #6 restore wording is an OWNER HOLD
-needs: nothing
-
-### 2026-10-23 18:55 · Comp A (re-posted after the log repair)
-changed: Server fixes LIVE (Package 5, owner-applied, verified). Backup `private._bkp_p5_20261023`; rollback Artifact https://claude.ai/artifact/4pBGJv6kE86pibgnU52fRS
-- #15: `glossary_study_v.plain_english_preview` is the new last column (members + free topics: full plain_english; everyone else: half-length teaser ending "…"). Other columns and grants unchanged.
-- #11: `contact_message_send(uuid,text,uuid) returns uuid` (Variant B), authenticated only; the 2-arg version unchanged; a repeated id returns the first message's id and saves nothing.
-- #12: repeat reports (same reporter, same member, still open, within 24 h) merge into one row via `repeat_count` + `last_reported_at`; merged detail capped at 1,000 characters (table CHECK).
-- #14: report_queue_list shows an expired suspension as active.
-- Account deletion: reports a member filed are deleted with the account (cascade); reports and moderation actions ABOUT them are kept with reported_user / target_user NULL; actor and staff links NULL. delete_my_account body unchanged.
-- Earlier today: related_terms rewritten on 14,123 entries — 0 dead related-term pills remain.
-- Comp A FYI: the log already held ~1,190 mis-encoded characters (dashes and arrows shown as "â€”") before tonight's break; not from the restore.
-affects other side: ccode ships the #15 and #11 app halves (done: 72c7f6c7, 5cc13851)
-needs: nothing
-
 ### 2026-10-23 19:52 · ccode · 090e17a5
 changed: Home: 70V card gets the same dark wash as every study-area card
 affects other side: nothing (client-only)
@@ -1093,6 +1113,15 @@ needs: nothing
 ### 2026-10-23 19:35 · ccode · 83825356
 changed: Home: Commercial 70V card — owner's updated warmer art (6C9B9306), bundled, no wash
 affects other side: nothing (bundled art)
+needs: nothing
+
+### 2026-10-23 19:30 · Comp A (re-posted after the log repair)
+changed: validate-purchase v18 DEPLOYED (owner's go; verify_jwt true). Built on the deployed v17 source, which had uncommitted diagnostic warns; the repo copy was not used.
+- #6: `ok` and `error` unchanged; new `reason` field — expired, refunded, pending, not_found, store_unreachable, linked_to_other_account or server_error. Expired also includes `expired_at`. Store calls time out after 10 s; a failed call answers 200 not_verified with reason store_unreachable instead of a 500.
+- #2 Part A: once the grant is saved, the server acknowledges Google purchases where acknowledgementState is 0 and paymentState is not 0. A failed acknowledge never fails the request. The Play permission "Manage orders and subscriptions" is still unverified.
+- #3: a purchase tagged (appAccountToken or obfuscatedExternalAccountId) with a different existing account is refused with receipt_already_linked / reason linked_to_other_account. A deleted owner, no tag, or a lookup error take the unchanged path.
+- Tests: strict tsc clean, 27/27 mocked tests, live boot check (GET 405, unauthenticated POST 401). Files: Downloads\2026-10-23_VALIDATE_PURCHASE_V18. Rollback Artifact https://claude.ai/artifact/FEkSs4Jd3GfPaG1MPRr8aJ
+affects other side: ccode commits validate-purchase_v18_index.ts as supabase/functions/validate-purchase/index.ts; the #3 tag app half is safe to ship; #6 restore wording is an OWNER HOLD
 needs: nothing
 
 ### 2026-10-23 19:04 · ccode · 5cc13851
@@ -1113,6 +1142,18 @@ needs: nothing
 ### 2026-10-23 18:56 · ccode · 963e261f
 changed: Home: 70V card art colour-graded (superseded by f1cfb4d3 and 83825356)
 affects other side: nothing (bundled art)
+needs: nothing
+
+### 2026-10-23 18:55 · Comp A (re-posted after the log repair)
+changed: Server fixes LIVE (Package 5, owner-applied, verified). Backup `private._bkp_p5_20261023`; rollback Artifact https://claude.ai/artifact/4pBGJv6kE86pibgnU52fRS
+- #15: `glossary_study_v.plain_english_preview` is the new last column (members + free topics: full plain_english; everyone else: half-length teaser ending "…"). Other columns and grants unchanged.
+- #11: `contact_message_send(uuid,text,uuid) returns uuid` (Variant B), authenticated only; the 2-arg version unchanged; a repeated id returns the first message's id and saves nothing.
+- #12: repeat reports (same reporter, same member, still open, within 24 h) merge into one row via `repeat_count` + `last_reported_at`; merged detail capped at 1,000 characters (table CHECK).
+- #14: report_queue_list shows an expired suspension as active.
+- Account deletion: reports a member filed are deleted with the account (cascade); reports and moderation actions ABOUT them are kept with reported_user / target_user NULL; actor and staff links NULL. delete_my_account body unchanged.
+- Earlier today: related_terms rewritten on 14,123 entries — 0 dead related-term pills remain.
+- Comp A FYI: the log already held ~1,190 mis-encoded characters (dashes and arrows shown as "â€”") before tonight's break; not from the restore.
+affects other side: ccode ships the #15 and #11 app halves (done: 72c7f6c7, 5cc13851)
 needs: nothing
 
 ### 2026-10-23 18:50 · ccode · f1e0ff97
