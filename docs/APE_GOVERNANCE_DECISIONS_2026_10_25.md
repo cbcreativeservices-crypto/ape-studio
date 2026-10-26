@@ -108,3 +108,53 @@ Purchase history is declared to Apple and Google for App functionality only. Add
   - each memory index now points at the other;
   - PROTOCOL rule 20;
   - a user-level hook so every folder gets the one protocol (owner's go).
+
+> **Numbering note (2026-10-26):** Comp A's own record uses D102–D109 (`claude/APE_GOVERNANCE_DECISIONS_2026-10-25.md`), so ccode continues at D110.
+
+## D110 · The owner's change list, Progress + Flashcards + Glossary (owner 2026-10-26)
+
+All on `ota-after-approval-39-23` (2e4cf973, 6578217a); they reach phones only with the post-approval OTA.
+
+- **Progress:** order = Share your achievements, Certificates, Programs, Topics. Share is not a button: certificate + QR + /registry link (the website for a guest). Small certificates show the learner's REAL certificate (the PDF's HTML, drawn once); each opens that certificate. The Certificates wall row, popup and full screen show the real certificate too.
+- **Popups with text scroll as one page** (the iPhone topic popup was stubborn).
+- **Flashcards:** the ALL list opens with a tap; the red eye shows "FULL VIEW: Term + Definition Together"; DAW "Don't See a Term?" note, once ever (ALL list open 7 s, or the 30th card), naming the live topics (Equalization (EQ); Dynamics — Compression, Limiting & Gating (Core)).
+- **Bookmarks list icon turns purple 0.4 s** on add/remove, in Flashcards and the Glossary.
+- **"Research and learn more" / "View images" use the owner's browser-window icon** (WebLinkIcon), traced from the owner's art, approved in gray. A first globe version was rejected.
+
+## D111 · Intro video once per ACCOUNT (owner 2026-10-26; D99 item 7)
+
+- App half on the OTA branch (8403954e): Home asks the account before the video; no answer = the old per-device rule.
+- Server half APPLIED by Comp A on the owner's GO (`users.intro_video_seen_at`, `my_intro_video_seen()`, `mark_intro_video_seen()`), verified by ccode read-only.
+- The owner confirmed the iPhone (build 39) plays the correct new video.
+
+## D112 · Instructor view scope (owner 2026-10-26, after a browser preview)
+
+- A teacher sees the student's ENROLLED topics plus EVERY topic they completed, including before sharing (no date cut-off).
+- Labs = the labs required by the CERTIFICATES of the enrolled topics, plus the `af_*` Audio Fundamentals labs (not programs, not all 227). Labs done outside that set show as "Other labs completed".
+- Server change APPLIED by Comp A on the owner's GO via `private.student_scoped_labs`; verified Pro1 = 59 / 4 / 1.
+- The instructor server side was decided and live since 2026-10-04 (what a teacher sees, student opt-in by code), so 1.0.1 = app UI only.
+- Website `/instructor` page built locally on `web-launch-day` (34bd8929); the real-data check waits for Comp A's test instructor.
+
+## D113 · Launch-day website (owner 2026-10-26)
+
+- Gate-off for launch = ccode's 3dbb211b on `web-launch-day`; Comp A's 93a60ff is dropped.
+- Legal pages = the live 10-24/25 texts plus what 10-22/23 added (merge 2549d94a): the 10-22/23 Terms rewrite with the D89 prices in all three places; a contradicting "handled through the stores" sentence now carries D89's own sentence.
+- Terms 20.16 zero tolerance (owner-approved 2026-10-15) is in (bfb52ba0). Its "Our filter" paragraph is a hidden HOLD until Comp A confirms the live filter.
+- The registry page says "Academy member" once (D6, 1e605767).
+- All LOCAL; push = the owner's launch-day go.
+
+## D114 · The recording engineer's uploads (owner 2026-10-26)
+
+- "Comp A did not do audio engineer upload … you need to make that happen."
+- The existing `/lab-upload` was reopened rather than building a new page. `lab_upload_config` was switched ON and the code ROTATED (the new code went to the owner in chat only, never stored).
+- `/lab-upload` skips the site key (a3d805b2, pushed on the owner's GO); the upload code still protects it.
+- Turn it OFF again when the engineer is done.
+
+## D115 · The test Pixel runs build 23 (owner 2026-10-26)
+
+- Build 20 was uninstalled (owner OK: a different signing key). Build 23 was sideloaded from the EAS AAB, signed with the debug key.
+- D1: the paywall close button PASSES on it (✕, BACK, near-miss tap).
+
+## D116 · The 1.0.1 plan (D4, 2026-10-26)
+
+Downloads `2026-10-26_APE_1.0.1_PLAN`: Meta SDK + ATT, purchase events with the Analytics purpose first, the instructor view (UI only), location tag back, Fill-in/Matching review screens, camera `required=false`, the tuner phase-2 bench. The owner's decisions are marked inside.
