@@ -14,11 +14,20 @@
  * thing you are reading. The scrim AROUND the panel still closes normally,
  * which is what people expect of a dimmed overlay.
  */
-import { type ReactNode } from 'react';
+import { createContext, useContext, type ReactNode } from 'react';
 import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../theme/tokens';
 
 export type AboutSection = { key: string; label: string; body: ReactNode };
+
+/**
+ * True inside a popup that scrolls AS A WHOLE (TrophyModal with a `below`
+ * panel, owner 2026-10-26: the iPhone "struggles to scroll" the topic popup).
+ * There the panel is plain prose in the popup's one scroll: no inner
+ * ScrollView of its own, no height cap and no responder claim. A scroll
+ * inside a scroll is what made the drag stubborn.
+ */
+export const AboutPanelInline = createContext(false);
 
 export function AboutPanel({
   eyebrow,
@@ -35,8 +44,28 @@ export function AboutPanel({
   accent?: string;
 }) {
   const { height } = useWindowDimensions();
+  const inline = useContext(AboutPanelInline);
   const cap = maxHeight ?? Math.round(height * 0.42);
   if (sections.length === 0) return null;
+
+  const body = (
+    <>
+      <Text style={[styles.eyebrow, { color: accent }]}>{eyebrow.toUpperCase()}</Text>
+      {sections.map((s) => (
+        <View key={s.key} style={styles.section}>
+          {s.label ? <Text style={styles.heading}>{s.label.toUpperCase()}</Text> : null}
+          {typeof s.body === 'string' ? <Text style={styles.body}>{s.body}</Text> : s.body}
+        </View>
+      ))}
+    </>
+  );
+  if (inline) {
+    return (
+      <View style={styles.wrap} accessibilityLabel={eyebrow}>
+        <View style={styles.content}>{body}</View>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.wrap, { maxHeight: cap }]} onStartShouldSetResponder={() => true} onResponderRelease={() => {}}>
@@ -48,13 +77,7 @@ export function AboutPanel({
         // of meeting one enormous label on the scrim.
         accessibilityLabel={eyebrow}
       >
-        <Text style={[styles.eyebrow, { color: accent }]}>{eyebrow.toUpperCase()}</Text>
-        {sections.map((s) => (
-          <View key={s.key} style={styles.section}>
-            {s.label ? <Text style={styles.heading}>{s.label.toUpperCase()}</Text> : null}
-            {typeof s.body === 'string' ? <Text style={styles.body}>{s.body}</Text> : s.body}
-          </View>
-        ))}
+        {body}
       </ScrollView>
     </View>
   );

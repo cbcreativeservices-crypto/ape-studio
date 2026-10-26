@@ -5,7 +5,8 @@
  * Presentation only — no data fetching, no navigation.
  */
 import { type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { AboutPanelInline } from './AboutPanel';
 import { ALL_ORIENTATIONS } from './modalOrientations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TrophyImage } from './TrophyImage';
@@ -53,8 +54,12 @@ export function TrophyModal({
   overlay,
   onOverlayClose,
   grayed = false,
+  artAspect = 1,
   onClose,
 }: {
+  /** Width ÷ height of the art's frame. 1 (square) for trophies; a
+   *  certificate passes its page shape so it is not letterboxed (2026-10-26). */
+  artAspect?: number;
   /** Optional full-window layer drawn over everything (the full-screen
    *  certificate, owner 2026-10-23). While it is up, Android BACK calls
    *  `onOverlayClose` instead of closing the whole popup. */
@@ -85,7 +90,91 @@ export function TrophyModal({
 }) {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const ART = artSize(width, height, !!below);
+  // WITH a panel the popup scrolls AS A WHOLE (owner 2026-10-26: on iPhone
+  // the topic popup "struggles to scroll ... very stubborn"). The art, the
+  // name and the prose are one page in one ScrollView; the panel no longer
+  // scrolls inside it (AboutPanelInline). The art keeps its full size, since
+  // it no longer has to share the window, and a fixed ✕ closes it.
+  const ART = artSize(width, height, false);
+  // A wide frame (a certificate) widens rather than shrinks: the art keeps its
+  // height and grows across, within the window's side margins.
+  const frameW = artAspect > 1 ? Math.min(Math.round(ART * artAspect), width - 48) : ART;
+  const frameH = artAspect > 1 ? Math.round(frameW / artAspect) : ART;
+  if (below) {
+    return (
+      <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={overlay && onOverlayClose ? onOverlayClose : onClose}>
+        <View style={[styles.host, styles.hostReading]}>
+          <ScrollView
+            style={styles.flex}
+            contentContainerStyle={[styles.scrollBody, { paddingTop: insets.top + 56, paddingBottom: insets.bottom + 28 }]}
+            showsVerticalScrollIndicator
+          >
+            {/* The art still closes on a tap, as every trophy popup does. */}
+            <Pressable
+              style={styles.artBlock}
+              onPress={onClose}
+              accessibilityRole="button"
+              // The scrim is the only accessible element, so it must READ the trophy
+              // (name + earned meta), not just "Close trophy" (Bug+Hater night A1-03).
+              accessibilityLabel={`${name ?? 'Trophy'}${meta ? `, ${meta.toLowerCase()}` : ''}. Tap to close.`}
+              // The action key sits INSIDE this one element, so on iOS a screen
+              // reader could never reach it (a Pressable inside an accessible
+              // Pressable is not an element — APE-STUDIO-W/R/S nested-element sweep,
+              // 2026-10-08). It rides on the scrim as a custom action instead.
+              accessibilityActions={action && !action.busy ? [{ name: 'trophyAction', label: action.label }] : undefined}
+              onAccessibilityAction={(e) => {
+                if (e.nativeEvent.actionName === 'trophyAction' && action && !action.busy) action.onPress();
+              }}
+              onAccessibilityEscape={onClose}
+            >
+              <View
+                style={[styles.frame, { width: frameW, height: frameH, borderColor: color, shadowColor: color }]}
+                pointerEvents="none"
+              >
+                {children ?? (
+                  <TrophyImage iconUrl={iconUrl} grayed={grayed} fill radius={14} fallback={<View style={styles.empty} />} />
+                )}
+              </View>
+              {name ? <Text style={styles.name}>{name.toUpperCase()}</Text> : null}
+              {meta ? <Text style={styles.meta}>{meta}</Text> : null}
+              {action ? (
+                <Pressable
+                  onPress={action.onPress}
+                  disabled={action.busy}
+                  // Reached through the scrim's custom action (above); not a second
+                  // element nested inside the first.
+                  accessible={false}
+                  accessibilityRole="button"
+                  accessibilityLabel={action.busy ? 'Working, please wait' : action.label}
+                  accessibilityState={{ disabled: !!action.busy, busy: !!action.busy }}
+                  aria-disabled={!!action.busy}
+                  aria-busy={!!action.busy}
+                  style={({ pressed }) => [styles.action, { borderColor: color }, pressed && styles.actionPressed]}
+                >
+                  <Text style={[styles.actionText, { color }]}>{action.busy ? 'WORKING…' : action.label}</Text>
+                </Pressable>
+              ) : null}
+              {/* A tap on the PROSE does nothing, so the hint names what closes. */}
+              <Text style={styles.hint}>TAP THE IMAGE OR ✕ TO CLOSE</Text>
+            </Pressable>
+            <AboutPanelInline.Provider value>
+              <View style={styles.belowWrap}>{below}</View>
+            </AboutPanelInline.Provider>
+          </ScrollView>
+          <Pressable
+            onPress={onClose}
+            hitSlop={12}
+            style={[styles.close, { top: insets.top + 10 }]}
+            accessibilityRole="button"
+            accessibilityLabel="Close"
+          >
+            <Text style={styles.closeX}>✕</Text>
+          </Pressable>
+          {overlay ? <View style={StyleSheet.absoluteFill}>{overlay}</View> : null}
+        </View>
+      </Modal>
+    );
+  }
   return (
     <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={visible} transparent animationType="fade" onRequestClose={overlay && onOverlayClose ? onOverlayClose : onClose}>
       {/* The dark backdrop lives on the HOST, not the scrim, so an optional
@@ -111,7 +200,7 @@ export function TrophyModal({
         onAccessibilityEscape={onClose}
       >
         <View
-          style={[styles.frame, { width: ART, height: ART, borderColor: color, shadowColor: color }]}
+          style={[styles.frame, { width: frameW, height: frameH, borderColor: color, shadowColor: color }]}
           pointerEvents="none"
         >
           {children ?? (
@@ -177,6 +266,26 @@ const styles = StyleSheet.create({
     elevation: 12,
   },
   empty: { flex: 1, backgroundColor: '#1a1a1c' },
+  flex: { flex: 1 },
+  // A page of prose over the app: darker, so the screen behind does not
+  // show through the text.
+  hostReading: { backgroundColor: 'rgba(0,0,0,0.95)' },
+  // The whole-popup scroll (owner 2026-10-26).
+  scrollBody: { alignItems: 'stretch', gap: 20 },
+  artBlock: { alignItems: 'center', gap: 18, paddingHorizontal: 24 },
+  close: {
+    position: 'absolute',
+    right: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(20,20,22,0.85)',
+    borderWidth: 1,
+    borderColor: '#3a3a42',
+  },
+  closeX: { fontSize: 17, color: '#e8ecf2', fontWeight: '600' },
   name: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 18,

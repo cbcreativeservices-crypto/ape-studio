@@ -15,10 +15,11 @@ const wall = rd('src/screens/achievements/CredentialWall.tsx');
 const modal = rd('src/components/TrophyModal.tsx');
 
 describe('certificate preview pass 2026-10-23', () => {
-  it('the Share card shows a certificate and opens Certificates', () => {
+  // Superseded 2026-10-26 (owner): the Share card is no longer a button — it
+  // holds the certificate, the QR and the Registry link. Pinned in
+  // progressShareCard_20261026.test.ts; the SAMPLE is still its fallback.
+  it('the Share card still falls back to the SAMPLE certificate', () => {
     assert.match(home, /YOUR_NAME_certificate_SAMPLE_web\.webp/);
-    assert.match(home, /onPress=\{\(\) => navigation\.navigate\('Certificates'\)\}[\s\S]{0,400}SHARE|shareHead/);
-    assert.match(home, /SEE YOUR CERTIFICATES ›/);
   });
   it('a SAMPLE shows only while no certificate is earned, labelled as a sample', () => {
     assert.match(wall, /kind === 'certificate' && rows != null && rows\.length === 0/);

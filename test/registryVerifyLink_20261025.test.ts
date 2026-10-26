@@ -23,7 +23,8 @@ test('the registry verify line opens the same page the QR encodes', () => {
   assert.match(tag, /\.catch\(\(\) => \{\s*notify\('Page unavailable'/);
   // The QR and the link share one URL builder.
   const qr = readFileSync(join(process.cwd(), 'src/components/CredentialQr.tsx'), 'utf8');
-  assert.match(qr, /value=\{registryUrl\(token\)\}/);
+  // (2026-10-26: the QR may also encode a given `url`, the website for a guest.)
+  assert.match(qr, /token \? registryUrl\(token\)/);
   assert.doesNotMatch(tag, /\/verify`/);
 });
 

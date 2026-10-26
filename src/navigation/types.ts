@@ -40,8 +40,10 @@ export type AchievementsStackParamList = {
   Topics: undefined;
   /** Chronological "everything earned" wall. */
   Gallery: undefined;
-  /** Earned specialization certificates. */
-  Certificates: undefined;
+  /** Earned specialization certificates. `openId` (a credential id) opens
+   *  that certificate on arrival — a small certificate tapped on Progress
+   *  (owner 2026-10-26). */
+  Certificates: { openId?: string } | undefined;
   /** Earned program certificates. */
   Programs: undefined;
 };

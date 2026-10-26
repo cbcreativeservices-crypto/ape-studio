@@ -10,7 +10,7 @@
  * PDF download; the waiting slot taps into the existing AwardProgress screen
  * (the in-progress checklist + Final Exam gate) rather than duplicating it.
  */
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 // expo-image, not RN Image (perf hunt 2026-10-03): the course-cards bucket
@@ -20,7 +20,9 @@ import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } fr
 // art is then the row's already-decoded image. See components/CardArt.
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import { CertificateArt, CertificateRenderHost, CERT_ASPECT } from '../../features/credentials/certificateRender';
+import type { CertificateRequest } from '../../features/credentials/certificatePdf';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { CredentialBadge, type CredentialKind } from '../../components/CredentialBadge';
@@ -146,6 +148,21 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
 
   useFocusEffect(useCallback(() => load(), [load]));
 
+  // A small certificate tapped on Progress arrives with its id (owner
+  // 2026-10-26): open THAT certificate once the list has it, then drop the
+  // param so coming back to this screen does not open it again.
+  const route = useRoute<any>();
+  const openId: string | undefined = route.params?.openId;
+  useEffect(() => {
+    if (!openId || !rows) return;
+    const hit = rows.find((r) => String(r.id) === openId);
+    navigation.setParams({ openId: undefined });
+    if (hit) {
+      setMessage(null);
+      setOpen(hit);
+    }
+  }, [openId, rows, navigation]);
+
   // SYNCHRONOUS LATCH (bug pass 2, 2026-09-30). `busy` disables the button only
   // after a re-render, so a double tap started two exports: two share sheets,
   // the second refused by iOS — and its failure put "Could not prepare the
@@ -222,8 +239,16 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
               accessibilityRole="button"
               accessibilityLabel={`${c.name}, ${fmtEarned(c.awardedAt).toLowerCase()}`}
             >
-              <View style={styles.art}>
-                {art ? (
+              <View style={kind === 'certificate' ? styles.certArt : styles.art}>
+                {kind === 'certificate' ? (
+                  // The certificate ITSELF in the left box (owner 2026-10-26);
+                  // the credential art is only the fallback on a device that
+                  // cannot draw it.
+                  <CertificateArt
+                    req={certReq(c)}
+                    fallback={art ? <Image source={art} style={styles.artImg} contentFit="contain" accessibilityIgnoresInvertColors /> : <CredentialBadge kind={kind} size={48} />}
+                  />
+                ) : art ? (
                   <Image
                     source={art}
                     style={styles.artImg}
@@ -280,6 +305,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
         visible={sampleOpen}
         iconUrl={null}
         name="Sample certificate"
+        artAspect={CERT_ASPECT}
         color={accent}
         meta="SAMPLE · NOT EARNED"
         action={null}
@@ -311,6 +337,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
         visible={!!open}
         iconUrl={null}
         name={open?.name}
+        artAspect={kind === 'certificate' ? CERT_ASPECT : 1}
         color={accent}
         meta={open ? fmtEarned(open.awardedAt) : null}
         action={
@@ -327,11 +354,20 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
         // 2026-10-23): as children they sat inside the art frame, which crops
         // its content and is pointerEvents="none" — the buttons were cut off
         // and could not be tapped.
-        overlay={fullOpen && open ? <CertificateFullView source={open.slug && !artFailed.has(open.slug) ? credentialArtFor(open.slug) : null} label={open.name} onClose={() => setFullOpen(false)} /> : null}
+        overlay={
+          fullOpen && open ? (
+            <CertificateFullView
+              source={open.slug && !artFailed.has(open.slug) ? credentialArtFor(open.slug) : null}
+              label={open.name}
+              cert={kind === 'certificate' ? certReq(open) : null}
+              onClose={() => setFullOpen(false)}
+            />
+          ) : null
+        }
         onOverlayClose={() => setFullOpen(false)}
         below={
           <View style={styles.belowCol}>
-            {open && open.slug && !artFailed.has(open.slug) && credentialArtFor(open.slug) ? <FullScreenKey onPress={() => setFullOpen(true)} /> : null}
+            {open && (kind === 'certificate' || (open.slug && !artFailed.has(open.slug) && credentialArtFor(open.slug))) ? <FullScreenKey onPress={() => setFullOpen(true)} /> : null}
             {/* [8] (2026-09-07): honest note when the download isn't in this build. */}
             {!certificateExportAvailable() ? (
               <Text style={styles.exportNote}>Certificate download isn’t available on this device. Your certificate is safely recorded on your account.</Text>
@@ -347,7 +383,22 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
           </View>
         }
       >
-        {open && open.slug && !artFailed.has(open.slug) && credentialArtFor(open.slug) ? (
+        {open && kind === 'certificate' ? (
+          <CertificateArt
+            req={certReq(open)}
+            fill
+            label={open.name}
+            fallback={
+              open.slug && !artFailed.has(open.slug) && credentialArtFor(open.slug) ? (
+                <Image source={credentialArtFor(open.slug)!} style={styles.artImg} contentFit="contain" accessibilityIgnoresInvertColors />
+              ) : (
+                <View style={styles.modalBadge}>
+                  <CredentialBadge kind={kind} size={180} />
+                </View>
+              )
+            }
+          />
+        ) : open && open.slug && !artFailed.has(open.slug) && credentialArtFor(open.slug) ? (
           <Image accessible
             source={credentialArtFor(open.slug)!}
             style={styles.artImg}
@@ -364,11 +415,19 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
           </View>
         )}
       </TrophyModal>
+      {/* Draws the real certificates off-screen (owner 2026-10-26); while
+          this screen is up it takes over from Progress's. */}
+      <CertificateRenderHost />
     </View>
   );
 }
 
 const SAMPLE_CERT = require('../../../assets/YOUR_NAME_certificate_SAMPLE_web.webp');
+
+/** What the certificate drawing needs — the same fields the PDF prints. */
+function certReq(c: EarnedCredentialRow): CertificateRequest {
+  return { credentialName: c.name, awardType: c.type, earnedAt: c.awardedAt };
+}
 
 function FullScreenKey({ onPress }: { onPress: () => void }) {
   return (
@@ -385,7 +444,19 @@ function FullScreenKey({ onPress }: { onPress: () => void }) {
  * Android, no native module needed, and it cannot strand the app sideways. A
  * window that is already landscape (a tablet held sideways) shows it upright.
  */
-function CertificateFullView({ source, label, onClose }: { source: unknown; label: string; onClose: () => void }) {
+function CertificateFullView({
+  source,
+  label,
+  cert = null,
+  onClose,
+}: {
+  source: unknown;
+  label: string;
+  /** Draw the learner's real certificate (owner 2026-10-26); `source` is then
+   *  only the fallback. */
+  cert?: CertificateRequest | null;
+  onClose: () => void;
+}) {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const rotate = height > width;
@@ -399,7 +470,16 @@ function CertificateFullView({ source, label, onClose }: { source: unknown; labe
           rotate && { transform: [{ rotate: '90deg' }] },
         ]}
       >
-        {source ? (
+        {cert ? (
+          <View style={[styles.fullImg, { margin: rotate ? Math.max(insets.top, 12) : 12 }]}>
+            <CertificateArt
+              req={cert}
+              fill
+              label={label}
+              fallback={source ? <Image source={source as never} style={styles.artImg} contentFit="contain" accessibilityIgnoresInvertColors /> : null}
+            />
+          </View>
+        ) : source ? (
           <Image
             accessible
             source={source as never}
@@ -594,6 +674,8 @@ const styles = StyleSheet.create({
   rowEarned: { backgroundColor: '#181818', borderWidth: 1, borderColor: '#242424' },
   rowWaiting: { backgroundColor: '#121212', borderWidth: 1, borderColor: '#202020', borderStyle: 'dashed' },
   art: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
+  // The certificate's own landscape box (the SAMPLE row's width).
+  certArt: { width: 62, borderRadius: 2, overflow: 'hidden', justifyContent: 'center' },
   artImg: { width: '100%', height: '100%' },
   rowMain: { flex: 1, gap: 3 },
   rowName: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.3, color: colors.textPrimary },

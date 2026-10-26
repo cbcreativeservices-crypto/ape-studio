@@ -34,14 +34,19 @@ try {
 
 export function CredentialQr({
   token,
+  url,
   size = 120,
   pendingLabel = 'Issued when your Registry ID goes live',
 }: {
   token: string | null | undefined;
+  /** Encode this address instead of a token's registry page — the website
+   *  for someone with no account yet (Progress share card, owner 2026-10-26). */
+  url?: string;
   size?: number;
   pendingLabel?: string;
 }) {
-  if (!token || !QRCode) {
+  const value = url ?? (token ? registryUrl(token) : null);
+  if (!value || !QRCode) {
     return (
       <View style={[styles.tile, { width: size, height: size }]}>
         <Text style={styles.pendingTitle}>QR</Text>
@@ -53,7 +58,7 @@ export function CredentialQr({
   const inner = size - 16;
   return (
     <View style={[styles.tile, { width: size, height: size }]}>
-      <Qr value={registryUrl(token)} size={inner} backgroundColor="#ffffff" color="#000000" />
+      <Qr value={value} size={inner} backgroundColor="#ffffff" color="#000000" />
     </View>
   );
 }

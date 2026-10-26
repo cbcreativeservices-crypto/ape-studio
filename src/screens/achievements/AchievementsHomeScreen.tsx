@@ -9,7 +9,7 @@
  * 2026-08-07).
  */
 import { useCallback, useRef, useState, type ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
@@ -24,8 +24,19 @@ import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { readingColumn, readingText } from '../../theme/readingColumn';
 import { useWideOnTablet } from '../../theme/useIsTablet';
 import { TabletGrid } from '../../components/TabletGrid';
+import { CredentialQr } from '../../components/CredentialQr';
+import { CertificateArt, CertificateRenderHost, CERT_ASPECT } from '../../features/credentials/certificateRender';
+import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useTier } from '../../features/commercial/useTier';
+import { fetchMyQrTokenOrThrow } from '../../features/profile/api';
+import { REGISTRY_BASE_URL, registryUrl } from '../../features/profile/registry';
+import { notify } from '../../lib/confirm';
 
 const MINI = 44;
+/** A small certificate in the strip: five fit a 390 pt phone. */
+const MINI_CERT_W = 56;
+const SHARE_QR = 104;
+const SAMPLE_CERT = require('../../../assets/YOUR_NAME_certificate_SAMPLE_web.webp');
 
 function MiniTopic({ iconUrl }: { iconUrl: string | null }) {
   return (
@@ -101,6 +112,35 @@ export function AchievementsHomeScreen() {
 
   useFocusEffect(useCallback(() => load(), [load]));
 
+  // The share card's QR (owner 2026-10-26). A KNOWN guest gets the website;
+  // a member gets their own Registry page. A failed read is said so, never
+  // shown as "no QR" (DirectoryScreen's rule, network audit 2026-09-11).
+  // KNOWN only (tier sweep 2026-10-03): a failed membership read is not a guest.
+  const { tierKnown } = useEntitlement();
+  const tier = useTier();
+  const guest = tierKnown && tier === 'guest';
+  const [qrToken, setQrToken] = useState<string | null>(null);
+  const [qrFailed, setQrFailed] = useState(false);
+  const qrTicket = useRef(0);
+  useFocusEffect(
+    useCallback(() => {
+      const ticket = ++qrTicket.current;
+      setQrFailed(false);
+      if (guest) {
+        setQrToken(null);
+        return;
+      }
+      fetchMyQrTokenOrThrow()
+        .then((tok) => {
+          if (ticket === qrTicket.current) setQrToken(tok);
+        })
+        .catch(() => {
+          if (ticket === qrTicket.current) setQrFailed(true);
+        });
+    }, [guest]),
+  );
+  const qr = { token: guest ? null : qrToken, guest, failed: qrFailed };
+
   const t = hub?.topics;
   const c = hub?.certificates;
   const p = hub?.programs;
@@ -142,64 +182,95 @@ export function AchievementsHomeScreen() {
           </View>
         ) : (
         <>
-        <TabletGrid minTile={300} maxCols={3} gap={14}>
-        {/* TOPICS */}
-        <Pressable
-          key="topics"
-          style={({ pressed }) => [styles.card, { borderColor: `${colors.amber}44` }, pressed && styles.cardPressed]}
-          // Press-IN warms the next screen's read (perf hunt 2026-10-03): with
-          // the hub's own answer still fresh it is shared, not re-fetched.
-          onPressIn={() => prefetchTrophyCase('topics')}
-          onPress={() => navigation.navigate('Topics')}
-          accessibilityRole="button"
-          accessibilityLabel={`Topics, ${t?.earned ?? 0} of ${t?.total ?? 0} earned`}
-        >
-          <View style={styles.cardHead}>
-            <Text style={styles.cardName}>TOPICS</Text>
-            <Text style={[styles.count, { color: colors.amber, textShadowColor: `${colors.amber}66` }]}>
-              {t ? `${t.earned} / ${t.total} COMPLETED` : '— / —'}
-            </Text>
-            <View style={styles.flex} />
-            <Text style={styles.chevron}>›</Text>
+        {/* ── SHARE YOUR ACHIEVEMENTS — first, and NOT a button (owner
+            2026-10-26). It holds what there is to share: the certificate
+            itself, the QR, and the link to the learner's own Registry page
+            (the same page and link as Get Discovered). With no account yet
+            the QR and link go to the website. Featuring still does not exist
+            (owner 2026-09-18: "remove feature, user can only share"). */}
+        <View style={styles.featured}>
+          <Text style={styles.cardName}>{TROPHY_CASE_EMPTY.shareHead}</Text>
+          <View style={styles.shareRow}>
+            <View style={styles.shareCert}>
+              {c?.recent[0] ? (
+                <CertificateArt
+                  req={{ credentialName: c.recent[0].name, awardType: 'certificate', earnedAt: c.recent[0].awardedAt }}
+                  label={`Your certificate: ${c.recent[0].name}`}
+                  fallback={<Image source={SAMPLE_CERT} style={styles.certImg} contentFit="contain" accessibilityIgnoresInvertColors />}
+                />
+              ) : (
+                <Image source={SAMPLE_CERT} style={styles.certImg} contentFit="contain" accessibilityIgnoresInvertColors />
+              )}
+            </View>
+            <CredentialQr
+              token={qr.token}
+              url={qr.guest ? REGISTRY_BASE_URL : undefined}
+              size={SHARE_QR}
+              pendingLabel={qr.failed ? 'Couldn’t load your QR' : 'Your QR appears here soon'}
+            />
           </View>
-          <RecentStrip
-            loading={!t}
-            empty={!!t && t.recent.length === 0}
-            emptyLabel={TROPHY_CASE_EMPTY.topics}
-          >
-            {(t?.recent ?? []).map((topic) => (
-              <MiniTopic key={topic.achievementId} iconUrl={topic.iconUrl} />
-            ))}
-          </RecentStrip>
-        </Pressable>
+          {qr.guest || qr.token ? (
+            <Text
+              style={styles.shareLink}
+              suppressHighlighting
+              onPress={() => {
+                const to = qr.token ? registryUrl(qr.token) : REGISTRY_BASE_URL;
+                Linking.openURL(to).catch(() => {
+                  notify('Page unavailable', 'We couldn’t open that page. Check your connection, or scan the QR instead.');
+                });
+              }}
+              accessibilityRole="link"
+              accessibilityLabel={qr.token ? 'Open your verification page' : 'Open the Pro Audio Training Academy website'}
+            >
+              {qr.token ? 'Scan or tap to open your verification page' : 'proaudiotrainingacademy.com'}
+            </Text>
+          ) : null}
+          {c && c.recent.length === 0 ? <Text style={styles.featuredLead}>{TROPHY_CASE_EMPTY.shareLead}</Text> : null}
+          <Text style={[styles.emptyText, styles.noFlex]}>{TROPHY_CASE_EMPTY.shareHint}</Text>
+        </View>
 
-        {/* CERTIFICATES */}
-        <Pressable
-          key="certificates"
-          style={({ pressed }) => [styles.card, { borderColor: `${colors.cyan}44` }, pressed && styles.cardPressed]}
-          onPressIn={() => prefetchTrophyCase('certificate')}
-          onPress={() => navigation.navigate('Certificates')}
-          accessibilityRole="button"
-          accessibilityLabel={`Certificates, ${c?.earned ?? 0} earned`}
-        >
-          <View style={styles.cardHead}>
+        <TabletGrid minTile={300} maxCols={3} gap={14}>
+        {/* CERTIFICATES — the header opens the wall; each small certificate
+            opens THAT certificate (owner 2026-10-26). Separate pressables, not
+            one nested in another, so a screen reader reaches each. */}
+        <View key="certificates" style={[styles.card, { borderColor: `${colors.cyan}44` }]}>
+          <Pressable
+            style={({ pressed }) => [styles.cardHead, pressed && styles.cardPressed]}
+            onPressIn={() => prefetchTrophyCase('certificate')}
+            onPress={() => navigation.navigate('Certificates')}
+            accessibilityRole="button"
+            accessibilityLabel={`Certificates, ${c?.earned ?? 0} earned`}
+            hitSlop={8}
+          >
             <Text style={styles.cardName}>CERTIFICATES</Text>
             <Text style={[styles.count, { color: colors.cyan, textShadowColor: `${colors.cyan}66` }]}>
               {c ? `${c.earned} EARNED` : '—'}
             </Text>
             <View style={styles.flex} />
             <Text style={styles.chevron}>›</Text>
-          </View>
+          </Pressable>
           <RecentStrip
             loading={!c}
             empty={!!c && c.recent.length === 0}
             emptyLabel={TROPHY_CASE_EMPTY.certificates}
           >
             {(c?.recent ?? []).map((cred) => (
-              <MiniCredential key={cred.id} kind="certificate" />
+              <Pressable
+                key={cred.id}
+                style={({ pressed }) => [styles.miniCert, pressed && styles.cardPressed]}
+                onPressIn={() => prefetchTrophyCase('certificate')}
+                onPress={() => navigation.navigate('Certificates', { openId: cred.id })}
+                accessibilityRole="button"
+                accessibilityLabel={`${cred.name} certificate. Opens it.`}
+              >
+                <CertificateArt
+                  req={{ credentialName: cred.name, awardType: 'certificate', earnedAt: cred.awardedAt }}
+                  fallback={<MiniCredential kind="certificate" />}
+                />
+              </Pressable>
             ))}
           </RecentStrip>
-        </Pressable>
+        </View>
 
         {/* PROGRAMS */}
         <Pressable
@@ -230,47 +301,38 @@ export function AchievementsHomeScreen() {
             ))}
           </RecentStrip>
         </Pressable>
-        </TabletGrid>
 
-        {/* ── SHARING, NOT FEATURING (owner 2026-09-18) ───────────────────────
-            The first draft of this section was headed FEATURED ACHIEVEMENT and
-            said an accomplishment could be selected "to feature and share".
-            Featuring does not exist and is not being built — the owner's ruling
-            was "remove feature, user can only share" — so every trace of it is
-            gone, heading included: that word WAS the promise.
-
-            What is left is true today. Sharing is real and shipped: open any
-            certificate or program and the share row offers the link, the QR as
-            an image, and the printed certificate. */}
-        {/* A small certificate makes it plain this is where CERTIFICATES live
-            (owner 2026-10-23: "not trophies"); the card opens the Certificates
-            wall, which opens even with none earned and shows a SAMPLE. */}
+        {/* TOPICS — last (owner order 2026-10-26: share, certificates,
+            programs, topics). */}
         <Pressable
-          style={({ pressed }) => [styles.featured, pressed && styles.cardPressed]}
-          onPressIn={() => prefetchTrophyCase('certificate')}
-          onPress={() => navigation.navigate('Certificates')}
+          key="topics"
+          style={({ pressed }) => [styles.card, { borderColor: `${colors.amber}44` }, pressed && styles.cardPressed]}
+          // Press-IN warms the next screen's read (perf hunt 2026-10-03): with
+          // the hub's own answer still fresh it is shared, not re-fetched.
+          onPressIn={() => prefetchTrophyCase('topics')}
+          onPress={() => navigation.navigate('Topics')}
           accessibilityRole="button"
-          accessibilityLabel={`${TROPHY_CASE_EMPTY.shareHead}. ${TROPHY_CASE_EMPTY.shareHint} Opens your certificates.`}
+          accessibilityLabel={`Topics, ${t?.earned ?? 0} of ${t?.total ?? 0} earned`}
         >
           <View style={styles.cardHead}>
-            <Text style={styles.cardName}>{TROPHY_CASE_EMPTY.shareHead}</Text>
+            <Text style={styles.cardName}>TOPICS</Text>
+            <Text style={[styles.count, { color: colors.amber, textShadowColor: `${colors.amber}66` }]}>
+              {t ? `${t.earned} / ${t.total} COMPLETED` : '— / —'}
+            </Text>
             <View style={styles.flex} />
             <Text style={styles.chevron}>›</Text>
           </View>
-          <View style={styles.shareRow}>
-            <Image
-              source={require('../../../assets/YOUR_NAME_certificate_SAMPLE_web.webp')}
-              style={styles.shareCert}
-              contentFit="contain"
-              accessibilityIgnoresInvertColors
-            />
-            <View style={styles.shareText}>
-              <Text style={styles.featuredLead}>{TROPHY_CASE_EMPTY.shareLead}</Text>
-              <Text style={[styles.emptyText, styles.noFlex]}>{TROPHY_CASE_EMPTY.shareHint}</Text>
-              <Text style={[styles.shareCta, { color: colors.cyan }]}>SEE YOUR CERTIFICATES ›</Text>
-            </View>
-          </View>
+          <RecentStrip
+            loading={!t}
+            empty={!!t && t.recent.length === 0}
+            emptyLabel={TROPHY_CASE_EMPTY.topics}
+          >
+            {(t?.recent ?? []).map((topic) => (
+              <MiniTopic key={topic.achievementId} iconUrl={topic.iconUrl} />
+            ))}
+          </RecentStrip>
         </Pressable>
+        </TabletGrid>
         </>
         )}
       </ScrollView>
@@ -278,6 +340,8 @@ export function AchievementsHomeScreen() {
       {/* Trophy-case intro (Pillar B, plan §3) — draft copy awaits owner
           ratification; hidden from real users while placeholder-tagged. */}
       <ScreenIntroOverlay introKey="awards" />
+      {/* Draws the real certificates above off-screen (owner 2026-10-26). */}
+      <CertificateRenderHost />
     </View>
   );
 }
@@ -328,12 +392,15 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 8,
   },
-  // Share card (owner 2026-10-23): a small certificate beside the copy.
-  shareRow: { flexDirection: 'row', gap: 12, alignItems: 'center' },
-  shareCert: { width: 92, aspectRatio: 486 / 375, borderRadius: 4 },
-  shareText: { flex: 1, gap: 6 },
+  // Share card (owner 2026-10-26): the certificate beside the QR, the link
+  // under them. Not pressable.
+  shareRow: { flexDirection: 'row', gap: 14, alignItems: 'center', marginTop: 4 },
+  shareCert: { flex: 1, maxWidth: 260, borderRadius: 3, overflow: 'hidden' },
+  certImg: { width: '100%', aspectRatio: CERT_ASPECT },
+  // The Get Discovered link's own look (DirectoryScreen registryLink).
+  shareLink: { fontFamily: fonts.barlowMedium, fontSize: 13, color: '#7fd4ff', textDecorationLine: 'underline', marginTop: 2 },
   noFlex: { flex: 0 },
-  shareCta: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.2 },
+  miniCert: { width: MINI_CERT_W, borderRadius: 2, overflow: 'hidden' },
   featuredLead: {
     fontFamily: fonts.barlowMedium,
     fontSize: 14,
