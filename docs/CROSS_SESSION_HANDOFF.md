@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 03:01 · ccode · 9b17dfff
+changed: Protocol copy: rule 20 = ONE MEMORY STORE (~/.claude/ape-memory)
+affects other side: nothing for A
+needs: nothing
+
+
 ### 2026-10-26 03:01 · ccode · a5fef2f7
 changed: Docs: must-do D0 = owner's change list next (owner's order 2026-10-26); session hand-over to local_3f36429b
 affects other side: nothing for A (ccode queue order only)
