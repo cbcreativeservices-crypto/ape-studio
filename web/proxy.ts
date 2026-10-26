@@ -145,9 +145,14 @@ export function proxy(request: NextRequest) {
     // page's "Verify by code" link opened the key screen, and the form submits
     // to /verify/<code>. Both show only the holder's name and credentials (the
     // same public RPCs as /registry/<token>).
+    // /lab-upload (owner GO 2026-10-26: "Audio engineer has files to turn in"):
+    // the recording engineer's uploader. The page itself is noindex and the
+    // lab-upload edge function checks the shared upload code before any file
+    // can go up, so the site key in front of it only blocked the engineer.
     if (
       legalPublic === "/employers/apply" ||
       legalPublic === "/institutions" ||
+      legalPublic === "/lab-upload" ||
       legalPublic === "/verify" ||
       /^\/verify\/[^/]+$/.test(legalPublic) ||
       /^\/registry\/[^/]+$/.test(legalPublic)
