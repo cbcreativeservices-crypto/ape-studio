@@ -95,3 +95,16 @@ Purchase history is declared to Apple and Google for App functionality only. Add
 - It is mirrored in memory (`launch-must-do-list.md`) and Downloads.
 - PROTOCOL rule 19: read it before any "what's next".
 - **First reconcile (2026-10-26) found one forgotten item:** 40 newer topic tiles never uploaded (must-do A3).
+- **Second reconcile, same day: the root cause.** Claude Code keeps one memory folder per working folder.
+  - Home-folder sessions saved to `.claude/projects/C--Users-profe/memory`.
+  - ape-studio sessions saved to `.claude/projects/C--Users-profe-dev-ape-studio/memory`, so each saw only half.
+  - The protocol hook is project-level, so home-folder sessions never got it.
+  - The worktrees carry an old 11-rule protocol file.
+- **Folded in from the other store:**
+  - 32 newer certificate-card images never uploaded (A3b);
+  - the labs-required switch, still OFF (A6);
+  - the toddler-hunt server brief and the Terms zero-tolerance clause (section C).
+- **Fixes:**
+  - each memory index now points at the other;
+  - PROTOCOL rule 20;
+  - a user-level hook so every folder gets the one protocol (owner's go).

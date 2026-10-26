@@ -8,7 +8,7 @@
 
 Copies: memory `launch-must-do-list.md` · Downloads `<date>_APE_LAUNCH_MUST_DO.md/.html`.
 
-**Last reconciled:** 2026-10-26, against the session transcript and these sources:
+**Last reconciled:** 2026-10-26, twice. The second pass came after finding the second memory store, `C:\Users\profe\.claude\projects\C--Users-profe\memory\`; its "pending after approval" and "launch reminders" notes are folded in here. Sources: the session transcript, both memory stores, and:
 - `CROSS_SESSION_HANDOFF.md`;
 - the governance docs, D44–D101;
 - `SESSION_HANDOFF_2026-10-*`;
@@ -31,6 +31,8 @@ Copies: memory `launch-must-do-list.md` · Downloads `<date>_APE_LAUNCH_MUST_DO.
 | A1 | Check that the fingerprint of `ota-after-approval-39-23` still matches 39/23 (iOS `91355451…`, Android `a903813a…`). Run tsc and the full suite. Check `eas update:list --branch production` for a rollback | to do |
 | A2 | Publish the OTA to production, iOS then Android (`eas update`), **owner's GO in the moment** | to do |
 | A3 | **Upload the 40 newer topic tiles** at the same moment as A2: `node scripts/upload-topic-tiles.mjs`, which needs the service key. The server holds the 2026-09-09 versions of gs3100 3150 3160 3170 3180 3200 3220 3290 3310 3330 3340 3400 3420 3430 3490 3530 3540 3600 3680 3700 3790 3820 3830 3840 3930 3960 3990 4040 4090 4120 4210 4230 4310 4410 4470 4490 4700 4710 4720 4730. Found 2026-10-26 by md5 comparison; the owner-approved images from 10-17/18 were committed but never uploaded. Spot-check 2–3 public URLs | to do |
+| A3b | **Upload the 32 newer certificate-card images** (`course-cards` bucket) at the same moment: `node scripts/upload-credential-cards.mjs`, which needs the service key. The server has 09-30 versions of 31 `cert-*-v3.webp` files plus `prog-broadcast-podcast-and-streaming-audio-v3.webp`. Found 2026-10-26 by md5; the home-store note of 2026-10-11 said to upload them with the tiles | to do |
+| A6 | **Turn on "labs required for the final exam"**, in the SAME sitting, AFTER the OTA is published, never before: `lab_requirements_enforced()` → `select true` (it's `false` on live, checked 2026-10-26). Then test: a cert with no labs → the exam starts; labs undone → `labs_incomplete`; an earned cert → `already_earned`. This is Comp A's "certificate rules switch on approval day" | to do (Comp A or ccode, owner's go) |
 | A4 | Prove the update landed on a device (Sentry OTA context or Pixel logcat). Report the update IDs | to do |
 | A5 | **Comp A server changes**, timed with the OTA: the time-trial removal (`docs/2026-10-24_CCODE_TO_COMP_A_REMOVE_TIME_TRIAL_SERVER.md`): stop honouring `trial_passed`, revoke `credit_time_trial`, reset passes | waiting on Comp A's SQL, then the owner's go |
 
@@ -68,6 +70,8 @@ Copies: memory `launch-must-do-list.md` · Downloads `<date>_APE_LAUNCH_MUST_DO.
 | Comp A | Time-trial server SQL (A5) |
 | Comp A | Link-context migration (`search_query`, `wikipedia_url`) on approval day; Comp B returns |
 | Comp A | Approval-day server switches: certificate rules (labs + final exam) and the daily certificate-release job. Tell Comp A if the app assumes certificates release instantly |
+| Comp A | **The toddler-hunt server brief** (Downloads `2026-10-14_COMP_A_TODDLER_SERVER_FIXES.md`, items #2 #3 #6 #11 #12 #14) is applied **after** the OTA. Then ccode wires the client halves it names (`p_client_msg_id`, restore reasons, `appAccountToken` / `obfuscatedAccountId`). Status to confirm with Comp A |
+| Comp A | Terms zero-tolerance + 24 h clause (owner-approved 2026-10-15, `2026-10-15_TERMS_ZERO_TOLERANCE_DRAFT.md`) is published with the launch-day site (B6) |
 | Comp A | Per-seat access codes with end dates. App redeem-screen wording for expired/used codes is to be confirmed |
 | Comp A | Email confirmation ON within 14 days of launch. App sign-up copy ("check your email") and the confirm landing screen are to be confirmed |
 
