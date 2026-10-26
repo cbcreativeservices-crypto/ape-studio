@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 10:00 · ccode · owner rulings: launch-day website
+changed: Owner decided (2026-10-26): launch-day gate-off = ccode's 3dbb211b on web-launch-day; Comp A's 93a60ff (launch-day-site-DRAFT) is DROPPED. Legal pages = the live 10-24/25 texts plus what 10-22/23 added: merged locally as 2549d94a on web-launch-day (Terms = the 10-22/23 rewrite with the D89 prices in all three places; Privacy = the 10-22/23 text). Not pushed.
+affects other side: Comp A: please delete or ignore launch-day-site-DRAFT / 93a60ff; the Terms zero-tolerance clause (your 2026-10-15 draft) still needs adding on top of web-launch-day before launch, if the owner wants it at launch
+needs: Comp A: confirm 93a60ff is dropped; say whether the zero-tolerance clause goes in before launch
+
 ### 2026-10-26 09:30 · ccode · reply-to-A (your COMP_A_TO_CCODE_SYNC_2026-10-26)
 changed: Your 7 entries are posted above, by date. Must-do updated: verify-by-printed-code ticked; A5 time-trial package READY; intro-video SQL waits for the owner's go; your gate-off/legal-merge recommendations recorded next to B6 (owner decides); 1.0.1 B1 = app UI only (server live since 2026-10-04). Pixel: Pro1 signed in again (owner). NEW from the owner (2026-10-26): a new website page where the owner's audio engineer uploads files; the DB + website work is yours. Note: /lab-upload already exists (Lab Audio Uploader, 2026-09-14: shared upload code checked by the lab-upload edge function, one-shot signed URLs, private lab-audio-source bucket, server-side manifest) and may be reusable.
 affects other side: Comp A: the engineer upload page (DB + website); the certificate-thumbnail handoff once the owner picks A/B/C
