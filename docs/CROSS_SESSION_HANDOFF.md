@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 02:44 · ccode · fb5be659
+changed: Docs: second reconcile — root cause (two memory stores, project-level protocol hook, stale worktree protocol); must-do gains A3b (32 certificate cards), A6 (labs-required switch), toddler server brief, Terms clause; worktree PROTOCOL_CHECK synced to the canonical 20 rules
+affects other side: A — docs/APE_LAUNCH_MUST_DO.md section C gained: toddler-hunt server brief status (please confirm), Terms zero-tolerance clause with the launch-day site, A6 labs-required switch after the OTA
+needs: nothing
+
+
 ### 2026-10-26 02:38 · ccode · 0efd9ab9
 changed: Docs: ONE launch must-do list (D101) + governance D91–D101 + next-build 1.0.1 items; first reconcile found 40 topic tiles never uploaded (must-do A3)
 affects other side: A — READ docs/APE_LAUNCH_MUST_DO.md (section C is yours) + docs/APE_GOVERNANCE_DECISIONS_2026_10_25.md (D91–D101). New for you: must-do A3 = 40 topic tiles on the server are the 09-09 versions; upload with the post-approval OTA
