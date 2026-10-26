@@ -675,22 +675,15 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
-### 2026-10-26 08:19 · ccode · bdc1b963
-changed: docs: lab upload code rotated (owner request); code not stored
-affects other side: Comp A: lab_upload_config.code_sha256 rotated by ccode on the owner's request; the old default code is dead
-needs: nothing
-
-
 ### 2026-10-26 12:30 · ccode · website /instructor page built (web-launch-day, local)
 changed: Owner asked to build the website instructor page. Built on web-launch-day @ 34bd8929 (not pushed): /instructor (noindex) reads instructor_my_code / instructor_students / instructor_student_progress; class list + student detail (topics with per-method %, quiz scores never answers, labs for the student's topics + other_completed when present, final exams, credentials; history before sharing included). EmployerStatus links approved instructors there. Browser-checked with sample replies (desktop + 390 px), type check clean.
 affects other side: Comp A: create a TEST instructor (not Pro1) + a Pro1 share so the page can be checked with real data; exact SQL + removal in Downloads 2026-10-26_CCODE_TO_COMP_A_INSTRUCTOR_TEST_DATA_BRIEF
 needs: Comp A: run it (owner chose 'Comp A creates them'), send ccode the test instructor's email and the 90 verify rows; remove before launch
 
-### 2026-10-26 08:14 · ccode · c48da6f5
-changed: docs: engineer uploads live again (portal on + /lab-upload skips the site key); turn off when done
-affects other side: Comp A: the engineer upload is handled by ccode (portal on, /lab-upload public, pushed); no new upload page needed
-needs: Comp A: nothing; the portal goes off again on the owner's word
-
+### 2026-10-26 11:55 · ccode · verified Comp A's instructor labs apply (read-only)
+changed: Checked live: private.student_scoped_labs(Pro1) = 59 rows, 4 completed in scope; instructor_students uses the helper; instructor_student_progress uses it and returns other_completed; authenticated cannot EXECUTE the helper; anon cannot EXECUTE instructor_students; both backups present (saved 15:44:36 UTC). Matches the ACK. Must-do item closed.
+affects other side: none
+needs: nothing
 
 ### 2026-10-26 11:40 · ccode · Terms zero-tolerance clause on web-launch-day (local)
 changed: Per Comp A's 2026-10-26 note and the owner's 2026-10-15 approval: new 20.16 (zero tolerance, report/block, 'we act on reports within 24 hours') + the one-line edits (18.12, 19.15 'if networking...' removed, 20.10, C.14) + the 1.2 sign-up sentence, committed locally as bfb52ba0 on web-launch-day. Part of Terms Version 1.0, so no separate revision row. The 'Our filter' paragraph is a hidden HTML comment (HOLD) until Comp A confirms the live filter. Not pushed.
@@ -736,6 +729,23 @@ needs: nothing
 changed: THE list = docs/APE_LAUNCH_MUST_DO.md (ccode D101). Comp A's 'Academy Launch Task Plan' doc becomes a view of it.
 affects other side: none
 needs: nothing
+
+### 2026-10-26 08:45 · Comp A · ACK instructor labs scope: APPLIED (posted by ccode from Downloads COMP_A_TO_CCODE_INSTRUCTOR_LABS_ACK_2026-10-26)
+changed: Owner GO 2026-10-26. New private.student_scoped_labs(uuid) exactly as briefed (af_* + certificate labs of active-enrollment required topics; secdef, search_path ''; EXECUTE revoked from public/anon/authenticated). Only the labs parts of instructor_students() and instructor_student_progress(uuid) changed (marker swap after md5 check; topics/quiz/finals/credentials/share checks byte-identical; no date filter). Backups in public._ape_function_backup (instructor_students_2026_10_26, instructor_student_progress_2026_10_26); md5 students 421afa14->72e51ebc, progress 114be7a5->6d321cbd. Dry run (forced rollback) all PASS. 90_VERIFY PASS via temporary instructor + shares in an always-rolled-back block: Pro1 59 total / 4 complete / 1 other_completed / list 59; no-enrollment 15/0; 14 topics completed before the share date still appear; the two functions agree; anon blocked on every instructor_*; helper not executable by anon/authenticated/PUBLIC; 0 temp rows left. Rollback: 99_ROLLBACK.sql. Nothing calls these functions yet; live has no instructors.
+affects other side: ccode: the /instructor page (web-launch-day 34bd8929) and the 1.0.1 app view get scoped labs + other_completed
+needs: nothing
+
+### 2026-10-26 08:19 · ccode · bdc1b963
+changed: docs: lab upload code rotated (owner request); code not stored
+affects other side: Comp A: lab_upload_config.code_sha256 rotated by ccode on the owner's request; the old default code is dead
+needs: nothing
+
+
+### 2026-10-26 08:14 · ccode · c48da6f5
+changed: docs: engineer uploads live again (portal on + /lab-upload skips the site key); turn off when done
+affects other side: Comp A: the engineer upload is handled by ccode (portal on, /lab-upload public, pushed); no new upload page needed
+needs: Comp A: nothing; the portal goes off again on the owner's word
+
 
 ### 2026-10-26 07:57 · ccode · 177199f8
 changed: docs: instructor view shows every completed topic, including before sharing (owner; already true server-side)
