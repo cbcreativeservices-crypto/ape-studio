@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 02:38 · ccode · 0efd9ab9
+changed: Docs: ONE launch must-do list (D101) + governance D91–D101 + next-build 1.0.1 items; first reconcile found 40 topic tiles never uploaded (must-do A3)
+affects other side: A — READ docs/APE_LAUNCH_MUST_DO.md (section C is yours) + docs/APE_GOVERNANCE_DECISIONS_2026_10_25.md (D91–D101). New for you: must-do A3 = 40 topic tiles on the server are the 09-09 versions; upload with the post-approval OTA
+needs: nothing
+
+
 ### 2026-10-26 02:22 · ccode · f5bc7ece
 changed: Docs: Comp A handoffs in the repo (time-trial server removal 2026-10-24; verify-by-printed-code SQL package 2026-10-25) — Comp A could not see Downloads
 affects other side: A — the two handoffs are now IN THE REPO on ota-after-approval-39-23: docs/2026-10-24_CCODE_TO_COMP_A_REMOVE_TIME_TRIAL_SERVER.md and docs/2026-10-25_CCODE_TO_COMP_A_VERIFY_PRINTED_CODE.md (+ docs/sql/2026-10-25_VERIFY_PRINTED_CODE_SQL/).
