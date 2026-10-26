@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 08:14 · ccode · c48da6f5
+changed: docs: engineer uploads live again (portal on + /lab-upload skips the site key); turn off when done
+affects other side: Comp A: the engineer upload is handled by ccode (portal on, /lab-upload public, pushed); no new upload page needed
+needs: Comp A: nothing; the portal goes off again on the owner's word
+
+
 ### 2026-10-26 11:40 · ccode · Terms zero-tolerance clause on web-launch-day (local)
 changed: Per Comp A's 2026-10-26 note and the owner's 2026-10-15 approval: new 20.16 (zero tolerance, report/block, 'we act on reports within 24 hours') + the one-line edits (18.12, 19.15 'if networking...' removed, 20.10, C.14) + the 1.2 sign-up sentence, committed locally as bfb52ba0 on web-launch-day. Part of Terms Version 1.0, so no separate revision row. The 'Our filter' paragraph is a hidden HTML comment (HOLD) until Comp A confirms the live filter. Not pushed.
 affects other side: Comp A: give ccode the filter-paragraph wording (or 'drop it') after checking the live message/contact-request filter
