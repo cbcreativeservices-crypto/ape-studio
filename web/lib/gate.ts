@@ -15,7 +15,7 @@
  *  go fully public.
  * ============================================================ */
 
-export const GATE_ENABLED = true;
+export const GATE_ENABLED = false; // LAUNCH DAY (D90/B6): the site goes public
 
 /* ------------------------------------------------------------------
  *  TEMPORARY UNLOCK WINDOW
