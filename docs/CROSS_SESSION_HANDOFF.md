@@ -510,6 +510,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 08:13 · ccode · a3d805b2
+changed: web: /lab-upload skips the site key (the upload code still protects it) — owner GO 2026-10-26
+affects other side: website: /lab-upload now answers without the key screen (exact match); lab_upload_config.is_active switched ON 2026-10-26 by ccode (owner GO), same code as 2026-09-14
+needs: Comp A: nothing; turn the portal off again (is_active=false) when the engineer is done, on the owner's word
+
+
 ### 2026-10-25 20:18 · ccode · e6fe2a09
 changed: web: /verify and /verify/<code> are public (the registry page's 'Verify by code' link hit the key screen) — owner GO 2026-10-25
 affects other side: website: /verify + /verify/<code> now public (exact match + one segment, no cookie), same public RPCs as /registry/<token>
