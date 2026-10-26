@@ -79,7 +79,8 @@ Copies: memory `launch-must-do-list.md` · Downloads `<date>_APE_LAUNCH_MUST_DO.
 
 | # | What | Status |
 |---|---|---|
-| D1 | Task A item 6: test the paywall close button on the Pixel (owner said yes, USB) | after the owner's change on the Certificates screen |
+| D0 | **NEXT: the owner's change list**, starting with a change on Progress → Certificates (Pixel, pro1@). Owner's order 2026-10-26: change list, then D1–D5 | ask the owner |
+| D1 | Task A item 6: test the paywall close button on the Pixel (owner said yes, USB) | after D0 |
 | D2 | Task A item 7: the onboarding **intro video** shows once per **account** (it's per device today) | to design (needs a server flag → Comp A) |
 | D3 | Task B: website launch-day prep (B6, B7) | to do |
 | D4 | Task C: the 1.0.1 plan | to do |
