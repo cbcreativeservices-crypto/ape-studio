@@ -510,6 +510,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-25 20:18 · ccode · e6fe2a09
+changed: web: /verify and /verify/<code> are public (the registry page's 'Verify by code' link hit the key screen) — owner GO 2026-10-25
+affects other side: website: /verify + /verify/<code> now public (exact match + one segment, no cookie), same public RPCs as /registry/<token>
+needs: nothing
+
+
 ### 2026-10-24 11:49 · ccode · 487d9d11
 changed: web: /institutions is public (App Review notes link to it for institutional licensing) — owner GO 2026-10-24
 affects other side: website only — /institutions now answers without the key screen (exact match in web/proxy.ts); nothing for A
