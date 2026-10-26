@@ -446,3 +446,8 @@ the disclosure unconditionally, which is what the hard rule actually requires.
 2. **Fill-in and Matching review screens** — give each an end-of-round review where "Research and learn more ↗ · View images ↗" can sit. Owner wanted the links there too (2026-10-24); today the term IS the Fill-in answer and shows for under a second, and a Matching pair vanishes.
 3. **Android `uses-feature android.hardware.camera required=false`** — so Play doesn't filter out camera-less devices (audit 2026-10-24; distribution only).
 4. **Website terms page title** says "Terms of Service" while the app's link says "Terms of Use". Align (website change, no build).
+5. **Purchase events to analytics (1.0.1, D98)**: purchase started / completed / failed / restored → Aptabase. **First** add the "Analytics" purpose to Purchase history in App Store Connect (App Privacy) and Play (Data safety). Rides with the Meta SDK update, which changes those forms anyway.
+6. **Meta SDK** (install events), App Tracking Transparency prompt, App Privacy and Data safety updates. Owner 2026-10-25: paid Meta ads are held until 1.0.1.
+7. **Instructor progress view**, with a short student-data statement for schools (owner 2026-10-25).
+
+> The single cross-cutting list (post-approval OTA, launch day, Comp A, 1.0.1) is `docs/APE_LAUNCH_MUST_DO.md` (D101). Keep both in step.
