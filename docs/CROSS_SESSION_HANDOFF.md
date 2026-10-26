@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 03:01 · ccode · a5fef2f7
+changed: Docs: must-do D0 = owner's change list next (owner's order 2026-10-26); session hand-over to local_3f36429b
+affects other side: nothing for A (ccode queue order only)
+needs: nothing
+
+
 ### 2026-10-26 02:44 · ccode · fb5be659
 changed: Docs: second reconcile — root cause (two memory stores, project-level protocol hook, stale worktree protocol); must-do gains A3b (32 certificate cards), A6 (labs-required switch), toddler server brief, Terms clause; worktree PROTOCOL_CHECK synced to the canonical 20 rules
 affects other side: A — docs/APE_LAUNCH_MUST_DO.md section C gained: toddler-hunt server brief status (please confirm), Terms zero-tolerance clause with the launch-day site, A6 labs-required switch after the OTA
