@@ -44,7 +44,10 @@ describe('glossary intro waits its turn', () => {
     // The seen flag is written in dismiss(), which a held intro never reaches.
     // If hold ever short-circuits before that, a fresh install loses its intro.
     const dismiss = intro.slice(intro.indexOf('const dismiss = useCallback'), intro.indexOf('return { visible:'));
-    assert.match(dismiss, /AsyncStorage\.setItem\(INTRO_STORAGE_PREFIX \+ key/, 'dismiss no longer persists the seen flag');
+    // (2026-10-26: the write is the shared markIntroSeen, also used for the
+    // account-level intro video.)
+    assert.match(dismiss, /markIntroSeen\(key\)/, 'dismiss no longer persists the seen flag');
+    assert.match(intro, /export function markIntroSeen\(key: IntroKey\): void \{\s*void AsyncStorage\.setItem\(INTRO_STORAGE_PREFIX \+ key, '1'\)/);
     assert.ok(!/hold/.test(dismiss), 'hold leaked into dismiss — a deferred intro would be retired instead of shown later');
   });
 

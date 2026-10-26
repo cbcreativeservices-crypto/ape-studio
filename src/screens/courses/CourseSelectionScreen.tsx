@@ -56,8 +56,10 @@ import { prefetchCardArt } from '../../features/home/cardArtPrefetch';
 import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { BookIcon } from '../../components/BookIcon';
-import { useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
-import { onScreenIntrosReset } from '../../features/intro/screenIntros';
+import { markIntroSeen, useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
+import { INTRO_STORAGE_PREFIX, onScreenIntrosReset } from '../../features/intro/screenIntros';
+import { fetchIntroVideoSeenOnAccount, markIntroVideoSeenOnAccount } from '../../features/profile/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Svg, { Path } from 'react-native-svg';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
@@ -1495,11 +1497,64 @@ export function CourseSelectionScreen() {
   // focused; the seen-flag is written only when the video plays to the end
   // (IntroVideoScreen), so a failed play is offered again on the next launch.
   const introVideo = useScreenIntro('introVideo');
+  // ONCE PER ACCOUNT (owner 2026-10-26, D99 item 7; it was once per device).
+  // For a signed-in account the server's mark decides, asked BEFORE the video
+  // can launch: already seen → no video (and this phone remembers); not seen
+  // but this phone has played it → that counts, and the account is marked.
+  // No answer (signed out, offline, or the server has no mark yet) → today's
+  // per-device flag decides, unchanged. A brand-new account still gets the
+  // video: sign-up resets the intros (AuthScreen, owner 2026-10-23).
+  // `resolved`, not `tierKnown`: a FAILED membership read must not hold the
+  // video forever (a first launch offline still gets it, as today).
+  const [authNonce, setAuthNonce] = useState(0);
   useEffect(() => {
-    if (!introVideo.visible || introVideoLaunched) return;
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') setAuthNonce((n) => n + 1);
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
+  /** null = still asking; 'seen' blocks the launch; 'free' = the device flag decides. */
+  const [accountVideo, setAccountVideo] = useState<'seen' | 'free' | null>(null);
+  useEffect(() => {
+    if (!resolved) {
+      setAccountVideo(null);
+      return undefined;
+    }
+    let alive = true;
+    setAccountVideo(null);
+    void (async () => {
+      const onAccount = await fetchIntroVideoSeenOnAccount();
+      if (onAccount == null) {
+        if (alive) setAccountVideo('free');
+        return;
+      }
+      let onDevice: string | null = null;
+      try {
+        onDevice = await AsyncStorage.getItem(INTRO_STORAGE_PREFIX + 'introVideo');
+      } catch {
+        onDevice = null;
+      }
+      if (onAccount) {
+        if (onDevice == null) markIntroSeen('introVideo');
+        if (alive) setAccountVideo('seen');
+        return;
+      }
+      if (onDevice != null) {
+        void markIntroVideoSeenOnAccount();
+        if (alive) setAccountVideo('seen');
+        return;
+      }
+      if (alive) setAccountVideo('free');
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [resolved, authNonce]);
+  useEffect(() => {
+    if (accountVideo !== 'free' || !introVideo.visible || introVideoLaunched) return;
     introVideoLaunched = true;
     (navigation as any).navigate('IntroVideo');
-  }, [introVideo.visible, navigation]);
+  }, [accountVideo, introVideo.visible, navigation]);
   // First-run "start here" cues (owner 2026-09-14): Explore breathes until first
   // opened; About breathes until opened OR one week after this first Home view.
   const attract = useHomeAttract();

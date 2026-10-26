@@ -200,6 +200,35 @@ export async function fetchMyQrToken(): Promise<string | null> {
   }
 }
 
+/**
+ * The onboarding intro video, once per ACCOUNT (owner 2026-10-26, D99 item 7;
+ * it was once per device). The account's own "seen" mark lives on the server
+ * (Comp A: `my_intro_video_seen()` → boolean, `mark_intro_video_seen()`).
+ * Answers null when signed out, on any error, or while the server does not
+ * have the functions yet — the caller then keeps today's per-device rule.
+ */
+export async function fetchIntroVideoSeenOnAccount(): Promise<boolean | null> {
+  try {
+    if (!(await hasSafeSession(supabase.auth.getSession(), 'fetchIntroVideoSeenOnAccount'))) return null;
+    const { data, error } = await supabase.rpc('my_intro_video_seen');
+    if (error || typeof data !== 'boolean') return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+/** Mark this account's intro video seen. Best-effort and silent: a lost mark
+ *  only means the video can play once more on another phone. */
+export async function markIntroVideoSeenOnAccount(): Promise<void> {
+  try {
+    if (!(await hasSafeSession(supabase.auth.getSession(), 'markIntroVideoSeenOnAccount'))) return;
+    await supabase.rpc('mark_intro_video_seen');
+  } catch {
+    // see above
+  }
+}
+
 /** The member's QR token for a PRINTED certificate (full-app run 2,
  *  2026-10-02): like fetchMyQrToken, but a read that FAILED throws instead of
  *  answering null — a certificate exported during a network blip used to print

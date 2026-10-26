@@ -23,6 +23,7 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
+import { markIntroVideoSeenOnAccount } from '../../features/profile/api';
 import { useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'IntroVideo'>;
@@ -50,8 +51,13 @@ export function IntroVideoScreen({ navigation, route }: Props) {
     (played: boolean) => {
       if (doneRef.current) return;
       doneRef.current = true;
-      // Only a video that actually played to the end retires the first-run flag.
-      if (played && !replay) dismiss();
+      // Only a video that actually played to the end retires the first-run flag
+      // — on this phone, and on the account when one is signed in (once per
+      // ACCOUNT, owner 2026-10-26; a no-op for a guest or before Comp A's mark).
+      if (played && !replay) {
+        dismiss();
+        void markIntroVideoSeenOnAccount();
+      }
       navigation.replace('OnboardingLanding');
     },
     [navigation, replay, dismiss],

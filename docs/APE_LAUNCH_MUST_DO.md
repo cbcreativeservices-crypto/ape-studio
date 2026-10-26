@@ -89,13 +89,13 @@ Copies: memory `launch-must-do-list.md` · Downloads `<date>_APE_LAUNCH_MUST_DO.
 | D0g | Flashcards: with reveal-all (red eye) on, a label reads "FULL VIEW: Term + Definition Together" | built on the OTA branch 2026-10-26; web preview checked |
 | D0h | Bookmark add/remove: besides the term's bookmark animation, the Bookmarks LIST icon flashes purple 0.4 s — in Flashcards AND at the top of the Glossary | built on the OTA branch 2026-10-26; Flashcards measured on web (#b45bff ~0.4 s, add and remove); Glossary same hook, not clicked (its device-ID consent) |
 | D0i | Glossary + Flashcards: the ↗ arrow after "Research and learn more" and "View images" becomes the owner's browser-window-with-arrow icon (the globe was rejected as too compact), traced exactly from the owner's image as an SVG (WebLinkIcon), in the link's gray | OWNER APPROVED 2026-10-26 (gray); built on the OTA branch; overlay-checked against the original |
-| D1 | Task A item 6: test the paywall close button on the Pixel (owner said yes, USB) | after D0 |
-| D2 | Task A item 7: the onboarding **intro video** shows once per **account** (it's per device today) | to design (needs a server flag → Comp A) |
+| D1 | Task A item 6: test the paywall close button on the Pixel (owner said yes, USB) | DONE 2026-10-26 ~4:29 AM, PASS on the Pixel 7 Pro, Android build 23, guest (Pro1 signed out with the owner's OK): Home → Membership opens the paywall; ✕ closes it to Home; Android BACK closes it; a tap just off the ✕ closes it. iPhone not tested (no device access) |
+| D2 | Task A item 7: the onboarding **intro video** shows once per **account** (it's per device today) | APP HALF built on the OTA branch 2026-10-26 (owner's pick): Home asks `my_intro_video_seen()` before the video; no answer → today's per-device rule, so safe before the server. Comp A brief with the SQL: Downloads `2026-10-26_CCODE_TO_COMP_A_INTRO_VIDEO_PER_ACCOUNT.md/.html`. **Waiting: Comp A runs the SQL on the owner's go** |
 | D3 | Task B: website launch-day prep (B6, B7) | to do |
 | D4 | Task C: the 1.0.1 plan | to do |
 | D5 | Reply to Comp A on Tasks A/B/C in `CROSS_SESSION_HANDOFF.md` | to do |
 | D6 | Pro1 shows "Academy member" twice on its registry page (no registry name set). Optionally hide the label when no name is set (website) | owner's call |
-| D7 | `labCatalog.ts` comment says "163 ratified functions"; the truth is 166 (Comp A). Fix it in the next code change | small |
+| D7 | `labCatalog.ts` comment says "163 ratified functions"; the truth is 166 (Comp A). Fix it in the next code change | DONE 2026-10-26: the comment keeps its 2026-08-31 history and adds "166 as of 2026-10-26" |
 
 ## E. Version 1.0.1 (needs a build)
 

@@ -576,7 +576,8 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     kind: 'hub',
     route: 'CalcLab',
     // Count the CALCULATORS, not the workspaces (fix 2026-08-31: the row
-    // said "55 Calculators" over 163 ratified functions). A getter, so the
+    // said "55 Calculators" over 163 ratified functions — 166 as of
+    // 2026-10-26, per Comp A; the number shown is always computed). A getter, so the
     // calc registry loads when the count is first shown, not at app start.
     get count() {
       return calcFunctionCount();
