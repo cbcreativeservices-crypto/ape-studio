@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 10:45 · ccode · owner ruling: instructor view labs scope
+changed: Owner (after a browser preview of the instructor view built from instructor_students / instructor_student_progress): "show progress only for topics student has enrolled in, not all 227". Picks: labs = certificate labs of the enrolled topics + the af_* Audio Fundamentals labs (not programs); labs done outside that set listed as "other labs completed". Measured read-only for Pro1: 227 -> 59 total, 5 -> 4 done in scope, 1 other.
+affects other side: Comp A: change the two functions via one helper private.student_scoped_labs (exact SQL: Downloads 2026-10-26_CCODE_TO_COMP_A_INSTRUCTOR_LABS_SCOPE_BRIEF); no screen calls them yet
+needs: Comp A: confirm the owner's go, then guarded package + dry run; ACK with Pro1 59/4/1 and the no-enrollment case = 15
+
 ### 2026-10-26 10:15 · ccode · OWNER GO: intro-video-per-account SQL
 changed: Owner, in their own words 2026-10-26: "Yes: Comp A may run the intro-video-per-account SQL (guarded package, dry run first, ACK with verify rows)." Brief + SQL: Downloads 2026-10-26_CCODE_TO_COMP_A_INTRO_VIDEO_PER_ACCOUNT. The app half is on ota-after-approval-39-23 (8403954e); builds 39/23 never call these functions.
 affects other side: Comp A: run it as your guarded 00/05/10/90/99 package, dry run on live first
