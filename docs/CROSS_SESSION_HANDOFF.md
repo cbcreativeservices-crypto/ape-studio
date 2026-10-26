@@ -510,6 +510,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 07:14 · ccode · 2549d94a
+changed: Merge origin/audio-tools-engine into web-launch-day (owner ruling 2026-10-26: legal = the live 10-24/25 texts + what 10-22/23 added)
+affects other side: website (launch-day branch, local only): the legal pages now = the 10-22/23 rewrite + the live 2027 prices; nothing live changes until the owner pushes
+needs: nothing; push on the owner's launch-day go
+
+
 ### 2026-10-26 04:37 · ccode · 1e605767
 changed: web: registry page says 'Academy member' once when no registry name is set (owner D6, 2026-10-26)
 affects other side: nothing yet — local web-launch-day branch, not pushed (Comp A section G)
