@@ -13,13 +13,14 @@ const fc = read('src/screens/study/FlashcardsScreen.tsx');
 const gl = read('src/screens/glossary/GlossaryScreen.tsx');
 
 test('one shared flash for Glossary and Flashcards', () => {
-  assert.match(fc, /import \{ AckFlash \} from '\.\.\/\.\.\/components\/AckFlash';/);
-  assert.match(gl, /import \{ AckFlash \} from '\.\.\/\.\.\/components\/AckFlash';/);
+  // (2026-10-26: both also take useAckTint, the 0.4 s purple on Bookmarks.)
+  assert.match(fc, /import \{ AckFlash(, useAckTint)? \} from '\.\.\/\.\.\/components\/AckFlash';/);
+  assert.match(gl, /import \{ AckFlash(, useAckTint)? \} from '\.\.\/\.\.\/components\/AckFlash';/);
   assert.doesNotMatch(gl, /function AckFlash\(/, 'Glossary must not keep its own copy');
 });
 
 test('the filter-row Bookmark and Custom list icons flash', () => {
-  assert.match(fc, /<AckFlash n=\{ack\.fav\}>\n\s+<BookmarkIcon color=\{c\} filled=\{bookmarkedOnly\} \/>/);
+  assert.match(fc, /<AckFlash n=\{ack\.fav\}>\n\s+<BookmarkIcon color=\{favLit \? colors\.purple : c\} filled=\{bookmarkedOnly\} \/>/);
   assert.match(fc, /<AckFlash n=\{ack\.custom\}>\n\s+<DeckIcon color=\{colors\.customList\} size=\{17\} \/>/);
 });
 
@@ -32,4 +33,15 @@ test('a card toggle flashes only when it was not refused', () => {
 test('in full screen the flash waits for the filter row to come back', () => {
   assert.match(fc, /rowHiddenRef\.current = fullscreen;/);
   assert.match(fc, /if \(fullscreen \|\| !pendingAck\.current\) return;/);
+});
+
+// Owner 2026-10-26: on every Bookmarks add/remove the list icon ALSO shows
+// purple for 0.4 s — Flashcards and the Glossary's top row, one shared hook.
+test('the Bookmarks icon turns purple for 0.4 s on add and remove (both screens)', () => {
+  const flash = read('src/components/AckFlash.tsx');
+  assert.match(flash, /export const ACK_TINT_MS = 400;/);
+  assert.match(flash, /export function useAckTint\(n: number\): boolean/);
+  assert.match(fc, /const favLit = useAckTint\(ack\.fav\);/);
+  assert.match(gl, /const favLit = useAckTint\(ack\.fav\);/);
+  assert.match(gl, /<BookmarkIcon color=\{favLit \? colors\.purple : c\}/);
 });

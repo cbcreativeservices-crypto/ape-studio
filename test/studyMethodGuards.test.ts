@@ -15,7 +15,8 @@ test('Flashcards: tutorials wait for Low-Light, focus and fullscreen', () => {
   // Deferred, not consumed: the block check comes BEFORE the seen-flag write.
   const show = src.indexOf('const showTutorial = useCallback(');
   const blocked = src.indexOf('if (tutorialBlockedRef.current)', show);
-  const persisted = src.indexOf('AsyncStorage.setItem(INTRO_STORAGE_PREFIX + key', show);
+  // (2026-10-26: the write lives in markTutorialSeen, shared with the DAW note.)
+  const persisted = src.indexOf('markTutorialSeen(key)', show);
   assert.ok(show > 0 && blocked > show && persisted > blocked, 'a blocked tutorial must not be marked seen');
   assert.match(src, /\{tutorial && !tutorialBlocked \? <IntroSheet/);
 });

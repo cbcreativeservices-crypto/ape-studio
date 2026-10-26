@@ -288,6 +288,7 @@ const OPT_OUTS: Record<string, { count: number; why: string }> = {
   'features/study/scenarioExempt.ts': { count: 1, why: 'a derived cache: a lost marker is found again on the next fetch' },
   'features/study/termsExempt.ts': { count: 1, why: 'a derived cache: a lost marker is found again on the next fetch' },
   'features/celebration/celebrationSeen.ts': { count: 1, why: 'the app’s own seen-marker, not a change the user made' },
+  'features/intro/topicScopeNote.ts': { count: 1, why: 'the DAW note’s card counter (2026-10-26): the app’s own bookkeeping, not a change the user made; a lost count only shows the note a little later' },
   'features/enrollment/enrollmentStore.ts': { count: 1, why: 'the server list adopted on a pristine device: a refusal is re-adopted next launch' },
 };
 

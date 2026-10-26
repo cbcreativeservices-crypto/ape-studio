@@ -43,8 +43,10 @@ test('View images: Google Images with SafeSearch ON, opened directly', () => {
     'https://www.google.com/search?tbm=isch&safe=active&q=XLR%20connector%20audio',
   );
   const link = read('src/features/research/ResearchMoreLink.tsx');
-  assert.match(link, />Research and learn more ↗<\/Text>/);
-  assert.match(link, />View images ↗<\/Text>/);
+  // (2026-10-26: the ↗ became the owner's browser-window icon, WebLinkIcon.)
+  assert.match(link, />Research and learn more<\/Text>\s*<WebLinkIcon /);
+  assert.match(link, />View images<\/Text>\s*<WebLinkIcon /);
+  assert.doesNotMatch(link, /↗<\/Text>/);
   assert.match(link, /onPress=\{\(\) => openViewImages\(name, searchQuery\)\}/);
   assert.match(read('src/features/research/researchLinks.ts'), /export function openViewImages\(term: string, searchQuery\?: unknown\): void \{\s*const name = term\.trim\(\);\s*if \(name\) open\(googleImagesUrlFor\(name, searchQuery\), 'google\.com'\);/);
 });

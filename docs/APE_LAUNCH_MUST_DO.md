@@ -79,12 +79,16 @@ Copies: memory `launch-must-do-list.md` · Downloads `<date>_APE_LAUNCH_MUST_DO.
 
 | # | What | Status |
 |---|---|---|
-| D0 | **NEXT: the owner's change list** (given 2026-10-26). Owner's order: change list, then D1–D5 | in progress |
+| D0 | The owner's change list (given 2026-10-26). Owner's order: change list, then D1–D5 | DONE 2026-10-26 (owner: "done with my changes"); each row below says what is checked; all of it reaches phones only with the post-approval OTA |
 | D0a | Progress screen: order top→bottom = Share your achievements, Certificates, Programs, Topics. The Certificates strip shows small images of the REAL earned certificates (not blue circles); tap one to open it. On the Certificates screen the left image box and the full-screen view show the certificate itself, not the credential art | built on the OTA branch 2026-10-26; checked as a guest on the web preview; signed-in + phone check waits for the OTA |
 | D0b | Progress "Share your achievements" stops being a button. It shows the certificate image, the user's QR (pending/website tile with no account), and a blue underlined link to their /registry page (as on Get Discovered) | built on the OTA branch 2026-10-26; web preview checked (guest) |
 | D0c | Put the current Android build (23) on the Pixel (sideload from the EAS 7fac1daa AAB, debug-keystore signed like build 20) | DONE 2026-10-26: build 20 uninstalled (owner OK), 23 installed, versionCode 23 confirmed; owner signs in again |
 | D0d | Study Dashboard topic popup (image + "About this topic"): scrolling on iPhone is stubborn | built on the OTA branch 2026-10-26 (the whole popup scrolls as one page, no inner scroll box); web checked; iPhone check after the OTA |
-| D0e | Flashcard screen change: the owner gives it after D0a–D0d | ask the owner |
+| D0e | Flashcards, DAW Fundamentals (the free topic): a "Don't see a term?" popup, once, at whichever comes first: the ALL list open ~7 s (first time) or the 30th card shown. Explains that terms live in the topic that covers them fully (EQ → Equalization (EQ), compression → Dynamics — Compression, Limiting & Gating (Core)). OK closes it. No pick from the owner, so the defaults apply: the full draft text, once ever (whichever trigger comes first), 30 cards counted across visits | built on the OTA branch 2026-10-26; web preview: shows after 7 s in the ALL list, OK closes it, never again. 30-card path pinned by test, not clicked through; phones after the OTA |
+| D0f | Flashcards: the ALL list opens with a plain tap (no long press) | built on the OTA branch 2026-10-26; web preview checked |
+| D0g | Flashcards: with reveal-all (red eye) on, a label reads "FULL VIEW: Term + Definition Together" | built on the OTA branch 2026-10-26; web preview checked |
+| D0h | Bookmark add/remove: besides the term's bookmark animation, the Bookmarks LIST icon flashes purple 0.4 s — in Flashcards AND at the top of the Glossary | built on the OTA branch 2026-10-26; Flashcards measured on web (#b45bff ~0.4 s, add and remove); Glossary same hook, not clicked (its device-ID consent) |
+| D0i | Glossary + Flashcards: the ↗ arrow after "Research and learn more" and "View images" becomes the owner's browser-window-with-arrow icon (the globe was rejected as too compact), traced exactly from the owner's image as an SVG (WebLinkIcon), in the link's gray | OWNER APPROVED 2026-10-26 (gray); built on the OTA branch; overlay-checked against the original |
 | D1 | Task A item 6: test the paywall close button on the Pixel (owner said yes, USB) | after D0 |
 | D2 | Task A item 7: the onboarding **intro video** shows once per **account** (it's per device today) | to design (needs a server flag → Comp A) |
 | D3 | Task B: website launch-day prep (B6, B7) | to do |

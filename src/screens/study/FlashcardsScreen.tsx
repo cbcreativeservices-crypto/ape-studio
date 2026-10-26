@@ -46,7 +46,7 @@ import { GlassButton } from '../../components/GlassButton';
 import { LedMeterWell, segmentsForPct } from '../../components/LedMeter';
 import { StudioButton } from '../../components/StudioButton';
 import { DeckIcon } from '../../components/DeckIcon';
-import { AckFlash } from '../../components/AckFlash';
+import { AckFlash, useAckTint } from '../../components/AckFlash';
 import { useCoachMark } from '../../lib/coachMark';
 import { isHazardTerm } from '../../lib/hazard';
 import { useShake } from '../../lib/useShake';
@@ -79,7 +79,8 @@ import { consumeDevPreview } from '../../features/dev/devPreview';
 import { devBypass } from '../../config/devMode';
 import { IntroSheet, useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
-import { INTRO_STORAGE_PREFIX } from '../../features/intro/screenIntros';
+import { INTRO_STORAGE_PREFIX, SCREEN_INTROS } from '../../features/intro/screenIntros';
+import { countTopicScopeCard, isTopicScopeTopic, TOPIC_SCOPE_CARDS, TOPIC_SCOPE_LIST_MS } from '../../features/intro/topicScopeNote';
 import { emitStudyProgress, StudySession } from '../../features/study/sync';
 import { markTermsExempt } from '../../features/study/termsExempt';
 import { supabase } from '../../lib/supabase';
@@ -155,6 +156,15 @@ const SHOW_MEDIA_KEY = 'ape:fcShowMedia';
 const SHOW_LINKS_KEY = 'ape:fcShowLinks';
 
 type Difficulty = 'beginner' | 'intermediate' | 'advanced';
+
+/** The one-time tutorials this screen presents itself (T2, T3, the DAW note). */
+type TutorialKey = 'flashcardsCustomize' | 'flashcardsPower' | 'flashcardsTopicScope';
+
+/** Retire a tutorial. Silent on purpose: the app's tutorial seen-flag — a
+ *  lost flag offers it once more. Nothing is kept under the dev bypass. */
+function markTutorialSeen(key: TutorialKey): void {
+  if (!devBypass('alwaysShowIntros')) void AsyncStorage.setItem(INTRO_STORAGE_PREFIX + key, '1').catch(() => {});
+}
 
 /** Long-press popup list selectors (Booth 2026-07-11 / 2026-07-18). */
 type TermListSelKey =
@@ -480,6 +490,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     pendingAck.current = null;
     setAck((a) => ({ ...a, [k]: a[k] + 1 }));
   }, [fullscreen]);
+  // …and the Bookmarks icon turns purple for 0.4 s (owner 2026-10-26).
+  const favLit = useAckTint(ack.fav);
   // Reveal SOLO (user request 2026-07-18): the red "eye" button opens an inline
   // study view — term + primary definition shown together. Like a mixer solo:
   // it overrides the reveal filters and locks the FILTERS button until cleared.
@@ -829,11 +841,16 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // ---- Flashcard tutorials T2 (Customize) + T3 (Power Features), user request
   // 2026-07-18. T1 (Flashcards) is the on-entry ScreenIntroOverlay below. Each
   // shows once (persisted), or every time under the dev "alwaysShowIntros" flag.
-  const [tutorial, setTutorial] = useState<
-    null | { key: 'flashcardsCustomize' | 'flashcardsPower'; onDone?: () => void }
-  >(null);
+  const [tutorial, setTutorial] = useState<null | { key: TutorialKey; onDone?: () => void }>(null);
   const t2Done = useRef(false);
   const t3Done = useRef(false);
+  // "Don't see a term?" — DAW (the free topic) only, once ever (owner
+  // 2026-10-26; features/intro/topicScopeNote). Shown at whichever comes
+  // first: the ALL list open 7 s (drawn INSIDE that list's Modal) or the
+  // 30th card shown here, counted across visits (the tutorial path).
+  const scopeDone = useRef(false);
+  const scopeTopic = isTopicScopeTopic(topicName);
+  const [scopeInList, setScopeInList] = useState(false);
   const swipeCount = useRef(0);
   // Offer the "Customize Your Deck" tutorial at most ONCE per screen visit — the
   // swipe trigger was re-firing it every swipe past 5 (and every time under the
@@ -882,19 +899,19 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     overlaysSuppressed || !isFocused || fullscreen || !!termList || sessionTimer.configOpen || timerOpen || !introsSettled;
   const tutorialBlockedRef = useRef(tutorialBlocked);
   tutorialBlockedRef.current = tutorialBlocked;
-  const [pendingTutorial, setPendingTutorial] = useState<
-    null | 'flashcardsCustomize' | 'flashcardsPower'
-  >(null);
+  const [pendingTutorial, setPendingTutorial] = useState<null | TutorialKey>(null);
 
   useEffect(() => {
     void AsyncStorage.multiGet([
       INTRO_STORAGE_PREFIX + 'flashcardsCustomize',
       INTRO_STORAGE_PREFIX + 'flashcardsPower',
+      INTRO_STORAGE_PREFIX + 'flashcardsTopicScope',
     ])
       .then((pairs) => {
         for (const [k, v] of pairs) {
           if (v == null) continue;
-          if (k.endsWith('flashcardsPower')) t3Done.current = true;
+          if (k.endsWith('flashcardsTopicScope')) scopeDone.current = true;
+          else if (k.endsWith('flashcardsPower')) t3Done.current = true;
           else t2Done.current = true;
         }
       })
@@ -902,7 +919,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   }, []);
 
   const showTutorial = useCallback(
-    (key: 'flashcardsCustomize' | 'flashcardsPower', onDone?: () => void) => {
+    (key: TutorialKey, onDone?: () => void) => {
       if (tutorialBlockedRef.current) {
         // A long-press still gets what it reached for; the tutorial waits.
         if (onDone) onDone();
@@ -911,9 +928,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       }
       setTutorial((cur) => (cur ? cur : { key, onDone }));
       if (key === 'flashcardsPower') t3Done.current = true;
+      else if (key === 'flashcardsTopicScope') scopeDone.current = true;
       else t2Done.current = true;
-      // Silent on purpose: the app's tutorial seen-flag — a lost flag offers it once more.
-      if (!devBypass('alwaysShowIntros')) void AsyncStorage.setItem(INTRO_STORAGE_PREFIX + key, '1').catch(() => {});
+      markTutorialSeen(key);
     },
     [],
   );
@@ -937,6 +954,39 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     setTutorial(null);
     if (done) setTimeout(done, HOST_DISMISS_MS);
   }, []);
+
+  // Trigger 1: the ALL list has been open TOPIC_SCOPE_LIST_MS.
+  const allListOpen = termList?.key === 'all';
+  useEffect(() => {
+    if (!scopeTopic || !allListOpen || scopeDone.current) return undefined;
+    const t = setTimeout(() => {
+      if (scopeDone.current) return;
+      scopeDone.current = true;
+      setScopeInList(true);
+      markTutorialSeen('flashcardsTopicScope');
+    }, TOPIC_SCOPE_LIST_MS);
+    return () => clearTimeout(t);
+  }, [scopeTopic, allListOpen]);
+  useEffect(() => {
+    if (!termList) setScopeInList(false);
+  }, [termList]);
+  // Trigger 2: the TOPIC_SCOPE_CARDS-th card shown in this topic. Presented
+  // through showTutorial, so every block above (Low-Light, another tab, full
+  // screen, an open list or intro) defers it rather than stacking Modals.
+  const scopeCardId = card?.id;
+  useEffect(() => {
+    if (!scopeTopic || !scopeCardId || scopeDone.current) return undefined;
+    let alive = true;
+    void countTopicScopeCard().then((n) => {
+      if (!alive || n == null || n < TOPIC_SCOPE_CARDS || scopeDone.current) return;
+      // Another tutorial is up: the next card asks again.
+      if (tutorialRef.current) return;
+      showTutorialRef.current('flashcardsTopicScope');
+    });
+    return () => {
+      alive = false;
+    };
+  }, [scopeTopic, scopeCardId]);
 
   // T3 opened via a category long-press: show the tutorial first, then continue
   // to the list the user was reaching for. Otherwise open the list directly.
@@ -1712,7 +1762,13 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           <FilterChip
             label="ALL"
             active={diffSel.size === 0}
-            onPress={() => { setDiffSel(new Set()); resetToStart(); }}
+            // A plain TAP opens the ALL list (owner 2026-10-26: "should not
+            // need a long press"); it still clears the level filters.
+            onPress={() => {
+              setDiffSel(new Set());
+              resetToStart();
+              openTermList('All terms', 'all');
+            }}
             onLongPress={() => handleChipLongPress('All terms', 'all')}
           />
           <FilterChip label="A–Z" active={orderMode === 'az'} onPress={() => { setOrderMode('az'); resetToStart(); }} />
@@ -1806,7 +1862,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             label="Bookmarks"
             icon={(c) => (
               <AckFlash n={ack.fav}>
-                <BookmarkIcon color={c} filled={bookmarkedOnly} />
+                <BookmarkIcon color={favLit ? colors.purple : c} filled={bookmarkedOnly} />
               </AckFlash>
             )}
             active={bookmarkedOnly}
@@ -1908,6 +1964,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                 {soloReveal ? (
                   // Open study view: term + primary DEFINITION together.
                   <>
+                    {/* Says what the red eye did (owner 2026-10-26, exact text). */}
+                    <Text style={styles.fullViewTag} maxFontSizeMultiplier={1.3}>
+                      FULL VIEW: Term + Definition Together
+                    </Text>
                     <Text
                       style={styles.levelTerm}
                       maxFontSizeMultiplier={TERM_MAX_FONT_SCALE}
@@ -2409,6 +2469,28 @@ export function FlashcardsScreen({ navigation, route }: Props) {
               <Text style={styles.tlCloseText}>CLOSE</Text>
             </Pressable>
           </View>
+          {/* "Don't see a term?" drawn INSIDE this Modal (owner 2026-10-26):
+              a second root Modal over an open one is refused on iOS. */}
+          {scopeInList ? (
+            <View style={styles.scopeScrim} accessibilityViewIsModal>
+              <View style={styles.scopeCard}>
+                <Text style={styles.scopeTitle} accessibilityRole="header">
+                  {SCREEN_INTROS.flashcardsTopicScope.title}
+                </Text>
+                <ScrollView style={{ flexGrow: 0 }} showsVerticalScrollIndicator>
+                  <Text style={styles.scopeBody}>{SCREEN_INTROS.flashcardsTopicScope.body}</Text>
+                </ScrollView>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="OK, close this note"
+                  style={({ pressed }) => [styles.scopeOk, pressed && { opacity: 0.8 }]}
+                  onPress={() => setScopeInList(false)}
+                >
+                  <Text style={styles.scopeOkText}>{SCREEN_INTROS.flashcardsTopicScope.button ?? 'OK'}</Text>
+                </Pressable>
+              </View>
+            </View>
+          ) : null}
         </View>
       </Modal>
 
@@ -2668,6 +2750,14 @@ const styles = StyleSheet.create({
   tlEmpty: { fontFamily: fonts.barlowItalic, fontSize: 14, color: colors.textMuted },
   tlClose: { marginTop: 12, alignItems: 'center', paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: '#3a3a3a' },
   tlCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.4, color: colors.textSubAlt },
+  // "Don't see a term?" over the ALL list (owner 2026-10-26) — the list's own
+  // card grammar, one step forward.
+  scopeScrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 24 },
+  scopeCard: { width: '100%', maxWidth: 400, maxHeight: '82%', backgroundColor: '#1a1b1e', borderRadius: 14, borderWidth: 1, borderColor: `${colors.amber}88`, padding: 20, gap: 12 },
+  scopeTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, letterSpacing: 0.4, color: colors.textPrimary },
+  scopeBody: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 23, color: colors.textSecondary },
+  scopeOk: { alignSelf: 'stretch', alignItems: 'center', paddingVertical: 12, borderRadius: 8, backgroundColor: colors.amber },
+  scopeOkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.6, color: '#111' },
   fsTerm: { fontFamily: fonts.oswaldMedium, fontSize: 36, letterSpacing: 0.5, color: colors.textPrimary, textAlign: 'center' },
   fsTermSmall: { fontFamily: fonts.oswaldMedium, fontSize: 25, color: colors.amber, textAlign: 'center', marginBottom: 16 },
   fsEyebrow: {
@@ -2775,6 +2865,9 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   levelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.8, color: colors.amberLabel },
+  // The red eye's own label (owner 2026-10-26): the eye's red, so the two read
+  // as one control.
+  fullViewTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: '#ff5b52', marginBottom: 6 },
   // flexGrow: short text still fills the scroller, so a tap below it is the
   // text's own press (see CardTextPress).
   // 22 px bottom: the last line clears the absolute "Suggest a correction"

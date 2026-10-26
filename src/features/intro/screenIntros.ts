@@ -20,6 +20,7 @@ export type IntroKey =
   | 'flashcards' // T1 — on first Flashcards entry
   | 'flashcardsCustomize' // T2 — after ~5 card views/swipes
   | 'flashcardsPower' // T3 — first category long-press, or ~45s in
+  | 'flashcardsTopicScope' // DAW (free topic) — ALL list open 7 s, or 30th card (owner 2026-10-26)
   | 'glossary'
   | 'glossaryCustom' // Glossary CUSTOM STUDY LIST filter — first tap (UX review 2026-10-15)
   | 'awards'
@@ -212,6 +213,22 @@ export const SCREEN_INTROS: Record<
       'Mark terms as Known as you master them, and use Bookmarks or Custom categories to create personalized ' +
       'study collections.',
     button: 'Start Studying',
+  },
+  // DAW Fundamentals (the free topic) only — see features/intro/topicScopeNote
+  // (owner 2026-10-26: "don't see a term? ... you write the text"). Topic
+  // names are the live active titles (checked in the DB 2026-10-26).
+  flashcardsTopicScope: {
+    placeholder: false,
+    title: 'Don’t See a Term?',
+    body:
+      'DAW Fundamentals & Session Management covers the DAW itself: sessions, tracks, routing, editing, plug-ins and keeping projects organized.\n\n' +
+      'Many audio terms have a topic of their own, where they’re covered fully:\n\n' +
+      '•  EQ → Equalization (EQ)\n' +
+      '•  Compression, limiting, gating → Dynamics — Compression, Limiting & Gating (Core)\n' +
+      '•  Reverb → Reverb\n' +
+      '•  Delay & echo → Delay & Time-Based Effects\n\n' +
+      'Every term is grouped into the topic that covers it specifically and completely. You can look up any term in the Glossary.',
+    button: 'OK',
   },
   glossary: {
     // Final glossary welcome copy (user-provided 2026-07-18).

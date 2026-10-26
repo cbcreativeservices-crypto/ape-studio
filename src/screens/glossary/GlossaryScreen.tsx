@@ -92,7 +92,7 @@ import {
 import { collapsedDefinitionLines } from '../../features/glossary/collapsedLines';
 import { recordRecentTerm, useRecentTerms, useRecentTermsUnreadable } from '../../features/glossary/recentTerms';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
-import { AckFlash } from '../../components/AckFlash';
+import { AckFlash, useAckTint } from '../../components/AckFlash';
 import { GlossaryLockView } from '../../features/glossary/GlossaryLockView';
 import { GlossaryDeviceKeyView } from '../../features/glossary/GlossaryDeviceKeyView';
 import {
@@ -2194,6 +2194,8 @@ ${COPY.glossaryFreeAllowance}`,
     pendingAck.current = null;
     setAck((a) => ({ ...a, [k]: a[k] + 1 }));
   }, [popupTrail.length]);
+  // …and the Bookmarks icon turns purple for 0.4 s (owner 2026-10-26).
+  const favLit = useAckTint(ack.fav);
   // "Our Commitment to You" (owner 2026-10-09): once the ~4 minutes are
   // reached it waits for the reader to CLOSE their next definition — a natural
   // pause, never in the middle of a lookup or on the way somewhere else.
@@ -4196,7 +4198,7 @@ ${COPY.glossaryFreeAllowance}`,
             // "# Terms" readout (user request 2026-07-24).
             <AckFlash n={ack.fav}>
               <View style={styles.chipIconWrap}>
-                <BookmarkIcon color={c} filled={filter === 'favorites'} size={17} />
+                <BookmarkIcon color={favLit ? colors.purple : c} filled={filter === 'favorites'} size={17} />
               </View>
             </AckFlash>
           )}
