@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 03:37 · ccode · 2e4cf973
+changed: Progress: share card + real certificates; popups scroll as one page (owner 2026-10-26)
+affects other side: app UI only (Progress, Certificates, popups); JS-only, OTA branch
+needs: nothing
+
+
 ### 2026-10-26 03:01 · ccode · 9b17dfff
 changed: Protocol copy: rule 20 = ONE MEMORY STORE (~/.claude/ape-memory)
 affects other side: nothing for A
