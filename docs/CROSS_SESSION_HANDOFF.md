@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 02:20 · ccode · fcdab163
+changed: Launch audit Task A (OTA-safe): Sentry environment = EAS channel; TEMP lab probe dev-only; forced sign-out sends queued study time first (bounded 5 s)
+affects other side: app: OTA after approval — telemetry env (preview builds stop reporting as production), lab probe gone from store builds, study queue flushed before single-device sign-out
+needs: nothing
+
+
 ### 2026-10-25 · ccode · SQL package (no app commit)
 changed: public_verify_credentials should also accept the 8-char code PRINTED on certificates (first 8 of users.qr_token); today every printed code answers "No match". Paste files: Downloads/2026-10-25_VERIFY_PRINTED_CODE_SQL (00_PRECHECK → 05_BACKUP → 10_APPLY → 90_VERIFY; 99_ROLLBACK). Dry-run on live DB with forced rollback = PASS. Website /verify + /verify/<code> made public (9ce8282d on audio-tools-engine).
 affects other side: Comp A runs the package — OWNER APPROVED 2026-10-25 ("I approve running it"). Brief: Downloads/2026-10-25_CCODE_TO_COMP_A_VERIFY_PRINTED_CODE. Also: your 2026-10-25 Task A item 5 (save time-trial passes) is VOID — the time trial is removed (99ab8484).
