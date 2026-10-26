@@ -22,7 +22,7 @@ Copies: memory `launch-must-do-list.md` · Downloads `<date>_APE_LAUNCH_MUST_DO.
 | Store builds | iOS 1.0 (**39**) and Android 1.0.0 (**23**), both IN REVIEW since 2026-10-24 |
 | Rule while in review | **D74:** no production OTA. Website and server changes only with the owner's go |
 | Post-approval OTA branch | `ota-after-approval-39-23` (worktree `C:\Users\profe\dev\ape-workbench`). JS/content only, committed and pushed as each change lands (PROTOCOL rule 18) |
-| Owner's test phone | Pixel 7 Pro has Android **build 20** installed (versionCode 20), not 23 |
+| Owner's test phone | Pixel 7 Pro has Android **build 23** since 2026-10-26 (sideloaded, debug-key signed). Pro1 was signed out overnight for the D1 test, so the owner signs in again |
 
 ## A. When BOTH stores approve: the post-approval update (owner's GO each time)
 
@@ -58,8 +58,8 @@ Copies: memory `launch-must-do-list.md` · Downloads `<date>_APE_LAUNCH_MUST_DO.
 | B3 | Play: remove or update the Open-testing-20 item in "Changes ready to publish (13)". **Never press that batch before launch day** | to do |
 | B4 | Press Apple **Release** and Google **Publish** together | to do |
 | B5 | Revoke any reviewer Lifetime on nonmember@ | to do |
-| B6 | Website: gate OFF, plus store links (`web/lib/appstore.ts`: Apple id6813607582, Play com.cbcreativeservices.apestudio) as ONE launch-day push. Comp A Task B; it pairs with gate-off commit 93a60ff on `launch-day-site-DRAFT` | prepare (ccode), push on the owner's go |
-| B7 | Check the Play account-deletion URL (Data safety) loads publicly with the gate ON and OFF (Comp A Task B3) | to check |
+| B6 | Website: gate OFF, plus store links (`web/lib/appstore.ts`: Apple id6813607582, Play com.cbcreativeservices.apestudio) as ONE launch-day push. Comp A Task B; it pairs with gate-off commit 93a60ff on `launch-day-site-DRAFT` | PREPARED 2026-10-26 overnight, LOCAL ONLY: `web-launch-day` @ 3dbb211b (worktree `ape-web-launch`) has gate off + store links. NOT pushed. **Before launch day, the owner decides a merge conflict:** this branch's Terms/Privacy edits (10-22/23) vs the live branch's newer legal edits (10-24/25: 2027 prices back in the Terms, the camera line, /institutions, /verify). Comp A's own gate-off commit 93a60ff is on Comp A's computer, not here. Push = the owner's go |
+| B7 | Check the Play account-deletion URL (Data safety) loads publicly with the gate ON and OFF (Comp A Task B3) | CHECKED 2026-10-26: gate ON → /support, /privacy, /terms answer 200 (/about 401); /support has "How do I request account or data deletion?". Gate OFF → every path passes (web/proxy.ts:109). Comp A/owner: confirm Play's Data-safety deletion URL is /support |
 | B8 | Test data: pro1@ holds 5 test certificates (`credential_awards.source='owner_test'`) and `show_in_registry=true`. Remove with `delete from credential_awards where source='owner_test'` if the owner wants a clean launch | owner's call |
 
 ## C. Waiting on others
@@ -91,13 +91,15 @@ Copies: memory `launch-must-do-list.md` · Downloads `<date>_APE_LAUNCH_MUST_DO.
 | D0i | Glossary + Flashcards: the ↗ arrow after "Research and learn more" and "View images" becomes the owner's browser-window-with-arrow icon (the globe was rejected as too compact), traced exactly from the owner's image as an SVG (WebLinkIcon), in the link's gray | OWNER APPROVED 2026-10-26 (gray); built on the OTA branch; overlay-checked against the original |
 | D1 | Task A item 6: test the paywall close button on the Pixel (owner said yes, USB) | DONE 2026-10-26 ~4:29 AM, PASS on the Pixel 7 Pro, Android build 23, guest (Pro1 signed out with the owner's OK): Home → Membership opens the paywall; ✕ closes it to Home; Android BACK closes it; a tap just off the ✕ closes it. iPhone not tested (no device access) |
 | D2 | Task A item 7: the onboarding **intro video** shows once per **account** (it's per device today) | APP HALF built on the OTA branch 2026-10-26 (owner's pick): Home asks `my_intro_video_seen()` before the video; no answer → today's per-device rule, so safe before the server. Comp A brief with the SQL: Downloads `2026-10-26_CCODE_TO_COMP_A_INTRO_VIDEO_PER_ACCOUNT.md/.html`. **Waiting: Comp A runs the SQL on the owner's go** |
-| D3 | Task B: website launch-day prep (B6, B7) | to do |
-| D4 | Task C: the 1.0.1 plan | to do |
-| D5 | Reply to Comp A on Tasks A/B/C in `CROSS_SESSION_HANDOFF.md` | to do |
-| D6 | Pro1 shows "Academy member" twice on its registry page (no registry name set). Optionally hide the label when no name is set (website) | owner's call |
+| D3 | Task B: website launch-day prep (B6, B7) | DONE 2026-10-26 overnight — see B6 (local commit; a legal-text merge for the owner) and B7 (checked) |
+| D4 | Task C: the 1.0.1 plan | DONE 2026-10-26 overnight: Downloads `2026-10-26_APE_1.0.1_PLAN.md/.html` (owner decisions marked OWNER DECIDES inside) |
+| D5 | Reply to Comp A on Tasks A/B/C in `CROSS_SESSION_HANDOFF.md` | DONE 2026-10-26 overnight: LOG entry "reply-to-A (Tasks A/B/C…)" on the OTA branch; asks Comp A for the intro-video SQL (owner's go), the Play deletion URL, and which gate-off commit |
+| D6 | Pro1 shows "Academy member" twice on its registry page (no registry name set). Optionally hide the label when no name is set (website) | DONE 2026-10-26 (owner YES): `web-launch-day` @ 1e605767, local only; can also be cherry-picked to the live site on the owner's go |
 | D7 | `labCatalog.ts` comment says "163 ratified functions"; the truth is 166 (Comp A). Fix it in the next code change | DONE 2026-10-26: the comment keeps its 2026-08-31 history and adds "166 as of 2026-10-26" |
 
 ## E. Version 1.0.1 (needs a build)
+
+The plan, in order with the owner's decisions marked: Downloads `2026-10-26_APE_1.0.1_PLAN.md/.html` (D4).
 
 | What | Source |
 |---|---|
