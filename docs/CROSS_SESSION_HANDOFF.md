@@ -510,6 +510,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 08:01 · ccode · bfb52ba0
+changed: web (launch-day): Terms zero-tolerance clause 20.16 + consistency edits (owner-approved 2026-10-15; Comp A 2026-10-26)
+affects other side: website launch-day branch (local): Terms 20.16 zero tolerance in; its filter paragraph on HOLD
+needs: Comp A: the HOLD filter-paragraph wording once the live filter is confirmed
+
+
 ### 2026-10-26 07:14 · ccode · 2549d94a
 changed: Merge origin/audio-tools-engine into web-launch-day (owner ruling 2026-10-26: legal = the live 10-24/25 texts + what 10-22/23 added)
 affects other side: website (launch-day branch, local only): the legal pages now = the 10-22/23 rewrite + the live 2027 prices; nothing live changes until the owner pushes
