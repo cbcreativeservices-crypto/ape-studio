@@ -70,7 +70,11 @@ export default function RegistryResult({ token }: { token: string }) {
   return (
     <div className="mt-8">
       <div className="rounded-xl border border-border bg-surface p-6 sm:p-8">
-        <p className="text-sm text-text-sub">Academy member</p>
+        {/* With no registry name set the server's label IS "Academy member";
+            the eyebrow then said it twice (owner D6, 2026-10-26). */}
+        {profile.holder_label?.trim().toLowerCase() === "academy member" ? null : (
+          <p className="text-sm text-text-sub">Academy member</p>
+        )}
         <p className="font-display text-2xl font-semibold text-foreground">
           {profile.holder_label}
         </p>
