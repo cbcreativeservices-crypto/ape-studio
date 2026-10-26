@@ -48,6 +48,9 @@ Copies: memory `launch-must-do-list.md` · Downloads `<date>_APE_LAUNCH_MUST_DO.
 | 1e272c8f | iPhone edge swipe on the Profile + Progress tab roots (D97) |
 | 1e914db5 | iPhone swipe-back on 25 audited screens (D97) |
 | fcdab163 | Launch audit Task A items 2–4: Sentry environment = channel, lab probe dev-only, study queue flushed before a forced sign-out (D99) |
+| 2e4cf973 | Owner change list D0a/b/d: Progress share card + real certificates; popups with text scroll as one page |
+| 6578217a | Owner change list D0e–i: DAW "Don't See a Term?" note, ALL tap, FULL VIEW label, purple Bookmarks flash, browser-window link icon |
+| 8403954e | D2 intro video once per ACCOUNT (app half; server SQL is Comp A's) + D7 comment |
 
 ## B. Launch day (D90, owner presses the buttons)
 
