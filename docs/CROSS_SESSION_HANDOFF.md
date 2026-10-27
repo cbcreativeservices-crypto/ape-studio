@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 16:15 · ccode · e6bf6e82
+changed: R5: re-send a round's answers when complete_scenario_round returns 0
+affects other side: nothing [MD:R5] (app now re-sends a round's answers when complete_scenario_round returns 0; ships in the post-approval OTA)
+needs: nothing
+
+
 ### 2026-10-27 16:09 · ccode · e1eed53c
 changed: R7: certificate name saved through set_registry_name (community-rules filter)
 affects other side: Comp A: the app now saves the certificate name only through set_registry_name [MD:R7]. R7b (revoke the direct registry_name UPDATE grant) must wait until the post-approval OTA has reached phones: the store builds 39/23 still write the column directly
