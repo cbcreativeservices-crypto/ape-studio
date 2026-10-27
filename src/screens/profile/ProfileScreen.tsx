@@ -39,6 +39,8 @@ import {
   type UnreadBaseline,
   isAdultConfirmed,
   isRegistryStateKnown,
+  onRegistryNameRefused,
+  REGISTRY_NAME_REFUSED,
   setRegistryVisible,
   type PublicProfile,
   USER_NAME_MAX,
@@ -590,6 +592,10 @@ export function ProfileScreen() {
    *  throws at DOWNLOAD instead. Measured here with the very same function, so
    *  an unengravable name is caught while the person is still holding the
    *  keyboard rather than at the moment they've earned something. */
+  // R7 (2026-10-27): the server's community-rules filter refused the
+  // certificate name — it was NOT saved, so the certificate keeps the old one.
+  const [nameRefused, setNameRefused] = useState(false);
+  useEffect(() => onRegistryNameRefused(setNameRefused), []);
   const registryNameFits = useMemo(
     () => certificateNameFits(pub.registryName),
     [pub.registryName],
@@ -1346,14 +1352,19 @@ export function ProfileScreen() {
             ref={registryNameRef}
             style={styles.input}
             value={pub.registryName}
-            onChangeText={(t) => setPubKey('registryName', t)}
+            onChangeText={(t) => {
+              setNameRefused(false);
+              setPubKey('registryName', t);
+            }}
             placeholder="Your Preferred Name"
             placeholderTextColor={colors.textMuted}
             autoCapitalize="words"
             returnKeyType="done"
             accessibilityLabel="Name on your certificates"
           />
-          {pub.registryName.trim().length > 0 && !registryNameFits ? (
+          {nameRefused ? (
+            <Text style={styles.fieldError}>{REGISTRY_NAME_REFUSED}</Text>
+          ) : pub.registryName.trim().length > 0 && !registryNameFits ? (
             <Text style={styles.fieldError}>
               This is too long to print on a certificate. Shorten it, or put a space in it
               so it can run over two lines.

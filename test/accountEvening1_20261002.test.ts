@@ -53,7 +53,7 @@ const FAKE_PROFILE_API =
   encodeURIComponent(
     `export async function fetchMyRegistryName() { return null; }
      export async function fetchMyRegistryListing() { return { state: 'none' }; }
-     export async function saveMyRegistryName() { return true; }
+     export async function saveMyRegistryName(name) { return { ok: true, name }; }
      export async function setRegistryListing() { return true; }`,
   );
 const FAKE_AUTH_API =

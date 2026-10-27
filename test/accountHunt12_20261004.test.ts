@@ -78,7 +78,7 @@ const FAKE_PROFILE_API =
   encodeURIComponent(
     `export function fetchMyRegistryName() { return globalThis.__AH12__.nameRead(); }
      export function fetchMyRegistryListing() { return globalThis.__AH12__.listingRead(); }
-     export async function saveMyRegistryName(name) { globalThis.__AH12_NAMES__.push(name); return true; }
+     export async function saveMyRegistryName(name) { globalThis.__AH12_NAMES__.push(name); return { ok: true, name }; }
      export async function setRegistryListing(input) {
        globalThis.__AH12_LISTING__.push({ on: input.on, bio: input.bio });
        return true;

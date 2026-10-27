@@ -253,14 +253,29 @@ function noteSyncedRegistryName(v: string | null): void {
   lastSyncedRegistryName = v;
 }
 
+/* The server's community-rules filter can refuse a certificate name (R7,
+ * 2026-10-27). The sync is fire-and-forget, so the refusal is told to whoever
+ * is listening — the Profile screen shows it under the field, and clears it on
+ * the next accepted save. Never shown for a plain failure (offline): that keeps
+ * the local copy and retries on the next edit, as before. */
+export const REGISTRY_NAME_REFUSED =
+  'That name wasn’t saved: it looks like it breaks our community rules. Use the name you want printed on your certificates.';
+type NameRefusedListener = (refused: boolean) => void;
+const nameRefusedListeners = new Set<NameRefusedListener>();
+export function onRegistryNameRefused(cb: NameRefusedListener): () => void {
+  nameRefusedListeners.add(cb);
+  return () => void nameRefusedListeners.delete(cb);
+}
+
 function queueRegistryNameSync(name: string): void {
   const trimmed = name.trim();
   if (!trimmed || trimmed === lastSyncedRegistryName) return;
   if (registrySyncTimer) clearTimeout(registrySyncTimer);
   registrySyncTimer = setTimeout(() => {
     registrySyncTimer = null;
-    void saveMyRegistryName(trimmed).then((ok) => {
-      if (ok) lastSyncedRegistryName = trimmed;
+    void saveMyRegistryName(trimmed).then((r) => {
+      if (r.ok) lastSyncedRegistryName = r.name;
+      if (r.ok || r.refused) nameRefusedListeners.forEach((cb) => cb(!r.ok));
     });
   }, REGISTRY_SYNC_IDLE_MS);
 }

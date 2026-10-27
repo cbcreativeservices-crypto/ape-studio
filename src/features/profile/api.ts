@@ -9,7 +9,7 @@ import { hasSafeSession, safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
 import { classifyProfileRead, type ProfileRead } from './profileRead';
-import { myUserId, myUserRowOrThrow } from '../account/myUserRow';
+import { myUserRowOrThrow } from '../account/myUserRow';
 export type { ProfileRead } from './profileRead';
 
 /* ---- fetches ---- */
@@ -370,41 +370,27 @@ export async function setRegistryListing(input: {
   }
 }
 
-/** Persist the registry name to the server. Returns false on any failure
- *  (guest, offline, RLS) so the caller can keep the local copy and retry later. */
-export async function saveMyRegistryName(name: string): Promise<boolean> {
+/** What the server did with a certificate-name save. `refused` = the
+ *  community-rules filter said no (retrying the same text fails the same way);
+ *  `failed` = anything else (guest, offline, too long) — keep the local copy. */
+export type RegistryNameSave = { ok: true; name: string } | { ok: false; refused: boolean };
+
+/**
+ * Persist the registry name to the server through `set_registry_name` (must-do
+ * R7, live 2026-10-27). This is the name PRINTED on certificates and shown when
+ * someone scans a code, so it goes through the same community-rules filter as
+ * the rest of the profile: the RPC trims and collapses spaces, caps it at 60,
+ * and raises `community_rules` for a blocked word or contact details. It
+ * resolves the caller from auth.uid() itself, so no user id is sent, and it
+ * returns the name as stored — only that counts as saved (never "no error").
+ */
+export async function saveMyRegistryName(name: string): Promise<RegistryNameSave> {
   try {
-    const userId = await myUserId();
-    if (!userId) return false;
-    /**
-     * ⛔ NO ERROR IS NOT THE SAME AS "IT SAVED".
-     *
-     * An `update().eq()` that matches ZERO rows returns `error: null` — the
-     * write simply had nothing to write to. Without `.select()` there is no way
-     * to tell that apart from a successful update, so this returned `true` for
-     * a save that never happened. Row-level security is exactly how that
-     * occurs: the column grant here is scoped, and `own_users_update` restricts
-     * it to `auth_id = auth.uid()`, so a stale or mismatched `userId` is
-     * filtered out silently rather than refused loudly.
-     *
-     * It matters beyond a lost setting. This is the name that gets PRINTED on
-     * the certificate: `certificatePdf` reads the SERVER copy of
-     * `registry_name`, while the Profile screen keeps showing the device-local
-     * value it just "saved". The learner sees their corrected name in the app
-     * and a different one on the credential, with nothing anywhere reporting a
-     * failure.
-     *
-     * The house idiom, already applied in three other places after the same
-     * bug: ask for the row back and treat an empty result as failure.
-     */
-    const { data, error } = await supabase
-      .from('users')
-      .update({ registry_name: name.trim() })
-      .eq('id', userId)
-      .select('id');
-    return !error && Array.isArray(data) && data.length > 0;
+    const { data, error } = await supabase.rpc('set_registry_name', { p_name: name.trim() });
+    if (error) return { ok: false, refused: (error.message ?? '').toLowerCase().includes('community_rules') };
+    return typeof data === 'string' && data ? { ok: true, name: data } : { ok: false, refused: false };
   } catch {
-    return false;
+    return { ok: false, refused: false };
   }
 }
 
