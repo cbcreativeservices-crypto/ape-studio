@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 11:09 · ccode · ea2c8ed9
+changed: Tests: pin the Study Dashboard wording in the My Custom List intro (fixes 15b3d4cc's 2 failing pins)
+affects other side: none (tests only)
+needs: nothing
+
+
 ### 2026-10-27 11:06 · ccode · 15b3d4cc
 changed: Study Dashboard: one name everywhere + its own title in the header (owner 2026-10-27)
 affects other side: none (app copy only)
