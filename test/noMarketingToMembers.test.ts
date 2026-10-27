@@ -19,7 +19,10 @@ test('Home card eyebrows: plain labels for members', () => {
   assert.match(s, /upsell \? 'FREE · CAREER DISCOVERY' : 'CAREER DISCOVERY'/);
   assert.match(s, /upsell \? 'INCLUDED FOR EVERYONE' : 'MEASUREMENT TOOLS'/);
   assert.match(s, /upsell \? 'INCLUDED FOR EVERYONE' : 'REFERENCE'/);
-  assert.match(s, /upsell \? 'FREE TOPIC' : 'TOPIC'/);
+  // The two always-on topics: FREE TOPIC for known non-members; members get the
+  // reason they sit on Home instead (owner 2026-10-27, freeTopicMemberEyebrow).
+  assert.match(s, /\? upsell\s*\? 'FREE TOPIC'/);
+  assert.doesNotMatch(s, /'REQUIRED FOR EVERY CERTIFICATE'[^\n]*FREE|'WHERE MOST LEARNERS START'[^\n]*FREE/);
   assert.match(s, /isTools && upsell \? \(\s*<Text style=\{styles\.cardToolsSub\}[^>]*>/);
   assert.equal((s.match(/const upsell = useUpsellAllowed\(\);/g) ?? []).length, 2, 'card + screen both read the house helper');
   assert.doesNotMatch(s, /isMember \? '|!isMember \?/, 'no copy branches on isMember alone');

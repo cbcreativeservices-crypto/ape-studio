@@ -1277,7 +1277,16 @@ function CourseCardView({
     : isGlossary
       ? upsell ? 'INCLUDED FOR EVERYONE' : 'REFERENCE'
       : free
-        ? upsell ? 'FREE TOPIC' : 'TOPIC' // keep the free-topic subtitle for free users (2026-07-18 fix)
+        ? upsell
+          ? 'FREE TOPIC' // keep the free-topic subtitle for free users (2026-07-18 fix)
+          : // Members (owner 2026-10-27): say WHY these two topics sit on Home,
+            // without "free" wording. Safety is a standing requirement of every
+            // certificate (award_standing_requirements); DAW is the open start.
+            free.gs === 3060
+            ? 'REQUIRED FOR EVERY CERTIFICATE'
+            : free.gs === 3970
+              ? 'WHERE MOST LEARNERS START'
+              : 'TOPIC'
         : // NEW COPY 2026-09-03, owner review. The audio-field cards used to
           // read "Specialization Certificate", which the carousel rule now
           // forbids: only topic cards belong here. They are topic cards, so
