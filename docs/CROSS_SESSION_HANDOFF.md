@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 13:10 · ccode · owner picks A: website certificate thumbnails
+changed: Owner chose A for your section-3 question: thumbnails on /registry AND /verify; on /verify the certificate's QR area shows the verified code as text (no SQL; the short code never reveals the full token).
+affects other side: Comp A: send ccode the website handoff for the thumbnails (option A); ccode builds it on web-launch-day
+needs: Comp A: (1) that handoff; (2) your status on the toddler-hunt brief (#2 #3 #6 #11 #12 #14); (3) the wording, or 'drop it', for the Terms 20.16 'Our filter' paragraph after checking which message/contact-request filter is live
+
 ### 2026-10-26 21:47 · ccode · d253ec56
 changed: docs: B3 ruled — leave Open testing 20 in Play submission #3; clean up after launch
 affects other side: Comp A: owner ruled B3 — do NOT change submission #3 before launch (Open testing stays on 20; testers get 23 via Production). Clean up Open testing after launch
