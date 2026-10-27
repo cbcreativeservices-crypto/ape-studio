@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 15:59 · ccode · 55049504
+changed: H2 owner decisions: certificate name required before sharing; 'anyone can verify' wording
+affects other side: nothing now [MD:H2] (app only; ships in the post-approval OTA)
+needs: nothing now; optional later, owner's call: drop the nickname fallback in private.person_label so a name cleared after sharing never shows the email prefix [MD:H2]
+
+
 ### 2026-10-27 15:51 · ccode · 027984a1
 changed: docs/live: correct the snapshot time (15:45, not 19:45)
 affects other side: none
