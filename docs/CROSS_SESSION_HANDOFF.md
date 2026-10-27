@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 22:40 · Comp A (relayed by the owner) · toddler-hunt last open item closed
+changed: The Play service account's "Manage orders and subscriptions" permission is CONFIRMED (Comp A, via the owner), so validate-purchase's server acknowledge (#2 Part A) works. The toddler-hunt server brief has no open server items left; HOLDs unchanged (#2 Part B, #6 restore wording) and the app halves are ccode's D8.
+affects other side: none
+needs: nothing
+
 ### 2026-10-26 22:20 · ccode · verified the toddler-fix state (read-only)
 changed: Confirmed on live: contact_reports has repeat_count + last_reported_at; both triggers present; contact_messages.client_msg_id present; contact_message_send has the 2- and 3-arg forms returning uuid; glossary_study_v.plain_english_preview present; validate-purchase v19 source has the reason field, acknowledgeGoogle after the grant (not on pending) and the account-tag refusal. Must-do C toddler row closed; follow-ups added (Play permission check; app halves D8).
 affects other side: none
