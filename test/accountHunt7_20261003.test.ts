@@ -50,18 +50,23 @@ registerHooks({
 
 const api = (await import('../src/features/employer/api.ts')) as typeof import('../src/features/employer/api');
 
-test('employer: a FAILED verified-employer check is null, never a "not verified" false', async () => {
+// R1 (2026-10-27): the check is myVerifierKind() over my_verifier_kind(),
+// which also says WHICH kind. The hunt-7 rule is unchanged: a failed read is
+// 'unknown', never 'none'.
+test('employer: a FAILED verified check is "unknown", never a "not verified" none', async () => {
   g.__AH7_RPC__ = () => ({ data: null, error: { message: 'Failed to fetch' } });
-  assert.equal(await api.amIVerifiedEmployer(), null);
+  assert.equal(await api.myVerifierKind(), 'unknown');
   g.__AH7_RPC__ = () => {
     throw new Error('network down');
   };
-  assert.equal(await api.amIVerifiedEmployer(), null);
-  // Real answers are unchanged.
-  g.__AH7_RPC__ = () => ({ data: true, error: null });
-  assert.equal(await api.amIVerifiedEmployer(), true);
-  g.__AH7_RPC__ = () => ({ data: false, error: null });
-  assert.equal(await api.amIVerifiedEmployer(), false);
+  assert.equal(await api.myVerifierKind(), 'unknown');
+  // Real answers.
+  g.__AH7_RPC__ = (name: string) => ({ data: name === 'my_verifier_kind' ? 'employer' : null, error: null });
+  assert.equal(await api.myVerifierKind(), 'employer');
+  g.__AH7_RPC__ = () => ({ data: 'instructor', error: null });
+  assert.equal(await api.myVerifierKind(), 'instructor');
+  g.__AH7_RPC__ = () => ({ data: null, error: null });
+  assert.equal(await api.myVerifierKind(), 'none');
 });
 
 test('employer section: a failed check never reads "no longer active", and never opens the chips', () => {

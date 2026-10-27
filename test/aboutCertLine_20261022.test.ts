@@ -13,8 +13,8 @@ const read = (p: string) => readFileSync(join(import.meta.dirname, '..', 'src', 
 describe('About sheet certificate line matches the approved wording', () => {
   const about = read('screens/about/AboutHomeSheet.tsx');
   it('names the Registry listing step', () => {
-    assert.match(about, /'List your credentials in the Pro Registry and employers can verify them online\.'/);
-    assert.match(read('lib/copy.ts'), /list them in the Pro Registry and employers can verify them online\./);
+    assert.match(about, /'List your credentials in the Pro Registry and employers and instructors can verify them online\.'/);
+    assert.match(read('lib/copy.ts'), /list them in the Pro Registry and employers and instructors can verify them online\./);
   });
   it('drops the blanket "verifiable for life" promise', () => {
     assert.doesNotMatch(about, /verifiable for life/);
@@ -24,7 +24,7 @@ describe('About sheet certificate line matches the approved wording', () => {
   it('says plainly that an ongoing membership is not required to stay listed, found and verified', () => {
     assert.match(
       about,
-      /'An ongoing membership is not required\. Your credentials stay in the registry, and employers can still find and verify them, whether or not you keep your membership\.'/,
+      /'An ongoing membership is not required\. Your credentials stay in the registry, and employers and instructors can still find and verify them, whether or not you keep your membership\.'/,
     );
   });
 });
@@ -35,7 +35,7 @@ describe('membership is not needed to stay listed — said in help and on the re
   it('Help "How do I cancel?" says listed certificates stay listed and verifiable', () => {
     assert.match(
       read('features/help/helpContent.ts'),
-      /if you listed them in the Pro Registry, they stay listed, and employers can still find and verify them after your membership ends\./,
+      /if you listed them in the Pro Registry, they stay listed, and employers and instructors can still find and verify them after your membership ends\./,
     );
   });
   it('the Pro Registry intro says the listing stays whether or not you keep your membership', () => {

@@ -54,10 +54,14 @@ export const COPY = {
    * 1 and 3 are ratified strings reused verbatim. Line 2 is H-A (2026-10-22):
    * the unconditional "employers can check online" was not true for everyone —
    * verification answers only for members who list in the Pro Registry (18+).
+   * R1 (2026-10-27): "employers AND INSTRUCTORS" — verified instructors and
+   * schools verify exactly as employers do (server live 2026-10-04), and the
+   * verify functions (public_verify_*) are open to anyone, never employers
+   * only.
    */
   membershipPoints: [
     'Every topic, certificate and lab is included.',
-    'Earn certificates — list them in the Pro Registry and employers can verify them online.',
+    'Earn certificates — list them in the Pro Registry and employers and instructors can verify them online.',
     'No add-ons. No extra fees.',
   ] as readonly string[],
   /** H3: the SHAPE of the pricing on the landing — never a price. */
@@ -87,7 +91,7 @@ export const COPY = {
    *  the owner 2026-10-22: the listing never depends on membership (true in the
    *  DB — the registry/verify functions check age 18+, never membership). */
   registryProfile:
-    'Create an optional profile in the Pro Audio Training Academy Professional Registry. As you earn certificates, your profile becomes a verified graduate record that employers can validate online and you can share on résumés, job applications, portfolios, and professional networking profiles. Your listing and certificates stay in the registry whether or not you keep your membership.',
+    'Create an optional profile in the Pro Audio Training Academy Professional Registry. As you earn certificates, your profile becomes a verified graduate record that employers and instructors can validate online and you can share on résumés, job applications, portfolios, and professional networking profiles. Your listing and certificates stay in the registry whether or not you keep your membership.',
   // The free tier's glossary allowance (owner 2026-09-13, governance R7).
   // ADDED, not reworded — marketingLine, upgradeSheetBody and paywallBody each
   // call the glossary "free" and predate the weekly cap (2026-09-10); all three

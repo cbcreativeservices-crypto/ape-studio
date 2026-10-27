@@ -79,8 +79,10 @@ const SECTIONS: { head: string; paras: string[] }[] = [
       // ongoing membership is not needed to stay listed, be found or be
       // verified — true in the DB (directory_search / public_verify_* /
       // set_registry_listing check age 18+, never membership).
-      'List your credentials in the Pro Registry and employers can verify them online.',
-      'An ongoing membership is not required. Your credentials stay in the registry, and employers can still find and verify them, whether or not you keep your membership.',
+      // R1 (2026-10-27): employers AND instructors (instructor/school
+      // accounts verify exactly as employers do since 2026-10-04).
+      'List your credentials in the Pro Registry and employers and instructors can verify them online.',
+      'An ongoing membership is not required. Your credentials stay in the registry, and employers and instructors can still find and verify them, whether or not you keep your membership.',
     ],
   },
 ];

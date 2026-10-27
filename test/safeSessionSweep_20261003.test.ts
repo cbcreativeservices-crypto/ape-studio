@@ -271,9 +271,10 @@ test('E · fetchMyEmployerApplication: an unknown session is "error", not "never
   assert.doesNotMatch(b, /hasSafeSession/);
 });
 
-test('F · amIVerifiedEmployer: an unknown session is null (read failed), not false', () => {
-  const b = fnBody(employer, 'export async function amIVerifiedEmployer');
-  assert.match(b, /if \(timedOut\) return null;/);
+// R1 (2026-10-27): amIVerifiedEmployer became myVerifierKind (my_verifier_kind).
+test('F · myVerifierKind: an unknown session is "unknown" (read failed), not "none"', () => {
+  const b = fnBody(employer, 'export async function myVerifierKind');
+  assert.match(b, /if \(timedOut\) return 'unknown';/);
   assert.doesNotMatch(b, /hasSafeSession/);
 });
 

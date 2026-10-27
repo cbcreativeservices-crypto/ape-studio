@@ -246,7 +246,7 @@ export const CERT_CHOICES: readonly Choice<KeepChoice>[] = [
   { code: 'delete_all', label: 'Delete everything. No one can verify your certificates afterwards.' },
   {
     code: 'keep_record',
-    label: 'Keep a verification record: only your name, certificate, date and code stay, so employers can still check it.',
+    label: 'Keep a verification record: only your name, certificate, date and code stay, so employers and instructors can still check it.',
   },
 ] as const;
 // OWNER-APPROVED COPY (2026-10-24).

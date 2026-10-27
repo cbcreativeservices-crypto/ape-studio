@@ -7,9 +7,15 @@
  * rule (quiet in Low-Light), the stored-preference mapping, and every word the
  * user reads about it.
  *
- * The server half (who is told, when, with what text) is a DRAFT for Comp A:
- * supabase/migrations/2026100401_community_notifications.sql and
- * docs/APE_COMMUNITY_NOTIFICATIONS_SERVER_DRAFT_2026_10_04.md.
+ * The server half (who is told, when, with what text) was drafted for Comp A
+ * in supabase/migrations/2026100401_community_notifications.sql and
+ * docs/APE_COMMUNITY_NOTIFICATIONS_SERVER_DRAFT_2026_10_04.md, and has been
+ * live since (checked read-only 2026-10-27): the triggers on contact_requests
+ * and contact_messages queue the alerts, and the cron job
+ * community-push-every-minute sends them. Messages, requests and About text
+ * that break the community rules have been refused server-side since
+ * ~2026-10-23 (the functions raise `community_rules`; the words are in
+ * src/features/directory/rules.ts).
  */
 
 /** Android channel for member-to-member alerts — separate from the weekly

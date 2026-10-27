@@ -727,6 +727,12 @@ affects other side: Comp A — R3 SQL draft in Downloads, safe order inside
 needs: Comp A: R3 step 1 after owner GO [MD:R3]
 
 
+### 2026-10-27 09:43 · ccode · b9ea5dd5
+changed: R1 + H2: instructor accounts (app half) + the student's instructor-sharing switch [MD:R1] [MD:H2]
+affects other side: Comp A — the app now calls my_verifier_kind, instructor_my_code and instructor_share_lookup/on/off/mine (allow-list shrank); it no longer calls am_i_verified_employer (now unused anywhere: clean-up candidate, allow-listed). No server change made or needed
+needs: nothing for the build. For the first real test: one verified instructor (live has none) — that is the existing E3 note
+
+
 ### 2026-10-27 09:40 · ccode · c96c9c54
 changed: docs: must-do R13 corrected + owner re-confirmed month hold; H4 keep; H5 employer public page; D14 cards
 affects other side: Comp A — owner decisions for the forgotten-items brief: R13 yes (month hold), H4 keep

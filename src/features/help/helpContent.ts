@@ -88,7 +88,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         // no answer to this — the filter note below used to admit the gap.
         id: 'acct-cancel',
         q: 'How do I cancel?',
-        a: 'Cancel your Monthly or Annual Academy membership any time in your App Store or Google Play subscription settings, at least 24 hours before it renews. You keep your membership until the end of the time you have paid for. Lifetime is a one-time payment and never renews, so there is nothing to cancel. Your earned certificates stay yours: if you listed them in the Pro Registry, they stay listed, and employers can still find and verify them after your membership ends. Deleting your Academy account does not cancel a store subscription — cancel it first.',
+        a: 'Cancel your Monthly or Annual Academy membership any time in your App Store or Google Play subscription settings, at least 24 hours before it renews. You keep your membership until the end of the time you have paid for. Lifetime is a one-time payment and never renews, so there is nothing to cancel. Your earned certificates stay yours: if you listed them in the Pro Registry, they stay listed, and employers and instructors can still find and verify them after your membership ends. Deleting your Academy account does not cancel a store subscription — cancel it first.',
         jump: { label: 'Manage membership', route: 'Paywall' },
       },
       {
