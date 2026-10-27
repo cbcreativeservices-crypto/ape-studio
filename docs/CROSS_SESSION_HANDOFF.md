@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 21:45 · ccode · 45b6a8a0
+changed: docs: Google approved Android 23 (managed publishing; not published); Apple 39 still in review
+affects other side: Comp A: Google APPROVED Android 23 (owner, Play Console). Managed publishing ON: do NOT press Publish (the 13-change batch still holds the old Production 20 / Open testing 20 items, B3). Apple 39 still in review; the post-approval OTA waits for both
+needs: Comp A: tell ccode/owner the moment Apple approves 39
+
+
 ### 2026-10-26 08:53 · ccode · 4c5946e1
 changed: docs: governance D110-D116 (today's owner rulings) + protocol rules 21-23 (trace owner art, browser pane per session, secrets chat-only)
 affects other side: Comp A: governance D110-D116 record today's rulings (your record stays D102-D109); protocol rules 21-23 added
