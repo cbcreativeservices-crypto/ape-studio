@@ -651,11 +651,11 @@ export function ScenariosScreen({ route }: Props) {
             ? 'You’ve worked through every scenario for the terms in My Custom List. It’s practice, so nothing is recorded — open Scenarios again any time for a fresh set.'
             : roundSaved === false
             ? 'You’ve worked through every scenario for this topic. Your last round is saved on this device but hasn’t reached your account yet — the scenarios meter fills and the topic quiz unlocks once it syncs, next time you’re online.'
-            : "You've worked through every scenario for this topic — the scenarios meter on your Dashboard is full, and the topic quiz is unlocked."}
+            : "You've worked through every scenario for this topic — the scenarios meter on your Study Dashboard is full, and the topic quiz is unlocked."}
         </Text>
         <View style={{ width: 240, marginTop: 8, gap: 10 }}>
           <StudioButton
-            label="Back to Dashboard"
+            label="Back to Study Dashboard"
             variant="secondary"
             small
             // popTo: RN7 navigate() would push a second Dashboard (see StudyHeader).

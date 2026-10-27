@@ -84,11 +84,11 @@ export type QuizOutcome = 'full_pass' | 'partial_pass' | 'no_pass' | 'voided' | 
 export const QUIZ_OUTCOME_COPY: Record<QuizOutcome, string> = {
   full_pass: 'You passed. This topic is complete.',
   partial_pass: 'You passed the required sections. Some sections still need work.',
-  no_pass: 'You did not pass this time. You can retake the quiz from your dashboard.',
+  no_pass: 'You did not pass this time. You can retake the quiz from your Study Dashboard.',
   voided:
-    'This attempt was not counted because the app was left during the quiz. The quiz locks for 15 minutes after that; then you can start a new attempt from your dashboard.',
+    'This attempt was not counted because the app was left during the quiz. The quiz locks for 15 minutes after that; then you can start a new attempt from your Study Dashboard.',
   timed_out:
-    'Time ran out before this attempt was finished. You can start a new attempt from your dashboard.',
+    'Time ran out before this attempt was finished. You can start a new attempt from your Study Dashboard.',
 };
 
 export type SubmitResult = {
@@ -115,10 +115,10 @@ export type SubmitResult = {
 export const CUSTOM_LIST_QUIZ_OUTCOME_COPY: Record<QuizOutcome, string> = {
   full_pass: 'Practice on My Custom List: not counted toward anything.',
   partial_pass: 'Practice on My Custom List: not counted toward anything.',
-  no_pass: 'Practice on My Custom List: not counted toward anything. You can quiz your list again from your dashboard.',
+  no_pass: 'Practice on My Custom List: not counted toward anything. You can quiz your list again from your Study Dashboard.',
   voided:
     'This attempt was not counted because the app was left during the quiz. The list quiz locks for 15 minutes after that.',
-  timed_out: 'Time ran out before this attempt was finished. You can quiz your list again from your dashboard.',
+  timed_out: 'Time ran out before this attempt was finished. You can quiz your list again from your Study Dashboard.',
 };
 
 /** The outcome sentence for a quiz, by what was quizzed (topic or My Custom List). */
@@ -661,9 +661,9 @@ export const QUIZ_SUBMIT_ERROR_COPY: Record<string, string> = {
   // submit with the stored result, so reaching this means something else
   // closed the attempt.
   attempt_not_open:
-    'This quiz attempt has already been closed. Open the quiz again from your dashboard to see your result.',
+    'This quiz attempt has already been closed. Open the quiz again from your Study Dashboard to see your result.',
   attempt_not_found:
-    'We could not find this quiz attempt. Open the quiz again from your dashboard — if it keeps happening, email info@proaudiotrainingacademy.com.',
+    'We could not find this quiz attempt. Open the quiz again from your Study Dashboard — if it keeps happening, email info@proaudiotrainingacademy.com.',
   bad_serve_set:
     'This quiz was not set up correctly and could not be graded. Nothing you did caused this, and the attempt will not be counted against you.',
   not_owner: 'This quiz belongs to a different account. Sign in as the account that started it.',
@@ -677,5 +677,5 @@ export const QUIZ_SUBMIT_ERROR_COPY: Record<string, string> = {
   // tapping OK unmounts the screen and destroys `answers`. Until the callback
   // is dropped the wording must not promise survival.
   unknown:
-    'Your quiz could not be submitted and this attempt was not recorded. Nothing has been counted against you. Open the quiz again from your dashboard to retake it.',
+    'Your quiz could not be submitted and this attempt was not recorded. Nothing has been counted against you. Open the quiz again from your Study Dashboard to retake it.',
 };

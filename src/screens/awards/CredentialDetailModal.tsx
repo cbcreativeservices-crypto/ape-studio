@@ -370,7 +370,7 @@ export function CredentialDetailModal({
                     style={({ pressed }) => [styles.studyBtn, pressed && styles.btnPressed]}
                     onPress={() => onStudy(credential)}
                     accessibilityRole="button"
-                    accessibilityLabel={`Study ${credential.name} now — opens your dashboard`}
+                    accessibilityLabel={`Study ${credential.name} now — opens your Study Dashboard`}
                   >
                     <Image source={STUDY_ICON} style={styles.studyIcon} resizeMode="contain" />
                     <Text style={styles.studyBtnText}>STUDY NOW ›</Text>

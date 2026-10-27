@@ -1700,7 +1700,7 @@ export const EnrollmentView = memo(function EnrollmentView({
               <Text style={styles.openLabsText}>LAB REQUIREMENTS</Text>
             </Pressable>
           </View>
-          <Text style={styles.labHint}>Completed in the Audio Fundamentals labs, not from the dashboard.</Text>
+          <Text style={styles.labHint}>Completed in the Audio Fundamentals labs, not from the Study Dashboard.</Text>
         </View>
       );
     }
@@ -1768,10 +1768,10 @@ export const EnrollmentView = memo(function EnrollmentView({
                 style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, isCore && guest && styles.cardCoreFlush, styles.collapsedCard]}
                 onPress={unlessLifted(() => toggleCollapse(tid))}
                 accessibilityRole="button"
-                accessibilityLabel={`${nameFor(e.gs)}, ${pctText(e.gs)}, ${coreLocked ? 'locked in your study deck' : showActive ? 'in your study deck' : 'not in your study deck'}`}
+                accessibilityLabel={`${nameFor(e.gs)}, ${pctText(e.gs)}, ${coreLocked ? 'locked on your Study Dashboard' : showActive ? 'on your Study Dashboard' : 'not on your Study Dashboard'}`}
                 accessibilityHint="Expands the topic"
                 accessibilityActions={[
-                  ...(coreLocked ? [] : [{ name: 'deck', label: showActive ? 'Remove from study deck' : 'Add to study deck' }]),
+                  ...(coreLocked ? [] : [{ name: 'deck', label: showActive ? 'Remove from Study Dashboard' : 'Add to Study Dashboard' }]),
                   ...(showActive ? [{ name: 'study', label: `Study ${nameFor(e.gs)}` }] : []),
                 ]}
                 // A screen-reader action is never mid-drag, so no lift guard.
@@ -1802,7 +1802,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                   accessibilityState={{ disabled: coreLocked, selected: showActive }}
                   aria-disabled={coreLocked}
                   aria-pressed={showActive}
-                  accessibilityLabel={coreLocked ? 'Locked in your study deck' : showActive ? 'Remove from study deck' : 'Add to study deck'}
+                  accessibilityLabel={coreLocked ? 'Locked on your Study Dashboard' : showActive ? 'Remove from Study Dashboard' : 'Add to Study Dashboard'}
                 >
                   <LoadPill on={showActive} small dim={coreLocked} live={sweepLive} />
                 </Pressable>
@@ -1909,7 +1909,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                   aria-disabled={coreLocked}
                   aria-pressed={showActive}
                   accessibilityLabel={
-                    coreLocked ? 'Locked in your study deck until completed' : showActive ? 'Remove from study deck' : 'Add to study deck'
+                    coreLocked ? 'Locked on your Study Dashboard until completed' : showActive ? 'Remove from Study Dashboard' : 'Add to Study Dashboard'
                   }
                 >
                   <LoadPill on={showActive} dim={coreLocked} live={sweepLive} />
@@ -2486,7 +2486,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                   No terms yet. Tap <DeckIcon color={colors.customList} size={15} /> on any glossary term or flashcard to
                   add it here.
                 </>
-              ) : `${starredTerms.size} term${starredTerms.size === 1 ? '' : 's'} in My Custom List. It is always on your study dashboard: open Study and turn the topic dial to it.`}
+              ) : `${starredTerms.size} term${starredTerms.size === 1 ? '' : 's'} in My Custom List. It is always on your Study Dashboard: open Study and turn the topic dial to it.`}
             </Text>
             <Pressable
               style={styles.customPanelBtn}

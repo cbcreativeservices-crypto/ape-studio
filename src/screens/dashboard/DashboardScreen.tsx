@@ -1288,7 +1288,7 @@ export function DashboardScreen() {
               ? 'Your enrolled topics could not be read from this device just now — they are not lost, and nothing is written over them. Tap Retry.'
             // There is no pull-to-refresh on this screen — the Retry button is
             // the way back (the old text sent people looking for a gesture).
-            : 'Could not load the dashboard. Check your connection and tap Retry.',
+            : 'Could not load the Study Dashboard. Check your connection and tap Retry.',
       );
     } finally {
       if (!stale()) setLoading(false);
@@ -2077,6 +2077,8 @@ export function DashboardScreen() {
         {/* Header (shared, 30%-enlarged tile — Booth 2026-07-08).
             Logo tap → About/Credits (Dashboard only). */}
         <AppHeader
+          // The screen says what it is (owner 2026-10-27): one name everywhere.
+          title={['Study', 'Dashboard']}
           // The blue Study icon opens the Topic-Deck manager (owner 2026-08-01);
           // About moved to Settings.
           onLogoPress={() => setDeckOpen(true)}

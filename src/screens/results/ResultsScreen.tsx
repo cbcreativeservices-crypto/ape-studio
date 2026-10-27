@@ -138,7 +138,7 @@ export function ResultsScreen({ navigation, route }: Props) {
         </View>
         <View style={styles.buttonCol}>
           {msLeft <= 0 && <StudioButton label="Retake Quiz" variant="primary" onPress={retake} />}
-          <StudioButton label="Back to Dashboard" variant="secondary" onPress={toDashboard} />
+          <StudioButton label="Back to Study Dashboard" variant="secondary" onPress={toDashboard} />
         </View>
       </View>
     );
@@ -207,13 +207,13 @@ export function ResultsScreen({ navigation, route }: Props) {
             // On a pass, leaving is the sensible next step — "Retake Quiz" as
             // the primary action read as though something had gone wrong.
             <>
-              <StudioButton label="Back to Dashboard" variant="primary" onPress={toDashboard} />
+              <StudioButton label="Back to Study Dashboard" variant="primary" onPress={toDashboard} />
               <StudioButton label="Retake Quiz" variant="secondary" onPress={retake} />
             </>
           ) : (
             <>
               <StudioButton label={isPractice ? 'Retake' : 'Retake Quiz'} variant="primary" onPress={retake} />
-              <StudioButton label="Back to Dashboard" variant="secondary" onPress={toDashboard} />
+              <StudioButton label="Back to Study Dashboard" variant="secondary" onPress={toDashboard} />
             </>
           )}
         </View>

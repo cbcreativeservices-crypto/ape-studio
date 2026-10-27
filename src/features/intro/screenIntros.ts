@@ -251,9 +251,9 @@ export const SCREEN_INTROS: Record<
       // Popup review 2 D2 (2026-10-27): the list has no unlock order. Since
       // D12 (2026-10-27) it has scenarios and its own practice quiz too
       // (studyGate customListMethods() / customListHasQuiz()).
-      'Your deck sits on the Study dashboard like a topic of its own. You can study it with flashcards, fill-in-the-blank, matching and scenarios, and every method is open from the start. Once it holds 30 terms you can also take a practice quiz on it, not counted toward anything.\n\n' +
+      'Your deck sits on the Study Dashboard like a topic of its own. You can study it with flashcards, fill-in-the-blank, matching and scenarios, and every method is open from the start. Once it holds 30 terms you can also take a practice quiz on it, not counted toward anything.\n\n' +
       // 2026-10-19: the list is ALWAYS on the Study dashboard now (no LOAD step).
-      'It is always on your Study dashboard: open Study and turn the topic dial to My Custom List.\n\n' +
+      'It is always on your Study Dashboard: open Study and turn the topic dial to My Custom List.\n\n' +
       'Use it for terms you find difficult, words from a class or a job, or anything you want to practice.',
     button: 'Got it',
   },

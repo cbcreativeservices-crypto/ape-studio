@@ -224,7 +224,7 @@ export function CareerFamilyScreen() {
               <TextLink label={allTopics ? 'Show fewer' : `Show ${fam.topicGs.length - START_HERE} more topic${fam.topicGs.length - START_HERE === 1 ? '' : 's'}`} onPress={() => setAllTopics(!allTopics)} muted />
             ) : null}
             {addedHere.length ? (
-              <CtaButton label={`STUDY ${addedHere.length} TOPIC${addedHere.length === 1 ? '' : 'S'} NOW ›`} tone="green" onPress={studyNow} hint="Opens your study dashboard at the first topic you added" />
+              <CtaButton label={`STUDY ${addedHere.length} TOPIC${addedHere.length === 1 ? '' : 'S'} NOW ›`} tone="green" onPress={studyNow} hint="Opens your Study Dashboard at the first topic you added" />
             ) : null}
             <TextLink label="Open the full curriculum" onPress={openCurriculum} />
           </>

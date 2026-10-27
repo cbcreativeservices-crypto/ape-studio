@@ -77,9 +77,9 @@ export function accentFor(kind: CarouselCard['kind']): string {
  */
 function labelFor(kind: CarouselCard['kind']): string {
   return kind === 'topics'
-    ? 'TOPICS AVAILABLE FOR LOADING IN YOUR STUDY DASHBOARD'
+    ? 'TOPICS AVAILABLE FOR LOADING ON YOUR STUDY DASHBOARD'
     : kind === 'custom'
-      ? 'YOUR ★ STARRED TERMS AS ONE STUDY DECK'
+      ? 'YOUR ★ STARRED TERMS ON YOUR STUDY DASHBOARD'
       : kind === 'program'
       ? 'PROGRAM'
       : kind === 'cert'
@@ -259,10 +259,10 @@ export function EnrollmentSelection({
                 accessibilityRole="button"
                 accessibilityLabel={
                   isTopics
-                    ? 'Study — open your dashboard'
+                    ? 'Study — open your Study Dashboard'
                     : isCustom
                       ? 'Study my custom list'
-                      : `Study all of ${card.title} — loads its ${card.topicCount} topics and opens your dashboard`
+                      : `Study all of ${card.title} — loads its ${card.topicCount} topics and opens your Study Dashboard`
                 }
               >
                 <Image source={STUDY_ICON} style={s.studyIcon} resizeMode="contain" />
@@ -278,7 +278,7 @@ export function EnrollmentSelection({
                   topic that can never be removed from the study dashboard") —
                   no LOAD / UNLOAD, just the fact, in the same slot. */}
               {isCustom ? (
-                <View style={s.loadActionBtn} accessible accessibilityLabel="My custom list is always in the study dashboard">
+                <View style={s.loadActionBtn} accessible accessibilityLabel="My Custom List is always on your Study Dashboard">
                   <Text style={s.loadText}>ALWAYS IN STUDY</Text>
                 </View>
               ) : (
@@ -291,8 +291,8 @@ export function EnrollmentSelection({
                   aria-pressed={card.allLoaded}
                   accessibilityLabel={
                     card.allLoaded
-                      ? `Unload all ${card.topicCount} topics of ${card.title} from the study deck`
-                      : `Load all ${card.topicCount} topics of ${card.title} into the study deck`
+                      ? `Unload all ${card.topicCount} topics of ${card.title} from your Study Dashboard`
+                      : `Load all ${card.topicCount} topics of ${card.title} onto your Study Dashboard`
                   }
                 >
                   {/* "ALL" stays in the label (owner 2026-09-20): the bare verb

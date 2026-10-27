@@ -46,7 +46,7 @@ export function StudyHeader({
         onPress={goBack}
         hitSlop={8}
         accessibilityRole="button"
-        accessibilityLabel="Back to Dashboard"
+        accessibilityLabel="Back to Study Dashboard"
       >
         <MethodIcon method={method} size={34} />
       </Pressable>
@@ -82,7 +82,7 @@ export function StudyHeader({
           hitSlop={8}
           style={styles.returnBtn}
           accessibilityRole="button"
-          accessibilityLabel="Return to Dashboard"
+          accessibilityLabel="Return to Study Dashboard"
         >
           <Text style={styles.returnText} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹ RETURN</Text>
         </Pressable>

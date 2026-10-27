@@ -58,7 +58,7 @@ import { safeGoBack } from '../../lib/safeGoBack';
 
 /** My Enrollments' explanation, owner-approved wording (2026-10-23). */
 const ENROLL_INTRO_TEXT =
-  'Choose the topics you want to study, then load them into your Study dashboard. Here you can see your progress for each certificate and program and for everything you’re enrolled in, and manage your Custom Study List.';
+  'Choose the topics you want to study, then load them onto your Study Dashboard. Here you can see your progress for each certificate and program and for everything you’re enrolled in, and manage your Custom Study List.';
 
 const SPEC_CERT_KEY = 'ape:specCert'; // chosen Specialization Certificate name (Level 1)
 const PROGRAM_PATH_KEY = 'ape:programPath'; // chosen program path name (Level 2)

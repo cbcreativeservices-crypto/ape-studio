@@ -63,7 +63,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'start-first-steps',
         q: 'How do I start studying?',
-        a: 'Enroll in topics, then open the Dashboard. Each topic runs the same loop: work the study methods in order — each one unlocks the next — then take the Topic Quiz to bank the topic.',
+        a: 'Enroll in topics, then open the Study Dashboard. Each topic runs the same loop: work the study methods in order — each one unlocks the next — then take the Topic Quiz to bank the topic.',
       },
       {
         id: 'start-replay',
@@ -128,7 +128,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         // no certificate.
         id: 'study-custom-list',
         q: 'What is My Custom List?',
-        a: 'Your own study deck, built from glossary terms you choose. Tap the three-card icon beside any term in the Glossary, or on a flashcard, to add it. It is always on your Study dashboard: turn the topic dial to My Custom List. All of its study methods (flashcards, fill-in-the-blank, matching and scenarios) are open from the start, and once it holds 30 terms you can take a practice quiz of 30 up to all of them, picked at random. It’s practice only and doesn’t count toward a certificate.',
+        a: 'Your own study deck, built from glossary terms you choose. Tap the three-card icon beside any term in the Glossary, or on a flashcard, to add it. It is always on your Study Dashboard: turn the topic dial to My Custom List. All of its study methods (flashcards, fill-in-the-blank, matching and scenarios) are open from the start, and once it holds 30 terms you can take a practice quiz of 30 up to all of them, picked at random. It’s practice only and doesn’t count toward a certificate.',
       },
       {
         id: 'study-quiz',
@@ -153,7 +153,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'enroll-loaded',
         q: 'What does LOADED / UNLOADED mean on my enrollments?',
-        a: 'LOADED puts that topic into your Dashboard study deck; UNLOADED takes it out of the deck while keeping the enrollment and all of its progress. Required core topics stay loaded until you complete them.',
+        a: 'LOADED puts that topic on your Study Dashboard; UNLOADED takes it off the Study Dashboard while keeping the enrollment and all of its progress. Required core topics stay loaded until you complete them.',
       },
       {
         id: 'enroll-add-remove',
