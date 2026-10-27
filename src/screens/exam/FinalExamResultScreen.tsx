@@ -52,15 +52,15 @@ const COPY: Record<string, { title: string; body: string; tone: 'good' | 'bad' |
     tone: 'warn',
   },
   voided: {
-    title: 'ATTEMPT VOIDED',
+    title: 'NOT COUNTED',
     // The briefing promises fifteen minutes; "briefly" was vaguer than the
     // promise the learner was given before they started.
-    body: 'This attempt was voided because the app was switched away from during the exam. The Final Exam is locked for fifteen minutes before you can try again.',
+    body: 'You left the app twice during the exam, so this attempt isn’t counted. The Final Exam is locked for 15 minutes before you can try again.',
     tone: 'warn',
   },
   held: {
     title: 'PAPER RECEIVED',
-    body: 'Your exam has been marked and sealed. A certificate requires one complete month of membership, so your result is held until your first month completes — then it is released and, if you have passed, your certificate is issued. You do not need to do anything, and you do not need to sit it again.',
+    body: 'Your exam has been graded and sealed. A certificate requires one complete month of membership, so your result is held until your first month completes — then it is released and, if you have passed, your certificate is issued. You do not need to do anything, and you do not need to sit it again.',
     tone: 'warn',
   },
   discarded: {

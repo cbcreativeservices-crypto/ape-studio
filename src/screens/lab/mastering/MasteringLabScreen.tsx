@@ -461,7 +461,7 @@ export function MasteringLabScreen() {
       <TakeawayCard>{mod.takeaway}</TakeawayCard>
       <Text style={styles.requirement}>
         {done
-          ? 'This module is credited. Review it any time — practising never removes credit.'
+          ? 'This module is credited. Review it any time — practicing never removes credit.'
           : mod.id === 'project'
             ? `Credit for this module: answer the ${scenarios.length} track decisions and complete the QC checklist (${answeredCount} of ${scenarios.length} answered). Credit lands the moment the last one does. NEXT still moves on; you can come back.`
             : `Credit for this module: answer its ${scenarios.length} decisions on the PRACTICE step (${answeredCount} of ${scenarios.length} so far). A wrong pick is fine — the explanation is the point. Credit lands the moment the last one does. NEXT still moves on; you can come back.`}

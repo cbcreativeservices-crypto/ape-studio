@@ -95,7 +95,7 @@ export function ExamBriefing({
 
         {/* ── Why it is like this ─────────────────────────────────────────── */}
         <Text style={styles.lead}>
-          This is a proctored-standard assessment. Please read this before you begin — it is the same
+          This exam is held to a professional standard. Please read this before you begin. It is the same
           every time, so nothing here can take you by surprise later.
         </Text>
 
@@ -127,8 +127,8 @@ export function ExamBriefing({
         />
         <Rule
           n="2"
-          title="Leaving the app voids the attempt."
-          body="The first time you switch away you will get one warning. The second time, the attempt is VOIDED — not graded, not scored — and the exam is locked for fifteen minutes before you may try again. Very brief switches are ignored, but do not rely on that."
+          title="Leaving the app twice ends the attempt."
+          body="The first time you switch away, you get one warning. The second time, the attempt is not counted (it is not graded or scored) and the exam locks for 15 minutes before you can try again. Switches of two seconds or less are ignored, but don’t rely on that."
         />
         <Rule
           n="3"
@@ -161,8 +161,8 @@ export function ExamBriefing({
               yet — and you are welcome to take the exam now.
             </Text>
             <Text style={styles.tenureBody}>
-              Your paper will be held, unopened, until your first month completes. It is graded then,
-              and your certificate is issued then.
+              Your paper is graded when you submit it, and the result is held until your first month
+              completes. Then it is released, and if you passed, your certificate is issued.
             </Text>
             <Text style={styles.tenureWarn}>
               {/* No attempt cap exists — `start_final_exam` never compares
@@ -193,7 +193,7 @@ export function ExamBriefing({
           // 'unknown' — state the policy, claim nothing about this person.
           <Text style={styles.body}>
             A certificate requires one complete paid month of membership. If your first month is not
-            yet complete, your paper is held until it is, then graded and issued. Ending your
+            yet complete, your result is held until it is, then released, and a pass issues the certificate. Ending your
             membership before that month completes discards the exam ungraded.
           </Text>
         )}
@@ -228,7 +228,7 @@ export function ExamBriefing({
 function Rule({ n, title, body }: { n: string; title: string; body: string }) {
   return (
     // One accessibility node per rule: a screen reader should hear "Rule 2,
-    // leaving the app voids the attempt, …" as one statement rather than
+    // leaving the app twice ends the attempt, …" as one statement rather than
     // three fragments.
     <View style={styles.rule} accessible accessibilityLabel={`Rule ${n}. ${title} ${body}`}>
       <Text style={styles.ruleNum}>{n}</Text>

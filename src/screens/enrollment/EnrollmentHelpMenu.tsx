@@ -19,6 +19,11 @@ import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useModalHandoff } from '../../lib/confirm';
 import { colors, fonts } from '../../theme/tokens';
 
+/** The answers about THIS screen: the `enroll-*` entries plus `start-first-steps`. */
+export function isEnrollmentScreenHelp(id: string): boolean {
+  return id.startsWith('enroll-') || id === 'start-first-steps';
+}
+
 export function EnrollmentHelpMenu() {
   const navigation = useNavigation<any>();
   const afterClose = useAfterModalsClose();
@@ -27,8 +32,16 @@ export function EnrollmentHelpMenu() {
   const [menu, setMenu] = useState(false);
   const [intro, setIntro] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
-  // The Help hub's own search for this screen (what "Help with this screen" opened).
-  const screenHelp = useMemo(() => filterHelp('enroll'), []);
+  // The Help hub's own search for this screen (what "Help with this screen" opened),
+  // narrowed BY ID (popup review 2 A5, 2026-10-27): the word "enroll" also
+  // matched the privacy answer `pv-leaves` and `start-account`.
+  const screenHelp = useMemo(
+    () =>
+      filterHelp('enroll')
+        .map((c) => ({ ...c, entries: c.entries.filter((e) => isEnrollmentScreenHelp(e.id)) }))
+        .filter((c) => c.entries.length > 0),
+    [],
+  );
   return (
     <>
       <Pressable

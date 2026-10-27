@@ -35,4 +35,4 @@ export const INDOOR_ROWS: readonly SafetyRow[] = [SPORTS_SAFETY.approval, SPORTS
 
 /** The practice itself (B13 L116, B14 L178–L181, B12 L49): an inactive,
  *  authorized area, consenting adults, nothing hazardous staged. */
-export const PRACTICE_RULES = 'Practise only in an inactive, authorized area with consenting adults and a named safety observer who can stop it. No real match, contact, bat swings, hard balls, thrown objects, skating, rackets, collisions or loud whistle tests — gentle claps and ordinary speech are enough.';
+export const PRACTICE_RULES = 'Practice only in an inactive, authorized area with consenting adults and a named safety observer who can stop it. No real match, contact, bat swings, hard balls, thrown objects, skating, rackets, collisions or loud whistle tests — gentle claps and ordinary speech are enough.';

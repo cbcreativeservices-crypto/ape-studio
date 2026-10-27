@@ -1104,7 +1104,7 @@ export function DashboardScreen() {
         if (result.outcome === 'held') {
           notify(
             'Offline exam submitted',
-            'Your exam reached us and has been graded. Your result is held until your first month of membership completes, and your certificate is issued then.',
+            'Your exam reached us and has been graded. Your result is held until your first month of membership completes; if you passed, your certificate is issued then.',
           );
           continue;
         }
@@ -2355,7 +2355,7 @@ export function DashboardScreen() {
             list has really been read — never over a list still loading. */}
         {isCustom && starredRead && !starredUnreadable && starred.size === 0 ? (
           <Text style={styles.customEmpty}>
-            Your custom list is empty. Add terms from the Glossary — tap the custom-list icon beside any term, or on a
+            My Custom List is empty. Add terms from the Glossary: tap the three-card icon beside any term, or on a
             flashcard while you study any of your other topics.
           </Text>
         ) : null}
@@ -2503,9 +2503,17 @@ export function DashboardScreen() {
                       // never moves — it says "open and available", not progress
                       // (none is kept for the list). The word still tells an
                       // empty list apart; the count is on the topic card.
+                      // A non-member's list is not open (D4, 2026-10-27): the meter
+                      // says LOCKED from the same flag as the switch beside it.
                       <GlassScreen
                         title={m.label}
-                        value={starred.size > 0 || !starredRead || starredUnreadable ? 'OPEN' : 'EMPTY'}
+                        value={
+                          actMembershipLocked
+                            ? 'LOCKED'
+                            : starred.size > 0 || !starredRead || starredUnreadable
+                              ? 'OPEN'
+                              : 'EMPTY'
+                        }
                         valueColor={colors.customList}
                         segments={segmentsForPct(CUSTOM_LIST_METER_PCT)}
                       />
@@ -2923,6 +2931,8 @@ export function DashboardScreen() {
         visible={upgradeOpen}
         // A known guest is told the account step too (TestFlight triage 2026-10-08).
         guest={quizAsGuest}
+        // My Custom List is not a topic and has no scenarios or quiz (D1, 2026-10-27).
+        customList={dispIsCustom}
         onClose={() => setUpgradeOpen(false)}
         onUnlock={() => {
           setUpgradeOpen(false);

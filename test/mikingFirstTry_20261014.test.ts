@@ -65,7 +65,7 @@ describe('#19 the quick check: first try counts, retakes are practice', () => {
     assert.match(practice, /QUICK CHECK · PRACTICE · not recorded/);
     assert.match(practice, /PRACTICE · \$\{gradedP\.right\} OF \$\{gradedP\.total\}/);
     assert.doesNotMatch(practice, /recordQuick|recordQuickPick/);
-    assert.match(card, /PRACTISE THE QUICK CHECK · NOT RECORDED/);
+    assert.match(card, /PRACTICE THE QUICK CHECK · NOT RECORDED/);
   });
   it('no copy promises another counted try after START OVER', () => {
     assert.doesNotMatch(jk, /allows another try at the check/);

@@ -566,7 +566,7 @@ export const B12_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A curved bowl that gathers sound arriving along its axis onto a small element at its focus. Operators use it to follow distant action — a kick, a call, a contact — from an approved place.', src: 'LESSON-B12' },
     { title: 'WHAT IT DOES', text: 'It narrows and lifts the HIGH frequencies of whatever is on its axis. Low sound can still reach the element directly — that is not the bowl helping.', src: 'LESSON-B12' },
     { title: 'ITS OWN SYSTEM', text: 'Each dish has its own capsule, focal reference, mount and cover. Use the maker’s, and measure the focus from the surface the maker names — never a shotgun swapped in by assumption.', src: 'LESSON-B12' },
-    { title: 'THE PRACTICE', text: 'Here you practise from mark M on a practice field. These are suggested starting points — experimentation is encouraged; your ears and the venue decide.', src: 'LESSON-B12' },
+    { title: 'THE PRACTICE', text: 'Here you practice from mark M on a practice field. These are suggested starting points — experimentation is encouraged; your ears and the venue decide.', src: 'LESSON-B12' },
   ],
   sound: {
     stages: [

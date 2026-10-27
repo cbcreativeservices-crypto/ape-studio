@@ -250,15 +250,15 @@ export function drawRandomTerms(ids: Iterable<string>, n: number, rand: () => nu
 
 export const CUSTOM_EMPTY_TITLE = 'No terms in your list yet';
 export const CUSTOM_EMPTY_BODY =
-  'Add terms from the Glossary to study them here: tap the custom-list icon (three stacked cards) beside any term. ' +
+  'Add terms from the Glossary to study them here: tap the three-card icon beside any term. ' +
   'You can also tap it on a flashcard while you study any of your other topics.';
 
 export const CUSTOM_CHECKING_TITLE = 'Checking…';
-export const CUSTOM_CHECKING_BODY = 'Your custom list is still loading on this phone. Try again in a moment.';
+export const CUSTOM_CHECKING_BODY = 'My Custom List is still loading on this phone. Try again in a moment.';
 
 export const CUSTOM_UNREADABLE_TITLE = 'Your list couldn’t be read';
 export const CUSTOM_UNREADABLE_BODY =
-  'Your custom list couldn’t be read on this phone just now. Nothing has been removed — try again in a moment.';
+  'My Custom List couldn’t be read on this phone just now. Nothing has been removed — try again in a moment.';
 
 export const CUSTOM_QUIZ_MIN_TITLE = 'Not enough terms yet';
 

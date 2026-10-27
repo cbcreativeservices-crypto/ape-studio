@@ -154,8 +154,8 @@ export function QuickCheckCard({ items, journey }: { items: readonly DiagnosticI
             <Text style={[styles.resultHead, { color: colors.textSecondary }]}>{`PRACTICE · ${gradedP.right} OF ${gradedP.total}`}</Text>
             <Text style={styles.resultText}>Practice only — it does not change your first try or what it opened.</Text>
             <View style={styles.row}>
-              <Go label="PRACTISE AGAIN" onPress={() => setPractice({})} />
-              <Go label="DONE PRACTISING" onPress={() => setPractice(null)} />
+              <Go label="PRACTICE AGAIN" onPress={() => setPractice({})} />
+              <Go label="DONE PRACTICING" onPress={() => setPractice(null)} />
             </View>
           </View>
         ) : (
@@ -170,7 +170,7 @@ export function QuickCheckCard({ items, journey }: { items: readonly DiagnosticI
     return (
       <View style={{ gap: 10 }}>
         <QuickResult res={res} journey={journey} before />
-        <Go label="PRACTISE THE QUICK CHECK · NOT RECORDED" onPress={() => setPractice({})} />
+        <Go label="PRACTICE THE QUICK CHECK · NOT RECORDED" onPress={() => setPractice({})} />
       </View>
     );
   }
@@ -219,7 +219,7 @@ function QuickResult({ res, journey, before }: { res: QuickCheckResult; journey:
         </>
       ) : (
         <>
-          <Text style={styles.resultText}>{`The activities open once the first two pages are done — they will be quick if you know this. Worth a look first: ${res.misses.map((p) => journey.titleOf(p)).join(', ') || 'the first two pages'}. Your first try stands — you can practise the check again any time; practice is not recorded.`}</Text>
+          <Text style={styles.resultText}>{`The activities open once the first two pages are done — they will be quick if you know this. Worth a look first: ${res.misses.map((p) => journey.titleOf(p)).join(', ') || 'the first two pages'}. Your first try stands — you can practice the check again any time; practice is not recorded.`}</Text>
           <View style={styles.row}>
             {(res.misses.length ? res.misses : FOUNDATION_PAGES).map((p) => (
               <Go key={p} label={`OPEN ${journey.titleOf(p).toUpperCase()}`} onPress={() => journey.goPage(p, p === 'meet' ? 1 : 0)} />

@@ -162,7 +162,8 @@ test('3a. a method tap: empty → popup, not read yet → Checking…, unreadabl
 test('3b. the empty popup says how terms are actually added, in plain words', () => {
   assert.equal(rules.CUSTOM_EMPTY_TITLE, 'No terms in your list yet');
   assert.match(rules.CUSTOM_EMPTY_BODY, /^Add terms from the Glossary to study them here/);
-  assert.match(rules.CUSTOM_EMPTY_BODY, /three stacked cards/);
+  // Popup review 2 D13 (2026-10-27): the house name for the icon.
+  assert.match(rules.CUSTOM_EMPTY_BODY, /the three-card icon beside any term/);
   assert.equal(rules.CUSTOM_CHECKING_TITLE, 'Checking…');
   // A failed read is never called empty.
   assert.doesNotMatch(rules.CUSTOM_UNREADABLE_BODY, /empty/i);
@@ -275,7 +276,8 @@ test('5. every custom-list meter is FULL and never moves; nothing is recorded', 
   assert.ok(at > 0, 'the custom method panel is missing');
   const panel = d.slice(at, d.indexOf('/>', at));
   assert.match(panel, /segments=\{segmentsForPct\(CUSTOM_LIST_METER_PCT\)\}/);
-  assert.match(panel, /'OPEN' : 'EMPTY'/);
+  // D4 (2026-10-27): a non-member's list reads LOCKED first (popupReview2 pins it).
+  assert.match(panel, /\?\s*'LOCKED'\s*:\s*starred\.size > 0 \|\| !starredRead \|\| starredUnreadable\s*\?\s*'OPEN'\s*:\s*'EMPTY'/);
   assert.doesNotMatch(panel, /pct|rawPct|methodPct/);
   // The list quiz (when it appears) and the topic card read full too.
   assert.match(d, /<GlassScreen title="LIST QUIZ" value=\{qShort\} valueColor=\{qColor\} segments=\{segmentsForPct\(CUSTOM_LIST_METER_PCT\)\} \/>/);

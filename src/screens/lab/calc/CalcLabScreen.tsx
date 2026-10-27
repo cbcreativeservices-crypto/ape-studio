@@ -61,7 +61,7 @@ export function CalcLabScreen() {
   // calculators stay open to everyone.
   // `!resolved` counts as allowed (entitlement roll-out 2026-09-11): the
   // provider boots at 'anonymous', so a member who opened a workflow before the
-  // server read landed got the "Workflows are an Academy feature" sell for the
+  // server read landed got the "Workflows are part of Academy membership" sell for the
   // membership they already hold.
   const workflowsAllowed = !resolved || isMember;
   // A signed-in learner whose membership read FAILED (no remembered tier)
@@ -85,7 +85,7 @@ export function CalcLabScreen() {
     // confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so this gate
     // was a silent tap on the web preview (B-018/B-062).
     confirmDialog(
-      'Workflows are an Academy feature',
+      'Workflows are part of Academy membership',
       `Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays open: a free account includes ${CALC_WEEKLY_LIMIT} calculations a week, and membership removes the limit.`,
       'See membership',
       afterDialogCloses(() => (navigation as any).navigate('Paywall')),

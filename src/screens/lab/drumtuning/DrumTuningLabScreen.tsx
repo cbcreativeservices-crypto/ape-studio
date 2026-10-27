@@ -440,7 +440,7 @@ export function DrumTuningLabScreen() {
     <>
       <TakeawayCard>{mod.takeaway}</TakeawayCard>
       {done ? (
-        <Text style={styles.requirement}>This chapter is credited. Review it any time — practising never removes credit.</Text>
+        <Text style={styles.requirement}>This chapter is credited. Review it any time — practicing never removes credit.</Text>
       ) : (
         <>
           <Text style={styles.requirement}>{`TO EARN CREDIT · ${mod.credit}${standing ? ` — ${standing}.` : ''}`}</Text>

@@ -186,7 +186,7 @@ export function CareerFamilyScreen() {
       {licensed ? (
         <Card tone="amber">
           <SectionLabel>LICENSED OR CREDENTIALED PROFESSIONS IN THIS FAMILY</SectionLabel>
-          <Body>Some titles here are licensed, credentialed or restricted-entry occupations (marked LICENSED below). Academy topics build the audio and acoustics knowledge those fields draw on; they are not a route to any licence, clinical credential, bar admission or security clearance, and completing them does not qualify anyone to practise. Check the licensing body where you live.</Body>
+          <Body>Some titles here are licensed, credentialed or restricted-entry occupations (marked LICENSED below). Academy topics build the audio and acoustics knowledge those fields draw on; they are not a route to any licence, clinical credential, bar admission or security clearance, and completing them does not qualify anyone to practice. Check the licensing body where you live.</Body>
         </Card>
       ) : null}
 

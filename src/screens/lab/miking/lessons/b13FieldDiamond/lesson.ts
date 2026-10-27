@@ -587,7 +587,7 @@ export const B13_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'Action sound at field and diamond sports — kicks, contact, calls, bat and glove — picked up without putting a mic, a stand or an operator in the path of play: American football, soccer, rugby union, baseball and softball.', src: 'LESSON-B13' },
     { title: 'APPROVAL FIRST', text: 'At a real event the usable places come from the event’s approval, not from the best view. A credential does not approve a mount; a sport’s rule still applies if someone at the venue likes the spot.', src: 'LESSON-B13' },
     { title: 'THE METHODS', text: 'Approved perimeter shotguns aimed into named zones, a tracked dish for distant detail, fixed ambience for continuity — each covers some zones and hands off the rest. Commentary, interviews and players’ mics are separate sources.', src: 'LESSON-B13' },
-    { title: 'THE PRACTICE FIELD', text: 'Here you practise on an inactive training field, with a comparison mark outside a 30 × 20 m rectangle and three targets inside. These are suggested starting points — experimentation is encouraged; your ears and the venue decide.', src: 'LESSON-B13' },
+    { title: 'THE PRACTICE FIELD', text: 'Here you practice on an inactive training field, with a comparison mark outside a 30 × 20 m rectangle and three targets inside. These are suggested starting points — experimentation is encouraged; your ears and the venue decide.', src: 'LESSON-B13' },
   ],
   sound: {
     stages: [

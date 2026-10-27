@@ -189,8 +189,8 @@ export function endLead(
   }
   if (w.complete) {
     return mode === 'credit'
-      ? `Every ${noun} is credited. Review any of them, or practise the whole lab again — practising never removes credit you have earned.`
-      : `Every ${noun} is done. Review any of them, or practise the whole lab again — practising never clears what you have done.`;
+      ? `Every ${noun} is credited. Review any of them, or practice the whole lab again. Practicing never removes credit you have earned.`
+      : `Every ${noun} is done. Review any of them, or practice the whole lab again. Practicing never clears what you have done.`;
   }
   return mode === 'credit'
     ? `${onlyCheck ? 'Only the check is left' : `${what} still to finish`} before this lab counts toward your credit. Everything you have done is saved — jump straight to any of them.`

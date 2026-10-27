@@ -502,7 +502,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
 
   const onRowDelete = useCallback((m: SavedMeasurement) => {
     // confirmDialog: Alert.alert is a no-op on RN-web (QA night 2026-09-01).
-    confirmDialog('Delete measurement', `Delete “${m.title}”? This cannot be undone.`, 'Delete', () => deleteMeasurement(m.id), {
+    confirmDialog('Delete this measurement?', `Delete “${m.title}”? This cannot be undone.`, 'Delete', () => deleteMeasurement(m.id), {
       destructive: true,
     });
   }, []);
@@ -575,7 +575,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
   const onDeleteSelected = useCallback(() => {
     if (selected.length === 0) return;
     confirmDialog(
-      'Delete measurements',
+      `Delete ${selected.length} measurement${selected.length === 1 ? '' : 's'}?`,
       `Delete ${selected.length} selected measurement${selected.length === 1 ? '' : 's'}? This cannot be undone.`,
       'Delete',
       () => {

@@ -600,7 +600,7 @@ export const B16_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'Moving action, selected detail and the venue’s atmosphere at motorsport, equestrian and aquatic events — from safe, permitted places. Underwater pickup is a separate, optional extension.', src: 'LESSON-B16' },
     { title: 'PERMISSION DEFINES THE PLACE', text: 'Every location, mount, cable route and operator movement is approved. Athletes, animals, officials, medical and emergency access are preserved — and approval never overrides the rules.', src: 'LESSON-B16' },
     { title: 'A MOVING SOURCE', text: 'A fixed mic hears the source come and go: its distance, its angle and its own state change together. Fixed sectors, stereo trajectories and a stable ambience each serve a different perspective.', src: 'LESSON-B16' },
-    { title: 'THE PRACTICE ROOM', text: 'Here you practise with a person walking past two fixed mics — no vehicles, horses or water. These are suggested starting points — experimentation is encouraged; your ears and the room decide.', src: 'LESSON-B16' },
+    { title: 'THE PRACTICE ROOM', text: 'Here you practice with a person walking past two fixed mics — no vehicles, horses or water. These are suggested starting points — experimentation is encouraged; your ears and the room decide.', src: 'LESSON-B16' },
   ],
   sound: {
     stages: [

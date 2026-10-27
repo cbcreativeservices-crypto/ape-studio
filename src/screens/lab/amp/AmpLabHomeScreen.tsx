@@ -119,9 +119,9 @@ export function AmpLabHomeScreen() {
     // confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so RESET was
     // a silent tap on the web preview (B-018/B-062).
     confirmDialog(
-      'Reset this lab?',
+      'Start a fresh practice run?',
       'Starts a fresh practice run: clears your answered checks and your latest final attempt. Completed modules and your best final result are kept. Nothing else in the app is affected.',
-      'Reset',
+      'Start over',
       () => {
         void resetAmpProgress().then(setProgress);
       },

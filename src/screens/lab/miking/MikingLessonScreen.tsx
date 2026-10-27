@@ -372,7 +372,7 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
     <>
       <TakeawayCard>{content.takeaway}</TakeawayCard>
       {done ? (
-        <Text style={styles.requirement}>This page is credited. Review it any time — practising never removes credit.</Text>
+        <Text style={styles.requirement}>This page is credited. Review it any time — practicing never removes credit.</Text>
       ) : (
         <Text style={styles.requirement}>{`TO EARN CREDIT · ${c.note}${standing ? ` — ${standing}.` : ''}`}</Text>
       )}

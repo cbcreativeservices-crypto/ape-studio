@@ -322,7 +322,7 @@ export function TuningLabScreen() {
           noun="chapter"
           // After START OVER the chapter marks are clear but the lab stays
           // credited (owner ruling 2026-10-14, #20) — said, never implied away.
-          extra={progress?.done && !unreadable ? <Text style={styles.creditKept}>This lab is already credited. Practising again never removes that credit.</Text> : undefined}
+          extra={progress?.done && !unreadable ? <Text style={styles.creditKept}>This lab is already credited. Practicing again never removes that credit.</Text> : undefined}
           onJump={(id) => goTo(Number(id))}
           onPracticeAgain={() => goTo(CHAPTERS[0].index)}
           onDone={() => safeGoBack(navigation)}

@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BrandLogo } from '../../components/BrandLogo';
 import { colors, fonts } from '../../theme/tokens';
 import { READING_MAX_W, readingColumn } from '../../theme/readingColumn';
-import { useUpsellAllowed } from '../../features/commercial/useTier';
+import { useGuestWording, useUpsellAllowed } from '../../features/commercial/useTier';
 type ReadBuildLabelModule = typeof import('../../features/updates/readBuildLabel');
 
 /** Free-tier lines a MEMBER never sees (owner 2026-09-29: no membership
@@ -21,6 +21,12 @@ const FREE_TIER_LINES = new Set<string>([
     + 'Free use includes 14 definitions a week; Academy membership removes the limit.',
   'You do not have to enroll in the Academy to use the app as a reference.',
 ]);
+
+/** Owner copy (2026-08-12), and its GUEST variant (popup review 2 C2, owner OK
+ *  2026-10-27): a guest's work is never saved (D57), so a guest reads the
+ *  account condition first. Members and free accounts see the owner line. */
+const SAVED_LINE = 'Your progress is saved so you can continue building your knowledge over time.';
+const SAVED_LINE_GUEST = 'With an account, your progress is saved so you can continue building your knowledge over time.';
 
 /** One eyebrow-headed section. */
 const SECTIONS: { head: string; paras: string[] }[] = [
@@ -59,7 +65,7 @@ const SECTIONS: { head: string; paras: string[] }[] = [
     paras: [
       'Learning activities throughout the Academy help you practice and reinforce what you have studied.',
       'When you are ready, complete the assessment for a topic to demonstrate your understanding and complete that topic.',
-      'Your progress is saved so you can continue building your knowledge over time.',
+      SAVED_LINE,
     ],
   },
   {
@@ -92,6 +98,7 @@ export function AboutHomeSheet({ visible, onClose }: { visible: boolean; onClose
   // Free-tier lines on the shared tier (final round A, 2026-10-02): hidden
   // until a read has actually produced the tier.
   const upsell = useUpsellAllowed();
+  const { guest } = useGuestWording();
   const insets = useSafeAreaInsets();
   // Lazy require: keeps expo-updates / the label reads off the app-start graph
   // (perfStartTrim ratchet); only read while the sheet is open.
@@ -133,7 +140,7 @@ export function AboutHomeSheet({ visible, onClose }: { visible: boolean; onClose
                 <Text style={styles.eyebrow}>{s.head}</Text>
                 {s.paras.filter((p) => !(!upsell && FREE_TIER_LINES.has(p))).map((p, i) => (
                   <Text key={i} style={styles.body}>
-                    {p}
+                    {guest && p === SAVED_LINE ? SAVED_LINE_GUEST : p}
                   </Text>
                 ))}
               </View>

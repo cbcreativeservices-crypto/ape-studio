@@ -26,6 +26,25 @@ import { Modal } from '../../components/DimModal';
 import { GlassButton } from '../../components/GlassButton';
 import { colors, fonts } from '../../theme/tokens';
 
+/**
+ * MY CUSTOM LIST VARIANT (popup review 2 D1, owner OK 2026-10-27). The list is
+ * not a topic and offers only flashcards, fill-in-the-blank and matching
+ * (studyGate `customListMethods()`; scenarios and the quiz are on HOLD), so the
+ * topic copy ("MEMBERS TOPIC", "scenarios, and the Topic Quiz") was untrue for
+ * it. Adding terms is never gated (the Glossary toggle has no membership check),
+ * so the body says so. The topic copy below is owner copy (2026-08-13) and is
+ * unchanged.
+ */
+export const CUSTOM_LIST_SHEET_COPY = {
+  eyebrow: '🔒 MY CUSTOM LIST',
+  title: 'Studying My Custom List is part of Academy membership',
+  how: 'To study it, tap UNLOCK ACADEMY ACCESS below and choose a membership. Your list opens the moment it is active.',
+  howGuest:
+    'To study it you need an account and a membership: tap UNLOCK ACADEMY ACCESS below, choose a membership, and create your account when asked (or sign in if you have one).',
+  body: 'You can keep adding terms to your list from the Glossary. Membership lets you study them with flashcards, fill-in-the-blank and matching.',
+  freeTail: 'The whole study path, start to finish.',
+} as const;
+
 export function StudyAccessSheet({
   visible,
   onClose,
@@ -33,7 +52,13 @@ export function StudyAccessSheet({
   freeTopicNames = [],
   onTryFree,
   guest = false,
+  customList = false,
 }: {
+  /**
+   * The sheet was opened from My Custom List (the dial is on it), not from a
+   * topic: show `CUSTOM_LIST_SHEET_COPY` instead of the topic copy.
+   */
+  customList?: boolean;
   /**
    * A KNOWN guest (no account — `remindAsGuest(tier, useGuestWording().guest)`,
    * never a pending or unconfirmed member, D52). Owner, TestFlight build 32: a
@@ -89,6 +114,15 @@ export function StudyAccessSheet({
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityRole="button" accessibilityLabel="Dismiss" />
         <View style={styles.sheet}>
           <ScrollView bounces={false} contentContainerStyle={{ gap: 12 }}>
+        {customList ? (
+          <>
+            <Text style={styles.eyebrow}>{CUSTOM_LIST_SHEET_COPY.eyebrow}</Text>
+            <Text style={styles.title}>{CUSTOM_LIST_SHEET_COPY.title}</Text>
+            <Text style={styles.how}>{guest ? CUSTOM_LIST_SHEET_COPY.howGuest : CUSTOM_LIST_SHEET_COPY.how}</Text>
+            <Text style={styles.body}>{CUSTOM_LIST_SHEET_COPY.body}</Text>
+          </>
+        ) : (
+          <>
         <Text style={styles.eyebrow}>🔒 MEMBERS TOPIC</Text>
         <Text style={styles.title}>Membership required to study this topic</Text>
         <Text style={styles.how}>
@@ -101,6 +135,8 @@ export function StudyAccessSheet({
           week). Academy membership unlocks the complete study path for this topic—including flashcards,
           homework (fill-in-the-blank and matching), scenarios, and the Topic Quiz.
         </Text>
+          </>
+        )}
         <Text style={styles.body}>
           {/* Popup review C6 (owner OK 2026-10-26): a guest's work is never saved (D57). */}
           {guest ? 'With an account and membership, your progress is saved' : 'Your progress is saved'} as you
@@ -112,8 +148,12 @@ export function StudyAccessSheet({
             <Text style={styles.freeEyebrow}>OPEN TO YOU RIGHT NOW</Text>
             <Text style={styles.freeBody}>
               {freeTopicNames.length > 1 ? 'Two topics are' : 'One topic is'} free to study in full:{' '}
-              <Text style={styles.freeName}>{names}</Text>. Same flashcards, practice activities,
-              scenarios and quiz—the whole path, start to finish.
+              <Text style={styles.freeName}>{names}</Text>.{' '}
+              {/* My Custom List variant: "Same … scenarios and quiz" compared the
+                  free topics with a list that has neither (D1). */}
+              {customList
+                ? CUSTOM_LIST_SHEET_COPY.freeTail
+                : 'Same flashcards, practice activities, scenarios and quiz—the whole path, start to finish.'}
             </Text>
           </View>
         ) : null}

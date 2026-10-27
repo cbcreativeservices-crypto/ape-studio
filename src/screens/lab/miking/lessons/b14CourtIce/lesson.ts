@@ -568,7 +568,7 @@ export const B14_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'Action sound at court, racket and ice sports — ball and racket contact, shoes, the puck and stick, skates, board impacts — followed without putting mics, cables or operators in the athletes’ way: basketball, indoor volleyball, tennis, badminton and ice hockey.', src: 'LESSON-B14' },
     { title: 'APPROVAL FIRST', text: 'Every position, mount and cable route is approved by the event. A credential, a low-profile housing or a photo of another broadcast is not approval; local permission cannot override a rule.', src: 'LESSON-B14' },
     { title: 'AIR AND STRUCTURE', text: 'Perimeter and compact mics, a floor boundary and approved plants hear the air; a contact sensor hears the structure. They are different perspectives — kept apart and labelled.', src: 'LESSON-B14' },
-    { title: 'THE PRACTICE LINE', text: 'Here you practise at a mock boundary on an inactive dry floor: three source points inside, the mic mark outside. These are suggested starting points — experimentation is encouraged; your ears and the venue decide.', src: 'LESSON-B14' },
+    { title: 'THE PRACTICE LINE', text: 'Here you practice at a mock boundary on an inactive dry floor: three source points inside, the mic mark outside. These are suggested starting points — experimentation is encouraged; your ears and the venue decide.', src: 'LESSON-B14' },
   ],
   sound: {
     stages: [

@@ -62,12 +62,12 @@ export function ToolLearnScreen({ navigation, route }: Props) {
         ) : gate !== 'open' ? (
           <ToolGatePending gate={gate} />
         ) : !content ? (
-          // Honest authoring state — no placeholder teaching text.
+          // No tutorial for this tool (only the multimeter today) — no placeholder
+          // teaching text, and no forward promise (popup review 2 D11, 2026-10-27).
           <View style={styles.authoringCard}>
-            <Text style={styles.authoringTitle}>TUTORIAL IN AUTHORING</Text>
+            <Text style={styles.authoringTitle}>NO GUIDED TUTORIAL FOR THIS TOOL</Text>
             <Text style={styles.authoringBody}>
-              The guided tutorial for this tool is being written. The tool's reference page (purpose,
-              what it measures, what it does not) is available now from its info screen.
+              Its reference page (purpose, what it measures, what it does not) is on its info screen.
             </Text>
           </View>
         ) : (

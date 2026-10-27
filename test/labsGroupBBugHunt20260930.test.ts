@@ -139,8 +139,8 @@ test('Sound Systems: resets drop page memory and re-mount (a practice run — no
 });
 
 test('cable labs: practice again after the final challenge and bench; Install locks scroll during drags', () => {
-  assert.match(read('src/screens/lab/cable/lessons/lesson11.tsx'), /PRACTISE AGAIN ↻" action onPress=\{\(\) => setProg\(FRESH\)\}/);
-  assert.match(read('src/screens/lab/cable/lessons/lesson10.tsx'), /label="PRACTISE AGAIN ↻"/);
+  assert.match(read('src/screens/lab/cable/lessons/lesson11.tsx'), /PRACTICE AGAIN ↻" action onPress=\{\(\) => setProg\(FRESH\)\}/);
+  assert.match(read('src/screens/lab/cable/lessons/lesson10.tsx'), /label="PRACTICE AGAIN ↻"/);
   const ci = read('src/screens/lab/cableinstall/CableInstallLabScreen.tsx');
   assert.match(ci, /scrollEnabled=\{!dragLocked\}/);
   assert.match(ci, /<ScrollLockProvider value=\{setDragLocked\}>/);

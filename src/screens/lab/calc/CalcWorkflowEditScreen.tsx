@@ -216,7 +216,7 @@ export function CalcWorkflowEditScreen() {
     if (!editingId && workflowLimitsFor(entitlement, resolved).savedWorkflows === 0) {
       notify(
         'Building workflows is part of membership',
-        'Building your own calculator workflows is a feature of Academy membership. You can still run the built-in templates.',
+        'Building your own calculator workflows is part of Academy membership.',
       );
       return;
     }

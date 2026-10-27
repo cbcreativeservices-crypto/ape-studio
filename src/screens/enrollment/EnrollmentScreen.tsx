@@ -2486,7 +2486,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                   No terms yet. Tap <DeckIcon color={colors.customList} size={15} /> on any glossary term or flashcard to
                   add it here.
                 </>
-              ) : `${starredTerms.size} starred term${starredTerms.size === 1 ? '' : 's'}. LOAD puts this list on your study dashboard as one deck.`}
+              ) : `${starredTerms.size} term${starredTerms.size === 1 ? '' : 's'} in My Custom List. It is always on your study dashboard: open Study and turn the topic dial to it.`}
             </Text>
             <Pressable
               style={styles.customPanelBtn}
@@ -2871,8 +2871,8 @@ export const EnrollmentView = memo(function EnrollmentView({
             <ScrollView style={{ flexGrow: 0 }} showsVerticalScrollIndicator>
               {customListFailed ? (
                 <Text style={styles.clEmpty}>
-                  Couldn’t load your custom list. Your saved terms are safe — close this and open
-                  it again.
+                  Couldn’t load My Custom List. Your saved terms are safe. Close this and open it
+                  again.
                 </Text>
               ) : customListRows == null ? (
                 <Text style={styles.clEmpty}>Loading…</Text>
@@ -2889,9 +2889,9 @@ export const EnrollmentView = memo(function EnrollmentView({
                 ))
               ) : (
                 <Text style={styles.clEmpty}>
-                  No terms yet — open a term in the Glossary and tap “Add to custom list”, or tap{' '}
-                  <DeckIcon color={colors.customList} size={15} /> on a flashcard while you study any of your other topics,
-                  to build this list.
+                  {/* “Add to custom list” is only the icon’s screen-reader label (D13). */}
+                  No terms yet. Tap <DeckIcon color={colors.customList} size={15} /> beside a term in the Glossary, or on a
+                  flashcard while you study any of your other topics, to build this list.
                 </Text>
               )}
             </ScrollView>

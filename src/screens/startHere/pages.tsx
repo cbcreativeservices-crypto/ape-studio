@@ -290,7 +290,7 @@ function WelcomePage({ ctx: _ctx }: { ctx: PageCtx }) {
       </Card>
       <Card tint="rgba(127,212,255,.35)">
         <Text style={[styles.cardEyebrow, { color: colors.cyanBright }]}>WORDS YOU’LL MEET</Text>
-        <Text style={styles.cardBody}>Tap any word as you go to see what it means. Practise them any time with flip cards and a quick quiz.</Text>
+        <Text style={styles.cardBody}>Tap any word as you go to see what it means. Practice them any time with flip cards and a quick quiz.</Text>
         <Pressable onPress={env.openTerms} style={styles.linkBtn} accessibilityRole="button" accessibilityLabel="Open the starter words">
           <Text style={styles.linkText}>OPEN THE STARTER WORDS ›</Text>
         </Pressable>
@@ -1267,8 +1267,8 @@ function L6Safe({ ctx: _ctx }: { ctx: PageCtx }) {
         <Pressable onPress={env.openSafety} style={styles.linkBtn} accessibilityRole="button" accessibilityLabel="Open the Pro Audio Safety topic">
           <Text style={styles.linkText}>PRO AUDIO SAFETY TOPIC ›</Text>
         </Pressable>
-        <Pressable onPress={env.openTerms} style={styles.linkBtn} accessibilityRole="button" accessibilityLabel="Practise all 24 starter words">
-          <Text style={styles.linkText}>PRACTISE ALL 24 STARTER WORDS ›</Text>
+        <Pressable onPress={env.openTerms} style={styles.linkBtn} accessibilityRole="button" accessibilityLabel="Practice all 24 starter words">
+          <Text style={styles.linkText}>PRACTICE ALL 24 STARTER WORDS ›</Text>
         </Pressable>
       </View>
     </DocPage>

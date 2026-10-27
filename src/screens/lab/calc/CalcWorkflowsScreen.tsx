@@ -128,8 +128,8 @@ export function CalcWorkflowsScreen() {
       confirmDialog(
         action === 'duplicate' ? 'Customize this template?' : 'Build your own workflow?',
         action === 'duplicate'
-          ? 'Duplicating a template creates your own custom calculator workflow — a feature of Academy membership. You can still run any template as-is.'
-          : 'Building your own calculator workflows is a feature of Academy membership. You can still run the built-in templates.',
+          ? 'Making your own copy of a template is part of Academy membership.'
+          : 'Building your own calculator workflows is part of Academy membership.',
         'See membership',
         seePlans,
         { cancelText: 'Not now' },

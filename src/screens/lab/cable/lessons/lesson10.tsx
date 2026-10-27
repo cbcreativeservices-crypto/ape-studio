@@ -317,7 +317,7 @@ export function Lesson10Body() {
           The TESTER_UNIT is banked in labCompletion — this clears only the run. */}
       {allDone ? (
         <OptionChip
-          label="PRACTISE AGAIN ↻"
+          label="PRACTICE AGAIN ↻"
           action
           onPress={() => {
             setSolved([]);

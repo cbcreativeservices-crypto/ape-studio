@@ -207,15 +207,15 @@ export function LabEndScreen({
       ) : null}
 
       <View style={styles.actions}>
-        <GlassButton label="PRACTISE AGAIN FROM THE START" tint="gold" height={46} fontSize={12.5} onPress={onPracticeAgain} />
+        <GlassButton label="PRACTICE AGAIN FROM THE START" tint="gold" height={46} fontSize={12.5} onPress={onPracticeAgain} />
         <GlassButton label={doneLabel} tint="green" height={46} fontSize={12.5} onPress={done} />
       </View>
       <Text style={styles.note}>
         {isGuest
-          ? 'Practising again, reviewing and leaving are always open.'
+          ? 'Practicing again, reviewing and leaving are always open.'
           : mode === 'credit'
-            ? 'Practising again or reviewing never removes credit you have already earned.'
-            : 'Practising again or reviewing never clears what you have already done.'}
+            ? 'Practicing again or reviewing never removes credit you have already earned.'
+            : 'Practicing again or reviewing never clears what you have already done.'}
       </Text>
     </ScrollView>
   );

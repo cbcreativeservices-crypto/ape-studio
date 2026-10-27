@@ -41,7 +41,7 @@ export function earEndUnits(
     const p = progress?.[m.id];
     let detail: string;
     if (earModuleCredited(p)) {
-      detail = `Level ${Math.min(p!.mastered, m.levels)} of ${m.levels} cleared — practise on for the higher levels`;
+      detail = `Level ${Math.min(p!.mastered, m.levels)} of ${m.levels} cleared — practice on for the higher levels`;
     } else if (earModuleTried(p)) {
       const n = p!.total;
       detail = `Tried · level ${Math.min(p!.level, m.levels)} of ${m.levels} · ${n} answer${n === 1 ? '' : 's'} · ${TO_COUNT.toLowerCase()}`;

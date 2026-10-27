@@ -12,14 +12,14 @@ export function ToolAcademyLock({ what, onUpgrade }: { what: string; onUpgrade: 
   return (
     <View style={styles.card}>
       <Text style={styles.eyebrow}>ACADEMY MEMBERS</Text>
-      <Text style={styles.title}>Guided Measurement Training</Text>
+      <Text style={styles.title}>Guided measurement training</Text>
       <Text style={styles.body}>
-        {what} is part of the Academy's guided measurement training — step-by-step tutorials on what
+        {what} is part of Academy membership: step-by-step tutorials on what
         each tool measures, what it does not, how to read the display, and when a measurement should
         not be trusted. The tools themselves are always free to open.
       </Text>
       <View style={{ marginTop: 6 }}>
-        <GlassButton label="UPGRADE TO ACADEMY" tint="gold" height={48} fontSize={14} onPress={onUpgrade} />
+        <GlassButton label="SEE MEMBERSHIP" tint="gold" height={48} fontSize={14} onPress={onUpgrade} />
       </View>
     </View>
   );

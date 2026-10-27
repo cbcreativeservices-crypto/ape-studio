@@ -117,7 +117,17 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'study-order',
         q: 'Why are some study methods locked?',
-        a: 'Methods unlock in order on purpose — each builds on the one before it. Finish the current method and the next opens; the Topic Quiz opens last.',
+        // Popup review 2 C1 (owner OK 2026-10-27): the list has no unlock order
+        // (studyGate.ts rule 2, customListMethodPowered).
+        a: 'Methods unlock in order on purpose — each builds on the one before it. Finish the current method and the next opens; the Topic Quiz opens last. My Custom List is the exception: all of its methods are open from the start.',
+      },
+      {
+        // Popup review 2 C1 (owner OK 2026-10-27). Methods = studyGate
+        // customListMethods() while CUSTOM_LIST_SERVER_READY is false; nothing
+        // is recorded for the list, so it counts toward no certificate.
+        id: 'study-custom-list',
+        q: 'What is My Custom List?',
+        a: 'Your own study deck, built from glossary terms you choose. Tap the three-card icon beside any term in the Glossary, or on a flashcard, to add it. It is always on your Study dashboard: turn the topic dial to My Custom List. All of its study methods (flashcards, fill-in-the-blank and matching) are open from the start. It doesn’t count toward a certificate.',
       },
       {
         id: 'study-quiz',
@@ -216,7 +226,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'tools-saved',
         q: 'Where do saved measurements go?',
-        a: 'The Measurement Library, stored on this phone — not in the cloud. Saving is an Academy feature.',
+        a: 'The Measurement Library, stored on this phone — not in the cloud. Saving is part of Academy membership.',
         jump: { label: 'Open the Tools', route: 'ToolsHub' },
       },
       {

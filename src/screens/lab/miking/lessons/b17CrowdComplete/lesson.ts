@@ -592,7 +592,7 @@ export const B17_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A complete sports sound picture from separately controllable commentary, action and audience feeds — minimal and extensive layouts, stereo and the outputs that come from it, and what survives the loss of detail.', src: 'LESSON-B17' },
     { title: 'ROLES, NOT A MIC COUNT', text: 'A main audience bed, audience spots where it leaves a gap, action detail from approved sectors, commentary on its own inputs. A layout earns its extra channels only by covering what a smaller one lacks.', src: 'LESSON-B17' },
     { title: 'EVERY OUTPUT HEARD', text: 'Stereo, the declared mono and every downmix get their own listen; input peaks are kept apart from program loudness; every event still needs its own rules, venue plan and approvals.', src: 'LESSON-B17' },
-    { title: 'THE MOCK VENUE', text: 'Here you practise in a dry room laid out as a small venue: an action point, three audience places, the stereo centre and an action mic. These are suggested starting points — experimentation is encouraged; your ears and the room decide.', src: 'LESSON-B17' },
+    { title: 'THE MOCK VENUE', text: 'Here you practice in a dry room laid out as a small venue: an action point, three audience places, the stereo centre and an action mic. These are suggested starting points — experimentation is encouraged; your ears and the room decide.', src: 'LESSON-B17' },
   ],
   sound: {
     stages: [

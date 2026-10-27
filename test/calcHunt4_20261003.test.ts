@@ -44,7 +44,7 @@ describe('H4-1 — a failed membership read is never told to sign in or sold mem
     assert.match(s, /const tierUnconfirmed = tier === 'guest' && !tierKnown;/);
     const gate = s.slice(s.indexOf('const gateWorkflow = '), s.indexOf('const onNewWorkflow'));
     const unconf = gate.indexOf('if (tierUnconfirmed) {');
-    assert.ok(unconf > 0 && unconf < gate.indexOf("'Workflows are an Academy feature'"), 'checked before the sell');
+    assert.ok(unconf > 0 && unconf < gate.indexOf("'Workflows are part of Academy membership'"), 'checked before the sell');
     assert.match(gate, /if \(tierUnconfirmed\) \{[\s\S]*?notify\([\s\S]*?return;\s*\}/);
     assert.ok(gate.includes(NOT_CONFIRMED));
   });

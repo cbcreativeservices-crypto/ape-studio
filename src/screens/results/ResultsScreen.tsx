@@ -10,7 +10,7 @@
  *   no_pass — [Retake Quiz] + [Back to Dashboard]
  *   practice — PRACTICE label, [Retake] + [Back], no trophy option
  *   timed_out — "Time expired — not passed" (no lockout)
- *   voided — red ! + "QUIZ VOIDED" + live 15-min lockout countdown
+ *   voided — red ! + "ATTEMPT NOT COUNTED" + live 15-min lockout countdown
  * Scrollable wrong-answer review: question, your answer, correct answer.
  * (Explanations are NOT client-readable — quiz_questions is admin-only; gap
  * D-3 logged for the backend session.)
@@ -117,9 +117,11 @@ export function ResultsScreen({ navigation, route }: Props) {
         <View style={styles.voidBang}>
           <Text style={styles.voidBangText}>!</Text>
         </View>
-        <Text style={styles.voidTitle}>QUIZ VOIDED</Text>
+        {/* Popup review 2 D5 (2026-10-27): "not counted", never "voided". */}
+        <Text style={styles.voidTitle}>ATTEMPT NOT COUNTED</Text>
         <Text style={styles.voidBody}>
-          App-switch detected twice. This attempt was voided and does not count.
+          You left the app twice during the quiz, so this attempt isn’t counted. You can try again when the timer
+          below runs out.
         </Text>
         <View style={styles.lockoutCard}>
           <Text style={styles.lockoutEyebrow}>LOCKOUT</Text>

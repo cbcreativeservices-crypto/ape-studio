@@ -905,7 +905,7 @@ const RECENT_UNREADABLE =
  *  read (hunt 13, K2 — the same pattern as RECENT_UNREADABLE). */
 /** The Custom tab with nothing on it and nothing searched. */
 const CUSTOM_EMPTY =
-  'Your custom list is empty. Tap the deck icon beside any term to add it here, then this tab shows just those terms.';
+  'My Custom List is empty. Tap the three-card icon beside any term to add it. This button then shows just those terms.';
 const CUSTOM_UNREADABLE =
   'Your custom list couldn’t be read on this phone. Nothing has been removed — it’ll show again once the list can be read.';
 const BOOKMARKS_UNREADABLE =
@@ -3907,11 +3907,11 @@ ${COPY.glossaryFreeAllowance}`,
       'Every professional-audio term in one place — search it, follow the links between related terms, switch how definitions read, and save the ones you want to keep.',
     sections: [
       { heading: 'SEARCH', body: 'Type any term in the search box. Results rank by the closest match, and the letters you typed are highlighted.' },
-      { heading: 'BEG / ADV', body: 'Tap BEG or ADV in the header to switch a definition between plain English (BEG) and the official, technical wording (ADV).' },
-      { heading: 'LIST / CARDS', body: 'CARDS focuses one term at a time; LIST shows the full scrollable list. Tap a term to expand its definition and learning levels.' },
+      { heading: 'BEG / ADV', body: 'Tap BEG/ADV above the list to switch between plain English (BEG) and the official, technical wording (ADV).' },
+      { heading: 'CARD VIEW', body: 'The green full-screen button opens card view, one term at a time; the inward-arrows button takes you back to the full list. Tap a term in the list to open its definition and learning levels.' },
       { heading: 'GLOSSARY LINKS', body: 'Inside a definition, words that have their own entry show in blue — tap one to jump straight to that term. Use the “Glossary Links” button above the list to turn those links on or off everywhere; it glows blue when they’re on.' },
       { heading: 'CALCULATOR (Σ)', body: 'A blue word followed by a small purple Σ can also be calculated: tap the word for its definition, or tap the Σ to open that term’s calculator in the Audio Calculator Laboratory.' },
-      { heading: 'SAVE & FILTER', body: 'Bookmark a term or add it to a custom list, then use the ALL · Topic · Bookmarks · Custom · Recent chips to filter to just those.' },
+      { heading: 'SAVE & FILTER', body: 'Bookmark a term, or tap the three-card icon to add it to My Custom List. Then use the All, Topic, Bookmarks, CUSTOM STUDY LIST and Recent buttons to show just those terms. Press and hold Bookmarks or CUSTOM STUDY LIST to see the whole list.' },
     ],
     links: [{ label: 'Open the Audio Calculator Laboratory', onPress: () => (navigation as any).navigate('CalcLab') }],
   });
@@ -4233,7 +4233,7 @@ ${COPY.glossaryFreeAllowance}`,
             setFilter('custom');
             setTopicPickerOpen(false);
           }}
-          onLongPress={() => setTermListModal({ title: 'Custom list', kind: 'starred' })}
+          onLongPress={() => setTermListModal({ title: 'My Custom List', kind: 'starred' })}
         />
         <Chip
           label="Recent"
@@ -4811,8 +4811,8 @@ ${COPY.glossaryFreeAllowance}`,
                       ? (
                           // The custom list's own 3-card icon, not a ★ (owner 2026-10-16).
                           <>
-                            No terms yet — tap <DeckIcon color={colors.customList} size={15} /> on any term to build your
-                            custom list.
+                            No terms yet — tap <DeckIcon color={colors.customList} size={15} /> on any term to build My
+                            Custom List.
                           </>
                         )
                       : termListModal?.kind === 'recent'

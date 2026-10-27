@@ -94,7 +94,7 @@ export function TopicDeckSheet({
           </View>
           <Text style={styles.note}>
             {custom
-              ? 'Custom order — use ↑ (further left) and ↓ (further right). Tap a topic to jump to it.'
+              ? 'Custom order: ↑ moves a topic earlier in the deck and ↓ moves it later. Tap a topic to jump to it.'
               : 'Alphabetical order. Switch to CUSTOM to arrange the deck yourself. Tap a topic to jump to it.'}
           </Text>
 
@@ -354,8 +354,8 @@ export function CustomQuizLengthSheet({
             })}
           </View>
           <Text style={qStyles.rules}>
-            The clock does not pause. Leaving the app twice voids the attempt and locks the quiz for fifteen minutes. Going
-            back wipes your answers — there is no save.
+            The clock doesn’t pause. If you leave the app twice, the attempt isn’t counted and your list quiz locks for
+            15 minutes. Going back wipes your answers, and the clock keeps running.
           </Text>
           <View style={qStyles.actions}>
             <View style={qStyles.action}>

@@ -195,7 +195,7 @@ export const EXAM_START_ERROR_COPY: Record<ExamStartError, string> = {
   // client that guessed would be wrong for anyone whose membership lapsed and
   // restarted.
   result_held:
-    'Your Final Exam has been marked and is being held until your first month of membership completes. There is nothing more to do — you do not need to sit it again.',
+    'Your Final Exam has been graded and is being held until your first month of membership completes. There is nothing more to do — you do not need to sit it again.',
   already_earned: 'You have already earned this credential.',
   award_content_incomplete: 'This award is not open for examination yet — its topics are still being published.',
   award_incomplete: 'Complete every required topic and the Audio Fundamentals labs before taking the Final Exam.',
@@ -379,7 +379,7 @@ export const EXAM_SUBMIT_ERROR_COPY: Record<ExamSubmitError, string> = {
   // The serve set is written inside start_final_exam's transaction, so an empty
   // one means the attempt never fully started. Nothing the learner did.
   bad_serve_set:
-    'This exam was not set up correctly and could not be marked. Nothing you did caused this, and this attempt will not be counted — email info@proaudiotrainingacademy.com.',
+    'This exam was not set up correctly and could not be graded. Nothing you did caused this, and this attempt will not be counted — email info@proaudiotrainingacademy.com.',
   not_owner: 'This exam belongs to a different account. Sign in as the account that started it.',
   user_not_found:
     'We could not find your account record. Sign out and back in, and email info@proaudiotrainingacademy.com if it continues.',

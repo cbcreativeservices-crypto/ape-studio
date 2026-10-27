@@ -156,8 +156,8 @@ function FlipCards({ group }: { group: TermGroupId | 'all' }) {
         </Text>
         <Text style={styles.intro}>{again.length > 0 ? `${again.length} still to learn. Go again with just those — they will stick faster.` : 'Every word known. Try the QUIZ to test yourself the other way round.'}</Text>
         {again.length > 0 ? (
-          <Pressable onPress={() => { setDeck(again); setIdx(0); setFlipped(false); }} style={styles.primaryBtn} accessibilityRole="button" accessibilityLabel="Practise the words still to learn">
-            <Text style={styles.primaryText}>PRACTISE THE {again.length} STILL TO LEARN</Text>
+          <Pressable onPress={() => { setDeck(again); setIdx(0); setFlipped(false); }} style={styles.primaryBtn} accessibilityRole="button" accessibilityLabel="Practice the words still to learn">
+            <Text style={styles.primaryText}>PRACTICE THE {again.length} STILL TO LEARN</Text>
           </Pressable>
         ) : null}
         <Pressable onPress={() => { setDeck(all.map((x) => x.id)); setIdx(0); setFlipped(false); setKnown(new Set()); }} style={styles.secondaryBtn} accessibilityRole="button" accessibilityLabel="Start all the cards again">

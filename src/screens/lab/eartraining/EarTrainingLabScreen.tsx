@@ -119,7 +119,7 @@ export function EarTrainingLabScreen() {
         {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"): a
             ladder handed out because storage could not be read shows no
             levels, no accuracy and no ✓ — said here, before the rows. The
-            modules stay open to practise. */}
+            modules stay open to practice. */}
         {unreadable ? <ProgressUnreadableNote /> : null}
         <TabletGrid minTile={360} maxCols={2} gap={8}>
         {EAR_MODULES.map((m) => {

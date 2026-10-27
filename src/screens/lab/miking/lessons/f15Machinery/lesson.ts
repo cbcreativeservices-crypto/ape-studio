@@ -55,7 +55,7 @@ const pages: LessonPages = {
     title: 'Keep out',
     goal: 'Find where a mic may and may not go round a running device — the exclusion zone, the airflow — and see the industrial machine that is a no-go.',
     credit: { scenarios: ['mp.ctx.1', 'mp.ctx.2', 'mp.rec.3'], interactive: 'keepOut', note: 'In KEEP OUT, try a position in the zone, one in the airflow and a clear one, look at the no-go machine, and answer the three checks.' },
-    takeaway: 'Nothing enters the exclusion zone; a capsule in the airflow reads wind; an industrial machine is never a place to practise — guards on, lockout by authorized people only.',
+    takeaway: 'Nothing enters the exclusion zone; a capsule in the airflow reads wind; an industrial machine is never a place to practice — guards on, lockout by authorized people only.',
   },
   twoMic: {
     title: 'The cycle and the claims',
@@ -614,7 +614,7 @@ export const F15_LESSON: Lesson = {
   setupPairs: [{ label: 'A and B: the same radius, two sides', A: { zone: 'mp.A' }, B: { zone: 'mp.B' }, line: 'One radius, one height, two angles. If the cycle stays the same, the difference comes from the spot: the fan’s direction and the room’s bounces there.' }],
   orient: [
     { title: 'WHAT IT IS', text: 'Miking a product while it runs, from repeatable, safe positions: what a user hears at a stated point, a comparison before and after a change, or clues to a fault — each claim no bigger than the setup.', src: 'F15-LESSON' },
-    { title: 'THE DEVICE', text: 'A low-risk, intact, guarded device under its own instructions — here a desk fan on a small table. Industrial machines are not a place to practise: they appear here only as a no-go example.', src: 'F15-LESSON' },
+    { title: 'THE DEVICE', text: 'A low-risk, intact, guarded device under its own instructions — here a desk fan on a small table. Industrial machines are not a place to practice: they appear here only as a no-go example.', src: 'F15-LESSON' },
     { title: 'TWO KINDS OF SIGNAL', text: 'A mic reads the airborne pressure where its capsule sits; a contact sensor, fixed on by someone qualified while the device is isolated, reads the housing’s vibration in other units.', src: 'F15-LESSON' },
     { title: 'THE KEEP-OUTS', text: 'Round the running fan, an exclusion zone — the guard plus a margin — and its airflow. Nothing goes inside either: the drawing’s 0.3 m margin and 30° cone are drawings; the device and the site set the real ones.', src: 'F15-LESSON' },
   ],

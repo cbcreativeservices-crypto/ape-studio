@@ -308,9 +308,9 @@ export function FaultCard({ title, symptom, start, fixed, hints, why, onFixed, s
                 fired.current = false;
               }}
               accessibilityRole="button"
-              accessibilityLabel="Practise this fault again"
+              accessibilityLabel="Practice this fault again"
             >
-              <Text style={styles.faultBtnText}>PRACTISE AGAIN</Text>
+              <Text style={styles.faultBtnText}>PRACTICE AGAIN</Text>
             </Pressable>
           ) : null}
         </>

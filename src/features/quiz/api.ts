@@ -70,7 +70,7 @@ export const QUIZ_OUTCOME_COPY: Record<QuizOutcome, string> = {
   partial_pass: 'You passed the required sections. Some sections still need work.',
   no_pass: 'You did not pass this time. You can retake the quiz from your dashboard.',
   voided:
-    'This attempt was not counted because the app was left during the quiz. You can start a new attempt from your dashboard.',
+    'This attempt was not counted because the app was left during the quiz. The quiz locks for 15 minutes after that; then you can start a new attempt from your dashboard.',
   timed_out:
     'Time ran out before this attempt was finished. You can start a new attempt from your dashboard.',
 };
@@ -502,7 +502,7 @@ export const QUIZ_SUBMIT_ERROR_COPY: Record<string, string> = {
   attempt_not_found:
     'We could not find this quiz attempt. Open the quiz again from your dashboard — if it keeps happening, email info@proaudiotrainingacademy.com.',
   bad_serve_set:
-    'This quiz was not set up correctly and could not be marked. Nothing you did caused this, and the attempt will not be counted against you.',
+    'This quiz was not set up correctly and could not be graded. Nothing you did caused this, and the attempt will not be counted against you.',
   not_owner: 'This quiz belongs to a different account. Sign in as the account that started it.',
   user_not_found:
     'We could not find your account record. Sign out and back in, and email info@proaudiotrainingacademy.com if it continues.',
