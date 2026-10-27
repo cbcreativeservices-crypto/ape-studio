@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 16:32 · ccode · 42487325
+changed: docs: R4 closed — store-notifications is live (v11); checklist wording corrected
+affects other side: nothing; docs only — R4 closed, store-notifications v11 re-checked live [MD:R4]
+needs: Comp A: confirm the App Store and Play webhook URLs point at store-notifications (ccode cannot see the store consoles) [MD:R4]
+
+
 ### 2026-10-27 16:15 · ccode · e6bf6e82
 changed: R5: re-send a round's answers when complete_scenario_round returns 0
 affects other side: nothing [MD:R5] (app now re-sends a round's answers when complete_scenario_round returns 0; ships in the post-approval OTA)
