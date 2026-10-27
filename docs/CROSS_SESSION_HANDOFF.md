@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 15:51 · ccode · 027984a1
+changed: docs/live: correct the snapshot time (15:45, not 19:45)
+affects other side: none
+needs: nothing
+
+
 ### 2026-10-27 15:51 · ccode · 0f32757c
 changed: Merge R1 + H2: instructor accounts (app half) + the student's instructor-sharing switch (owner GO 2026-10-27)
 affects other side: Comp A: the app now calls my_verifier_kind and instructor_share_* (live since 10-04)
