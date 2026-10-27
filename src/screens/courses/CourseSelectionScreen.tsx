@@ -310,31 +310,32 @@ let lastCenteredId: string | null = null;
  * shared course-card artwork.
  */
 const FIELD_TOPICS: readonly string[] = [];
-/** Showcase cards, carousel order (owner 2026-09-05): broad, tempting areas
- *  first. Each name is a CARD_IMAGE key; a name without art is skipped. */
+/** Showcase cards, carousel order — the owner's own left-to-right order
+ *  (2026-10-27, picked on the card-order page). Each name is a CARD_IMAGE key;
+ *  a name without art is skipped. Mixing & Mastering, Audio Restoration &
+ *  Archiving and Acoustics Science were added 2026-09-16 so their credentials
+ *  get their own menus. */
 const SHOWCASE_CARDS: readonly string[] = [
-  'Live Sound Engineering',
   'Music Production',
   'Recording Arts',
+  'Live Sound Engineering',
   'Worship Audio',
+  'Architectural Acoustics',
   'DJ Production',
   'Theatrical Sound Design',
   'Podcasting & Broadcast',
   'Sound for Film & Games',
-  'Sound Reinforcement',
   'System Design & Maintenance',
+  'Sound Reinforcement',
   'Corporate & Event AV',
-  'Architectural Acoustics',
   'Commercial 70V Systems',
   'Assisted Listening',
-  'Vehicle Audio',
   'HiFi & Consumer Audio',
   'Audio Electronics',
+  'Vehicle Audio',
   'Audio Technician',
   'Road Crew & Touring',
   'Career & Business',
-  // Owner 2026-09-16 — three added areas so their credentials get their own
-  // menus instead of bloating the originals. Art: owner-produced card images.
   'Mixing & Mastering',
   'Audio Restoration & Archiving',
   'Acoustics Science',
