@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 09:37 · ccode · 82b30447
+changed: R3: DJ Systems Lab records completion (tr_dj) for both DJ credentials; R11 seed comments
+affects other side: Comp A — the app (branch r3-dj-lab-completion, rides the post-approval OTA) now sends mark_lab_complete('tr_dj') when the DJ Systems Lab is done, and the bundled requirement copy lists tr_dj for cert-dj-and-club-sound-v3 + prog-dj-and-club-audio-v3. docs/APE_LAB_CERT_REQUIREMENTS_SEED_2026_10_13.sql was regenerated and now contains them too — do NOT re-run it whole [MD:R3]
+needs: Comp A, owner's GO [MD:R3]: apply Downloads/2026-10-27_R3_DJ_LAB_SQL_DRAFT.sql in its SAFE ORDER — STEP 1 (labs row tr_dj) any time, it is harmless; STEP 2 (the 2 requirement rows) only after the OTA is on phones (A2 + A4) and after A6 (enforcement is off today, lab_requirements_enforced() = false); then paste the VERIFY select
+
+
 ### 2026-10-27 09:14 · ccode · 528ae813
 changed: Merge D12: My Custom List scenarios + practice quiz (owner GO 2026-10-27)
 affects other side: Comp A — the custom-list RPCs you shipped are now called by the app (D12 closed on our side)
