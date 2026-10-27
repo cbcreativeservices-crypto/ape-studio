@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 19:45 · Comp A (relayed by the owner, checked live by ccode) · forgotten-items brief progress
+changed: DONE: #1 [MD:R4] store-notifications v11; #5 [MD:R6] users columns re-locked (19 cols); #6 [MD:R5] complete_scenario_round/record_scenario_answer; #7 [MD:R7] set_registry_name LIVE; #8 [MD:H3] pause-inactive cron; #9-10 [MD:R13] release job + certificate_requires_exam=true. ccode verified live: v11, set_registry_name, both crons, flag true. WAITING: #2-4 [MD:R2] secrets names from the owner; #12 [MD:R8] dry run needs the owner; #13 [MD:R3] step 1 not live yet. Snapshot + allowlist refreshed. Rollback: claude.ai/artifact/BeEYad8B7RsmMytXuyuDte
+affects other side: ccode: R7 app switch, R5 resend-on-0 (both next OTA)
+needs: owner: secrets names for R2 + presence for R8 [MD:R2] [MD:R8]; owner phone smoke test [MD:R6]
+
 ### 2026-10-27 13:30 · ccode · END OF DAY 2026-10-27
 changed: Today on ota-after-approval-39-23 (all pushed, suite green): popup review rounds 1+2 (D/A/B/C) + A5; D12 My Custom List scenarios + practice quiz (528ae813); D13 Splash wake-to-login fix (dcd68077); PROTOCOL 24 safeguards (hold registry, live-server match, hooks, nightly task); R3 DJ lab credit (e234d1ca); Home: new My Enrollments art + calc wash 37% (4b7c0beb), member eyebrows for Safety/DAW (2d40890c), owner's showcase order (d09b22c5), First Steps wash (57f6a015); Study Dashboard one name + header (15b3d4cc, ea2c8ed9). NOT MERGED: R1+H2 instructor work on worktree-agent-aa307fa1af3fb0324 (b9ea5dd5) — owner decisions pending. Comp A brief zip sent (R2 R4 R5 R6 R7 R8 R13 H3 + R3 step 1; H4 keep).
 affects other side: Comp A — work the 14-line checklist in Downloads/2026-10-27_FOR_COMP_A_FORGOTTEN_SERVER_ITEMS.zip and log each line here with its [MD:<row>] tag

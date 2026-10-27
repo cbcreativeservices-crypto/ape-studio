@@ -1,5 +1,5 @@
 {
- "taken_at": "2026-10-27T08:35:00-07:00",
+ "taken_at": "2026-10-27T19:45:00-07:00",
  "taken_by": "ccode, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions",
  "functions": [
   "_custom_list_attempt_payload",
@@ -151,6 +151,7 @@
   "rls_auto_enable",
   "seed_commercial_free_topics",
   "set_registry_listing",
+  "set_registry_name",
   "set_verify_code",
   "start_custom_list_quiz",
   "start_final_exam",
@@ -189,11 +190,13 @@
  "cron_jobs": [
   "community-flag-digest",
   "community-flags-retention",
+  "community-profile-pause-inactive",
   "community-push-every-minute",
   "on-weekly-concept",
   "purge-anon-devices",
+  "refresh-glossary-term-count",
   "refresh_academy_stats",
   "refresh_program_kpis",
-  "refresh-glossary-term-count"
+  "release-pending-credentials"
  ]
 }

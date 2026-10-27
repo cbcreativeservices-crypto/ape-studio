@@ -46,6 +46,7 @@
   "remove_retained_credential": "admin tool: deletes one retained certificate record (a deleted account's certificate, by verify code) on request; admin/service role only (checked live 2026-10-27)",
   "rls_auto_enable": "server-internal: event trigger ensure_rls (turns RLS on for new tables) (checked live 2026-10-27)",
   "seed_commercial_free_topics": "server-internal: called by register_commercial_user (checked live 2026-10-27)",
+  "set_registry_name": "R7a LIVE 2026-10-27 (Comp A); the app switch of saveMyRegistryName is not built yet [MD:R7]",
   "set_verify_code": "server-internal: trigger users.users_set_verify_code (checked live 2026-10-27)",
   "trg_eval_credentials": "server-internal: trigger student_achievement_progress.student_progress_award (checked live 2026-10-27)",
   "users_default_notification_prefs": "server-internal: trigger users.users_default_notification_prefs (checked live 2026-10-27)",
