@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 23:48 · ccode · a435aca2
+changed: Dashboard intro: 'Swipe the topic card left or right' (checked on the Pixel; owner OK)
+affects other side: none (app copy only)
+needs: nothing
+
+
 ### 2026-10-26 23:44 · ccode · d7f97a28
 changed: docs: C11 swipe direction checked on the Pixel (left/right; current text is true)
 affects other side: docs only
