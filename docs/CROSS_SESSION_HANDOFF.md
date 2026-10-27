@@ -675,10 +675,15 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
-### 2026-10-26 13:10 · ccode · owner picks A: website certificate thumbnails
-changed: Owner chose A for your section-3 question: thumbnails on /registry AND /verify; on /verify the certificate's QR area shows the verified code as text (no SQL; the short code never reveals the full token).
-affects other side: Comp A: send ccode the website handoff for the thumbnails (option A); ccode builds it on web-launch-day
-needs: Comp A: (1) that handoff; (2) your status on the toddler-hunt brief (#2 #3 #6 #11 #12 #14); (3) the wording, or 'drop it', for the Terms 20.16 'Our filter' paragraph after checking which message/contact-request filter is live
+### 2026-10-26 22:20 · ccode · verified the toddler-fix state (read-only)
+changed: Confirmed on live: contact_reports has repeat_count + last_reported_at; both triggers present; contact_messages.client_msg_id present; contact_message_send has the 2- and 3-arg forms returning uuid; glossary_study_v.plain_english_preview present; validate-purchase v19 source has the reason field, acknowledgeGoogle after the grant (not on pending) and the account-tag refusal. Must-do C toddler row closed; follow-ups added (Play permission check; app halves D8).
+affects other side: none
+needs: nothing
+
+### 2026-10-26 22:05 · Comp A · status: toddler-hunt server fixes (brief 2026-10-14) ALL LIVE (posted by ccode from Downloads COMP_A_TO_CCODE_TODDLER_FIXES_STATUS_2026-10-26)
+changed: Read-only on live, nothing changed. Live: #14 (standing_effective_status; expired suspension -> no row), #12 (contact_reports.repeat_count + last_reported_at + trigger contact_reports_merge_repeat), #11 (contact_messages.client_msg_id + trigger; contact_message_send(uuid,text) and (uuid,text,uuid) both return uuid), #6 + #2 Part A + #3 (validate-purchase v19: reason incl. linked_to_other_account/server_error + expired_at; acknowledgeGoogle after the grant, never on pending; account tag refuses another existing account), #15 (glossary_study_v.plain_english_preview). v19 comments date #2/#3/#6 to 2026-10-23. Not verified: the Play service account's 'Manage orders and subscriptions' permission (#2; without it acknowledge gets 403, harmless); behaviour tests not re-run. Still HOLD: #2 Part B, the #6 restore wording (owner), the app halves of #3/#6/#11/#15 (ccode, next update).
+affects other side: ccode: must-do C toddler item -> done (live); the app halves are ccode's
+needs: owner: check the Play service-account permission
 
 ### 2026-10-26 21:47 · ccode · d253ec56
 changed: docs: B3 ruled — leave Open testing 20 in Play submission #3; clean up after launch
@@ -698,11 +703,10 @@ affects other side: Comp A: Google APPROVED Android 23 (owner, Play Console). Ma
 needs: Comp A: tell ccode/owner the moment Apple approves 39
 
 
-### 2026-10-26 08:53 · ccode · 4c5946e1
-changed: docs: governance D110-D116 (today's owner rulings) + protocol rules 21-23 (trace owner art, browser pane per session, secrets chat-only)
-affects other side: Comp A: governance D110-D116 record today's rulings (your record stays D102-D109); protocol rules 21-23 added
-needs: nothing
-
+### 2026-10-26 13:10 · ccode · owner picks A: website certificate thumbnails
+changed: Owner chose A for your section-3 question: thumbnails on /registry AND /verify; on /verify the certificate's QR area shows the verified code as text (no SQL; the short code never reveals the full token).
+affects other side: Comp A: send ccode the website handoff for the thumbnails (option A); ccode builds it on web-launch-day
+needs: Comp A: (1) that handoff; (2) your status on the toddler-hunt brief (#2 #3 #6 #11 #12 #14); (3) the wording, or 'drop it', for the Terms 20.16 'Our filter' paragraph after checking which message/contact-request filter is live
 
 ### 2026-10-26 12:30 · ccode · website /instructor page built (web-launch-day, local)
 changed: Owner asked to build the website instructor page. Built on web-launch-day @ 34bd8929 (not pushed): /instructor (noindex) reads instructor_my_code / instructor_students / instructor_student_progress; class list + student detail (topics with per-method %, quiz scores never answers, labs for the student's topics + other_completed when present, final exams, credentials; history before sharing included). EmployerStatus links approved instructors there. Browser-checked with sample replies (desktop + 390 px), type check clean.
@@ -758,6 +762,12 @@ needs: nothing
 changed: THE list = docs/APE_LAUNCH_MUST_DO.md (ccode D101). Comp A's 'Academy Launch Task Plan' doc becomes a view of it.
 affects other side: none
 needs: nothing
+
+### 2026-10-26 08:53 · ccode · 4c5946e1
+changed: docs: governance D110-D116 (today's owner rulings) + protocol rules 21-23 (trace owner art, browser pane per session, secrets chat-only)
+affects other side: Comp A: governance D110-D116 record today's rulings (your record stays D102-D109); protocol rules 21-23 added
+needs: nothing
+
 
 ### 2026-10-26 08:45 · Comp A · ACK instructor labs scope: APPLIED (posted by ccode from Downloads COMP_A_TO_CCODE_INSTRUCTOR_LABS_ACK_2026-10-26)
 changed: Owner GO 2026-10-26. New private.student_scoped_labs(uuid) exactly as briefed (af_* + certificate labs of active-enrollment required topics; secdef, search_path ''; EXECUTE revoked from public/anon/authenticated). Only the labs parts of instructor_students() and instructor_student_progress(uuid) changed (marker swap after md5 check; topics/quiz/finals/credentials/share checks byte-identical; no date filter). Backups in public._ape_function_backup (instructor_students_2026_10_26, instructor_student_progress_2026_10_26); md5 students 421afa14->72e51ebc, progress 114be7a5->6d321cbd. Dry run (forced rollback) all PASS. 90_VERIFY PASS via temporary instructor + shares in an always-rolled-back block: Pro1 59 total / 4 complete / 1 other_completed / list 59; no-enrollment 15/0; 14 topics completed before the share date still appear; the two functions agree; anon blocked on every instructor_*; helper not executable by anon/authenticated/PUBLIC; 0 temp rows left. Rollback: 99_ROLLBACK.sql. Nothing calls these functions yet; live has no instructors.
