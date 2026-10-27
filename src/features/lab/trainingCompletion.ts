@@ -17,6 +17,8 @@
  *   tr_drum_tuning every chapter banked (7)               DrumTuningLabScreen
  *   tr_tuning     every chapter (14 — the store's `done`) TuningLabScreen
  *   tr_sound_systems the hub's COMPLETE rule              SoundSystemsLabScreen (soundsystems/labComplete)
+ *   tr_dj         every REQUIRED screen done (16–18 are   DJSystemsLabScreen → PagedLab labDoneKey
+ *                 optional; dj/pages/registry djLabComplete)  [MD:R3], 2026-10-27
  *   tr_<practice> the lab's understanding check passed    passUnderstandingCheck (PagedLab, LabShell,
  *                 (incl. tr_eq — see trainingLabKeys)     SsPagedLab, LabUnderstandingBlock)
  *   ear_<module>  mastered ≥ REQUIRED_EAR_LEVEL           EarModuleScreen
@@ -41,6 +43,8 @@ import { isEarProgressUnreadable, loadEarProgress, type EarProgressState } from 
 import { getSoundSystemsProgress, hydrateSoundSystemsProgress, isSoundSystemsProgressUnreadable } from '../soundsystems/progress';
 import { soundSystemsLabComplete } from '../soundsystems/labComplete';
 import { SS_LEARN_ID, SS_PAGE_COUNTS } from '../../screens/lab/soundsystems/units';
+// Pure (no React Native) — the screens themselves are never loaded here.
+import { DJ_LAB_ID, djLabComplete } from '../../screens/lab/dj/pages/registry';
 import { isPagedProgressUnreadable, loadPagedProgress } from './pagedProgress';
 import { projectStore } from '../production/projectStore';
 import { productionProjectComplete } from '../production/complete';
@@ -153,6 +157,13 @@ export async function collectCompletedTrainingKeys(): Promise<string[]> {
     if (isSoundSystemsProgressUnreadable() || isPagedProgressUnreadable(SS_LEARN_ID) || isLabCompletionUnreadable()) return;
     const learnPages = learn.completed.filter((p) => p < SS_PAGE_COUNTS.learn).length;
     if (soundSystemsLabComplete(learnPages, getSoundSystemsProgress(), hasLabUnit(SS_LEARN_ID, UNDERSTANDING_UNIT))) add(trainingKeyFor('SoundSystemsLab'));
+  });
+  // DJ Systems Lab [MD:R3]: screens finished on builds 39/23 (which sent no
+  // key) are in the lab's PagedLab store; credit them once every required
+  // screen is done. An unreadable store contributes nothing.
+  await step(async () => {
+    const p = await loadPagedProgress(DJ_LAB_ID);
+    if (!isPagedProgressUnreadable(DJ_LAB_ID) && djLabComplete(p.completed)) add(trainingKeyFor('DJSystemsLab'));
   });
   for (const [lab, route] of [['preprod', 'PreProdLab'], ['postprod', 'PostProdLab']] as const) {
     await step(async () => {

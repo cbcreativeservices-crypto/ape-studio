@@ -5,9 +5,10 @@
  * requisite). Pure data — imported by the boot-loaded labCompletion store,
  * so NOTHING React/Skia may ever live here.
  *
- * Credit stays inert server-side until the owner runs
- * docs/APE_CONNECTOR_SELECT_SEED_2026_09_11.sql (the lab_not_found guard
- * keeps the completion unsent + retried until then).
+ * Server credit: docs/APE_CONNECTOR_SELECT_SEED_2026_09_11.sql WAS RUN —
+ * the live `labs` row af_connector_select is dated 2026-09-11 (checked
+ * 2026-10-27), so mark_lab_complete accepts it. Before the seed, the
+ * lab_not_found guard kept the completion unsent and retried.
  */
 export const CONNECTOR_SELECT_LAB_KEY = 'af_connector_select' as const;
 

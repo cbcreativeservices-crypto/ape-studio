@@ -113,7 +113,7 @@ import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type La
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 
-export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail, optionalPage }: {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail, optionalPage, labDoneKey }: {
   labId: string;
   title: string;
   subtitle: string;
@@ -156,6 +156,13 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
    *  and the lab counts as done once every OTHER page is. Omitted = every
    *  page is required, exactly as before. */
   optionalPage?: (index: number) => boolean;
+  /** ADDITIVE (2026-10-27, DJ Systems Lab [MD:R3]): the WHOLE-LAB training key
+   *  (trainingLabKeys, e.g. tr_dj) this lab completes once every required page
+   *  is done — the same "lab done" rule as `optionalPage` above. Reported
+   *  through reportTrainingComplete, so the labCompletion queue's rules hold
+   *  (guests held for the sign-in hand-off, preview earns nothing, an unsent
+   *  key is retried). Omitted = the lab reports no whole-lab key, as before. */
+  labDoneKey?: string;
 }) {
   // The note is owed: the guest reminder waits, so two popups never present together.
   const [proNoteOwed, setProNoteOwed] = useState(proNote);
@@ -269,6 +276,14 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     const t = setTimeout(() => setAwaitingRestore(false), RESTORE_WAIT_MS);
     return () => clearTimeout(t);
   }, [awaitingRestore]);
+  // CERTIFICATE CREDIT (labDoneKey): the whole lab, once every required page
+  // is done in the progress this shell holds — a failed read hands it an empty
+  // stand-in, so only pages really done can complete it. Fires on the FINISH
+  // that ends the last page, and again on any later visit (idempotent).
+  const labComplete = !!progress && allDone(progress.completed);
+  useEffect(() => {
+    if (labDoneKey && labComplete) reportTrainingComplete(labDoneKey);
+  }, [labDoneKey, labComplete]);
   const bankedPages = useLabClearedUnits(creditLabKey ?? labId);
   const bankedCheck = useLabClearedUnits(labId);
   const bankedPageKeys = useLabKeysDone(pageCreditKeys);

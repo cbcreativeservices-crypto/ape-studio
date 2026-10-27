@@ -304,6 +304,8 @@ describe('the backfill', () => {
     kv.map.set('ape:mastering:v1', JSON.stringify({ modules: Object.fromEntries(MASTERING_MODULES.map((m) => [m.id, { done: true, answers: {} }])) }));
     kv.map.set('ape:drumtuning:v1', JSON.stringify({ modules: { sound: { done: true, answers: {} } }, notes: [] }));
     kv.map.set('ape:tuning:v1', JSON.stringify({ completed: [0, 1, 2], lastChapter: 2, done: true, mathView: false }));
+    // DJ Systems Lab [MD:R3]: every required screen (16–18 optional, indexes 15–17) done on 39/23.
+    kv.map.set('ape:dj-systems:v1', JSON.stringify({ completed: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 18, 19, 20, 21, 22, 23], lastPage: 23, done: true }));
     kv.map.set('ape:ear:v1', JSON.stringify({ modules: { comb: { level: 2, trials: [], bestStreak: 0, streak: 0, total: 40, totalScore: 35, mastered: 2 }, band: { level: 2, trials: [], bestStreak: 0, streak: 0, total: 20, totalScore: 17, mastered: 1 } }, subBassOk: true }));
     // Fresh reads, as on a launch.
     miking.resetMikingLocal();
@@ -313,7 +315,7 @@ describe('the backfill', () => {
     await settle();
     assert.equal(completion.isLabDone('tr_envelope'), false, 'precondition: no tr_ credit yet');
     const keys = new Set(await tc.collectCompletedTrainingKeys());
-    for (const k of ['mk_C06a', 'mxb_mix', 'mxb_flow', 'mxa_parallel', 'tr_mastering', 'tr_tuning', 'ear_comb', 'tr_envelope']) assert.ok(keys.has(k), `missing ${k}`);
+    for (const k of ['mk_C06a', 'mxb_mix', 'mxb_flow', 'mxa_parallel', 'tr_mastering', 'tr_tuning', 'ear_comb', 'tr_envelope', 'tr_dj']) assert.ok(keys.has(k), `missing ${k}`);
     for (const k of ['mk_M03', 'tr_drum_tuning', 'ear_band', 'tr_sound_systems', 'tr_preprod']) assert.ok(!keys.has(k), `not complete: ${k}`);
     assert.ok(![...keys].some((k) => k.startsWith('mxb_') && !K.MIXING_BEG_PAGE_IDS.some((p) => `mxb_${p}` === k)), 'the check page index is no key');
     await tc.backfillTrainingCompletion();

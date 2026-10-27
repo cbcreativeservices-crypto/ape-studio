@@ -47,8 +47,8 @@ const STORAGE_KEY = 'ape:labProgress';
 /** Stable lab keys for the audio_fundamentals area (match the labs-catalog seed
  *  and the `key` on each fundamentals leaf in labCatalog.ts). IMMUTABLE.
  *  af_cables added 2026-08-15 (owner ruling: 12th required fundamentals lab,
- *  full certificate credit at launch; owner runs the seed SQL —
- *  docs/APE_CABLE_LAB_SEED_2026_08_15.sql). */
+ *  full certificate credit at launch; its seed, docs/APE_CABLE_LAB_SEED_2026_08_15.sql,
+ *  was run — the live `labs` row is dated 2026-08-18, checked 2026-10-27). */
 export type LabKey =
   | 'af_amplitude'
   | 'af_foundations'
@@ -62,17 +62,21 @@ export type LabKey =
   | 'af_signal_detective'
   | 'af_gain_staging'
   | 'af_cables'
-  // Cable Dressing & Installation (owner brief 2026-08-24) — queued safely
-  // until the owner runs docs/APE_CABLE_INSTALL_SEED_2026_08_24.sql.
+  // Cable Dressing & Installation (owner brief 2026-08-24). Its seed,
+  // docs/APE_CABLE_INSTALL_SEED_2026_08_24.sql, WAS RUN: the live `labs` row
+  // is dated 2026-08-24 (checked 2026-10-27). Before that the completion was
+  // kept unsent and retried; it is accepted now.
   | 'af_cable_install'
   // Patchbay Signal Flow & Normalling (owner ruling 2026-09-10: everything in
-  // the Audio Fundamentals container is part of the fundamentals requisite) —
-  // queued safely until the owner runs docs/APE_PATCHBAY_LAB_SEED_2026_09_10.sql
-  // (the lab_not_found guard keeps the completion unsent + retried until then).
+  // the Audio Fundamentals container is part of the fundamentals requisite).
+  // Its seed, docs/APE_PATCHBAY_LAB_SEED_2026_09_10.sql, WAS RUN: live row
+  // dated 2026-09-11 (checked 2026-10-27). The lab_not_found guard (unsent +
+  // retried) is still what protects any key whose row is missing.
   | 'af_patchbay'
   // Audio Connectors & Cable Selection (owner brief 2026-09-11; same
-  // fundamentals-container ruling) — queued safely until the owner runs
-  // docs/APE_CONNECTOR_SELECT_SEED_2026_09_11.sql.
+  // fundamentals-container ruling). Its seed,
+  // docs/APE_CONNECTOR_SELECT_SEED_2026_09_11.sql, WAS RUN: live row dated
+  // 2026-09-11 (checked 2026-10-27).
   | 'af_connector_select';
 
 /** The explicit-review unit (read-through / sandbox labs) and the challenge-pass

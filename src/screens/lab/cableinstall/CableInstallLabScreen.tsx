@@ -12,8 +12,9 @@
  * TERMINATE → LABEL → INSPECT.
  *
  * Progress: one labCompletion unit per stage + inspect/final-check units
- * (key 'af_cable_install' — queued safely until the backend row is seeded;
- * see docs/APE_CABLE_INSTALL_SEED_2026_08_24.sql). Resume: step persisted at
+ * (key 'af_cable_install'; its backend row was seeded from
+ * docs/APE_CABLE_INSTALL_SEED_2026_08_24.sql — live row dated 2026-08-24,
+ * checked 2026-10-27). Resume: step persisted at
  * 'ape:ciStep'; dimension scores + shown myths at 'ape:ciState'. Anonymous
  * users neither restore nor persist (house guest rule).
  */
