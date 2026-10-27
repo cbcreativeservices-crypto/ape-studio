@@ -71,7 +71,7 @@ describe('A · approved wording, verbatim', () => {
   it('H-A: the certificate line is the conditional, Registry wording (the unconditional one is gone)', () => {
     assert.deepEqual(COPY.membershipPoints, [
       'Every topic, certificate and lab is included.',
-      'Earn certificates — list them in the Pro Registry and employers can verify them online.',
+      'Earn certificates — list them in the Pro Registry and employers and instructors can verify them online.',
       'No add-ons. No extra fees.',
     ]);
     const all = Object.values(COPY).flat().join('\n');

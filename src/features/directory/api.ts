@@ -17,6 +17,7 @@ import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
 import { LIMITS, readableError } from './rules';
 import { registerLocalStoreReset } from '../storage/localStoreRegistry';
+import { contactKindOf, type ContactKind } from '../employer/verifierKind.ts';
 
 export { LIMITS, readableError };
 
@@ -530,8 +531,9 @@ export type ContactThread = {
    * them. Someone deciding whether to accept has to know which they are
    * talking to.
    */
-  otherKind: 'member' | 'employer';
-  /** A human approved this organisation. Only ever true for an employer. */
+  otherKind: ContactKind;
+  /** A human approved this organisation or instructor. Only ever true for an
+   *  employer or an instructor/school (R1, 2026-10-27). */
   otherVerified: boolean;
   /** The employer's own site, so the claim is checkable by the person being
    *  asked rather than only by us. */
@@ -558,9 +560,12 @@ export async function fetchContactThreads(): Promise<ListResult<ContactThread>> 
       createdAt: r.created_at as string,
       respondedAt: (r.responded_at as string) ?? null,
       messageCount: Number(r.unread_hint ?? 0),
-      // Defaults to 'member': an older server that does not return these
-      // columns must not silently label everyone an employer.
-      otherKind: (r.other_kind === 'employer' ? 'employer' : 'member') as ContactThread['otherKind'],
+      // The server's kind, carried through (R1, 2026-10-27): 'employer',
+      // 'instructor' (a verified instructor or school) or 'member'. Until R1
+      // every non-'employer' kind was flattened to 'member', so a verified
+      // instructor wrote to members with no badge. Anything unrecognised is
+      // still 'member': an older server must not silently badge anyone.
+      otherKind: contactKindOf(r.other_kind),
       otherVerified: r.other_verified === true,
       otherWebsite: (r.other_website as string) ?? null,
     }));

@@ -16,6 +16,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { CredentialQr } from '../../components/CredentialQr';
 import { CredentialShareRow } from '../../features/credentials/CredentialShareRow';
 import { EmployerSection } from './EmployerSection';
+import { InstructorShareSection } from './InstructorShareSection';
 import { AdminSection } from './AdminSection';
 import { AccountStandingNotice } from '../../features/account/AccountStandingNotice';
 import { fetchMyCredentials, type EarnedCredentialRow } from '../../features/credentials/api';
@@ -1545,6 +1546,13 @@ export function ProfileScreen() {
             Certificates you have already earned stay verifiable by QR.
           </Text>
         </Section>
+
+        {/* —— MY INSTRUCTOR — the student's "Allow my instructor to see my
+            progress" switch (must-do H2, 2026-10-27). A privacy control, so
+            it sits with WHO CAN SEE ME. Off unless switched on; the state is
+            always the server's. A KNOWN guest never reaches here (the guest
+            Profile above returns early). —— */}
+        <InstructorShareSection />
 
         {/* —— WHAT I WORK IN — published when listed, so the section says
             so rather than leaving the user to guess. "Why you're studying"

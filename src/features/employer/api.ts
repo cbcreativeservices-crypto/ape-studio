@@ -13,6 +13,7 @@
 import { supabase } from '../../lib/supabase';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { withDeadline } from '../../lib/boundedCall';
+import { verifierKindOf, type VerifierKind } from './verifierKind.ts';
 
 /**
  * The two admin WRITES are bounded (night bug pass 3, 2026-10-01). supabase-js
@@ -38,6 +39,8 @@ export type EmployerApplication = {
   queueReasons: string[];
   createdAt: string;
   reviewedAt: string | null;
+  /** Employer, or instructor/school (the server's `kind`, R1). */
+  kind: VerifierKind;
 };
 
 /**
@@ -81,6 +84,7 @@ export async function fetchMyEmployerApplication(): Promise<EmployerState> {
         queueReasons: reasons,
         createdAt: String(row.created_at ?? ''),
         reviewedAt: (row.reviewed_at as string) ?? null,
+        kind: verifierKindOf(row.kind),
       },
     };
   } catch {
@@ -89,37 +93,43 @@ export async function fetchMyEmployerApplication(): Promise<EmployerState> {
 }
 
 /**
- * Am I a verified employer? Never throws; false on any doubt.
+ * Am I a verified employer OR a verified instructor — and which? (R1,
+ * 2026-10-27; was `amIVerifiedEmployer`.)
  *
- * ── WHY THIS TAKES NO ARGUMENT (corrected 2026-09-18) ──────────────────────
+ *   'employer' | 'instructor' — a verified, non-revoked account of that kind;
+ *   'none'                    — not a verified account (or a guest);
+ *   'unknown'                 — THE READ FAILED. Never "not verified".
  *
- * `is_verified_employer(uuid)` wants public.users.id; the client holds the
- * AUTH id. My first version resolved that mapping here through `my_identity()`
- * and read the wrong field — it returns `id`, not `user_id` — so it would have
- * returned false for EVERY verified employer, forever, with no error anywhere.
- * Fails closed and silent: the exact inert-check shape that has bitten this
- * codebase three times.
+ * ── WHY THIS TAKES NO ARGUMENT (2026-09-18) ────────────────────────────────
+ * The server's per-user check wants public.users.id; the client holds the AUTH
+ * id. A first version resolved that mapping here, read the wrong field and
+ * would have answered "not verified" for EVERY verified employer, forever,
+ * with no error. `my_verifier_kind()` resolves the caller server-side with
+ * `directory_me()` (live definition, read 2026-10-27: the `kind` of the
+ * caller's employer_profiles row where `revoked_at is null`, else null; granted
+ * to authenticated only), so the client cannot get the id space wrong.
  *
- * `am_i_verified_employer()` does the resolution server-side with
- * `directory_me()`. The client cannot get the id space wrong because it is no
- * longer asked to.
+ * ── 'unknown' IS NOT 'none' (hunt 7, 2026-10-03) ───────────────────────────
+ * A failed read answered "not verified" and the Profile section turned "could
+ * not ask" into a fact: a verified employer whose check dropped, beside an
+ * application read that landed, was told "This application is no longer
+ * active." Only a kind opens the chips, and the RPCs are refused server-side
+ * regardless.
  */
-export async function amIVerifiedEmployer(): Promise<boolean | null> {
-  // NULL = THE READ FAILED (hunt 7, 2026-10-03). It answered `false` for that
-  // too, and the Profile section turned "could not ask" into a fact: a verified
-  // employer whose check dropped, beside an application read that landed, was
-  // told "This application is no longer active." Never grants anything — only
-  // `true` opens the chips, and the RPCs are refused server-side regardless.
+export type MyVerifierKind = VerifierKind | 'none' | 'unknown';
+
+export async function myVerifierKind(): Promise<MyVerifierKind> {
   try {
-    // An UNKNOWN session is a failed read (null), not "not verified".
-    const { result: got, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'amIVerifiedEmployer');
-    if (timedOut) return null;
-    if (!got.data.session) return false;
-    const { data, error } = await supabase.rpc('am_i_verified_employer');
-    if (error) return null;
-    return data === true;
+    // An UNKNOWN session is a failed read, not "not verified".
+    const { result: got, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'myVerifierKind');
+    if (timedOut) return 'unknown';
+    if (!got.data.session) return 'none';
+    const { data, error } = await supabase.rpc('my_verifier_kind');
+    if (error) return 'unknown';
+    // null = no verified profile. Any string = a verified profile of some kind.
+    return typeof data === 'string' && data ? verifierKindOf(data) : 'none';
   } catch {
-    return null;
+    return 'unknown';
   }
 }
 
@@ -200,6 +210,8 @@ export type PendingApplication = {
   domainResolves: boolean;
   siteReachable: boolean;
   queueReasons: string[];
+  /** Employer, or instructor/school (the list's last column, R1). */
+  kind: VerifierKind;
 };
 
 export type ActiveEmployer = {
@@ -208,6 +220,7 @@ export type ActiveEmployer = {
   companyWebsite: string;
   revokedAt: string | null;
   createdAt: string;
+  kind: VerifierKind;
 };
 
 /** True only for a user whose `users.role` is 'admin'. */
@@ -238,6 +251,7 @@ export async function fetchPendingApplications(): Promise<PendingApplication[] |
       domainResolves: r.domain_resolves === true,
       siteReachable: r.site_reachable === true,
       queueReasons: Array.isArray(r.queue_reasons) ? (r.queue_reasons as string[]) : [],
+      kind: verifierKindOf(r.kind),
     }));
   } catch {
     return null;
@@ -254,6 +268,7 @@ export async function fetchActiveEmployers(): Promise<ActiveEmployer[] | null> {
       companyWebsite: String(r.company_website ?? ''),
       revokedAt: (r.revoked_at as string) ?? null,
       createdAt: String(r.created_at ?? ''),
+      kind: verifierKindOf(r.kind),
     }));
   } catch {
     return null;

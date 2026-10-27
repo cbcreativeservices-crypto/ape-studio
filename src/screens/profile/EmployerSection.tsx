@@ -1,5 +1,7 @@
 /**
- * EmployerSection — the employer's half of the Profile screen.
+ * EmployerSection — the employer's (and, since R1 2026-10-27, the verified
+ * INSTRUCTOR's) half of the Profile screen. Same application, same approval,
+ * same section; the words follow the account's `kind` (VERIFIER_COPY).
  *
  * ── WHAT THIS IS AND IS NOT ────────────────────────────────────────────────
  *
@@ -26,12 +28,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Chip, ChipWrap } from '../directory/directoryBits';
 import { fetchTaxonomy, type Taxonomy } from '../../features/directory/api';
 import {
-  amIVerifiedEmployer,
   fetchMyEmployerApplication,
   fetchMyEmployerInterests,
+  myVerifierKind,
   setEmployerInterests,
   type EmployerApplication,
 } from '../../features/employer/api';
+import { VERIFIER_COPY, type VerifierKind } from '../../features/employer/verifierKind';
+import { InstructorCodeRow } from './InstructorCodeRow';
 import { colors, fonts } from '../../theme/tokens';
 
 const APPLY_URL = 'https://www.proaudiotrainingacademy.com/employers/apply';
@@ -64,6 +68,8 @@ type Kind = 'area' | 'role' | 'open_to';
 export function EmployerSection() {
   const [app, setApp] = useState<EmployerApplication | null>(null);
   const [verified, setVerified] = useState(false);
+  /** The verified account's kind, from my_verifier_kind() (R1). */
+  const [verifierKind, setVerifierKind] = useState<VerifierKind | null>(null);
   /** The verified-employer check itself FAILED — the status is unknown, so
    *  the section must not say the account is no longer active. */
   const [verifyFailed, setVerifyFailed] = useState(false);
@@ -108,11 +114,14 @@ export function EmployerSection() {
   const pickedLoaded = useRef(false);
   const load = useCallback(async () => {
     const ticket = ++loadTicket.current;
-    const [state, isVerified] = await Promise.all([
+    const [state, who] = await Promise.all([
       fetchMyEmployerApplication(),
-      amIVerifiedEmployer(),
+      myVerifierKind(),
     ]);
     if (ticket !== loadTicket.current) return;
+    // 'unknown' = the check FAILED (null here), never "not verified".
+    const isVerified = who === 'unknown' ? null : who !== 'none';
+    setVerifierKind(who === 'employer' || who === 'instructor' ? who : null);
     failedRef.current = isVerified === null || state.state === 'error';
     setVerified(isVerified === true);
     // A FAILED verified-check is not "not verified" (hunt 7, 2026-10-03).
@@ -154,6 +163,9 @@ export function EmployerSection() {
   // Nothing to say to a member, so say nothing.
   if (!loaded || (!app && !verified)) return null;
 
+  /** The verified kind when known, else what the application asked for. */
+  const copy = VERIFIER_COPY[verifierKind ?? app?.kind ?? 'employer'];
+
   const toggle = async (kind: Kind, slug: string) => {
     const current = pickedRef.current[kind] ?? [];
     const next = current.includes(slug) ? current.filter((s) => s !== slug) : [...current, slug];
@@ -194,9 +206,9 @@ export function EmployerSection() {
   return (
     <View style={styles.wrap}>
       <View style={styles.headRow}>
-        <Text style={styles.head}>EMPLOYER ACCOUNT</Text>
+        <Text style={styles.head}>{copy.accountHead}</Text>
         {verified ? (
-          <View style={styles.tag} accessible accessibilityLabel="Verified employer">
+          <View style={styles.tag} accessible accessibilityLabel={copy.badgeA11y}>
             <Text style={styles.tagText}>VERIFIED</Text>
           </View>
         ) : null}
@@ -205,10 +217,7 @@ export function EmployerSection() {
       {app ? <Text style={styles.company}>{app.companyName}</Text> : null}
 
       {verified ? (
-        <Text style={styles.body}>
-          Your employer account is active. Choose what you are looking for — members can see this,
-          and it is how the right people find you.
-        </Text>
+        <Text style={styles.body}>{copy.activeBody}</Text>
       ) : app?.status === 'pending' ? (
         <>
           {/* No mailer runs on `employer_review`, so no decision email is ever
@@ -235,14 +244,16 @@ export function EmployerSection() {
           {app.reviewNote ? <Text style={styles.reason}>{app.reviewNote}</Text> : null}
         </>
       ) : verifyFailed ? (
-        <Text style={styles.warn}>
-          Couldn’t check your employer account just now. Check your connection and reopen this screen.
-        </Text>
+        <Text style={styles.warn}>{copy.checkFailed}</Text>
       ) : (
         <Text style={styles.body}>This application is no longer active.</Text>
       )}
 
       {note ? <Text style={styles.warn}>{note}</Text> : null}
+
+      {/* A verified INSTRUCTOR's code for students (instructor_my_code).
+          Never drawn for an employer: the server answers null for one anyway. */}
+      {verified && verifierKind === 'instructor' ? <InstructorCodeRow /> : null}
 
       {verified && tax && interestsFailed ? (
         <Text style={styles.warn}>
@@ -252,9 +263,9 @@ export function EmployerSection() {
 
       {verified && tax && !interestsFailed ? (
         <>
-          <Row kind="area" title="AREAS YOU HIRE IN" items={tax.areas} />
-          <Row kind="role" title="ROLES YOU ARE LOOKING FOR" items={tax.roles} />
-          <Row kind="open_to" title="WHAT YOU ARE OFFERING" items={tax.openTo} />
+          <Row kind="area" title={copy.areaHead} items={tax.areas} />
+          <Row kind="role" title={copy.roleHead} items={tax.roles} />
+          <Row kind="open_to" title={copy.offerHead} items={tax.openTo} />
         </>
       ) : null}
 
@@ -277,7 +288,7 @@ export function EmployerSection() {
             )
           }
           accessibilityRole="link"
-          accessibilityLabel="Open your employer application on the website"
+          accessibilityLabel={copy.openApplicationA11y}
         >
           <Text style={styles.linkText}>OPEN MY APPLICATION ON THE WEBSITE ›</Text>
         </Pressable>

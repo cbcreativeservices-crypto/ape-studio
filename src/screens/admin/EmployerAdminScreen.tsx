@@ -45,6 +45,7 @@ import {
   type ActiveEmployer,
   type PendingApplication,
 } from '../../features/employer/api';
+import { VERIFIER_COPY } from '../../features/employer/verifierKind';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 export function EmployerAdminScreen() {
@@ -99,7 +100,7 @@ export function EmployerAdminScreen() {
     const body =
       action === 'approve'
         ? app.emailConfirmed
-          ? 'They will be able to contact members without publishing a community profile, and the app vouches for them with a VERIFIED EMPLOYER badge.'
+          ? `They will be able to contact members without publishing a community profile, and the app vouches for them with a ${VERIFIER_COPY[app.kind].badge} badge.`
           : 'THIS APPLICANT HAS NOT CONFIRMED THEIR WORK EMAIL. Nothing proves they hold that mailbox or work at that company. Approve only if you have verified them another way.'
         : 'They are told the application was not approved. They can apply again later.';
     confirmDialog(
@@ -209,6 +210,10 @@ export function EmployerAdminScreen() {
         {!loading && tab === 'pending'
           ? pending?.map((a) => (
               <View key={a.id} style={s.card}>
+                {/* The applicant's kind (R1, 2026-10-27): employer, or
+                    instructor/school. The server decides it from the
+                    application; the admin does not pick it here. */}
+                <Text style={s.kicker}>{VERIFIER_COPY[a.kind].adminTag}</Text>
                 <Text style={s.company}>{a.companyName}</Text>
                 <Text style={s.sub}>
                   {a.companyWebsite} · APP-{a.id.slice(0, 8)}
@@ -266,6 +271,7 @@ export function EmployerAdminScreen() {
         {!loading && tab === 'active'
           ? active?.map((e) => (
               <View key={e.userId} style={s.card}>
+                <Text style={s.kicker}>{VERIFIER_COPY[e.kind].adminTag}</Text>
                 <Text style={s.company}>{e.companyName}</Text>
                 <Text style={s.sub}>{e.companyWebsite}</Text>
                 <Text style={[s.status, e.revokedAt ? s.statusOff : s.statusOn]}>

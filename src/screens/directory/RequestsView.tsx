@@ -25,6 +25,7 @@ import {
   type ReportReason,
   type ThreadMessage,
 } from '../../features/directory/api';
+import { VERIFIER_COPY } from '../../features/employer/verifierKind';
 import { confirmDialog, notify as appNotify } from '../../lib/confirm';
 import { markThreadSeen, threadUnread } from '../../features/directory/inboxCounts';
 import { markThreadRead } from '../../features/directory/inboxApi';
@@ -469,24 +470,23 @@ export function RequestsView({
  * The badge is drawn ONLY when `otherVerified` is true. An employer row that
  * somehow arrives unverified reads as a plain name, which is the honest
  * rendering: an unverified badge is worse than none.
+ *
+ * A verified INSTRUCTOR or school gets the same treatment with its own words
+ * (R1, 2026-10-27): "VERIFIED INSTRUCTOR", and its site.
  */
 function ThreadWho({ t }: { t: ContactThread }) {
-  const employer = t.otherKind === 'employer';
+  const verifier = t.otherKind === 'member' ? null : VERIFIER_COPY[t.otherKind];
   return (
     <View style={st.whoWrap}>
       <View style={st.whoRow}>
         <Text style={st.name}>{t.otherDisplayName}</Text>
-        {employer && t.otherVerified ? (
-          <View
-            style={st.verifiedTag}
-            accessible
-            accessibilityLabel="Verified employer. We checked this organisation."
-          >
-            <Text style={st.verifiedTagText}>VERIFIED EMPLOYER</Text>
+        {verifier && t.otherVerified ? (
+          <View style={st.verifiedTag} accessible accessibilityLabel={verifier.badgeA11y}>
+            <Text style={st.verifiedTagText}>{verifier.badge}</Text>
           </View>
         ) : null}
       </View>
-      {employer && t.otherWebsite ? (
+      {verifier && t.otherWebsite ? (
         <Text style={st.whoSite} numberOfLines={1}>
           {t.otherWebsite}
         </Text>
