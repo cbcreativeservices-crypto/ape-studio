@@ -1118,7 +1118,14 @@ function CourseCardView({
     const inner = (
       <>
         <LinearGradient
-          colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
+          // The Calculators art (owner 2026-10-27) gets a lighter wash: the
+          // standard one deepened its purple stage light too much. Frame,
+          // eyebrow and button are unchanged.
+          colors={
+            calc
+              ? ['rgba(8,8,10,0.49)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.36)', 'rgba(8,8,10,0.91)']
+              : ['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']
+          }
           locations={[0, 0.3, 0.58, 1]}
           style={StyleSheet.absoluteFill}
         />
