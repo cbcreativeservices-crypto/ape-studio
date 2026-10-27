@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 10:00 · ccode · 4b7c0beb
+changed: Home cards: new My Enrollments art (bundled) + Calculator card's wash lightened 37% (owner OK); new calc_lab.webp kept for upload after Apple approval
+affects other side: none now; calc_lab.webp bucket upload after Apple approval (owner GO given) [MD:D14]
+needs: nothing
+
+
 ### 2026-10-27 09:43 · ccode · e234d1ca
 changed: Merge R3: DJ Systems Lab records completion (tr_dj) for both DJ credentials; R11 seed comments
 affects other side: Comp A — R3 SQL draft in Downloads, safe order inside
