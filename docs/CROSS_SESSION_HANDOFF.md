@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 10:44 · ccode · d09b22c5
+changed: Home: study-area cards in the owner's chosen order (2026-10-27)
+affects other side: none (app only)
+needs: nothing
+
+
 ### 2026-10-27 10:17 · ccode · 2d40890c
 changed: Home: members see why Pro Audio Safety and DAW sit on Home (owner 2026-10-27)
 affects other side: none (app copy only)
