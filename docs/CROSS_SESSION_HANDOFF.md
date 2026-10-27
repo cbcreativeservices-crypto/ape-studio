@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 22:42 · ccode · 3311d90b
+changed: docs: engineer's first upload batch (13 WAVs, 2026-10-26) noted on the must-do list
+affects other side: docs only
+needs: nothing
+
+
 ### 2026-10-26 23:15 · ccode · #6 restore wording (owner OK)
 changed: Restore 'expired'/'refunded' messages now come from `restoreEndedCopy(kind, os)` in paywallCopy.ts: they name the phone's own store (the App Store / Google Play), drop "Choose a plan above" (the 'checking' Paywall face shows no plans), and a refund points at the store. Pinned verbatim in test/restoreReasons_20261023. Full suite 14,983/14,983. JS only, rides the post-approval OTA.
 affects other side: none
