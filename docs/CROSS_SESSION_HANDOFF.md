@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 10:17 · ccode · 2d40890c
+changed: Home: members see why Pro Audio Safety and DAW sit on Home (owner 2026-10-27)
+affects other side: none (app copy only)
+needs: nothing
+
+
 ### 2026-10-27 10:00 · ccode · 4b7c0beb
 changed: Home cards: new My Enrollments art (bundled) + Calculator card's wash lightened 37% (owner OK); new calc_lab.webp kept for upload after Apple approval
 affects other side: none now; calc_lab.webp bucket upload after Apple approval (owner GO given) [MD:D14]
