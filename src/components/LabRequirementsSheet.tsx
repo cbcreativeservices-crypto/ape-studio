@@ -92,7 +92,7 @@ export function LabRequirementsSheet({
                     these would otherwise wonder why nothing moved. */}
                 {member.some((m) => !m.tracked) ? (
                   <Text style={s.trackNote}>
-                    These labs don’t record progress yet, so they aren’t counted in the total above. Work through them
+                    These labs don’t record progress in the app, so they aren’t counted in the total above. Work through them
                     from the labs menu — your credential needs them.
                   </Text>
                 ) : null}

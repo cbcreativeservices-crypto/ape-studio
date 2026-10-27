@@ -283,7 +283,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
         // months — and the exact pattern App Review guideline 5.1.1(v) exists to
         // stop: an account that can be created in the app must be deletable in
         // the app, without contacting anyone.
-        a: 'Settings → DELETE ACCOUNT, at the very bottom. Hold the button for five seconds and confirm; it permanently erases your personal data and signs you out. You do not need to contact us.',
+        a: 'Settings → ACCOUNT AND PRIVACY → Delete account and personal data. Enter your password and tap Delete my account to confirm. It permanently erases your personal data and signs you out. You do not need to contact us.',
       },
     ],
   },

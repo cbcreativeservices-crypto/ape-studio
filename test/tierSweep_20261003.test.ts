@@ -97,8 +97,8 @@ describe('2. Home + Curriculum — upsell only via useUpsellAllowed', () => {
   it('Home: Membership link, eyebrows and the 🔒 MEMBERSHIP cards', () => {
     assert.match(home, /\{upsell \? \(\s*<Pressable\s*style=\{\[styles\.membershipBtn/);
     assert.doesNotMatch(home, /resolved && !isMember/);
-    assert.equal((home.match(/upsell \? '🔒 MEMBERSHIP' : 'COMING SOON'/g) ?? []).length, 2, 'stub + coming topic cards');
-    assert.doesNotMatch(home, /isMember \? 'COMING SOON' : '🔒 MEMBERSHIP'/);
+    assert.equal((home.match(/upsell \? '🔒 MEMBERSHIP' : 'CAN’T LOAD'/g) ?? []).length, 2, 'stub + coming topic cards');
+    assert.doesNotMatch(home, /isMember \? 'CAN’T LOAD' : '🔒 MEMBERSHIP'/);
   });
   it('Curriculum: Membership link, the FREE eyebrow and the a11y "Free,"', () => {
     assert.match(cur, /const upsell = useUpsellAllowed\(\);/);

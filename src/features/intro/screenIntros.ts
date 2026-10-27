@@ -155,15 +155,14 @@ export const SCREEN_INTROS: Record<
     // Final "Our Commitment to You" copy (user-provided 2026-07-18).
     // Pricing-honesty line added to the trust theme (owner 2026-08-21).
     //
-    // ⚠️ IT IS NO LONGER THE SECOND POPUP. `AppWelcomeOverlay` is commented
-    // out at AuthScreen.tsx:584, so this is the first thing a new user reads
-    // — and it opened mid-conversation, answering a greeting that no longer
-    // runs. The greeting line below restores the opening; remove it again when
-    // the welcome overlay comes back.
+    // The "Welcome to Pro Audio Training Academy." opener was dropped
+    // 2026-10-26 (popup review D6): this now shows after the intro video and
+    // the Glossary welcome (~4 min into the Glossary), so a second "Welcome"
+    // read as a repeat.
     placeholder: false,
     title: 'Our Commitment to You',
     body:
-      'Welcome to Pro Audio Training Academy. We built this academy to be a trusted place to learn.\n\n' +
+      'We built this academy to be a trusted place to learn.\n\n' +
       'Our glossary, lessons, and quizzes are created for education—not advertising. Companies cannot pay to influence our definitions, recommendations, or learning content.\n\n' +
       'You’ll never have to deal with intrusive ads or annoying pop-ups interrupting your learning. Our focus is simple: provide clear, unbiased, and technically accurate audio education that puts students first.\n\n' +
       'Our pricing is just as straightforward. One membership. Not a series of extra charges—what your membership includes stays included, with no add-ons or surprise fees.\n\n' +

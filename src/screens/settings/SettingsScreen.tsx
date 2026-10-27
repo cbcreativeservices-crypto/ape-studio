@@ -1297,7 +1297,7 @@ ${LOCAL_LOSS}`
                 () =>
                   notify(
                     'Hints reset',
-                    'Onboarding hints and the welcome greeting will show again on next open.',
+                    'Screen intros and tips will show again the next time you open each screen. To watch the intro video again, tap Replay intro on Home.',
                   ),
                 // A refused reset was an unhandled rejection and a tap that did
                 // nothing (owner 2026-10-03: "if it fails the user needs to
@@ -1316,7 +1316,7 @@ ${LOCAL_LOSS}`
                 () =>
                   notify(
                     'Permission prompts reset',
-                    'The camera, location, photo and alerts explainer popups will ask again next time — including if you had chosen “always allow.” This does not change what you’ve allowed in your device Settings.',
+                    'The camera, microphone, location, photo and alerts explainer popups will ask again next time — including if you had chosen “always allow.” This does not change what you’ve allowed in your device Settings.',
                   ),
                 // A choice the device would not let go of (owner 2026-10-03).
                 () => notify('Couldn’t reset permission prompts', 'Something went wrong on this device. Try again.'),

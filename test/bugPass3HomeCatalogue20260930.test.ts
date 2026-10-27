@@ -25,7 +25,7 @@ test('Home: RENEW on the expired-membership dialog waits out the dialog Modal, o
   // Pattern P5 (2026-10-02): through the shared useModalHandoff (waits
   // HOST_DISMISS_MS, once, dropped on unmount — test/patternP5_20261002).
   assert.match(s, /const renewHandoff = useModalHandoff\(\);/);
-  const at = s.indexOf("'Membership Expired'");
+  const at = s.indexOf("'Your membership has ended'");
   const block = s.slice(at, at + 700);
   assert.match(block, /\(\) => renewHandoff\(\(\) => \(navigation as any\)\.navigate\('Paywall'\)\),/);
   assert.doesNotMatch(block, /\(\) => \(navigation as any\)\.navigate\('Paywall'\),/);

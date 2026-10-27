@@ -23,6 +23,7 @@ import { useCalcSectionOpen } from './calcPrefs';
 import type { Workflow } from './workflowModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { useTier } from '../../../features/commercial/useTier';
+import { CALC_WEEKLY_LIMIT } from '../../../features/lab/calcUsage';
 import { GlassPanel, GlassTile } from '../../tools/GlassTile';
 import type { CalcSectionId } from './calcTypes';
 import { safeGoBack } from '../../../lib/safeGoBack';
@@ -85,7 +86,7 @@ export function CalcLabScreen() {
     // was a silent tap on the web preview (B-018/B-062).
     confirmDialog(
       'Workflows are an Academy feature',
-      'Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays open to browse, with 5 free calculations a week; membership removes that limit.',
+      `Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays open: a free account includes ${CALC_WEEKLY_LIMIT} calculations a week, and membership removes the limit.`,
       'See membership',
       afterDialogCloses(() => (navigation as any).navigate('Paywall')),
       { cancelText: 'Not now' },

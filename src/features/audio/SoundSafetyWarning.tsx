@@ -186,7 +186,7 @@ export function SoundSafetyWarning({
             </Pressable>
 
             <Text style={styles.footNote}>
-              You can read this again at any time from Help.
+              This warning appears once. The Pro Audio Safety topic covers hearing protection in full.
             </Text>
           </ScrollView>
         </View>

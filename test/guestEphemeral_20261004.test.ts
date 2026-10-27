@@ -361,7 +361,7 @@ describe('3. a guest touches only Pro Audio Safety and DAW Fundamentals', () => 
   });
 
   it('[R2] the quiz: a known guest is told it needs an account, every time, instead of BEGIN', () => {
-    assert.equal(rules.GUEST_QUIZ_BODY, 'Topic quizzes are graded and recorded on an account, so you need to be signed in to take one. As a guest, a quiz result can’t be saved or credited.');
+    assert.equal(rules.GUEST_QUIZ_BODY, 'Topic quizzes are graded and recorded on your account, so you need to sign in to take one.');
     const d = read('src/screens/dashboard/DashboardScreen.tsx');
     assert.match(d, /const quizAsGuest = remindAsGuest\(tierForTerms, guestWording\.guest\);/);
     const guestAt = d.indexOf('if (quizAsGuest) {');

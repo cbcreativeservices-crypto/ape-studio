@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 23:50 · ccode · popup copy review: 14 group-D mismatches fixed (owner GO)
+changed: Downloads/2026-10-26_POPUP_COPY_REVIEW D1–D14, each checked against the code first: sound-safety footnote (no Help re-read), Help delete-account answer (exit flow), Home guest gate title/body, calc workflow gate uses CALC_WEEKLY_LIMIT and says 'free account', Hints-reset notice (Settings + Help), Commitment popup drops the second 'Welcome', sound-safety 'free topic' → 'open to everyone' (no SOUND_SAFETY_VERSION bump: obligation unchanged), Home 'COMING SOON' → 'CAN’T LOAD' + 'Topics didn’t load', Dashboard sign-out names the device wipe (Settings' list), permission reset names the microphone, guest quiz text, mic explainer names voice search, lab requirements drop 'yet', 'Membership Expired' → 'Your membership has ended'. Tests updated; full suite 14,983/14,983. JS only, rides the post-approval OTA. Group C (owner-approved wording) waits on the owner.
+affects other side: none
+needs: owner: decide the group-C suggestions
+
 ### 2026-10-26 22:42 · ccode · 3311d90b
 changed: docs: engineer's first upload batch (13 WAVs, 2026-10-26) noted on the must-do list
 affects other side: docs only

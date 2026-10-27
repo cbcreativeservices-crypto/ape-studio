@@ -46,7 +46,7 @@ const COPY: Record<CapabilityKey, PermissionCopy> = {
     body:
       'The live measurement tools read the microphone to show level, spectrum and pitch ' +
       'in real time. Audio is analyzed on your device and immediately discarded — nothing ' +
-      'is recorded, stored, or uploaded. The microphone runs only while a live tool is open.',
+      'is recorded, stored, or uploaded. The microphone runs only while a live tool or voice search is in use.',
     allowLabel: 'ALLOW MICROPHONE',
   },
   photo: {

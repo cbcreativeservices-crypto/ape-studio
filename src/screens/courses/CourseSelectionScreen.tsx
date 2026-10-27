@@ -854,7 +854,7 @@ function CourseCardView({
         <View style={{ alignItems: 'center' }}>
           <View style={{ width: cd.btnW }}>
             <GlassButton maxFontSizeMultiplier={HOME_MAX}
-              label={upsell ? '🔒 MEMBERSHIP' : 'COMING SOON'}
+              label={upsell ? '🔒 MEMBERSHIP' : 'CAN’T LOAD'}
               tint="steel"
               height={50}
               fontSize={13}
@@ -1240,7 +1240,7 @@ function CourseCardView({
         : coming
           ? upsell
             ? onLockedPress
-            : () => notify('Coming soon', `${coming.name} is on the way — it'll appear here when it's ready.`)
+            : () => notify('Topics didn’t load', 'Your account didn’t finish loading, so this card can’t open yet. Check your connection and reopen the app.')
           : null;
 
   // Audio-field topic cards match the Awards' Specialization Certificate BLUE
@@ -1338,14 +1338,14 @@ function CourseCardView({
             // they see COMING SOON instead of the paywall path.
             <View style={{ width: cd.btnW }}>
               <GlassButton maxFontSizeMultiplier={HOME_MAX}
-                label={upsell ? '🔒 MEMBERSHIP' : 'COMING SOON'}
+                label={upsell ? '🔒 MEMBERSHIP' : 'CAN’T LOAD'}
                 tint="steel"
                 height={50}
                 fontSize={13}
                 onPress={
                   upsell
                     ? onLockedPress
-                    : () => notify('Coming soon', `${coming.name} is on the way — it'll appear here when it's ready.`)
+                    : () => notify('Topics didn’t load', 'Your account didn’t finish loading, so this card can’t open yet. Check your connection and reopen the app.')
                 }
               />
             </View>
@@ -1974,8 +1974,8 @@ export function CourseSelectionScreen() {
     // Alert.alert is a no-op on RN-web — a lapsed user's tap did nothing at all
     // on the web preview (QA night 2026-09-01).
     confirmDialog(
-      'Membership Expired',
-      'Your membership has expired. Renew to open your saved Home cards and continue studying.',
+      'Your membership has ended',
+      'Renew to keep studying your topics.',
       'Renew',
       () => renewHandoff(() => (navigation as any).navigate('Paywall')),
       { cancelText: 'Not now' },
@@ -2355,9 +2355,9 @@ export function CourseSelectionScreen() {
       <PrePaywallPrompt
         visible={guestGateOpen}
         onClose={() => setGuestGateOpen(false)}
-        title="Create a free account"
+        title="This topic is part of Academy membership"
         lines={[
-          'Sign up to study this topic. Your free topics — Pro Audio Safety and DAW Fundamentals & Session Management — are open to explore right now.',
+          'Membership starts with a free account. Pro Audio Safety and DAW Fundamentals & Session Management are open to explore right now.',
         ]}
         primaryLabel="CREATE FREE ACCOUNT"
         onPrimary={() => {

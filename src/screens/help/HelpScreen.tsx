@@ -214,7 +214,7 @@ export function HelpScreen() {
                 resetting.current = true;
                 Promise.all([resetCoachMarks(), resetScreenIntros(), resetAmplitudeOrientation(), resetOnboarding()])
                   .then(
-                    () => notify('Hints reset', 'Onboarding hints and the welcome greeting will show again on next open.'),
+                    () => notify('Hints reset', 'Screen intros and tips will show again the next time you open each screen. To watch the intro video again, tap Replay intro on Home.'),
                     // Three of these rethrow a storage failure, and there was no
                     // handler: an unhandled rejection and a tap that did nothing
                     // (bug hunt 2026-09-30).

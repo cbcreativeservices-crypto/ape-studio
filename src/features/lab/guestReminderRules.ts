@@ -61,7 +61,7 @@ export function guestReminderBody(kind: GuestReminderKind, carryOpen: boolean): 
  * refusal if they reach it some other way.
  */
 export const GUEST_QUIZ_BODY =
-  'Topic quizzes are graded and recorded on an account, so you need to be signed in to take one. As a guest, a quiz result can’t be saved or credited.';
+  'Topic quizzes are graded and recorded on your account, so you need to sign in to take one.';
 export const GUEST_QUIZ_START_REFUSED =
   'You’re not signed in. Topic quizzes are graded and recorded on an account — tap Back and sign in to take this one.';
 export const GUEST_QUIZ_NOT_NOW = 'Not now';

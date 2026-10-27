@@ -1791,7 +1791,7 @@ export function DashboardScreen() {
               // Signing out is not undoable from here — ask first.
               confirmDialog(
                 'Sign out?',
-                'This signs you out of this device and returns to the login screen. Your saved progress stays with your account.',
+                'This signs you out of this device and returns to the login screen. Your progress and credentials are safe on your account. But this device will lose anything kept only on it — saved measurements, your term lists, your settings, lab progress, room designs and calculator projects.',
                 'Sign out',
                 () => {
                   signOutOnce();

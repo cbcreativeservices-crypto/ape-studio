@@ -55,7 +55,7 @@ export const SOUND_SAFETY_PROTECTIONS = [
   'Tap the red AUDIO OUTPUT · ON row at any time to mute. On a phone with a motion sensor, shaking the device mutes instantly too.',
   'The signal generator starts well below full scale and will not exceed its own ceiling.',
   'A listening-exposure monitor tracks how long you listen and estimates your daily dose, and checks in with you as you go — except in Low-Light Production Mode, where nothing appears on its own.',
-  'Pro Audio Safety is a free topic in this app, and it covers hearing protection properly.',
+  'Pro Audio Safety, a topic open to everyone in the app, covers hearing protection in full.',
 ] as const;
 
 export const SOUND_SAFETY_LIMITS =
