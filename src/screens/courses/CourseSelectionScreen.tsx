@@ -1019,7 +1019,9 @@ function CourseCardView({
     const startInner = (
       <>
         <LinearGradient
-          colors={['rgba(8,8,10,0.55)', 'rgba(8,8,10,0)', 'rgba(8,8,10,0.45)', 'rgba(8,8,10,0.95)']}
+          // A little more wash than the other cards (owner 2026-10-27): this art
+          // is brighter, so it stood out from the rest of the row.
+          colors={['rgba(8,8,10,0.66)', 'rgba(8,8,10,0.16)', 'rgba(8,8,10,0.56)', 'rgba(8,8,10,0.95)']}
           locations={[0, 0.3, 0.58, 1]}
           style={StyleSheet.absoluteFill}
         />
