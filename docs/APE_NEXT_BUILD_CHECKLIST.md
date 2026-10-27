@@ -405,16 +405,18 @@ Faraday forcing), so it is worth finishing properly.
   tones is nearly inaudible at 15–150 Hz. Wire the picture or it still feels dead.
 
 
-## AFTER THIS BUILD + TESTER ROUND — deploy `store-notifications`
+## `store-notifications` — DEPLOYED (v11, 2026-10-27; must-do R4)
 
 Owner 2026-09-22: *"do store-notifications after this build and tester version."*
 
-⛔ **Until it is deployed, NO refund, cancellation, revocation or renewal is
-processed at all.** A refunded member keeps access until `expires_at`, which for
-a lifetime purchase is 2099. The function is written and hardened; it has simply
-never been deployed — it is absent from the deployed list.
+✅ **Live.** The function was first deployed 2026-09-30 (v10 from 10-23), and
+Comp A deployed the security fix b2601b4f as **v11 on 2026-10-27** (owner GO),
+`verify_jwt` false — checked on the live function list by ccode. This section
+used to say it had "never been deployed"; that was wrong from 2026-09-30 on.
+Still not verified from here: that the App Store / Play webhook URLs point at it
+(store consoles are Comp A's lane).
 
-- Deploy with **`verify_jwt` FALSE** — the stores do not send a Supabase JWT.
+- Deployed with **`verify_jwt` FALSE** — the stores do not send a Supabase JWT.
 - `markRefunded` is already scoped to `source IN ('app_store','play_store')`, so
   a forged notification naming an access code cannot mass-revoke code holders.
 - Sequence matters: it reads columns the tenure migration adds, and that
