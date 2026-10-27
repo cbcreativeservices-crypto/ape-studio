@@ -32,13 +32,13 @@ test('D0e: the note is DAW-only, once, at 7 s in the ALL list or the 30th card',
   assert.match(fc, /showTutorialRef\.current\('flashcardsTopicScope'\)/);
 });
 
-test('D0e: the copy names the live active topics and closes on OK', () => {
+test('D0e: the copy names the live active topics and closes on Got it (copy review A2)', () => {
   const i = intros.indexOf('flashcardsTopicScope: {');
   const entry = intros.slice(i, intros.indexOf('},', i));
   assert.match(entry, /title: 'Don’t See a Term\?'/);
   assert.match(entry, /Equalization \(EQ\)/);
   assert.match(entry, /Dynamics — Compression, Limiting & Gating \(Core\)/);
-  assert.match(entry, /button: 'OK'/);
+  assert.match(entry, /button: 'Got it'/);
 });
 
 test('D0f: a plain tap on ALL opens the ALL list', () => {

@@ -431,8 +431,8 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
           tap always works, so it leads. */}
       <View style={styles.shakeCard}>
         <Text style={styles.shakeText}>
-          ⚠ TAP THE RED AUDIO OUTPUT ROW AT ANY TIME TO MUTE IMMEDIATELY — OR, ON A PHONE WITH
-          A MOTION SENSOR, SHAKE THE DEVICE.
+          ⚠ To mute at any time, tap the red AUDIO OUTPUT row, or shake the phone if it has a
+          motion sensor.
         </Text>
       </View>
       {/* Enable-audio card. */}
@@ -500,13 +500,13 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
         // RNW 0.21 drops the accessibilityState object; aria-checked is what
         // reaches the DOM, and it is valid (and required) on role=checkbox.
         aria-checked={bypassTimer}
-        accessibilityLabel="Keep audio on and defeat the auto-off timer for this session"
+        accessibilityLabel="Keep audio on and turn off the auto-off timer for this session"
       >
         <View style={[styles.checkbox, bypassTimer && styles.checkboxOn]}>
           {bypassTimer ? <Text style={styles.checkboxMark}>✓</Text> : null}
         </View>
         <Text style={styles.bypassText}>
-          Keep audio on for this session — defeat the {Math.round(IDLE_MS / 60000)}-minute
+          Keep audio on for this session — turn off the {Math.round(IDLE_MS / 60000)}-minute
           auto-off timer (audio stays on until you mute it).
         </Text>
       </Pressable>

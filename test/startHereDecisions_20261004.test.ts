@@ -204,11 +204,11 @@ describe('decision 4 — Start Here wording and the ask-first rule', async () =>
     assert.equal(sh.relatedPlan({ starter: false, metered: true, alreadyOpened: false }), 'ask');
   });
   it('[R2] the words: extras only when the server counted them; normal wording otherwise', () => {
-    assert.equal(sh.relatedIntro(2), 'Start Here includes 2 extra definitions (2 left). After those, a related word uses 1 of your weekly definition lookups.');
-    assert.equal(sh.relatedIntro(0), 'You’ve used Start Here’s 2 extra definitions. Opening a related word now uses 1 of your weekly definition lookups.');
-    assert.equal(sh.relatedIntro(null), 'Opening a related word uses 1 definition lookup.');
+    assert.equal(sh.relatedIntro(2), 'Start Here includes 2 extra definitions (2 left). After those, a related word uses 1 of your weekly definitions.');
+    assert.equal(sh.relatedIntro(0), 'You’ve used Start Here’s 2 extra definitions. Opening a related word now uses 1 of your weekly definitions.');
+    assert.equal(sh.relatedIntro(null), 'Opening a related word uses 1 of your weekly definitions.');
     assert.equal(sh.relatedAskBody(1), 'This uses 1 of Start Here’s 2 extra definitions (1 left).');
-    assert.equal(sh.relatedAskBody(0), 'Opening this word uses 1 definition lookup.');
+    assert.equal(sh.relatedAskBody(0), 'Opening this word uses 1 of your weekly definitions.');
     assert.equal(sh.bonusSpentLine(1), 'This used one of Start Here’s 2 extra definitions (1 left).');
   });
   it('[R2] Start Here wires it: the popup reads via "startHere"; maybe-members see no related words; the ask is in the popup', () => {

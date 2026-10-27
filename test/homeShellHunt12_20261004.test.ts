@@ -73,5 +73,5 @@ test('3. Dashboard: one study screen per tap across different switches', () => {
   // The claim is a hook, so it must sit above the early returns.
   assert.ok(src.indexOf('const claimStudyOpen = useCallback(') < src.indexOf('if (loading && !data) {'));
   assert.match(src, /if \(routeName && claimStudyOpen\(\)\) \{\s*navigation\.navigate\(routeName, \{ achievementId: dispTopic\.id/);
-  assert.match(src, /if \(!claimStudyOpen\(\)\) return;\s*confirmDialog\(\s*'BEFORE YOU BEGIN'/);
+  assert.match(src, /if \(!claimStudyOpen\(\)\) return;\s*confirmDialog\(\s*'Before you begin'/);
 });

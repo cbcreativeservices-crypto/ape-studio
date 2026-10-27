@@ -551,7 +551,7 @@ export function ExposureMonitorScreen() {
               accessibilityRole="button"
               onPress={() =>
                 confirmDialog(
-                  'Delete ALL exposure history?',
+                  'Delete all exposure history?',
                   'Every stored day will be removed. This cannot be undone.',
                   'Delete all',
                   () => {

@@ -268,8 +268,8 @@ export function QuizScreen({ navigation, route }: Props) {
             notify(
               'Offline',
               Platform.OS === 'web'
-                ? 'Offline — please reconnect to submit. Keep this tab open until you reconnect; your finished attempt is held in this browser session only.'
-                : 'Offline — please reconnect to submit.',
+                ? 'Reconnect to submit your quiz. Keep this tab open until you reconnect; your finished attempt is held in this browser session only.'
+                : 'Reconnect to submit your quiz.',
               () => safeGoBack(navigation),
             );
           } else {
@@ -354,7 +354,7 @@ export function QuizScreen({ navigation, route }: Props) {
       if (focusLossCount.current === 1) {
         notify(
           'App switch detected',
-          'Leaving the app during a quiz is not allowed. One more switch will VOID this attempt and lock the quiz for 15 minutes.',
+          'Leaving the app during a quiz is not allowed. One more switch ends this attempt without counting it and locks the quiz for 15 minutes.',
         );
       } else {
         void doSubmit(); // server voids + applies the lockout

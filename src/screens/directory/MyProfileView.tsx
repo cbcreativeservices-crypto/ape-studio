@@ -103,8 +103,14 @@ export function toCountryCode(raw: string): string {
 
 /** Confirm dialogs must work on web too — react-native-web ships Alert as a
  *  literal no-op, which would make Publish silently do nothing in a browser. */
-function confirmThen(title: string, body: string, yes: string, onYes: () => void): void {
-  confirmDialog(title, body, yes, onYes);
+function confirmThen(
+  title: string,
+  body: string,
+  yes: string,
+  onYes: () => void,
+  opts?: { destructive?: boolean },
+): void {
+  confirmDialog(title, body, yes, onYes, opts);
 }
 
 function notify(title: string, body: string): void {
@@ -399,6 +405,7 @@ export function MyProfileView() {
         'Your public page goes offline immediately and you are removed from directory search. Your draft is kept here, and your earned credentials are not affected.',
         'Unpublish',
         () => sendPublish(false),
+        { destructive: true },
       );
       return;
     }
@@ -892,6 +899,7 @@ export function MyProfileView() {
                 lastSent.current = EMPTY_COMMUNITY_PROFILE;
                 setP(EMPTY_COMMUNITY_PROFILE);
               }),
+            { destructive: true },
           )
         }
       />

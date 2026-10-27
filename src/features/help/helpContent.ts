@@ -104,8 +104,8 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       },
       {
         id: 'acct-signout',
-        q: 'How do I log out or switch accounts?',
-        a: 'Settings → ACCOUNT → Log out. You can sign into a different account from the screen that follows.',
+        q: 'How do I sign out (log out) or switch accounts?',
+        a: 'Settings → ACCOUNT → Sign out. You can sign into a different account from the screen that follows.',
         jump: { label: 'Open Settings', route: 'Settings' },
       },
     ],

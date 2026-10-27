@@ -60,9 +60,9 @@ describe('the decision', () => {
 describe('the words (plain)', () => {
   it('title, body with and without N, buttons', () => {
     assert.equal(crossLinkTitle('Headroom'), 'Open “Headroom”?');
-    assert.equal(crossLinkBody(5), 'Opening this term uses 1 definition lookup. You have 5 left this week.');
-    assert.equal(crossLinkBody(null), 'Opening this term uses 1 definition lookup.');
-    assert.equal(CROSS_LINK_OPEN, 'Open (uses 1 lookup)');
+    assert.equal(crossLinkBody(5), 'Opening this term uses 1 of your weekly definitions. You have 5 left this week.');
+    assert.equal(crossLinkBody(null), 'Opening this term uses 1 of your weekly definitions.');
+    assert.equal(CROSS_LINK_OPEN, 'Open (uses 1 definition)');
     assert.equal(CROSS_LINK_CANCEL, 'Cancel');
   });
 });

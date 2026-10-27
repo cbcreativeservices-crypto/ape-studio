@@ -145,10 +145,10 @@ export function GlossaryLockView({
           <LockGlyph />
           <Text style={styles.kicker}>PRO AUDIO GLOSSARY</Text>
           <Text style={styles.title} accessibilityRole="header">
-            You’ve used this week’s lookups
+            You’ve used this week’s free definitions
           </Text>
           <Text style={styles.body}>
-            You’ve used all {GLOSSARY_WEEKLY_LIMIT} of your free glossary lookups this week. Academy
+            You’ve used all {GLOSSARY_WEEKLY_LIMIT} of your free glossary definitions this week. Academy
             membership removes the cap — every term, every definition, always.
           </Text>
 
@@ -156,9 +156,9 @@ export function GlossaryLockView({
             <View
               style={styles.resetBox}
               accessible
-              accessibilityLabel={`Free lookups reset in ${formatCountdownLong(msLeft)}`}
+              accessibilityLabel={`Free definitions reset in ${formatCountdownLong(msLeft)}`}
             >
-              <Text style={styles.resetLabel}>FREE LOOKUPS RESET IN</Text>
+              <Text style={styles.resetLabel}>FREE DEFINITIONS RESET IN</Text>
               <Text style={styles.resetValue} accessibilityElementsHidden importantForAccessibility="no">
                 {formatCountdown(msLeft)}
               </Text>

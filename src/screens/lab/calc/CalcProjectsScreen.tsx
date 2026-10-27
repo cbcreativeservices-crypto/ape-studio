@@ -154,7 +154,7 @@ export function CalcProjectsScreen() {
     } else {
       confirmDialog(
         'Project limit reached',
-        `Your account keeps up to ${limits.savedProjects} projects. Academy membership removes the limit.`,
+        `A free account keeps up to ${limits.savedProjects} projects. Academy membership removes the limit.`,
         'See membership',
         afterDialogCloses(() => (navigation as any).navigate('Paywall')),
         { cancelText: 'Not now' },

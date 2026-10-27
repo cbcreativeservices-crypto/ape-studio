@@ -125,7 +125,7 @@ describe('3. Calculator workflows — honest words, never the sell, on a failed 
     const s = read('src/screens/lab/calc/CalcWorkflowEditScreen.tsx');
     const save = s.slice(s.indexOf('const saveOnce = '), s.indexOf('const trimmed = name.trim()'));
     const unconf = save.indexOf('if (!editingId && tierUnconfirmed) {');
-    assert.ok(unconf > 0 && unconf < save.indexOf("'Build your own workflow?'"));
+    assert.ok(unconf > 0 && unconf < save.indexOf("'Building workflows is part of membership'"));
     assert.ok(save.includes(NC));
   });
   it('the calculator no longer imports the raw Alert', () => {

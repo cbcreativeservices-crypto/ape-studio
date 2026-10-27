@@ -27,7 +27,7 @@ const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 export const FINDER_INTRO = {
   lead: 'Which kinds of audio work would you enjoy doing?',
   body: `Rate ${QUESTION_COUNT} activities. In about five minutes you’ll have five career families worth exploring, and a place in the Academy to start on each.`,
-  trust: 'Free. No account. Your answers stay on this phone.',
+  trust: 'Free. No account needed. Your answers stay on this phone.',
   howTo: 'You’ll answer for activities, not job titles. Answer for enjoyment only — whether you would be good at it, or could do it today, does not matter here. If you don’t know what an activity is like, say so: that is a useful answer, never a low score.',
   /** A KNOWN guest (owner ruling 2026-10-04: guest data is always deleted,
    *  Career Finder included — and signing in starts the account fresh, so

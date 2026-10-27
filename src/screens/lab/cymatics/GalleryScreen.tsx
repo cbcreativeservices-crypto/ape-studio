@@ -298,7 +298,7 @@ export function GalleryScreen() {
     try {
       a = await patternStore().loadArtwork(id);
     } catch {
-      notify('Artwork not read', `The colouring saved for “${current.name}” could not be read on this device, so the art board did not open. Try again.`);
+      notify('Artwork not read', `The coloring saved for “${current.name}” could not be read on this device, so the art board did not open. Try again.`);
       return;
     }
     if (modeRef.current !== 'open' || currentIdRef.current !== id) return;

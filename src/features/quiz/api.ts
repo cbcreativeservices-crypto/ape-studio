@@ -140,7 +140,7 @@ export const QUIZ_START_ERROR_COPY: Record<QuizStartError, string> = {
     'Study requirements are not yet met for this topic. Tap Back and check the TOPIC QUIZ panel for what remains.',
   academy_required:
     'Academy membership is required for this topic’s quiz. Your progress is saved — tap Back, then Membership on the Academy screen.',
-  under_lockout: 'This quiz is locked out after a voided attempt. Try again when the lockout ends.',
+  under_lockout: 'This quiz is locked for a short while because the last attempt wasn’t counted. Try again when the wait ends.',
   topic_locked: 'This topic is locked.',
   not_enrolled: 'You are not enrolled in this topic.',
   version_mismatch: 'Content was updated — tap Back and reopen the quiz.',

@@ -125,7 +125,7 @@ const DIALOGS: { label: string; run: () => void }[] = [
   {
     label: 'Confirm · destructive',
     run: () =>
-      confirmDialog('Log out?', 'You can sign in as a different user afterward.', 'Log out', () => {}, {
+      confirmDialog('Sign out?', 'You can sign in as a different user afterward.', 'Sign out', () => {}, {
         destructive: true,
       }),
   },

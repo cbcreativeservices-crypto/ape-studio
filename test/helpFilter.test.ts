@@ -36,7 +36,7 @@ const ALL = count(HELP_CATEGORIES);
 describe('a whole question finds its answer', () => {
   // The exact failure the owner reported: sentences returned nothing. These
   // are questions the manual DOES answer, phrased the way a person types.
-  for (const q of ['how do I log out', 'are the meters calibrated', 'where are my certificates']) {
+  for (const q of ['how do I log out', 'how do I sign out', 'are the meters calibrated', 'where are my certificates']) {
     it(`"${q}" finds its answer`, () => {
       const hit = filterHelp(q);
       assert.ok(count(hit) > 0, 'a question the manual answers must not come back empty');

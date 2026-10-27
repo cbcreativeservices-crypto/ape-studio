@@ -60,7 +60,7 @@ export function TubeReferenceScreen() {
       // confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so locked
       // rows were silent taps on the web preview (B-018/B-062).
       confirmDialog(
-        'Tube Reference — Academy',
+        'Part of Academy membership',
         'The full-screen tube reference cards are a feature of Academy membership.',
         'See membership',
         afterDialogCloses(() => navigation.navigate('Paywall')),

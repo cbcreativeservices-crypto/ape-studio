@@ -365,7 +365,7 @@ describe('3. a guest touches only Pro Audio Safety and DAW Fundamentals', () => 
     const d = read('src/screens/dashboard/DashboardScreen.tsx');
     assert.match(d, /const quizAsGuest = remindAsGuest\(tierForTerms, guestWording\.guest\);/);
     const guestAt = d.indexOf('if (quizAsGuest) {');
-    assert.ok(guestAt > 0 && guestAt < d.indexOf("'BEFORE YOU BEGIN',"));
+    assert.ok(guestAt > 0 && guestAt < d.indexOf("'Before you begin',"));
     assert.match(d, /if \(quizAsGuest\) \{\s*confirmDialog\(\s*GUEST_REMINDER_TITLE,\s*GUEST_QUIZ_BODY,\s*GUEST_REMINDER_SIGN_IN,\s*\(\) => \(navigation as any\)\.navigate\('Auth'\),\s*\{ cancelText: GUEST_QUIZ_NOT_NOW \},\s*\);\s*return;\s*\}/);
     const q = read('src/screens/quiz/QuizScreen.tsx');
     assert.match(q, /\{startErrorCode === 'user_not_found' && quizAsGuest \? GUEST_QUIZ_START_REFUSED : startError\}/);

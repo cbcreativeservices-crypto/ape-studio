@@ -381,16 +381,16 @@ export function SettingsScreen({ navigation }: Props) {
         'This device will lose anything kept only on it — saved measurements, your term lists, your settings, lab progress, room designs and calculator projects. Signing back into the same account does not bring them back.';
 
       confirmDialog(
-        'Log out?',
+        'Sign out?',
         stranded > 0
           ? // Do not claim the progress is safe when we just tried to save it
             // and could not. Naming the count is what makes "wait and
             // reconnect" an obvious alternative to losing the work.
-            `${stranded} piece${stranded === 1 ? '' : 's'} of study progress could not be saved to your account — most likely you are offline. Logging out now DISCARDS ${stranded === 1 ? 'it' : 'them'}. Reconnect and reopen the app to save ${stranded === 1 ? 'it' : 'them'} first.
+            `${stranded} piece${stranded === 1 ? '' : 's'} of study progress could not be saved to your account — most likely you are offline. Signing out now DISCARDS ${stranded === 1 ? 'it' : 'them'}. Reconnect and reopen the app to save ${stranded === 1 ? 'it' : 'them'} first.
 
 ${LOCAL_LOSS}`
           : `Your progress and credentials are safe on your account. But ${LOCAL_LOSS.charAt(0).toLowerCase()}${LOCAL_LOSS.slice(1)}`,
-        'Log out',
+        'Sign out',
         () => {
           if (logoutRunning.current) return;
           logoutRunning.current = true;
@@ -429,7 +429,7 @@ ${LOCAL_LOSS}`
             if (error) {
               consumeIntentionalSignOut(); // no SIGNED_OUT is coming for it
               notify(
-                'Couldn’t log out',
+                'Couldn’t sign out',
                 'We couldn’t reach the Academy to sign you out — check your connection and try again.',
               );
               return;
@@ -1276,8 +1276,8 @@ ${LOCAL_LOSS}`
               <Text style={styles.monoAction}>SIGN IN ›</Text>
             </Pressable>
           ) : (
-            <Pressable style={styles.row} onPress={confirmLogout} accessibilityRole="button" accessibilityLabel="Log out">
-              <Text style={styles.rowLabel}>Log out</Text>
+            <Pressable style={styles.row} onPress={confirmLogout} accessibilityRole="button" accessibilityLabel="Sign out">
+              <Text style={styles.rowLabel}>Sign out</Text>
               <Text style={styles.monoAction}>SIGN OUT ›</Text>
             </Pressable>
           )}

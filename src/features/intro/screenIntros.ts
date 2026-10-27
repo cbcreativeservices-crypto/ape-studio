@@ -228,7 +228,7 @@ export const SCREEN_INTROS: Record<
       '•  Reverb → Reverb\n' +
       '•  Delay & echo → Delay & Time-Based Effects\n\n' +
       'Every term is grouped into the topic that covers it specifically and completely. You can look up any term in the Glossary.',
-    button: 'OK',
+    button: 'Got it',
   },
   glossary: {
     // Final glossary welcome copy (user-provided 2026-07-18).
@@ -247,11 +247,11 @@ export const SCREEN_INTROS: Record<
     title: 'Your Custom Study List',
     body:
       'This is your own study deck, made from any glossary terms you choose.\n\n' +
-      'To add a term, tap the deck icon beside it. Tap it again to take it off. This button shows only the terms you’ve added; press and hold it to see and edit the whole list.\n\n' +
+      'To add a term, tap the three-card icon beside it; tap it again to take it off. The CUSTOM STUDY LIST button shows only the terms you’ve added. Press and hold it to see and edit the whole list.\n\n' +
       'Your deck works like a topic of its own in the Academy’s study system. You can study it with flashcards, matching, fill-in-the-blank and scenario questions, the same way you study any topic.\n\n' +
       // 2026-10-19: the list is ALWAYS on the Study dashboard now (no LOAD step).
       'It is always on your Study dashboard: open Study and turn the topic dial to My Custom List.\n\n' +
-      'Use it for terms you find difficult, words from a class or a job, or anything you want to practise.',
+      'Use it for terms you find difficult, words from a class or a job, or anything you want to practice.',
     button: 'Got it',
   },
   enrollments: {

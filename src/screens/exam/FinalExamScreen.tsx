@@ -432,7 +432,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
       if (focusLossCount.current === 1) {
         notify(
           'App switch detected',
-          'Leaving the app during the Final Exam is not allowed. One more switch will VOID this attempt and lock the exam for 15 minutes.',
+          'Leaving the app during the Final Exam is not allowed. One more switch ends this attempt without counting it and locks the exam for 15 minutes.',
         );
       } else {
         void doSubmit();

@@ -206,7 +206,7 @@ export const EXAM_START_ERROR_COPY: Record<ExamStartError, string> = {
   award_not_found: 'That award could not be found.',
   invalid_award_type: 'That award type is not recognized.',
   pool_too_small: 'This Final Exam is not available yet — email info@proaudiotrainingacademy.com so we can look at it.',
-  under_lockout: 'This Final Exam is locked out after a voided attempt. Try again when the lockout ends.',
+  under_lockout: 'This Final Exam is locked for a short while because the last attempt was not counted. Try again when the wait ends.',
   user_not_found: 'We could not find your account record. Sign out and back in, and email info@proaudiotrainingacademy.com if it continues.',
   offline: 'Starting the Final Exam requires a connection. Reconnect and try again.',
   unknown: 'Could not start the Final Exam. Try again.',

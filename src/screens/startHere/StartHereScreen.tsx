@@ -329,10 +329,10 @@ export function StartHereScreen() {
     const message = 'Clears your place and the ticks in Start Here only.';
     if (Platform.OS === 'web') {
       const c = (globalThis as unknown as { confirm?: (m: string) => boolean }).confirm;
-      if (typeof c !== 'function' || c(`Start over? ${message}`)) doReset();
+      if (typeof c !== 'function' || c(`Start a fresh run? ${message}`)) doReset();
       return;
     }
-    confirmDialog('Start over?', message, 'Start over', doReset, { destructive: true });
+    confirmDialog('Start a fresh run?', message, 'Start over', doReset, { destructive: true });
   };
 
   const done = useMemo(() => new Set(progress.completed), [progress.completed]);

@@ -130,7 +130,7 @@ export function GalleryArt({
           .saveArtwork(a)
           .then((ok) => {
             if (ok) onArtwork(a);
-            else notify('Artwork not saved', 'The last colouring changes could not be saved on this device. Open COLOUR to redo them.');
+            else notify('Artwork not saved', 'The last coloring changes could not be saved on this device. Open COLOUR to redo them.');
           });
       }
     },

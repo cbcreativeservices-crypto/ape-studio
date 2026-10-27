@@ -584,7 +584,7 @@ export function CalcWorkflowRunScreen() {
     }
     const existing = await workflowStore.listResults();
     if (limits.savedResults != null && existing.length >= limits.savedResults && !existing.some((r) => r.id === summary.id)) {
-      notify('Result limit reached', `Free accounts keep up to ${limits.savedResults} results. Academy membership removes the limit.`);
+      notify('Result limit reached', `A free account keeps up to ${limits.savedResults} results. Academy membership removes the limit.`);
       return;
     }
     const ok = await workflowStore.saveResult(summary, storeGenRef.current);

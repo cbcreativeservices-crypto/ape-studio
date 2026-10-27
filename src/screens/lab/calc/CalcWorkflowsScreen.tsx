@@ -137,7 +137,7 @@ export function CalcWorkflowsScreen() {
     } else {
       confirmDialog(
         'Workflow limit reached',
-        `Your account keeps up to ${limits.savedWorkflows} workflows. Academy membership removes the limit.`,
+        `A free account keeps up to ${limits.savedWorkflows} workflows. Academy membership removes the limit.`,
         'See membership',
         seePlans,
         { cancelText: 'Not now' },

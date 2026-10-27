@@ -200,15 +200,15 @@ export function relatedPlan(a: { starter: boolean; metered: boolean; alreadyOpen
  *  server's count of extras; null/undefined = unknown or not offered → the
  *  normal wording only, never a promise of extras. */
 export function relatedIntro(left: number | null | undefined): string {
-  if (left == null) return 'Opening a related word uses 1 definition lookup.';
-  if (left > 0) return `Start Here includes 2 extra definitions (${left} left). After those, a related word uses 1 of your weekly definition lookups.`;
-  return 'You’ve used Start Here’s 2 extra definitions. Opening a related word now uses 1 of your weekly definition lookups.';
+  if (left == null) return 'Opening a related word uses 1 of your weekly definitions.';
+  if (left > 0) return `Start Here includes 2 extra definitions (${left} left). After those, a related word uses 1 of your weekly definitions.`;
+  return 'You’ve used Start Here’s 2 extra definitions. Opening a related word now uses 1 of your weekly definitions.';
 }
 
 /** The question before a charged open. */
 export function relatedAskBody(left: number | null | undefined): string {
   if (left != null && left > 0) return `This uses 1 of Start Here’s 2 extra definitions (${left} left).`;
-  return 'Opening this word uses 1 definition lookup.';
+  return 'Opening this word uses 1 of your weekly definitions.';
 }
 
 /** Said under a definition whose open spent an extra one (server's answer). */

@@ -683,7 +683,7 @@ async function finishSignOut(onDone: () => void): Promise<void> {
   const { error } = await supabase.auth.signOut({ scope: 'local' }).catch((e: unknown) => ({ error: e as Error }));
   if (error) {
     consumeIntentionalSignOut(); // no SIGNED_OUT is coming for it
-    notify('Couldn’t log out', 'We couldn’t reach the Academy to sign you out — check your connection and try again.');
+    notify('Couldn’t sign out', 'We couldn’t reach the Academy to sign you out — check your connection and try again.');
     return;
   }
   onDone();
@@ -1104,7 +1104,7 @@ export function DashboardScreen() {
         if (result.outcome === 'held') {
           notify(
             'Offline exam submitted',
-            'Your exam reached us and has been marked. Your result is held until your first month of membership completes, and your certificate is issued then.',
+            'Your exam reached us and has been graded. Your result is held until your first month of membership completes, and your certificate is issued then.',
           );
           continue;
         }
@@ -2752,8 +2752,8 @@ export function DashboardScreen() {
                         // starts, every single time." This was the one
                         // exception to it.
                         confirmDialog(
-                          'BEFORE YOU BEGIN',
-                          'The clock does not pause. Leaving the app twice voids the attempt and locks the quiz for fifteen minutes. Going back wipes your answers — there is no save.',
+                          'Before you begin',
+                          'The clock doesn’t pause. If you leave the app twice, the attempt isn’t counted and the quiz locks for 15 minutes. Going back wipes your answers, and the clock keeps running.',
                           'BEGIN',
                           () =>
                             navigation.navigate('Quiz', {

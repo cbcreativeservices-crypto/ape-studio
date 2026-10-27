@@ -316,12 +316,12 @@ function warnUsage(used: number, limit: number): void {
   if (used === GLOSSARY_WARN_AT_USED && used < limit) {
     notify(
       'Heads up — weekly glossary limit',
-      `That’s ${used} of ${limit} free lookups this week — ${limit - used} left for the rest of your week. Academy membership makes the glossary unlimited.`,
+      `That’s ${used} of ${limit} free definitions this week, with ${limit - used} left for the rest of your week. Academy membership makes the glossary unlimited.`,
     );
   } else if (used >= limit) {
     notify(
       'Weekly glossary limit',
-      `That was your last free glossary lookup this week (${limit} of ${limit}). It resets one week after your first one. Academy membership makes the glossary unlimited.`,
+      `That was your last free definition this week (${limit} of ${limit}). It resets one week after your first one. Academy membership makes the glossary unlimited.`,
     );
   }
 }
@@ -460,7 +460,7 @@ function notifyShareUnreadable(err: ShareDefinitionUnreadable): void {
   notify(
     'Couldn’t share this term',
     err.fault === 'limit-reached'
-      ? `This week’s definition lookups are used up, so the full definition of “${err.term}” can’t be loaded to share.`
+      ? `This week’s free definitions are used up, so the full definition of “${err.term}” can’t be loaded to share.`
       : err.fault === 'checking'
       ? `Your account is still being checked, so the full definition of “${err.term}” can’t be loaded to share yet. Try again in a moment.`
       : err.fault === 'unconfirmed'

@@ -57,7 +57,7 @@ export function lookupsLeft(count: { used: number; limit: number } | null): numb
   return Math.max(0, Math.floor(limit - used));
 }
 
-export const CROSS_LINK_OPEN = 'Open (uses 1 lookup)';
+export const CROSS_LINK_OPEN = 'Open (uses 1 definition)';
 export const CROSS_LINK_CANCEL = 'Cancel';
 
 export function crossLinkTitle(term: string): string {
@@ -66,6 +66,6 @@ export function crossLinkTitle(term: string): string {
 
 /** The count sentence only when the count is known. */
 export function crossLinkBody(left: number | null): string {
-  const base = 'Opening this term uses 1 definition lookup.';
+  const base = 'Opening this term uses 1 of your weekly definitions.';
   return left === null ? base : `${base} You have ${left} left this week.`;
 }

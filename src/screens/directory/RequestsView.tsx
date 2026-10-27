@@ -46,8 +46,14 @@ function notify(title: string, body: string): void {
   appNotify(title, body);
 }
 
-function confirmThen(title: string, body: string, yes: string, onYes: () => void): void {
-  confirmDialog(title, body, yes, onYes);
+function confirmThen(
+  title: string,
+  body: string,
+  yes: string,
+  onYes: () => void,
+  opts?: { destructive?: boolean },
+): void {
+  confirmDialog(title, body, yes, onYes, opts);
 }
 
 const STATUS_LABEL: Record<ContactThread['status'], string> = {
@@ -168,6 +174,7 @@ function ThreadModeration({
                 onError(null);
                 return onReload();
               }),
+            { destructive: true },
           )
         }
         hitSlop={6}
