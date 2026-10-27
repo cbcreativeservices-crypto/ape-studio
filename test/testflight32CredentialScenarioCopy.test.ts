@@ -77,7 +77,11 @@ test('Scenarios screen mirrors the answered count on load and on every answer', 
   const s = src('src/screens/study/ScenariosScreen.tsx');
   assert.match(s, /scenarioAnsweredCounts\(hwRef\.current\?\.rounds \?\? \[\], answersRef\.current\)/);
   // Once in judge (before the save) and once after the server answers are loaded.
-  assert.equal((s.match(/mirrorAnswered\(\);\s*\n\s*void saveLocalMethodStates\(achievementId, 'scenarios'/g) ?? []).length, 2);
+  // (D12, 2026-10-27: the write is skipped for My Custom List, which records nothing.)
+  assert.equal(
+    (s.match(/mirrorAnswered\(\);\s*\n\s*(?:if \(!customMode\) )?void saveLocalMethodStates\(achievementId, 'scenarios'/g) ?? []).length,
+    2,
+  );
 });
 
 // ── 3. enrollment is not free ──────────────────────────────────────────────

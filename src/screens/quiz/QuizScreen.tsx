@@ -17,6 +17,11 @@
  * - One sitting: [‹] back OR Android hardware-back = confirm → wipe local
  *   answers immediately (the attempt stays open server-side; re-entry resumes).
  * - Offline submit → queued + "Offline — please reconnect to submit."
+ * - MY CUSTOM LIST (D12, 2026-10-27): the same screen, the same clock, app-
+ *   switch, offline and resume rules, on the list's own RPCs —
+ *   start_custom_list_quiz (the whole stored list + the length chosen on the
+ *   Dashboard) and submit_custom_list_quiz. Practice only: always Results,
+ *   never a celebration, and nothing is credited.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -47,8 +52,10 @@ import {
   clearQuizIntent,
   enqueueSubmission,
   QuizStartFailure,
-  QUIZ_START_ERROR_COPY,
+  quizStartErrorCopy,
+  startCustomListQuiz,
   startQuizAttempt,
+  submitCustomListQuiz,
   submitQuiz,
   type AnswerValue,
   type AttemptPayload,
@@ -64,6 +71,8 @@ import { readingColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { useGuestWording, useTier } from '../../features/commercial/useTier';
 import { GUEST_QUIZ_START_REFUSED, remindAsGuest } from '../../features/lab/guestReminderRules';
+import { CUSTOM_QUIZ_MIN, isCustomListId } from '../../features/commercial/studyGate';
+import { readTermList } from '../../features/flags/flaggedStore';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Quiz'>;
 
@@ -76,7 +85,9 @@ function fmtClock(msLeft: number): string {
 }
 
 export function QuizScreen({ navigation, route }: Props) {
-  const { achievementId, topicName } = route.params;
+  const { achievementId, topicName, customCount } = route.params;
+  // MY CUSTOM LIST (D12): the list's own practice quiz, never a topic RPC.
+  const customMode = isCustomListId(achievementId);
   const insets = useSafeAreaInsets();
   // A KNOWN guest only (D52): see GUEST_QUIZ_START_REFUSED.
   const quizAsGuest = remindAsGuest(useTier(), useGuestWording().guest);
@@ -128,7 +139,18 @@ export function QuizScreen({ navigation, route }: Props) {
     let alive = true;
     (async () => {
       try {
-        const p = await startQuizAttempt(achievementId);
+        // MY CUSTOM LIST: the WHOLE stored list goes up with the length chosen
+        // (30 … the list); the server draws at random and substitutes terms
+        // that have no question. A list the phone cannot read is said so,
+        // never sent as empty.
+        const p = customMode
+          ? await readTermList('starred').then(
+              (ids) => startCustomListQuiz(ids, customCount ?? CUSTOM_QUIZ_MIN),
+              () => {
+                throw new QuizStartFailure('custom_list_unreadable');
+              },
+            )
+          : await startQuizAttempt(achievementId);
         if (!alive) return;
         // Warm every figure in the paper now, not on the tap that reaches it.
         const figures = [...new Set(p.questions.map((q) => q.media_url).filter((u): u is string => !!u))];
@@ -153,7 +175,7 @@ export function QuizScreen({ navigation, route }: Props) {
         if (!alive) return;
         const code = e instanceof QuizStartFailure ? e.code : 'unknown';
         setStartErrorCode(code);
-        setStartError(QUIZ_START_ERROR_COPY[code]);
+        setStartError(quizStartErrorCopy(code, customMode));
       }
     })();
     return () => {
@@ -162,7 +184,7 @@ export function QuizScreen({ navigation, route }: Props) {
     // startNonce re-runs the start on "Try again". Re-calling with the SAME
     // persisted intent id is idempotent (api.ts header) — it resumes the same
     // attempt and can never draw a fresh question set.
-  }, [achievementId, startNonce]);
+  }, [achievementId, customMode, customCount, startNonce]);
 
   const deadline = useMemo(
     () => (payload ? new Date(payload.started_at).getTime() + payload.time_limit_seconds * 1000 : null),
@@ -193,7 +215,8 @@ export function QuizScreen({ navigation, route }: Props) {
         focusLossDuration: Math.round(focusLossDuration.current),
       };
       try {
-        const result = await submitQuiz(args);
+        // My Custom List grades on its own practice RPC (never submit_quiz).
+        const result = await (customMode ? submitCustomListQuiz : submitQuiz)(args);
         // The server has it — drop the local copy so nothing can be restored
         // into a finished attempt.
         // Both clears in ONE storage round trip, not two (perf hunt
@@ -207,7 +230,8 @@ export function QuizScreen({ navigation, route }: Props) {
         // Guarded: popToTop on an already-single-route stack raises an
         // unhandled-action redbox (Booth 2026-07-09p).
         if (navigation.canGoBack()) navigation.popToTop();
-        if (result.outcome === 'full_pass' && !payload.is_practice) {
+        // My Custom List is practice only: it never celebrates a topic.
+        if (!customMode && result.outcome === 'full_pass' && !payload.is_practice) {
           // A passed quiz is a genuine success — the store-review eligibility
           // counter (launch readiness, 2026-09-06). Never prompts by itself.
           void noteHighValueEvent('quiz_passed');
@@ -247,8 +271,10 @@ export function QuizScreen({ navigation, route }: Props) {
             result,
             topicName,
             achievementId,
-            isPractice: payload.is_practice,
+            isPractice: customMode || payload.is_practice,
             questions,
+            // Retake on Results asks for the same length again.
+            ...(customMode ? { customCount } : null),
           });
         }
       } catch (e) {
@@ -315,7 +341,7 @@ export function QuizScreen({ navigation, route }: Props) {
         if (mountedRef.current) setSubmitting(false);
       }
     },
-    [payload, achievementId, topicName, navigation],
+    [payload, achievementId, topicName, navigation, customMode, customCount],
   );
 
   /* ---- countdown (never pauses; force-submit at 0:00) ---- */
@@ -573,7 +599,8 @@ export function QuizScreen({ navigation, route }: Props) {
     // [47] (2026-09-11): quiz start is online-only, so a brief network hiccup
     // used to eject the learner all the way back to the Dashboard to relaunch.
     // Offer an in-place retry for the transient codes only.
-    const canRetryStart = startErrorCode === 'offline' || startErrorCode === 'unknown';
+    const canRetryStart =
+      startErrorCode === 'offline' || startErrorCode === 'unknown' || startErrorCode === 'custom_list_unreadable';
     return (
       <View style={styles.center}>
         <Text style={styles.errorText}>
@@ -674,6 +701,18 @@ export function QuizScreen({ navigation, route }: Props) {
         <Text style={styles.finalNote}>
           Each answer locks when you move on — you can’t return to a question.
         </Text>
+        {/* MY CUSTOM LIST: practice, said once at the top; and the honest count
+            when the list ran out of terms with a quiz question (the server
+            substitutes first, and shortens only then). */}
+        {customMode && qIdx === 0 ? (
+          <Text style={styles.finalNote}>
+            {`Practice on My Custom List: not counted toward anything.${
+              payload.requested_count != null && payload.questions.length < payload.requested_count
+                ? ` Only ${payload.questions.length} of your terms have quiz questions yet, so this quiz has ${payload.questions.length}.`
+                : ''
+            }`}
+          </Text>
+        ) : null}
 
         {/* RN <Image> does NOT default `accessible` (Image.ios.js:170-171), so
             without it this label never reached the iOS tree and the figure —

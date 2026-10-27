@@ -22,6 +22,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
 import { clearQuizIntent } from '../../features/quiz/api';
+import { isCustomListId } from '../../features/commercial/studyGate';
 import type { RootStackParamList } from '../../navigation/types';
 import { readingColumn } from '../../theme/readingColumn';
 
@@ -58,7 +59,10 @@ function useLockoutCountdown(lockoutUntil?: string) {
 
 export function ResultsScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
-  const { result, topicName, achievementId, isPractice } = route.params;
+  const { result, topicName, achievementId, isPractice, customCount } = route.params;
+  // MY CUSTOM LIST (D12): a practice quiz — counted toward nothing, no credit
+  // and no certificate wording; Retake asks for the same length again.
+  const customList = isCustomListId(achievementId);
   // [45] (2026-09-07): default questions so .find() can't crash if the route is
   // ever entered without them (wrong_answers is already coalesced below).
   const questions = route.params.questions ?? [];
@@ -103,12 +107,16 @@ export function ResultsScreen({ navigation, route }: Props) {
           name: 'Main',
           params: {
             screen: 'Study',
-            params: { screen: 'Quiz', params: { achievementId, topicName }, initial: false },
+            params: {
+              screen: 'Quiz',
+              params: { achievementId, topicName, ...(customList ? { customCount } : null) },
+              initial: false,
+            },
           },
         },
       ],
     });
-  }, [navigation, achievementId, topicName]);
+  }, [navigation, achievementId, topicName, customList, customCount]);
 
   /* ---- voided: dedicated full-screen state (08-s7-results-voided) ---- */
   if (result.outcome === 'voided') {
@@ -176,6 +184,12 @@ export function ResultsScreen({ navigation, route }: Props) {
           </View>
           {timedOut && <Text style={styles.timedOut}>Time expired — not passed</Text>}
         </View>
+
+        {customList ? (
+          <Text style={styles.practiceNote}>
+            Practice on My Custom List: not counted toward anything, and nothing is recorded as progress.
+          </Text>
+        ) : null}
 
         {passed && !isPractice && (
           <View style={styles.clampNotice}>
@@ -245,6 +259,7 @@ const styles = StyleSheet.create({
   },
   scoreOf: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.4, color: '#777777' },
   timedOut: { fontFamily: fonts.barlowMedium, fontSize: 14, color: colors.red, marginTop: 8 },
+  practiceNote: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center' },
 
   clampNotice: {
     backgroundColor: '#1d1607',

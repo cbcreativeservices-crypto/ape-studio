@@ -13,6 +13,11 @@
  * In-round: inline ✓/✕ + explanation, no retry; NEXT › moves on (no auto-advance since 2026-09-30). Progress persists
  * server-side (mid-round resume). The Ear Training (S12) method was retired
  * (Booth 2026-07-26).
+ *
+ * MY CUSTOM LIST (D12, server live 2026-10-27): achievementId 'flagged' runs
+ * the same three rounds on `get_custom_list_scenarios` with the list's current
+ * terms. Practice only — nothing is recorded: no record_scenario_answer, no
+ * complete_scenario_round, no local method mirror, no exemption.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -33,6 +38,7 @@ import {
   SCENARIO_ROUNDS,
   buildRoundReport,
   completeScenarioRound,
+  fetchCustomListScenarios,
   fetchScenarioHomework,
   recordScenarioAnswer,
   type RoundReport,
@@ -58,6 +64,8 @@ import { StudyHeader } from './StudyHeader';
 import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import type { StudyStackParamList } from '../../navigation/types';
 import { readingColumn } from '../../theme/readingColumn';
+import { isCustomListId } from '../../features/commercial/studyGate';
+import { readTermList } from '../../features/flags/flaggedStore';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Scenarios'>;
 
@@ -68,6 +76,8 @@ type View5 = 'loading' | 'nocontent' | 'play' | 'report' | 'done';
 
 export function ScenariosScreen({ route }: Props) {
   const { achievementId, topicName } = route.params;
+  // MY CUSTOM LIST (D12): the list's terms, its own RPC, nothing recorded.
+  const customMode = isCustomListId(achievementId);
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
@@ -227,6 +237,11 @@ export function ScenariosScreen({ route }: Props) {
       // wrong round as saved or unsaved.
       const token = ++roundSaveTokenRef.current;
       setView('report');
+      // My Custom List: practice only — no round to save, no mirror (D12).
+      if (customMode) {
+        setRoundSaved(true);
+        return;
+      }
       // Local "round finished" sentinel so the Dashboard's dev fast-complete can
       // treat scenarios as done even on topics with very few questions (owner
       // 2026-08-13). Inert in production (scenarios % reads server completion_pct).
@@ -252,7 +267,7 @@ export function ScenariosScreen({ route }: Props) {
         }
       });
     },
-    [achievementId],
+    [achievementId, customMode],
   );
 
   /** Set up play for round r: resume at the first unanswered item, or finish the
@@ -292,7 +307,12 @@ export function ScenariosScreen({ route }: Props) {
   // initial load
   useEffect(() => {
     let alive = true;
-    fetchScenarioHomework(achievementId).then((h) => {
+    // My Custom List: the stored list's current terms (an unreadable list is
+    // the honest "couldn't load" face, never an empty one).
+    (customMode
+      ? readTermList('starred').then((ids) => fetchCustomListScenarios(ids), () => null)
+      : fetchScenarioHomework(achievementId)
+    ).then((h) => {
       if (!alive) return;
       setHw(h);
       setLoaded(true);
@@ -309,7 +329,7 @@ export function ScenariosScreen({ route }: Props) {
       alive = false;
       if (advanceTimer.current) clearTimeout(advanceTimer.current);
     };
-  }, [achievementId]);
+  }, [achievementId, customMode]);
 
   // one-time setup once the plan is loaded
   useEffect(() => {
@@ -330,7 +350,8 @@ export function ScenariosScreen({ route }: Props) {
       // treating scenarios as an unsatisfiable term of the quiz gate, then nudge
       // any live Dashboard to recompute the unlock.
       setNoContentReason('empty');
-      void markScenariosExempt(achievementId).then(() => emitStudyProgress());
+      // The list has no quiz gate to exempt (D12): nothing is written for it.
+      if (!customMode) void markScenariosExempt(achievementId).then(() => emitStudyProgress());
       setView('nocontent');
       return;
     }
@@ -338,13 +359,13 @@ export function ScenariosScreen({ route }: Props) {
     // Answers already on the server (resume / another device) count too.
     hwRef.current = hw;
     mirrorAnswered();
-    void saveLocalMethodStates(achievementId, 'scenarios', scenarioStatesRef.current);
+    if (!customMode) void saveLocalMethodStates(achievementId, 'scenarios', scenarioStatesRef.current);
     if (hw.roundsCompleted >= SCENARIO_ROUNDS) {
       setView('done');
       return;
     }
     enterRound(hw.rounds[hw.currentRound - 1] ?? [], Math.min(SCENARIO_ROUNDS, hw.currentRound));
-  }, [loaded, hw, enterRound, mirrorAnswered, achievementId]);
+  }, [loaded, hw, enterRound, mirrorAnswered, achievementId, customMode]);
 
   const item = view === 'play' ? roundQuestions[idx] : null;
 
@@ -382,9 +403,12 @@ export function ScenariosScreen({ route }: Props) {
       answersRef.current[item.id] = { round: activeRound, correct };
       // False = neither sent nor kept in the durable queue (held in memory
       // only): the round report must not claim "saved on this device".
-      void recordScenarioAnswer(achievementId, item.id, activeRound, correct).then((kept) => {
-        if (!kept) answerUnkeptRef.current = true;
-      });
+      // My Custom List records nothing (D12).
+      if (!customMode) {
+        void recordScenarioAnswer(achievementId, item.id, activeRound, correct).then((kept) => {
+          if (!kept) answerUnkeptRef.current = true;
+        });
+      }
       // Mirror engagement locally so the Dashboard reflects scenarios progress
       // right away (and dev fast-complete can reach the quiz).
       scenarioStatesRef.current[item.id] = {
@@ -392,7 +416,7 @@ export function ScenariosScreen({ route }: Props) {
         correct: correct ? 1 : (scenarioStatesRef.current[item.id]?.correct ?? 0),
       };
       mirrorAnswered();
-      void saveLocalMethodStates(achievementId, 'scenarios', scenarioStatesRef.current);
+      if (!customMode) void saveLocalMethodStates(achievementId, 'scenarios', scenarioStatesRef.current);
       if (correct) incBrainOutput('scenarios');
       setFeedback({ correct, text: item.explanation });
       /* ── THE VERDICT AND THE TEACHING WERE BOTH SILENT ───────────────────
@@ -424,7 +448,7 @@ export function ScenariosScreen({ route }: Props) {
       // explanation stays until the learner taps NEXT — for everyone now, not
       // only screen-reader users (W18 above).
     },
-    [item, activeRound, achievementId, advance, mirrorAnswered],
+    [item, activeRound, achievementId, advance, mirrorAnswered, customMode],
   );
 
   const answerSingle = useCallback(
@@ -512,12 +536,14 @@ export function ScenariosScreen({ route }: Props) {
       <View style={[styles.center, { paddingTop: insets.top }]}>
         <StudyHeader method="scenarios" title="SCENARIO" />
         <Text style={styles.emptyTitle}>
-          {isError ? 'SCENARIOS UNAVAILABLE' : 'NO SCENARIOS FOR THIS TOPIC'}
+          {isError ? 'SCENARIOS UNAVAILABLE' : customMode ? 'NO SCENARIOS FOR THESE TERMS' : 'NO SCENARIOS FOR THIS TOPIC'}
         </Text>
         <Text style={styles.emptyBody}>
           {isError
             ? "We couldn't load the scenario drills right now. Check your connection, then go back and open Scenarios again — your other study methods are unaffected."
-            : "This topic doesn't include scenario drills, so this method counts as complete — the quiz unlocks once your other methods are done."}
+            : customMode
+              ? 'None of the terms in My Custom List have scenario drills yet. Add more terms from the Glossary, or study your list with the other methods.'
+              : "This topic doesn't include scenario drills, so this method counts as complete — the quiz unlocks once your other methods are done."}
         </Text>
       </View>
     );
@@ -601,7 +627,7 @@ export function ScenariosScreen({ route }: Props) {
 
           <View style={{ marginTop: 6 }}>
             <StudioButton
-              label={lastRound ? 'Finish homework' : `Begin Round ${report.round + 1}`}
+              label={lastRound ? (customMode ? 'Finish' : 'Finish homework') : `Begin Round ${report.round + 1}`}
               variant="success"
               onPress={continueFromReport}
             />
@@ -621,7 +647,9 @@ export function ScenariosScreen({ route }: Props) {
          *  server, the meter is NOT full and the quiz is NOT unlocked yet — the
          *  report screen already says so; this one used to contradict it. */}
         <Text style={styles.emptyBody}>
-          {roundSaved === false
+          {customMode
+            ? 'You’ve worked through every scenario for the terms in My Custom List. It’s practice, so nothing is recorded — open Scenarios again any time for a fresh set.'
+            : roundSaved === false
             ? 'You’ve worked through every scenario for this topic. Your last round is saved on this device but hasn’t reached your account yet — the scenarios meter fills and the topic quiz unlocks once it syncs, next time you’re online.'
             : "You've worked through every scenario for this topic — the scenarios meter on your Dashboard is full, and the topic quiz is unlocked."}
         </Text>
@@ -794,7 +822,7 @@ export function ScenariosScreen({ route }: Props) {
           }}
         />
       </ScrollView>
-      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="scenarios" topicId={achievementId} />
+      <PaceTimerModal visible={timerOpen} onClose={() => setTimerOpen(false)} method="scenarios" topicId={customMode ? undefined : achievementId} />
     </View>
   );
 }

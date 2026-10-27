@@ -1,9 +1,9 @@
 /**
  * Popup copy review, round 2 (owner OK 2026-10-27, Downloads/
  * 2026-10-27_POPUP_COPY_REVIEW_2.md). The texts that must stay true to the
- * code are pinned to the code itself: when My Custom List gains scenarios or
- * its quiz (studyGate CUSTOM_LIST_SERVER_READY), these fail until the copy
- * says so too.
+ * code are pinned to the code itself: the copy names exactly what My Custom
+ * List has (studyGate customListMethods() / customListHasQuiz()). D12
+ * (2026-10-27) gave it scenarios and its practice quiz, so it names all five.
  */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -23,11 +23,16 @@ const METHOD_WORDS: Record<string, string> = {
 const listMethods = gate.customListMethods();
 const listHasScenarios = listMethods.includes('scenarios');
 
-/** Every method the list has is named; scenarios / the quiz only once it has them. */
+/** Every method the list has is named; scenarios / the quiz only if it has them. */
 function namesTheListsMethods(text: string, where: string) {
   for (const m of listMethods) assert.ok(text.toLowerCase().includes(METHOD_WORDS[m]), `${where} names ${m}`);
   if (!listHasScenarios) assert.doesNotMatch(text, /scenario/i, `${where} promises scenarios the list does not have`);
   if (!gate.customListHasQuiz()) assert.doesNotMatch(text, /\bquiz\b/i, `${where} promises a quiz the list does not have`);
+  // …and once it has its quiz, the copy says so — as practice, with its 30-term floor.
+  if (gate.customListHasQuiz()) {
+    assert.match(text, /\bpractice quiz\b/i, `${where} does not name the list’s practice quiz`);
+    assert.match(text, /\b30 terms\b/, `${where} does not give the quiz its 30-term minimum`);
+  }
 }
 
 // ── D1 ───────────────────────────────────────────────────────────────────────
@@ -37,8 +42,8 @@ const listCopy = sheet.slice(sheet.indexOf('export const CUSTOM_LIST_SHEET_COPY 
 test('D1: the My Custom List sheet is not the topic sheet', () => {
   assert.ok(listCopy.length > 0, 'CUSTOM_LIST_SHEET_COPY present');
   assert.doesNotMatch(listCopy, /MEMBERS TOPIC/);
-  assert.doesNotMatch(listCopy, /scenario/i);
-  assert.doesNotMatch(listCopy, /\bquiz\b/i);
+  // Not the topic's Topic Quiz: the list's quiz is a practice quiz (D12).
+  assert.doesNotMatch(listCopy, /Topic Quiz/);
   assert.match(listCopy, /eyebrow: '🔒 MY CUSTOM LIST'/);
   assert.match(listCopy, /title: 'Studying My Custom List is part of Academy membership'/);
   namesTheListsMethods(listCopy.slice(listCopy.indexOf('body:')), 'the sheet body');
@@ -75,7 +80,7 @@ test('D2: the Custom Study List intro names only the methods the list has', () =
   assert.ok(para, 'the study paragraph is present');
   namesTheListsMethods(para, 'the intro');
   const copy = block.replace(/^\s*\/\/.*$/gm, '');
-  assert.doesNotMatch(copy, /scenario|the same way you study any topic/i);
+  assert.doesNotMatch(copy, /the same way you study any topic/i);
   // Rule 2 (no power sequence) is what "open from the start" claims.
   assert.equal(gate.customListMethodPowered('matching'), true);
   assert.match(para, /every method is open from the start/);

@@ -121,13 +121,13 @@ import {
   CUSTOM_QUIZ_MIN_TITLE,
   CUSTOM_UNREADABLE_BODY,
   CUSTOM_UNREADABLE_TITLE,
+  clampQuizLength,
   customListCountLine,
   customListHasQuiz,
   customListMethods,
   customMethodTap,
   customQuizMinBody,
   customQuizTap,
-  drawRandomTerms,
   effectiveRemoved,
 } from '../../features/commercial/studyGate';
 import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
@@ -142,7 +142,7 @@ import { HelpKey } from '../../components/HelpKey';
 import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 import { LearningIntroSheet } from '../../features/intro/LearningIntroSheet';
 import { getTopicIntro, isIntroEmpty } from '../../features/intro/learningIntros';
-import { QUIZ_OUTCOME_COPY, replayQuizSubmissions } from '../../features/quiz/api';
+import { quizOutcomeCopy, replayQuizSubmissions } from '../../features/quiz/api';
 import { EXAM_OUTCOME_COPY, EXAM_PASS_NOT_ISSUED_COPY, replayExamSubmissions } from '../../features/finalExam/api';
 import { onStudyProgress, replayQueue } from '../../features/study/sync';
 import { flushScenarioQueue, pendingScenarioCount } from '../../features/study/scenarioHomework';
@@ -1083,7 +1083,7 @@ export function DashboardScreen() {
       // replays it.
       const replayOk = !popupOpenRef.current && navigation.isFocused() && !areOverlaysSuppressed();
       const replayed = replayOk ? await replayQuizSubmissions().catch(() => []) : [];
-      for (const { result } of replayed) {
+      for (const { achievementId: quizId, result } of replayed) {
         notify(
           'Offline quiz submitted',
           // No denominator: a replayed submission carries the score and the
@@ -1092,7 +1092,8 @@ export function DashboardScreen() {
           // was simply wrong on any topic with fewer than 30 quizzable terms.
           // Never print the enum: "no pass" / "voided" is database
           // vocabulary, and "voided" is an accusation in one word.
-          `Score ${result.score}. ${QUIZ_OUTCOME_COPY[result.outcome]}`,
+          // My Custom List says "practice, not counted", never "topic complete".
+          `Score ${result.score}. ${quizOutcomeCopy(quizId, result.outcome)}`,
         );
       }
       const examReplayed = replayOk ? await replayExamSubmissions().catch(() => []) : [];
@@ -1984,17 +1985,25 @@ export function DashboardScreen() {
     else setCustomQuizOpen(true);
   };
   /**
-   * BEGIN on the length popup: a uniform random draw of `n` of the list's terms.
-   *
-   * ⏸ HOLD (studyGate.CUSTOM_LIST_SERVER_READY = false): the quiz panel is
-   * not drawn for the custom list, so this is unreachable today. The hand-off to
-   * QuizScreen lands with the server RPC — Downloads/2026-10-19_COMP_A_CUSTOM_LIST_QUIZ.md
-   * §5 — and `start_quiz_attempt` must never be called with the 'flagged' id.
+   * BEGIN on the length popup (D12, server live 2026-10-27): QuizScreen in its
+   * My Custom List mode, with the length chosen (30 … every term). The quiz
+   * reads the WHOLE stored list itself and `start_custom_list_quiz` draws `n`
+   * terms at random on the server, substituting terms that have no question —
+   * `start_quiz_attempt` never sees the 'flagged' id. The rules were stated on
+   * the popup before BEGIN; the push waits for the popup to close.
    */
   const beginCustomQuiz = (n: number) => {
     setCustomQuizOpen(false);
-    const ids = drawRandomTerms(starred, n);
-    console.warn('[custom-list quiz] HOLD — server RPC not live; drew', ids.length, 'terms');
+    const len = clampQuizLength(n, starred.size);
+    if (len == null) {
+      // The list shrank below 30 while the popup was open.
+      notify(CUSTOM_QUIZ_MIN_TITLE, customQuizMinBody(starred.size));
+      return;
+    }
+    if (!claimStudyOpen()) return;
+    afterPopupCloses(() =>
+      navigation.navigate('Quiz', { achievementId: FLAGGED_TOPIC_ID, topicName: FLAGGED_TOPIC_NAME, customCount: len }),
+    );
   };
   // The free topics that are actually in THIS deck, with their index, so the
   // study-access sheet can offer a real jump (owner 2026-09-17). Order follows
@@ -2349,8 +2358,8 @@ export function DashboardScreen() {
             list the learner keeps editing can never be "finished"), each one
             works on the list's current terms, and an empty list answers a tap
             with a centred popup saying how to fill it. Scenarios and the quiz
-            join it once the server can serve a term list (studyGate:
-            CUSTOM_LIST_SERVER_READY — HOLD). */}
+            joined it on 2026-10-27 (D12), on the list's own server RPCs —
+            practice only, nothing recorded. */}
         {/* EMPTY, AND HOW TO FILL IT (owner 2026-10-14). Only once the stored
             list has really been read — never over a list still loading. */}
         {isCustom && starredRead && !starredUnreadable && starred.size === 0 ? (
@@ -2608,8 +2617,8 @@ export function DashboardScreen() {
           );
         })}
 
-        {/* MY CUSTOM LIST shows its quiz only once the server can draw one from
-            a term list (HOLD — studyGate.CUSTOM_LIST_SERVER_READY). */}
+        {/* MY CUSTOM LIST shows its quiz since the server could draw one from a
+            term list (D12, 2026-10-27 — studyGate.customListHasQuiz()). */}
         {!isCustom || customListHasQuiz() ? (
           <>
         {/* Section header over the quiz (owner 2026-08-11) — a vented blank

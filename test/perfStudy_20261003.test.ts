@@ -53,7 +53,9 @@ describe('2. Scenarios figures', () => {
   it('expo-image, prefetched when the homework loads', () => {
     assert.match(s, /import \{ Image \} from 'expo-image';/);
     assert.doesNotMatch(rnImport(s), /\bImage\b/);
-    const load = s.indexOf('fetchScenarioHomework(achievementId).then(');
+    // D12 (2026-10-27): My Custom List loads through the same `.then(` (its own
+    // RPC on the left of the ternary), so the topic load ends `…(achievementId)\n).then(`.
+    const load = s.search(/fetchScenarioHomework\(achievementId\)\s*\)?\.then\(/);
     const pre = s.indexOf("Image.prefetch(figures, 'memory-disk')");
     assert.ok(load > 0 && pre > load, 'prefetch runs inside the homework load');
     assert.match(s, /q\.media\?\.kind === 'image' \? \[q\.media\.url\]/);

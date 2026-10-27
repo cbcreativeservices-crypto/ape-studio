@@ -16,6 +16,7 @@
 import { supabase } from '../../lib/supabase';
 import { emitStudyProgress } from './sync';
 import { isAuthDenial, isOfflineError } from './sessionRetry';
+import { isCustomListId } from '../commercial/studyGate';
 
 /**
  * A call that never reached the server AS THIS LEARNER (hunt 12, 2026-10-04).
@@ -182,8 +183,38 @@ function parseHomework(data: any): ScenarioHomework | null {
 /** Load (creating on first entry) the user's scenario homework for a topic.
  *  Returns null on error / no auth so the screen shows an honest empty state. */
 export async function fetchScenarioHomework(achievementId: string): Promise<ScenarioHomework | null> {
+  // ⛔ Never the My Custom List pseudo-id (not a topic uuid): its scenarios are
+  // fetchCustomListScenarios (D12).
+  if (isCustomListId(achievementId)) return null;
   try {
     const { data, error } = await supabase.rpc('get_scenario_homework', { p_achievement_id: achievementId });
+    if (error) return null;
+    return parseHomework(data);
+  } catch {
+    return null;
+  }
+}
+
+/** A glossary row id (the list stores them; the RPC takes uuid[]). */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * MY CUSTOM LIST scenarios (owner 2026-10-19; server live, D12 2026-10-27).
+ *
+ * `get_custom_list_scenarios(p_glossary_ids uuid[])` answers in the
+ * get_scenario_homework question shape — up to 3 scenarios per term of the
+ * list, drawn fresh on every call — and STORES NOTHING: no homework row, no
+ * rounds, no answers (owner: "practice only", "no progress stored"). So the
+ * plan always starts at round 1 with no answers, and the screen never calls
+ * record_scenario_answer / complete_scenario_round for the list.
+ * Members only on the server (`academy_required` → null, the honest
+ * "couldn't load" face, like any other failure).
+ */
+export async function fetchCustomListScenarios(glossaryIds: Iterable<string>): Promise<ScenarioHomework | null> {
+  try {
+    // uuid[] on the server: one malformed stored id must not fail the whole call.
+    const ids = [...new Set(glossaryIds)].filter((x) => UUID_RE.test(x));
+    const { data, error } = await supabase.rpc('get_custom_list_scenarios', { p_glossary_ids: ids });
     if (error) return null;
     return parseHomework(data);
   } catch {
@@ -277,6 +308,8 @@ export async function recordScenarioAnswer(
   round: number,
   correct: boolean,
 ): Promise<boolean> {
+  // My Custom List stores no scenario progress (D12): nothing to send or keep.
+  if (isCustomListId(achievementId)) return true;
   // THE ACCOUNT THIS ANSWER BELONGS TO (pattern hunt wave 3, 2026-10-02): the
   // two awaits below are network calls, and a sign-out that lands while they
   // are out used to queue the departing learner's answer under the NEXT
@@ -312,6 +345,8 @@ export async function completeScenarioRound(
   achievementId: string,
   round: number,
 ): Promise<{ roundsCompleted: number; saved: boolean; queued?: boolean }> {
+  // My Custom List stores no rounds (D12): there is nothing to save.
+  if (isCustomListId(achievementId)) return { roundsCompleted: round, saved: true };
   // Same generation fence as recordScenarioAnswer (wave 3, 2026-10-02).
   const gen = scenarioQueueGeneration();
   const stillPending = await flushScenarioQueue();

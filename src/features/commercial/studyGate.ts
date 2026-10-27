@@ -87,7 +87,9 @@ export function customListLocked(input: { resolved: boolean; entitlement: GateTi
  *      fill it; a tap before the list has been read says "Checking…"; a list
  *      that could not be read is never called empty.
  *   4. QUIZ: at least 30 terms; the learner picks 30 … all; the terms are a
- *      random draw of that many.
+ *      random draw of that many — made by the SERVER from the whole list, so a
+ *      term with no question is replaced by another from the same list
+ *      (owner: "substitute"). Practice only: it counts toward nothing.
  */
 
 /** The pseudo-topic id (storage and routes keep 'flagged' so starred terms
@@ -99,23 +101,23 @@ export function isCustomListId(id: string | null | undefined): boolean {
 }
 
 /**
- * ⏸ HOLD — SERVER NOT READY (2026-10-19).
+ * SERVER READY — the list's scenarios and quiz are LIVE (D12, owner GO
+ * 2026-10-27).
  *
- * Scenarios and the quiz are SERVER-BACKED and keyed by a real topic uuid:
- * `get_scenario_homework(p_achievement_id uuid)` and
- * `start_quiz_attempt(p_achievement_id uuid, p_client_attempt_id uuid)`.
- * Neither accepts a set of glossary ids or a length, and `submit_quiz` grades
- * 1–30 questions. Until Comp A ships the custom-list RPCs (brief:
- * Downloads/2026-10-19_COMP_A_CUSTOM_LIST_QUIZ.md) the custom list shows
- * Flashcards, Fill in the Blank and Matching only — those three run entirely
- * on the device from the list's own terms.
- *
- * ⛔ DO NOT flip this alone. It also needs the client half named in the brief
- * (QuizScreen + ScenariosScreen calling the new RPCs with the drawn ids).
- * With this false, the dashboard never routes the custom list to either
- * server screen, so nothing can break before the server is ready.
+ * They were held here from 2026-10-19 until Comp A shipped the custom-list
+ * RPCs (brief: Downloads/2026-10-19_COMP_A_CUSTOM_LIST_QUIZ.md), because the
+ * topic RPCs are keyed by a real topic uuid and the list's id is 'flagged'.
+ * Now:
+ *   - Scenarios → `get_custom_list_scenarios(p_glossary_ids uuid[])`
+ *     (ScenariosScreen, custom mode; nothing recorded).
+ *   - Quiz → `start_custom_list_quiz(p_glossary_ids uuid[], p_count int,
+ *     p_client_attempt_id uuid)` + `submit_custom_list_quiz(…)` (QuizScreen,
+ *     custom mode; practice only).
+ * ⛔ 'flagged' still never reaches `start_quiz_attempt`, `submit_quiz` or
+ * `get_scenario_homework` — the api layer refuses it
+ * (test/customListQuizScenarios_20261027).
  */
-export const CUSTOM_LIST_SERVER_READY = false;
+export const CUSTOM_LIST_SERVER_READY = true;
 
 /** The study methods the custom list offers right now. */
 export function customListMethods(serverReady: boolean = CUSTOM_LIST_SERVER_READY): string[] {
@@ -233,6 +235,11 @@ export function clampQuizLength(requested: number, count: number): number | null
 /**
  * A uniform random draw of `n` distinct ids (partial Fisher–Yates). Duplicate
  * ids in the input count once. `rand` is injectable for tests.
+ *
+ * ⚠️ NOT the quiz draw (D12, 2026-10-27): the app sends the WHOLE list and the
+ * server draws, because only the server knows which terms have a question and
+ * can substitute the ones that do not. A device-side draw would shorten the
+ * quiz instead.
  */
 export function drawRandomTerms(ids: Iterable<string>, n: number, rand: () => number = Math.random): string[] {
   const pool = [...new Set(ids)];
