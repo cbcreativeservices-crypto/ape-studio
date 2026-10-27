@@ -19,6 +19,8 @@ test('C1–C5: Flashcards / Trophy Case / Commitment intros name what the app ha
   assert.match(intros, /Use FILTER to choose which parts of each definition appear/);
   assert.match(intros, /BEG, INT, ADV, KNOWN, Bookmarks or Custom list/);
   assert.match(intros, /then pass its Final Exam to earn it/);
+  // C11, checked on the Pixel 2026-10-26: left/right changes topic (DashboardScreen PanResponder).
+  assert.match(intros, /Swipe the topic card left or right to change topics/);
 });
 
 test('C6: the study-access sheet never tells a guest their progress is saved', () => {
