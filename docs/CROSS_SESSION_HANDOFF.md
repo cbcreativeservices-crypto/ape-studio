@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 21:45 · ccode · 3c85189b
+changed: docs: Play submission #3 Ready to publish (owner screenshot); B3 check before Publish
+affects other side: Comp A: Play Submission activity #3 (Oct 24) Ready to publish; #1/#2 canceled. Before launch-day Publish, confirm #3's Open testing item is build 23 or remove it (B3)
+needs: nothing now
+
+
 ### 2026-10-26 21:45 · ccode · 45b6a8a0
 changed: docs: Google approved Android 23 (managed publishing; not published); Apple 39 still in review
 affects other side: Comp A: Google APPROVED Android 23 (owner, Play Console). Managed publishing ON: do NOT press Publish (the 13-change batch still holds the old Production 20 / Open testing 20 items, B3). Apple 39 still in review; the post-approval OTA waits for both
