@@ -296,7 +296,8 @@ const styles = StyleSheet.create({
  * length as a row of chips — 30 · 50 · 100 · ALL, each capped at the list's
  * count (studyGate.quizLengthOptions) — the quiz rules stated before the
  * clock starts, as every quiz on this screen does, then BEGIN / NOT NOW.
- * The terms themselves are drawn by the caller (drawRandomTerms).
+ * The terms themselves are drawn at random by the server from the whole list
+ * (start_custom_list_quiz, D12), which substitutes terms that have no question.
  *
  * Lives in this file (not its own module) to stay inside the app-start graph
  * cap (test/perfStartTrim_20261004).
@@ -332,7 +333,7 @@ export function CustomQuizLengthSheet({
         <Pressable accessible={false} style={qStyles.panel} onPress={() => {}}>
           <Text style={qStyles.title}>QUIZ YOUR LIST</Text>
           <Text style={qStyles.note}>
-            {`Your list has ${count} terms. Choose how many to be quizzed on — they are picked at random from your list.`}
+            {`Your list has ${count} terms. Choose how many to be quizzed on — they are picked at random from your list. It’s practice: not counted toward anything.`}
           </Text>
           <View style={qStyles.chips} accessibilityRole="radiogroup">
             {options.map((o) => {

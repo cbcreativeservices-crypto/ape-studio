@@ -15,6 +15,15 @@
  * attempt open) returns the SAME payload. Resume = re-call; never re-draw.
  * Quiz start is online-only; an offline SUBMIT queues locally and replays
  * with the true p_submitted_at + p_submitted_offline=true (Code brief §6).
+ *
+ * MY CUSTOM LIST (D12, server live 2026-10-27): its practice quiz has its OWN
+ * RPCs — `start_custom_list_quiz(p_glossary_ids uuid[], p_count int,
+ * p_client_attempt_id uuid)` and `submit_custom_list_quiz(…)`, the same answer
+ * shape and the same void / lockout / time rules, practice only (the server
+ * writes nothing but its own custom_list_quiz_* rows). The list's pseudo-id
+ * 'flagged' is not a uuid and must never reach `start_quiz_attempt` /
+ * `submit_quiz`: `startQuizAttempt` refuses it, and the replay sends a queued
+ * list attempt to the list's own submit.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { registerLocalStoreReset } from '../storage/localStoreRegistry';
@@ -24,6 +33,7 @@ import { withDeadline } from '../../lib/boundedCall';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { trackEvent } from '../telemetry/telemetry';
 import { clearAttemptDraft } from '../assess/attemptDraft';
+import { CUSTOM_LIST_ID, isCustomListId } from '../commercial/studyGate';
 import {
   deleteQueuedSubmission,
   getQueuedSubmissions,
@@ -50,6 +60,12 @@ export type AttemptPayload = {
   is_practice: boolean;
   time_limit_seconds: number;
   questions: ServedQuestion[];
+  /** My Custom List only: 'custom_list', the length chosen (30 … the list)
+   *  and how many were served — fewer only when the list runs out of terms
+   *  that have a quiz question (the server substitutes before it shortens). */
+  kind?: 'custom_list';
+  requested_count?: number;
+  served_count?: number;
 };
 
 /** F4-safe answer shapes (see header). */
@@ -84,7 +100,31 @@ export type SubmitResult = {
   next_topic: { unlocked: boolean; clamped?: boolean } | null;
   wrong_answers: Record<string, { correct: unknown; selected: unknown }>;
   lockout_until?: string;
+  /** My Custom List only (submit_custom_list_quiz): always practice. */
+  kind?: 'custom_list';
+  is_practice?: boolean;
+  served_count?: number;
+  pass_mark?: number;
 };
+
+/**
+ * The same sentences for a My Custom List quiz. It is practice only — it banks
+ * no topic and counts toward nothing — so "This topic is complete" would be
+ * false (owner 2026-10-19: "practice only does not count towards any other").
+ */
+export const CUSTOM_LIST_QUIZ_OUTCOME_COPY: Record<QuizOutcome, string> = {
+  full_pass: 'Practice on My Custom List: not counted toward anything.',
+  partial_pass: 'Practice on My Custom List: not counted toward anything.',
+  no_pass: 'Practice on My Custom List: not counted toward anything. You can quiz your list again from your dashboard.',
+  voided:
+    'This attempt was not counted because the app was left during the quiz. The list quiz locks for 15 minutes after that.',
+  timed_out: 'Time ran out before this attempt was finished. You can quiz your list again from your dashboard.',
+};
+
+/** The outcome sentence for a quiz, by what was quizzed (topic or My Custom List). */
+export function quizOutcomeCopy(achievementId: string, outcome: QuizOutcome): string {
+  return (isCustomListId(achievementId) ? CUSTOM_LIST_QUIZ_OUTCOME_COPY : QUIZ_OUTCOME_COPY)[outcome];
+}
 
 export type QuizStartError =
   | 'safety_prerequisite_incomplete'
@@ -104,6 +144,12 @@ export type QuizStartError =
   // Retired content (server, 2026-10-05) — see RETIRED_CONTENT_COPY.
   | 'retired_content'
   | 'archived_quiz_retired'
+  // My Custom List (start_custom_list_quiz). The app checks the 30-term
+  // minimum before BEGIN; these are the server's backstop, plus a list the
+  // phone could not read.
+  | 'custom_list_too_small'
+  | 'custom_list_no_questions'
+  | 'custom_list_unreadable'
   | 'offline'
   | 'unknown';
 
@@ -148,9 +194,28 @@ export const QUIZ_START_ERROR_COPY: Record<QuizStartError, string> = {
   user_not_found: 'We could not find your account record. Sign out and back in, and email info@proaudiotrainingacademy.com if it continues.',
   retired_content: RETIRED_CONTENT_COPY,
   archived_quiz_retired: RETIRED_CONTENT_COPY,
+  custom_list_too_small:
+    'The quiz needs at least 30 terms in your list. Tap Back, add more terms from the Glossary, then try again.',
+  custom_list_no_questions:
+    'None of the terms in your list have quiz questions yet. Tap Back and add other terms from the Glossary.',
+  custom_list_unreadable:
+    'My Custom List couldn’t be read on this phone just now. Nothing has been removed — try again in a moment.',
   offline: 'Quiz start requires a connection. Reconnect and try again.',
   unknown: 'Could not start the quiz. Try again.',
 };
+
+/** Where the My Custom List quiz needs its own words (it is not a topic). */
+const CUSTOM_LIST_START_COPY: Partial<Record<QuizStartError, string>> = {
+  academy_required:
+    'Academy membership is required for the My Custom List quiz. Tap Back, then Membership on the Academy screen.',
+  under_lockout:
+    'Your list quiz is locked for a short while because the last attempt wasn’t counted. Try again when the wait ends.',
+};
+
+/** The start-failure sentence — in the list's own words for My Custom List. */
+export function quizStartErrorCopy(code: QuizStartError, customList: boolean): string {
+  return (customList ? CUSTOM_LIST_START_COPY[code] : undefined) ?? QUIZ_START_ERROR_COPY[code];
+}
 
 const KNOWN_ERRORS: QuizStartError[] = [
   'safety_prerequisite_incomplete',
@@ -164,6 +229,8 @@ const KNOWN_ERRORS: QuizStartError[] = [
   'user_not_found',
   'archived_quiz_retired',
   'retired_content',
+  'custom_list_too_small',
+  'custom_list_no_questions',
 ];
 
 function parseStartError(message: string): QuizStartError {
@@ -192,10 +259,15 @@ export class QuizStartFailure extends Error {
 }
 
 /**
- * Start (or resume) an attempt. The client attempt id persists until a
- * finalized submit, so a crash/relaunch resumes the SAME attempt + payload.
+ * The client attempt id for a quiz intent: the stored one, or a fresh one
+ * stored for the next launch to rejoin.
+ *
+ * `tag` (My Custom List only) is the length chosen: a stored intent rejoins
+ * only a sitting of the SAME length, so choosing another length starts a new
+ * draw (the server closes the old sitting) instead of resuming a quiz of a
+ * different size. Stored as `<id>#<tag>`; a topic intent is the bare id.
  */
-export async function startQuizAttempt(achievementId: string): Promise<AttemptPayload> {
+async function resolveIntentId(achievementId: string, tag?: string): Promise<string> {
   // The intent id is a RESUME CONVENIENCE, not a correctness requirement: it
   // lets a crash/relaunch rejoin the same attempt. Unguarded, a local storage
   // hiccup threw before the RPC was ever called, and the caller's broad catch
@@ -222,40 +294,46 @@ export async function startQuizAttempt(achievementId: string): Promise<AttemptPa
       intentId = null;
     }
   }
+  if (intentId && tag != null) {
+    const at = intentId.lastIndexOf('#');
+    intentId = at > 0 && intentId.slice(at + 1) === tag ? intentId.slice(0, at) : null;
+  }
   if (!intentId) {
     intentId = Crypto.randomUUID();
     if (!readFailed && gen === intentGeneration) {
       try {
-        await AsyncStorage.setItem(intentKey(achievementId), intentId);
+        await AsyncStorage.setItem(intentKey(achievementId), tag != null ? `${intentId}#${tag}` : intentId);
       } catch {
         /* resume convenience only — the attempt still starts */
       }
     }
   }
-  /**
-   * ⛔ ONE RETRY FOR THE COLD-START AUTH RACE (owner 2026-09-20 bug pass).
-   *
-   * The session is read from the keychain ASYNCHRONOUSLY, so a tap that gets
-   * to a quiz before the stored login lands goes out as `anon` — and
-   * `start_quiz_attempt` answers `user_not_found`, which this very file
-   * documents as exactly that. But `user_not_found` is a KNOWN error, so the
-   * member was shown "We could not find your account record. Sign out and
-   * back in…" — advice that is both alarming and wrong, for an account that
-   * is fine and will work a second later.
-   *
-   * The study reads already close this window (features/study/sessionRetry).
-   * Quiz start never did, and it is the one place the wrong message costs the
-   * most: the learner is about to sit a graded paper.
-   *
-   * Retry ONCE and only with a real session: getSession() settles after the
-   * client has finished reading storage, so the second call is certain to
-   * carry the token. A genuine missing account still fails, immediately.
-   */
-  const call = () =>
-    supabase.rpc('start_quiz_attempt', {
-      p_achievement_id: achievementId,
-      p_client_attempt_id: intentId,
-    });
+  return intentId;
+}
+
+/**
+ * ⛔ ONE RETRY FOR THE COLD-START AUTH RACE (owner 2026-09-20 bug pass).
+ *
+ * The session is read from the keychain ASYNCHRONOUSLY, so a tap that gets
+ * to a quiz before the stored login lands goes out as `anon` — and
+ * `start_quiz_attempt` answers `user_not_found`, which this very file
+ * documents as exactly that. But `user_not_found` is a KNOWN error, so the
+ * member was shown "We could not find your account record. Sign out and
+ * back in…" — advice that is both alarming and wrong, for an account that
+ * is fine and will work a second later.
+ *
+ * The study reads already close this window (features/study/sessionRetry).
+ * Quiz start never did, and it is the one place the wrong message costs the
+ * most: the learner is about to sit a graded paper.
+ *
+ * Retry ONCE and only with a real session: getSession() settles after the
+ * client has finished reading storage, so the second call is certain to
+ * carry the token. A genuine missing account still fails, immediately.
+ * (`start_custom_list_quiz` opens with the same `user_not_found` check.)
+ */
+async function startWithAuthRetry(
+  call: () => PromiseLike<{ data: unknown; error: { message: string } | null }>,
+): Promise<AttemptPayload> {
   let { data, error } = await call();
   if (error && error.message.includes('user_not_found')) {
     // An UNKNOWN read (stall / rejection / offline refresh — the session is
@@ -275,9 +353,59 @@ export async function startQuizAttempt(achievementId: string): Promise<AttemptPa
     if (timedOut && error && error.message.includes('user_not_found')) throw new QuizStartFailure('unknown');
   }
   if (error) throw new QuizStartFailure(parseStartError(error.message));
-  const payload = data as AttemptPayload;
+  return data as AttemptPayload;
+}
+
+/**
+ * Start (or resume) an attempt. The client attempt id persists until a
+ * finalized submit, so a crash/relaunch resumes the SAME attempt + payload.
+ */
+export async function startQuizAttempt(achievementId: string): Promise<AttemptPayload> {
+  // ⛔ NEVER THE CUSTOM LIST (D12): 'flagged' is not a topic uuid. Its quiz is
+  // startCustomListQuiz; arriving here with it is a routing bug, refused
+  // before any call leaves the phone.
+  if (isCustomListId(achievementId)) throw new QuizStartFailure('unknown');
+  const intentId = await resolveIntentId(achievementId);
+  const call = () =>
+    supabase.rpc('start_quiz_attempt', {
+      p_achievement_id: achievementId,
+      p_client_attempt_id: intentId,
+    });
+  const payload = await startWithAuthRetry(call);
   // Anonymous count only — no topic/attempt ids leave the app.
   trackEvent('quiz_start', { practice: payload.is_practice });
+  return payload;
+}
+
+/** A glossary row id (the list stores them; the custom-list RPCs take uuid[]). */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * MY CUSTOM LIST quiz (owner 2026-10-19; server live, D12 2026-10-27).
+ *
+ * `glossaryIds` is the WHOLE list, never a client-side draw: the server picks
+ * `count` terms at random among the list's terms that have a quiz question, so
+ * a term without one is replaced by another term from the same list (owner:
+ * "substitute"). It refuses a list under 30 (`custom_list_too_small`) and
+ * clamps `count` into 30 … the list size. Time = the topic quiz's 20 s per
+ * question. Practice only: nothing is credited and no progress is stored.
+ *
+ * Resume: the intent is keyed to the list and tagged with the length, so a
+ * relaunch at the same length rejoins the same sitting and questions.
+ */
+export async function startCustomListQuiz(glossaryIds: Iterable<string>, count: number): Promise<AttemptPayload> {
+  // uuid[] on the server: one malformed stored id must not fail the whole call.
+  const ids = [...new Set(glossaryIds)].filter((x) => UUID_RE.test(x));
+  const n = Math.max(0, Math.floor(Number(count) || 0));
+  const intentId = await resolveIntentId(CUSTOM_LIST_ID, String(n));
+  const call = () =>
+    supabase.rpc('start_custom_list_quiz', {
+      p_glossary_ids: ids,
+      p_count: n,
+      p_client_attempt_id: intentId,
+    });
+  const payload = await startWithAuthRetry(call);
+  trackEvent('quiz_start', { practice: true });
   return payload;
 }
 
@@ -338,6 +466,38 @@ export async function submitQuiz(args: {
         p_focus_loss_duration: args.focusLossDuration,
       }),
     'submit_quiz',
+  );
+  if (error) throw new Error(error.message);
+  const result = data as SubmitResult;
+  trackEvent('quiz_finish', { outcome: result.outcome, offline: args.submittedOffline });
+  return result;
+}
+
+/**
+ * Submit a My Custom List attempt: `submit_custom_list_quiz`, the twin of
+ * `submit_quiz` (same arguments, same idempotent frozen result, same void and
+ * time rules) that writes nothing outside its own practice rows. Bounded for
+ * the same reason as submitQuiz.
+ */
+export async function submitCustomListQuiz(args: {
+  attemptId: string;
+  answers: Record<string, AnswerValue>;
+  submittedAt: string;
+  submittedOffline: boolean;
+  focusLossCount: number;
+  focusLossDuration: number;
+}): Promise<SubmitResult> {
+  const { data, error } = await withDeadline(
+    async () =>
+      await supabase.rpc('submit_custom_list_quiz', {
+        p_attempt_id: args.attemptId,
+        p_answers: args.answers,
+        p_submitted_at: args.submittedAt,
+        p_submitted_offline: args.submittedOffline,
+        p_focus_loss_count: args.focusLossCount,
+        p_focus_loss_duration: args.focusLossDuration,
+      }),
+    'submit_custom_list_quiz',
   );
   if (error) throw new Error(error.message);
   const result = data as SubmitResult;
@@ -413,7 +573,10 @@ async function replayQuizSubmissionsOnce(): Promise<
   const results: { achievementId: string; result: SubmitResult }[] = [];
   for (const r of rows) {
     try {
-      const result = await submitQuiz({
+      // A queued My Custom List attempt (its row carries the 'flagged' id)
+      // goes back to the list's own submit, never to submit_quiz.
+      const submit = isCustomListId(r.achievement_id) ? submitCustomListQuiz : submitQuiz;
+      const result = await submit({
         attemptId: r.attempt_id,
         answers: JSON.parse(r.answers_json),
         submittedAt: r.submitted_at,

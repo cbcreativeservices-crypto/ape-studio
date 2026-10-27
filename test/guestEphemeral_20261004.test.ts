@@ -321,7 +321,13 @@ describe('3. a guest touches only Pro Audio Safety and DAW Fundamentals', () => 
     assert.match(d, /if \(customListLocked\) \{\s*\/\/ After the term list has gone \(afterPopupCloses\)\.\s*afterPopupCloses\(\(\) => setUpgradeOpen\(true\)\);/);
     // The only navigations into the study screens are those (plus a dev bypass).
     assert.equal((d.match(/navigation\.navigate\(routeName,/g) ?? []).length, 2);
-    assert.equal((d.match(/navigation\.navigate\('Quiz',/g) ?? []).length, 1);
+    // Two Quiz routes since D12 (2026-10-27): the topic BEGIN and My Custom
+    // List's BEGIN — the list's is reached only from the length popup, which
+    // the quiz switch opens AFTER its actMembershipLocked gate (and the list
+    // fails closed for a guest, above).
+    assert.equal((d.match(/navigation\.navigate\('Quiz',/g) ?? []).length, 2);
+    assert.match(d, /navigation\.navigate\('Quiz', \{ achievementId: FLAGGED_TOPIC_ID, topicName: FLAGGED_TOPIC_NAME, customCount: len \}\)/);
+    assert.match(d, /if \(actMembershipLocked\) \{\s*setUpgradeOpen\(true\);\s*return;\s*\}\s*\/\/ A KNOWN GUEST CANNOT SIT A QUIZ[\s\S]{0,900}if \(dispIsCustom\) \{\s*customQuizPress\(\);/);
     const e = read('src/screens/enrollment/EnrollmentScreen.tsx');
     assert.match(e, /if \(lastLoc\?\.kind === 'method' && paidResolved\) \{/);
   });

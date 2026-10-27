@@ -1,7 +1,7 @@
 {
  "_rule": "Every live public function the app/website/edge code never names must be listed here with a reason. A reason containing TRIAGE fails test/liveServerMatch; a reason waiting on app work must cite a must-do row as [MD:<id>].",
  "allow": {
-  "_custom_list_attempt_payload": "[MD:D12] app half not built yet",
+  "_custom_list_attempt_payload": "server-internal: called by start_custom_list_quiz / submit_custom_list_quiz to build the attempt payload",
   "_labs_recompute_af": "server-internal: trigger labs.trg_labs_recompute_af (checked live 2026-10-27)",
   "_mic_contrib_rate_cap": "server-internal: trigger mic_calibration_contributions.trg_mic_contrib_rate_cap (checked live 2026-10-27)",
   "_scenario_build_assignment": "server-internal: called by get_scenario_homework and start_scenario_cycle (checked live 2026-10-27)",
@@ -22,7 +22,6 @@
   "employer_profile_public": "no caller: anon-callable public employer profile by token, but no app or website page uses it (supabase/migrations/2026091905_employer_profiles_no_anon_enumeration.sql:44-50: build the page or drop it) (checked live 2026-10-27) [MD:H4]",
   "employer_profiles_set_kind": "[MD:R1] instructor/school accounts app half not built",
   "gen_verify_code": "server-internal: called by instructor_my_code and set_verify_code (checked live 2026-10-27)",
-  "get_custom_list_scenarios": "[MD:D12] app half not built yet",
   "get_program_kpis": "admin tool: is_admin()-only read of mv_program_kpis (refreshed every 5 min by cron refresh_program_kpis); EXECUTE revoked from anon and authenticated, so only the SQL editor/service role can call it; no admin screen reads it (checked live 2026-10-27)",
   "glossary_device_key": "server-internal: called by get_glossary_definition_start_here, glossary_consume, glossary_start_here_bonus_status and glossary_usage_status (checked live 2026-10-27)",
   "in_quiet_hours": "server-internal: called by community_push_due, dispatch_community_push and get_due_concept_subscriptions (checked live 2026-10-27)",
@@ -48,8 +47,6 @@
   "rls_auto_enable": "server-internal: event trigger ensure_rls (turns RLS on for new tables) (checked live 2026-10-27)",
   "seed_commercial_free_topics": "server-internal: called by register_commercial_user (checked live 2026-10-27)",
   "set_verify_code": "server-internal: trigger users.users_set_verify_code (checked live 2026-10-27)",
-  "start_custom_list_quiz": "[MD:D12] app half not built yet",
-  "submit_custom_list_quiz": "[MD:D12] app half not built yet",
   "trg_eval_credentials": "server-internal: trigger student_achievement_progress.student_progress_award (checked live 2026-10-27)",
   "users_default_notification_prefs": "server-internal: trigger users.users_default_notification_prefs (checked live 2026-10-27)",
   "validate_applicable_methods": "server-internal: trigger achievements.trig_validate_applicable_methods (checked live 2026-10-27)",

@@ -9,9 +9,10 @@
  * list quiz allow the quiz to go from a minimum of 30 terms up to their total
  * list of terms (randomly selected)."
  *
- * Scenarios and the quiz are server-backed and HELD (studyGate.ts
- * CUSTOM_LIST_SERVER_READY = false) until Comp A's RPCs exist — the brief is
- * Downloads/2026-10-19_COMP_A_CUSTOM_LIST_QUIZ.md.
+ * Scenarios and the quiz are server-backed. They were HELD (studyGate.ts
+ * CUSTOM_LIST_SERVER_READY = false) until Comp A's RPCs existed (brief:
+ * Downloads/2026-10-19_COMP_A_CUSTOM_LIST_QUIZ.md); D12 (2026-10-27) wired
+ * them — test/customListQuizScenarios_20261027 pins the RPC routing.
  */
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
@@ -113,13 +114,20 @@ test('2a. every custom-list method is powered; Scenarios joins when the server i
   assert.equal(rules.customListHasQuiz(true), true);
 });
 
-test('2b. HOLD: the server-backed parts stay off until Comp A ships the RPCs', () => {
-  assert.equal(rules.CUSTOM_LIST_SERVER_READY, false, 'flip only with the QuizScreen/ScenariosScreen wiring in the brief');
+test('2b. SERVER READY (D12, 2026-10-27): Scenarios and the quiz are on, on the list’s own RPCs', () => {
+  assert.equal(rules.CUSTOM_LIST_SERVER_READY, true);
+  assert.deepEqual(rules.customListMethods(), ['flashcards', 'fill_in_blank', 'matching', 'scenarios']);
+  assert.equal(rules.customListHasQuiz(), true);
   const d = read(DASH);
-  // The quiz panel is not drawn for the list while held, and nothing routes the
-  // 'flagged' id to start_quiz_attempt.
+  // The quiz panel is drawn for the list, and exactly two routes reach the
+  // Quiz screen: the topic BEGIN, and the list's BEGIN with its length.
   assert.match(d, /\{!isCustom \|\| customListHasQuiz\(\) \? \(/);
-  assert.equal((d.match(/navigation\.navigate\('Quiz',/g) ?? []).length, 1);
+  assert.equal((d.match(/navigation\.navigate\('Quiz',/g) ?? []).length, 2);
+  assert.match(d, /navigation\.navigate\('Quiz', \{ achievementId: FLAGGED_TOPIC_ID, topicName: FLAGGED_TOPIC_NAME, customCount: len \}\)/);
+  // The topic BEGIN is reached only past the custom branch.
+  const custom = d.search(/if \(dispIsCustom\) \{\s*customQuizPress\(\);\s*return;\s*\}/);
+  const topicBegin = d.indexOf("'Before you begin',");
+  assert.ok(custom > 0 && topicBegin > custom, 'the list must branch off before the topic quiz BEGIN');
 });
 
 test('2c. the Dashboard powers the list\'s methods from the start; real topics keep the chain', () => {
@@ -260,7 +268,11 @@ test('4d. the length popup is a centred DimModal popup built on the same rules',
   assert.match(src, /export function CustomQuizLengthSheet\(/);
   assert.match(src, /backdrop: \{ flex: 1, backgroundColor: 'rgba\(0,0,0,0\.6\)', justifyContent: 'center'/);
   const d = read(DASH);
-  assert.match(d, /const ids = drawRandomTerms\(starred, n\);/);
+  // D12: the server draws from the WHOLE list (it alone can substitute a term
+  // with no question), so BEGIN hands QuizScreen the length, not a draw.
+  assert.doesNotMatch(d, /drawRandomTerms\(/);
+  assert.match(d, /const len = clampQuizLength\(n, starred\.size\);/);
+  assert.match(d, /afterPopupCloses\(\(\) =>\s*navigation\.navigate\('Quiz', \{ achievementId: FLAGGED_TOPIC_ID, topicName: FLAGGED_TOPIC_NAME, customCount: len \}\),\s*\);/);
   assert.match(d, /popupOpenRef\.current = termsOpen \|\| trophyOpen \|\| deckOpen \|\| upgradeOpen \|\| customQuizOpen \|\| dashIntroUp;/);
 });
 

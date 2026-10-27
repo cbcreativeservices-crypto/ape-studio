@@ -16,7 +16,9 @@ export type StudyStackParamList = {
   Flashcards: StudyScreenParams;
   FillInBlank: StudyScreenParams;
   Matching: StudyScreenParams;
-  Quiz: StudyScreenParams;
+  /** `customCount` — My Custom List only (achievementId 'flagged'): the quiz
+   *  length chosen on the Dashboard, 30 … every term (owner 2026-10-19). */
+  Quiz: StudyScreenParams & { customCount?: number };
   /** S17 — optional preselect context (present when opened from a Dashboard). */
   Glossary: {
     achievementId?: string;
@@ -55,6 +57,8 @@ export type ResultsParams = {
   achievementId: string;
   isPractice: boolean;
   questions: { slot: number; text: string }[];
+  /** My Custom List only: the length the learner chose, for Retake. */
+  customCount?: number;
 };
 
 export type TrophyEntrySource = 'quiz_win' | 'gallery' | 'achievements_grid';

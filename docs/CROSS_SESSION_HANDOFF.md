@@ -680,6 +680,12 @@ changed: (1) test/holdRegistry_20261027 — every parked feature (⏸ / on HOLD 
 affects other side: Comp A — please log in this file whenever a server function goes live; the nightly run now diffs the live server every day. Open server items for you: [MD:R2] [MD:H3] [MD:H4]
 needs: Comp A: R2, H3, H4 per owner GO [MD:R2]
 
+### 2026-10-27 09:09 · ccode · fafbe18d
+changed: D12: My Custom List scenarios + practice quiz, app half
+affects other side: the app now CALLS start_custom_list_quiz / submit_custom_list_quiz / get_custom_list_scenarios (live defs read 2026-10-27, unchanged from 10_APPLY.sql); please keep their signatures and the custom_list_too_small / custom_list_no_questions / under_lockout / academy_required codes stable. 'flagged' never reaches the topic RPCs.
+needs: nothing (no DB change). Local branch only, not pushed, no OTA.
+
+
 ### 2026-10-27 08:22 · ccode · 6402ca13
 changed: docs: must-do R1-R13 from the 2026-10-27 forgotten-items reconciliation
 affects other side: Comp A: see must-do R2, R5, R6 (ccode confirms the app reads the secret users columns only via my_identity), R7, R8, R12, R13 and D12 (custom-list RPCs confirmed live)
@@ -697,16 +703,26 @@ changed: Downloads/2026-10-27_POPUP_COPY_REVIEW_2 D1–D13, A1–A6, B1–B4, C1
 affects other side: Comp A: once the owner approves items in the DB review, apply its appendix SQL (achievements welcomes + glossary rows)
 needs: owner decisions on the DB review [MD:D10]
 
+### 2026-10-27 01:10 · ccode · popup review A1–A7, B1–B9 applied (owner GO), A5 skipped
+changed: Custom list intro (three-card icon, CUSTOM STUDY LIST button, 'practice'); DAW note button 'Got it'; quiz 'Before you begin' (not counted, clock keeps running — checked: deadline = server started_at + limit); quiz/exam app-switch + lockout wording; Audio Output banner sentence case, 'turn off' timer; Career Finder 'No account needed'; 'Log out' → 'Sign out' in all user-facing text (Help keeps '(log out)' so search still finds it); Glossary allowance says 'definitions' everywhere; calc save limits 'A free account keeps up to N'; two members-only titles; offline quiz body; 'Delete all exposure history?'; coloring/graded; Delete profile / Unpublish / Block confirms now destructive (red); Start Here 'Start a fresh run?'. A5 (signal generator) NOT applied: the proposed gloss misdefined dBFS — corrected text offered to the owner. Full suite 14,988/14,988. JS only, rides the post-approval OTA.
+affects other side: none
+needs: nothing now (asked: owner OK of the corrected A5 text; given, applied in eac55b7e at 00:18)
+
+### 2026-10-27 00:20 · ccode · popup review C1–C10 applied (owner OK); C11 waits on the Pixel
+changed: Owner-approved texts brought in line with the app: Flashcards intro (eye button / FULL VIEW, green full screen), Customize Your Deck (FILTER = definition parts; BEG/INT/ADV/KNOWN/Bookmarks/Custom list choose cards), Power Features (chip names, no 'reassign', button 'Got it'), Trophy Case (+ Final Exam), Commitment ('sales pop-ups'), Study access sheet (guest progress line; '14 definitions a week'; punctuation), Help start-replay + tools-limits, calcFreeAllowance drops the duplicate 'removes both limits', manage-subscription fallback names the phone's own store (exit/api + Paywall), Enrollments menu label = popup title. New test/popupReviewC_20261026. Full suite 14,987/14,987. C11: code says left/right swipe (the review's up/down was wrong); phone check is must-do D9.
+affects other side: none
+needs: nothing
+
 ### 2026-10-27 00:18 · ccode · eac55b7e
 changed: Signal generator: cap warning explains dBFS and the risk (popup review A5, owner OK)
 affects other side: none (app copy only)
 needs: nothing
 
 
-### 2026-10-27 01:10 · ccode · popup review A1–A7, B1–B9 applied (owner GO), A5 skipped
-changed: Custom list intro (three-card icon, CUSTOM STUDY LIST button, 'practice'); DAW note button 'Got it'; quiz 'Before you begin' (not counted, clock keeps running — checked: deadline = server started_at + limit); quiz/exam app-switch + lockout wording; Audio Output banner sentence case, 'turn off' timer; Career Finder 'No account needed'; 'Log out' → 'Sign out' in all user-facing text (Help keeps '(log out)' so search still finds it); Glossary allowance says 'definitions' everywhere; calc save limits 'A free account keeps up to N'; two members-only titles; offline quiz body; 'Delete all exposure history?'; coloring/graded; Delete profile / Unpublish / Block confirms now destructive (red); Start Here 'Start a fresh run?'. A5 (signal generator) NOT applied: the proposed gloss misdefined dBFS — corrected text offered to the owner. Full suite 14,988/14,988. JS only, rides the post-approval OTA.
+### 2026-10-26 23:50 · ccode · popup copy review: 14 group-D mismatches fixed (owner GO)
+changed: Downloads/2026-10-26_POPUP_COPY_REVIEW D1–D14, each checked against the code first: sound-safety footnote (no Help re-read), Help delete-account answer (exit flow), Home guest gate title/body, calc workflow gate uses CALC_WEEKLY_LIMIT and says 'free account', Hints-reset notice (Settings + Help), Commitment popup drops the second 'Welcome', sound-safety 'free topic' → 'open to everyone' (no SOUND_SAFETY_VERSION bump: obligation unchanged), Home 'COMING SOON' → 'CAN’T LOAD' + 'Topics didn’t load', Dashboard sign-out names the device wipe (Settings' list), permission reset names the microphone, guest quiz text, mic explainer names voice search, lab requirements drop 'yet', 'Membership Expired' → 'Your membership has ended'. Tests updated; full suite 14,983/14,983. JS only, rides the post-approval OTA. Group C (owner-approved wording) waits on the owner.
 affects other side: none
-needs: nothing now (asked: owner OK of the corrected A5 text; given, applied in eac55b7e at 00:18)
+needs: owner: decide the group-C suggestions
 
 ### 2026-10-26 23:48 · ccode · a435aca2
 changed: Dashboard intro: 'Swipe the topic card left or right' (checked on the Pixel; owner OK)
@@ -720,22 +736,6 @@ affects other side: docs only
 needs: nothing
 
 
-### 2026-10-27 00:20 · ccode · popup review C1–C10 applied (owner OK); C11 waits on the Pixel
-changed: Owner-approved texts brought in line with the app: Flashcards intro (eye button / FULL VIEW, green full screen), Customize Your Deck (FILTER = definition parts; BEG/INT/ADV/KNOWN/Bookmarks/Custom list choose cards), Power Features (chip names, no 'reassign', button 'Got it'), Trophy Case (+ Final Exam), Commitment ('sales pop-ups'), Study access sheet (guest progress line; '14 definitions a week'; punctuation), Help start-replay + tools-limits, calcFreeAllowance drops the duplicate 'removes both limits', manage-subscription fallback names the phone's own store (exit/api + Paywall), Enrollments menu label = popup title. New test/popupReviewC_20261026. Full suite 14,987/14,987. C11: code says left/right swipe (the review's up/down was wrong); phone check is must-do D9.
-affects other side: none
-needs: nothing
-
-### 2026-10-26 23:50 · ccode · popup copy review: 14 group-D mismatches fixed (owner GO)
-changed: Downloads/2026-10-26_POPUP_COPY_REVIEW D1–D14, each checked against the code first: sound-safety footnote (no Help re-read), Help delete-account answer (exit flow), Home guest gate title/body, calc workflow gate uses CALC_WEEKLY_LIMIT and says 'free account', Hints-reset notice (Settings + Help), Commitment popup drops the second 'Welcome', sound-safety 'free topic' → 'open to everyone' (no SOUND_SAFETY_VERSION bump: obligation unchanged), Home 'COMING SOON' → 'CAN’T LOAD' + 'Topics didn’t load', Dashboard sign-out names the device wipe (Settings' list), permission reset names the microphone, guest quiz text, mic explainer names voice search, lab requirements drop 'yet', 'Membership Expired' → 'Your membership has ended'. Tests updated; full suite 14,983/14,983. JS only, rides the post-approval OTA. Group C (owner-approved wording) waits on the owner.
-affects other side: none
-needs: owner: decide the group-C suggestions
-
-### 2026-10-26 22:42 · ccode · 3311d90b
-changed: docs: engineer's first upload batch (13 WAVs, 2026-10-26) noted on the must-do list
-affects other side: docs only
-needs: nothing
-
-
 ### 2026-10-26 23:15 · ccode · #6 restore wording (owner OK)
 changed: Restore 'expired'/'refunded' messages now come from `restoreEndedCopy(kind, os)` in paywallCopy.ts: they name the phone's own store (the App Store / Google Play), drop "Choose a plan above" (the 'checking' Paywall face shows no plans), and a refund points at the store. Pinned verbatim in test/restoreReasons_20261023. Full suite 14,983/14,983. JS only, rides the post-approval OTA.
 affects other side: none
@@ -745,6 +745,12 @@ needs: nothing
 changed: Checked before building. All four app halves were committed 2026-10-23 and are in build source 802c3d7c (iOS 39 / Android 23): #11 p_client_msg_id 5cc13851, #3 purchase tag 0c61cfe7, #15 plain_english_preview 72c7f6c7, #6 restore reasons 26d90ccb. No code change. The only open item is the owner OKing the #6 expired/refunded wording.
 affects other side: none
 needs: owner: OK the #6 wording
+
+### 2026-10-26 22:42 · ccode · 3311d90b
+changed: docs: engineer's first upload batch (13 WAVs, 2026-10-26) noted on the must-do list
+affects other side: docs only
+needs: nothing
+
 
 ### 2026-10-26 22:40 · Comp A (relayed by the owner) · toddler-hunt last open item closed
 changed: The Play service account's "Manage orders and subscriptions" permission is CONFIRMED (Comp A, via the owner), so validate-purchase's server acknowledge (#2 Part A) works. The toddler-hunt server brief has no open server items left; HOLDs unchanged (#2 Part B, #6 restore wording) and the app halves are ccode's D8.

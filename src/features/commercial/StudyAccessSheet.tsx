@@ -28,10 +28,10 @@ import { colors, fonts } from '../../theme/tokens';
 
 /**
  * MY CUSTOM LIST VARIANT (popup review 2 D1, owner OK 2026-10-27). The list is
- * not a topic and offers only flashcards, fill-in-the-blank and matching
- * (studyGate `customListMethods()`; scenarios and the quiz are on HOLD [MD:D12]), so the
- * topic copy ("MEMBERS TOPIC", "scenarios, and the Topic Quiz") was untrue for
- * it. Adding terms is never gated (the Glossary toggle has no membership check),
+ * not a topic: it has no Topic Quiz and no "MEMBERS TOPIC", so the topic copy
+ * was untrue for it. Its methods are studyGate `customListMethods()` plus its
+ * own practice quiz (`customListHasQuiz()`) — all five since D12 (2026-10-27).
+ * Adding terms is never gated (the Glossary toggle has no membership check),
  * so the body says so. The topic copy below is owner copy (2026-08-13) and is
  * unchanged.
  */
@@ -41,7 +41,7 @@ export const CUSTOM_LIST_SHEET_COPY = {
   how: 'To study it, tap UNLOCK ACADEMY ACCESS below and choose a membership. Your list opens the moment it is active.',
   howGuest:
     'To study it you need an account and a membership: tap UNLOCK ACADEMY ACCESS below, choose a membership, and create your account when asked (or sign in if you have one).',
-  body: 'You can keep adding terms to your list from the Glossary. Membership lets you study them with flashcards, fill-in-the-blank and matching.',
+  body: 'You can keep adding terms to your list from the Glossary. Membership lets you study them with flashcards, fill-in-the-blank, matching and scenarios, and take a practice quiz once your list has 30 terms.',
   freeTail: 'The whole study path, start to finish.',
 } as const;
 
@@ -150,7 +150,8 @@ export function StudyAccessSheet({
               {freeTopicNames.length > 1 ? 'Two topics are' : 'One topic is'} free to study in full:{' '}
               <Text style={styles.freeName}>{names}</Text>.{' '}
               {/* My Custom List variant: "Same … scenarios and quiz" compared the
-                  free topics with a list that has neither (D1). */}
+                  free topics with a list that then had neither (D1); its quiz
+                  is still a practice quiz, not a topic's, so the tail stays. */}
               {customList
                 ? CUSTOM_LIST_SHEET_COPY.freeTail
                 : 'Same flashcards, practice activities, scenarios and quiz—the whole path, start to finish.'}
