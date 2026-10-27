@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 09:43 · ccode · b9ea5dd5
+changed: R1 + H2: instructor accounts (app half) + the student's instructor-sharing switch [MD:R1] [MD:H2]
+affects other side: Comp A — the app now calls my_verifier_kind, instructor_my_code and instructor_share_lookup/on/off/mine (allow-list shrank); it no longer calls am_i_verified_employer (now unused anywhere: clean-up candidate, allow-listed). No server change made or needed
+needs: nothing for the build. For the first real test: one verified instructor (live has none) — that is the existing E3 note
+
+
 ### 2026-10-27 09:14 · ccode · 528ae813
 changed: Merge D12: My Custom List scenarios + practice quiz (owner GO 2026-10-27)
 affects other side: Comp A — the custom-list RPCs you shipped are now called by the app (D12 closed on our side)
