@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 22:55 · ccode · D8 (toddler-hunt app halves) already shipped
+changed: Checked before building. All four app halves were committed 2026-10-23 and are in build source 802c3d7c (iOS 39 / Android 23): #11 p_client_msg_id 5cc13851, #3 purchase tag 0c61cfe7, #15 plain_english_preview 72c7f6c7, #6 restore reasons 26d90ccb. No code change. The only open item is the owner OKing the #6 expired/refunded wording.
+affects other side: none
+needs: owner: OK the #6 wording
+
 ### 2026-10-26 22:40 · Comp A (relayed by the owner) · toddler-hunt last open item closed
 changed: The Play service account's "Manage orders and subscriptions" permission is CONFIRMED (Comp A, via the owner), so validate-purchase's server acknowledge (#2 Part A) works. The toddler-hunt server brief has no open server items left; HOLDs unchanged (#2 Part B, #6 restore wording) and the app halves are ccode's D8.
 affects other side: none
