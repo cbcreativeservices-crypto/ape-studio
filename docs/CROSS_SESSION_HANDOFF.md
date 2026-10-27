@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 09:09 · ccode · fafbe18d
+changed: D12: My Custom List scenarios + practice quiz, app half
+affects other side: the app now CALLS start_custom_list_quiz / submit_custom_list_quiz / get_custom_list_scenarios (live defs read 2026-10-27, unchanged from 10_APPLY.sql); please keep their signatures and the custom_list_too_small / custom_list_no_questions / under_lockout / academy_required codes stable. 'flagged' never reaches the topic RPCs.
+needs: nothing (no DB change). Local branch only, not pushed, no OTA.
+
+
 ### 2026-10-27 08:22 · ccode · 6402ca13
 changed: docs: must-do R1-R13 from the 2026-10-27 forgotten-items reconciliation
 affects other side: Comp A: see must-do R2, R5, R6 (ccode confirms the app reads the secret users columns only via my_identity), R7, R8, R12, R13 and D12 (custom-list RPCs confirmed live)
