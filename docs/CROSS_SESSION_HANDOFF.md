@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 21:47 · ccode · d253ec56
+changed: docs: B3 ruled — leave Open testing 20 in Play submission #3; clean up after launch
+affects other side: Comp A: owner ruled B3 — do NOT change submission #3 before launch (Open testing stays on 20; testers get 23 via Production). Clean up Open testing after launch
+needs: Comp A: after launch, point Open testing at the current build or close it
+
+
 ### 2026-10-26 21:45 · ccode · 3c85189b
 changed: docs: Play submission #3 Ready to publish (owner screenshot); B3 check before Publish
 affects other side: Comp A: Play Submission activity #3 (Oct 24) Ready to publish; #1/#2 canceled. Before launch-day Publish, confirm #3's Open testing item is build 23 or remove it (B3)
