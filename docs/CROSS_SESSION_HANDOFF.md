@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 09:43 · ccode · e234d1ca
+changed: Merge R3: DJ Systems Lab records completion (tr_dj) for both DJ credentials; R11 seed comments
+affects other side: Comp A — R3 SQL draft in Downloads, safe order inside
+needs: Comp A: R3 step 1 after owner GO [MD:R3]
+
+
 ### 2026-10-27 09:40 · ccode · c96c9c54
 changed: docs: must-do R13 corrected + owner re-confirmed month hold; H4 keep; H5 employer public page; D14 cards
 affects other side: Comp A — owner decisions for the forgotten-items brief: R13 yes (month hold), H4 keep
