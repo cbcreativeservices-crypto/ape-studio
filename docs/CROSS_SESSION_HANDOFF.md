@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 09:14 · ccode · 528ae813
+changed: Merge D12: My Custom List scenarios + practice quiz (owner GO 2026-10-27)
+affects other side: Comp A — the custom-list RPCs you shipped are now called by the app (D12 closed on our side)
+needs: nothing
+
+
 ### 2026-10-27 09:40 · ccode · PROTOCOL 24 safeguards + wake-to-login bug fix
 changed: (1) test/holdRegistry_20261027 — every parked feature (⏸ / on HOLD / _READY=false / until Comp A) cites its must-do row [MD:<id>]; 38 stale hold comments rewritten past-tense, 9 active tagged (D12, H1); new must-do rows H1–H4 + ids E1–E5. (2) docs/live/LIVE_SERVER_SNAPSHOT.json + SERVER_ONLY_ALLOWLIST.json + test/liveServerMatch_20261027 — every called function must be live, every uncalled live function explained (found: employer-issue-code not deployed = R2; instructor_share_* never called = H2; pause_inactive unscheduled = H3; employer_profile_public unused = H4). (3) Splash wake fix (owner's iPhone report, must-do D13): a stalled start-up session read on a device whose account marker names an account now goes to Main instead of the login screen; test/splashWakeStall_20261027. Hooks (outside the repo): owner_inbox, mustdo_status, claim_check; scheduled task ape-nightly-reconciliation 03:30. Full suite 15,007/15,007.
 affects other side: Comp A — please log in this file whenever a server function goes live; the nightly run now diffs the live server every day. Open server items for you: [MD:R2] [MD:H3] [MD:H4]
