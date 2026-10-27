@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 10:50 · ccode · 57f6a015
+changed: Home: a little more wash on the Your First Steps in Audio card (owner OK)
+affects other side: none (app only)
+needs: nothing
+
+
 ### 2026-10-27 10:44 · ccode · d09b22c5
 changed: Home: study-area cards in the owner's chosen order (2026-10-27)
 affects other side: none (app only)
