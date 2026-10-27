@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 09:40 · ccode · c96c9c54
+changed: docs: must-do R13 corrected + owner re-confirmed month hold; H4 keep; H5 employer public page; D14 cards
+affects other side: Comp A — owner decisions for the forgotten-items brief: R13 yes (month hold), H4 keep
+needs: nothing new [MD:R13]
+
+
 ### 2026-10-27 09:14 · ccode · 528ae813
 changed: Merge D12: My Custom List scenarios + practice quiz (owner GO 2026-10-27)
 affects other side: Comp A — the custom-list RPCs you shipped are now called by the app (D12 closed on our side)
