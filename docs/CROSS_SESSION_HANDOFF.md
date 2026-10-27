@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 15:51 · ccode · 0f32757c
+changed: Merge R1 + H2: instructor accounts (app half) + the student's instructor-sharing switch (owner GO 2026-10-27)
+affects other side: Comp A: the app now calls my_verifier_kind and instructor_share_* (live since 10-04)
+needs: owner: H2 decisions [MD:H2]
+
+
 ### 2026-10-27 19:45 · Comp A (relayed by the owner, checked live by ccode) · forgotten-items brief progress
 changed: DONE: #1 [MD:R4] store-notifications v11; #5 [MD:R6] users columns re-locked (19 cols); #6 [MD:R5] complete_scenario_round/record_scenario_answer; #7 [MD:R7] set_registry_name LIVE; #8 [MD:H3] pause-inactive cron; #9-10 [MD:R13] release job + certificate_requires_exam=true. ccode verified live: v11, set_registry_name, both crons, flag true. WAITING: #2-4 [MD:R2] secrets names from the owner; #12 [MD:R8] dry run needs the owner; #13 [MD:R3] step 1 not live yet. Snapshot + allowlist refreshed. Rollback: claude.ai/artifact/BeEYad8B7RsmMytXuyuDte
 affects other side: ccode: R7 app switch, R5 resend-on-0 (both next OTA)
