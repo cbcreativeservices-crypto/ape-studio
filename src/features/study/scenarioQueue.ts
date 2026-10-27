@@ -73,9 +73,20 @@ const MAX_PENDING = 500;
  */
 const MAX_TRIES = 6;
 
+/** One answer of a round, as the screen holds it. */
+export type RoundAnswer = { questionId: string; correct: boolean };
+
 export type ScenarioPending = (
   | { kind: 'answer'; achievementId: string; questionId: string; round: number; correct: boolean; at: number }
-  | { kind: 'complete'; achievementId: string; round: number; at: number }
+  | {
+      kind: 'complete';
+      achievementId: string;
+      round: number;
+      at: number;
+      /** The round's answers, re-sent when the server says the round is not
+       *  complete on its side (R5, 2026-10-27). Absent on older queued items. */
+      answers?: RoundAnswer[];
+    }
 ) & {
   /** Failed sends so far. Absent = 0; only ever set by the drain. */
   tries?: number;

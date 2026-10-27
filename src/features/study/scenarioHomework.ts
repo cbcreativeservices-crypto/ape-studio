@@ -34,6 +34,7 @@ import {
   pendingScenarioCount,
   queueScenarioCall,
   scenarioQueueGeneration,
+  type RoundAnswer,
   type ScenarioPending,
 } from './scenarioQueue';
 
@@ -273,10 +274,35 @@ async function sendComplete(achievementId: string, round: number): Promise<numbe
   }
 }
 
+/**
+ * Complete a round; when the server answers 0, re-send the round's answers and
+ * ask once more (must-do R5, 2026-10-27).
+ *
+ * Since R5 the server no longer takes the phone's word for a round: it advances
+ * only when its own `answers` holds every question it assigned to that round,
+ * and returns 0 otherwise. An answer that never landed (an old build's lost
+ * write, a dropped request) would leave that 0 forever — the queued complete
+ * retried six times and gave up, and the quiz stayed locked. The screen still
+ * holds the round's answers, so it sends them again; `record_scenario_answer`
+ * overwrites by question id, so a re-send of one that did land is harmless.
+ */
+async function sendCompleteResending(
+  achievementId: string,
+  round: number,
+  answers: readonly RoundAnswer[] | undefined,
+): Promise<number | null | 'offline'> {
+  const n = await sendComplete(achievementId, round);
+  if (n !== null || !answers || answers.length === 0) return n;
+  for (const a of answers) {
+    if ((await sendAnswer(achievementId, a.questionId, round, a.correct)) === 'offline') return 'offline';
+  }
+  return sendComplete(achievementId, round);
+}
+
 /** Send one queued scenario call. Shape-dispatched by the drain. */
 async function sendPending(item: ScenarioPending): Promise<boolean | 'offline'> {
   if (item.kind === 'answer') return sendAnswer(item.achievementId, item.questionId, item.round, item.correct);
-  const n = await sendComplete(item.achievementId, item.round);
+  const n = await sendCompleteResending(item.achievementId, item.round, item.answers);
   if (n === 'offline') return 'offline';
   return n !== null;
 }
@@ -344,6 +370,7 @@ export async function recordScenarioAnswer(
 export async function completeScenarioRound(
   achievementId: string,
   round: number,
+  answers?: readonly RoundAnswer[],
 ): Promise<{ roundsCompleted: number; saved: boolean; queued?: boolean }> {
   // My Custom List stores no rounds (D12): there is nothing to save.
   if (isCustomListId(achievementId)) return { roundsCompleted: round, saved: true };
@@ -352,14 +379,20 @@ export async function completeScenarioRound(
   const stillPending = await flushScenarioQueue();
   if (gen !== scenarioQueueGeneration()) return { roundsCompleted: round, saved: false, queued: false };
   if (stillPending === 0) {
-    const n = await sendComplete(achievementId, round);
+    const n = await sendCompleteResending(achievementId, round, answers);
     if (typeof n === 'number') return { roundsCompleted: n, saved: true };
     if (gen !== scenarioQueueGeneration()) return { roundsCompleted: round, saved: false, queued: false };
   }
   // `queued` (wave 3): did the device KEEP the round for the retry? False
   // means it is held in memory only until the queue can be read — the
   // report must not say "saved on this device".
-  const queued = await queueScenarioCall({ kind: 'complete', achievementId, round, at: Date.now() });
+  const queued = await queueScenarioCall({
+    kind: 'complete',
+    achievementId,
+    round,
+    at: Date.now(),
+    ...(answers && answers.length > 0 ? { answers: [...answers] } : {}),
+  });
   return { roundsCompleted: round, saved: false, queued };
 }
 

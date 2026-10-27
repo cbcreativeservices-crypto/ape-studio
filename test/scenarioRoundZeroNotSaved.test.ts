@@ -58,6 +58,62 @@ describe('completeScenarioRound', () => {
     assert.equal(await pendingScenarioCount(), 0);
   });
 
+  // R5 (2026-10-27): the server now returns 0 while ITS answers for the round
+  // are incomplete. The round's answers are re-sent, then it asks once more.
+  it('a 0 reply re-sends the round answers, then the round saves', async () => {
+    const calls: string[] = [];
+    let answered = 0;
+    (globalThis as Record<string, unknown>).__RPC__ = (name: string, args: Record<string, unknown>) => {
+      calls.push(name === 'record_scenario_answer' ? `answer:${args.p_question_id}:${args.p_round}:${args.p_correct}` : name);
+      if (name === 'record_scenario_answer') {
+        answered++;
+        return { data: null, error: null };
+      }
+      return { data: answered >= 2 ? 1 : 0, error: null };
+    };
+    const r = await completeScenarioRound('topic-a', 1, [
+      { questionId: 'q1', correct: true },
+      { questionId: 'q2', correct: false },
+    ]);
+    assert.deepEqual(r, { roundsCompleted: 1, saved: true });
+    assert.deepEqual(calls, [
+      'complete_scenario_round',
+      'answer:q1:1:true',
+      'answer:q2:1:false',
+      'complete_scenario_round',
+    ]);
+    assert.equal(await pendingScenarioCount(), 0);
+  });
+
+  it('still 0 after the re-send: not saved, queued WITH the answers for the next try', async () => {
+    setRpc(() => ({ data: 0, error: null }));
+    const r = await completeScenarioRound('topic-a', 3, [{ questionId: 'q9', correct: true }]);
+    assert.equal(r.saved, false);
+    const q = JSON.parse([...store.values()][0]);
+    assert.deepEqual(q[0].answers, [{ questionId: 'q9', correct: true }]);
+  });
+
+  it('no answers given: one ask, no re-send (as before)', async () => {
+    // Empty what the tests above left queued (the queue lives in memory too).
+    setRpc(() => ({ data: 3, error: null }));
+    await completeScenarioRound('topic-a', 3);
+    assert.equal(await pendingScenarioCount(), 0);
+    const calls: string[] = [];
+    (globalThis as Record<string, unknown>).__RPC__ = (name: string) => {
+      calls.push(name);
+      return { data: 0, error: null };
+    };
+    await completeScenarioRound('topic-a', 2);
+    assert.deepEqual(calls, ['complete_scenario_round']);
+  });
+
+  it('the Scenarios screen passes the round answers along (R5)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const s = readFileSync(new URL('../src/screens/study/ScenariosScreen.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+    assert.match(s, /\.map\(\(q\) => \(\{ questionId: q\.id, correct: answersRef\.current\[q\.id\]\.correct \}\)\);/);
+    assert.match(s, /completeScenarioRound\(achievementId, r, roundAnswers\)/);
+  });
+
   it('an RPC error is still not saved', async () => {
     setRpc(() => ({ data: null, error: { message: 'boom' } }));
     const r = await completeScenarioRound('topic-a', 1);

@@ -251,7 +251,12 @@ export function ScenariosScreen({ route }: Props) {
       // for the report and cleared for the next round.
       const answersKept = !answerUnkeptRef.current;
       answerUnkeptRef.current = false;
-      void completeScenarioRound(achievementId, r).then(({ roundsCompleted, saved, queued }) => {
+      // This round's answers go along, so a round the server says is
+      // incomplete (an answer that never landed) can be re-sent (R5).
+      const roundAnswers = rq
+        .filter((q) => answersRef.current[q.id])
+        .map((q) => ({ questionId: q.id, correct: answersRef.current[q.id].correct }));
+      void completeScenarioRound(achievementId, r, roundAnswers).then(({ roundsCompleted, saved, queued }) => {
         // Only advance the local rounds count when the SERVER took it. Bumping
         // it on a queued-but-unsent round is what made the Dashboard LED and
         // the report disagree with the database.
