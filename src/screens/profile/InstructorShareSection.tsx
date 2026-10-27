@@ -34,6 +34,7 @@ import {
   stopLine,
 } from '../../features/instructor/shareRules';
 import { confirmDialog, notify } from '../../lib/confirm';
+import { fetchMyRegistryName } from '../../features/profile/api';
 import { useLatchedPress } from '../../lib/latch';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -120,8 +121,28 @@ export function InstructorShareSection() {
       });
       return;
     }
-    if (share?.state === 'off' && next) openPopup();
+    if (share?.state === 'off' && next) void startShare();
   };
+
+  // A name before sharing (owner 2026-10-27): the instructor sees the SAVED
+  // certificate name (private.person_label reads users.registry_name first);
+  // without one they would see the account name, which starts out as the
+  // part of the email before the @. A read that fails is said as such, never
+  // treated as "no name".
+  const startShare = useLatchedPress(async () => {
+    let name: string | null;
+    try {
+      name = await fetchMyRegistryName();
+    } catch {
+      notify(SHARE_COPY.notConfirmedTitle, SHARE_COPY.readFailed);
+      return;
+    }
+    if (!name) {
+      notify(SHARE_COPY.nameFirstTitle, SHARE_COPY.nameFirstBody);
+      return;
+    }
+    openPopup();
+  });
 
   const summary =
     share === null

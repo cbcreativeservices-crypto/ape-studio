@@ -85,7 +85,9 @@ export const SHARE_COPY = {
     // private.person_label: registry_name, else first name + last initial,
     // else users.nickname — which register_commercial_user fills with the
     // part of the email before the @. Said plainly rather than hidden.
-    'Your name: the name on your certificates. If you have not set one, your account name, which starts out as the part of your email address before the @.',
+    // A certificate name is required before sharing (owner 2026-10-27), so
+    // the instructor never sees the email-derived account name.
+    'Your name: the name on your certificates (fill in “Name on your certificates” in Profile before you share).',
     'Each topic you are enrolled in, have studied or have completed — including topics you completed before you turned this on: done or in progress, your best score, and how far you are in each study method, flashcards included.',
     'Your quiz attempts, practice ones too: how many, each score and the date.',
     'Your labs: the labs for those topics’ certificates and the Audio Fundamentals labs, plus any other lab you finished.',
@@ -122,6 +124,9 @@ export const SHARE_COPY = {
   stopTitle: 'Stop sharing?',
   stopYes: 'Stop sharing',
   notConfirmedTitle: 'Couldn’t confirm',
+  nameFirstTitle: 'Add your certificate name first',
+  nameFirstBody:
+    'Your instructor sees you by the name on your certificates. Fill in “Name on your certificates” in Profile and save it, then turn sharing on.',
   stoppedTitle: 'Sharing is off',
   stoppedBody: 'Your instructor can no longer see your progress.',
 };

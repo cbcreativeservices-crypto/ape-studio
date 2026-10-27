@@ -81,7 +81,7 @@ const SECTIONS: { head: string; paras: string[] }[] = [
       // set_registry_listing check age 18+, never membership).
       // R1 (2026-10-27): employers AND instructors (instructor/school
       // accounts verify exactly as employers do since 2026-10-04).
-      'List your credentials in the Pro Registry and employers and instructors can verify them online.',
+      'Anyone can verify your credentials online with the code printed on them. List them in the Pro Registry so employers and instructors can find you.',
       'An ongoing membership is not required. Your credentials stay in the registry, and employers and instructors can still find and verify them, whether or not you keep your membership.',
     ],
   },

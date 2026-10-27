@@ -61,7 +61,7 @@ export const COPY = {
    */
   membershipPoints: [
     'Every topic, certificate and lab is included.',
-    'Earn certificates — list them in the Pro Registry and employers and instructors can verify them online.',
+    'Earn certificates — anyone can verify them online with the code printed on them, and listing them in the Pro Registry lets employers and instructors find you.',
     'No add-ons. No extra fees.',
   ] as readonly string[],
   /** H3: the SHAPE of the pricing on the landing — never a price. */

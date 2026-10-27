@@ -199,9 +199,21 @@ describe('R1 · "am I verified" asks my_verifier_kind', () => {
     assert.match(s, /\{VERIFIER_COPY\[e\.kind\]\.adminTag\}/);
   });
 
-  it('copy: employers AND instructors can verify (anyone can, server-side)', () => {
-    assert.match(read('src/lib/copy.ts'), /list them in the Pro Registry and employers and instructors can verify them online\./);
-    assert.doesNotMatch(code('src/lib/copy.ts'), /and employers can verify/);
+  // Owner 2026-10-27: "anyone can verify" — public_verify_credentials(p_code) is
+  // anon-executable and not gated by show_in_registry (checked live).
+  it('copy: anyone can verify by the printed code; the Registry is for being found', () => {
+    for (const f of ['src/lib/copy.ts', 'src/screens/about/AboutHomeSheet.tsx']) {
+      assert.match(read(f), /nyone can verify (them|your credentials) online with the code printed on them/);
+      assert.doesNotMatch(code(f), /Pro Registry and employers and instructors can verify/);
+    }
+  });
+
+  it('H2: sharing needs a certificate name first (owner 2026-10-27)', () => {
+    const s = code('src/screens/profile/InstructorShareSection.tsx');
+    assert.match(s, /name = await fetchMyRegistryName\(\)/);
+    assert.match(s, /if \(!name\) \{\s*notify\(SHARE_COPY\.nameFirstTitle, SHARE_COPY\.nameFirstBody\);\s*return;\s*\}\s*openPopup\(\);/);
+    // A failed read is not "no name": it says it couldn't check, and opens nothing.
+    assert.match(s, /catch \{\s*notify\(SHARE_COPY\.notConfirmedTitle, SHARE_COPY\.readFailed\);\s*return;\s*\}/);
   });
 });
 
@@ -321,8 +333,10 @@ describe('H2 · the words', () => {
     assert.match(sees, /certificates and the Audio Fundamentals labs, plus any other lab you finished/);
     assert.match(sees, /final exam attempts/);
     assert.match(sees, /certificates you have earned/);
-    // person_label can fall back to the sign-up nickname (email local part).
-    assert.match(sees, /part of your email address before the @/);
+    // person_label prefers registry_name; a certificate name is required before
+    // sharing (owner 2026-10-27), so the email-derived fallback is never reached.
+    assert.match(sees, /^Your name: the name on your certificates \(fill in “Name on your certificates” in Profile before you share\)\./);
+    assert.doesNotMatch(sees, /before the @/);
     // Never answers; employers never.
     assert.match(rules.SHARE_COPY.never.join(' '), /Your answers to any question/);
     assert.equal(rules.SHARE_COPY.employersNever, 'Employers never see this.');
@@ -357,8 +371,8 @@ describe('H2 · the Profile section uses the house helpers', () => {
     assert.match(s, /share\?\.state === 'guest' \? \(\s*<Text style=\{styles\.warn\}>\{SHARE_COPY\.guest\}<\/Text>/);
   });
 
-  it('turning on goes code → lookup → confirm → on', () => {
-    assert.match(s, /if \(share\?\.state === 'off' && next\) openPopup\(\);/);
+  it('turning on goes name check → code → lookup → confirm → on', () => {
+    assert.match(s, /if \(share\?\.state === 'off' && next\) void startShare\(\);/);
     assert.match(s, /const r = await lookupInstructor\(code\);/);
     assert.match(s, /const r = await shareWithInstructor\(code\);/);
     assert.match(s, /setShare\(\{ state: 'on', share: r\.share \}\);/);

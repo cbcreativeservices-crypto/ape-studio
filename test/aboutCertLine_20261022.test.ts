@@ -12,9 +12,12 @@ const read = (p: string) => readFileSync(join(import.meta.dirname, '..', 'src', 
 
 describe('About sheet certificate line matches the approved wording', () => {
   const about = read('screens/about/AboutHomeSheet.tsx');
-  it('names the Registry listing step', () => {
-    assert.match(about, /'List your credentials in the Pro Registry and employers and instructors can verify them online\.'/);
-    assert.match(read('lib/copy.ts'), /list them in the Pro Registry and employers and instructors can verify them online\./);
+  // Superseded 2026-10-27 (owner, H2): verification by the printed code works
+  // for anyone whether or not the credential is listed (public_verify_credentials
+  // is not gated by show_in_registry, checked live); the Registry is for being found.
+  it('says anyone can verify by the code, and names the Registry listing step', () => {
+    assert.match(about, /'Anyone can verify your credentials online with the code printed on them\. List them in the Pro Registry so employers and instructors can find you\.'/);
+    assert.match(read('lib/copy.ts'), /anyone can verify them online with the code printed on them, and listing them in the Pro Registry lets employers and instructors find you\./);
   });
   it('drops the blanket "verifiable for life" promise', () => {
     assert.doesNotMatch(about, /verifiable for life/);
