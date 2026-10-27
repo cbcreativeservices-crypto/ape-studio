@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 00:18 · ccode · eac55b7e
+changed: Signal generator: cap warning explains dBFS and the risk (popup review A5, owner OK)
+affects other side: none (app copy only)
+needs: nothing
+
+
 ### 2026-10-27 01:10 · ccode · popup review A1–A7, B1–B9 applied (owner GO), A5 skipped
 changed: Custom list intro (three-card icon, CUSTOM STUDY LIST button, 'practice'); DAW note button 'Got it'; quiz 'Before you begin' (not counted, clock keeps running — checked: deadline = server started_at + limit); quiz/exam app-switch + lockout wording; Audio Output banner sentence case, 'turn off' timer; Career Finder 'No account needed'; 'Log out' → 'Sign out' in all user-facing text (Help keeps '(log out)' so search still finds it); Glossary allowance says 'definitions' everywhere; calc save limits 'A free account keeps up to N'; two members-only titles; offline quiz body; 'Delete all exposure history?'; coloring/graded; Delete profile / Unpublish / Block confirms now destructive (red); Start Here 'Start a fresh run?'. A5 (signal generator) NOT applied: the proposed gloss misdefined dBFS — corrected text offered to the owner. Full suite 14,988/14,988. JS only, rides the post-approval OTA.
 affects other side: none
