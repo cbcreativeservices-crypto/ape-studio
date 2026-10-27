@@ -40,3 +40,9 @@ test('C9: the manage-subscription fallback names the phone’s own store', () =>
     assert.match(s, /Open the \$\{storeNameFor\(Platform\.OS\)\} app and look under Subscriptions/, f);
   }
 });
+
+test('A5: the signal generator cap warning explains dBFS correctly', () => {
+  const gen = read('src/screens/tools/SignalGenScreen.tsx');
+  assert.match(gen, /Above \$\{capDb\} dBFS \(decibels relative to digital full scale\) the tone can be loud enough to hurt your ears or your speakers\./);
+  assert.doesNotMatch(gen, /decibels below digital full scale/);
+});

@@ -515,7 +515,8 @@ export function SignalGenScreen({ navigation }: Props) {
         // clear the latch.
         confirmDialog(
           'Output above the safety cap',
-          `Levels above ${capDb} dBFS can be loud. Remove headphones / lower monitor level before continuing.`,
+          // Popup review A5 (owner OK 2026-10-27): dBFS explained, the risk stated.
+          `Above ${capDb} dBFS (decibels relative to digital full scale) the tone can be loud enough to hurt your ears or your speakers. Take off headphones and turn your speakers down before you continue.`,
           'I understand — unlock',
           () => {
             capPromptOpen.current = false;
