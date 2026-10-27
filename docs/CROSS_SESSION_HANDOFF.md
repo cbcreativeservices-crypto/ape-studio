@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 13:30 · ccode · END OF DAY 2026-10-27
+changed: Today on ota-after-approval-39-23 (all pushed, suite green): popup review rounds 1+2 (D/A/B/C) + A5; D12 My Custom List scenarios + practice quiz (528ae813); D13 Splash wake-to-login fix (dcd68077); PROTOCOL 24 safeguards (hold registry, live-server match, hooks, nightly task); R3 DJ lab credit (e234d1ca); Home: new My Enrollments art + calc wash 37% (4b7c0beb), member eyebrows for Safety/DAW (2d40890c), owner's showcase order (d09b22c5), First Steps wash (57f6a015); Study Dashboard one name + header (15b3d4cc, ea2c8ed9). NOT MERGED: R1+H2 instructor work on worktree-agent-aa307fa1af3fb0324 (b9ea5dd5) — owner decisions pending. Comp A brief zip sent (R2 R4 R5 R6 R7 R8 R13 H3 + R3 step 1; H4 keep).
+affects other side: Comp A — work the 14-line checklist in Downloads/2026-10-27_FOR_COMP_A_FORGOTTEN_SERVER_ITEMS.zip and log each line here with its [MD:<row>] tag
+needs: Comp A: the brief checklist [MD:R2] [MD:R4] [MD:R13]; owner: H2 decisions [MD:H2]
+
 ### 2026-10-27 11:09 · ccode · ea2c8ed9
 changed: Tests: pin the Study Dashboard wording in the My Custom List intro (fixes 15b3d4cc's 2 failing pins)
 affects other side: none (tests only)
