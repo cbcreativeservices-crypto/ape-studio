@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 16:09 · ccode · e1eed53c
+changed: R7: certificate name saved through set_registry_name (community-rules filter)
+affects other side: Comp A: the app now saves the certificate name only through set_registry_name [MD:R7]. R7b (revoke the direct registry_name UPDATE grant) must wait until the post-approval OTA has reached phones: the store builds 39/23 still write the column directly
+needs: nothing now; R7b after the OTA is out [MD:R7]. Also: the must-do rows R2-R8/R11/H3/H4/H5 were restored after the R1+H2 merge overwrote them
+
+
 ### 2026-10-27 15:59 · ccode · 55049504
 changed: H2 owner decisions: certificate name required before sharing; 'anyone can verify' wording
 affects other side: nothing now [MD:H2] (app only; ships in the post-approval OTA)
