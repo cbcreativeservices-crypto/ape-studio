@@ -19,7 +19,7 @@ Copies: memory `launch-must-do-list.md` · Downloads `<date>_APE_LAUNCH_MUST_DO.
 
 | | |
 |---|---|
-| Store builds | iOS 1.0 (**39**) and Android 1.0.0 (**23**), both IN REVIEW since 2026-10-24 |
+| Store builds | **Android 1.0.0 (23): APPROVED by Google** (owner saw it in Play Console → Publishing → Submission activity, 2026-10-26). Managed publishing is ON, so nothing is live until someone presses Publish — DON'T, until launch day (B3 clean-up first, then B4 together with Apple). **iOS 1.0 (39): still IN REVIEW** (since 2026-10-24). The post-approval OTA (section A) waits for BOTH |
 | Rule while in review | **D74:** no production OTA. Website and server changes only with the owner's go |
 | Post-approval OTA branch | `ota-after-approval-39-23` (worktree `C:\Users\profe\dev\ape-workbench`). JS/content only, committed and pushed as each change lands (PROTOCOL rule 18) |
 | Owner's test phone | Pixel 7 Pro has Android **build 23** since 2026-10-26 (sideloaded, debug-key signed). Pro1 signed in again by the owner, 2026-10-26 morning |
