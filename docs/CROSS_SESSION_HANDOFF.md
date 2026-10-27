@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 23:44 · ccode · d7f97a28
+changed: docs: C11 swipe direction checked on the Pixel (left/right; current text is true)
+affects other side: docs only
+needs: nothing
+
+
 ### 2026-10-27 00:20 · ccode · popup review C1–C10 applied (owner OK); C11 waits on the Pixel
 changed: Owner-approved texts brought in line with the app: Flashcards intro (eye button / FULL VIEW, green full screen), Customize Your Deck (FILTER = definition parts; BEG/INT/ADV/KNOWN/Bookmarks/Custom list choose cards), Power Features (chip names, no 'reassign', button 'Got it'), Trophy Case (+ Final Exam), Commitment ('sales pop-ups'), Study access sheet (guest progress line; '14 definitions a week'; punctuation), Help start-replay + tools-limits, calcFreeAllowance drops the duplicate 'removes both limits', manage-subscription fallback names the phone's own store (exit/api + Paywall), Enrollments menu label = popup title. New test/popupReviewC_20261026. Full suite 14,987/14,987. C11: code says left/right swipe (the review's up/down was wrong); phone check is must-do D9.
 affects other side: none
