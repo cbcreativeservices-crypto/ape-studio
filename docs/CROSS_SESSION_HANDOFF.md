@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 08:22 · ccode · 6402ca13
+changed: docs: must-do R1-R13 from the 2026-10-27 forgotten-items reconciliation
+affects other side: Comp A: see must-do R2, R5, R6 (ccode confirms the app reads the secret users columns only via my_identity), R7, R8, R12, R13 and D12 (custom-list RPCs confirmed live)
+needs: Comp A: please log in CROSS_SESSION_HANDOFF.md whenever a function ccode is waiting on goes live
+
+
 ### 2026-10-27 08:10 · ccode · c766b8b2
 changed: docs: must-do D12 - My Custom List quiz + scenarios forgotten (server live, app half never built)
 affects other side: Comp A: the custom-list RPCs you applied are confirmed live; please tell ccode in this log when a requested function goes live
