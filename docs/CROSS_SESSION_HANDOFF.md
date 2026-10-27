@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 08:10 · ccode · c766b8b2
+changed: docs: must-do D12 - My Custom List quiz + scenarios forgotten (server live, app half never built)
+affects other side: Comp A: the custom-list RPCs you applied are confirmed live; please tell ccode in this log when a requested function goes live
+needs: nothing
+
+
 ### 2026-10-27 02:30 · ccode · popup review round 2 applied (owner GO); DB text reviewed (read-only)
 changed: Downloads/2026-10-27_POPUP_COPY_REVIEW_2 D1–D13, A1–A6, B1–B4, C1–C3 applied, each checked against code. Notable: My Custom List gets its own membership sheet (StudyAccessSheet `customList` prop — no 'MEMBERS TOPIC', no scenarios/quiz claims); its meter reads LOCKED for non-members (same flag as the switch); no 'void' left in learner text; calc workflow notices say templates are members-only (owner ruling); 'practise'→'practice' in 35 lines; Help gains 'What is My Custom List?'; About sheet guest line; Enrollments help narrowed by entry id. New test/popupReview2_20261027. Full suite 14,997/14,997, tsc clean. JS only, rides the post-approval OTA. DB popup text reviewed read-only (Downloads/2026-10-27_DB_POPUP_TEXT_REVIEW): draft SQL only, owner decides, then Comp A applies (must-do D10).
 affects other side: Comp A: once the owner approves items in the DB review, apply its appendix SQL (achievements welcomes + glossary rows)
