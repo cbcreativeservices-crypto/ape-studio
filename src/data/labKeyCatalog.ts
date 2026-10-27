@@ -31,6 +31,7 @@ export const TRAINING_LAB_NAMES: Readonly<Record<string, string>> = {
   tr_drum_tuning: 'Drum Tuning Lab',
   tr_tuning: 'Tuning & Temperament Lab',
   tr_sound_systems: 'Sound Systems Lab',
+  tr_dj: 'DJ Systems Lab',
   tr_eq: 'EQ Lab',
   tr_preprod: 'Audio Pre-Production',
   tr_postprod: 'Audio Post-Production',

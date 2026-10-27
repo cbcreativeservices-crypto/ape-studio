@@ -43,6 +43,13 @@
  * test/djMusic and test/djLab. Documented in docs/labs/dj/MODEL.md; sources
  * and unknowns in docs/labs/dj/SOURCES.md (never shown to learners).
  *
+ * CERTIFICATE CREDIT [MD:R3] (owner 2026-10-18: required by both DJ
+ * credentials once all 24 screens exist; built 2026-10-27). The lab's key is
+ * tr_dj (trainingLabKeys, by this route). PagedLab reports it once every
+ * REQUIRED screen is done (`labDoneKey`) — the FINISH that ends screen 24
+ * when it completes the set — and the backfill (trainingCompletion) credits a
+ * lab finished on builds 39/23 before this update, from `ape:dj-systems:v1`.
+ *
  * MEMBERS ONLY — nothing here is free for a guest (owner 2026-10-18). The gate
  * is RootNavigator's MemberGated.DJSystemsLab (withMembershipPreview →
  * useMemberGate), reading `member: true` on this lab's catalog leaf.
@@ -52,10 +59,11 @@ import { PagedLab } from '../kit/PagedLab';
 import { releaseTracks } from './engine/djMusic';
 import { clearDeckCache } from './engine/djRender';
 import { DJ_GOALS, DJ_PAGE_NO, DJ_PAGES } from './pages';
-import { isOptionalNo } from './pages/registry';
+import { DJ_LAB_ID, isOptionalNo } from './pages/registry';
+import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
 import { leftLine } from './booth/goalStore';
 
-export const DJ_LAB_ID = 'dj-systems';
+export { DJ_LAB_ID };
 export const DJ_LAB_TITLE = 'DJ Systems Lab';
 
 export const DJ_ACCURACY_DETAIL =
@@ -95,6 +103,7 @@ export function DJSystemsLabScreen() {
       pageDetail={leftDetail}
       accuracyDetail={DJ_ACCURACY_DETAIL}
       optionalPage={optionalPage}
+      labDoneKey={trainingKeyFor('DJSystemsLab')}
     />
   );
 }

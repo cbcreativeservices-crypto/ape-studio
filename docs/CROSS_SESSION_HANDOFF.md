@@ -681,16 +681,22 @@ affects other side: Comp A — owner decisions for the forgotten-items brief: R1
 needs: nothing new [MD:R13]
 
 
+### 2026-10-27 09:40 · ccode · PROTOCOL 24 safeguards + wake-to-login bug fix
+changed: (1) test/holdRegistry_20261027 — every parked feature (⏸ / on HOLD / _READY=false / until Comp A) cites its must-do row [MD:<id>]; 38 stale hold comments rewritten past-tense, 9 active tagged (D12, H1); new must-do rows H1–H4 + ids E1–E5. (2) docs/live/LIVE_SERVER_SNAPSHOT.json + SERVER_ONLY_ALLOWLIST.json + test/liveServerMatch_20261027 — every called function must be live, every uncalled live function explained (found: employer-issue-code not deployed = R2; instructor_share_* never called = H2; pause_inactive unscheduled = H3; employer_profile_public unused = H4). (3) Splash wake fix (owner's iPhone report, must-do D13): a stalled start-up session read on a device whose account marker names an account now goes to Main instead of the login screen; test/splashWakeStall_20261027. Hooks (outside the repo): owner_inbox, mustdo_status, claim_check; scheduled task ape-nightly-reconciliation 03:30. Full suite 15,007/15,007.
+affects other side: Comp A — please log in this file whenever a server function goes live; the nightly run now diffs the live server every day. Open server items for you: [MD:R2] [MD:H3] [MD:H4]
+needs: Comp A: R2, H3, H4 per owner GO [MD:R2]
+
+### 2026-10-27 09:37 · ccode · 82b30447
+changed: R3: DJ Systems Lab records completion (tr_dj) for both DJ credentials; R11 seed comments
+affects other side: Comp A — the app (branch r3-dj-lab-completion, rides the post-approval OTA) now sends mark_lab_complete('tr_dj') when the DJ Systems Lab is done, and the bundled requirement copy lists tr_dj for cert-dj-and-club-sound-v3 + prog-dj-and-club-audio-v3. docs/APE_LAB_CERT_REQUIREMENTS_SEED_2026_10_13.sql was regenerated and now contains them too — do NOT re-run it whole [MD:R3]
+needs: Comp A, owner's GO [MD:R3]: apply Downloads/2026-10-27_R3_DJ_LAB_SQL_DRAFT.sql in its SAFE ORDER — STEP 1 (labs row tr_dj) any time, it is harmless; STEP 2 (the 2 requirement rows) only after the OTA is on phones (A2 + A4) and after A6 (enforcement is off today, lab_requirements_enforced() = false); then paste the VERIFY select
+
+
 ### 2026-10-27 09:14 · ccode · 528ae813
 changed: Merge D12: My Custom List scenarios + practice quiz (owner GO 2026-10-27)
 affects other side: Comp A — the custom-list RPCs you shipped are now called by the app (D12 closed on our side)
 needs: nothing
 
-
-### 2026-10-27 09:40 · ccode · PROTOCOL 24 safeguards + wake-to-login bug fix
-changed: (1) test/holdRegistry_20261027 — every parked feature (⏸ / on HOLD / _READY=false / until Comp A) cites its must-do row [MD:<id>]; 38 stale hold comments rewritten past-tense, 9 active tagged (D12, H1); new must-do rows H1–H4 + ids E1–E5. (2) docs/live/LIVE_SERVER_SNAPSHOT.json + SERVER_ONLY_ALLOWLIST.json + test/liveServerMatch_20261027 — every called function must be live, every uncalled live function explained (found: employer-issue-code not deployed = R2; instructor_share_* never called = H2; pause_inactive unscheduled = H3; employer_profile_public unused = H4). (3) Splash wake fix (owner's iPhone report, must-do D13): a stalled start-up session read on a device whose account marker names an account now goes to Main instead of the login screen; test/splashWakeStall_20261027. Hooks (outside the repo): owner_inbox, mustdo_status, claim_check; scheduled task ape-nightly-reconciliation 03:30. Full suite 15,007/15,007.
-affects other side: Comp A — please log in this file whenever a server function goes live; the nightly run now diffs the live server every day. Open server items for you: [MD:R2] [MD:H3] [MD:H4]
-needs: Comp A: R2, H3, H4 per owner GO [MD:R2]
 
 ### 2026-10-27 09:09 · ccode · fafbe18d
 changed: D12: My Custom List scenarios + practice quiz, app half

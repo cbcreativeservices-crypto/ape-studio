@@ -38,6 +38,28 @@ export function requiredDone(numbers: readonly number[], done: (index: number) =
   return numbers.every((n, i) => isOptionalNo(n) || done(i));
 }
 
+/** The lab's PagedLab id — its saved pages live in `ape:dj-systems:v1`.
+ *  ⛔ Never renamed: the backfill reads finished screens from that store. */
+export const DJ_LAB_ID = 'dj-systems';
+
+/**
+ * The outline numbers of the REGISTERED screens, in page order, for code that
+ * must not load the screens themselves (the training-credit backfill). All 24
+ * screens are registered since 2026-10-19 (builds 39/23), so page i is screen
+ * i + 1. test/djLabCredit_20261027 keeps this equal to pages/index DJ_PAGE_NO.
+ */
+export const DJ_SCREEN_NUMBERS: readonly number[] = Array.from({ length: 24 }, (_, i) => i + 1);
+
+/**
+ * CERTIFICATE CREDIT [MD:R3] (owner 2026-10-18: the DJ lab is required by
+ * both DJ credentials). The whole lab is complete — its tr_dj key is reported
+ * — when every REQUIRED screen is done (`completed` = PagedLab's done page
+ * indexes). The same rule PagedLab's own `optionalPage` "lab done" uses.
+ */
+export function djLabComplete(completed: readonly number[], numbers: readonly number[] = DJ_SCREEN_NUMBERS): boolean {
+  return requiredDone(numbers, (i) => completed.includes(i));
+}
+
 /**
  * WHAT THIS LAB COVERS — one line per outline screen. The closing screen
  * lists the lines of the screens that are REGISTERED (so a branch without

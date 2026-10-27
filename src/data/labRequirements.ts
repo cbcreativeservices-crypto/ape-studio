@@ -286,6 +286,10 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_amp', why: 'A distributed system is an amplifier loading problem before it is anything else.' },
   ],
   'cert-dj-and-club-sound-v3': [
+    // DJ Systems Lab (owner 2026-10-18, built 2026-10-27 [MD:R3]): required by
+    // both DJ credentials once all 24 screens exist. Server rows: Comp A, in
+    // the safe order of Downloads6-10-27_R3_DJ_LAB_SQL_DRAFT.sql.
+    { key: 'tr_dj', why: 'Connecting, gain-staging, cueing, mixing and fault-finding a DJ booth is the job this certificate names.' },
     { key: 'ear_band', why: 'DJ mixing moves whole bands in and out, and you have to hear which one you just moved.' },
   ],
   'cert-drum-mixing-v3': [
@@ -651,6 +655,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     ...mk('E09'),
   ],
   'prog-dj-and-club-audio-v3': [
+    { key: 'tr_dj', why: 'Building, running and troubleshooting the DJ booth and its feed to the venue is the core of this program.' },
     { key: 'tr_eq', why: 'Club mixing and club system tuning are both frequency work.' },
     { key: 'ear_band', why: 'DJ mixing moves whole bands in and out, and you have to hear which one you just moved.' },
   ],

@@ -78,7 +78,7 @@ describe('trainingLabKeys — the permanent server keys', () => {
   it('counts per family (2026-10-13)', () => {
     const keys = allKeys();
     const count = (p: string) => keys.filter((k) => k.startsWith(p)).length;
-    assert.equal(count('tr_'), 34);
+    assert.equal(count('tr_'), 35); // 34 + tr_dj (DJ Systems Lab, 2026-10-27, [MD:R3])
     assert.equal(count('mxb_'), 16);
     assert.equal(count('mxa_'), 20);
     assert.equal(count('ear_'), 14);

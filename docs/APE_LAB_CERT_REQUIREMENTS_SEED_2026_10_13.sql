@@ -5,6 +5,9 @@
 -- Regenerate: node scripts/gen-lab-cert-seed.mjs   (ratchet: test/labCertRequirements_20261013.test.ts)
 -- STATUS: APPROVED by the owner 2026-10-13 — ready to run.
 -- (Downloads\2026-10-13_LAB_CERT_REQUIREMENTS_MAP.md).
+-- ⛔ 2026-10-27 [MD:R3]: this file now also lists tr_dj (DJ Systems Lab) and its two DJ requirement rows.
+--   Do NOT re-run this whole seed to add them: apply Downloads\2026-10-27_R3_DJ_LAB_SQL_DRAFT.sql in its
+--   SAFE ORDER (the labs row at once; the requirement rows only after the OTA that reports tr_dj is on phones).
 --
 -- Assumes (Comp A creates them):
 --   labs(id uuid primary key default gen_random_uuid(), key text unique not null, name text not null, area text not null)
@@ -13,7 +16,7 @@
 -- Idempotent: labs are inserted ON CONFLICT (key) DO NOTHING; requirements are upserted, and any
 -- requirement row NOT in this file is deleted — the map is the whole truth.
 -- Aborts (nothing written) if any slug or lab key fails to resolve.
--- 212 labs rows, 540 requirement rows, 120 credentials.
+-- 213 labs rows, 542 requirement rows, 120 credentials.
 
 BEGIN;
 
@@ -28,6 +31,7 @@ INSERT INTO labs (key, name, area) VALUES
   ('tr_cymatics', 'Cymatics Lab', 'training'),
   ('tr_delay', 'Delay Lab', 'training'),
   ('tr_distortion', 'Distortion Lab', 'training'),
+  ('tr_dj', 'DJ Systems Lab', 'training'),
   ('tr_drum_tuning', 'Drum Tuning Lab', 'training'),
   ('tr_envelope', 'Sound Envelope & Transients Lab', 'training'),
   ('tr_eq', 'EQ Lab', 'training'),
@@ -308,6 +312,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('certificate', 'cert-dialogue-editor-v3', 'tr_speech', 'Dialogue editing is cutting around plosives, sibilance and breaths — you need to know what makes them.'),
   ('certificate', 'cert-dialogue-editor-v3', 'tr_postprod', 'Dialogue is edited inside a post workflow with a spotting session and a delivery at the end.'),
   ('certificate', 'cert-distributed-and-paging-systems-v3', 'tr_amp', 'A distributed system is an amplifier loading problem before it is anything else.'),
+  ('certificate', 'cert-dj-and-club-sound-v3', 'tr_dj', 'Connecting, gain-staging, cueing, mixing and fault-finding a DJ booth is the job this certificate names.'),
   ('certificate', 'cert-dj-and-club-sound-v3', 'ear_band', 'DJ mixing moves whole bands in and out, and you have to hear which one you just moved.'),
   ('certificate', 'cert-drum-mixing-v3', 'tr_eq', 'Separating a kit is frequency work before it is anything else.'),
   ('certificate', 'cert-drum-mixing-v3', 'tr_compression', 'Drum dynamics are controlled with compression without losing the groove.'),
@@ -616,6 +621,7 @@ INSERT INTO _lab_req_stage (credential_type, slug, lab_key, why) VALUES
   ('program', 'prog-concert-and-festival-production-v3', 'ear_frequency', 'Finding a feeding-back frequency by ear, fast, is daily work on a show.'),
   ('program', 'prog-concert-and-festival-production-v3', 'mxb_sends', 'Pre- and post-fader sends decide whether an effect follows the fader — and whether a route sends the same sound twice by mistake.'),
   ('program', 'prog-concert-and-festival-production-v3', 'mk_E09', 'A band starts as a stage plot — the fewest microphones that do the job, with every open microphone counted.'),
+  ('program', 'prog-dj-and-club-audio-v3', 'tr_dj', 'Building, running and troubleshooting the DJ booth and its feed to the venue is the core of this program.'),
   ('program', 'prog-dj-and-club-audio-v3', 'tr_eq', 'Club mixing and club system tuning are both frequency work.'),
   ('program', 'prog-dj-and-club-audio-v3', 'ear_band', 'DJ mixing moves whole bands in and out, and you have to hear which one you just moved.'),
   ('program', 'prog-earth-space-and-seismoacoustics-v3', 'mk_F16', 'Scientific arrays depend on a marked origin, one shared clock and the right spacing, or they report positions that are not real.'),

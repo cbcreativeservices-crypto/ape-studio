@@ -48,6 +48,13 @@ export const TRAINING_LABS: readonly TrainingLab[] = [
   // every TROUBLESHOOT fault, AND the LEARN understanding check
   // (features/soundsystems/labComplete.ts, shared by the hub and the backfill).
   { route: 'SoundSystemsLab', key: 'tr_sound_systems', completion: 'all-modules' },
+  // DJ Systems Lab [MD:R3] (owner 2026-10-18: required by BOTH DJ credentials
+  // once all 24 screens exist — they do, in builds 39/23). Complete when every
+  // REQUIRED screen is done (1–15 and 19–24; 16–18 are optional equipment
+  // paths): pages/registry djLabComplete, shared by PagedLab (labDoneKey) and
+  // the backfill. Added 2026-10-27; its server `labs` row and requirement rows
+  // are Comp A's (Downloads\2026-10-27_R3_DJ_LAB_SQL_DRAFT.sql, safe order).
+  { route: 'DJSystemsLab', key: 'tr_dj', completion: 'all-modules' },
   // EQ (2026-10-13): the EQ Lab banks NO per-module credit — its modules are
   // only VISITED (labVisits 'eq', "progress, never credit"), and opening a
   // screen must never earn a certificate. So it completes like the practice
