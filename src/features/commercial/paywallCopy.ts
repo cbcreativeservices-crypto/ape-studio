@@ -33,6 +33,25 @@ export function storeNotResponding(os: string): string {
   return `${name} isn’t responding right now. Please try again in a moment.`;
 }
 
+/** Restore found a purchase the store says is over (server #6 reason). Owner
+ *  OK 2026-10-26: names the phone's own store, and no "above" — the
+ *  'checking' Paywall face shows no plans; a refund points at the store,
+ *  the only one who can reverse it. */
+export function restoreEndedCopy(kind: 'expired' | 'refunded', os: string): { title: string; body: string } {
+  const store = os === 'ios' ? 'the App Store' : os === 'android' ? 'Google Play' : 'the app store';
+  const Store = store.charAt(0).toUpperCase() + store.slice(1);
+  if (kind === 'expired') {
+    return {
+      title: 'Your membership has ended',
+      body: `Your last Academy membership through ${store} has ended, so there’s nothing to restore. Choose a plan to join again.`,
+    };
+  }
+  return {
+    title: 'This purchase was refunded',
+    body: `${Store} refunded this Academy purchase, so it can’t restore access. Choose a plan to join again, or contact ${store} if you think this is a mistake.`,
+  };
+}
+
 /** The buy button's label (H5 plan-named buttons, H6 gold). */
 export function buyLabel(plan: PlanId, storePrice: string | undefined, guest: boolean): string {
   if (guest) return COPY.createAccountToContinue;

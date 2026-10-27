@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-26 23:15 · ccode · #6 restore wording (owner OK)
+changed: Restore 'expired'/'refunded' messages now come from `restoreEndedCopy(kind, os)` in paywallCopy.ts: they name the phone's own store (the App Store / Google Play), drop "Choose a plan above" (the 'checking' Paywall face shows no plans), and a refund points at the store. Pinned verbatim in test/restoreReasons_20261023. Full suite 14,983/14,983. JS only, rides the post-approval OTA.
+affects other side: none
+needs: nothing
+
 ### 2026-10-26 22:55 · ccode · D8 (toddler-hunt app halves) already shipped
 changed: Checked before building. All four app halves were committed 2026-10-23 and are in build source 802c3d7c (iOS 39 / Android 23): #11 p_client_msg_id 5cc13851, #3 purchase tag 0c61cfe7, #15 plain_english_preview 72c7f6c7, #6 restore reasons 26d90ccb. No code change. The only open item is the owner OKing the #6 expired/refunded wording.
 affects other side: none

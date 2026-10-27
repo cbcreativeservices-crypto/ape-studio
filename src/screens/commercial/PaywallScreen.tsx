@@ -48,7 +48,7 @@ import {
 } from '../../features/commercial/purchase';
 import { PLANS as IAP_PLANS, type PlanId } from '../../features/commercial/iapProducts';
 import { localizePlans, type PlanCopy } from '../../features/commercial/storePrices';
-import { buyLabel, planIdOf, purchaseDisclosure, storeNameFor, storeNotResponding } from '../../features/commercial/paywallCopy';
+import { buyLabel, planIdOf, purchaseDisclosure, restoreEndedCopy, storeNameFor, storeNotResponding } from '../../features/commercial/paywallCopy';
 import { fitValue } from '../../theme/legibility';
 import { useLatchedPress } from '../../lib/latch';
 import type { RootStackParamList } from '../../navigation/types';
@@ -442,13 +442,13 @@ export function PaywallScreen({ navigation, route }: Props) {
             notify('Purchase', PENDING_MESSAGE);
             return;
           case 'expired':
-            // The store answered: the subscription ended (server #6, 2026-10-23).
-            notify('Your membership has ended', 'The store says your last Academy subscription has expired, so there is nothing to restore. Choose a plan above to join again.');
+          case 'refunded': {
+            // The store answered: the subscription ended or was refunded
+            // (server #6, 2026-10-23; wording owner OK 2026-10-26).
+            const c = restoreEndedCopy(result, Platform.OS);
+            notify(c.title, c.body);
             return;
-          case 'refunded':
-            // The store answered: the purchase was refunded (server #6, 2026-10-23).
-            notify('Purchase was refunded', 'The store says this Academy purchase was refunded, so it can’t restore access. Choose a plan above to join again.');
-            return;
+          }
           case 'unavailable':
             notify(
               'Purchasing unavailable',

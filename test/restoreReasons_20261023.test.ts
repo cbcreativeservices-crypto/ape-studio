@@ -6,6 +6,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
+import { restoreEndedCopy } from '../src/features/commercial/paywallCopy.ts';
 
 const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 const purchase = read('src/features/commercial/purchase.ts');
@@ -23,7 +24,30 @@ test('restore maps all-expired / all-refunded / all-pending failures', () => {
   assert.ok(purchase.indexOf("return 'linked';") < purchase.indexOf("return 'expired';"));
 });
 
-test('the paywall states both new outcomes', () => {
-  assert.match(paywall, /case 'expired':\s*\/\/[^\n]*\n\s*notify\('Your membership has ended'/);
-  assert.match(paywall, /case 'refunded':\s*\/\/[^\n]*\n\s*notify\('Purchase was refunded'/);
+test('the paywall states both new outcomes through restoreEndedCopy', () => {
+  assert.match(paywall, /case 'expired':\s*case 'refunded': \{[\s\S]*?restoreEndedCopy\(result, Platform\.OS\);\s*notify\(c\.title, c\.body\);/);
+});
+
+// Owner OK 2026-10-26: the phone's own store by name, no "above" (the
+// 'checking' Paywall face shows no plans), a refund points at the store.
+test('restore wording, verbatim, on both phones', () => {
+  assert.deepEqual(restoreEndedCopy('expired', 'ios'), {
+    title: 'Your membership has ended',
+    body: 'Your last Academy membership through the App Store has ended, so there’s nothing to restore. Choose a plan to join again.',
+  });
+  assert.deepEqual(restoreEndedCopy('refunded', 'ios'), {
+    title: 'This purchase was refunded',
+    body: 'The App Store refunded this Academy purchase, so it can’t restore access. Choose a plan to join again, or contact the App Store if you think this is a mistake.',
+  });
+  assert.deepEqual(restoreEndedCopy('expired', 'android'), {
+    title: 'Your membership has ended',
+    body: 'Your last Academy membership through Google Play has ended, so there’s nothing to restore. Choose a plan to join again.',
+  });
+  assert.deepEqual(restoreEndedCopy('refunded', 'android'), {
+    title: 'This purchase was refunded',
+    body: 'Google Play refunded this Academy purchase, so it can’t restore access. Choose a plan to join again, or contact Google Play if you think this is a mistake.',
+  });
+  for (const k of ['expired', 'refunded'] as const) {
+    for (const os of ['ios', 'android', 'web']) assert.doesNotMatch(restoreEndedCopy(k, os).body, /above|The store says/);
+  }
 });
