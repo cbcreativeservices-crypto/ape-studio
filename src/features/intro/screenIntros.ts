@@ -164,7 +164,7 @@ export const SCREEN_INTROS: Record<
     body:
       'We built this academy to be a trusted place to learn.\n\n' +
       'Our glossary, lessons, and quizzes are created for education—not advertising. Companies cannot pay to influence our definitions, recommendations, or learning content.\n\n' +
-      'You’ll never have to deal with intrusive ads or annoying pop-ups interrupting your learning. Our focus is simple: provide clear, unbiased, and technically accurate audio education that puts students first.\n\n' +
+      'You’ll never have to deal with intrusive ads or sales pop-ups interrupting your learning. Our focus is simple: provide clear, unbiased, and technically accurate audio education that puts students first.\n\n' +
       'Our pricing is just as straightforward. One membership. Not a series of extra charges—what your membership includes stays included, with no add-ons or surprise fees.\n\n' +
       'Thank you for learning with us.',
   },
@@ -186,7 +186,7 @@ export const SCREEN_INTROS: Record<
       'Learn one term at a time with an interactive deck designed to build long-term mastery.\n\n' +
       '•  Swipe left or right to move through the deck.\n\n' +
       '•  Tap a card to reveal additional learning levels, including definitions, explanations, examples, and related information.\n\n' +
-      '•  Show All displays both the term and definition together on the same card, while Full Screen provides a distraction-free study experience.',
+      '•  Tap the eye button to see the term and its definition together (FULL VIEW), or the green full-screen button for distraction-free study.',
     button: 'Tap anywhere to continue',
   },
   // T2 — after ~5 card views/swipes (final copy, user-provided 2026-07-18).
@@ -195,8 +195,9 @@ export const SCREEN_INTROS: Record<
     title: 'Customize Your Deck',
     body:
       'Study exactly what you want.\n\n' +
-      'Use Filters to show or hide different definitions, learning status, bookmarks, favorites, or your own ' +
-      'custom categories. Build a flashcard deck that’s tailored to your learning goals.',
+      'Use FILTER to choose which parts of each definition appear when you reveal a card. Use the BEG, INT, ADV, ' +
+      'KNOWN, Bookmarks and Custom list buttons to choose which cards are in your deck. Build a flashcard deck ' +
+      'that’s tailored to your learning goals.',
     button: 'Got It',
   },
   // T3 — first category long-press, or ~45s in (final copy, user-provided
@@ -206,12 +207,12 @@ export const SCREEN_INTROS: Record<
     title: 'Power Features',
     body:
       'Unlock additional ways to organize and study.\n\n' +
-      'Press and hold any category button—such as Beginner, Intermediate, Advanced, Known, Bookmarks, or ' +
-      'Custom—to view everything inside that category. From there, you can review terms, edit custom lists, and ' +
-      'reassign terms between categories.\n\n' +
+      'Press and hold any category button—BEG, INT, ADV, KNOWN, Bookmarks or Custom list—to view everything ' +
+      'inside that category. From there, you can review terms and add them to Known, Bookmarks or your Custom ' +
+      'list.\n\n' +
       'Mark terms as Known as you master them, and use Bookmarks or Custom categories to create personalized ' +
       'study collections.',
-    button: 'Start Studying',
+    button: 'Got it',
   },
   // DAW Fundamentals (the free topic) only — see features/intro/topicScopeNote
   // (owner 2026-10-26: "don't see a term? ... you write the text"). Topic
@@ -275,7 +276,7 @@ export const SCREEN_INTROS: Record<
     body:
       'Everything you earn lives in three collections.\n\n' +
       'TOPICS — every topic quiz you pass is banked here.\n\n' +
-      'CERTIFICATES — complete a certificate’s required topics and labs to earn it.\n\n' +
+      'CERTIFICATES — complete a certificate’s required topics and labs, then pass its Final Exam to earn it.\n\n' +
       'PROGRAMS — a broad topic path across a whole discipline, earned the same way.\n\n' +
       'Tap any collection to see what you’ve earned and what’s still ahead.',
     button: 'Tap anywhere to continue',

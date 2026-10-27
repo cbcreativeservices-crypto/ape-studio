@@ -267,7 +267,7 @@ describe('#2 unfinished Android purchases are re-checked once per app open', () 
 describe('#27 guests are told a free ACCOUNT includes the calculations', () => {
   it('the sentence, and where it sits', () => {
     const copy = read('src/lib/copy.ts');
-    assert.match(copy, /calcFreeAllowance: 'A free account also includes 5 calculations a week; membership removes both limits\.'/);
+    assert.match(copy, /calcFreeAllowance: 'A free account also includes 5 calculations a week\.'/);
     assert.doesNotMatch(copy, /Free use also includes 5 calculations/);
     for (const f of ['src/features/commercial/UpgradeSheet.tsx', 'src/screens/commercial/PaywallScreen.tsx']) {
       assert.match(read(f), /COPY\.glossaryFreeAllowance \+ ' ' \+ COPY\.calcFreeAllowance/, f);

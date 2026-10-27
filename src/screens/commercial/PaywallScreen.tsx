@@ -491,8 +491,8 @@ export function PaywallScreen({ navigation, route }: Props) {
       notify(
         // Ratified by the owner 2026-09-14
         'Manage subscription',
-        // Ratified by the owner 2026-09-14
-        'We couldn’t open your app-store subscription settings. Open the App Store or Play Store app and look under Subscriptions.',
+        // Ratified by the owner 2026-09-14; names the phone's own store (popup review C9, owner OK 2026-10-26)
+        `We couldn’t open your ${storeNameFor(Platform.OS)} subscription settings. Open the ${storeNameFor(Platform.OS)} app and look under Subscriptions.`,
       );
     });
   };

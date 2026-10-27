@@ -56,7 +56,7 @@ export function EnrollmentHelpMenu() {
             {/* The amber glass glow (owner 2026-10-23) — the same backlit gold key
                 as Home's CERTIFICATES & PROGRAMS. */}
             <GlassButton
-              label="HOW YOUR LEARNING IS ORGANIZED"
+              label="UNDERSTAND WHAT YOU’LL ENCOUNTER"
               tint="gold"
               height={50}
               fontSize={13}

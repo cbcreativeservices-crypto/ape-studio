@@ -18,6 +18,7 @@ import Constants from 'expo-constants';
 import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
 import { notify } from '../../lib/confirm';
+import { storeNameFor } from '../commercial/paywallCopy';
 import { trackEvent } from '../telemetry/telemetry';
 import { markIntentionalSignOut } from '../auth/intentionalSignOut';
 import { lookUpDeletedAccount, signOutThisDevice } from '../auth/api';
@@ -143,7 +144,7 @@ export async function openSubscriptions(provider: Provider | null, flow: ExitFlo
     notify(
       // Ratified by the owner 2026-09-14 (PaywallScreen onManage)
       'Manage subscription',
-      'We couldn’t open your app-store subscription settings. Open the App Store or Play Store app and look under Subscriptions.',
+      `We couldn’t open your ${storeNameFor(Platform.OS)} subscription settings. Open the ${storeNameFor(Platform.OS)} app and look under Subscriptions.`,
     );
     return false;
   }

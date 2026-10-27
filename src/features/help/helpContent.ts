@@ -68,7 +68,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'start-replay',
         q: 'Can I see the welcome screens and hints again?',
-        a: 'Yes — use “Replay onboarding hints” at the bottom of this screen (also in Settings). Every intro and tip will show again on its next open.',
+        a: 'Yes — use “Replay onboarding hints” at the bottom of this screen (also in Settings). Screen intros and tips show again the next time you open each screen. To watch the intro video again, tap Replay intro on Home.',
       },
     ],
   },
@@ -222,7 +222,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'tools-limits',
         q: 'Why did a calculator or the glossary stop and ask me to wait?',
-        a: 'The free tier has rolling weekly limits — 5 calculator results and 14 glossary lookups in any 7 days. Academy membership removes both caps.',
+        a: 'The free tier has weekly limits — 5 calculations and 14 glossary definitions a week; each count resets one week after your first use. Academy membership removes both caps.',
       },
     ],
   },

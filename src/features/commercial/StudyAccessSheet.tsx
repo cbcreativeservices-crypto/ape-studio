@@ -97,13 +97,14 @@ export function StudyAccessSheet({
             : 'To study it: tap UNLOCK ACADEMY ACCESS below and choose a membership. Everything on this topic opens the moment it is active.'}
         </Text>
         <Text style={styles.body}>
-          You can explore individual terms in the glossary for free. Academy membership unlocks the
-          complete study path for this topic—including flashcards, homework — fill in the blank
-          and matching — scenarios, and the Topic Quiz.
+          You can explore individual terms in the glossary for free (14 definitions a
+          week). Academy membership unlocks the complete study path for this topic—including flashcards,
+          homework (fill-in-the-blank and matching), scenarios, and the Topic Quiz.
         </Text>
         <Text style={styles.body}>
-          Your progress is saved as you complete topics, earn achievements, and work toward
-          certificates and verified completion records.
+          {/* Popup review C6 (owner OK 2026-10-26): a guest's work is never saved (D57). */}
+          {guest ? 'With an account and membership, your progress is saved' : 'Your progress is saved'} as you
+          complete topics, earn achievements, and work toward certificates and verified completion records.
         </Text>
 
         {offerFree ? (

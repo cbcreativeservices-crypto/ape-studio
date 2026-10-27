@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 00:20 · ccode · popup review C1–C10 applied (owner OK); C11 waits on the Pixel
+changed: Owner-approved texts brought in line with the app: Flashcards intro (eye button / FULL VIEW, green full screen), Customize Your Deck (FILTER = definition parts; BEG/INT/ADV/KNOWN/Bookmarks/Custom list choose cards), Power Features (chip names, no 'reassign', button 'Got it'), Trophy Case (+ Final Exam), Commitment ('sales pop-ups'), Study access sheet (guest progress line; '14 definitions a week'; punctuation), Help start-replay + tools-limits, calcFreeAllowance drops the duplicate 'removes both limits', manage-subscription fallback names the phone's own store (exit/api + Paywall), Enrollments menu label = popup title. New test/popupReviewC_20261026. Full suite 14,987/14,987. C11: code says left/right swipe (the review's up/down was wrong); phone check is must-do D9.
+affects other side: none
+needs: nothing
+
 ### 2026-10-26 23:50 · ccode · popup copy review: 14 group-D mismatches fixed (owner GO)
 changed: Downloads/2026-10-26_POPUP_COPY_REVIEW D1–D14, each checked against the code first: sound-safety footnote (no Help re-read), Help delete-account answer (exit flow), Home guest gate title/body, calc workflow gate uses CALC_WEEKLY_LIMIT and says 'free account', Hints-reset notice (Settings + Help), Commitment popup drops the second 'Welcome', sound-safety 'free topic' → 'open to everyone' (no SOUND_SAFETY_VERSION bump: obligation unchanged), Home 'COMING SOON' → 'CAN’T LOAD' + 'Topics didn’t load', Dashboard sign-out names the device wipe (Settings' list), permission reset names the microphone, guest quiz text, mic explainer names voice search, lab requirements drop 'yet', 'Membership Expired' → 'Your membership has ended'. Tests updated; full suite 14,983/14,983. JS only, rides the post-approval OTA. Group C (owner-approved wording) waits on the owner.
 affects other side: none

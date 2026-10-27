@@ -105,7 +105,7 @@ export const COPY = {
    *  guest to create an account first, so "Free use also includes…" was false
    *  to a guest. True for a signed-in free account too, so one string serves
    *  both; it follows `glossaryFreeAllowance` on the Upgrade sheet + Paywall. */
-  calcFreeAllowance: 'A free account also includes 5 calculations a week; membership removes both limits.',
+  calcFreeAllowance: 'A free account also includes 5 calculations a week.',
   /** The lab-preview sheet once the person BECOMES a member while it is open
    *  (toddler hunt #32, owner 2026-10-14): no more selling — one button that
    *  closes the sheet and leaves the (now unlocked) lab open. */
