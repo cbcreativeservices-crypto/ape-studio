@@ -1,5 +1,5 @@
 /**
- * DriveHint — "press play to drive the plate" (slider HOLD #19, owner
+ * DriveHint — "press play to drive the plate" (slider audit held item #19, owner
  * 2026-10-14). The plate and the drum only move while they are DRIVEN (the
  * tone, or the silent drive); with nothing driving, a fader move changes the
  * physics but the picture holds still, and the learner read it as a dead

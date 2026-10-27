@@ -8,7 +8,7 @@
  * A centred popup in the house intro style (never a pulldown, never a raw
  * Alert): the glossary TERM as the title, its PLAIN-ENGLISH text exactly as
  * the glossary has it underneath, one CONTINUE. Which term each lab gets, and
- * the labs still on HOLD, are in labTermIntroData.ts.
+ * any lab left without one (status 'hold'; none today), are in labTermIntroData.ts.
  *
  * Mounted ONCE, by withMembershipPreview (the wrapper every lab route goes
  * through), beside the lab screen — `require`d there on first use, so none of
@@ -68,7 +68,7 @@ export function LabTermIntroHost({
   freeLab?: boolean;
 }) {
   const term = wiredLabTerm(labTermKey(routeName, params));
-  if (!term) return null; // not a catalog lab, on HOLD, or 'none': nothing, and nothing owed
+  if (!term) return null; // not a catalog lab, a 'hold' row, or 'none': nothing, and nothing owed
   return <LabTermIntro term={term} freeLab={freeLab} />;
 }
 

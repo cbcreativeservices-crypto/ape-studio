@@ -476,7 +476,7 @@ export function BassLabScreen() {
               }
             : {
                 // Only 4 touch points (½ ⅓ ¼ ⅕), so TAP BUTTONS, not a fader
-                // (slider audit HOLD #6, owner 2026-10-14): a 4-detent lane
+                // (slider audit held item #6, owner 2026-10-14): a 4-detent lane
                 // snapped on release and read as "the slider jumped". Sticky
                 // so the nodes can be A/B'd while the wave redraws + retunes.
                 kind: 'options',

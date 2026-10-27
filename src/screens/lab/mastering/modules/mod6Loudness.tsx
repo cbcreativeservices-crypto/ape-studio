@@ -25,7 +25,7 @@ import { drivePreview, matchPreview } from '../masteringEngine';
 import { MODEL_BADGE, RENDER_BADGE, type ModuleProps } from './shared';
 
 const CEILING = -1.0;
-/** On the glass while the LOUDER picture is a drivePreview estimate (HOLD #20). */
+/** On the glass while the LOUDER picture is a drivePreview estimate (slider audit held item #20). */
 const DRIVE_PREVIEW_NOTE = 'ESTIMATE · RENDERS WHEN YOU LET GO';
 /** The LISTEN step's index in the steps below (pinned by test/perfDecisionsC_20261004). */
 const LISTEN_STEP = 1;
@@ -97,7 +97,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
   // read the old drive's numbers beside the new fader, and after MATCH off
   // the glass still said "played at −x dB · matched" (toddler pass 2).
   const current = pb.current;
-  // DRIVE PREVIEW (slider HOLD #20): between a DRIVE move and its render the
+  // DRIVE PREVIEW (slider audit held item #20): between a DRIVE move and its render the
   // glass drew the OLD drive's waveform. While the shown LOUDER is stale it
   // is estimated from the undriven QUIETER render (same limiter, same
   // ceiling) — it follows the fader at the lane's own rate (the rack hands

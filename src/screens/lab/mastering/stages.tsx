@@ -160,7 +160,7 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
    *  same render is drawn. The dock keys stay the named transport. */
   onTap?: () => void;
   /** The picture is a live ESTIMATE while a fader moves (drivePreview, slider
-   *  HOLD #20): this note says so where the match line sits. */
+   *  audit held item #20): this note says so where the match line sits. */
   previewNote?: string;
 }) {
   const H = WAVE_H;

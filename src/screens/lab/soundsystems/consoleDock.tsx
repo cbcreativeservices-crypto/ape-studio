@@ -3,7 +3,7 @@
  * bind to the shared lane (a channel fader, a send pot, a DCA, a wedge send).
  * The lane is 0..1; these own the dB mapping, the 1 dB snap and the OFF
  * floor the console engine uses. The mapping is a CONSOLE-FADER TAPER, not
- * linear in dB (HOLD #7, owner default 2026-10-14): unity about three
+ * linear in dB (held item #7, owner default 2026-10-14): unity about three
  * quarters up, +10 at the top, the scale closing up toward OFF at the
  * bottom — see src/features/soundsystems/faderTaper.ts.
  */

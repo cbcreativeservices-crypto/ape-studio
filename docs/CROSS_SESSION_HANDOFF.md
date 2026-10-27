@@ -675,10 +675,15 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 09:40 · ccode · PROTOCOL 24 safeguards + wake-to-login bug fix
+changed: (1) test/holdRegistry_20261027 — every parked feature (⏸ / on HOLD / _READY=false / until Comp A) cites its must-do row [MD:<id>]; 38 stale hold comments rewritten past-tense, 9 active tagged (D12, H1); new must-do rows H1–H4 + ids E1–E5. (2) docs/live/LIVE_SERVER_SNAPSHOT.json + SERVER_ONLY_ALLOWLIST.json + test/liveServerMatch_20261027 — every called function must be live, every uncalled live function explained (found: employer-issue-code not deployed = R2; instructor_share_* never called = H2; pause_inactive unscheduled = H3; employer_profile_public unused = H4). (3) Splash wake fix (owner's iPhone report, must-do D13): a stalled start-up session read on a device whose account marker names an account now goes to Main instead of the login screen; test/splashWakeStall_20261027. Hooks (outside the repo): owner_inbox, mustdo_status, claim_check; scheduled task ape-nightly-reconciliation 03:30. Full suite 15,007/15,007.
+affects other side: Comp A — please log in this file whenever a server function goes live; the nightly run now diffs the live server every day. Open server items for you: [MD:R2] [MD:H3] [MD:H4]
+needs: Comp A: R2, H3, H4 per owner GO [MD:R2]
+
 ### 2026-10-27 08:22 · ccode · 6402ca13
 changed: docs: must-do R1-R13 from the 2026-10-27 forgotten-items reconciliation
 affects other side: Comp A: see must-do R2, R5, R6 (ccode confirms the app reads the secret users columns only via my_identity), R7, R8, R12, R13 and D12 (custom-list RPCs confirmed live)
-needs: Comp A: please log in CROSS_SESSION_HANDOFF.md whenever a function ccode is waiting on goes live
+needs: Comp A: please log in CROSS_SESSION_HANDOFF.md whenever a function ccode is waiting on goes live [MD:D12]
 
 
 ### 2026-10-27 08:10 · ccode · c766b8b2
@@ -690,7 +695,7 @@ needs: nothing
 ### 2026-10-27 02:30 · ccode · popup review round 2 applied (owner GO); DB text reviewed (read-only)
 changed: Downloads/2026-10-27_POPUP_COPY_REVIEW_2 D1–D13, A1–A6, B1–B4, C1–C3 applied, each checked against code. Notable: My Custom List gets its own membership sheet (StudyAccessSheet `customList` prop — no 'MEMBERS TOPIC', no scenarios/quiz claims); its meter reads LOCKED for non-members (same flag as the switch); no 'void' left in learner text; calc workflow notices say templates are members-only (owner ruling); 'practise'→'practice' in 35 lines; Help gains 'What is My Custom List?'; About sheet guest line; Enrollments help narrowed by entry id. New test/popupReview2_20261027. Full suite 14,997/14,997, tsc clean. JS only, rides the post-approval OTA. DB popup text reviewed read-only (Downloads/2026-10-27_DB_POPUP_TEXT_REVIEW): draft SQL only, owner decides, then Comp A applies (must-do D10).
 affects other side: Comp A: once the owner approves items in the DB review, apply its appendix SQL (achievements welcomes + glossary rows)
-needs: owner decisions on the DB review
+needs: owner decisions on the DB review [MD:D10]
 
 ### 2026-10-27 00:18 · ccode · eac55b7e
 changed: Signal generator: cap warning explains dBFS and the risk (popup review A5, owner OK)
@@ -701,7 +706,7 @@ needs: nothing
 ### 2026-10-27 01:10 · ccode · popup review A1–A7, B1–B9 applied (owner GO), A5 skipped
 changed: Custom list intro (three-card icon, CUSTOM STUDY LIST button, 'practice'); DAW note button 'Got it'; quiz 'Before you begin' (not counted, clock keeps running — checked: deadline = server started_at + limit); quiz/exam app-switch + lockout wording; Audio Output banner sentence case, 'turn off' timer; Career Finder 'No account needed'; 'Log out' → 'Sign out' in all user-facing text (Help keeps '(log out)' so search still finds it); Glossary allowance says 'definitions' everywhere; calc save limits 'A free account keeps up to N'; two members-only titles; offline quiz body; 'Delete all exposure history?'; coloring/graded; Delete profile / Unpublish / Block confirms now destructive (red); Start Here 'Start a fresh run?'. A5 (signal generator) NOT applied: the proposed gloss misdefined dBFS — corrected text offered to the owner. Full suite 14,988/14,988. JS only, rides the post-approval OTA.
 affects other side: none
-needs: owner: OK the corrected A5 text
+needs: nothing now (asked: owner OK of the corrected A5 text; given, applied in eac55b7e at 00:18)
 
 ### 2026-10-26 23:48 · ccode · a435aca2
 changed: Dashboard intro: 'Swipe the topic card left or right' (checked on the Pixel; owner OK)

@@ -208,7 +208,7 @@ export function labelPlaces(r: PlanRect, s: number): { u: number; v: number; ali
 }
 
 /**
- * DOWNSTAGE = BOTTOM (owner 2026-10-16, stage-plot review HOLD 1): every LIVE
+ * DOWNSTAGE = BOTTOM (owner 2026-10-16, stage-plot review held item 1): every LIVE
  * plan shows the audience at the BOTTOM — upstage at the top, the deck's
  * downstage edge and its PA pair along the bottom, the audience marks below
  * it (the common stage-plot convention). Eleven plan families lay their stage

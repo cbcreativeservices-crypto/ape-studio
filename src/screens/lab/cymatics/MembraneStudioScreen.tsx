@@ -528,7 +528,7 @@ function MembraneStudio() {
                   // its own top labels and layout.
                   topBand={isSpeaker ? 0 : 24}
                 />
-                {/* HOLD #19: a still head / cone says why — nothing drives it.
+                {/* Slider audit held item #19: a still head / cone says why — nothing drives it.
                     Below the speaker view's top labels (CUTAWAY / CONE FROM THE FRONT). */}
                 <DriveHint driving={driving} canPlay={tone.engineReady} what={isSpeaker ? 'cone' : 'drum head'} silentKey="STRIKE › SILENT DRIVE" top={isSpeaker ? 28 : 6} />
                 </View>

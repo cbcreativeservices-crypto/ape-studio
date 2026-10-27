@@ -248,7 +248,7 @@ export const SCREEN_INTROS: Record<
     body:
       'This is your own study deck, made from any glossary terms you choose.\n\n' +
       'To add a term, tap the three-card icon beside it; tap it again to take it off. The CUSTOM STUDY LIST button shows only the terms you’ve added. Press and hold it to see and edit the whole list.\n\n' +
-      // Popup review 2 D2 (2026-10-27): scenarios are on HOLD (studyGate
+      // Popup review 2 D2 (2026-10-27): scenarios are on HOLD [MD:D12] (studyGate
       // CUSTOM_LIST_SERVER_READY) and the list has no unlock order.
       'Your deck sits on the Study dashboard like a topic of its own. You can study it with flashcards, fill-in-the-blank and matching, and every method is open from the start.\n\n' +
       // 2026-10-19: the list is ALWAYS on the Study dashboard now (no LOAD step).

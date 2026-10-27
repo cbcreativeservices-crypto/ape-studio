@@ -687,7 +687,7 @@ function LessonCard({ head, body }: { head: string; body: string }) {
 }
 
 /* ── the scene ──────────────────────────────────────────────────────────── */
-/** Why STORED SLACK stops moving once confirmed (slider HOLD #18). */
+/** Why STORED SLACK stops moving once confirmed (slider audit held item #18). */
 const SLACK_LOCK_REASON = 'confirmed — the loop is dressed and sized to the project note.';
 
 export function LabelScene({ width, completed, onComplete, openSources }: CiModuleProps) {
@@ -788,7 +788,7 @@ export function LabelScene({ width, completed, onComplete, openSources }: CiModu
      elements are simply rendered twice. ──────────────────────────────────── */
   const slackDock = (
     <View style={{ gap: 8 }}>
-      {/* LOCKED after CONFIRM (slider HOLD #18, owner 2026-10-14): the cap
+      {/* LOCKED after CONFIRM (slider audit held item #18, owner 2026-10-14): the cap
           used to keep riding the finger after the answer was banked. Same
           idiom as the rack's `locked` fader — dimmed, never takes a touch,
           the reason printed under it as "LABEL — locked: reason". */}

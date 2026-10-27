@@ -21,6 +21,9 @@ import { softDeadline } from '../lib/boundedCall';
 import { notify } from '../lib/confirm';
 import { checkMyAccountRecord, signOutHalfCreatedAccount } from '../features/auth/api';
 import { ACCOUNT_SETUP_UNFINISHED_SIGN_IN } from '../features/auth/authErrorCopy';
+import { readDeviceAccountMarker } from '../features/account/accountLocalSync';
+import { navigationRef } from '../navigation/navigationRef';
+import { clearAppDialogs } from '../components/AppDialog';
 // The reset-in-progress flag, loaded on first use (during the hold, after
 // the first frame): the app-start module graph is capped (test/perfStartTrim).
 type ResetFlag = typeof import('../features/auth/passwordResetPending');
@@ -55,7 +58,16 @@ export function SplashScreen({ navigation }: Props) {
     // (a rejection or a stall → the signed-out route, as before) and also says
     // when a STORED session's refresh could not reach the server (hunt 8,
     // 2026-10-03) — see splashRoute.ts.
-    const sessionSafe = safeSessionResult(supabase.auth.getSession(), 'Splash');
+    // ⛔ A STALLED read on a member's phone is the member (wake report
+    // 2026-10-27, see splashRoute.ts): only then is the device's account
+    // marker asked (local AsyncStorage, bounded) and carried to splashBase.
+    const sessionSafe = safeSessionResult(supabase.auth.getSession(), 'Splash').then(async (read) => ({
+      ...read,
+      storedAccount:
+        read.timedOut && !read.result.error
+          ? await softDeadline(async () => !!(await readDeviceAccountMarker()), false, 'Splash/accountMarker', 2000)
+          : false,
+    }));
     // ⚡ WARM HOME DURING THE HOLD (perf hunt 2026-10-03). A signed-in launch
     // lands on Home, whose carousel art used to start loading only once Home
     // had mounted — after the 2.5 s hold — so the first cards sat on their
@@ -156,6 +168,21 @@ export function SplashScreen({ navigation }: Props) {
         routes: [baseRoute, ...above],
       });
       if (notice) notify('Signed out', notice);
+      // CONFIRM A STALLED LAUNCH ONCE IT IS IN (wake report 2026-10-27). A
+      // refresh token found dead while Splash still showed emitted SIGNED_OUT
+      // where SessionExpiryGuard deliberately does nothing (Splash/Auth), so
+      // ask once more now: a definite "no account" goes to the login screen; a
+      // read still pending is left to SessionExpiryGuard, which acts on Main.
+      if (signedIn && read.timedOut) {
+        void safeSessionResult(supabase.auth.getSession(), 'Splash/confirm')
+          .then((late) => {
+            if (late.timedOut || splashBase(late) === 'Main') return;
+            if (!navigationRef.isReady() || navigationRef.getCurrentRoute()?.name === 'Auth') return;
+            clearAppDialogs();
+            navigationRef.reset({ index: 0, routes: [{ name: 'Auth' as never }] });
+          })
+          .catch(() => {});
+      }
       // Hold the intro ~2.5s before advancing (Booth 2026-07-11).
     }, 2500);
 

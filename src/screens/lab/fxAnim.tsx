@@ -776,8 +776,8 @@ function echoOutPath(
  *    DAMPING visibly shortens the trail.
  *  • LINEAR amplitude (a DAW overview); the lane edge = the −20 dBFS peak.
  *  • PING-PONG splits OUT into two lanes, L over R: odd repeats left, even
- *    right (the designed behaviour — see the fix notes' HOLD on the engine's
- *    cross-feed with a mono source). */
+ *    right (the designed behaviour; the fix notes held the engine's
+ *    cross-feed with a mono source until engine 10 shipped it, 2026-10-24). */
 function EchoFlow({
   w,
   h,

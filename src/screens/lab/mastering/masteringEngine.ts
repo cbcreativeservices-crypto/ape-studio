@@ -696,7 +696,7 @@ export function fitFontBoost(width: number, designW: number, minUnits: number, f
   return Math.max(1, floorPt / (minUnits * k));
 }
 
-/* ── DRIVE preview while the fader moves (slider HOLD #20, owner 2026-10-14) ─
+/* ── DRIVE preview while the fader moves (slider audit held item #20, owner 2026-10-14) ─
    The real render of a new DRIVE only lands after the fader settles; until
    then the glass showed the OLD drive's waveform beside the new number. This
    estimates the new picture from the UNDRIVEN render (QUIETER: the same

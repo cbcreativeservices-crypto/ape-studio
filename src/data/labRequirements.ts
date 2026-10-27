@@ -3,7 +3,7 @@
  * program genuinely requires, keyed by credential slug.
  *
  * ── STATUS ────────────────────────────────────────────────────────────────
- * PROPOSED 2026-10-13 — for owner review, HOLD until approved. Owner summary:
+ * Proposed 2026-10-13 and APPROVED by the owner the same day (d2d37511). Owner summary:
  * Downloads\2026-10-13_LAB_CERT_REQUIREMENTS_MAP.md. Backend seed (generated
  * FROM this file — never hand-edit it): docs/APE_LAB_CERT_REQUIREMENTS_SEED_2026_10_13.sql,
  * regenerate with `node scripts/gen-lab-cert-seed.mjs`; the ratchet

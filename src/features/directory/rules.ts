@@ -155,9 +155,9 @@ export function slugify(label: string): string {
  * message, a contact request or About text (Apple Guideline 1.2 — Comp A brief
  * Downloads/2026-10-15_COMP_A_CHAT_CONTENT_FILTER_BRIEF.md). The server raises
  * `message = 'community_rules', detail = <category>`; the category is for the
- * moderation log and is never shown. ⏸ Copy pending owner approval.
- * Until the server filter is applied nothing raises it, so this changes no
- * behaviour today.
+ * moderation log and is never shown. The copy was owner-approved 2026-10-15
+ * (bfab662f). The server filter went live ~2026-10-23 (must-do R12):
+ * community_profile_save, contact_request_send and contact_message_send raise it.
  */
 export const COMMUNITY_RULES_MESSAGE =
   'That can’t be sent: it looks like it breaks our community rules. Please rephrase.';

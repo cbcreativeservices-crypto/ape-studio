@@ -27,7 +27,7 @@ import { setSamplingActive } from './onboardingSampling';
 const HOME_ROUTE = 'Main';
 const LAST_INDEX = SAMPLER_STOPS.length - 1;
 
-// ⏸ PARKED (owner 2026-09-08): the first-run walkthrough is set aside until it's
+// ⏸ PARKED [MD:H1] (owner 2026-09-08): the first-run walkthrough is set aside until it's
 // finished — the app must NOT show it on entry. Flip back to `true` to re-enable.
 // The `#samplerpreview` web harness (SamplerPreview) still renders the screen for
 // continued development, so this only disables the on-device first-run trigger.

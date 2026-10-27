@@ -1,5 +1,5 @@
 /**
- * Drum pitch faders move in MUSICAL steps (slider audit HOLD #8, owner
+ * Drum pitch faders move in MUSICAL steps (slider audit held item #8, owner
  * 2026-10-14: "switch to musical steps (semitones)").
  *
  * A straight-Hz lane gave the low end too little travel and the top too much:

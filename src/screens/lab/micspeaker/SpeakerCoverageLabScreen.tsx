@@ -223,7 +223,7 @@ const SPK2_TINT = '#6fa8ff';
 const FILLS_TINT = '#5bff85';
 const heightWord = (h: number) => (h < 0.3 ? 'low' : h > 0.7 ? 'flown high' : 'mid');
 const lowMidHigh = (v: number) => (v < 0.33 ? 'low' : v > 0.66 ? 'high' : 'mid');
-/** The lane's own number beside its word (slider audit HOLD #21, owner
+/** The lane's own number beside its word (slider audit held item #21, owner
  *  2026-10-14: "add the number next to the word"). The map has no honest
  *  metre scale across the stage, so the number is the slider's travel. */
 const pct = (v: number) => `${Math.round(Math.max(0, Math.min(1, v)) * 100)} %`;
@@ -344,7 +344,7 @@ export function SpeakerCoverageLabScreen() {
 
   // Owner 2026-08-31: the SPKRS tray (with its cryptic "E1/E2" = "editing
   // speaker N") is replaced by direct SPKR 1 / SPKR 2 keys. POSITION and AIM were LABEL-ONLY keys
-  // (formatShort ''); the owner reversed that 2026-10-14 (slider audit HOLD
+  // (formatShort ''); the owner reversed that 2026-10-14 (slider audit held item
   // #22: "the value on the dock key is empty — show the value"), so both keys
   // carry their number again. The slider wears the target's identity:
   // amber = speaker 1, blue = speaker 2, green = the fill pair (which the

@@ -792,7 +792,7 @@ function StageViz({
   level: number;
   noiseKind: NoiseKind | null;
   gainDbAt: ((f: number) => number) | null;
-  /** STEREO BALANCE 0 (L) .. 1 (R) — drawn on the L–R strip (HOLD #17). */
+  /** STEREO BALANCE 0 (L) .. 1 (R) — drawn on the L–R strip (slider audit held item #17). */
   balance: number;
 }) {
   const clock = viz.useVizClock(running);
@@ -881,7 +881,7 @@ export function balanceWords(balance: number): string {
       : 'CENTER';
 }
 
-/** The STEREO BALANCE fader's drawn twin (slider HOLD #17, owner 2026-10-14):
+/** The STEREO BALANCE fader's drawn twin (slider audit held item #17, owner 2026-10-14):
  *  an L–R strip under the views — a centre tick and a marker that follows the
  *  fader, so a balance move is SEEN as well as heard. Read-only display. */
 function BalanceStrip({ balance, ts, height, gap }: { balance: number; ts: number; height: number; gap: number }) {
@@ -935,7 +935,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   sweepPause: { justifyContent: 'center', paddingHorizontal: 16 },
-  // STEREO BALANCE strip (HOLD #17)
+  // STEREO BALANCE strip (slider audit held item #17)
   balRow: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 4 },
   balEnd: { fontFamily: fonts.oswaldSemiBold, letterSpacing: 1, color: '#9a9ca8' },
   balTrack: { flex: 1, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.10)', justifyContent: 'center' },

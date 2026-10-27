@@ -1986,7 +1986,7 @@ export function DashboardScreen() {
   /**
    * BEGIN on the length popup: a uniform random draw of `n` of the list's terms.
    *
-   * ⏸ HOLD (studyGate.CUSTOM_LIST_SERVER_READY = false): the quiz panel is
+   * ⏸ HOLD [MD:D12] (studyGate.CUSTOM_LIST_SERVER_READY = false): the quiz panel is
    * not drawn for the custom list, so this is unreachable today. The hand-off to
    * QuizScreen lands with the server RPC — Downloads/2026-10-19_COMP_A_CUSTOM_LIST_QUIZ.md
    * §5 — and `start_quiz_attempt` must never be called with the 'flagged' id.
@@ -1994,7 +1994,7 @@ export function DashboardScreen() {
   const beginCustomQuiz = (n: number) => {
     setCustomQuizOpen(false);
     const ids = drawRandomTerms(starred, n);
-    console.warn('[custom-list quiz] HOLD — server RPC not live; drew', ids.length, 'terms');
+    console.warn('[custom-list quiz] HOLD — server RPC not live; drew', ids.length, 'terms'); // [MD:D12]
   };
   // The free topics that are actually in THIS deck, with their index, so the
   // study-access sheet can offer a real jump (owner 2026-09-17). Order follows
@@ -2350,7 +2350,7 @@ export function DashboardScreen() {
             works on the list's current terms, and an empty list answers a tap
             with a centred popup saying how to fill it. Scenarios and the quiz
             join it once the server can serve a term list (studyGate:
-            CUSTOM_LIST_SERVER_READY — HOLD). */}
+            CUSTOM_LIST_SERVER_READY — HOLD [MD:D12]). */}
         {/* EMPTY, AND HOW TO FILL IT (owner 2026-10-14). Only once the stored
             list has really been read — never over a list still loading. */}
         {isCustom && starredRead && !starredUnreadable && starred.size === 0 ? (
@@ -2609,7 +2609,7 @@ export function DashboardScreen() {
         })}
 
         {/* MY CUSTOM LIST shows its quiz only once the server can draw one from
-            a term list (HOLD — studyGate.CUSTOM_LIST_SERVER_READY). */}
+            a term list (HOLD — studyGate.CUSTOM_LIST_SERVER_READY [MD:D12]). */}
         {!isCustom || customListHasQuiz() ? (
           <>
         {/* Section header over the quiz (owner 2026-08-11) — a vented blank

@@ -80,7 +80,7 @@ export const LESSON_FRAMES: Readonly<Record<OwnInstrument, LessonFrame>> = {
 };
 
 /** The rows in front of the percussion: a brass row, then winds and strings. */
-/** DESKS (owner 2026-10-16, stage-plot review HOLD 4): the players sit in
+/** DESKS (owner 2026-10-16, stage-plot review held item 4): the players sit in
  *  pairs, desk partners sharing ONE music stand on the line between them,
  *  `PAIR` mm either side of it — wide enough for the pair's shared headphone
  *  box on its stand between their seats in the studio. */

@@ -621,7 +621,7 @@ function M3Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         setAmt(v);
         tone.set({ levelDb: levelFor(v) });
       },
-      // Word AND number on the lane (slider audit HOLD #21, owner 2026-10-14).
+      // Word AND number on the lane (slider audit held item #21, owner 2026-10-14).
       format: () => `${readout} · ${Math.round(amt * 100)} %`,
       formatShort: () => `${Math.round(amt * 100)}%`,
       tint: levelColor(amt),
@@ -697,7 +697,7 @@ function M4Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         setAmt(v);
         tone.set({ levelDb: levelFor(v) });
       },
-      // Word AND number on the lane (slider audit HOLD #21, owner 2026-10-14).
+      // Word AND number on the lane (slider audit held item #21, owner 2026-10-14).
       format: () => `${readout} · ${Math.round(amt * 100)} %`,
       formatShort: () => `${Math.round(amt * 100)}%`,
       tint: levelColor(amt),

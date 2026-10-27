@@ -133,7 +133,7 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
             params: [
               {
                 ...faderParam({ id: 'gap', label: 'GAP', value: gap, min: 0, max: 6, step: 0.5, format: (v) => (crossfade ? `crossfade on — ${XF_OVERLAP_SEC} s overlap, gap 0` : `${v.toFixed(1)} s between tracks`), formatShort: (v) => (crossfade ? 'XF' : `${v.toFixed(1)} s`), onChange: setGap, home: 2 }),
-                // HOLD #16 (owner 2026-10-14): with CROSSFADE on there is no gap to set.
+                // Slider audit held item #16 (owner 2026-10-14): with CROSSFADE on there is no gap to set.
                 locked: crossfade ? 'CROSSFADE is on — the tracks overlap, so there is no gap to set. Turn CROSSFADE off to ride GAP.' : undefined,
               } as DockParam,
               optionsParam({ id: 'order', label: 'ORDER', value: seqId, options: PROJECT_SEQUENCES.map((s) => ({ key: s.id, label: s.label, short: s.short, blurb: s.why })), onChange: setSeqId }),

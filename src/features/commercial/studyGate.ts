@@ -99,7 +99,7 @@ export function isCustomListId(id: string | null | undefined): boolean {
 }
 
 /**
- * ⏸ HOLD — SERVER NOT READY (2026-10-19).
+ * ⏸ HOLD — SERVER NOT READY (2026-10-19). [MD:D12]
  *
  * Scenarios and the quiz are SERVER-BACKED and keyed by a real topic uuid:
  * `get_scenario_homework(p_achievement_id uuid)` and
@@ -115,7 +115,7 @@ export function isCustomListId(id: string | null | undefined): boolean {
  * With this false, the dashboard never routes the custom list to either
  * server screen, so nothing can break before the server is ready.
  */
-export const CUSTOM_LIST_SERVER_READY = false;
+export const CUSTOM_LIST_SERVER_READY = false; // [MD:D12]
 
 /** The study methods the custom list offers right now. */
 export function customListMethods(serverReady: boolean = CUSTOM_LIST_SERVER_READY): string[] {

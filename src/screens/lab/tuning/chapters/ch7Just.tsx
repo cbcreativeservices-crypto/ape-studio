@@ -158,7 +158,7 @@ export function Ch7Just({ ctx }: ChapterProps) {
       },
       formatShort: (p) => `${1 + Math.round(p * (N - 1))}/${N}`,
     },
-    // Every key holds ONE slot from the first note (slider audit HOLD #28,
+    // Every key holds ONE slot from the first note (slider audit held item #28,
     // owner 2026-10-14: "keep the key fixed"). PLAY, TONIC and RETUNE used to
     // appear as NOTES revealed more of the mapping, and each new key reflowed
     // the dock — NOTES shrank and slid under the finger. The ones not usable

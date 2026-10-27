@@ -16,6 +16,19 @@
  * read that STALLED says nothing about who it is, so it keeps Splash's
  * documented fallback, the login screen (QA Wave D, 2026-09-10).
  *
+ * ⛔ …UNLESS THE DEVICE SAYS WHOSE IT IS (wake report, 2026-10-27). In real
+ * use the "stall" is almost never the keychain: auth-js's `getSession()`
+ * waits for its start-up refresh, which retries with backoff for up to 30 s
+ * (and a stalled socket is bounded only at 30 s, boundedCall.ts). So a member
+ * whose token expired while the phone sat unused, waking to a network that is
+ * not up within ~3 s, was timed out at 5 s with NO error and sent to the login
+ * screen — while the refresh then succeeded behind it. When the read stalled
+ * and the device's account marker (accountLocalSync — a uid only after a
+ * CONFIRMED account sign-in; '' for a guest) names an account, it is that
+ * member's stored session: Main. A dead refresh token still answers fast
+ * (session removed → no stall → Auth), and one that dies later is caught on
+ * Main by Splash's confirm read / SessionExpiryGuard.
+ *
  * Import-free apart from the account rule, so it is testable in node.
  */
 import { isRealAccount, type MaybeSession } from '../features/commercial/realAccount.ts';
@@ -24,6 +37,8 @@ import { isRealAccount, type MaybeSession } from '../features/commercial/realAcc
 export type SplashSessionRead = {
   result: { data: { session: MaybeSession }; error?: { name?: unknown } | null };
   timedOut: boolean;
+  /** The device's account marker names an account (asked only for a stall). */
+  storedAccount?: boolean;
 };
 
 /** The base route under whatever was pushed over Splash. */
@@ -32,5 +47,8 @@ export function splashBase(read: SplashSessionRead): 'Main' | 'Auth' {
   // The refresh could not REACH the server: the session is still stored, and
   // it is the member's (safeSessionResult marks exactly this as timedOut).
   if (read.timedOut && read.result.error?.name === 'AuthRetryableFetchError') return 'Main';
+  // The read STALLED (no answer at all) on a device whose last confirmed
+  // identity was an account: a stall is not a guest (wake report 2026-10-27).
+  if (read.timedOut && !read.result.error && read.storedAccount === true) return 'Main';
   return 'Auth';
 }

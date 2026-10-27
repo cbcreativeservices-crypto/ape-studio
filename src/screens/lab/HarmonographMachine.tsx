@@ -401,7 +401,7 @@ export function drawingPath(
   return d;
 }
 
-/* ── GHOST of the outgoing figure (slider HOLD #2, owner 2026-10-14) ──────
+/* ── GHOST of the outgoing figure (slider audit held item #2, owner 2026-10-14) ──────
    A settings change pulls a fresh sheet and the redraw takes up to a minute;
    the old figure — exactly as far as it had been drawn — stays on the paper
    at a faint alpha until the new figure completes, then it is dropped. */
@@ -546,7 +546,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
      sheet; an unfreeze resumes the same drawing. */
   const progress = useSharedValue(0);
   const runKeyRef = useRef<unknown[]>([]);
-  /** The outgoing figure, held faintly while the new one draws (HOLD #2). */
+  /** The outgoing figure, held faintly while the new one draws (slider audit held item #2). */
   const [ghost, setGhost] = useState<Ghost | null>(null);
   const ghostRef = useRef<Ghost | null>(null);
   const setGhostBoth = useCallback((g: Ghost | null) => {
@@ -579,7 +579,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
     runKeyRef.current = key;
     if (!sameRun) {
       runTokenRef.current += 1;
-      // GHOST (slider HOLD #2, owner 2026-10-14): a fader move used to wipe
+      // GHOST (slider audit held item #2, owner 2026-10-14): a fader move used to wipe
       // the sheet and the redraw takes up to a minute. The outgoing figure —
       // as far as it had been drawn — stays faintly under the new pen until
       // the new figure completes. Read BEFORE the write below (a JS write

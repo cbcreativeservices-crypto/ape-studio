@@ -1,6 +1,6 @@
 /**
  * Console-fader taper — the position ↔ dB scale of a mixing-console level
- * fader (HOLD item #7, owner default 2026-10-14: "switch to a mixing-console
+ * fader (held item #7, owner default 2026-10-14: "switch to a mixing-console
  * style scale").
  *
  * A console fader is not linear in dB: unity (0 dB) sits about three

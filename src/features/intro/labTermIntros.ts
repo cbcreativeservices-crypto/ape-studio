@@ -18,7 +18,7 @@
  *
  * This file holds no React and no storage, so the rules are node-testable:
  *   • labTermKey     — which catalog lab a route (and its params) is;
- *   • wiredLabTerm   — its term + exact glossary text, or null (HOLD / none);
+ *   • wiredLabTerm   — its term + exact glossary text, or null ('hold' / 'none');
  *   • isLabTermSeen  — seen per glossary TERM: one CONTINUE covers every lab
  *     that uses the same term (labTermSeenFlag is what CONTINUE stores);
  *   • labTermIntroState — whether the popup is OWED (the lab's own intros
@@ -58,7 +58,7 @@ export function labTermKey(routeName: string, params?: unknown): string | null {
 
 export type WiredLabTerm = { key: string; term: string; plainEnglish: string; glossaryId: string };
 
-/** The popup's copy for a lab, or null: not a catalog lab, or on HOLD. */
+/** The popup's copy for a lab, or null: not a catalog lab, or a 'hold' / 'none' row. */
 export function wiredLabTerm(key: string | null): WiredLabTerm | null {
   if (!key) return null;
   const e = LAB_TERM_ENTRIES[key];

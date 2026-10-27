@@ -29,7 +29,7 @@ import { colors, fonts } from '../../theme/tokens';
 /**
  * MY CUSTOM LIST VARIANT (popup review 2 D1, owner OK 2026-10-27). The list is
  * not a topic and offers only flashcards, fill-in-the-blank and matching
- * (studyGate `customListMethods()`; scenarios and the quiz are on HOLD), so the
+ * (studyGate `customListMethods()`; scenarios and the quiz are on HOLD [MD:D12]), so the
  * topic copy ("MEMBERS TOPIC", "scenarios, and the Topic Quiz") was untrue for
  * it. Adding terms is never gated (the Glossary toggle has no membership check),
  * so the body says so. The topic copy below is owner copy (2026-08-13) and is

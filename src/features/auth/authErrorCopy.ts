@@ -89,7 +89,7 @@ export function passwordIssue(pw: string): string | null {
 }
 
 /* ── The account RECORD and the DELETED-account lookup (toddler bug hunt
- * 2026-10-14, HOLD items 7, 9, 10b — owner-approved) ─────────────────────
+ * 2026-10-14, items 7, 9, 10b — held for the owner, then approved) ─────────────────────
  *
  * Creating an account is two steps: the auth sign-up, then
  * register_commercial_user, which writes the public.users row. When the

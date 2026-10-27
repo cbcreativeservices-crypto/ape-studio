@@ -638,7 +638,7 @@ function PlateStudio() {
                   // drive starts): the pill never sits on the plate.
                   topBand={24}
                 />
-                {/* HOLD #19: a still plate says why — nothing drives it. */}
+                {/* Slider audit held item #19: a still plate says why — nothing drives it. */}
                 <DriveHint driving={driving} canPlay={tone.engineReady} what="plate" silentKey="DRIVE › SILENT DRIVE" />
                 </View>
               ) : (

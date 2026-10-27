@@ -1,6 +1,6 @@
 /**
  * "A password reset is in progress on this device" (toddler bug hunt
- * 2026-10-14, HOLD item 8, owner-approved).
+ * 2026-10-14, item 8 — held for the owner, then approved).
  *
  * A valid recovery code signs the device in (verifyOtp → a recovery session)
  * BEFORE the new password is set. Closing the app at that moment left the

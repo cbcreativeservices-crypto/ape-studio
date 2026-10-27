@@ -852,7 +852,7 @@ function stepValue(v: number, delta: number, lo: number, hi: number): number {
 export const STRIP_FADER_TICK_MS = 16;
 
 /**
- * The channel fader's live PREVIEW (slider HOLD #20, owner 2026-10-14). Every
+ * The channel fader's live PREVIEW (slider audit held item #20, owner 2026-10-14). Every
  * dB step of a drag went straight to the page, which rebuilds the whole
  * console, the variant set and the render pipeline — so the cap and its dB
  * label only caught up when the page did, and on a busy page the fader drew
