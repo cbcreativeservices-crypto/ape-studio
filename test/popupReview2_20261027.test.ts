@@ -76,7 +76,7 @@ test('D2: the Custom Study List intro names only the methods the list has', () =
   const intros = read('src/features/intro/screenIntros.ts');
   const block = intros.slice(intros.indexOf('glossaryCustom: {'), intros.indexOf('enrollments: {'));
   assert.ok(block.length > 0);
-  const para = block.match(/'(Your deck sits on the Study dashboard[^']*)'/)?.[1] ?? '';
+  const para = block.match(/'(Your deck sits on the Study Dashboard[^']*)'/)?.[1] ?? '';
   assert.ok(para, 'the study paragraph is present');
   namesTheListsMethods(para, 'the intro');
   const copy = block.replace(/^\s*\/\/.*$/gm, '');

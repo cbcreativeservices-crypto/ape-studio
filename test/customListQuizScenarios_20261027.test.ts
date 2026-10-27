@@ -305,7 +305,7 @@ test('6. every place that describes the list names all five methods', () => {
   const body = sheet.match(/ body: '([^']*)',/)?.[1] ?? '';
   five(body, 'the membership sheet');
   const intros = read('src/features/intro/screenIntros.ts');
-  const para = intros.match(/'(Your deck sits on the Study dashboard[^']*)'/)?.[1] ?? '';
+  const para = intros.match(/'(Your deck sits on the Study Dashboard[^']*)'/)?.[1] ?? '';
   five(para, 'the intro');
   const study = HELP_CATEGORIES.find((c) => c.key === 'study')!;
   five(study.entries.find((e) => e.id === 'study-custom-list')!.a, 'the help answer');
