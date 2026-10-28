@@ -4,7 +4,7 @@
  * read only); every fix since is made HERE. convert.py will not overwrite it.
  *
  * HAND EDIT 2026-10-16 (keyboard low-end pass, after the owner's salsa piano
- * correction): NEW COPY awaiting owner approval in the grand piano EQ row.
+ * correction): new copy, OWNER APPROVED 2026-10-16 (Downloads/2026-10-16_KEYBOARD_LOW_END_CORRECTIONS.md), in the grand piano EQ row.
  *
  * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  *
@@ -95,7 +95,7 @@ export const GUIDE: MixingGuide = {
         "boost": "+1–3 dB broad at 2–4 kHz (consonants); +1–2 dB shelf at 10–12 kHz",
         "notes": "2–4 kHz carries most consonants; keep it clear but never shrill"
       },
-      // NEW COPY — owner review (2026-10-16 keyboard low-end pass).
+      // Owner-approved 2026-10-16 (keyboard low-end pass).
       {
         "source": "Grand piano",
         "cut": "Piano and voice alone: a rumble filter only, below the lowest note — the left hand is the bass. With double bass or band: HPF 40–60 Hz; −2–3 dB at 250–400 Hz; dip 2–3 kHz under the vocal",

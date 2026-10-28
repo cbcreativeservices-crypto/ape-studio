@@ -4,7 +4,7 @@
  * read only); every fix since is made HERE. convert.py will not overwrite it.
  *
  * HAND EDIT 2026-10-16 (keyboard low-end pass, after the owner's salsa piano
- * correction): NEW COPY awaiting owner approval in the piano EQ row.
+ * correction): new copy, OWNER APPROVED 2026-10-16 (Downloads/2026-10-16_KEYBOARD_LOW_END_CORRECTIONS.md), in the piano EQ row.
  *
  * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  *
@@ -103,7 +103,7 @@ export const GUIDE: MixingGuide = {
         "boost": "+1–2 dB at 3–5 kHz for finger definition",
         "notes": "Keep warmth; nylon tolerates less top boost"
       },
-      // NEW COPY — owner review (2026-10-16 keyboard low-end pass).
+      // Owner-approved 2026-10-16 (keyboard low-end pass).
       {
         "source": "Piano",
         "cut": "Piano and voice alone: a rumble filter only, below the lowest note (27.5 Hz) — the left hand is the bass. With a band: HPF 80–100 Hz if the bass covers the low end; −2–3 dB at 250–500 Hz",

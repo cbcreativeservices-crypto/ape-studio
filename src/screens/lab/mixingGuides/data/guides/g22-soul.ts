@@ -4,7 +4,7 @@
  * read only); every fix since is made HERE. convert.py will not overwrite it.
  *
  * HAND EDIT 2026-10-16 (keyboard low-end pass, after the owner's salsa piano
- * correction): NEW COPY awaiting owner approval in one Motown bullet in the notes.
+ * correction): new copy, OWNER APPROVED 2026-10-16 (Downloads/2026-10-16_KEYBOARD_LOW_END_CORRECTIONS.md), in one Motown bullet in the notes.
  *
  * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  */
@@ -354,7 +354,7 @@ export const GUIDE: MixingGuide = {
       "text": "Leave headroom for the vamp—it should be the biggest moment.",
       "bullet": true
     },
-    // NEW COPY — owner review (2026-10-16 keyboard low-end pass).
+    // Owner-approved 2026-10-16 (keyboard low-end pass).
     {
       "text": "In classic Motown-style arrangements the piano’s left hand (often with baritone sax or guitar) doubles the bass line. Keep that piano’s low end so the unison sounds thick, and balance it against the bass rather than filtering it out. Talk with the keyboardist first, or know their music.",
       "bullet": true

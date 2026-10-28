@@ -94,7 +94,7 @@ export const GUIDE: MixingGuide = {
   ],
   "eq": {
     "rows": [
-      // NEW COPY — owner review (2026-10-16 keyboard low-end pass): the piano keeps its low end.
+      // Owner-approved 2026-10-16 (keyboard low-end pass): the piano keeps its low end.
       {
         "source": "Piano (montuno: its repeating syncopated pattern)",
         "cut": "No low cut that reaches the left hand: at most a rumble filter below the lowest note (27.5 Hz); −2–3 dB at 300–600 Hz only if boxy",
@@ -163,7 +163,7 @@ export const GUIDE: MixingGuide = {
       }
     ],
     "notes": [
-      // NEW COPY — owner review (2026-10-16): the caution the owner asked for, explained rather than silently fixed.
+      // Owner-approved 2026-10-16: the caution the owner asked for, explained rather than silently fixed.
       {
         "label": "Caution — don’t low-cut the piano:",
         "text": "The most common mistake with salsa is to high-pass the piano the way you would in pop or rock, often at 100–180 Hz. In most salsa the piano often switches from its montuno to doubling the bass: in the mambos (horn-led instrumental sections), breaks and unison lines it plays the bass line with the bassist, in octaves or unison. Cut the piano’s lows and those lines go thin instead of full and fat, the way they are meant to sound. What we suggest instead: keep the piano’s low end, with at most a rumble filter below its lowest note; live, send the piano to the subwoofers with the bass; manage the bass and piano low end with balance and the arrangement (voicings, who plays what, talked over with the band), not with a filter; and if the mix is muddy, the piano is rarely the cause: an electric or stage piano on a DI brings no stage bleed, though its left hand still adds low end, and an acoustic piano only does when its mics are pushed hard into the subs and pick up the stage with it — then keep the mics close and the sub send moderate rather than cutting the piano’s low end. Look for the mud elsewhere first — horn and vocal mics, the tumba’s ring, stage wash — and make small, careful cuts there. The same holds in son (Cuban roots song style), mambo (1940s–50s Cuban big-band dance style), cha-cha-chá, timba (modern Cuban dance music) and Latin jazz, wherever the piano switches to doubling the bass. Use your ears and the room. Talk with the keyboardist first, or know their music."
@@ -354,7 +354,7 @@ export const GUIDE: MixingGuide = {
       "text": "Don’t mix salsa like rock with a big kick-and-sub foundation; it sounds heavy and unclear here.",
       "bullet": true
     },
-    // NEW COPY — owner review (2026-10-16 keyboard low-end pass).
+    // Owner-approved 2026-10-16 (keyboard low-end pass).
     {
       "text": "Don’t high-pass the piano like a pop keyboard: it often switches to doubling the bass and belongs in the subs with it (see the caution under EQ).",
       "bullet": true

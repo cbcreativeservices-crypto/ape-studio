@@ -4,7 +4,7 @@
  * read only); every fix since is made HERE. convert.py will not overwrite it.
  *
  * HAND EDIT 2026-10-16 (keyboard low-end pass, after the owner's salsa piano
- * correction): NEW COPY awaiting owner approval in the soloist/piano EQ row.
+ * correction): new copy, OWNER APPROVED 2026-10-16 (Downloads/2026-10-16_KEYBOARD_LOW_END_CORRECTIONS.md), in the soloist/piano EQ row.
  *
  * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  *
@@ -127,7 +127,7 @@ export const GUIDE: MixingGuide = {
         "boost": "None",
         "notes": "Mostly for a little definition"
       },
-      // NEW COPY — owner review (2026-10-16 keyboard low-end pass): the piano's bottom octave is part of the music.
+      // Owner-approved 2026-10-16 (keyboard low-end pass): the piano's bottom octave is part of the music.
       {
         "source": "Concerto soloist / piano",
         "cut": "Soloist: HPF 40–80 Hz. Piano: a rumble filter only, below its lowest note (27.5 Hz) — the bottom octave is part of the music; −1–3 dB at 2–4 kHz if harsh",

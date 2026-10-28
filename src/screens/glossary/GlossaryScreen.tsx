@@ -1476,8 +1476,10 @@ export function GlossaryScreen({ route, navigation }: Props) {
 
   // ---- TEMPORARY DEVICE KEY (owner 2026-09-13) ----
   // The glossary is the one screen that asks for it, because it is the one
-  // screen the gateway protects. Everything here is inert until the server side
-  // exists: `probeGateway()` answers 'absent' and `keyState` is 'ready'.
+  // screen the gateway protects. The gateway is LIVE (checked 2026-10-27:
+  // glossary_browse_v exists, anon SELECT on glossary revoked), so
+  // `probeGateway()` answers 'deployed' and a guest is asked for a device key.
+  // It answers 'absent' only on an old schema or a failed probe.
   const [gateway, setGateway] = useState<GatewayProbe | undefined>(undefined);
   const [consent, setConsent] = useState<ConsentRecord | undefined>(undefined);
   const [hasSession, setHasSession] = useState<boolean | undefined>(undefined);

@@ -4,7 +4,7 @@
  * read only); every fix since is made HERE. convert.py will not overwrite it.
  *
  * HAND EDIT 2026-10-16 (keyboard low-end pass, after the owner's salsa piano
- * correction): NEW COPY awaiting owner approval in the piano EQ row.
+ * correction): new copy, OWNER APPROVED 2026-10-16 (Downloads/2026-10-16_KEYBOARD_LOW_END_CORRECTIONS.md), in the piano EQ row.
  *
  * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  *
@@ -132,7 +132,7 @@ export const GUIDE: MixingGuide = {
         "boost": "+2 dB at 2–4 kHz (pluck); gentle shelf at 8–10 kHz",
         "notes": "Piezo pickups need a cut near 1–2 kHz quack"
       },
-      // NEW COPY — owner review (2026-10-16 keyboard low-end pass).
+      // Owner-approved 2026-10-16 (keyboard low-end pass).
       {
         "source": "Piano",
         "cut": "HPF 50–80 Hz in ballads and pop arrangements; −2–3 dB at 250–400 Hz",

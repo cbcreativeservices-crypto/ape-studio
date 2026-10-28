@@ -4,7 +4,7 @@
  * read only); every fix since is made HERE. convert.py will not overwrite it.
  *
  * HAND EDIT 2026-10-16 (keyboard low-end pass, after the owner's salsa piano
- * correction): NEW COPY awaiting owner approval in the piano/keys EQ row.
+ * correction): new copy, OWNER APPROVED 2026-10-16 (Downloads/2026-10-16_KEYBOARD_LOW_END_CORRECTIONS.md), in the piano/keys EQ row.
  *
  * Keyboardist caution owner-approved 2026-10-16: "Talk with the keyboardist first, or know their music." appended to the existing keyboard note.
  *
@@ -110,7 +110,7 @@ export const GUIDE: MixingGuide = {
         "boost": "+1–2 dB at 1–3 kHz on reeds for definition",
         "notes": "Doublers switch instruments — snapshot EQ per instrument if needed"
       },
-      // NEW COPY — owner review (2026-10-16 keyboard low-end pass).
+      // Owner-approved 2026-10-16 (keyboard low-end pass).
       {
         "source": "Piano / keys",
         "cut": "HPF 60–80 Hz, but nothing above rumble when a keyboard part covers the bass line (common in reduced orchestrations); −2–3 dB at 250–400 Hz",
