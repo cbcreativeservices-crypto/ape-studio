@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 08:00 · ccode · 4697c248
+changed: D15: website certificate thumbnails + tap-to-open, moved onto the one branch (rule 25)
+affects other side: nothing (website only; no DB change) [MD:D15]
+needs: owner: review + website deploy GO; Comp A D18 for the /verify names [MD:D15] [MD:D18]
+
+
 ### 2026-10-28 07:57 · ccode · 786a5c7b
 changed: Merge the live website branch (audio-tools-engine) into the one branch — rule 25
 affects other side: Comp A: rule 25 — ALL edits (app and website) now on ota-after-approval-39-23; audio-tools-engine is only the website deploy target [MD:D17]
