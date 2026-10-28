@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 22:06 · ccode · 57f1137b
+changed: R11: stale comments corrected (Mixing Guide approvals, glossary gateway live)
+affects other side: nothing; comments only [MD:R11]
+needs: nothing
+
+
 ### 2026-10-27 16:32 · ccode · 42487325
 changed: docs: R4 closed — store-notifications is live (v11); checklist wording corrected
 affects other side: nothing; docs only — R4 closed, store-notifications v11 re-checked live [MD:R4]
