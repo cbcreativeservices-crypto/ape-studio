@@ -23,6 +23,7 @@ const PATHS = [
   "/terms",
   "/ai",
   "/accessibility",
+  "/delete-account",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

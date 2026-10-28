@@ -131,7 +131,8 @@ export function proxy(request: NextRequest) {
       legalPublic === "/privacy" ||
       legalPublic === "/terms" ||
       legalPublic === "/support" ||
-      legalPublic === "/accessibility"
+      legalPublic === "/accessibility" ||
+      legalPublic === "/delete-account"
     ) {
       return NextResponse.next();
     }

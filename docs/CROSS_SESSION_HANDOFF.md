@@ -680,30 +680,25 @@ changed: docs: must-do D19 — branch consolidation done (rule 25); 6 old unmerg
 affects other side: Comp A: ALL edits on ota-after-approval-39-23 only (rule 25); audio-tools-engine is the website deploy target, never edited directly [MD:D19]
 needs: owner: decide the 6 old branches and the web-launch-day split [MD:D19]
 
-
 ### 2026-10-28 08:08 · ccode · ab0ee6c3
 changed: One branch holds the protocol and the post-merge hook too (rule 25): copies of ape-studio's canonical PROTOCOL_CHECK.md (rules 0-25) and scripts/hooks/post-merge
 affects other side: Comp A: read rules 0 and 25 (one branch for all edits)
 needs: nothing
-
 
 ### 2026-10-28 08:05 · ccode · c9a531fb
 changed: supabase records from final-lab onto the one branch (rule 25)
 affects other side: Comp A: repo records now match live (employer-confirm-email v14; weekly-concept migrations were applied by hand and are now recorded)
 needs: nothing
 
-
 ### 2026-10-28 08:00 · ccode · 4697c248
 changed: D15: website certificate thumbnails + tap-to-open, moved onto the one branch (rule 25)
 affects other side: nothing (website only; no DB change) [MD:D15]
 needs: owner: review + website deploy GO; Comp A D18 for the /verify names [MD:D15] [MD:D18]
 
-
 ### 2026-10-28 07:57 · ccode · 786a5c7b
 changed: Merge the live website branch (audio-tools-engine) into the one branch — rule 25
 affects other side: Comp A: rule 25 — ALL edits (app and website) now on ota-after-approval-39-23; audio-tools-engine is only the website deploy target [MD:D17]
 needs: nothing
-
 
 ### 2026-10-28 07:45 · ccode → Comp A · catch-up brief + D18 SQL (owner GO)
 changed: Brief Downloads/2026-10-28_FOR_COMP_A_CATCH_UP_AND_D18.zip: everything since Comp A's 10-27 progress note (R1+H2 merged and decisions, R7/R5 app halves, R4 docs, D15 website thumbnails built not deployed, D16 13 WAVs, A1 fingerprints, D17, safeguards) + D18 SQL and rollback [MD:D18]
@@ -2827,6 +2822,11 @@ changed: Android 3-button nav bar: bottom content clears the bar on 32 root-stac
 affects other side: nothing (app only, JS layout; ships with the post-approval OTA)
 needs: nothing
 
+### 2026-10-15 14:02 · ccode · ad30bb94
+changed: web: public /delete-account page (Play account-deletion requirement)
+affects other side: nothing yet (branch web-delete-account, NOT pushed, not live). Once the owner gives the go and it is live, A registers https://www.proaudiotrainingacademy.com/delete-account in Play Console › Data safety (brief HOLD 1).
+needs: exit-flow brief item 7 (delete_my_account(p_keep_credentials) + retained_credentials) logged live here before WEB_DELETE_ENABLED is switched on; item 8 backup window for the page copy.
+
 ### 2026-10-15 11:20 Â· ccode Â· e9edce3f
 changed: Home: tapping HOME resets the card carousel to the default card; the dot row can be dragged to move through the cards (UX review 2026-10-15)
 affects other side: nothing (app only)
@@ -4030,6 +4030,21 @@ needs: nothing
 ### 2026-10-07 07:54 Â· ccode Â· a24c61af
 changed: feat(miking): finish the restructure â€” eight-page journey wired, setups drawn, credit mapped (backup branch miking-restructure-wip only; NOT merged into final-lab, NOT published; 8263/8263)
 affects other side: nothing (client-only; Miking progress stays device-local in ape:miking:v1, old page ids kept and mapped)
+
+### 2026-10-07 07:40 · ccode · (screenshots)
+changed: iPad pass: Calc Lab after-shots at 1024×1366 / 1366×1024 / 412×915 in docs/screens/ipad_pass_2026_10_07/
+affects other side: nothing
+needs: nothing
+
+### 2026-10-07 07:21 · ccode · a54dde1b
+changed: NATIVE (next iOS build only): capture runs at the tap's rate; a 0 Hz / 0 ch input is an error, not a crash
+affects other side: nothing for the DB. ⛔ Moves the iOS runtime fingerprint — merge only with an owner-ordered build; everything before it on ipad-pass-wip is OTA-safe
+needs: nothing
+
+### 2026-10-07 07:20 · ccode · 86a1c21b
+changed: iPad pass: keep the branch OTA-safe — Swift hardening split into its own build-only commit (a54dde1b)
+affects other side: nothing
+needs: nothing
 
 ### 2026-10-07 07:18 Â· ccode Â· 81b591a7
 changed: iPad audio: no-signal verdict lives beside the clip baseline (start graph stays at 260); toddler guard allows the noSignal prop

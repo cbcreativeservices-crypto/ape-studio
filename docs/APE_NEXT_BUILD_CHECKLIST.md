@@ -453,3 +453,39 @@ the disclosure unconditionally, which is what the hard rule actually requires.
 7. **Instructor progress view**, with a short student-data statement for schools (owner 2026-10-25).
 
 > The single cross-cutting list (post-approval OTA, launch day, Comp A, 1.0.1) is `docs/APE_LAUNCH_MUST_DO.md` (D101). Keep both in step.
+
+### Adv Tuner soak freeze — native lifecycle hardening, found 2026-09-13 (needs a build)
+
+> Restored 2026-10-28 (must-do D20): this section was written 2026-09-13 on branch
+> claude/elated-proskuriakova-c876c8 and never merged, so the next build would have missed it.
+> Its two JS halves shipped 2026-10-24 (b182fa68); the NATIVE half below is still open.
+
+Owner hit a JS-thread wedge after minutes of soak in the CenterLock fullscreen
+tuner (memory `adv-tuner-soak-freeze-2026-09-13`). Two JS mitigations shipped
+the same day over Metro (tuner-frame quantized dedup; the covered tuner-mode UI
+frozen while a fullscreen overlay is open) — those need no build. What DOES
+need a build is the lifecycle evidence from the logcat capture:
+
+- **The ape-dsp capture engine outlived the React instance.** ~1 MB/s
+  NativeAlloc churn continued after `Destroying ReactInstance`, with
+  `Tried to enqueue runnable on already finished thread` spam. `ApeDspModule`'s
+  `OnDestroy` stops capture — but a WEDGED reload (`reactInstance is null.
+  Dropping work` → instance destroyed, never recreated) is exactly the path
+  where module teardown can be skipped, leaving Oboe holding the mic into a
+  dead runtime.
+- **Native change when a build is next prepared:** make capture teardown
+  independent of the happy-path module destroy — e.g. register an
+  `Application.ActivityLifecycleCallbacks` / ReactHost destroy hook in
+  `ApeDspModule.kt` that calls `nativeStopCapture` + `nativeGenStop` when the
+  hosting instance dies, so nothing keeps the HAL open into a dead runtime.
+  ⚠️ Must NOT stop the mic on ordinary screen handoffs — the warm mic session
+  (memory `mic-warm-session`) is deliberate; this is instance-death-only.
+- **Before designing further:** a Perfetto sched trace across a repro (recipe
+  in memory `adv-tuner-soak-freeze-2026-09-13`) should pin whether the wedged
+  JS thread is spinning or blocked, and identify WHO posts the dead-thread
+  runnables (nothing in `ApeDspModule.kt` posts per-frame — all frames are
+  JS-pulled — so the spam source may be the dev client itself; a release-ish
+  repro decides how much of this is launch-relevant).
+
+Per the Generator-ramp precedent above: not written into native source yet —
+apply as part of the build.
