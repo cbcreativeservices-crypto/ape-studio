@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 10:30 · ccode · 79a57250
+changed: Ported what was still useful from the 6 old branches (owner "Review and port useful"): /delete-account page switched OFF, the tuner long-run freeze native plan into the next-build checklist, iPad Calc Lab shots + old log entries. The 6 branches are deleted locally and kept as tags backup/old-branch-* on GitHub [MD:D20]
+affects other side: Comp A: once the owner switches /delete-account on and deploys, set it as the Play Data-safety deletion URL (today /support) [MD:D20]
+needs: owner: review the /delete-account copy; the next native build carries the tuner lifecycle fix [MD:D20]
+
 ### 2026-10-28 08:14 · ccode · 801d7f16
 changed: docs: must-do D19 — branch consolidation done (rule 25); 6 old unmerged branches + web-launch-day split wait on the owner
 affects other side: Comp A: ALL edits on ota-after-approval-39-23 only (rule 25); audio-tools-engine is the website deploy target, never edited directly [MD:D19]
