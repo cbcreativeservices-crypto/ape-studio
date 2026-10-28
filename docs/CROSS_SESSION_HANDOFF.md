@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 22:18 · ccode · 188acef4
+changed: docs: must-do D16 — engineer's 13 WAVs mapped; quality check first (owner)
+affects other side: nothing yet [MD:D16]; later: publishing the checked WAVs to lab-audio + lab_audio_assets rows is a server write
+needs: nothing now; the owner downloads the 13 files for the quality check [MD:D16]
+
+
 ### 2026-10-27 22:06 · ccode · 57f1137b
 changed: R11: stale comments corrected (Mixing Guide approvals, glossary gateway live)
 affects other side: nothing; comments only [MD:R11]
