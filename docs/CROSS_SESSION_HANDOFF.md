@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 07:45 · ccode → Comp A · catch-up brief + D18 SQL (owner GO)
+changed: Brief Downloads/2026-10-28_FOR_COMP_A_CATCH_UP_AND_D18.zip: everything since Comp A's 10-27 progress note (R1+H2 merged and decisions, R7/R5 app halves, R4 docs, D15 website thumbnails built not deployed, D16 13 WAVs, A1 fingerprints, D17, safeguards) + D18 SQL and rollback [MD:D18]
+affects other side: Comp A: apply D18 (dry run first), answer R4 console URLs [MD:R4]; R7b/A5/A6/D2 only after the update [MD:R7] [MD:A5] [MD:A6] [MD:D2]; person_label HOLD
+needs: Comp A reply tagged [MD:<id>] with D18 VERIFY results [MD:D18]
+
 ### 2026-10-27 23:20 · ccode · fb205d9f
 changed: scripts/suite-gate.mjs: commit only when nothing failed AND the whole suite ran (a run stopped at 8,300 tests still said fail 0)
 affects other side: nothing (ccode commit gate)
