@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# ---------------------------------------------------------------------------
+# post-merge — warn when a merge changed rows of docs/APE_LAUNCH_MUST_DO.md.
+#
+# Why (2026-10-27): merging the R1+H2 branch (0f32757c) replaced 11 must-do rows
+# with that branch's OLDER text — Comp A's "DONE … checked live" statuses for
+# R2–R8/H3/H4 went back to "owner GO to deploy", and row H5 vanished. Git saw
+# no conflict, so nothing warned. This hook lists every row the merge changed
+# or removed, and flags the ones that went BACKWARDS (a DONE status lost, or a
+# row gone), so the merging session restores them before it commits more.
+#
+# It only prints. It never edits or commits. Installed via core.hooksPath
+# (scripts/hooks), like post-commit, so it runs in every worktree.
+# ---------------------------------------------------------------------------
+LIST=docs/APE_LAUNCH_MUST_DO.md
+git rev-parse -q --verify ORIG_HEAD >/dev/null || exit 0
+git cat-file -e "ORIG_HEAD:$LIST" 2>/dev/null || exit 0
+git cat-file -e "HEAD:$LIST" 2>/dev/null || exit 0
+git diff --quiet ORIG_HEAD HEAD -- "$LIST" && exit 0
+
+OLD=$(mktemp); NEW=$(mktemp)
+git show "ORIG_HEAD:$LIST" > "$OLD"
+git show "HEAD:$LIST" > "$NEW"
+node - "$OLD" "$NEW" <<'NODE' 1>&2
+const fs = require('fs');
+const [oldF, newF] = process.argv.slice(2);
+const rows = (f) => {
+  const m = new Map();
+  for (const l of fs.readFileSync(f, 'utf8').replace(/\r\n/g, '\n').split('\n')) {
+    const r = l.match(/^\| *([A-Z]{1,2}\d{1,3}[a-z]?) *\|/);
+    if (!r) continue;
+    const cells = l.split('|').map((c) => c.trim()).filter(Boolean);
+    m.set(r[1], (cells[cells.length - 1] || '').replace(/^[~*\s(]+/, ''));
+  }
+  return m;
+};
+const a = rows(oldF), b = rows(newF);
+const done = (s) => /^(DONE|CLOSED|VERIFIED DONE)\b/.test(s || '');
+const back = [], changed = [];
+for (const [id, s] of a) {
+  if (!b.has(id)) back.push(`${id}: ROW REMOVED by the merge`);
+  else if (b.get(id) !== s) {
+    if (done(s) && !done(b.get(id))) back.push(`${id}: was "${s.slice(0, 70)}…" → now "${b.get(id).slice(0, 70)}…"`);
+    else changed.push(id);
+  }
+}
+if (!back.length && !changed.length) process.exit(0);
+console.error('\n[must-do merge check] The merge changed docs/APE_LAUNCH_MUST_DO.md.');
+if (back.length) {
+  console.error('⛔ WENT BACKWARDS (restore from ORIG_HEAD unless the branch is newer):');
+  for (const x of back) console.error('   ' + x);
+}
+if (changed.length) console.error(`   Changed rows (check each is the NEWER text): ${changed.join(', ')}`);
+console.error('   Compare: git diff ORIG_HEAD HEAD -- docs/APE_LAUNCH_MUST_DO.md\n');
+NODE
+rm -f "$OLD" "$NEW"
+exit 0
