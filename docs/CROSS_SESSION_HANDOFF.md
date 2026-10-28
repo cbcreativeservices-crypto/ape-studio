@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 08:57 · ccode · 545bc7fa
+changed: docs: launch-day switch kept as an exact recipe (B6); D19 done; D21 flaky test; protocol copy gains rule 26
+affects other side: Comp A: web-launch-day is gone; launch day = the 4-line switch on B6, on the one branch [MD:B6]
+needs: nothing
+
+
 ### 2026-10-28 08:47 · ccode · fc760b36
 changed: Merge web-launch-day into the one branch — everything except the gate switch (owner 2026-10-28 'Yes, all but the gate'; rule 25)
 affects other side: Comp A: the website now calls instructor_students + instructor_student_progress from the one branch (still not deployed); gate switch stays on web-launch-day for launch day [MD:B6]
