@@ -6,7 +6,7 @@ import RegistryResult from "@/components/RegistryResult";
 import ContactThisMember from "@/components/ContactThisMember";
 
 /**
- * Academy Registry credential lookup — the target of every member's QR code
+ * Pro Registry credential lookup — the target of every member's QR code
  * (encodes /registry/<qr_token>). Mirrors the /verify/[code] page but resolves
  * the opaque per-user token via public_verify_by_token.
  */
@@ -17,7 +17,7 @@ export default function Page() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
       <p className="font-mono text-xs uppercase tracking-[0.3em] text-amber">
-        Academy Registry
+        Pro Registry
       </p>
       <div className="mt-4 flex items-baseline justify-between gap-4">
         <h1 className="font-display text-3xl font-semibold uppercase tracking-wide text-foreground sm:text-4xl">

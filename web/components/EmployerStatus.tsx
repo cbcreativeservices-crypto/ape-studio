@@ -26,6 +26,8 @@ type App = {
   checks: Record<string, unknown> | null;
   created_at: string;
   reviewed_at: string | null;
+  /** 'employer' | 'instructor' (owner 2026-10-04: instructors verify the same way). */
+  kind?: string | null;
 };
 
 export default function EmployerStatus() {
@@ -139,6 +141,16 @@ export default function EmployerStatus() {
             ))}
           </ul>
         </div>
+      ) : null}
+
+      {app.status === "approved" && app.kind === "instructor" ? (
+        // The instructor's class lives on the website (owner 2026-10-26).
+        <a
+          href="/instructor"
+          className="mr-3 mt-5 inline-block rounded-md bg-amber px-5 py-2.5 text-sm font-semibold text-background hover:bg-amber-deep"
+        >
+          Open your students
+        </a>
       ) : null}
 
       {app.status === "approved" ? (

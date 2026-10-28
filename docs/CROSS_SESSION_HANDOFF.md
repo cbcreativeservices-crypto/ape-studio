@@ -1020,6 +1020,11 @@ changed: docs: lab upload code rotated (owner request); code not stored
 affects other side: Comp A: lab_upload_config.code_sha256 rotated by ccode on the owner's request; the old default code is dead
 needs: nothing
 
+### 2026-10-26 08:16 · ccode · 34bd8929
+changed: web (launch-day): /instructor page — a verified instructor's class from the live instructor functions (owner 2026-10-26)
+affects other side: website launch-day branch (local): new /instructor page reading instructor_my_code / instructor_students / instructor_student_progress
+needs: Comp A: a test instructor + Pro1 share for a real-data check (brief in Downloads)
+
 ### 2026-10-26 08:14 · ccode · c48da6f5
 changed: docs: engineer uploads live again (portal on + /lab-upload skips the site key); turn off when done
 affects other side: Comp A: the engineer upload is handled by ccode (portal on, /lab-upload public, pushed); no new upload page needed
@@ -1030,6 +1035,11 @@ changed: web: /lab-upload skips the site key (the upload code still protects it)
 affects other side: website: /lab-upload now answers without the key screen (exact match); lab_upload_config.is_active switched ON 2026-10-26 by ccode (owner GO), same code as 2026-09-14
 needs: Comp A: nothing; turn the portal off again (is_active=false) when the engineer is done, on the owner's word
 
+### 2026-10-26 08:01 · ccode · bfb52ba0
+changed: web (launch-day): Terms zero-tolerance clause 20.16 + consistency edits (owner-approved 2026-10-15; Comp A 2026-10-26)
+affects other side: website launch-day branch (local): Terms 20.16 zero tolerance in; its filter paragraph on HOLD
+needs: Comp A: the HOLD filter-paragraph wording once the live filter is confirmed
+
 ### 2026-10-26 07:57 · ccode · 177199f8
 changed: docs: instructor view shows every completed topic, including before sharing (owner; already true server-side)
 affects other side: Comp A: the instructor labs brief now says the instructor sees every completed topic, including before sharing; add no date filter
@@ -1039,6 +1049,11 @@ needs: nothing new (same brief, same go)
 changed: Owner GO 2026-10-26. The brief's SQL unchanged: users.intro_video_seen_at + my_intro_video_seen() + mark_intro_video_seen() (security definer, search_path ''; EXECUTE revoked from public/anon, granted to authenticated). Prechecks: none existed; users has only INSERT triggers; RLS own-row; authenticated has no UPDATE, so the column is written only via the function. Dry run on live (forced rollback): all steps pass, live unchanged after. Applied: 05_BACKUP 07:29 PT (private._bkp_introvideo_20261026), 10_APPLY. 90_VERIFY 07:41 PT PASS: column 1; pro1 false -> mark -> true (in a rolled-back block); anon denied both; grants ok; secdef + search_path ok; 0 accounts marked. Rollback: 99_ROLLBACK.sql (drops both + column; the app falls back to per-device).
 affects other side: ccode: D2 server half done; the app half (8403954e) ships with the post-approval OTA
 needs: nothing
+
+### 2026-10-26 07:14 · ccode · 2549d94a
+changed: Merge origin/audio-tools-engine into web-launch-day (owner ruling 2026-10-26: legal = the live 10-24/25 texts + what 10-22/23 added)
+affects other side: website (launch-day branch, local only): the legal pages now = the 10-22/23 rewrite + the live 2027 prices; nothing live changes until the owner pushes
+needs: nothing; push on the owner's launch-day go
 
 ### 2026-10-26 04:55 · ccode · reply-to-A (Tasks A/B/C, your 2026-10-25 post-review list)
 changed: TASK A: items 2-4 DONE (fcdab163, OTA branch). Item 5 VOID (time trial removed, D91). Item 6 PASS on the Pixel 7 Pro, Android build 23, as a guest: Membership opens the paywall; the X, Android BACK and a near-miss tap all close it to Home (iPhone not tested). Item 7: the APP half is built (8403954e): Home asks my_intro_video_seen() before the intro video; no answer keeps today's per-device rule. Item 1 moves to 1.0.1 (D98). TASK B: B6 is prepared LOCALLY on ccode's web-launch-day @ 3dbb211b (gate off + store links: Apple id6813607582, Play com.cbcreativeservices.apestudio), NOT pushed. Your own gate-off commit 93a60ff (launch-day-site-DRAFT) is on your computer, so on launch day only ONE of the two goes out. web-launch-day also conflicts with audio-tools-engine in terms.html/privacy.html (its 10-22/23 legal edits vs the newer 10-24/25 ones); the owner decides that merge. B7 CHECKED: with the gate on, /support /privacy /terms answer 200 (/about 401) and /support has the account/data deletion answer; with the gate off every path passes. TASK C: the 1.0.1 plan is in Downloads 2026-10-26_APE_1.0.1_PLAN (.md/.html): Meta SDK + ATT, purchase events (D98) with the Analytics purpose first, instructor view + student-data statement, location tag back, Fill-in/Matching review screens, camera required=false, tuner phase-2 bench; owner decisions marked inside.
@@ -1053,6 +1068,11 @@ needs: nothing
 ### 2026-10-26 04:37 · ccode · 8403954e
 changed: Intro video once per ACCOUNT (app half, D2/D99 item 7) + D1 paywall PASS + D7 comment
 affects other side: Comp A: SQL for my_intro_video_seen / mark_intro_video_seen (brief in Downloads), owner's go first
+needs: nothing
+
+### 2026-10-26 04:37 · ccode · 1e605767
+changed: web: registry page says 'Academy member' once when no registry name is set (owner D6, 2026-10-26)
+affects other side: nothing yet — local web-launch-day branch, not pushed (Comp A section G)
 needs: nothing
 
 ### 2026-10-26 04:26 · ccode · 6578217a
@@ -1565,6 +1585,16 @@ changed: Intro video: the owner's final onboarding video (2026-10-23), replaced 
 affects other side: nothing (bundled asset; rides the approval-day OTA — the H2 hold is cleared once merged)
 needs: nothing
 
+### 2026-10-23 00:14 · ccode · 64add2ef
+changed: web (launch-day): curriculum sample list uses the app's real subject and field names (owner, via Comp A) (entry restored 2026-10-26: an earlier stub fill on this branch wiped the log)
+affects other side: nothing yet — local web-launch-day branch, not pushed (Comp A section G)
+needs: nothing
+
+### 2026-10-23 00:06 · ccode · b5efc810
+changed: web (launch-day, Comp A fact-check + owner rulings): camera/Photos permissions, email-only sign-in, no prices in Terms, Pro Registry name, salsa and Latin-jazz pianist (entry restored 2026-10-26: an earlier stub fill on this branch wiped the log)
+affects other side: nothing yet — local web-launch-day branch, not pushed (Comp A section G)
+needs: nothing
+
 ### 2026-10-23 00:03 · ccode · 8ce9035c
 changed: One registry name on screen (Pro Registry) + Limiter popup = glossary text
 affects other side: nothing (app copy; Limiter popup now equals glossary plain_english 7f621dc4)
@@ -1588,6 +1618,21 @@ needs: nothing
 ### 2026-10-22 18:15 · ccode · 023640ea
 changed: Fact audit R1: 43 S1 fixes, in-app contradictions, dev-leak check (Comp B return)
 affects other side: nothing (app copy + curated notification JSON + careerIndex; rides the approval-day OTA)
+needs: nothing
+
+### 2026-10-22 17:43 · ccode · a09387dd
+changed: web legal: Terms published as Version 1.0; 2027 price amounts removed (owner) (entry restored 2026-10-26: an earlier stub fill on this branch wiped the log)
+affects other side: nothing yet — local web-launch-day branch, not pushed (Comp A section G)
+needs: nothing
+
+### 2026-10-22 17:26 · ccode · 4aa3d2e6
+changed: web legal: one name (free access / Academy membership), verification live, membership not required, 1 Jan 2027 prices (entry restored 2026-10-26: an earlier stub fill on this branch wiped the log)
+affects other side: nothing yet — local web-launch-day branch, not pushed (Comp A section G)
+needs: nothing
+
+### 2026-10-22 17:15 · ccode · 4ef375bb
+changed: web: /verify and /verify/<code> open without the site key (owner H-A)
+affects other side: nothing yet — web-launch-day branch is LOCAL ONLY (not pushed); goes live only on the owner's launch-day go
 needs: nothing
 
 ### 2026-10-22 17:00 · ccode · cff3f25b

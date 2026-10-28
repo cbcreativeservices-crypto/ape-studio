@@ -29,8 +29,9 @@ export default function Page() {
           items={[
             "Foundations of Sound",
             "Foundations & Safety",
-            "Mics, Amps, & Speakers",
-            "Signal Processing",
+            "Microphones",
+            "Loudspeakers & Amplification",
+            "Signal Processing & Effects",
             "Acoustics & Measurement",
             "Studio Recording",
           ]}
