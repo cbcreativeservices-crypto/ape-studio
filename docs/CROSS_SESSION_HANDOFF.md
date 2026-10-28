@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 22:57 · ccode · 9754d50d
+changed: Certificate renderer: opt-in verifiedCode (website verify page, D15); must-do D15/D17
+affects other side: nothing [MD:D15] (website change built locally, not pushed; no DB change)
+needs: owner: D15 commit/name/deploy decisions [MD:D15]; D17 test failures on audio-tools-engine [MD:D17]
+
+
 ### 2026-10-27 22:39 · ccode · 3528b518
 changed: A1: fingerprints match 39/23 after a line-ending fix; add scripts/fingerprint-eol-sync.mjs
 affects other side: nothing [MD:A1] (fingerprints match 39/23; run scripts/fingerprint-eol-sync.mjs before any eas update from this worktree)
