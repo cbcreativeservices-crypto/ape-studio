@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 08:47 · ccode · fc760b36
+changed: Merge web-launch-day into the one branch — everything except the gate switch (owner 2026-10-28 'Yes, all but the gate'; rule 25)
+affects other side: Comp A: the website now calls instructor_students + instructor_student_progress from the one branch (still not deployed); gate switch stays on web-launch-day for launch day [MD:B6]
+needs: owner: website deploy GO when wanted; launch-day gate switch on launch day [MD:B6]
+
+
 ### 2026-10-28 10:30 · ccode · 79a57250
 changed: Ported what was still useful from the 6 old branches (owner "Review and port useful"): /delete-account page switched OFF, the tuner long-run freeze native plan into the next-build checklist, iPad Calc Lab shots + old log entries. The 6 branches are deleted locally and kept as tags backup/old-branch-* on GitHub [MD:D20]
 affects other side: Comp A: once the owner switches /delete-account on and deploys, set it as the Play Data-safety deletion URL (today /support) [MD:D20]

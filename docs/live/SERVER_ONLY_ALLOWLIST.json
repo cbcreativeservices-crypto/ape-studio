@@ -26,8 +26,6 @@
   "get_program_kpis": "admin tool: is_admin()-only read of mv_program_kpis (refreshed every 5 min by cron refresh_program_kpis); EXECUTE revoked from anon and authenticated, so only the SQL editor/service role can call it; no admin screen reads it (checked live 2026-10-27)",
   "glossary_device_key": "server-internal: called by get_glossary_definition_start_here, glossary_consume, glossary_start_here_bonus_status and glossary_usage_status (checked live 2026-10-27)",
   "in_quiet_hours": "server-internal: called by community_push_due, dispatch_community_push and get_due_concept_subscriptions (checked live 2026-10-27)",
-  "instructor_student_progress": "called by the website /instructor page on branch web-launch-day (web/lib/instructor.ts), not yet on this branch [MD:B6]",
-  "instructor_students": "called by the website /instructor page on branch web-launch-day (web/lib/instructor.ts), not yet on this branch [MD:B6]",
   "is_ta_or_admin": "server-internal: called by lookup_student_by_qr and the RLS policy student_badges.ta_read_student_badges (checked live 2026-10-27)",
   "is_verified_employer": "server-internal: called by contact_request_send and employer_set_interests; EXECUTE for postgres only. Until 2026-10-27 only an app comment named it (the amIVerifiedEmployer docblock, rewritten for my_verifier_kind in R1) (checked live 2026-10-27)",
   "lab_requirements_enforced": "server-internal: the switch read by start_final_exam; returns false until the post-approval OTA (checked live 2026-10-27) [MD:A6]",
