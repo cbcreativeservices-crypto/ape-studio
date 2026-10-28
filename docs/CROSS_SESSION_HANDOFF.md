@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 23:20 · ccode · fb205d9f
+changed: scripts/suite-gate.mjs: commit only when nothing failed AND the whole suite ran (a run stopped at 8,300 tests still said fail 0)
+affects other side: nothing (ccode commit gate)
+needs: nothing
+
+
 ### 2026-10-27 23:13 · ccode · c84b0368
 changed: Test: a must-do status starting DONE may not hide open work (R4/R6 lesson); D5/D6 point to D2/B6
 affects other side: nothing [MD:A1] (list hygiene test only)
