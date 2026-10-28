@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 08:08 · ccode · ab0ee6c3
+changed: One branch holds the protocol and the post-merge hook too (rule 25): copies of ape-studio's canonical PROTOCOL_CHECK.md (rules 0-25) and scripts/hooks/post-merge
+affects other side: Comp A: read rules 0 and 25 (one branch for all edits)
+needs: nothing
+
+
 ### 2026-10-28 08:05 · ccode · c9a531fb
 changed: supabase records from final-lab onto the one branch (rule 25)
 affects other side: Comp A: repo records now match live (employer-confirm-email v14; weekly-concept migrations were applied by hand and are now recorded)
