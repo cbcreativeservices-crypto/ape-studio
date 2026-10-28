@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 22:28 · ccode · 793d4daa
+changed: docs: must-do D16 paused by the owner until 2026-10-28 (Supabase sign-in)
+affects other side: nothing [MD:D16] (paused until 2026-10-28)
+needs: nothing
+
+
 ### 2026-10-27 22:18 · ccode · 188acef4
 changed: docs: must-do D16 — engineer's 13 WAVs mapped; quality check first (owner)
 affects other side: nothing yet [MD:D16]; later: publishing the checked WAVs to lab-audio + lab_audio_assets rows is a server write
