@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 08:14 · ccode · 801d7f16
+changed: docs: must-do D19 — branch consolidation done (rule 25); 6 old unmerged branches + web-launch-day split wait on the owner
+affects other side: Comp A: ALL edits on ota-after-approval-39-23 only (rule 25); audio-tools-engine is the website deploy target, never edited directly [MD:D19]
+needs: owner: decide the 6 old branches and the web-launch-day split [MD:D19]
+
+
 ### 2026-10-28 08:08 · ccode · ab0ee6c3
 changed: One branch holds the protocol and the post-merge hook too (rule 25): copies of ape-studio's canonical PROTOCOL_CHECK.md (rules 0-25) and scripts/hooks/post-merge
 affects other side: Comp A: read rules 0 and 25 (one branch for all edits)
