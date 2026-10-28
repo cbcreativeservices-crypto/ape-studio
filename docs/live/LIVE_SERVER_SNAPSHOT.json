@@ -1,5 +1,5 @@
 {
- "taken_at": "2026-10-27T15:45:00-07:00",
+ "taken_at": "2026-10-28T16:45:00-07:00",
  "taken_by": "ccode, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions",
  "functions": [
   "_custom_list_attempt_payload",
@@ -194,9 +194,9 @@
   "community-push-every-minute",
   "on-weekly-concept",
   "purge-anon-devices",
-  "refresh-glossary-term-count",
   "refresh_academy_stats",
   "refresh_program_kpis",
+  "refresh-glossary-term-count",
   "release-pending-credentials"
  ]
 }

@@ -675,10 +675,20 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 16:50 · ccode · checked Comp A's D18 / R8 / R3 applies live (read-only); Terms filter paragraph released
+changed: Checked live: D18 md5s = Comp A's, /verify/F8461FBF = "Academy member"; R8 columns gone, no function/app/seed names them; R3 step 1 labs row live, 0 tr_dj requirement rows, enforcement off; filter called by contact_message_send, contact_request_send, community_profile_save, set_registry_name. Terms 20.16 "Our filter" paragraph un-hidden (owner-approved 10-15 wording). Must-do: D18 server done, R8 done, R3 step 1 done, R12 done; new D22. Live snapshot refreshed (no list changes) [MD:D22]
+affects other side: Comp A: D22 — delete_my_account still copies nickname/first name into retained_credentials (shown on /verify for deleted accounts; 0 rows today), and lookup_student_by_qr returns nickname to any signed-in caller (nothing calls it) [MD:D22]
+needs: Comp A: D22 fix (1); owner decides D22 (2) [MD:D22]
+
+### 2026-10-28 16:30 · Comp A · D18, R8, R3 step 1 APPLIED; Terms filter confirmed (posted by ccode from Downloads COMP_A_TO_CCODE_D18_R8_R3_DONE_2026-10-28)
+changed: Owner GO "continue" (16:13 PT), owner present for each database prompt. D18 LIVE: holder_label on public_verify_by_token + public_verify_credentials = registry_name else "Academy member" (backups public_verify_by_token@2026-10-28_D18, public_verify_credentials@2026-10-28_D18; new md5 67fc820b…, 607c9458…; grants unchanged). R8 LIVE: achievements.sequence_in_course / is_prerequisite dropped (backups start_quiz_attempt@2026-10-27_R8, private._bkp_achievements_cols_20261027 473 rows); quiz start ok, 30 questions. R3 step 1 LIVE: labs row tr_dj "DJ Systems Lab" (training, active); student_achievement_progress 520→520, awards 5→5. Terms filter: both send paths refuse community_rules before saving since 10-23; members cannot write the tables. Intro video (D2) was applied 10-26 — already marked done here. Rollbacks: D18_ROLLBACK_restore_live_2026-10-28.sql, R8_ROLLBACK_2026-10-28.sql, R3_STEP1_ROLLBACK_2026-10-28.sql (claude.ai "Rollback D18 R8 R3"). Glossary audit round 5 went to Comp B (no DB change until QA'd) [MD:D18] [MD:R8] [MD:R3] [MD:R12]
+affects other side: ccode: Comp A's VERIFY note — check `prosrc ilike '%u.nickname%'`, not '%nickname%' (the D18 comment contains the word); any seed script inserting into achievements must not name the dropped columns (none found) [MD:R8]
+needs: owner: start one quiz on a phone (R8); R4 store console screenshots and R2 secrets names to Comp A; R3 step 2 after the OTA + A6 [MD:R8] [MD:R4] [MD:R2] [MD:R3]
+
 ### 2026-10-28 16:13 · ccode · 8119a00c
 changed: Docs: Comp A's decision record D102-D116 onto the one branch
 affects other side: Comp A: your record now lives on ota-after-approval-39-23 as docs/APE_GOVERNANCE_DECISIONS_2026_10_26_COMPA.md; send future D-numbers to ccode to add there
-needs: Comp A: the Terms 20.16 filter-sentence live check (still HOLD)
+needs: nothing (the Terms 20.16 filter check came back from Comp A the same day) [MD:R12]
 
 
 ### 2026-10-28 08:57 · ccode · 545bc7fa
