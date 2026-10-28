@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 23:01 · ccode · ca240451
+changed: docs: D15 certificate-name decision (owner); D18 private user name on public verify pages
+affects other side: Comp A: public_verify_by_token + public_verify_credentials show the private nickname when registry_name is empty [MD:D18]
+needs: Comp A: drop the nickname/first-name fallbacks in both → registry_name else Academy member [MD:D18]
+
+
 ### 2026-10-27 22:57 · ccode · 9754d50d
 changed: Certificate renderer: opt-in verifiedCode (website verify page, D15); must-do D15/D17
 affects other side: nothing [MD:D15] (website change built locally, not pushed; no DB change)
