@@ -38,9 +38,12 @@ function esc(s: unknown): string {
  * The short id at the end makes one application findable by search months
  * later, and it is the same id the admin list shows.
  */
-function subjectFor(outcome: string, company: string, domain: string, id: string): string {
+function subjectFor(outcome: string, company: string, domain: string, id: string, kind = "employer"): string {
   const tag = outcome === "approved" ? "AUTO-OK" : "REVIEW";
-  return `[APE-EMPLOYER][${tag}] ${company} · ${domain} · APP-${id.slice(0, 8)}`;
+  // Instructors/schools (2026-10-04) share the employer flow; the leading
+  // [APE-EMPLOYER] tag is kept so existing Gmail filters still catch them.
+  const who = kind === "instructor" ? "INSTRUCTOR · " : "";
+  return `[APE-EMPLOYER][${tag}] ${who}${company} · ${domain} · APP-${id.slice(0, 8)}`;
 }
 
 Deno.serve(async (req) => {
@@ -129,8 +132,9 @@ Deno.serve(async (req) => {
           ${line("Website", a.company_website)}
           ${line("Work email", a.work_email)}
           ${line("Work email CONFIRMED", "yes — code entered")}
+          ${line("Account type", a.kind === "instructor" ? "Instructor / school" : "Employer")}
           ${line("Role", a.role_title)}
-          ${line("Hiring for", a.hiring_for ?? "—")}
+          ${line(a.kind === "instructor" ? "Teaches" : "Hiring for", a.hiring_for ?? "—")}
           ${line("Email at company domain", checks.email_matches_site ? "yes" : "NO")}
           ${line("Consumer mailbox", checks.free_mail ? "YES" : "no")}
           ${line("Domain resolves", remote.domain_resolves ? "yes" : "NO")}
@@ -152,7 +156,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           from,
           to: [to],
-          subject: subjectFor(outcome, String(a.company_name ?? ""), domain, appId),
+          subject: subjectFor(outcome, String(a.company_name ?? ""), domain, appId, String(a.kind ?? "employer")),
           html,
           headers: { "X-APE-Category": outcome === "approved" ? "employer-auto" : "employer-review" },
         }),
