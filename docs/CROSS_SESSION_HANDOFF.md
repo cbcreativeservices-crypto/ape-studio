@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-27 22:39 · ccode · 3528b518
+changed: A1: fingerprints match 39/23 after a line-ending fix; add scripts/fingerprint-eol-sync.mjs
+affects other side: nothing [MD:A1] (fingerprints match 39/23; run scripts/fingerprint-eol-sync.mjs before any eas update from this worktree)
+needs: nothing
+
+
 ### 2026-10-27 22:28 · ccode · 793d4daa
 changed: docs: must-do D16 paused by the owner until 2026-10-28 (Supabase sign-in)
 affects other side: nothing [MD:D16] (paused until 2026-10-28)
