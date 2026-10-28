@@ -47,10 +47,24 @@ function qrLib(): QrLib | null {
 export interface CertificateOptions {
   /** Existing app matrix builder can be injected; it must use correction M. */
   createQrMatrix?: (url: string) => QrMatrix;
+  /**
+   * WEBSITE verify-by-code page ONLY (D15, owner Option A 2026-10-27). That
+   * page knows the 8-character code the server just verified, never the UUID.
+   * Applies only when `qrToken` is absent and this is exactly 8 hex characters
+   * (case-insensitive): the QR box then reads "VERIFIED CODE" + the code, the
+   * label "Verified by code", the host line /verify, and the Credential value
+   * is the code. The covert layers stay absent (they need the full UUID; never
+   * faked). App call sites never pass it, so app output is byte-identical
+   * (test/certificateVerifiedCode_20261027.test.ts).
+   */
+  verifiedCode?: string;
 }
 
 const VERIFY_BASE = 'https://www.proaudiotrainingacademy.com/registry/';
 const VERIFY_HOST = 'proaudiotrainingacademy.com/registry';
+const VERIFY_CODE_BASE = 'https://www.proaudiotrainingacademy.com/verify/';
+const VERIFY_CODE_HOST = 'proaudiotrainingacademy.com/verify';
+const SHORT_CODE = /^[0-9A-F]{8}$/;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const QR_QUIET_ZONE = 4;
 const QR_SIZE_PX = 108;
@@ -258,14 +272,29 @@ export function buildCertificateHtml(fields: CertificateFields, options: Certifi
   const factory = options.createQrMatrix
     ?? (lib ? (payload: string) => lib.create(payload, {errorCorrectionLevel: 'M'}).modules : null);
   const qr = url && factory ? buildQrSvg(url, factory) : '';
-  const metaHtml = date ? `<div class="metadata"><div><div class="label">Awarded</div><div class="value">${escapeHtml(date)}</div></div>${shortId ? `<div><div class="label">Credential</div><div class="value">${escapeHtml(shortId)}</div></div>` : ''}</div>` : '';
+  // Opt-in, website code page only (see CertificateOptions.verifiedCode).
+  const codeCandidate = typeof options.verifiedCode === 'string' ? options.verifiedCode.toUpperCase() : '';
+  const verifiedCode = !fields.qrToken && SHORT_CODE.test(codeCandidate) ? codeCandidate : null;
+  const credentialId = shortId ?? verifiedCode;
+  const metaHtml = date ? `<div class="metadata"><div><div class="label">Awarded</div><div class="value">${escapeHtml(date)}</div></div>${credentialId ? `<div><div class="label">Credential</div><div class="value">${escapeHtml(credentialId)}</div></div>` : ''}</div>` : '';
   const qrHtml = qr
     ? `<a class="qr" href="${escapeHtml(url)}" aria-label="Open the public credential registry">${qr}</a>`
-    : '<div class="qr-fallback" aria-hidden="true"></div>';
-  const verifyLabel = qr ? 'Scan to verify' : url ? 'Verify online' : 'Verification unavailable';
+    : verifiedCode
+      ? `<div class="qr-code"><div class="qr-code-kicker">Verified code</div><div class="qr-code-value">${escapeHtml(verifiedCode)}</div></div>`
+      : '<div class="qr-fallback" aria-hidden="true"></div>';
+  const verifyLabel = qr ? 'Scan to verify' : url ? 'Verify online' : verifiedCode ? 'Verified by code' : 'Verification unavailable';
   const verifyHost = url
     ? `<a class="qr-host" href="${escapeHtml(url)}">${escapeHtml(VERIFY_HOST)}</a>`
-    : '<div class="qr-host">Please contact the Academy.</div>';
+    : verifiedCode
+      ? `<a class="qr-host" href="${escapeHtml(VERIFY_CODE_BASE + verifiedCode)}">${escapeHtml(VERIFY_CODE_HOST)}</a>`
+      : '<div class="qr-host">Please contact the Academy.</div>';
+  // Empty for every app call, so the app's <style> block is unchanged byte for byte.
+  const verifiedCodeCss = verifiedCode
+    ? `.verification .qr-code{width:81pt;height:81pt;margin-left:auto;background:#ffffff;border:.6pt solid ${escapeHtml(GOLD)};display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.qr-code-kicker{font-size:5.5pt;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:${escapeHtml(GOLD)};}
+.qr-code-value{margin-top:4pt;font-size:13pt;font-weight:600;letter-spacing:.04em;color:${escapeHtml(INK)};}
+`
+    : '';
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=1056"><title>${escapeHtml(credential)} | Pro Audio Training Academy</title><style>
 ${FONT_CSS}
 
@@ -319,7 +348,7 @@ a { color: inherit; text-decoration: none; }
 .verification .qr-host { display: block; }
 .qr-fallback { height: 81pt; }
 
-</style></head><body><main class="sheet">
+${verifiedCodeCss}</style></head><body><main class="sheet">
 <svg class="decor wm" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 792 612" width="792pt" height="612pt" aria-hidden="true" preserveAspectRatio="xMidYMid slice"><defs>${WM_DEFS}</defs>
 <rect x="0" y="0" width="792" height="612" fill="url(#wmB)" opacity="0.13"/><rect x="0" y="0" width="792" height="612" fill="url(#wmB2)" opacity="0.13"/>
 <image href="${PANTOGRAPH_DATAURI}" x="70" y="300" width="440" height="165" opacity="0.17" preserveAspectRatio="none"/></svg>
