@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 16:13 · ccode · 8119a00c
+changed: Docs: Comp A's decision record D102-D116 onto the one branch
+affects other side: Comp A: your record now lives on ota-after-approval-39-23 as docs/APE_GOVERNANCE_DECISIONS_2026_10_26_COMPA.md; send future D-numbers to ccode to add there
+needs: Comp A: the Terms 20.16 filter-sentence live check (still HOLD)
+
+
 ### 2026-10-28 08:57 · ccode · 545bc7fa
 changed: docs: launch-day switch kept as an exact recipe (B6); D19 done; D21 flaky test; protocol copy gains rule 26
 affects other side: Comp A: web-launch-day is gone; launch day = the 4-line switch on B6, on the one branch [MD:B6]
