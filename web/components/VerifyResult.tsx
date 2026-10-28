@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { verifyCode, type VerifyOutcome } from "@/lib/verify";
 import VerifyForm from "./VerifyForm";
+import CertificateGallery from "./CertificateGallery";
 
 export default function VerifyResult({ code }: { code: string }) {
   const [outcome, setOutcome] = useState<VerifyOutcome | null>(null);
@@ -73,27 +74,13 @@ export default function VerifyResult({ code }: { code: string }) {
           {outcome.holder}
         </p>
 
-        <ul className="mt-6 divide-y divide-border">
-          {outcome.credentials.map((c, i) => (
-            <li key={i} className="py-4">
-              <p className="font-display text-lg font-semibold text-foreground">
-                {c.credential_name}
-              </p>
-              <p className="mt-1 text-sm text-text-sub">
-                <span className="uppercase tracking-wide text-text-muted">
-                  {c.credential_type}
-                </span>
-                {c.level_or_tier ? <> · {c.level_or_tier}</> : null}
-                {c.track ? <> · {c.track}</> : null}
-              </p>
-              {c.earned_at ? (
-                <time className="font-mono text-xs text-text-muted" dateTime={c.earned_at}>
-                  Earned {new Date(c.earned_at).toLocaleDateString()}
-                </time>
-              ) : null}
-            </li>
-          ))}
-        </ul>
+        <div className="mt-2">
+          <CertificateGallery
+            credentials={outcome.credentials}
+            holder={outcome.holder}
+            source={{ kind: "code", code }}
+          />
+        </div>
       </div>
 
       <p className="mt-6 text-xs text-text-muted">

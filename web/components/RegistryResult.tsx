@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { lookupRegistry, type RegistryOutcome } from "@/lib/verify";
+import CertificateGallery from "./CertificateGallery";
 
 /**
  * RegistryResult — the public page behind a member's QR token (users.qr_token).
@@ -113,27 +114,11 @@ export default function RegistryResult({ token }: { token: string }) {
             </p>
           </div>
 
-          <ul className="mt-4 divide-y divide-border">
-            {credentials.map((c, i) => (
-              <li key={i} className="py-4">
-                <p className="font-display text-lg font-semibold text-foreground">
-                  {c.credential_name}
-                </p>
-                <p className="mt-1 text-sm text-text-sub">
-                  <span className="uppercase tracking-wide text-text-muted">
-                    {c.credential_type}
-                  </span>
-                  {c.level_or_tier ? <> · {c.level_or_tier}</> : null}
-                  {c.track ? <> · {c.track}</> : null}
-                </p>
-                {c.earned_at ? (
-                  <time className="font-mono text-xs text-text-muted" dateTime={c.earned_at}>
-                    Earned {new Date(c.earned_at).toLocaleDateString()}
-                  </time>
-                ) : null}
-              </li>
-            ))}
-          </ul>
+          <CertificateGallery
+            credentials={credentials}
+            holder={profile.holder_label}
+            source={{ kind: "registry", token }}
+          />
         </div>
       ) : (
         <div className="mt-6 rounded-lg border border-border bg-surface p-6">
