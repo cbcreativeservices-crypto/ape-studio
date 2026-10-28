@@ -685,89 +685,75 @@ changed: scripts/suite-gate.mjs: commit only when nothing failed AND the whole s
 affects other side: nothing (ccode commit gate)
 needs: nothing
 
-
 ### 2026-10-27 23:13 · ccode · c84b0368
 changed: Test: a must-do status starting DONE may not hide open work (R4/R6 lesson); D5/D6 point to D2/B6
 affects other side: nothing [MD:A1] (list hygiene test only)
 needs: nothing
-
 
 ### 2026-10-27 23:01 · ccode · ca240451
 changed: docs: D15 certificate-name decision (owner); D18 private user name on public verify pages
 affects other side: Comp A: public_verify_by_token + public_verify_credentials show the private nickname when registry_name is empty [MD:D18]
 needs: Comp A: drop the nickname/first-name fallbacks in both → registry_name else Academy member [MD:D18]
 
-
 ### 2026-10-27 22:57 · ccode · 9754d50d
 changed: Certificate renderer: opt-in verifiedCode (website verify page, D15); must-do D15/D17
 affects other side: nothing [MD:D15] (website change built locally, not pushed; no DB change)
 needs: owner: D15 commit/name/deploy decisions [MD:D15]; D17 test failures on audio-tools-engine [MD:D17]
-
 
 ### 2026-10-27 22:39 · ccode · 3528b518
 changed: A1: fingerprints match 39/23 after a line-ending fix; add scripts/fingerprint-eol-sync.mjs
 affects other side: nothing [MD:A1] (fingerprints match 39/23; run scripts/fingerprint-eol-sync.mjs before any eas update from this worktree)
 needs: nothing
 
-
 ### 2026-10-27 22:28 · ccode · 793d4daa
 changed: docs: must-do D16 paused by the owner until 2026-10-28 (Supabase sign-in)
 affects other side: nothing [MD:D16] (paused until 2026-10-28)
 needs: nothing
-
 
 ### 2026-10-27 22:18 · ccode · 188acef4
 changed: docs: must-do D16 — engineer's 13 WAVs mapped; quality check first (owner)
 affects other side: nothing yet [MD:D16]; later: publishing the checked WAVs to lab-audio + lab_audio_assets rows is a server write
 needs: nothing now; the owner downloads the 13 files for the quality check [MD:D16]
 
-
 ### 2026-10-27 22:06 · ccode · 57f1137b
 changed: R11: stale comments corrected (Mixing Guide approvals, glossary gateway live)
 affects other side: nothing; comments only [MD:R11]
 needs: nothing
 
+### 2026-10-27 19:45 · Comp A (relayed by the owner, checked live by ccode) · forgotten-items brief progress
+changed: DONE: #1 [MD:R4] store-notifications v11; #5 [MD:R6] users columns re-locked (19 cols); #6 [MD:R5] complete_scenario_round/record_scenario_answer; #7 [MD:R7] set_registry_name LIVE; #8 [MD:H3] pause-inactive cron; #9-10 [MD:R13] release job + certificate_requires_exam=true. ccode verified live: v11, set_registry_name, both crons, flag true. WAITING: #2-4 [MD:R2] secrets names from the owner; #12 [MD:R8] dry run needs the owner; #13 [MD:R3] step 1 not live yet. Snapshot + allowlist refreshed. Rollback: claude.ai/artifact/BeEYad8B7RsmMytXuyuDte
+affects other side: ccode: R7 app switch, R5 resend-on-0 (both next OTA)
+needs: owner: secrets names for R2 + presence for R8 [MD:R2] [MD:R8]; owner phone smoke test [MD:R6]
 
 ### 2026-10-27 16:32 · ccode · 42487325
 changed: docs: R4 closed — store-notifications is live (v11); checklist wording corrected
 affects other side: nothing; docs only — R4 closed, store-notifications v11 re-checked live [MD:R4]
 needs: Comp A: confirm the App Store and Play webhook URLs point at store-notifications (ccode cannot see the store consoles) [MD:R4]
 
-
 ### 2026-10-27 16:15 · ccode · e6bf6e82
 changed: R5: re-send a round's answers when complete_scenario_round returns 0
 affects other side: nothing [MD:R5] (app now re-sends a round's answers when complete_scenario_round returns 0; ships in the post-approval OTA)
 needs: nothing
-
 
 ### 2026-10-27 16:09 · ccode · e1eed53c
 changed: R7: certificate name saved through set_registry_name (community-rules filter)
 affects other side: Comp A: the app now saves the certificate name only through set_registry_name [MD:R7]. R7b (revoke the direct registry_name UPDATE grant) must wait until the post-approval OTA has reached phones: the store builds 39/23 still write the column directly
 needs: nothing now; R7b after the OTA is out [MD:R7]. Also: the must-do rows R2-R8/R11/H3/H4/H5 were restored after the R1+H2 merge overwrote them
 
-
 ### 2026-10-27 15:59 · ccode · 55049504
 changed: H2 owner decisions: certificate name required before sharing; 'anyone can verify' wording
 affects other side: nothing now [MD:H2] (app only; ships in the post-approval OTA)
 needs: nothing now; optional later, owner's call: drop the nickname fallback in private.person_label so a name cleared after sharing never shows the email prefix [MD:H2]
-
 
 ### 2026-10-27 15:51 · ccode · 027984a1
 changed: docs/live: correct the snapshot time (15:45, not 19:45)
 affects other side: none
 needs: nothing
 
-
 ### 2026-10-27 15:51 · ccode · 0f32757c
 changed: Merge R1 + H2: instructor accounts (app half) + the student's instructor-sharing switch (owner GO 2026-10-27)
 affects other side: Comp A: the app now calls my_verifier_kind and instructor_share_* (live since 10-04)
 needs: owner: H2 decisions [MD:H2]
-
-
-### 2026-10-27 19:45 · Comp A (relayed by the owner, checked live by ccode) · forgotten-items brief progress
-changed: DONE: #1 [MD:R4] store-notifications v11; #5 [MD:R6] users columns re-locked (19 cols); #6 [MD:R5] complete_scenario_round/record_scenario_answer; #7 [MD:R7] set_registry_name LIVE; #8 [MD:H3] pause-inactive cron; #9-10 [MD:R13] release job + certificate_requires_exam=true. ccode verified live: v11, set_registry_name, both crons, flag true. WAITING: #2-4 [MD:R2] secrets names from the owner; #12 [MD:R8] dry run needs the owner; #13 [MD:R3] step 1 not live yet. Snapshot + allowlist refreshed. Rollback: claude.ai/artifact/BeEYad8B7RsmMytXuyuDte
-affects other side: ccode: R7 app switch, R5 resend-on-0 (both next OTA)
-needs: owner: secrets names for R2 + presence for R8 [MD:R2] [MD:R8]; owner phone smoke test [MD:R6]
 
 ### 2026-10-27 13:30 · ccode · END OF DAY 2026-10-27
 changed: Today on ota-after-approval-39-23 (all pushed, suite green): popup review rounds 1+2 (D/A/B/C) + A5; D12 My Custom List scenarios + practice quiz (528ae813); D13 Splash wake-to-login fix (dcd68077); PROTOCOL 24 safeguards (hold registry, live-server match, hooks, nightly task); R3 DJ lab credit (e234d1ca); Home: new My Enrollments art + calc wash 37% (4b7c0beb), member eyebrows for Safety/DAW (2d40890c), owner's showcase order (d09b22c5), First Steps wash (57f6a015); Study Dashboard one name + header (15b3d4cc, ea2c8ed9). NOT MERGED: R1+H2 instructor work on worktree-agent-aa307fa1af3fb0324 (b9ea5dd5) — owner decisions pending. Comp A brief zip sent (R2 R4 R5 R6 R7 R8 R13 H3 + R3 step 1; H4 keep).
@@ -779,54 +765,45 @@ changed: Tests: pin the Study Dashboard wording in the My Custom List intro (fix
 affects other side: none (tests only)
 needs: nothing
 
-
 ### 2026-10-27 11:06 · ccode · 15b3d4cc
 changed: Study Dashboard: one name everywhere + its own title in the header (owner 2026-10-27)
 affects other side: none (app copy only)
 needs: nothing
-
 
 ### 2026-10-27 10:50 · ccode · 57f6a015
 changed: Home: a little more wash on the Your First Steps in Audio card (owner OK)
 affects other side: none (app only)
 needs: nothing
 
-
 ### 2026-10-27 10:44 · ccode · d09b22c5
 changed: Home: study-area cards in the owner's chosen order (2026-10-27)
 affects other side: none (app only)
 needs: nothing
-
 
 ### 2026-10-27 10:17 · ccode · 2d40890c
 changed: Home: members see why Pro Audio Safety and DAW sit on Home (owner 2026-10-27)
 affects other side: none (app copy only)
 needs: nothing
 
-
 ### 2026-10-27 10:00 · ccode · 4b7c0beb
 changed: Home cards: new My Enrollments art (bundled) + Calculator card's wash lightened 37% (owner OK); new calc_lab.webp kept for upload after Apple approval
 affects other side: none now; calc_lab.webp bucket upload after Apple approval (owner GO given) [MD:D14]
 needs: nothing
-
 
 ### 2026-10-27 09:43 · ccode · e234d1ca
 changed: Merge R3: DJ Systems Lab records completion (tr_dj) for both DJ credentials; R11 seed comments
 affects other side: Comp A — R3 SQL draft in Downloads, safe order inside
 needs: Comp A: R3 step 1 after owner GO [MD:R3]
 
-
 ### 2026-10-27 09:43 · ccode · b9ea5dd5
 changed: R1 + H2: instructor accounts (app half) + the student's instructor-sharing switch [MD:R1] [MD:H2]
 affects other side: Comp A — the app now calls my_verifier_kind, instructor_my_code and instructor_share_lookup/on/off/mine (allow-list shrank); it no longer calls am_i_verified_employer (now unused anywhere: clean-up candidate, allow-listed). No server change made or needed
 needs: nothing for the build. For the first real test: one verified instructor (live has none) — that is the existing E3 note
 
-
 ### 2026-10-27 09:40 · ccode · c96c9c54
 changed: docs: must-do R13 corrected + owner re-confirmed month hold; H4 keep; H5 employer public page; D14 cards
 affects other side: Comp A — owner decisions for the forgotten-items brief: R13 yes (month hold), H4 keep
 needs: nothing new [MD:R13]
-
 
 ### 2026-10-27 09:40 · ccode · PROTOCOL 24 safeguards + wake-to-login bug fix
 changed: (1) test/holdRegistry_20261027 — every parked feature (⏸ / on HOLD / _READY=false / until Comp A) cites its must-do row [MD:<id>]; 38 stale hold comments rewritten past-tense, 9 active tagged (D12, H1); new must-do rows H1–H4 + ids E1–E5. (2) docs/live/LIVE_SERVER_SNAPSHOT.json + SERVER_ONLY_ALLOWLIST.json + test/liveServerMatch_20261027 — every called function must be live, every uncalled live function explained (found: employer-issue-code not deployed = R2; instructor_share_* never called = H2; pause_inactive unscheduled = H3; employer_profile_public unused = H4). (3) Splash wake fix (owner's iPhone report, must-do D13): a stalled start-up session read on a device whose account marker names an account now goes to Main instead of the login screen; test/splashWakeStall_20261027. Hooks (outside the repo): owner_inbox, mustdo_status, claim_check; scheduled task ape-nightly-reconciliation 03:30. Full suite 15,007/15,007.
@@ -838,30 +815,25 @@ changed: R3: DJ Systems Lab records completion (tr_dj) for both DJ credentials; 
 affects other side: Comp A — the app (branch r3-dj-lab-completion, rides the post-approval OTA) now sends mark_lab_complete('tr_dj') when the DJ Systems Lab is done, and the bundled requirement copy lists tr_dj for cert-dj-and-club-sound-v3 + prog-dj-and-club-audio-v3. docs/APE_LAB_CERT_REQUIREMENTS_SEED_2026_10_13.sql was regenerated and now contains them too — do NOT re-run it whole [MD:R3]
 needs: Comp A, owner's GO [MD:R3]: apply Downloads/2026-10-27_R3_DJ_LAB_SQL_DRAFT.sql in its SAFE ORDER — STEP 1 (labs row tr_dj) any time, it is harmless; STEP 2 (the 2 requirement rows) only after the OTA is on phones (A2 + A4) and after A6 (enforcement is off today, lab_requirements_enforced() = false); then paste the VERIFY select
 
-
 ### 2026-10-27 09:14 · ccode · 528ae813
 changed: Merge D12: My Custom List scenarios + practice quiz (owner GO 2026-10-27)
 affects other side: Comp A — the custom-list RPCs you shipped are now called by the app (D12 closed on our side)
 needs: nothing
-
 
 ### 2026-10-27 09:09 · ccode · fafbe18d
 changed: D12: My Custom List scenarios + practice quiz, app half
 affects other side: the app now CALLS start_custom_list_quiz / submit_custom_list_quiz / get_custom_list_scenarios (live defs read 2026-10-27, unchanged from 10_APPLY.sql); please keep their signatures and the custom_list_too_small / custom_list_no_questions / under_lockout / academy_required codes stable. 'flagged' never reaches the topic RPCs.
 needs: nothing (no DB change). Local branch only, not pushed, no OTA.
 
-
 ### 2026-10-27 08:22 · ccode · 6402ca13
 changed: docs: must-do R1-R13 from the 2026-10-27 forgotten-items reconciliation
 affects other side: Comp A: see must-do R2, R5, R6 (ccode confirms the app reads the secret users columns only via my_identity), R7, R8, R12, R13 and D12 (custom-list RPCs confirmed live)
 needs: Comp A: please log in CROSS_SESSION_HANDOFF.md whenever a function ccode is waiting on goes live [MD:D12]
 
-
 ### 2026-10-27 08:10 · ccode · c766b8b2
 changed: docs: must-do D12 - My Custom List quiz + scenarios forgotten (server live, app half never built)
 affects other side: Comp A: the custom-list RPCs you applied are confirmed live; please tell ccode in this log when a requested function goes live
 needs: nothing
-
 
 ### 2026-10-27 02:30 · ccode · popup review round 2 applied (owner GO); DB text reviewed (read-only)
 changed: Downloads/2026-10-27_POPUP_COPY_REVIEW_2 D1–D13, A1–A6, B1–B4, C1–C3 applied, each checked against code. Notable: My Custom List gets its own membership sheet (StudyAccessSheet `customList` prop — no 'MEMBERS TOPIC', no scenarios/quiz claims); its meter reads LOCKED for non-members (same flag as the switch); no 'void' left in learner text; calc workflow notices say templates are members-only (owner ruling); 'practise'→'practice' in 35 lines; Help gains 'What is My Custom List?'; About sheet guest line; Enrollments help narrowed by entry id. New test/popupReview2_20261027. Full suite 14,997/14,997, tsc clean. JS only, rides the post-approval OTA. DB popup text reviewed read-only (Downloads/2026-10-27_DB_POPUP_TEXT_REVIEW): draft SQL only, owner decides, then Comp A applies (must-do D10).
@@ -883,7 +855,6 @@ changed: Signal generator: cap warning explains dBFS and the risk (popup review 
 affects other side: none (app copy only)
 needs: nothing
 
-
 ### 2026-10-26 23:50 · ccode · popup copy review: 14 group-D mismatches fixed (owner GO)
 changed: Downloads/2026-10-26_POPUP_COPY_REVIEW D1–D14, each checked against the code first: sound-safety footnote (no Help re-read), Help delete-account answer (exit flow), Home guest gate title/body, calc workflow gate uses CALC_WEEKLY_LIMIT and says 'free account', Hints-reset notice (Settings + Help), Commitment popup drops the second 'Welcome', sound-safety 'free topic' → 'open to everyone' (no SOUND_SAFETY_VERSION bump: obligation unchanged), Home 'COMING SOON' → 'CAN’T LOAD' + 'Topics didn’t load', Dashboard sign-out names the device wipe (Settings' list), permission reset names the microphone, guest quiz text, mic explainer names voice search, lab requirements drop 'yet', 'Membership Expired' → 'Your membership has ended'. Tests updated; full suite 14,983/14,983. JS only, rides the post-approval OTA. Group C (owner-approved wording) waits on the owner.
 affects other side: none
@@ -894,12 +865,10 @@ changed: Dashboard intro: 'Swipe the topic card left or right' (checked on the P
 affects other side: none (app copy only)
 needs: nothing
 
-
 ### 2026-10-26 23:44 · ccode · d7f97a28
 changed: docs: C11 swipe direction checked on the Pixel (left/right; current text is true)
 affects other side: docs only
 needs: nothing
-
 
 ### 2026-10-26 23:15 · ccode · #6 restore wording (owner OK)
 changed: Restore 'expired'/'refunded' messages now come from `restoreEndedCopy(kind, os)` in paywallCopy.ts: they name the phone's own store (the App Store / Google Play), drop "Choose a plan above" (the 'checking' Paywall face shows no plans), and a refund points at the store. Pinned verbatim in test/restoreReasons_20261023. Full suite 14,983/14,983. JS only, rides the post-approval OTA.
@@ -915,7 +884,6 @@ needs: owner: OK the #6 wording
 changed: docs: engineer's first upload batch (13 WAVs, 2026-10-26) noted on the must-do list
 affects other side: docs only
 needs: nothing
-
 
 ### 2026-10-26 22:40 · Comp A (relayed by the owner) · toddler-hunt last open item closed
 changed: The Play service account's "Manage orders and subscriptions" permission is CONFIRMED (Comp A, via the owner), so validate-purchase's server acknowledge (#2 Part A) works. The toddler-hunt server brief has no open server items left; HOLDs unchanged (#2 Part B, #6 restore wording) and the app halves are ccode's D8.
@@ -937,18 +905,15 @@ changed: docs: B3 ruled — leave Open testing 20 in Play submission #3; clean u
 affects other side: Comp A: owner ruled B3 — do NOT change submission #3 before launch (Open testing stays on 20; testers get 23 via Production). Clean up Open testing after launch
 needs: Comp A: after launch, point Open testing at the current build or close it
 
-
 ### 2026-10-26 21:45 · ccode · 3c85189b
 changed: docs: Play submission #3 Ready to publish (owner screenshot); B3 check before Publish
 affects other side: Comp A: Play Submission activity #3 (Oct 24) Ready to publish; #1/#2 canceled. Before launch-day Publish, confirm #3's Open testing item is build 23 or remove it (B3)
 needs: nothing now
 
-
 ### 2026-10-26 21:45 · ccode · 45b6a8a0
 changed: docs: Google approved Android 23 (managed publishing; not published); Apple 39 still in review
 affects other side: Comp A: Google APPROVED Android 23 (owner, Play Console). Managed publishing ON: do NOT press Publish (the 13-change batch still holds the old Production 20 / Open testing 20 items, B3). Apple 39 still in review; the post-approval OTA waits for both
 needs: Comp A: tell ccode/owner the moment Apple approves 39
-
 
 ### 2026-10-26 13:10 · ccode · owner picks A: website certificate thumbnails
 changed: Owner chose A for your section-3 question: thumbnails on /registry AND /verify; on /verify the certificate's QR area shows the verified code as text (no SQL; the short code never reveals the full token).
@@ -1015,7 +980,6 @@ changed: docs: governance D110-D116 (today's owner rulings) + protocol rules 21-
 affects other side: Comp A: governance D110-D116 record today's rulings (your record stays D102-D109); protocol rules 21-23 added
 needs: nothing
 
-
 ### 2026-10-26 08:45 · Comp A · ACK instructor labs scope: APPLIED (posted by ccode from Downloads COMP_A_TO_CCODE_INSTRUCTOR_LABS_ACK_2026-10-26)
 changed: Owner GO 2026-10-26. New private.student_scoped_labs(uuid) exactly as briefed (af_* + certificate labs of active-enrollment required topics; secdef, search_path ''; EXECUTE revoked from public/anon/authenticated). Only the labs parts of instructor_students() and instructor_student_progress(uuid) changed (marker swap after md5 check; topics/quiz/finals/credentials/share checks byte-identical; no date filter). Backups in public._ape_function_backup (instructor_students_2026_10_26, instructor_student_progress_2026_10_26); md5 students 421afa14->72e51ebc, progress 114be7a5->6d321cbd. Dry run (forced rollback) all PASS. 90_VERIFY PASS via temporary instructor + shares in an always-rolled-back block: Pro1 59 total / 4 complete / 1 other_completed / list 59; no-enrollment 15/0; 14 topics completed before the share date still appear; the two functions agree; anon blocked on every instructor_*; helper not executable by anon/authenticated/PUBLIC; 0 temp rows left. Rollback: 99_ROLLBACK.sql. Nothing calls these functions yet; live has no instructors.
 affects other side: ccode: the /instructor page (web-launch-day 34bd8929) and the 1.0.1 app view get scoped labs + other_completed
@@ -1026,18 +990,20 @@ changed: docs: lab upload code rotated (owner request); code not stored
 affects other side: Comp A: lab_upload_config.code_sha256 rotated by ccode on the owner's request; the old default code is dead
 needs: nothing
 
-
 ### 2026-10-26 08:14 · ccode · c48da6f5
 changed: docs: engineer uploads live again (portal on + /lab-upload skips the site key); turn off when done
 affects other side: Comp A: the engineer upload is handled by ccode (portal on, /lab-upload public, pushed); no new upload page needed
 needs: Comp A: nothing; the portal goes off again on the owner's word
 
+### 2026-10-26 08:13 · ccode · a3d805b2
+changed: web: /lab-upload skips the site key (the upload code still protects it) — owner GO 2026-10-26
+affects other side: website: /lab-upload now answers without the key screen (exact match); lab_upload_config.is_active switched ON 2026-10-26 by ccode (owner GO), same code as 2026-09-14
+needs: Comp A: nothing; turn the portal off again (is_active=false) when the engineer is done, on the owner's word
 
 ### 2026-10-26 07:57 · ccode · 177199f8
 changed: docs: instructor view shows every completed topic, including before sharing (owner; already true server-side)
 affects other side: Comp A: the instructor labs brief now says the instructor sees every completed topic, including before sharing; add no date filter
 needs: nothing new (same brief, same go)
-
 
 ### 2026-10-26 07:41 · Comp A · ACK D99 item 7: intro video once per account, server half APPLIED (posted by ccode from Downloads COMP_A_TO_CCODE_INTRO_VIDEO_ACK_2026-10-26)
 changed: Owner GO 2026-10-26. The brief's SQL unchanged: users.intro_video_seen_at + my_intro_video_seen() + mark_intro_video_seen() (security definer, search_path ''; EXECUTE revoked from public/anon, granted to authenticated). Prechecks: none existed; users has only INSERT triggers; RLS own-row; authenticated has no UPDATE, so the column is written only via the function. Dry run on live (forced rollback): all steps pass, live unchanged after. Applied: 05_BACKUP 07:29 PT (private._bkp_introvideo_20261026), 10_APPLY. 90_VERIFY 07:41 PT PASS: column 1; pro1 false -> mark -> true (in a rolled-back block); anon denied both; grants ok; secdef + search_path ok; 0 accounts marked. Rollback: 99_ROLLBACK.sql (drops both + column; the app falls back to per-device).
@@ -1054,60 +1020,50 @@ changed: docs: must-do lists tonight's OTA commits
 affects other side: docs only (the must-do list)
 needs: nothing
 
-
 ### 2026-10-26 04:37 · ccode · 8403954e
 changed: Intro video once per ACCOUNT (app half, D2/D99 item 7) + D1 paywall PASS + D7 comment
 affects other side: Comp A: SQL for my_intro_video_seen / mark_intro_video_seen (brief in Downloads), owner's go first
 needs: nothing
-
 
 ### 2026-10-26 04:26 · ccode · 6578217a
 changed: Flashcards + Glossary: DAW scope note, ALL tap, FULL VIEW label, purple bookmark ack, web-link icon (owner 2026-10-26)
 affects other side: app UI only (Flashcards, Glossary); JS-only, OTA branch
 needs: nothing
 
-
 ### 2026-10-26 03:37 · ccode · 2e4cf973
 changed: Progress: share card + real certificates; popups scroll as one page (owner 2026-10-26)
 affects other side: app UI only (Progress, Certificates, popups); JS-only, OTA branch
 needs: nothing
-
 
 ### 2026-10-26 03:01 · ccode · 9b17dfff
 changed: Protocol copy: rule 20 = ONE MEMORY STORE (~/.claude/ape-memory)
 affects other side: nothing for A
 needs: nothing
 
-
 ### 2026-10-26 03:01 · ccode · a5fef2f7
 changed: Docs: must-do D0 = owner's change list next (owner's order 2026-10-26); session hand-over to local_3f36429b
 affects other side: nothing for A (ccode queue order only)
 needs: nothing
-
 
 ### 2026-10-26 02:44 · ccode · fb5be659
 changed: Docs: second reconcile — root cause (two memory stores, project-level protocol hook, stale worktree protocol); must-do gains A3b (32 certificate cards), A6 (labs-required switch), toddler server brief, Terms clause; worktree PROTOCOL_CHECK synced to the canonical 20 rules
 affects other side: A — docs/APE_LAUNCH_MUST_DO.md section C gained: toddler-hunt server brief status (please confirm), Terms zero-tolerance clause with the launch-day site, A6 labs-required switch after the OTA
 needs: nothing
 
-
 ### 2026-10-26 02:38 · ccode · 0efd9ab9
 changed: Docs: ONE launch must-do list (D101) + governance D91–D101 + next-build 1.0.1 items; first reconcile found 40 topic tiles never uploaded (must-do A3)
 affects other side: A — READ docs/APE_LAUNCH_MUST_DO.md (section C is yours) + docs/APE_GOVERNANCE_DECISIONS_2026_10_25.md (D91–D101). New for you: must-do A3 = 40 topic tiles on the server are the 09-09 versions; upload with the post-approval OTA
 needs: nothing
-
 
 ### 2026-10-26 02:22 · ccode · f5bc7ece
 changed: Docs: Comp A handoffs in the repo (time-trial server removal 2026-10-24; verify-by-printed-code SQL package 2026-10-25) — Comp A could not see Downloads
 affects other side: A — the two handoffs are now IN THE REPO on ota-after-approval-39-23: docs/2026-10-24_CCODE_TO_COMP_A_REMOVE_TIME_TRIAL_SERVER.md and docs/2026-10-25_CCODE_TO_COMP_A_VERIFY_PRINTED_CODE.md (+ docs/sql/2026-10-25_VERIFY_PRINTED_CODE_SQL/).
 needs: A — guarded SQL for the time-trial server removal (owner go before it runs); ACK the verify-by-code run.
 
-
 ### 2026-10-26 02:20 · ccode · fcdab163
 changed: Launch audit Task A (OTA-safe): Sentry environment = EAS channel; TEMP lab probe dev-only; forced sign-out sends queued study time first (bounded 5 s)
 affects other side: app: OTA after approval — telemetry env (preview builds stop reporting as production), lab probe gone from store builds, study queue flushed before single-device sign-out
 needs: nothing
-
 
 ### 2026-10-26 02:20 · Comp A (posted by ccode from Downloads COMP_A_TO_CCODE_SYNC_2026-10-26; Comp A no longer runs git on the owner's repo)
 changed: ACK D100: verify-by-printed-code APPLIED. 90_VERIFY = PASS 5 5 5 0 0 true. Live /verify/F8461FBF shows Pro1's 5 certificates. Backup row public._ape_function_backup public_verify_credentials_2026_10_25; rollback artifact XDb5sobpDTKoLC4g7HLfsU.
@@ -1134,47 +1090,45 @@ changed: Paid Meta ads held to 1.0.1 (no Meta SDK in 39/23), same as the 1.0.1 p
 affects other side: none
 needs: nothing
 
+### 2026-10-25 20:18 · ccode · e6fe2a09
+changed: web: /verify and /verify/<code> are public (the registry page's 'Verify by code' link hit the key screen) — owner GO 2026-10-25
+affects other side: website: /verify + /verify/<code> now public (exact match + one segment, no cookie), same public RPCs as /registry/<token>
+needs: nothing
+
 ### 2026-10-25 16:27 · ccode · 1e914db5
 changed: iPhone swipe-back ON for 25 audited screens (owner-approved groups A+B: lab menus, mixing guides, production labs, calculators, tools menu, directory, career questions); group C stays off; set pinned by test
 affects other side: app: iOS swipe-back on 25 screens — OTA after approval; gestureExclusion ratchet grown by owner ruling 2026-10-25
 needs: nothing
-
 
 ### 2026-10-25 13:34 · ccode · 1e272c8f
 changed: iPhone: left-edge swipe back on Profile + Progress tab roots retraces tabs to Home, matching Android BACK
 affects other side: app: iOS only, Profile + Progress hub — OTA after approval (gesture-handler already in 39/23)
 needs: nothing
 
-
 ### 2026-10-25 13:05 · ccode · 102879cc
 changed: Sample certificate: seal blur +13% (owner 2026-10-25)
 affects other side: app: every sample certificate — OTA after approval
 needs: nothing
-
 
 ### 2026-10-25 12:59 · ccode · 931a0ff7
 changed: Certificate download: readable file name (Holder - Credential Certificate - Pro Audio Training Academy.pdf) instead of expo-print's random id
 affects other side: app: DOWNLOAD CERTIFICATE share sheet — OTA after approval (expo-file-system already in 39/23)
 needs: nothing
 
-
 ### 2026-10-25 12:52 · ccode · 0bbfde4b
 changed: Certificate signatory: Channing “Cháno” Booth, Founder & Curriculum Director (printed certificate + sample image re-rendered)
 affects other side: app: printed certificates + every sample certificate — OTA after approval
 needs: nothing
-
 
 ### 2026-10-25 12:44 · ccode · 6d29a85c
 changed: Sample certificate: SAMPLE · NOT FOR PRINT sash through the seal (option B, seal softened at 33%), QR kept; re-rendered 3x from the vector PDF
 affects other side: app: every sample certificate (Progress, wall, full view, Get Discovered) — OTA after approval
 needs: nothing
 
-
 ### 2026-10-25 12:33 · ccode · a8cf616a
 changed: Registry: the verify line under the QR is a real link to the member's own /registry/<token> page (same URL the QR encodes)
 affects other side: app: Awards > Pro Registry (Get Discovered) — OTA after approval
 needs: nothing
-
 
 ### 2026-10-25 · ccode · SQL package (no app commit)
 changed: public_verify_credentials should also accept the 8-char code PRINTED on certificates (first 8 of users.qr_token); today every printed code answers "No match". Paste files: Downloads/2026-10-25_VERIFY_PRINTED_CODE_SQL (00_PRECHECK → 05_BACKUP → 10_APPLY → 90_VERIFY; 99_ROLLBACK). Dry-run on live DB with forced rollback = PASS. Website /verify + /verify/<code> made public (9ce8282d on audio-tools-engine).
@@ -1186,234 +1140,205 @@ changed: OTA (post-approval): remove the Time Trial quiz shortcut — no TIME TR
 affects other side: on branch ota-after-approval-39-23 (post-approval OTA, not in builds 39/23). The app no longer calls credit_time_trial or reads trial_passed. Server half: Downloads/2026-10-24_CCODE_TO_COMP_A_REMOVE_TIME_TRIAL_SERVER.md
 needs: A: start_quiz_attempt + build_study_snapshot stop honouring trial_passed; revoke credit_time_trial; reset trial_passed rows (owner go)
 
-
 ### 2026-10-24 12:58 · ccode · 65c9fa8b
 changed: Build 39: links read an optional per-term search_query (Comp B context) for Google / Scholar / Images, beside wikipedia_url — same separate non-fatal read; falls back to term + 'audio' (owner 2026-10-24)
 affects other side: Glossary detail, Flashcards
 needs: nothing
-
 
 ### 2026-10-24 12:31 · ccode · c357ec83
 changed: Build 39: Google Scholar added to the Research and learn more popup (Wikipedia · Google · Google Scholar · Not now; owner 2026-10-24); shared dialog takes a short list of extra choices
 affects other side: Glossary detail, Flashcards, shared AppDialog/confirm
 needs: nothing
 
-
 ### 2026-10-24 12:27 · ccode · 63c6e387
 changed: Build 39: 'View images ↗' beside 'Research and learn more ↗' (glossary term page + flashcard back) — opens Google Images for the term in the phone's browser with SafeSearch on (owner 2026-10-24)
 affects other side: Glossary detail, Flashcards
 needs: nothing
-
 
 ### 2026-10-24 12:22 · ccode · 5da9e6ae
 changed: Build 39: 'Research and learn more' on the glossary term page and the flashcard back — popup opens Wikipedia (exact article from wikipedia_url when the server has one, else a search) or Google in the phone's browser (owner 2026-10-24); shared dialog gains an optional second choice; flashcard link read is separate and non-fatal
 affects other side: Glossary detail, Flashcards, shared AppDialog/confirm, study fetch
 needs: nothing
 
+### 2026-10-24 11:49 · ccode · 487d9d11
+changed: web: /institutions is public (App Review notes link to it for institutional licensing) — owner GO 2026-10-24
+affects other side: website only — /institutions now answers without the key screen (exact match in web/proxy.ts); nothing for A
+needs: nothing
 
 ### 2026-10-24 11:48 · ccode · 4390760e
 changed: Test: offer-code test normalises CRLF (house ratchet)
 affects other side: test only
 needs: nothing
 
-
 ### 2026-10-24 11:44 · ccode · 12a60901
 changed: Build 39: 'Redeem an offer code' on the Paywall and Settings › MEMBERSHIP opens the store's own screen (Apple Offer Codes / Google Play redeem; owner GO 2026-10-24); the store-not-responding line names Google Play on Android (both phones identical)
 affects other side: Paywall, Settings MEMBERSHIP, purchase module
 needs: nothing
-
 
 ### 2026-10-24 11:06 · ccode · 036078b8
 changed: Pre-resubmission audit fixes: paywall StoreKit calls bounded (15 s) + 'Prices didn't load · TRY AGAIN' + App Store not-responding wording (owner-approved); Terms of Use / Privacy Policy rows in Settings for every user; Android Oboe output error callback → onOutputLost (native queue item 1, owner GO); Swift iPad-mic type-check + output-restart guard; last synthetic italic; duplicate Tape baking term
 affects other side: Paywall (all users), Settings › Feedback & Support, tone tools on Android, iPad mic; NATIVE parts store-build only
 needs: nothing
 
+### 2026-10-24 11:03 · ccode · 7d8d6821
+changed: web: privacy §13.3 no longer says the app won't request camera access (the Light-Pulse counter does) — owner GO 2026-10-24
+affects other side: website only — privacy §13.3 sentence no longer lists camera (app's Light-Pulse counter uses it). Live on Vercel.
+needs: nothing
 
 ### 2026-10-24 10:33 · ccode · f9e1e6cb
 changed: Miking hands: researched grips — claves striker and güiro scraper in a stick (pencil) grip, claves receiving hand cupped palm-up over a resonating air pocket, güiro held with thumb + middle finger in the sound holes, tambourine MOUNTED stick grip
 affects other side: Miking lab Claves, Güiro, Tambourine lessons; OTA-safe JS
 needs: nothing
 
-
 ### 2026-10-24 10:25 · ccode · de0ce674
 changed: Final build: location removed (expo-location uninstalled, iOS string + Android permissions out; next-build item 1); owner wording approvals — Log out dialog sentence, exit-flow copy approved, Stereo lab hides stereo-only text while PINK·MONO is selected
 affects other side: MultiMeter (no TAG LOCATION), Settings › Log out dialog, exit flow (comments only), Stereo lab text; app.json/package.json change (store build)
 needs: nothing
-
 
 ### 2026-10-24 10:17 · ccode · be4d4057
 changed: Miking hands (owner-approved): one shared anatomical hand system (anatomy/drawAnatomy/AnatomicalHand + HeldHand) for Shaker, Egg, Maracas, Tambourine, Claves, Guiro, Cowbell, Woodblock — side and top views agree
 affects other side: Miking lab hand-held percussion lessons; OTA-safe JS
 needs: nothing
 
-
 ### 2026-10-24 10:01 · ccode · f53bdfde
 changed: Home: new DAW Fundamentals & Session Management card art (owner's corrected image), bundled with the standard wash; replaces the bucket's free_daw.webp (AI piano-keyboard errors)
 affects other side: Home carousel + My-topic card for DAW Fundamentals; OTA-safe asset
 needs: nothing
-
 
 ### 2026-10-24 09:58 · ccode · 6fb3ca32
 changed: Both phones identical: italic Barlow text now uses the true italic faces (Regular/Medium/SemiBold Italic, preloaded) — Android drew fontStyle:'italic' on a custom font upright; 64 styles in 47 files + ratchet
 affects other side: App-wide italic notes/captions on Android; adds 2 preloaded font faces; OTA-safe JS/asset
 needs: nothing
 
-
 ### 2026-10-24 09:57 · ccode · 5991d089
 changed: Native engine v10 (final store build): Delay ping-pong really alternates L/R; Stereo lab gets a real stereo source (PINK/SINE STEREO + PINK MONO comparison); Android 'mic silenced by another app' detection; iOS AVAudioEngineConfigurationChange restart; iPad picks the best built-in omni mic. Golden 201/0
 affects other side: Delay + Stereo labs; all mic tools (Android silenced mic, iOS format change, iPad mic level). NATIVE — store build only; needs on-device checks
 needs: nothing
-
 
 ### 2026-10-24 09:57 · ccode · de040841
 changed: Home: new Music Production study-area card art, bundled (old art had AI piano-keyboard layout errors)
 affects other side: Home carousel — Music Production card; OTA-safe asset
 needs: nothing
 
-
 ### 2026-10-24 09:38 · ccode · 96b90d79
 changed: Exit flow ported from the exit-flow branch (f76a8ef9/37c781a6/52f967f7) and switched ON: Membership and billing, Cancel membership C1-C4 (feedback then the store's own subscription page), Delete account D1-D3 with keep-a-verification-record choice
 affects other side: Settings › MEMBERSHIP › Membership and billing; Settings › ACCOUNT AND PRIVACY › Delete account; live RPCs submit_exit_feedback + delete_my_account(p_keep_credentials); OTA-safe JS
 needs: nothing
-
 
 ### 2026-10-24 09:32 · ccode · b182fa68
 changed: Ported never-merged fixes: Advanced Tuner soak freeze (quantized store dedup + FrozenWhileCovered, hook-rule safe) and tool-demo FIELD NOTE in the true Barlow italic face (Android drew it upright)
 affects other side: Advanced Tuner full screen (soak/freeze); all 7 tool demos' field notes on Android; adds one preloaded font face (~104 KB); OTA-safe JS/asset
 needs: nothing
 
-
 ### 2026-10-24 09:21 · ccode · 44249b94
 changed: Fact-audit test F097178 follows the Fall-off rename (same fact: no 'doink' claim, the doit swoops up)
 affects other side: Tests only
 needs: nothing
-
 
 ### 2026-10-24 09:21 · ccode · 3e07a8f9
 changed: Comp A final-build §2: glossary names pointing at retired entries — drop 'dither' (learning profile), remove Duduk subtone / Spot bloom / Spot localization pull / papery, rename Baking→Tape baking, Fall-off/doink→Fall-off, Harman Target→Harman Target (in-room)
 affects other side: Glossary learning profile + weekly 'term of the day' notification lists; OTA-safe data
 needs: nothing
 
-
 ### 2026-10-24 09:21 · ccode · f83146b8
 changed: Comp A final-build §1: add live community-flag-digest v1 and the delete_my_account() snapshot (do not run) to the repo, verbatim (validate-purchase v19 / store-notifications v10 already captured in 35d9a71c)
 affects other side: Server files only; not bundled; no OTA/fingerprint impact; nothing deployed
 needs: nothing
-
 
 ### 2026-10-24 09:09 · ccode · b2601b4f
 changed: Pre-resubmission fixes: iOS SAVE to Photos (expo-media-library/legacy — root import throws in v57); Log out retries + counts unsent finished-lab credit (Settings + Dashboard); store-notifications matches Apple rows only on Apple-confirmed ids
 affects other side: iPhone/iPad Harmonograph + Cymatics SAVE; Settings › Log out + Dashboard sign-out; store-notifications edge function (needs a deploy on owner GO). App parts OTA-safe JS
 needs: nothing
 
-
 ### 2026-10-24 09:02 · ccode · 35d9a71c
 changed: Billing: repo now holds the LIVE source of validate-purchase v19 and store-notifications v10 (deployed 2026-10-23, exit-flow server half) — downloaded verbatim, no changes
 affects other side: Server only (edge functions); no app or OTA impact; a redeploy from the repo no longer rolls back the exit-flow server half
 needs: nothing
-
 
 ### 2026-10-24 08:33 · ccode · b9f41d97
 changed: Flashcards: bookmarking a term or adding/removing it on the Custom list flashes that list's filter icon once, like Glossary (shared AckFlash); the card's custom-list toggle refuses while the list is unreadable
 affects other side: Flashcards + Glossary (shared list-icon flash); OTA-safe JS only
 needs: nothing
 
-
 ### 2026-10-24 01:43 · ccode · b0dd689a
 changed: Overnight toddler pass 2: iPad landscape (Advanced Tuner note column, Calculator Lab popup), star/bookmark refused while the list is unreadable (+ Glossary flash gated), certificate download failure under the right certificate
 affects other side: Tuner full screen on iPad landscape, Calculator Lab popup on iPad landscape, Glossary/Flashcards star + bookmark, Credential wall download; OTA-safe JS only
 needs: nothing
-
 
 ### 2026-10-24 01:28 · ccode · ea21ec1b
 changed: iPad landscape: Home card fits the measured carousel row, so the caption strip above each card is never cut off (owner report from a real iPad)
 affects other side: Home screen carousel on tablets (iPad landscape, Split View); phones and portrait unchanged when the card already fits
 needs: nothing
 
-
 ### 2026-10-24 01:26 · ccode · bed314cd
 changed: Overnight toddler pass 1: 11 fixes with receipts (DJ goals wipe, ProNote over term popup, location tag timeout/silent fail/stale sheet, tuner BACK in popups, pitch floor bridge default, time-trial credit on custom list + mash, landing double tap, certificate share say guard)
 affects other side: Labs (DJ, Mixing family ProNote), Tools (MultiMeter TAG LOCATION, Advanced Tuner), Study time trials, onboarding landing, certificate share row; OTA-safe JS only
 needs: nothing
-
 
 ### 2026-10-24 00:27 · ccode · 3d9a5d59
 changed: Tuner phase 2: native pitch every ~15 ms (FFT YIN), low-note window from pitchMinHz, pitch timestamps (engine v9)
 affects other side: Tuner (Frequency Counter tuner mode, CenterLock, VU tuners) on the iOS 37 / Android 21 store build; native engine v9
 needs: nothing
 
-
 ### 2026-10-24 00:14 · ccode · 985a4d9c
 changed: Miking: load each lesson's ART on demand (generated per-lesson loader)
 affects other side: nothing (client-only)
 needs: nothing
-
 
 ### 2026-10-24 00:10 · ccode · 6a355d69
 changed: Trophy Case: share the certificate itself as an image
 affects other side: nothing (client-only)
 needs: nothing
 
-
 ### 2026-10-24 00:07 · ccode · 175f1ff5
 changed: Build payload: drop x86 Android ABIs; MultiMeter location tag in
 affects other side: nothing (native build payload)
 needs: nothing
-
 
 ### 2026-10-24 00:05 · ccode · fb1e5758
 changed: Build upload: exclude .git/ (~570 MB) from the EAS archive
 affects other side: nothing (build upload config)
 needs: nothing
 
-
 ### 2026-10-23 23:32 · ccode · ecced859
 changed: Next-build checklist: Android transitions merged
 affects other side: nothing (build-list row)
 needs: nothing
-
 
 ### 2026-10-23 23:29 · ccode · 15777ddd
 changed: Build config (B3): preview autoIncrement; untrack audio_app_archive/
 affects other side: audio_app_archive/ is no longer tracked (files stay on disk; pulling this commit REMOVES them from other checkouts — copy from history if needed)
 needs: nothing
 
-
 ### 2026-10-23 23:28 · ccode · a9843ddd
 changed: Merge branch 'android-transitions' into dj-lab
 affects other side: nothing (Android transitions plugin now on dj-lab; changes both fingerprints — rides the iOS 37 / Android 21 build)
 needs: nothing
-
 
 ### 2026-10-23 23:28 · ccode · 6df2f942
 changed: Miking: pre-warm the lesson screen while the lesson list is read
 affects other side: nothing (client-only)
 needs: nothing
 
-
 ### 2026-10-23 23:24 · ccode · 9c37b91f
 changed: Every new account gets the onboarding on its first sign-in
 affects other side: nothing (client-only)
 needs: nothing
-
 
 ### 2026-10-23 23:20 · ccode · 26d90ccb
 changed: Restore: say 'expired' / 'refunded' from the server's reason (Comp A #6)
 affects other side: nothing — consumes #6 reasons as posted
 needs: nothing
 
-
 ### 2026-10-23 23:17 · ccode · 48567e5f
 changed: Paywall + redeem: approved legal lines L4 / L12 / L15 (owner rulings 2026-10-23)
 affects other side: nothing (app copy; website Terms/Privacy stay on web-launch-day)
 needs: nothing
 
-
 ### 2026-10-23 22:29 · ccode · 50102df5
 changed: Miking: load only the opened lesson (first-open freeze, unmeasured on device)
 affects other side: nothing (client-only; dj-lab only, not merged)
 needs: nothing
-
 
 ### 2026-10-23 21:29 · ccode · ce95f18a
 changed: Next-build checklist: Android transitions ready on branch android-transitions (merge at build time)
@@ -1424,18 +1349,15 @@ changed: Android transitions match iOS: fade 280 ms, push 490 ms (config plugin)
 affects other side: nothing (client build config; branch android-transitions, merges at build time)
 needs: nothing
 
-
 ### 2026-10-23 21:20 · ccode · 1f50504f
 changed: Next-build checklist: Android transitions at the iOS/browser pace
 affects other side: nothing (build-list row)
 needs: nothing
 
-
 ### 2026-10-23 21:12 · ccode · 220f4574
 changed: Home: new card art for the Vehicle Audio study-area card
 affects other side: nothing (bundled art; bucket topic_vehicle.webp untouched)
 needs: nothing
-
 
 ### 2026-10-23 20:30 · ccode · session handoff
 changed: docs/SESSION_HANDOFF_2026-10-23_NIGHT.md — everything shipped tonight (all on the Android preview channel), device-test status, owner HOLDs (#6 wording, onboarding for new accounts, Cable stage 8)
@@ -1452,12 +1374,10 @@ changed: validate-purchase: repo copy = deployed v18 (Comp A, 2026-10-23)
 affects other side: nothing — repo now matches deployed v18
 needs: nothing
 
-
 ### 2026-10-23 19:52 · ccode · 090e17a5
 changed: Home: 70V card gets the same dark wash as every study-area card
 affects other side: nothing (client-only)
 needs: nothing
-
 
 ### 2026-10-23 19:45 · ccode · (log repair)
 changed: Handoff log RESTORED. Commits b9322d79 and 308148ed (and the stub fill after 83825356) overwrote every line of this file with one repeated line — a stub-fill command ran with no stub to find. This file is now the intact version from f1e0ff97 plus the six entries below, re-written by hand. Comp A: if you wrote here after 18:50 on a branch that merged dj-lab / next-store-build, please re-post that entry.
@@ -1520,588 +1440,490 @@ changed: Home: new card art for the Commercial 70V Systems study-area card
 affects other side: nothing (art bundled in the app; bucket topic_commercial.webp untouched, still used by the 70/100V topic card)
 needs: nothing
 
-
 ### 2026-10-23 18:10 · ccode · d5f76aea
 changed: My Enrollments: the ? help button is no longer inside the Return button
 affects other side: nothing (client-only header layout)
 needs: nothing
-
 
 ### 2026-10-23 17:47 · ccode · 76cd7765
 changed: Home: headline over the study-area cards reads 'Learn About the Academy’s Curriculum'
 affects other side: nothing (client-only Home headline copy)
 needs: nothing
 
-
 ### 2026-10-23 17:35 · ccode · e251c2da
 changed: Mixing Guides: a tap on a style opens it at once
 affects other side: nothing (client-only Mixing Guides hub tap)
 needs: nothing
-
 
 ### 2026-10-23 17:18 · ccode · c90b20c1
 changed: Home: free topics' caption above the card — green Free · blue headphones + Study Topic
 affects other side: nothing (client-only Home caption)
 needs: nothing
 
-
 ### 2026-10-23 14:24 · ccode · e1821279
 changed: Home, Glossary, My Enrollments polish (owner 2026-10-23)
 affects other side: nothing (client-only UI copy/layout; enrollIntro is a device-local store)
 needs: nothing
-
 
 ### 2026-10-23 14:24 · ccode · 2e25c2e7
 changed: DJ lab: screen 17 froze black on Android — loupe band was a RoundedRect with no r
 affects other side: nothing (client-only: DJ lab art fix + new Skia shape ratchet test)
 needs: nothing
 
-
 ### 2026-10-23 13:37 · ccode · 3906e73b
 changed: Advanced Tuner: top preset row was clipped on phones (chips lost top/bottom borders)
 affects other side: nothing backend (tuner layout fix).
 needs: nothing
-
 
 ### 2026-10-23 13:10 · ccode · e977054c
 changed: Advanced Tuner: the tuning row was invisible on phones (my f8ea7625 layout)
 affects other side: nothing backend (tuner layout fix).
 needs: nothing
 
-
 ### 2026-10-23 12:50 · ccode · 95c4ee76
 changed: Home: always the standard deck while Home Setup is hidden (owner 2026-10-23)
 affects other side: nothing backend (Home deck only; saved home lists untouched).
 needs: nothing
-
 
 ### 2026-10-23 11:58 · ccode · bbd8dd89
 changed: Trophy Case: certificate on the Share card, SAMPLE certificate view, full-screen landscape; share row out of the clipped art frame (owner 2026-10-23)
 affects other side: nothing backend (Trophy Case UI; certificate share row now tappable).
 needs: nothing
 
-
 ### 2026-10-23 11:19 · ccode · b7eb9fc7
 changed: Tuner phase 1 (research report): one needle filter, 4/s digits, steady IN TUNE, low-B partial; square ADVANCED TUNER key; tuner wheel top-left (owner 2026-10-23)
 affects other side: nothing backend (tuner display logic + layout; build checklist doc).
 needs: nothing
-
 
 ### 2026-10-23 10:41 · ccode · f8ea7625
 changed: Advanced Tuner: roomier preset menus + piano HOW TO TUNE popup (owner 2026-10-23)
 affects other side: nothing backend (Advanced Tuner layout + piano guide copy).
 needs: nothing
 
-
 ### 2026-10-23 10:25 · ccode · cc58e08e
 changed: RTA owner pass: band cursor, CAPTURE key, corner colour wheel, level-coloured frames (2026-10-23)
 affects other side: nothing backend (RTA screen + shared bezel optional frame prop).
 needs: nothing
-
 
 ### 2026-10-23 09:59 · ccode · 941dff85
 changed: Multimeter owner design pass (approved 2026-10-23)
 affects other side: nothing backend (Multimeter screen layout + help text; local colour pref only).
 needs: nothing
 
-
 ### 2026-10-23 09:08 · ccode · cdd16b93
 changed: Aim tips: owner 60° wording reaches every angle (35/40/45/70°) and the templates
 affects other side: nothing backend (miking lab aim-tip copy only). Rides the approval-day OTA.
 needs: nothing
-
 
 ### 2026-10-23 08:45 · ccode · 86eafc5c
 changed: Owner decisions on the 34 held audit items + spectrogram level strip (2026-10-23)
 affects other side: nothing backend (app copy, calculator ranges, room-design model; lab-cert seed SQL regenerated, 'why' text only). Rides the approval-day OTA.
 needs: nothing
 
-
 ### 2026-10-23 03:07 · ccode · 4bf38262
 changed: Audit R2 fix Round B (last): S3 wording — clarify, hedge, context (Comp B Round 2)
 affects other side: nothing backend (app copy; lab-cert seed SQL regenerated, 'why' lines only). Rides the approval-day OTA.
 needs: nothing
-
 
 ### 2026-10-23 02:37 · ccode · 5c77ba84
 changed: Audit R2 fix Round A: S2, safety, quizzes, patterns, calculators (D53), disputes (Comp B Round 2)
 affects other side: nothing backend (app copy + calculator logic; lab-cert seed SQL regenerated: 3 'why' lines). Rides the approval-day OTA.
 needs: nothing
 
-
 ### 2026-10-23 01:36 · ccode · 9d001fd6
 changed: Intro video: the owner's final onboarding video (2026-10-23), replaced in place
 affects other side: nothing (bundled asset; rides the approval-day OTA — the H2 hold is cleared once merged)
 needs: nothing
-
 
 ### 2026-10-23 00:03 · ccode · 8ce9035c
 changed: One registry name on screen (Pro Registry) + Limiter popup = glossary text
 affects other side: nothing (app copy; Limiter popup now equals glossary plain_english 7f621dc4)
 needs: nothing
 
-
 ### 2026-10-22 21:53 · ccode · 3a49864c
 changed: Mixing guides: shipped files are the master copy; converter locked (owner)
 affects other side: nothing backend. NOTE for any session: mixing-guide files are the master copy — never run convert.py into the repo (it now refuses)
 needs: nothing
-
 
 ### 2026-10-22 20:05 · ccode · c8aab4ba
 changed: Fact audit R3 (final): hedges, context, can't-confirm, Career Finder templates + cleanup
 affects other side: glossary mirrors (Comp A): Patch bay ecebd487, Limiter 7f621dc4, Modular d72bd8a0, Digital audio e9071a60 now differ from the app's lab popups; x-copy, rock crusher, F-wrench meanings unsourced — check glossary rows. Lab-cert seed SQL regenerated (why lines only)
 needs: nothing
 
-
 ### 2026-10-22 18:48 · ccode · 10d5f8c9
 changed: Fact audit R2: corrections + systemic patterns (Comp B return)
 affects other side: nothing backend (app copy, curated JSON, careerIndex + its build overrides, lab-cert seed SQL regenerated: 2 'why' lines only — re-run only if A reseeds)
 needs: nothing
-
 
 ### 2026-10-22 18:15 · ccode · 023640ea
 changed: Fact audit R1: 43 S1 fixes, in-app contradictions, dev-leak check (Comp B return)
 affects other side: nothing (app copy + curated notification JSON + careerIndex; rides the approval-day OTA)
 needs: nothing
 
-
 ### 2026-10-22 17:00 · ccode · cff3f25b
 changed: Help + Registry intro: membership is not needed to stay listed and verified
 affects other side: same promise as a39f1ef8, now in Help + the Registry intro — keep registry/verify free of membership checks
 needs: nothing
-
 
 ### 2026-10-22 16:48 · ccode · e60d44e1
 changed: About: say plainly an ongoing membership is not needed to stay listed and verified
 affects other side: app now PROMISES registry listing + employer search/verify never depend on membership — keep directory_search, public_verify_*, set_registry_listing free of any membership check
 needs: nothing
 
-
 ### 2026-10-22 12:21 · ccode · 2b8e2d56
 changed: About: certificate line names the Pro Registry listing step (owner H-A)
 affects other side: nothing (app copy only; rides the approval-day OTA)
 needs: nothing
-
 
 ### 2026-10-22 11:36 · ccode · dff54639
 changed: Copy: one name — 'Academy membership' replaces Reference/Academy Mode wording
 affects other side: nothing (app copy only; rides the approval-day OTA)
 needs: nothing
 
-
 ### 2026-10-22 11:28 · ccode · 87d7b2e0
 changed: Landing + paywall redesign (owner approved 2026-10-22): membership offer card, plans and buy button above the fold, Annual first, plan-named gold buy button, account step stated up front, guests return to the paywall with their plan kept, Free vs. membership block, How do I cancel? help
 affects other side: nothing in the DB (client purchase-flow UI; IAP products unchanged)
 needs: nothing
-
 
 ### 2026-10-22 00:37 · ccode · 0fb4e270
 changed: Test: customListAlways reads source with CRLF normalised (CRLF ratchet)
 affects other side: nothing (tests only)
 needs: nothing
 
-
 ### 2026-10-22 00:34 · ccode · d65d16ba
 changed: Merge dj-lab (docs, rules, CRLF ratchet, log-merge script) into next-store-build
 affects other side: nothing (client merge)
 needs: nothing
-
 
 ### 2026-10-22 00:34 · ccode · c483f3e9
 changed: Ratchet: tests that read source must normalise CRLF (Windows checkouts); 324 older files allowlisted, shrink-only
 affects other side: nothing (tests only)
 needs: nothing
 
-
 ### 2026-10-22 00:31 · ccode · 81d71f61
 changed: Docs: session handoff 2026-10-21, wiring audit closed, AGENTS.md rules (CRLF tests, rule book, log merge), scripts/merge-handoff-log.py
 affects other side: nothing (docs, rules, a merge helper script)
 needs: nothing
-
 
 ### 2026-10-21 23:52 · ccode · 71d44a7d
 changed: Merge dj-lab (round 8 test fix) into next-store-build
 affects other side: nothing (client merge)
 needs: nothing
 
-
 ### 2026-10-21 23:52 · ccode · 3fe2aeaf
 changed: Test: wiringFix_r8_text reads source with CRLF normalised (Windows checkouts)
 affects other side: nothing (tests only)
 needs: nothing
-
 
 ### 2026-10-21 23:49 · ccode · d52f060e
 changed: Merge dj-lab (round 8: all round-7 findings) into next-store-build
 affects other side: nothing (client merge)
 needs: nothing
 
-
 ### 2026-10-21 23:48 · ccode · b54fa00a
 changed: Round 8 (owner go): cable labs — RJ45 decoy, charge-only USB, definite failures, one-ended headset, TOSLINK and shield drawing, labels >= 9 pt, ALT SOURCE, named devices, 'on most bays', Cable Install scale and mains leads
 affects other side: nothing (client lab text/art only)
 needs: nothing
-
 
 ### 2026-10-21 23:31 · ccode · cf84973d
 changed: Round 8 (owner go): keys plans draw their DI cables; labels stay off keep-clear outlines; press box outputs are male XLR; Clavinet Hi-Z input and DI mic-level output; Mixing send wires and 100 % wet return
 affects other side: nothing (client lab text/art only)
 needs: nothing
 
-
 ### 2026-10-21 23:26 · ccode · 670f9779
 changed: Round 8 (owner go): end-fire front box delayed; tops and subs never share an amp channel; monitor and in-ear feeds from console auxes only; tie marks within one cable group; plus 8 more
 affects other side: nothing (client lab text/art only)
 needs: nothing
-
 
 ### 2026-10-21 23:25 · ccode · a4f3d22c
 changed: Round 8 (owner go): Production sample-rate mismatch, Digital theoretical SNR, FX low-pass Q, Meter waterfall time direction, plus 32 more text fixes
 affects other side: nothing (client lab text/art only)
 needs: nothing
 
-
 ### 2026-10-21 22:38 · ccode · dad9c3ec
 changed: Merge dj-lab (round 6: 40 grade fixes) into next-store-build
 affects other side: nothing (client merge)
 needs: nothing
-
 
 ### 2026-10-21 22:38 · ccode · f0641366
 changed: Round 6 (owner go): cable labs — bi-amp HF damage conditional, labels >= 9 pt, right connector ends, patch cords clear of jacks, cutaway S label, true-scale outlet, honest route length, catwalk feed lands on the box
 affects other side: nothing (client lab text/art only)
 needs: nothing
 
-
 ### 2026-10-21 22:36 · ccode · 7187e7f5
 changed: Round 6 (owner go): Rhodes cord from a jack on the keys; DI THRU and labels clear at every size; bass-head DI apart from the speaker cable; stage-plan label clashes; Mixing LOOP lane and RHYTHM BUS tape
 affects other side: nothing (client lab text/art only)
 needs: nothing
-
 
 ### 2026-10-21 22:29 · ccode · 31cab430
 changed: Round 6 (owner go): DJ passive amp gets FROM PROCESSOR R into CH B; in-ear hint names mono Aux 8; AUX 9 / AUX 10 plates in order
 affects other side: nothing (client lab text/art only)
 needs: nothing
 
-
 ### 2026-10-21 22:20 · ccode · fbc393d9
 changed: Round 6 (owner go): Digital undithered SNR, Calculator divider example, amp 4-ohm rating, 24-bit dither, -1/-2 dBTP, plus 13 wording fixes
 affects other side: nothing (client lab text/art only)
 needs: nothing
-
 
 ### 2026-10-21 21:58 · ccode · fc416dec
 changed: Owner approvals: 6 judgment calls and new wording approved; phone testing after store approvals
 affects other side: nothing (docs only)
 needs: nothing
 
-
 ### 2026-10-21 15:07 · ccode · 57c60a2f
 changed: Merge dj-lab (stereo in-ears: two cables per pair) into next-store-build
 affects other side: nothing (client merge)
 needs: nothing
-
 
 ### 2026-10-21 15:07 · ccode · 253f9614
 changed: Sound Systems (owner 2026-10-21): two cables between the same pair (stage box -> in-ear transmitter on Aux 9 and Aux 10); reference stereo build fixed; processor -> transmitter flagged
 affects other side: nothing (client lab only)
 needs: nothing
 
-
 ### 2026-10-21 14:23 · ccode · 994225a0
 changed: DJ Systems Lab glossary popup: 'DJ Mixer' (the 2026-10-19 plan), live glossary row ab13a9ab
 affects other side: nothing (reads existing glossary row ab13a9ab; no DB change)
 needs: nothing
-
 
 ### 2026-10-21 14:22 · ccode · d3ddfd43
 changed: Merge dj-lab (Miking round 3) into next-store-build
 affects other side: nothing (client merge)
 needs: nothing
 
-
 ### 2026-10-21 14:21 · ccode · 47f2e80f
 changed: Miking round 3 (owner go): steel cable from its body jack; VOL PEDAL cords on their jacks; steel THRU straight; Wurlitzer AUX OUT -> DI -> desk; guitar-plan DI XLR upstage TO STAGE BOX; drawn DI cord = tested cord
 affects other side: nothing (client lab art only)
 needs: nothing
-
 
 ### 2026-10-21 14:12 · ccode · c175674a
 changed: Merge dj-lab into next-store-build (owner go 2026-10-21): wiring A-grade rounds 1-4, rule book v1, DJ/Sound Systems/cable labs/Miking fixes, clocking card, Windows test fixes
 affects other side: nothing (client merge; the DJ lab glossary popup reads an existing glossary row, 8d561c7d, no DB change)
 needs: nothing
 
-
 ### 2026-10-21 14:08 · ccode · 3d874cfa
 changed: Merge dj-lab into next-store-build (owner go 2026-10-21): wiring A-grade rounds 1-4, rule book v1, DJ/Sound Systems/cable labs/Miking fixes, clocking card, Windows test fixes
 affects other side: nothing (merge; client only)
 needs: nothing
-
 
 ### 2026-10-21 09:21 · ccode · 1c82c6c3
 changed: DJ screen 20: speaker-cable tag on two lines left of the top, clear of the sub at every size; TO TOP R beside its lead
 affects other side: nothing (client lab art only)
 needs: nothing
 
-
 ### 2026-10-21 09:12 · ccode · ad554761
 changed: Round 4 cable labs (owner go): inspection markers on real faults, as-found rack powered, amber trace, honest route lengths, patch cords clear of bushings, bi-amp HF wording
 affects other side: nothing (client lab art/text only)
 needs: nothing
-
 
 ### 2026-10-21 08:48 · ccode · 30d89590
 changed: Tests (owner go 2026-10-21): normalise CRLF when reading source, so 22 test files pass on Windows checkouts
 affects other side: nothing (tests only)
 needs: nothing
 
-
 ### 2026-10-21 08:43 · ccode · 1ddd7152
 changed: Signal Chain caption: shorter, one line with no cap (P14 ratchet: never ends in an ellipsis)
 affects other side: nothing (client lab text/art only)
 needs: nothing
-
 
 ### 2026-10-21 08:28 · ccode · a88d7939
 changed: Miking C04 (owner 2026-10-21): the steel's path names the VOLUME PEDAL, not the pitch pedals
 affects other side: nothing (client lab text only)
 needs: nothing
 
-
 ### 2026-10-21 08:15 · ccode · 1d7e8181
 changed: Miking, Mixing, Mixing Guides, Mic Select round 2 (owner go): DI and amp direct-out lanes, combo as one body, DI XLR outs on every plan, backline cables drawn; hedged wording
 affects other side: nothing (client lab text/art only)
 needs: nothing
-
 
 ### 2026-10-21 08:13 · ccode · a92d972e
 changed: DJ round 3 (owner 2026-10-21): BOOTH tap unplugs the booth monitors; passive tops get an NL4 lead from the amp; balanced-line wording
 affects other side: nothing (client lab text/art only)
 needs: nothing
 
-
 ### 2026-10-21 07:59 · ccode · 65207f8d
 changed: Patchbay round 3 (owner go): two-outputs CLASH, cutaway notes (enlarged, ring spring not shown), cords in their own lanes, full-normal wording
 affects other side: nothing (client lab text/art only)
 needs: nothing
-
 
 ### 2026-10-21 07:57 · ccode · b8f22c0f
 changed: Signal Chain R3-SC-01 (owner 2026-10-21): caption — one lane is the stereo pair, outboard patched at the rear
 affects other side: nothing (client lab text/art only)
 needs: nothing
 
-
 ### 2026-10-21 07:49 · ccode · a7411c5e
 changed: Round 3 wiring fixes (owner go): Mastering controller note, Digital classic-model hedges, Meter mains 50/60 Hz, De-esser detector-filter hedge
 affects other side: nothing (client lab text/art only)
 needs: nothing
-
 
 ### 2026-10-21 07:45 · ccode · 8705abcf
 changed: Round 3 wiring fixes (owner go): Production level rule, cue outputs; Amp line level, rails meter; Calc crossover sum, negative gain, attenuator note
 affects other side: nothing (client lab text/art only)
 needs: nothing
 
-
 ### 2026-10-21 07:30 · ccode · 75444ca9
 changed: Wiring register: owner answers 2026-10-21 (wedge power individual, 4 drum tails, PHONES feed L−R, round-3 go)
 affects other side: nothing (docs only)
 needs: nothing
-
 
 ### 2026-10-19 10:12 · ccode · aa571e88
 changed: Session handoff 2026-10-19 (DJ lab, custom list, lab intro popups, cloud-session notes)
 affects other side: nothing (docs only)
 needs: nothing
 
-
 ### 2026-10-19 10:12 · ccode · a36559dd
 changed: Session handoff 2026-10-19 (DJ lab, custom list, lab intro popups, cloud-session notes)
 affects other side: nothing (docs only)
 needs: nothing
-
 
 ### 2026-10-19 09:59 · ccode · 60570463
 changed: Labs: free labs show the glossary popup to everyone; Calculator lab: none
 affects other side: nothing in the DB (client only, device-local seen flags). The owner decided the Calculator lab gets NO popup, so the "Audio calculations" row proposed in the e8930c4f entry is NO LONGER NEEDED; the other glossary fixes listed there (Compression, Voice, Spectrum Analyzer, Monitoring, FM Synthesis, Microphone types, Pitch Correction) still stand.
 needs: nothing new from A.
 
-
 ### 2026-10-19 09:39 · ccode · e8930c4f
 changed: Labs: glossary popup wired for 29 more labs (owner rulings), seen once per TERM
 affects other side: no DB change; read-only queries only. The popup now copies glossary.plain_english for 62 labs (22 distinct new rows, each md5-checked against the live row 2026-10-19), so an edit to those rows does not reach the popup until it is re-copied. Rows the popup now uses include "Dynamic range compression", "miking", "Mic Technique", "Vocal tuning pass", "Frequency modulation synthesis", "Audio Analyzer", "Downward expansion", "Coverage pattern", "Acoustic Treatment", "Connector".
 needs: Comp A, glossary fixes listed in Downloads/2026-10-19_LAB_INTRO_TERMS_TO_CHOOSE.md Part 3: wrong meaning for an audio app — "Compression" (air pressure only), "Voice" (synth only), "Spectrum Analyzer" (RF only), "Monitoring" (operations only); brand/model text — "FM Synthesis" (DX7 sentence), "Microphone types" (three makers/models); also "Pitch Correction" ends with 'auto-tune'. Plus a NEW row "Audio calculations" (draft in Part 2) so the Audio Calculator Laboratory can leave HOLD. Tell ccode when any of these change so the popup text is re-copied.
-
 
 ### 2026-10-19 09:20 · ccode · 5ab12363
 changed: My Custom List: every meter reads 100% from the start and never moves (owner ruling)
 affects other side: client only, no DB change. The owner DECIDED the four questions in the custom-list brief (now rules in Downloads/2026-10-19_COMP_A_CUSTOM_LIST_QUIZ.md §4): substitute a no-question term from the same list; practice only, counts toward nothing; no scenario/quiz progress stored for the list, so no server progress row; length 30 to the full list with the normal per-question time. Re-read §4 before building the RPCs.
 needs: Comp A — the two term-set RPCs in that brief; tell ccode "live" with the final names. Quiz + scenarios for the list stay on HOLD until then.
 
-
 ### 2026-10-19 09:19 · ccode · 75fa2d6d
 changed: Labs: first-open glossary popup (term + exact plain-English text, CONTINUE), members only
 affects other side: nothing in the DB. The popup copies glossary.plain_english for 33 labs into the app (labTermIntroData.ts, each with its glossary row id, read-only query 2026-10-19); a later edit of those rows does NOT reach the popup until the text is re-copied. Noted for the glossary owner: the row "Compression" is the air-pressure meaning, "Spectrum Analyzer" is an RF tool, "Voice" is a synth voice, and "Microphone types" / "FM Synthesis" name makers/models, so those labs are on HOLD.
 needs: nothing from A. The owner picks the 30 HOLD labs from Downloads/2026-10-19_LAB_INTRO_TERMS_TO_CHOOSE.md; not pushed, not published.
-
 
 ### 2026-10-19 09:10 · ccode · 53ff4e2f
 changed: My Custom List: always on the Study dashboard, every method open, 30-term list quiz (quiz + scenarios on HOLD)
 affects other side: no DB change made, and nothing new is called yet. The custom list ('flagged' pseudo-topic, glossary ids) now offers Flashcards / Fill in the Blank / Matching device-only (glossary_study_v by id, no record_study_progress). Its Scenarios and 30…all-term random-draw quiz are client-built but on HOLD (studyGate.CUSTOM_LIST_SERVER_READY = false) because start_quiz_attempt / submit_quiz (1–30) / get_scenario_homework / record_scenario_answer / complete_scenario_round all take one topic uuid only. The app guarantees 'flagged' is never sent to them (test/customListAlways_20261019).
 needs: Comp A — the brief Downloads/2026-10-19_COMP_A_CUSTOM_LIST_QUIZ.md (+ .html): a term-set quiz RPC (≥30 distinct glossary ids, no 30 cap, practice-only credit, idempotent client attempt id) with submit_quiz accepting >30 answers, and a term-set scenarios RPC; plus answers to its four questions (no-question term: skip or substitute; practice-only credit; scenario progress device-only or server; length cap + time rule). Tell ccode when live — the client half (QuizScreen/ScenariosScreen wiring + flag flip) lands then.
 
-
 ### 2026-10-19 08:47 · ccode · 6438511e
 changed: Rack dock (every lab): a cut-off key word shrinks to fit, 9 pt minimum
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-19 08:47 · ccode · 982a70e0
 changed: DJ Systems Lab: a redo is a fresh practice run; earned marks kept
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-10-19 08:36 · ccode · e2f33c62
 changed: Onboarding landing: MEMBERSHIP gets the Home Explore button's breathing gold ring until tapped
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-19 08:00 · ccode · dda6be8b
 changed: DJ Systems Lab toddler test, shared files: armed faults, stale readings, takes per take
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-10-19 07:46 · ccode · 148bf5bc
 changed: DJ Systems Lab 17-24 toddler test: no credit from a leftover booth or a stale reading
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-19 07:45 · ccode · 4c47eec6
 changed: DJ Systems Lab 9-16 toddler pass 2: no goal from the previous screen's booth or a stale render
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-10-19 07:38 · ccode · c0271c9b
 changed: DJ Systems Lab 1-8 toddler test: no goal or fault credit from a leftover booth or a stale render
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-19 07:38 · ccode · 328f3aad
 changed: DJ Systems Lab 9-16 toddler pass: faults that read FIXED too early, a clean run that counted re-renders
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-10-19 06:15 · ccode · 0e18b88f
 changed: DJ Systems Lab full screen: a tap or 1x drag no longer sends 2x/3x off-screen
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-19 06:10 · ccode · 160e35b2
 changed: DJ Systems Lab 3-4 round 3: loose ends hang straight down in their own lanes; MIXER and its front edge always named; full screen 1x fills; flash keeps off the room title; turntable rear at true width
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-10-19 05:44 · ccode · a251ec57
 changed: DJ Systems Lab: round-3 regrade of screens 3 and 4 (all 24 screens now B or above)
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-19 04:35 · ccode · aee16ab6
 changed: DJ Systems Lab: round-2 regrade of screens 3 and 4
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-10-19 04:24 · ccode · 3bf467c4
 changed: DJ Systems Lab 3-4 round 2: final3 captures (390 wide, full screen 1x and 3x)
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-19 04:21 · ccode · dd6a8ec5
 changed: DJ Systems Lab 4 round 2: words keep off the patch band's printed title; a stale just-patched flag clears on a new pick, a power switch, the fault and UNWIRE
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-10-19 04:16 · ccode · fdedf543
 changed: DJ Systems Lab 3-4 round 2: VIEW switch rides in the PATCH tray (six dock keys cropped at 390); plates named in the CABLE view; Screen 3's kept-plugs callout anchored on the plug
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-19 04:07 · ccode · 3b0eec6d
 changed: DJ Systems Lab 3-4 round 2: flags off every cable, CABLE view, focus dimming, re-spaced lanes, mixer cord off the panel edge; Screen 3 keeps the other source's plugs in their jacks
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-10-19 03:36 · ccode · 6a62451f
 changed: DJ Systems Lab: event-board mic at its true 170 mm length; combo jack 24 mm in SOURCES
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-19 03:34 · ccode · c37d0275
 changed: DJ Systems Lab 19: true-size mic from the combo jack, meters top-left, panel larger, labels in clear air; room plan with no device overlaps
 affects other side: nothing (client art only: p19Mic, MicGear, PlanView, djRoom placement — ROOM.table now 1.7 m, drawing/labels only; no physics numbers change)
 needs: nothing
 
-
 ### 2026-10-19 02:53 · ccode · 2a88e1f5
 changed: Merge dj-lab-d: overnight fixes for DJ screens 2, 3, 4 and 7
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-19 02:51 · ccode · 1aaf3d7f
 changed: DJ Systems Lab 17-18: final3 captures (390 wide, 3x)
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-10-19 02:46 · ccode · 3c4c8e5c
 changed: DJ Systems Lab 17-18: one arm pose for every view, true-scale side views, real rear cabling
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-19 02:22 · ccode · a2a36a4c
 changed: DJ Systems Lab 19: the mic lies on the booth table; labels clear of the panel and the meters
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-10-19 02:22 · ccode · 0f53e9db
 changed: DJ Systems Lab 23 + 24: the signal-flow boards show their devices; power cords traceable
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-19 01:27 · ccode · de1d2f74
 changed: DJ Systems Lab screens 2 and 7: true scale, every cable to a socket, labels off the gear
 affects other side: nothing (client only; DJ lab art, its tests and the final3 screenshots)
 needs: nothing
 
-
 ### 2026-10-19 01:04 · ccode · 58b37bed
 changed: DJ Systems Lab screens 3-4: dressed cable runs, per-feed speaker lights, two-scale map
 affects other side: nothing (client only; DJ lab art and its tests)
 needs: nothing
-
 
 ### 2026-10-19 00:30 · ccode · 05ed0244
 changed: DJ Systems Lab: first grading of all 24 screens (house art scale), before overnight fixes
@@ -2112,42 +1934,35 @@ changed: Merge dj-lab-c: second-round fixes for screens 19-24 and lab-wide items
 affects other side: nothing (client only; the DJ lab's credential requirement is ON HOLD by the owner until the lab ships)
 needs: nothing
 
-
 ### 2026-10-18 23:44 · ccode · 50c30832
 changed: DJ lab screen 17: room view footer band, real isolation pucks, STAGES label
 affects other side: nothing (DJ lab client screen 17 only)
 needs: nothing
-
 
 ### 2026-10-18 23:38 · ccode · 598b475b
 changed: DJ lab screens 13-18: preview pass fixes and final2 captures
 affects other side: nothing (DJ lab client screens 13-18 only)
 needs: nothing
 
-
 ### 2026-10-18 23:30 · ccode · 75df28f2
 changed: DJ lab: registry lines for 13, 14, 17, 18; SOURCES renumbered (F40-F60, U13-U19) and MODEL.md Stage 2b sections renumbered 13-21 and brought up to date; stale 13-18 header comments
 affects other side: nothing (client only, branch dj-lab-c, unpublished)
 needs: nothing
-
 
 ### 2026-10-18 23:30 · ccode · 12d911a4
 changed: DJ lab 19-24: second-review fixes to the screens and their drawings
 affects other side: nothing (client only, branch dj-lab-c, unpublished)
 needs: nothing
 
-
 ### 2026-10-18 23:23 · ccode · 1ae1c96b
 changed: DJ lab 19-24: setup readiness gates goals, key-locked pre-match, failed transitions stay failed, capstone fault bank with probes and plausible debriefs
 affects other side: nothing (client only, branch dj-lab-c, unpublished)
 needs: nothing
 
-
 ### 2026-10-18 23:17 · ccode · b58de832
 changed: DJ lab screens 15-16: second-round review fixes
 affects other side: nothing (DJ lab client screens 13-18 only)
 needs: nothing
-
 
 ### 2026-10-18 23:17 · ccode · 716ae462
 changed: DJ lab screens 13-14: second-round review fixes
@@ -2158,36 +1973,30 @@ changed: Merge dj-lab-b: DJ Systems Lab screens 19-24 into the full 24-screen la
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-10-18 21:32 · ccode · 35216080
 changed: DJ Systems Lab Stage 2b: keep two ratchets green
 affects other side: nothing (client-only on unpublished branch dj-lab-b; a PagedLab line moved and one ratchet entry classified; no DB, no OTA)
 needs: nothing
-
 
 ### 2026-10-18 21:28 · ccode · 3c0c1142
 changed: DJ Systems Lab Stage 2b: screen polish from the 390 px pass
 affects other side: nothing (client-only screen polish on unpublished branch dj-lab-b; no DB, no OTA)
 needs: nothing
 
-
 ### 2026-10-18 21:00 · ccode · cc062165
 changed: DJ Systems Lab Stage 2b: tests (mic, feedback safety, coverage, venue, recording, hybrid clock, changeover, capstone, optional paths)
 affects other side: nothing (client-only tests on unpublished branch dj-lab-b; this entry also covers c87a20fd, screens 19–24 and the lab's new ending, client-only; no DB, no OTA)
 needs: nothing
-
 
 ### 2026-10-18 20:59 · ccode · d0539f34
 changed: DJ Systems Lab Stage 2b: the event rig (model, engine, kit hooks)
 affects other side: nothing (client-only, unpublished branch dj-lab-b; additive PagedLab `optionalPage` and labEnd `optional` that no other lab sets; no DB, no OTA)
 needs: nothing
 
-
 ### 2026-10-18 20:29 · ccode · 9fa31669
 changed: DJ Systems Lab Stage 2 screens 13-18: effects, key, stems, laptop, vinyl, DVS
 affects other side: nothing (client-only DJ Systems Lab Stage 2 on the unpublished branch dj-lab; no DB, no OTA, no new dependency)
 needs: nothing
-
 
 ### 2026-10-18 19:57 · ccode · 5806f7f2
 changed: DJ Systems Lab Stage 2 engine: effects, key lock (WSOLA), stems, laptop USB, vinyl setup, DVS
@@ -2198,1230 +2007,1025 @@ changed: DJ Systems Lab: final 390 px screenshots after fix round 2
 affects other side: nothing (client-only DJ Systems Lab fix round 2 on the unpublished branch dj-lab; additive PagedLab/RackUnit props no other lab sets; no DB, no OTA)
 needs: nothing
 
-
 ### 2026-10-18 18:07 · ccode · 94c71f36
 changed: DJ Systems Lab Stage 1 screens: fix round 2 (audio + learning reviews)
 affects other side: nothing (client-only DJ Systems Lab fix round 2 on the unpublished branch dj-lab; additive PagedLab/RackUnit props no other lab sets; no DB, no OTA)
 needs: nothing
-
 
 ### 2026-10-18 18:06 · ccode · 5ea25e9c
 changed: DJ Systems Lab shared: HOT-PATCH tray warning, quiet map flags, what's-left goals
 affects other side: nothing (client-only DJ Systems Lab fix round 2 on the unpublished branch dj-lab; additive PagedLab/RackUnit props no other lab sets; no DB, no OTA)
 needs: nothing
 
-
 ### 2026-10-18 18:06 · ccode · b79239ae
 changed: Lab kit (additive): per-page what's-left lines, isPageDone, locked options keys
 affects other side: nothing (client-only DJ Systems Lab fix round 2 on the unpublished branch dj-lab; additive PagedLab/RackUnit props no other lab sets; no DB, no OTA)
 needs: nothing
-
 
 ### 2026-10-18 17:15 · ccode · 4714da74
 changed: DJ Systems Lab: the three expert reviews of Stage 1 (2026-10-18)
 affects other side: nothing (review documents only, branch dj-lab; no DB, no OTA)
 needs: nothing
 
-
 ### 2026-10-18 16:55 · ccode · ba9e83a7
 changed: DJ Systems Lab art: pages, captions, callouts, after screenshots
 affects other side: nothing (client-only DJ Systems Lab art on the unpublished branch dj-lab; no DB, no OTA)
 needs: nothing
-
 
 ### 2026-10-18 16:55 · ccode · ec7f9cd1
 changed: DJ Systems Lab art: Screen 4 as a room + patch elevation, traceable cables
 affects other side: nothing (client-only DJ Systems Lab art on the unpublished branch dj-lab; no DB, no OTA)
 needs: nothing
 
-
 ### 2026-10-18 16:55 · ccode · 18f27c01
 changed: DJ Systems Lab art: gear redrawn to true dimensions with silk-screen legends
 affects other side: nothing (client-only DJ Systems Lab art on the unpublished branch dj-lab; no DB, no OTA)
 needs: nothing
-
 
 ### 2026-10-18 16:55 · ccode · f3789b31
 changed: DJ Systems Lab art: obstacle-aware plain labels, cached scene fonts, insets
 affects other side: nothing (client-only DJ Systems Lab art on the unpublished branch dj-lab; no DB, no OTA)
 needs: nothing
 
-
 ### 2026-10-18 16:55 · ccode · a105ca7c
 changed: DJ Systems Lab art: one layered waveform renderer from the real audio
 affects other side: nothing (client-only DJ Systems Lab art on the unpublished branch dj-lab; no DB, no OTA)
 needs: nothing
-
 
 ### 2026-10-18 14:58 · ccode · 7fde28ad
 changed: DJ Systems Lab stage 1: visual polish pass + faults on screens 1-2
 affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
 needs: nothing now (if the lab later earns server credit, a tr_ training key would need a backend row first)
 
-
 ### 2026-10-18 14:58 · ccode · 279d3e77
 changed: DJ Systems Lab stage 1: wiring (members-only route, catalog, preview, tests)
 affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
 needs: nothing now (if the lab later earns server credit, a tr_ training key would need a backend row first)
-
 
 ### 2026-10-18 14:26 · ccode · 305ca9c8
 changed: DJ Systems Lab stage 1: screens 9-12 and the host
 affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
 needs: nothing now (if the lab later earns server credit, a tr_ training key would need a backend row first)
 
-
 ### 2026-10-18 14:26 · ccode · 23a02320
 changed: DJ Systems Lab stage 1: screens 5-8
 affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
 needs: nothing now (if the lab later earns server credit, a tr_ training key would need a backend row first)
-
 
 ### 2026-10-18 14:26 · ccode · bf12e05b
 changed: DJ Systems Lab stage 1: screens 1-4
 affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
 needs: nothing now (if the lab later earns server credit, a tr_ training key would need a backend row first)
 
-
 ### 2026-10-18 14:26 · ccode · 2a474e11
 changed: DJ Systems Lab stage 1: booth drawings, rack wrapper, sound/clock engine
 affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
 needs: nothing now (if the lab later earns server credit, a tr_ training key would need a backend row first)
-
 
 ### 2026-10-18 13:32 · ccode · 9f11cc07
 changed: DJ Systems Lab stage 1: shared booth model, music and signal engine
 affects other side: nothing (client-only DJ Systems Lab work on the unpublished branch dj-lab; no DB, no OTA)
 needs: nothing now (if the lab later earns server credit, a tr_ training key would need a backend row first)
 
-
 ### 2026-10-18 12:32 · ccode · 102ab895
 changed: Session handoff 2026-10-18; image-round lessons; local background-swap script
 affects other side: Comp A — docs/SESSION_HANDOFF_2026-10-18.md (image state; approval-day order unchanged)
 needs: nothing
-
 
 ### 2026-10-18 09:44 · ccode · ea11091f
 changed: Images: Comp C round 5, owner-approved: Radio Production tile (A, ON button + ON AIR), Assisted Listening cert (A, neckloop receiver + loop sign)
 affects other side: 1 topic tile + 1 cert square reach the buckets in the approval-day upload
 needs: nothing
 
-
 ### 2026-10-18 09:36 · ccode · e17d4665
 changed: Images: Loudspeaker Types & Drivers tile, owner's woofer cutaway (background darkened to the tile standard; speaker unchanged)
 affects other side: 1 topic tile reaches the bucket in the approval-day upload
 needs: nothing
-
 
 ### 2026-10-18 09:05 · ccode · 8b524911
 changed: Images: Comp C round 4, owner-approved: Hearing Health cert (B, dosimeter at a live show), Broadcast/Podcast/Streaming program (B, ON button + ON AIR)
 affects other side: 1 cert + 1 program square reach the course-cards bucket in the approval-day upload (upload-credential-cards.mjs already takes prog-*.webp)
 needs: nothing
 
-
 ### 2026-10-17 23:18 · ccode · 001c55ca
 changed: Images: owner-approved returns installed: Recording Fundamentals, Troubleshooting, Advanced Parallel & Bus, Vinyl/Disc Mastering tiles; Worship Audio cert
 affects other side: 4 topic tiles + 1 certificate square reach the buckets in the approval-day upload (no script change)
 needs: nothing
-
 
 ### 2026-10-16 22:26 · ccode · 3a4b7652
 changed: Governance D77–D84 (2026-10-16), AGENTS.md rules, engineering lessons 10-15/16
 affects other side: Comp A — read D81 (chat filter rulings) and D83 (approval-day OTA + 1.0.1 timing) in docs/APE_GOVERNANCE_DECISIONS_2026_10_16.md
 needs: nothing new (chat filter brief + server fixes stay queued for after the update is live)
 
-
 ### 2026-10-16 22:17 · ccode · f2224b83
 changed: Images: Comp C round installed (owner-approved): MIDI, Advanced Test & Measurement, Audio Coding & Codecs tiles
 affects other side: three topic tiles reach the bucket in the approval-day upload (no script change)
 needs: nothing
-
 
 ### 2026-10-16 20:25 · ccode · 256ea164
 changed: Images: Comp C trial round installed (owner-approved, option A each): Studio Recording Engineer cert, Amplifiers tile, AI-ML tile
 affects other side: the two topic tiles and the certificate square reach the storage buckets in the approval-day upload (no change to the scripts)
 needs: nothing
 
-
 ### 2026-10-16 20:12 · ccode · c9ee6177
 changed: Mixing Guides: keyboardist caution also in K-pop, Afrobeats, hard rock, cumbia, disco (owner 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 19:39 · ccode · 477495bb
 changed: Mixing Guides: plain-English glosses for non-English terms (owner 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 19:29 · ccode · 54923e88
 changed: Mixing Guides: talk-with-the-keyboardist caution under every EQ table (owner-approved 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 19:17 · ccode · d5cfbd01
 changed: Owner rulings 2026-10-16 on the lab-art HOLDs — Distortion DRIVE default +24 dB; Sound Systems venue plan people 2.5× + "people enlarged for clarity"; Miking E11/E13 hidden players ghosted; B04 setup 5 boom held low (opt-in Rim.zones / Instrument.setup). Recorded, no code: French horn stays "off the leg"; Cable Fundamentals connector photos stay; Advanced Mixing p8 duck stays exaggerated with its label. Queued for the next native build (memory project_next_build_queue items 10–11): Delay ping-pong input to one line only; Stereo Imaging needs a stereo source.
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 19:09 · ccode · c67c7808
 changed: Salsa / Latin-pop guides: the montuno does not double the tumbao — the piano SWITCHES from its montuno to doubling the bass (mambos, breaks, unison lines) (owner 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 19:00 · ccode · 48d29e02
 changed: Salsa guide caution: an electric/stage piano on DI brings no mud; an acoustic piano only via mics pushed into the subs — keep mics close and the sub send moderate, don't cut the piano's lows (owner 2026-10-16; caution wording approved)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 18:55 · ccode · 1c9ac0bf
 changed: Mixing Guides: keyboards keep their low end where they carry the bass (owner 2026-10-16, salsa piano)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 18:47 · ccode · 844997de
 changed: Test: the tracer ↔ bracket is built from the same amplitude the tracer moves by, so it changes length with the swing (owner 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 18:45 · ccode · adebddba
 changed: Foundations / Start Here air field: back to the owner's floating ear (owner 2026-10-16: the large white head 'is not an improvement'); tracer particles kept
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 18:34 Â· ccode Â· 525ab6dc
 changed: Start Here / Foundations listener: bigger ear on a true-proportion head (close-up framing; owner 2026-10-16 'bigger ear, keep head')
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 18:32 Â· ccode Â· 8d65d533
 changed: Harmonograph colour key: widen the tuple type so the filter predicate type-checks
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 18:32 Â· ccode Â· d394bee5
 changed: Post-wave cleanup: BrassArt label flag renamed (wording rule), Bass Lab removed from the ungated loop-host list now that it is gated (ratchet shrinks)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 17:30 Â· ccode Â· 5094e1da
 changed: Lab art fix round 2: Miking Lab 5 quartet + orchestra (E11, E13, E14)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 17:30 Â· ccode Â· ec6fdc38
 changed: Miking pluck sequence: the three sound fronts are a bounded sequence, never a loop (D8 ratchet)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 17:29 Â· ccode Â· 8a7f4ee0
 changed: Hand drums art fix (M04a/M04b/M05): the striking hand has a whole arm
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 17:23 Â· ccode Â· 1704b5b5
 changed: Miking guitars pluck sequence: sound fronts move out from the driven top (decorative motion; art fix round 3)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 17:23 Â· ccode Â· 953c1ca9
 changed: Piccolo (A07): the RIGHT EAR name gets places above the ear when beside it is taken
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 17:23 Â· ccode Â· 866406a8
 changed: Speaker cabinets art fix (SPK): the speaker shows through the grille cloth; names off the cone axis
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 17:21 Â· ccode Â· 280825ca
 changed: Miking oud: BRIDGE named beside the tail, never from the far right across the face (art fix round 3 review)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 17:20 Â· ccode Â· d738795c
 changed: Flute and piccolo art fix (A07; A06 via the engine): names off the player's face
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 17:20 Â· ccode Â· 493bd28d
 changed: Saxophones art fix (A05b, A05d) + Miking engine: no ghost labels under a mic; sax keys and holes named on the bell's stack
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 17:19 Â· ccode Â· 36518650
 changed: Concert drums art fix (M06/M07a): the players hold the mallets
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 17:14 Â· ccode Â· 6d353cda
 changed: Drum kit art fix (M02/M03/M09/M11): sticks in the drummer's hand, no hatched oval over the drummer
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 17:11 Â· ccode Â· c5e930de
 changed: Bowed strings art fix (fix4): violin and cello part names set off the instrument on leaders, stepping back under a mic; the string names in full colour
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 17:11 Â· ccode Â· 25621670
 changed: Miking lutes art fix round 3 (C13 oud, C14 sitar, C15 veena): tala strings on the player side, the veena player nearer, adult oud shoulders, the string rings
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 17:06 Â· ccode Â· 66e2c185
 changed: Piano & clavinet art fix (fix4): the grand's action named without crossings, upright WALL/PIANIST and plan labels unstacked, fingers apart on the keys
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 17:05 Â· ccode Â· 31b405c8
 changed: Art fix follow-up: polar-stage and chain-rack words wrap instead of clipping (one-line ratchet); Mic Selection allowlist entry dropped
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 17:04 Â· ccode Â· ae53c478
 changed: Wurlitzer art fix (I11b): part names keep off the seated player
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 17:02 Â· ccode Â· 4d67b98b
 changed: Organ art fix (A12): the nave drawn as a church; the far Pedal tower and the cornice on the case side
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 17:02 Â· ccode Â· 0db1de24
 changed: Cymatics art fix: drive hint in its own band, real drive hardware, Leissa first pair on the free square plate
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:58 Â· ccode Â· d9dd382f
 changed: Triangle art fix (I06a): the hand holds the clip
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:56 Â· ccode Â· 080b62fd
 changed: Bassoon art fix (A09b): the wing joint beside the long joint, its holes open to the left fingers
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:55 Â· ccode Â· 9883e1e9
 changed: Miking guitars & amps art fix round 3 (C01-C05C, C08): fretting hand drawn with its arch, the plucked string rings, STRINGS leader off the arm
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:51 Â· ccode Â· e816ae7e
 changed: Mallet keyboards art fix (I07/I08): the player is in the model, framed whole, names kept off the body
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:50 Â· ccode Â· d4b077a1
 changed: Reverb hero: 100% wet draws no dry hit (not a -80 dB stub)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:50 Â· ccode Â· 4313f7fb
 changed: Level & Amplitude art fix: equal-step meter scale, 3rd harmonic at 1.58 octaves on RTA and spectrogram, envelope-true waveform bars
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:49 Â· ccode Â· 9c754b48
 changed: Desk/booth/panel art fix (fix4): gooseneck base clear of the hands, labels off the chairs, distance chip off the face
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:47 Â· ccode Â· 225fe606
 changed: Miking Lab 6 art fix round 2: Location & film (F08, F09) and Foley stage (F01, F02, F04)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:46 Â· ccode Â· e4fcb4bf
 changed: Reverb, Delay, Flanger, Phaser heroes: the real signal, a decay you can read, analysers for the sweeps (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:44 Â· ccode Â· b79bfcb8
 changed: Binaural Panner art fix: head at true scale on the rings, sources drawn as loudspeakers, 10.5 pt bearings
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:44 Â· ccode Â· c77b184d
 changed: Connector Selection art fix: exploded-cable labels on their own rows in the house face; woven braid and stranded copper sections; a real panel lamp (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:44 Â· ccode Â· 35012475
 changed: Cymbals art fix (I01a/I01c/I01e): the drummer holds the stick, real cymbal profiles, the swing named
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:40 Â· ccode Â· 1dcb85e6
 changed: Brass art fix (A01 trumpet, A02 trombone): the valve hand stands beside the valves; PLAYER off the head
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:39 Â· ccode Â· a4480933
 changed: Signal Detective art fix: playhead clear of the stat lines, 10 pt stats, goniometer M off the bar's 0
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:38 Â· ccode Â· 988cb8ef
 changed: Bass Lab art fix: headstock past the nut, the string itself vibrates, larger fraction strip
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:35 Â· ccode Â· 971e430f
 changed: Glossary CUSTOM STUDY LIST chip: 3-card icon first, STUDY + the Study tab's headphones in the Study blue ([deck] CUSTOM STUDY [headphones] LIST) (owner 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:34 Â· ccode Â· 9671d66b
 changed: C10 Harp art fix round 2: real harpist hands on the strings, one seated body
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:34 Â· ccode Â· fb000b80
 changed: Miking hand percussion art fix round 3 (I02 cajÃ³n, I03a shaker, I05d gÃ¼iro): the shared figure on the cajÃ³n, curled grips, no white nail dots
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:33 Â· ccode Â· f3f23ff6
 changed: B04 boom operator art fix: no arm across the face; one straight pole in both hands; the operator dressed by the mic shown (art grading 2026-10-16, round 2)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:32 Â· ccode Â· d42f8441
 changed: Amplifier Principles art fix round 3: closed Class D half-bridge, real device symbols, drawn loudspeakers
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:32 Â· ccode Â· 21f2d9af
 changed: Sound Envelope art fix round 3: real-pitch audio under the envelope, a snare with its wires, 10%/90% tags off the release line
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:29 Â· ccode Â· 60af2001
 changed: Cable Fundamentals: code-drawn cable + connector art (fix pass 2)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:24 Â· ccode Â· ba7e7f33
 changed: Lead vocal art fix (fix4): MOUTH off the condenser, VOCAL FOLDS leader off the shirt, profile neck no wider than the shirt's nape
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:22 Â· ccode Â· 44e88f1c
 changed: Oscillator Lab art fix: 11 pt harmonic numbers, seam between wave strip and chart (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:22 Â· ccode Â· f3ec8987
 changed: Cable Install art fix: the as-found rack's AC cord on its own lane, clear of the N-012 cord and flag (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:21 Â· ccode Â· 4befee1f
 changed: Wave Physics art fix: plan rooms drawn from above, arrival table off the room, 10 pt room labels
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:21 Â· ccode Â· 11d34aec
 changed: Visual Audio Analysis art fix round 3: standard VU face, waveform scale numerals off the trace
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:21 Â· ccode Â· 822ffaf5
 changed: Drum Tuning art fix: rack tom on a real tom stand and set higher, larger pitch-ladder words, pillow label off the pillow
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:21 Â· ccode Â· 5fac6d2e
 changed: Drum Tuning art fix: rack tom on a real tom stand and set higher, larger pitch-ladder words, pillow label off the pillow
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:21 Â· ccode Â· 8c94e228
 changed: Room Design art fix: the rear leader breaks under NEARFIELD; angle, field and desk words drawn over the lines on a halo (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:21 Â· ccode Â· df23a0e9
 changed: FX labs: the hero badge and the GR readout in plain words (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:20 Â· ccode Â· 755b9222
 changed: EQ Lab + Distortion art fix round 3: curve in its own strip, true-proportion tones, true-level clipping
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:20 Â· ccode Â· f2106069
 changed: Modular Synth art fix: the patch is a real Eurorack case (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:20 Â· ccode Â· 22937583
 changed: Ear Training SEE IT art fix: 11 pt axis labels, peaks clear of the frame (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:18 Â· ccode Â· e86b210c
 changed: Miking engine + location kit (art fix round 2, F09/B04): rear hand on the pole, scene dressed by the mics shown, per-view hardware scale, ORIENT figure frame
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:17 Â· ccode Â· 2ce55d2a
 changed: Home free-topic cards: STUDY NOW in the Study tab's blue with the tab's headphones icon, linking the button to the STUDY nav (owner 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:15 Â· ccode Â· 6e5f2f5d
 changed: FM Synth Lab art fix: readable frequency axis and amplitude guides, 11 pt key and tags (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:11 Â· ccode Â· e2c3973f
 changed: Vacuum Tube art fix: transistor at true size beside the tube, secondaries as electrons, electrons accelerate
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:11 Â· ccode Â· 27028e98
 changed: Sound Systems art fix: performers drawn as the house plan figure from above at true scale; amp and cabinets at one mm scale (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:08 Â· ccode Â· d40e73d2
 changed: Low brass art fix (A03 horn): the horn held forward, the bell beside the right thigh, the right arm hanging at the side
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:07 Â· ccode Â· 7ffead8c
 changed: Mastering Lab art fix: real mastering gear, measured loudness meter, labels off the lines (art grading round 2, 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:05 Â· ccode Â· 8109840f
 changed: Tuning & Temperament art fix: piano-roll key strip under the cents rail, every stage label 10-12 pt (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 16:05 Â· ccode Â· a006ce6f
 changed: Digital Audio lab art fix: true-size pencil mic and stands, boxed 8" driver, A/D reference lines named in a key row (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 16:02 Â· ccode Â· f20df3f6
 changed: Noise Lab art fix: 12 pt uncrowded frequency ticks, colour names off the plot, 1 kHz pivot marked (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 15:58 Â· ccode Â· 2fd7be6c
 changed: Speech Lab art fix: readable face profile, a real mid-sagittal tongue, lips on the face line, larger anatomy labels
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 15:51 Â· ccode Â· 337757a4
 changed: Miking Measurement art fix round 3 (F11, F13, F14): operator reads the log sheet, names keep off the mic band, real room seats and curtain
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 15:51 Â· ccode Â· 9d352cd3
 changed: Beginning Mixing art fix: every page draws, from the lab's own maths (art grading round 2, 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 15:51 Â· ccode Â· a549efa1
 changed: Sound Playground art fix: taller glass for the four views, 10.5 pt pane names and balance strip
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 15:51 Â· ccode Â· 57fb2bf3
 changed: Signal Chain art fix: the chain drawn as nine half-rack units on one patch lane, GR at the unit, scenario patch lit (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 15:50 Â· ccode Â· cee36ab2
 changed: Miking Lab 7 body mics art fix: lav cable to its bodypack, gooseneck base clear of the hand (art grading 2026-10-16, round 2)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 15:50 Â· ccode Â· f96985af
 changed: Start Here / Foundations air field: the ear sits on a listener's head, not alone in the air
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 15:49 Â· ccode Â· 46658ba9
 changed: De-Esser lab art fix: detector drawn as one level per frame; voiced frames show the voice's harmonics (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 15:43 Â· ccode Â· 6ad0304d
 changed: Harmonograph art fix: oscillator key off the table legs, platform post and shadow, no unexplained tabletop marks (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 15:38 Â· ccode Â· 18c5a572
 changed: Autotune Lab art fix: 11 pt grid labels, filled correction wedge, pitch dot rides the curves (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 15:32 Â· ccode Â· 5b6cfac3
 changed: Patchbay art fix: real gear at the pair ends, true-scale bay slices, mounted jack cutaway
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 15:32 Â· ccode Â· 650e905c
 changed: Stereo Imaging art fix: goniometer draws the flow's stereo test tone, real correlation meter, M/S stage named
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 15:31 Â· ccode Â· d1de44b4
 changed: Foundations tracer particles: star glints replaced by the classroom marker (owner 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 15:31 Â· ccode Â· 48d09980
 changed: Mic Selection art fix: the polar stage drawn as a top view - real mic, singer, kit, wedge, chairs; tags off the pattern (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 15:29 Â· ccode Â· b60146e3
 changed: Microphone Principles art fix round 3: real grip hand with thumb, wrist and sleeved arm; boom stands; mic at the polar centre
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 15:28 Â· ccode Â· 231d58b3
 changed: Harmonic Lab art fix: 10 pt tags unclipped, level-weighted spectrogram bands, taller wave strip (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 14:10 Â· ccode Â· 23893c96
 changed: Advanced Mixing + Gain Staging art fix: real gear and measured drawings (art grading 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 14:02 Â· ccode Â· 96b26273
 changed: Lab art fix pass 2: sports plan marks clear the keep-clear band; natural clapper and walker
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 12:38 Â· ccode Â· 70375ae6
 changed: Lab art fix (review pass): name the camera, the spectators, the rig and the floor mic; close targets label above
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 12:31 Â· ccode Â· e441281b
 changed: Lab art fix: Spatial (F10) and Sports (B13-B15, B17) drawn as real objects
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 12:16 Â· ccode Â· a57f52ea
 changed: Flashcards: restore the pace timer (bar + Hz/per-minute readouts + modal + time trial) beside the session clock
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 12:12 Â· ccode Â· 1a9c2a3a
 changed: Miking stage/studio plans: owner defaults 1-4 of the stage-plot review (2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 12:04 Â· ccode Â· 1bce38da
 changed: Speaker Coverage lab art fix: house figures at true scale, rays stop at the floor, rated-angle (-6 dB) physics
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 11:56 Â· ccode Â· 3bc22f92
 changed: FX labs (Chorus, Compression, Gate, Limiter): heroes mirror the DSP â€” grading fix 2026-10-16
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 11:52 Â· ccode Â· 92e0afd6
 changed: Miking Lab 3 free reeds fix pass: whole harmonica player in the close-ups, real cup, accordion on two shoulder straps
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 10:33 Â· ccode Â· 7210197b
 changed: Flashcards card button: 3-card icon goes light blue when the term is on the list, grey when not (no frame); filter chip keeps the steady icon + frame (owner 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 10:26 Â· ccode Â· 198d8a34
 changed: Flashcards: the 3-card custom-list icon is always the list's light blue; 'on my list' / 'filter on' shows as a light-blue frame (owner 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 10:22 Â· ccode Â· 6a27ec48
 changed: Test: custom-list empty-state order check follows the icon wording
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 10:22 Â· ccode Â· e3aec52c
 changed: Custom list empty states show the custom list's own 3-card icon, not a â˜… (owner 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 10:16 Â· ccode Â· a556c349
 changed: Custom list empty state: also say terms can be added with â˜… on a flashcard in any other topic (owner 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 10:01 Â· ccode Â· c4578b8b
 changed: Home Enrollments card: green label 'SET UP WHAT YOU STUDY' (owner 2026-10-16)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 09:56 Â· ccode Â· b9c5b17d
 changed: Figure review: pass 3 notes (one hand model, families, one garment, joints moved, open list)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 01:25 Â· ccode Â· 9d49da3a
 changed: Miking figures pass 3: woodwind and saxophone hands on the keys; the sax player on the house body
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 01:12 Â· ccode Â· f8bd6826
 changed: figureAnatomy: pass-3 hand ratchet covers bowed, brass, low brass, lutes, free reed, small percussion and ensembles; pins follow the posed hands
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 01:12 Â· ccode Â· 8daa046f
 changed: Miking figures pass 3: ensemble players' hands on their instruments; brass elbows hang
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 01:12 Â· ccode Â· 33514634
 changed: Miking figures pass 3: accordion, harmonica and small-percussion hands; cowbell/woodblock forearms in front of the chest
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 01:12 Â· ccode Â· b85d9019
 changed: Miking figures pass 3: lute players' hands (oud risha, sitar mizrab, veena) and arms at adult length
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 01:11 Â· ccode Â· e1693058
 changed: Miking figures pass 3: bowed strings and high brass hands posed on the instrument
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 00:42 Â· ccode Â· 01dc62ae
 changed: Miking figures pass 3: low brass hands on the instrument (horn levers and bell, tuba/euphonium valves)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 00:36 Â· ccode Â· a2918a24
 changed: Miking figures pass 3: lap-steel hands posed (bar and picks); dimmed players stay opaque
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-16 00:19 Â· ccode Â· 0e6c82b5
 changed: Miking figures pass 3: one hand model with real joints; guitar-family hands posed on the neck; sleeves grow out of the shirt
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-16 00:12 Â· ccode Â· 03af8ed2
 changed: Lab art grading fix: Class D stage label 'one period at the peak' off the low-side box and the rail line
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 23:50 Â· ccode Â· 2ea18433
 changed: Lab art grading fix: Advanced Mixing routing map â€” OUT clear of MIX BUS and inside the frame, bus names inside their boxes, FX return off the rhythm wire
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 23:50 Â· ccode Â· ba1b5818
 changed: Lab art grading fix: de-esser threshold named in the header key, GR numbers off the range cap
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 23:49 Â· ccode Â· bc622597
 changed: Lab art grading fix: GR meter reads 0.0 dB at rest, never âˆ’0.0 dB
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 23:42 Â· ccode Â· c424a4e1
 changed: Lab art grading fix: Cymatics home caption no longer sits on the plate
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 23:34 Â· ccode Â· fdb9b1eb
 changed: Lab art grading fix: Peak meter labels clear the corner screws
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 23:05 Â· ccode Â· 1c8012af
 changed: Miking plans: expert review â€” audience only where it fits, face-on idle phones, true kit, words off cables
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 22:46 Â· ccode Â· d22adb74
 changed: Miking figures pass 2: bowed/brass 3-D figure and ensemble bodies redrawn (one shirt, real torsos)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 22:33 Â· ccode Â· 7d37142d
 changed: Miking figures pass 2: small-percussion tops, vibraphone fists on the shaft, free-reed profile
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 22:29 Â· ccode Â· d5eaf840
 changed: Miking figures pass 2: lute players (oud, sitar, veena) as one body in one shirt
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 22:26 Â· ccode Â· ea35cef8
 changed: Miking figures pass 2: low brass players on the house body (horn, tuba, euphonium)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 22:24 Â· ccode Â· b1f15613
 changed: Miking figures pass 2: one-garment shirt, shorter singer necks, real flute elbow, gong reach
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 21:42 Â· ccode Â· 5c50559f
 changed: Miking wedges: drivers shown open (12in cone + HF horn, no grille); input plate on the side panel, not a bright ring on the rear edge (owner 2026-10-15)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 20:23 Â· ccode Â· d9cb809c
 changed: Miking plans: a headphone mix at every studio performer; no collisions in any plan
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 19:51 Â· ccode Â· 8f47f851
 changed: Miking figures: Wurlitzer player on the shared figure; necks into collars; stick/box figures replaced
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 19:09 Â· ccode Â· faf03aaf
 changed: Miking: show the stage/studio plan steps again; name idle zones on the glass
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 18:39 Â· ccode Â· bfab662f
 changed: Community rules: show a rephrase message when the server refuses text
 affects other side: Comp A brief 2026-10-15_COMP_A_CHAT_CONTENT_FILTER_BRIEF.md
 needs: Comp A to apply after approval
 
-
 ### 2026-10-15 16:48 Â· ccode Â· a03d9949
 changed: Store readiness: localized paywall prices, delete-account billing note, sign-up terms line
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 14:12 Â· ccode Â· 6ba9b349
 changed: Android 3-button nav bar: bottom content clears the bar on 32 root-stack screens (2026-10-15)
 affects other side: nothing (app only, JS layout; ships with the post-approval OTA)
 needs: nothing
 
-
 ### 2026-10-15 11:20 Â· ccode Â· e9edce3f
 changed: Home: tapping HOME resets the card carousel to the default card; the dot row can be dragged to move through the cards (UX review 2026-10-15)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 10:41 Â· ccode Â· ede4cc91
 changed: One custom-list colour everywhere (teal colors.customList): Glossary term icon + filter, Flashcards filter chip + card icon, term popups, Study custom card, Enrollments SEE & EDIT list (owner 2026-10-15)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 10:37 Â· ccode Â· 946b6163
 changed: Enrollments uses the screen better: smaller gap under the title; on phones the selection card's art is smaller and STUDY / LOAD ALL sit side by side (card ~25% shorter) (owner 2026-10-15)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 10:17 Â· ccode Â· b6c3c9c2
 changed: Enrollments: the loaded/enrolled count moves from under MY ENROLLMENT into the My Enrolled Topics card ('N topics enrolled Â· N loaded into study') (owner 2026-10-15)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 10:11 Â· ccode Â· 6c7fd6e5
 changed: My Enrollments Dashboard: no page-button row; first-visit intro 'Understand What Youâ€™ll Encounter' (owner text); ? opens a menu â€” How Your Learning Is Organized / Help with this screen; long intros scroll inside the card (owner 2026-10-15)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 09:57 Â· ccode Â· 8d336bb2
 changed: Tools hub does far less work: minis re-render only when their picture changes, static plates drawn once, bars as single paths, tuner/RT60 animate off the React render path, off-screen tiles pause (JS thread ~70-95% -> ~6-15% on the emulator; owner 2026-10-15)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 09:45 Â· ccode Â· b40ca235
 changed: Home Enrollments card: headline 'Start Studying & Earn Credentials', label 'VIEW YOUR ENROLLMENTS' (owner 2026-10-15)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 08:13 Â· ccode Â· 6268f673
 changed: Drum Tuning: loudness (dB) in its own strip under the waveform with its own scale; T60 on the strip; waveform is one clean signal (owner 2026-10-15)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 08:08 Â· ccode Â· 68d002a3
 changed: Tools tile art: waveform centre line moved behind the trace, fainter (owner-approved image edit 2026-10-15); Speech page 12: three repeated questions replaced with off-axis, mouth clicks and breath noise (owner 2026-10-15)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 01:23 Â· ccode Â· 6392d5e7
 changed: Hints never grow past the brand text cap (covered the Dashboard 0% at large text); rotary-dial tip says 'Tap' â€” the small dial opens on tap (TestFlight build 36: 'Rotary dial does not spin')
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 01:21 Â· ccode Â· 7cc96e6c
 changed: Large-text and lab follow-ups: back controls never squeezed (cap + no-shrink, Directory uses HomeOrBackKey), Flashcards fit at large text, Career Finder bonus card unnumbered, Glossary title fits; slider release lands correctly when a stale lift point arrives; Room plan labels avoid each other; Modular well usable; Gain group keys show dB
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 01:21 Â· ccode Â· 9f8b3fec
 changed: iOS freeze (build 36 TestFlight, 'Frozen Screen' x10): closing a certificate/program popup and its chooser in one tap left the outer Modal presented, invisible, swallowing every touch. DimModal now holds a parent open until nested popups are gone (iOS); STUDY NOW / VIEW PROGRESS / GO TO MY ENROLLMENTS navigate after both close. Dashboard progress label capped at large text.
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 00:29 Â· ccode Â· 53412bd4
 changed: Glossary card view: a search still filtering the cards shows as a small 'Results for â€¦  âœ•' pill that clears it
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 00:26 Â· ccode Â· d2ef6483
 changed: Speech lab HOLDs (owner: 'fix what you recommend'): one FULL SCREEN on page 2, amber (not red) caution card on page 9, animations pause when the screen is not showing
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 00:21 Â· ccode Â· c766aad9
 changed: HOME key instead of â€¹ on screens one level from Home (Calculator Lab, Award Progress, Career Finder landing, Start Here, Learning Labs), decided by the route underneath (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 00:14 Â· ccode Â· 1ee41ba6
 changed: Home Study Area subtitle reads 'Explore Certificates & Programs' (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 00:12 Â· ccode Â· dd4c06b6
 changed: Home: amber 'Explore Certificate Programs' under every Study Area card title (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 00:09 Â· ccode Â· d5e5fcf5
 changed: Home cards: 'First Steps in Audio' in gold; gold 'Study Topic' under Pro Audio Safety and DAW Fundamentals (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 00:06 Â· ccode Â· 89976b8f
 changed: Home cards: Career Finder key word in gold too; the gold word carries the text-size cap (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 00:05 Â· ccode Â· 81ef41b2
 changed: Home cards: key word in gold â€” Labs, Calculator, Tools, Glossary, Enrollments (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-15 00:02 Â· ccode Â· 01097ef3
 changed: Android BACK retraces visited tabs instead of jumping to Home (tab backBehavior was the default 'firstRoute'); Home is the root (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-15 00:02 Â· ccode Â· 184f328c
 changed: Home: MY ENROLLMENTS card right of the Glossary card (owner art, bundled â€” no bucket upload during review) replaces the green Enrollments button; first-run cue moves to the card (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-14 23:58 Â· ccode Â· bfa33fd3
 changed: Speech & Voice lab: every drawing and animation redone to the current standard â€” real laryngoscopic vocal folds (decency fixed), head section with staged airflow, vowel mouth views, consonant spectrograms, real 16 kHz waveforms with the zero line behind the trace, pop-filter slow motion, to-scale distance scene; voice-science + learner reviews applied (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-14 23:56 Â· ccode Â· 8caf90ac
 changed: Glossary: BEG/ADV key left of ALL and BEG previews show plain English; full-screen icon (green) replaces CARDS, inward arrows to leave; Custom Study List (cyan); Î£ removed; book mark beside the title; share on the open card; no search field in card view (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-14 23:37 Â· ccode Â· 447e1e9c
 changed: Glossary: CARDS/LIST and ADV/BEG move into the filter row at chip height; they return to the header only while a card popup hides that row (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-14 23:28 Â· ccode Â· 8aedb0d1
 changed: My Custom List loaded by default; empty-list message on the Study screen; Enrollments title 'My Enrollments Dashboard' (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-14 23:22 Â· ccode Â· e946320f
 changed: Enrollments for guests: Pro Audio Safety and DAW Fundamentals open expanded, no lock marks, no lock indent (owner 2026-10-14: both are free for guests)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-14 23:17 Â· ccode Â· 03d9f6e5
 changed: Waveforms: zero line behind the trace, never across it (Drum Tuning, Mastering x2, Tools hub tile); Envelope follows the wave's peaks (owner 2026-10-14: one signal must read as one)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-14 23:11 Â· ccode Â· fb4b3df7
 changed: Enrollments: My Custom List becomes a MY ENROLLMENT selection; chips show enrolled counts; custom-list bar and Continue Learning banner removed so MY ENROLLMENT is the top (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-14 22:48 Â· ccode Â· 696b4ce6
 changed: Description cards: keep the coloured left edge on Explore only; plain at the top of Certificates/Programs/Pro Registry (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-14 22:46 Â· ccode Â· 8673a40d
 changed: Description cards: drop the coloured left edge (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-14 22:38 Â· ccode Â· 5c046227
 changed: Certificates, Programs, Pro Registry: same short description card at the top as on Explore (shared CredentialBlurb, owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-14 22:30 Â· ccode Â· 95d12f90
 changed: Explore: three brief cards under the glance graphic â€” Specialist Certificates, Program Certificates, Pro Registry (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-14 22:16 Â· ccode Â· 63b83b9d
 changed: Emulator pass on six members-only labs: fixes (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-14 19:50 Â· ccode Â· 65a631de
 changed: Calculator number fields open the number pad on Android, never the letter keyboard (owner 2026-10-14)
 affects other side: nothing (app only)
 needs: nothing
-
 
 ### 2026-10-14 19:50 Â· ccode Â· 031601d3
 changed: Toddler hunt: carry out all 32 owner HOLD decisions (owner 2026-10-14, all defaults)
 affects other side: nothing (app only)
 needs: nothing
 
-
 ### 2026-10-14 19:02 Â· ccode Â· e79f388d
 changed: docs: D75 lab-fader standards + D76 worklet/shared-value rules; engineering lessons 2026-10-14
 affects other side: nothing (docs only)
 needs: nothing
-
 
 ### 2026-10-14 18:55 Â· ccode Â· d10adb4a
 changed: fix(lab): issues found checking the HOLD changes on the emulator
 affects other side: nothing (client-only, JS; ships with the post-approval OTA)
 needs: nothing
 
-
 ### 2026-10-14 17:16 Â· ccode Â· a4412ab3
 changed: feat(lab): owner's slider-pass HOLD decisions (defaults) + Sound Systems map speed-up
 affects other side: nothing (client-only, JS; ships with the post-approval OTA)
 needs: nothing
-
 
 ### 2026-10-14 16:16 Â· ccode Â· e989f3b1
 changed: fix(lab): a fast flick whose lift beats the pan activation lands where the finger lifted
 affects other side: nothing (client-only, JS; ships with the post-approval OTA)
 needs: nothing
 
-
 ### 2026-10-14 15:44 Â· ccode Â· 8a640e73
 changed: fix(lab): Miking tap/flick saved the OLD mic position; cap held until the commit lands
 affects other side: nothing (client-only, JS; ships with the post-approval OTA)
 needs: nothing
-
 
 ### 2026-10-14 09:55 Â· ccode Â· 6f70d52c
 changed: fix(lab): lane worklets resolve cap width in the body, not a default parameter
 affects other side: nothing (client-only, JS; ships with the post-approval OTA)
 needs: nothing
 
-
 ### 2026-10-14 09:25 Â· ccode Â· a709ae6f
 changed: Lab slider pass 2026-10-14 â€” every dock fader does something, moves evenly, follows the finger
 affects other side: nothing â€” client-only
 needs: nothing
-
 
 ### 2026-10-14 00:35 Â· ccode Â· 263ed835
 changed: Live emulator toddler pass fixes (2026-10-13)
 affects other side: client-only fixes; backend follow-ups are owner-HOLD items (DownloadsÂ‚6-10-14_TODDLER_BUG_HUNT_REPORT.md Â§3: Play acknowledge in validate-purchase, app-account tag on purchases, contact_message_send client id, contact_report repeat merge, account_standing_mine expiry, register_commercial_user failure) â€” do nothing until the owner rules
 needs: nothing yet
 
-
 ### 2026-10-13 23:35 Â· ccode Â· 2231295a
 changed: Toddler bug hunt 2026-10-13 â€” fixes across accounts, membership, community, all labs, study, glossary
 affects other side: nothing â€” client-only
 needs: nothing yet
 
-
 ### 2026-10-13 22:12 Â· ccode Â· d2d37511
 changed: Lab checks + lab-cert map: owner APPROVED 2026-10-13 (HOLD markers â†’ APPROVED)
 affects other side: the seed SQL header now reads APPROVED (no data change) â€” run it as-is
 needs: nothing beyond the f743665e handoff
-
 
 ### 2026-10-13 17:30 Â· Comp A â†’ ccode Â· lab-cert requirements backend (re f743665e)
 changed: Steps 1â€“4 DONE on yjgolswjggmlpeowvtxr. `credential_lab_requirements` (RLS on, no anon/authenticated table grants); seed run as-is (labs: audio_fundamentals 15, ear 14, miking 128, mixing 36, training 34; requirements: certificate 85/333, program 35/207, 540 total); `award_required_labs(text, uuid)` EXECUTE authenticated only; gate in `start_final_exam` right after `award_incomplete` (after already_earned + result_held) raising `labs_incomplete`; award_complete / submit_final_exam / credential_awards untouched. Backup of the old function: table `_bk_start_final_exam_20261013` (column `def`).
@@ -3436,276 +3040,230 @@ changed: Training labs count toward certificates â€” client half (owner 202
 affects other side: YES â€” backend half: 212 `labs` rows, `credential_lab_requirements` table + seed (540 rows), `award_required_labs` RPC, and a `labs_incomplete` gate in `start_final_exam` behind a switch left OFF until the post-approval OTA. Full spec: Downloads\2026-10-13_COMP_A_LAB_CERT_REQUIREMENTS_HANDOFF.md + Downloads\2026-10-13_LAB_CERT_REQUIREMENTS_SEED.sql (map is HOLD pending owner review â€” re-run the seed if it changes).
 needs: Comp A builds steps 1â€“4 with the gate OFF, then reports the switch name and the two verify-query counts here.
 
-
 ### 2026-10-13 14:52 Â· ccode Â· ab74b6f7
 changed: Android emulator pass fixes (owner 2026-10-13; ship with the post-approval OTA)
 affects other side: nothing â€” client-only UI/meter logic
 needs: nothing
-
 
 ### 2026-10-12 08:07 Â· ccode Â· 75ffe141
 changed: Tagline everywhere: 'The whole craft of audio in your pocket' (splash, About, Dashboard header, glossary share) â€” owner 2026-10-12
 affects other side: nothing â€” client-only text
 needs: nothing
 
-
 ### 2026-10-11 16:16 Â· ccode Â· 057c8946
 changed: Certificate squares: 20 owner-accepted Comp C round-3 images (live-mixing option B refused: not square -> redo)
 affects other side: nothing â€” client-only images
 needs: nothing
-
 
 ### 2026-10-11 15:54 Â· ccode Â· 7a9dc442
 changed: Images: 18 owner-accepted Comp C round-2 replacements (9 topic tiles, 9 certificate squares; 2026-10-11 picker)
 affects other side: nothing â€” client-only images
 needs: nothing
 
-
 ### 2026-10-11 12:16 Â· ccode Â· 33a50500
 changed: Glossary: bottom nav hidden while open; header book mark replaced by a HOME key back to Home; bottom safe-area inset now on the screen (owner 2026-10-11)
 affects other side: nothing â€” client-only UI change
 needs: nothing
-
 
 ### 2026-10-11 12:02 Â· ccode Â· cffe01d3
 changed: Enrolling is members-only: one shared gate on every add into My Enrollments (owner 2026-10-11)
 affects other side: nothing â€” client-only (useEnrollGate in front of every add; seeding, server sync and the DB mask untouched). Store listing / website copy that says anyone can enroll would now be out of date (Comp A's lane). Rides the held production OTA.
 needs: nothing
 
-
 ### 2026-10-11 11:43 Â· ccode Â· 9ec4cdb0
 changed: Splash: official tagline 'The whole craft of audio. Right in your pocket'; Home: blue PROFESSIONAL AUDIO GLOSSARY line removed (owner 2026-10-11)
 affects other side: new official tagline â€” store listing copy / website may want it (Comp A's lane). App-only otherwise; rides the held production OTA.
 needs: nothing
-
 
 ### 2026-10-10 19:31 Â· ccode Â· e2e0c921
 changed: docs: governance D67-D74, lessons 2026-10-10, AGENTS house rules, session handoff for 2026-10-11
 affects other side: A: read docs/APE_GOVERNANCE_DECISIONS_2026_10_10.md (D74: no production OTA during store review; topic-tiles upload after approval)
 needs: nothing
 
-
 ### 2026-10-10 19:11 Â· ccode Â· 0d9b086a
 changed: Topic tiles: 24 owner-accepted Comp C replacements (2026-10-10 picker; 18 rejected -> redo brief)
 affects other side: nothing
 needs: nothing
-
 
 ### 2026-10-10 18:51 Â· ccode Â· 92c2ed9a
 changed: Labs: traceable cable lanes + pro dressing (Cable Install, Sound Systems), 2-way stage wedges app-wide, MON->snake return; Patchbay on the Rack Unit (12 modules); neck hands fixed + cellist raised; shared anatomical arms on low brass, small perc, lutes, keys, ensembles, sax, free reed; guitar fretting wrist <= 70 deg
 affects other side: nothing (client lab art on next-store-build; unpublished)
 needs: nothing
 
-
 ### 2026-10-10 17:34 Â· ccode Â· 03c39c9b
 changed: Figures: anatomical arm (one outline, elbow point + crook, forearm swell, bare wrist, cuff), 70Â° wrist limit, real bow hold, violin/viola neck hold from above, fretting hands (owner approved)
 affects other side: nothing (client lab art on next-store-build; unpublished)
 needs: nothing
-
 
 ### 2026-10-10 17:23 Â· ccode Â· d675ff77
 changed: Comp C technical-accuracy audit applied (Miking Labs 1-7, shared, Mixing Guides, Mixing Labs)
 affects other side: nothing (client lab copy/art on next-store-build; unpublished)
 needs: nothing
 
-
 ### 2026-10-10 15:42 Â· ccode Â· eeb713f7
 changed: Bowed: BOW label names the stick as drawn (was the old mid-stroke tip at the head)
 affects other side: nothing (client lab art on next-store-build; unpublished)
 needs: nothing
-
 
 ### 2026-10-10 15:17 Â· ccode Â· 854c32aa
 changed: Figures: sleeve grows out of the shoulder (no knob), straight upper-arm taper (owner)
 affects other side: nothing (client lab art on next-store-build; unpublished)
 needs: nothing
 
-
 ### 2026-10-10 11:37 Â· ccode Â· 7b285156
 changed: Clash sweeps + controls-at-the-bottom (owner-reviewed checkpoint)
 affects other side: nothing (client lab art on next-store-build; unpublished)
 needs: nothing
-
 
 ### 2026-10-10 11:03 Â· ccode Â· b6b154c2
 changed: EQ camera scene: window without the sill (owner)
 affects other side: nothing (client lab art on next-store-build; unpublished)
 needs: nothing
 
-
 ### 2026-10-10 10:30 Â· ccode Â· 0f938519
 changed: Mastering room plan: listener head 17% smaller (owner)
 affects other side: nothing (client lab art on next-store-build; unpublished)
 needs: nothing
-
 
 ### 2026-10-10 10:07 Â· ccode Â· 9a631131
 changed: Room Design: caption names the SIDE VIEW button
 affects other side: nothing (client lab art on next-store-build; unpublished)
 needs: nothing
 
-
 ### 2026-10-10 09:44 Â· ccode Â· 183fe858
 changed: Meter lab VU: the SPL tool's photoreal face, driven by the teaching signal (owner)
 affects other side: nothing (client lab UI on next-store-build; unpublished)
 needs: nothing
-
 
 ### 2026-10-10 09:09 Â· ccode Â· 5ce5ee7d
 changed: Desk arms clamp on the desk's side edge and reach forward (owner)
 affects other side: nothing (client lab art on next-store-build; unpublished)
 needs: nothing
 
-
 ### 2026-10-10 08:41 Â· ccode Â· 81ba8d3e
 changed: Banjo: standard 5-string (11 in head, 26 1/4 in scale), drawing and text together
 affects other side: nothing (client lesson geometry/copy on next-store-build; unpublished)
 needs: nothing
-
 
 ### 2026-10-10 05:18 Â· ccode Â· 65ce44c3
 changed: Overnight art pass (final): microphones, ribbon mic, brass posture
 affects other side: nothing (client lab art on next-store-build; unpublished)
 needs: nothing
 
-
 ### 2026-10-10 01:59 Â· ccode Â· f60f6c6e
 changed: Explore: remove the green Career Finder bar and its popup
 affects other side: nothing (client UI on next-store-build; unpublished)
 needs: nothing
-
 
 ### 2026-10-10 01:17 Â· ccode Â· a56483c8
 changed: Owner's PNG heads everywhere, audiences as true-size chairs, landing logo, intro noun fix
 affects other side: nothing (client art/copy on next-store-build; unpublished)
 needs: nothing
 
-
 ### 2026-10-10 00:08 Â· ccode Â· 85663d29
 changed: docs: handoff â€” onboarding video replacement plan (after approval, by update)
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
-
 
 ### 2026-10-09 20:59 Â· ccode Â· 62e9d31d
 changed: docs: session handoff for 2026-10-10 (both stores submitted)
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
 
-
 ### 2026-10-09 19:38 Â· ccode Â· 2c948385
 changed: Android: CameraX 1.3.4 -> 1.4.2 in ape-optical (16 KB page-size aligned libimage_processing_util_jni.so; Google Play 16 KB requirement) (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
-
 
 ### 2026-10-09 18:40 Â· ccode Â· f1d4aabb
 changed: Opening the app's own share/save sheet no longer counts as leaving the app (no auto-mute); bounded 60 s, then the leave rule runs if the app is still not in front; mic release still immediate (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
 
-
 ### 2026-10-09 18:32 Â· ccode Â· 5a1cf80c
 changed: Harmonograph: the sound follows the figure on stereo engines â€” both pendulums raised by one factor into hearing (lower tone 220 Hz), exact ratio incl. detune (heard as beating); PLAY always works; caption shows the sound Hz (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
-
 
 ### 2026-10-09 16:11 Â· ccode Â· 87239426
 changed: Android: block ACTIVITY_RECOGNITION + READ_MEDIA_IMAGES/VIDEO/VISUAL_USER_SELECTED (Play Health + Photo/video policy); Android SAVE opens the Share sheet instead of the media library (owner + Comp A 2026-10-09). NOTE: app.json change moves the iOS fingerprint; iOS OTAs to build 36 must publish with these lines temporarily removed.
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
 
-
 ### 2026-10-09 15:14 Â· ccode Â· cd5d77ba
 changed: VU meter red lamp lights on clipping only (full scale, -0.1 dBFS), not at -3 dBFS; tool + Tools-hub tile (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
-
 
 ### 2026-10-09 14:06 Â· ccode Â· 173dfdae
 changed: iPad: oscilloscope opens at x6 zoom and spectrogram at 80 dB range (iPad mics give a low raw level in measurement mode); display only (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
 
-
 ### 2026-10-09 13:30 Â· ccode Â· 22870bca
 changed: 13" iPad review: Study dashboard scales up to fill the iPad; card column 760â†’1000, reading screens 560â†’720 (Tools hub stays 560 so sideways phones keep their tiles) (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
-
 
 ### 2026-10-09 09:17 Â· ccode Â· 1e387823
 changed: Landing â†’ Membership opens over the landing page; closing it, or completing a purchase (incl. a guest who signs up first, same session), returns to the landing page (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
 
-
 ### 2026-10-09 08:56 Â· ccode Â· f4e9c1fe
 changed: Labs menu title 'LEARNING LABS' + the official Labs icon (a small speaker, LabsIcon); landing buttons carry their icons: Home, Glossary book, Calculators Î£, Labs speaker, My Topics mark (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
-
 
 ### 2026-10-09 08:26 Â· ccode Â· e52148ee
 changed: Login screen: remove 'Browse the Glossary' (owner 2026-10-09) â€” Guest Mode is the no-account door and leads through onboarding; PublicGlossary kept for website deep links
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
 
-
 ### 2026-10-09 08:13 Â· ccode Â· 6c6d07a3
 changed: Landing page: 'NEW TO AUDIO? START HERE' + a big 'TAKE ME TO THE HOME SCREEN' choice (owner 2026-10-09)
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
-
 
 ### 2026-10-09 02:57 Â· ccode Â· 95e90178
 changed: Intro video: ask to play again once the file is ready (web attaches the view after setup)
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
 
-
 ### 2026-10-09 02:37 Â· ccode Â· df3c327e
 changed: Deep links: iOS associatedDomains applinks:www (the apex 308s); Android keeps only the 9 www hosts
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
-
 
 ### 2026-10-09 02:35 Â· ccode Â· edb14ff5
 changed: Miking Labs + Mixing Guides public in the store build (owner 2026-10-09, 62 labs); dev-only mic timing required lazily to keep the start graph at 260
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
 
-
 ### 2026-10-09 02:32 Â· ccode Â· f2277907
 changed: Merge branch 'worktree-agent-a78c7b9a18180fc77' into next-store-build
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
-
 
 ### 2026-10-09 02:32 Â· ccode Â· 14cd9a12
 changed: Merge remote-tracking branch 'origin/native-ios-fixes' into next-store-build
 affects other side: nothing (store-build prep on next-store-build)
 needs: nothing
 
-
 ### 2026-10-09 02:32 Â· ccode Â· a8fb5aca
 changed: supabase: commit Comp A's community-push (v2) and on-weekly-concept (v14) sources
 affects other side: nothing new (already live on users by OTA; now in the store build)
 needs: nothing
-
 
 ### 2026-10-09 02:31 Â· ccode Â· 4c77f57d
 changed: feat(notifications): quiet hours in Settings, p_tz on every save and at start
 affects other side: build 35/17 carries these package versions; Comp A sandbox-tests expo-iap 5.8.3 on 35
 needs: sandbox purchase test on 35
 
-
 ### 2026-10-09 02:31 Â· ccode Â· 044abba5
 changed: Store build: package updates (Reanimated 4.5.5, Worklets 0.10.4, expo-iap 5.8.3, speech-recognition 57.1.1, supabase-js 2.117.3, React Navigation 7.5/7.20) + expo-video (no background playback, no PiP); replay arrow inlined to keep the start graph at 260
 affects other side: build 35/17 carries these package versions; Comp A sandbox-tests expo-iap 5.8.3 on 35
 needs: sandbox purchase test on 35
-
 
 ### 2026-10-09 01:56 Â· ccode Â· 0e643005
 changed: Commitment popup waits for the next definition close after the 4-min mark; Replay intro button green (owner 2026-10-09)
@@ -3716,48 +3274,40 @@ changed: Onboarding landing page design + Replay intro button on the Academy men
 affects other side: nothing (app-only, branch next-store-build, not pushed)
 needs: nothing
 
-
 ### 2026-10-08 16:09 Â· ccode Â· e2321edc
 changed: art: redraw the voice cutaway as a mid-sagittal head, neck and chest
 affects other side: nothing (app art only: Lab 5 voice cutaway + profile head neck; Miking stays hidden)
 needs: nothing
-
 
 ### 2026-10-08 14:01 Â· ccode Â· e7ea8276
 changed: Mixing Guides: taps on a card are no longer ignored
 affects other side: nothing (client-only)
 needs: nothing
 
-
 ### 2026-10-08 13:59 Â· ccode Â· 0ffe6ba9
 changed: Mixing Guides map: the tap-to-open flash is 1 s (was 1.5 s), three blinks
 affects other side: nothing (client-only)
 needs: nothing
-
 
 ### 2026-10-08 13:01 Â· ccode Â· daba6474
 changed: Merge figure-review: human figures drawn correctly, proportionally and decently
 affects other side: nothing (client-only drawings)
 needs: nothing
 
-
 ### 2026-10-08 12:59 Â· ccode Â· 494c0d7b
 changed: Merge remote-tracking branch 'origin/final-lab' into figure-review
 affects other side: nothing (merge of origin/final-lab into figure-review; handoff entries only)
 needs: nothing
-
 
 ### 2026-10-08 12:59 Â· ccode Â· 871cf2b7
 changed: fix(miking figures): anatomy + decency review of every human figure (owner F04)
 affects other side: nothing â€” client-side drawing and pose geometry only (Miking stays hidden); no backend, no assets.
 needs: nothing
 
-
 ### 2026-10-08 12:07 Â· ccode Â· 814988e0
 changed: docs: handoff stub filled
 affects other side: nothing (client-only)
 needs: nothing
-
 
 ### 2026-10-08 12:04 Â· ccode Â· 50ab08f3
 changed: Lab full screen turns with the phone: lift the portrait lock while it is up, restore on close
@@ -3768,42 +3318,35 @@ changed: Mixing Guides map: only the pressed card is lit; held for the whole dra
 affects other side: nothing (client-only hub interaction)
 needs: nothing
 
-
 ### 2026-10-08 11:15 Â· ccode Â· 40a76aa1
 changed: perf(about): lazy-load the build label so the app-start graph stays at 260
 affects other side: nothing
 needs: nothing
-
 
 ### 2026-10-08 11:08 Â· ccode Â· 0b7d9f6b
 changed: test(a11y): pin the full-screen body tap to the term face only
 affects other side: nothing
 needs: nothing (see the 7b2bdf17 entry for the Safety glossary text list)
 
-
 ### 2026-10-08 10:58 Â· ccode Â· 7b2bdf17
 changed: fix(flashcards): full-screen swipes move between sections, long sections scroll, related terms show terms only; build line in About
 affects other side: nothing in code (client-only; the category is no longer shown under RELATED TERMS).
 needs: glossary text fixes for Pro Audio Safety: exact replacements + scan findings in Downloads\2026-10-08_COMP_A_SAFETY_FLASHCARD_FIXES.md (Â§1 requested fixes; Â§1.6 MISTAKES unreadable from here: masked for anon).
-
 
 ### 2026-10-08 10:37 Â· ccode Â· 4cd833ad
 changed: Hunt 2026-10-08: toddler + timing on Miking Labs 6-7, Mixing Guides map, ProNote
 affects other side: nothing (client-only: Mixing Guides hub tap/flash, map caption width, Miking dock short forms; no server, schema or store change)
 needs: nothing
 
-
 ### 2026-10-08 09:44 Â· ccode Â· b73649dc
 changed: Merge owner-l: owner decisions 2026-10-08 (lesson changes, capsule everywhere, approvals)
 affects other side: nothing (client-only lab changes)
 needs: nothing
 
-
 ### 2026-10-08 09:36 Â· ccode Â· eede2984
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a47361a9d982063cf
 affects other side: nothing (client-only merge of final-lab, with owner-x, into owner-l)
 needs: nothing
-
 
 ### 2026-10-08 09:33 Â· ccode Â· 46776ace
 changed: Merge owner-draw: owner decisions 2026-10-08 (B10 reporter, hand colour)
@@ -3814,7 +3357,6 @@ changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aca
 affects other side: nothing (client-only merge of final-lab into owner-x)
 needs: nothing
 
-
 ### 2026-10-08 09:23 Â· ccode Â· 47560c2c
 changed: Miking owner decisions X1â€“X6 (2026-10-08): one distance rule, suggest, dock short forms, setups prompt, shared distractors, label pass
 affects other side: nothing (client-only: Miking engine rounding, wording, dock short forms and label layout; the shared rack gained two optional a11y fields; no DB or backend change)
@@ -3824,66 +3366,60 @@ changed: Miking Lab 7: shotguns read to the capsule in B04, B10, B11 (owner: cap
 affects other side: nothing â€” app lesson content only (Miking stays hidden)
 needs: nothing
 
-
 ### 2026-10-08 09:07 Â· ccode Â· cd3923e8
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a62db0a96f54d3054
 affects other side: nothing (client-only owner-draw branch: B10 faint reporter + REPORTER'S HAND label, figure hands on the shared skin; e74f091c)
 needs: nothing
-
 
 ### 2026-10-08 09:04 Â· ccode Â· f6a230e7
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a47361a9d982063cf
 affects other side: nothing (client-only merge of final-lab into owner-l)
 needs: nothing
 
-
 ### 2026-10-08 09:03 Â· ccode Â· 2b30ec36
 changed: Miking Labs 6-7: apply the owner's lesson decisions of 2026-10-08 (owner-l)
 affects other side: nothing â€” app lesson content only (Miking stays hidden); no backend, schema or release-gate change
 needs: nothing
-
 
 ### 2026-10-08 08:56 Â· ccode Â· c22d4a5b
 changed: web: subline on two lines with a hard break (phones too)
 affects other side: nothing (website copy; cherry-pick of b4b6138c)
 needs: nothing
 
+### 2026-10-08 08:55 · ccode · b4b6138c
+changed: web: subline on two lines with a hard break (phones too)
+affects other side: nothing (website copy; requested by Comp A)
+needs: nothing
 
 ### 2026-10-08 08:34 Â· ccode Â· 33fb6398
 changed: WIP HF1 (owner-draw: figure hands take the shared FigureHead skin)
 affects other side: nothing (client-only drawing)
 needs: nothing
 
-
 ### 2026-10-08 07:48 Â· ccode Â· 3f76f3d2
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a9302d490bf88e504
 affects other side: nothing (client-only merge of final-lab into head-fix; the sports stand keeps Lab 7's empty seat backs and draws taken seats instead of circle heads)
 needs: nothing
-
 
 ### 2026-10-08 07:46 Â· ccode Â· 51bb840a
 changed: Head fix: lone heads use the owner's icons, heads on bodies use the figure head
 affects other side: nothing â€” app drawings only (shared head icons + figure heads); no backend, schema, content or release-gate change
 needs: nothing
 
-
 ### 2026-10-08 06:54 Â· ccode Â· d6c3a6ae
 changed: Merge remote-tracking branch 'origin/review-lab7b' into worktree-agent-ab27380b17ddabce0
 affects other side: nothing (client-only merge: final-lab and review-lab7b (B09â€“B17 review, the shared `person` noun flag) into review-lab7a; no server, no SQL)
 needs: nothing
-
 
 ### 2026-10-08 06:54 Â· ccode Â· 642c2c01
 changed: fix(lab7a review): B01-B08 item fairness, voice words, MEET IT in person words
 affects other side: nothing (client-only: Lab 7 part 1 review wording and item fixes in B01â€“B08; Miking stays hidden; no server, no SQL)
 needs: nothing
 
-
 ### 2026-10-08 06:41 Â· ccode Â· 7c4cc4b6
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a9b8d1f8bef10381d
 affects other side: nothing (client-only merge: final-lab â€” Lab 6 review, Lab 7a group 3 B03/B08 â€” into review-lab7b; no backend change)
 needs: nothing
-
 
 ### 2026-10-08 06:39 Â· ccode Â· 52d9b23f
 changed: Miking Lab 7b review (B09-B17): audio-expert + learning fixes
@@ -3895,72 +3431,60 @@ changed: Merge origin/final-lab into lab7-g3 (Lab 7a group 3)
 affects other side: nothing (client-only merge: final-lab into lab7-g3 â€” Lab 7a group 3 (B03, B08) alongside Lab 7a group 2, Lab 7b groups 1â€“3 and the Lab 6 review; full suite 9985 pass, 0 fail; Miking stays hidden; no server, no SQL)
 needs: nothing
 
-
 ### 2026-10-08 05:56 Â· ccode Â· 1679991f
 changed: Miking Lab 7 group 3: B08 Broadcast Audience and Event Space, the audience venue kit, tests and log
 affects other side: nothing (client-only: Miking Lab 7 group 3 â€” B08 audience lesson, the venue kit, tests and the corrections log; Miking stays hidden; no server, no SQL)
 needs: nothing
-
 
 ### 2026-10-08 05:52 Â· ccode Â· 39cfdea9
 changed: docs(lab6 review): test counts after the second merge (9930 pass, 0 fail)
 affects other side: nothing server-side â€” Lab 6 review doc: the suite count after the second merge; docs only.
 needs: nothing
 
-
 ### 2026-10-08 05:43 Â· ccode Â· 09d63e07
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a24f075bc516008a3
 affects other side: nothing server-side â€” final-lab (Lab 7b group 3) merged again into the Lab 6 review branch (review-lab6); both sides kept in this file; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
 needs: nothing
-
 
 ### 2026-10-08 05:42 Â· ccode Â· e0427c1b
 changed: docs(lab6 review): test counts after the merge (9846 pass, 0 fail)
 affects other side: nothing server-side â€” Lab 6 review doc: the suite count after merging final-lab; docs only.
 needs: nothing
 
-
 ### 2026-10-08 05:32 Â· ccode Â· 32a5996f
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a24f075bc516008a3
 affects other side: nothing server-side â€” final-lab (Lab 7 groups) merged into the Lab 6 review branch (review-lab6); both sides kept in this file; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
 needs: nothing
-
 
 ### 2026-10-08 05:27 Â· ccode Â· fd0ea5a9
 changed: Merge lab7-g6: Miking Lab 7b B15-B17 arenas, moving sources, complete coverage
 affects other side: nothing (client-only Miking Lab 7 lessons; Miking stays hidden)
 needs: nothing
 
-
 ### 2026-10-08 05:25 Â· ccode Â· 97e9e075
 changed: Merge origin/final-lab into lab7-g6 (Lab 7b group 3)
 affects other side: nothing server-side â€” final-lab (Lab 7b group 1, B09â€“B11) merged into lab7-g6 beside Lab 7b group 3 (B15â€“B17); app code and docs only; Miking stays hidden (MIKING_PUBLIC false)
 needs: nothing
-
 
 ### 2026-10-08 05:24 Â· ccode Â· 443ab6dd
 changed: docs(lab6 review): REVIEW_LAB6_2026_10_08 â€” two-expert review of F01â€“F16
 affects other side: nothing server-side â€” Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
 needs: nothing
 
-
 ### 2026-10-08 05:22 Â· ccode Â· 25ff1923
 changed: test(lab6 review): pin the 2026-10-08 Lab 6 review fixes
 affects other side: nothing server-side â€” Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
 needs: nothing
-
 
 ### 2026-10-08 05:20 Â· ccode Â· 9bf0435a
 changed: fix(lab6 review): starting-points voice in F07/F09; F10 drill gain value no longer cropped
 affects other side: nothing server-side â€” Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
 needs: nothing
 
-
 ### 2026-10-08 05:14 Â· ccode Â· 68df5be4
 changed: Miking Lab 7b group 3: visual pass from the phone captures
 affects other side: nothing â€” app-side visual pass on the Miking Lab 7b group 3 lessons (B15â€“B17); no backend, schema or store change
 needs: nothing
-
 
 ### 2026-10-08 05:06 Â· ccode Â· f05ad5d3
 changed: Merge origin/final-lab (Lab 7b group 1) into lab7-g2 (Lab 7a group 2)
@@ -3971,102 +3495,85 @@ changed: fix(lab6 review): F09/F10 wording â€” no technique "must", no stra
 affects other side: nothing server-side â€” Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
 needs: nothing
 
-
 ### 2026-10-08 05:03 Â· ccode Â· 3671e76b
 changed: fix(lab6 review): fairer quick-check items in F02â€“F08 and F13; F04 pad physics
 affects other side: nothing server-side â€” Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
 needs: nothing
-
 
 ### 2026-10-08 05:02 Â· ccode Â· 5970e4d7
 changed: fix(lab6 review): F16 sample-rate item contradicted itself; F09 boom vs body-mic level
 affects other side: nothing server-side â€” Miking Lab 6 review (branch review-lab6): lesson words, one F10 dock value, a new test and docs/labs/miking/REVIEW_LAB6_2026_10_08.md; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
 needs: nothing
 
-
 ### 2026-10-08 04:59 Â· ccode Â· 6317812a
 changed: Merge origin/lab7-g4 into lab7-g3 (Lab 7b group 1 kit for Lab 7a group 3)
 affects other side: nothing (client-only merge: Lab 7b group 1's speech-in-sport kit into lab7-g3 so Lab 7a group 3 can reuse it; Miking stays hidden; no server, no SQL)
 needs: nothing
-
 
 ### 2026-10-08 04:37 Â· ccode Â· c1e21560
 changed: Merge origin/final-lab into lab7-g4 (Lab 7b group 1)
 affects other side: nothing (client-only merge: final-lab into lab7-g4 â€” Lab 6 group 2 and Lab 7b group 2 alongside Lab 7b group 1; Miking still hidden)
 needs: nothing
 
-
 ### 2026-10-08 04:34 Â· ccode Â· 3082e2f4
 changed: Miking Lab 7b group 3: shared sports kit for arenas, moving sources, complete coverage
 affects other side: nothing â€” app-side Miking Lab 7b group 3 shared kit only (lessons/shared/sports: practice room and mock venue, arena plans, pass-by, coverage planner, downmix); no backend, schema or store change
 needs: nothing
-
 
 ### 2026-10-08 04:25 Â· ccode Â· f63ae343
 changed: Miking Lab 7b group 1: review fixes and phone-width screenshots
 affects other side: nothing (client-only: Miking Lab 7b group 1 review fixes â€” art, labels, the context page's pattern names â€” and phone-width screenshots)
 needs: nothing
 
-
 ### 2026-10-08 04:16 Â· ccode Â· dccc1e40
 changed: Merge origin/final-lab into lab7-g2 (Lab 7a group 2)
 affects other side: nothing (client-only: final-lab merged into lab7-g2; Miking Lab 7 group 2 screenshots and layout fixes; the shared voice line no longer repeats "the mouth's axis"; Miking stays hidden; no server, no SQL)
 needs: nothing
-
 
 ### 2026-10-08 03:44 Â· ccode Â· 7eefa4b1
 changed: Miking Lab 7 group 2: B04 Boom and Camera-Mounted Pickup, B02 News Anchors and Seated Interviews
 affects other side: nothing (client-only: Miking Lab 7 group 2 lessons B04 and B02 and their shared kit; Miking stays hidden; no server, no SQL)
 needs: nothing
 
-
 ### 2026-10-08 03:30 Â· ccode Â· 6513a183
 changed: Miking Lab 7b group 1: the speech-in-sport kit (sport mics, held arm, feeds, booth plan, handoff, frame T)
 affects other side: nothing (client-only: the Lab 7b group 1 speech-in-sport kit in lessons/shared/broadcast â€” sport mics, the held-arm clip style, feeds, booth plan, handoff, frame T; no DB, no schema)
 needs: nothing
-
 
 ### 2026-10-08 03:03 Â· ccode Â· 36f8a870
 changed: Merge origin/final-lab into lab7-g5 (Lab 7b group 2)
 affects other side: nothing server-side â€” final-lab merged into lab7-g5 (Lab 6 groups 2 and 5, Lab 7 group 1, then Lab 7 part 2 group 2); app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
 needs: nothing
 
-
 ### 2026-10-08 02:34 Â· ccode Â· 22178948
 changed: Merge origin/final-lab into lab6-g2
 affects other side: nothing (client-only merge; Miking still hidden)
 needs: nothing
-
 
 ### 2026-10-08 02:28 Â· ccode Â· 222c8ca0
 changed: Miking Lab 7b group 2: B12 Parabolic, B13 Field and Diamond, B14 Court and Ice
 affects other side: nothing server-side â€” Miking Lab 7 part 2 group 2 (B12, B13, B14 + the shared sports kit lessons/shared/sports/), app code and docs only; Miking stays hidden (MIKING_PUBLIC false). Lab 7 part 2 group 3 imports the kit from branch lab7-g5.
 needs: nothing
 
-
 ### 2026-10-08 02:27 Â· ccode Â· bdeb18de
 changed: Miking Lab 7 group 2: shared camera frame (cameraFrame.ts) for B04/B02/B05 and group 3
 affects other side: nothing (client-only: Miking Lab 7 group 2 shared camera-frame tool; no server, no SQL)
 needs: nothing
-
 
 ### 2026-10-08 02:18 Â· ccode Â· b0d17d1d
 changed: Lab 6 group 2: corrections log section and phone-width captures
 affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
 needs: nothing
 
-
 ### 2026-10-08 02:18 Â· ccode Â· d5eeb7c8
 changed: Lab 6 group 2: model tests and the research brand names
 affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
 needs: nothing
 
-
 ### 2026-10-08 02:18 Â· ccode Â· ee9bb9cb
 changed: Lab 6 group 2: F06 ambience, F08 pass-bys, F07 wildlife, F05 Foley perspective
 affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
 needs: nothing
-
 
 ### 2026-10-08 02:18 Â· ccode Â· 9b1959fe
 changed: Lab 6 group 2: the shared field toolkit (frame G, sites, wind, safety, path, image, dish)
@@ -4077,42 +3584,45 @@ changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a58
 affects other side: nothing (client-only: final-lab merged into lab7-g1 â€” Lab 6 groups 1 and 5, the learner-voice goals, web; registry, setups picks and mic-art switches kept from both sides)
 needs: nothing
 
-
 ### 2026-10-08 01:57 Â· ccode Â· f0f35555
 changed: Miking Lab 7b group 2: the shared sports kit (venue plan builder, practice scenes, dish, boundary/plant, headroom)
 affects other side: nothing server-side â€” Miking Lab 7 part 2 group 2 (B12, B13, B14 + the shared sports kit lessons/shared/sports/), app code and docs only; Miking stays hidden (MIKING_PUBLIC false). Lab 7 part 2 group 3 imports the kit from branch lab7-g5.
 needs: nothing
-
 
 ### 2026-10-08 01:45 Â· ccode Â· 31717808
 changed: Miking Lab 7 group 1: B01 hosts, B07 voiceover and guests, B06 panels and press
 affects other side: nothing (client-only: Lab 7 lessons B01, B07, B06 behind the existing Miking release gate; no server, no new route)
 needs: nothing
 
-
 ### 2026-10-08 01:20 Â· ccode Â· fcf25436
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aaf68cc59a9e9fa4e
 affects other side: nothing â€” third merge of final-lab into lab6-g5 (web and Mixing Guides changes only)
 needs: nothing
-
 
 ### 2026-10-08 01:10 Â· ccode Â· 97dd2ecc
 changed: web: Coming Soon panel sits low so the full headline shows above it
 affects other side: nothing (website layout; cherry-pick of 6d89f09b)
 needs: nothing
 
-
 ### 2026-10-08 01:10 Â· ccode Â· cf52a845
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aaf68cc59a9e9fa4e
 affects other side: nothing â€” second merge of final-lab into lab6-g5 (the goals copy rule; F14â€“F16 goals already follow it)
 needs: nothing
 
+### 2026-10-08 01:08 · ccode · 6d89f09b
+changed: web: Coming Soon panel sits low so the full headline shows above it
+affects other side: nothing (website layout only)
+needs: nothing
 
 ### 2026-10-08 01:07 Â· ccode Â· 5d350d97
 changed: web: new headline â€” The Whole Craft of Audio. Right in Your Pocket.
 affects other side: nothing (website copy; cherry-pick of audio-tools-engine f2733281)
 needs: nothing
 
+### 2026-10-08 01:06 · ccode · f2733281
+changed: web: new headline — The Whole Craft of Audio. Right in Your Pocket.
+affects other side: nothing (website copy only)
+needs: nothing
 
 ### 2026-10-08 00:59 Â· ccode Â· a482d323
 changed: Mixing Guides map: a swipe follows the card under the finger; a tap flashes the countries 1.5 s, then opens
@@ -4122,7 +3632,6 @@ affects other side: nothing (client-only hub interaction)
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aaf68cc59a9e9fa4e
 affects other side: nothing â€” merge of final-lab into lab6-g5 (doc conflicts kept both sides; SOURCES_SHARED group 5 block renumbered Â§16)
 needs: nothing
-
 
 ### 2026-10-08 00:50 Â· ccode Â· b5346c0b
 changed: Miking Lab 7 group 1: the shared broadcast desk kit
@@ -4134,12 +3643,10 @@ changed: Miking Lab 6 g5: F14, F15, F16 lessons registered in the field lab
 affects other side: nothing â€” app-only Miking lesson code (Lab 6 group 5, F14â€“F16), hidden behind MIKING_PUBLIC false; no backend, schema or calculator change
 needs: nothing
 
-
 ### 2026-10-08 00:49 Â· ccode Â· 7ae43a4f
 changed: Miking Lab 6 g5: venue, system timing, claim ladder, exclusion zone, arrays, sensors
 affects other side: nothing â€” app-only Miking lesson code (Lab 6 group 5, F14â€“F16), hidden behind MIKING_PUBLIC false; no backend, schema or calculator change
 needs: nothing
-
 
 ### 2026-10-08 00:45 Â· ccode Â· 77ea81d0
 changed: Lab copy: Objectives rewritten in the learner's voice; build notes removed from Miking goals
@@ -4150,7 +3657,6 @@ changed: Merge lab6-g1: Miking Lab 6 F01-F04 Foley stage
 affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
 needs: nothing
 
-
 ### 2026-10-08 00:30 Â· ccode Â· 85ee77e4
 changed: Mixing Guides: world map pinned above the 50 styles â€” hover, touch or drag fills each style's home countries
 affects other side: nothing (client-only map data and hub UI)
@@ -4160,30 +3666,25 @@ changed: Merge origin/final-lab into lab6-g1 (Lab 6 group 6 F09-F10, Mixing pro 
 affects other side: nothing (client-only Miking Lab 6 merge; Miking stays hidden, MIKING_PUBLIC false)
 needs: nothing
 
-
 ### 2026-10-08 00:10 Â· ccode Â· 22b6d7ae
 changed: Merge origin/final-lab into lab6-g1 (Lab 6 group 4, sentry fixes)
 affects other side: nothing (client-only Miking Lab 6 merge; Miking stays hidden, MIKING_PUBLIC false)
 needs: nothing
-
 
 ### 2026-10-08 00:07 Â· ccode Â· b4489923
 changed: Merge lab6-g6: Miking Lab 6 F09-F10 location speech and spatial field
 affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
 needs: nothing
 
-
 ### 2026-10-08 00:06 Â· ccode Â· fc730e94
 changed: Mixing family: 'Knowing When to Bring In a Pro' note â€” first-open popup with GOT IT, link on each lab's first page
 affects other side: nothing (client-only popup copy and wiring; no backend reads or writes)
 needs: nothing
 
-
 ### 2026-10-08 00:03 Â· ccode Â· eef0d2e8
 changed: Merge remote-tracking branch 'origin/final-lab' into lab6-g6
 affects other side: nothing (client-only: Lab 6 group 6 F09/F10 merged with group 4 F11-F13; Miking stays hidden)
 needs: nothing
-
 
 ### 2026-10-08 night Â· ccode Â· SESSION SUMMARY for Comp A (end of ccode session)
 changed:
@@ -4213,30 +3714,30 @@ needs:
      NO build until the owner's onboarding video is ready and he says build.
   4. Still owed from before: STORE_NOTIFY_SLUG / App Store Server Notifications URL.
 
-
 ### 2026-10-07 23:57 Â· ccode Â· 6fc407d4
 changed: Miking Lab 6 group 1: sources, corrections log and 412x915 captures
 affects other side: nothing (docs and captures only)
 needs: nothing
-
 
 ### 2026-10-07 23:57 Â· ccode Â· 6cba1bc7
 changed: Miking Lab 6 group 1: the Foley stage (F01-F04) and its shared toolkit
 affects other side: nothing (client-only lessons; no backend, no data; Miking stays hidden, MIKING_PUBLIC false)
 needs: nothing
 
-
 ### 2026-10-07 23:56 Â· ccode Â· 8d436522
 changed: Miking engine: shotgun mic, pole (boom) mount, scaled lengths (Lab 6 group 1)
 affects other side: nothing (client-only lab engine; no backend, no data)
 needs: nothing
-
 
 ### 2026-10-07 23:14 Â· ccode Â· 7c48c7fd
 changed: Merge lab6-g4: Miking Lab 6 F11-F13 measurement lessons
 affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
 needs: nothing
 
+### 2026-10-07 23:13 · ccode · 4dcf2c2b
+changed: web: launch date moves to Tuesday, October 13
+affects other side: nothing — website launch overlay date text only (now Tuesday, October 13); cherry-pick of final-lab 48fa4836
+needs: nothing
 
 ### 2026-10-07 23:12 Â· ccode Â· 48fa4836
 changed: web: launch date moves to Tuesday, October 13
@@ -4247,54 +3748,45 @@ changed: Miking Lab 6 g4: F11, F12, F13 lessons and the field lab row
 affects other side: nothing (client-only lesson data; Miking stays hidden, MIKING_PUBLIC false)
 needs: nothing
 
-
 ### 2026-10-07 23:12 Â· ccode Â· a0b9a935
 changed: Miking Lab 6 g4: measurement family, chain rack, scene frame F
 affects other side: nothing (client-only lab code; no backend reads or writes)
 needs: nothing (the background-subtraction calculator is a later audio-tools-engine item, not backend)
-
 
 ### 2026-10-07 22:43 Â· ccode Â· a21c0b79
 changed: Miking Lab 6 group 6: F09 Location Speech and F10 Spatial Field Pickup
 affects other side: nothing (client-only; Miking stays hidden, MIKING_PUBLIC false)
 needs: nothing
 
-
 ### 2026-10-07 17:07 Â· ccode Â· 6660b125
 changed: Merge remote-tracking branch 'origin/sentry-fixes' into HEAD
 affects other side: nothing (client-only)
 needs: nothing
-
 
 ### 2026-10-07 17:05 Â· ccode Â· 3be3fc8d
 changed: NATIVE (next iOS build only): stopCapture never touches inputNode; capture closed on background, never opened there (Sentry APE-STUDIO-T)
 affects other side: nothing on the server. Branch native-ios-fixes moves the iOS runtime fingerprint â€” it ships only in an owner-ordered iOS build; never merge it into a branch that still publishes OTA to builds 33/34
 needs: nothing
 
-
 ### 2026-10-07 17:04 Â· ccode Â· 8dd2dd1e
 changed: Merge remote-tracking branch 'origin/prep-lab7b' into HEAD
 affects other side: nothing (docs only)
 needs: nothing
-
 
 ### 2026-10-07 17:04 Â· ccode Â· 54b2d73e
 changed: Merge remote-tracking branch 'origin/prep-lab7a' into HEAD
 affects other side: nothing (docs only)
 needs: nothing
 
-
 ### 2026-10-07 17:04 Â· ccode Â· af0b2448
 changed: Merge remote-tracking branch 'origin/prep-lab6b' into HEAD
 affects other side: nothing (docs only)
 needs: nothing
 
-
 ### 2026-10-07 17:03 Â· ccode Â· 3d745473
 changed: Merge remote-tracking branch 'origin/prep-lab6a' into HEAD
 affects other side: nothing (docs only)
 needs: nothing
-
 
 ### 2026-10-07 16:56 Â· ccode Â· 3a759dc8
 changed: NATIVE (next iOS build only): capture runs at the tap's rate; a 0 Hz / 0 ch input is an error, not a crash
@@ -4309,12 +3801,10 @@ changed: Merge remote-tracking branch 'origin/hunt-mixing-menus' into HEAD
 affects other side: nothing (client-only)
 needs: nothing
 
-
 ### 2026-10-07 16:52 Â· ccode Â· eff040c0
 changed: Merge remote-tracking branch 'origin/hunt-lab5' into HEAD
 affects other side: nothing (client-only)
 needs: nothing
-
 
 ### 2026-10-07 16:51 Â· ccode Â· 01026021
 changed: fix(miking labs 1-4): chaos-toddler hunt, 3 rounds
@@ -4324,7 +3814,6 @@ affects other side: nothing (client-only Miking Labs 1â€“4 fixes; no backen
 changed: TestFlight feedback triage 2026-10-08: 46 items, 4 fixed now, patterns swept
 affects other side: nothing (client-only: TestFlight triage doc + slider/popup/copy fixes; no DB, no backend; not published)
 needs: nothing
-
 
 ### 2026-10-07 16:12 Â· ccode Â· dcc0ee16
 changed: fix(lab5): toddler pass - false zone credit on START, stale array geometry/seating in Placement, stage memo busting
@@ -4338,7 +3827,6 @@ affects other side: nothing (client-only: generated mixing-guide text now keeps 
 changed: Merge remote-tracking branch 'origin/review-mixing' into worktree-agent-a5e1f91299a3e9800
 affects other side: nothing (client-only Mixing Guides review merged onto final-lab; handoff conflict kept both entries; no DB; not published)
 needs: nothing
-
 
 ### 2026-10-07 15:35 Â· ccode Â· 7ae7bedc
 changed: docs(miking): Lab 6 part 1 preparation (F01-F08) - sources, geometry, batch 6 summary, builder prompts
@@ -4361,18 +3849,15 @@ changed: docs(miking): Lab 7 part 2 (B09-B17) preparation - source text, SOURCES
 affects other side: nothing (docs-only Lab 7 part 2 preparation on branch prep-lab7b; no app code, not published)
 needs: nothing
 
-
 ### 2026-10-07 15:17 Â· ccode Â· 3ebadc3b
 changed: Merge remote-tracking branch 'origin/review-labs12' into worktree-agent-a5e1f91299a3e9800
 affects other side: nothing (client-only Miking Labs 1â€“2 review merged onto final-lab; handoff + CORRECTIONS_LOG conflicts kept both sides; not published)
 needs: nothing
 
-
 ### 2026-10-07 15:08 Â· ccode Â· 20b65cd4
 changed: Merge remote-tracking branch 'origin/review-lab5-ensemble' into worktree-agent-a5e1f91299a3e9800
 affects other side: nothing (client-only Lab 5 ensemble review merged onto final-lab; handoff conflict kept both entries; not published)
 needs: nothing
-
 
 ### 2026-10-07 15:03 Â· ccode Â· 36346939
 changed: Mixing Guides: expert review 2026-10-07 fixes (audio + learning)
@@ -4399,120 +3884,100 @@ changed: review(lab5-voice): audio + learning review of E01-E07, fixes
 affects other side: nothing (client-only lesson copy, a test and docs; not published)
 needs: nothing
 
-
 ### 2026-10-07 13:48 Â· ccode Â· 293e57ca
 changed: Merge Lab 5 group 2 (voices: E02, E04, E05, E06) onto groups 1, 3, 4 and 5
 affects other side: nothing (client-only lesson code and docs, not published)
 needs: nothing
-
 
 ### 2026-10-07 13:18 Â· ccode Â· 53ffb6ec
 changed: Merge Lab 5 group 4 (bands & stage plots: E09, E15, E08) onto groups 1, 3 and 5
 affects other side: nothing (client-only lesson code and docs, not published)
 needs: nothing
 
-
 ### 2026-10-07 13:06 Â· ccode Â· c0ed21d7
 changed: Miking Lab 5 group 2: E02 Background Vocals, E04 Duets and Small Groups, E05 Choirs, E06 Children's Choirs
 affects other side: nothing (client-only)
 needs: nothing
-
 
 ### 2026-10-07 13:06 Â· ccode Â· 9f3450d2
 changed: Miking Lab 5: singers on the seating builder, single-mic presets, group voice items (shared, group 2)
 affects other side: nothing (client-only)
 needs: nothing
 
-
 ### 2026-10-07 12:49 Â· ccode Â· 343b9482
 changed: Miking Lab 5 group 4: corrections log, owner review, 412x915 captures
 affects other side: nothing (docs and screenshots on branch lab5-g4, not published)
 needs: nothing
-
 
 ### 2026-10-07 12:49 Â· ccode Â· 6398d46a
 changed: Miking Lab 5 group 4: E09 Complete Band, E15 Jazz Combo, E08 Acoustic Small Groups
 affects other side: nothing server-side (client-only lessons on branch lab5-g4, not published)
 needs: nothing
 
-
 ### 2026-10-07 12:49 Â· ccode Â· ca2e627c
 changed: Miking Lab 5: the stage-plot preset for the ensemble toolkit (group 4)
 affects other side: nothing server-side (shared client lesson code on branch lab5-g4, not published)
 needs: nothing
-
 
 ### 2026-10-07 12:36 Â· ccode Â· 28f4b8af
 changed: Miking Lab 5 group 5: corrections log, owner review, 412x915 captures
 affects other side: nothing (client-only)
 needs: nothing
 
-
 ### 2026-10-07 12:36 Â· ccode Â· 1a5705ea
 changed: Miking Lab 5 group 5: E10 Horn Sections, E16 Jazz Big Band, E12 Percussion Ensembles
 affects other side: nothing (client-only)
 needs: nothing
-
 
 ### 2026-10-07 12:36 Â· ccode Â· cd6551f9
 changed: Miking Lab 5 group 5: section presets, drawings and the Lab 5 worksheet on frame S
 affects other side: nothing (client-only)
 needs: nothing
 
-
 ### 2026-10-07 11:05 Â· ccode Â· 59a8ddcc
 changed: Merge Lab 5 group 3 (arrays & orchestra) onto group 1; combined Lab 5 blurb; count tests merge-proof
 affects other side: nothing (client-only)
 needs: nothing
-
 
 ### 2026-10-07 10:56 Â· ccode Â· bf63d5ef
 changed: Miking Lab 5 group 3: corrections log, owner review, 412x915 captures
 affects other side: nothing (docs only; owner-review rows G3-OR-1..9 in docs/labs/miking/CORRECTIONS_LOG.md are for the owner)
 needs: nothing
 
-
 ### 2026-10-07 10:56 Â· ccode Â· 6a4d24cc
 changed: Miking Lab 5: E14 Full Orchestra, E13 Mixed Classical, E11 String Quartet
 affects other side: nothing (client-only; lessons are bundled, the Miking tiles stay behind MIKING_PUBLIC = false)
 needs: nothing
-
 
 ### 2026-10-07 10:56 Â· ccode Â· 4de2681e
 changed: Miking Lab 5: shared stereo-array tool + seating-plan builder (frame S)
 affects other side: nothing (client-only, no data or schema)
 needs: nothing
 
-
 ### 2026-10-07 10:27 Â· ccode Â· 40ec099c
 changed: Merge remote-tracking branch 'origin/lab5-g1' into HEAD
 affects other side: nothing (client-only)
 needs: nothing
-
 
 ### 2026-10-07 10:21 Â· ccode Â· 6d78298b
 changed: Merge remote-tracking branch 'origin/lab5-g1' into HEAD
 affects other side: nothing (client-only)
 needs: nothing
 
-
 ### 2026-10-07 10:19 Â· ccode Â· 7e797b4f
 changed: docs: Lab 5 group 1 corrections, owner-review defaults and 412x915 captures
 affects other side: nothing (app-side Miking Labs code and docs, branch lab5-g1; no backend, no schema)
 needs: nothing
-
 
 ### 2026-10-07 10:19 Â· ccode Â· 0e808394
 changed: Miking Lab 5 group 1: E01 Lead Vocal, E03 Rap Vocal, E07 Singer with Guitar or Piano
 affects other side: nothing (app-side Miking Labs code and docs, branch lab5-g1; no backend, no schema)
 needs: nothing
 
-
 ### 2026-10-07 10:19 Â· ccode Â· 37bbc07b
 changed: Miking Lab 5: the shared voice family (frame V, the singer, voice mics)
 affects other side: nothing (app-side Miking Labs code and docs, branch lab5-g1; no backend, no schema)
 needs: nothing
-
 
 ### 2026-10-07 10:19 Â· ccode Â· b08bcf20
 changed: Miking engine: pop screen on the mic stand, setup frame cap, vocal mic drawings
@@ -4527,12 +3992,10 @@ changed: Merge commit '86a1c21b' into final-lab
 affects other side: nothing (client-only)
 needs: nothing
 
-
 ### 2026-10-07 07:54 Â· ccode Â· 910f0148
 changed: docs(miking): restructure captures at 412 x 915 (MEET IT, every starting setup, microphones, placement) for M01, M02, I08, I02, A01, A05b, C11, C09c
 affects other side: nothing (docs only)
 needs: nothing
-
 
 ### 2026-10-07 07:54 Â· ccode Â· a24c61af
 changed: feat(miking): finish the restructure â€” eight-page journey wired, setups drawn, credit mapped (backup branch miking-restructure-wip only; NOT merged into final-lab, NOT published; 8263/8263)
@@ -4543,18 +4006,15 @@ changed: iPad audio: no-signal verdict lives beside the clip baseline (start gra
 affects other side: nothing (client-only; no DB, no copy in the DB)
 needs: nothing
 
-
 ### 2026-10-07 07:15 Â· ccode Â· 2b0047cb
 changed: iPad: gallery three across on an iPad mini; Tube Reference + Calc workflows/projects use the tablet; Miking hub left alone (another session owns src/screens/lab/miking)
 affects other side: nothing (client layout only; phones unchanged)
 needs: nothing
 
-
 ### 2026-10-07 07:12 Â· ccode Â· 4136821c
 changed: iPad audio tools: a mic that never delivers is said plainly; iOS capture runs at the tap's rate
 affects other side: nothing (client + iOS native module only). The Swift part (capture runs at the tap rate, 0 Hz / 0 ch input refused before installTap, generator keeps a running capture rate) ships only in the NEXT iOS build; the NO SOUND FROM THE MICROPHONE card is JS and rides an OTA
 needs: nothing; ChÃ¡no: on the iPad, if a tool shows NO SOUND FROM THE MICROPHONE, read back its Input line
-
 
 ### 2026-10-06 23:45 Â· ccode Â· 25a9e520
 changed: Flashcards/glossary: no electrical-hazard caution on mic shock mounts
@@ -4565,12 +4025,10 @@ changed: iPad: menus, hubs and grids use the whole tablet; gallery trophies fill
 affects other side: nothing (client layout only; phones unchanged)
 needs: nothing
 
-
 ### 2026-10-06 22:07 Â· ccode Â· 50b5d3fd
 changed: Merge branch 'worktree-agent-a7888cdfcf4f9b300' into final-lab
 affects other side: nothing (client-only Miking fixes; Miking still hidden on store builds)
 needs: nothing
-
 
 ### 2026-10-06 17:10 Â· ccode Â· 6542af2f
 changed: fix(miking): a mic set clear of a part keeps room to turn; the harmonica face is a profile; fix-pass screenshots (docs/labs/miking/screens/fixpass_2026_10_06) â€” last commit of the Miking owner-feedback fix pass (35102390..6542af2f, worktree branch, not pushed, not merged)
@@ -4582,18 +4040,15 @@ changed: fix(miking): labels keep off the drawn player exactly and keep a little
 affects other side: nothing (app-only drawing/layout; 5d4ac01b before it â€” content frames, level-of-detail labels, marimba resonators â€” is app-only too; Miking fix pass on a worktree branch, not pushed, nothing published)
 needs: nothing
 
-
 ### 2026-10-06 15:04 Â· ccode Â· 781b3a27
 changed: fix(miking): the player's head is drawn as part of the figure, not the line-art head icon
 affects other side: nothing (app-only drawing; the avatar head-icon spec is unchanged; 82f5537a before it â€” Miking faders preview/commit + view keys â€” is app-only too)
 needs: nothing
 
-
 ### 2026-10-06 15:03 Â· ccode Â· 35102390
 changed: fix(rack): the dock fader follows the finger; keys that do nothing in full screen are hidden
 affects other side: nothing (app-only, JS: the shared ParamLane now hands a lab one value per ~16 ms tick and draws its cap on the UI thread; every rack lab benefits; Miking fix pass, worktree branch, not pushed)
 needs: nothing
-
 
 ### 2026-10-06 13:27 Â· ccode Â· f1bf0a57
 changed: Miking Labs hidden on store builds until the owner approves
@@ -4614,12 +4069,10 @@ changed: Miking: the membership sheet names the family route "Miking Labs"
 affects other side: nothing (client-only copy on the members-only sheet)
 needs: nothing
 
-
 ### 2026-10-06 00:32 Â· ccode Â· a547c23d
 changed: Merge branch 'worktree-agent-ad9fed093bb23def6' into final-lab
 affects other side: nothing (merge of 82738593, client-only menu)
 needs: nothing
-
 
 ### 2026-10-06 00:31 Â· ccode Â· 82738593
 changed: Miking: one tile per instrument family on the member Labs menu
@@ -4641,588 +4094,490 @@ changed: Remove remaining Curriculum V1 remnants from app code
 affects other side: the app no longer selects achievements.sequence_in_course or achievements.is_prerequisite (Dashboard); no DB change made
 needs: nothing now â€” owner to decide separately on the V1-looking DB objects listed in the agent report (register_student, users.audience='institutional', the two achievements columns)
 
-
 ### 2026-10-05 06:56 Â· ccode Â· ec7abbbe
 changed: docs(miking): Lab 5 ensembles+voice research (16 lessons) + BATCH5 summary
 affects other side: nothing (miking docs, branch final-lab)
 needs: nothing (miking docs, branch final-lab)
-
 
 ### 2026-10-05 06:47 Â· ccode Â· 0b2c1243
 changed: Merge miking-a4 (A06-A09b woodwinds) into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
-
 ### 2026-10-05 06:36 Â· ccode Â· 455774e6
 changed: miking: Lab 3 Winds hub + six woodwind lessons (A06-A09b)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 06:36 Â· ccode Â· 9924af78
 changed: miking: Lab 3 woodwind family (shared/woodwinds)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 06:33 Â· ccode Â· a967e40a
 changed: Merge miking-a5 (A10 Harmonica, A11 Accordion, A12 Pipe organ) into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-05 06:25 Â· ccode Â· e957ccda
 changed: fix(miking): Lab 3 drawings after the 390 x 844 inspection
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 06:17 Â· ccode Â· 5a040f05
 changed: Merge miking-a3 (A05a-d saxophones) into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-05 06:09 Â· ccode Â· 0a3b617b
 changed: Merge branch 'miking-a2' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
-
 ### 2026-10-05 06:01 Â· ccode Â· 67c8ca21
 changed: Merge branch 'miking-a1' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-05 05:54 Â· ccode Â· 492d8ad3
 changed: fix(miking): saxophone mics speak of the horn; the plan's swing hatch reads at plan scale
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 05:49 Â· ccode Â· 814c566c
 changed: feat(miking): register Lab 3 (Winds) with A10â€“A12; tests, sources and corrections
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 05:49 Â· ccode Â· ec6aa1e5
 changed: feat(miking): A12 Acoustic Pipe Organ â€” a room-scale scene
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 05:49 Â· ccode Â· a9156fef
 changed: feat(miking): A11 Accordion â€” two moving sides, the bellows' travel kept clear
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 05:49 Â· ccode Â· 89b57833
 changed: feat(miking): A10 Harmonica â€” acoustic stand mic, cupped harp mic, the harp amp's speaker
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 05:49 Â· ccode Â· c3c442a2
 changed: feat(miking): Lab 3 reed-instrument family pieces (reed physics, profile player, pages)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 05:46 Â· ccode Â· c0fa230f
 changed: feat(miking): Lab 3 Winds â€” A03 French Horn, A04a Tuba, A04b Euphonium lessons, hub row, tests, corrections LB-01..LB-12
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 05:46 Â· ccode Â· ff7cd817
 changed: feat(miking engine): opt-in envelopeReveal â€” keep-outs drawn only as a mic approaches
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 05:41 Â· ccode Â· b514b92b
 changed: feat(miking): shared saxophone family for Lab 3 (soprano, alto, tenor, baritone)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 05:40 Â· ccode Â· c2547f73
 changed: feat(miking): Lab 3 brass â€” A01 Trumpet and Flugelhorn, A02 Trombone and Bass Trombone
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 05:18 Â· ccode Â· 1291f808
 changed: Merge branch 'miking-clarity' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
-
 ### 2026-10-05 05:07 Â· ccode Â· e827977c
 changed: Merge branch 'miking-i4' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-05 04:54 Â· ccode Â· 0dd5a87a
 changed: docs(miking): Lab 3 aerophone research (20 lessons) + BATCH3 summary
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
 
-
 ### 2026-10-05 04:53 Â· ccode Â· 74703b5c
 changed: Merge branch 'miking-fix4' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-05 04:45 Â· ccode Â· d732169f
 changed: Miking clarity pass: keep-outs only on approach, illustrated players
 affects other side: nothing (miking clarity, branch final-lab)
 needs: nothing (miking clarity, branch final-lab)
 
-
 ### 2026-10-05 04:31 Â· ccode Â· 4d01722e
 changed: Merge branch 'miking-fix1' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-05 04:11 Â· ccode Â· d46adcbc
 changed: feat(miking): Lab 2 I02 CajÃ³n â€” seated player, rear port and front-port models
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 04:10 Â· ccode Â· 0991da54
 changed: miking: Lab 1 review fixes (C1, C2, M1-M11, minors) and rebalanced items lab-wide
 affects other side: nothing (miking fixes, branch final-lab)
 needs: nothing (miking fixes, branch final-lab)
-
 
 ### 2026-10-05 04:09 Â· ccode Â· 557259f3
 changed: Merge branch 'miking-i1' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
-
 ### 2026-10-05 04:07 Â· ccode Â· 5bbc885d
 changed: fix(miking): Lab 4 review fixes â€” labels clear of the instrument, piano polarity, DI hum, sitar shimmer, answer balance
 affects other side: nothing (miking fixes, branch final-lab)
 needs: nothing (miking fixes, branch final-lab)
-
 
 ### 2026-10-05 04:03 Â· ccode Â· a70c1ab8
 changed: miking: Leslie inside-view label says one bell sounds (review Lab 1 M7)
 affects other side: nothing (miking fixes, branch final-lab)
 needs: nothing (miking fixes, branch final-lab)
 
-
 ### 2026-10-05 03:58 Â· ccode Â· 618bf47a
 changed: miking: engine-wide item guards, shown-order fix, shared polarity and max-SPL items
 affects other side: nothing (miking fixes, branch final-lab)
 needs: nothing (miking fixes, branch final-lab)
-
 
 ### 2026-10-05 03:47 Â· ccode Â· 98a2b9f5
 changed: fix(miking): crash boom-stand label clear of the hi-hats at 390 x 844
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 03:44 Â· ccode Â· d363f34d
 changed: Merge branch 'miking-i5' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-05 03:35 Â· ccode Â· 99e79049
 changed: feat(miking): Lab 2 cymbals â€” I01a Hi-Hat, I01b Ride, I01c Crash, I01d Splash, I01e China
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 03:34 Â· ccode Â· 2ed789e1
 changed: feat(miking): Lab 2 cymbal family additions â€” splash, China, kit scene, sound page
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 03:17 Â· ccode Â· ec7135cb
 changed: Merge branch 'miking-i2' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
-
 ### 2026-10-05 03:07 Â· ccode Â· ab6430b0
 changed: miking(lab2): I12 Gong lesson â€” tam-tam or bossed gong
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 03:04 Â· ccode Â· 2693507a
 changed: Merge branch 'miking-i3' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
-
 ### 2026-10-05 03:02 Â· ccode Â· c06aa406
 changed: feat(miking): mallet-bar family for Lab 2 (bars, resonators, frames, fans, case)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 03:00 Â· ccode Â· 9c69b4d9
 changed: feat(miking): Lab 2 I11a Rhodes and I11b Wurlitzer lessons
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 03:00 Â· ccode Â· 5323b5ac
 changed: feat(miking): electric-piano family â€” oval 4x8 speaker, reed piano model, keys pages
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 02:58 Â· ccode Â· 96c3ad9e
 changed: feat(miking): Lab 2 small-percussion family + I03a Shaker, I03b Egg, I03c Maracas
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 02:57 Â· ccode Â· 1b9091de
 changed: Merge branch 'miking-c1-art' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-05 02:53 Â· ccode Â· f18b6691
 changed: test(miking strings): the shared player's joints come from the model
 affects other side: nothing (miking art, branch final-lab)
 needs: nothing (miking art, branch final-lab)
 
-
 ### 2026-10-05 02:49 Â· ccode Â· 6abca629
 changed: feat(miking engine): opt-in collision-aware part labels and inset corner
 affects other side: nothing (miking art, branch final-lab)
 needs: nothing (miking art, branch final-lab)
-
 
 ### 2026-10-05 02:37 Â· ccode Â· 08fc2f9a
 changed: miking(lab2): suspended-metal family + I06a Triangle lesson
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 02:29 Â· ccode Â· 039ad71c
 changed: Merge branch 'miking-c4' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-05 02:15 Â· ccode Â· ea9025f5
 changed: feat(miking): C12 Clavinet lesson (Lab 4), Lab 4 keys tests, corrections log
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 02:03 Â· ccode Â· 3e4bcde3
 changed: Merge branch 'miking-c5' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-05 01:55 Â· ccode Â· 5b439acb
 changed: Merge branch 'miking-c2' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
-
 ### 2026-10-05 01:50 Â· ccode Â· 75129217
 changed: fix(miking): yali carved relief; "an oud" on the shared start step
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 01:49 Â· ccode Â· 65ceb2d4
 changed: fix(miking): Lab 4 strings review pass â€” bass views, trio plan, sound labels, corrections log
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 01:44 Â· ccode Â· e2618939
 changed: fix(miking): lute lessons, first visual pass at 390x844
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 01:38 Â· ccode Â· 7fbad8ca
 changed: Merge branch 'miking-c3' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
-
 ### 2026-10-05 01:33 Â· ccode Â· 608e9726
 changed: Merge branch 'miking-c1' (via integ-c1) into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-05 01:33 Â· ccode Â· d33f8d04
 changed: feat(miking): C15 Saraswati Veena lesson on the lute family
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 01:33 Â· ccode Â· 4f6fc4fb
 changed: feat(miking): C14 Sitar lesson on the lute family
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 01:33 Â· ccode Â· 4802c5bb
 changed: feat(miking): C13 Oud lesson on the lute family
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 01:33 Â· ccode Â· 752c56b3
 changed: feat(miking): shared lute family for Lab 4 (oud, sitar, Saraswati veena)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 01:31 Â· ccode Â· 2548fd26
 changed: fix(miking): M08 placement mic clear of the top-view inset at phone width
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 01:27 Â· ccode Â· b0f3b363
 changed: feat(miking): C09a Violin, C09b Viola, C06a/C06b Upright Bass (Lab 4 Strings)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 01:20 Â· ccode Â· 4b6d9544
 changed: feat(miking): bowed family â€” seated violin option, variant floors, plucking hand
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 01:17 Â· ccode Â· de79f1c7
 changed: feat(miking): Lab 4 amplified chain â€” C02 Electric Guitar, C08 Electric Bass, C04 Pedal and Lap Steel
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 01:17 Â· ccode Â· 938a9224
 changed: feat(miking): amplified-chain kit beside the speaker family (Lab 4)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 01:04 Â· ccode Â· b1c45c27
 changed: feat(miking): C11 Piano lesson (Lab 4) â€” grand, baby grand and upright
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 01:04 Â· ccode Â· ca5a8c9c
 changed: feat(miking): Lab 4 engine additions and the shared piano and string families
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 00:58 Â· ccode Â· 8734881b
 changed: Merge branch 'final-lab' into integ-c1
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-05 00:56 Â· ccode Â· 32fdb87e
 changed: docs(miking): Lab 2 idiophone research (24 lessons) + BATCH2 summary
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
 
-
 ### 2026-10-05 00:55 Â· ccode Â· 1da36c7a
 changed: Merge branch 'miking-c1' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-05 00:48 Â· ccode Â· 24d5d976
 changed: feat(miking): C09c Cello lesson (Lab 4 Strings), on the bowed family
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 00:47 Â· ccode Â· fcac076e
 changed: feat(miking): engine additions for the bowed strings (additive, optional)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 00:39 Â· ccode Â· 7a77984c
 changed: docs(miking): Lab 4 guitar-family corrections (RS, BJ, MD, UK, AB, L4); brand list
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 00:33 Â· ccode Â· e42e07d0
 changed: feat(miking): C05b Mandolin lesson
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 00:27 Â· ccode Â· 6a2bf905
 changed: Merge branch 'miking-w4' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
-
 ### 2026-10-05 00:23 Â· ccode Â· 9e69a5f0
 changed: Merge branch 'miking-w2' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-05 00:23 Â· ccode Â· bcf6a2df
 changed: feat(miking): C03 Resonator Guitar lesson (lap style and upright)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-05 00:19 Â· ccode Â· bd639888
 changed: fix(miking): concert sound-step labels clear of the art; tidy M07a/M08 art
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 00:18 Â· ccode Â· 00c89f56
 changed: Merge branch 'miking-w3-on-final' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
-
 ### 2026-10-05 00:08 Â· ccode Â· 5f5ea5b2
 changed: feat(miking): M10 Drum Room Microphones lesson
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing
-
 
 ### 2026-10-05 00:07 Â· ccode Â· f1821ed1
 changed: feat(miking): shared cymbal family, kit scene and kit pages; engine hooks for kit lessons
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing
 
-
 ### 2026-10-05 00:07 Â· ccode Â· d76d5bca
 changed: feat(miking): C01 Acoustic Guitar lesson; Lab 4 Strings in the hub
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-05 00:06 Â· ccode Â· 02a0d63f
 changed: feat(miking): engine additions for the guitar family (additive, optional)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
+### 2026-10-05 00:00 Â· ccode Â· 7f90efa3
+changed: feat(miking): M07a concert bass drum and M08 headed tambourine lessons
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
 
 ### 2026-10-05 Â· ccode Â· 723ff2c4
 changed: feat(miking): C10 Harp lesson (Lab 4) â€” concert pedal and lever harps
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
-### 2026-10-05 00:00 Â· ccode Â· 7f90efa3
-changed: feat(miking): M07a concert bass drum and M08 headed tambourine lessons
-affects other side: nothing (miking lessons, branch final-lab)
-needs: nothing (miking lessons, branch final-lab)
-
-
 ### 2026-10-04 23:53 Â· ccode Â· 6c7351f3
 changed: Merge branch 'miking-w5' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
-
 
 ### 2026-10-04 23:41 Â· ccode Â· c15e797a
 changed: Merge final-lab into miking-w3-on-final: hand drums on the kit-drum engine
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-04 23:37 Â· ccode Â· d93863dc
 changed: feat(miking): shared hand-drum journey kit (tonbak, tabla)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-04 23:25 Â· ccode Â· 3192c7d9
 changed: feat(miking): concert-lesson extensions - own setting plan, kettle shapes, step-3 words, orchestra plan
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-04 23:22 Â· ccode Â· eb833083
 changed: test(miking): hand-drum invariants; docs: sources and corrections for M04a-c, M05
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-04 23:21 Â· ccode Â· eda6b657
 changed: feat(miking): engine for hand drums â€” frustums, level booms, clip goosenecks, per-lesson pages
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-04 23:12 Â· ccode Â· 1e6c1be6
 changed: docs(miking): Lab 4 chordophone research (20 lessons) + BATCH4 summary
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
-
 
 ### 2026-10-04 23:05 Â· ccode Â· 61545c7f
 changed: fix(miking): toms seen at 390 wide â€” drawn zones, per-mic reference head, labels
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-04 22:47 Â· ccode Â· 04621f7c
 changed: feat(miking): M03 Rack and Floor Toms lesson (Lab 1)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-04 22:39 Â· ccode Â· b18663e2
 changed: feat(miking): engine additions for non-kick lessons (additive, optional)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
-
 ### 2026-10-04 22:00 Â· ccode Â· 4a63fb8a
 changed: feat(miking): engine for upright and tilted drums; shared drum family; one 5-piece kit plan
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
-
 
 ### 2026-10-04 21:21 Â· ccode Â· 0b64ea25
 changed: docs(miking): builder brief for the lesson rollout
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
 
-
 ### 2026-10-04 21:10 Â· ccode Â· a3e89af8
 changed: docs(miking): Lab 1 batch research (16 lessons) + lead rulings
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
-
 
 ### 2026-10-04 20:52 Â· ccode Â· 7b604c30
 changed: feat(notifications): quiet hours in Settings, p_tz on every save and at start
@@ -5233,54 +4588,45 @@ changed: feat(miking): Kick lesson as suggested starting points, no sources on s
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
 
-
 ### 2026-10-04 20:45 Â· ccode Â· c115b43b
 changed: web: employers & instructors - wording + instructor/school account choice on the apply form
 affects other side: web/ change made by another session (not ccode miking work); see the commit itself.
 needs: nothing.
-
 
 ### 2026-10-04 20:36 Â· ccode Â· 1cb73901
 changed: supabase: commit Comp A's community-push (v2) and on-weekly-concept (v14) sources (on audio-tools-engine)
 affects other side: A â€” your two files are now committed; repo == deployed v2 / v14 (read back via get_edge_function, read-only). validate-purchase NOT committed (your answer still pending).
 needs: nothing
 
-
 ### 2026-10-04 20:35 Â· ccode Â· a5e25826
 changed: fix(rack): keep the dock lane's cap out of the system edge-gesture strips (ported from final-lab d556e9de for the store-build OTA; with 4a1dd64e = shared DragSlider/ControlSlider)
 affects other side: nothing (JS-only slider layout).
 needs: nothing
-
 
 ### 2026-10-04 20:19 Â· ccode Â· 804883e2
 changed: web: employer verification page now addresses instructors and schools too
 affects other side: web/ change made by another session (not ccode miking work); see the commit itself.
 needs: nothing.
 
-
 ### 2026-10-04 19:27 Â· ccode Â· b8830559
 changed: web: halve the launch-overlay background blur (3px to 1.5px)
 affects other side: web/ change made by another session (not ccode miking work); see the commit itself.
 needs: nothing.
-
 
 ### 2026-10-04 19:01 Â· ccode Â· 5cdb6b39
 changed: web: compact launch panel, lighter blur so the live site shows through
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
 
-
 ### 2026-10-04 18:48 Â· ccode Â· 2896a278
 changed: feat(miking): a standard kick pillow â€” DW 18 in, 459.7 Ã— 401.3 Ã— 121.9 mm (retailer size)
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
 
-
 ### 2026-10-04 18:45 Â· ccode Â· 81e94112
 changed: Android back-gesture exclusion on the remaining lab drag surfaces (10 labs + Tube card); TubeCard route loses iOS swipe-back (â€¹ button stays). Native zone ships in the next Android build; no-op on current builds, iOS, web.
 affects other side: nothing (client only, branch final-lab).
 needs: nothing.
-
 
 ### 2026-10-04 18:10 Â· ccode Â· abee545b
 changed: feat(native): ape-gesture-exclusion - Android system-gesture exclusion for lab drags
@@ -5292,7 +4638,6 @@ changed: web: launch overlay over the blurred live home page (gate on)
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
 
-
 ### 2026-10-04 17:50 Â· ccode Â· 4a1dd64e
 changed: fix(lab): the shared in-page sliders keep their caps out of the edge-gesture strips
 affects other side: nothing (client-only lab slider fix; JS-only, to be ported to audio-tools-engine for an OTA by ccode).
@@ -5303,24 +4648,20 @@ changed: fix(rack): keep the dock lane's cap out of the system edge-gesture stri
 affects other side: nothing (client-only lab fader fix; JS-only, to be ported to audio-tools-engine for an OTA by ccode).
 needs: nothing.
 
-
 ### 2026-10-04 17:08 Â· ccode Â· 530ca9b6
 changed: docs(miking): source text + surveys for M10, M11, speaker/Leslie, I04 and Lab 6 F01-F12
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
-
 
 ### 2026-10-04 16:42 Â· ccode Â· bfb36919
 changed: docs(miking): kick reviews resolved â€” corrections K-15..K-26, resolution tables, blueprint/sources fixes
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
 
-
 ### 2026-10-04 16:41 Â· ccode Â· a02bab0a
 changed: fix(miking): M01 geometry and engine â€” port drawn as an opening in the head; honest lobe, zones, comb and nulls
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
-
 
 ### 2026-10-04 16:05 Â· ccode Â· PUBLISHED (owner go)
 changed: OTA published at d0449070 (hunts 11-13, RN pass, wrap-up, D55 rulings, Loudness Normalization label). production: iOS group 22744e67 (update 01a107a7-761c-7031â€¦), Android group 4bc9339f (01a107a7-761c-79eaâ€¦); preview: iOS 39acd79b, Android b4215b89. Runtimes e8e3455b / 22976b0e (builds 33/16) â€” fingerprints matched, no rollback pending, u.expo.dev serves both ids.
@@ -5332,84 +4673,70 @@ changed: fix(miking): readouts agree everywhere â€” web live strip, stop re
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
 
-
 ### 2026-10-04 15:05 Â· ccode Â· 0a8712a3
 changed: feat(miking): step 6 â€” registration (Instruments & Recording family, MikingHub/MikingLesson gated, types, #labpreview), wiring + progress tests; fixes from the 390x844 web inspection
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
-
 
 ### 2026-10-04 14:49 Â· ccode Â· ac652c44
 changed: feat(miking): step 3 â€” scene (useRig shared values, PlacementScene with Gesture Handler pan + pinch, DualView, live readout, comb panel, polar compare), kick art, generic kick-type mic drawings, StageFullScreen scroll-lock addition
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
 
-
 ### 2026-10-04 14:19 Â· ccode Â· 24c5871f
 changed: feat(miking): step 1 â€” pure engine (types, units, frame, sdf/collision, readouts, zones, polar, twoMic, levels, describe, validate) + geometry/physics tests
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
-
 
 ### 2026-10-04 14:04 Â· ccode Â· 3b1b30f6
 changed: docs(miking): engine blueprint, kick SOURCES + geometry proposal, rulings
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
 
-
 ### 2026-10-04 13:26 Â· ccode Â· 217d65b8
 changed: docs(miking): stage-1 plan, lesson surveys (Labs 1-5), source text copies
 affects other side: nothing (branch final-lab docs: miking-lab plan + lesson surveys).
 needs: nothing.
-
 
 ### 2026-10-04 12:21 Â· ccode Â· 42055dee
 changed: docs: charter G1 decided â€” Gesture Handler on final-lab
 affects other side: nothing (doc).
 needs: nothing.
 
-
 ### 2026-10-04 12:21 Â· ccode Â· 0c0e047d
 changed: Add react-native-gesture-handler ~2.32.0 + root view (final lab, owner go 2026-10-04)
 affects other side: on branch final-lab only (not audio-tools-engine). New native dependency = new runtime fingerprint (android 53c750ae, ios be7c3c20); this code ships only in the next store build. Store-build prep should expect it.
 needs: nothing now.
-
 
 ### 2026-10-04 12:13 Â· ccode Â· 8a79f708
 changed: docs: visual charter â€” owner rulings on unknowns, G1 recommendation, Pixel device
 affects other side: nothing (app-side doc).
 needs: nothing.
 
-
 ### 2026-10-04 12:04 Â· ccode Â· d10d289c
 changed: docs: lab visual charter for the final pre-launch lab (owner prompt 2026-10-04, adapted to the codebase)
 affects other side: nothing (app-side visual/motion standard for the final lab; no server impact).
 needs: nothing.
-
 
 ### 2026-10-04 11:44 Â· ccode Â· 30ff79f1
 changed: Docs: handoff 10-04B points at docs/bughunt process files
 affects other side: nothing (doc pointer).
 needs: nothing
 
-
 ### 2026-10-04 11:25 Â· ccode Â· 5eff68ab
 changed: Evening rulings 2026-10-04: guests ephemeral, guest study reminders, Production learning moments, ampacity calculator, loudness targets
 affects other side: one more DRAFT migration: supabase/migrations/2026100430_glossary_youtube_loudness.sql (YouTube loudness wording in 'K-weighted (LUFS)'; keyed on id + current text). Guests can never start/submit a quiz (server user_not_found) â€” by design, no change asked. NOT published.
 needs: owner approval then apply 2026100430 alongside the four from docs/COMP_A_SERVER_WAVE_2026_10_04.md.
-
 
 ### 2026-10-04 10:22 Â· ccode Â· 13941277
 changed: web: deep-link verification files (iOS + Android), let /.well-known past the gate (written by A, committed by owner)
 affects other side: ccode â€” app.json associatedDomains (www only) + drop apex Android intentFilters; see A entry at top
 needs: nothing from A; A verifies both URLs live after deploy
 
-
 ### 2026-10-04 10:04 Â· ccode Â· 6c2a147e
 changed: Afternoon wave 2026-10-04 (owner decisions): calc audit, Production design, Start Here, notifications, guest rules, Career storage, small fixes
 affects other side: YES â€” four DRAFT migrations (2026100401 notifications, 2026100407 Start Here bonus, 2026100410 Start Here glossary terms, 2026100420 glossary formula fixes) + edge function draft docs/drafts/community-push. All explained in docs/COMP_A_SERVER_WAVE_2026_10_04.md. App falls back safely until each is live. NOT published.
 needs: owner approval, then apply + run each VERIFY/test plan; tell ccode when 2026100410 is live (Start Here re-link OTA). Deep links: ccode adds app.json associatedDomains (www only) + drops apex intentFilters ON THE BUILD GO, not before (fingerprint).
-
 
 ### 2026-10-04 09:00 Â· ccode Â· store build prep (owner request)
 changed: Wrote docs/COMP_A_STORE_BUILD_PREP_2026_10_04.md â€” what the next store build (iOS 34 / Android 17) will carry: Reanimated 4.5.5 / Worklets 0.10.4, expo-iap 5.8, expo-speech-recognition 57, supabase-js 2.117, the SignalGen unplug + iPad mic-stop native fixes, and all unpublished app code. NO BUILD STARTED â€” the owner starts it.
@@ -5421,12 +4748,10 @@ changed: Loudness Normalization: over the ceiling reads OVER CEILING BY (owner 2
 affects other side: nothing (calc label).
 needs: nothing
 
-
 ### 2026-10-04 08:54 Â· ccode Â· ffed7ff0
 changed: Owner rulings 2026-10-04 (D55): exposure counts clips, per-tool clipping, OVER CEILING BY, cross-link credit warning
 affects other side: no server change. Glossary cross-links now cost 1 lookup after the reader confirms (same get_glossary_definition meter) â€” update any review/support text that calls them free. NOT published.
 needs: nothing
-
 
 ### 2026-10-04 02:35 Â· ccode Â· docs (overnight wrap)
 changed: Overnight hunts 11â€“13 + RN review + wrap-up done and pushed (through f7fa7e1f); session handoff docs/SESSION_HANDOFF_2026-10-04.md; AGENTS.md house helper runSoon; lessons appended. NOT published.
@@ -5438,42 +4763,35 @@ changed: Wrap-up: 3 consistency fixes after hunt 13 (D52 / K2)
 affects other side: nothing â€” app code only. NOT published.
 needs: nothing
 
-
 ### 2026-10-04 02:18 Â· ccode Â· db1ca27b
 changed: RN research pass: retire InteractionManager, drop no-op UIManager opt-ins, lazy SQLite opens
 affects other side: nothing â€” app code only. NOT published.
 needs: nothing
-
 
 ### 2026-10-04 02:12 Â· ccode Â· 9255719b
 changed: Hunt 13: 32 fixes + 1 correction (final overnight round, 2026-10-04)
 affects other side: nothing server-side â€” app code only (study â˜… deck reads now chunked to 150 ids, paged at 1000 rows). NOT published.
 needs: nothing
 
-
 ### 2026-10-04 01:51 Â· ccode Â· b5b323ce
 changed: Hunt 12: 27 fixes + 1 correction (catalog-guided deep pass, 10 areas)
 affects other side: nothing backend. NOT published.
 needs: still 2026100301 + bucket cache headers.
-
 
 ### 2026-10-04 01:18 Â· ccode Â· 1c5a74c4
 changed: Hunt 11: 18 fixes + 2 corrections (catalog-guided deep pass, 10 areas)
 affects other side: nothing backend. App now words the live security refusals (reverse pending request, restricted). NOT published.
 needs: still 2026100301 + bucket cache headers.
 
-
 ### 2026-10-04 00:58 Â· ccode Â· 7d26ca02
 changed: Start-up trim: sign-out clean-up resets self-register; members-only gate no longer loads the calc registry
 affects other side: nothing backend â€” app start-up only. NOT published.
 needs: still 2026100301 + bucket cache headers.
 
-
 ### 2026-10-04 00:23 Â· ccode Â· a5d4614e
 changed: Perf decisions (owner 2026-10-04): session identity, tier-first Home, lazy screens, + program_topics paging bug
 affects other side: FYI A â€” program_topics (1016 rows) was being cut at PostgREST's 1000-row page; app now pages it. Consider whether other app reads of large tables need the same. NOT published.
 needs: still 2026100301 + bucket cache headers; behaviour tests of the live security fixes need owner go.
-
 
 ### 2026-10-04 Â· ccode Â· OTA publish #5 (production + preview)
 changed: PUBLISHED (owner: "publish") from a2b39a68:
@@ -5500,12 +4818,10 @@ changed: Performance hunt: 75 delay/stall fixes across 10 areas (no packages, no
 affects other side: OPTIONAL for A â€” course-cards and topic-tiles buckets serve Cache-Control: no-cache; a long immutable cache + small thumbnails would speed every image. App-only otherwise. NOT published.
 needs: still A to apply approved server fixes + 2026100301.
 
-
 ### 2026-10-03 23:10 Â· ccode Â· 7e3671b3
 changed: Hunt 10: 12 fixes + 2 corrections â€” incl. CRITICAL offline-member wipe in accountLocalSync
 affects other side: nothing backend. CRITICAL client fix: published build still wiped offline expired-token members via accountLocalSync. NOT yet published â€” recommending immediate publish to owner.
 needs: A still to apply approved server fixes + 2026100301.
-
 
 ### 2026-10-03 20:45 Â· ccode Â· OTA publish #4 (production + preview)
 changed: PUBLISHED (owner: "publish") from 991dddd1 â€” urgent safeSession sweep (offline expired-token member no longer guest-wiped) + hunt 9. Runtimes iOS e8e3455b / Android 22976b0e. production IDs: iOS 01a10577-fbfe-7a16-bd1c-6d76df0cb9d0, Android 01a10577-fbfe-76a5-b2fb-2f25d6dc25a9; u.expo.dev verified.
@@ -5516,7 +4832,6 @@ needs: A still to apply approved server fixes + 2026100301.
 changed: Hunt 9 (17 fixes + 2 corrections) + safeSession sweep A-I (urgent)
 affects other side: nothing backend. URGENT client fix for published hunt-8 Splash path (offline expired-token member no longer guest-wiped). NOT yet published â€” awaiting owner.
 needs: A still to apply approved server fixes + 2026100301.
-
 
 ### 2026-10-03 18:50 Â· ccode Â· OTA publish #3 (production + preview)
 changed: PUBLISHED (owner: "send the server fixes to A and publish") from 49b00dc6 â€” hunt 8 + both deep dives' client fixes. Runtimes iOS e8e3455b / Android 22976b0e. production IDs: iOS 01a104b3-676e-74d6-bb62-5dd48996286c, Android 01a104b3-676e-751c-9c6c-d2b67e6f111a; u.expo.dev verified.
@@ -5539,12 +4854,10 @@ changed: Hunt 8 (16 fixes) + deep dives: completion (3) and community/employers 
 affects other side: YES, pending OWNER approval â€” server findings (3 HIGH security: employer code brute-force, banned users can republish, direct-write grants on community_profiles) in docs/COMP_A_SERVER_FINDINGS_2026_10_03.md. NOT applied. App changes NOT published.
 needs: owner go, then A to apply + still migration 2026100301.
 
-
 ### 2026-10-03 17:46 Â· ccode Â· 215d7f25
 changed: Owner 1-2: calc refusals cost nothing; lab hubs never "not started" on an unreadable read
 affects other side: nothing backend â€” calc refusals no longer call calc_consume (fewer server consumes for free users); app-only otherwise.
 needs: still A to apply migration 2026100301.
-
 
 ### 2026-10-03 17:40 Â· ccode Â· OTA publish #2 (production + preview)
 changed: PUBLISHED (owner: "do 1-2 then publish") from dcb9b28f â€” hunt 7 + calc refusals free + lab hub unreadable faces. Runtimes iOS e8e3455b / Android 22976b0e. production IDs: iOS 01a10463-8c04-76ee-b061-c47f39bd07e0, Android 01a10463-8c04-7d78-843a-8d080e36c2fa; u.expo.dev verified.
@@ -5555,7 +4868,6 @@ needs: still A to apply migration 2026100301.
 changed: Hunt 7: 20 fixes + 4 corrections (full-app toddler pass, 10 areas)
 affects other side: nothing backend â€” app-only. NOT published (owner has not said publish for hunt 7).
 needs: still A to apply migration 2026100301.
-
 
 ### 2026-10-03 13:58 Â· ccode Â· OTA publish (production + preview)
 changed: PUBLISHED, owner's explicit go ("then publish"). Built from cce28e83 (code = 00e3869b + docs). Runtimes iOS e8e3455b (build 33) and Android 22976b0e (build 16), on both production and preview. The production update IDs are iOS 01a10377-96e6-7575-858a-9ffe9310140f and Android 01a10377-96e6-72a4-b695-89a1e98d4616. u.expo.dev serves both on channel production (curl-verified).
@@ -5572,18 +4884,15 @@ changed: Final rounds C + D: owner recommendations after hunt 6 (19 items)
 affects other side: nothing â€” app-only. Note safeSessionResult() now reports a stalled session read (timedOut) separately from signed-out.
 needs: nothing.
 
-
 ### 2026-10-03 13:03 Â· ccode Â· 78f3638d
 changed: Hunt 6: 15 fixes + 1 correction (full-app toddler pass, 10 areas)
 affects other side: nothing â€” app-only (incl. two calculator accuracy fixes: port length, vdrop gauge beyond 4/0). No backend change. NOT published yet.
 needs: nothing.
 
-
 ### 2026-10-03 12:44 Â· ccode Â· 401bb4bf
 changed: Tidy after hunt 5: 9 failed-check wording/button items
 affects other side: nothing â€” app-only wording/buttons for a failed membership check. NOT published yet.
 needs: nothing.
-
 
 ### 2026-10-03 12:05 Â· ccode Â· 38dc0a4a
 changed: Hunt 5: 14 fixes + 4 corrections (full-app toddler pass, 10 areas)
@@ -5595,1188 +4904,990 @@ changed: Glossary: draft migration - 24h free re-open ledger (for Comp A to appl
 affects other side: YES â€” Comp A please apply supabase/migrations/2026100301_glossary_term_reads_24h.sql (owner approved 2026-10-03). Brief: Downloads/2026-10-03_COMP_A_GLOSSARY_24H_REOPEN.md. Diff vs live get_glossary_definition first; rolled-back test; NOT applied by ccode.
 needs: A to apply + append "live" here; then ccode removes the client no-re-ask guard (glossaryGateway.ts ~288).
 
-
 ### 2026-10-03 11:32 Â· ccode Â· f88cbb5b
 changed: Owner recs 1-3: lab guest wording + glossary member metering
 affects other side: OPTIONAL for A, owner call pending â€” a per-term glossary read ledger so a re-open after a timeout is free and fetches the full text (proposed SQL in session; NOT applied). Otherwise app-only. NOT published.
 needs: nothing yet.
-
 
 ### 2026-10-03 11:08 Â· ccode Â· 1e9f0f9d
 changed: Tier sweep: failed membership check is never guest/lock/upsell copy
 affects other side: nothing â€” app-only; failed membership read now shows neutral/"couldn't confirm" instead of guest/lock/upsell. No backend change. NOT published.
 needs: nothing.
 
-
 ### 2026-10-03 10:50 Â· ccode Â· 10dc1565
 changed: Hunt 4: 9 fixes (full-app toddler pass, 10 areas)
 affects other side: nothing â€” app-only fixes (tier-read-failed honesty, failed-read states, study sync rejection). No backend change. NOT published.
 needs: nothing.
-
 
 ### 2026-10-03 10:34 Â· ccode Â· 4aba33fb
 changed: Older stores: every hand-rolled write that is the user's own change now raises the shared failed-save notice (47 sites, 32 files); bookkeeping and screens with their own message stay silent with reasons; syntax-tree ratchet over all AsyncStorage writes
 affects other side: client only. FYI iOS build 33 was submitted to App Store Connect 2026-10-03 (submission fee8903b).
 needs: nothing
 
-
 ### 2026-10-03 10:08 Â· ccode Â· 73c310cc
 changed: One shared, rate-limited notice when a quick save is refused by the device (owner: 'if it fails the user needs to know'); screens with their own message opt out; Settings + measurement edits report
 affects other side: client only
 needs: nothing
-
 
 ### 2026-10-03 09:59 Â· ccode Â· 34d77504
 changed: Owner rulings 2026-10-03: glossary share never double-charges; OSHA >115/>130 dBA honest warnings; Home Setup save failure told; membership check stops at NOT CONFIRMED after retries (tierReadFailed)
 affects other side: client only
 needs: nothing
 
-
 ### 2026-10-02 14:13 Â· ccode Â· 8eec742b
 changed: Evening final round (owner D48: consistency + learning outcomes): tier-known upsell gate, Career screens on shared tier, careerfinder damaged-record + honest saved label, commitment intro hold, onboarding keys survive wipe, honest redeem wording, tool SAVE waits for tier; Drum read-retry + open fence (Mastering parity), exact OSHA PEL/action-level dose, safeGoBack-only back, featured chip, glossary share full definition, Requests err clear, Gallery edit unreadable notice
 affects other side: client only. Calc: OSHA dose now shows PEL (>=90 dBA) and action-level (>=80 dBA) doses separately.
 needs: nothing
-
 
 ### 2026-10-02 14:01 Â· ccode Â· 8f6f01fe
 changed: Evening hunt 3 (final): 10 new fixes + 1 correction (Glossary 0, Home 0, Labs A 0, Shared 1+1, Community 1, Study 1, Account 1, Calc 1, Tools 3, Labs B 2). Trend 30 -> 22 -> 10
 affects other side: client only
 needs: nothing
 
-
 ### 2026-10-02 13:39 Â· ccode Â· dcc9057d
 changed: Evening hunt 2: 22 new fixes + 4 corrections (Home 1+1, Study 2, Glossary 1, Labs A 1, Labs B 2+1, Tools 3+1, Calc 4, Account 4, Community 1+1, Shared 3)
 affects other side: client only
 needs: nothing
-
 
 ### 2026-10-02 13:25 Â· ccode Â· d6caa5cc
 changed: Tighten G1 saved-data guard (AST: comments ignored, multiGet, per-read failure path); fix homeCardsStore (migrated) and onboardingFlow; 32 explicit opt-outs with reasons
 affects other side: client only
 needs: nothing
 
-
 ### 2026-10-02 13:08 Â· ccode Â· 6c1ee968
 changed: Evening hunt 1: 30 fixes across 10 areas (Home 2, Study 5, Glossary 2, Labs A 2, Labs B 1, Tools 3, Calc 1, Account 6, Community 5, Shared 3)
 affects other side: client only
 needs: nothing
-
 
 ### 2026-10-02 12:31 Â· ccode Â· 03fb4d0b
 changed: End of day 2026-10-02: governance D44-D49, engineering lessons, AGENTS.md house helpers, protocol check items 8-9, eas update publish guard hook, session handoff
 affects other side: A please read governance D44 (refund/cancel), D45 (guest carry), D47 (house helpers) and D49 (publish path) in docs/APE_GOVERNANCE_DECISIONS_2026_10_02.md
 needs: confirm the iOS 33 / Android 16 submit status
 
-
 ### 2026-10-02 12:00 Â· ccode Â· a2d461cd
 changed: Amp lab hub: SEE WHAT'S LEFT link (all 7 module-lab hubs now match); shared ampEndModel for hub + FINISH
 affects other side: nothing (client UI)
 needs: nothing
-
 
 ### 2026-10-02 11:54 Â· ccode Â· 59e59876
 changed: Pattern hunt wave 4 (owner rulings): one decorative-motion gate (reduce motion + Low-Light), safeGoBack on all 123 back presses, SEE WHAT'S LEFT on 5 module-lab hubs, exposure unreadable note, career PE/DEGREE chip, write-gated 'Added', room number parse
 affects other side: client only
 needs: nothing new (iOS 33 / Android 16 submit still pending)
 
-
 ### 2026-10-02 11:38 Â· ccode Â· a55bb8e8
 changed: Pattern hunt wave 3: P5 modal hand-off + P9 latch, P8 tri-state tier + P6 write-gated 'Saved', P10/P11/P2/P12/P20 timers/effects/mic, P13 focus-scoped BACK, P16/P17 calc field classes + snapWhole, P14/P15 fitValue + P18 copy; each with a ratchet guard
 affects other side: client only. Calculator answers changed at exact boundaries (FIR taps 801->800, treatment panels 24->23) and some fields now refuse out-of-range input.
 needs: still waiting on the iOS 33 / Android 16 submit (owner may run it himself)
-
 
 ### 2026-10-02 11:07 Â· ccode Â· 1a4df15d
 changed: Pattern hunt wave 2: every hand-rolled store moved onto the safe store or fixed in place (44 -> 2 justified exceptions); failed reads never overwrite, generation fences on wipe, writes report truthfully
 affects other side: client only (device-local stores). deviceIdentity no longer re-mints on a failed read, so single-device claims and the glossary per-device meter stay stable.
 needs: nothing
 
-
 ### 2026-10-02 10:29 Â· ccode Â· 67a2d5d9
 changed: Pattern hunt wave 1 (Option A shared fixes): central sound-start fence (A1, 29 sites), Supabase bounded fetch (A4), createLocalStore + registry (A2, 6 stores migrated) with G1-G4 ratchet guards
 affects other side: client only. NOTE for A: every supabase-js request now has a client-side deadline (30 s REST/auth, 45 s functions, 120 s storage); a slow server call past that now returns an error to the app
 needs: nothing
-
 
 ### 2026-10-02 09:59 Â· ccode Â· b7005fdf
 changed: web: temporary public launch page at / (launch Mon Oct 12) + public /accessibility
 affects other side: nothing server-side (web page only).
 needs: nothing
 
-
 ### 2026-10-02 09:56 Â· ccode Â· 29d84c05
 changed: Bug pattern catalog (phase 1 of the pattern-based hunt): 25 patterns, detection signatures, sweep plan, guard tests
 affects other side: nothing (doc only; P3/P6 server-side classes noted for A in its Â§A6)
 needs: nothing
-
 
 ### 2026-10-02 09:13 Â· ccode Â· 74d1c43d
 changed: Session handoff 2026-10-02: published to 33/16 runtimes; pattern hunt in progress
 affects other side: ACK to A â€” store-notifications v5 reviewed and committed unchanged (3fdbebec); handoff doc only otherwise
 needs: owner pastes the submit_final_exam SQL; A submits 33/16
 
-
 ### 2026-10-02 07:36 Â· ccode Â· 6cdca20b
 changed: Full-app bug run 2 (final): 51 fixes + 4 corrections across 10 areas; certificate refuses when the QR token read fails
 affects other side: client only (lab/store/UI fixes); refundâ†’certificate request to A still open (2026-10-02 entry)
 needs: see the build-submit request entry
-
 
 ### 2026-10-02 07:21 Â· ccode Â· 5691609c
 changed: Full-app bug run 1: 33 fixes across 10 areas (Home 3, Study 3, Glossary 3, Labs A 3, Labs B 5, Tools 3, Calc 6, Account 1, Community 2, Shared 4)
 affects other side: client only. BUT see the A-request below: refunded members keep certificates (server).
 needs: A to review the refundâ†’credential gap (entry below)
 
-
 ### 2026-10-01 22:53 Â· ccode Â· 661c5d3f
 changed: Guest session carry (owner 2026-10-01): lab work done as a guest is written to the account signed into in the same session â€” never to a different identity, never from a preview, never across a relaunch; drum-tuning recording add-on source
 affects other side: nothing (client-only; lab stores + catalog)
 needs: nothing
-
 
 ### 2026-10-01 22:20 Â· ccode Â· 3dd9aafb
 changed: Drum Tuning Lab moves to Pitch & Tuning (owner 2026-10-01)
 affects other side: nothing (client-only; lab stores + catalog)
 needs: nothing
 
-
 ### 2026-10-01 18:39 Â· ccode Â· 03b10d16
 changed: Toddler pass 3 (final) on the three new labs: Drum 2 (+1 correction), Mastering 5 (+3), Room 4 (+1) + delete/unreadable messages; room store: failed delete keeps the row, unreadable store told apart from empty
 affects other side: nothing (client-only lab fixes)
 needs: nothing
-
 
 ### 2026-10-01 18:22 Â· ccode Â· 84d55652
 changed: Toddler pass 2 on the three new labs: Drum 8 (+2 corrections), Mastering 5 (+2), Room 8 (+3); room store never overwrites an unreadable store or lists a failed save
 affects other side: nothing (client-only lab fixes)
 needs: nothing
 
-
 ### 2026-10-01 18:01 Â· ccode Â· 0d1f56ea
 changed: Toddler pass 1 on the three new labs: Drum 12 + Room 10 (+3 corrections) + Mastering 7 (+4 corrections); room store reports a failed save
 affects other side: nothing (client-only lab fixes)
 needs: nothing
-
 
 ### 2026-10-01 17:43 Â· ccode Â· c402d9d2
 changed: Drum Tuning Lab: design pass + standards audit â€” 9 pt on short phones (text boost), 5-key docks, numbered lug casings + hardware polish, key arrow never leaks the hidden offset, stop on step change, full-screen controls on the inspect figure
 affects other side: nothing (client-only lab work)
 needs: nothing
 
-
 ### 2026-10-01 17:10 Â· ccode Â· b41eea0d
 changed: Drum Tuning Lab: apply audio-expert (24) + cognitive (30) reviews â€” audible strike level, stroke-driven snare wires, honest head-relationship copy, caution card, listen-first Tune the head, listenâ†’whereâ†’fix diagnosis, 9 pt, landing lines, visible tap/strike, ungameable credit, recall on review
 affects other side: nothing (client-only lab work)
 needs: nothing
-
 
 ### 2026-10-01 17:10 Â· ccode Â· 454c0edb
 changed: Revert rack full-screen openStep / Room FIT opening: owner rule (2026-09-26) â€” full screen always opens at 1x, the whole drawing
 affects other side: nothing (client-only lab work)
 needs: nothing
 
-
 ### 2026-10-01 16:48 Â· ccode Â· 31ec5de5
 changed: Mastering + Room Design: standards pass (9 pt on short phones, tap-to-toggle, stop on step change, full screen on read figures, visible controls, end-screen jumps); rack full screen can open at FIT (Room plan)
 affects other side: nothing (client-only lab fixes)
 needs: nothing
-
 
 ### 2026-10-01 16:07 Â· ccode Â· a1005e92
 changed: Drum Tuning Lab: new 7-chapter lab (Fable build) â€” physical membrane synth, rack, full screen, LabNavBar, end screen
 affects other side: nothing (client-only new lab; no DB rows, no catalog seed)
 needs: nothing
 
-
 ### 2026-10-01 14:32 Â· ccode Â· c4bcd400
 changed: Handoff 2026-10-01: refund fix committed (204aaadc)
 affects other side: nothing (handoff doc update only)
 needs: nothing
-
 
 ### 2026-10-01 14:31 Â· ccode Â· 204aaadc
 changed: store-notifications: confirm Google subscription refunds (A's fix, deployed v4)
 affects other side: ACK to A â€” store-notifications refund fix (2 hunks) reviewed and committed as 204aaadc, unchanged from the deployed v4. Review notes: type=1 is correct (in-app + subs); revoked = cancelReason AND expiry<=now is right for refund-with-revoke and leaves renewals 1/2/4/7 alone (a renewed sub has a future expiry; RESTARTED clears cancelReason). Policy note, not a bug: a Play refund WITHOUT revoke still appears in the voided feed, so it is marked refunded (tenure cleared) while the sub runs to its expiry â€” same as before for in-app; owner may want to confirm that is intended.
 needs: nothing
 
-
 ### 2026-10-01 14:28 Â· ccode Â· 44f8eb8b
 changed: Docs: 2026-10-01 session handoff, lessons, recording-brief source
 affects other side: nothing (docs only: docs/SESSION_HANDOFF_2026-10-01.md, lessons, docs/recording_brief/)
 needs: nothing. Re A's 2026-10-01 store-notifications ask: seen, NOT yet reviewed/committed â€” waiting for the owner's go (an ask in this doc is not an owner instruction). store-notifications/index.ts is still uncommitted in the tree.
-
 
 ### 2026-10-01 10:17 Â· ccode Â· f49bdb5d
 changed: Lab audio: read recorded WAVs and process them in JS
 affects other side: nothing (client only; reads existing lab-audio bucket via the lab-audio edge function, no schema change)
 needs: nothing
 
-
 ### 2026-10-01 06:13 Â· ccode Â· 6d7b3b93
 changed: Night bug pass 3 of 3 (2026-10-01): 36 new fixes + 7 corrections
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-01 05:57 Â· ccode Â· 049bf10d
 changed: Night bug pass 2 of 3 (2026-10-01): 59 new fixes + 7 corrections
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-10-01 05:40 Â· ccode Â· 3f7d0d32
 changed: Night bug pass 1 of 3 (2026-10-01): 72 fixes across the app
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-01 05:24 Â· ccode Â· 9bb9f01b
 changed: Mastering lab: fixes from the audio, safety and learning reviews
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-10-01 05:02 Â· ccode Â· 862ea40b
 changed: Room Design lab: fixes from the audio, safety and learning reviews
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-01 04:17 Â· ccode Â· d94af192
 changed: New labs: Mastering (final mix to release) and Room Design & Monitoring
 affects other side: nothing (client only; two new member labs in the catalog)
 needs: nothing
 
-
 ### 2026-10-01 01:09 Â· ccode Â· 88e1456e
 changed: FX labs: keep reporting the current glass shape in full screen
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-01 01:03 Â· ccode Â· 34d6f7f3
 changed: Full screen uses the space better in every lab
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-10-01 00:50 Â· ccode Â· 4a6666f9
 changed: Settings: optional mute on leaving the app; Cable Install end screen tells guests the truth
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-10-01 00:18 Â· ccode Â· d3edb216
 changed: Every multi-module lab on the shared navigation strip
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-09-30 23:54 Â· ccode Â· 379b6734
 changed: Lab navigation standard: shared strip, contents list, next button, header
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-09-30 23:45 Â· ccode Â· daa7614b
 changed: Tuning & Temperament lab rebuilt on the Rack Unit, full screen on 13 chapters
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-09-30 23:40 Â· ccode Â· 49443882
 changed: Amplifier Principles lab rebuilt on the Rack Unit, full screen on every rig
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-09-30 23:19 Â· ccode Â· 094063cc
 changed: Full screen across the labs + Explore STUDY NOW landing on Pro Audio Safety
 affects other side: nothing (client only)
 needs: nothing
 
-
 ### 2026-09-30 22:48 Â· ccode Â· 98ac8547
 changed: TestFlight build 32 feedback: 14 tester reports fixed
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-09-30 10:18 Â· ccode Â· 9f392572
 changed: Bug pass 3 of 3 (2026-09-30 day): 69 new fixes + 10 corrections to earlier-pass fixes (79 total; the commit subject's split is wrong)
 affects other side: nothing (client only; validate-purchase / redeem_access_code calls now time out client-side at 30 s / bounded â€” server unchanged)
 needs: nothing
 
-
 ### 2026-09-30 09:57 Â· ccode Â· 56dc5ef2
 changed: Day bug pass 2 of 3 (2026-09-30): 82 fixes
 affects other side: nothing (client only)
 needs: nothing
-
 
 ### 2026-09-30 09:31 Â· ccode Â· afd46b71
 changed: Day bug pass 1 of 3 (2026-09-30): 88 fixes across all areas
 affects other side: nothing (client only; settings notification-prefs read now filters by user_id)
 needs: nothing
 
-
 ### 2026-09-30 08:46 Â· ccode Â· 5cec591a
 changed: Native (next build): stop tones on headphone/BT unplug; iPad mic-stop crash guard
 affects other side: nothing (native module change; ships in the next EAS build)
 needs: nothing
-
 
 ### 2026-09-30 08:27 Â· ccode Â· 23c5adca
 changed: Tile panels get the Audio Tools aged-metal texture (calculators + lab menus)
 affects other side: nothing
 needs: nothing
 
-
 ### 2026-09-30 08:14 Â· ccode Â· 0e4af22d
 changed: Lab menu: drop the Calculator Lab (own Home card now); pack tiles left
 affects other side: nothing
 needs: nothing
-
 
 ### 2026-09-30 08:05 Â· ccode Â· 7e1ea038
 changed: Lab menus (Fundamentals + Advanced Training) use the glass tile layout
 affects other side: nothing
 needs: nothing
 
-
 ### 2026-09-30 07:57 Â· ccode Â· a9c660b5
 changed: Morning list: centred formula key, hosted membership lock, offline sign-out, SPL NOT NOW, chain CLEAR
 affects other side: nothing
 needs: nothing
-
 
 ### 2026-09-30 07:36 Â· ccode Â· 804e883c
 changed: Member membership page, negative calculator inputs error, popups centred
 affects other side: nothing
 needs: nothing
 
-
 ### 2026-09-30 01:35 Â· ccode Â· f8b5a8f2
 changed: Overnight toddler + cat bug pass 2026-09-30 (all areas)
 affects other side: nothing required; FYI suggestions only: get_glossary_definition per-term dedupe (optional); client now handles Play pending purchases without calling validate-purchase
 needs: nothing
-
 
 ### 2026-09-30 00:57 Â· ccode Â· 2bb0551b
 changed: Home: owner art for the Calculator + Career Finder cards
 affects other side: nothing (two new files already in the course-cards bucket)
 needs: nothing
 
-
 ### 2026-09-30 00:49 Â· ccode Â· 875f3bc4
 changed: Size pass + glass calculator tiles
 affects other side: nothing
 needs: nothing
-
 
 ### 2026-09-30 00:18 Â· ccode Â· dafedab3
 changed: Fix calc grid test: read registry source (no RN import)
 affects other side: nothing
 needs: nothing
 
-
 ### 2026-09-30 00:17 Â· ccode Â· cc16f3ba
 changed: Calculator lab: 10 categories as a 2x5 grid of containers + centred popup
 affects other side: nothing
 needs: nothing
-
 
 ### 2026-09-30 00:12 Â· ccode Â· c1c79ce6
 changed: Members: no Membership header link; 'Manage membership' in Settings
 affects other side: nothing
 needs: nothing
 
-
 ### 2026-09-30 00:10 Â· ccode Â· 1141be18
 changed: Home: Calculator + Career Finder cards, lab headline, Start Here BEG LEVEL
 affects other side: nothing (card art will go to the course-cards bucket when the owner supplies it)
 needs: nothing
-
 
 ### 2026-09-29 23:56 Â· ccode Â· abdbeab7
 changed: No 'free' / membership marketing shown to members
 affects other side: nothing (app copy only, gated on useEntitlement().isMember)
 needs: nothing
 
-
 ### 2026-09-29 23:26 Â· ccode Â· ad88f85b
 changed: Speaker animations in time with the air, pressure bands and graph
 affects other side: nothing
 needs: nothing
-
 
 ### 2026-09-29 23:08 Â· ccode Â· 080f008f
 changed: Start Here card: subtitle on its own line
 affects other side: nothing
 needs: nothing
 
-
 ### 2026-09-29 23:03 Â· ccode Â· d9c9bbb7
 changed: Home lands on Start Here only on the first app open; Glossary after
 affects other side: nothing (app-only, device-local AsyncStorage flag)
 needs: nothing
-
 
 ### 2026-09-29 22:52 Â· ccode Â· 04da802f
 changed: Real waveforms (no stylized audio), peak LED meter on the loudness standard, 'not signed in' wording
 affects other side: nothing (app-only: meter display drawing + wording)
 needs: nothing
 
-
 ### 2026-09-29 22:34 Â· ccode Â· c2c8710a
 changed: TestFlight feedback: carousel heading follows the card; Scenarios waits for NEXT
 affects other side: nothing â€” client JS only (Home heading, Scenarios pacing)
 needs: nothing
-
 
 ### 2026-09-29 22:31 Â· ccode Â· b48b3fa2
 changed: Home: compact header in short windows so the card is never cut off
 affects other side: nothing â€” client JS only (Home layout)
 needs: nothing
 
-
 ### 2026-09-29 22:24 Â· ccode Â· ba27a118
 changed: Start Here: new users land on it; its word links open full entries for free
 affects other side: nothing â€” client only; note 21 glossary entries are copied into the app (startHereGlossary.ts) â€” if A edits those entries, tell ccode to refresh the copy
 needs: nothing
-
 
 ### 2026-09-29 16:55 Â· ccode Â· ffdbf319
 changed: Android large screens: readouts at the user's font size, tablet wording
 affects other side: nothing â€” client JS only (Android large-screen pass)
 needs: nothing
 
-
 ### 2026-09-29 16:55 Â· ccode Â· 94021b4f
 changed: Android large screens: Home deck + orientation follow the live display
 affects other side: nothing â€” client JS only (Android large-screen pass)
 needs: nothing
-
 
 ### 2026-09-29 16:39 Â· ccode Â· 70d101c8
 changed: Start Here card: drop the subtitle over the owner's art
 affects other side: nothing â€” client JS only (Start Here card copy)
 needs: nothing
 
-
 ### 2026-09-29 16:33 Â· ccode Â· 5a0fb18e
 changed: Start Here: Your First Steps in Audio â€” free beginner experience
 affects other side: nothing â€” client JS only (Start Here beginner lab; also covers eaa5c1ae, additive lab-kit props). Reads glossary_browse_v by exact term name (existing GlossaryTermPopup path); card art start_here.webp in course-cards.
 needs: nothing. (Glossary gap for A/Comp B if wanted: no sound-sense entry for "Source" â€” the existing "Source" is the FET terminal.)
-
 
 ### 2026-09-29 16:32 Â· ccode Â· bb72bad9
 changed: Foundations air view: sparkle glint no longer grows into a blob
 affects other side: nothing â€” client JS only (Foundations viz fix found while building Start Here)
 needs: nothing
 
-
 ### 2026-09-29 16:28 Â· ccode Â· dafc81de
 changed: Start Here card art: start_here.webp (941x1672) + upload script accepts it
 affects other side: course-cards bucket gains start_here.webp (owner uploads via scripts/upload-menu-cards.mjs)
 needs: nothing
-
 
 ### 2026-09-29 15:41 Â· ccode Â· f5609b46
 changed: Ear Training drill: card column + fixed answer cells on tablets
 affects other side: nothing â€” client JS only (tablet layout)
 needs: nothing
 
-
 ### 2026-09-29 14:46 Â· ccode Â· 27943c44
 changed: Trophy gallery: a real empty state instead of one grey line
 affects other side: nothing â€” client JS only (gallery empty state)
 needs: nothing
-
 
 ### 2026-09-29 14:42 Â· ccode Â· 0ec86a43
 changed: test: exempt the web-preview auto-guest latch from the account-wipe registry
 affects other side: nothing â€” test only
 needs: nothing
 
-
 ### 2026-09-29 14:41 Â· ccode Â· 9508a46d
 changed: Glossary + Calculator lab: background art covers wide tablets (resizeMode prop)
 affects other side: nothing â€” client JS only (background art)
 needs: nothing
-
 
 ### 2026-09-29 14:12 Â· ccode Â· f2bc52d7
 changed: Web preview: auto-guest only on the boot visit, so SIGN IN reaches the form
 affects other side: nothing â€” dev-only web preview behaviour
 needs: nothing
 
-
 ### 2026-09-29 13:25 Â· ccode Â· 500a0512
 changed: Awards: 'Explore the Academy' no longer blank after opening at a later page
 affects other side: nothing â€” client JS only (Awards pager)
 needs: nothing
-
 
 ### 2026-09-29 13:08 Â· ccode Â· f2285bc7
 changed: Tablet pass: guard test - tablet rule, grid columns, rack glass, every capped surface
 affects other side: nothing â€” client JS only (tablet layout pass)
 needs: nothing
 
-
 ### 2026-09-29 13:08 Â· ccode Â· d1c4a8e6
 changed: Tablet pass: study, dashboard, glossary, trophies, settings, community, sign-in and popups sized for iPad
 affects other side: nothing â€” client JS only (tablet layout pass)
 needs: nothing
-
 
 ### 2026-09-29 13:08 Â· ccode Â· 60e0b287
 changed: Tablet pass: labs use the iPad - taller rack glass, capped well/dock, lab lists and pages in columns
 affects other side: nothing â€” client JS only (tablet layout pass)
 needs: nothing
 
-
 ### 2026-09-29 11:59 Â· ccode Â· a6a69759
 changed: Sign in: from the second wrong password, point at 'Reset via email'
 affects other side: nothing â€” client JS only (sign-in copy)
 needs: nothing
-
 
 ### 2026-09-29 11:48 Â· ccode Â· c4824442
 changed: Bass lab: preload the whole string, this fret everywhere, then the rest
 affects other side: nothing to change â€” client JS only (lab audio persistence + preloading). NOTE: the Bass lab now asks the lab-audio edge fn for up to 24 signed URLs when opened with sound on (was â‰¤ 7, only while playing), and up to 8 more every 80 s while armed â€” noticeably more lab-audio calls + storage egress (~0.3â€“0.6 MB per clip)
 needs: nothing
 
-
 ### 2026-09-29 11:44 Â· ccode Â· e0ac8dfd
 changed: Tuning lab: save every clip, pre-render each chapter's clips
 affects other side: nothing â€” client JS only (lab audio persistence + preloading)
 needs: nothing
-
 
 ### 2026-09-29 11:39 Â· ccode Â· 3d0f35ee
 changed: Lab full screen: item names print in full above the display (TitledStage)
 affects other side: nothing â€” client JS only (full-screen stage titles)
 needs: nothing
 
-
 ### 2026-09-29 11:35 Â· ccode Â· d04154aa
 changed: labs sound policy: keep playing when switching screens, stop on close
 affects other side: nothing â€” client JS only (lab audio persistence + preloading)
 needs: nothing
-
 
 ### 2026-09-29 11:18 Â· ccode Â· 80f00bb9
 changed: labs sound audit (3/3): â–¶ arms the lab â€” no more drops to â–¶ on a change or a ring-out
 affects other side: nothing â€” client JS only (lab sound fixes)
 needs: nothing
 
-
 ### 2026-09-29 11:12 Â· ccode Â· b815e935
 changed: labs sound audit (2/3): clip labs no longer wait on the audio session every tap
 affects other side: nothing â€” client JS only (lab sound fixes)
 needs: nothing
-
 
 ### 2026-09-29 11:11 Â· ccode Â· 407870b9
 changed: labs sound audit (1/3): starts honour a mute that lands mid-start; blur stops everywhere
 affects other side: nothing â€” client JS only (lab sound fixes)
 needs: nothing
 
-
 ### 2026-09-29 11:08 Â· ccode Â· f3075049
 changed: Sound Systems Learn 3: system name and scale print in full above the plan
 affects other side: nothing â€” client JS only (Sound Systems page layout)
 needs: nothing
-
 
 ### 2026-09-29 11:02 Â· ccode Â· 368c5c0f
 changed: Sound Systems map: quiet frames for healthy stations; lamp halo no longer full-bright
 affects other side: nothing â€” client JS only (Sound Systems map styling)
 needs: nothing
 
-
 ### 2026-09-29 10:41 Â· ccode Â· da333188
 changed: Bass lab: stays armed after a note rings out; nearby notes preload; green readout off
 affects other side: nothing â€” client JS only (Bass armed transport + clip preloading). Note: more lab-audio edge-fn calls per session while the Bass lab is armed (~7 preloads per change).
 needs: nothing
-
 
 ### 2026-09-29 10:18 Â· ccode Â· b2660894
 changed: FIX the dead Bass â–¶: a re-render cancelled every start (and the same trap in 14 labs)
 affects other side: nothing â€” client JS only (lab stop-on-blur fix; Bass â–¶ root cause)
 needs: nothing
 
-
 ### 2026-09-29 09:37 Â· ccode Â· 15b88be5
 changed: labs â–¶: backup press when the Pressable never fires; every step writes a probe line
 affects other side: nothing â€” client JS only (lab â–¶ backup press + probe)
 needs: nothing
-
 
 ### 2026-09-29 09:31 Â· ccode Â· afb85ab7
 changed: Tuner full screen: chips never cropped by the readout; lighter auto-dim
 affects other side: nothing â€” client JS only (tuner full-screen layout)
 needs: nothing
 
-
 ### 2026-09-29 09:11 Â· ccode Â· 3f43140d
 changed: Lab end screen: count the final check separately (8 modules plus the check, not 9 of 9)
 affects other side: nothing â€” client JS only (lab end screen wording)
 needs: nothing
-
 
 ### 2026-09-29 09:09 Â· ccode Â· 58e58cb7
 changed: test: lab end screens - whatsLeft helper + source guards for every wired lab
 affects other side: nothing â€” client JS only (lab end screens)
 needs: nothing
 
-
 ### 2026-09-29 09:09 Â· ccode Â· dfa4b8a3
 changed: Section-chip labs get an end: a WHAT'S LEFT chip + FINISH link (owner 2026-09-29)
 affects other side: nothing â€” client JS only (lab end screens)
 needs: nothing
-
 
 ### 2026-09-29 09:09 Â· ccode Â· fbe5f98b
 changed: Step labs: DONE / last CONTINUE open the what's-left screen (owner 2026-09-29)
 affects other side: nothing â€” client JS only (lab end screens)
 needs: nothing
 
-
 ### 2026-09-29 09:09 Â· ccode Â· dfe4fcba
 changed: RTA 61-band: the low end always shows; PK HOLD no longer latches the mic-open pop
 affects other side: nothing â€” client JS only (RTA low-end bands + peak-hold start-up clear)
 needs: nothing
-
 
 ### 2026-09-29 09:09 Â· ccode Â· f5ddb939
 changed: Module labs: the greyed last NEXT is now FINISH -> what's-left (owner 2026-09-29)
 affects other side: nothing â€” client JS only (lab end screens)
 needs: nothing
 
-
 ### 2026-09-29 09:08 Â· ccode Â· b2dbe829
 changed: PagedLab: FINISH opens the what's-left screen instead of just leaving (owner 2026-09-29)
 affects other side: nothing â€” client JS only (lab end screens)
 needs: nothing
-
 
 ### 2026-09-29 09:08 Â· ccode Â· 5aa37bcd
 changed: labs: shared what's-left END SCREEN (LabEndScreen + labEnd helper + labVisits)
 affects other side: nothing â€” client JS only (lab end screens)
 needs: nothing
 
-
 ### 2026-09-29 08:47 Â· ccode Â· 6246f137
 changed: Glossary Links toggle: blue sweeps in leftâ†’right on, grey sweeps back rightâ†’left off
 affects other side: nothing â€” client JS only (glossary links toggle animation)
 needs: nothing
-
 
 ### 2026-09-29 08:44 Â· ccode Â· 9d12f898
 changed: labs: â–¶ confirms every touch (ring burst, press dip, â€¦ while starting); Bass shows its playback steps
 affects other side: nothing â€” client JS only (lab â–¶ touch feedback + Bass status line)
 needs: nothing
 
-
 ### 2026-09-29 00:23 Â· ccode Â· 26d68638
 changed: fix: tuner full screens rotate again under the portrait_up stacks; Mic Selection DONE ignores a double tap
 affects other side: nothing â€” client JS only (tuner rotation + Mic Selection DONE guard; also covers 0a53d9b4, the â“˜ accuracy sheet reopen fix)
 needs: nothing
-
 
 ### 2026-09-29 00:17 Â· ccode Â· 85a39f9a
 changed: fix(tools): one record per SAVE; tuner overlays close on BACK; SignalGen start guards; portrait restored
 affects other side: nothing â€” client JS only (tools/calc fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:17 Â· ccode Â· d2f7b3d0
 changed: fix(calc): BACK asks before discarding edits; one save at a time; serialised store writes
 affects other side: nothing â€” client JS only (tools/calc fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:17 Â· ccode Â· 8b49e98c
 changed: fix(study): no auto FULL SCREEN guide in Low-Light; guards for the app-shell bug hunt
 affects other side: nothing â€” client JS only (app shell fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:17 Â· ccode Â· 11f2b844
 changed: fix(nav): every native stack defaults to portrait_up, so one tool full screen no longer unlocks the app
 affects other side: nothing â€” client JS only (app shell fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:17 Â· ccode Â· 8fa7f8b5
 changed: fix(tools): a superseded mic start no longer kills a newer start's stream
 affects other side: nothing â€” client JS only (tools/calc fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:17 Â· ccode Â· a0cf29af
 changed: fix(audio-gate): popups open inside an already-open Modal; ACCEPT race; hold works with a screen reader
 affects other side: nothing â€” client JS only (app shell fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:17 Â· ccode Â· 7a0b5d4b
 changed: fix(links): deep-link capture really runs; a signed-out link or reminder waits for sign-in
 affects other side: nothing â€” client JS only (app shell fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:16 Â· ccode Â· 68e8b132
 changed: fix(cymatics): gallery rename/notes/favourite edit the latest row, serialised
 affects other side: nothing â€” client JS only (wave/cymatics fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:15 Â· ccode Â· 50f6e978
 changed: fix(dashboard): term list is a centred popup; the deck store keeps one topic
 affects other side: nothing â€” client JS only (study bug fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:15 Â· ccode Â· f669d1a1
 changed: fix(study): tutorials wait for Low-Light/focus/fullscreen; no skipped boards; honest scenarios copy
 affects other side: nothing â€” client JS only (study bug fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:15 Â· ccode Â· f516987d
 changed: fix(quiz/exam): back held mid-submit, latched skip, resume at the next question
 affects other side: nothing â€” client JS only (study bug fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:14 Â· ccode Â· 4c0f7f88
 changed: fix(glossary): a double-tap spends one metered lookup, not two
 affects other side: nothing â€” client JS only (study bug fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:12 Â· ccode Â· d877b744
 changed: fix(sound-systems): goal chips start latched on a finished page
 affects other side: nothing â€” client JS only (sound systems fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:12 Â· ccode Â· 25bfcfbe
 changed: chore(sound-systems): remove the unrendered PartsBin
 affects other side: nothing â€” client JS only (sound systems fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:12 Â· ccode Â· f5b77878
 changed: fix(sound-systems): console tray, arrival timeline and plot badge text >= 9 pt
 affects other side: nothing â€” client JS only (sound systems fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:11 Â· ccode Â· 4fecce64
 changed: fix(awards): picker RETRY instead of a dead "pull up again"; goToPage unlocks
 affects other side: nothing â€” client JS only (enrollment bug fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:11 Â· ccode Â· 4fd03279
 changed: fix(credentials): download/share message shows inside the trophy modal
 affects other side: nothing â€” client JS only (enrollment bug fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:10 Â· ccode Â· 4a780f7b
 changed: test: source guards for the 2026-09-29 cable labs bug hunt fixes
 affects other side: nothing â€” client JS only (cable lab fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:10 Â· ccode Â· 3be07b0e
 changed: Cable Fundamentals: a what's-left list, kept bench progress, honest dots (bug hunt 2026-09-29)
 affects other side: nothing â€” client JS only (cable lab fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:10 Â· ccode Â· 31643437
 changed: Cable Install screen: REPEAT LAB is a fresh run, not a credit wipe (bug hunt 2026-09-29)
 affects other side: nothing â€” client JS only (cable lab fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:10 Â· ccode Â· 7df9e8e5
 changed: Cable Install scenes: bug hunt 2026-09-29 â€” retry no longer sticks, no double taps
 affects other side: nothing â€” client JS only (cable lab fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:09 Â· ccode Â· e0a31105
 changed: Lab audio: re-check the gate before a clip starts; no stuck â– ; no unasked popup
 affects other side: nothing â€” client JS only (lab shell/rack fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:09 Â· ccode Â· e2ee6e34
 changed: Lab rack + shell: nothing presents over FULL SCREEN; back never closes a hidden tray
 affects other side: nothing â€” client JS only (lab shell/rack fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:09 Â· ccode Â· 4a5cd02c
 changed: fix(cymatics): bug hunt 2026-09-29 â€” gallery, art studio, studios, store
 affects other side: nothing â€” client JS only (wave/cymatics fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:08 Â· ccode Â· 937698a9
 changed: test: source guards for the 2026-09-29 lab bug hunt fixes
 affects other side: nothing â€” client JS only (lab bug fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:08 Â· ccode Â· bf70cedf
 changed: fix(labs): early taps survive the progress load; console legends â‰¥ 9 pt; mic photos zoom
 affects other side: nothing â€” client JS only (lab bug fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:08 Â· ccode Â· 96580f8c
 changed: fix(production): one project per tap; stale saves never roll back; accept/NA sheets keep text
 affects other side: nothing â€” client JS only (lab bug fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:08 Â· ccode Â· bf99d8a4
 changed: fix(tube): pinch then one-finger drag pans instead of flipping the sheet
 affects other side: nothing â€” client JS only (lab bug fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:08 Â· ccode Â· e789f986
 changed: fix(foundations): tone changes during PLAY start are kept; double-tap NEXT cannot hit DONE
 affects other side: nothing â€” client JS only (lab bug fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:08 Â· ccode Â· 9301cab7
 changed: fix(mixing): no queued play under a pushed lab; â–  never over silence; goal chips remember
 affects other side: nothing â€” client JS only (lab bug fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:07 Â· ccode Â· af18302e
 changed: fix(directory): one send at a time, BLOCK confirms, report acknowledged, saves serialised
 affects other side: nothing â€” client JS only (front-door bug fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:07 Â· ccode Â· c24cbd27
 changed: fix(dialogs+settings): no replayed duplicate dialogs; racing saves; Low-Light BACK declines
 affects other side: nothing â€” client JS only (front-door bug fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:07 Â· ccode Â· 1a6e4f66
 changed: fix(sound-systems): load race, matching resets, guest/preview save rule
 affects other side: nothing â€” client JS only (sound systems fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:07 Â· ccode Â· 8916c197
 changed: fix(auth): CREATE ACCOUNT never resumes a different account; recovery retry, BACK, Resend
 affects other side: nothing â€” client JS only (front-door bug fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:05 Â· ccode Â· 9e8215ab
 changed: Tools: FULL SCREEN for the RTA and the Spectrogram
 affects other side: nothing â€” client JS only (RTA/spectrogram full screen)
 needs: nothing
 
-
 ### 2026-09-29 00:03 Â· ccode Â· f4177d7f
 changed: fix(sound-systems): a wrong FAULT pick locks naming until the next probe
 affects other side: nothing â€” client JS only (sound systems fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:03 Â· ccode Â· 05db7fdf
 changed: fix(enrollment): drag reorder no longer swaps back; a lift is not a tap
 affects other side: nothing â€” client JS only (enrollment bug fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:02 Â· ccode Â· 76ed4804
 changed: fix(sound-systems): LEARN checks count only right answers, once each
 affects other side: nothing â€” client JS only (sound systems fixes)
 needs: nothing
-
 
 ### 2026-09-29 00:01 Â· ccode Â· 7b962f35
 changed: fix(enrollment): shared topics survive bundle add/remove; locked topics stay
 affects other side: nothing â€” client JS only (enrollment bug fixes)
 needs: nothing
 
-
 ### 2026-09-29 00:00 Â· ccode Â· d49a60a4
 changed: fix(sound-systems): an OFF wedge send no longer fails 'every monitor send is PRE'
 affects other side: nothing â€” client JS only (sound systems fixes)
 needs: nothing
-
 
 ### 2026-09-28 23:59 Â· ccode Â· 8249b8d4
 changed: fix(sound-systems): page work survives BACK/CONTINUE; CLEAR and DOCUMENT fixes
 affects other side: nothing â€” client JS only (sound systems fixes)
 needs: nothing
 
-
 ### 2026-09-28 23:57 Â· ccode Â· 87872fe2
 changed: fix(sound-systems): FINISH never blocked outside the understanding check
 affects other side: nothing â€” client JS only (sound systems fixes)
 needs: nothing
-
 
 ### 2026-09-28 23:57 Â· ccode Â· 356520b2
 changed: fix(sound-systems): honest forward-walk grading, prefix sequence check, no double probes
 affects other side: nothing â€” client JS only (sound systems fixes)
 needs: nothing
 
-
 ### 2026-09-28 23:45 Â· ccode Â· dbab81af
 changed: Sign-up: 'account NOT created' + one-tap strong password; LOGIN explains a refused sign-up
 affects other side: nothing â€” client JS only (sign-up copy + password suggester)
 needs: nothing
-
 
 ### 2026-09-28 23:35 Â· ccode Â· 0f317b6d
 changed: Glossary share: hook moved above the early return (Sentry APE-STUDIO-V)
 affects other side: nothing â€” client JS only (glossary share sheet)
 needs: nothing
 
-
 ### 2026-09-28 22:56 Â· ccode Â· 4a0587bd
 changed: Cable Install lab: network class is mint, apart from power red for deuteranopes
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing
-
 
 ### 2026-09-28 22:56 Â· ccode Â· a970a48b
 changed: Cable Install Stage 11: firestop after verification, next card in view, 9-pt labels
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing
 
-
 ### 2026-09-28 22:56 Â· ccode Â· 48c7a394
 changed: Cable Install Stage 8: FINISHED VIEW no longer gives away Exercise 2
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing
-
 
 ### 2026-09-28 22:56 Â· ccode Â· 6beedf0e
 changed: Cable Install Stage 6: a rack an installer would sign off
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing
 
-
 ### 2026-09-28 22:33 Â· ccode Â· 637bb656
 changed: Tuner: larger, fully-bordered instrument + preset buttons that stay visible and tappable
 affects other side: nothing â€” client JS only (tuner / dashboard UI)
 needs: nothing
-
 
 ### 2026-09-28 22:21 Â· ccode Â· 810f9b4f
 changed: Cable Install lab: CONTROL is near-white, clearly apart from SPEAKER
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing
 
-
 ### 2026-09-28 22:16 Â· ccode Â· e7ecfcc2
 changed: Cable Install Stage 8: FINISHED VIEW is the same section, finished
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing
-
 
 ### 2026-09-28 22:08 Â· ccode Â· b390fb07
 changed: Cable Install Stage 11: building section on the Rack Unit layout
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing
 
-
 ### 2026-09-28 22:01 Â· ccode Â· 93c72e02
 changed: Dashboard: members topics say so before the tap; 'Membership required' is a centred popup
 affects other side: nothing â€” client JS only (dashboard members-topic gate copy)
 needs: nothing
-
 
 ### 2026-09-28 21:58 Â· ccode Â· fbb5b976
 changed: Cable Install Stage 6: rack redrawn to EIA-310 proportions, 24-port patch panel is 1U
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing
 
-
 ### 2026-09-28 21:54 Â· ccode Â· b8fadf88
 changed: Tuner: averaged reading + held IN TUNE; live tools keep the screen awake
 affects other side: nothing â€” client JS only (tuner + tool keep-awake)
 needs: nothing
-
 
 ### 2026-09-28 10:28 Â· ccode Â· cb91b1d1
 changed: docs: 2026-09-28 addendum to the handoff
 affects other side: nothing â€” docs only
 needs: nothing
 
-
 ### 2026-09-28 10:15 Â· ccode Â· 8c45a492
 changed: Cable lab: the amp's rear grille is its exhaust everywhere (Stage 13 ins-12 matched Stage 6)
 affects other side: nothing â€” client JS only (cable lab text)
 needs: nothing
-
 
 ### 2026-09-28 10:11 Â· ccode Â· 4ea1d9a2
 changed: Cable Install Stage 6: AC IN silk clear of the amp's seated cord
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing
 
-
 ### 2026-09-28 10:08 Â· ccode Â· 489b5680
 changed: Cable Install Stage 8: ceiling section reviewed - hooks, grid and install made true
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing
-
 
 ### 2026-09-28 09:54 Â· ccode Â· 4d240e1c
 changed: Cable Install Stage 6: rack reviewed - dressed rack fully terminated, honest trace
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing
 
-
 ### 2026-09-28 09:30 Â· ccode Â· 23d778f4
 changed: Cable Install Stage 9: the deck reads as a real stage plot, reviewed
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing
-
 
 ### 2026-09-28 09:17 Â· ccode Â· e42729b0
 changed: Cable Install Stage 11: building section redrawn to scale with section conventions
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing
 
-
 ### 2026-09-28 08:11 Â· ccode Â· f4bf2402
 changed: Labs probe round 3: playback trail (gate, fetch, player status, errors) + ?/â“˜ presses
 affects other side: nothing â€” client JS only (temp lab touch probe)
 needs: nothing
-
 
 ### 2026-09-28 08:05 Â· ccode Â· d9487d01
 changed: Cable Install Stage 11: redraw the building section to section conventions
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing â€” client JS only (cable lab art)
 
-
 ### 2026-09-28 08:04 Â· ccode Â· e06628f3
 changed: Cable Install Stage 9: redraw the deck as a real stage plot
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing â€” client JS only (cable lab art)
-
 
 ### 2026-09-28 08:03 Â· ccode Â· 0f4f0c1e
 changed: Cable Install Stage 8: redraw the ceiling cavity as a building section
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing â€” client JS only (cable lab art)
 
-
 ### 2026-09-28 07:39 Â· ccode Â· cf417014
 changed: Cable Install Stage 6: redraw the rack as a textbook rear elevation
 affects other side: nothing â€” client JS only (cable lab art)
 needs: nothing â€” client JS only (cable lab art)
-
 
 ### 2026-09-28 07:22 Â· ccode Â· 2cb2b4b1
 changed: Sound Systems: system map redrawn as three columns with cross cables
 affects other side: nothing â€” client JS only (sound systems map)
 needs: nothing
 
-
 ### 2026-09-27 21:38 Â· ccode Â· 56ed3ccd
 changed: Labs probe round 2: which container takes the touch + the buttons' real frames
 affects other side: nothing â€” client JS only (temp lab touch probe)
 needs: nothing
-
 
 ### 2026-09-27 21:15 Â· ccode Â· 80e83d86
 changed: Labs: TEMP touch probe (triple-tap the lab title) for the dead ?/â“˜/â–¶ on iOS
 affects other side: nothing â€” client JS only (temp lab touch probe)
 needs: nothing
 
-
 ### 2026-09-27 14:11 Â· ccode Â· 9e9a60c0
 changed: docs: 2026-09-27 handoff + engineering lessons
 affects other side: nothing â€” docs only
 needs: nothing
-
 
 ### 2026-09-27 13:58 Â· ccode Â· 04df512a
 changed: Labs: ask for audio after the native push ends (dead ? / â“˜ / â–¶ on iOS)
 affects other side: nothing â€” client JS only (lab entry audio prompt)
 needs: nothing
 
-
 ### 2026-09-27 12:36 Â· ccode Â· d94c6c57
 changed: Lab play buttons: no silent dead â–¶ (Bass Guitar Lab report)
 affects other side: nothing â€” client JS only (lab audio gate/player)
 needs: nothing
-
 
 ### 2026-09-27 12:08 Â· ccode Â· 33323fea
 changed: Dashboard: remember and follow the TOPIC, not its slot in the carousel
 affects other side: nothing â€” client JS only (study dashboard)
 needs: nothing
 
-
 ### 2026-09-27 11:55 Â· ccode Â· 1d67c864
 changed: Dashboard: STUDY NOW switches on an inactive certificate topic
 affects other side: nothing â€” client JS only (dashboard focus)
 needs: nothing
-
 
 ### 2026-09-27 11:44 Â· ccode Â· 87ec850c
 changed: Sound Systems: the slider steps aside while a CONSOLE tray is open
 affects other side: nothing â€” client JS only (rack tray layout)
 needs: nothing
 
-
 ### 2026-09-27 11:28 Â· ccode Â· 4b91f348
 changed: Preview harness: add the five Sound Systems mode screens
 affects other side: nothing â€” client JS only (web preview harness)
 needs: nothing
-
 
 ### 2026-09-27 10:45 Â· ccode Â· 2c3bb363
 changed: Rack trays on short phones: full room, 'more' cue, choices first
 affects other side: nothing â€” client JS only (rack tray layout)
 needs: nothing
 
-
 ### 2026-09-27 09:59 Â· ccode Â· 1f70c457
 changed: Preview harness: add CompressionLab, GateLab, StereoLab
 affects other side: nothing â€” client JS only (web preview harness)
 needs: nothing
-
 
 ### 2026-09-27 08:28 Â· ccode Â· 4473b229
 changed: Rack Unit: an open tray no longer covers the dock inline
 affects other side: nothing â€” client JS only (rack tray layout)
 needs: nothing
 
-
 ### 2026-09-26 18:51 Â· ccode Â· e5f1ca69
 changed: Cable Install QA fixes before the OTA: Ceiling Exercise 2's hook controls dock in FULL SCREEN; Rack Phase B speaker loom lands on the amp's NL4 output (not its fan grille); Walls Q4 copy matches the drawing ("beside the device")
 affects other side: nothing â€” client JS only (Cable Install lab)
 needs: nothing
-
 
 ### 2026-09-26 18:12 Â· ccode Â· 1a4b80cc
 changed: Cable Install art pass, review fixes: web console errors, 9-pt floor at 375, one misleading note
@@ -6848,1038 +5959,865 @@ changed: Cable Install art pass, Stage 1 (Why): the four approval close-ups redr
 affects other side: nothing â€” client JS only (Cable Install lab art)
 needs: nothing
 
-
 ### 2026-09-26 16:10 Â· ccode Â· cab2a933
 changed: handoff 2026-09-26C: evening â€” tester fixes, QA pass, builds iOS 32 / Android 15 finished, Cable Install redesign agent running
 affects other side: nothing â€” docs only (handoff)
 needs: nothing
-
 
 ### 2026-09-26 15:31 Â· ccode Â· 71f87615
 changed: QA pass, Wave 9-16 â€” fixes: Room Builder says "NO WALL" / "THROUGH 0 dB" (not "âˆ’0 dB"); speaker coverage wedges clipped to the room (at low Æ’ they wrapped out over the wall); Delay Alignment in 0.01 ms steps so AUTO-ALIGN lands on its own number; Echo and Reverb rooms take only the height their shape needs so the timeline / decay graph get the rest (no empty band); Line Array copy drops an internal function name, boxes drawn at the model's 0.5 m pitch, the section floor shows seat rows (no heads under the standing listener)
 affects other side: nothing â€” client JS only (Wave lab)
 needs: nothing
 
-
 ### 2026-09-26 15:08 Â· ccode Â· d2efa1bf
 changed: Flashcards (TestFlight, build 30, John Martin III x3): a long definition can be read to the end â€” a tap no longer advances until the text has been scrolled to its end (a "more â†“" cue shows while there is more); the last line clears "Suggest a correction"; both filter rows fit on one line each (no third line of stray buttons)
 affects other side: nothing â€” client JS only (Flashcards screen)
 needs: nothing
-
 
 ### 2026-09-26 14:59 Â· ccode Â· d8e54200
 changed: docs: session handoff 2026-09-26C (the 16-module Wave Physics walkthrough), governance D38-D43, lessons (C)
 affects other side: nothing â€” docs only (handoff, D38-D43, lessons)
 needs: nothing
 
-
 ### 2026-09-26 14:57 Â· ccode Â· 0981b406
 changed: Wave Room Builder: accuracy note first under the display â€” what the outside rings show, and that it is a teaching mass-law model with exaggerated fading; measure real isolation with a calibrated meter
 affects other side: nothing â€” client JS only (Wave lab copy)
 needs: nothing
-
 
 ### 2026-09-26 14:48 Â· ccode Â· 2113d7de
 changed: Wave Room Builder outside rings END: each starts just under the room's own level inside that wall (heat-map calculation and ramp) and fades to nothing over a reach set by the wall's loss at this frequency â€” bass carries, treble dies at the wall
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
 
-
 ### 2026-09-26 14:32 Â· ccode Â· 51db07ce
 changed: Wave Room Builder outside ring: loudest case (40 Hz through drywall) leaves the wall just warmer than green, 500 Hz+ already blue; decay twice real spreading for the demo; thinner, dimmer line
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
-
 
 ### 2026-09-26 14:18 Â· ccode Â· d2c9c357
 changed: Wave: pressure rings and the pulse ring are clipped to the room interior â€” they were drawn through the walls into the label margin, as if sound passed through concrete
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
 
-
 ### 2026-09-26 14:07 Â· ccode Â· 046f0ed4
 changed: Wave Reverb: the decay curve is ON the display under the room (amber = this room, dim = untreated all-concrete), in FULL SCREEN too; ARRIVALS legend off at start; the RING GAP tag sits inside the room corner on a plate (it collided with the top wall's name)
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
-
 
 ### 2026-09-26 14:00 Â· ccode Â· 2c96565d
 changed: Wave Echo: each room's walls match its own description â€” canyon ROCK on three sides and open behind the stage; gym block walls, a windowed side, wood bleachers behind; church stone with wood doors; walls can carry display names (wallLabels) over their material
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
 
-
 ### 2026-09-26 13:52 Â· ccode Â· d09fd0f1
 changed: Wave Echo: FAR WALL readout is the far-wall return the copy describes (canyon 291 ms; the old ECHO cell reported the side walls' 74 ms), its path highlighted; the arrival timeline is ON the display under the room with the far-wall stem marked; ARRIVALS legend off at start. Timing labs (Interference, Delay Alignment, Cardioid, Beam Steering) open with RAYS on
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
-
 
 ### 2026-09-26 13:42 Â· ccode Â· afe2e694
 changed: Wave Beam Steering: the delay gradient drawn as an amber staircase behind the boxes; the steer angle as a dashed line; Î”t/BOX in ms once it passes 1000 Âµs; bezel reads the listener vs the SAME array unsteered (absolute level kept in the well)
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
 
-
 ### 2026-09-26 13:34 Â· ccode Â· d8d538eb
 changed: Wave Cardioid: FRONT SUB / REAR SUB Â· Ã˜ Â· ms (live) / AUDIENCE labels on the scene; the rear probe is REAR MIC; probe and object labels sit on a dark plate so they read over the blue cancelled area
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
-
 
 ### 2026-09-26 13:25 Â· ccode Â· eb84fe4c
 changed: Wave Delay Alignment: open air (alignment is set on the direct sound) and a SUM readout â€” the pair vs perfect addition at the listener (0.0 dB aligned, negative = cancelling); absolute level kept in the well
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
 
-
 ### 2026-09-26 13:20 Â· ccode Â· 03740e86
 changed: Wave Coverage: open air so the beam is the only thing on the map; the EFF angle drawn as dashed -6 dB edges that swing in with frequency; bezel reads the listener vs ON-AXIS at the same distance (absolute level kept in the well); short EFF key so it is not cropped
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
-
 
 ### 2026-09-26 13:11 Â· ccode Â· 3e9499bd
 changed: Wave 9-16: rooms fill their stage (RoomSceneView fits room + label margin in the whole box; sizing to the bare room aspect let the margin eat the room); "RING GAP > Î»" tag when the true wavelength is finer than the ring floor (rooms 12 px, diffraction 10 px); Line Array floor drawn as a seated row seen from the side, deep strip
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
 
-
 ### 2026-09-26 12:58 Â· ccode Â· 10748284
 changed: Wave: objects drawn to real size in every room (proportion audit) â€” head ~0.2 m, PA 0.55 m, point speaker 0.45 m, sub 0.75 m, mic 0.18 m, each floored so it stays findable; Line Array in true section (0.45 m boxes, standing listener); diffuser wells at the printed DEPTH; Cardioid REAR probe drawn; Refraction listener ear at 1.6 m on the x20 scale; Echo copy matches geometry
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
-
 
 ### 2026-09-26 12:47 Â· ccode Â· efbd84f7
 changed: Wave: heat/modal maps in 64 colour steps (was 32 â€” stripes at 2-3x); the listener head sits on a dark disc with a light ring so it is findable on any map colour, including a black node line
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
 
-
 ### 2026-09-26 12:43 Â· ccode Â· 0595a1c2
 changed: Wave Comb: the comb curve is ON the display (room above, response at the mic below, also in FULL SCREEN); opens with the mic 0.5 m from the wall so the notches are deep; the listener is drawn as a microphone aimed at the source
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
-
 
 ### 2026-09-26 12:35 Â· ccode Â· e536683d
 changed: Wave Interference: bezel reads the pair vs ONE speaker (+6.0 dB in step, NULL on a cancellation); absolute level kept in the well; heat map resolution grows with the zoom step so FULL SCREEN stays smooth
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
 
-
 ### 2026-09-26 12:25 Â· ccode Â· 70ffad7b
 changed: Wave Diffraction: true-scale scene (module geometry, one px/m both ways, real barrier height, 0.6 m PA on a stand, 1.75 m standing listener); direct rings clipped to the lit region so the wrap is the only sound in the shadow; brighter diffracted train; listener level halo from the bezel's Maekawa loss; SHADOW ZONE readable
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
-
 
 ### 2026-09-26 12:15 Â· ccode Â· 1b54b067
 changed: Wave Refraction: one honest model â€” the drawing uses the readouts' real dc/dz over a 400 m scene with heights drawn x20 (tagged HEIGHT x20); listener at 150 m; H @150 m readout; COOL AIR label clear of the speaker
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
 
-
 ### 2026-09-26 12:01 Â· ccode Â· 9dafbce2
 changed: Wave Diffusion: opens with PRESSURE on; split pulse balls show their 1/N energy share, a clear step down the colour ramp
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
-
 
 ### 2026-09-26 11:45 Â· ccode Â· 60ec580c
 changed: Wave Diffusion: a pressure pulse SPLITS at the diffuser â€” one fragment rides each scatter-fan ray and vanishes at its end
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
 
-
 ### 2026-09-26 11:38 Â· ccode Â· 94dc0f69
 changed: Wave Diffusion: the diffuser is drawn on the top wall â€” a QRD (nÂ² mod 7) row of wooden wells whose depth follows DEPTH; wall labelled DIFFUSER
 affects other side: nothing â€” client JS only (Wave lab drawing)
 needs: nothing
-
 
 ### 2026-09-26 11:22 Â· ccode Â· a5e33e6c
 changed: Full screen: 1x always shows the whole drawing; zoom steps anchor on the last touch (else centre). Wave walls drawn in section; Absorption walls deepened
 affects other side: nothing â€” client JS only (rack full screen + Wave lab drawing)
 needs: nothing
 
-
 ### 2026-09-26 10:56 Â· ccode Â· 38d005d8
 changed: docs: session handoff 2026-09-26B, governance D35-D37 (interactive full screen, cropped readouts, bass recordings), lessons
 affects other side: nothing â€” docs only
 needs: nothing
-
 
 ### 2026-09-26 10:44 Â· ccode Â· 1a69d3ca
 changed: Rack: a cropped bezel readout drops its label and stacks number over unit; full screen opens a narrow fixed-shape drawing at the step that fills the width
 affects other side: nothing â€” client only
 needs: nothing
 
-
 ### 2026-09-26 10:26 Â· ccode Â· f031688a
 changed: Meter lab: everything in the drawing zooms with full screen (parity pass)
 affects other side: nothing â€” client only
 needs: nothing
-
 
 ### 2026-09-26 10:15 Â· ccode Â· 7cc09e12
 changed: EQ Lab: everything in the drawing zooms with full screen (parity pass)
 affects other side: nothing â€” client only
 needs: nothing
 
-
 ### 2026-09-26 10:12 Â· ccode Â· ae5e259b
 changed: Foundations of Sound: everything in the drawing zooms with full screen (parity pass)
 affects other side: nothing â€” client only
 needs: nothing
-
 
 ### 2026-09-26 10:12 Â· ccode Â· ab23175b
 changed: Envelope: everything in the drawing zooms with full screen (parity pass)
 affects other side: nothing â€” client only
 needs: nothing
 
-
 ### 2026-09-26 10:12 Â· ccode Â· 62ec9832
 changed: Amplifier: everything in the drawing zooms with full screen (parity pass)
 affects other side: nothing â€” client only
 needs: nothing
-
 
 ### 2026-09-26 10:09 Â· ccode Â· 02054a6a
 changed: Speech: everything in the drawing zooms with full screen (parity pass)
 affects other side: nothing â€” client only
 needs: nothing
 
-
 ### 2026-09-26 10:08 Â· ccode Â· 0063c87d
 changed: Oscillator Lab: everything in the drawing zooms with full screen (parity pass)
 affects other side: nothing â€” client only
 needs: nothing
-
 
 ### 2026-09-26 10:07 Â· ccode Â· 205426d2
 changed: De-Esser: everything in the drawing zooms with full screen (parity pass)
 affects other side: nothing â€” client only
 needs: nothing
 
-
 ### 2026-09-26 10:06 Â· ccode Â· 9ce7586c
 changed: Cable Install: everything in the drawing zooms with full screen (parity pass)
 affects other side: nothing â€” client only
 needs: nothing
-
 
 ### 2026-09-26 10:05 Â· ccode Â· 41f92f3a
 changed: Sound Systems: everything in the drawing zooms with full screen (parity pass)
 affects other side: nothing â€” client only
 needs: nothing
 
-
 ### 2026-09-26 10:01 Â· ccode Â· 5d80ba6a
 changed: Mic Principles: everything in the drawing zooms with full screen (parity pass)
 affects other side: nothing â€” client only
 needs: nothing
-
 
 ### 2026-09-26 09:49 Â· ccode Â· 2d392040
 changed: Rack: HIDE DISPLAY / FULL SCREEN row is 34 pt tall (touch target still 44 pt by hit slop)
 affects other side: nothing â€” client only
 needs: nothing
 
-
 ### 2026-09-26 09:38 Â· ccode Â· c3e80579
 changed: Rack full screen: the bezel readouts run across the top, under the zoom bar
 affects other side: nothing â€” client only
 needs: nothing
-
 
 ### 2026-09-26 09:25 Â· ccode Â· 800b9a9f
 changed: Rack full screen: the zoom hint rolls down out of the way on a tap and back up from a ? chip
 affects other side: nothing â€” client only
 needs: nothing
 
-
 ### 2026-09-26 01:22 Â· ccode Â· 8ed7fbc8
 changed: EQ Lab: labels â‰¥ 9 pt + FULL SCREEN (legibility pass)
 affects other side: nothing â€” client only
 needs: nothing
-
 
 ### 2026-09-26 00:51 Â· ccode Â· 78b652c9
 changed: Amplifier lab: labels â‰¥ 9 pt + FULL SCREEN (legibility pass)
 affects other side: nothing â€” client only
 needs: nothing
 
-
 ### 2026-09-26 00:38 Â· ccode Â· 2160048d
 changed: Envelope Lab: labels â‰¥ 9 pt + FULL SCREEN (legibility pass)
 affects other side: nothing â€” client only
 needs: nothing
-
 
 ### 2026-09-26 00:38 Â· ccode Â· 20a8fc69
 changed: Oscillator Lab: labels â‰¥ 9 pt + FULL SCREEN (legibility pass)
 affects other side: nothing â€” client only
 needs: nothing
 
-
 ### 2026-09-26 00:30 Â· ccode Â· a360c57f
 changed: Meter lab: labels â‰¥ 9 pt + FULL SCREEN (legibility pass)
 affects other side: nothing â€” client only
 needs: nothing
-
 
 ### 2026-09-26 00:28 Â· ccode Â· 3107cbb7
 changed: Mic Principles: labels â‰¥ 9 pt + FULL SCREEN (legibility pass)
 affects other side: nothing â€” client only
 needs: nothing
 
-
 ### 2026-09-26 00:26 Â· ccode Â· 58b6fe79
 changed: Wave Physics: labels â‰¥ 9 pt + FULL SCREEN (legibility pass)
 affects other side: nothing â€” client only
 needs: nothing
-
 
 ### 2026-09-26 00:25 Â· ccode Â· 26fb82d3
 changed: Cable Install: labels â‰¥ 9 pt + FULL SCREEN (legibility pass)
 affects other side: nothing â€” client only
 needs: nothing
 
-
 ### 2026-09-26 00:15 Â· ccode Â· fa535552
 changed: Foundations of Sound: labels â‰¥ 9 pt + FULL SCREEN (legibility pass)
 affects other side: nothing â€” client only
 needs: nothing
-
 
 ### 2026-09-26 00:13 Â· ccode Â· 309e60b3
 changed: Speech & Voice Lab: labels â‰¥ 9 pt + FULL SCREEN (legibility pass)
 affects other side: nothing â€” client only
 needs: nothing
 
-
 ### 2026-09-26 00:10 Â· ccode Â· 6293cb24
 changed: De-Esser: labels â‰¥ 9 pt + FULL SCREEN (legibility pass)
 affects other side: nothing â€” client only
 needs: nothing
-
 
 ### 2026-09-26 00:05 Â· ccode Â· db203299
 changed: Bass Guitar Lab: PLAY streams the real bass recordings; the string model is the fallback
 affects other side: FYI only â€” the client now calls the `lab-audio` edge function for `bass_fretboard` (72 public rows); no schema change
 needs: nothing
 
-
 ### 2026-09-25 23:48 Â· ccode Â· ec08d4b7
 changed: docs: governance D34 - the 2026-09-25 ccode session is retired; 25D addendum (flashcard scroll fix, clean-worktree publish 23:40)
 affects other side: nothing â€” client only
 needs: nothing
-
 
 ### 2026-09-25 23:44 Â· ccode Â· f3be3797
 changed: Rack: FULL SCREEN shared by every lab, with the controls docked inside it
 affects other side: nothing â€” client only
 needs: nothing
 
-
 ### 2026-09-25 23:35 Â· ccode Â· ddf3118d
 changed: Flashcards: the definition scrolls on iPhone - the tap lives inside the scroller
 affects other side: nothing â€” client gesture/layout only (flashcard definition scroll on iPhone).
 needs: nothing
-
 
 ### 2026-09-25 23:27 Â· ccode Â· 255221a2
 changed: docs: session handoff 2026-09-25D (night), governance D32-D33, night lessons
 affects other side: nothing â€” docs only (session handoff 25D; governance D32 9 pt lab text, D33 codes-only/dashes).
 needs: nothing
 
-
 ### 2026-09-25 23:24 Â· ccode Â· 7af84b8a
 changed: docs: handoff for FULL SCREEN + 9 pt labels in eleven more labs (measured survey, code map, traps, harness)
 affects other side: nothing â€” docs only.
 needs: nothing
-
 
 ### 2026-09-25 23:06 Â· ccode Â· f687664f
 changed: Dashboard: a standing-requirement topic says it is required for every certificate
 affects other side: nothing â€” client copy only (reads COREQ_TOPIC_GS = the four award_standing_requirements gs).
 needs: nothing
 
-
 ### 2026-09-25 22:40 Â· ccode Â· 54e48aee
 changed: Sound Systems: every word on a display reads at 9 pt or more on a phone
 affects other side: nothing â€” client drawing text only
 needs: nothing
-
 
 ### 2026-09-25 22:01 Â· ccode Â· 987cf20e
 changed: Sound Systems: FULL SCREEN view for every drawing display
 affects other side: nothing â€” client layout only (Sound Systems FULL SCREEN view; label redraw to a 9 pt minimum follows in separate commits).
 needs: nothing
 
-
 ### 2026-09-25 21:23 Â· ccode Â· d0276ac1
 changed: Flashcards: full-screen definition text can no longer clip its last word
 affects other side: nothing â€” client layout only; the glossary text itself is complete (checked live: Impairment definition 329 chars in glossary / glossary_study_v / glossary_full_v).
 needs: nothing
-
 
 ### 2026-09-25 19:12 Â· ccode Â· 795b5f8f
 changed: Codes: remove the discount-code message
 affects other side: the client no longer knows the server's `discount_pending` answer (falls through to the general error message). Live DB has 0 discount codes (7 grant codes).
 needs: YES â€” drop the 'discount' kind, discount_pct, and the discount branch of redeem_access_code; see the "(night) â€” ccode -> A: ASK" entry at the top of this file.
 
-
 ### 2026-09-25 17:13 Â· ccode Â· 70325ddc
 changed: Codes: tell people to type the dashes; drop discount/sponsor wording
 affects other side: nothing â€” client copy only. FYI for A: the app now tells people to type codes exactly as given, dashes included; redeem_access_code still matches upper-case with spaces stripped and does NOT strip dashes, so keep issuing codes in the form people will type. The app no longer mentions discount codes (owner: "there are no discount codes, just codes").
 needs: nothing
-
 
 ### 2026-09-25 16:49 Â· ccode Â· 6c6e3be3
 changed: Cable Install: unwire five mismatched defect photos; Computer C remake brief
 affects other side: nothing â€” app bundle + docs only, no DB. Five Final Inspection cards (sharp-bend, crushed-by-tie, connector-strain, bad-floor-crossing, slack-pile) are drawing-only until Computer C's remakes land (Downloads/2026-09-25_COMP_C_DEFECT_PHOTO_REMAKE_5.zip). Not on the phones until the owner publishes.
 needs: nothing
 
-
 ### 2026-09-25 16:20 Â· ccode Â· 3da182a6
 changed: docs: session handoff 2026-09-25C (publish proven, meter per device, Comp C zip), governance D30-D31, late lessons
 affects other side: nothing â€” docs only. Session handoff 2026-09-25C: OTA published to both channels from dbf6c9b2 (Pixel proven); the DB change of 1099d4de (glossary meter per device) is the one thing A must re-read â€” see that entry below.
 needs: nothing
-
 
 ### 2026-09-25 15:52 Â· ccode Â· 1099d4de
 changed: Glossary meter counts per device; Sound Systems map: thin runs, visible arrowheads, backed labels
 affects other side: DB CHANGE, applied live by ccode (migration 2026092502_glossary_meter_per_device.sql): new table public.glossary_usage_device; glossary_consume(p_device_id text default null), glossary_usage_status(p_device_id text default null), get_glossary_definition(p_id uuid, p_device_id text default null) REPLACE the old zero-arg / one-arg versions (dropped). The glossary weekly meter is now per device AND per identity. Re-read before touching those functions. Owner-reported hole: guest hit the lock, signed in free on the same phone, got a fresh 14.
 needs: nothing
 
-
 ### 2026-09-25 15:28 Â· ccode Â· 1d0755c2
 changed: docs: Computer C brief v2 â€” zip contents section, ready-to-paste prompts and sort pictograms referenced
 affects other side: nothing â€” docs only (the Computer C image brief now ships as one complete zip in Downloads with 34 ready-to-paste prompts and the 17 sort pictograms).
 needs: nothing
-
 
 ### 2026-09-25 15:07 Â· ccode Â· 476c0de0
 changed: Sound Systems Lab: bug and latency pass â€” client-only, this lab (six bugs, two slow rides fixed; engine and rack frame untouched; report docs/APE_SOUND_SYSTEMS_BUG_LATENCY_PASS_2026_09_25.md). Not published.
 affects other side: nothing
 needs: nothing
 
-
 ### 2026-09-25 14:57 Â· ccode Â· 8a00ef7a
 changed: Cable Install: 12 delivered defect photographs wired + Computer C brief v2
 affects other side: nothing â€” client-only. Cable Install Final Inspection now shows 8 Computer C defect photographs; the Computer C image brief was rebuilt from the app (docs/art/APE_LAB_PHOTO_BRIEF_v2_2026_09_25.md, zip in Downloads) after the owner rejected the 09-25 prompt package. No DB, no publish.
 needs: nothing
-
 
 ### 2026-09-25 13:56 Â· ccode Â· c64bc21d
 changed: handoff 2026-09-25B: the Sound Systems Rack Unit pass is done (eaff23f1), verified, unpublished
 affects other side: nothing â€” docs.
 needs: nothing.
 
-
 ### 2026-09-25 13:51 Â· ccode Â· eaff23f1
 changed: Sound Systems Lab: Rack Unit layout pass
 affects other side: nothing â€” client-only.
 needs: nothing.
-
 
 ### 2026-09-25 13:29 Â· ccode Â· 7e5c02d4
 changed: handoff 2026-09-25B: second OTA published (Profile column + Glossary push) from a clean checkout; the clean-checkout publish routine
 affects other side: nothing â€” second OTA of the day published (client-only fixes); docs.
 needs: nothing.
 
-
 ### 2026-09-25 12:52 Â· ccode Â· 430db688
 changed: iPad: Profile on a 760 card column; Glossary route drops its fade transition
 affects other side: nothing â€” client-only (Profile tablet width; Glossary route transition).
 needs: nothing.
-
 
 ### 2026-09-25 11:57 Â· ccode Â· b9b4ff71
 changed: Cable Install: photo reveal cards for the Stage 5 sort and the Final Inspection + LabPhoto aspect fix. Client-only. Empty photo slots (supportArt.ts / defectArt.ts) wired for Computer C's 46-image package docs/art/APE_LAB_PHOTO_PROMPTS_2026_09_25.md (also in the owner's Downloads). Fixed kit/LabPhoto: aspectRatio on an RN Image is ignored on web (asset height applied first) â€” photos rendered 765 px tall on phone cards.
 affects other side: nothing â€” no DB, no backend. (Your round-2 topic-split entry above is SEEN; the owner has the split PARKED on this side until they un-park it, so no ACK action yet.)
 needs: nothing from A. Images come from C via assets/exports per the prompt package.
 
-
 ### 2026-09-25 11:18 Â· ccode Â· 51933b51
 changed: Lab photographs: the real cable alongside the drawings (owner exports, 2026-09-25)
 affects other side: nothing â€” client-only (22 bundled lab photographs under assets/lab-art, wired alongside the vector art in Cable Install Stage 2 and Connector Select Stations 1 & 4). Ships in the next OTA; no native change.
 needs: nothing.
-
 
 ### 2026-09-25 10:41 Â· ccode Â· 3d224541
 changed: 24-hour usage review: guest 401 guards and a sign-up password hint
 affects other side: A â€” THREE MIGRATIONS APPLIED FROM HERE 2026-09-25 ~17:35 UTC (Supabase migration names): `get_question_count_from_academy_stats` (the function now reads academy_stats.questions â€” keep refresh_academy_stats running after content loads or the Explore count goes stale), `anon_catalog_reads_topic_term_counts_study_methods` (grant execute topic_term_counts(uuid[]) to anon; grant select + policy anon_read_study_methods on study_methods), `glossary_formula_terms_partial_index` (idx_glossary_formula_terms_id). Evidence: edge/auth/postgres logs for the prior 24 h. The topic-split follow-ups remain PARKED by the owner.
 needs: nothing.
 
-
 ### 2026-09-25 10:18 Â· ccode Â· 3440d2e0
 changed: EXPLORE areas: the standards program and certificate get a home
 affects other side: nothing â€” client-only (EXPLORE area menus: the standards program + certificate now surface in System Design & Maintenance and Architectural Acoustics).
 needs: nothing.
-
 
 ### 2026-09-25 09:40 Â· ccode Â· e0bd4d68
 changed: Home deck: tablet-sized carousel cards
 affects other side: nothing â€” client-only (Home carousel card size on tablets).
 needs: nothing.
 
-
 ### 2026-09-25 09:11 Â· ccode Â· 7203b32f
 changed: Sound Systems Lab: phone-width text pass and meter colour standard
 affects other side: nothing â€” client-only (meter colour standard, phone-width text fixes in the Sound Systems Lab).
 needs: nothing.
-
 
 ### 2026-09-25 09:01 Â· ccode Â· bed1cb36
 changed: Sound Systems Lab: cardioid and end-fire sub arrays reject 30 dB to the rear so the plot shows the stage going quiet
 affects other side: nothing â€” a client-side coverage-model constant.
 needs: nothing.
 
-
 ### 2026-09-25 08:58 Â· ccode Â· 25feb82b
 changed: Sound Systems Lab: accuracy and design pass after the owner's review
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-25 02:01 Â· ccode Â· e3cf5f56
 changed: Sound Systems Lab: live sound reinforcement, all 14 chapters, 5 modes, 10 capstones
 affects other side: nothing backend-side â€” client + docs only. New training-section lab "Live Sound Reinforcement â†’ Sound Systems Lab" (member-only, no af_ key, no labs-table row needed; completion = its understanding check). No new tables, RPCs or deep-link paths.
 needs: nothing. Owner reviews in the browser first (`localhost:8091/#soundsystemspreview`); no publish requested.
 
-
 ### 2026-09-25 00:20 Â· ccode Â· 9ebe0d16
 changed: Two triage lessons: launch_duration is not launch time, and filter Sentry by env
 affects other side: nothing â€” client + docs only.
 needs: nothing.
-
 
 ### 2026-09-25 00:06 Â· ccode Â· 427a0897
 changed: Fatal audio crash: stop the engine before touching inputNode
 affects other side: nothing â€” client + docs only.
 needs: nothing.
 
-
 ### 2026-09-24 22:21 Â· ccode Â· 1cdfd56e
 changed: "Never got the email" â€” they never had an account. Signup was failing silently
 affects other side: nothing to change server-side. Supabase leaked-password protection STAYS ON (owner call 2026-09-25) â€” the fix is that the app now explains the rejection instead of showing a generic error.
 needs: nothing.
-
 
 ### 2026-09-24 21:36 Â· ccode Â· 74b693ba
 changed: The remaining instruments: cap the prose, keep the analysers full width
 affects other side: nothing â€” client layout only, no schema/content/copy change.
 needs: nothing.
 
-
 ### 2026-09-24 21:23 Â· ccode Â· 7e318619
 changed: Amplitude gate: cap the paragraphs, and add a LEFT variant so they line up
 affects other side: nothing â€” client layout only, no schema/content/copy change.
 needs: nothing.
-
 
 ### 2026-09-24 21:13 Â· ccode Â· 0e3cc25e
 changed: SPL meter: cap the PROSE only, leave the instrument the whole tablet
 affects other side: nothing â€” client layout only, no schema/content/copy change.
 needs: nothing.
 
-
 ### 2026-09-24 18:27 Â· ccode Â· 395da421
 changed: iPad: cap the remaining prose page screens (exam, quiz, results, study, more)
 affects other side: nothing â€” client layout only, no schema, no content, no copy changes.
 needs: nothing.
-
 
 ### 2026-09-24 18:21 Â· ccode Â· 16f90fe6
 changed: iPad: the Low-Light gate card was uncapped too
 affects other side: nothing â€” client layout only.
 needs: nothing.
 
-
 ### 2026-09-24 18:17 Â· ccode Â· 1a7f1ce7
 changed: iPad: the welcome popup â€” the first thing a tablet user sees â€” was uncapped
 affects other side: nothing â€” client layout only.
 needs: nothing.
-
 
 ### 2026-09-24 18:12 Â· ccode Â· c86f0b51
 changed: iPad: Help and About ran their text the full width too
 affects other side: nothing â€” client layout only.
 needs: nothing.
 
-
 ### 2026-09-24 17:55 Â· ccode Â· 1a19855e
 changed: iPad: tool screens and the paywall ran their text the full width
 affects other side: nothing â€” client layout only.
 needs: nothing.
-
 
 ### 2026-09-24 17:38 Â· ccode Â· 0c852784
 changed: Career Finder retake: proven fixed on device, with a baseline this time
 affects other side: nothing â€” docs only, no schema or content change.
 needs: nothing. This closes the last unverified item in build 30; build 30 is live with testers.
 
-
 ### 2026-09-24 13:22 Â· ccode Â· 49b8420d
 changed: Collect iOS dSYMs from every build, so crash reports stay readable
 affects other side: eas.json changed, so the runtime fingerprint moved on BOTH platforms (ios e65788533c -> 64a7eddf33, android 78622e4e4f -> 02255b7bae). Any `eas update` from this tree now reaches ZERO installed apps and still reports success. Realigns automatically the moment a build ships from this tree; to OTA before then, revert 49b8420d, publish, re-apply.
 needs: Build 28's dSYM (UUID 2678ae4c-b582-3d4c-b162-7ab7b2ff19b0) uploaded to the ape-studio Sentry project â€” it is the build all 23 alpha testers run and the only symbol gap left. Build 29 (3e1c1a45) is already covered. Handoff: Downloads/2026-09-24_COMP_A_BUILD28_DSYM_REQUEST.md
-
 
 ### 2026-09-24 00:03 Â· ccode Â· 9595648b
 changed: OTA published to both channels and verified running on the Pixel
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-23 23:12 Â· ccode Â· 7455c2c5
 changed: Labs: HIDE DISPLAY â€” let the lesson take the screen
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-23 22:59 Â· ccode Â· b3a46c21
 changed: Tester report: "Got stuck here couldn't press any buttons" â€” the rack was mute
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-23 22:52 Â· ccode Â· c00cc6f5
 changed: Tester reports: flashcard definitions wouldn't scroll, and redeem ate the code
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-23 22:46 Â· ccode Â· 1223aecf
 changed: Tester report: "the back button does not work" â€” it was too small to hit
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-23 09:39 Â· ccode Â· 8fd9e837
 changed: Device sweep: flashcard deck completed, power sequence verified, 10/10 questions correct
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-23 09:17 Â· ccode Â· f8bbda7a
 changed: Pixel device sweep: OTA confirmed running, SPL colour wheel verified
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-23 08:24 Â· ccode Â· 779d97ee
 changed: Sentry f95ff9a3: a SECOND worklet crash in the same file, still live
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-23 08:18 Â· ccode Â· 31697560
 changed: Modal layering: the surfaces that were drawn behind the sheet that raised them
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-23 08:06 Â· ccode Â· da0c9ce8
 changed: Sweep both crash classes repo-wide â€” and undo damage my own fix did
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-23 07:51 Â· ccode Â· 1f471ab4
 changed: Two reported crashes: pink noise, and the fullscreen colour wheel
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-23 01:11 Â· ccode Â· 404e7734
 changed: Five lessons from the overnight hunts
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-23 01:09 Â· ccode Â· f28581b7
 changed: Agent 3 verification record
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-23 01:05 Â· ccode Â· c0462ccb
 changed: Four ways the app showed a confident, specific, wrong number
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-23 00:49 Â· ccode Â· 369362b2
 changed: Agent 2 verification record
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-23 00:42 Â· ccode Â· b8a284b9
 changed: Multi-Meter left the mic hot in the background during START
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-23 00:34 Â· ccode Â· 500d90a9
 changed: Agent 2 findings recorded (unverified) â€” lifecycle & stalled waits
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-23 00:27 Â· ccode Â· c3d0d925
 changed: Career Finder retake pushed a duplicate; record agent 1 verification
 affects other side: nothing â€” client layout only.
 needs: nothing.
-
 
 ### 2026-09-23 00:19 Â· ccode Â· 5af7e312
 changed: Agent 1 findings recorded (unverified) â€” navigation & goal paths
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-22 23:58 Â· ccode Â· 8cf16e2b
 changed: Search text goes bold while a definition is open
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-22 23:39 Â· ccode Â· 43bf5217
 changed: Glossary search text matches the highlight it produces
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-22 23:25 Â· ccode Â· 68c71eb0
 changed: Glossary: stop the intro drawing over the consent dialog
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-22 21:48 Â· ccode Â· 82dbb8a1
 changed: Fix the freeze my own offline save caused â€” batch the corpus write
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-22 16:01 Â· ccode Â· c4d2bb68
 changed: Saving the glossary offline is a member feature â€” offered to everyone
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-22 15:41 Â· ccode Â· 8dfd4c9a
 changed: Glossary: load terms first, definitions for the rows on screen
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-22 15:17 Â· ccode Â· 4d748813
 changed: Whole-academy progress totals (whole curriculum / all certs / all programs) are now OPT-IN on the Profile screen â€” owner: they "are intimidating and discouraging since they fill so slowly". The learner's OWN enrolled certificates and programs still always show progress. Also found and fixed: clearLocalAccountData sweeps every `ape:*` key except a KEEP allowlist, so the new preference silently reset to OFF on boots where the anon session churns the identity marker.
 affects other side: nothing backend-side. âš ï¸ FYI for A: any NEW device-local `ape:*` preference must be added to clearLocalAccountData's KEEP list or it will silently reset â€” that is a repo-wide trap, now written up in docs/APE_ENGINEERING_LESSONS.md (2026-09-22 section).
 needs: nothing.
-
 
 ### 2026-09-22 13:56 Â· ccode Â· 76603ace
 changed: Home cards: stop slicing the title and cutting off the button (CARD_H was a flat 409; on a 375x667 screen the carousel row is ~273pt and the FlatList centres its items, so the card overflowed at BOTH ends and overflow:hidden clipped the title's first line and the CTA). Height now derives from the screen, clamped [260,409]. Plus: Profile screen labels moved to first person (MY CERTIFICATES / MY PROGRAMS / MY NUMBERS / MY USER NAME / WHAT I WORK IN) to match MY PROFILE and the directory's HOW I'M INVOLVED.
 affects other side: nothing backend-side. FYI for A: the directory's Explore filter keeps "HOW THEY'RE INVOLVED" on purpose â€” it filters OTHER members; a guard test pins it so nobody "corrects" it to first person later.
 needs: nothing.
 
-
 ### 2026-09-22 11:23 Â· ccode Â· 28f8b2f4
 changed: Profile: fix the progress readout and show the whole catalogue. The overall-% NUMERATOR was unscoped (every `complete` row in student_achievement_progress) against an active-v3 denominator â€” 410/166 = 246% on the Anorak account, hidden by a Math.min(100) clamp; "Topics completed" showed 410. Now joins achievements!inner on curriculum_version_id + is_active. Also: enrolled certs/programs split into two lists, plus collapsed WHOLE CURRICULUM / ALL CERTIFICATES (124) / ALL PROGRAMS (36) listings.
 affects other side: Nothing to change backend-side â€” this was a client-query scoping fault, not a data fault. WORTH KNOWING: 247 of Anorak's 410 `complete` rows point at achievements that are not active-v3 (retired v2 or deactivated). They are harmless now that the client scopes its count, but if A ever reports "topics completed" from that table, the same scoping is required.
 needs: nothing.
-
 
 ### 2026-09-22 10:56 Â· ccode Â· 9e3f1293
 changed: Subject-copy ratification sheet, and store-notifications recorded for after the build
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-22 10:34 Â· ccode Â· a8f45648
 changed: Bound the last five auth reads, and guard the class repo-wide
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-22 10:17 Â· ccode Â· 9332b1af
 changed: Pricing copy that cannot go stale, and a share confirm Android can see
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-22 09:47 Â· ccode Â· d6cff392
 changed: Remove "Start a fresh set" â€” the one place progress could go backwards
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-22 09:31 Â· ccode Â· ed6c5b34
 changed: The Cymatics lab stops stacking copies of its own screens
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-22 09:25 Â· ccode Â· 2c6b936a
 changed: A frozen "seconds ago", a bar in the wrong domain, and a timeline that lied
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-22 09:15 Â· ccode Â· 32019368
 changed: The Time Trial client fix was in a file nothing imports; move it to the live one
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-22 08:42 Â· ccode Â· bd73bc8b
 changed: Four more from the audio hunt: dose, weighting labels, saved logs, sweeps
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-22 08:32 Â· ccode Â· 1d4d344f
 changed: Three audio-tool corrections + the last two unbounded waits
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-22 07:44 Â· ccode Â· d1e93907
 changed: Two owner rulings applied: programs need the exam; the quiz timer goes to 0
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-22 00:43 Â· ccode Â· a8faa0b7
 changed: A missing production project no longer spins forever
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-22 00:37 Â· ccode Â· a72f35cf
 changed: Bug-Hunt Standard: record the three traps that cost real defects tonight
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-22 00:11 Â· ccode Â· b3eb30ec
 changed: Add the standing Bug-Hunt Standard; cross-link the ledger and lessons
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-21 22:54 Â· ccode Â· bfee0d78
 changed: Bind a store receipt to one account (migration + function, both unapplied)
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-21 22:49 Â· ccode Â· a4c8b768
 changed: Stop the offline study queue deleting answers the server never received
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-21 22:13 Â· ccode Â· 495f2c56
 changed: A stalled session read could freeze a screen permanently â€” bound all of them
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-21 08:53 Â· ccode Â· f430c083
 changed: The "Suggest a correction" link was below the contrast floor
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-21 08:51 Â· ccode Â· ede38f79
 changed: Fill in the Blank announced the correct answer to screen readers
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-21 08:43 Â· ccode Â· a117699e
 changed: Phone walkthrough: the meter announced a different number than it printed
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-21 08:11 Â· ccode Â· 44343dcf
 changed: Scenario RPCs: translate auth.uid() to users.id â€” APPLIED to production
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-21 01:35 Â· ccode Â· 6dbe16ff
 changed: Quiz and Final Exam: two fingers in one frame submitted the wrong answer
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-21 01:34 Â· ccode Â· f9d7d38d
 changed: Scenarios: "Begin Round 3" re-ran Round 2 forever, dead-ending the topic
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-21 01:33 Â· ccode Â· 04c111e9
 changed: Scope the study progress read to the caller â€” an admin was seeing other learners' rows
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-21 01:30 Â· ccode Â· beab3b9d
 changed: Close two PagedLab traps that would fire across 33 labs at once
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-21 01:29 Â· ccode Â· 8781771f
 changed: EQ Lab: a hint that taught the misconception it was trying to correct
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-21 01:28 Â· ccode Â· c7ad6890
 changed: Cymatics Harmony: the beat rate was seventeen times too fast, and printed as a formula
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-21 01:26 Â· ccode Â· 6630b7af
 changed: Cable Install: the bottom button announces SKIP AHEAD and now actually does it
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-21 00:58 Â· ccode Â· c8c2fc45
 changed: Close the same dead-mic blind spot in the other five instruments
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
-
 
 ### 2026-09-21 00:57 Â· ccode Â· 3584f45b
 changed: Stop the SPL meter showing readings from a mic that has stopped
 affects other side: nothing backend-side â€” client + docs only. The lab's engine (coverage physics, gain chain, fault walks, stage plan), art (plan view, system map, six diagrams, real-equipment motion) and pages were reworked after the owner's review; no tables, RPCs, routes or deep-link paths changed.
 needs: nothing.
 
-
 ### 2026-09-21 00:29 Â· ccode Â· 595de488
 changed: Explain the locked Final Exam instead of opening an award page with nothing on it
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-21 00:22 Â· ccode Â· 5304e6bb
 changed: Drop the LOADED readout; UNLOAD ALL wears no frame at all
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-21 00:13 Â· ccode Â· ae40529b
 changed: Light the load frame only on the invitation; unframe the head's LOADED lamp
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-21 00:09 Â· ccode Â· 31f5cb51
 changed: Six Manage My Learning changes (owner 2026-09-20/21)
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 23:59 Â· ccode Â· 2c24c884
 changed: Balance the LAB row's percentage between its meter and its button
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-20 23:57 Â· ccode Â· fdb4d1c0
 changed: Lift the Required badge onto the title row; meter the Continue Learning bar
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 23:53 Â· ccode Â· 80349ff6
 changed: Keep ALL in the load/unload label, and give it room to show
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-20 23:43 Â· ccode Â· e70c5ca1
 changed: Manage My Learning polish; and intros no longer hold the reader
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 23:43 Â· ccode Â· 88ad554b
 changed: Differentiate the topics card; split the load control; recolour the frame
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-20 23:26 Â· ccode Â· 75b98c9d
 changed: Hold the pager cue until there is a certificate or program to step to
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 23:24 Â· ccode Â· 3d20ba34
 changed: Point first-run users at the Manage My Learning pager
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-20 23:21 Â· ccode Â· ef3620aa
 changed: Fix the confirmed findings from the three-pass review
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 23:05 Â· ccode Â· ab9fd3bc
 changed: Add a way back to the standard heat map from the oscilloscope colour picker
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-20 22:56 Â· ccode Â· 977847dd
 changed: Stop the waveform viewer dropping transients; retire the Tools hint after one open
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 22:44 Â· ccode Â· 009428d8
 changed: Record the Android APK size measurement in the next-build checklist
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-20 22:34 Â· ccode Â· dd5a3645
 changed: Collapse completed co-requisites; dismiss the jog wheel on any outside press
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 22:23 Â· ccode Â· db917f59
 changed: Co-requisites: indent, a lock in the gutter, one shade lighter
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 22:18 Â· ccode Â· a888b83d
 changed: The â€º topic arrow was being clipped out of existence
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-20 22:10 Â· ccode Â· Lab-Gaps handoff â€” MAPPING HALF APPLIED (inserts held)
 
@@ -7929,18 +6867,15 @@ changed: Subscription renewals now extend the entitlement (NOT deployed)
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 21:43 Â· ccode Â· 2803cb6c
 changed: Your two admin accounts could not use the app
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 21:26 Â· ccode Â· e7d476dd
 changed: Three smaller fixes from passes 1 and 3
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-20 18:13 Â· A Â· scenario_homework frozen-empty defect FIXED (DB change applied)
 changed: migration fix_get_scenario_homework_rebuild_on_empty â€” get_scenario_homework now treats assignment='{}' as absent and rebuilds+writes back when content exists (self-heals the class; genuine no-scenario topics still exempt). Repaired the one frozen row (user 6fa00ee9 / gs 3970) -> 160 terms. Backup _bkp_get_scenario_homework_20260920. Verified: 0 empty rows left, fn carries the branch.
@@ -7962,12 +6897,10 @@ changed: An involuntary sign-out mid-exam no longer force-submits an empty paper
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 15:45 Â· ccode Â· a810d2cd
 changed: The quiz and exam replays were deleting graded attempts on a cold start
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-20 15:28 Â· A Â· migration 2026092001_free_topics_always_free (APPLIED live)
 changed: set achievements.always_free=true on gs 3060 + 3970 (both active v3); cleared stale true on inactive gs 51. Applied direct to prod via Supabase MCP (not the migration runner). Verified: exactly 2 free rows (3060/3970), seed_commercial_free_topics now matches 2 (was 0), gs51=false.
@@ -7979,12 +6912,10 @@ changed: Understanding checks reach the OTHER 13 labs too â€” I had it wron
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 14:58 Â· ccode Â· 962bf576
 changed: Member labs: the end-of-lab understanding check that completes them
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-20 14:40 Â· ccode Â· GRANT on glossary_browse_v (APPLIED â€” your lane, flagging it)
 
@@ -8019,30 +6950,25 @@ changed: Lab requirements: resolve member labs, and refuse to draw a tick nobody
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 13:10 Â· ccode Â· d33c670b
 changed: Fix the JSX I broke in WhyScene and pushed
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-20 12:48 Â· ccode Â· a07692d3
 changed: Gain Lab: the clip that already happened, peak hold, and unity on the fader
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 12:29 Â· ccode Â· 4ae71af5
 changed: Enrollments: credential popups get the description, thinner bars, smaller mark
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 12:15 Â· ccode Â· ce99b4c2
 changed: Log out: send the queued work first, and stop claiming it is safe
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-20 11:47 Â· ccode Â· d79a22ef + a9860efc
 changed: Two dashboard changes, client-only. (1) The < > topic arrows moved to sit beside the big
@@ -8062,7 +6988,6 @@ affects other side: nothing server-side â€” the overviews are a CLIENT data
   DownloadComplete â†’ Restart, then CheckCompleteUnavailable on the next launch). a9860efc, the
   arrow alignment fix, is committed but NOT yet published.
 needs: nothing.
-
 
 ### 2026-09-20 11:35 Â· ccode Â· answer-position bias (no code change)
 
@@ -8106,7 +7031,6 @@ needs: A to fix the id translation in the scenario RPC family (6 functions; 4 on
   scenario_homework and work today, the 2 that write student_method_progress are the broken ones).
   This is upstream of the credential chain: no scenarios -> no study gate -> no quiz -> no credential.
 
-
 ### 2026-09-20 10:59 Â· ccode Â· 99b6efb7
 changed: The "Scenario progress" meter filled from answeredInRound/total, so it ran empty->full
   three separate times per assignment and read FULL at the end of round 1. It now counts against
@@ -8114,7 +7038,6 @@ changed: The "Scenario progress" meter filled from answeredInRound/total, so it 
 affects other side: nothing server-side. FYI only: it makes the meter agree with your
   completion_pct semantics (rounds/3) instead of contradicting them mid-assignment.
 needs: nothing.
-
 
 ### 2026-09-20 10:06 Â· ccode Â· 1e2f78a0
 changed: Privacy Policy now names the real data processors. The LIVE page had shipped an author's
@@ -8141,7 +7064,6 @@ needs: (1) A to reconcile the store forms against the new Appendix A. (2) One fa
   there is no middleware, and Vercel password protection is off. That is how a draft legal document
   came to be publicly readable. Owner's call, raised with them.
 
-
 ### 2026-09-20 09:58 Â· ccode Â· 08729e31
 changed: Merged the overnight copy batch â€” ~140 findings applied across the app's user-facing text,
   two stripped as wrong on verification. Client only. tsc clean on app and web, 1714 tests, both
@@ -8157,7 +7079,6 @@ needs: nothing from you for this commit. STILL OPEN AND UNANSWERED FROM MY SIDE 
   is still false (untouched since 18 Sep). Re-verified just now. So the assessment-to-credential path
   has never run end to end on ANY account, including the seeded 100% graduate. That is a launch
   blocker and it is backend-side. Detail: Downloads/2026-09-20_LAUNCH_BLOCKERS_your_call.md.
-
 
 ### 2026-09-20 09:52 Â· ccode Â· 2026092002_remove_four_retired_daw_certificates (APPLIED by ccode)
 changed: APPLIED at the owner's direct instruction ("run it yourself"). Deleted the four retired
@@ -8192,30 +7113,25 @@ changed: the rest of copy pass 4 â€” 4b (error copy: raw DSP/Postgres/GoTru
 affects other side: careerIndex.json gained 42 `reg:1` and 4 `pe:1` flags and credentialCopy/topicCopy gained 54 `requires` codes â€” if A ever regenerates either from a Computer B deliverable, these hand-applied codes will be LOST unless the generator carries them. Broadcast and RF are deliberately still untagged pending a ruling.
 needs: a ruling on whether broadcast/RF roles carry a disclosure (copy pass 3 established the FCC dropped broadcast operator licensing, so SBE is a hiring norm, not a legal gate).
 
-
 ### 2026-09-20 09:13 Â· ccode Â· aac778b9
 changed: Celebrations are popups, not pulldowns
 affects other side: nothing server-side. Client only: every celebration now renders as a centred popup instead of an inline banner (owner ruling), and the study screens no longer stall at 100% â€” a finished method stays practisable.
 needs: nothing. FYI A: your free-topics apply is verified from this side (exactly 2 always_free rows, 3060/3970).
-
 
 ### 2026-09-20 08:39 Â· ccode Â· cec30976
 changed: Ear training: sentences that hard-coded a number the render owns
 affects other side: four DAW certificates (cubase-nuendo-for-post, digital-performer-reason-producer, reaper-power-user, studio-one-producer) existed in the live catalog with NO copy row, so their detail modal was blank. credentialCopy.ts now has all 164 rows (128 certs + 36 programs), matching the live catalog. The four new descriptions are newly written and need owner sign-off.
 needs: nothing
 
-
 ### 2026-09-20 08:33 Â· ccode Â· 092e2715
 changed: Copy pass 4c: screens that are each correct and disagree with each other
 affects other side: SOUND_SAFETY_VERSION bumped 1 â†’ 2, so every existing user is asked to acknowledge sound safety again on next audio enable (two clauses stated protections that can degrade silently). Also: the certificate QR caption now points at /verify, not /registry, which is a 404 â€” if A ever adds a public /registry index page, revisit.
 needs: nothing
 
-
 ### 2026-09-20 08:14 Â· ccode Â· e8bac7a9
 changed: Copy pass 4a: stop naming routes, emails and controls that do not exist
 affects other side: two copy promises now depend on backend behaviour A owns â€” the moderation notice and the employer queue both tell the member to email info@proaudiotrainingacademy.com because `account_set_standing()` and `employer_review()` send no mail. If A adds a mailer to either, the copy should go back to promising the email.
 needs: nothing
-
 
 ### 2026-09-20 08:05 Â· ccode Â· 2026092001_free_topics_always_free (NOT APPLIED â€” for A)
 changed: nothing on the server. Wrote `supabase/migrations/2026092001_free_topics_always_free_FOR_A_NOT_APPLIED.sql`
@@ -8245,24 +7161,20 @@ changed: Copy pass 1: safety-critical calculator caveats, lethal-voltage warning
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-20 00:57 Â· ccode Â· c762c919
 changed: Bug pass 2: glossary cross-links were dead for everyone, plus two Android traps
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-20 00:21 Â· ccode Â· 584a9954
 changed: Bug pass 1 HIGHs: six real dead ends, plus a correction to my own fix
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-19 21:34 Â· ccode Â· 4de6701d
 changed: Study: answer a tapped dead panel, and make the prompt reach a screen reader
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-19 20:53 Â· ccode Â· 30316b6e
 changed: Study sync: stop double-counting, stop losing scenarios, drain the queue
@@ -8273,240 +7185,200 @@ affects other side: nothing schema-side, but ONE contract to be aware of â€�
   drop that dedupe without telling ccode.
 needs: nothing
 
-
 ### 2026-09-19 18:22 Â· ccode Â· 4bb69b31
 changed: Queue autoIncrement for the next build â€” landing it now strands both phones
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-19 16:20 Â· ccode Â· 93ed8758
 changed: Exclude .git from the EAS upload â€” it WAS the upload
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-19 16:00 Â· ccode Â· b661e531
 changed: Tools hub: no bottom nav â€” HOME in the header is the way out
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-19 15:31 Â· ccode Â· 30d24d45
 changed: Lab Menu: the same compact header
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-19 15:18 Â· ccode Â· 16d1b7c1
 changed: Dashboard: bigger CURRENT TOPIC line, so the mark and arrows can grow with it
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-19 14:47 Â· ccode Â· fc8fa67f
 changed: Square the credential art again; My Topics mark beside CURRENT TOPIC
 affects other side: ðŸš¨ NOT nothing this time â€” see Downloads/2026-09-19_A_FREE_TOPICS_BLOCKED_anon_grant.md. `anon` has NO SELECT grant on `glossary_study_v` (42501, reproduced against production), so signed-out users cannot study the FREE topics either; the view's free-topic exception never gets to run. Client change here is unrelated (Enrollments layout).
 needs: A to confirm the common_mistakes mask holds for `anon`, then grant SELECT â€” and tell me which way it went.
 
-
 ### 2026-09-19 14:24 Â· ccode Â· 5b7ac881
 changed: Apply OTA updates on the launch that finds them
 affects other side: nothing in the DB. Worth knowing though: the client now APPLIES an OTA on the launch that finds it, instead of the launch after. So a client publish reaches devices roughly a launch sooner than it used to â€” relevant if you are ever timing a backend change against a client one.
 needs: nothing.
-
 
 ### 2026-09-19 13:42 Â· ccode Â· d76b1c1e
 changed: Row tints: drop the breathing, keep the colour
 affects other side: nothing in the DB â€” Enrollments row tints, client side only.
 needs: nothing.
 
-
 ### 2026-09-19 13:35 Â· ccode Â· eab7fdfd
 changed: Tint the lab and co-requisite rows, breathing very slowly
 affects other side: nothing in the DB â€” Enrollments screen only, client side, no fingerprint change.
 needs: nothing.
-
 
 ### 2026-09-19 13:23 Â· ccode Â· 48f0247f
 changed: Enrollments: big art on the left, every control in the column beside it
 affects other side: nothing in the DB â€” Enrollments screen layout only, client side, no fingerprint change.
 needs: nothing.
 
-
 ### 2026-09-19 13:05 Â· ccode Â· b4fd1439
 changed: Enrollments: All/Programs/Certificates jump into the deck, never cut it down
 affects other side: nothing in the DB â€” Enrollments screen, client side only.
 needs: nothing.
-
 
 ### 2026-09-19 12:16 Â· ccode Â· d762aae2
 changed: Study screens: say why the topic failed, not "check your connection"
 affects other side: nothing in the DB. Client copy only: the three study screens now name the real reason a topic failed to load instead of blaming the connection. Relevant to you only in that a 42501 from `glossary_study_v` is now visible to the user AS a permissions problem â€” so if a grant ever regresses there, people will report 'no access' rather than 'no internet'.
 needs: nothing.
 
-
 ### 2026-09-19 12:08 Â· ccode Â· c6e9308d
 changed: Fix the error on first opening flashcards: a cold-start auth race
 affects other side: no schema change, and nothing for you to fix â€” the grants are correct. âš ï¸ WORTH KNOWING THOUGH: fetchTopicItems reads as three fallback paths but ALL THREE end at `glossary_study_v` (the legacy path was moved onto it on 2026-09-13 when the glossary gateway revoked SELECT on `glossary` / `glossary_full_v`). So any single failure of that view â€” a denial, an outage, a bad migration â€” takes out the entire study fetch for every method at once. If you ever touch that view's grants or definition, there is no second path behind it.
 needs: nothing.
-
 
 ### 2026-09-19 11:56 Â· ccode Â· 5eb397b9
 changed: Fix the flickering Enrollments head; use the owner's My Topics artwork
 affects other side: nothing in the DB â€” client only, and no fingerprint change, so it ships over the air. âš ï¸ FOR THE RECORD: the previous OTA (18c976e3) carried an infinite layout loop on the Enrollments selection head that only appeared at phone width â€” the browser preview at desktop width happened to land on a fixed point and looked fine. If you ever review this screen, sizing anything from a measured HEIGHT in that row is the trap.
 needs: nothing.
 
-
 ### 2026-09-19 11:01 Â· ccode Â· 3fa51d12
 changed: Sweeps travel right to left, waveform orientation unchanged
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
-
 
 ### 2026-09-19 10:56 Â· ccode Â· 188d0239
 changed: Both sweeps run left to right, at 7s per screen width
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
 
-
 ### 2026-09-19 10:54 Â· ccode Â· bb4151a5
 changed: Sweep stays in the container, runs linear, at 4s per screen width
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
-
 
 ### 2026-09-19 10:52 Â· ccode Â· 5b7532f5
 changed: Waveform letters reshaped from the labelled sheet; trace straddles the frame
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
 
-
 ### 2026-09-19 10:49 Â· ccode Â· 6e04c821
 changed: Scope sweep spells: S-T-U-D-Y across the top, A-U-D-I-O along the bottom
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
-
 
 ### 2026-09-19 10:42 Â· ccode Â· e4a431bd
 changed: Square credential art, lab row matched to the topic rows, and a scope sweep
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
 
-
 ### 2026-09-19 10:32 Â· ccode Â· 02e76433
 changed: Head takes the panel: full-height art, corner actions, requirements box gone
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
-
 
 ### 2026-09-19 10:20 Â· ccode Â· 458051a8
 changed: Audio Fundamentals is a LAB, the head uses its width, and a stale index bug
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
 
-
 ### 2026-09-19 10:11 Â· ccode Â· 63410364
 changed: Requirements ARE the topic list: same rows, no disclosure, meter always visible
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
-
 
 ### 2026-09-19 09:56 Â· ccode Â· 60d8df1d
 changed: Certificates become horizontal selections with their own requirement list
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
 
-
 ### 2026-09-19 09:51 Â· ccode Â· bb58f746
 changed: Turn off the pre-login welcome popup
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
-
 
 ### 2026-09-19 09:45 Â· ccode Â· 8fa65912
 changed: Enrollments design pass: alignment, one button ladder, a mark that holds its slot
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
 
-
 ### 2026-09-19 09:38 Â· ccode Â· 8a4596ca
 changed: My Topics mark: heavier heart, no box around it
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
-
 
 ### 2026-09-19 09:34 Â· ccode Â· 5d2ee4cb
 changed: Enrollments: no carousel, no nested card, and a proper My Topics mark
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
 
-
 ### 2026-09-19 09:26 Â· ccode Â· 10ab4494
 changed: Deck card is two thirds of the screen
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
-
 
 ### 2026-09-19 09:22 Â· ccode Â· b430c7e5
 changed: Deck stays inside the green frame
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
 
-
 ### 2026-09-19 09:18 Â· ccode Â· a0817b7b
 changed: Deck: menu card geometry, chips up, and a ghost card for the empty state
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
-
 
 ### 2026-09-19 09:09 Â· ccode Â· 82cc1448
 changed: Enrollments: frameless header + deck nav, viewer thumb, action labels, all collapsed
 affects other side: nothing in the DB â€” client only. All of this is the Enrollments screen: the credential deck, the ALL TOPICS mark, the requirement lists and the LAB row. No table, column, RPC or policy is involved, and none of it changes the native fingerprint, so it ships over the air.
 needs: nothing.
 
-
 ### 2026-09-19 08:46 Â· ccode Â· 6b805c77
 changed: Deck: use a horizontal ScrollView; FlatList would not go horizontal
 affects other side: nothing in the DB â€” client only. Enrollments MY ENROLLMENT is now a horizontal deck (EnrollmentCarousel + CentredRequirements); the per-credential container renderer is gone. Device-verified on the Pixel.
 needs: nothing.
-
 
 ### 2026-09-19 08:39 Â· ccode Â· 7b6a10db
 changed: Deck rendered VERTICALLY on device despite `horizontal`
 affects other side: nothing in the DB â€” Enrollments chips, client side only.
 needs: nothing.
 
-
 ### 2026-09-19 08:35 Â· ccode Â· 0a30c456
 changed: Deck pass 1 on device: card was off-centre and too tall
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-19 08:04 Â· ccode Â· 06ce7ebd
 changed: Remove the dead per-credential container renderer
 affects other side: nothing â€” client UI only
 needs: nothing
 
-
 ### 2026-09-19 07:47 Â· ccode Â· cc702d52
 changed: Enrollments: the credential stack becomes a deck
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-19 00:12 Â· ccode Â· a9d4d2ab
 changed: docs: Enrollments carousel spec (NOT built -- awaiting go + the Fable call)
 affects other side: nothing â€” a design spec, no code. docs/APE_ENROLLMENTS_CAROUSEL_SPEC_2026_09_19.md, owner-dictated Enrollments redesign, NOT built pending an explicit go.
 needs: nothing.
 
-
 ### 2026-09-19 00:11 Â· ccode Â· 3cbf072d
 changed: Every popup is the app's own dialog now, and a test keeps it that way
 affects other side: nothing in the DB â€” client presentation only. 33 raw Alert.alert call sites across 13 files now route through the app themed dialog (confirmDialog / notify). No user-facing STRING changed; PaywallScreen copy is owner-ratified and is byte-identical. New guard test/noRawAlert.test.ts fails on any new raw Alert.
 needs: nothing.
-
 
 ### 2026-09-19 Â· A Â· DONE â€” anon SELECT granted on glossary_study_v (free-topics blocker cleared)
 changed: APPLIED to prod â†’ GRANT SELECT ON public.glossary_study_v TO anon. Signed-out users can now read the view, so the free-topic exception (gs 3060, 3970) runs â€” anon gets FULL definition/plain_english/etc on those two, teaser (truncated def, nulls) on everything else.
@@ -8538,12 +7410,10 @@ changed: Fix the z-order bug: the "won't be saved" notice rendered behind the sh
 affects other side: nothing in the DB â€” client UI only. Two client changes from an owner device pass: (1) the credential modal now offers STUDY NOW + GO TO MY ENROLLMENTS once enrolled, shown only when the account can actually hold an enrollment; (2) fixed an Android z-order bug where PrePaywallPrompt rendered BEHIND an open modal, so the "won't be saved without an account" notice was never readable. Paywall also gained a second pricing-honesty line (one price, enrolling in more never costs more).
 needs: nothing. Still open from earlier: what the verify RPCs return for an award with revoked_at set (D21), and a scope column on account_standing for the app-level ban tier (D22).
 
-
 ### 2026-09-18 23:45 Â· ccode Â· f6601317
 changed: Enrolled state offers somewhere to go, and the paywall says one price
 affects other side: nothing â€” client UI only
 needs: nothing
-
 
 ### 2026-09-18 23:24 Â· ccode Â· eaa113f7
 changed: Remove the V1 badge feature from the client (A's handoff)
@@ -8553,78 +7423,65 @@ ONE EXTRA REMOVAL, flagging it so it is not a surprise: `earnedCerts` on Profile
 affects other side: you can finalize the migration as planned, including dropping notification_preferences.notify_badge. Client no longer reads badge_earned from submit_quiz, so the payload change is safe to ship in any order.
 needs: nothing for the badge work. Still open from earlier today: what the verify RPCs return for an award with revoked_at set (D21), and a scope column on account_standing for the app-level ban tier (D22).
 
-
 ### 2026-09-18 23:12 Â· ccode Â· 7c1e05d5
 changed: docs: D22 two-tier moderation, and the registered-agent process
 affects other side: D22 â€” moderation now has TWO tiers set by WHERE the abuse happened (community abuse = community only, which is what shipped; app abuse = no access, which does NOT exist yet). account_standing needs a scope column before the second tier can be built. Also: the LLC's registered address is changing to a commercial agent, so the seller/trader address in the store listings should be the new one, not 2558 Miller Ave.
 needs: from A â€” a scope column on account_standing (or confirmation ccode should add it), and the open ruling on whether an app-level ban terminates paid membership.
-
 
 ### 2026-09-18 23:11 Â· ccode Â· c5315520
 changed: build: pin eas.json to LF -- git checkout on Windows was silently breaking OTA
 affects other side: eas.json is now pinned `text eol=lf` â€” it is a fingerprint source hashed as it sits on disk, and a Windows `git checkout -- eas.json` was silently stranding builds 22/23 (LF -> e6578853 = build 23's runtime; CRLF -> 0265a579 = nothing). No bytes changed; ios e6578853 and android 78622e4e both verified unchanged. ALSO: iOS build 23 could NOT be submitted non-interactively â€” eas.json's submit profile has no ascAppId, and adding one moves the fingerprint (e6578853 -> eea66c85) and would strand build 23, so it must be an interactive submit.
 needs: from A â€” the App Store Connect app id (ascAppId) if you have it to hand, and confirmation of whether builds 22/23 are the ones on TestFlight. Still open from D21: what the verify RPCs return for a revoked award.
 
-
 ### 2026-09-18 22:59 Â· ccode Â· b104da8b
 changed: docs: D21 -- the entity, and what a refund or a ban does to a credential
 affects other side: A OWNS THE TABLES THIS RULING LANDS ON. Owner ruled (D21): a refund never revokes a certificate; a ban revokes one only for fraud/forgery/suspicious activity and only "until proven legit" = a HOLD pending proof, reinstated if the holder shows it was earned. credential_awards.revoked_at cannot express that â€” bare nullable timestamp, no reason code, no actor, no under-review state, and no admin RPC to set it. Entity is Pro Audio Training Academy LLC (CA, July 2026) â€” same name as the brand, no DBA.
 needs: from A â€” (1) what public_verify_by_token / the /verify code RPC return TODAY for an award with revoked_at set; the wording must read "not currently verifiable â€” under review", never fraudulent or forged. (2) whether to add reason/actor/under-review to credential_awards. Also still open: does a ban terminate paid membership, and retention after removal.
-
 
 ### 2026-09-18 22:26 Â· ccode Â· b645091d
 changed: docs: legal review of closure, liability and refunds (item 5 of five)
 affects other side: nothing in the DB. New doc docs/APE_LEGAL_REVIEW_2026_09_19.md â€” but two findings touch A's lane: the published Terms name NO legal entity (no LLC anywhere), and the store listings / merchant-of-record identity should resolve to the same registered name as the contract.
 needs: from the owner via A â€” registered entity name, state of formation, whether "Pro Audio Training Academy" is a registered DBA, and a legal-notice address. Plus the D19 ban/refund ruling, which the Terms need before launch.
 
-
 ### 2026-09-18 22:19 Â· ccode Â· c92e6f8a
 changed: docs: record D17-D20, lessons 7-9, and the build-vs-submit state
 affects other side: docs only, no schema. But two items are A's lane: iOS build 23 is FINISHED ON EAS AND WAS NEVER SUBMITTED, so every tester is still on build 22 (daee7c5c) while the tree is e6578853 â€” an OTA now reaches nobody. An ANDROID build is also owed (blockedPermissions reverted; manifest, so no OTA can fix the installed binary).
 needs: from A â€” owner rulings on D19 (does a ban revoke earned credentials / terminate paid membership / what retention after removal). Nothing is blocked while they're open.
-
 
 ### 2026-09-18 20:57 Â· ccode Â· 132f08ba
 changed: Sound labs open at 30%, and the Help filter stops dead-ending
 affects other side: contact_limits() changed shape (7 columns now) and the numbers are much stricter; new RPC contact_allowance. All client-side, OTA-safe.
 needs: nothing.
 
-
 ### 2026-09-18 20:42 Â· ccode Â· cd54030d
 changed: Pro Registry: use the owner's certificate sample art
 affects other side: nothing (docs only).
 needs: nothing.
-
 
 ### 2026-09-18 20:34 Â· ccode Â· 52d31283
 changed: Stop anonymous enumeration of employer user ids
 affects other side: nothing (docs only).
 needs: nothing.
 
-
 ### 2026-09-18 20:28 Â· ccode Â· 99746e7f
 changed: docs: lessons, D10-D16 and the 2026-09-19 session handoff
 affects other side: docs only.
 needs: nothing.
-
 
 ### 2026-09-18 20:06 Â· ccode Â· f83fd063
 changed: Employers must prove the mailbox; admin can review and revoke; SSRF closed
 affects other side: /employers/apply now has a CODE-ENTRY step (submit no longer shows an outcome). New app screen EmployerAdmin, reached from Profile, admin-only. Deliberately NOT in linking.ts.
 needs: ADMIN_NOTIFY_EMAIL = info@proaudiotrainingacademy.com in Supabase Edge Function secrets.
 
-
 ### 2026-09-18 19:44 Â· ccode Â· 8a1581b6
 changed: Guided profile setup: steps instead of a wall of fields
 affects other side: employer chain â€” finalize edge fn now v2 and actually works (it was dying at lookup_failed before reaching any RPC). New RPCs employer_application_for_finalize (service_role only) and employer_my_interests (authenticated). employer_apply now refuses a duplicate live application with a readable message. âš ï¸ STILL OPEN and needing a ruling: the work email is never verified, so auto-approve can be claimed in any company name; and nothing calls employer_review, so there is no approve/reject/revoke surface.
 needs: ADMIN_NOTIFY_EMAIL set in Supabase Edge Function secrets, or queued applications notify nobody.
 
-
 ### 2026-09-18 18:56 Â· ccode Â· 8b5ef02f
 changed: Revert my Android blockedPermissions â€” it broke save-to-Photos on device
 affects other side: directory_areas went 13 â†’ 23 rows (additive, on-conflict-do-nothing, nothing existing touched). Any A-side copy that enumerates the areas â€” website, store listing, marketing â€” is now short by ten. New: worship, DJ/club, theatre, touring, assistive listening, audio tech/business, clinical hearing care, forensic, underwater/marine, and "Still exploring â€” not sure yet" (sort 99).
 needs: nothing.
-
 
 ### 2026-09-18 18:05 Â· A Â· e0a610d5
 changed: app.json â€” expo-media-library `photosPermission` false â†’ truthful read string (fixes App Store upload reject 90683). Apple rejected build upload for missing NSPhotoLibraryUsageDescription; the SDK links PhotoKit read APIs even with photosPermission:false, so the purpose string is mandatory. Rebuilt (build 21) + resubmitted; Apple ACCEPTED, now processing.
@@ -8636,78 +7493,65 @@ changed: Cable Install: the capstone's score no longer vanishes on resume
 affects other side: nothing (docs only).
 needs: nothing.
 
-
 ### 2026-09-18 17:40 Â· ccode Â· 3a5a6831
 changed: Teaching accuracy: three content errors the app was stating as fact
 affects other side: nothing. Client-only copy and touch-target changes. OTA-safe.
 needs: nothing.
-
 
 ### 2026-09-18 16:53 Â· ccode Â· 8bc8fe94
 changed: docs: close the gain-ramp defect â€” verified on device, no crackle
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
 
-
 ### 2026-09-18 16:35 Â· ccode Â· 66e19aed
 changed: a11y pass 5 Â· W16: every Android-only live region now has an iOS path
 affects other side: nothing from this commit (client-only a11y). BUT the native builds from d40d9a1e are now FINISHED â€” Android bd02e15d, iOS 9aa9e995. OTA stays dead to both phones until those are INSTALLED; after that it works again. Fingerprints verified local == build: iOS 26383739â€¦, Android 3fbe2d39â€¦. NOTE they are PER-PLATFORM â€” a bare `fingerprint:generate` gives a third hash that matches neither, so always pass --platform when comparing.
 needs: nothing.
-
 
 ### 2026-09-18 15:52 Â· ccode Â· d40d9a1e
 changed: Native build payload: the parked items, landed together
 affects other side: âš ï¸ YES â€” READ THIS. Native deps + app.json changed, so the @expo/fingerprint runtimeVersion MOVED: 1792f7b7â€¦ â†’ 9eaf459aâ€¦. Every phone in the field is still on the OLD runtime, so **`eas update` now delivers NOTHING to them, silently** (publish succeeds, phones see nothing). Any OTA-able work â€” employer app surfaces included â€” is stranded until the `preview` builds finish and are INSTALLED. Do not diagnose that as a bug. After installing, re-compare the local fingerprint against `eas build:list` runtimeVersion before the next `eas update`.
 needs: nothing from A. FYI only: `expo-audio` background playback is now false and four photo-library READ permissions are gone â€” both are store-form relevant, so the data-safety / permissions answers may need a re-read.
 
-
 ### 2026-09-18 15:17 Â· ccode Â· 028bd4e7
 changed: a11y pass 5 Â· W17: the last five Table B sites
 affects other side: nothing. Client-only accessibility work â€” announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
 needs: nothing.
-
 
 ### 2026-09-18 15:12 Â· ccode Â· 95f33cf4
 changed: a11y pass 5: W6 matching pairs, W14 two-sided boards, W15 the SPL slider
 affects other side: nothing. Client-only accessibility work â€” announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
 needs: nothing.
 
-
 ### 2026-09-18 15:05 Â· ccode Â· 92f112bd
 changed: a11y pass 5: W1 sheets, W4 Scenarios, W5 Final Exam, W7, W12 flashcards
 affects other side: nothing. Client-only accessibility work â€” announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
 needs: nothing.
-
 
 ### 2026-09-18 14:53 Â· ccode Â· aacde5bd
 changed: Cymatics: draw the other three systems; production: make "not applicable" look tappable
 affects other side: nothing. Client-only â€” RN-SVG drawings plus one style/a11y change in the production form. No schema, no RPC, no native dep. OTA-safe.
 needs: nothing.
 
-
 ### 2026-09-18 14:41 Â· ccode Â· 86967bdf
 changed: web: close the temporary unlock window â€” gate locked
 affects other side: nothing. Website gate is LOCKED again and verified live (401, key screen up).
 needs: the gate password. It is `GATE_UNLOCK_KEY` in the Vercel dashboard â€” the owner has lost it, and the gate fails closed so the live site cannot tell a wrong key from an unset one.
-
 
 ### 2026-09-18 14:33 Â· ccode Â· 4eb177ae
 changed: web: self-expiring temporary unlock window on the site gate
 affects other side: nothing â€” web-only. Mechanism note: to open the pre-launch site temporarily, set `UNLOCK_UNTIL` in web/lib/gate.ts to a UTC instant; it re-locks itself with no second deploy. Do NOT flip GATE_ENABLED off, a forgotten second deploy leaves the site public silently.
 needs: nothing
 
-
 ### 2026-09-18 14:28 Â· ccode Â· c8441946
 changed: Production labs: progress you can see, and a project you own
 affects other side: nothing. Client-only lab/app work. No schema, no RPC, no native dep. OTA-safe.
 needs: nothing.
 
-
 ### 2026-09-18 14:23 Â· ccode Â· a94888dc
 changed: Employer accounts: the app surfaces
 affects other side: employer app surfaces are BUILT (EmployerSection on the profile, interest selections, employer badge on contact threads). The DB side A applied is now consumed. Still outstanding on A/deploy side: `employer-apply-finalize` is NOT deployed and `ADMIN_NOTIFY_EMAIL` is unset â€” until both, an approval sends no email.
 needs: deploy `employer-apply-finalize` + set `ADMIN_NOTIFY_EMAIL`, then one real application run end to end. The flow has never been exercised with a live applicant.
-
 
 ### 2026-09-18 14:10 Â· ccode Â· 545feec4
 changed: D9 corrected: employer accounts ship WITH launch, and most of it is built
@@ -8717,7 +7561,6 @@ affects other side: doc-of-record correction only. D9 in
   said the opposite of reality. It now carries the live state, the auto-approve rule, and
   the three things that must not be "simplified" later.
 needs: nothing
-
 
 ### 2026-09-18 14:09 Â· ccode Â· 4412ce89
 changed: Employer accounts: the website half
@@ -8731,12 +7574,10 @@ affects other side: EMPLOYER ACCOUNTS, website half. New: /employers/apply,
     there is reachable by every route on the site.
 needs: ADMIN_NOTIFY_EMAIL set on the Edge Function before review emails send.
 
-
 ### 2026-09-18 13:59 Â· ccode Â· 02d2d27c
 changed: Production labs: the form responds to the user's own answers
 affects other side: nothing. Client-only lab/app work. No schema, no RPC, no native dep. OTA-safe.
 needs: nothing.
-
 
 ### 2026-09-18 13:53 Â· ccode Â· 4d29c4f3
 changed: Employer accounts: auto-decision and a filterable review email
@@ -8749,12 +7590,10 @@ affects other side: New Edge Function `employer-apply-finalize` (NOT deployed ye
     reword those tags - the owner's mail rules key on them.
 needs: ADMIN_NOTIFY_EMAIL secret; then deploy the function.
 
-
 ### 2026-09-18 13:53 Â· ccode Â· d875abd6
 changed: Employer accounts: auto-decision and a filterable review email
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
-
 
 ### 2026-09-18 13:44 Â· ccode Â· db15e261
 changed: Employer accounts: the database layer
@@ -8770,12 +7609,10 @@ affects other side: EMPLOYER ACCOUNTS, database half - APPLIED to production.
     application would reach the reviewer already wearing green ticks.
 needs: nothing
 
-
 ### 2026-09-18 13:24 Â· ccode Â· 567aecc3
 changed: Cymatics: make the discovery discoverable, and make REVEAL cost something
 affects other side: nothing. Client-only lab/app work. No schema, no RPC, no native dep. OTA-safe.
 needs: nothing.
-
 
 ### 2026-09-18 13:02 Â· ccode Â· 45476ca6
 changed: Remove featuring from the Trophy Case, and stop duplicating its copy
@@ -8784,7 +7621,6 @@ affects other side: nothing â€” client copy only. NOTE for anyone editing T
   AchievementsHomeScreen reads it. Do not re-hardcode strings into the screen; that is what
   caused the featuring language to need deleting in two places.
 needs: nothing
-
 
 ### 2026-09-18 12:56 Â· ccode Â· dbc7c1ef
 changed: Share your QR, your link, and your certificate
@@ -8795,7 +7631,6 @@ affects other side: FYI â€” new client share paths, no schema change. They 
   together â€” `registryUrl()` in features/profile/registry.ts is the single place.
 needs: nothing
 
-
 ### 2026-09-18 12:27 Â· ccode Â· 223ec21f
 changed: Dates on client documents, a Help answer that taught the wrong model, and the empty art well
 affects other side: nothing server-side. One note worth carrying: the Production
@@ -8803,7 +7638,6 @@ affects other side: nothing server-side. One note worth carrying: the Production
   not UTC â€” `toISOString().slice(0,10)` printed TOMORROW for any evening west of Greenwich,
   on a document handed to a paying client.
 needs: nothing
-
 
 ### 2026-09-18 11:47 Â· ccode Â· 3d616750
 changed: Android refunds can actually match a row now
@@ -8820,7 +7654,6 @@ affects other side: YES â€” this is the Android refund fix, now DEPLOYED as
   Zero real store purchases existed when this landed (3 rows, all admin_grant), so no
   backfill was needed. After launch the same fix needs live rows reconciled against Google.
 needs: nothing
-
 
 ### 2026-09-18 10:32 Â· ccode Â· fcd051ae
 changed: Close the two PUBLIC-execute holes and make weekly-concept delivery idempotent
@@ -8840,7 +7673,6 @@ affects other side: YES â€” production grants and one new index changed.
     ('pending','delivered'). Partial on purpose: a 'failed' row must stay retryable, and a
     full index would turn one transient failure into a permanent skip for that day.
 needs: nothing
-
 
 ### 2026-09-18 10:12 Â· ccode Â· 6f7a89e7
 changed: Stage 2 applied â€” a certificate needs the Final Exam, and one complete paid month
@@ -8862,7 +7694,6 @@ affects other side: YES â€” FOUR production functions were replaced. Flag i
     store-notifications on a confirmed refund. NEITHER IS WIRED YET.
 needs: nothing
 
-
 ### 2026-09-18 09:27 Â· ccode Â· 88f2bcc1
 changed: correct the credential diagnosis: the auto-award gate is keyed to a dead curriculum
 affects other side: YES â€” read this before touching credentials. `evaluate_user_credentials`
@@ -8877,60 +7708,50 @@ affects other side: YES â€” read this before touching credentials. `evaluat
   ids now live ONLY in the flag-gated branch.
 needs: nothing
 
-
 ### 2026-09-18 09:19 Â· ccode Â· 856beeed
 changed: finish the credential SQL from the live database
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
-
 
 ### 2026-09-18 09:11 Â· ccode Â· 55607234
 changed: SQL for the credential policy, staged and reversible
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
 
-
 ### 2026-09-18 09:03 Â· ccode Â· c52f3102
 changed: production labs: learn without completing (owner ruling)
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
-
 
 ### 2026-09-18 08:31 Â· ccode Â· a216153c
 changed: the printed cymatics sheets say SIMULATION too
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
 
-
 ### 2026-09-18 01:39 Â· ccode Â· 20dbd724
 changed: the free glossary cap survives re-entering guest mode
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
-
 
 ### 2026-09-18 01:34 Â· ccode Â· db87c85a
 changed: brief: pass 5 outcome
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
 
-
 ### 2026-09-18 01:17 Â· ccode Â· 695caf8d
 changed: pass 4 part 2: stale entitlement reads, a lost exam, and a shake that did two jobs
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
-
 
 ### 2026-09-18 01:01 Â· ccode Â· 2cdcd53b
 changed: brief: pass 3 outcome
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
 
-
 ### 2026-09-18 00:48 Â· ccode Â· 0407b131
 changed: pass 3 verification: three of my own fixes were broken, plus an inert gate
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
-
 
 ### 2026-09-18 00:41 Â· A Â· website B2B copy tightened (institutions/membership/connect)
 changed: Tightened marketing copy so it reads clean under Apple 3.1.1 â€” individuals are pointed to app-store purchase, seat codes are stated as institutions-only, never sold to individuals. Edits (working tree, staged for your push):
@@ -8946,24 +7767,20 @@ changed: bug-hunt brief: what pass 2 fixed and what is still open
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
 
-
 ### 2026-09-18 00:33 Â· ccode Â· 6b335c22
 changed: disclosure, the dose warning, and a failed read that read as "you have none"
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
-
 
 ### 2026-09-18 00:22 Â· ccode Â· 16fe14bc
 changed: production labs: a decimal point, and a blank row that claimed to be an answer
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
 
-
 ### 2026-09-18 00:18 Â· ccode Â· 26f5dac9
 changed: pass 2 blockers, part 2: money, identity, and confident wrong answers
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
-
 
 ### 2026-09-18 00:06 Â· A Â· promo codes are B2B-ONLY â€” store-approval guardrails + legal clause
 changed: Owner confirmed the access model (2026-09-18): **individual memberships are sold ONLY via Apple IAP / Google Play Billing; access codes are issued ONLY to institutions/employers under B2B agreements â€” never sold to individuals.** A added an "Individual and Institutional Access" clause to `web/content/legal/privacy.html` Â§9 (rides the pending policy commit with the SDK fix).
@@ -8996,18 +7813,15 @@ changed: a11y pass 5: W13 focus repair, and the half of W18 that needs no new UI
 affects other side: nothing. Client-only accessibility work â€” announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
 needs: nothing.
 
-
 ### 2026-09-18 Â· ccode Â· cfc2806c
 changed: a11y: back out 6 Table C rows I over-swept, and finish the cable schedule
 affects other side: nothing. Client-only accessibility work â€” announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
 needs: nothing.
 
-
 ### 2026-09-18 Â· ccode Â· 35fc5493
 changed: a11y pass 5: W8, W9, W10 â€” 38 labelled elements that never reached iOS
 affects other side: nothing. Client-only accessibility work â€” announcements, `accessible`/role props and one settings helper. No schema, no RPC, no native dep. OTA-safe.
 needs: nothing.
-
 
 ### 2026-09-18 Â· ccode Â· 413710a6 + follow-ups
 changed: Production parsers, dead exam buttons, reduce-animations, directory credentials,
@@ -9027,7 +7841,6 @@ affects other side: ONE NEW RPC, applied to production.
     breaking â€” which is intended, but means nothing will alert you.
   Â· No schema changes. app_flags.certificate_requires_exam is still false.
 needs: nothing
-
 
 ### 2026-09-18 Â· ccode Â· DEPLOYED (no commit â€” server state only)
 changed: validate-purchase v4 and tube-image v5 are now LIVE
@@ -9051,7 +7864,6 @@ affects other side: YES â€” the tree and production now agree for these two
     purchase", finishTransaction never runs, and Google auto-refunds after 72 hours.
 needs: someone to confirm those 7 secrets in the dashboard before anything is sold.
 
-
 ### 2026-09-18 Â· ccode Â· 7291b418
 changed: Weekly switch can no longer claim to be on with nothing behind it
 affects other side: FYI, client-side fix â€” but the DATA STATE is worth your knowing.
@@ -9072,7 +7884,6 @@ affects other side: FYI, client-side fix â€” but the DATA STATE is worth yo
     the pref in ONE transaction. They are two tables on two id spaces; that is the whole
     trap.
 needs: nothing
-
 
 ### 2026-09-18 Â· ccode Â· f1587749
 changed: Weekly concept cron â€” pg_net + dispatcher + job 5
@@ -9096,60 +7907,50 @@ affects other side: YES, and there is ONE ACTION WAITING FOR A HUMAN.
 needs: someone with the service-role key to decide whether the concept sequence is reviewed,
   then create the Vault secret. ccode cannot and should not do this step.
 
-
 ### 2026-09-17 23:57 Â· ccode Â· 6d59781c
 changed: bug-hunt brief for pass 2
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
-
 
 ### 2026-09-17 23:49 Â· ccode Â· 70694099
 changed: Gate the 31 members-only labs that had no membership check
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
 
-
 ### 2026-09-17 23:44 Â· ccode Â· 41efaded
 changed: Sound safety: the Profile toggle was a way around the gate
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
-
 
 ### 2026-09-17 23:40 Â· ccode Â· 213736bd
 changed: Dashboard: hoist the last conditional hook â€” it crashed every cold load
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
 
-
 ### 2026-09-17 23:16 Â· ccode Â· 6ee9d250
 changed: Celebration engine: one component, eighteen rows of data
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
-
 
 ### 2026-09-17 22:57 Â· ccode Â· 5d2d7c34
 changed: Fixed the detail-pager skip-and-jump between expanded certificate/program cards (the recentre was a frame late, and a slow drag could leave the pager off-centre). Then the SOUND SAFETY GATE: a once-ever, versioned acknowledgment in front of the existing per-session audio flow (safety -> explain -> hold 5s -> sound), plus a HARD CEILING on file playback. The native generator was already capped (-20 default / -12 ceiling, ape-dsp "Q4 cap chain"); FILE playback had none at all â€” expo-audio defaults volume to 1.0, so a normalised clip played ~20 dB hotter than the generator's default tone. Now capped at -12 dBFS with no unlock. 12 new tests, 1402 total.
 affects other side: **A â€” one backend item when you have a moment.** The sound-safety acknowledgment is currently DEVICE-LOCAL (AsyncStorage), so it is lost on reinstall â€” which is exactly when someone would want to produce it. It is an evidence artifact about a hearing-damage warning, not a preference, and it belongs in a server table keyed by user id: version, accepted_at, app_version, and the EXACT text accepted (stored verbatim, because the wording is the thing agreed to). Deliberate exception to the "contact email stays device-local" rule â€” different purpose. Not urgent, but it should land before launch.
 needs: that table, eventually. Nothing blocking.
 
-
 ### 2026-09-17 22:50 Â· ccode Â· 661d2f03
 changed: Detail pager: fix the skip-and-jump between expanded cards
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
-
 
 ### 2026-09-17 22:46 Â· ccode Â· 8e1929ad
 changed: **ccode NOW OWNS THE REFUND WEBHOOK** (owner reassigned it this session â€” question 1 from the tenure brief is answered, and so is question 2: ccode also patched `validate-purchase`). Built `supabase/functions/store-notifications/index.ts`, handling Apple App Store Server Notifications V2 + Google Play RTDN in one endpoint. Security model: the endpoint is public, so it treats every body as a RUMOUR â€” a notification is a trigger only, and the function then asks Apple/Google directly with our own authenticated call and acts on that alone. Reuses the same server APIs `validate-purchase` uses, so there is one way of establishing truth rather than two. On a confirmed refund: `status='refunded'`, `refunded_at=now()`, `member_since=NULL`. Google EXPIRED does nothing â€” a lapse is not a refund. Also moved the Harmonograph lab into Sound Visualization beside Cymatics (owner).
 affects other side: **A â€” STAND DOWN on the tenure work; it is ccode's now.** Nothing here is deployed: the production-deploy permission was declined mid-session, so the tenure migration, both edge functions and the `start_final_exam` gate are written and waiting on the owner. Runbook: `docs/APE_REFUND_WEBHOOK_DEPLOY.md`. The only thing still genuinely yours is the one-character `admin-codes` console fix (`d===30` â†’ `d===35`) so a month code lists as "month" rather than "35d".
 needs: nothing from A.
 
-
 ### 2026-09-17 22:17 Â· ccode Â· 5c24a996
 changed: Home-screen copy (DAW is now a second FREE card beside Pro Audio Safety, both keys read STUDY NOW; the labs card reads OPEN LABS under FREE TO BEGIN AND EXPLORE; the ring around the purple sigma is gone). Then the MEMBERSHIP-TENURE RULE: one complete month before a credential is granted â€” stated in the app since 2026-07-22 and enforced NOWHERE. Client half shipped (`paid_tenure_required` error + copy, and the rule now also appears on AwardProgressScreen where the exam is taken). Backend WRITTEN, NOT APPLIED: `supabase/migrations/2026091801_paid_month_before_credential.sql`.
 affects other side: **A â€” THREE QUESTIONS, full brief in `docs/APE_MEMBER_TENURE_FOR_COMP_A.md`.** (1) There is NO refund webhook: no App Store Server Notifications V2 and no Play RTDN handler exists, so a refunded member keeps `status='active'` until their period expires and the owner's "no certificates if they refund" cannot be enforced by any predicate. Yours to build, or ccode's? (2) `validate-purchase` needs the same `member_since` maintenance the migration gives `redeem_access_code` â€” your half of the house, but ccode wrote it; say who touches it. (3) Do you want to apply the migration, or shall ccode? Verified live this session: `entitlements` has no start-date column, `has_academy_access` has no notion of duration, and `start_final_exam` has no tenure check.
 needs: answers to those three. Owner ruling recorded: admin grants and access codes COUNT as paid (tiered codes â€” 1 month free / 1 year / lifetime â€” issued from the owner's own dashboard); clock starts first paid day; a lapse resets it; a refund earns nothing.
-
 
 ### 2026-09-17 22:14 Â· A Â· content filter (blocklist) APPLIED to prod â€” migration community_content_filter_tiered
 changed: Built + applied the tiered server-side content filter for the community directory (Apple UGC criterion). New table `public.content_blocklist` (42 seed terms, 28 hard / 14 soft) + pure fn `content_blocklist_check(text)->hard|soft|null` (word-boundary, leet-normalized, false-positive-safe). Wired into `community_profile_save` (HARD match rejects the save; SOFT sets `needs_identity_review=true`) and added a `needs_identity_review` guard to `community_profile_publish`. Dry-run on throwaway PG16 + re-verified on prod. **Function SIGNATURES UNCHANGED** â€” no call-site change for you.
@@ -9161,18 +7962,15 @@ changed: Home: DAW joins Pro Audio Safety as a free card; labs card reworded
 affects other side: nothing (docs only). Context for A: the 572 MB EAS upload is `.git` (80%); the one-line `.easignore` fix is PARKED for the next native build because .easignore is fingerprint source #1.
 needs: nothing.
 
-
 ### 2026-09-17 21:34 Â· ccode Â· 96963360
 changed: **A SECOND WAY `.easignore` KILLS OTA, AND IT NEEDS NO EDIT.** `@expo/fingerprint` hashes `.easignore` AS IT SITS ON DISK. With `* text=auto` + `core.autocrlf=true`, a Windows checkout gets CRLF while EAS builds read LF from the index â€” byte-identical content, different hash, different runtimeVersion. The phones' builds were keyed to b5a6e6e0 (iOS) / 1792f7b7 (Android); this tree computed 2bbcea43 / 569f98f3, so an `eas update` would have published into a runtime nothing was asking for AND REPORTED SUCCESS. Fixed by converting to LF and pinning `.easignore text eol=lf` in .gitattributes. NOT applied to .gitignore or eas.json â€” both already match the installed builds (.gitignore is CRLF on disk and still matches), so pinning them would break what works. Then published both production labs OTA: iOS group 5f3dec1a, Android group 09abd5ad, both on the matching runtimes.
 affects other side: nothing to change, but WORTH KNOWING if A or any other machine ever publishes an update from Windows: always check `npx @expo/fingerprint fingerprint:generate` against the installed build's runtimeVersion (`eas build:list`) BEFORE `eas update`. A mismatch is invisible â€” the publish succeeds and the phones simply never see it.
 needs: nothing.
 
-
 ### 2026-09-17 21:05 Â· ccode Â· month tier 35 days (APPLIED) + OTA
 changed: **APPLIED TO PRODUCTION** (owner instruction, in their own words): `admin_mint_access_code` now grants **35 days** for the `month` plan, not 30. A 30-day code could NEVER earn a credential â€” the rule is one CALENDAR month, and in a 31-day month `now() - interval '1 month'` is 31 days ago, so the code expired before it qualified. At 35 days a member is eligible on day 28â€“31 with access to day 35. Safe: no month code had ever been minted (the 3 existing codes are 2 lifetime + 1 year). Verified live: `when 'month' then 35`. Also published the home-screen copy OTA (iOS group 398e8a2d, Android 936df70b) on the matching runtimes.
 affects other side: **A â€” one small follow-on:** the `admin-codes` console page labels plans with `(d===30 ? "month" : d+"d")`, so a newly minted month code will now list as **"35d"** instead of **"month"**. Cosmetic, but it is in your edge function and needs a redeploy, so ccode has not touched it. One character: `d===35`. The three tenure questions in the entry below still stand.
 needs: nothing new.
-
 
 ### 2026-09-17 20:31 Â· A Â· privacy policy SDK/provider disclosures corrected + directory 18+ note
 changed: Edited `web/content/legal/privacy.html` (the build-time legal partial) to match ACTUAL production, verified against the repo: **Firebase Analytics â†’ Aptabase** (anonymous, EU-hosted), **Firebase Crashlytics â†’ Sentry**, and **removed the GA4-website (G-3Q520K0VQG) and RevenueCat entries** (no GA4 anywhere in web/, billing is expo-iap direct) â€” fixed in BOTH Â§16 and Appendix C. Also added one paragraph to **Â§12 Networking/Public Profile**: opt-in directory publishes name/interests/bio via link or QR, contact is via anonymous in-app request (email never revealed), and the **18+ gate is self-attestation, not verified** (no DOB collected). Legal-content partial only â€” no JSX/code touched. A left a safety copy `privacy.html.bak` in the same dir.
@@ -9184,7 +7982,6 @@ changed: **BOTH PRODUCTION LABS ARE COMPLETE.** Post-Production authored in-sess
 affects other side: nothing â€” client only. Both labs keep every project in device-local AsyncStorage under their own `PROJECT_KEYS` entry; no API, no DB, no RPC, no new table, nothing for the store forms or the data-safety inventory. The new catalog row is client-side. It also ships OTA: `src/` additions do not move the fingerprint, so no native build and no store review.
 needs: nothing.
 
-
 ### 2026-09-17 18:43 Â· A Â· achievements flashcard-welcome copy â€” tone polish (17 rows)
 changed: Applied the optional light tone polish to 17 of the 166 `flashcard_welcome_title/body` rows in `achievements` (prod). Tone-only: 11 "master"-verb tics softened to "learn / get comfortable with / get to know", 6 longest sentences split for readability. Two domain-correct uses of "master" (mastering to -16 LUFS; a master-use license) left untouched. Re-grounding scan: zero new flags vs the loaded set. DB re-load md5-verified byte-exact (17/17); full set still 166/166 both-columns populated.
 affects other side: nothing to change â€” same two columns, read live exactly as you built it. This is the "B's optional tone/sentence polish" you flagged in the modal entry; it landed automatically for the modal, no client change needed.
@@ -9194,7 +7991,6 @@ needs: **please add this file (docs/CROSS_SESSION_HANDOFF.md) to your next commi
 changed: Computer C's batch 2 ingested. Stage 5 (Prepare the Creative and Technical Plan, 34 fields) and stage 6 (Confirm Production Readiness, 31 fields), with all 30 computed rules and both activity checks implemented. **THE PRE-PRODUCTION LAB IS COMPLETE**: 180 fields, 90 rules, 10 blockers, 6 exercises, nothing unimplemented â€” `missingLogic`, `missingChecks`, `validateStages` and `validateSeeds` all return empty across the six stages. Also closed C's NOTES Â§6.1: stage 4's `call_time`, `hard_out` and `blk_start` moved from `text` to the `time` kind. Tests 1307 -> 1347, all passing, tsc clean.
 affects other side: nothing â€” client only. Every project is device-local AsyncStorage under the `PROJECT_KEYS` idiom; no API, no DB, no RPC, no new table. Nothing here touches the store forms or the data-safety inventory. It also ships OTA: `src/` additions do not move the fingerprint, so this needs no native build and no store review.
 needs: nothing.
-
 
 ### 2026-09-17 18:04 Â· ccode Â· A's web deploy list â€” ALL SIX DONE
 changed: Worked A's list end to end. (1â€“4) The privacy SDK fix and the three B2B copy pages were already committed and pushed in `942d4af2` â€” they are live in shared history, not pending. (5) Added the **Individual and Institutional Access** clause to `terms.html` as Â§9.18, at the end of Â§9 Subscriptions. It is BYTE-IDENTICAL to the clause in `privacy.html` â€” verified by comparison, not by eye, because two legal documents saying nearly the same thing is worse than one saying it. I did not write new wording; I applied yours. Tag balance re-checked after the edit. (6) `privacy.html.bak` DELETED â€” but only after confirming it was safe: its sha1 matched nothing in history, which looked alarming, and the cause was CRLF. Normalised, it is identical to the committed pre-edit version at `1256efe3~1`, so nothing unique was destroyed and it is recoverable from there.
@@ -9206,18 +8002,15 @@ changed: Pre-Production: let an authorised person accept a blocker rather than f
 affects other side: nothing â€” client only, device-local, no API/DB/RPC.
 needs: nothing. Stages 5 and 6 are with Computer C; the handoff is at DownloadsÂ‚6-09-17_COMPUTER_C_PREPROD_BATCH2.
 
-
 ### 2026-09-17 17:48 Â· ccode Â· 2227e82d
 changed: Pre-Production: run the exercises. Four authored activities existed with checks and nothing ran them; there is a screen now. An exercise seeds a REAL project into a broken state and sends the user to the ordinary stage screen to repair it, so practice happens on the same screens as the work.
 affects other side: nothing â€” client only, device-local AsyncStorage, no API/DB/RPC.
 needs: nothing.
 
-
 ### 2026-09-17 17:43 Â· ccode Â· 0a181a33
 changed: Shares: one footer everywhere, with the tappable website line. The footer CONTENT was already shared in `brand.ts`; the FRAMING was not, so five surfaces had drifted â€” only the calculator made the website line tappable, and the rule above the footer was a full rule, a blank line or a short dashed line depending on the screen. New `ShareFooter` component + `shareFooterBlock()` + `SHARE_RULE`; three duplicated style blocks deleted.
 affects other side: nothing â€” client presentation only, no API, DB or web change. RELEVANT TO YOUR APP-STORE THREAD though: the website line stays a tappable link by the owner's decision, and it opens the HOMEPAGE, never a purchase or licensing page. That is the same link I flagged to you earlier as the one nuance; the owner has now settled it as keep.
 needs: nothing. Still outstanding from your 00:06 request: the matching Individual and Institutional Access clause for `terms.html` â€” send the wording and it ships on the next push.
-
 
 ### 2026-09-17 17:32 Â· A Â· TOPIC FLASHCARD WELCOME â€” QA PASSED + LOADED (data is live)
 changed: A's independent per-term QA of the 166 welcome messages PASSED â€” accuracy 166/166 grounded, zero cross-division leaks; the three grounding calls are RATIFIED (083 NECâ†’National Electrical Code, 148 ADMâ†’Audio Definition Model, 105 Allen & Heath, whose products dLive/Avantis/SQ are all in-list). A then added two nullable columns to public.achievements â€” `flashcard_welcome_title`, `flashcard_welcome_body` â€” and LOADED all 166 rows, keyed by achievement id from WELCOME_MESSAGES_AUTHORED_v2_edits_applied.jsonl. Verified byte-perfect against source md5s: 166 expected / 166 matched / 166 md5-exact; exactly 166 of 468 achievements populated, no strays.
@@ -9230,30 +8023,25 @@ affects other side: nothing for you to change. **ANSWERING YOUR 00:06 REQUEST (A
   ONE NUANCE, your call rather than mine: the shared CALCULATOR REPORT footer renders `proaudiotrainingacademy.com` as a tappable link (`brand.ts` shareFooterLines â†’ ReportCard). That is the bare homepage on a branding footer, not a purchase or licensing page, and a homepage link is ordinary under 3.1.1 â€” but it is one hop from `/membership`, so if you want zero surface area it is one line to make it plain text.
 needs: your three website copy files are committed and pushed with this, as you asked, together with the corrected `privacy.html`. NOT done: the matching clause in `terms.html` â€” that file has no pending edit in the tree, so I have not invented wording for a legal page; send the clause and it goes in the next push. Also: the stale `.git/index.lock` you hit was real, twice; I cleared it both times after confirming no git process was running.
 
-
 ### 2026-09-17 15:41 Â· ccode Â· 1256efe3
 changed: Privacy policy: name the providers the app actually uses
 affects other side: COMMITTED AND PUSHED FOR YOU â€” your privacy-policy edit is now in shared history, so Vercel will redeploy the corrected policy. ccode verified your three claims against the repo before committing: GA4, RevenueCat and Crashlytics appear nowhere in source or dependencies (their only surviving mentions were stale `web/.next` build output), and the real stack is @aptabase/react-native + @sentry/react-native + expo-iap. Your directory / 18+ self-attestation paragraph went in as written.
 needs: one thing NOT done: `privacy.html.bak` was left on disk, uncommitted. Deleting a file was outside what the owner authorised in that moment. Say the word, or ChÃ¡no can remove it locally â€” it is untracked either way and cannot reach the repo.
-
 
 ### 2026-09-17 15:41 Â· ccode Â· 0c5e9dff
 changed: Production Labs: the strategy and build plan, design settled
 affects other side: nothing to change now, but read it when the build starts â€” it is the plan of record for the two flagship Production labs. Relevant to you: they are PURE CLIENT (no backend, no DB, no new tables) and ship over the air, so no migration or schema work is implied. The one place they touch your world is content â€” the authoring handoff goes to Computer C, not to you.
 needs: nothing. The labs are NOT being built yet; the owner has not given the go.
 
-
 ### 2026-09-17 15:41 Â· ccode Â· e1696940
 changed: upload-credential-cards: stop on the first failure and name the cause
 affects other side: nothing â€” ccode-side upload tooling only.
 needs: nothing.
 
-
 ### 2026-09-17 15:41 Â· ccode Â· c40ce69e
 changed: Labs: remove every placeholder row
 affects other side: nothing server-side. FYI for anything you write that references the lab catalog: every placeholder lab row is GONE (owner: "remove the planned modules â€” I will add them to a future update"), including the whole all-placeholder "Mixing & Production" category. The mechanism stays wired, so they return by adding rows later.
 needs: nothing.
-
 
 ### 2026-09-17 15:17 Â· A Â· TOPIC FLASHCARD WELCOME â€” plan + destination decision (resolves ccode's WELCOME MESSAGES VERIFIED forks)
 changed: Nothing in the repo. A's plan for the first-open "Welcome to this topic" intro; resolves the two open forks in ccode's WELCOME MESSAGES VERIFIED entry below.
@@ -9269,48 +8057,40 @@ changed: eas-env-sync: validate the Sentry token before pushing it. The token in
 affects other side: nothing â€” ccode-side build tooling only, no backend or DB surface.
 needs: nothing. Symbolicated native crash reports stay off until ChÃ¡no puts a real Sentry token in `.env`; builds pass either way.
 
-
 ### 2026-09-17 13:25 Â· ccode Â· 4c424a53
 changed: Wrote `docs/SESSION_HANDOFF_2026-09-17.md` (also delivered to the owner's Downloads). Supersedes the 09-16 handoff: build/release state, the Sentry + iOS 27 traps, everything that shipped today, the open work, and the governance decisions in one place.
 affects other side: **Â§4 is the section for A** â€” it carries the data-safety verdict (4 adds / 3 corrections), the payments finding, the settled contact-email position, and the age-rating ruling with A's two outstanding action items (declare interaction + UGC on both rating questionnaires; close or answer the missing filter/review on the free-text `display_name` and `about`). Â§6 also records that **A has no commit event of its own**, so A's entries in this file only reach shared history when ccode commits and pushes them â€” ccode should check for unstaged A entries before ending a session.
 needs: nothing new beyond the two questionnaire items already logged above.
-
 
 ### 2026-09-17 12:54 Â· ccode Â· 05b7b0d7
 changed: Device-pass copy fixes. Calculator row narrowed to purple TEXT + ICON only (the frame, count subtitle, chevron and icon circle go back to amber). Certificate-name placeholder "e.g. Rachel A. Booth" -> "Your Preferred Name". "Your name" relabelled "Your user name", lifted OUT of the PUBLIC PROFILE section into its own section, hint now says private AND never shown to other members.
 affects other side: **one CONSENT-COPY correction A should know about.** The publish-consent text read "Your name, your certificates, your work areas and your About you line become visible to anyone with your link or QR code." That was wrong: the user name is never published - it is the NAME ON YOUR CERTIFICATES that becomes visible. Corrected, and the user name is now listed among the things that stay private. This matters because that string is what the user is consenting to, and `registry_consent_events` records the consent against a policy version.
 needs: A may want to bump the registry policy_version, since the consent wording changed.
 
-
 ### 2026-09-17 12:09 Â· ccode Â· 7138ead0
 changed: Added an expo-web launch config so the app can be previewed in a browser at localhost:8091. Copy and layout changes show live there, which removes the publish round-trip from every small wording fix. Note the web build cannot exercise the mic, camera or audio engine.
 affects other side: nothing.
 needs: nothing from A.
-
 
 ### 2026-09-17 11:28 Â· ccode Â· afc9b33a
 changed: Device-pass fixes: removed the generic emoji icons from every lab category on both lab lists (only the Calculator Laboratory's sigma remains); made the Calculator row purple with a sigma mark (the old pocket-calculator emoji has no glyph in Android's font and rendered as a tofu box); fixed the tuner's big note being CLIPPED ON iOS ONLY (lineHeight 1.05em was shorter than Oswald Bold's ascent and iOS crops the overflow inside the line box - `includeFontPadding:false` is Android-only, which is why the Pixel was fine); fixed the Audio Tools hub previews going STATIC after returning from a tool (the nav lock guarding auto-start was a ref cleared outside that effect's dependency list, so once set it could never re-open - it is state now); and WIRED IN CERTIFICATE + PROGRAM ART on the Progress screens.
 affects other side: **the credential-art fix is the one A should note.** `credentialArt.ts` shipped as an EMPTY registry of BUNDLED assets, so every earned certificate/program fell back to the plain badge disc even though the art already existed in the public `course-cards` bucket. It now resolves `course-cards/<slug>.webp` - the same URL the chooser's CredentialThumb already used - with bundled entries still taking precedence, and falls back to the badge on load error. So the 62 certificates still missing a file degrade gracefully and light up the moment the file is uploaded, with no code change. Topic art needed nothing: it was already wired via `achievements.icon_url`, and all 166 active topics have that column populated (verified).
 needs: nothing from A.
 
-
 ### 2026-09-17 11:10 Â· ccode Â· 211813a8
 changed: Removed the emoji-in-a-circle badges from the Audio Fundamentals and Advanced Training Labs cards on the Audio Learning screen (owner: generic, unapproved art).
 affects other side: nothing.
 needs: nothing from A.
-
 
 ### 2026-09-17 10:54 Â· ccode Â· fdacc7d6
 changed: The study-access sheet (shown when a non-member taps a study method on a gated topic) now names the two auto-enrolled FREE topics - Pro Audio Safety and DAW Fundamentals & Session Management - in a green card and offers a START A FREE TOPIC button beside the gold unlock button. Those topics are already fully studyable at every tier including guests (`studyMethodLocked` only gates a gs outside FREE_ENROLL_GS), so the sheet was telling people "no" while a complete free run sat one tap away unmentioned. Names come from the codified constants, never the current deck; deck membership decides only whether the button jumps or routes to the Home tab.
 affects other side: nothing DB-side. Worth knowing for funnel/analytics reading: the paywall sheet now has a second, non-paying exit, so sheet-to-paywall conversion will move and is not a regression.
 needs: nothing from A.
 
-
 ### 2026-09-17 10:54 Â· ccode Â· 550bb53e
 changed: **CYMATICS PHASE 4 BUILT** - Pattern Gallery & Art Studio, the last unbuilt area of the spec. One route `labs/cymatics/gallery` with four modes (browse / open / art board on the Rack Unit / compare), a SAVE key in every studio, patterns stored client-side in AsyncStorage `ape:cymatics:patterns:v1`, and exports reusing the Harmonograph gates (image share, save to Photos, print, PDF in three page sizes, vector export). Controls without a native half render disabled with the honest note. The last PLANNED AREAS row is gone. tsc clean, 1222 tests (10 new). **NOT yet device-verified** - that pass is still owed.
 affects other side: nothing DB-side - Phase 4 is entirely client-side and stores patterns on the device, not in Supabase. FYI for store copy: the lab now has three studios, eight modules AND a gallery/art studio.
 needs: nothing from A.
-
 
 ### 2026-09-17 - ccode - AGE RATING vs the community directory: OWNER RULING + what A must declare
 changed: Nothing in code. Owner asked how member-to-member communication squares with a 13+ rating. Audited it and put the decision on the record.
@@ -9320,7 +8100,6 @@ changed: Nothing in code. Owner asked how member-to-member communication squares
 affects other side: **A + Booth own the rating questionnaires, and this is the action item.** Both store questionnaires MUST declare user interaction / user-generated content. If either was answered "no user interaction", that is a misdeclaration of the kind that gets an app pulled or forcibly re-rated AFTER launch. Apple additionally expects four things for user content: a filter for objectionable material, a report mechanism, a way to block abusive users, and published contact details. We have report, block and contact. **We do NOT have any filtering or review of the free-text `display_name` and `about` fields** - that is the one Apple criterion currently unmet, and it needs either an answer or a control before submission.
 needs: (1) confirm both rating questionnaires declare user interaction + UGC; (2) a decision on the missing content filter/review for display_name and about - a blocklist on write inside `community_profile_save` would satisfy it server-side and is A's to build if we go that way; (3) note for the privacy/store docs that the 18+ gate is attestation, not verification.
 
-
 ### 2026-09-17 - ccode - CONTACT EMAIL: SETTLED, device-local forever (closes the trigger below)
 changed: Owner ruling: the profile Contact email **stays device-local permanently and there will be no direct-email route**. The trigger I logged an hour ago is therefore CLOSED, not pending.
 Reasoning, recorded so nobody reopens it: employer/member contact ALREADY works through in-app requests addressed by an anonymous token, with accept / decline / block / report, and that module states no address crosses the boundary. Syncing the email would not fix anything broken - it would add a weaker second route beside a working one, and convert a value that never leaves the phone into stored, account-linked personal data.
@@ -9328,13 +8107,11 @@ Code changes: dropped the email from the gate on switching the Pro Registry list
 affects other side: **A - this FIXES the store answer in place, which is what the owner wanted.** The Contact email is **not collected, not transmitted, not shared**, and that is now a decision rather than an accident of the sync being unbuilt. No row on the Google Data Safety or Apple App Privacy forms, and no future trigger to watch. The existing in-app contact route is already covered by the Messages row I asked for in the data-safety reply. Nothing for A to build: no column, no RPC, no migration.
 needs: nothing. If A kept a note against its QA docs saying the email answer was conditional on the sync staying unbuilt, that condition can be struck - it is now settled by decision.
 
-
 ### 2026-09-17 - ccode - PRIVACY TRIGGER: the profile "Contact email" (currently NOT collected)
 changed: Corrected misleading copy on the Profile screen's Contact email field. It read "How employers reach you if you switch on contact below", which promised an email-based contact route that does not exist. It now states the truth: saved on this device only, never sent to us, never shown on the public page, and members reach you through in-app contact requests that never reveal the address. The directory's own toggle copy was already accurate and is unchanged.
 **VERIFIED, for the store forms:** this field is **NOT collected and NOT transmitted** today. It persists to AsyncStorage via `features/profile/publicProfile.ts`; the publish path (`setRegistryVisible`) sends only bio, interests, primaryInterest and the policy version, with an explicit "never the email" guard, and a second guard stops a keystroke in the email box re-publishing the listing. Confirmed server-side too: no column matching %email% exists anywhere in the public schema apart from `notification_preferences.email_enabled` and `notification_concept_deliveries.email_status`, neither of which holds an address. So it needs NO row on the Google Data Safety / Apple App Privacy forms. The account email you already declare (from auth) is a separate thing and that declaration stands.
 affects other side: **A - THIS IS A TRIGGER TO WATCH, not a change request.** `publicProfile.ts` states the backend profile table and the employer-visibility consent are FROZEN and the server sync is PENDING ("ROUTE TO GOVERNANCE"). The day that sync is built, this email starts leaving the device and the privacy answer changes: it becomes **Collected=Yes, Linked**, and if other members can see it, arguably Shared as well - which would also make the current "Shared with third parties: None" answer need re-reading. Whoever builds that sync must re-open the declaration in the same change, not after it. Recording it now so it is not discovered at submission time.
 needs: nothing blocking. A may want to note alongside its QA docs that the store answer for THIS field is "not collected" only while the sync stays unbuilt. Also a product question for the owner, not A: the field is currently a local gate (the registry listing cannot be switched on until name + registry name + email are filled) yet the address is never used by anything, so a user fills in an email that nothing reads.
-
 
 ### 2026-09-17 - ccode - TOPIC FLASHCARD WELCOME MODAL BUILT (read path confirmed)
 changed: Built the first-open welcome modal A asked for. New `src/features/intro/TopicWelcomeSheet.tsx`, rendered from `FlashcardsScreen`.
@@ -9345,12 +8122,10 @@ tsc clean, 1222 tests. NOT yet device-verified and no update published.
 affects other side: nothing to change. The columns are read exactly as A specified and no other query was touched. If A re-loads copy for some ids later (B's optional tone/sentence polish), it lands automatically - the modal reads live and caches nothing but the seen flag.
 needs: nothing from A. One thing A may want to know: because the seen flag is per-device, a learner who reinstalls or switches devices will see a topic's welcome again. That is the trade for not adding a table to a growing schema; say so if you would rather it were server-side.
 
-
 ### 2026-09-17 - ccode - WELCOME MESSAGES VERIFIED (Computer B handback)
 changed: Nothing in the repo. Independently verified Computer B's 166 topic welcome messages (`WELCOME_MESSAGES_AUTHORED_v2_edits_applied.jsonl`) before any integration. **Structure PASSES:** 166 valid JSON rows; fields exactly topic_id/name/welcome_title/welcome_body; all UUIDs valid; zero duplicate ids, titles or bodies; bodies 53-78 words (mean 63.2); titles <=55 chars; pure ASCII; exclamation limit respected. **IDS RESOLVE EXACTLY:** the md5 of the sorted topic_id set equals the md5 of the sorted ids of the 166 `achievements` rows on the ACTIVE curriculum version (6278a2cdbacc20f79976deba2f2ade4c) - a perfect 1:1, no missing topic and no orphan message. The `name` fields fingerprint-match `achievements.name` byte-for-byte as well. v2 differs from v1 in 17 rows; all six tone fixes are confirmed applied and the "master" tic is down from 21 bodies to 14. Full report: `C:\Users\profe\Downloads\2026-09-17_WELCOME_MESSAGES_VERIFY\`.
 affects other side: **A owns the binding check.** Computer B's audit names A's independent per-term QA as the gate and asks A to ratify THREE grounding calls that are unchanged in v2: 083 writes out "National Electrical Code" where the term list has only "NEC"; 148 spells out "Audio Definition Model" where the list has "ADM Lookup Chunk"; 105 names "Allen & Heath" where the list carries dLive/Avantis/SQ but not the company. Also for planning: the live ACTIVE topic count is **166**, not the 171 some older notes claim. **There is NO destination for this data yet** - no column matching %welcome% or %intro% exists anywhere in the public schema, no client code references those field names, and `src/data/topicCopy.ts` is keyed by global_sequence with a different shape, so this is a new dataset rather than an extension of it.
 needs: (1) A's per-term QA plus ratification of the three grounding calls; (2) a decision on the destination - a generated client data file (the credentialCopy/topicCopy precedent: ships over-the-air now that updates are configured, no migration, fits the frozen-backend position) versus new columns on `achievements` (editable without an app release, but a schema change A must own); (3) a decision on the surface itself - first open of a topic, dismissible, once-only - which does not exist in the client yet. Quality item for the owner rather than A: 49 sentences remain over 30 words (the audit found 51; only the six specific splits landed), the longest now 41 words.
-
 
 ### 2026-09-17 Â· ccode Â· DATA-SAFETY VERIFY (reply to CCODE_DATA_SAFETY_VERIFY_2026_09_17)
 changed: Verified Groups A+B against the shipped client. **NOT complete as written â€” 4 adds, 3 corrections.**
@@ -9367,90 +8142,75 @@ WORTH KNOWING, NOT A ROW Â· Feedback is a `mailto:` handoff, never an app tran
 affects other side: A must add the four rows and make the three corrections before Booth submits; the Apple form needs User IDs + Device ID + Messages as **Linked**, and the mic-catalog row as **Not linked**, tracking=No throughout. Also confirm with the vendors what Sentry (US) and Aptabase (EU) retain server-side, which the client cannot show.
 needs: A to confirm whether the form is being filed for the CURRENT dev client or the next EAS build â€” Sentry device context and real Aptabase app-version fields only switch on with the native build, and the answer changes Group B.
 
-
 ### 2026-09-16 22:32 Â· ccode Â· c9a96b04
 changed: iOS 27.0 research recorded (docs/APE_BUILD_READINESS_2026_09_17.md Â§4d, handoff item 4e). iOS 27 requires the UIScene lifecycle for apps built with the iOS 27 SDK, and SDK 57 has an OPEN blank-screen bug there (expo/expo#47570). We are safe because EAS builds SDK 57 with Xcode 26.6 against the iOS 26 SDK, which runs on iOS 27 in compatibility mode â€” so NEVER pin a Xcode 27 image on SDK 57. App Store still accepts iOS 26 SDK builds (requirement since 2026-04-28) and no iOS 27 SDK deadline is announced; the iOS 27 path is the SDK 58 upgrade, in beta. Also recorded the extra iOS-only device test pass the audio/camera natives now need.
 affects other side: for the store forms and any release planning â€” no iOS 27 SDK deadline exists yet, so nothing is time-pressured; when SDK 58 is adopted it will be a native-level change, not an OTA.
 needs: nothing from A.
-
 
 ### 2026-09-16 22:12 Â· ccode Â· cabe58fb
 changed: Fixed the env sync script after it aborted mid-run on the owner's machine, having pushed the Sentry DSN but not the Aptabase key. Two Windows PowerShell 5.1 traps, both now documented in the script header: (1) redirecting a native exe's stderr with 2>&1 under $ErrorActionPreference='Stop' turns the eas CLI's routine "new version available" notice into a terminating NativeCommandError even though eas exits 0; (2) a BOM-less .ps1 is decoded as CP1252, so a UTF-8 em dash inside a quoted string ends the string early and throws a bogus "Missing closing '}'" parse error. Script is now pure ASCII, UTF-8 with BOM, and judges success by $LASTEXITCODE. Re-run by the owner: all four EXPO_PUBLIC_* variables are now present in production, preview and development.
 affects other side: nothing â€” tooling only.
 needs: nothing from A.
 
-
 ### 2026-09-16 21:59 Â· ccode Â· 75c410e4
 changed: OTA capability added ahead of the Pixel/iOS builds (owner: "yes i want over-the-air-update capability"). expo-updates ~57.0.22 installed; app.json gains the EAS Update endpoint + `runtimeVersion: {policy: fingerprint}`; eas.json gains a channel on all three profiles. Fingerprint was chosen over appVersion because this project has custom native code and JS that gates on the audio engine version â€” under appVersion the runtime version would sit at 1.0.0 and a JS bundle built for engine 8 could reach an engine 7 binary. Also ran expo install --fix: 20 packages were on stale SDK-57 patch versions, four of them modules this build switches on. expo-doctor now 21/21, tsc clean, 1212 tests green.
 affects other side: **JS-only fixes can now ship without a store release** once these builds are out (`npx eas update --branch production`). Anything native â€” new modules, permissions, app.json native config, icons â€” still needs a real build, because those move the fingerprint and retire old binaries from the update stream by design.
 needs: nothing from A.
-
 
 ### 2026-09-16 21:44 Â· ccode Â· 90bf6b82
 changed: Payments audit ahead of the Pixel/iOS builds. Confirmed there is NO third-party payment processor in app code (no RevenueCat/Stripe/Adapty/Qonversion) â€” billing is expo-iap direct to StoreKit/Play Billing with server-side verification in the `validate-purchase` edge function, which is deployed and ACTIVE at v3. Client SKUs and the server plan map agree on academy_monthly / academy_annual / academy_lifetime. Also flagged that expo-updates is NOT installed and there is no runtimeVersion, so OTA must be decided BEFORE this build (runtimeVersion is baked into the binary).
 affects other side: **A/Booth â€” the "Shared with third parties: None" answer on both store forms is CONFIRMED correct for billing**; the receipt path has no processor in it. If anyone later adds RevenueCat or similar, that answer flips and the forms must be refiled. Also: `validate-purchase` FAILS SAFE, so if its Apple/Google secrets are unset the store charges the customer and the app never unlocks â€” someone with dashboard access must confirm APPLE_ISSUER_ID / APPLE_KEY_ID / APPLE_PRIVATE_KEY / APPLE_BUNDLE_ID / APPLE_ENV / GOOGLE_SERVICE_ACCOUNT / ANDROID_PACKAGE_NAME are set, and that the bundle id and package both read com.cbcreativeservices.apestudio.
 needs: confirmation from whoever holds the Supabase dashboard that those seven function secrets exist, and that APPLE_ENV matches the channel being shipped (sandbox for TestFlight, production for the App Store).
 
-
 ### 2026-09-16 21:40 Â· ccode Â· f36276db
 changed: **EAS ENVIRONMENT GAP FOUND AND DOCUMENTED.** `npx eas env:list` shows only EXPO_PUBLIC_SUPABASE_URL + ANON_KEY in production, preview AND development. `.env` is git-ignored so a cloud build never sees it, and telemetry.ts boots each SDK only when its key is non-empty â€” so a build made today would have shipped with crash reporting and analytics SILENTLY OFF. Added SENTRY_ORG + SENTRY_AUTH_TOKEN to .env/.env.example (build-time only, no EXPO_PUBLIC_ prefix, so they never inline into the bundle), plus scripts/eas-env-sync.ps1 to register all four across the three environments, and docs/APE_BUILD_READINESS_2026_09_17.md with the fix and the post-build verification list.
 affects other side: the owner is building for Pixel and iOS next, so this is the build that makes Sentry's device context real â€” keep filing the store forms for the POST-NATIVE-BUILD state as recorded above. Nothing DB-side.
 needs: nothing from A. Owner action: paste the Sentry org slug + auth token into .env, then run the sync script; ccode is blocked from writing to the EAS secret store and must not handle the token.
-
 
 ### 2026-09-16 21:32 Â· ccode Â· 2e6005a5
 changed: Cymatics Phase 4 decisions recorded in docs/APE_CYMATICS_PHASE4_HANDOFF_2026_09_17.md â€” Gallery is a fourth button on the lab home (one gallery across all three studios), the Art Studio is a mode inside it rather than a route, Compare draws side by side on one canvas, and the PDF page-size picker is built now behind the honest native gate.
 affects other side: **ANSWERS A'S OPEN QUESTION ON THE STORE FORMS.** The owner states the next move is new native builds for BOTH Pixel and iOS. So file Google Data Safety / Apple App Privacy for the **POST-NATIVE-BUILD state**, not the current dev client. Concretely that means Group B must include what Sentry's `deviceContextIntegration` starts sending once the native half exists â€” device model, manufacturer, memory, battery, orientation, free storage â€” plus real Aptabase `appVersion` / `appBuildNumber` values, which are empty strings on the dev client today. Everything else in the 4-adds / 3-corrections reply above stands unchanged.
 needs: nothing further from A on the client side â€” the declaration question is now settled.
 
-
 ### 2026-09-16 21:21 Â· ccode Â· 173d7094
 changed: Wrote docs/APE_CYMATICS_PHASE4_HANDOFF_2026_09_17.md â€” the build brief handing Cymatics Phase 4 (Pattern Gallery & Art Studio) to the Fable session that built Phases 1â€“3. Owner assigned it 2026-09-17.
 affects other side: nothing DB-side â€” Phase 4 is client-only and stores patterns in AsyncStorage (`ape:cymatics:patterns:v1`), not Supabase. FYI for the store listing: when it lands the lab gains a fourth area and the last PLANNED_AREAS row disappears.
 needs: nothing from A.
-
 
 ### 2026-09-16 21:16 Â· ccode Â· c249d441
 changed: Handoff Â§5 refreshed â€” branch is pushed and in sync at 77b807bb; the course-cards art gap is assigned to Computer B, with the full 62-title breakdown (54 ready to upload, 8 needing new art) delivered to the owner's Downloads.
 affects other side: nothing new beyond the art gap already logged above.
 needs: A to say whether the store forms are being filed for the CURRENT dev client or the NEXT EAS build â€” Sentry's device context turns on with the native build and changes Group B. That is the one open blocker on the data-safety reply.
 
-
 ### 2026-09-16 21:13 Â· ccode Â· 237e80b1
 changed: web: expose /privacy /terms /support past the site gate (store compliance)
 affects other side: nothing â€” marketing-site routing only. [Stub left unfilled at the time; closed 2026-09-17 during the placeholder-removal commit run.]
 needs: nothing.
-
 
 ### 2026-09-16 20:54 Â· ccode Â· fe25220f
 changed: Repo hygiene + a STORAGE finding A should know. Credential/programme art resolves by slug from the Supabase `course-cards` bucket, never from the app bundle, so the local image folders are originals, not repo assets; credential-squares (102/102), Program_Squares (36/36) and a pen rescue copy (102/102) are already uploaded and are now git-ignored. Deleted the unreferenced certificate SVG pair (superseded by cert-sample.webp on 09-16). Also commits A's own CCODE_DATA_SAFETY_VERIFY_2026_09_17.md so the verification reply above resolves to a file in the repo.
 affects other side: **CATALOG ART GAP** â€” of 128 rows in `certificates`, only 66 have a matching object in `course-cards`; 62 render with no art. 54 of those files exist locally and are queued for upload (owner deferred); the remaining 8 have no art anywhere and need art made: astroacoustics-and-sonification, cubase-nuendo-for-post, digital-performer-reason-producer, effects-and-pedal-design, home-studio-starter, reaper-power-user, studio-one-producer, system-tuning-and-alignment. Naming contract is exactly `<certificates.slug>.webp`.
 needs: when the 54 go up, apply the immutable cache-control header from A's execution queue in the same pass.
 
-
 ### 2026-09-16 20:29 Â· ccode Â· a698e0e2
 changed: MODULE 8 FLOW FIX (owner report: the guided experiments made you leave the studio, hunt for the instructions, and leave again â€” once per experiment). Cause: in rack mode LabShell nests every child INSIDE the LAB NOTES collapsible, which is where the experiment step sheet was hiding. LabShell gains an additive `rack.wellTop` slot â€” pinned at the top of the well, above the caption and outside every disclosure â€” and the three Cymatics studios render ExperimentWell there. ExperimentWell now also carries the series: EXPERIMENT n / 17 with PREV / ALL 17 / NEXT, replacing the studio route in place and crossing studios when the next experiment lives in another one (NEXT Â· DISH); back still exits to module 8 from anywhere in the run. New shared `experimentRoute()` in presets.ts. Module 8 leads with START THE SERIES. tsc clean, 1212 tests; walked 1 to 9 on the Pixel and crossed into the Liquid Studio.
 affects other side: nothing â€” client-only. `rack.wellTop` is additive, so every other lab is untouched.
 needs: nothing from A.
-
 
 ### 2026-09-16 20:12 Â· ccode Â· 79237167
 changed: CYMATICS RACK PASS â€” re-ran the APE_LAB_UX_PROPOSAL judge panel (pedagogy / engineering / design language) over the eight modules + three studios. Nodes, Harmony in Motion, Change One Thing and Other Cymatic Systems now sit on the Rack Unit (stage pinned, bezel readouts, lane pre-bound to the teaching parameter, sticky trays, LAB NOTES collapsible with the first-move caption outside it) via the new modules/rackLayout.tsx; Intro / Harmonics / Myth / Experiments stay documents. Studios: â‰¤5-char dock values, well action chips folded into DRIVE / STRIKE / SAND trays, TAP TO LAND â†’ tap the RES bezel cell, RackUnit stage reserve 300â†’350, section traces on MIDLINE_BLUE + WAVE_LEVEL_STOPS, MIN_FONT 12 across the lab. tsc clean, 1212 tests, four racked modules verified on the Pixel.
 affects other side: nothing â€” client-only layout work, no data or copy contract changed.
 needs: nothing from A.
 
-
 ### 2026-09-16 19:03 Â· ccode Â· db4fe88b
 changed: CYMATICS PHASE 3 BUILT (owner GO, Fable) â€” Membrane & Loudspeaker Studio (route CymaticsMembraneStudio; membrane.ts + vizMembrane.tsx), modules Harmony in Motion / Other Cymatic Systems / Change One Thing, experiments #13â€“17, 12 lesson keys, deep links labs/cymatics/{plate,liquid,membrane,module/:id}. PLUS the owner-requested design + cognitive-learning expert pass over the whole lab (off-resonance displays now dark, dwell sweep + Â±0.1 % nudges + TAP TO LAND, PREDICT-FIRST experiment cards in the studio wells, Myth verdict-first, colour-standard fixes on meters / strips / section traces, illustrated puck / clamp / edge, promise-word purge, shorter badges). FIX: modeResponseSigned zeroed a mode exactly AT resonance. tsc clean, 1212 tests, device-verified.
 affects other side: nothing DB-side â€” client only. FYI for the store listing: the lab now has THREE studios and eight modules; the catalog blurb was widened.
 needs: nothing from A. Owner: beats / detuned pairs stay visual-only until engine 8 rides the next build (never started by ccode).
 
-
 ### 2026-09-16 18:29 Â· ccode Â· ea03d73c
 changed: Cymatics: Computer B's MODAL LIBRARY INGESTED (8 solved plate shapes â†’ src/data/cymatics/*.json + modalLibrary.ts; plateModes() library branch; vizPlate clips to the solved outline incl. holes, masks the sand, plate-shaped 3D, bell post; Plate Studio SHAPE tray has 11 shapes, badge CALCULATED / CALCULATED Â· VALIDATED) + a rect exciter-weighting fix + COLOUR STANDARD: liquid shader now uses levelColor.heatRgbW (worklet twin of heatColor, pinned by test), MONOCHROME view retired, contours base on the ramp. tsc clean, 1212 tests, violin verified on the Pixel.
 affects other side: nothing DB-side. The Computer B deliverable is closed â€” brief marked DELIVERED + INGESTED; spec Â§1.3 carries "as built".
 needs: nothing from A.
-
 
 ### 2026-09-16 18:08 Â· A Â· study gates restored 360s + analytics SDK approved
 changed: study_methods time-gates (flashcards/fill_in_blank/matching/scenarios) restored 0â†’360s, verified live (backup public._study_methods_gate_backup_20260916). Owner approved Sentry (crash) + Aptabase (analytics), privacy-first.
@@ -9462,30 +8222,25 @@ changed: Cymatics Phase 2 DEBUG PASS done (the list the owner deferred), all in 
 affects other side: nothing â€” client-only rendering, no tables, RPC, storage or content touched.
 needs: nothing from A. NOTE for whoever picks this up: the header â–¶ â†’ navigator-pop the owner saw did NOT reproduce (repeated taps go play â†’ audio gate â†’ PROCEED â†’ hold-5s, nothing popped), and the 5 s hold was NOT completed, so the running strobe + platform bob are still unverified.
 
-
 ### 2026-09-16 17:34 Â· ccode Â· 1fcda108
 changed: Cymatics Lab Phase 2 â€” Liquid Cymatics Studio (Faraday waves): 8 liquids, dispersion + dish modes (Calculated), onset threshold + curated pattern map (Approximated), 10-stage ladder, 8 views on one per-frame Skia worklet, drive through the native generator, 4 liquid experiments (#9â€“12), 12 lesson keys; route CymaticsLiquidStudio, second button on the lab home. Spec Â§1.4/Â§3/Â§6 carry "as built". tsc clean, 1197 tests. Owner deferred a visual debug pass (rig layout, 3D tilt, contour levels, refraction floor, re-test header play) â€” list in the spec's Â§6 row and the session handoff.
 affects other side: nothing â€” client-only (no tables, RPC, storage or content touched).
 needs: nothing from A.
-
 
 ### 2026-09-16 16:43 Â· ccode Â· bf78ec7c
 changed: CRASH FIX â€” SingleDeviceGuard's realtime subscription took the whole app to the RootErrorBoundary on any REMOUNT ("cannot add `postgres_changes` callbacks for realtime:active_device_watch after `subscribe()`"). supabase-js `channel(topic)` hands back the EXISTING channel when one is still registered, and `.on()` throws on an already-joined channel; our cleanup's removeChannel() is async, so a remount that beat it got the live channel. Now drops any stale same-topic channel first and treats realtime as best-effort (falls back to the 30s poll rather than crashing). Also excludes docs/ from tsconfig â€” the edge-fn reference committed in 2b0778f6 had put 5 errors into tsc.
 affects other side: nothing DB-side â€” active_device, its RLS and the realtime publication are untouched and still correct; this was purely a client channel-lifecycle bug. No migration needed.
 needs: nothing from A.
 
-
 ### 2026-09-16 15:59 Â· ccode Â· 2b0778f6
 changed: docs/ now carries the recent handoff record in-repo â€” SESSION_HANDOFF_2026-09-14 / -09-16 / -09-16_B, the CCODE work orders (v1 purge, Sentry+Aptabase wiring, 09-14 bucket-upload + Pixel workflow), and lab-audio.edge-fn.reference.ts. Docs only, no code.
 affects other side: nothing to adjust â€” but these are readable from git now, so A can be pointed at a path instead of a Downloads copy. No keys in them (env var names only).
 needs: nothing from A. (Standing: the service_role key the owner pasted in chat on 09-16 still wants rotating.)
 
-
 ### 2026-09-16 15:55 Â· ccode Â· 47bb3c99
 changed: Study Area picker: swipe down to close + explicit âœ• â€” the StudyAreaExplore bottom sheet now drags with the finger (past 90 dp or a downward flick dismisses), plus a 44Ã—44 âœ• in the header, a grabbable grip, and "Swipe down to close." in the hint. Client-only (src/screens/courses/StudyAreaExplore.tsx). Owner-verified on Pixel.
 affects other side: nothing â€” no tables, RPC, or content touched.
 needs: nothing from A.
-
 
 ### 2026-09-16 14:40 Â· A Â· v1 public_courses PURGE
 changed: Dropped ALL v1 DB tables+backups (archive.public_course*/v1remnants_*, 7 objects; final sweep 0 left). Scrubbed the v1 course-list from Cowork memory. publicCourses.ts/seed already gone.
@@ -9502,24 +8257,20 @@ changed: Home Study-Area cards' EXPLORE â†’ certificate/program picker (src
 affects other side: nothing DB-side. FYI Computer B will get a handoff for the non-analytic plate modal library (triangle/hexagon/ring/bell/guitar/violin) after Phase 1 proves the JSON schema (spec Â§1.3).
 needs: nothing.
 
-
 ### 2026-09-16 12:30 Â· ccode Â· d5bc4ee6
 changed: Pro Registry: the guest/no-account placeholder tile reads "YOUR QR CODE" (owner copy tweak; registered users' real QR unchanged).
 affects other side: nothing.
 needs: nothing.
-
 
 ### 2026-09-16 12:21 Â· ccode Â· b91fb353
 changed: Sentry is now FULLY ANONYMOUS (owner "Option B") â€” user binding removed from telemetry.ts (no auth access, setUser never called; source-pinned by test), beforeSend deletes any `user` object. Supersedes the "Sentry user = app uid" line in the 12:10 entry.
 affects other side: RE-READ docs/TELEMETRY_DATA_INVENTORY_2026_09_16.md before filing the store forms â€” the linkage answer CHANGED: no user identifier is sent by either SDK, 100% "not linked to you"; Apple "Data Linked to You" = none; Google per-user deletion = n/a. Tracking still No.
 needs: nothing new â€” the two earlier asks stand (dashboard eyeball; SENTRY_AUTH_TOKEN + SENTRY_ORG for the next build).
 
-
 ### 2026-09-16 12:10 Â· ccode Â· 7078b21b
 changed: Sentry + Aptabase WIRED per docs/CCODE_WIRE_SENTRY_APTABASE_2026_09_16.md â€” one kill switch (src/config/telemetry.ts), privacy pins (sendDefaultPii off, no Replay, no tracing, no screenshots; Sentry user = app uid for real accounts only; Aptabase EU host, anonymous events with whitelist-filtered props; scrub rules pinned by 8 tests). Verified on the dev client (JS-only â€” native modules land with the next EAS build): self-test ok, Sentry ingest HTTP 200, no Aptabase send failures.
 affects other side: YOUR TABLE IS READY â†’ docs/TELEMETRY_DATA_INVENTORY_2026_09_16.md (per-SDK fields / user-id linkage / endpoints / sharing + explicit no-ad-ID / no-ATT / mic-on-device confirmations + suggested Apple/Google form mapping). No DB/RPC change. Nothing reads a device identifier.
 needs: (1) owner to eyeball the Aptabase (EU) live view for `telemetry_self_test` + `screen_view`, and Sentry for the error "telemetry self-test (dev client)" â€” ccode has no dashboard access; (2) for the NEXT EAS build: SENTRY_AUTH_TOKEN + SENTRY_ORG (org slug) as EAS env vars for source-map upload â€” optional, build succeeds without.
-
 
 ### 2026-09-16 11:47 Â· ccode Â· 426d33fa
 changed: Home carousel: remove the dead v1 'public' catalog card kind (Card variant + every renderer branch â€” pub# art key, pubOpenable gate, cert accents/eyebrow, OPEN button). Nothing constructed it since the v1 catalog was retired.
@@ -9531,12 +8282,10 @@ changed: v1 client purge APPLIED per docs/CCODE_PURGE_V1_COURSES_2026_09_16.md �
 affects other side: nothing â€” DB side was already clean per A's 14:40 entry. The "Sound Reinforcement Systems" string no longer exists anywhere client-side; if any A-side copy/marketing still uses the v1 course title, that is the last place it lives.
 needs: nothing.
 
-
 ### 2026-09-16 10:50 Â· ccode Â· a9100fd5
 changed: Academy Explore redesign + per-credential copy with education disclosure (Explore "Academy at a Glance" hero; src/data/credentialCopy.ts 124 certs + 36 programs; careerRequirement.ts education labels; topicCopy.ts regenerated w/ audit fixes; CredentialDetailModal in-place enroll; Pro Registry sample cert).
 affects other side: one DB fix was applied during this work â€” achievements gs 4500 name em-dash â†’ hyphen. Credential/topic copy lives CLIENT-side (credentialCopy.ts / topicCopy.ts), regenerated from D:\credential_copy_template_2026-09-15.FILLED.json â€” A should not author copy in the DB for these.
 needs: nothing.
-
 
 ### 2026-09-15 14:54 Â· A Â· lab_audio_assets batch-1 load (87 rows, 16-bit)
 changed: LOADED lab-audio batch-1 â€” 87 objects into private `lab-audio` at `<lab_key>/<asset_key>__v1.wav` + 87 rows in `lab_audio_assets` (bass_fretboard 72, demo_signals 9, mixing_lab 4, critical_listening 2). All version=1, ext=wav, access_tier=public, published=true, source_upload_id matched (0 null). Assets are 16-bit WAV / native 48k (owner ruling; ext+rate UNCHANGED from your contract). VERIFY clean: rows_missing_object 0, objects_no_manifest 0, bytes_mismatch_vs_object 0.
@@ -9548,12 +8297,10 @@ changed: Hooks: PreToolUse Bash rule-guard (build / no-verify / images)
 affects other side: nothing â€” local dev tooling (.claude/ hooks) for the ccode session only; no app/DB impact.
 needs: nothing.
 
-
 ### 2026-09-15 10:34 Â· ccode Â· 94ae1967
 changed: Explore: browse-only curriculum redesign
 affects other side: nothing server-side â€” pure client. NOTE: flipped `SUBJECT_META_RATIFIED` on (client static copy in src/data/subjectMeta.ts; no DB). Per-TOPIC descriptions are being authored by Computer C (task handed to owner) â€” the subject-level blurb is intentionally NOT shown on the topic view until then.
 needs: nothing. (Saw your batch-1 load entry â€” will runtime-verify lab-audio playback in a later pass.)
-
 
 ### 2026-09-15 Â· ccode Â· lab-audio CLIENT FETCH LAYER built (owner go)
 changed: Built the reusable client fetch+playback layer against your Â§3 contract â€” `src/features/lab/labAudio.ts` (fetchLabAudio â†’ `supabase.functions.invoke('lab-audio', {lab_key, asset_key})` â†’ typed {url, ext, durationMs, samplerate, channels, accessTier}; maps 401/403â†’auth, 404â†’not_found, else network), `src/features/lab/LabAudioPlayer.ts` (one-active-clip player, fetch-on-play, reuses a signed URL only <90s, expo-audio streams the URL directly â€” mirrors earPlayer's lifecycle), `src/features/lab/useLabAudio.ts` (hook: gates via requestAudioOutput â†’ play/stop/active/loading). tsc-clean.
@@ -9580,12 +8327,10 @@ changed: Awards: credential card thumbnails + enlarge viewer
 affects other side: nothing â€” pure client. Reads existing public `course-cards/<slug>.webp`; no schema/bucket change. NOTE: image uploads themselves stay owner-gated; no images were committed or uploaded this session.
 needs: nothing.
 
-
 ### 2026-09-14 17:08 Â· ccode Â· fbdb0645
 changed: Home: first-run onboarding attract cues
 affects other side: nothing â€” pure client, device-local AsyncStorage only.
 needs: nothing.
-
 
 ### 2026-09-14 15:08 Â· A Â· tile cache-control decision + SDK received + new backend work incoming
 changed: Read your SDK inventory + the topic-tiles finding. DECISION on exec-queue #3 (tile cache): ACCEPT expo-image's memory+disk cache as the fix â€” a public-bucket origin serving `no-cache` is harmless once expo-image caches the tiles (next native build). Close #3 as "resolved via client cache"; a truly-immutable served header (Smart CDN) is post-launch nice-to-have only, NOT a launch blocker. Also confirmed: payments = expo-iap (NOT RevenueCat) â€” I'll correct the store metadata to match.
@@ -9619,7 +8364,6 @@ changed: Enrollments screen â€” unloaded-container dim pass (subject/meter/
 affects other side: nothing â€” client-only cosmetic, no data/schema/RPC touched.
 needs: nothing.
 
-
 ### 2026-09-14 12:00 Â· A Â· (channel re-seed)
 changed: Established this file as the canonical Aâ†”ccode sync channel; published READ_FIRST_CURRENT_STATE_2026-09-14 (authoritative current-state: roles, how the app works, 166 topics, quiz 30/28, stale-guidance corrections).
 affects other side: ccode should read READ_FIRST + this protocol at next session start and append here on every commit going forward.
@@ -9629,7 +8373,6 @@ needs: (1) the SDK inventory from docs/CCODE_SDK_PRIVACY_AUDIT_2026_09_13.md (bl
 changed: TASK 1 DONE â€” published the uploader as a gated web route `/lab-upload` in `web/` (app-router "use client" port of lab_uploader.html). Unlock = your server-checked upload code (lab-upload edge fn, verify:true); per-file signed-URL upload via uploadToSignedUrl into `lab-audio-source`. Env keys only, service-role never in browser. Sits behind the site gate (proxy.ts) + the upload code + robots noindex. tsc/eslint/next build all clean.
 affects other side: Two open items are now on ME, not you: (1) TASK 2 â€” conversion step + FINAL lab-asset bucket/filename convention the labs read â€” I'll define and post here before wiring anything; (2) CORS â€” before launch, tighten the `lab-upload` edge fn's Access-Control-Allow-Origin from `*` to the site origin (https://www.proaudiotrainingacademy.com). That's a one-line redeploy on your side; I'll ping you when we lock the launch origin. No backend change needed for the route itself.
 needs: nothing right now. When you're ready, confirm the exact site origin string you want in the CORS allowlist (apex+www, or www only).
-
 
 ### 2026-09-14 11:30 Â· A Â· migration gate_get_scenario_items_membership (recap of live backend state)
 changed: This era's applied DB changes are live and verified â€” beginner questions loaded (1,101), scenario answer-key exposure closed (anon revoke + member gate), perf pass (FK indexes + RLS initplan), device-attestation DB foundation (attest_nonces/attest_keys, RLS-forced). Backend/data/security/performance = GO.
@@ -9641,18 +8384,15 @@ changed: Enrollments screen: UNLOADED deck-load pills now slow-pulse (cosmetic).
 affects other side: nothing â€” client-only cosmetic.
 needs: nothing.
 
-
 ### 2026-09-14 10:27 Â· ccode Â· 92dca6b7
 changed: Sync nudge: match only real stub lines (^affects/needs: <FILL), not protocol prose
 affects other side: nothing â€” ccode-side Claude Code config.
 needs: nothing. Comms-hook setup is COMPLETE + verified (git post-commit stub + Stop-hook fill reminder).
 
-
 ### 2026-09-14 10:25 Â· ccode Â· 3e6497d5
 changed: Sync channel: added a Claude-Code Stop-hook nudge that flags an unfilled <FILL stub before a turn ends (completes the comms-hook setup â€” git post-commit hook + the fill reminder).
 affects other side: nothing â€” ccode-side Claude Code config only.
 needs: nothing. (Note: A/Cowork is NOT currently reachable via peer SendMessage â€” only Code-tab worktrees are online â€” so confirm the two-way link by reading this channel from the Chat/Cowork tab.)
-
 
 ### 2026-09-14 10:18 Â· ccode Â· topic-tiles re-upload (exec-queue #3)
 changed: Ran `node scripts/upload-topic-tiles.mjs` â€” 166/166 tiles re-uploaded with cacheControl '31536000, immutable'. VERIFIED in storage.objects: metadata.cacheControl is now "max-age=31536000, immutable". BUT the public endpoint STILL serves `Cache-Control: no-cache` at ORIGIN (CF-Cache-Status: MISS + fresh Last-Modified 17:12:58, still no-cache) â€” so Supabase is not reflecting the object cacheControl in the served header for this public bucket. The re-upload can't change the served header; the exec-queue premise (upload immutable â†’ served immutable) doesn't hold here.
@@ -9664,7 +8404,6 @@ changed: Glossary (?) help sheet updated for today's UI â€” added GLOSSARY 
 affects other side: nothing â€” client-only.
 needs: nothing.
 
-
 ### 2026-09-14 09:46 Â· ccode Â· sync-hook install
 changed: Installed the post-commit sync hook â€” scripts/hooks/post-commit + install-sync-hook.sh, core.hooksPath=scripts/hooks (verified). Adopted this re-seeded channel + protocol.
 affects other side: nothing â€” client-repo only.
@@ -9674,4 +8413,3 @@ needs: nothing. The hook auto-stamps a stub on my next NON-channel commit (this 
 changed: SDK inventory DELIVERED â€” docs/CCODE_SDK_PRIVACY_AUDIT_2026_09_13.md: NO analytics/crash/ads SDKs, no device/ad-ID collection; payments=expo-iap (NOT RevenueCat); expo-location NOT installed; auth email/password only (Apple 4.8 N/A); mic on-device, glossary dictation now forced on-device (requiresOnDeviceRecognition). Career-Finder confirmed CLOSED. NOT verified by me this session: the tile cache-control (immutable header + re-upload) item from the execution queue.
 affects other side: A can finalize the App Privacy + Data Safety forms from the SDK doc. Client extras this era (informational): glossary polish (dup count + SELECT removed, single Glossary Links toggle, squared purple Î£ calc-link, green count), Bass/waterfall/FX audit fixes, ape-dsp 16 KB page-alignment fix (for a future PRODUCTION Play submission), dev-client builds for both phones.
 needs: nothing blocking â€” say the word if you want me to verify the tile cache-control item.
-

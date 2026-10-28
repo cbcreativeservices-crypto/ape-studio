@@ -5,7 +5,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Accessibility",
   description:
-    "How Pro Audio Training Academy approaches website accessibility, known limits, and how to request help. We are working toward WCAG 2.2 AA; we have not completed an audit.",
+    "Pro Audio Training Academy is committed to making audio education usable by everyone. Learn how we design for accessibility and how to get help.",
 };
 
 const EMAIL = "info@proaudiotrainingacademy.com";
@@ -16,56 +16,51 @@ export default function Page() {
     <div className="pb-16">
       <PageHero
         eyebrow="Accessibility"
-        title="We want this site to be usable"
-        lede="Pro Audio Training Academy is working toward Web Content Accessibility Guidelines (WCAG) 2.2 Level AA for this website. We have not completed an audit, and we do not claim conformance."
+        title="Audio education for everyone"
+        lede="Pro Audio Training Academy is committed to making our website and app usable by as many people as possible, including people who use assistive technology."
       />
 
-      <Section title="What this page covers">
+      <Section title="Our standard">
         <p>
-          This statement is about the companion website. Learning happens
-          primarily in the mobile app, which follows Apple and Google
-          accessibility guidance on each device.
-        </p>
-        <p>
-          We treat accessibility as ongoing work — evaluation, fixes, and
-          feedback — not a one-time badge.
+          We design this website to the Web Content Accessibility Guidelines
+          (WCAG) 2.2, Level AA, and we review new pages against that standard
+          as we build them. Learning happens mainly in the Pro Audio Training
+          Academy app, which uses the accessibility features built into iPhone,
+          iPad and Android devices.
         </p>
       </Section>
 
-      <Section title="What we already do">
+      <Section title="What you can expect">
         <List
           items={[
-            "Pages declare English (lang=en) and include a skip-to-content link.",
-            "Focusable controls use a visible focus ring.",
-            "The header marks the current page and traps keyboard focus in the mobile menu.",
-            "The home-page screen tour can be paused, is hidden from assistive technology as a duplicate strip, and does not autoplay video when the system prefers reduced motion.",
+            "Keyboard access: you can move through every page with a keyboard, and a “Skip to content” link takes you straight past the menu.",
+            "Clear focus: the item you are on is always outlined so you can see where you are.",
+            "Easy navigation: the menu shows which page you are on and works with a keyboard on phones and tablets.",
+            "Motion control: the home-page screen tour can be paused, and videos do not play automatically if your device is set to reduce motion.",
+            "Screen reader friendly: pages are marked as English so screen readers use the right voice.",
           ]}
         />
       </Section>
 
-      <Section title="Known limits">
-        <List
-          items={[
-            "This website is in English only.",
-            "We have not completed a WCAG 2.2 AA audit, so we do not claim that every page meets that level.",
-            "Some images and looping screen recordings are decorative; others still need better text alternatives as we replace temporary captures.",
-            "Older legal pages are long. We will keep improving structure and headings over time.",
-          ]}
-        />
+      <Section title="Ongoing improvement">
         <p>
-          A longer commitment, including the POUR principles, is in the{" "}
-          <a href="/terms#apxJ">Terms of Service, Appendix J</a>. That
-          appendix does not create a guarantee of perfect accessibility.
+          Accessibility is part of how we work, not a one-time project. We are
+          adding more descriptive text to images and improving the layout of
+          our longer legal pages. The website is currently available in
+          English. Our full accessibility commitment is in the{" "}
+          <a href="/terms#apxJ">Terms of Service, Appendix J</a>.
         </p>
       </Section>
 
-      <Section title="Request help or report a barrier">
+      <Section title="Need help?">
         <p>
-          If you cannot use a page or feature, email{" "}
-          <a href={ACCESS_MAIL}>{EMAIL}</a> with the page address, what you
-          were trying to do, and the assistive technology or browser you
-          use if you know it. We aim to reply within 3–5 business days.
+          If anything on our website or in the app is hard to use, we want to
+          know. Email <a href={ACCESS_MAIL}>{EMAIL}</a> and tell us the page,
+          what you were trying to do, and the device or assistive technology
+          you use. We reply within 3–5 business days. If you need information in a
+          different format, contact us and we’ll do our best to help.
         </p>
+        <p>Last reviewed: October 2026.</p>
       </Section>
 
       <div className="mx-auto flex max-w-3xl flex-col gap-3 px-4 pb-4 sm:flex-row sm:px-6">

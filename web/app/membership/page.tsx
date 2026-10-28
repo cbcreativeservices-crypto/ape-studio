@@ -65,8 +65,7 @@ export default function Page() {
           — one per user — for its own students, staff, or members to
           activate access. Codes are provided only to institutions and are
           not sold to individuals; individual memberships are available in
-          the app. Custom topics, certificates, programs, and analytics are
-          coming soon for the Institutional tier.
+          the app.
         </p>
         <p>
           <Link href="/institutions">Licensing for schools, studios, and industry</Link>

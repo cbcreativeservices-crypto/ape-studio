@@ -1,18 +1,7 @@
-import type { Metadata } from "next";
-import ComingSoon from "@/components/ComingSoon";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Store",
-  description:
-    "The Pro Audio Training Academy store is coming soon.",
-};
-
+// Parked 2026-10-19: website is an app landing page for now.
+// Original saved in web/_parked_2026_10_19/.
 export default function Page() {
-  return (
-    <ComingSoon
-      eyebrow="Store"
-      title="Coming soon"
-      body="The Academy store is being prepared. Check back here when it opens."
-    />
-  );
+  redirect("/");
 }

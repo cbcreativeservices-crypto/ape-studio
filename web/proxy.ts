@@ -135,6 +135,30 @@ export function proxy(request: NextRequest) {
     ) {
       return NextResponse.next();
     }
+    // Pages the APP links to (owner 2026-10-15, App Store review audit): the
+    // employer sign-up button and a certificate's QR / share link must not land
+    // a reviewer or an employer on the key screen. Exact match / one-segment
+    // only — no cookie, not a site-wide unlock.
+    // /institutions (owner GO 2026-10-24): the App Review notes link to it to
+    // explain institutional licensing and its access codes.
+    // /verify + /verify/<code> (owner GO 2026-10-25): the public credential
+    // page's "Verify by code" link opened the key screen, and the form submits
+    // to /verify/<code>. Both show only the holder's name and credentials (the
+    // same public RPCs as /registry/<token>).
+    // /lab-upload (owner GO 2026-10-26: "Audio engineer has files to turn in"):
+    // the recording engineer's uploader. The page itself is noindex and the
+    // lab-upload edge function checks the shared upload code before any file
+    // can go up, so the site key in front of it only blocked the engineer.
+    if (
+      legalPublic === "/employers/apply" ||
+      legalPublic === "/institutions" ||
+      legalPublic === "/lab-upload" ||
+      legalPublic === "/verify" ||
+      /^\/verify\/[^/]+$/.test(legalPublic) ||
+      /^\/registry\/[^/]+$/.test(legalPublic)
+    ) {
+      return NextResponse.next();
+    }
   }
 
   // Already unlocked with a valid cookie -> show the site.
