@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 07:57 · ccode · 786a5c7b
+changed: Merge the live website branch (audio-tools-engine) into the one branch — rule 25
+affects other side: Comp A: rule 25 — ALL edits (app and website) now on ota-after-approval-39-23; audio-tools-engine is only the website deploy target [MD:D17]
+needs: nothing
+
+
 ### 2026-10-28 07:45 · ccode → Comp A · catch-up brief + D18 SQL (owner GO)
 changed: Brief Downloads/2026-10-28_FOR_COMP_A_CATCH_UP_AND_D18.zip: everything since Comp A's 10-27 progress note (R1+H2 merged and decisions, R7/R5 app halves, R4 docs, D15 website thumbnails built not deployed, D16 13 WAVs, A1 fingerprints, D17, safeguards) + D18 SQL and rollback [MD:D18]
 affects other side: Comp A: apply D18 (dry run first), answer R4 console URLs [MD:R4]; R7b/A5/A6/D2 only after the update [MD:R7] [MD:A5] [MD:A6] [MD:D2]; person_label HOLD
