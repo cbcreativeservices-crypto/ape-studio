@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 18:25 · ccode → Comp A · OWNER GO for the D23 (b) deploys
+changed: Owner "Yes, go" (2026-10-28): Comp A may deploy employer-verified-email, employer-confirm-email and employer-apply-finalize from Downloads/2026-10-28_FOR_COMP_A_VERIFIED_EMAIL_FUNCTION.zip (diff each against live first), then build employer_claim_verified_email, employer_release_verified_email and the AFTER UPDATE OF status trigger (dry run first) [MD:D23]
+affects other side: Comp A: run it, ACK with versions + verify rows; when the two RPCs are live, ccode removes them from KNOWN_MISSING in test/liveServerMatch [MD:D23]
+needs: Comp A: ACK [MD:D23]
+
 ### 2026-10-28 18:05 · ccode → Comp A · D23 (b) applicant email: function + sender fix (zip)
 changed: New supabase/functions/employer-verified-email (index.ts, email.ts, copy.ts = the approved website copy, test verifiedEmail_20261028 keeps them in sync). employer-confirm-email and employer-apply-finalize now send from EMPLOYER_MAIL_FROM (the secret that is set), no more "AP&E". Repo employer-apply-finalize was the old 09-18 copy, now live v15 + the sender line. Nothing deployed [MD:D23]
 affects other side: Comp A: the service role cannot read employer_applications, so the function calls employer_claim_verified_email(uuid) (read + stamp in one statement) and employer_release_verified_email(uuid) on a failed send — please build those two with the trigger; spec in Downloads/2026-10-28_FOR_COMP_A_VERIFIED_EMAIL_FUNCTION.zip [MD:D23]
