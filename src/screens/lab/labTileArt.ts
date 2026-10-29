@@ -80,6 +80,26 @@ const ART: Readonly<Record<string, ImageSourcePropType>> = {
   'Ear Training Lab': require('../../../assets/lab-tiles/tr-63-ear-training-lab.webp'),
 };
 
+/** Audio Calculator Laboratory: one image per section tile (owner 2026-10-29),
+ *  keyed by the section id in calc/registry.ts SECTION_META. */
+const CALC_ART: Readonly<Record<string, ImageSourcePropType>> = {
+  waves: require('../../../assets/lab-tiles/calc-01-waves.webp'),
+  levels: require('../../../assets/lab-tiles/calc-02-levels.webp'),
+  spl: require('../../../assets/lab-tiles/calc-03-spl.webp'),
+  speakers: require('../../../assets/lab-tiles/calc-04-speakers.webp'),
+  mics: require('../../../assets/lab-tiles/calc-05-mics.webp'),
+  digital: require('../../../assets/lab-tiles/calc-06-digital.webp'),
+  music: require('../../../assets/lab-tiles/calc-07-music.webp'),
+  rooms: require('../../../assets/lab-tiles/calc-08-rooms.webp'),
+  filters: require('../../../assets/lab-tiles/calc-09-filters.webp'),
+  electronics: require('../../../assets/lab-tiles/calc-10-electronics.webp'),
+};
+
+/** The tile art for a Calculator Lab section, or undefined (plain glass). */
+export function calcTileArt(sectionId: string): ImageSourcePropType | undefined {
+  return CALC_ART[sectionId];
+}
+
 /** The tile art for a lab, or undefined (plain glass). */
 export function labTileArt(labName: string): ImageSourcePropType | undefined {
   return ART[labName];

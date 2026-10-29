@@ -52,6 +52,15 @@ describe('Labs menu tile art', () => {
     const have = new Set(entries.map((e) => e.name));
     assert.deepEqual(leafNames('training').filter((n) => !have.has(n)), []);
   });
+  it('every Calculator Lab section tile has its art, and the screen passes it', () => {
+    const calc = [...src.matchAll(/^\s{2}(\w+): require\('\.\.\/\.\.\/\.\.\/(assets\/lab-tiles\/calc-[^']+\.webp)'\),$/gm)].map((m) => ({ id: m[1], file: m[2] }));
+    const reg = readFileSync(join(root, 'src/screens/lab/calc/registry.ts'), 'utf8');
+    const ids = [...reg.slice(reg.indexOf('export const SECTION_META'), reg.indexOf('export const COMING_SOON')).matchAll(/\{ id: '(\w+)'/g)].map((m) => m[1]);
+    assert.equal(ids.length, 10);
+    assert.deepEqual(calc.map((c) => c.id).sort(), [...ids].sort());
+    for (const c of calc) assert.ok(existsSync(join(root, c.file)), `${c.file} missing`);
+    assert.match(readFileSync(join(root, 'src/screens/lab/calc/CalcLabScreen.tsx'), 'utf8'), /backgroundImage=\{calcTileArt\(sec\.id\)\}/);
+  });
   it('the Labs screen passes it to the tile, and the tile shades it for legible text', () => {
     const screen = readFileSync(join(root, 'src/screens/lab/EarLabScreen.tsx'), 'utf8');
     assert.match(screen, /backgroundImage=\{labTileArt\(leaf\.name\)\}/);

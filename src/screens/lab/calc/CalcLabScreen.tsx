@@ -25,6 +25,7 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { useTier } from '../../../features/commercial/useTier';
 import { CALC_WEEKLY_LIMIT } from '../../../features/lab/calcUsage';
 import { GlassPanel, GlassTile } from '../../tools/GlassTile';
+import { calcTileArt } from '../labTileArt';
 import type { CalcSectionId } from './calcTypes';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { HomeOrBackKey } from '../../../components/nav/HomeOrBackKey';
@@ -282,6 +283,7 @@ export function CalcLabScreen() {
                 key={sec.id}
                 style={styles.catFrame}
                 glassStyle={[styles.catFace, tablet && styles.catFaceTablet]}
+                backgroundImage={calcTileArt(sec.id)}
                 onPress={() => setOpenSec(sec.id)}
                 accessibilityLabel={`${sec.title}. ${sec.note} ${count} calculators. Opens the list.`}
               >
