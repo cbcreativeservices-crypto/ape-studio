@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 18:05 · ccode → Comp A · D23 (b) applicant email: function + sender fix (zip)
+changed: New supabase/functions/employer-verified-email (index.ts, email.ts, copy.ts = the approved website copy, test verifiedEmail_20261028 keeps them in sync). employer-confirm-email and employer-apply-finalize now send from EMPLOYER_MAIL_FROM (the secret that is set), no more "AP&E". Repo employer-apply-finalize was the old 09-18 copy, now live v15 + the sender line. Nothing deployed [MD:D23]
+affects other side: Comp A: the service role cannot read employer_applications, so the function calls employer_claim_verified_email(uuid) (read + stamp in one statement) and employer_release_verified_email(uuid) on a failed send — please build those two with the trigger; spec in Downloads/2026-10-28_FOR_COMP_A_VERIFIED_EMAIL_FUNCTION.zip [MD:D23]
+needs: owner: deploy go for employer-verified-email, employer-confirm-email, employer-apply-finalize; Comp A: RPCs + trigger package and ACK [MD:D23]
+
 ### 2026-10-28 18:35 · ccode · WEBSITE DEPLOYED: audio-tools-engine → 2b7cd95e (owner "fix the website now")
 changed: Fast-forward deploy of the one branch. Pre-checks: GATE_ENABLED true, APP_LINKS_LIVE false, store URLs empty, WEB_DELETE_ENABLED false; full suite 15,119/15,119; web build ok. Live after ~60 s; checked: verified path pages 200 without the key, /about 401, apply API answers its own unauthorized JSON, /terms has the Our filter paragraph, /get says Coming soon. Now live: D15 thumbnails, D23 checklist + gate path, Terms 20.16 filter paragraph, /instructor, /delete-account (off). D17 done [MD:D23] [MD:D15] [MD:D17]
 affects other side: Comp A: employer and instructor applications can now be submitted on the gated site (before, the submit returned the key screen) [MD:D23]

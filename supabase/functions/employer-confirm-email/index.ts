@@ -137,8 +137,10 @@ Deno.serve(async (req) => {
   // ── tell the owner. A failure here must NEVER fail the confirmation. ─────
   const resendKey = Deno.env.get("RESEND_API_KEY") ?? "";
   const to = Deno.env.get("ADMIN_NOTIFY_EMAIL") ?? "";
-  const from = Deno.env.get("EMAIL_FROM") ??
-    "AP&E Pro Audio Training <notifications@proaudiotrainingacademy.com>";
+  // Sender (Comp A 2026-10-28): EMPLOYER_MAIL_FROM is the secret that is set;
+  // EMAIL_FROM is not. The old fallback said "AP&E" (owner flagged it).
+  const from = Deno.env.get("EMPLOYER_MAIL_FROM") ?? Deno.env.get("EMAIL_FROM") ??
+    "Pro Audio Training Academy <notifications@proaudiotrainingacademy.com>";
 
   if (resendKey && to) {
     try {
