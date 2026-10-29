@@ -52,7 +52,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Sound Playground",
     term: "Sound Wave",
     plainEnglish:
-      "It is the back-and-forth pressure ripple that travels through air and lets us hear. The air molecules just vibrate in place and pass the energy along, rather than flying from the source to your ear.",
+      "A sound wave is the back-and-forth pressure ripple that travels through air and lets us hear. The air molecules just vibrate in place and pass the energy along, rather than flying from the source to your ear.",
     glossaryId: "ae191bcd-f5eb-4ec1-ae40-c4cc52e7706a",
   },
   MicLab: {
@@ -60,7 +60,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Microphone Principles",
     term: "Microphone (Mic)",
     plainEnglish:
-      "A microphone is the first link in the audio chain. It turns sound in the air into an electrical signal your gear can work with. The types work in different ways. Condenser mics are sensitive and detailed. Dynamic mics are rugged. Knowing your mics is basic to good recording.",
+      "A microphone is usually the first link in the audio chain. It turns sound in the air into an electrical signal your gear can work with. The types work in different ways. Condenser mics are sensitive and detailed. Dynamic mics are rugged. Knowing your mics is basic to good recording.",
     glossaryId: "651bcc9f-dd53-4c67-8900-92d119497ad2",
   },
   WaveLab: {
@@ -260,7 +260,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Smart Processors Lab",
     term: "De-esser",
     plainEnglish:
-      "Sibilance is the harsh 'S' sound in words like 'yes,' 'sister,' or 'sound,' and it sits roughly around 4 to 10 kHz. A de-esser is a processor that spots this excessive sibilance and turns it down. A split-band de-esser turns down only the high band where the 'S' lives, much like a dynamic EQ. A wideband de-esser turns down the whole signal for a moment each time an 'S' comes through. De-essers are key in vocal recording, where harsh esses can be distracting.",
+      "Sibilance is the harsh 'S' sound in words like 'yes,' 'sister,' or 'sound,' and it often sits around 4 to 10 kHz. A de-esser spots this extra sibilance and turns it down. A wideband de-esser turns the whole voice down for a split second on each 'S'. A split-band de-esser turns down only the high band, much like a dynamic EQ. De-essers are key in vocal work, where harsh esses can be distracting.",
     glossaryId: "13de599c-2d67-45b9-8e64-d1a6ebb9219f",
   },
   DelayLab: {
@@ -300,7 +300,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Phaser",
     term: "phaser",
     plainEnglish:
-      "A phaser splits the signal through a chain of all-pass filters that shift phase differently at different frequencies, then mixes that back with the original. Where the two cancel, you get notches in the spectrum. An LFO sweeps those notches up and down, for the classic swirling sweep. More all-pass stages means more notches and a thicker effect. The LFO rate and depth set how fast and how obvious the sweep is. It differs from a flanger, which makes its comb notches with a short modulated delay.",
+      "A phaser runs a copy of the signal through a chain of all-pass filters. These leave the level of every frequency alone but shift its phase (its position in the wave's cycle), by a different amount at each frequency. The copy is then mixed back with the original. Where the two cancel, you get notches in the spectrum. An LFO (a slow, automatic wobble) sweeps those notches up and down, for the classic swirling sweep. More all-pass stages means more notches and a thicker effect. The LFO rate and depth set how fast and how obvious the sweep is. It differs from a flanger, which makes its comb notches with a short modulated delay.",
     glossaryId: "53870fd2-ddf2-4299-8d29-a0d195e1285e",
   },
   DistortionLab: {
@@ -316,7 +316,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Phase",
     term: "Phase",
     plainEnglish:
-      "Phase is where a wave is in its up-and-down cycle compared to another wave. When two copies line up (in phase) they add together. When two equal sine waves are half a cycle apart (180 degrees) they cancel. Phase drives comb filtering, mono compatibility, and speaker alignment.",
+      "Phase is where a wave is in its up-and-down cycle compared to another wave. When two copies line up (in phase) they add together. When two equal sine waves are half a cycle apart (180 degrees) they cancel. With music, one time delay gives a different phase at each frequency, so some frequencies cancel and others add. Phase drives comb filtering, mono compatibility, and speaker alignment.",
     glossaryId: "a3004045-dce0-4e6d-9a51-f1149c4584a3",
   },
   OscillatorLab: {
@@ -524,7 +524,7 @@ export const LAB_TERM_ENTRIES: Readonly<Record<string, LabTermEntry>> = {
     lab: "Ear Training Lab",
     term: "ear training",
     plainEnglish:
-      "It means training your ears the way a musician trains for pitch. You listen to known changes over and over until you recognise them instantly. Then you can hear a boost at a certain frequency, or too much compression, and name it. It turns vague reactions into clear decisions at the desk.",
+      "It means training your ears the way a musician trains for pitch. You listen to known changes over and over until you recognize them instantly. Then you can hear a boost at a certain frequency, or too much compression, and name it. It turns vague reactions into clear decisions at the desk.",
     glossaryId: "c9f87f96-20eb-44a4-a8fe-5465e49816a2",
   },
   // DJ Systems Lab came from dj-lab after the 2026-10-19 rulings (merged 2026-10-21);

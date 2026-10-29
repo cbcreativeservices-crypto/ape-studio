@@ -118,7 +118,7 @@ describe('3. Calculator workflows — honest words, never the sell, on a failed 
     assert.ok(unconf > 0 && unconf < guard.indexOf('confirmDialog('), 'checked before the membership dialog');
     assert.ok(guard.includes(NC));
     const cap = s.slice(s.indexOf('{mine.length === 0 ? ('), s.indexOf('WORKFLOW TEMPLATES'));
-    assert.ok(cap.indexOf('tierUnconfirmed') < cap.indexOf('an Academy membership feature'));
+    assert.ok(cap.indexOf('tierUnconfirmed') < cap.indexOf('are part of Academy membership'));
     assert.ok(cap.includes(NC));
   });
   it('the builder\'s SAVE', () => {

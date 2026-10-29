@@ -168,8 +168,8 @@ export function ExamBriefing({
               {/* No attempt cap exists — `start_final_exam` never compares
                   attempt_number to anything — so reassuring about one only
                   planted the idea that there is one. */}
-              If you end your membership before that month completes, this exam is discarded. It is
-              not graded and it is not applied.
+              If you end your membership before that month completes, this exam's result is discarded
+              and is not applied to your record.
             </Text>
           </View>
         ) : tenure === 'complete' ? (
@@ -194,7 +194,7 @@ export function ExamBriefing({
           <Text style={styles.body}>
             A certificate requires one complete paid month of membership. If your first month is not
             yet complete, your result is held until it is, then released, and a pass issues the certificate. Ending your
-            membership before that month completes discards the exam ungraded.
+            membership before that month completes discards the result.
           </Text>
         )}
 

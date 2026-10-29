@@ -320,7 +320,7 @@ export function CalcWorkflowsScreen() {
                 ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
                 : 'Checking your account…'
               : limits.savedWorkflows === 0
-              ? 'Building your own workflows is an Academy membership feature — the templates below are ready to run.'
+              ? 'Workflows (templates and your own) are part of Academy membership.'
               : 'Nothing saved yet — start from a template below, or build one with ＋ NEW.'}
           </Text>
         ) : (

@@ -314,7 +314,9 @@ describe('Calculator workflow entitlement limits', () => {
         const v = l[k];
         assert.ok(v === null || v >= 0, `${tier}.${k} = ${v}`);
       }
-      assert.ok(['selected', 'all'].includes(l.templates), tier);
+      assert.ok(['none', 'all'].includes(l.templates), tier);
+      // D11 (owner 2026-10-27): workflows, templates included, are members only.
+      assert.equal(l.templates === 'all', tier === 'academy', tier);
     }
   });
 });

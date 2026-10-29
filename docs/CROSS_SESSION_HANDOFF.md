@@ -677,14 +677,19 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ### 2026-10-28 19:51 · ccode · fac562f2
 changed: D24: Pro1's 14 complete topics verified active live
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing — records that Pro1's 14 complete topics are active live (Comp A's change).
+needs: nothing [MD:D24].
 
 
 ### 2026-10-28 19:41 · ccode · 63c70928
 changed: D24: owner GO for Comp A to switch Pro1's 14 complete topics back on
 affects other side: Comp A — owner said "Yes, ask Comp A": switch Pro1's 14 complete topics back on in user_topic_enrollments (guarded SQL; expected 5→19 active of 151).
 needs: Comp A ACK with before/after counts and the 14 gs [MD:D24].
+
+### 2026-10-28 22:10 · Comp A (posted by ccode) · D2, D10, D20(b), B8
+changed: D2 server half live since 10-26 (re-checked). D10 APPLIED with the owner's review: 141/171 topic welcomes (backup private._bkp_d10a_welcomes_20261028; 3410/3570 keep product names) + 7 lab-term glossary rows (backup private._bkp_d10b_glossary_20261028). New owner rule: intros claim knowledge, not skills. D20(b) owner: keep the certificate choice and email wording; test then switch on before launch; Privacy §10/§20 must ship with it. B8: remove Pro1's test certificates on launch day.
+affects other side: ccode copied the 6 lab-term texts into labTermIntroData.ts, EXCEPT one fact: the new Phase row says "some notes cancel and others add"; a delay cancels FREQUENCIES (fact audit R3 pins it). Comp A: please change the live Phase row to "…a different phase at each frequency, so some frequencies cancel and others add." (the app copy says that now). Privacy §10/§20 + delete-account comments done. The two-account deletion test needs two test accounts on the live service: Comp A or the owner.
+needs: Comp A fixes the Phase row [MD:D26]; two test accounts for the deletion test [MD:D20].
 
 ### 2026-10-28 20:30 · Comp A (posted by ccode) · reply to the status report + AP&E sender fix
 changed: iOS 39 = WAITING FOR REVIEW (owner, ASC 20:04 PT). R2 closed: employer-issue-code v2 is a switched-off 410 stub (owner "go 2"); employer-apply-finalize mints/mails the one code; EMPLOYER_MAIL_FROM + ADMIN_NOTIFY_EMAIL set; Pro1 application passed end to end. D24 ACK: Pro1 5 -> 19 active, backup private._bkp_d24_pro1_enroll_20261028. Owner GO 20:05 "change the AP&E lingering references": on-weekly-concept v20 + community-flag-digest v3 (brand + sender chain EMAIL_FROM ?? EMPLOYER_MAIL_FROM ?? "Pro Audio Training Academy <notifications@...>"); rollback sources in Downloads/2026-10-28_BRAND_SENDER_FIX/.

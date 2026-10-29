@@ -124,18 +124,20 @@ export type WorkflowLimits = {
   savedWorkflows: number | null;
   savedProjects: number | null;
   savedResults: number | null;
-  templates: 'selected' | 'all';
+  templates: 'none' | 'all';
   canResume: boolean;
 };
 
 // Owner 2026-08-06: creating custom "My Workflows" (new OR duplicate-and-
-// customize) is ACADEMY-ONLY. Free accounts can run templates, resume, and
-// save/share their results — but savedWorkflows stays 0.
+// customize) is ACADEMY-ONLY. Owner 2026-10-27: running workflows AT ALL —
+// templates included — is members only too (CalcLabScreen's gateWorkflow stops
+// everyone else at the door), so only `academy` has templates (must-do D11).
+// The project/result caps below stay for a member whose membership lapses.
 export const WORKFLOW_LIMITS: Record<'anonymous' | 'free' | 'academy' | 'lapsed', WorkflowLimits> = {
-  anonymous: { savedWorkflows: 0, savedProjects: 0, savedResults: 0, templates: 'selected', canResume: false },
-  free: { savedWorkflows: 0, savedProjects: 3, savedResults: 10, templates: 'selected', canResume: true },
+  anonymous: { savedWorkflows: 0, savedProjects: 0, savedResults: 0, templates: 'none', canResume: false },
+  free: { savedWorkflows: 0, savedProjects: 3, savedResults: 10, templates: 'none', canResume: true },
   academy: { savedWorkflows: null, savedProjects: null, savedResults: null, templates: 'all', canResume: true },
-  lapsed: { savedWorkflows: 0, savedProjects: 3, savedResults: 10, templates: 'selected', canResume: true },
+  lapsed: { savedWorkflows: 0, savedProjects: 3, savedResults: 10, templates: 'none', canResume: true },
 };
 
 /**

@@ -82,6 +82,26 @@ registerHooks({
 
 const flags = await import('../src/features/flags/flaggedStore.ts');
 const settle = () => new Promise((r) => setTimeout(r, 60));
+/** Wait until no storage call has run for 60 ms (must-do D21, 2026-10-28).
+ *  Test A's bookmark writes can still be in flight on a busy machine; one that
+ *  lands after B seeds the fake storage adds a 13th context and an extra trip. */
+async function quiet(): Promise<void> {
+  const until = Date.now() + 10_000;
+  let last = -1;
+  let stable = 0;
+  while (stable < 3 && Date.now() < until) {
+    await new Promise((r) => setTimeout(r, 20));
+    stable = g.__PA8_CALLS__ === last ? stable + 1 : 0;
+    last = g.__PA8_CALLS__;
+  }
+}
+function seedContexts(): void {
+  AS.clear();
+  for (let i = 0; i < 12; i += 1) AS.set(`ape:bm:topic-${i}`, JSON.stringify([`t${i}`, `u${i}`]));
+  AS.set('ape:bm:empty', '[]');
+  AS.set('ape:bm:corrupt', '{not json');
+  AS.set('ape:other', '"x"');
+}
 
 /* ── A ─────────────────────────────────────────────────────────────────── */
 test('A · a term row subscribes to its own membership: a tap on ANOTHER row leaves its snapshot unchanged', async () => {
@@ -127,11 +147,8 @@ test('A · TermSelectIcons reads per-term booleans and is memoized', () => {
 
 /* ── B ─────────────────────────────────────────────────────────────────── */
 test('B · the bookmark contexts are counted in one storage trip, not one per context', async () => {
-  AS.clear();
-  for (let i = 0; i < 12; i += 1) AS.set(`ape:bm:topic-${i}`, JSON.stringify([`t${i}`, `u${i}`]));
-  AS.set('ape:bm:empty', '[]');
-  AS.set('ape:bm:corrupt', '{not json');
-  AS.set('ape:other', '"x"');
+  await quiet();
+  seedContexts();
 
   g.__PA8_CALLS__ = 0;
   const t0 = performance.now();
@@ -145,6 +162,8 @@ test('B · the bookmark contexts are counted in one storage trip, not one per co
 });
 
 test('B · a failed batch read falls back to per-key reads with the same answer', async () => {
+  await quiet();
+  seedContexts();
   g.__PA8_FAIL_MULTI__ = true;
   try {
     const out = await flags.listBookmarkContexts();
