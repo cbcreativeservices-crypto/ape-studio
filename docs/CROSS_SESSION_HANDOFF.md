@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 18:35 · ccode · WEBSITE DEPLOYED: audio-tools-engine → 2b7cd95e (owner "fix the website now")
+changed: Fast-forward deploy of the one branch. Pre-checks: GATE_ENABLED true, APP_LINKS_LIVE false, store URLs empty, WEB_DELETE_ENABLED false; full suite 15,119/15,119; web build ok. Live after ~60 s; checked: verified path pages 200 without the key, /about 401, apply API answers its own unauthorized JSON, /terms has the Our filter paragraph, /get says Coming soon. Now live: D15 thumbnails, D23 checklist + gate path, Terms 20.16 filter paragraph, /instructor, /delete-account (off). D17 done [MD:D23] [MD:D15] [MD:D17]
+affects other side: Comp A: employer and instructor applications can now be submitted on the gated site (before, the submit returned the key screen) [MD:D23]
+needs: owner: look at the certificate thumbnails live [MD:D15]; Comp A: mail-from secret name for the applicant email [MD:D23]
+
 ### 2026-10-28 18:15 · ccode · D23 verified next steps built on the website + gate opened for the verified path; D22 checked live
 changed: Owner approved the wording, chose "Website first" for instructors (code + student progress on /instructor, which works on today's builds) and the gate fix. Checklist under "You are verified" on the apply form and the status page (web/lib/verifiedNextSteps.ts, web/components/VerifiedNextSteps.tsx); status page says "instructor account" for instructors. Gate: /get, /employers/account, /login, /reset-password, /instructor and /api/employers/apply now open without the site key (the apply submit returned the key screen, 401, on live — nobody could apply). Test verifiedNextSteps_20261028. Not deployed. D22 ACK checked live: matches; lookup_student_by_qr off the allowlist + snapshot. D18 done (person_label live per the owner) [MD:D23] [MD:D22] [MD:D18]
 affects other side: Comp A: for the applicant email, name the mail-from secret that is actually set (employer-confirm-email reads EMAIL_FROM) and pick the manual-approval route (database trigger vs admin screen call) [MD:D23]
