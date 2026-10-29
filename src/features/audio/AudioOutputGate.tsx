@@ -61,6 +61,7 @@ function appVersion(): string | null {
     ?.nativeApplicationVersion ?? null;
 }
 import {
+  askBeforeSoundStart,
   disableAudioOutput,
   enableAudioOutput,
   getLastAudioActivity,
@@ -536,8 +537,18 @@ export function AudioOutputGate({ children }: { children: React.ReactNode }) {
   });
   useEffect(() => () => setHostedOverlay(null), []);
 
+  // "We're updating our audio" (must-do D28): once output is allowed, the first
+  // sound in a lab whose recordings are being replaced waits for its PLAY.
+  // Every caller already awaits this before it sounds, so no lab needs its own hook.
+  const gatedApi = useMemo<GateApi>(
+    () => ({
+      requestAudioOutput: () => api.requestAudioOutput().then((ok) => (ok ? askBeforeSoundStart() : false)),
+    }),
+    [api],
+  );
+
   return (
-    <AudioOutputGateContext.Provider value={api}>
+    <AudioOutputGateContext.Provider value={gatedApi}>
       {children}
 
       {/* POPUP 0 — the first-use Sound Safety Warning. Once ever, until the

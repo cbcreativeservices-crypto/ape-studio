@@ -34,11 +34,13 @@
  * await (the mixing / mastering armed replay): arm it when the timer is set,
  * ask it when the timer fires.
  */
-import { getSoundStopEpoch, isAudioOutputEnabled } from './audioOutputStore';
+import { askBeforeSoundStart, getSoundStopEpoch, isAudioOutputEnabled } from './audioOutputStore';
 
 /** Why a start was blocked: the gate closed, a newer press / a stop / a close
  *  superseded it, or every sound was stopped (the epoch moved). */
-export type FenceBlock = 'gate' | 'superseded' | 'epoch';
+export type FenceBlock = 'gate' | 'superseded' | 'epoch' | 'notice';
+
+
 
 export type FenceResult<T> = { status: 'started'; value: T } | { status: 'blocked'; why: FenceBlock };
 
@@ -70,6 +72,8 @@ export async function startFenced<T = void>(f: {
   stop: (started: T, why: FenceBlock) => unknown;
   isCurrent?: () => boolean;
 }): Promise<FenceResult<T>> {
+  // The "We're updating our audio" notice (must-do D28; audioOutputStore slot).
+  if (!(await askBeforeSoundStart())) return { status: 'blocked', why: 'notice' };
   const blocked = armFence(f.isCurrent);
   const value = await f.start();
   const why = blocked();

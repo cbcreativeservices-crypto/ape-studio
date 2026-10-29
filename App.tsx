@@ -184,6 +184,14 @@ setMeasurementFailureReporter((title, body) => notify(title, body));
 // reports itself (owner ruling 2026-10-03: "if it fails the user needs to
 // know"): one shared, rate-limited notice — src/features/storage/saveFailureNotice.ts.
 setSaveFailurePresenter((title, body, onDismiss) => notify(title, body, onDismiss));
+// "We're updating our audio" before the first sound in a lab whose recordings are
+// being replaced (owner 2026-10-28, must-do D28): every startFenced start and the
+// shared output gate ask it. Required here, not imported, and installed off the
+// render path: keeps it out of the app-start graph (perf start trim budget).
+runSoon(() => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  (require('./src/features/audio/audioReplacement') as typeof import('./src/features/audio/audioReplacement')).installAudioReplacementNotice();
+});
 
 function App() {
   // Capture the error tuple: a font-load failure must NOT hang the app forever on

@@ -278,3 +278,19 @@ export function useFeedbackAllowed(): boolean {
     () => feedbackAllowed,
   );
 }
+
+/**
+ * A question asked BEFORE any sound starts (must-do D28: the "We're updating our
+ * audio" notice, features/audio/audioReplacement.ts). Registered by the app
+ * just after start-up; startFenced and the shared output gate both ask it.
+ * Kept here, a module already in the start graph, so neither the notice nor
+ * the fence adds to app start. Resolves false = do not start.
+ */
+let beforeStart: (() => Promise<boolean>) | null = null;
+export function setBeforeSoundStart(gate: (() => Promise<boolean>) | null): void {
+  beforeStart = gate;
+}
+/** Ask the registered question (true when none is registered). */
+export function askBeforeSoundStart(): Promise<boolean> {
+  return beforeStart ? beforeStart() : Promise.resolve(true);
+}

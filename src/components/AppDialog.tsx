@@ -40,6 +40,9 @@ export type AppDialogRequest = {
   /** Confirm label. Absent ⇒ a one-button NOTICE. */
   confirmText?: string;
   cancelText?: string;
+  /** A confirm with NO cancel button (owner 2026-10-28, the audio-update notice:
+   *  one PLAY button). The scrim and Android BACK still run onCancel. */
+  hideCancel?: boolean;
   /** Tints the confirm control red rather than amber. */
   destructive?: boolean;
   onConfirm?: () => void;
@@ -292,7 +295,7 @@ export function AppDialogHost() {
                   <Text style={styles.ctaText}>{x.text.toUpperCase()}</Text>
                 </Pressable>
               ))}
-          {isNotice ? null : (
+          {isNotice || req.hideCancel ? null : (
             <Pressable
               onPress={() => resolve('cancel')}
               hitSlop={8}

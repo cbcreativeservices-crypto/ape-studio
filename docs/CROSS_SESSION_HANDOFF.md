@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 21:48 · ccode · 03e9eafb
+changed: D27: UK -> US spelling in on-screen app text (colour/centre/programme)
+affects other side: nothing on the server. The database glossary (13 terms, 348 texts) and the lab-requirement seed still use UK spelling; respelling those is Comp A's call with the owner.
+needs: nothing [MD:D27].
+
+
 ### 2026-10-28 19:51 · ccode · fac562f2
 changed: D24: Pro1's 14 complete topics verified active live
 affects other side: nothing — records that Pro1's 14 complete topics are active live (Comp A's change).
