@@ -494,7 +494,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'cert-sound-design-with-synthesis-v3': [
     { key: 'tr_oscillator', why: 'Synthesis starts with what the oscillator is actually producing.' },
-    { key: 'tr_modular', why: 'Oscillator, filter and amplifier, shaped by an LFO and an envelope, is the plan behind most synthesisers.' },
+    { key: 'tr_modular', why: 'Oscillator, filter and amplifier, shaped by an LFO and an envelope, is the plan behind most synthesizers.' },
     { key: 'tr_fm', why: 'FM is a widely used technique and one of the least understood.' },
   ],
   /**
@@ -557,7 +557,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_amp', why: 'The amplifier around the tube — classes, loading, transformers — has to be understood too.' },
   ],
   'cert-tube-audio-equipment-specialist-v3': [
-    { key: 'tr_tube', why: 'Tube behaviour is the specialism.' },
+    { key: 'tr_tube', why: 'Tube behavior is the specialism.' },
     { key: 'tr_amp', why: 'Servicing tube gear means knowing the amplifier stage the tube sits in.' },
   ],
   'cert-vinyl-and-disc-mastering-v3': [
@@ -664,8 +664,8 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'prog-electronic-music-production-and-synthesis-v3': [
     { key: 'tr_oscillator', why: 'Every sound in this program starts at an oscillator.' },
-    { key: 'tr_modular', why: 'Oscillator, filter, amplifier, LFO and envelope is the patch behind most synthesisers you will use.' },
-    { key: 'tr_eq', why: 'Synthesised parts are fitted together with frequency decisions.' },
+    { key: 'tr_modular', why: 'Oscillator, filter, amplifier, LFO and envelope is the patch behind most synthesizers you will use.' },
+    { key: 'tr_eq', why: 'Synthesized parts are fitted together with frequency decisions.' },
     { key: 'tr_compression', why: 'Electronic music is built on deliberate dynamics control.' },
     ...beg('mxb_static', 'mxb_pan', 'mxb_eq', 'mxb_comp', 'mxb_space', 'mxb_auto', 'mxb_export'),
   ],

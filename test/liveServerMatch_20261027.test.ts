@@ -39,9 +39,8 @@ test('every rpc() the code calls exists on the live server', () => {
   const missing = [...called].filter((f) => !snap.functions.includes(f));
   // Written for Comp A to create (must-do row named). Remove each the moment it
   // is live — the snapshot refresh will show it, and a stale entry fails below.
-  const KNOWN_MISSING: Record<string, string> = {
-    audio_replacement_pending: 'D28',
-  };
+  // Empty since 2026-10-29: audio_replacement_pending is live (D28, Comp A).
+  const KNOWN_MISSING: Record<string, string> = {};
   for (const [f, row] of Object.entries(KNOWN_MISSING)) {
     assert.ok(mustDo.includes(`| ${row} |`), `${f} is excused by must-do ${row}, which is not on the list`);
     assert.ok(!snap.functions.includes(f), `${f} is live now: take it off KNOWN_MISSING`);
