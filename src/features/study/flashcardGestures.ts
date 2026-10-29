@@ -41,9 +41,20 @@ export type FsSwipe = 'none' | 'nextSection' | 'prevSection' | 'nextCard' | 'pre
 /** A horizontal move only counts when it clearly dominates the vertical one. */
 const clearlyHorizontal = (dx: number, dy: number) => Math.abs(dx) > 1.5 * Math.abs(dy);
 
+/**
+ * Capture phase (owner 2026-10-29, "swiping doesn't work in full screen"): a
+ * clear horizontal swipe is taken BEFORE the child under the finger — the
+ * section ScrollView fills the screen, and once it had the touch (or had
+ * scrolled a pixel) it refused to hand the swipe up. Vertical is never
+ * captured, so the text still scrolls.
+ */
+export function fsShouldCapture(g: { dx: number; dy: number }): boolean {
+  return Math.abs(g.dx) > 14 && clearlyHorizontal(g.dx, g.dy);
+}
+
 /** Should the full-screen responder take this drag from the ScrollView? */
 export function fsShouldClaim(g: { dx: number; dy: number }, f: FsFace): boolean {
-  if (Math.abs(g.dx) > 14 && clearlyHorizontal(g.dx, g.dy)) return true;
+  if (fsShouldCapture(g)) return true;
   // Vertical belongs to the text everywhere except the bare term face.
   return !f.studyMode && f.level === 0 && Math.abs(g.dy) > 12 && Math.abs(g.dy) > Math.abs(g.dx);
 }

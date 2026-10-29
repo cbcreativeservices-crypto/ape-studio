@@ -113,7 +113,7 @@ import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import type { StudyStackParamList } from '../../navigation/types';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { ResearchMoreLink } from '../../features/research/ResearchMoreLink';
-import { fsShouldClaim, fsSwipeAction, relatedTermsText, stepSectionLevel } from '../../features/study/flashcardGestures';
+import { fsShouldCapture, fsShouldClaim, fsSwipeAction, relatedTermsText, stepSectionLevel } from '../../features/study/flashcardGestures';
 
 /**
  * The user's own "Flagged" pseudo-topic (Booth 2026-07-18): the Dashboard's
@@ -1447,6 +1447,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         if (stateRef.current.linkedOpen) return false;
         return fsShouldClaim(g, { level: stateRef.current.level, studyMode: stateRef.current.reviewMode });
       },
+      // A clear horizontal swipe is taken before the ScrollView under the
+      // finger can keep it, and is not handed back (owner 2026-10-29).
+      onMoveShouldSetPanResponderCapture: (_e, g) => !stateRef.current.linkedOpen && fsShouldCapture(g),
+      onPanResponderTerminationRequest: () => false,
       onPanResponderRelease: (_e, g) => {
         const { stepSection, goCard, reveal, level, reviewMode } = stateRef.current;
         const action = fsSwipeAction(g, { level, studyMode: reviewMode });
@@ -2265,7 +2269,14 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           {/* A tap flips ONLY on the term face (tester Terry, 2026-10-08): on a
               section a stray touch used to advance it with no easy way back.
               Sections now change by a deliberate horizontal swipe. */}
-          <Pressable accessible={false} onPress={studyMode || level !== 0 ? undefined : onTap} style={styles.fsBody}>
+          {/* ⛔ `disabled` off the term face (owner 2026-10-29: "only a tap
+              works" in full screen). With no onPress this Pressable still
+              took the responder on every touch-down, and it wraps the section
+              / study-sheet ScrollViews — the scroller-inside-a-touchable
+              arrangement CardTextPress fixed in the card view (2026-09-25):
+              the drag never reached the text. Disabled, it claims nothing and
+              the ScrollView owns the touch. The term face has no scroller. */}
+          <Pressable accessible={false} onPress={studyMode || level !== 0 ? undefined : onTap} style={styles.fsBody} disabled={studyMode || level !== 0}>
             {card ? (
               studyMode ? (
                 // STUDY SHEET: term + every chosen section together, scrollable.

@@ -12,6 +12,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   NO_RELATED_TERMS,
+  fsShouldCapture,
   fsShouldClaim,
   fsSwipeAction,
   relatedTermsText,
@@ -58,6 +59,18 @@ test('A2: vertical drags on a section belong to the ScrollView; diagonal drags t
   assert.equal(fsShouldClaim({ dx: 2, dy: -30 }, term), true);
   assert.equal(fsSwipeAction({ dx: 2, dy: -50, vx: 0 }, term), 'revealFirst');
   assert.match(fc, /fsShouldClaim\(g,/);
+});
+
+test('2026-10-29: full screen — the body never sits as a touchable over the ScrollView; horizontal swipes are captured', () => {
+  // Off the term face the body Pressable is disabled, so it claims no touch-down.
+  assert.match(fc, /style=\{styles\.fsBody\} disabled=\{studyMode \|\| level !== 0\}>/);
+  // Clear horizontal swipes are captured (before the ScrollView) and kept.
+  assert.equal(fsShouldCapture({ dx: -40, dy: 6 }), true);
+  assert.equal(fsShouldCapture({ dx: 30, dy: 40 }), false);
+  assert.equal(fsShouldCapture({ dx: 3, dy: 80 }), false);
+  assert.equal(fsShouldCapture({ dx: 10, dy: 0 }), false);
+  assert.match(fc, /onMoveShouldSetPanResponderCapture: \(_e, g\) => !stateRef\.current\.linkedOpen && fsShouldCapture\(g\)/);
+  assert.match(fc, /onPanResponderTerminationRequest: \(\) => false/);
 });
 
 test('A3: RELATED TERMS never shows the category; empty reads honestly', () => {
