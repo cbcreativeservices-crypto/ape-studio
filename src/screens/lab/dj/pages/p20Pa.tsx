@@ -62,7 +62,7 @@ export const GOALS_PA = ['Hand off DJ L and DJ R, balanced', 'Raise the room by 
 type View3 = 'ROOM' | 'HANDOFF' | 'SYSTEM';
 
 const LOOK: Record<View3, string> = {
-  ROOM: 'You are looking down on the venue: the stage at the top, the floor coloured by level, the tops with their −6 dB edges, the subs and the booth. PA L stands at house left — on your left here, the DJ’s right.',
+  ROOM: 'You are looking down on the venue: the stage at the top, the floor colored by level, the tops with their −6 dB edges, the subs and the booth. PA L stands at house left — on your left here, the DJ’s right.',
   HANDOFF: 'You are looking at the back of the mixer and the venue’s stage box at the side of the stage, about 20 m of cable away: MASTER L and R into the inputs this venue has labelled DJ L and DJ R (13 and 14 here; every venue numbers its own — ask the engineer).',
   SYSTEM: 'You are looking at the venue’s system: the crossover’s response (TOPS, SUB and their SUM), and below, a top and a sub at true size.',
 };
@@ -463,7 +463,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
         render: (w, h) => {
           const k = Math.sqrt(Math.max(1, w / 360));
           return view === 'ROOM' ? (
-            <Scene w={w} h={h} frame={PLAN_FRAME} motion={motion} fit={{ x: 0, y: 0, w, h: h - LEGEND_H * k }} aspect={false} focus={{ x: -160, y: 60, w: 320, h: 200 }} a11y={`${LOOK.ROOM} Floor centre about ${fmtDba(fc)} dBA, the decks ${fmtDba(decks)}.${map === 'BASS' ? ' The bass map shows 60 hertz: the subs’ sound adds in step in some places and cancels in others.' : ''}`} obstacles={[...planObstacles(v.place, v.subPos, v.subs, true), FLOOR_WORD]} callouts={roomCallouts} screenOverlay={(sw, sh, _x, kz) => <HeatLegend w={sw} h={sh} k={Math.sqrt(Math.max(1, kz))} mode={map} place={v.place} feedDbfs={feed > -90 ? feed : -20} strip />}>
+            <Scene w={w} h={h} frame={PLAN_FRAME} motion={motion} fit={{ x: 0, y: 0, w, h: h - LEGEND_H * k }} aspect={false} focus={{ x: -160, y: 60, w: 320, h: 200 }} a11y={`${LOOK.ROOM} Floor center about ${fmtDba(fc)} dBA, the decks ${fmtDba(decks)}.${map === 'BASS' ? ' The bass map shows 60 hertz: the subs’ sound adds in step in some places and cancels in others.' : ''}`} obstacles={[...planObstacles(v.place, v.subPos, v.subs, true), FLOOR_WORD]} callouts={roomCallouts} screenOverlay={(sw, sh, _x, kz) => <HeatLegend w={sw} h={sh} k={Math.sqrt(Math.max(1, kz))} mode={map} place={v.place} feedDbfs={feed > -90 ? feed : -20} strip />}>
               <PlanView spec={{ map, place: v.place, subPos: v.subPos, subs: v.subs, feedDbfs: feed > -90 ? feed : -20, monitors: true, turntable: true, edges: map === 'TOPS', points: true, djTone: dose != null && dose > 100 ? '#ff5a48' : '#5bff85' }} />
             </Scene>
           ) : view === 'HANDOFF' ? (
@@ -493,7 +493,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
           );
         },
         bezel: [
-          { k: 'FLOOR', v: fmtDba(floor), sub: floorHum ? 'dBA · HUM' : 'dBA (MODEL)', vA11y: floor == null ? 'no sound on the floor' : `${floor.toFixed(0)} dBA modelled at the floor centre${floorHum ? ', with a hum' : ''}`, tint: floorHum ? PEAK_RED : colors.amber },
+          { k: 'FLOOR', v: fmtDba(floor), sub: floorHum ? 'dBA · HUM' : 'dBA (MODEL)', vA11y: floor == null ? 'no sound on the floor' : `${floor.toFixed(0)} dBA modelled at the floor center${floorHum ? ', with a hum' : ''}`, tint: floorHum ? PEAK_RED : colors.amber },
           { k: 'AT THE DECKS', v: fmtDba(dj), sub: 'dBA (MODEL)', tint: dj != null && dj > 88 ? PEAK_RED : colors.green },
           { k: '4-HOUR DOSE', v: dose == null ? '—' : `${dose} %`, sub: 'ROOM ONLY', vA11y: dose == null ? 'no dose yet' : `${dose} percent of the daily dose in four hours, from the room only — the headphones add to it`, tint: dose != null && dose > 100 ? PEAK_RED : colors.green },
           fourth,
@@ -510,7 +510,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
             format: (x) => `MASTER ${Math.round(x * 100)}% · ${(20 * Math.log10(Math.max(1e-6, levelKnobGain(x)))).toFixed(1)} dB${x > 0.8 ? ' — past unity' : ''}`,
             formatShort: (x) => `${Math.round(x * 100)}%`,
           },
-          { kind: 'options', id: 'view', label: 'VIEW', valueLabel: view, options: [{ id: 'ROOM', label: 'ROOM', blurb: 'The venue from above, coloured by level.' }, { id: 'HANDOFF', label: 'HANDOFF', blurb: 'The mixer’s rear and the venue’s stage box.' }, { id: 'SYSTEM', label: 'SYSTEM', blurb: 'The crossover and the speakers.' }], selectedId: view, onSelect: (id) => setView(id as View3) },
+          { kind: 'options', id: 'view', label: 'VIEW', valueLabel: view, options: [{ id: 'ROOM', label: 'ROOM', blurb: 'The venue from above, colored by level.' }, { id: 'HANDOFF', label: 'HANDOFF', blurb: 'The mixer’s rear and the venue’s stage box.' }, { id: 'SYSTEM', label: 'SYSTEM', blurb: 'The crossover and the speakers.' }], selectedId: view, onSelect: (id) => setView(id as View3) },
           { kind: 'group', id: 'venue', label: 'VENUE', valueLabel: venueHandoffOk(v) ? `${v.gainDb >= 0 ? '+' : '−'}${Math.abs(v.gainDb)} dB` : 'NOT FED', valueA11y: `the venue gets ${v.djL ? 'DJ L' : 'no DJ L'} and ${v.djR ? 'DJ R' : 'no DJ R'}; engineer's gain ${v.gainDb} dB; booth monitors ${Math.round(booth.mixer.booth * 100)} percent`, render: () => <VenueTray tr={tr} onAsk={setEngineer} /> },
           { kind: 'group', id: 'setup', label: 'SETUP', valueLabel: PLACE_SHORT[v.place], valueA11y: `tops ${PLACEMENTS[v.place].label.toLowerCase()}`, render: () => <SetupTray setView={setView} map={map} setMap={setMap} /> },
           stopKey(tr),

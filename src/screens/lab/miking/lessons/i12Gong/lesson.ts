@@ -94,11 +94,11 @@ const scenarios: MikingScenario[] = [
     id: 'gg.snd.2',
     page: 'sound',
     prompt: 'Why can a stroke on a bossed gong’s boss sound more like one pitch?',
-    options: ['A centre stroke drives mostly the ring-shaped shapes', 'The boss is tuned so that it makes no other sounds at all', 'The boss stops the rest of the face moving'],
-    correct: 'A centre stroke drives mostly the ring-shaped shapes',
-    explain: 'A stroke drives a shape only as much as the face moves where it lands. At the centre, every shape with a still line across it stands still — so fewer shapes ring, and the sound centres on a pitch. (The boss shapes it further.)',
+    options: ['A center stroke drives mostly the ring-shaped shapes', 'The boss is tuned so that it makes no other sounds at all', 'The boss stops the rest of the face moving'],
+    correct: 'A center stroke drives mostly the ring-shaped shapes',
+    explain: 'A stroke drives a shape only as much as the face moves where it lands. At the center, every shape with a still line across it stands still — so fewer shapes ring, and the sound centers on a pitch. (The boss shapes it further.)',
     why: {
-      'The boss is tuned so that it makes no other sounds at all': 'The face still rings in several shapes; the centre stroke favours fewer of them.',
+      'The boss is tuned so that it makes no other sounds at all': 'The face still rings in several shapes; the center stroke favours fewer of them.',
       'The boss stops the rest of the face moving': 'The whole face still moves; it is which shapes are driven that changes.',
     },
   },
@@ -229,7 +229,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A bossed gong: you put the mic very close, right on the boss’s line. What may happen?',
     options: ['The mallet’s impact is exaggerated', 'You hear the purest pitch the gong can make', 'Nothing changes from a broader view'],
     correct: 'The mallet’s impact is exaggerated',
-    explain: 'Very close on the centre may exaggerate the mallet’s impact; it is not automatically the most faithful pitch. Aim at the boss from a safe offset and compare a broader front view.',
+    explain: 'Very close on the center may exaggerate the mallet’s impact; it is not automatically the most faithful pitch. Aim at the boss from a safe offset and compare a broader front view.',
     why: {
       'You hear the purest pitch the gong can make': 'Closest is not purest: compare a safe offset and a broader view.',
       'Nothing changes from a broader view': 'Distance and angle change the balance a lot at a gong.',
@@ -279,7 +279,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Start with the main array; add only as much spot as needed',
     explain: 'Begin with the main array and use only as much gong spot as needed — then check the blend through the whole phrase, in mono.',
     why: {
-      'As much as possible, so that the gong can be turned up later on': 'A loud spot pulls the gong out of the ensemble and colours the sum.',
+      'As much as possible, so that the gong can be turned up later on': 'A loud spot pulls the gong out of the ensemble and colors the sum.',
       'None — a gong does not need a spot mic': 'Sometimes it does — for definition the main array misses.',
     },
   },
@@ -289,9 +289,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Which kind of gong is a broad, blooming wash with no clear note?',
     options: ['An orchestral tam-tam, without a boss', 'A bossed gong struck on its boss', 'A gong of either kind, if it is large'],
     correct: 'An orchestral tam-tam, without a boss',
-    explain: 'A tam-tam blooms into a broad, complex sound; a bossed gong struck on its boss is more pitch-centred. Identify the gong before choosing an approach.',
+    explain: 'A tam-tam blooms into a broad, complex sound; a bossed gong struck on its boss is more pitch-centered. Identify the gong before choosing an approach.',
     why: {
-      'A bossed gong struck on its boss': 'That is the more pitch-centred kind.',
+      'A bossed gong struck on its boss': 'That is the more pitch-centered kind.',
       'A gong of either kind, if it is large': 'Size alone does not decide it; the kind of gong does.',
     },
   },
@@ -415,7 +415,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Small condenser about 90 cm in front of the face, facing it, outside the swing and the mallet', ok: true, power: 'phantom', feedback: 'The broad front view; it needs the phantom this channel has.' },
       { id: 'b', label: 'A coincident pair at the front, compared with one mic, in the good room', ok: true, power: 'phantom', feedback: 'A fair studio choice for size, if it stays solid in mono.' },
-      { id: 'c', label: 'A mic 5 cm from the face, at its centre', ok: false, power: 'phantom', feedback: 'Inside the swing, against the gong — never.' },
+      { id: 'c', label: 'A mic 5 cm from the face, at its center', ok: false, power: 'phantom', feedback: 'Inside the swing, against the gong — never.' },
       { id: 'd', label: 'A clamp on the frame holding the mic, without asking', ok: false, power: 'phantom', feedback: 'Nothing is attached to the frame without the owner’s approval.' },
       { id: 'e', label: 'Tie the gong still so the level does not change', ok: false, power: 'none', feedback: 'The gong must hang freely.' },
     ],
@@ -453,7 +453,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What tells an orchestral tam-tam from a bossed gong?',
     options: ['A tam-tam has no raised boss in the middle', 'A tam-tam is usually the smaller of the two', 'A bossed gong is struck at its rim'],
     correct: 'A tam-tam has no raised boss in the middle',
-    explain: 'A bossed gong has a raised centre that is struck; a tam-tam’s face has no boss. Identify the gong before choosing an approach.',
+    explain: 'A bossed gong has a raised center that is struck; a tam-tam’s face has no boss. Identify the gong before choosing an approach.',
     why: {
       'A tam-tam is usually the smaller of the two': 'Tam-tams are often large; size is not the tell.',
       'A bossed gong is struck at its rim': 'It is struck on or near its boss.',
@@ -487,9 +487,9 @@ const diagnostic: DiagnosticItem[] = [
     id: 'gg.q.4',
     covers: 'sound',
     prompt: 'Why does a stroke on the boss favour fewer vibration shapes?',
-    options: ['At the centre, the shapes with still lines stand still', 'The boss is far too thick to vibrate at all, so it stays still', 'The two cords hold the centre of the face still'],
-    correct: 'At the centre, the shapes with still lines stand still',
-    explain: 'A stroke drives a shape only as much as the face moves there; at the centre only the ring-shaped ones move.',
+    options: ['At the center, the shapes with still lines stand still', 'The boss is far too thick to vibrate at all, so it stays still', 'The two cords hold the centre of the face still'],
+    correct: 'At the center, the shapes with still lines stand still',
+    explain: 'A stroke drives a shape only as much as the face moves there; at the center only the ring-shaped ones move.',
     why: {
       'The boss is far too thick to vibrate at all, so it stays still': 'The boss vibrates with the face; it is which shapes are driven.',
       'The two cords hold the centre of the face still': 'The cords hold the rim, not the centre.',
@@ -535,9 +535,9 @@ export const I12_LESSON: Lesson = {
   ],
   sound: {
     stages: [
-      { title: 'The mallet lands', text: 'The soft mallet strikes the face a little off centre. That contact is the ATTACK — softened by the mallet’s felt.', byVariant: { bossed: 'The soft mallet strikes the boss. That contact is the ATTACK — softened by the mallet’s felt.' } },
+      { title: 'The mallet lands', text: 'The soft mallet strikes the face a little off center. That contact is the ATTACK — softened by the mallet’s felt.', byVariant: { bossed: 'The soft mallet strikes the boss. That contact is the ATTACK — softened by the mallet’s felt.' } },
       { title: 'Broad shapes first', text: 'The face moves first in a few broad shapes — drawn here, much larger than life, as blue and amber regions.' },
-      { title: 'The build-up', text: 'Then the energy spreads into many finer shapes across the face: the sound SWELLS after the stroke — the bloom. The order of events, not their speed.', byVariant: { bossed: 'Struck on the boss, the face rings mostly in its ring-shaped shapes, round the boss: a steadier, more pitch-centred tone.' } },
+      { title: 'The build-up', text: 'Then the energy spreads into many finer shapes across the face: the sound SWELLS after the stroke — the bloom. The order of events, not their speed.', byVariant: { bossed: 'Struck on the boss, the face rings mostly in its ring-shaped shapes, round the boss: a steadier, more pitch-centered tone.' } },
       { title: 'Front and back', text: 'The plate pushes air from both faces as it rings, and the whole gong swings gently on its cords. It decays slowly unless the player damps it.' },
     ],
     attack: 'The mallet’s contact: soft and broad with a felt mallet, harder with a harder one. A close mic near the struck area tends to hear more of the impact and of that local area of the face.',
@@ -569,9 +569,9 @@ export const I12_LESSON: Lesson = {
     ],
   },
   unknowns: [
-    { text: 'The boss (Ø 90 × 35 mm), the rim’s depth (40 mm), the face’s dome (8 mm), the centre height (1300 mm) and the swing (±80 mm) — drawing defaults.', dims: ['bossD', 'bossH', 'rim', 'dome', 'centreH', 'swing'] },
+    { text: 'The boss (Ø 90 × 35 mm), the rim’s depth (40 mm), the face’s dome (8 mm), the center height (1300 mm) and the swing (±80 mm) — drawing defaults.', dims: ['bossD', 'bossH', 'rim', 'dome', 'centreH', 'swing'] },
     { text: 'The mallet (head Ø 120 mm, handle 400 mm) and the frame (feet 600 mm, posts 40 mm, the inner width) — drawing defaults; the stand type is a rated frame for gongs up to 100 cm.', dims: ['malletHead', 'malletHandle', 'feet', 'post'] },
-    { text: 'Where a tam-tam is struck: a little off centre (0.25 R) is a drawing default — a maker’s figure shows an ideal point that was not read as text. The build-up is drawn as which shapes hold the energy, never as a time or a level.', dims: [] },
+    { text: 'Where a tam-tam is struck: a little off center (0.25 R) is a drawing default — a maker’s figure shows an ideal point that was not read as text. The build-up is drawn as which shapes hold the energy, never as a time or a level.', dims: [] },
     { text: 'The 60–120 cm and 30–60 cm starting points and the room mic are the lesson’s own teaching trials; no maker prescribes them. One recording account placed mics about 30 cm from the gongs in a large room — specific to that room.', dims: [] },
   ],
   live: {

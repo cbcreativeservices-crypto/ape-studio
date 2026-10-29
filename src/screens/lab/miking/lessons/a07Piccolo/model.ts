@@ -48,7 +48,7 @@ const BEHIND_Z: Omit<DocumentedZone, 'start'> = {
   kind: 'sourced',
   src: 'DPA-FLUTE',
   quote: 'spot-miked behind and slightly above the head of the player, pointing at the finger holes',
-  bandProv: ill(`${TRANSFER}; "a few inches" drawn 190–330 mm from the head’s centre`),
+  bandProv: ill(`${TRANSFER}; "a few inches" drawn 190–330 mm from the head’s center`),
   refSurface: 'head',
   side: 'outside',
   distance: { min: 190, max: 330 },

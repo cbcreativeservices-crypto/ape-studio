@@ -167,7 +167,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Two crowd mics stand far apart, one each side of the stage. What are they?',
     options: ['Two zones, not a coherent pair', 'A stereo pair, as two mics make one', 'One wide pair, once the levels match'],
     correct: 'Two zones, not a coherent pair',
-    explain: 'Two distant zone mics hear different local events at different times. The image can wander and the mono sum can colour — check each one and the sum.',
+    explain: 'Two distant zone mics hear different local events at different times. The image can wander and the mono sum can color — check each one and the sum.',
     why: {
       'A stereo pair, as two mics make one': 'Two channels are not a stereo image: the geometry decides.',
       'One wide pair, once the levels match': 'Matching levels does not remove the timing differences between them.',
@@ -360,7 +360,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Which output do you check before the event, besides stereo?',
     options: ['The mono output, by ear', 'The loudest channel alone', 'Only the surround layout'],
     correct: 'The mono output, by ear',
-    explain: 'Evaluate headphones, stereo loudspeakers and the actual mono path: a pair or two zones can colour the mono sum.',
+    explain: 'Evaluate headphones, stereo loudspeakers and the actual mono path: a pair or two zones can color the mono sum.',
     why: {
       'The loudest channel alone': 'One channel tells you nothing about the sum.',
       'Only the surround layout': 'Optional deliverables never replace the mono and stereo check.',
@@ -412,7 +412,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Two zones or a spaced pair summed? Listen to one channel alone.',
     options: ['Check the sum; use one channel or XY', 'Flip one zone’s polarity for good', 'Boost the low end on both of the channels'],
     correct: 'Check the sum; use one channel or XY',
-    explain: 'For mono, one crowd mic or one channel of a spaced pair can be clearer than an unchecked sum; XY keeps a stable centre.',
+    explain: 'For mono, one crowd mic or one channel of a spaced pair can be clearer than an unchecked sum; XY keeps a stable center.',
     why: {
       'Flip one zone’s polarity for good': 'Polarity cannot remove the delays between distant mics.',
       'Boost the low end on both of the channels': 'EQ cannot fill a comb’s notches.',
@@ -491,7 +491,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A spaced pair on the truss plus a zone per side section', ok: true, power: 'phantom', feedback: 'A start that can pass — rigged by a qualified rigger, the mono sum checked.' },
       { id: 'c', label: 'One mono mic in the middle for the whole arena', ok: false, power: 'phantom', feedback: 'One capsule cannot represent every section of an arena.' },
       { id: 'd', label: 'Crowd mics clamped over the seats by the audio crew', ok: false, power: 'phantom', feedback: 'Nothing over people without a qualified rigger.' },
-      { id: 'e', label: 'Every zone time-aligned to the centre seat', ok: false, power: 'phantom', feedback: 'Alignment fits one seat; the audience is everywhere.' },
+      { id: 'e', label: 'Every zone time-aligned to the center seat', ok: false, power: 'phantom', feedback: 'Alignment fits one seat; the audience is everywhere.' },
     ],
     reasons: [
       { id: 'r.doc', label: 'Each zone raised on an approved place, aimed at faces', role: 'required', feedback: 'Say where each zone starts and why.' },
@@ -528,7 +528,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Two zone mics far apart, summed to mono. What can you expect?',
     options: ['A comb that moves seat to seat', 'A stable centre, like an XY pair', 'Nothing, once they are level-matched'],
     correct: 'A comb that moves seat to seat',
-    explain: 'Different local events reach the two at different times: the image can wander and the mono sum colours — differently for each seat.',
+    explain: 'Different local events reach the two at different times: the image can wander and the mono sum colors — differently for each seat.',
     why: { 'A stable centre, like an XY pair': 'XY capsules hear a source at the same moment; far-apart zones do not.', 'Nothing, once they are level-matched': 'Levels do not remove the timing differences.' },
   },
   {

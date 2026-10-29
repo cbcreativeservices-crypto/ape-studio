@@ -227,7 +227,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ps.place.2',
     page: 'placement',
-    prompt: 'High notes and bar attacks sound sharp and brittle at the dust cap’s centre. What first?',
+    prompt: 'High notes and bar attacks sound sharp and brittle at the dust cap’s center. What first?',
     options: ['Cut the treble on the amp first, before moving the mic or anything else', 'Move the mic back and change its angle in one go', 'Slide toward the cap’s edge or outer cone, same distance'],
     correct: 'Slide toward the cap’s edge or outer cone, same distance',
     explain: 'One change at a time: slide across the cone first, compare at matched level, then try an angle.',
@@ -434,10 +434,10 @@ const symptoms: Symptom[] = [
   {
     id: 's.brittle',
     observation: 'Upper notes sound sharp or brittle',
-    firstChecks: 'Is the mic near the dust-cap centre? Move toward the cap’s edge or outer cone; compare on real playing.',
+    firstChecks: 'Is the mic near the dust-cap center? Move toward the cap’s edge or outer cone; compare on real playing.',
     options: ['Toward the cap’s edge or outer cone; compare on real playing', 'Cut the amp’s treble before moving the mic at all', 'Push the mic right up against the grille cloth to tame the highs'],
     correct: 'Toward the cap’s edge or outer cone; compare on real playing',
-    explain: 'The centre tends to be brightest. Slide outward at the same distance, and judge it on the player’s real phrases.',
+    explain: 'The center tends to be brightest. Slide outward at the same distance, and judge it on the player’s real phrases.',
     why: {
       'Cut the amp’s treble before moving the mic at all': 'The amp is the player’s sound; move the mic first.',
       'Push the mic right up against the grille cloth to tame the highs': 'Touching the grille adds noise; move across the cone instead.',
@@ -686,7 +686,7 @@ export const C04_LESSON: Lesson = {
       { title: 'Push in front, pull behind', text: 'Moving forward, the cone pushes the air in front and pulls the air behind — at the same moment, opposite ways.' },
       { title: 'Sound leaves', text: 'Sound leaves the front through the grille; with a closed back, the back of the cone sounds into the box.', ported: 'Sound leaves the front through the grille — and through the open back, opposite in polarity.' },
     ],
-    attack: 'The picked attack and the bar’s contact reach the cone first. A close mic aimed toward the centre of the cone tends to hear more of them — sometimes too sharp on high notes.',
+    attack: 'The picked attack and the bar’s contact reach the cone first. A close mic aimed toward the center of the cone tends to hear more of them — sometimes too sharp on high notes.',
     body: 'The long sustain and the swells, with the amp’s reverb, the cabinet and the room. Toward the edge, or a little farther back, a mic tends to hear more of it. Tendencies to check.',
     head: { diameterMm: 305, rods: 0, label: '12 in speaker, face-on', strikeSrc: 'CEL-V30' },
   },

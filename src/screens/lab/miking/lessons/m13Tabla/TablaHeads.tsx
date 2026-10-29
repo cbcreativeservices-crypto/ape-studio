@@ -87,8 +87,8 @@ export function TablaHeads({ w, h, focus, press, accessibilityLabel }: { w: numb
     return q;
   }, [b.u, b.v]);
   const labels: StaticLabel[] = [
-    { id: 'dayan', text: 'DAYAN · CENTRED', short: 'DAYAN', u: POS.dayan.u, v: -BAYAN.headR - 40, align: 'center', tone: focus === 'dayan' ? undefined : 'muted' },
-    { id: 'bayan', text: 'BAYAN · OFF-CENTRE', short: 'BAYAN', u: POS.bayan.u, v: -BAYAN.headR - 40, align: 'center', tone: focus === 'bayan' ? undefined : 'muted' },
+    { id: 'dayan', text: 'DAYAN · CENTERED', short: 'DAYAN', u: POS.dayan.u, v: -BAYAN.headR - 40, align: 'center', tone: focus === 'dayan' ? undefined : 'muted' },
+    { id: 'bayan', text: 'BAYAN · OFF-CENTER', short: 'BAYAN', u: POS.bayan.u, v: -BAYAN.headR - 40, align: 'center', tone: focus === 'bayan' ? undefined : 'muted' },
     { id: 'player', text: 'PLAYER ↓', u: (POS.bayan.u + POS.dayan.u) / 2, v: BAYAN.headR + 50, align: 'center', tone: 'muted' },
     { id: 'aud', text: 'AUDIENCE ↑', u: (POS.bayan.u + POS.dayan.u) / 2, v: -BAYAN.headR - 40, align: 'center', tone: 'muted' },
   ];

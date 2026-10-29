@@ -470,7 +470,7 @@ export function useMsWidthStep({ sources, onInteractive, done }: { sources: read
       bezel: [
         { k: 'WIDTH k', v: k.toFixed(2), flex: 1 },
         { k: 'SIDE', v: k > 0 ? `${sideDb(k).toFixed(1)} dB` : 'OFF', flex: 1 },
-        { k: src.short, v: Math.abs(bal) < 0.05 ? 'CENTRE' : `${Math.abs(bal).toFixed(1)} dB ${bal > 0 ? 'L' : 'R'}`, flex: 1.2 },
+        { k: src.short, v: Math.abs(bal) < 0.05 ? 'CENTER' : `${Math.abs(bal).toFixed(1)} dB ${bal > 0 ? 'L' : 'R'}`, flex: 1.2 },
         { k: 'MONO', v: '= MID', tint: GREEN, flex: 0.9 },
       ],
       params: [
@@ -510,7 +510,7 @@ export function useMsWidthStep({ sources, onInteractive, done }: { sources: read
         <NowLine text={words} />
         <Card>
           <Point title="THE MATRIX">{`Left = Mid + k × Side; Right = Mid − k × Side. Add them and halve: (L + R) ÷ 2 = Mid — the Side cancels. Here the source gives Mid ${d.mono.toFixed(2)}, left ${d.L.toFixed(2)}, right ${d.R.toFixed(2)}.`}</Point>
-          <Point title="THE WIDTH">{k === 0 ? 'No Side at all: left and right are the same — mono in two channels.' : k > 1 ? 'Wide: the opposite-polarity rear lobe of each side’s pickup (dashed) grows large, and the image can pull to the edges. Start modest.' : 'A modest width: the left channel favours the left, the right the right, and the centre stays in the centre. Each side already has a small opposite-polarity rear lobe (dashed); it grows with the width.'}</Point>
+          <Point title="THE WIDTH">{k === 0 ? 'No Side at all: left and right are the same — mono in two channels.' : k > 1 ? 'Wide: the opposite-polarity rear lobe of each side’s pickup (dashed) grows large, and the image can pull to the edges. Start modest.' : 'A modest width: the left channel favours the left, the right the right, and the center stays in the center. Each side already has a small opposite-polarity rear lobe (dashed); it grows with the width.'}</Point>
           <Point title="CHECK">Decode once, with the Side’s positive lobe facing the side you call left; then compare stereo and mono. A source at the positive lobe should appear on the intended side.</Point>
         </Card>
         {complete ? <Note tone="ok">Width is a decision made after the capture: the mono sum keeps the Mid whatever k is. Start with a modest width, check left and right with a gentle source, and listen in mono.</Note> : <Body>Take the width to none and to wide, and look from two sources.</Body>}
@@ -523,7 +523,7 @@ export function useMsWidthStep({ sources, onInteractive, done }: { sources: read
 
 type SurroundId = 'centre' | 'rear' | 'front';
 const SURROUND: Readonly<Record<SurroundId, { label: string; short: string; ins: Readonly<Partial<Record<'L' | 'C' | 'R' | 'LS' | 'RS', number>>> }>> = {
-  centre: { label: 'Commentary in the centre channel', short: 'CENTRE', ins: { C: 1 } },
+  centre: { label: 'Commentary in the center channel', short: 'CENTER', ins: { C: 1 } },
   rear: { label: 'Crowd in the left surround only', short: 'SURROUND', ins: { LS: 1 } },
   front: { label: 'Action in the left channel only', short: 'FRONT L', ins: { L: 1 } },
 };
@@ -674,9 +674,9 @@ export function useDownmixStep({ onInteractive, done }: { onInteractive: (id: st
         <NowLine text={words} />
         <Card>
           {fmt === 'mono' ? (
-            <Point title="THE MONO CHECK">Centre speech keeps its level; a cheer in one channel drops about 6 dB; diffuse applause about 3 dB. So a mono check can thin the crowd and leave the speech — or lose a hard-panned effect. Listen at a matched loudness; a meter only helps you find the moment.</Point>
+            <Point title="THE MONO CHECK">Center speech keeps its level; a cheer in one channel drops about 6 dB; diffuse applause about 3 dB. So a mono check can thin the crowd and leave the speech — or lose a hard-panned effect. Listen at a matched loudness; a meter only helps you find the moment.</Point>
           ) : (
-            <Point title="THE FOLD-DOWN">The centre and the surrounds go into each side about 3 dB down (0.7071). This is one example from a broadcast guideline — every codec and renderer can differ. Keep headroom on the bus: the fold-down adds channels together.</Point>
+            <Point title="THE FOLD-DOWN">The center and the surrounds go into each side about 3 dB down (0.7071). This is one example from a broadcast guideline — every codec and renderer can differ. Keep headroom on the bus: the fold-down adds channels together.</Point>
           )}
           <Point title="KEEP THE EVENT IN THE MAIN CHANNELS">The low-frequency effects channel is an optional extra: keep the engine, the impacts and the venue’s body in the main channels, so the event does not depend on it surviving a downmix.</Point>
         </Card>

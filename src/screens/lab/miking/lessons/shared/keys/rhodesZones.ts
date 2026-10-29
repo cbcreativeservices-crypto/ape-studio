@@ -26,7 +26,7 @@ const R12 = SPEAKER_12.rCone.mm;
 const TOL = 15;
 /** "Amplifiers 1-6 inches (2-15 cm)": the research's close band, exactly. */
 export const RH_CLOSE = { min: 1 * IN, max: 6 * IN };
-const AIM_TIGHT = { maxOffAxis: 20, prov: ill('"aimed near the transition / at the centre": ±20° is the lab’s tolerance') };
+const AIM_TIGHT = { maxOffAxis: 20, prov: ill('"aimed near the transition / at the center": ±20° is the lab’s tolerance') };
 const AIM_LOOSE = { maxOffAxis: 45, prov: ill('"aim towards the center … or towards the edge": ±45° covers both aims; the lab’s tolerance') };
 
 const RHODES_ZONES: readonly DocumentedZone[] = [
@@ -48,8 +48,8 @@ const RHODES_ZONES: readonly DocumentedZone[] = [
   },
   {
     id: 'rh.centre',
-    label: 'Close, on the centre of the cone',
-    band: 'Start about 2.5–15 cm (1–6 in) from the grille, on the centre of the speaker (the dust cap).',
+    label: 'Close, on the center of the cone',
+    band: 'Start about 2.5–15 cm (1–6 in) from the grille, on the center of the speaker (the dust cap).',
     kind: 'sourced',
     src: 'S-GTR',
     quote: 'the closer the mic is to the speaker’s center, the more brightness you’ll get (and S-MILLS "The more you move a mic toward the center of the speaker, the brighter it will sound")',
@@ -81,7 +81,7 @@ const RHODES_ZONES: readonly DocumentedZone[] = [
   {
     id: 'rh.close',
     label: 'Close in front of the speaker',
-    band: 'Start about 2.5–15 cm (1–6 in) from the grille, in front of the speaker, aimed at its centre or toward its edge.',
+    band: 'Start about 2.5–15 cm (1–6 in) from the grille, in front of the speaker, aimed at its center or toward its edge.',
     kind: 'sourced',
     src: 'S-PGA27',
     quote: 'Amplifiers 1-6 inches (2-15 cm) Aim towards the center of the speaker for a clear, aggressive sound, or towards the edge of the speaker for a mellow sound.',
@@ -91,7 +91,7 @@ const RHODES_ZONES: readonly DocumentedZone[] = [
     radial: { line: 'axis', max: R12, prov: ill('"in front of the speaker": within the cone’s own radius (141.5 mm) of its axis') },
     aim: AIM_LOOSE,
     start: { p: { x: G + 90, y: -90, z: 0 }, az: 0, el: 0 },
-    tendency: 'The speaker itself, with little of the room: isolation on a loud stage. Toward the centre tends to be clearer and more aggressive; toward the edge, mellower.',
+    tendency: 'The speaker itself, with little of the room: isolation on a loud stage. Toward the center tends to be clearer and more aggressive; toward the edge, mellower.',
     checks: ['One change at a time: keep the distance while you move across', 'Stage spill from drums and wedges', 'The level on the strongest accents'],
   },
   {

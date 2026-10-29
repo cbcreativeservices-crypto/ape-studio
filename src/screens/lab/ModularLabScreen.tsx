@@ -606,7 +606,7 @@ export function ModularLabScreen() {
         <Text style={styles.caption}>
           Seven modules in one row of a Eurorack case. Right side, AMBER cables: the audio path —
           the VCO’s waveform output into the VCF, then the VCA, then OUT. Left side: the control
-          sources. Each control cable takes its source’s colour (the line under the module’s
+          sources. Each control cable takes its source’s color (the line under the module’s
           name: SEQ red, LFO blue, ENV green). It carries control voltage (CV) — it turns a
           setting for you and makes no sound itself. The envelope always opens the VCA; every
           other cable is a routing you choose. Tap any module for what it does.

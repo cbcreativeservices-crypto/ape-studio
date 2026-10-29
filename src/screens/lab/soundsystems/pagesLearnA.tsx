@@ -34,7 +34,7 @@ import { flipFader, SoundSystemsRackLayout, type SsPageDef } from './rackLayout'
 import { StageFit } from '../rack/StageFit';
 import { TitledStage } from '../rack/TitledStage';
 
-const MAP_BADGE = 'SYSTEM MAP — ILLUSTRATIVE · LEDs chase simulated programme';
+const MAP_BADGE = 'SYSTEM MAP — ILLUSTRATIVE · LEDs chase simulated program';
 
 /* ── 1 · The complete system ────────────────────────────────────────────── */
 
@@ -237,7 +237,7 @@ function PageTrace({ ctx }: { ctx: PageCtx }) {
         wrongAt >= 0 ? (
           <VerdictLine ok={false}>{wrongText}</VerdictLine>
         ) : complete ? (
-          <VerdictLine ok>Source to listener, in order — and the LEDs chase with programme. That is the walk you will make on every fault.</VerdictLine>
+          <VerdictLine ok>Source to listener, in order — and the LEDs chase with program. That is the walk you will make on every fault.</VerdictLine>
         ) : null
       }
     >
@@ -453,7 +453,7 @@ function PageConfigs({ ctx }: { ctx: PageCtx }) {
 
 const CONFIG_CASES: readonly { id: string; situation: string; correct: string; distractors: string[]; why: string }[] = [
   { id: 'c-speech', situation: 'A lecture in a long, narrow hall. One presenter, no music.', correct: 'mono', distractors: ['stereo', 'stereo-subs', 'lcr'], why: 'One position, one signal: every seat hears the same thing, and there is no pair to comb-filter down the middle of a narrow room.' },
-  { id: 'c-musical', situation: 'A musical in a wide theatre — the voice must seem to come from the actor for the seats at the far sides.', correct: 'lcr', distractors: ['stereo', 'dual-mono', 'zones'], why: 'A centre cluster carries the voice for every seat; left and right carry the width. Stereo alone gives the side seats a one-sided vocal.' },
+  { id: 'c-musical', situation: 'A musical in a wide theatre — the voice must seem to come from the actor for the seats at the far sides.', correct: 'lcr', distractors: ['stereo', 'dual-mono', 'zones'], why: 'A center cluster carries the voice for every seat; left and right carry the width. Stereo alone gives the side seats a one-sided vocal.' },
   { id: 'c-dj', situation: 'A DJ in a bar. The owner wants to turn the bass down at 11 pm without touching the tops.', correct: 'mono-sub-out', distractors: ['no-subs', 'stereo-subs', 'dual-mono'], why: 'A separate subwoofer output makes the sub level a console decision — a fader move at 11 pm, not a trip to the cabinet.' },
   { id: 'c-field', situation: 'An outdoor stage. The back rows are 80 m away and hear a quiet, muddy mush.', correct: 'delays', distractors: ['front-fills', 'stereo', 'mono'], why: 'Delay loudspeakers restore level at the back without raising the front, and arrive with the mains when set to the distance — many engineers add a few milliseconds more so the stage stays the perceived source.' },
   { id: 'c-flown', situation: 'Flown mains fire over the heads of the first five rows.', correct: 'front-fills', distractors: ['delays', 'zones', 'lcr'], why: 'Front fills on the stage lip cover what the flown mains cannot reach, at a modest level, matrix-fed so they can be delayed and equalised.' },

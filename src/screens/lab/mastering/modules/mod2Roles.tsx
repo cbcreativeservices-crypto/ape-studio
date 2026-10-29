@@ -13,7 +13,7 @@ import { MODEL_BADGE, type ModuleProps } from './shared';
 
 const ROWS: readonly [string, string][] = [
   ['Works with individual tracks, buses and effects.', 'Usually works with the approved stereo or multichannel mix.'],
-  ['Shapes relationships among instruments.', 'Evaluates and adjusts the mix as a complete programme.'],
+  ['Shapes relationships among instruments.', 'Evaluates and adjusts the mix as a complete program.'],
   ['Can change a vocal, a snare or a bass independently.', 'Usually cannot change those independently without stems or a new mix.'],
   ['Builds the final mix for review and approval.', 'Prepares the approved mix for release and distribution.'],
   ['Focuses on balance and intent.', 'Focuses on translation, consistency, technical quality and delivery.'],
@@ -31,7 +31,7 @@ export function Mod2Roles({ onAnswered }: ModuleProps) {
             <>
               <CompareTable left="MIXING ENGINEER" right="MASTERING ENGINEER" rows={ROWS} />
               <Card>
-                <Point title="The roles can overlap">In smaller projects one person may do both. What still changes is the listening perspective — the finished programme, fresh — and the available control: a stereo file, not a session.</Point>
+                <Point title="The roles can overlap">In smaller projects one person may do both. What still changes is the listening perspective — the finished program, fresh — and the available control: a stereo file, not a session.</Point>
                 <Point title={'Mastering is not simply "making it louder"'}>Level is one decision among many, judged at matched loudness like every other.</Point>
               </Card>
             </>
@@ -62,7 +62,7 @@ export function Mod2Roles({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <Body>Ride REQUEST (or tap it for the list). The signal flow on the display runs from the individual tracks, through the mix bus, to the stereo master and the delivery. The lit stage is where the request can normally be addressed — and the colour says whose job it is.</Body>
+              <Body>Ride REQUEST (or tap it for the list). The signal flow on the display runs from the individual tracks, through the mix bus, to the stereo master and the delivery. The lit stage is where the request can normally be addressed — and the color says whose job it is.</Body>
               <Card tone="accent">
                 <Point title={item.label}>{item.why}</Point>
               </Card>
@@ -79,7 +79,7 @@ export function Mod2Roles({ onAnswered }: ModuleProps) {
             <>
               <SectionTitle>KEY IDEAS</SectionTitle>
               <Card>
-                <Body>• The mixer works inside the session; the mastering engineer works on the finished programme.</Body>
+                <Body>• The mixer works inside the session; the mastering engineer works on the finished program.</Body>
                 <Body>• Independent control of an element belongs to the mix — or to stems, by agreement.</Body>
                 <Body>• Translation, consistency, technical quality and delivery are the mastering focus.</Body>
               </Card>

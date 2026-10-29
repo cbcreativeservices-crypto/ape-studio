@@ -655,8 +655,8 @@ export const B06_LESSON: Lesson = {
   unknowns: [
     { text: 'The panelists seated (the lips 450 mm above a 740 mm table), 70 cm apart, and the presenter standing (the lips 1550 mm above the floor) — the shared figures’ drawing defaults.', dims: ['yFloor'] },
     { text: 'The table (70 cm deep, a cloth skirt), the gooseneck bases (33 cm in front, 21 cm to the left), the boundary’s place, the lectern (its top 37–43 cm below the lips, 45 cm deep), the aisle mic’s place and the PA — drawing defaults.', dims: [] },
-    { text: 'The panel gooseneck’s distance (20–30 cm round the proposal’s 25 cm) and its 10–35° below the mouth’s line, and the lectern’s “a little off-centre” drawn below the mouth — the lab’s drawing. The gooseneck’s reach (46 cm) and head are drawing defaults.', dims: [] },
-    { text: 'The 7–10 in gain-setting distance at a podium is not drawn as a zone (owner item O-LEC). The head turns about its centre (a simplified picture).', dims: [] },
+    { text: 'The panel gooseneck’s distance (20–30 cm round the proposal’s 25 cm) and its 10–35° below the mouth’s line, and the lectern’s “a little off-center” drawn below the mouth — the lab’s drawing. The gooseneck’s reach (46 cm) and head are drawing defaults.', dims: [] },
+    { text: 'The 7–10 in gain-setting distance at a podium is not drawn as a zone (owner item O-LEC). The head turns about its center (a simplified picture).', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

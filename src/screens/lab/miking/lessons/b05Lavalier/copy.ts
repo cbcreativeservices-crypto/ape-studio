@@ -31,7 +31,7 @@ const BASE = standingVoiceCopy({
   studio: {
     id: 'b5.ctx.studio',
     prompt: 'A recorded studio interview, no loudspeakers, a close shot. What is a fair first mic for the presenter?',
-    note: 'In a quiet studio there is no PA to reject: a clean, centred lav that fits the picture is a good start — or a headset, a hidden lav or a boom, each for a reason. Switch to LIVE for the PA exercise.',
+    note: 'In a quiet studio there is no PA to reject: a clean, centered lav that fits the picture is a good start — or a headset, a hidden lav or a boom, each for a reason. Switch to LIVE for the PA exercise.',
   },
   contextPoints: [
     { title: 'STUDIO', text: 'No PA: a natural voice, low clothing noise and the picture come first — a visible lav, a hidden one, a headset or a boom can all work.' },

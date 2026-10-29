@@ -127,5 +127,5 @@ export const FOCUS_SLIDE = 20;
 export function focusWords(offsetMm: number): string {
   const a = Math.abs(Math.round(offsetMm));
   if (a === 0) return 'At the maker’s focal reference: the reflected sound meets at the element.';
-  return `${a} mm ${offsetMm > 0 ? 'out of' : 'into'} the bowl from the focus: higher frequencies weaken first. Measure the focus from the surface the maker names — never an estimated centre — and recheck it after travel.`;
+  return `${a} mm ${offsetMm > 0 ? 'out of' : 'into'} the bowl from the focus: higher frequencies weaken first. Measure the focus from the surface the maker names — never an estimated center — and recheck it after travel.`;
 }

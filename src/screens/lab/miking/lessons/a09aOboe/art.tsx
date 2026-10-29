@@ -54,7 +54,7 @@ export const OBOE_ART: LessonArt = windLessonArt({
   },
   setting: {
     before: [
-      { title: 'ASK THE PLAYER FIRST', text: 'Seated or standing, and how much does the oboe pivot as they breathe and read? Which notes does the part use — the lowest B♭, the top? What sound do they want: a natural orchestral colour, an intimate solo, a separated line? Hear the oboe unamplified first, across its range, quiet and loud.' },
+      { title: 'ASK THE PLAYER FIRST', text: 'Seated or standing, and how much does the oboe pivot as they breathe and read? Which notes does the part use — the lowest B♭, the top? What sound do they want: a natural orchestral color, an intimate solo, a separated line? Hear the oboe unamplified first, across its range, quiet and loud.' },
       { title: 'WORK WITH THE OBOE AS IT IS', text: 'The oboe and its reed are delicate, and they are the player’s. Ask before touching anything; nothing goes on the reed, a joint, a ring key, a rod or a pad, and no clip or adhesive without their agreement.' },
     ],
     hearing: 'Protect your hearing during rehearsals and soundcheck: the oboe cuts through, and the brass and percussion behind a woodwind section can be loud for long stretches. NIOSH advises no more than 85 dBA averaged over 8 hours a day, halving the time for every 3 dB above that; the US legal limit (OSHA) is 90 dBA with a 5 dB rule. These are limits for PEOPLE, measured where a person listens — a mic’s maximum SPL rating says nothing about it. Keep monitor levels down and use hearing protection where it is loud.',

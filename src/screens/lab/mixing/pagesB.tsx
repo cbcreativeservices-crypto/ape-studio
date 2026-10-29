@@ -91,7 +91,7 @@ const SCENARIO: {
     'In the chorus, keys, guitar and backing pad all sustain at once. The lead is still the loudest thing — but the section feels smeared and the lead feels buried anyway.',
   verdicts: {
     arrangement: { ok: true, note: 'Muting one sustaining layer for the chorus instantly opens space — often the single strongest move.' },
-    level: { ok: true, note: 'Lowering the competitors keeps their colour and clears the lead — without pushing the lead into the ceiling.' },
+    level: { ok: true, note: 'Lowering the competitors keeps their color and clears the lead — without pushing the lead into the ceiling.' },
     frequency: { ok: true, note: 'A cut where the pads overlap the lead clears the collision while everything keeps playing.' },
     processing: { ok: false, note: 'Nothing here says a plugin is misbehaving — this smear is arrangement and balance, not processing.' },
     space: { ok: true, note: 'If those sustains carry reverb, drying them tightens the section noticeably.' },
@@ -176,7 +176,7 @@ function PageSubtractive({ ctx }: { ctx: PageCtx }) {
         question="The vocal feels buried. You have already raised it twice this hour. The subtractive instinct says:"
         options={['Raise it a third time, a little more', 'Lower what competes with it instead', 'Add a brighter EQ boost so it cuts', 'Compress it harder so it stays on top']}
         correct={1}
-        explain="Raising the focal sound again and again is how mixes spiral upward into the ceiling. Lowering the competition clears the same space — headroom untouched, colour intact."
+        explain="Raising the focal sound again and again is how mixes spiral upward into the ceiling. Lowering the competition clears the same space — headroom untouched, color intact."
         wrong={[
           'A third raise buys the same three dB the first two bought — briefly. The spiral is the tell.',
           undefined,
@@ -217,17 +217,17 @@ function PagePanning({ ctx }: { ctx: PageCtx }) {
   }, [riskKey]);
   const [checkDone, setCheckDone] = useState(false);
   const goals = [
-    { label: 'Place three supports off-centre', hit: offCentre >= 3 && badRisks.length === 0 },
+    { label: 'Place three supports off-center', hit: offCentre >= 3 && badRisks.length === 0 },
     { label: 'Hear the mono fold', hit: pb.heard.includes('mono') },
     { label: 'Pass the check', hit: checkDone },
   ];
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>Pan answers one of the five questions: WHERE does each sound live? The stereo field is real estate — spend the sides on supporting parts, and keep the mix’s spine at centre.</Lead>
+      <Lead>Pan answers one of the five questions: WHERE does each sound live? The stereo field is real estate — spend the sides on supporting parts, and keep the mix’s spine at center.</Lead>
       <Card>
         <Eyebrow>PLACE THE SESSION</Eyebrow>
-        <Body>Convention, not law — but a strong default: kick, bass and the focal element live at or near centre; supporting parts earn the sides. Mirror-place similar parts (guitar left, keys right) for balance.</Body>
+        <Body>Convention, not law — but a strong default: kick, bass and the focal element live at or near center; supporting parts earn the sides. Mirror-place similar parts (guitar left, keys right) for balance.</Body>
         <MixMapArt settings={mix} mono={view === 'mono'} title={view === 'mono' ? 'YOUR PLACEMENT · FOLDED TO MONO' : 'YOUR PLACEMENT'} state={view === 'mono' ? 'MONO FOLD' : 'STEREO'} />
         <MiniConsole tracks={TRACK_IDS} value={mix} onChange={setMix} show={{ fader: false, pan: true, mute: true }} />
         {badRisks.length > 0 ? (
@@ -235,7 +235,7 @@ function PagePanning({ ctx }: { ctx: PageCtx }) {
             {badRisks
               .map((r) =>
                 r.risk === 'lowEndOffCentre'
-                  ? `${track(r.id).name}: low frequencies far off-centre unbalance the sides, and its level shifts when the mix folds to mono.`
+                  ? `${track(r.id).name}: low frequencies far off-center unbalance the sides, and its level shifts when the mix folds to mono.`
                   : `${track(r.id).name}: the focal anchor drifting off-centre destabilises the whole image.`,
               )
               .join(' ')}
@@ -248,15 +248,15 @@ function PagePanning({ ctx }: { ctx: PageCtx }) {
         <AbPlayer pb={pb} variants={variants} onPick={(id) => setView(id === 'mono' ? 'mono' : 'stereo')} note="The fold is level-matched. Wide placement should survive it: if a part disappears in mono, its width was doing load-bearing work. The picture above folds with it: dashed = where each part sat in stereo." />
       </Card>
       <UnderstandingCheck
-        question="Why do kick and bass conventionally sit at (or very near) centre?"
+        question="Why do kick and bass conventionally sit at (or very near) center?"
         options={['Tradition — old consoles could not pan low end this way', 'Low end carries most of the energy — split it and the image tilts', 'Low frequencies cannot be panned at all by a pan pot', 'Because the lead vocal needs the sides kept free']}
         correct={1}
-        explain="Low frequencies carry most of a mix’s energy. Push that energy to one side and the whole image leans; fold to mono and off-centre low end shifts level. Centre keeps the spine stable everywhere."
+        explain="Low frequencies carry most of a mix’s energy. Push that energy to one side and the whole image leans; fold to mono and off-center low end shifts level. Center keeps the spine stable everywhere."
         wrong={[
           'Consoles could pan low end fine; the real old reason was vinyl, where bass on one side could make the cutting stylus jump. The reason still holds in every modern DAW — it is physics and playback, not nostalgia.',
           undefined,
           'They CAN be panned — pan is just level between speakers. It is a bad idea for the spine, not an impossibility.',
-          'The vocal sits at centre WITH them — the sides are for supports, not for the spine.',
+          'The vocal sits at center WITH them — the sides are for supports, not for the spine.',
         ]}
         onCorrect={() => setCheckDone(true)}
       />

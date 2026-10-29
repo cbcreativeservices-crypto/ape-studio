@@ -104,7 +104,7 @@ const scenarios: MikingScenario[] = [
     correct: 'At the focus the maker specifies',
     explain: 'Place the element at the collector’s focal position, measured from the surface the maker names — and recheck it after travel.',
     why: {
-      'Right in the middle of the bowl': 'An estimated centre is not the focus.',
+      'Right in the middle of the bowl': 'An estimated center is not the focus.',
       'Wherever it sounds loudest today': 'Louder is not focused; the maker’s reference is.',
     },
   },
@@ -356,10 +356,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'What decides where the element sits in the dish?',
     options: ['The maker’s focal reference', 'The loudest result on the day', 'The middle of the bowl, by eye'],
     correct: 'The maker’s focal reference',
-    explain: 'Measured from the surface the maker names, not an estimated centre — and rechecked after travel.',
+    explain: 'Measured from the surface the maker names, not an estimated center — and rechecked after travel.',
     why: {
       'The loudest result on the day': 'Louder is not focused.',
-      'The middle of the bowl, by eye': 'The focus sits on the centre line, but at a depth you cannot judge by eye.',
+      'The middle of the bowl, by eye': 'The focus sits on the center line, but at a depth you cannot judge by eye.',
     },
   },
 ];

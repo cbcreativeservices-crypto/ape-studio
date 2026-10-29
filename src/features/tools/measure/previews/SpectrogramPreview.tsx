@@ -99,7 +99,7 @@ export function SpectrogramPreview({
     `${payload.dynamicRangeDb} dB range below 0 dBFS · ${payload.fftPreset}`;
   const a11y =
     `Saved spectrogram: ${seconds.toFixed(1)} seconds of audio across ` +
-    `${payload.bandsHz.length} frequency rows, coloured over a ${payload.dynamicRangeDb} decibel ` +
+    `${payload.bandsHz.length} frequency rows, colored over a ${payload.dynamicRangeDb} decibel ` +
     'range below full scale. Brighter means louder.';
 
   return (

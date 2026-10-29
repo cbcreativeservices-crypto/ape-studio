@@ -58,7 +58,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See how two mics hearing one moving tambourine interact — arrival times, comb-filter notches, and what polarity does and does not change.',
     credit: { scenarios: ['tmb.two.1', 'tmb.two.2', 'tmb.two.3', 'tmb.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Moving arrival times can change the colour from stroke to stroke. Polarity flips the sign; it does not remove a delay. Mono alone often serves.',
+    takeaway: 'Moving arrival times can change the color from stroke to stroke. Polarity flips the sign; it does not remove a delay. Mono alone often serves.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -277,7 +277,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tmb.two.3',
     page: 'twoMic',
-    prompt: 'Two mics hear one shaken tambourine. Why can the sum change colour from stroke to stroke?',
+    prompt: 'Two mics hear one shaken tambourine. Why can the sum change color from stroke to stroke?',
     options: ['The moving instrument changes the arrival times', 'The jingles change pitch as they move', 'The mics’ patterns widen as the jingles approach'],
     correct: 'The moving instrument changes the arrival times',
     explain: 'When more than one mic hears a moving instrument, the arrival times keep changing — and so does the comb. Check each alone and the sum in mono.',

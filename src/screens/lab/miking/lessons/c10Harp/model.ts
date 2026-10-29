@@ -149,7 +149,7 @@ function zonesFor(g: HarpGeom, pre: 'hp' | 'lv', S: '' | 'L'): DocumentedZone[] 
         top: { u0: hole.x - 90 * k, u1: hole.x + 60 * k, v0: -60, v1: 60 },
       },
       start: aimedAlong(add(hole, out, 40, 18), { x: g.n[0], y: g.n[1], z: 0 }),
-      tendency: 'A close, concealed signal on a stage — with its own colouring of the sound near the hole, and more feedback margin than an open stand mic, not unlimited.',
+      tendency: 'A close, concealed signal on a stage — with its own coloring of the sound near the hole, and more feedback margin than an open stand mic, not unlimited.',
       checks: ['The owner’s agreement, and an approved holder', 'Nothing blocking the hole; no foam pushed in', 'Cable relief so a pull cannot reach the harp'],
     },
   ];

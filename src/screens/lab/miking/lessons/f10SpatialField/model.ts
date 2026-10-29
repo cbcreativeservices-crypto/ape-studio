@@ -209,8 +209,8 @@ export const F10_SETUPS: SpatialSetup[] = [
     rigs: [{ id: 'surround50', c: AT() }],
     singles: [],
     deliver: 'For: a five-speaker layout (L, C, R, Ls, Rs).',
-    start: 'Front left, centre and right across the front, two surrounds behind, round the listener’s point — the spacing chosen for the place and the taste. Document each mic and its front axis.',
-    line: 'A stable front with the space around it; check the stereo and mono downmix — spaced mics can colour it.',
+    start: 'Front left, center and right across the front, two surrounds behind, round the listener’s point — the spacing chosen for the place and the taste. Document each mic and its front axis.',
+    line: 'A stable front with the space around it; check the stereo and mono downmix — spaced mics can color it.',
   },
   {
     id: 's.dms',

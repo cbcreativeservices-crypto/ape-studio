@@ -458,15 +458,15 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
     },
     {
       key: 'spots',
-      title: 'Centre and edge',
+      title: 'Center and edge',
       kind: 'COMPARE',
       layout: 'rack',
       rack: {
         render: (w, h) => <CabExplorer w={w} h={h} kind="1x12" back="closed" view="face" spot={spot} accessibilityLabel={`One 12 inch speaker face-on, the spot marked: ${SPOT_WORDS[spot].title.toLowerCase()}.`} />,
         badge: 'One 12 in speaker face-on · the blue ring is where the mic aims · tendencies to check, not results',
         bezel: [
-          { k: 'SPOT', v: spot === 'centre' ? 'CENTRE' : spot === 'boundary' ? 'CAP EDGE' : 'EDGE', flex: 1.2 },
-          { k: 'FROM CENTRE', v: lenCell(SPOT_WORDS[spot].r).v, sub: lenCell(SPOT_WORDS[spot].r).sub, flex: 1.3 },
+          { k: 'SPOT', v: spot === 'centre' ? 'CENTER' : spot === 'boundary' ? 'CAP EDGE' : 'EDGE', flex: 1.2 },
+          { k: 'FROM CENTER', v: lenCell(SPOT_WORDS[spot].r).v, sub: lenCell(SPOT_WORDS[spot].r).sub, flex: 1.3 },
           { k: 'TENDS TO', v: spot === 'centre' ? 'BRIGHTER' : spot === 'boundary' ? 'BETWEEN' : 'MELLOWER', flex: 1.3 },
         ],
         params: [
@@ -475,23 +475,23 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
             kind: 'options',
             id: 'spot',
             label: 'SPOT',
-            valueLabel: spot === 'centre' ? 'CENTRE' : spot === 'boundary' ? 'CAP EDGE' : 'EDGE',
+            valueLabel: spot === 'centre' ? 'CENTER' : spot === 'boundary' ? 'CAP EDGE' : 'EDGE',
             valueA11y: SPOT_WORDS[spot].title.toLowerCase(),
             selectedId: spot,
             onSelect: (id) => setSpot(id as (typeof SPOTS)[number]),
             sticky: true,
-            options: SPOTS.map((s) => ({ id: s, label: s === 'centre' ? 'CENTRE' : s === 'boundary' ? 'CAP EDGE' : 'EDGE', blurb: SPOT_WORDS[s].text })),
+            options: SPOTS.map((s) => ({ id: s, label: s === 'centre' ? 'CENTER' : s === 'boundary' ? 'CAP EDGE' : 'EDGE', blurb: SPOT_WORDS[s].text })),
           },
         ],
         initialParam: 'spot',
       },
       well: (
         <>
-          <Landing looking="One speaker, face-on" prompt="Tap SPOT and pick one: the centre, the dust-cap edge or toward the edge. Each is a place to aim a close mic." />
+          <Landing looking="One speaker, face-on" prompt="Tap SPOT and pick one: the center, the dust-cap edge or toward the edge. Each is a place to aim a close mic." />
           <Card>
             <Point title={SPOT_WORDS[spot].title}>{SPOT_WORDS[spot].text}</Point>
           </Card>
-          <Note>Why: at low pitches the whole cone moves as one. Higher up the cone flexes, and more of the high-frequency sound comes from the middle, near the voice coil. Close in, the spot a mic faces tilts the balance — the centre most often brighter, the edge mellower. A tendency, and speakers vary: check by ear.</Note>
+          <Note>Why: at low pitches the whole cone moves as one. Higher up the cone flexes, and more of the high-frequency sound comes from the middle, near the voice coil. Close in, the spot a mic faces tilts the balance — the center most often brighter, the edge mellower. A tendency, and speakers vary: check by ear.</Note>
         </>
       ),
     },
@@ -1030,7 +1030,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
       body: (
         <>
           <Body>What you just did, in words. After our research, each blue zone is where we suggest you begin, measured from the grille in front of the speaker that is really sounding. They are starting points, not rules: move from there and listen — there is no single right answer, and every speaker and cabinet is different.</Body>
-          <Body>Change one thing at a time. Keep the distance and move across the cone — centre, dust-cap edge, toward the edge — or keep the spot and move away from the grille. A mic farther back hears more of the cabinet and the room; a mic moved toward the edge most often sounds mellower. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.</Body>
+          <Body>Change one thing at a time. Keep the distance and move across the cone — center, dust-cap edge, toward the edge — or keep the spot and move away from the grille. A mic farther back hears more of the cabinet and the room; a mic moved toward the edge most often sounds mellower. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.</Body>
           <Body>On a rotary cabinet: start with each mic alone, then add the lower to the upper at a useful level and check the blend in mono — through slow, fast and the change between them.</Body>
           <Note tone="warn">Clearance comes first: off the grille cloth, the stand steady, the cable away from the player and the walkway; on a rotary cabinet everything outside, with the cabinet off while you place it.</Note>
         </>
@@ -1329,9 +1329,9 @@ export function SpkTwoMic({ lesson, answers, onAnswered, onInteractive, interact
           <Card>
             <Point title="UPPER + LOWER">Start with each mic alone. Add the lower to the upper at a musically useful level, then check that the low register and the organ’s articulation stay clear — in mono, through slow, fast and the change.</Point>
             <Point title="AN X/Y PAIR">Directional capsules as close to coincident as their mounts safely allow, without touching, angled for the louvers you want to cover. The arrivals line up, so the mono sum stays steadier.</Point>
-            <Point title="SPACED SIDE MICS">As the horn turns it faces one mic, then the other: a larger, more moving picture in stereo — and time differences and room pickup that can colour the mono sum. Listen through a whole rotation.</Point>
+            <Point title="SPACED SIDE MICS">As the horn turns it faces one mic, then the other: a larger, more moving picture in stereo — and time differences and room pickup that can color the mono sum. Listen through a whole rotation.</Point>
           </Card>
-          <Note>A polarity flip is a diagnostic, not a general repair for different arrival times. Panning is a separate decision from the pickup: the lower channel is often centred, but the balance depends on the arrangement.</Note>
+          <Note>A polarity flip is a diagnostic, not a general repair for different arrival times. Panning is a separate decision from the pickup: the lower channel is often centered, but the balance depends on the arrangement.</Note>
         </>
       ),
     },

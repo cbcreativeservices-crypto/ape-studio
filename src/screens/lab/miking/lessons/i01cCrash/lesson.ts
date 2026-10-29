@@ -96,7 +96,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The crash sits loose between its felts, so a big hit swings and rocks it. A mic keeps clear of that motion — above, or below its downward swing.',
     why: {
       'It stops dead the moment the stick leaves': 'It rings on — and moves. That is why it is mounted loose.',
-      'It slides down the stand toward the toms': 'It stays on its sleeve; it rocks and swings about the centre.',
+      'It slides down the stand toward the toms': 'It stays on its sleeve; it rocks and swings about the center.',
     },
   },
   {
@@ -396,7 +396,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'A big hit swings the crash hard: a mic keeps clear of that motion.',
     why: {
       'Stops ringing at once, held still': 'It rings on — and moves.',
-      'Slides down its stand a little': 'It stays on its sleeve, rocking about the centre.',
+      'Slides down its stand a little': 'It stays on its sleeve, rocking about the center.',
     },
   },
   {

@@ -467,7 +467,7 @@ export const C13_LESSON: Lesson = {
   },
   unknowns: [
     { text: 'Every oud dimension — face 490 × 360, bowl 180, string length 600, neck 200, pegbox 190 at 60°, the rosettes’ places and sizes — is a drawing default (oud/GEOMETRY_PROPOSAL.md: no oud dimension was read).', dims: [] },
-    { text: 'The player’s posture and reach, and the seated height (the face’s centre line 70 cm above the floor): drawing defaults. No HEIGHT readout is shown.', dims: ['yFloor'] },
+    { text: 'The player’s posture and reach, and the seated height (the face’s center line 70 cm above the floor): drawing defaults. No HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The keep-off margins (face 8 mm, strings 10 mm, bridge 6 mm) and the pegbox’s 25 cm swing: illustrative.', dims: ['oud'] },
     { text: 'The 20 cm face start is drawn ± 5 cm from “maybe 8 inches … more or less”; the stage start’s 6 cm nearest edge is the lab’s clearance.', dims: [] },
     { text: 'The wedge, the frame-drum player and the PA positions — a typical layout.', dims: [] },

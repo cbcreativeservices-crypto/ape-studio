@@ -211,7 +211,7 @@ export function CymbalSoundPage({ lesson, art, answers, onAnswered, onInteractiv
           <Landing looking={`${X.shapes.looking} · shape ${shape.label}`} prompt={X.shapes.prompt} />
           <Card>
             <Point title={`SHAPE ${shape.label} · ${shape.still.toUpperCase()}`}>
-              {`A struck cymbal rings in many shapes at once; this is one of them. ${idx === 0 ? 'It is the lowest the plate model gives a disc held at its centre.' : `On the simplified flat disc its pitch is ${shape.ratio.toFixed(2)} times the lowest one’s — not a whole number, which is part of why a cymbal sounds like a wash rather than a note.`} With the stick on the ${area.label.toLowerCase()}, the plate moves ${pct} % of this shape’s peak there, so the stroke ${share < 0.05 ? 'barely drives this shape' : share < 0.4 ? 'drives it only a little' : 'drives it strongly'}.${edgeMost ? ' In this shape the edge moves more than the middle of the plate.' : ''}`}
+              {`A struck cymbal rings in many shapes at once; this is one of them. ${idx === 0 ? 'It is the lowest the plate model gives a disc held at its center.' : `On the simplified flat disc its pitch is ${shape.ratio.toFixed(2)} times the lowest one’s — not a whole number, which is part of why a cymbal sounds like a wash rather than a note.`} With the stick on the ${area.label.toLowerCase()}, the plate moves ${pct} % of this shape’s peak there, so the stroke ${share < 0.05 ? 'barely drives this shape' : share < 0.4 ? 'drives it only a little' : 'drives it strongly'}.${edgeMost ? ' In this shape the edge moves more than the middle of the plate.' : ''}`}
             </Point>
           </Card>
           {X.shapes.notes.map((t) => (

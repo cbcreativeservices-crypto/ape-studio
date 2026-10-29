@@ -23,7 +23,7 @@ const pages: LessonPages = {
   },
   setups: {
     title: 'Starting setups',
-    goal: 'See real setups drawn on the section — a close mic on each player, one mic for two, a section pair in front, both together; in the studio, one mic or a pair at the centre of an arc. Then what to settle before any mic goes up.',
+    goal: 'See real setups drawn on the section — a close mic on each player, one mic for two, a section pair in front, both together; in the studio, one mic or a pair at the center of an arc. Then what to settle before any mic goes up.',
     credit: { scenarios: ['hs.set.1', 'hs.set.2', 'hs.hear'], interactive: 'setupsSeen', note: 'Look at every main setup on the drawing, and answer the three checks.' },
     takeaway: 'Hear the players first, at their loudest and softest. Minimal plans favour blend; expanded plans give control but act as one multi-mic system. Keep every stand clear of slides, bells, hands and feet.',
   },
@@ -36,7 +36,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the section pair yourself — closer, farther, higher — and see what changes across the players.',
-    credit: { scenarios: ['hs.place.1', 'hs.place.2', 'hs.31', 'hs.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['hs.place.1', 'hs.place.2', 'hs.31', 'hs.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Rehearse the balance before moving mics. Closer favours the nearest player; farther or higher evens the section out with more room. Move the pair as a unit, one change at a time.',
   },
   context: {
@@ -267,7 +267,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The pair is 1.4 m from the trumpet; its close mic 0.4 m. What follows?',
     options: ['The close mic hears it about 3 ms earlier', 'Both mics hear the trumpet at the same time', 'The pair hears the trumpet a little earlier'],
     correct: 'The close mic hears it about 3 ms earlier',
-    explain: 'A 1 m path difference is about 2.9 ms. Summed, the early close mic can change the attack and colour — compare pair alone, close mic alone and both.',
+    explain: 'A 1 m path difference is about 2.9 ms. Summed, the early close mic can change the attack and color — compare pair alone, close mic alone and both.',
     why: {
       'Both mics hear the trumpet at the same time': 'Different distances mean different arrival times.',
       'The pair hears the trumpet a little earlier': 'The close mic is nearer, so it hears the trumpet first.',
@@ -359,7 +359,7 @@ const symptoms: Symptom[] = [
   {
     id: 'hs.s.blend',
     observation: 'The horn section lacks blend',
-    firstChecks: 'Inconsistent distances, or each close mic a different colour? Rehearse the balance, align the placement logic, compare a section mic with the close mics.',
+    firstChecks: 'Inconsistent distances, or each close mic a different color? Rehearse the balance, align the placement logic, compare a section mic with the close mics.',
     options: ['Rehearse; align distances and placement', 'Add reverb to the brass until it blends', 'Pan the four players hard left and right'],
     correct: 'Rehearse; align distances and placement',
     explain: 'Blend starts with the players and consistent placement logic; compare a section view with the close mics.',
@@ -410,7 +410,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · A studio recording of a four-piece section (trumpet, tenor sax, trombone, tuba) in a good room, with independent balance wanted later. Phantom power on every input.',
     setups: [
       { id: 'a', label: 'The players on an arc round an X/Y pair, plus a close mic on each', ok: true, power: 'phantom', feedback: 'The blend from the pair and separate tracks for later balance.' },
-      { id: 'b', label: 'One section mic at the arc’s centre, the players balancing themselves', ok: true, power: 'phantom', feedback: 'Fair for blend — independent balance will be limited.' },
+      { id: 'b', label: 'One section mic at the arc’s center, the players balancing themselves', ok: true, power: 'phantom', feedback: 'Fair for blend — independent balance will be limited.' },
       { id: 'c', label: 'A clip in each bell and no section view', ok: false, power: 'phantom', feedback: 'A bell-only, close view of every player and no room.' },
       { id: 'd', label: 'A stand mic in the trombone’s slide path, on its axis', ok: false, power: 'phantom', feedback: 'A collision hazard and noise source in the slide’s travel.' },
       { id: 'e', label: 'One omni a metre from the trumpet only', ok: false, power: 'phantom', feedback: 'The trumpet dominates; the others are off in the distance.' },
@@ -580,7 +580,7 @@ export const E10_LESSON: EnsembleLesson = {
   unknowns: [
     { text: 'The horn line is a drawing default: four players standing 1 m apart, 0.5 m behind the front line. The studio arc is a drawing default: four seated players, each instrument’s bell (the sax’s body) 1.5 m from the section mic (inside the 1–6 ft range).', dims: [] },
     { text: 'The close mics’ directions are drawing defaults: the trumpet’s 15° off the bell’s axis; the sax’s beside the bell on the player’s right, a little above; the trombones’ above and beside the slide; the tuba’s about 61 cm above its bell.', dims: [] },
-    { text: 'The section pair is drawn 1.4 m in front and 2 m up on stage, at the arc’s centre 1.3 m up in the studio; the wedge 1.8 m in front of the trumpet.', dims: [] },
+    { text: 'The section pair is drawn 1.4 m in front and 2 m up on stage, at the arc’s center 1.3 m up in the studio; the wedge 1.8 m in front of the trumpet.', dims: [] },
   ],
   live: { wedges: E10_WEDGES },
   accuracyDetail:

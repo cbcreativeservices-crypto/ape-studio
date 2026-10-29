@@ -20,7 +20,7 @@ const TOOL_SHORT: Record<ToolView, string> = {
   playback: 'EDITING', monitor: 'MONITORS', eq: 'EQ', dyn: 'DYNAMICS', stereo: 'STEREO', meters: 'METERS', analog: 'ANALOG',
 };
 const AMOUNT_LABEL: Record<ToolView, string> = {
-  playback: 'FADE', monitor: 'LEVEL', eq: 'TILT', dyn: 'RATIO', stereo: 'WIDTH', meters: 'LEVEL', analog: 'COLOUR',
+  playback: 'FADE', monitor: 'LEVEL', eq: 'TILT', dyn: 'RATIO', stereo: 'WIDTH', meters: 'LEVEL', analog: 'COLOR',
 };
 
 /** The AMOUNT readout. A tilt is ± the same number at the two ends. */
@@ -109,7 +109,7 @@ export function Mod4Tools({ onAnswered }: ModuleProps) {
               <Body>Pick a TOOL group, then ride {AMOUNT_LABEL[view]}: every group draws the display a mastering engineer actually looks at for that decision, and the control changes the picture. The groups are a shelf, not a chain.</Body>
               {needsProgramme ? (
                 <Card tone="accent">
-                  <Point title="This view draws the programme">Press ▶ DRAW MIX in the dock: the lab renders the client's mix once (no sound, nothing plays) and the EDITING and METERS views fill in.</Point>
+                  <Point title="This view draws the program">Press ▶ DRAW MIX in the dock: the lab renders the client's mix once (no sound, nothing plays) and the EDITING and METERS views fill in.</Point>
                 </Card>
               ) : null}
               <Card tone="accent">
@@ -132,7 +132,7 @@ export function Mod4Tools({ onAnswered }: ModuleProps) {
               <Card>
                 <Point title="What it is">Optional EQs, compressors, converters and routing in the analog domain, inserted around the digital session.</Point>
                 <Point title="What it is not">A requirement, or a mark of quality. Excellent masters are made entirely in the box and entirely out of it.</Point>
-                <Point title="How to compare honestly">The same way as everything else: the same goal, matched level, a bypass, a second system. Neither analog nor digital is superior; they are different tools with different conveniences — recall, precision, workflow, colour.</Point>
+                <Point title="How to compare honestly">The same way as everything else: the same goal, matched level, a bypass, a second system. Neither analog nor digital is superior; they are different tools with different conveniences — recall, precision, workflow, color.</Point>
               </Card>
             </>
           ),

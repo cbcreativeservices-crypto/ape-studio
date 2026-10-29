@@ -836,7 +836,7 @@ registerActivityChecks({
     },
     {
       id: 'not-squeezed-flat',
-      label: 'The correction is no longer compression or limiting on an already flat programme',
+      label: 'The correction is no longer compression or limiting on an already flat program',
       met: (c) => {
         const lra = num(c.get('finish', 'measured_lra'));
         const action = str(c.get('finish', 'loudness_action'));

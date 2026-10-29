@@ -110,7 +110,7 @@ export const F14_ZONES: DocumentedZone[] = [
     refSurface: 'woofer',
     side: 'either',
     distance: { min: 20, max: 45 },
-    radial: { line: 'wooferAxis', max: 25, prov: ill('on the woofer’s centre: within 2.5 cm') },
+    radial: { line: 'wooferAxis', max: 25, prov: ill('on the woofer’s center: within 2.5 cm') },
     requires: { variant: 'bench', micTypeIds: ['measQuarter', 'measFF'] },
     aim: { maxOffAxis: 10, prov: ill('pointed at the cone: within 10°') },
     start: toward(S.near, WOOFER14),
@@ -197,7 +197,7 @@ export const F14_ZONES: DocumentedZone[] = [
   {
     id: 'vn.edge',
     label: 'Edge of coverage, near the aisle',
-    band: 'Try a seat mid-room near the centre aisle — the edge of the left main’s coverage — at a seated ear height.',
+    band: 'Try a seat mid-room near the center aisle — the edge of the left main’s coverage — at a seated ear height.',
     kind: 'trial',
     src: 'F14-LESSON',
     quote: 'point-source and fill checks include main axes and overlap or edge-of-coverage regions (F14 L24)',

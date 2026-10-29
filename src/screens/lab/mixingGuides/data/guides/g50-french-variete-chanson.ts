@@ -43,7 +43,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Accordion:",
-      "text": "the signature colour of musette (accordion dance-hall style) and realist chanson, revived by the nouvelle scène (new generation: Les Têtes Raides, Zaz). Treble and bass sides behave like two instruments; bellows and key noise are part of the sound.",
+      "text": "the signature color of musette (accordion dance-hall style) and realist chanson, revived by the nouvelle scène (new generation: Les Têtes Raides, Zaz). Treble and bass sides behave like two instruments; bellows and key noise are part of the sound.",
       "bullet": true
     },
     {
@@ -84,7 +84,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: lead vocal (clearly on top, often 3–6 dB above the band by feel, more than in rock), the main accompanying instrument (piano, guitar or accordion), bass, strings/pads, drums and percussion, backing vocals, reverb returns. In acoustic settings the double bass carries the low end at 50–200 Hz with the kick light and short; in variété-pop let the bass or synth bass own the sustained low end and keep the kick tight. Vocal, bass and kick centre; piano in stereo but moderately narrow (roughly 60–70% width) so it does not surround the voice; accordion slightly off-centre opposite the guitar; strings spread wide; backing vocals panned left and right behind the lead. Keep the 1–4 kHz zone uncluttered for the voice."
+      "text": "Hierarchy, loudest to quietest: lead vocal (clearly on top, often 3–6 dB above the band by feel, more than in rock), the main accompanying instrument (piano, guitar or accordion), bass, strings/pads, drums and percussion, backing vocals, reverb returns. In acoustic settings the double bass carries the low end at 50–200 Hz with the kick light and short; in variété-pop let the bass or synth bass own the sustained low end and keep the kick tight. Vocal, bass and kick center; piano in stereo but moderately narrow (roughly 60–70% width) so it does not surround the voice; accordion slightly off-center opposite the guitar; strings spread wide; backing vocals panned left and right behind the lead. Keep the 1–4 kHz zone uncluttered for the voice."
     }
   ],
   "eq": {

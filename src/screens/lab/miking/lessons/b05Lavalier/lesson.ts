@@ -80,7 +80,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Fit a body mic in the right order, choose and justify a setup for a studio interview and for a live talk, and say what would justify a second mic.',
     credit: { scenarios: ['b5.prac.order', 'b5.prac.gain', 'b5.prac.setup1', 'b5.prac.setup2', 'b5.prac.3', 'b5.mix.1', 'b5.mix.2', 'b5.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The placement sheet is optional — it needs a real, agreeing presenter.' },
-    takeaway: 'Consent, a centred place measured from the lips, loops that take the tug, the right adapter, one open mic per voice and a tested fallback pass. A brand or a “hotter” signal do not — and more than one setup can pass.',
+    takeaway: 'Consent, a centered place measured from the lips, loops that take the tug, the right adapter, one open mic per voice and a tested fallback pass. A brand or a “hotter” signal do not — and more than one setup can pass.',
   },
 };
 /** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
@@ -98,7 +98,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The presenter turns to a guest. What happens at a lav on the chest?',
     options: ['The mouth moves off it; it stays put', 'It turns with the head and keeps aim', 'Nearer to the mouth as it turns'],
     correct: 'The mouth moves off it; it stays put',
-    explain: 'A lav is fixed to the clothes on the chest. The head turns about its centre, so the mouth swings away from the lav’s line — a little farther and well off the mouth’s axis.',
+    explain: 'A lav is fixed to the clothes on the chest. The head turns about its center, so the mouth swings away from the lav’s line — a little farther and well off the mouth’s axis.',
     why: {
       'It turns with the head and keeps aim': 'Only a head-worn mic, like a headset, turns with the head. A chest lav moves with the chest.',
       'Nearer to the mouth as it turns': 'The mouth swings sideways, away from the middle of the chest.',
@@ -171,7 +171,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · A lav clipped to a lapel, off the middle. What changes?',
     options: ['A turn one way sounds unlike the other', 'Nothing — one place on the chest is like another', 'It turns with the head, as a headset does'],
     correct: 'A turn one way sounds unlike the other',
-    explain: 'Off the middle, turning toward the lapel keeps the mouth nearer; turning away takes it farther. A centred lav reads both turns alike.',
+    explain: 'Off the middle, turning toward the lapel keeps the mouth nearer; turning away takes it farther. A centered lav reads both turns alike.',
     why: {
       'Nothing — one place on the chest is like another': 'Distance and angle to the mouth change with the place, and with each turn.',
       'It turns with the head, as a headset does': 'A lapel is part of the jacket: it moves with the chest, not the head.',
@@ -301,8 +301,8 @@ const scenarios: MikingScenario[] = [
     id: 'b5.ctx.studio',
     page: 'context',
     prompt: 'A recorded studio interview, no loudspeakers, a close shot. A fair first mic?',
-    options: ['A clean, centred lav that fits the shot', 'A headset turned up as far as it goes', 'Two lavs on one jacket, both left open at once'],
-    correct: 'A clean, centred lav that fits the shot',
+    options: ['A clean, centered lav that fits the shot', 'A headset turned up as far as it goes', 'Two lavs on one jacket, both left open at once'],
+    correct: 'A clean, centered lav that fits the shot',
     explain: 'With no PA there is nothing to reject: a natural voice, low clothing noise and the picture come first. A headset, a hidden lav or a boom can work too, each for a reason.',
     why: {
       'A headset turned up as far as it goes': 'Gain does not make a voice better; and a headset may not suit the picture.',
@@ -330,7 +330,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The headset hears the voice first and the lectern mic a little later. Summed, some frequencies arrive out of step and cancel — a comb.',
     why: {
       'The lectern mic flips the voice’s polarity': 'Distance delays a sound; it does not flip its sign.',
-      'Two mics make the voice too loud to hear': 'The second copy colours the sound more than it adds level.',
+      'Two mics make the voice too loud to hear': 'The second copy colors the sound more than it adds level.',
     },
   },
   polarityDelay('b5.two.2'),
@@ -437,10 +437,10 @@ const symptoms: Symptom[] = [
   {
     id: 'b5.sym.turn',
     observation: 'The voice drops when the presenter turns to the guest',
-    firstChecks: 'Is the lav off the middle, on the side away from the guest? Would a centred place or a headset hold better?',
-    options: ['Centre the lav, or try a headset', 'Turn the presenter’s channel up a little', 'Ask the presenter to face front'],
-    correct: 'Centre the lav, or try a headset',
-    explain: 'A turn takes the mouth away from a chest mic — more so from one off to the far side. A centred lav reads both turns alike; a headset turns with the head.',
+    firstChecks: 'Is the lav off the middle, on the side away from the guest? Would a centered place or a headset hold better?',
+    options: ['Center the lav, or try a headset', 'Turn the presenter’s channel up a little', 'Ask the presenter to face front'],
+    correct: 'Center the lav, or try a headset',
+    explain: 'A turn takes the mouth away from a chest mic — more so from one off to the far side. A centered lav reads both turns alike; a headset turns with the head.',
     why: {
       'Turn the presenter’s channel up a little': 'More gain lifts the room with the voice and does not follow the turn.',
       'Ask the presenter to face front': 'The program needs them to turn. Choose the mic for it.',
@@ -481,7 +481,7 @@ const orderTasks: OrderTask[] = [
     steps: [
       { text: 'Ask the wearer; learn the shot, the clothes and the moves', early: 'Start with the person and the program, before any equipment.' },
       { text: 'Check the mic, its adapter and the transmitter match', early: 'Know the electrical path before fitting anything.' },
-      { text: 'Clip it visibly, centred, with a loop and the cable secured', early: 'Fit the mic once the path is right.' },
+      { text: 'Clip it visibly, centered, with a loop and the cable secured', early: 'Fit the mic once the path is right.' },
       { text: 'Set gain on the loudest real speech and laughter', early: 'Gain comes once the mic is fitted.' },
       { text: 'Rehearse turns, sitting, standing and gestures', early: 'Check the movement once the level is set.' },
       { text: 'Hide it only if the shot needs it; compare again', early: 'Conceal after the visible place works.' },
@@ -497,7 +497,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A recorded studio interview, no loudspeakers, a close shot; the presenter in a jacket, agreeing to a body mic.',
     setups: [
-      { id: 'a', label: 'An omni lav on the sternum, a loop at the clip and one lower down', ok: true, power: 'pack', feedback: 'A suggested start: centred, steady, quiet cable — check turns and the clothes.' },
+      { id: 'a', label: 'An omni lav on the sternum, a loop at the clip and one lower down', ok: true, power: 'pack', feedback: 'A suggested start: centered, steady, quiet cable — check turns and the clothes.' },
       { id: 'b', label: 'A lav hidden under the shirt, after the visible place was checked', ok: true, power: 'pack', feedback: 'A suggested start if the shot needs it — compare it with the visible place.' },
       { id: 'c', label: 'A lav on the far lapel, untested with turns', ok: false, power: 'pack', feedback: 'Off the middle and untested: a turn away from it can drop the voice.' },
       { id: 'd', label: 'A lav taped to the skin with camera tape', ok: false, power: 'pack', feedback: 'Camera tape is not skin-safe. Use an adhesive made for skin, after asking.' },
@@ -629,7 +629,7 @@ export const B05_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A microphone the presenter wears: a lavalier clipped to the clothes on the chest, one hidden under them, or a headset with its capsule beside the mouth.', src: 'LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'Studio interviews and news, location shoots, talks and presentations on a stage, theatre — wherever a person moves, turns or needs both hands.', src: 'LESSON' },
     { title: 'WHAT IT DOES', text: 'It keeps the voice usable while the person turns, reads, walks and changes posture — and fits the picture or the stage.', src: 'LESSON' },
-    { title: 'NO SINGLE RIGHT PLACE', text: 'Different mics, clothes, voices and rooms call for different places. Begin with a centred, visible lav or a headset where its maker says, rehearse the real moves, and adjust by listening. Experimentation is encouraged.', src: 'LESSON' },
+    { title: 'NO SINGLE RIGHT PLACE', text: 'Different mics, clothes, voices and rooms call for different places. Begin with a centered, visible lav or a headset where its maker says, rehearse the real moves, and adjust by listening. Experimentation is encouraged.', src: 'LESSON' },
   ],
   sound: {
     stages: [
@@ -652,7 +652,7 @@ export const B05_LESSON: Lesson = {
       { id: 'pa', label: 'the PA', short: 'PA', note: 'Live: it faces the audience, but every open mic on the stage hears it. A capsule close to the mouth and the fewest open mics keep the margin.', prov: { kind: 'illustrative', reason: 'a typical small stage' }, tag: 'FEEDBACK', scene: 'stage' },
     ],
     stage: 'LIVE: a headset beside the mouth, its rear toward the PA where it is directional, the lectern muted, every route traced. Avoid uncontrolled feedback.',
-    studio: 'STUDIO: a centred lav, about 12–25 cm from the lips, a loop at the clip and the cable secured lower down — hidden only after the visible place works.',
+    studio: 'STUDIO: a centered lav, about 12–25 cm from the lips, a loop at the clip and the cable secured lower down — hidden only after the visible place works.',
   },
   diagnostic,
   practice: {
@@ -671,7 +671,7 @@ export const B05_LESSON: Lesson = {
     { text: 'The clip points on the clothes (sternum, lapel 75 mm off the middle, collar, tie, neckline) and a capsule 6 mm off the garment — drawing defaults on the shared figure; the distances they give (about 13–24 cm) fall inside the researched 12.5–25 cm band.', dims: [] },
     { text: 'The headset’s capsule 14 mm ahead of the lips and 34 mm to the side — about 24 mm from the mouth’s corner, inside the 2–3 cm a headset maker gives; the corner itself is a drawing default.', dims: [] },
     { text: 'The cable’s spare in each loop (60 and 50 mm) and how much a sit, a turn or a gesture lengthens the path (45, 30, 55 mm) — drawing defaults for a simplified picture. The breath jet’s angle and reach — the voice family’s illustrative cone.', dims: [] },
-    { text: 'The studio camera (2.5 m out, a close shot), the lectern (as the panels lesson’s), the PA’s place (1.5 m out, 1.5 m to the right, 1.7 m up) — drawing defaults. The head turns about its centre (a simplified picture).', dims: [] },
+    { text: 'The studio camera (2.5 m out, a close shot), the lectern (as the panels lesson’s), the PA’s place (1.5 m out, 1.5 m to the right, 1.7 m up) — drawing defaults. The head turns about its center (a simplified picture).', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

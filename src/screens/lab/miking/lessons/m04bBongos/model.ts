@@ -18,7 +18,7 @@ import { IN, drawAbove, drawingDefault, ill, src, type HandDrum } from '../share
 export const BONGO_DIMS = {
   machoD: { mm: 7.25 * IN, prov: src('LP-GEN2', 'This set of 7-1/4″ and 8-5/8″ drums') } as Dim,
   hembraD: { mm: 8.625 * IN, prov: src('LP-GEN2', 'This set of 7-1/4″ and 8-5/8″ drums') } as Dim,
-  block: drawingDefault(40, 'the centre block’s width (drawing default 40 mm)'),
+  block: drawingDefault(40, 'the center block’s width (drawing default 40 mm)'),
   shellH: drawingDefault(150, 'the shells’ height (drawing default 150 mm)'),
   seatedH: drawingDefault(560, 'the heads’ height for a seated player, the pair between the knees (drawing default 560 mm)'),
   standH: drawingDefault(900, 'the heads’ height on a stand (drawing default 900 mm)'),
@@ -75,7 +75,7 @@ export const BONGO_ZONES: DocumentedZone[] = [
     side: 'either',
     distance: JUST_ABOVE,
     bandProv: ill('"just above": no number; 5 to 15 cm is the geometry file’s drawing default'),
-    radial: { line: 'between', max: BETWEEN.r, prov: ill('"between pair of drums": the proposal’s x 0 to +80 at the pair’s centre line') },
+    radial: { line: 'between', max: BETWEEN.r, prov: ill('"between pair of drums": the proposal’s x 0 to +80 at the pair’s center line') },
     requires: { micTypeIds: STAND },
     aim: aim(30, '"aiming down": ±30° of straight down is the lab’s tolerance'),
     drawn: drawAbove(HEAD_Y, JUST_ABOVE, { u0: BETWEEN.x - BETWEEN.r, u1: BETWEEN.x + BETWEEN.r }, { u0: BETWEEN.x - BETWEEN.r, u1: BETWEEN.x + BETWEEN.r, v0: BETWEEN.z - BETWEEN.r, v1: BETWEEN.z + BETWEEN.r, round: true }),

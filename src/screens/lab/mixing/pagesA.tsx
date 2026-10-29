@@ -100,7 +100,7 @@ function PageWhatMixingDoes({ ctx }: { ctx: PageCtx }) {
 /* ════ 2 · PREPARE THE SESSION ════════════════════════════════════════════ */
 
 const PREP_ITEMS = [
-  { id: 'names', name: 'Name, order, colour', why: 'KICK, SNARE, LEAD — not Audio_07. You cannot mix what you cannot find.' },
+  { id: 'names', name: 'Name, order, color', why: 'KICK, SNARE, LEAD — not Audio_07. You cannot mix what you cannot find.' },
   { id: 'cleanup', name: 'Remove the junk', why: 'Unused tracks, count-ins, coughs, hum between phrases: gone now, not fought with plugins later.' },
   { id: 'clipgain', name: 'Clip gain first', why: 'Even out wild clip levels BEFORE the fader, so the fader has one job.' },
   { id: 'phase', name: 'Polarity, phase, timing', why: 'Check multi-mic pairs and stereo files now. No EQ fixes a phase fight.' },
@@ -128,7 +128,7 @@ function PagePrepare({ ctx }: { ctx: PageCtx }) {
           onOpen={(id) => setSeen((s) => new Set(s).add(id))}
         />
         <PrepArt opened={seen} />
-        <Body>The session updates as you open each step: names and colours, the junk gone, the quiet clip levelled, headroom on the master meter, references parked, an untouched copy saved.</Body>
+        <Body>The session updates as you open each step: names and colors, the junk gone, the quiet clip levelled, headroom on the master meter, references parked, an untouched copy saved.</Body>
       </Card>
       <Card tone="note">
         <Eyebrow>SEPARATE THE JOBS</Eyebrow>

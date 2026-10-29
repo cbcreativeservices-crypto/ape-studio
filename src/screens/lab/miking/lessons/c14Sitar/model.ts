@@ -37,7 +37,7 @@ export function c14ZoneSpecs(sc: LuteScene): LuteZoneSpec[] {
       bandProv: ill('"approximately 20cm": 17–23 cm is the lab’s drawing of it'),
       surface: 'board',
       distance: { min: 170, max: 230 },
-      radial: { max: 230, prov: ill('below the bridge, within 23 cm of the board’s centre line — the lab’s drawing') },
+      radial: { max: 230, prov: ill('below the bridge, within 23 cm of the board’s center line — the lab’s drawing') },
       aimAt: { surface: 'bridge', r: 45, prov: ill('pointed at the bridge’s top: the axis meets the board within 4.5 cm of the bridge — the lab’s tolerance') },
       aim: { minOffAxis: 15, maxOffAxis: 65, prov: ill('"diagonally upwards": 15–65° off straight-on — the lab’s tolerance') },
       box: { min: v(-3000, 0, -3000), max: v(3000, 3000, 3000), prov: ill('below the bridge: the mic is lower than the bridge in front view') },

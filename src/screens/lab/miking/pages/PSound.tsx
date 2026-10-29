@@ -332,7 +332,7 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
       },
       well: (
         <>
-          <Landing looking={`${S.head.label} · shape ${shape.label}`} prompt="Step through SHAPE, then try each STRIKE point. Which shapes does a centre strike leave still?" />
+          <Landing looking={`${S.head.label} · shape ${shape.label}`} prompt="Step through SHAPE, then try each STRIKE point. Which shapes does a center strike leave still?" />
           <Card>
             <Point title={`SHAPE ${shape.label} · ${shape.still.toUpperCase()}`}>
               {`A struck head vibrates in several shapes at once; this is one of them. ${C.sound.shapeWords ? fillRatio(Math.abs(shape.ratio - 1) < 1e-9 ? C.sound.shapeWords.lowest : C.sound.shapeWords.other, shape.ratio) : shapeIdx === 0 ? 'It is the lowest shape — the others are measured against it, and none of them is a whole-number multiple, which is part of why a drum sounds less “pitched” than a string.' : `Its pitch is ${shape.ratio.toFixed(2)} times the lowest shape’s on a simplified head — not a whole number, which is part of why a drum sounds less “pitched” than a string.`} Under ${C.sound.strikerPhrase} (${strike.label.toLowerCase()}) the head moves ${sharePct} % of this shape’s peak, so the strike ${share < 0.05 ? `does not drive this shape at all: ${C.sound.strikerPhrase} is on a still line` : share < 0.4 ? 'drives it only a little' : 'drives it strongly'}.`}

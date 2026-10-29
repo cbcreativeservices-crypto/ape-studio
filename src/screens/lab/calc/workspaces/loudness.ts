@@ -214,7 +214,7 @@ const LOUDTP: Workspace = {
         const r = Math.pow(2, (n(v.lufsA) - n(v.lufsB)) / 10);
         return Number.isFinite(r) && r > 0
           ? null
-          : 'Those loudness values are far apart beyond any real programme — check both readings (integrated loudness of real audio sits above about −70 LUFS).';
+          : 'Those loudness values are far apart beyond any real program — check both readings (integrated loudness of real audio sits above about −70 LUFS).';
       },
       compute: (v) => {
         const d = n(v.lufsA) - n(v.lufsB);

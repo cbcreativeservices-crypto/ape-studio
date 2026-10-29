@@ -108,13 +108,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tm.snd.3',
     page: 'sound',
-    prompt: 'The stick strikes the exact centre of a tom’s batter head. Which of its vibration shapes can it set moving?',
+    prompt: 'The stick strikes the exact center of a tom’s batter head. Which of its vibration shapes can it set moving?',
     options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the centre'],
     correct: 'Only the ring-shaped ones; the rest have a still line there',
-    explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape. The ring-shaped ones include the lowest shape, the plain dome; off centre, more shapes join in.',
+    explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape. The ring-shaped ones include the lowest shape, the plain dome; off center, more shapes join in.',
     why: {
       'All of them equally, because the whole of the head is struck': 'The stick touches one small spot. A shape is driven only as much as the head moves there.',
-      'Only the shapes that have a still line across the centre': 'The reverse: a still line through the centre means the head does not move there.',
+      'Only the shapes that have a still line across the centre': 'The reverse: a still line through the center means the head does not move there.',
     },
   },
   micRatingCheck({ id: 'tm.set.1', page: 'setting', mic: 'tom mic', loudest: 'the hardest tom hit' }),
@@ -217,12 +217,12 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tm.place.2',
     page: 'placement',
-    prompt: 'You swing the mic’s aim from the rim toward the centre of the head. What tends to change?',
+    prompt: 'You swing the mic’s aim from the rim toward the center of the head. What tends to change?',
     options: ['More low end and body; less of the rim’s higher-pitched attack', 'Only the level drops; the tone stays exactly the same', 'A fixed amount of bass boost that you can read off a chart'],
     correct: 'More low end and body; less of the rim’s higher-pitched attack',
-    explain: 'Pointing toward the rim tends to bring a higher-pitched attack; toward the centre a fuller low end. “Attack” here is that higher-pitched edge near the rim, not the stick’s strike itself. Tendencies, checked on the drum.',
+    explain: 'Pointing toward the rim tends to bring a higher-pitched attack; toward the center a fuller low end. “Attack” here is that higher-pitched edge near the rim, not the stick’s strike itself. Tendencies, checked on the drum.',
     why: {
-      'Only the level drops; the tone stays exactly the same': 'Aim changes the balance too — attack toward the rim, body toward the centre.',
+      'Only the level drops; the tone stays exactly the same': 'Aim changes the balance too — attack toward the rim, body toward the center.',
       'A fixed amount of bass boost that you can read off a chart': 'These are tendencies, not fixed amounts. Drums vary — check it on this drum.',
     },
   },
@@ -544,7 +544,7 @@ const setupTasks: SetupTask[] = [
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: when the stick pushes a tom’s batter head down, what does its bottom head do?', options: ['It moves down too, pushed by the air', 'It moves up, toward the batter head', 'It stays still — only the struck head moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch both heads.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: you swing the mic’s aim from the rim toward the centre of the head. What changes?', options: ['More attack', 'More low end and body', 'It depends on this drum'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
+  placement: { prompt: 'Predict: you swing the mic’s aim from the rim toward the center of the head. What changes?', options: ['More attack', 'More low end and body', 'It depends on this drum'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The crash hangs above the tom mic. Where will this supercardioid reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip the bottom mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
@@ -685,7 +685,7 @@ export const M03_LESSON: Lesson = {
   sound: {
     stages: [
       { title: 'The stick strikes', text: 'The tip of the stick strikes the batter head. That brief contact is where the ATTACK begins.' },
-      { title: 'The batter head is pushed in', text: 'The head bows into the drum — most at the centre, not at all at the hoop: its lowest vibration shape, drawn many times larger than it really moves.' },
+      { title: 'The batter head is pushed in', text: 'The head bows into the drum — most at the center, not at all at the hoop: its lowest vibration shape, drawn many times larger than it really moves.' },
       {
         title: 'The air pushes the bottom head',
         text: 'The batter head squeezes the air inside, and the air pushes the bottom (resonant) head out. The two heads are coupled through the air.',
@@ -698,7 +698,7 @@ export const M03_LESSON: Lesson = {
       },
     ],
     attack: 'The start of the sound: the stick’s brief contact with the batter head. It begins at the strike, so a mic above the batter head and aimed at it tends to hear more of it — and pointed toward the rim, more of a higher-pitched attack.',
-    body: 'The ring: both heads, the air inside and the shell ringing together after the stroke — often a clear pitch, lower on a bigger drum. Pointed toward the centre, a mic tends to hear more of the low end. Both are tendencies, and drums vary. Tuning and damping change how long a tom rings — the Drum Tuning Lab covers that.',
+    body: 'The ring: both heads, the air inside and the shell ringing together after the stroke — often a clear pitch, lower on a bigger drum. Pointed toward the center, a mic tends to hear more of the low end. Both are tendencies, and drums vary. Tuning and damping change how long a tom rings — the Drum Tuning Lab covers that.',
     head: { diameterMm: 12 * 25.4, rods: 6, label: '12 in batter head, seen from above', strikeSrc: 'LESSON', hoop: 'metal' },
   },
   setting: {
@@ -726,7 +726,7 @@ export const M03_LESSON: Lesson = {
       { id: 'pattern', label: 'Pattern', kind: 'text' },
       { id: 'zone', label: 'Starting position you tried', kind: 'text' },
       { id: 'distance', label: 'Distance, from which head', kind: 'text' },
-      { id: 'aim', label: 'Aim (rim or centre), and where the cymbals sit off it', kind: 'text' },
+      { id: 'aim', label: 'Aim (rim or center), and where the cymbals sit off it', kind: 'text' },
       { id: 'notes', label: 'What you heard (tendencies, in words)', kind: 'text' },
     ],
   },

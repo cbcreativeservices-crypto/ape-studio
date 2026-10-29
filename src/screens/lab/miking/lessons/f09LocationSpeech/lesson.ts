@@ -657,7 +657,7 @@ export const F09_LESSON: Lesson = {
     { text: 'The body mic’s distance from the mouth: no source gives one ("above the sternum" is sourced) — read from the drawing (about 21 cm).', dims: [] },
     { text: 'The pole’s reach (2.5 m) and thickness, the operator’s stance and grip, the counter, the keys, the jar and the planted mic’s place — drawing defaults.', dims: [] },
     { text: 'The power line’s height (5.2 m) and place (1.2 m behind the talker) — drawing defaults; its 3 m (10 ft) keep-out is sourced and drawn exact.', dims: [] },
-    { text: 'The short shotgun is drawn as a supercardioid (a simplified picture: its tube narrows only the higher frequencies). The head turns about the head’s centre (a drawing default).', dims: [] },
+    { text: 'The short shotgun is drawn as a supercardioid (a simplified picture: its tube narrows only the higher frequencies). The head turns about the head’s center (a drawing default).', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

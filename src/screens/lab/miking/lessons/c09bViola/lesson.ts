@@ -40,7 +40,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for the viola by its properties — pattern, power, size and mount — not by its brand.',
     credit: { scenarios: ['va.mic.1', 'va.mic.2', 'va.mic.3', 'va.mic.4', 'va.rec.1'], note: 'Answer the five checks (one reaches back to how the viola sounds).' },
-    takeaway: 'A stand mic gives the integrated viola; a compact cardioid aimed at one area colours it on purpose; a miniature on a clip or holder stays put as the player moves — each has its own trade-off.',
+    takeaway: 'A stand mic gives the integrated viola; a compact cardioid aimed at one area colors it on purpose; a miniature on a clip or holder stays put as the player moves — each has its own trade-off.',
   },
   placement: {
     title: 'Placement Studio',
@@ -159,7 +159,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A compact cardioid aimed close at one area of the viola can…',
     options: ['Capture the whole viola evenly, from all of its parts at once, like a room mic', 'Bring out timbre, bow or finger sounds — and some low-end body', 'Remove the room completely from the recording'],
     correct: 'Bring out timbre, bow or finger sounds — and some low-end body',
-    explain: 'Aimed at a chosen area, it emphasises that area’s sound; up close, proximity effect adds low-frequency weight. A deliberate colour, not a neutral view.',
+    explain: 'Aimed at a chosen area, it emphasises that area’s sound; up close, proximity effect adds low-frequency weight. A deliberate color, not a neutral view.',
     why: {
       'Capture the whole viola evenly, from all of its parts at once, like a room mic': 'Close and aimed, it favours one area — that is the point of it.',
       'Remove the room completely from the recording': 'A cardioid reduces the room; it does not remove it.',
@@ -171,7 +171,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why does a miniature on the viola need its aim chosen with care?',
     options: ['It hears the whole room, so the aim makes no difference to the sound', 'It samples only part of the viola, so its aim shapes the sound', 'Its clip turns it into a pickup, which ignores the aim'],
     correct: 'It samples only part of the viola, so its aim shapes the sound',
-    explain: 'Mounted close, a narrow-pattern miniature hears one region. It follows the player, but the region it faces decides the colour.',
+    explain: 'Mounted close, a narrow-pattern miniature hears one region. It follows the player, but the region it faces decides the color.',
     why: {
       'It hears the whole room, so the aim makes no difference to the sound': 'Close up and directional, it hears mostly one region of the viola.',
       'Its clip turns it into a pickup, which ignores the aim': 'A miniature is still a microphone hearing airborne sound; a pickup senses the viola’s own vibration instead.',
@@ -445,7 +445,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · A loud stage; the violist turns and sways. One channel, phantom available, the monitors are loud.',
     setups: [
       { id: 'a', label: 'Miniature on a body clip made for the viola, aimed at the bridge, away from the face', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the viola — check the fit and do a full motion test.' },
-      { id: 'b', label: 'Miniature on a holder behind the bridge, over the strings, checked for colour', ok: true, power: 'phantom', feedback: 'A suggested starting point: steady as the player moves — compare under and over.' },
+      { id: 'b', label: 'Miniature on a holder behind the bridge, over the strings, checked for color', ok: true, power: 'phantom', feedback: 'A suggested starting point: steady as the player moves — compare under and over.' },
       { id: 'c', label: 'Small condenser 1 m in front, for a natural blended sound', ok: false, power: 'phantom', feedback: 'On a loud stage, a metre away hears the monitors more than the viola — and the player leaves its zone.' },
       { id: 'd', label: 'A violin clip pushed onto the viola without checking it fits', ok: false, power: 'phantom', feedback: 'Mounts are not interchangeable: use one made to fit this viola.' },
       { id: 'e', label: 'A supercardioid with the wedge straight behind it, trusted to reject it', ok: false, power: 'phantom', feedback: 'A supercardioid has a rear lobe: straight behind is not its best rejection.' },
@@ -570,7 +570,7 @@ export const C09B_LESSON: Lesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'The viola is the violin’s larger, lower relative, held the same way under the chin. Its four strings — C, G, D, A — run over a bridge that passes their vibration into the hollow body. Bowed, or plucked (pizzicato).', src: 'DPA-VLA' },
     { title: 'WHERE YOU MEET IT', text: 'String quartets and orchestras, chamber music, studio sessions — and solo and live work too. This lesson covers one viola: a studio solo, a spot in an ensemble, and a live stage.', src: 'LESSON' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'It fills the middle of the string sound — inner voices and harmonies — and takes melodies of its own, with a darker colour than the violin. The sound that supports a quartet may differ from the focused tone needed beside amplified instruments.', src: 'LESSON' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'It fills the middle of the string sound — inner voices and harmonies — and takes melodies of its own, with a darker color than the violin. The sound that supports a quartet may differ from the focused tone needed beside amplified instruments.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'Violas vary in size and tone more than violins; this lab draws one about 39 cm in body length. Its lowest note, the open C, is about 131 Hz.', src: 'MET-BANKS' },
   ],
   sound: {

@@ -367,11 +367,11 @@ export const CAPSTONES: readonly Capstone[] = [
     requirements: [
       req('sources', 'Three sources: a vocal mic, a DI (or instrument mic), and playback', 'build', (s) => count(s, 'vocalMic') >= 1 && (count(s, 'di') + count(s, 'instrumentMic')) >= 1 && count(s, 'playback') >= 1),
       req('console', 'A mixing console', 'build', (s) => count(s, 'console') === 1),
-      req('mono', 'ONE loudspeaker at the centre main position (a single box over the sub) — no left/right pair', 'build', (s) => anySpeakerIn(s, 'mainC') && !anySpeakerIn(s, 'mainL') && !anySpeakerIn(s, 'mainR')),
-      req('sub', 'A subwoofer at the centre sub position', 'build', (s) => anySubIn(s, 'subC')),
+      req('mono', 'ONE loudspeaker at the center main position (a single box over the sub) — no left/right pair', 'build', (s) => anySpeakerIn(s, 'mainC') && !anySpeakerIn(s, 'mainL') && !anySpeakerIn(s, 'mainR')),
+      req('sub', 'A subwoofer at the center sub position', 'build', (s) => anySubIn(s, 'subC')),
       req('live', 'Every loudspeaker live, every source connected', 'build', live),
       VIA_CONSOLE,
-      feedsReq('Outputs: the centre box on MAIN MONO; the sub on MONO, Aux 6 or Matrix 1'),
+      feedsReq('Outputs: the center box on MAIN MONO; the sub on MONO, Aux 6 or Matrix 1'),
     ],
   },
   {

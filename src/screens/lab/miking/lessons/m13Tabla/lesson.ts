@@ -18,13 +18,13 @@ const pages: LessonPages = {
     title: 'Meet the tabla',
     goal: 'Get to know the tabla — the two drums, where you meet them, what they do in the music, and their parts — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'One instrument, two drums: the smaller wooden dayan with its black patch in the middle, and the larger bayan with its patch off-centre. Ringing and damped strokes, the bayan’s pitch glides and quiet finger work all belong to the player’s sound.',
+    takeaway: 'One instrument, two drums: the smaller wooden dayan with its black patch in the middle, and the larger bayan with its patch off-center. Ringing and damped strokes, the bayan’s pitch glides and quiet finger work all belong to the player’s sound.',
   },
   sound: {
     title: 'How it makes its sound',
     goal: 'See how a stroke becomes sound on each drum, what the black patch does, and why the bayan’s pitch can move.',
     credit: { scenarios: ['ta.snd.1', 'ta.snd.2', 'ta.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'The black patch’s weight lets the dayan ring with a clear pitch. The bayan’s patch sits off-centre, and pressing the head with the heel of the hand bends its pitch — so the left hand moves across the head all the time.',
+    takeaway: 'The black patch’s weight lets the dayan ring with a clear pitch. The bayan’s patch sits off-center, and pressing the head with the heel of the hand bends its pitch — so the left hand moves across the head all the time.',
   },
   setting: {
     title: 'Where it sits',
@@ -90,12 +90,12 @@ const scenarios: MikingScenario[] = [
     id: 'ta.snd.2',
     page: 'sound',
     prompt: 'Where does the bayan’s black patch sit?',
-    options: ['Off-centre, unlike the dayan’s', 'In the middle, as on the dayan', 'Nowhere: the bayan’s head is plain'],
-    correct: 'Off-centre, unlike the dayan’s',
-    explain: 'On the bayan the patch sits off-centre — unlike the dayan’s centred patch. Do not copy one drum’s layout onto the other: look at the drum in front of you.',
+    options: ['Off-center, unlike the dayan’s', 'In the middle, as on the dayan', 'Nowhere: the bayan’s head is plain'],
+    correct: 'Off-center, unlike the dayan’s',
+    explain: 'On the bayan the patch sits off-center — unlike the dayan’s centered patch. Do not copy one drum’s layout onto the other: look at the drum in front of you.',
     why: {
-      'In the middle, as on the dayan': 'That is the dayan. The bayan’s patch is off-centre.',
-      'Nowhere: the bayan’s head is plain': 'The bayan has a black patch too — off-centre, beside where the heel of the hand rests and presses.',
+      'In the middle, as on the dayan': 'That is the dayan. The bayan’s patch is off-center.',
+      'Nowhere: the bayan’s head is plain': 'The bayan has a black patch too — off-center, beside where the heel of the hand rests and presses.',
     },
   },
   {
@@ -224,7 +224,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'One mic per drum. Where on the head do you aim first?',
     options: ['Between the patch and the outer head, then one the player suggests', 'Right at the black patch, where the stroke lands', 'At the rim, where the brightest part of the sound leaves the head as well'],
     correct: 'Between the patch and the outer head, then one the player suggests',
-    explain: 'Try a target between the loaded area and the outer playing area, then another chosen with the player. The patch, the rim or the centre is not the only useful source.',
+    explain: 'Try a target between the loaded area and the outer playing area, then another chosen with the player. The patch, the rim or the center is not the only useful source.',
     why: {
       'Right at the black patch, where the stroke lands': 'The patch is one area among several; try it as a comparison, not as the rule.',
       'At the rim, where the brightest part of the sound leaves the head as well': 'The rim is one area among several; aiming there can also bring the mic into the hand’s path.',
@@ -293,13 +293,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ta.rec.3',
     page: 'context',
-    prompt: 'FROM EARLIER · Which drum rings with a clear pitch thanks to its centred black patch?',
+    prompt: 'FROM EARLIER · Which drum rings with a clear pitch thanks to its centered black patch?',
     options: ['The dayan, the smaller wooden drum', 'The bayan, the larger kettle drum', 'Both drums, since both patches are centred'],
     correct: 'The dayan, the smaller wooden drum',
-    explain: 'The dayan’s centred patch lets it ring with a clear pitch; the bayan’s patch is off-centre and its pitch is bent by the hand.',
+    explain: 'The dayan’s centered patch lets it ring with a clear pitch; the bayan’s patch is off-center and its pitch is bent by the hand.',
     why: {
-      'The bayan, the larger kettle drum': 'The bayan’s patch is off-centre; its pitch is bent by the hand.',
-      'Both drums, since both patches are centred': 'Only the dayan’s patch is centred.',
+      'The bayan, the larger kettle drum': 'The bayan’s patch is off-center; its pitch is bent by the hand.',
+      'Both drums, since both patches are centred': 'Only the dayan’s patch is centered.',
     },
   },
   {
@@ -323,7 +323,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The drums sit close together: each mic hears its own drum and some of the other. Angle and place them to reduce unwanted overlap, then judge the blend in mono.',
     why: {
       'Each mic must be set to the same level': 'Equal levels are not a goal: set the balance the player intends.',
-      'Two mics on one source cancel each other in mono': 'They can colour each other, not always cancel. Judge the actual blend.',
+      'Two mics on one source cancel each other in mono': 'They can color each other, not always cancel. Judge the actual blend.',
     },
   },
   {
@@ -518,7 +518,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · Solo tabla in a quiet studio with a good room; the player wants the quiet finger work to carry. Two channels; phantom power is available.',
     setups: [
       { id: 'a', label: 'One cardioid condenser about 30–50 cm in front of and above the area between the heads', ok: true, power: 'phantom', feedback: 'A simple shared picture of the pair; it has the phantom it needs.' },
-      { id: 'b', label: 'A coincident cardioid pair about 50–80 cm from the pair, centred on it', ok: true, power: 'phantom', feedback: 'A stereo view with some room — check it in mono.' },
+      { id: 'b', label: 'A coincident cardioid pair about 50–80 cm from the pair, centered on it', ok: true, power: 'phantom', feedback: 'A stereo view with some room — check it in mono.' },
       { id: 'c', label: 'Two cardioid condensers, one per drum, about 15–25 cm from each head', ok: true, power: 'phantom', feedback: 'Separate control of each drum; check the overlap in mono.' },
       { id: 'd', label: 'A drum-kit hoop clip on each drum’s straps, mic over the black patch', ok: false, power: 'phantom', feedback: 'A hoop clip is not safe on tabla straps, and the mic sits in the hands’ path.' },
       { id: 'e', label: 'Two mics panned hard left and right to separate the drums', ok: false, power: 'phantom', feedback: 'Spreading the drums hard apart is not the aim — the pair is one instrument.' },
@@ -567,12 +567,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'instrument',
     prompt: 'Where is each drum’s black patch?',
-    options: ['Centred on the dayan; off-centre on the bayan', 'Centred on both drums, as on the dayan', 'Off-centre on the dayan; centred on the bayan'],
-    correct: 'Centred on the dayan; off-centre on the bayan',
-    explain: 'The dayan’s patch is in the middle; the bayan’s sits off-centre.',
+    options: ['Centered on the dayan; off-center on the bayan', 'Centred on both drums, as on the dayan', 'Off-centre on the dayan; centred on the bayan'],
+    correct: 'Centered on the dayan; off-center on the bayan',
+    explain: 'The dayan’s patch is in the middle; the bayan’s sits off-center.',
     why: {
-      'Centred on both drums, as on the dayan': 'Only the dayan’s is centred; the bayan’s sits off-centre.',
-      'Off-centre on the dayan; centred on the bayan': 'The other way round: centred on the dayan, off-centre on the bayan.',
+      'Centred on both drums, as on the dayan': 'Only the dayan’s is centered; the bayan’s sits off-center.',
+      'Off-centre on the dayan; centred on the bayan': 'The other way round: centered on the dayan, off-center on the bayan.',
     },
   },
   {
@@ -591,8 +591,8 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'What lets the dayan ring with a clear pitch?',
-    options: ['The weight of its centred black patch', 'Its metal body, ringing like a bell', 'The lacing, which vibrates with the head'],
-    correct: 'The weight of its centred black patch',
+    options: ['The weight of its centered black patch', 'Its metal body, ringing like a bell', 'The lacing, which vibrates with the head'],
+    correct: 'The weight of its centered black patch',
     explain: 'The patch’s added weight changes how the head vibrates, giving the dayan its clear, pitched ring.',
     why: {
       'Its metal body, ringing like a bell': 'The dayan’s body is wood; the pitch comes from the patched head.',

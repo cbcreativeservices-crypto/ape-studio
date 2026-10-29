@@ -278,7 +278,7 @@ const scenarios: MikingScenario[] = [
     correct: 'When the main or overhead mics lose them',
     explain: 'Listen to the main pair and the overheads first; a spot gives independent control, but it may also hear more loud neighbours than cymbals. Check it with the main, in mono.',
     why: {
-      'As a habit, so they can be turned up later': 'A spot that is not needed adds spill and can colour the sum.',
+      'As a habit, so they can be turned up later': 'A spot that is not needed adds spill and can color the sum.',
       'When they are the loudest instrument anywhere in the room': 'Loudness is not the test; what the main mics miss is.',
     },
   },
@@ -517,7 +517,7 @@ export const I06B_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT THEY ARE', text: 'A pair of small brass or bronze cymbals, each with a strap or loop through its centre. They sound when one strikes the other — the metal itself vibrates. (Crotales, a tuned keyboard of small cymbals, and the drum-kit cymbals are other instruments.)', src: 'MET-TAL' },
+    { title: 'WHAT THEY ARE', text: 'A pair of small brass or bronze cymbals, each with a strap or loop through its center. They sound when one strikes the other — the metal itself vibrates. (Crotales, a tuned keyboard of small cymbals, and the drum-kit cymbals are other instruments.)', src: 'MET-TAL' },
     { title: 'WHERE YOU MEET THEM', text: 'In music and dance traditions where they are worn on the fingers, and in orchestras and percussion sections — in the studio and on stage. (Dance and whole-ensemble setups come later, in Lab 5.)', src: 'PAS-ECV0220' },
     { title: 'WHAT THEY DO IN THE MUSIC', text: 'Bright, piercing accents, quick rhythms, and a shimmering ring after each stroke. Held still and struck edge-first, or played in rhythm by a dancer — two very different sources for a mic.', src: 'PAS-ECV0220' },
     { title: 'THEIR SIZE', text: 'Small: about 5 cm across. This lab draws a measured pair of 5.5 and 4.8 cm (about 2 in), 2.4 cm high. Thin and thick pairs exist; one maker describes its thin pair as lower-pitched than its thick — compare the real pairs.', src: 'MET-TAL' },
@@ -569,6 +569,6 @@ export const I06B_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. There is no single agreed finger-cymbal miking standard: these starting points come from how microphones behave and a general rule of at least 30 cm from percussion, and every pair, player, dance and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one measured pair, a standing player or a dancer on a straight route, the plate’s shapes on a flat disc held at its centre, motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the hands and the route.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. There is no single agreed finger-cymbal miking standard: these starting points come from how microphones behave and a general rule of at least 30 cm from percussion, and every pair, player, dance and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one measured pair, a standing player or a dancer on a straight route, the plate’s shapes on a flat disc held at its center, motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the hands and the route.',
   copy: { words: metalWords('finger cymbals', 'player') },
 };

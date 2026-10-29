@@ -1953,8 +1953,8 @@ export function SplMeterScreen({ navigation }: Props) {
                     <ColorWheelButton
                       style={styles.ctrlBarWheel}
                       onCustomize={() => setLedPickerOpen(true)}
-                      feature="the LED meter colours"
-                      accessibilityLabel="Customize LED colours"
+                      feature="the LED meter colors"
+                      accessibilityLabel="Customize LED colors"
                     />
                   )}
                 </View>
@@ -2260,8 +2260,8 @@ export function SplMeterScreen({ navigation }: Props) {
                         <ColorWheelButton
                           style={styles.vuFsLedWheelPill}
                           onCustomize={() => setLedPickerOpen(true)}
-                          feature="the LED meter colours"
-                          accessibilityLabel="Customize LED colours"
+                          feature="the LED meter colors"
+                          accessibilityLabel="Customize LED colors"
                         />
                       )}
                       <Pressable hitSlop={6}

@@ -13,7 +13,7 @@ export const A02_COPY: Partial<LessonCopy> = {
   sceneSubject: { tenor: 'a tenor trombone played standing, the slide at 1st position', bass: 'a bass trombone played standing, the slide at 1st position' },
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
   axes: {
-    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Out along the bell toward the audience, or back toward the player (x). Distances are read from the bell rim’s centre.' },
+    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Out along the bell toward the audience, or back toward the player (x). Distances are read from the bell rim’s center.' },
     y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y). The slide runs below the bell.' },
     z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left (the bell’s side) or right (the slide’s side) (z).' },
   },
@@ -35,7 +35,7 @@ export const A02_COPY: Partial<LessonCopy> = {
     typeNotes: {
       instDynCard: 'Ideas to try with a dynamic: begin above or beside the slide, aimed across the bell, then move one thing at a time — the angle toward or away from the axis, then the distance — and recheck the slide’s reach after every move.',
       sdcCard: 'Ideas to try with a condenser: check it can take the horn’s peaks (or use a pad its maker allows); farther away it can carry the room and the section as well as the horn.',
-      brClip: 'Ideas to try with a bell clip: on the bell rim, never the slide; then change only the capsule’s angle — between the bell’s centre and its edge — and route the cable clear of the slide and the hands.',
+      brClip: 'Ideas to try with a bell clip: on the bell rim, never the slide; then change only the capsule’s angle — between the bell’s center and its edge — and route the cable clear of the slide and the hands.',
     },
     note: 'Clearance comes first: stop the player before moving a real mic. A mic, stand or cable anywhere the slide, a mute, the hands or the player can reach is in the wrong place, whatever the number says.',
     availableLead: 'Starting points for this mic',
@@ -108,7 +108,7 @@ export const A02_COPY: Partial<LessonCopy> = {
     startIntro: 'This lesson is about putting a microphone on a trombone — the tenor, and the bass trombone. First the horn itself: what it is, how the lips, the tube and the slide make its sound, where the sound leaves, and where the player stands — and how far the slide reaches. Then the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.',
     startNew: 'Good — NEXT takes you through the trombone first. You can change how you started here at any time.',
     refTitle: 'MEASURED FROM',
-    otherRef: 'Every starting point here is measured from the centre of the bell’s rim — the place the sound leaves. A number measured from the slide or the mouthpiece would put the mic somewhere else.',
+    otherRef: 'Every starting point here is measured from the center of the bell’s rim — the place the sound leaves. A number measured from the slide or the mouthpiece would put the mic somewhere else.',
     noAim: 'This starting point gives no aim, so the mic simply faces the bell. Distance, height and angle are still separate things to try.',
     clipMount: 'Mount: a clip made for this bell, on the rim — never on the slide — with the player’s agreement',
     standMount: 'Mount: a weighted stand outside the slide’s whole path, the mutes, the hands and the player',

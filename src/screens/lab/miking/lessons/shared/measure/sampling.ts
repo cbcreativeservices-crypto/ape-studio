@@ -16,7 +16,7 @@ export type SpotKind = 'centre' | 'front' | 'mid' | 'rear' | 'side' | 'corner';
 export type Spot = { id: SpotKind; label: string; distance: 'near' | 'mid' | 'far'; boundary: 'open' | 'wall' | 'corner'; note: string };
 
 export const SPOTS: readonly Spot[] = [
-  { id: 'centre', label: 'The middle of the room', distance: 'mid', boundary: 'open', note: 'One “centre of the room” reading is a single point, not the room.' },
+  { id: 'centre', label: 'The middle of the room', distance: 'mid', boundary: 'open', note: 'One “center of the room” reading is a single point, not the room.' },
   { id: 'front', label: 'A front-row seat', distance: 'near', boundary: 'open', note: 'Near the source: more direct sound, less of the room’s decay.' },
   { id: 'mid', label: 'A seat mid-audience', distance: 'mid', boundary: 'open', note: 'A typical listener: the direct sound and the room together.' },
   { id: 'rear', label: 'A seat near the back', distance: 'far', boundary: 'open', note: 'Far from the source: more of the room, the direct sound weaker.' },
@@ -29,7 +29,7 @@ export type SamplingVerdict = { ok: boolean; points: string[] };
 export function judgeSampling(ids: readonly SpotKind[]): SamplingVerdict {
   const set = SPOTS.filter((s) => ids.includes(s.id));
   const points: string[] = [];
-  if (set.length < 2) points.push(set.length === 1 && set[0].id === 'centre' ? 'One centre-of-room reading cannot stand for the room: sample more than one position.' : 'One position stands only for itself: choose at least two.');
+  if (set.length < 2) points.push(set.length === 1 && set[0].id === 'centre' ? 'One center-of-room reading cannot stand for the room: sample more than one position.' : 'One position stands only for itself: choose at least two.');
   const dists = new Set(set.map((s) => s.distance));
   if (set.length >= 2 && !(dists.has('near') || dists.has('mid')) ) points.push('Every position is far from the source: add one nearer.');
   if (set.length >= 2 && !dists.has('far')) points.push('Nothing is far from the source: add a seat near the back.');

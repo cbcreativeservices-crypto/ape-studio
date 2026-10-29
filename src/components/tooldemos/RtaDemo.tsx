@@ -600,7 +600,7 @@ function SceneMic() {
               </Defs>
               <Rect x={0} y={0} width={72} height={8} rx={4} fill='url(#rtaLegendRamp)' />
             </Svg>
-            <Text style={styles.rampLegendText}>BAR COLOUR = BAND LEVEL</Text>
+            <Text style={styles.rampLegendText}>BAR COLOR = BAND LEVEL</Text>
           </View>
         </View>
       </View>

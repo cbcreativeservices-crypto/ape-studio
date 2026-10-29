@@ -87,7 +87,7 @@ export type KitPartRoles = Partial<Record<string, string>>;
 
 const DEFAULT_ROLES: Record<string, string> = {
   'kit.kick': 'The bass drum, on the floor in the middle: the beater strikes its batter head; the front head faces the audience.',
-  'kit.snare': 'The snare, between the player’s knees: the backbeat. Overhead distances are usually measured to its centre.',
+  'kit.snare': 'The snare, between the player’s knees: the backbeat. Overhead distances are usually measured to its center.',
   'kit.tom1': 'The smaller rack tom, on the holder over the kick, tilted toward the player.',
   'kit.tom2': 'The larger rack tom, on the holder over the kick, tilted toward the player.',
   'kit.floor': 'The floor tom, on its own legs at the player’s right.',
@@ -172,15 +172,15 @@ export function kitRegions(notes: Partial<Record<string, string>> = {}): Radiati
   const r = (id: string, partId: string, label: string, anchor: Vec3, note: string): RadiatingRegion => ({ id, partId, label, anchor, prov: LAYOUT_PROV, note: notes[id] ?? note });
   const tom = (k: KitDrumId) => KIT_DRUMS[k].c;
   return [
-    r('src.snare', 'kit.snare', 'snare', S0, 'The snare’s batter head, at its centre.'),
-    r('src.kick', 'kit.kick', 'kick', O, 'The kick’s batter head, at its centre.'),
-    r('src.hihat', 'cym.hihat', 'hi-hats', KIT_PLACED_CYMBALS.hihat.c, 'The hi-hats, at their centre.'),
+    r('src.snare', 'kit.snare', 'snare', S0, 'The snare’s batter head, at its center.'),
+    r('src.kick', 'kit.kick', 'kick', O, 'The kick’s batter head, at its center.'),
+    r('src.hihat', 'cym.hihat', 'hi-hats', KIT_PLACED_CYMBALS.hihat.c, 'The hi-hats, at their center.'),
     r('src.tom1', 'kit.tom1', '10 in tom', tom('tom1'), 'The 10 in rack tom’s batter head.'),
     r('src.tom2', 'kit.tom2', '12 in tom', tom('tom2'), 'The 12 in rack tom’s batter head.'),
     r('src.floor', 'kit.floor', 'floor tom', tom('floor'), 'The floor tom’s batter head.'),
-    r('src.crash1', 'cym.crash1', '16 in crash', cymbalAnchors('crash1').centre, 'The 16 in crash, at its centre.'),
-    r('src.crash2', 'cym.crash2', '18 in crash', cymbalAnchors('crash2').centre, 'The 18 in crash, at its centre.'),
-    r('src.ride', 'cym.ride', 'ride', cymbalAnchors('ride').centre, 'The ride, at its centre.'),
+    r('src.crash1', 'cym.crash1', '16 in crash', cymbalAnchors('crash1').centre, 'The 16 in crash, at its center.'),
+    r('src.crash2', 'cym.crash2', '18 in crash', cymbalAnchors('crash2').centre, 'The 18 in crash, at its center.'),
+    r('src.ride', 'cym.ride', 'ride', cymbalAnchors('ride').centre, 'The ride, at its center.'),
   ];
 }
 
@@ -196,7 +196,7 @@ export const KIT_SURFACES: ReferenceSurface[] = [
 export const KIT_LINES: RefLine[] = [
   { id: 'snareLine', label: 'the snare’s centre line', point: S0, dir: { x: 0, y: 1, z: 0 } },
   { id: 'kickAxis', label: 'the kick’s axis', point: O, dir: { x: 1, y: 0, z: 0 } },
-  { id: 'kitLine', label: 'the kit’s centre line', point: { x: KIT_CENTRE.x, y: 0, z: KIT_CENTRE.z }, dir: { x: 0, y: 1, z: 0 } },
+  { id: 'kitLine', label: 'the kit’s center line', point: { x: KIT_CENTRE.x, y: 0, z: KIT_CENTRE.z }, dir: { x: 0, y: 1, z: 0 } },
 ];
 
 const DEG = Math.PI / 180;

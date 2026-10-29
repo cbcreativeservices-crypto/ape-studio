@@ -106,7 +106,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b1.snd.2',
     page: 'sound',
-    prompt: 'Why can a hard desk under the mouth colour a host’s voice at the mic?',
+    prompt: 'Why can a hard desk under the mouth color a host’s voice at the mic?',
     options: ['It sends a later copy that cancels some frequencies', 'It soaks up the voice’s low end on the way down', 'It turns the mic’s pattern into an omni'],
     correct: 'It sends a later copy that cancels some frequencies',
     explain: 'The voice reaches the mic straight and, a little later, off the desk. Added together, some frequencies cancel — a comb. A mic nearer the mouth and higher off the desk hears the bounce later and weaker.',
@@ -124,7 +124,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Each voice reaches its own mic first and the other host’s mic a little later. Summed, some frequencies cancel. Close mics, rears toward each other, and muting a mic no one uses keep it small.',
     why: {
       'The far mic reverses that voice’s polarity': 'Distance delays a sound; it does not flip its sign.',
-      'Two open mics make that voice twice as loud': 'The far copy is lower and later: it colours the sound more than it adds level.',
+      'Two open mics make that voice twice as loud': 'The far copy is lower and later: it colors the sound more than it adds level.',
     },
   },
   voiceRatingCheck('b1.set.1', 'the host'),
@@ -170,10 +170,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · A mic fixed on its arm, the host turns to a guest. What happens?',
     options: ['The mouth moves off the mic’s axis', 'The arm turns the mic to follow the head', 'Nothing: the distance stays the same'],
     correct: 'The mouth moves off the mic’s axis',
-    explain: 'The arm holds the mic still while the head turns about its centre: the mouth moves away and off the axis — more so the closer the mic is.',
+    explain: 'The arm holds the mic still while the head turns about its center: the mouth moves away and off the axis — more so the closer the mic is.',
     why: {
       'The arm turns the mic to follow the head': 'A desk arm holds still; only someone moving it, or a headset, follows the head.',
-      'Nothing: the distance stays the same': 'The mouth swings round the head’s centre, so its distance and angle to the mic change.',
+      'Nothing: the distance stays the same': 'The mouth swings round the head’s center, so its distance and angle to the mic change.',
     },
   },
   {
@@ -303,7 +303,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Two hosts, both mics open. What does each mic hear besides its own host?',
     options: ['The other host, later and lower', 'Nothing else, because each is cardioid', 'Only the room, not the other host'],
     correct: 'The other host, later and lower',
-    explain: 'The other voice is farther away and off the back of the pattern — lower, but later. That is bleed: it can colour the mix, and no rule makes it zero.',
+    explain: 'The other voice is farther away and off the back of the pattern — lower, but later. That is bleed: it can color the mix, and no rule makes it zero.',
     why: {
       'Nothing else, because each is cardioid': 'A cardioid rejects most behind, but not all of it — and the room carries the other voice too.',
       'Only the room, not the other host': 'The other host is a loud source a metre or so away: their voice reaches the mic.',
@@ -537,7 +537,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The host turns to a guest; the mic stays on its arm. Which mic changes most?',
     options: ['A very close one: the same turn is a bigger change', 'A farther one, since it was already the quieter one', 'Neither: an arm keeps the mic aimed at the mouth'],
     correct: 'A very close one: the same turn is a bigger change',
-    explain: 'The mouth swings round the head’s centre by much the same amount; at a close mic that is a bigger share of the distance and angle — a bigger change in level and tone.',
+    explain: 'The mouth swings round the head’s center by much the same amount; at a close mic that is a bigger share of the distance and angle — a bigger change in level and tone.',
     why: {
       'A farther one, since it was already the quieter one': 'Farther away, the same movement is a smaller share of the distance.',
       'Neither: an arm keeps the mic aimed at the mouth': 'An arm holds still; the mouth moves.',
@@ -657,7 +657,7 @@ export const B01_LESSON: Lesson = {
     { text: 'The seated host: the lips 450 mm above a 740 mm desk (the floor 1190 mm below the lips), the seat, the forearms on the desk — drawing defaults; the head is the voice family’s.', dims: ['yFloor'] },
     { text: 'The broadcast dynamic’s size (190 mm long, 60 mm across), the desk arm’s segments (420 and 400 mm) and its clamp post, the condenser’s shock mount — drawing defaults; no outline was read.', dims: [] },
     { text: 'The desk (about 1.4 m deep, 1.3 m wide, its front edge 6 cm ahead of the lips), the second host’s place (1.5 m lip to lip), the clamps, the laptops and the script; the PA’s place (2.6 m out, 1.1 m to the host’s left) — drawing defaults.', dims: [] },
-    { text: '“A very slight angle” off the breath stream: 10–20° above the mouth’s axis (the proposal’s 15° default). The head turns about its centre (a simplified picture); the turn limits are drawing defaults.', dims: [] },
+    { text: '“A very slight angle” off the breath stream: 10–20° above the mouth’s axis (the proposal’s 15° default). The head turns about its center (a simplified picture); the turn limits are drawing defaults.', dims: [] },
     { text: 'The desk reflection is drawn as a hard, flat mirror and the mouth as one point (a simplified picture): read where the first dip falls, not its depth.', dims: [] },
   ],
   live: { wedges },

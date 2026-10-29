@@ -115,11 +115,11 @@ const scenarios: MikingScenario[] = [
     id: 'hh.snd.3',
     page: 'sound',
     prompt: 'On the top cymbal, toward which part do the higher overtones tend to sit?',
-    options: ['Toward the cup at the centre', 'Out at the very edge of the plate', 'Under the bottom cymbal, on the stand'],
-    correct: 'Toward the cup at the centre',
-    explain: 'The lower tones tend to be stronger toward the edge and the high overtones toward the centre — so where a mic points over the plate changes the balance. A tendency, checked by ear.',
+    options: ['Toward the cup at the center', 'Out at the very edge of the plate', 'Under the bottom cymbal, on the stand'],
+    correct: 'Toward the cup at the center',
+    explain: 'The lower tones tend to be stronger toward the edge and the high overtones toward the center — so where a mic points over the plate changes the balance. A tendency, checked by ear.',
     why: {
-      'Out at the very edge of the plate': 'The edge tends to carry more of the lower tones; the overtones sit toward the centre.',
+      'Out at the very edge of the plate': 'The edge tends to carry more of the lower tones; the overtones sit toward the center.',
       'Under the bottom cymbal, on the stand': 'Underneath, the top cymbal’s warmer tones and the stick are softer — not more overtones.',
     },
   },
@@ -204,7 +204,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You slide the mic’s aim from the edge toward the cup. What tends to change?',
     options: ['More of the high overtones, less of the lower tones', 'Only the level drops; the tone itself stays exactly the same', 'A fixed treble boost you can read off a chart'],
     correct: 'More of the high overtones, less of the lower tones',
-    explain: 'Toward the centre tends to bring the higher overtones, toward the edge the lower tones. Tendencies — every pair differs, so listen.',
+    explain: 'Toward the center tends to bring the higher overtones, toward the edge the lower tones. Tendencies — every pair differs, so listen.',
     why: {
       'Only the level drops; the tone itself stays exactly the same': 'Aim changes the balance too — overtones toward the cup, lower tones toward the edge.',
       'A fixed treble boost you can read off a chart': 'These are tendencies, not fixed amounts. Check by ear on these hats.',
@@ -261,10 +261,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'hh.rec.3',
     page: 'context',
-    prompt: 'FROM EARLIER · A mic straight above the clutch, at the centre, would tend to hear the hats how?',
+    prompt: 'FROM EARLIER · A mic straight above the clutch, at the center, would tend to hear the hats how?',
     options: ['More of the high overtones from the cup, less of the edge', 'Exactly as a mic out over the far edge of the pair hears them', 'Mostly the pedal and the tubes of the stand'],
     correct: 'More of the high overtones from the cup, less of the edge',
-    explain: 'Toward the centre, the overtones; toward the edge, the lower tones. And straight over the clutch, the mic sits in the rod’s path — keep it clear.',
+    explain: 'Toward the center, the overtones; toward the edge, the lower tones. And straight over the clutch, the mic sits in the rod’s path — keep it clear.',
     why: {
       'Exactly as a mic out over the far edge of the pair hears them': 'Where a mic looks over the plate changes the balance.',
       'Mostly the pedal and the tubes of the stand': 'It still hears the cymbals first; the cup’s overtones are stronger there.',
@@ -538,7 +538,7 @@ export const I01A_LESSON: CymbalLesson = {
     { text: 'The stick’s side of the pair (± 80° about the throne, a stick’s 406.4 mm up), the air-burst ring (60 mm wide, 30 mm above) and the clamp on the stand — drawn illustratively.', dims: [] },
     { text: 'The bands with no published number: “a few centimetres” over the outer edge (4.5–6.5 cm) and the underside (5–8.5 cm under the bottom cymbal, 10–15 cm out) are the lab’s drawings.', dims: [] },
     { text: 'The family draws the open pair with the bottom cymbal lowered; on a real stand the top cymbal rises. The gap between them is what the lesson uses.', dims: [] },
-    { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front, square to the top cymbal’s edge plane, rounded to ≈ 5 mm.', dims: [] },
+    { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front, square to the top cymbal’s edge plane, rounded to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

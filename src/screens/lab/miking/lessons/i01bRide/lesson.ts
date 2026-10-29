@@ -104,11 +104,11 @@ const scenarios: MikingScenario[] = [
     id: 'rd.snd.3',
     page: 'sound',
     prompt: 'Why does a stroke on the bell drive most of the plate’s ringing shapes only a little?',
-    options: ['The felts hold the centre, and most shapes barely move there', 'The bell is hollow, so the stick cannot reach the plate itself', 'The bell is struck with the shoulder, which is too soft'],
-    correct: 'The felts hold the centre, and most shapes barely move there',
-    explain: 'A shape is driven only as much as the plate moves under the stick. Near the held centre most of the ringing shapes barely move (a few, with a still ring, do) — so the bell’s clear, bright accent sits over less wash.',
+    options: ['The felts hold the center, and most shapes barely move there', 'The bell is hollow, so the stick cannot reach the plate itself', 'The bell is struck with the shoulder, which is too soft'],
+    correct: 'The felts hold the center, and most shapes barely move there',
+    explain: 'A shape is driven only as much as the plate moves under the stick. Near the held center most of the ringing shapes barely move (a few, with a still ring, do) — so the bell’s clear, bright accent sits over less wash.',
     why: {
-      'The bell is hollow, so the stick cannot reach the plate itself': 'The bell is part of the plate. It is the held centre that moves so little.',
+      'The bell is hollow, so the stick cannot reach the plate itself': 'The bell is part of the plate. It is the held center that moves so little.',
       'The bell is struck with the shoulder, which is too soft': 'The bell is often played with the stick’s shoulder, which gives it more power, not less. Where it lands is what matters.',
     },
   },
@@ -370,7 +370,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What are a ride’s three playing areas?',
     options: ['The bell, the bow and the edge', 'The cup, the clutch and the rim', 'The top, the seat and the pedal'],
     correct: 'The bell, the bow and the edge',
-    explain: 'The bell (cup) at the centre, the bow (the ride area) and the edge (the crash area).',
+    explain: 'The bell (cup) at the center, the bow (the ride area) and the edge (the crash area).',
     why: {
       'The cup, the clutch and the rim': 'The clutch is a hi-hat part. A ride has a bell, a bow and an edge.',
       'The top, the seat and the pedal': 'Those are hi-hat parts. A ride hangs on a stand and has a bell, a bow and an edge.',
@@ -421,7 +421,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The ride hangs over the floor tom on the player’s right.',
     why: {
       'The hi-hats, opened by the foot': 'The hats are on the left.',
-      'The snare': 'The snare is between the player’s knees, on the left of centre.',
+      'The snare': 'The snare is between the player’s knees, on the left of center.',
     },
   },
   hearingDiagnostic(W),

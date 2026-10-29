@@ -44,7 +44,7 @@ const PARTS: Part[] = [
     id: 'facade',
     label: 'the building’s facade',
     short: 'facade',
-    role: 'A hard wall: it reflects the plaza’s sound back toward a mic near it. Useful colour or not — listen before you shield from it or stand by it.',
+    role: 'A hard wall: it reflects the plaza’s sound back toward a mic near it. Useful color or not — listen before you shield from it or stand by it.',
     prov: SITE,
     variants: ['plaza'],
     solid: { kind: 'box', min: { x: -14000, y: -12000, z: -15000 }, max: { x: PLAZA.facadeX, y: 0, z: 15000 } },

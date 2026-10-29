@@ -75,7 +75,7 @@ export const ACCORDION = {
   grilleH: placeholder(300, 'the treble grille’s height: drawing default 300'),
   grilleW: placeholder(80, 'the treble grille’s width: drawing default 80'),
   /** The accordion's grille centre at chest height for a standing player. */
-  grilleHt: placeholder(1150, 'the treble grille’s centre above the floor for a standing player: drawing default 1150'),
+  grilleHt: placeholder(1150, 'the treble grille’s center above the floor for a standing player: drawing default 1150'),
   /** A cable's slack for the full bellows cycle: the maximum opening + 150. */
   cableSlack: placeholder(750, 'cable slack for a bellows-mounted mic: the maximum opening plus 150, a drawing default'),
 } as const;

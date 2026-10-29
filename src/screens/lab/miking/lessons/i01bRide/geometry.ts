@@ -13,7 +13,7 @@ const size = RIDE.spec.d.prov;
 const areas = { kind: 'sourced', src: 'ZIL-L11', quote: '"BELL (or CUP)", "RIDE AREA", "CRASH AREA", "BOW/PROFILE", "EDGE"' } as const;
 
 const OWN: Part[] = [
-  { id: 'ride.bell', label: 'bell (cup)', short: 'bell', role: 'The raised centre. The stick’s tip on the bell gives a bright, cutting accent that rings through the band.', prov: areas },
+  { id: 'ride.bell', label: 'bell (cup)', short: 'bell', role: 'The raised center. The stick’s tip on the bell gives a bright, cutting accent that rings through the band.', prov: areas },
   { id: 'ride.bow', label: 'bow (the ride area)', short: 'bow', role: 'The wide middle, played with the stick’s tip for time. It does not open up at once like a crash — a clear “ping” over the wash.', prov: areas },
   { id: 'ride.edge', label: 'edge (the crash area)', short: 'edge', role: 'The outer band. Crashed with the shoulder of the stick, the ride opens up into a big wash — and swings hardest on its felts.', prov: areas },
   { id: 'ride.mount', label: 'felts, sleeve and wing nut', short: 'mount', role: 'The ride sits on its sleeve between two felts, able to move — the wing nut is not over-tightened. That freedom is why it swings.', prov: { kind: 'sourced', src: 'ZIL-L11', quote: 'it’s important to have sleeves, bottom and top felts and a wing nut. The cymbal should be able to move freely, so avoid over tightening the wing nut.' } },
@@ -41,7 +41,7 @@ export const RIDE_MODEL: InstrumentModel = cymbalModel({
   envelopes: [{ id: 'env.rideStick', label: 'the stick over the ride', shape: stickSector(RIDE, 80, 30), prov: ill('the player’s side of the ride, a stick’s length (406.4 mm) up — the lab’s drawing (ride_cymbal/GEOMETRY_PROPOSAL.md ko.stick)') }],
   regions: [
     { id: 'r.tip', partId: 'ride.bow', label: 'the stick’s tip on the bow', anchor: STRIKE_BOW, prov: ill('the bow, toward the player (a drawing default on the sourced area)'), note: 'Where the stick’s tip plays the bow for time: the ride’s definition starts here.' },
-    { id: 'r.bell', partId: 'ride.bell', label: 'the bell', anchor: at(RIDE, STRIKE.bell, TH_THRONE, RIDE.spec.rise.mm), prov: ill('the bell'), note: 'The raised centre: bright, cutting accents.' },
+    { id: 'r.bell', partId: 'ride.bell', label: 'the bell', anchor: at(RIDE, STRIKE.bell, TH_THRONE, RIDE.spec.rise.mm), prov: ill('the bell'), note: 'The raised center: bright, cutting accents.' },
     { id: 'r.edge', partId: 'ride.edge', label: 'the edge (a crash on the ride)', anchor: at(RIDE, STRIKE.edge, TH_THRONE, 2), prov: ill('the edge band'), note: 'Crashed with the stick’s shoulder: the ride opens into its wash.' },
     { id: 'r.floor', partId: 'kit.floor', label: 'the floor tom below', anchor: FLOOR.c, prov: ill('the shared 5-piece kit'), note: 'The floor tom right under the ride: the neighbour a ride mic hears most.' },
   ],

@@ -122,7 +122,7 @@ export const E16_ZONES: DocumentedZone[] = [
     variants: ['rows'],
     micTypeIds: PAIR_TYPES,
     tendency: 'The band as one picture: closer, the saxes in front and the trumpets distant; higher and farther, the rows even out with more room.',
-    checks: ['Quiet reeds against a full brass chord', 'The centre image', 'The mono sum'],
+    checks: ['Quiet reeds against a full brass chord', 'The center image', 'The mono sum'],
   }),
   targetZone({
     id: 'bb.sax',

@@ -215,7 +215,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Two tracks, close and room. How do you pan them?',
     options: ['Kept together: they are distances', 'Hard left and hard right, kept apart', 'Wide apart, to widen the room'],
     correct: 'Kept together: they are distances',
-    explain: 'Hard-panning close and room sends different views to opposite sides and can pull a centred picture cue apart. Blend them where the picture needs the action.',
+    explain: 'Hard-panning close and room sends different views to opposite sides and can pull a centered picture cue apart. Blend them where the picture needs the action.',
     why: {
       'Hard left and hard right, kept apart': 'Two channels are not stereo by themselves: they are two distances.',
       'Wide apart, to widen the room': 'It splits two perspectives across the speakers instead.',

@@ -104,7 +104,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Time and level differences between the ears, and the outer ears’ shaping, carry direction. A binaural head keeps those cues; a fixed head keeps one point of view.',
     why: {
       'Only the left ear hears it, while the right is shaded': 'The far ear still hears it — later and quieter, shaded by the head.',
-      'Both ears hear it at the same time and level': 'That is a sound on the centre line — ahead, behind or above — not one to the side.',
+      'Both ears hear it at the same time and level': 'That is a sound on the center line — ahead, behind or above — not one to the side.',
     },
   },
   {

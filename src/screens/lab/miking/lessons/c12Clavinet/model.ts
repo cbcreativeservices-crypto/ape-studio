@@ -42,8 +42,8 @@ export const CLAV_ZONES: DocumentedZone[] = [
   },
   {
     id: 'cl.centre',
-    label: 'Close, at the centre of the speaker',
-    band: 'Try the mic 2–15 cm (1–6 in) from the grille, aimed at the centre of the speaker.',
+    label: 'Close, at the center of the speaker',
+    band: 'Try the mic 2–15 cm (1–6 in) from the grille, aimed at the center of the speaker.',
     kind: 'sourced',
     src: 'S-PGA27',
     quote: 'Aim towards the center of the speaker for a clear, aggressive sound',
@@ -53,7 +53,7 @@ export const CLAV_ZONES: DocumentedZone[] = [
     bandProv: ill('Shure prints “2-15 cm” for amplifiers'),
     radial: { line: 'axis', min: 0, max: 30, prov: ill('“towards the center”: within 3 cm of the speaker’s centre line') },
     requires: { variants: BOTH, micTypeIds: MICS },
-    aim: { maxOffAxis: 15, prov: ill('aimed at the centre: within 15°') },
+    aim: { maxOffAxis: 15, prov: ill('aimed at the center: within 15°') },
     drawn: {
       side: { u0: G + 20, u1: G + 150, v0: -30, v1: 30 },
       top: { u0: G + 20, u1: G + 150, v0: -30, v1: 30 },
@@ -95,7 +95,7 @@ export const CLAV_ZONES: DocumentedZone[] = [
     side: 'outside',
     distance: { min: 5, max: 150 },
     bandProv: ill('close to the grille, as the positions it turns from'),
-    radial: { line: 'axis', min: 20, max: 110, prov: ill('between the centre and the edge, the lab’s drawing') },
+    radial: { line: 'axis', min: 20, max: 110, prov: ill('between the center and the edge, the lab’s drawing') },
     requires: { variants: BOTH, micTypeIds: MICS },
     aim: { minOffAxis: 20, maxOffAxis: 45, prov: ill('“approx. 30°”: 20–45° off square to the grille') },
     drawn: {
@@ -116,7 +116,7 @@ export const CLAV_ZONES: DocumentedZone[] = [
     refSurface: 'grille',
     side: 'outside',
     distance: { min: 150, max: 300 },
-    radial: { line: 'axis', min: 0, max: 60, prov: ill('“on-axis with speaker cone”: within 6 cm of its centre line') },
+    radial: { line: 'axis', min: 0, max: 60, prov: ill('“on-axis with speaker cone”: within 6 cm of its center line') },
     requires: { variants: BOTH, micTypeIds: MICS },
     aim: { maxOffAxis: 15, prov: ill('on axis: within 15°') },
     drawn: {
@@ -138,7 +138,7 @@ export const CLAV_ZONES: DocumentedZone[] = [
     side: 'outside',
     distance: { min: 50, max: 150 },
     bandProv: ill('no source gives a distance: 5–15 cm behind the back, the lab’s drawing'),
-    radial: { line: 'axis', min: 0, max: 90, prov: ill('behind the speaker, within 9 cm of its centre line') },
+    radial: { line: 'axis', min: 0, max: 90, prov: ill('behind the speaker, within 9 cm of its center line') },
     requires: { variants: ['combo'], micTypeIds: MICS },
     aim: { maxOffAxis: 30, prov: ill('aimed at the back of the speaker: within 30°') },
     drawn: {

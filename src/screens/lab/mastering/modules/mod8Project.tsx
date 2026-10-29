@@ -143,7 +143,7 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
           },
           well: (
             <>
-              <Body>Choose an ORDER, ride GAP, try CROSSFADE. The top strip is the running order on a real time base: block length is the track length, block height and colour are its loudness, the wedge is its fade-out. The lower strip zooms the three transitions to ±15 s so the gap, the fade wedge and a crossfade overlap are all visible and all move with the fader; with CROSSFADE on the gap is 0 and the next track starts inside the fade. The largest loudness step between neighbours is the number sequencing watches (steps over 6 LU flagged) — here the quiet song makes a step the client asked for, so the gap around it is a decision, not an accident.</Body>
+              <Body>Choose an ORDER, ride GAP, try CROSSFADE. The top strip is the running order on a real time base: block length is the track length, block height and color are its loudness, the wedge is its fade-out. The lower strip zooms the three transitions to ±15 s so the gap, the fade wedge and a crossfade overlap are all visible and all move with the fader; with CROSSFADE on the gap is 0 and the next track starts inside the fade. The largest loudness step between neighbours is the number sequencing watches (steps over 6 LU flagged) — here the quiet song makes a step the client asked for, so the gap around it is a decision, not an accident.</Body>
               <Card tone="accent">
                 <Point title={seq.label}>{seq.why}</Point>
               </Card>
@@ -151,7 +151,7 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
               <Card>
                 <Point title="Digital distribution first">Confirm the distributor's current file spec and the services' current loudness / true-peak guidance; deliver masters plus the instrumentals, named to the agreed convention, with ISRCs and titles. Dither the 24-bit files too: float to 24-bit is still a reduction. Most mastering engineers do, though it matters far less than at 16-bit.</Point>
                 <Point title="CD a month later">Red Book: sample-rate conversion 48 → 44.1 kHz first, dither to 16-bit as the very last step; the plant's accepted master format (often a DDP image — confirm); an ISRC per track and the UPC/EAN; CD-Text if wanted; the approved gaps and order.</Point>
-                <Point title={'Vinyl "maybe"'}>Ask the cutting engineer before promising anything: side lengths, whether a less limited pre-master is preferred, bass centring, and which song sits at the inner groove.</Point>
+                <Point title={'Vinyl "maybe"'}>Ask the cutting engineer before promising anything: side lengths, whether a less limited pre-master is preferred, bass centering, and which song sits at the inner groove.</Point>
                 <Point title="Document it">A delivery note with what was sent where, and the measured numbers.</Point>
               </Card>
             </>

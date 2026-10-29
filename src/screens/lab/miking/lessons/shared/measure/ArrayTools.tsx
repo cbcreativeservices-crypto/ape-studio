@@ -79,8 +79,8 @@ export function useBaselineStep({ words, baseline, centre, side, third }: { word
   const dt = baselineDt(caps, S);
   const first = firstHeard(caps, S);
   const params: DockParam[] = [
-    { kind: 'options', id: 'src', label: 'SOURCE', valueLabel: src === 'centre' ? 'CENTRE' : src === 'side' ? 'SIDE' : 'MIRROR', selectedId: src, onSelect: (id) => setSrc(id as SrcId), sticky: true, options: [
-      { id: 'centre', label: 'At the centre point', blurb: `${fmtMetres(dist(centre, { x: 0, y: 0, z: 0 }))} straight in front of the origin.` },
+    { kind: 'options', id: 'src', label: 'SOURCE', valueLabel: src === 'centre' ? 'CENTER' : src === 'side' ? 'SIDE' : 'MIRROR', selectedId: src, onSelect: (id) => setSrc(id as SrcId), sticky: true, options: [
+      { id: 'centre', label: 'At the center point', blurb: `${fmtMetres(dist(centre, { x: 0, y: 0, z: 0 }))} straight in front of the origin.` },
       { id: 'side', label: 'At the side point', blurb: 'The same source moved 1 m to the right.' },
       { id: 'mirror', label: 'At the side point’s mirror, behind', blurb: 'Where the side point would be if it were behind the array instead of in front.' },
     ] },
@@ -461,7 +461,7 @@ export function useKitStep({ words, onDone }: { words: KitWords; onDone: () => v
           ];
   const a11y =
     kit === 'camera'
-      ? 'An acoustic camera: a ring of capsules round a lens on a mount, facing a small device; a coloured patch on the device marks where the map puts the sound — an estimate, not a photograph of sound.'
+      ? 'An acoustic camera: a ring of capsules round a lens on a mount, facing a small device; a colored patch on the device marks where the map puts the sound — an estimate, not a photograph of sound.'
       : kit === 'ultra'
         ? `A handheld ultrasonic detector. At a ${rate / 1000} kilohertz sample rate a band is kept only below ${rate / 2000} kilohertz; the band you need reaches ${topK} kilohertz, so it is ${keeps ? 'kept' : 'not kept'}.`
         : 'Under water, from the side: the surface, a buoy, a mooring line to an anchor on the bottom, and a hydrophone hanging on its cable partway down. Underwater levels use a reference of 1 micropascal.';

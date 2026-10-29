@@ -204,7 +204,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says about 40–80 cm. What is it measured from?',
     options: ['The middle of the row, at the bars’ height', 'The nearer end of the wooden rail it hangs from', 'The floor, so the stand is set first'],
     correct: 'The middle of the row, at the bars’ height',
-    explain: 'The distance is from the centre of the row — at a height that sees the bars, not only the rail — and the mic still stays outside the swing and the hand.',
+    explain: 'The distance is from the center of the row — at a height that sees the bars, not only the rail — and the mic still stays outside the swing and the hand.',
     why: {
       'The nearer end of the wooden rail it hangs from': 'An end is the wrong reference for a central view: measure from the middle of the row.',
       'The floor, so the stand is set first': 'The floor says nothing about the distance to the sound.',
@@ -278,7 +278,7 @@ const scenarios: MikingScenario[] = [
     correct: 'When the main or overhead mics do not carry them well',
     explain: 'Listen to the main pickup first; a spot helps for independent control — placed away from louder cymbals and checked with the main, in mono.',
     why: {
-      'As a habit, so they can be turned up later': 'A spot that is not needed adds spill and can colour the sum.',
+      'As a habit, so they can be turned up later': 'A spot that is not needed adds spill and can color the sum.',
       'When they are the loudest instrument anywhere in the room': 'Loudness is not the test; what the main mics miss is.',
     },
   },
@@ -345,10 +345,10 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the mic too near one end — or is the player’s sweep inconsistent?',
     options: ['Whether the mic is near one end, or the sweep varies', 'Turn up the high frequencies on the desk', 'Ask the player to start each sweep a lot louder'],
     correct: 'Whether the mic is near one end, or the sweep varies',
-    explain: 'Compare the full gesture; re-centre the mic on the row or step back safely.',
+    explain: 'Compare the full gesture; re-center the mic on the row or step back safely.',
     why: {
       'Turn up the high frequencies on the desk': 'EQ does not move the mic toward the missing end.',
-      'Ask the player to start each sweep a lot louder': 'The sweep is the music; centre the mic instead.',
+      'Ask the player to start each sweep a lot louder': 'The sweep is the music; center the mic instead.',
     },
   },
   {

@@ -347,7 +347,7 @@ export const M3_BAND: EarModule = {
           : undefined,
       ordered: { low: 'too low', high: 'too high' }, // NEW COPY
       reveal:
-        `${gain > 0 ? '+' : ''}${gain} dB in ${band.label} (${hzLabel(band.lo)}–${hzLabel(band.hi)}), centred near ${hzLabel(Math.min(band.c, 16000))}.` +
+        `${gain > 0 ? '+' : ''}${gain} dB in ${band.label} (${hzLabel(band.lo)}–${hzLabel(band.hi)}), centered near ${hzLabel(Math.min(band.c, 16000))}.` +
         (program && fellBack ? programFallbackNote(program) : ''),
       ...(program && !fellBack ? { source: program.name } : {}),
       seeIt: {

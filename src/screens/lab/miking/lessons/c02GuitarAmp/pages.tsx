@@ -46,13 +46,13 @@ export const C02_SPEC: AmpPagesSpec = {
   },
   notes: {
     beam: 'Most guitar amps use 10 in or 12 in speakers: a 12 in cone, as drawn here, beams a little sooner than a 10 in as the pitch rises. Off the axis, the highs fall away first.',
-    spots: 'On a guitar amp, the dust cap’s edge is a common first aim. Toward the centre tends to add brightness and pick attack — and fizz on a driven tone; toward the edge tends to be smoother and darker. Speakers vary: check by ear.',
-    place: 'This combo’s speaker sits off-centre under the controls — the zones sit on the speaker, not on the middle of the grille. The open back’s zone (behind the amp) starts outside the clear air space the amp needs behind it.',
+    spots: 'On a guitar amp, the dust cap’s edge is a common first aim. Toward the center tends to add brightness and pick attack — and fizz on a driven tone; toward the edge tends to be smoother and darker. Speakers vary: check by ear.',
+    place: 'This combo’s speaker sits off-center under the controls — the zones sit on the speaker, not on the middle of the grille. The open back’s zone (behind the amp) starts outside the clear air space the amp needs behind it.',
     context: 'A close mic on a stable stand gives isolation and repeatability on stage; the PA then adds what the stage sound lacks, rather than doubling it.',
   },
   liveCards: [
-    { title: 'CLEAN AND EDGE-OF-BREAKUP', text: 'Check quiet notes, the pick’s attack and the player’s dynamics. If the centre sounds brittle, slide outward; if the guitar disappears in the band, try the dust cap’s edge before reaching for EQ.' },
-    { title: 'HIGH-GAIN DISTORTION', text: 'The amp is already compressed and rich in upper harmonics. Compare the cap’s edge and off-centre spots for articulation without fizz — and judge it with the bass, drums and other guitar playing.' },
+    { title: 'CLEAN AND EDGE-OF-BREAKUP', text: 'Check quiet notes, the pick’s attack and the player’s dynamics. If the center sounds brittle, slide outward; if the guitar disappears in the band, try the dust cap’s edge before reaching for EQ.' },
+    { title: 'HIGH-GAIN DISTORTION', text: 'The amp is already compressed and rich in upper harmonics. Compare the cap’s edge and off-center spots for articulation without fizz — and judge it with the bass, drums and other guitar playing.' },
     { title: 'LOW STAGE VOLUME, OR AN ISOLATED AMP', text: 'A small amp at a workable level can still give a useful miked sound. If the amp is moved off stage, make sure the player hears a good monitor mix and the amp still has its ventilation.' },
     { title: 'STUDIO', text: 'A close mic gives isolation; a farther mic or a front-and-rear pair on an open back can add size when the room helps. Record the close mic alone first, then blend, and check in mono.' },
   ],

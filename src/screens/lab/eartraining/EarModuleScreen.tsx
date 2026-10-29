@@ -579,7 +579,7 @@ export function EarModuleScreen() {
         subtitle={`Level ${level}/${mod.levels} · ${mod.levelNames[level - 1] ?? ''}`}
         right={
           <>
-            <AccuracyNote compact detail="These drills play through your phone’s UNCALIBRATED output and your own headphones or speakers, both of which colour what you hear. The skill — noticing a change and naming it — transfers anywhere; the absolute tonality you hear here does not." />
+            <AccuracyNote compact detail="These drills play through your phone’s UNCALIBRATED output and your own headphones or speakers, both of which color what you hear. The skill — noticing a change and naming it — transfers anywhere; the absolute tonality you hear here does not." />
             <View
               style={styles.statPill}
               accessible

@@ -275,7 +275,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A screened condenser about 15 cm from the lips',
     explain: 'A screened condenser on the mouth’s axis, about 15–20 cm out, is a place to begin — then compare small changes at matched level, the singer performing the real song.',
     why: {
-      'A handheld, the singer cupping the grille close': 'Cupping the grille changes the pattern and colours the voice.',
+      'A handheld, the singer cupping the grille close': 'Cupping the grille changes the pattern and colors the voice.',
       'Two mics side by side, summed together': 'Two mics summed on one voice comb-filter; compare them one at a time instead.',
     },
   },

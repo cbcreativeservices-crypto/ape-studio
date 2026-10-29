@@ -164,7 +164,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You want a room mic to hear the room from every side. Which pattern fits that question?',
     options: ['Omni', 'Cardioid', 'Hypercardioid'],
     correct: 'Omni',
-    explain: 'An omni hears all round — room included. A directional pattern favours what it faces and colours the room sound arriving off-axis.',
+    explain: 'An omni hears all round — room included. A directional pattern favours what it faces and colors the room sound arriving off-axis.',
     why: {
       Cardioid: 'A cardioid favours its front and turns down its back: it hears less of the room behind it.',
       Hypercardioid: 'A hypercardioid is more directional still: it hears even less of the room around it.',
@@ -236,7 +236,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A corner pair 4.6 m out worked well in one session. Is it worth trying in your room?',
     options: ['Yes — as an idea to try, judged in this room by ear', 'Yes — the corners are where room mics belong in a room', 'No — a spot that worked in one room only suits that room'],
     correct: 'Yes — as an idea to try, judged in this room by ear',
-    explain: 'It is one example, not a prescription — but a good one to try. Corners can add width, or weaken the centre and exaggerate the room’s faults. Listen.',
+    explain: 'It is one example, not a prescription — but a good one to try. Corners can add width, or weaken the center and exaggerate the room’s faults. Listen.',
     why: {
       'Yes — the corners are where room mics belong in a room': 'A corner is one choice; it can help or hurt. No position is the room-mic position.',
       'No — a spot that worked in one room only suits that room': 'Rooms differ, so it is not a rule — but it is still a sensible idea to try and judge by ear.',
@@ -427,7 +427,7 @@ const symptoms: Symptom[] = [
   },
   {
     id: 's.hollow',
-    observation: 'The snare sounds hollow, or the centre wanders',
+    observation: 'The snare sounds hollow, or the center wanders',
     firstChecks: 'Spaced pair, uneven arrivals or interaction with overhead and close tracks: compare each room channel, sum to mono, reposition or lower the troublesome channel.',
     options: ['Each room channel alone, then in mono with the others; move or lower one', 'Pan the room pair out much wider, so that the snare sits back in the middle', 'Boost the snare’s mid-range on the room channels'],
     correct: 'Each room channel alone, then in mono with the others; move or lower one',
@@ -654,7 +654,7 @@ export const M10_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'kit', label: 'the kit', short: 'KIT', tag: 'THE SOURCE', note: 'Near the back wall. A room mic usually faces the kit’s middle — the line from the kick through the snare is a useful centre.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan' } },
+      { id: 'kit', label: 'the kit', short: 'KIT', tag: 'THE SOURCE', note: 'Near the back wall. A room mic usually faces the kit’s middle — the line from the kick through the snare is a useful center.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan' } },
       { id: 'walls', label: 'the walls', short: 'WALLS', tag: 'REFLECTIONS', note: 'They send the kit’s sound back. Near a wall, a mic hears that reflection strongly — a boom or a hollow sound can come from a nearby boundary. Nothing is fixed to them without the venue’s approval.', scene: 'all', prov: { kind: 'illustrative', reason: 'room drawing default' } },
       { id: 'floor', label: 'the floor', short: 'FLOOR', tag: 'FIRST ECHO', note: 'Often the first reflection to arrive: a mic near the floor hears the direct sound and its floor echo almost together.', scene: 'studio', prov: { kind: 'illustrative', reason: 'room drawing default' } },
       { id: 'ceiling', label: 'the ceiling', short: 'CEILING', tag: 'ABOVE', note: 'About 3 m up here. High mics hear its reflection sooner; nothing hangs from it without the venue’s approval and qualified people.', scene: 'studio', prov: { kind: 'illustrative', reason: 'room drawing default (3 m)' } },

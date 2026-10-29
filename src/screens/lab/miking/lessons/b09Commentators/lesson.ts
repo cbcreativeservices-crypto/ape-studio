@@ -91,7 +91,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The commentator turns to follow a play down the field. What happens at a mic fixed on a desk arm?',
     options: ['The mouth moves off its axis: duller, quieter', 'The arm turns the mic to follow the mouth', 'Nothing changes: the desk arm is close enough'],
     correct: 'The mouth moves off its axis: duller, quieter',
-    explain: 'The arm holds the mic still while the head turns about its centre: the mouth moves away and off the axis. A headset boom turns with the head and keeps one distance.',
+    explain: 'The arm holds the mic still while the head turns about its center: the mouth moves away and off the axis. A headset boom turns with the head and keeps one distance.',
     why: {
       'The arm turns the mic to follow the mouth': 'An arm holds still. Only a headset boom moves with the head.',
       'Nothing changes: the desk arm is close enough': 'Closer makes it worse: the same turn is a bigger share of a short distance.',
@@ -118,7 +118,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Each voice reaches its own mic first and the partner’s mic a little later. Summed, some frequencies cancel. Close booms and pulling down the mic of whoever is silent keep it small.',
     why: {
       'The far mic reverses that voice’s polarity': 'Distance delays a sound; it does not flip its sign.',
-      'Two open mics make that voice twice as loud': 'The far copy is much lower and later: it colours the sound more than it adds level.',
+      'Two open mics make that voice twice as loud': 'The far copy is much lower and later: it colors the sound more than it adds level.',
     },
   },
   hearingCheck('b9.set.1', W),
@@ -674,7 +674,7 @@ export const B09_LESSON: Lesson = {
     { text: 'The headset boom: its capsule 2–6 cm beside the mouth corner is the lab’s drawing of “the outside corner of the mouth” (no distance is given); the boom’s length from the ear (170 mm) is a drawing default — the maker gives only its 155° pivot and an 89 mm adjust range.', dims: [] },
     { text: 'The lip ribbon: the guard’s place on the upper lip is the lab’s drawing; how far the ribbon sits behind the guard is not given anywhere readable — a drawing default (60 mm), never shown as a number. The hand holding it is the shared figure’s arm.', dims: [] },
     { text: 'The booth: the desk (1.8 × 0.75 m), the seats 0.9 m apart, the window, the screen and the notes; the open position’s rail, the crowd and the PA cluster’s place (1.8 m out, 3 m to the left, 1.6 m above the lips) — drawing defaults.', dims: [] },
-    { text: 'The partner’s voice in your mic is read by distance and an ideal pattern from point mouths, with no room (a simplified picture); the head turns about its centre.', dims: [] },
+    { text: 'The partner’s voice in your mic is read by distance and an ideal pattern from point mouths, with no room (a simplified picture); the head turns about its center.', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

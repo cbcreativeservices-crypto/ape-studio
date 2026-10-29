@@ -26,7 +26,7 @@ export const TIMP_DIMS = {
   /** Head height above the floor: UNKNOWN (proposal drawing default 760). */
   headH: placeholder(760, 'timpani head height above the floor'),
   /** Centre spacing of the pair: drawing default ±380 (rim gap 61.5 mm). */
-  pairZ: placeholder(380, 'centre spacing of the two drums'),
+  pairZ: placeholder(380, 'center spacing of the two drums'),
   /** "about 1 m (3'4") above the skin height" — the shared spot. */
   spotH: { mm: 1000, prov: src('DECCA', 'a single microphone between them at about 1 m (3\'4") above the skin height') } as Dim,
   /** The mallets' reach above the heads on the player's side (ILLUSTRATIVE). */

@@ -52,7 +52,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose an anchor’s mic by the shot, the movement and the route: a visible or hidden lav, a boom outside the frame, a gooseneck or a boundary mic on the desk.',
     credit: { scenarios: ['b2.mic.1', 'b2.mic.2', 'b2.mic.3', 'b2.mic.4', 'b2.rec.1'], note: 'Answer the five checks (one reaches back to the anchor and the desk).' },
-    takeaway: 'A centred lav is a reliable first trial; hide it only after the visible place works; a boom avoids the clothes but must stay outside the frame; a desk mic avoids the clothes but meets the papers and the desk’s bounce.',
+    takeaway: 'A centered lav is a reliable first trial; hide it only after the visible place works; a boom avoids the clothes but must stay outside the frame; a desk mic avoids the clothes but meets the papers and the desk’s bounce.',
   },
   placement: {
     title: 'Placement Studio',
@@ -82,7 +82,7 @@ const pages: LessonPages = {
     title: 'Practice',
     goal: 'Set up an anchor’s mic in the right order, choose and justify a setup for a recorded interview and a public one, and say what would justify a second mic.',
     credit: { scenarios: ['b2.prac.order', 'b2.prac.gain', 'b2.prac.setup1', 'b2.prac.setup2', 'b2.prac.3', 'b2.mix.1', 'b2.mix.2', 'b2.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The placement sheet is optional — it needs a real set.' },
-    takeaway: 'Consent, a centred place measured from the lips, a channel for each speaker, one mic on air per voice and a tested fallback pass. A brand, a hidden mic for its own sake or a “hotter” signal do not — and more than one setup can pass.',
+    takeaway: 'Consent, a centered place measured from the lips, a channel for each speaker, one mic on air per voice and a tested fallback pass. A brand, a hidden mic for its own sake or a “hotter” signal do not — and more than one setup can pass.',
   },
 };
 /** MEET IT in person words (review 2026-10-08, L7G2-18 / L7G3-17): the engine's goal calls the subject "it". */
@@ -100,7 +100,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The anchor turns from the camera to the guest. What happens at the lav?',
     options: ['It stays put; the mouth turns away from it', 'It turns with the anchor’s head toward the guest', 'It comes closer to the mouth as the head turns'],
     correct: 'It stays put; the mouth turns away from it',
-    explain: 'A lav is on the chest. The head turns about its centre, so the mouth moves off the lav’s line — a centred lav changes alike for a turn either way.',
+    explain: 'A lav is on the chest. The head turns about its center, so the mouth moves off the lav’s line — a centered lav changes alike for a turn either way.',
     why: {
       'It turns with the anchor’s head toward the guest': 'Only a head-worn mic, like a headset, turns with the head. A chest lav moves with the chest.',
       'It comes closer to the mouth as the head turns': 'The mouth swings sideways, away from the middle of the chest.',
@@ -170,13 +170,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'b2.rec.1',
     page: 'microphone',
-    prompt: 'FROM EARLIER · Why does a centred lav suit an anchor who turns both ways?',
+    prompt: 'FROM EARLIER · Why does a centered lav suit an anchor who turns both ways?',
     options: ['Turns left and right read alike', 'It turns with the head as it moves', 'Closest to the mouth of all the places'],
     correct: 'Turns left and right read alike',
     explain: 'On the middle line, a turn to either side moves the mouth the same way relative to the lav: no one side is quieter.',
     why: {
       'It turns with the head as it moves': 'A lav stays on the chest; only a headset turns.',
-      'Closest to the mouth of all the places': 'A collar or neckline is closer; the centre is about balance.',
+      'Closest to the mouth of all the places': 'A collar or neckline is closer; the center is about balance.',
     },
   },
   {
@@ -272,7 +272,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The direct voice and its later copy off the desk add up: some frequencies cancel. A boundary mic on the desk hears the two arrive together.',
     why: {
       'The desk soaks up the voice’s high end': 'A hard desk reflects; the problem is the later copy.',
-      'The anchor talks more quietly when it is near': 'The anchor’s voice does not change; the reflection does the colouring.',
+      'The anchor talks more quietly when it is near': 'The anchor’s voice does not change; the reflection does the coloring.',
     },
   },
   {
@@ -305,7 +305,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A recorded news interview, no loudspeakers, a two-shot. A fair first setup?',
     options: ['A lav each, on separate channels', 'One boundary between them for both', 'The camera’s mic for both voices'],
     correct: 'A lav each, on separate channels',
-    explain: 'With no PA, a centred lav each on labelled channels gives level and routing control; a boom outside the frame can carry the program with the lavs as fallbacks.',
+    explain: 'With no PA, a centered lav each on labelled channels gives level and routing control; a boom outside the frame can carry the program with the lavs as fallbacks.',
     why: {
       'One boundary between them for both': 'Shared and far from both mouths: less control, more room and papers.',
       'The camera’s mic for both voices': 'As far as the camera: the room comes up with the voices.',
@@ -428,9 +428,9 @@ const symptoms: Symptom[] = [
     id: 'b2.sym.turn',
     observation: 'The anchor sounds duller when turned to the guest',
     firstChecks: 'Is the lav off to the far side? Is a fixed boom or a desk mic aimed where the anchor faced the camera?',
-    options: ['Centre the lav; re-aim or cue the fixed mic', 'Turn the anchor’s channel up a little for the turns', 'Ask the anchor to face the camera to talk'],
-    correct: 'Centre the lav; re-aim or cue the fixed mic',
-    explain: 'Each mic here stays put while the mouth turns. A centred lav reads both turns alike; a boom or a desk mic is aimed for the real turns, or the guest gets the line.',
+    options: ['Center the lav; re-aim or cue the fixed mic', 'Turn the anchor’s channel up a little for the turns', 'Ask the anchor to face the camera to talk'],
+    correct: 'Center the lav; re-aim or cue the fixed mic',
+    explain: 'Each mic here stays put while the mouth turns. A centered lav reads both turns alike; a boom or a desk mic is aimed for the real turns, or the guest gets the line.',
     why: {
       'Turn the anchor’s channel up a little for the turns': 'Gain raises the room with the voice and does not follow the turn.',
       'Ask the anchor to face the camera to talk': 'The interview needs them to turn; place the mics for it.',
@@ -483,7 +483,7 @@ const orderTasks: OrderTask[] = [
     steps: [
       { text: 'Ask for the shot, the moves, the turns and the route', early: 'Start with the program and the picture, before any equipment.' },
       { text: 'Ask the anchor and wardrobe; check the mic and its adapter', early: 'The person and the electrical path come before fitting.' },
-      { text: 'Fit a visible, centred lav with a loop; secure the cable', early: 'Fit the mic once you have agreement and the right path.' },
+      { text: 'Fit a visible, centered lav with a loop; secure the cable', early: 'Fit the mic once you have agreement and the right path.' },
       { text: 'Set gain on normal and emphatic speech, with headroom', early: 'Gain comes once the mic is fitted.' },
       { text: 'Rehearse turns to the camera, the guest and the script', early: 'Check the movement once the level is set.' },
       { text: 'Add a tested fallback — a boom or desk mic — on its own track', early: 'Add the fallback after the main mic works.' },
@@ -499,7 +499,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A recorded seated interview in a quiet studio: an anchor and a guest, a two-shot, no loudspeakers.',
     setups: [
-      { id: 'a', label: 'A centred lav on each, on separate labelled channels', ok: true, power: 'pack', feedback: 'A suggested start — check turns, the clothes and an overlap in the program.' },
+      { id: 'a', label: 'A centered lav on each, on separate labelled channels', ok: true, power: 'pack', feedback: 'A suggested start — check turns, the clothes and an overlap in the program.' },
       { id: 'b', label: 'A boom just outside the frame for each voice, the lavs as fallbacks', ok: true, power: 'phantom', feedback: 'A suggested start — check the widest frame and keep each fallback on its own track.' },
       { id: 'c', label: 'One boundary on the desk between them for both', ok: false, power: 'phantom', feedback: 'Shared and far from both mouths: less control, more room and papers.' },
       { id: 'd', label: 'The camera’s mic only, its gain turned up', ok: false, power: 'phantom', feedback: 'As far as the camera: the room comes up with the voices.' },
@@ -513,7 +513,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A public interview: an anchor and a guest at a desk, an audience and a PA, a broadcast program.',
     setups: [
-      { id: 'a', label: 'A centred lav each, the fewest open, the PA checked with the operator', ok: true, power: 'pack', feedback: 'A suggested start — check the margin at a safe level.' },
+      { id: 'a', label: 'A centered lav each, the fewest open, the PA checked with the operator', ok: true, power: 'pack', feedback: 'A suggested start — check the margin at a safe level.' },
       { id: 'b', label: 'A gooseneck each, raised, its rejection toward the PA', ok: true, power: 'phantom', feedback: 'A suggested start — check the actual pattern against the PA’s place.' },
       { id: 'c', label: 'Every mic on the desk left open in case', ok: false, power: 'phantom', feedback: 'Each open mic hears the PA: less margin before feedback.' },
       { id: 'd', label: 'The boom and the lav both in the program', ok: false, power: 'phantom', feedback: 'Two mics on one voice comb. Choose one.' },
@@ -616,7 +616,7 @@ export const B02_LESSON: Lesson = {
   id: 'B02',
   labId: 'broadcast',
   title: 'News Anchors and Seated Interviews',
-  subtitle: 'A centred lav about 12–25 cm from the lips, a boom just outside the frame, a desk mic where the shot allows — a channel for each speaker',
+  subtitle: 'A centered lav about 12–25 cm from the lips, a boom just outside the frame, a desk mic where the shot allows — a channel for each speaker',
   noun: { one: 'anchor', many: 'anchors', subject: 'anchor', person: true },
   model: B02_MODEL,
   micTypeIds: ['locLav', 'shotgunShort', 'compactHyper', 'bcGoose', 'bcBoundaryDesk'],
@@ -631,7 +631,7 @@ export const B02_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A seated anchor or interview guest on camera, who looks to a camera, a co-anchor, a monitor or another person, handles papers and changes posture while speaking.', src: 'LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'News sets, studio interviews, talk shows and public interviews: a lav on each talker, a boom just out of the shot, a gooseneck or a boundary mic on the desk.', src: 'LESSON' },
     { title: 'WHAT IT DOES', text: 'It keeps each voice clear through turns and posture changes, fits the picture, and gives each speaker their own channel.', src: 'LESSON' },
-    { title: 'NO SINGLE RIGHT PLACE', text: 'The shot, the movement and the route decide. Begin with a centred, visible lav, rehearse the real turns, and adjust by listening. Experimentation is encouraged.', src: 'LESSON' },
+    { title: 'NO SINGLE RIGHT PLACE', text: 'The shot, the movement and the route decide. Begin with a centered, visible lav, rehearse the real turns, and adjust by listening. Experimentation is encouraged.', src: 'LESSON' },
   ],
   sound: {
     stages: [
@@ -654,7 +654,7 @@ export const B02_LESSON: Lesson = {
       { id: 'pa', label: 'the PA', short: 'PA', note: 'A public interview: it faces the audience, but every open mic on the set hears it.', prov: { kind: 'illustrative', reason: 'a typical small stage' }, tag: 'FEEDBACK', scene: 'stage' },
     ],
     stage: 'PUBLIC: close mics, the fewest open, a pattern’s rejection toward the PA where the mic has one, every route traced. Avoid uncontrolled feedback.',
-    studio: 'NEWS SET: a centred lav on each talker on separate channels, a boom just outside the widest frame as program or fallback, a desk mic where the shot allows.',
+    studio: 'NEWS SET: a centered lav on each talker on separate channels, a boom just outside the widest frame as program or fallback, a desk mic where the shot allows.',
   },
   diagnostic,
   practice: {
@@ -672,7 +672,7 @@ export const B02_LESSON: Lesson = {
     { text: 'The seated anchor and guest: the lips 450 mm above a 740 mm desk (the floor 1190 mm below the lips), the guest 80 cm along the desk on the anchor’s right — drawing defaults.', dims: ['yFloor'] },
     { text: 'The desk (70 cm deep, from 65 cm on the anchor’s left to 65 cm past the guest), the gooseneck’s base, the boundary’s place, the scripts — drawing defaults. The gooseneck’s 20–30 cm is the panels lesson’s drawing default; we found no source that gives one here.', dims: [] },
     { text: 'The camera (2.6 m out at eye level) and its two shots — drawing defaults. The boom’s start is calculated from the drawing: the tube’s tip 15 cm outside the widest frame on a line 45° up and 20° to the anchor’s left, the capsule the tube’s length behind it; the stand’s arm (85 cm) and its column are drawing defaults.', dims: [] },
-    { text: 'The lav’s place on the chest is the shared figure’s; its distance (about 21 cm) falls inside the researched 12.5–25 cm band. The PA’s place (2.2 m out, 1.6 m to the left, 1.7 m up) — a drawing default. The head turns about its centre; the desk reflects as a mirror (simplified pictures).', dims: [] },
+    { text: 'The lav’s place on the chest is the shared figure’s; its distance (about 21 cm) falls inside the researched 12.5–25 cm band. The PA’s place (2.2 m out, 1.6 m to the left, 1.7 m up) — a drawing default. The head turns about its center; the desk reflects as a mirror (simplified pictures).', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

@@ -1677,12 +1677,12 @@ export function suggest(d: RoomDesign, a: Omit<Analysis, 'suggestions'>): Sugges
   const len = (m: number) => fmtLen(m, u);
   if (s) {
     if (Math.abs(s.axisOffset) > 0.1) {
-      out.push({ tier: 'CALCULATED', level: 'try', text: `The listening position sits ${fmtLen(Math.abs(s.axisOffset), u, { small: true })} ${s.axisOffset > 0 ? 'right' : 'left'} of the room's centre line. Try it on the centre line and compare — matched left/right geometry is the usual starting point.` });
+      out.push({ tier: 'CALCULATED', level: 'try', text: `The listening position sits ${fmtLen(Math.abs(s.axisOffset), u, { small: true })} ${s.axisOffset > 0 ? 'right' : 'left'} of the room's center line. Try it on the center line and compare — matched left/right geometry is the usual starting point.` });
     } else {
-      out.push({ tier: 'CALCULATED', level: 'ok', text: 'The listening position is on the room’s centre line.' });
+      out.push({ tier: 'CALCULATED', level: 'ok', text: 'The listening position is on the room’s center line.' });
     }
     if (s.pathDiff > SYM_TOL) {
-      out.push({ tier: 'CALCULATED', level: 'check', text: `Left and right speakers are ${fmtLen(s.pathDiff, u, { small: true })} apart in distance to the ears (${len(s.distL)} vs ${len(s.distR)}). Above about ${fmtLen(SYM_TOL, u, { small: true })} the centre image starts to pull toward the nearer speaker.` });
+      out.push({ tier: 'CALCULATED', level: 'check', text: `Left and right speakers are ${fmtLen(s.pathDiff, u, { small: true })} apart in distance to the ears (${len(s.distL)} vs ${len(s.distR)}). Above about ${fmtLen(SYM_TOL, u, { small: true })} the center image starts to pull toward the nearer speaker.` });
     }
     const sideDiff = Math.abs(s.wallL.side - s.wallR.side);
     if (sideDiff > 0.15) {
@@ -1697,7 +1697,7 @@ export function suggest(d: RoomDesign, a: Omit<Analysis, 'suggestions'>): Sugges
       out.push({ tier: 'CALCULATED', level: 'try', text: `The tweeters sit ${fmtLen(Math.abs(s.heightDiff), u, { small: true })} ${s.heightDiff > 0 ? 'above' : 'below'} ear height. Most monitor makers suggest the tweeter at or just above ear height; tilt or raise to test.` });
     }
     if (s.listenerRear < 1) {
-      out.push({ tier: 'ESTIMATED', level: 'check', text: `The listener is ${len(s.listenerRear)} from the rear wall — the rear reflection arrives early and strong, and the pressure peak at the wall colours the bass. Moving forward, or treating the rear wall, is worth comparing.` });
+      out.push({ tier: 'ESTIMATED', level: 'check', text: `The listener is ${len(s.listenerRear)} from the rear wall — the rear reflection arrives early and strong, and the pressure peak at the wall colors the bass. Moving forward, or treating the rear wall, is worth comparing.` });
     }
     // The front-wall notch at the seat (image-source, audio review 2), merged
     // into one line when the two speakers stand at the same distance
@@ -1728,15 +1728,15 @@ export function suggest(d: RoomDesign, a: Omit<Analysis, 'suggestions'>): Sugges
       if (z.zone === 'peak') out.push({ tier: zoneTier, level: 'check', text: `The listener sits at a pressure maximum of the ${name}: bass at that frequency will sound heavy there. Move fore/aft — try the seat at roughly 35–40 % of the room length and compare.` });
       if (z.zone === 'null') out.push({ tier: zoneTier, level: 'check', text: `The listener sits near a null of the ${name}: that frequency nearly disappears at the seat, and no EQ fixes a null. Move fore/aft — try the seat at roughly 35–40 % of the room length and compare.` });
     } else if (z.mode.axis === 'W') {
-      if (z.zone === 'null' && onCentre) out.push({ tier: zoneTier, level: 'ok', text: `On the centre line you sit in the null of every odd width mode (here ${fmtHz(z.mode.f)}). That is true of every symmetrical room and is the accepted trade — a centred stereo pair barely drives those modes. Keep the symmetry; only the sub's position and the width-mode peaks at the side walls are worth working.` });
-      else if (z.zone === 'null') out.push({ tier: zoneTier, level: 'info', text: `The seat sits near a null of the ${name} — expected near the centre line, where every odd width mode nulls. Keep left/right symmetry rather than chasing it.` });
-      else if (z.zone === 'peak') out.push({ tier: zoneTier, level: 'try', text: `The listener sits near a pressure maximum of the ${name} — close to a side wall, where the width modes pile up. The centre line is the usual answer; compare.` });
+      if (z.zone === 'null' && onCentre) out.push({ tier: zoneTier, level: 'ok', text: `On the center line you sit in the null of every odd width mode (here ${fmtHz(z.mode.f)}). That is true of every symmetrical room and is the accepted trade — a centered stereo pair barely drives those modes. Keep the symmetry; only the sub's position and the width-mode peaks at the side walls are worth working.` });
+      else if (z.zone === 'null') out.push({ tier: zoneTier, level: 'info', text: `The seat sits near a null of the ${name} — expected near the center line, where every odd width mode nulls. Keep left/right symmetry rather than chasing it.` });
+      else if (z.zone === 'peak') out.push({ tier: zoneTier, level: 'try', text: `The listener sits near a pressure maximum of the ${name} — close to a side wall, where the width modes pile up. The center line is the usual answer; compare.` });
     } else {
       if (z.zone === 'null') out.push({ tier: zoneTier, level: 'info', text: `Seated ears sit near the null of the first height mode (${fmtHz(z.mode.f)}) — ear height near mid-height does this in every room of this height. Normal, not a reason to move; raising or lowering the chair a few cm is the only lever.` });
       else if (z.zone === 'peak') out.push({ tier: zoneTier, level: 'try', text: `The ears sit near a pressure maximum of the ${name} — close to the floor or the ceiling. A few cm of chair height changes it; compare.` });
     }
   }
-  out.push({ tier: 'ESTIMATED', level: 'info', text: 'The pressure map and the zones above show the SHAPE of each mode, not how strongly the speakers excite it — a symmetric pair on the centre line barely drives the odd width modes at all. Measure to know.' });
+  out.push({ tier: 'ESTIMATED', level: 'info', text: 'The pressure map and the zones above show the SHAPE of each mode, not how strongly the speakers excite it — a symmetric pair on the center line barely drives the odd width modes at all. Measure to know.' });
   if (!a.rectangular) {
     const planRect = planIsRectangular(d.room);
     out.push({
@@ -1833,7 +1833,7 @@ export function diffLayouts(d: RoomDesign, fromIdx: number, toIdx: number, pre: 
   if (a.stereo && b.stereo) {
     if (Math.abs(a.stereo.angleDeg - b.stereo.angleDeg) > 0.5) out.push({ tier: 'CALCULATED', text: `Listening angle ${a.stereo.angleDeg.toFixed(0)}° → ${b.stereo.angleDeg.toFixed(0)}°.` });
     if (Math.abs(a.stereo.pathDiff - b.stereo.pathDiff) > 0.005) out.push({ tier: 'CALCULATED', text: `Left/right path difference ${fmtLen(a.stereo.pathDiff, u, { small: true })} → ${fmtLen(b.stereo.pathDiff, u, { small: true })}.` });
-    if (Math.abs(a.stereo.axisOffset - b.stereo.axisOffset) > 0.01) out.push({ tier: 'CALCULATED', text: `Offset from the centre line ${fmtLen(Math.abs(a.stereo.axisOffset), u, { small: true })} → ${fmtLen(Math.abs(b.stereo.axisOffset), u, { small: true })}.` });
+    if (Math.abs(a.stereo.axisOffset - b.stereo.axisOffset) > 0.01) out.push({ tier: 'CALCULATED', text: `Offset from the center line ${fmtLen(Math.abs(a.stereo.axisOffset), u, { small: true })} → ${fmtLen(Math.abs(b.stereo.axisOffset), u, { small: true })}.` });
   }
   for (let i = 0; i < Math.min(a.listenerZones.length, b.listenerZones.length); i++) {
     const za = a.listenerZones[i];

@@ -197,7 +197,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A reflective room indoors. What is a fair comparison to make?',
     options: ['A shotgun and a compact directional mic, same place', 'Two shotguns of different lengths, one of them far off', 'The camera’s mic against the boom, gain matched'],
     correct: 'A shotgun and a compact directional mic, same place',
-    explain: 'Among reflections a shotgun’s off-axis colour can show; a compact directional mic may sound smoother. Compare at the same place and loudness — neither is best everywhere.',
+    explain: 'Among reflections a shotgun’s off-axis color can show; a compact directional mic may sound smoother. Compare at the same place and loudness — neither is best everywhere.',
     why: {
       'Two shotguns of different lengths, one of them far off': 'A longer tube does not fix the room, and distance is a different test.',
       'The camera’s mic against the boom, gain matched': 'That compares distances, not the boom mics for this room.',
@@ -426,11 +426,11 @@ const symptoms: Symptom[] = [
   },
   {
     id: 'b4.sym.room',
-    observation: 'Indoors, the voice sounds hollow and coloured',
+    observation: 'Indoors, the voice sounds hollow and colored',
     firstChecks: 'What is behind the talker along the mic’s axis? Is a shotgun hearing reflections off its axis? How far is the mic?',
     options: ['Move closer; try a compact directional mic', 'Swap to a longer shotgun, same place', 'Raise the treble on the boom to bring back the clarity'],
     correct: 'Move closer; try a compact directional mic',
-    explain: 'Indoors, reflections reach a shotgun off its axis and colour the voice. Closer helps most; a compact directional mic may sound smoother — compare.',
+    explain: 'Indoors, reflections reach a shotgun off its axis and color the voice. Closer helps most; a compact directional mic may sound smoother — compare.',
     why: {
       'Swap to a longer shotgun, same place': 'A longer tube does not fix the room.',
       'Raise the treble on the boom to bring back the clarity': 'EQ cannot remove the reflections it is mixed with.',

@@ -58,7 +58,7 @@ const TB_OFF: Z = {
   aim: { maxOffAxis: 30, prov: ill('aimed across the bell: within 30° of it (the lab’s tolerance)') },
   requires: { micTypeIds: STAND },
   draw: draw(TB, 15, 50, 300, 600, AWAY),
-  tendency: 'A balanced, present trombone — the core and the articulation without the full blast down the axis. Toward the centre tends to bring more edge; farther off, a softer top.',
+  tendency: 'A balanced, present trombone — the core and the articulation without the full blast down the axis. Toward the center tends to bring more edge; farther off, a softer top.',
   checks: ['The full slide sweep to 7th position, with the stand and cable outside it', 'The loudest accent, for overload in the mic as well as the input', 'Mutes in and out, and the player’s normal movement'],
 };
 
@@ -86,11 +86,11 @@ const clip = (P: HornPose, id: string, variant: string, rimWord: string): Docume
   const z: Z = {
     id,
     label: 'Miniature on a bell clip — never on the slide',
-    band: `Clip it to the bell’s rim where its maker allows (${rimWord}) — never on the slide — and bring the capsule a few centimetres in front of the bell on the side away from the slide, aimed between the bell’s centre and its edge.`,
+    band: `Clip it to the bell’s rim where its maker allows (${rimWord}) — never on the slide — and bring the capsule a few centimetres in front of the bell on the side away from the slide, aimed between the bell’s center and its edge.`,
     kind: 'sourced',
     src: 'DPA-MOUNT',
     quote: 'do not point the microphone directly into the center of the bell, but position it between the center position and the bell’s edge (DPA-MOUNT); mount only on the approved stationary bell area, never on the slide (L21)',
-    bandProv: ill('no distance is given: 4–13 cm in front of the rim’s centre, within 60° of the axis, on the side away from the slide, is the lab’s drawing'),
+    bandProv: ill('no distance is given: 4–13 cm in front of the rim’s center, within 60° of the axis, on the side away from the slide, is the lab’s drawing'),
     refSurface: 'bell',
     side: 'outside',
     distance: { min: 40, max: 130 },
@@ -99,7 +99,7 @@ const clip = (P: HornPose, id: string, variant: string, rimWord: string): Docume
     aimAt: { surface: 'bell', r: R, prov: ill('the capsule’s axis meets the bell’s opening, inside the rim') },
     requires: { variant, micTypeIds: ['brClip'], mount: 'clip' },
     draw: draw(P, 0, 60, 40, 130, AWAY),
-    tendency: 'The distance holds as the player moves, and the slide stays clear. A closer, more coloured view than a stand mic; listen for clip or bell vibration.',
+    tendency: 'The distance holds as the player moves, and the slide stays clear. A closer, more colored view than a stand mic; listen for clip or bell vibration.',
     checks: ['A clip made for this bell, with the player’s agreement', 'The cable routed clear of the slide, the hands and any trigger', 'The full slide sweep, mutes and the player’s movement'],
   };
   const aimPt = scale(AWAY, R * 0.45);

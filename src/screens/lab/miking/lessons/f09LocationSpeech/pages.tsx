@@ -248,7 +248,7 @@ function useTurnStep(hidden: boolean): MikingStep {
           )}
         </FieldStage>
       ),
-      badge: 'From above · calculated from the drawing · the head turns about its centre (a simplified picture) · silent',
+      badge: 'From above · calculated from the drawing · the head turns about its center (a simplified picture) · silent',
       bezel,
       params,
       initialParam: 'turn',

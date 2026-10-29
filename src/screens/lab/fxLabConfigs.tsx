@@ -510,7 +510,7 @@ const chorusConfig: FxLabConfig = {
   // lab does not have (its delay key is DELAY).
   exploreCaption:
     'Display: grey = your voice, blue = the delayed copy, the bold glowing line = what you hear (the two mixed; ' +
-    'its colour shows its level). As the slow wobble (the LFO) drifts the delay, the copy slides and the sum swells ' +
+    'its color shows its level). As the slow wobble (the LFO) drifts the delay, the copy slides and the sum swells ' +
     'and thins — that movement is the chorus.',
   sources: [srcSine(440), SRC_PINK],
   // EVERY PARAM OF A SHARED NODE MUST BE DECLARED HERE. `EffectChain::reset()`

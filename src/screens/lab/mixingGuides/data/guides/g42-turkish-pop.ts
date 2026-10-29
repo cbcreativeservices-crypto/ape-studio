@@ -36,7 +36,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Darbuka:",
-      "text": "goblet drum with a deep düm (centre stroke, low thump around 80–150 Hz) and sharp tek/ka (rim strokes, 2–6 kHz crack); fast rolls and fills. Usually alongside a kit or programmed kick.",
+      "text": "goblet drum with a deep düm (center stroke, low thump around 80–150 Hz) and sharp tek/ka (rim strokes, 2–6 kHz crack); fast rolls and fills. Usually alongside a kit or programmed kick.",
       "bullet": true
     },
     {
@@ -51,7 +51,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Kanun (plucked zither), ud (fretless lute), clarinet, ney (end-blown reed flute), zurna (loud folk shawm):",
-      "text": "melodic colour and solo fills; clarinet especially in 9/8 and fantezi (lighter arabesk-pop) numbers.",
+      "text": "melodic color and solo fills; clarinet especially in 9/8 and fantezi (lighter arabesk-pop) numbers.",
       "bullet": true
     },
     {
@@ -67,7 +67,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "The singer is front centre, BVs to one side; drums and darbuka (goblet drum)/percussion share a riser so they lock, bass beside them. Strings sit to one side, bağlama (long-necked Turkish lute), kanun (plucked zither) and clarinet to the other, keys at the back."
+      "text": "The singer is front center, BVs to one side; drums and darbuka (goblet drum)/percussion share a riser so they lock, bass beside them. Strings sit to one side, bağlama (long-necked Turkish lute), kanun (plucked zither) and clarinet to the other, keys at the back."
     },
     {
       "text": "Kick, bass and darbuka carry the groove, the darbuka’s düm-tek (low-and-sharp stroke) syncopation marking it as Turkish dance music. Keys hold fairly simple harmony so the makam (Turkish melodic mode) melody can move freely. Strings and bağlama play the instrumental hook in unison or octaves and answer the vocal. A typical song: intro hook on strings or bağlama, light verse, full chorus with BVs, then an instrumental break for darbuka and a soloist, sometimes shifting into a 9/8 roman havası (Romani 9/8 dance tune). Arabesk-leaning ballads open with a free-time taksim (improvised solo) before the band enters."
@@ -83,7 +83,7 @@ export const GUIDE: MixingGuide = {
       "text": "Loudest to quietest: lead vocal; kick and darbuka (goblet drum; roughly equal, with the darbuka pushed up in breaks); bass; string/bağlama hook (pushed when it carries the melody, tucked under the vocal otherwise); snare/clap; keys and pads; backing vocals; kanun (plucked zither)/clarinet fills; reverb returns."
     },
     {
-      "text": "Low end: the kick or 808 owns 45–70 Hz, the bass owns 70–200 Hz, and the darbuka düm (low center stroke) needs a small window around 90–130 Hz. If all three fight, high-pass the darbuka at 70–80 Hz and let it read from its 2–5 kHz attack. Lead vocal, kick, bass, snare and darbuka sit centre. Spread first and second violins left and right (or the stereo string pair wide), bağlama (long-necked Turkish lute) roughly 20–40% one side, kanun or clarinet opposite. Percussion layers such as def (frame drum with jingles), bendir (frame drum with a snare) and shakers go wider, 50–70%."
+      "text": "Low end: the kick or 808 owns 45–70 Hz, the bass owns 70–200 Hz, and the darbuka düm (low center stroke) needs a small window around 90–130 Hz. If all three fight, high-pass the darbuka at 70–80 Hz and let it read from its 2–5 kHz attack. Lead vocal, kick, bass, snare and darbuka sit center. Spread first and second violins left and right (or the stereo string pair wide), bağlama (long-necked Turkish lute) roughly 20–40% one side, kanun or clarinet opposite. Percussion layers such as def (frame drum with jingles), bendir (frame drum with a snare) and shakers go wider, 50–70%."
     }
   ],
   "eq": {

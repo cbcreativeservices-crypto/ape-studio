@@ -20,9 +20,9 @@ export const SPLASH_COPY: Partial<LessonCopy> = {
   sceneSubject: { arm: 'a 10 in splash on an arm over the 10 in tom', piggy: 'an 8 in splash upside down on top of the 18 in crash' },
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP' },
   axes: {
-    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (x), from the splash’s centre.' },
+    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (x), from the splash’s center.' },
     y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y), from the splash. Distances are read from the face the zone names, square to it.' },
-    z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z), from the splash’s centre.' },
+    z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z), from the splash’s center.' },
     origin: { arm: ARM.c, piggy: PIGGY.c },
   },
   instrument: {
@@ -130,7 +130,7 @@ export const SPLASH_CYM: CymbalExtra = {
     rFrac: 0.85,
     stages: [
       { title: 'The stick strikes', text: 'The stick strikes near the edge. A small, thin plate responds at once: a quick, bright ATTACK — an accent, a “splash”.' },
-      { title: 'The plate bends', text: 'The small plate bends under the stick, the felts holding its centre. Drawn many times larger than it really moves.' },
+      { title: 'The plate bends', text: 'The small plate bends under the stick, the felts holding its center. Drawn many times larger than it really moves.' },
       { title: 'It rings, briefly, and swings', text: 'The whole plate rings — high because it is small, short because it is small and thin — and it swings on its felts.', byVariant: { piggy: 'Upside down on the crash, it rings with the crash under it: the two plates sound and swing together.' } },
       { title: 'Sound leaves both faces', text: 'Sound leaves both faces, up toward the overheads and down toward the tom below — and dies away soon.' },
     ],
@@ -144,7 +144,7 @@ export const SPLASH_CYM: CymbalExtra = {
   },
   shapes: {
     title: 'The plate’s shapes',
-    badge: 'A simplified picture: one flat disc held at its centre · blue + toward you, amber − away',
+    badge: 'A simplified picture: one flat disc held at its center · blue + toward you, amber − away',
     prompt: 'Step through SHAPE, then move the STICK between the bell, the bow and the edge.',
     looking: 'The splash from above',
     notes: [
@@ -152,7 +152,7 @@ export const SPLASH_CYM: CymbalExtra = {
       'A simplified picture: a flat disc of even thickness. A real splash is domed, thin and lathed — the pattern of the shapes is what the picture teaches.',
     ],
     areas: [
-      { id: 'bell', label: 'BELL', blurb: 'The small raised centre.', r: 10, rFrac: 0.1 },
+      { id: 'bell', label: 'BELL', blurb: 'The small raised center.', r: 10, rFrac: 0.1 },
       { id: 'bow', label: 'BOW', blurb: 'The middle of the plate.', r: 60, rFrac: 0.5 },
       { id: 'edge', label: 'NEAR THE EDGE', blurb: 'Where the stick usually lands.', r: 105, rFrac: 0.85 },
     ],

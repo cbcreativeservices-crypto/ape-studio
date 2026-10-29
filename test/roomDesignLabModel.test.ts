@@ -460,7 +460,7 @@ describe('stereo geometry and symmetry', () => {
     near(g.axisOffset, 0.2, 1e-9);
     assert.ok(g.pathDiff > SYM_TOL);
     const a = analyze({ ...d, layouts: [lay] });
-    assert.ok(a.suggestions.some((s) => /centre line/.test(s.text) && s.tier === 'CALCULATED' && s.level === 'try'));
+    assert.ok(a.suggestions.some((s) => /center line/.test(s.text) && s.tier === 'CALCULATED' && s.level === 'try'));
     assert.ok(a.suggestions.some((s) => /apart in distance to the ears/.test(s.text)));
   });
   it('a listener behind the speakers is a placement conflict', () => {

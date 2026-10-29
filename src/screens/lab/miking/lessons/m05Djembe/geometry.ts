@@ -23,7 +23,7 @@ export const BLOCKS = [45, 135, 225, 315].map((deg) => {
 
 const ring = DJEMBE.rim;
 const parts: Part[] = [
-  headPart(DJEMBE, 'A goat-skin head, struck with the hands: bass strokes near the centre, tones and slaps closer to the edge.', D.headClear),
+  headPart(DJEMBE, 'A goat-skin head, struck with the hands: bass strokes near the center, tones and slaps closer to the edge.', D.headClear),
   { id: 'djembe.bowl', label: 'bowl', short: 'BOWL', role: 'The carved bowl under the head. With the narrow waist and the open foot below it, the air inside sets the deep bass note.', prov: src('MEINL-HDJ500', 'Siam Oak'), solid: { kind: 'frustum', a: { x: 0, y: HEAD_Y - ring.rise, z: 0 }, b: { x: 0, y: BELLY.y, z: 0 }, ra: R + ring.t, rb: BELLY.r } },
   { id: 'djembe.bowlLow', label: 'bowl', short: 'BOWL', role: 'The carved bowl under the head.', prov: D.bowlDepth.prov, solid: { kind: 'frustum', a: { x: 0, y: BELLY.y, z: 0 }, b: { x: 0, y: WAIST_Y, z: 0 }, ra: BELLY.r, rb: R_WAIST } },
   { id: 'djembe.foot', label: 'foot', short: 'FOOT', role: 'The flaring foot below the waist, open at the bottom: a lot of the bass leaves here.', prov: D.footD.prov, solid: { kind: 'frustum', a: { x: 0, y: WAIST_Y, z: 0 }, b: { x: 0, y: 0, z: 0 }, ra: R_WAIST, rb: R_FOOT } },
@@ -90,7 +90,7 @@ export const DJ_WORDS: HandWords = {
   },
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
   axes: {
-    x: { label: 'FRONT–BACK', blurb: 'Toward the audience (front) or toward the player (back), measured from the drum’s centre (x).', plus: 'front of', minus: 'behind', from: 'centre' },
+    x: { label: 'FRONT–BACK', blurb: 'Toward the audience (front) or toward the player (back), measured from the drum’s center (x).', plus: 'front of', minus: 'behind', from: 'centre' },
     y: { label: 'HEIGHT', blurb: 'Up or down, measured from the drum’s foot. Distances in the bezel are read from the surface the zone names.', plus: 'below', minus: 'above', from: 'the foot' },
     z: { label: 'ACROSS', blurb: 'Toward the player’s left or right.', plus: 'right of', minus: 'left of', from: 'centre' },
   },

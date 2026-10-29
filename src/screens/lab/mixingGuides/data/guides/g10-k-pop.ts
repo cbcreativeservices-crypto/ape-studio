@@ -49,7 +49,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "label": "Occasional Korean colour:",
+      "label": "Occasional Korean color:",
       "text": "gayageum (Korean zither), daegeum (bamboo flute), buk (barrel) drums or janggu (hourglass drum) samples appear in “Korean-concept” songs (traditional-fusion stages); treat as featured textures.",
       "bullet": true
     },

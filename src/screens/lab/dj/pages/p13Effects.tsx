@@ -37,7 +37,7 @@ import type { Box } from '../geometry/boothGeometry';
 const TERMS = [
   { term: 'Insert', def: 'The effect sits IN one channel’s path: all of that channel goes through it. On this mixer it is after the fader, so pulling the fader lets an echo ring on.' },
   { term: 'Send / return', def: 'On this mixer, each channel’s SEND knob feeds the effect a COPY; the RETURN adds only the effect back (set an outboard unit to 100 % wet). The dry sound never changes — one reverb can serve both decks. Many mixers have one send with a channel select instead.' },
-  { term: 'Dry / wet', def: 'Dry is the sound without the effect, wet is the effect alone. This mixer’s LEVEL knob keeps the dry full up to its centre, then fades it as the wet takes over.' },
+  { term: 'Dry / wet', def: 'Dry is the sound without the effect, wet is the effect alone. This mixer’s LEVEL knob keeps the dry full up to its center, then fades it as the wet takes over.' },
   { term: 'Feedback', def: 'How much of an echo’s output goes back in. None: one repeat (a plain delay). More: repeats that keep going and fade more slowly.' },
 ] as const;
 
@@ -231,7 +231,7 @@ function PageEffects({ ctx }: { ctx: PageCtx }) {
       options: [
         { id: 'time', label: 'TIME (BEAT)', blurb: fx.type === 'REVERB' ? 'How long the reverb’s tail lasts.' : 'In beats, at the deck’s tempo: the echo’s spacing, or one sweep.' },
         { id: 'feedback', label: 'FEEDBACK', blurb: 'ECHO: how many repeats. FLANGER: how sharp. Nothing on REVERB or FILTER.' },
-        { id: 'level', label: fx.route === 'SEND' ? 'RETURN' : 'LEVEL (DRY/WET)', blurb: fx.route === 'SEND' ? 'How much of the effect comes back into the mix; the dry never changes.' : 'Dry full up to the centre, then the wet takes over.' },
+        { id: 'level', label: fx.route === 'SEND' ? 'RETURN' : 'LEVEL (DRY/WET)', blurb: fx.route === 'SEND' ? 'How much of the effect comes back into the mix; the dry never changes.' : 'Dry full up to the center, then the wet takes over.' },
       ],
       selectedId: focus,
       onSelect: (id: string) => setFocus(id as Knob),

@@ -33,7 +33,7 @@ const SOURCES: ArrivalSource[] = [
 const POINTS: ArrivalPoint[] = [
   { id: 'over', label: 'OVER THE SNARE · 1 m', short: 'OVER SNARE', p: GJ_MAIN },
   { id: 'side', label: 'BESIDE THE FLOOR TOM', short: 'FLOOR TOM', p: GJ_SIDE },
-  { id: 'centre', label: 'OVER THE KIT’S CENTRE', short: 'CENTRE', p: { x: KIT_CENTRE.x, y: MONO.y, z: KIT_CENTRE.z } },
+  { id: 'centre', label: 'OVER THE KIT’S CENTER', short: 'CENTER', p: { x: KIT_CENTRE.x, y: MONO.y, z: KIT_CENTRE.z } },
 ];
 
 function KitBackground({ view }: { view: ViewId }): ReactElement {

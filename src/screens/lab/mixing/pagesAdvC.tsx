@@ -31,7 +31,7 @@ function PageHarmonic({ ctx }: { ctx: PageCtx }) {
   const [drive, setDrive] = useState<'clean' | 'warm' | 'hot'>('clean');
   const satItems = [
     { id: 'what', name: 'What saturation adds', blurb: 'Harmonics related to the signal — density and “weight” that EQ cannot fabricate, plus soft peak rounding.' },
-    { id: 'flavors', name: 'Tape, console, tube', blurb: 'Different curves, same idea: nonlinearity as colour. DAW-neutral truth: judge with ears, level-matched — not by the label.' },
+    { id: 'flavors', name: 'Tape, console, tube', blurb: 'Different curves, same idea: nonlinearity as color. DAW-neutral truth: judge with ears, level-matched — not by the label.' },
     { id: 'clip', name: 'Clipping as a tool', blurb: 'A hard or soft ceiling shaving peaks. On drums, sometimes exactly right; on everything, usually regret.' },
     { id: 'evaluate', name: 'Level-matched evaluation', blurb: 'Saturation flatters loudness meters. If it is not clearly better at MATCHED loudness, it is just distortion.' },
   ] as const;
@@ -49,7 +49,7 @@ function PageHarmonic({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>THE DRIVE, HEARD</Eyebrow>
         <Prompt>The full session through a soft saturator, level-matched: clean · gentle drive · hard drive. Listen for density first, then for what the hard version COSTS (the transients dull, the top fizzes).</Prompt>
-        <AbPlayer pb={pb} variants={variants} onPick={(id) => setDrive(id as 'clean' | 'warm' | 'hot')} note="Level-matched on purpose — saturation’s loudness flattery is removed, so what remains is the actual colour trade." />
+        <AbPlayer pb={pb} variants={variants} onPick={(id) => setDrive(id as 'clean' | 'warm' | 'hot')} note="Level-matched on purpose — saturation’s loudness flattery is removed, so what remains is the actual color trade." />
         <DrivePlot driveDb={variants.find((v) => v.id === drive)?.busDriveDb ?? 0} />
       </Card>
       <Card>
@@ -60,7 +60,7 @@ function PageHarmonic({ ctx }: { ctx: PageCtx }) {
         question="A saturation plugin makes the mix “bigger and more exciting” the instant it is enabled. The advanced reflex:"
         options={['Ship it — bigger and exciting is the goal', 'Match the levels first; most of that instant excitement is added loudness', 'Add a second instance for twice the size', 'Automate it louder in the chorus']}
         correct={1}
-        explain="Nonlinear stages add level and density together — the meter goes up WITH the harmonics. Match loudness, then re-judge: keep it only if the colour itself, not the volume, earns its place."
+        explain="Nonlinear stages add level and density together — the meter goes up WITH the harmonics. Match loudness, then re-judge: keep it only if the color itself, not the volume, earns its place."
         wrong={[
           'The goal is a better mix at EQUAL loudness — anything sounds bigger louder.',
           undefined,
@@ -98,7 +98,7 @@ function PageImaging({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>Mid/side thinking splits any stereo signal into CENTRE (mid) and DIFFERENCE (side). Width tools scale the side — powerful, seductive, and paid for in mono, where the side channel simply dies.</Lead>
+      <Lead>Mid/side thinking splits any stereo signal into CENTER (mid) and DIFFERENCE (side). Width tools scale the side — powerful, seductive, and paid for in mono, where the side channel simply dies.</Lead>
       <Card>
         <Eyebrow>WIDTH AND ITS INVOICE, HEARD</Eyebrow>
         <Prompt>AS MIXED · the same mix WIDENED 1.6× (side channel scaled up) · and the widened mix folded to MONO. Level-matched throughout.</Prompt>
@@ -110,8 +110,8 @@ function PageImaging({ ctx }: { ctx: PageCtx }) {
         <WidthArt view={view} />
       </Card>
       <Card tone="note">
-        <Eyebrow>THE STABLE-CENTRE RULE</Eyebrow>
-        <Body>Width is jewellery; the CENTRE is the skeleton. Kick, bass, lead at a rock-solid centre buy you the right to spend the sides freely. Frequency-aware widening (wide highs, mono lows) is the professional compromise — and every width decision gets the mono fold test before it ships.</Body>
+        <Eyebrow>THE STABLE-CENTER RULE</Eyebrow>
+        <Body>Width is jewellery; the CENTER is the skeleton. Kick, bass, lead at a rock-solid center buy you the right to spend the sides freely. Frequency-aware widening (wide highs, mono lows) is the professional compromise — and every width decision gets the mono fold test before it ships.</Body>
       </Card>
       <UnderstandingCheck
         question="A stereo widener makes the pads huge, but the club’s mono system swallows them. What actually happened?"
@@ -264,7 +264,7 @@ function PageMixBus({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>The mix bus touches EVERYTHING — which is exactly why its processing is conservative: a dB or two of linked compression, a whisper of colour, headroom preserved. The boundary with mastering is a real border, not a suggestion.</Lead>
+      <Lead>The mix bus touches EVERYTHING — which is exactly why its processing is conservative: a dB or two of linked compression, a whisper of color, headroom preserved. The boundary with mastering is a real border, not a suggestion.</Lead>
       <Card>
         <Eyebrow>THE BUS CHAIN, THREE WAYS</Eyebrow>
         <Prompt>Level-matched: no chain · a conservative chain (2:1, slow attack, gentle drive — the mix “holds hands”) · an overcooked one (fast, deep, driven — the mix breathes like it ran here).</Prompt>

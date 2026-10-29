@@ -180,7 +180,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says about 30–60 cm. Measured from where?',
     options: ['The middle of the usual playing area — not the nearest stroke', 'The nearest point the egg reaches on its very biggest stroke', 'The player’s chest, wherever the egg happens to be'],
     correct: 'The middle of the usual playing area — not the nearest stroke',
-    explain: 'The distance is to the centre of the motion. The nearest approach sets the clearance — and at 30 cm a hand may still come close.',
+    explain: 'The distance is to the center of the motion. The nearest approach sets the clearance — and at 30 cm a hand may still come close.',
     why: {
       'The nearest point the egg reaches on its very biggest stroke': 'That point sets the clearance; the readout shows it separately.',
       'The player’s chest, wherever the egg happens to be': 'The egg is played in front of the chest; measure from where it is played.',

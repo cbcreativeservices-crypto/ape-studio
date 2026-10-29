@@ -470,7 +470,7 @@ const copy: Partial<LessonCopy> = {
     availableLead: 'Starting points for this mic',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the holes a third of the way up, the hole field, the bell, or the middle of the oboe. They are starting points for different goals, not rules. Move from there and listen: there is no single right answer.',
-      separate: 'Distance, height and the angle toward the bell are separate variables: change one at a time, and play the lowest note of the part, the top and a fast passage each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille.',
+      separate: 'Distance, height and the angle toward the bell are separate variables: change one at a time, and play the lowest note of the part, the top and a fast passage each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille.',
       clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the reed and face, the fingers, the keys and the bell as it pivots. The engine stops the mic and names what it would touch.',
       tendencies: 'Facing the holes tends to give a natural balance; near the bell, brighter and more isolated with the lowest notes forward; very close to the keys, clicks; farther, more room. A directional mic up close also lifts the lows. These are tendencies, and oboes vary.',
     },
@@ -565,7 +565,7 @@ export const A09A_LESSON: WindLesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'A woodwind with a double reed — two thin blades of cane — on a narrow conical wooden tube with small tone holes, a dense keywork and a small flared bell. Octave keys lift its fingerings an octave.', src: 'Y-OB-MECH2' },
     { title: 'WHERE YOU MEET IT', text: 'Orchestras, wind bands and chamber groups, film scores and studio sessions; the English horn and the oboe d’amore are its larger relatives and take the same approach. This lesson covers one oboe: a studio solo, a loud stage and a spot in a section.', src: 'DPA-OB' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'It carries focused, singing melodies — most orchestras tune to it — and its tone cuts through. Ask what the music needs: a natural orchestral colour, an intimate solo, or a separated line over a band.', src: 'LESSON' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'It carries focused, singing melodies — most orchestras tune to it — and its tone cuts through. Ask what the music needs: a natural orchestral color, an intimate solo, or a separated line over a band.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'About 55 cm without its reed, the bell about 6 cm across. Its lowest note, B♭3, is about 233 Hz. This lab draws an oboe about that size, held 40° out from the body — seated, or standing.', src: 'MET-OB' },
   ],
   sound: {

@@ -247,7 +247,7 @@ const HAND_ACOUSTIC: HandSpec = {
   learnZones: [
     'What you just did, in words. After our research, each blue zone is where we suggest you begin: at the harmonica, measured from the harmonica; on the amp, measured from the grille. They are starting points, not rules: move from there and listen — every player, harmonica, amp and room is different.',
     'Acoustic: the hands’ chamber is part of the sound, so face the playing zone and keep it in every comparison. Move off the breath stream if bursts dominate. Avoid a high-pass setting that thins the low register — test with the real harmonicas.',
-    'Amp: find the real speaker, then compare the dust cap’s edge, the centre and the edge at the same distance. A mic on the amp hears the amplified system — the cupped harp mic, the amp, its distortion and the speaker.',
+    'Amp: find the real speaker, then compare the dust cap’s edge, the center and the edge at the same distance. A mic on the amp hears the amplified system — the cupped harp mic, the amp, its distortion and the speaker.',
   ],
 };
 const HAND_AMP: HandSpec = {

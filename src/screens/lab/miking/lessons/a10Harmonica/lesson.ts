@@ -233,9 +233,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'On the harp amp, the speaker mic sounds harsh. Where do you move it?',
     options: ['Toward the cone’s edge, keeping the distance', 'Right onto the grille, nearer the centre', 'Behind the amp, to hear the back of the cone'],
     correct: 'Toward the cone’s edge, keeping the distance',
-    explain: 'Toward the centre tends to add bite; toward the edge, a softer top end. Slide outward one step at a time and check you are on the real speaker.',
+    explain: 'Toward the center tends to add bite; toward the edge, a softer top end. Slide outward one step at a time and check you are on the real speaker.',
     why: {
-      'Right onto the grille, nearer the centre': 'Nearer the centre tends to add bite, and the mic stays off the grille.',
+      'Right onto the grille, nearer the centre': 'Nearer the center tends to add bite, and the mic stays off the grille.',
       'Behind the amp, to hear the back of the cone': 'That is a different, opposite-polarity view — and the vents need clear air. Try the edge first.',
     },
   },
@@ -272,7 +272,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Even a “clean” acoustic mic hears a nearby amp and the PA. Compare each feed alone and summed, and mute unused open mics.',
     why: {
       'A fault: a stand mic hears only what it faces': 'Every pattern hears off-axis sound too — less, not none.',
-      'Nothing to check: more harmonica is better': 'The amp arrives later at the stand mic: summed, it can colour the tone. Check it.',
+      'Nothing to check: more harmonica is better': 'The amp arrives later at the stand mic: summed, it can color the tone. Check it.',
     },
   },
   {
@@ -321,7 +321,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'What would justify a second harmonica feed — a room mic or a direct split?',
     options: ['A sound the first feed alone cannot give', 'Two feeds are the usual standard for harp', 'More level than one mic can give the PA'],
     correct: 'A sound the first feed alone cannot give',
-    explain: 'Start with one speaker mic. Add a feed only for a defined reason, check each alone and combined in mono, and omit it if it hollows the tone. A direct split does not replace the speaker when its colour is central.',
+    explain: 'Start with one speaker mic. Add a feed only for a defined reason, check each alone and combined in mono, and omit it if it hollows the tone. A direct split does not replace the speaker when its color is central.',
     why: {
       'Two feeds are the usual standard for harp': 'One feed is the usual start; a second has to earn its place.',
       'More level than one mic can give the PA': 'Level comes from gain and the fader, not from another mic.',
@@ -395,10 +395,10 @@ const symptoms: Symptom[] = [
   {
     id: 'hm.s.harsh',
     observation: 'The speaker mic sounds harsh',
-    firstChecks: 'Is it too near the dust cap’s centre? Slide toward the cone’s edge; verify the real speaker and compare.',
+    firstChecks: 'Is it too near the dust cap’s center? Slide toward the cone’s edge; verify the real speaker and compare.',
     options: ['Slide toward the cone’s edge; check the speaker', 'Turn the amp’s own treble control right down low', 'Move the mic right up against the grille'],
     correct: 'Slide toward the cone’s edge; check the speaker',
-    explain: 'Toward the centre tends to add bite. Slide outward, keeping the distance, and confirm the mic is on the speaker that is really sounding.',
+    explain: 'Toward the center tends to add bite. Slide outward, keeping the distance, and confirm the mic is on the speaker that is really sounding.',
     why: {
       'Turn the amp’s own treble control right down low': 'The amp’s settings are the player’s tone; move the mic first.',
       'Move the mic right up against the grille': 'Closer usually adds bite and low end; keep it off the grille.',

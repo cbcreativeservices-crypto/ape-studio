@@ -24,7 +24,7 @@ export const MAR_DIMS = {
   pairZ: drawingDefault(200, 'the hands either side of the playing area (±200 mm)'),
   /** The head's arc: a wrist pivot 170 mm below the head, ±35°, plus a 40 mm
    *  circular-wrist ring (proposal). */
-  pivot: drawingDefault(170, 'wrist pivot below the head centre'),
+  pivot: drawingDefault(170, 'wrist pivot below the head center'),
   stroke: drawingDefault(35, 'the up/down stroke, ± degrees about the wrist'),
   ring: drawingDefault(40, 'the circular-wrist ring’s radius'),
   near: { mm: 400, prov: { kind: 'trial', src: 'LESSON-MARACAS', note: 'A practical 40–80 cm (roughly 16–32 in.) from the midpoint of the two-head playing area' } } as Dim,
@@ -79,8 +79,8 @@ const FAR = MAR_DIMS.far.mm;
 export const MAR_ZONES: DocumentedZone[] = [
   targetZone({
     id: 'mar.centre.pair',
-    label: 'One mic, centred in front of the pair',
-    band: 'Start about 40–80 cm (16–32 in) from the midpoint between the two heads, centred in front of them and facing that midpoint.',
+    label: 'One mic, centered in front of the pair',
+    band: 'Start about 40–80 cm (16–32 in) from the midpoint between the two heads, centered in front of them and facing that midpoint.',
     kind: 'trial',
     src: 'LESSON-MARACAS',
     quote: 'A practical 40–80 cm (roughly 16–32 in.) from the midpoint of the two-head playing area gives room to test coverage',
@@ -145,8 +145,8 @@ export const MAR_ZONES: DocumentedZone[] = [
   }),
   targetZone({
     id: 'mar.centre.singer',
-    label: 'Centred in front, a little above the heads (singer)',
-    band: 'Start about 40–80 cm from the midpoint between the heads, centred in front, a little higher and angled down to the heads — which puts the singer’s mouth farther off the mic’s front than a low mic would.',
+    label: 'Centered in front, a little above the heads (singer)',
+    band: 'Start about 40–80 cm from the midpoint between the heads, centered in front, a little higher and angled down to the heads — which puts the singer’s mouth farther off the mic’s front than a low mic would.',
     kind: 'trial',
     src: 'LESSON-MARACAS',
     quote: 'Place the two microphones and performer to reduce unwanted pickup without asking the singer to sacrifice vocal mic technique.',

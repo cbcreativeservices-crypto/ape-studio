@@ -28,7 +28,7 @@ const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 const G = GRILLE_X.mm;
 const IN = 25.4;
 /** The lab's tolerance for "aimed at …" (no source gives one). */
-const AIM_TIGHT = { maxOffAxis: 20, prov: ill('"aim at the line / the centre / on-axis": ±20° is the lab’s tolerance') };
+const AIM_TIGHT = { maxOffAxis: 20, prov: ill('"aim at the line / the center / on-axis": ±20° is the lab’s tolerance') };
 const AIM_LOOSE = { maxOffAxis: 45, prov: ill('"aim towards the center … or towards the edge": ±45° covers both aims; the lab’s tolerance') };
 /** The radial band drawn round a named spot (the lab's tolerance). */
 const TOL = 15;
@@ -76,8 +76,8 @@ export const GUITAR_ZONES: readonly DocumentedZone[] = [
   },
   {
     id: 'eg.centre',
-    label: 'Close, on the centre of the cone',
-    band: 'Start about 1.5–5 cm (½–2 in) from the grille, on the centre of the speaker (the dust cap).',
+    label: 'Close, on the center of the cone',
+    band: 'Start about 1.5–5 cm (½–2 in) from the grille, on the center of the speaker (the dust cap).',
     kind: 'sourced',
     src: 'S-SM57-UG',
     quote: '2.5 cm (1 in.) from speaker, on-axis with center of speaker cone (Sharp attack; extended bass) — and S-MILLS "The more you move a mic toward the center of the speaker, the brighter it will sound"',
@@ -109,7 +109,7 @@ export const GUITAR_ZONES: readonly DocumentedZone[] = [
   {
     id: 'eg.close',
     label: 'Close in front of the speaker',
-    band: 'Start about 2–15 cm (1–6 in) from the grille, in front of the speaker, aimed at its centre or toward its edge.',
+    band: 'Start about 2–15 cm (1–6 in) from the grille, in front of the speaker, aimed at its center or toward its edge.',
     kind: 'sourced',
     src: 'S-PGA27',
     quote: 'Amplifiers 1-6 inches (2-15 cm) Aim towards the center of the speaker for a clear, aggressive sound, or towards the edge of the speaker for a mellow sound.',
@@ -119,7 +119,7 @@ export const GUITAR_ZONES: readonly DocumentedZone[] = [
     radial: { line: 'axis', max: R12, prov: ill('"in front of the speaker": within the cone’s own radius (141.5 mm) of its axis') },
     aim: AIM_LOOSE,
     start: { p: { x: G + 90, y: 0, z: 0 }, az: 0, el: 0 },
-    tendency: 'The speaker itself, with little of the room: isolation on a loud stage or in a dense mix. Aimed at the centre it tends to sound clearer and more aggressive; toward the edge, mellower.',
+    tendency: 'The speaker itself, with little of the room: isolation on a loud stage or in a dense mix. Aimed at the center it tends to sound clearer and more aggressive; toward the edge, mellower.',
     checks: ['One variable at a time: keep the distance while you move across', 'Room and stage spill', 'The level on the loudest passage'],
   },
   {
@@ -207,15 +207,15 @@ export const BASS_ZONES: readonly DocumentedZone[] = [
   },
   {
     id: 'bass.centre',
-    label: 'Close, toward the centre — more bite',
+    label: 'Close, toward the center — more bite',
     band: 'Start about 2.5–15 cm (1–6 in) from the grille, aimed at the middle of the woofer.',
     kind: 'sourced',
     src: 'S-BASSREC',
-    quote: 'pointing it directly at the centre will give you more \'bite\'',
+    quote: 'pointing it directly at the center will give you more \'bite\'',
     refSurface: 'grille',
     side: 'outside',
     distance: { min: 25.4, max: 152.4 },
-    radial: { line: 'axis', max: TOL, prov: ill('"directly at the centre": within 15 mm of the axis is the lab’s tolerance') },
+    radial: { line: 'axis', max: TOL, prov: ill('"directly at the center": within 15 mm of the axis is the lab’s tolerance') },
     aim: AIM_TIGHT,
     start: { p: { x: G + 60, y: 0, z: 0 }, az: 0, el: 0 },
     tendency: 'More upper-mid attack — pick, slap and fretless articulation read more clearly. It can exaggerate clank or fizz on driven tones: a tendency to check.',

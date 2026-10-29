@@ -46,7 +46,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — measured to the snare, aimed at it, clear of the player and the cymbals — then move the mic and see what changes.',
     credit: { scenarios: ['oh.place.1', 'oh.place.2', 'oh.place.3', 'oh.rec.2'], interactive: 'twoZones', note: 'Rest a mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A suggested zone is a place to begin, measured from a named reference — usually the snare’s centre. Height, position, aim and spacing are separate things to try, and clearance comes first.',
+    takeaway: 'A suggested zone is a place to begin, measured from a named reference — usually the snare’s center. Height, position, aim and spacing are separate things to try, and clearance comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -109,11 +109,11 @@ const scenarios: MikingScenario[] = [
     id: 'oh.snd.3',
     page: 'sound',
     prompt: 'Why does a stick on the bell drive the cymbal’s ringing shapes less than a stick on the bow?',
-    options: ['It lands near the held centre, where these shapes barely move', 'The bell is a separate part, so its motion stays out of the plate', 'A stroke on the bell is harder, which stops the plate ringing'],
-    correct: 'It lands near the held centre, where these shapes barely move',
-    explain: 'A stroke drives a shape as much as the plate moves where the stick lands. The shapes a centre-held cymbal rings in barely move near the centre. The bell still has a sound of its own — a tendency to hear, not a rule.',
+    options: ['It lands near the held center, where these shapes barely move', 'The bell is a separate part, so its motion stays out of the plate', 'A stroke on the bell is harder, which stops the plate ringing'],
+    correct: 'It lands near the held center, where these shapes barely move',
+    explain: 'A stroke drives a shape as much as the plate moves where the stick lands. The shapes a center-held cymbal rings in barely move near the center. The bell still has a sound of its own — a tendency to hear, not a rule.',
     why: {
-      'The bell is a separate part, so its motion stays out of the plate': 'The bell is part of the same plate. It sits near the held centre, where the ringing shapes barely move.',
+      'The bell is a separate part, so its motion stays out of the plate': 'The bell is part of the same plate. It sits near the held center, where the ringing shapes barely move.',
       'A stroke on the bell is harder, which stops the plate ringing': 'In this simple plate model, how hard the stroke is changes the level, not which shapes it can drive. Where it lands is what matters here.',
     },
   },
@@ -216,7 +216,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'oh.place.1',
     page: 'placement',
-    prompt: 'Your two overheads are 1.02 m and 1.13 m from the snare’s centre. What does that change?',
+    prompt: 'Your two overheads are 1.02 m and 1.13 m from the snare’s center. What does that change?',
     options: ['The snare reaches one mic about 0.3 ms later', 'Nothing yet — only the mics’ height changes the snare', 'The snare gets louder in the farther mic'],
     correct: 'The snare reaches one mic about 0.3 ms later',
     explain: '0.11 m is about 0.3 ms at 343 m/s. Summed, that delay notches the snare — matching the two distances is the usual starting check.',
@@ -291,9 +291,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'The PA is mono. Is a wide spaced pair the natural overhead choice?',
     options: ['Not by default: one overhead may be simpler', 'Yes: a spaced pair sounds wider in mono too', 'Yes, if the pair is panned hard left and right'],
     correct: 'Not by default: one overhead may be simpler',
-    explain: 'Stereo techniques suit a stereo system. In a mono PA a single overhead may be simpler, and a spaced pair summed to mono can colour the kit.',
+    explain: 'Stereo techniques suit a stereo system. In a mono PA a single overhead may be simpler, and a spaced pair summed to mono can color the kit.',
     why: {
-      'Yes: a spaced pair sounds wider in mono too': 'Summed to mono there is no width — and a spaced pair’s arrival differences can colour the sound.',
+      'Yes: a spaced pair sounds wider in mono too': 'Summed to mono there is no width — and a spaced pair’s arrival differences can color the sound.',
       'Yes, if the pair is panned hard left and right': 'A mono PA sums the pan positions back together, so panning cannot undo the pair’s arrival differences there.',
     },
   },
@@ -312,7 +312,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'oh.two.1',
     page: 'twoMic',
-    prompt: 'The floor-tom method’s two mics are both 1.02 m from the snare’s centre. Does the snare reach the two mics at the same moment?',
+    prompt: 'The floor-tom method’s two mics are both 1.02 m from the snare’s center. Does the snare reach the two mics at the same moment?',
     options: ['Yes — equal distance lines up the snare, not the other drums', 'Yes — and with it the kick, the toms and the cymbals as well', 'No — the side mic hears the snare later, being lower down'],
     correct: 'Yes — equal distance lines up the snare, not the other drums',
     explain: 'Equal snare distance lines up the snare only. The kick, toms and cymbals still reach the two mics at different times — here the kick is about 1.46 m from one mic and 0.90 m from the other, about 1.6 ms apart.',
@@ -336,12 +336,12 @@ const scenarios: MikingScenario[] = [
   {
     id: 'oh.two.3',
     page: 'twoMic',
-    prompt: 'Which pair is least likely to colour the kit when summed to mono?',
+    prompt: 'Which pair is least likely to color the kit when summed to mono?',
     options: ['A coincident X/Y pair, capsules together', 'A spaced pair, each 1.2 m from the snare', 'The floor-tom method’s mic above and side mic'],
     correct: 'A coincident X/Y pair, capsules together',
-    explain: 'Coincident capsules hear each source at the same moment, so the pair itself adds no time difference — no comb filtering between them. It can still colour off-axis sources through each capsule’s off-axis response, and it does not fix differences with the close mics.',
+    explain: 'Coincident capsules hear each source at the same moment, so the pair itself adds no time difference — no comb filtering between them. It can still color off-axis sources through each capsule’s off-axis response, and it does not fix differences with the close mics.',
     why: {
-      'A spaced pair, each 1.2 m from the snare': 'Equal snare distance lines up only the snare; other sources can arrive at two times, which can colour the mono sum.',
+      'A spaced pair, each 1.2 m from the snare': 'Equal snare distance lines up only the snare; other sources can arrive at two times, which can color the mono sum.',
       'The floor-tom method’s mic above and side mic': 'Matched to the snare, but far apart: the kick, toms and cymbals arrive at different times.',
     },
   },
@@ -389,7 +389,7 @@ const scenarios: MikingScenario[] = [
     correct: 'How it is aimed, and that player and cymbals are clear',
     explain: 'A distance belongs to its reference; a starting point may also name an aim; clearance is a separate check.',
     why: {
-      'The brand of the snare, so that the number fits that drum': 'The reference is the snare’s centre, whatever the brand.',
+      'The brand of the snare, so that the number fits that drum': 'The reference is the snare’s center, whatever the brand.',
       'Nothing more: the number places the mic exactly': 'A number is a place to begin — the aim and the clearance still have to be set, and then you listen.',
     },
   },
@@ -423,22 +423,22 @@ const symptoms: Symptom[] = [
   {
     id: 's.hat',
     observation: 'The hi-hat or a crash swamps one side of the pair',
-    firstChecks: 'Move or re-aim the array and inspect capsule distance to that cymbal; review the stereo centre and the drummer’s balance.',
+    firstChecks: 'Move or re-aim the array and inspect capsule distance to that cymbal; review the stereo center and the drummer’s balance.',
     options: ['Move or re-aim the pair; check each mic’s distance to that cymbal', 'Turn that whole side of the pair down until that cymbal sits back', 'Ask the drummer to take that cymbal off the kit'],
     correct: 'Move or re-aim the pair; check each mic’s distance to that cymbal',
-    explain: 'One mic is much closer to that cymbal. Move or re-aim the pair, check the stereo centre — and the player’s own balance.',
+    explain: 'One mic is much closer to that cymbal. Move or re-aim the pair, check the stereo center — and the player’s own balance.',
     why: {
-      'Turn that whole side of the pair down until that cymbal sits back': 'Turning a side down moves the whole image off centre; fix the distance to the cymbal first.',
+      'Turn that whole side of the pair down until that cymbal sits back': 'Turning a side down moves the whole image off center; fix the distance to the cymbal first.',
       'Ask the drummer to take that cymbal off the kit': 'The kit is the player’s. Move the mics before asking for changes.',
     },
   },
   {
     id: 's.snareSide',
     observation: 'The snare pulls to one side when the close snare mic comes up',
-    firstChecks: 'Inspect the overhead audio centre, level and aim; compare left/right capsule distance to the snare and the intended panning.',
-    options: ['The pair’s centre and its two snare distances, then panning', 'Pan the close snare mic hard to the other side to balance it', 'Invert the polarity of both overheads at the same time'],
-    correct: 'The pair’s centre and its two snare distances, then panning',
-    explain: 'If one overhead is nearer the snare, the snare leans that way. Centre the pair on the line through the kick and the snare, and match the snare distances.',
+    firstChecks: 'Inspect the overhead audio center, level and aim; compare left/right capsule distance to the snare and the intended panning.',
+    options: ['The pair’s center and its two snare distances, then panning', 'Pan the close snare mic hard to the other side to balance it', 'Invert the polarity of both overheads at the same time'],
+    correct: 'The pair’s center and its two snare distances, then panning',
+    explain: 'If one overhead is nearer the snare, the snare leans that way. Center the pair on the line through the kick and the snare, and match the snare distances.',
     why: {
       'Pan the close snare mic hard to the other side to balance it': 'That hides the cause and smears the snare across the image. Check the overheads’ distances first.',
       'Invert the polarity of both overheads at the same time': 'Inverting both changes nothing between them; the snare still leans toward the nearer mic.',
@@ -513,7 +513,7 @@ const orderTasks: OrderTask[] = [
   },
 ];
 
-const DOC: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured to the snare’s centre', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
+const DOC: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured to the snare’s center', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR: SetupReason = { id: 'r.clear', label: 'Mics, booms and cables stay clear of the sticks, the cymbals’ swing and the player', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND: SetupReason = { id: 'r.brand', label: 'It is the pair most engineers buy for drums', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties and by ear.' };
 const WIDE: SetupReason = { id: 'r.wide', label: 'The widest pair gives the best drum sound', role: 'wrong', feedback: 'Width is a choice for the music, not a measure of quality — and wide pairs need the most care in mono.' };
@@ -526,8 +526,8 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A coincident X/Y pair over the snare, capsules angled about 90° apart, not touching', ok: true, power: 'phantom', feedback: 'A compact image with no time difference inside the pair — a safe start when mono matters.' },
       { id: 'b', label: 'The floor-tom method: a mic about 1 m over the snare and a side mic at the same snare distance', ok: true, power: 'phantom', feedback: 'A whole-kit picture with two mics, the snare lined up by the matched distances — then check the rest of the kit in mono.' },
-      { id: 'c', label: 'A spaced pair, each about 1.2 m from the snare’s centre, checked in mono', ok: true, power: 'phantom', feedback: 'Width with the snare lined up; the mono check covers the other sources.' },
-      { id: 'd', label: 'A spaced pair set by eye, one mic much nearer the snare than the other', ok: false, power: 'phantom', feedback: 'Unequal snare distances put the snare at two times in the pair: measure to the snare’s centre first.' },
+      { id: 'c', label: 'A spaced pair, each about 1.2 m from the snare’s center, checked in mono', ok: true, power: 'phantom', feedback: 'Width with the snare lined up; the mono check covers the other sources.' },
+      { id: 'd', label: 'A spaced pair set by eye, one mic much nearer the snare than the other', ok: false, power: 'phantom', feedback: 'Unequal snare distances put the snare at two times in the pair: measure to the snare’s center first.' },
       { id: 'e', label: 'One mic lowered into the gap between the crashes and the drummer’s head', ok: false, power: 'phantom', feedback: 'That gap is the sticks’ and the player’s space: clearance comes first.' },
     ],
     reasons: [DOC, CLEAR, { id: 'r.mono', label: 'It is checked in mono, with the close mics, not only in stereo', role: 'required', feedback: 'The mix may be heard in mono: say how you will check it.' }, { id: 'r.room', label: 'The room adds something useful to the kit in this session', role: 'optional', feedback: 'A fair studio reason.' }, BRAND, WIDE],
@@ -663,7 +663,7 @@ export const M09_LESSON: Lesson = {
     // own HOW IT SOUNDS page); these are its cymbal words for completeness.
     stages: [
       { title: 'The stick meets the bow', text: 'The stick strikes the cymbal on its bow for a moment, then leaves.' },
-      { title: 'The plate bends', text: 'The plate bends under the stick; the felts hold its centre.' },
+      { title: 'The plate bends', text: 'The plate bends under the stick; the felts hold its center.' },
       { title: 'It rings and rocks', text: 'The whole plate rings, the edge moving most, and rocks on its felts.' },
       { title: 'Sound leaves both faces', text: 'Up toward the overheads and down toward the drums.' },
     ],
@@ -676,8 +676,8 @@ export const M09_LESSON: Lesson = {
       { id: 'cymbals', label: 'the crash cymbals', short: 'CRASHES', planIds: ['crash1', 'crash2'], tag: 'CLOSEST', note: 'They hang highest and closest to an overhead, and swing when struck. Keep each mic and its boom outside the swing — about 6 cm each way at the edge is the keep-out drawn here. A cymbal hit hard can swing farther, so leave more room.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan positions; swing envelope a drawing default' } },
       { id: 'ride', label: 'the ride', short: 'RIDE', tag: 'PLAYED ON', note: 'Over the floor tom, played all the time on its bow and bell. An overhead on that side — and the floor-tom side mic — hears it strongly.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
       { id: 'hihat', label: 'the hi-hats', short: 'HI-HATS', tag: 'LOUD, CLOSE', note: 'To the player’s left: often one of the loudest things in an overhead on that side. Air puffs out sideways as the pair closes.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
-      { id: 'snare', label: 'the snare', short: 'SNARE', tag: 'REFERENCE', note: 'The overheads’ usual reference: their distances are measured to its centre. When the two distances match, its sound reaches each mic at the same moment.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
-      { id: 'kick', label: 'the kick', short: 'KICK', tag: 'FARTHEST', note: 'Low and in the middle: an overhead above the kit usually hears it last and weakest. The line from the kick through the snare is a useful centre line for a pair.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
+      { id: 'snare', label: 'the snare', short: 'SNARE', tag: 'REFERENCE', note: 'The overheads’ usual reference: their distances are measured to its center. When the two distances match, its sound reaches each mic at the same moment.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
+      { id: 'kick', label: 'the kick', short: 'KICK', tag: 'FARTHEST', note: 'Low and in the middle: an overhead above the kit usually hears it last and weakest. The line from the kick through the snare is a useful center line for a pair.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
       { id: 'toms', label: 'the rack toms', short: 'TOMS', planIds: ['tom1', 'tom2'], tag: 'UNDER CRASHES', note: 'Under the crashes. Moving a pair toward the front of the kit brings the rack toms and the cymbals closer.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan positions' } },
       { id: 'floor', label: 'the floor tom', short: 'FLOOR TOM', tag: 'SIDE MIC', note: 'The floor-tom method’s side mic sits just beyond it, about 15 cm (6 in) above its rim, outside the player’s reach.', scene: 'all', prov: { kind: 'illustrative', reason: 'kit plan position' } },
       { id: 'throne', label: 'the player’s space', short: 'PLAYER', tag: 'KEEP OUT', note: 'The drummer’s head, shoulders and sticks. Nothing hangs over the player without a sturdy, counterweighted stand, and nothing goes in the sticks’ reach.', scene: 'all', prov: { kind: 'illustrative', reason: 'drawing defaults for the drummer’s envelope' } },
@@ -696,7 +696,7 @@ export const M09_LESSON: Lesson = {
       { id: 'kit', label: 'Kit, room and performance', kind: 'text' },
       { id: 'role', label: 'Role of the overheads', kind: 'choice', choices: ['Main kit picture', 'Mostly cymbals', 'In between'] },
       { id: 'method', label: 'Method', kind: 'choice', choices: ['One overhead', 'X/Y', 'ORTF', 'Spaced pair', 'Floor-tom method', 'Other'] },
-      { id: 'dist', label: 'Distances to the snare’s centre (each mic)', kind: 'text' },
+      { id: 'dist', label: 'Distances to the snare’s center (each mic)', kind: 'text' },
       { id: 'mono', label: 'Mono check with the close mics', kind: 'text' },
       { id: 'clear', label: 'Clearance and mounting checked', kind: 'text' },
       { id: 'notes', label: 'What you heard (tendencies, in words)', kind: 'text' },
@@ -705,7 +705,7 @@ export const M09_LESSON: Lesson = {
   unknowns: [
     { text: 'Kit positions, heights and tilts — a typical right-handed layout, drawing defaults.', dims: [] },
     { text: 'The drummer’s body and the sticks’ reach (head top 1.3 m, shoulder 1.15 m, reach 700 mm) — drawing defaults, not published figures.', dims: [] },
-    { text: 'The X/Y and ORTF pair height over the snare (the mono height), the spaced pair’s plan points, and the shoulder method’s kick reference point (the kick’s batter centre) — drawing defaults.', dims: [] },
+    { text: 'The X/Y and ORTF pair height over the snare (the mono height), the spaced pair’s plan points, and the shoulder method’s kick reference point (the kick’s batter center) — drawing defaults.', dims: [] },
     { text: 'The overhead boom stand’s reach and tube sizes — ILLUSTRATIVE.', dims: [] },
     { text: 'Every keep-out clearance, including each cymbal’s swing (± 60 mm at the edge) — ILLUSTRATIVE values for the owner to approve.', dims: ['cym.hihat', 'cym.crash1', 'cym.crash2', 'cym.ride'] },
     { text: 'The floor line (M01’s floor).', dims: ['yFloor'] },

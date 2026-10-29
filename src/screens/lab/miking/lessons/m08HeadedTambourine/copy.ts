@@ -30,8 +30,8 @@ export const TAMB_COPY: LessonCopy = {
   },
   sound: {
     strikes: [
-      { id: 'c', label: 'CENTRE', mm: 0, blurb: 'The exact centre of the head.' },
-      { id: 'half', label: 'HALFWAY OUT', mm: R * 0.5, blurb: 'Halfway from the centre to the frame — explore what it drives.' },
+      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact centre of the head.' },
+      { id: 'half', label: 'HALFWAY OUT', mm: R * 0.5, blurb: 'Halfway from the center to the frame — explore what it drives.' },
       { id: 'edge', label: 'NEAR THE FRAME', mm: R * 0.85, blurb: 'Close to the frame — explore what it drives.' },
     ],
     strikeDefault: 'half',

@@ -218,7 +218,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Yes — then compare a closer, slightly off-axis spot',
     explain: 'That is the above-the-bell starting point: open and rounded, with the room and the section. Compare a closer view at matched level before deciding.',
     why: {
-      'No — it belongs right over the bell’s centre': 'Directly over the centre emphasises one local, direct sound. Toward the edge is the suggestion.',
+      'No — it belongs right over the bell’s centre': 'Directly over the center emphasises one local, direct sound. Toward the edge is the suggestion.',
       'No — lower it into the bell for more warmth': 'A mic never goes into the bell — and a ribbon there would meet the bell’s air.',
     },
   },
@@ -334,7 +334,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'The mic too central or too close, an overload, or the player and the room: compare toward the edge or off axis at matched level, and check the gain stages.',
     options: ['Compare edge or off axis at matched level; check the gain stages', 'Boost the low end on the channel until the whole line fills out again', 'Ask the player to play more softly for a rounder tone'],
     correct: 'Compare edge or off axis at matched level; check the gain stages',
-    explain: 'Right over the bell’s centre, or overloaded, a euphonium can sound thin and brittle. Move toward the edge or off axis, and check that no stage clips.',
+    explain: 'Right over the bell’s center, or overloaded, a euphonium can sound thin and brittle. Move toward the edge or off axis, and check that no stage clips.',
     why: {
       'Boost the low end on the channel until the whole line fills out again': 'EQ hides the cause. Check the angle, the distance and the gain first.',
       'Ask the player to play more softly for a rounder tone': 'The player’s sound is theirs. The mic’s view and the gain are yours to change.',
@@ -421,7 +421,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'A small condenser about 60 cm above the bell, aimed toward its edge, raised under the main pair and checked in mono', ok: true, power: 'phantom', feedback: 'A suggested starting point: open and rounded, with the room — raised just enough.' },
       { id: 'b', label: 'A ribbon a little farther back and off the axis, out of the bell’s air, at a modest level under the main pair', ok: true, power: 'none', feedback: 'A suggested option: a softer view, kept out of the bell’s air — follow its manual on power.' },
-      { id: 'c', label: 'A ribbon 10 cm over the centre of the bell, for warmth', ok: false, power: 'none', feedback: 'Right in the bell’s stream of air: a risk to a ribbon, and a local, direct sound.' },
+      { id: 'c', label: 'A ribbon 10 cm over the center of the bell, for warmth', ok: false, power: 'none', feedback: 'Right in the bell’s stream of air: a risk to a ribbon, and a local, direct sound.' },
       { id: 'd', label: 'A stereo pair on the euphonium alone, to make the solo wider', ok: false, power: 'phantom', feedback: 'One player inside the band does not need a stereo pair; it pulls the image apart.' },
       { id: 'e', label: 'Turn the main pair up until the solo stands out', ok: false, power: 'phantom', feedback: 'That raises the whole band with it. A gentle spot gives the line its own share.' },
     ],

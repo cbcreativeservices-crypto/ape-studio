@@ -71,7 +71,7 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
                 <Point title="Reflections">Early reflections from nearby surfaces smear the direct sound; treatment at the first-reflection points (the amber pads in the drawing) keeps the stereo image honest.</Point>
                 <Point title="Low-frequency behaviour">Room modes and boundary effects set the bass at the listening position — the corner traps are for this. It is the hardest part to get right and the one most likely to mislead a tonal decision.</Point>
                 <Point title="Listening position">Symmetrical, away from the walls, with the monitors and the listener forming the triangle the monitors were designed for. In the drawing the listener sits about 38 % of the way down the room's length (an example, not a rule) — the plan is to scale, a 5 m room with 330 × 400 mm monitors.</Point>
-                <Point title="Avoiding misleading coloration">Everything above is about ONE thing: hearing the programme, not the room, so that what you fix is in the file.</Point>
+                <Point title="Avoiding misleading coloration">Everything above is about ONE thing: hearing the program, not the room, so that what you fix is in the file.</Point>
               </Card>
               <SectionTitle>MAIN MONITORS AND SECONDARY CHECKS</SectionTitle>
               <Card>

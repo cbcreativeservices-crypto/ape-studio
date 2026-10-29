@@ -52,7 +52,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from the pair and move it yourself — nearer, farther, higher — and see what changes for the front and back rows. From above: the height is in the readout and the words.',
-    credit: { scenarios: ['cc.place.1', 'cc.place.2', 'cc.31', 'cc.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the children, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['cc.place.1', 'cc.place.2', 'cc.31', 'cc.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the children, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Begin with one pair and move it in small steps. Nearer favours the front row and the words; farther, the blend. Aim at the mouths, not the tops of heads: children stand lower than adults.',
   },
   context: {
@@ -326,8 +326,8 @@ const symptoms: Symptom[] = [
     id: 'cc.s.front',
     observation: 'The front row dominates',
     firstChecks: 'Is the array aimed too low or too close to the front row? Raise or angle it toward the acoustic centre and recheck the words.',
-    options: ['Raise or angle it to the centre', 'Cut the front row with EQ on the bus', 'Spot the back row up loud'],
-    correct: 'Raise or angle it to the centre',
+    options: ['Raise or angle it to the center', 'Cut the front row with EQ on the bus', 'Spot the back row up loud'],
+    correct: 'Raise or angle it to the center',
     explain: 'Too low or close, the front row is much nearer. Raise or angle the array toward the middle of the choir, then check the words.',
     why: { 'Cut the front row with EQ on the bus': 'EQ cannot separate one row from another.', 'Spot the back row up loud': 'Spots first add overlap and stands near children.' },
   },
@@ -458,7 +458,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Where might a first main pair go for a children’s choir?',
     options: ['A few feet out, a little above their heads', 'Among the front row, at the children’s chest height', 'Behind the choir, near the wall'],
     correct: 'A few feet out, a little above their heads',
-    explain: 'One pair, centred, a few feet in front and a little above the children’s heads, aimed at their mouths — then move it in small steps.',
+    explain: 'One pair, centered, a few feet in front and a little above the children’s heads, aimed at their mouths — then move it in small steps.',
     why: { 'Among the front row, at the children’s chest height': 'Among the children it is in their way and hears whoever is nearest.', 'Behind the choir, near the wall': 'Behind them it hears their backs and the room.' },
   },
   hangDiag('cc', 'the children'),
@@ -566,7 +566,7 @@ export const E06_LESSON: EnsembleLesson = {
     ],
     safety: 'Supervision at all times; a responsible adult controls every mic. Stable stands, sandbags and cable ramps; exits clear; stop the group before moving anything. Nothing hangs over the children’s heads. A hung mic goes in front of the mouths, put up only by a qualified rigger with the venue’s approval. Quiet monitors, the level measured where the children stand; avoid uncontrolled feedback.',
     workedWords: {
-      begin: 'After our research, this is where we suggest you begin with a children’s choir: one pair, centred, a few feet in front and a little above their heads, aimed at their mouths — a place to start and compare, not a rule.',
+      begin: 'After our research, this is where we suggest you begin with a children’s choir: one pair, centered, a few feet in front and a little above their heads, aimed at their mouths — a place to start and compare, not a rule.',
       clearance: 'The stand’s wide base in front of the first row, clear of the children’s feet and the way out; a sandbag on its base, its cable taped flat or under a ramp, away from the children’s path.',
       height: 'A little above the children’s heads — lower than for adults — so it aims at their mouths and the back row. Too high and they turn dull and distant; too low and it hears the riser and the front row. (From above, the height is in the readout.)',
       forward: 'A few feet in front of the first row. Nearer favours the front row and the words; farther, the blend and the room.',

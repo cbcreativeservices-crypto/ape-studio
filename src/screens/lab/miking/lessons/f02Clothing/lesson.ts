@@ -45,7 +45,7 @@ const pages: LessonPages = {
     title: 'Choose the microphone',
     goal: 'Choose a cloth mic by its properties — a short shotgun or a small supercardioid, low self-noise for quiet cloth, a shock mount — and compare them in the actual room.',
     credit: { scenarios: ['f02.mic.tube', 'f02.mic.1', 'f02.mic.2', 'f02.rec.1'], note: 'Answer the four checks (one reaches back to where a cloth sound comes from).' },
-    takeaway: 'A short shotgun narrows only in the highs and colours what it hears off its axis indoors; a small supercardioid is smoother and can sit closer. Quiet cloth asks for a quiet mic and gain chain. Compare in the room, at matched level.',
+    takeaway: 'A short shotgun narrows only in the highs and colors what it hears off its axis indoors; a small supercardioid is smoother and can sit closer. Quiet cloth asks for a quiet mic and gain chain. Compare in the room, at matched level.',
   },
   placement: {
     title: 'Placement Studio',
@@ -351,14 +351,14 @@ const symptoms: Symptom[] = [
   },
   {
     id: 'f02.sym.colour',
-    observation: 'The shotgun sounds harsh and coloured in the room',
+    observation: 'The shotgun sounds harsh and colored in the room',
     firstChecks: 'The position and the axis; then a small supercardioid without a tube in the same place.',
     options: ['The axis and position, then a small supercardioid', 'Add a second shotgun beside it to smooth the sound out', 'Turn the mic away to hear less of the cloth'],
     correct: 'The axis and position, then a small supercardioid',
-    explain: 'Indoors, a shotgun’s off-axis sound can be coloured by reflections. Check its aim and place, then compare a small supercardioid at the same spot.',
+    explain: 'Indoors, a shotgun’s off-axis sound can be colored by reflections. Check its aim and place, then compare a small supercardioid at the same spot.',
     why: {
       'Add a second shotgun beside it to smooth the sound out': 'A second mic adds a comb, not smoothness.',
-      'Turn the mic away to hear less of the cloth': 'That hears more of the coloured off-axis sound.',
+      'Turn the mic away to hear less of the cloth': 'That hears more of the colored off-axis sound.',
     },
   },
   thumpSymptom(W),

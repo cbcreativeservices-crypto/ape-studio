@@ -247,7 +247,7 @@ export function PageConsonants({ ctx }: { ctx: PageCtx }) {
         a11y={`Spectrogram of the syllable ${SYLLABLE_TEXT[c.id] ?? ''}, 400 milliseconds, 0 to 8 kilohertz. ${c.name}: ${c.energy}.`}
         controls={<View style={{ gap: 8 }}><Text style={styles.readout} numberOfLines={2}>{c.name.toUpperCase()} · {c.examples} — energy: {c.energy}</Text>{picker}</View>}
       />
-      <Notice>Watch where the colour sits as you change family: an S-type hiss fills the top of the picture, a nasal hums only at the bottom, a plosive is silence then a sharp vertical burst. The hiss is a de-esser problem; the plosive's air is a pop-filter problem.</Notice>
+      <Notice>Watch where the color sits as you change family: an S-type hiss fills the top of the picture, a nasal hums only at the bottom, a plosive is silence then a sharp vertical burst. The hiss is a de-esser problem; the plosive's air is a pop-filter problem.</Notice>
       <Card><Body>At the microphone: {c.micNote}</Body></Card>
       <SpeechCheckCard id="nasal-family" />
     </View>

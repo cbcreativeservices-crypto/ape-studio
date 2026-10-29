@@ -53,7 +53,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — above or beside the slide’s path, aimed across the bell — then move the mic and see what changes, and why straight in front is stopped.',
     credit: { scenarios: ['tb.place.1', 'tb.place.2', 'tb.place.3', 'tb.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A suggested zone is a place to begin, measured from the bell rim’s centre — not a rule. The slide’s whole path comes first: a mic straight in front of the bell looks reasonable, but its stand drops through the slide.',
+    takeaway: 'A suggested zone is a place to begin, measured from the bell rim’s center — not a rule. The slide’s whole path comes first: a mic straight in front of the bell looks reasonable, but its stand drops through the slide.',
   },
   context: {
     title: 'Studio or live',
@@ -214,7 +214,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tb.place.2',
     page: 'placement',
-    prompt: 'You swing the mic toward the bell’s centre line, same distance. What tends to change?',
+    prompt: 'You swing the mic toward the bell’s center line, same distance. What tends to change?',
     options: ['More edge and definition', 'A softer, rounder top', 'Only the level, not the tone'],
     correct: 'More edge and definition',
     explain: 'Toward the axis the mic hears more of the high beam: more bite and definition — and more risk of glare. Recheck the slide’s clearance after every move.',
@@ -227,9 +227,9 @@ const scenarios: MikingScenario[] = [
     id: 'tb.place.3',
     page: 'placement',
     prompt: 'A starting point says “30–60 cm from the bell”. What is that measured from?',
-    options: ['The centre of the bell’s rim', 'The end of the slide’s crook', 'The player’s mouth, at the cup'],
-    correct: 'The centre of the bell’s rim',
-    explain: 'The sound leaves at the bell, so distances start at the rim’s centre. The slide’s crook moves — it is something to clear, not something to measure from.',
+    options: ['The center of the bell’s rim', 'The end of the slide’s crook', 'The player’s mouth, at the cup'],
+    correct: 'The center of the bell’s rim',
+    explain: 'The sound leaves at the bell, so distances start at the rim’s center. The slide’s crook moves — it is something to clear, not something to measure from.',
     why: {
       'The end of the slide’s crook': 'The crook moves with every position; it is a keep-out, not a reference.',
       'The player’s mouth, at the cup': 'The cup is where the sound starts; it leaves at the bell.',
@@ -431,7 +431,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A loud stage: a bass trombone with drums, moving, the valves used in low passages, a plunger in one tune. Phantom power available.',
     setups: [
-      { id: 'a', label: 'A miniature on a bell clip, aimed between centre and edge, cable routed clear', ok: true, power: 'phantom', feedback: 'A suggested starting point that rides on the bell — check the fit on the larger bell, the plunger and the triggers.' },
+      { id: 'a', label: 'A miniature on a bell clip, aimed between center and edge, cable routed clear', ok: true, power: 'phantom', feedback: 'A suggested starting point that rides on the bell — check the fit on the larger bell, the plunger and the triggers.' },
       { id: 'b', label: 'Dynamic beside the bell, out of the slide’s path, pattern aimed at the wedge', ok: true, power: 'none', feedback: 'A suggested starting point if the player keeps to an agreed zone.' },
       { id: 'c', label: 'Condenser 1 m in front, for a natural blend', ok: false, power: 'phantom', feedback: 'On a loud stage a metre away hears the band more than the horn — and its stand meets the slide.' },
       { id: 'd', label: 'A clip on the valve linkage, close to the triggers', ok: false, power: 'phantom', feedback: 'The linkage must move freely, and the thumb works there. Only the bell rim.' },
@@ -469,7 +469,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'From which part does nearly all of a trombone’s sound leave?',
     options: ['The bell', 'The slide', 'The tuning slide'],
     correct: 'The bell',
-    explain: 'The sound leaves at the bell — every starting point is measured from its rim’s centre. The slide only changes the tube’s length.',
+    explain: 'The sound leaves at the bell — every starting point is measured from its rim’s center. The slide only changes the tube’s length.',
     why: {
       'The slide': 'The slide changes the tube’s length; the sound leaves at the bell.',
       'The tuning slide': 'The tuning slide sets the tuning; the sound leaves at the bell.',
@@ -611,6 +611,6 @@ export const A02_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every horn, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical standing hold, the slide’s positions as the ideal ones, the tube drawn unwound, the bell’s spread of sound as a simplified shape, mic patterns and the two-mic comb as textbook shapes, and waves drawn larger so you can see them. Distances are rounded to about 5 mm and measured from the bell rim’s centre to the mic’s front. Place real mics with the player stopped, and only with their agreement — and never let anything touch the slide.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every horn, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical standing hold, the slide’s positions as the ideal ones, the tube drawn unwound, the bell’s spread of sound as a simplified shape, mic patterns and the two-mic comb as textbook shapes, and waves drawn larger so you can see them. Distances are rounded to about 5 mm and measured from the bell rim’s center to the mic’s front. Place real mics with the player stopped, and only with their agreement — and never let anything touch the slide.',
   copy: A02_COPY,
 };

@@ -160,7 +160,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why might a miniature clipped to the violin suit a fiddler who moves?',
     options: ['Its clip stops it from hearing the monitors and the rest of the stage', 'It moves with the violin, so the distance holds as the player turns', 'It needs no power, so a spare input without phantom will do'],
     correct: 'It moves with the violin, so the distance holds as the player turns',
-    explain: 'On the violin, the capsule keeps one distance however the player turns — a stand mic has a working zone the player can leave. It still hears the stage, and its close view is more coloured.',
+    explain: 'On the violin, the capsule keeps one distance however the player turns — a stand mic has a working zone the player can leave. It still hears the stage, and its close view is more colored.',
     why: {
       'Its clip stops it from hearing the monitors and the rest of the stage': 'A clip is a mount, not a pattern: the mic still hears the stage.',
       'It needs no power, so a spare input without phantom will do': 'This miniature condenser needs phantom power, through its adapter.',
@@ -170,12 +170,12 @@ const scenarios: MikingScenario[] = [
     id: 'vn.mic.2',
     page: 'microphone',
     prompt: 'A miniature aimed at an f-hole instead of the bridge tends to give…',
-    options: ['Less level, and a much brighter, thinner sound', 'Exactly the same sound, only quieter overall', 'More level, and often a slightly duller colour'],
-    correct: 'More level, and often a slightly duller colour',
-    explain: 'Toward the f-hole there is more output; the colour often turns a little duller than aimed at the bridge. One setup’s observation — check it by ear on the real violin.',
+    options: ['Less level, and a much brighter, thinner sound', 'Exactly the same sound, only quieter overall', 'More level, and often a slightly duller color'],
+    correct: 'More level, and often a slightly duller color',
+    explain: 'Toward the f-hole there is more output; the color often turns a little duller than aimed at the bridge. One setup’s observation — check it by ear on the real violin.',
     why: {
-      'Less level, and a much brighter, thinner sound': 'The f-hole tends to give more level, not less — and a duller rather than brighter colour.',
-      'Exactly the same sound, only quieter overall': 'A close mic’s aim changes both the level and the colour.',
+      'Less level, and a much brighter, thinner sound': 'The f-hole tends to give more level, not less — and a duller rather than brighter color.',
+      'Exactly the same sound, only quieter overall': 'A close mic’s aim changes both the level and the color.',
     },
   },
   {

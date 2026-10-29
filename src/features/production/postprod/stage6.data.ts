@@ -292,7 +292,7 @@ export const STAGE6_MIX: StageDef = {
     {
       sectionId: "automation",
       title: "Automation",
-      intro: "Following the programme rather than finding one setting and hoping.",
+      intro: "Following the program rather than finding one setting and hoping.",
       fields: [
         {
           fieldId: "automation_used",
@@ -324,12 +324,12 @@ export const STAGE6_MIX: StageDef = {
             { value: "mutes_return", label: "Muted elements returning" },
             { value: "send_no_return", label: "Send automation without a matching return" },
             { value: "pumping", label: "Unnatural pumping" },
-            { value: "out_of_range", label: "Automation outside the programme" }
+            { value: "out_of_range", label: "Automation outside the program" }
           ]
         },
         {
           fieldId: "static_or_dynamic",
-          label: "Does the mix follow the programme",
+          label: "Does the mix follow the program",
           kind: "choice",
           help: "One setting that is a compromise everywhere is usually worse than a moving one that is right in each place.",
           options: [
@@ -372,7 +372,7 @@ export const STAGE6_MIX: StageDef = {
             { value: "small", label: "Small speaker" },
             { value: "headphones", label: "Headphones" },
             { value: "speech_balance", label: "Speech balance in the fold-down" },
-            { value: "centre", label: "Centre-channel dependence" }
+            { value: "centre", label: "Center-channel dependence" }
           ]
         },
         {
@@ -638,7 +638,7 @@ export const STAGE6_MIX: StageDef = {
       kind: "missing",
       title: "Automation written and never checked",
       detail: "Automation exists and none of the usual faults have been checked for. Stray written data and mutes that return are silent in the session and audible in the print.",
-      fixHint: "Play the programme through watching the automation, and specifically look for data outside the programme and sends whose returns do not follow them.",
+      fixHint: "Play the program through watching the automation, and specifically look for data outside the program and sends whose returns do not follow them.",
       needsLogic: true,
       logicIntent: "Fire when automation_used is non-empty and does not contain only none, AND automation_checked is empty."
     },
@@ -647,8 +647,8 @@ export const STAGE6_MIX: StageDef = {
       watches: ["mix.static_or_dynamic", "mix.automation_used"],
       severity: "info",
       kind: "mismatch",
-      title: "One setting for the whole programme",
-      detail: "Nothing follows the programme. A single compromise balance across scenes or sections is normally solving the loudest moment and abandoning the quietest.",
+      title: "One setting for the whole program",
+      detail: "Nothing follows the program. A single compromise balance across scenes or sections is normally solving the loudest moment and abandoning the quietest.",
       fixHint: "Ride the thing with priority — dialogue, lead vocal — rather than compressing it harder until it survives everywhere.",
       needsLogic: true,
       logicIntent: "Fire when static_or_dynamic is static, or when automation_used contains only none."
@@ -659,7 +659,7 @@ export const STAGE6_MIX: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "A multichannel mix nobody has folded down",
-      detail: "The mix is in a format most listeners will not hear directly, and the fold-down has not been checked. Centre-channel speech buried under the folded-in music and effects is the classic result.",
+      detail: "The mix is in a format most listeners will not hear directly, and the fold-down has not been checked. Center-channel speech buried under the folded-in music and effects is the classic result.",
       fixHint: "Check the stereo fold-down and mono, listening specifically to whether the speech survives.",
       needsLogic: true,
       logicIntent: "Fire when mix_format is 5_1, 7_1, immersive or binaural, and fold_down_checked is empty."

@@ -87,7 +87,7 @@ const SIDE_Z: Omit<DocumentedZone, 'start'> = {
   aim: { maxOffAxis: 40, prov: ill('aimed at the body: within 40°') },
   requires: { micTypeIds: ['sdcCard'] },
   draw: draws(RIB_T, ax.y, 50, 50, 100),
-  tendency: 'Separation on a busy stage, with a closer, more local colour. The player must stay with it: mark the spot.',
+  tendency: 'Separation on a busy stage, with a closer, more local color. The player must stay with it: mark the spot.',
   checks: ['The bow arm at the frog and at the tip', 'The player’s movement away from the mic', 'Feedback with the monitors on'],
 };
 
@@ -106,7 +106,7 @@ const CLIP_Z: Omit<DocumentedZone, 'start'> = {
   aim: { maxOffAxis: 50, prov: ill('aimed at the bridge and top, away from the head: within 50°') },
   requires: { micTypeIds: ['strMini'] },
   draw: { side: zoneDisc('side', add(A.bridgeFoot, scale(norm(add(ax.z, scale(ax.y, -1))), 50)), 30), top: zoneDisc('top', add(A.bridgeFoot, scale(norm(add(ax.z, scale(ax.y, -1))), 50)), 30) },
-  tendency: 'A steady close sound as the player moves — aimed at the bridge it is brighter; toward an f-hole, more level and a little duller. A narrower, more coloured picture than a stand mic.',
+  tendency: 'A steady close sound as the player moves — aimed at the bridge it is brighter; toward an f-hole, more level and a little duller. A narrower, more colored picture than a stand mic.',
   checks: ['A clip made for this violin, fitted to its depth, with the player’s agreement', 'Nothing touches the bridge or the varnish; the bow never meets the gooseneck', 'Chin rest, shoulder rest and the full bow, then the cable'],
 };
 

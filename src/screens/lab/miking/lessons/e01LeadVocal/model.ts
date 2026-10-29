@@ -55,7 +55,7 @@ const SPECS: VoiceZoneSpec[] = [
     micTypeIds: ['vocLdcOpen'],
     variant: 'studio',
     start: { d: [250, 240, 260, 230, 270], deg: 16, at: 'mouth' },
-    tendency: 'Less breath and fewer pops without a screen; the vowels can change colour, so it suits a mic that sounds smooth off its axis. An idea, not a usual start.',
+    tendency: 'Less breath and fewer pops without a screen; the vowels can change color, so it suits a mic that sounds smooth off its axis. An idea, not a usual start.',
     checks: ['The singer’s view of the lyric sheet and the room', 'Pops and breath against a screened mic', 'How the vowels sound off the mic’s axis'],
   },
   looseRow({ id: 'lv.room', variant: 'studio', micTypeIds: ['vocLdc'] }),

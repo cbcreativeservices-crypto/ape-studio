@@ -124,7 +124,7 @@ export const PAIR_CENTRE: Vec3 = { x: S0.x, y: MONO.y, z: S0.z };
 /* ── SUGGESTED STARTING POINTS ── */
 
 const OH_TYPES = ['ohPencil', 'ohLdc'];
-const AIM_SNARE = { surface: 'snare', r: SNARE_R, prov: ill('"pointed at a particular spot on the drum" / "pointing to the centre of the snare": the lab counts any aim that lands on the snare head') };
+const AIM_SNARE = { surface: 'snare', r: SNARE_R, prov: ill('"pointed at a particular spot on the drum" / "pointing to the center of the snare": the lab counts any aim that lands on the snare head') };
 const GJ_MAIN_AIM = aimToward(GJ_MAIN, S0);
 const GJ_SIDE_AIM = aimToward(GJ_SIDE, S0);
 
@@ -137,26 +137,26 @@ export const M09_ZONES: DocumentedZone[] = [
   {
     id: 'oh.gj.main',
     label: 'Directly over the snare, aimed at it',
-    band: 'Start about 1 m (40 in) above the snare’s centre, aimed down at it. About 1.2 m (4 ft) is another place to begin.',
+    band: 'Start about 1 m (40 in) above the snare’s center, aimed down at it. About 1.2 m (4 ft) is another place to begin.',
     kind: 'sourced',
     src: 'RM-GJ',
-    quote: 'The first overhead mic, a condenser, goes directly over the snare drum, at a height of about 40", and pointed at a particular spot on the drum. (MT-GJ: "around 4 feet (122cm) above the kit, pointing to the centre of the snare drum")',
+    quote: 'The first overhead mic, a condenser, goes directly over the snare drum, at a height of about 40", and pointed at a particular spot on the drum. (MT-GJ: "around 4 feet (122cm) above the kit, pointing to the center of the snare drum")',
     refSurface: 'snare',
     side: 'either',
     distance: { min: OH.gjMain - 100, max: OH.gjHigh + 100 },
     bandProv: ill('two accounts, 40 in over the snare and 4 ft above the kit: the band spans both, ± 10 cm (the lab’s tolerance)'),
-    radial: { line: 'snareLine', max: 100, prov: ill('"directly over the snare": within 10 cm of its centre line is the lab’s tolerance') },
+    radial: { line: 'snareLine', max: 100, prov: ill('"directly over the snare": within 10 cm of its center line is the lab’s tolerance') },
     requires: { micTypeIds: OH_TYPES },
     aimAt: AIM_SNARE,
     drawn: drawnBox(S0, 100, OH.gjMain - 100, OH.gjHigh + 100),
     start: { p: GJ_MAIN, az: GJ_MAIN_AIM.az, el: GJ_MAIN_AIM.el },
-    tendency: 'A whole-kit picture centred on the snare. Higher tends to bring in more cymbals and more of the room; lower, more drums and less room. Compare by ear on this kit.',
+    tendency: 'A whole-kit picture centered on the snare. Higher tends to bring in more cymbals and more of the room; lower, more drums and less room. Compare by ear on this kit.',
     checks: ['The sticks’ highest point and the cymbals’ swing', 'The ceiling, the lights and a counterweighted boom', 'Whether this mic alone gives a useful kit balance'],
   },
   {
     id: 'oh.gj.side',
     label: 'Beside the floor tom, the same distance from the snare',
-    band: 'Start about 15 cm (6 in) above the floor-tom rim, just beyond the drum and outside the player’s reach, aimed across the kit at the snare — the same distance from the snare’s centre as the mic above it.',
+    band: 'Start about 15 cm (6 in) above the floor-tom rim, just beyond the drum and outside the player’s reach, aimed across the kit at the snare — the same distance from the snare’s center as the mic above it.',
     kind: 'sourced',
     src: 'MT-GJ',
     quote: 'The second mic is placed adjacent to the floor tom tom, around 6 inches (15cm) above its rim, firing across the kit towards the hi-hat. These two mics should be equidistant from the centre of the snare drum (RM-GJ: "it should be the same distance from the target spot on the snare drum as the first overhead")',
@@ -174,12 +174,12 @@ export const M09_ZONES: DocumentedZone[] = [
     },
     start: { p: GJ_SIDE, az: GJ_SIDE_AIM.az, el: GJ_SIDE_AIM.el },
     tendency: 'A side view across the kit: the floor tom and the ride come closer, the hi-hat sits across the kit. With the mic above, matching the two snare distances tends to keep the snare solid and central.',
-    checks: ['Outside the drummer’s reach and the floor tom’s rim', 'The same distance to the snare’s centre as the mic above — measure it', 'Floor tom and ride against the hi-hat'],
+    checks: ['Outside the drummer’s reach and the floor tom’s rim', 'The same distance to the snare’s center as the mic above — measure it', 'Floor tom and ride against the hi-hat'],
   },
   {
     id: 'oh.ab.hat',
     label: 'Spaced pair: the hi-hat-side mic',
-    band: 'Start about 1.2 m (4 ft) from the snare’s centre, over the hi-hat side of the kit, pointing straight down — the same distance from the snare as its partner.',
+    band: 'Start about 1.2 m (4 ft) from the snare’s center, over the hi-hat side of the kit, pointing straight down — the same distance from the snare as its partner.',
     kind: 'sourced',
     src: 'AX-DPE8',
     quote: 'keep the snare as the focal point and move the mics into various left and right positions equal distance from the snare; 4 feet is a good starting point. For best results, keep the mics in a vertical position',
@@ -199,7 +199,7 @@ export const M09_ZONES: DocumentedZone[] = [
   {
     id: 'oh.ab.ride',
     label: 'Spaced pair: the ride-side mic',
-    band: 'Start about 1.2 m (4 ft) from the snare’s centre, over the ride side of the kit, pointing straight down — the same distance from the snare as its partner.',
+    band: 'Start about 1.2 m (4 ft) from the snare’s center, over the ride side of the kit, pointing straight down — the same distance from the snare as its partner.',
     kind: 'sourced',
     src: 'AX-DPE8',
     quote: 'keep the snare as the focal point and move the mics into various left and right positions equal distance from the snare; 4 feet is a good starting point. For best results, keep the mics in a vertical position',
@@ -227,7 +227,7 @@ export const M09_ZONES: DocumentedZone[] = [
     side: 'either',
     distance: { min: heightOf(MONO) - heightOf(S0) - 120, max: heightOf(MONO) - heightOf(S0) + 160 },
     bandProv: ill('"about 1 foot above the drummer’s head": the head height is a drawing default (1.3 m); −12 / +16 cm is the lab’s tolerance'),
-    radial: { line: 'kitLine', max: 130, prov: ill('"over center of drum set": the kit’s centre is the midpoint of the kick and the snare (a drawing default); 13 cm is the lab’s tolerance') },
+    radial: { line: 'kitLine', max: 130, prov: ill('"over center of drum set": the kit’s center is the midpoint of the kick and the snare (a drawing default); 13 cm is the lab’s tolerance') },
     requires: { micTypeIds: OH_TYPES },
     aim: { maxOffAxis: 30, prov: ill('aimed down at the kit: within 30° of straight down is the lab’s tolerance') },
     drawn: { side: { u0: MONO.x - 130, u1: MONO.x + 130, v0: MONO.y - 160, v1: MONO.y + 120 }, top: { u0: MONO.x - 130, u1: MONO.x + 130, v0: MONO.z - 130, v1: MONO.z + 130 } },

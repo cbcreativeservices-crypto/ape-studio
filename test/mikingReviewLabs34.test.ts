@@ -140,7 +140,7 @@ describe('amps: close spots at the grille are tone choices; the bass amp’s far
       const v = L(id).model.variants[0].id;
       const list = setups(id, v);
       assert.ok(!list.some((s) => s.role === 'close'), id);
-      assert.ok(list.some((s) => s.role === 'more' && /centre/i.test(s.title)), `${id}: the centre stays to explore`);
+      assert.ok(list.some((s) => s.role === 'more' && /center/i.test(s.title)), `${id}: the center stays to explore`);
     }
   });
   it('the bass amp: a close mic with the farther mic as its TWO MICS', () => {

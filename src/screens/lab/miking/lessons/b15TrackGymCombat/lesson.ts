@@ -465,9 +465,9 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · A wrestling event: two event-assigned places outside the mat, three channels, the protection area busy.',
     setups: [
       { id: 'a', label: 'A directional at each assigned place, plus a wider venue feed', ok: true, power: 'phantom', feedback: 'A suggested start: one dominant action feed per sector, and the wider feed for the gaps.' },
-      { id: 'b', label: 'One directional on the centre, a stereo ambience pair for the rest', ok: true, power: 'phantom', feedback: 'A suggested start: a single sector supported by a wider feed — not presented as complete coverage.' },
+      { id: 'b', label: 'One directional on the center, a stereo ambience pair for the rest', ok: true, power: 'phantom', feedback: 'A suggested start: a single sector supported by a wider feed — not presented as complete coverage.' },
       { id: 'c', label: 'A mic taped in the protection border for the edge action', ok: false, power: 'phantom', feedback: 'The protection area is not a mic strip — the action carries into it.' },
-      { id: 'd', label: 'A small mic hidden at a mat joint near the centre', ok: false, power: 'phantom', feedback: 'Nothing hard is hidden in the mat, and it can be struck or snag.' },
+      { id: 'd', label: 'A small mic hidden at a mat joint near the center', ok: false, power: 'phantom', feedback: 'Nothing hard is hidden in the mat, and it can be struck or snag.' },
       { id: 'e', label: 'The coach’s shouts as the main mat perspective', ok: false, power: 'phantom', feedback: 'Coaches’ voices are not the mat: keep them from becoming the whole perspective.' },
     ],
     reasons: [

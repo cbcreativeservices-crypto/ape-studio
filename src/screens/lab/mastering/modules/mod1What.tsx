@@ -73,7 +73,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
             <>
               <Body>Ride STAGE across the chain: mastering is the last listening, decision-making and delivery stage before the music leaves the building.</Body>
               <Card>
-                <Point title="One file in, one file out">The mastering engineer usually receives a finished stereo (or multichannel) mix. Everything that follows acts on the whole programme at once.</Point>
+                <Point title="One file in, one file out">The mastering engineer usually receives a finished stereo (or multichannel) mix. Everything that follows acts on the whole program at once.</Point>
                 <Point title="Which is the foundation of this lab">Mastering can improve and unify a project. It cannot independently rebalance the individual tracks inside a stereo mix — the bezel's WORKS ON cell says why.</Point>
               </Card>
             </>
@@ -85,7 +85,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
             <>
               <SectionTitle>WHAT MASTERING CAN ADDRESS</SectionTitle>
               <Card>
-                <Point title="Overall tonal balance">A programme that leans dull, bright, thin or heavy as a whole.</Point>
+                <Point title="Overall tonal balance">A program that leans dull, bright, thin or heavy as a whole.</Point>
                 <Point title="Dynamics and level">Density, peak control and the level appropriate to the content and the destination.</Point>
                 <Point title="Consistency across a collection">Tracks that sit together in tone and level, so an album feels like one record.</Point>
                 <Point title="Sequencing and release preparation">Order, gaps, fades, formats, metadata, documentation.</Point>
@@ -160,7 +160,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
               <SectionTitle>KEY IDEAS</SectionTitle>
               <Card>
                 <Body>• Mastering sits between mixing and release: the final creative and technical stage.</Body>
-                <Body>• It addresses the whole programme — tone, dynamics, level, consistency, sequencing, delivery.</Body>
+                <Body>• It addresses the whole program — tone, dynamics, level, consistency, sequencing, delivery.</Body>
                 <Body>• It cannot rebalance the elements inside a stereo mix; that is a mix revision.</Body>
                 <Body>• Fresh ears, a reliable room and matched-level comparisons are what make its judgements trustworthy.</Body>
                 <Body>• Louder is not better. It is only louder.</Body>

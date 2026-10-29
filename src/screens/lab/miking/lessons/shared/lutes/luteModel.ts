@@ -140,7 +140,7 @@ export function bowlPoints(cx: number, a: number, c: number, zc = 0, zTop = 0, n
 export function oudScene(): LuteScene {
   const g = oudGeom();
   const posture = postureOf('oud');
-  const floorY = dd(700, 'seated on a chair: the face’s centre line above the floor').mm;
+  const floorY = dd(700, 'seated on a chair: the face’s center line above the floor').mm;
   const hm = g.halfMax;
   const D = OUD.bowlDepth.mm;
   const head = { c: v(200, -(hm + 270), -D - 120), r: 110 };
@@ -468,7 +468,7 @@ export function buildLute(kind: LuteKind, words: Record<string, PartWords>, name
   } else {
     surf('plate', 'plate', 'the top plate, round its middle on the far side of the bridge from the neck', 'the top-plate line');
     surf('bridge', 'bridge', 'the main bridge', 'the bridge line');
-    surf('top', 'plate', 'the top plate’s centre', 'the plate’s centre line');
+    surf('top', 'plate', 'the top plate’s center', 'the plate’s center line');
   }
 
   const views = viewsFor(sc);

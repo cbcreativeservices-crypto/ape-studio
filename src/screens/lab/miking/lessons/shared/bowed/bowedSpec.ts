@@ -118,7 +118,7 @@ export const VIOLA: BowedSpec = {
   body: T(388, 'MET-BANKS', 'Body L. 38.8 cm'),
   overall: dd(660, 'viola overall length (proposal §2 drawing default)'),
   lower: T(229.5, 'MET-BANKS', 'lower bout 22.95 cm'),
-  middle: T(132, 'MET-BANKS', 'centre bout 13.2 cm'),
+  middle: T(132, 'MET-BANKS', 'center bout 13.2 cm'),
   upper: T(185, 'MET-BANKS', 'upper bout 18.5 cm'),
   rib: T(35, 'MET-BANKS', 'rib H 3.5 cm'),
   stop: dd(215, 'viola stop (body neck edge to bridge)'),

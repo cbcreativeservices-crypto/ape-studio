@@ -156,8 +156,8 @@ export const M10_ZONES: DocumentedZone[] = [
       top: { u0: CORNER_R.x - 400, u1: ROOM.front - 20, v0: CORNER_R.z - 500, v1: ROOM.right - 20 },
     },
     start: pose(CORNER_R),
-    tendency: 'Mostly room: reflections, decay and width — and less of the kit’s direct sound. It can add space, or weaken the centre and exaggerate the room’s faults. Listen in mono too.',
-    checks: ['Clear of doors, routes and anyone walking past', 'Whether the width helps or the centre weakens', 'The pair in mono with the close mics'],
+    tendency: 'Mostly room: reflections, decay and width — and less of the kit’s direct sound. It can add space, or weaken the center and exaggerate the room’s faults. Listen in mono too.',
+    checks: ['Clear of doors, routes and anyone walking past', 'Whether the width helps or the center weakens', 'The pair in mono with the close mics'],
   },
   {
     id: 'rm.over',

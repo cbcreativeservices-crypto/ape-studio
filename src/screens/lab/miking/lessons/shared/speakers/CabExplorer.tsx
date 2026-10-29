@@ -161,5 +161,5 @@ function highlightPath(kind: CabKind, back: Back, view: CabExplorerView, id: str
 export const SPOT_WORDS: Record<'centre' | 'boundary' | 'edge', { title: string; text: string; r: number }> = {
   centre: { title: 'THE CENTRE', text: 'Over the middle of the dust cap. Most often the brightest, most present spot on the speaker — check it on this one.', r: CONE_SPOTS.centre },
   boundary: { title: 'THE DUST-CAP EDGE', text: 'Where the dust cap meets the cone: a common first aiming point, between bright and mellow.', r: CONE_SPOTS.boundary },
-  edge: { title: 'TOWARD THE EDGE', text: 'Over the outer part of the cone, inside the surround. Most often mellower and warmer than the centre.', r: CONE_SPOTS.edge },
+  edge: { title: 'TOWARD THE EDGE', text: 'Over the outer part of the cone, inside the surround. Most often mellower and warmer than the center.', r: CONE_SPOTS.edge },
 };

@@ -416,9 +416,9 @@ const symptoms: Symptom[] = [
   {
     id: 'sw.sym.pianoBoom',
     observation: 'The piano is boomy under the vocal',
-    firstChecks: 'A mic too close to the bass strings or the soundboard? Move toward the treble or the centre, adjust the lid, or use a controlled low cut.',
-    options: ['Move toward the centre or treble; adjust the lid', 'Boost the vocal’s low end so the two match', 'Put another mic under the piano to balance the bass'],
-    correct: 'Move toward the centre or treble; adjust the lid',
+    firstChecks: 'A mic too close to the bass strings or the soundboard? Move toward the treble or the center, adjust the lid, or use a controlled low cut.',
+    options: ['Move toward the center or treble; adjust the lid', 'Boost the vocal’s low end so the two match', 'Put another mic under the piano to balance the bass'],
+    correct: 'Move toward the center or treble; adjust the lid',
     explain: 'Close to the bass strings the low end dominates. A move toward the middle or treble, the lid, or a controlled low cut — placement first.',
     why: {
       'Boost the vocal’s low end so the two match': 'That makes the whole mix heavier, not clearer.',

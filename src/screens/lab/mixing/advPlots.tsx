@@ -554,7 +554,7 @@ export type WidthView = 'mixed' | 'wide' | 'widemono';
 const WIDTH_SOURCES = [
   { name: 'GTR', pan: -55 },
   { name: 'BGV', pan: -35 },
-  { name: 'CENTRE', pan: 0 },
+  { name: 'CENTER', pan: 0 },
   { name: 'PERC', pan: 30 },
   { name: 'KEYS', pan: 55 },
 ] as const;
@@ -583,10 +583,10 @@ export function WidthArt({ view }: { view: WidthView }) {
   return (
     <ArtFrame
       h={196}
-      a11y={`${mono ? 'Folded to mono: every source collapses to the centre and keeps only its mid signal.' : `Stereo stage at width ${width}.`} ${rows
+      a11y={`${mono ? 'Folded to mono: every source collapses to the center and keeps only its mid signal.' : `Stereo stage at width ${width}.`} ${rows
         .filter((r) => r.pan !== 0)
         .map((r) => `${r.name} ${mono ? 'loses' : 'would lose'} ${Math.abs(r.monoPriceDb).toFixed(1)} dB in mono`)
-        .join('; ')}. Centre sources lose nothing.`}
+        .join('; ')}. Center sources lose nothing.`}
     >
       <T x={px(-1)} y={16} color={ART.ink}>
         L
@@ -606,7 +606,7 @@ export function WidthArt({ view }: { view: WidthView }) {
         return (
           <G key={r.name}>
             <T x={sx0 - 12} y={y + 4} anchor="end" color={ART.ink}>
-              {r.name === 'CENTRE' ? 'KICK·BASS·LEAD' : r.name}
+              {r.name === 'CENTER' ? 'KICK·BASS·LEAD' : r.name}
             </T>
             <Line x1={sx0} y1={y} x2={sx1} y2={y} stroke="#2a2f3a" strokeWidth={1} />
             <Line x1={px(0)} y1={y - 5} x2={px(0)} y2={y + 5} stroke="#3a4150" strokeWidth={0.8} />

@@ -201,7 +201,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "6:1–10:1",
         "attackRelease": "5–10 ms / 50–100 ms",
         "gainReduction": "8–12 dB, blended 20–40%",
-        "notes": "vari-mu tube-style colour on the parallel path is common"
+        "notes": "vari-mu tube-style color on the parallel path is common"
       },
       {
         "source": "Mix bus",
@@ -294,7 +294,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Drums",
         "live": "Fewer inputs, light gating, rely on stage room; plate on snare and toms",
-        "studio": "Minimal-mic, roomy setups with ribbons; parallel colour; live-to-tape takes"
+        "studio": "Minimal-mic, roomy setups with ribbons; parallel color; live-to-tape takes"
       },
       {
         "area": "Vocals",

@@ -47,7 +47,7 @@ export const C03_COPY = stringsCopy({
     ],
   },
   workedZone: { lap: 'cover.lap', round: 'cover.round' },
-  workedAim: 'Face the coverplate and the upper body — the lab counts it while the mic’s axis, followed in, meets the body within about 17 cm of {head}. Aiming straight at the coverplate’s centre is one experiment, not a rule.',
+  workedAim: 'Face the coverplate and the upper body — the lab counts it while the mic’s axis, followed in, meets the body within about 17 cm of {head}. Aiming straight at the coverplate’s center is one experiment, not a rule.',
   clearWhat: 'the bar hand, the picking hand, the player’s arms and their view of the neck',
   placementReveal: 'Closer to the cone region tends to give more of its distinct, metallic projection; farther back, a more combined sound. Resonators differ, so “it depends on this one” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
   typeNotes: {

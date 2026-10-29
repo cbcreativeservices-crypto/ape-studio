@@ -42,9 +42,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we suggest you begin — at the grille on the dust-cap line, the centre, the edge, turned off axis, a little farther back, or behind an open back — measured from the surface each names, then move the mic one thing at a time and see what changes.',
+    goal: 'Start where we suggest you begin — at the grille on the dust-cap line, the center, the edge, turned off axis, a little farther back, or behind an open back — measured from the surface each names, then move the mic one thing at a time and see what changes.',
     credit: { scenarios: ['cv.place.1', 'cv.place.2', 'cv.place.3', 'cv.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A suggested zone is a place to begin, measured from a named surface — not a rule. Centre to edge, angle and distance are separate things to try; mark each position so you can come back to it.',
+    takeaway: 'A suggested zone is a place to begin, measured from a named surface — not a rule. Center to edge, angle and distance are separate things to try; mark each position so you can come back to it.',
   },
   context: {
     title: 'Studio or live',
@@ -211,13 +211,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cv.place.1',
     page: 'placement',
-    prompt: 'You move the close mic from the centre of the speaker toward the edge of the cone. What tends to change?',
+    prompt: 'You move the close mic from the center of the speaker toward the edge of the cone. What tends to change?',
     options: ['More bite and upper-mid edge come in', 'Only the level changes, not the tone', 'The attack and the brightness soften'],
     correct: 'The attack and the brightness soften',
-    explain: 'Toward the centre tends to bring more bite; toward the edge, a rounder sound — which may lose the percussive bite the part needs.',
+    explain: 'Toward the center tends to bring more bite; toward the edge, a rounder sound — which may lose the percussive bite the part needs.',
     why: {
-      'More bite and upper-mid edge come in': 'That is the move toward the centre.',
-      'Only the level changes, not the tone': 'Across the cone the tone changes too: centre brighter, edge rounder.',
+      'More bite and upper-mid edge come in': 'That is the move toward the center.',
+      'Only the level changes, not the tone': 'Across the cone the tone changes too: center brighter, edge rounder.',
     },
   },
   {
@@ -430,10 +430,10 @@ const symptoms: Symptom[] = [
   {
     id: 'cv.sym.bright',
     observation: 'The amp mic is too bright',
-    firstChecks: 'The capsule on the speaker’s centre or straight on axis: move toward the edge or angle it off axis.',
+    firstChecks: 'The capsule on the speaker’s center or straight on axis: move toward the edge or angle it off axis.',
     options: ['Position across the cone and the angle; move out or turn', 'Cut the treble on the channel until it is dull enough to sit right', 'Turn the amp down until the brightness goes'],
     correct: 'Position across the cone and the angle; move out or turn',
-    explain: 'At the centre, on axis, tends to be brightest. Move toward the edge, or turn the mic off axis, one change at a time.',
+    explain: 'At the center, on axis, tends to be brightest. Move toward the edge, or turn the mic off axis, one change at a time.',
     why: {
       'Cut the treble on the channel until it is dull enough to sit right': 'EQ hides the cause. Move the mic first.',
       'Turn the amp down until the brightness goes': 'Turning down changes level more than tone. Change the position.',
@@ -442,10 +442,10 @@ const symptoms: Symptom[] = [
   {
     id: 'cv.sym.dull',
     observation: 'The amp mic is dull or lacks attack',
-    firstChecks: 'The capsule too far off axis or at the edge: move slightly toward the centre; compare the distance.',
-    options: ['Move slightly toward the centre and compare the distance', 'Boost the treble until the attack comes back', 'Change to a different amplifier straight away, before the next take'],
-    correct: 'Move slightly toward the centre and compare the distance',
-    explain: 'At the edge or turned away, the bite softens. Move back toward the centre a little at a time.',
+    firstChecks: 'The capsule too far off axis or at the edge: move slightly toward the center; compare the distance.',
+    options: ['Move slightly toward the center and compare the distance', 'Boost the treble until the attack comes back', 'Change to a different amplifier straight away, before the next take'],
+    correct: 'Move slightly toward the center and compare the distance',
+    explain: 'At the edge or turned away, the bite softens. Move back toward the center a little at a time.',
     why: {
       'Boost the treble until the attack comes back': 'EQ before position hides the cause.',
       'Change to a different amplifier straight away, before the next take': 'The amp is the player’s sound. Move the mic first.',
@@ -511,7 +511,7 @@ const POWER_REASON: SetupReason = { id: 'r.power', label: 'Each input gets the r
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a suggested starting point, measured from the right surface — or a labelled direct path', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, stand and cables are safe: off the grille, clear of a hot amp and the player’s feet', role: 'required', feedback: 'Safety and clearance are part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on an amp', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
-const CLOSE_REASON: SetupReason = { id: 'r.closest', label: 'Right on the centre, closest, always gives the best clavinet', role: 'wrong', feedback: 'The centre tends to be brightest, not best; the part decides.' };
+const CLOSE_REASON: SetupReason = { id: 'r.closest', label: 'Right on the center, closest, always gives the best clavinet', role: 'wrong', feedback: 'The center tends to be brightest, not best; the part decides.' };
 
 const setupTasks: SetupTask[] = [
   {
@@ -520,7 +520,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · A funk session: the player wants their amp’s sound, with a wah pedal. Two channels; a passive DI is available.',
     setups: [
       { id: 'a', label: 'A passive DI after the pedals, plus a close dynamic at the grille on the dust-cap line', ok: true, power: 'none', feedback: 'A suggested pairing: the effects in both, the amp in the mic — aligned in mono.' },
-      { id: 'b', label: 'One close dynamic at the grille, between the centre and the edge', ok: true, power: 'none', feedback: 'A suggested single-mic start: the player’s amp sound.' },
+      { id: 'b', label: 'One close dynamic at the grille, between the center and the edge', ok: true, power: 'none', feedback: 'A suggested single-mic start: the player’s amp sound.' },
       { id: 'c', label: 'A condenser 30 cm from the clavinet’s strings, with no amp', ok: false, power: 'phantom', feedback: 'The strings make almost no sound in the air: the clavinet needs its amp or a direct path.' },
       { id: 'd', label: 'The clavinet’s output into a mic input with phantom on', ok: false, power: 'phantom', feedback: 'Never a mic input or phantom on the clavinet’s output: use a DI or an instrument (Hi-Z) input.' },
       { id: 'e', label: 'A close mic placed between two speakers of a 2×12 cabinet', ok: false, power: 'none', feedback: 'Between speakers it hears two sources at different distances. Choose one.' },
@@ -547,7 +547,7 @@ const setupTasks: SetupTask[] = [
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: what makes the clavinet’s sound reach a microphone?', options: ['The strings themselves', 'The pickups, through a speaker', 'The keys hitting the case'], after: 'Now STEP through the key (or PLAY ONCE) and watch where the signal goes.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: you move the close mic from the centre of the speaker to its edge. What changes?', options: ['More bite', 'A rounder sound', 'It depends on this amp'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
+  placement: { prompt: 'Predict: you move the close mic from the center of the speaker to its edge. What changes?', options: ['More bite', 'A rounder sound', 'It depends on this amp'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Which way should the mic’s rejection point?', options: ['Toward the loudest monitor', 'Away from the loudest monitor', 'Straight up'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip one mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
@@ -680,7 +680,7 @@ export const C12_LESSON: Lesson = {
       { title: 'The pickups make a signal', text: 'Magnetic pickups at the bridge end turn the string’s motion into a small voltage: out of the clavinet, through any pedals, to the amp — and only its speaker makes a sound a mic can hear.' },
       { title: 'The key comes up — the yarn mutes it', text: 'The tangent lifts away. The yarn-wound part of the string, held off while the string was pressed, can move again, and mutes it at once: a short, percussive note.' },
     ],
-    attack: 'The start of the sound: the tangent pressing the string onto the anvil — a sharp, percussive attack. A direct signal keeps it most precisely; a close mic near the speaker’s centre tends to hear it brightest.',
+    attack: 'The start of the sound: the tangent pressing the string onto the anvil — a sharp, percussive attack. A direct signal keeps it most precisely; a close mic near the speaker’s center tends to hear it brightest.',
     body: 'The rest: the string ringing until the key comes up and the yarn mutes it, shaped by the pickup switches, the pedals, the amp and the speaker — and, for a mic, the cabinet and the room. These are tendencies; every chain differs.',
     head: { diameterMm: 0, rods: 0, label: 'not a drum: see the string’s shapes', strikeSrc: 'PHYS-STRING' },
   },
@@ -706,7 +706,7 @@ export const C12_LESSON: Lesson = {
       { id: 'chain', label: 'The signal path (and where the DI sits)', kind: 'text' },
       { id: 'settings', label: 'Pickup and filter switches, pedals, amp settings', kind: 'text' },
       { id: 'mic', label: 'Mic type', kind: 'choice', choices: ['instrument dynamic, cardioid', 'small condenser', 'other', 'none (direct only)'] },
-      { id: 'zone', label: 'Mic position (centre, line, edge, angle, distance)', kind: 'text' },
+      { id: 'zone', label: 'Mic position (center, line, edge, angle, distance)', kind: 'text' },
       { id: 'blend', label: 'The DI and mic blend, and the mono check', kind: 'text' },
       { id: 'notes', label: 'What you heard (tendencies, in words)', kind: 'text' },
     ],
@@ -716,7 +716,7 @@ export const C12_LESSON: Lesson = {
     { text: 'The amplifier is drawn generically: the cabinet sizes come from a real open-backed combo and a real closed 1×12 cabinet, not from the lesson; the speaker’s position on the baffle, the open back’s opening and the chassis are drawing defaults.', dims: [] },
     { text: 'The speaker’s dust cap (radius 5 cm) and surround (12.8 cm) are drawing defaults; the cone’s size comes from a real 12-inch speaker.', dims: [] },
     { text: 'The clavinet’s case (100 × 45 cm), the stage layout and the keyboardist’s position are drawing defaults: the leaflet gives no dimensions. The mechanism is drawn as one straight string, not to scale.', dims: [] },
-    { text: 'The bands round the guides’ figures (at the grille 0.5–5 cm, the dust-cap line ±2 cm, the edge 9–14 cm off the centre, behind the open back 5–15 cm) — the lab’s drawing. We found no source that gives a distance behind an open back.', dims: [] },
+    { text: 'The bands round the guides’ figures (at the grille 0.5–5 cm, the dust-cap line ±2 cm, the edge 9–14 cm off the center, behind the open back 5–15 cm) — the lab’s drawing. We found no source that gives a distance behind an open back.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },

@@ -423,7 +423,7 @@ export function GearKnob({
             lastTap.current = 0;
             if (valueRef.current !== 0) {
               onChangeRef.current(0);
-              AccessibilityInfo.announceForAccessibility?.(`${name} pan centre`);
+              AccessibilityInfo.announceForAccessibility?.(`${name} pan center`);
             }
             return;
           }

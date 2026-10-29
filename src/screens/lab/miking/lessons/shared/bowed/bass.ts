@@ -129,7 +129,7 @@ export const BASS_UNDER: ZoneT = {
   aim: { maxOffAxis: 60, prov: ill('aimed back at the bridge and top: within 60°') },
   requires: { micTypeIds: ['strMini'] },
   draw: { side: zoneDisc('side', UNDER, 34), top: zoneDisc('top', UNDER, 34) },
-  tendency: 'The low end and body together with the string’s bite, close and steady as the bassist moves — a more local colour. Aimed toward an f-hole, more level.',
+  tendency: 'The low end and body together with the string’s bite, close and steady as the bassist moves — a more local color. Aimed toward an f-hole, more level.',
   checks: ['A clip made for the bass, on the strings, not the bridge', 'Clear of the fingers, the strings and the bow path', 'The cable kept from rubbing as the bassist moves'],
 };
 

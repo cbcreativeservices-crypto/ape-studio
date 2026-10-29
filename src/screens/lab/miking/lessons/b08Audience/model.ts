@@ -84,7 +84,7 @@ export const B08_ZONES: DocumentedZone[] = [
     rect: STUDIO.bar,
     hr: [2.8, 3.8],
     dist: [3000, 5000],
-    tendency: 'Width with a stable centre and a predictable mono sum — less spacious than a spaced pair, and a central place may hear more PA than crowd.',
+    tendency: 'Width with a stable center and a predictable mono sum — less spacious than a spaced pair, and a central place may hear more PA than crowd.',
     checks: ['The width against the section', 'The mono sum', 'The PA in the middle of the image'],
   }),
   crowdZone({
@@ -100,7 +100,7 @@ export const B08_ZONES: DocumentedZone[] = [
     rect: STUDIO.cornerL,
     hr: [2.0, 3.0],
     dist: [4500, 8000],
-    tendency: 'Its own part of the audience on its own channel — not a stereo pair: unequal local events and PA pickup can wander and colour the mono sum.',
+    tendency: 'Its own part of the audience on its own channel — not a stereo pair: unequal local events and PA pickup can wander and color the mono sum.',
     checks: ['Each channel alone, then the mono sum', 'The PA beside it', 'The channel map named'],
   }),
   crowdZone({
@@ -161,7 +161,7 @@ export const B08_SETUPS: SportSetup[] = [
     core: true,
     title: 'A spaced omni pair over the hall',
     type: 'two small omnis, spaced, on the truss over the event (a qualified rigger)',
-    start: 'High over the centre of the hall on the approved truss, the pair spaced apart — for the room’s size and its low end.',
+    start: 'High over the center of the hall on the approved truss, the pair spaced apart — for the room’s size and its low end.',
     line: 'The scale of the venue and its diffuse energy — and time differences that comb when the pair is summed to mono.',
     mics: [AB_L, AB_R],
     scene: EVENT_SCENE,
@@ -208,7 +208,7 @@ export const B08_SETUPS: SportSetup[] = [
 
 export const B08_PLACE: PlanZone[] = [
   { id: 'pz.mono', label: 'On the bar, aimed at the faces', band: 'Raised about 3–4 m on the bar, aimed at the middle of the section.', tendency: 'The section together, the PA off its front.', rect: STUDIO.bar, h: [2.8, 3.8], target: 'S', tol: 15, kinds: ['compact'] },
-  { id: 'pz.xy', label: 'An XY pair on the bar', band: 'The pair at the same raised place, its middle on the section.', tendency: 'Width with a stable centre; check the mono sum.', rect: STUDIO.bar, h: [2.8, 3.8], target: 'S', tol: 15, kinds: ['xy'] },
+  { id: 'pz.xy', label: 'An XY pair on the bar', band: 'The pair at the same raised place, its middle on the section.', tendency: 'Width with a stable center; check the mono sum.', rect: STUDIO.bar, h: [2.8, 3.8], target: 'S', tol: 15, kinds: ['xy'] },
   { id: 'pz.zoneL', label: 'A zone at the stage’s left corner', band: 'Raised about 2–3 m at the stage’s corner, aimed into the section.', tendency: 'One side of the audience on its own channel.', rect: STUDIO.cornerL, h: [2.0, 3.0], target: 'S', tol: 35, kinds: ['compact'] },
   { id: 'pz.zoneR', label: 'A zone at the stage’s right corner', band: 'The same at the opposite corner.', tendency: 'The other side on its own channel.', rect: STUDIO.cornerR, h: [2.0, 3.0], target: 'S', tol: 35, kinds: ['compact'] },
 ];

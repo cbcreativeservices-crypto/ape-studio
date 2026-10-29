@@ -25,7 +25,7 @@ const pages: LessonPages = {
     title: 'How it makes its sound',
     goal: 'See how bass, tone and slap become sound — the head, the air in the bowl, the open foot — and where each leaves the drum.',
     credit: { scenarios: ['dj.snd.1', 'dj.snd.2', 'dj.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'Slaps and tones start at the head, near its edge; the bass is struck near the centre, and much of it resonates out of the open foot. A mic hears more of whichever it is near and facing — test one mic before adding another.',
+    takeaway: 'Slaps and tones start at the head, near its edge; the bass is struck near the center, and much of it resonates out of the open foot. A mic hears more of whichever it is near and facing — test one mic before adding another.',
   },
   setting: {
     title: 'Where it sits',
@@ -104,12 +104,12 @@ const scenarios: MikingScenario[] = [
     id: 'dj.snd.1',
     page: 'sound',
     prompt: 'Where on the head is a djembe’s bass stroke played?',
-    options: ['With the palm and flat fingers, near the centre', 'With the fingertips, right at the edge', 'With the side of the hand, on the rope ring at the top'],
-    correct: 'With the palm and flat fingers, near the centre',
-    explain: 'The bass is struck with the palm and flat fingers near the centre; tone and slap are struck closer to the edge.',
+    options: ['With the palm and flat fingers, near the center', 'With the fingertips, right at the edge', 'With the side of the hand, on the rope ring at the top'],
+    correct: 'With the palm and flat fingers, near the center',
+    explain: 'The bass is struck with the palm and flat fingers near the center; tone and slap are struck closer to the edge.',
     why: {
-      'With the fingertips, right at the edge': 'That is nearer a slap. The bass is played near the centre with the palm.',
-      'With the side of the hand, on the rope ring at the top': 'The ring is not struck. The bass is played near the centre of the head.',
+      'With the fingertips, right at the edge': 'That is nearer a slap. The bass is played near the center with the palm.',
+      'With the side of the hand, on the rope ring at the top': 'The ring is not struck. The bass is played near the center of the head.',
     },
   },
   {
@@ -286,7 +286,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Where are the djembe’s tones and slaps struck?',
     options: ['Closer to the edge of the head', 'Right at the centre of the head', 'On the shell below the rope ring'],
     correct: 'Closer to the edge of the head',
-    explain: 'Tone and slap are struck closer to the edge; the bass near the centre.',
+    explain: 'Tone and slap are struck closer to the edge; the bass near the center.',
     why: {
       'Right at the centre of the head': 'That is where the bass is played.',
       'On the shell below the rope ring': 'The shell is not struck; tones and slaps are played on the head.',
@@ -508,7 +508,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A solo studio performance; the djembe stands raised on foam blocks with its opening clear. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'One slim condenser above the outer edge, about 41 cm from the head’s centre', ok: true, power: 'phantom', feedback: 'A suggested starting point that hears the whole drum and the room; phantom is available.' },
+      { id: 'a', label: 'One slim condenser above the outer edge, about 41 cm from the head’s center', ok: true, power: 'phantom', feedback: 'A suggested starting point that hears the whole drum and the room; phantom is available.' },
       { id: 'b', label: 'A compact dynamic close above the head, angled, plus a low mic aimed at the opening', ok: true, power: 'none', feedback: 'A case-example pair — check the blend in mono; dynamics need no phantom.' },
       { id: 'c', label: 'One compact dynamic close above the head, angled, outside the hands', ok: true, power: 'none', feedback: 'One mic first — if it carries enough bass, a second is unnecessary.' },
       { id: 'd', label: 'A mic pushed into the open foot for the bass', ok: false, power: 'none', feedback: 'Never obstruct the opening.' },
@@ -570,9 +570,9 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'Where is a djembe’s bass stroke played?',
-    options: ['Near the centre, with the palm and flat fingers', 'Right at the edge, with the fingertips', 'On the rope ring, with the side of the hand'],
-    correct: 'Near the centre, with the palm and flat fingers',
-    explain: 'The bass is struck near the centre; tone and slap closer to the edge.',
+    options: ['Near the center, with the palm and flat fingers', 'Right at the edge, with the fingertips', 'On the rope ring, with the side of the hand'],
+    correct: 'Near the center, with the palm and flat fingers',
+    explain: 'The bass is struck near the center; tone and slap closer to the edge.',
     why: {
       'Right at the edge, with the fingertips': 'That is nearer a slap.',
       'On the rope ring, with the side of the hand': 'The ring is not struck.',
@@ -645,7 +645,7 @@ export const M05_LESSON: HandLesson = {
   sound: {
     stages: [
       { title: 'The hand strikes', text: 'The hand strikes the head — the palm and flat fingers near the centre for a bass, closer to the edge for a tone or a slap. That brief contact is where the ATTACK begins.' },
-      { title: 'The head is pushed in', text: 'The head bows down into the drum — most at the centre, not at all at the rim: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
+      { title: 'The head is pushed in', text: 'The head bows down into the drum — most at the center, not at all at the rim: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
       { title: 'The air is pushed down', text: 'The head pushes the air in the bowl down through the narrow waist toward the foot. Resting on the floor, the foot’s opening meets the floor.', ported: 'The head pushes the air in the bowl down through the narrow waist and out of the open foot — while the air above the head thins: a mic above and a mic at the foot hear opposite pushes. Raised, the opening is clear of the floor.' },
       { title: 'Sound leaves the drum', text: 'Sound leaves from the head — the slaps and tones — and around the foot, where the opening meets the floor. The air in the bowl sets the deep bass note.', ported: 'Sound leaves from the head — the slaps and tones — and out of the open foot, where a lot of the bass resonates. The air in the bowl sets the deep bass note.' },
     ],
@@ -713,8 +713,8 @@ export const M05_LESSON: HandLesson = {
     strikeWord: 'HAND',
     face: { kind: 'rope', lugs: 0 },
     facePoints: [
-      { id: 'c', label: 'CENTRE', frac: 0, blurb: 'The exact centre — where the bass is played.' },
-      { id: 'h', label: 'HALFWAY', frac: 0.5, blurb: 'Halfway from the centre to the edge.' },
+      { id: 'c', label: 'CENTER', frac: 0, blurb: 'The exact center — where the bass is played.' },
+      { id: 'h', label: 'HALFWAY', frac: 0.5, blurb: 'Halfway from the center to the edge.' },
       { id: 'e', label: 'NEAR THE EDGE', frac: 0.82, blurb: 'Closer to the edge — where tones and slaps are played.' },
     ],
     openEnd: { default: false, raised: true },
@@ -723,7 +723,7 @@ export const M05_LESSON: HandLesson = {
       intro: 'Switch STROKE and watch which of the head’s shapes the spot drives. The bars are physics; the strokes are the player’s.',
       badge: 'A simplified head · where the hand lands, drawn at a typical spot · bars = how strongly that spot drives each shape',
       items: [
-        { id: 'bass', label: 'BASS', short: 'BASS', frac: 0.12, tool: 'palm', text: 'The palm and flat fingers near the centre. The deep note itself is the air in the bowl, set mostly by the shell’s size and shape, much less by the skin’s tension.' },
+        { id: 'bass', label: 'BASS', short: 'BASS', frac: 0.12, tool: 'palm', text: 'The palm and flat fingers near the center. The deep note itself is the air in the bowl, set mostly by the shell’s size and shape, much less by the skin’s tension.' },
         { id: 'tone', label: 'TONE', short: 'TONE', frac: 0.82, tool: 'fingers', text: 'Closer to the edge, with most of the fingers and the edge of the palm on the skin: a ringing open tone.' },
         { id: 'slap', label: 'SLAP', short: 'SLAP', frac: 0.82, tool: 'tips', text: 'Closer to the edge, with only the edge of the palm and the fingertips: a sharp, cutting slap.' },
       ],
@@ -768,7 +768,7 @@ export const M05_LESSON: HandLesson = {
     ideas: {
       hdDynCard: 'Ideas to try with this kind of mic: one stable mic above the head, outside the hands — then move it farther back or angle it differently, one change at a time, and decide whether one mic is enough.',
       hdDynHyper: 'Ideas to try with this kind of mic: close above the head for slap and tone, or — with the drum raised — low beside it, aimed at the opening. Its short body fits low positions.',
-      hdSdc: 'Ideas to try with this kind of mic: above the outer edge, about 41 cm from the head’s centre, pointing across it — more of the whole drum and the room. Check the bass it already carries.',
+      hdSdc: 'Ideas to try with this kind of mic: above the outer edge, about 41 cm from the head’s center, pointing across it — more of the whole drum and the room. Check the bass it already carries.',
     },
     placeLearn: [
       'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic. The two top positions — very close, and quite far — are different case examples, not rules; the low and under positions only exist when the drum is raised clear of the floor.',

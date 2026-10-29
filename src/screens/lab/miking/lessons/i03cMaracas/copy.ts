@@ -86,7 +86,7 @@ export const MAR_COPY: LessonCopy = spCopy({
   placement: {
     workedZone: { pair: 'mar.centre.pair', singer: 'mar.centre.singer' },
     workedAim: 'Face the midpoint between the heads — the starting point counts while the mic faces it within {tol}°. Distance, height and angle are separate things to try.',
-    reveal: 'Centred and a little farther back, both hands tend to balance; the nearer head can leap in level; a spot per head gives control at a cost. Pairs and players vary, so “it depends” is fair too.',
+    reveal: 'Centered and a little farther back, both hands tend to balance; the nearer head can leap in level; a spot per head gives control at a cost. Pairs and players vary, so “it depends” is fair too.',
     typeNotes: { smallDynCard: 'A dynamic can make sense on a loud stage; a small condenser tends to show more of the fine rattle. Compare by ear.' },
     note: 'Clearance comes first: stop the player before moving a real mic — both arms sweep wider than a single shaker. Watch PEAK meters for the brief accents.',
     learn: {
@@ -101,7 +101,7 @@ export const MAR_COPY: LessonCopy = spCopy({
     zone: 'mar.centre.pair',
     shield: ['mar.head0.pair', 'mar.head1.pair'],
     facing: 'the heads',
-    studioPrompt: 'A studio session has no wedge to reject. The decision changes: one centred mic, a pair of spots — or none?',
+    studioPrompt: 'A studio session has no wedge to reject. The decision changes: one centered mic, a pair of spots — or none?',
     studioNote: 'Mono is often enough for a supportive groove; a stereo picture should serve a deliberate idea, not simply the fact that there are two maracas. Switch back to LIVE for the monitor exercise.',
     points: [
       { title: 'A DEDICATED SPOT', text: 'One directional mic for hand percussion is a real touring approach — soundcheck the actual pair and both arms against the full band.' },
@@ -115,7 +115,7 @@ export const MAR_COPY: LessonCopy = spCopy({
     A: 'mar.right.pair',
     B: 'mar.left.pair',
     learn: [
-      'Two spots — one per head — give independent balance and a possible stereo picture, but each also hears the other head, a little later. Compare a single centred mic first: if it is balanced, it remains a valid choice.',
+      'Two spots — one per head — give independent balance and a possible stereo picture, but each also hears the other head, a little later. Compare a single centered mic first: if it is balanced, it remains a valid choice.',
       'Bring both up together and check in MONO. No fixed polarity switch or distance formula guarantees a better sum — move, re-aim or rebalance by ear.',
     ],
   },

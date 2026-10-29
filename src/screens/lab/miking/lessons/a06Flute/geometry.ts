@@ -116,7 +116,7 @@ function model(design: FluteDesign): InstrumentModel {
       exciter: 'The embouchure hole radiates for every note — and the air jet’s breath noise starts here.',
     }),
     variants: [
-      { id: 'metal', label: 'METAL', blurb: 'A metal concert flute: keyed, in a silver colour (plated, nickel-silver or silver — the look does not tell you which).' },
+      { id: 'metal', label: 'METAL', blurb: 'A metal concert flute: keyed, in a silver color (plated, nickel-silver or silver — the look does not tell you which).' },
       { id: 'wooden', label: 'WOODEN, KEYED', blurb: 'A wooden concert flute: the same keyed design in dark wood, tone holes sized like a metal flute’s.' },
       { id: 'simple', label: 'SIMPLE-SYSTEM', blurb: 'A simple-system wooden flute: a conical body with open finger holes and few or no keys — a different design.' },
     ],

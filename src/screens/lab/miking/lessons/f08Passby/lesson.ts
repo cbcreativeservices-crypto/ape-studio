@@ -148,7 +148,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No — a cone is not traffic control',
     explain: 'Passing traffic is a serious hazard and a practice session cannot create its own traffic control with a stand or a cone. Never set up on an active roadway.',
     why: {
-      'Yes — if the cone is bright orange': 'Its colour does not make a cone traffic control.',
+      'Yes — if the cone is bright orange': 'Its color does not make a cone traffic control.',
       'Yes — for a few minutes at a time': 'A short time on an active road is still on an active road.',
     },
   },
@@ -194,7 +194,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A tracked shotgun follows the walker. What tends to change?',
     options: ['It holds the walker; handling can creep in', 'It adds a Doppler shift of its very own', 'It turns the pass into a real stereo image'],
     correct: 'It holds the walker; handling can creep in',
-    explain: 'Kept on its axis, the walker stays present: the level follows distance alone, with no off-axis fall; handling noise can creep in, and off-axis colour if the aim lags.',
+    explain: 'Kept on its axis, the walker stays present: the level follows distance alone, with no off-axis fall; handling noise can creep in, and off-axis color if the aim lags.',
     why: {
       'It adds a Doppler shift of its very own': 'The operator turns but does not travel: no added pitch shift.',
       'It turns the pass into a real stereo image': 'One tracked mic is still mono: the mix decides where it sits.',

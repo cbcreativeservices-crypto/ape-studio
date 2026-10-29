@@ -27,7 +27,7 @@ export const D = SPEC.depth.mm;
 
 export const CBD_DIMS = {
   /** Centre height above the floor: UNKNOWN (proposal drawing default 800). */
-  centreH: placeholder(800, 'the drum’s centre height on its stand'),
+  centreH: placeholder(800, 'the drum’s center height on its stand'),
   /** "about 45 cm (1'6") away" from the skin, "looking diagonally downwards". */
   deccaDist: { mm: 450, prov: src('DECCA', 'looking diagonally downwards towards the skin from a distance of about 45 cm (1\'6") away') } as Dim,
   /** The diagonal: 45° above the head-centre horizontal — a drawing default. */
@@ -51,16 +51,16 @@ export const CBD_ZONES: DocumentedZone[] = [
   {
     id: 'cbd.spot',
     label: 'Above the playing head, looking down at it',
-    band: 'Start about 45 cm (18 in) from the playing head, above its centre, looking diagonally down at the head — outside the mallet’s and the damping hand’s path.',
+    band: 'Start about 45 cm (18 in) from the playing head, above its center, looking diagonally down at the head — outside the mallet’s and the damping hand’s path.',
     kind: 'sourced',
     src: 'DECCA',
     quote: 'The microphone is best placed just above the instrument, looking diagonally downwards towards the skin from a distance of about 45 cm (1\'6") away.',
     refSurface: 'playing',
     side: 'outside',
     distance: { min: 230, max: 420 },
-    bandProv: ill('"about 45 cm": a mic 38–52 cm from the head centre at the diagonal is 23–42 cm out from the head plane (the lab’s band)'),
+    bandProv: ill('"about 45 cm": a mic 38–52 cm from the head center at the diagonal is 23–42 cm out from the head plane (the lab’s band)'),
     radial: { line: 'axis', min: 230, max: 420, prov: ill('"just above": 23–42 cm above (or beside) the drum’s axis, the lab’s band for the diagonal') },
-    box: { min: { x: 0, y: -1200, z: -220 }, max: { x: 900, y: -120, z: 220 }, prov: ill('above the head centre, near the drum’s mid-plane (drawing default)') },
+    box: { min: { x: 0, y: -1200, z: -220 }, max: { x: 900, y: -120, z: 220 }, prov: ill('above the head center, near the drum’s mid-plane (drawing default)') },
     aim: { minOffAxis: 20, maxOffAxis: 70, prov: ill('"diagonally downwards": the lab counts 20–70° off the head’s axis') },
     aimAt: { surface: 'playing', r: R * 0.8, prov: ill('looking at the skin: the axis meets the head') },
     requires: { micTypeIds: BOTH },
@@ -80,8 +80,8 @@ export const CBD_ZONES: DocumentedZone[] = [
     side: 'outside',
     distance: { min: 120, max: 230 },
     bandProv: ill('"as near as safely useful": 12–23 cm out from the head is the lab’s drawing'),
-    radial: { line: 'axis', min: 230, max: 440, prov: ill('above the head centre, the lab’s band') },
-    box: { min: { x: 0, y: -1200, z: -220 }, max: { x: 900, y: -120, z: 220 }, prov: ill('above the head centre, near the drum’s mid-plane (drawing default)') },
+    radial: { line: 'axis', min: 230, max: 440, prov: ill('above the head center, the lab’s band') },
+    box: { min: { x: 0, y: -1200, z: -220 }, max: { x: 900, y: -120, z: 220 }, prov: ill('above the head center, near the drum’s mid-plane (drawing default)') },
     aim: { minOffAxis: 25, maxOffAxis: 75, prov: ill('looking down at the head: the lab’s tolerance') },
     aimAt: { surface: 'playing', r: R * 0.8, prov: ill('looking at the skin: the axis meets the head') },
     requires: { micTypeIds: BOTH },

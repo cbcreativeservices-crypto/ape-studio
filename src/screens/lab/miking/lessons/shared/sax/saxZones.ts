@@ -116,7 +116,7 @@ export function saxZone(F: SaxFamily, kind: ZoneKindId, id: string, w: ZoneWords
           side: 'outside',
           distance: { min: 50, max: 100 },
           cone: { min: 0, max: 22, prov: ill('on the bell’s axis: within 22° (the lab’s drawing)') },
-          aim: { maxOffAxis: 18, prov: ill('aimed into the bell: within 18° of its centre') },
+          aim: { maxOffAxis: 18, prov: ill('aimed into the bell: within 18° of its center') },
           requires: { micTypeIds: DYNAMICS },
           draw: draws(A.rimC, A.bellAxis, 22, 50, 100),
         },

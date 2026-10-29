@@ -27,7 +27,7 @@ export const TIMP_COPY: LessonCopy = {
   },
   sound: {
     strikes: [
-      { id: 'c', label: 'CENTRE', mm: 0, blurb: 'The exact centre of the head — not where a timpanist usually plays.' },
+      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact center of the head — not where a timpanist usually plays.' },
       { id: 'third', label: 'A THIRD IN FROM THE HOOP', mm: (R29 * 2) / 3, blurb: 'About a third of the radius in from the hoop, on the player’s side — where a full tone is usually found.' },
       { id: 'hoop', label: 'CLOSE TO THE HOOP', mm: R29 * 0.9, blurb: 'Very close to the hoop — explore what it drives.' },
     ],
@@ -41,14 +41,14 @@ export const TIMP_COPY: LessonCopy = {
       { k: 'BOWL AIR', at: ['AT REST', 'AT REST', 'ACROSS', 'ACROSS'], flex: 1.1 },
       { k: 'SOUND', at: ['—', '—', '—', 'UP AND OUT'], flex: 1.1 },
     ],
-    reveal: 'Struck off-centre, the head goes down where the mallet lands and up on the far side — a see-saw. The air under it is shoved across the bowl rather than squeezed.',
+    reveal: 'Struck off-center, the head goes down where the mallet lands and up on the far side — a see-saw. The air under it is shoved across the bowl rather than squeezed.',
     after: 'Then the head keeps ringing in its pitched shapes — the note. How long, and how bright, depends on the mallet, the strike point, the tuning and any damping: all the timpanist’s choices.',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. A centre strike drives only the ring-shaped ones, the lowest shape among them — on a timpani that means more thud and less of the note; a third of the way in from the hoop drives the pitched shapes well.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. A center strike drives only the ring-shaped ones, the lowest shape among them — on a timpani that means more thud and less of the note; a third of the way in from the hoop drives the pitched shapes well.',
       'This picture uses the head’s ideal shapes; the ratios are a timpani’s, with the bowl’s air included. A real drum, its head and its tuning move them a little.',
     ],
     coupledSubject: 'Side view of one timpano, cut open',
-    coupledNote: 'One stroke sets several shapes going at once. The see-saw family carries the note and rings on; the pump is the short thud at the start, strongest from a centre strike.',
+    coupledNote: 'One stroke sets several shapes going at once. The see-saw family carries the note and rings on; the pump is the short thud at the start, strongest from a center strike.',
     silentNote: 'This lab never plays a sound and draws no frequency curve for the drum: how a real timpani sounds depends on the drum, its head, the tuning, the mallets and the player. The pictures show where the sound comes from and where it leaves.',
     pair: {
       title: 'The head and the bowl’s air',
@@ -74,7 +74,7 @@ export const TIMP_COPY: LessonCopy = {
         blurb: 'The whole head moves down, then up, squeezing and easing the air in the bowl.',
         short: 'PUMP',
         title: 'PUMP (0,1) — THE THUD',
-        card: 'The whole head goes down together, then up. It squeezes and eases the air in the bowl, which pushes back hard: this shape sends its energy out quickly and dies away fast — a short, dull thud rather than the note. A strike right at the centre drives it most.',
+        card: 'The whole head goes down together, then up. It squeezes and eases the air in the bowl, which pushes back hard: this shape sends its energy out quickly and dies away fast — a short, dull thud rather than the note. A strike right at the center drives it most.',
         v0: '(0,1)',
         sub0: 'the thud',
         v1: 'ONE WAY',

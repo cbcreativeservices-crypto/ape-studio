@@ -534,7 +534,7 @@ export const I05A_LESSON: SpLesson = {
   unknowns: [
     { text: 'The mouth (100 × 60 mm) and closed end (70 × 40 mm) sections of the 177.8 mm bell — drawing defaults.', dims: ['mouthW', 'mouthH', 'endW', 'endH'] },
     { text: 'The mounted height (h 1000), the stick’s rise (300 mm) and sector, the left hand’s grip and the player’s posture — drawing defaults and ILLUSTRATIVE.', dims: ['rise', 'mountH'] },
-    { text: 'The 20–40 cm band is the lesson’s own audition range, measured from the bell’s centre; its near end is closer than one general percussion tip of about 30 cm or more.', dims: [] },
+    { text: 'The 20–40 cm band is the lesson’s own audition range, measured from the bell’s center; its near end is closer than one general percussion tip of about 30 cm or more.', dims: [] },
   ],
   live: { wedges: standingWedges('the bell') },
   accuracyDetail:

@@ -142,7 +142,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tu.rec.1',
     page: 'microphone',
-    prompt: 'FROM EARLIER · A mic close over the centre of an upward bell tends to hear…',
+    prompt: 'FROM EARLIER · A mic close over the center of an upward bell tends to hear…',
     options: ['One local part of the bell, plus air and valve noise', 'The whole tuba and the room around it, evenly', 'The neighbouring players more than the tuba right beneath it'],
     correct: 'One local part of the bell, plus air and valve noise',
     explain: 'Very close over the opening, one part of a large bell — and the air stream and mechanical noise — dominate. Aiming across the edge from farther away hears more of the whole tuba.',

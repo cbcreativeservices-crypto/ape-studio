@@ -80,7 +80,7 @@ export function c05bZoneSpecs(sc: GuitarScene): ZoneSpec[] {
       micTypeIds: ['clipCond'],
       boxG: { min: { x: clipX0, y: -40, z: 30 }, max: { x: clipX1, y: 40, z: 90 }, prov: ill('between the neck joint and the opening, over the strings: the lab’s drawing') },
       start: { dx: (clipX0 + clipX1) / 2, d: 60, aimAt: { x: (clipX0 + clipX1) / 2 - 20, y: 0, z: 0 } },
-      tendency: 'Isolation and mobility: it moves with the mandolin. Expect a local colour, and listen for handling and contact noise.',
+      tendency: 'Isolation and mobility: it moves with the mandolin. Expect a local color, and listen for handling and contact noise.',
       checks: ['A clip made for this body depth, with the owner’s OK — never on the scroll, the bridge or an f-hole’s edge', 'The picking hand', 'The cable, strain-relieved'],
     },
   ];

@@ -229,7 +229,7 @@ function bandStage(): Seating {
   return {
     id: 'band.stage',
     label: 'A band on a stage',
-    blurb: 'Drums upstage centre, guitar and bass in front of their amps, keys at the side, the singer downstage centre — a wedge for each player and the PA at the front corners.',
+    blurb: 'Drums upstage center, guitar and bass in front of their amps, keys at the side, the singer downstage center — a wedge for each player and the PA at the front corners.',
     seats,
     sections: sections(seats, ['drums', 'gtr', 'bass', 'keys', 'vox']),
     risers: [],

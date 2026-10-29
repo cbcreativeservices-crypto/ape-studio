@@ -181,7 +181,7 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
                   id === 'res'
                     ? 'A peak at the filter’s edge. Turn a filter first: with both filters off it changes nothing.'
                     : id.startsWith('f')
-                      ? 'Left of centre: low-pass (darker). Right: high-pass (thinner). Centre: off.'
+                      ? 'Left of center: low-pass (darker). Right: high-pass (thinner). Center: off.'
                       : id.endsWith('hi')
                         ? 'Above about 2.5 kHz: hats, cymbals, air.'
                         : 'About 250 Hz – 2.5 kHz: chords, voices, the body of a track.',

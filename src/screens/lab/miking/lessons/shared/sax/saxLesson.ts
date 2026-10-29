@@ -618,7 +618,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
       availableLead: 'Starting points for this mic',
       learn: {
         intro: c.learnIntro,
-        separate: 'Distance, height and the angle between the bell and the body are separate variables: change one at a time, and play low and high notes, quiet and loud, each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.',
+        separate: 'Distance, height and the angle between the bell and the body are separate variables: change one at a time, and play low and high notes, quiet and loud, each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimetre claim is made.',
         clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable out of the bell’s swing, the hands and the keys. The grey hatch appears when a mic comes near the space the bell sweeps — leave more room on a real stage.',
         tendencies: 'Toward the bell tends to bring brightness and focus; toward the tone holes, warmth and fullness with more key noise; farther away, more of the whole horn and the room. A directional mic up close also lifts the lows (proximity effect). These are tendencies, and horns and players vary.',
       },

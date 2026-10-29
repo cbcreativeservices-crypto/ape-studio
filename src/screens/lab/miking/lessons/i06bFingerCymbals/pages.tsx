@@ -113,7 +113,7 @@ const HELD: HandSpec = {
     warn: 'This simplified graph shows one point source and straight paths. Real cymbals move with the hands, so the delay between two mics changes as they play. Read the notch depths as illustrative only, and judge the pair by ear, in mono.',
     learn: [
       'A common situation: a spot, and another mic that hears the cymbals too — the main pair, a percussion overhead, or a second view. Each hears them at a different time. Two cymbals do not need two mics.',
-      'Compare the mics together at the intended levels in MONO. If the attack changes or the ring turns coloured, move, re-aim or rebalance first; try polarity as a diagnostic, not an automatic switch.',
+      'Compare the mics together at the intended levels in MONO. If the attack changes or the ring turns colored, move, re-aim or rebalance first; try polarity as a diagnostic, not an automatic switch.',
     ],
   },
   practice: {
@@ -150,7 +150,7 @@ const SPEC: MetalSpec = {
     figure: { title: 'FINGER CYMBALS', badge: 'A pair of 5.5 and 4.8 cm brass finger cymbals, from the audience · the hold is a drawing choice', label: (v) => (v === 'dance' ? 'A dancer seen from the audience, arms raised, a pair of finger cymbals on the thumb and a finger of each hand, with arrows showing the route across the stage.' : 'A pair of small brass finger cymbals seen from the audience: one held flat by its strap, the other above it, tipped edge-first, about to drop into it.') },
     partsBadge: 'A pair of brass finger cymbals · tap a part to name it',
     partsLooking: (v) => (v === 'dance' ? 'From the audience · a dancer, a pair on each hand' : 'From the audience · the pair close up'),
-    partsNote: 'Two small brass plates, each with a strap through its centre. Switch PLAYED to see them worn by a dancer.',
+    partsNote: 'Two small brass plates, each with a strap through its center. Switch PLAYED to see them worn by a dancer.',
     partsWarn: 'The cymbals and their straps are the player’s: never clip a mic to them, and never limit a dance to suit a microphone.',
     variantKey: 'PLAYED',
   },
@@ -174,21 +174,21 @@ const SPEC: MetalSpec = {
       strikes: () => [
         { id: 'edge', label: 'NEAR THE EDGE', words: 'near the edge', blurb: 'Where the other cymbal’s edge usually lands.', r: 0.88 },
         { id: 'bow', label: 'HALFWAY OUT', words: 'halfway out', blurb: 'Between the dome and the edge.', r: 0.6 },
-        { id: 'dome', label: 'BY THE DOME', words: 'by the dome', blurb: 'Close to the raised centre and the strap.', r: 0.32 },
+        { id: 'dome', label: 'BY THE DOME', words: 'by the dome', blurb: 'Close to the raised center and the strap.', r: 0.32 },
       ],
       metal: BRASS,
       knot: true,
       title: 'The plate’s shapes',
-      badge: 'A simplified picture: a flat disc held at its centre · blue + toward you, amber − away · white dashes = still lines',
+      badge: 'A simplified picture: a flat disc held at its center · blue + toward you, amber − away · white dashes = still lines',
       looking: () => `One cymbal face-on · ${Math.round(RA * 2) / 10} cm across · one vibration shape`,
       prompt: 'Step through SHAPE, then move the STROKE in toward the dome. Which shapes does a stroke near the edge drive?',
       strikeWord: 'STROKE',
       subject: 'A 5.5 centimetre finger cymbal seen face-on',
       notes: () => [
-        'A shape is set moving only as much as the plate moves where the edge lands. Near the edge, most shapes move a lot — the bright, piercing ring. The strap sits at the centre, so this picture leaves out the shapes that would move the centre: the strap damps them.',
+        'A shape is set moving only as much as the plate moves where the edge lands. Near the edge, most shapes move a lot — the bright, piercing ring. The strap sits at the center, so this picture leaves out the shapes that would move the center: the strap damps them.',
         'This is a flat disc of even thickness. A real finger cymbal is domed and small, so its pitches are high and its numbers differ; thin and thick pairs differ too — compare real pairs by ear.',
       ],
-      tried: 'Near the edge nearly every shape moves under the stroke; nearer the dome, fewer do. The contact point is part of the source’s colour.',
+      tried: 'Near the edge nearly every shape moves under the stroke; nearer the dome, fewer do. The contact point is part of the source’s color.',
     },
   },
 };

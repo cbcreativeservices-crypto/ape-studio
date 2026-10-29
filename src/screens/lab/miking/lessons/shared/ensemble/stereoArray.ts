@@ -171,7 +171,7 @@ export const ARRAYS: Readonly<Record<ArrayPresetId, ArrayDef>> = {
     recordingAngle: null,
     what: 'Two cardioids 30 cm apart, 90° between their axes — a fixed geometry.',
     tends: 'A little wider than the 17 cm pair, with more time difference between the sides.',
-    check: 'The mono sum and the centre.',
+    check: 'The mono sum and the center.',
     prov: src('DPA-STEREO', 'NOS 30 cm / 90°'),
   },
   din: {
@@ -211,7 +211,7 @@ export const ARRAYS: Readonly<Record<ArrayPresetId, ArrayDef>> = {
     recordingAngle: null,
     what: 'Two omnis side by side, 40–60 cm apart to start for an orchestra.',
     tends: 'A broad view of the ensemble and the hall; very wide spacing can open a hole in the middle.',
-    check: 'The centre, the mono sum and the low end, at each spacing and height you try.',
+    check: 'The center, the mono sum and the low end, at each spacing and height you try.',
     prov: src('DPA-AB-ORCH', 'Normally the spacing is adjusted between 40 and 60 cm; 1-2.5 meters → a hole will start to appear in the middle'),
   },
   tree: {
@@ -223,10 +223,10 @@ export const ARRAYS: Readonly<Record<ArrayPresetId, ArrayDef>> = {
     pattern: 'omni',
     turn: { min: 0, max: 45, def: 0 },
     recordingAngle: null,
-    what: 'Three omnis in a triangle: left and right 2 m apart, the centre 1.5 m forward of them, no two closer than 1.5 m. The centre is fed to both sides a few dB down.',
-    tends: 'A broad, stable picture with a filled-in centre; it needs room, a safe mount and careful centre balance.',
-    check: 'The centre’s level (raise it from silence), the edges, and the mono sum.',
-    prov: src('SCH-SURR', 'L–R "e.g. 2 meters", C forward "e.g. 1.5 meters", "not less than 1.5 meters", L/R turned 0–45°, centre "reduced 4 - 5 dB … mixed equally into the left and right channels"'),
+    what: 'Three omnis in a triangle: left and right 2 m apart, the center 1.5 m forward of them, no two closer than 1.5 m. The center is fed to both sides a few dB down.',
+    tends: 'A broad, stable picture with a filled-in center; it needs room, a safe mount and careful center balance.',
+    check: 'The center’s level (raise it from silence), the edges, and the mono sum.',
+    prov: src('SCH-SURR', 'L–R "e.g. 2 meters", C forward "e.g. 1.5 meters", "not less than 1.5 meters", L/R turned 0–45°, center "reduced 4 - 5 dB … mixed equally into the left and right channels"'),
   },
   treeCompact: {
     id: 'treeCompact',
@@ -237,9 +237,9 @@ export const ARRAYS: Readonly<Record<ArrayPresetId, ArrayDef>> = {
     pattern: 'omni',
     turn: { min: 0, max: 45, def: 0 },
     recordingAngle: null,
-    what: 'A smaller tree some engineers have used: left and right about 1.5 m apart, the centre about 0.75 m ahead — smaller both ways than the wider tree’s 2 m across and 1.5 m forward.',
-    tends: 'Less spread between the three omnis: a narrower, more centred picture than the wider tree.',
-    check: 'The same as the wider tree: centre level, edges, mono.',
+    what: 'A smaller tree some engineers have used: left and right about 1.5 m apart, the center about 0.75 m ahead — smaller both ways than the wider tree’s 2 m across and 1.5 m forward.',
+    tends: 'Less spread between the three omnis: a narrower, more centered picture than the wider tree.',
+    check: 'The same as the wider tree: center level, edges, mono.',
     prov: src('PELLOWE', 'maybe 2.5 feet back and 5 feet apart you would have 2 more (Decca practice, 1997 interview)'),
   },
   /* group 2 — voices */
@@ -337,9 +337,9 @@ export const ARRAYS: Readonly<Record<ArrayPresetId, ArrayDef>> = {
     locked: false,
     pattern: 'cardioid',
     recordingAngle: null,
-    what: 'Three mics across the front (left, centre, right) and two toward the rear (left and right surround) — one mic per loudspeaker of a five-channel layout. Drawn as an example layout: the spacing is chosen for the place and the taste.',
+    what: 'Three mics across the front (left, center, right) and two toward the rear (left and right surround) — one mic per loudspeaker of a five-channel layout. Drawn as an example layout: the spacing is chosen for the place and the taste.',
     tends: 'A stable front with the space around it; spaced omnis tend to sound more enveloping, cardioids give more separation between the channels.',
-    check: 'Listen on the five-speaker layout it is for, then the stereo and mono downmix — spaced mics summed can colour the sound.',
+    check: 'Listen on the five-speaker layout it is for, then the stereo and mono downmix — spaced mics summed can color the sound.',
     example: true,
     prov: { kind: 'trial', src: 'LESSON-F10', note: 'spatial_field/SOURCES.md #7 (no spacing in the lesson): positions a drawing default (D-6B-7)' },
   },
@@ -466,7 +466,7 @@ export function arrayCapsules(id: ArrayPresetId, params: ArrayParams = {}, place
       const g = id === 'tree' ? TREE : TREE_COMPACT;
       const b = clampR(def.turn, params.turn);
       const cDb = Math.max(TREE_CENTRE_DB.min, Math.min(TREE_CENTRE_DB.max, params.centreDb ?? -4.5));
-      out.push(cap('L', 'LEFT', 0, g.width / 2, 0, b, 'omni', 'L'), cap('R', 'RIGHT', 0, -g.width / 2, 0, -b, 'omni', 'R'), cap('C', 'CENTRE', g.forward, 0, 0, 0, 'omni', 'LR', cDb));
+      out.push(cap('L', 'LEFT', 0, g.width / 2, 0, b, 'omni', 'L'), cap('R', 'RIGHT', 0, -g.width / 2, 0, -b, 'omni', 'R'), cap('C', 'CENTER', g.forward, 0, 0, 0, 'omni', 'LR', cDb));
       break;
     }
     /* group 2 — voices: one mic (routed to both sides: a mono channel), or two back to back. */

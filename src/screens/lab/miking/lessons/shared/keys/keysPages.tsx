@@ -92,9 +92,9 @@ const SHORT: Record<string, string> = { front: 'FRONT', top: 'ABOVE', side: 'SID
 const SPOTS_12 = ['centre', 'boundary', 'edge'] as const;
 const SPOTS_OVAL: readonly OvalSpot[] = ['centre', 'off', 'out'];
 const OVAL_WORDS: Record<OvalSpot, { title: string; text: string; short: string; tends: string; r: number }> = {
-  centre: { title: 'THE CENTRE', short: 'CENTRE', tends: 'BRIGHTER', text: 'Over the dust cap in the middle of the oval. Most often the brightest, most direct spot — with the most click.', r: OVAL_SPOTS.centre },
-  off: { title: 'OFF-CENTRE', short: 'OFF-CENTRE', tends: 'BETWEEN', text: 'About a quarter of the way along the oval’s long side: a common first spot close in, often at a slight angle.', r: OVAL_SPOTS.off },
-  out: { title: 'TOWARD THE OUTER END', short: 'OUTWARD', tends: 'ROUNDER', text: 'Over the outer end of the cone, inside its edge. Most often rounder and warmer than the centre.', r: OVAL_SPOTS.out },
+  centre: { title: 'THE CENTER', short: 'CENTER', tends: 'BRIGHTER', text: 'Over the dust cap in the middle of the oval. Most often the brightest, most direct spot — with the most click.', r: OVAL_SPOTS.centre },
+  off: { title: 'OFF-CENTER', short: 'OFF-CENTER', tends: 'BETWEEN', text: 'About a quarter of the way along the oval’s long side: a common first spot close in, often at a slight angle.', r: OVAL_SPOTS.off },
+  out: { title: 'TOWARD THE OUTER END', short: 'OUTWARD', tends: 'ROUNDER', text: 'Over the outer end of the cone, inside its edge. Most often rounder and warmer than the center.', r: OVAL_SPOTS.out },
 };
 
 /** A short link to the speaker module (where a navigator is mounted). */
@@ -535,7 +535,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
         : []),
       {
         key: 'spots',
-        title: 'Centre and edge',
+        title: 'Center and edge',
         kind: 'COMPARE',
         layout: 'rack',
         rack: rhodes
@@ -543,12 +543,12 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
               render: (w, h) => <CabExplorer w={w} h={h} kind="1x12" back="closed" view="face" spot={spot12} accessibilityLabel={`One speaker face-on, the spot marked: ${SPOT_WORDS[spot12].title.toLowerCase()}.`} />,
               badge: 'One speaker face-on · the blue ring is where the mic aims · tendencies to check, not results',
               bezel: [
-                { k: 'SPOT', v: spot12 === 'centre' ? 'CENTRE' : spot12 === 'boundary' ? 'CAP EDGE' : 'EDGE', flex: 1.2 },
-                { k: 'FROM CENTRE', v: lenCell(SPOT_WORDS[spot12].r).v, sub: lenCell(SPOT_WORDS[spot12].r).sub, flex: 1.3 },
+                { k: 'SPOT', v: spot12 === 'centre' ? 'CENTER' : spot12 === 'boundary' ? 'CAP EDGE' : 'EDGE', flex: 1.2 },
+                { k: 'FROM CENTER', v: lenCell(SPOT_WORDS[spot12].r).v, sub: lenCell(SPOT_WORDS[spot12].r).sub, flex: 1.3 },
                 { k: 'TENDS TO', v: spot12 === 'centre' ? 'BRIGHTER' : spot12 === 'boundary' ? 'BETWEEN' : 'WARMER', flex: 1.3 },
               ],
               // Three spots: tap choices, not a fader (owner 2026-10-14, slider audit #5).
-              params: [{ kind: 'options', id: 'spot', label: 'SPOT', valueLabel: spot12 === 'centre' ? 'CENTRE' : spot12 === 'boundary' ? 'CAP EDGE' : 'EDGE', valueA11y: SPOT_WORDS[spot12].title.toLowerCase(), selectedId: spot12, onSelect: (id) => setSpot12(id as (typeof SPOTS_12)[number]), sticky: true, options: SPOTS_12.map((s) => ({ id: s, label: s === 'centre' ? 'CENTRE' : s === 'boundary' ? 'CAP EDGE' : 'EDGE', blurb: SPOT_WORDS[s].text })) }],
+              params: [{ kind: 'options', id: 'spot', label: 'SPOT', valueLabel: spot12 === 'centre' ? 'CENTER' : spot12 === 'boundary' ? 'CAP EDGE' : 'EDGE', valueA11y: SPOT_WORDS[spot12].title.toLowerCase(), selectedId: spot12, onSelect: (id) => setSpot12(id as (typeof SPOTS_12)[number]), sticky: true, options: SPOTS_12.map((s) => ({ id: s, label: s === 'centre' ? 'CENTER' : s === 'boundary' ? 'CAP EDGE' : 'EDGE', blurb: SPOT_WORDS[s].text })) }],
               initialParam: 'spot',
             }
           : {
@@ -556,7 +556,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
               badge: 'One 4 × 8 in oval speaker face-on · the blue ring is where the mic aims · tendencies to check',
               bezel: [
                 { k: 'SPOT', v: OVAL_WORDS[spotOv].short, flex: 1.3 },
-                { k: 'FROM CENTRE', v: lenCell(OVAL_WORDS[spotOv].r).v, sub: lenCell(OVAL_WORDS[spotOv].r).sub, flex: 1.3 },
+                { k: 'FROM CENTER', v: lenCell(OVAL_WORDS[spotOv].r).v, sub: lenCell(OVAL_WORDS[spotOv].r).sub, flex: 1.3 },
                 { k: 'TENDS TO', v: OVAL_WORDS[spotOv].tends, flex: 1.2 },
               ],
               // Three spots: tap choices, not a fader (owner 2026-10-14, slider audit #5).
@@ -565,7 +565,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
             },
         well: (
           <>
-            <Landing looking={rhodes ? 'One speaker, face-on' : 'One oval speaker, face-on'} prompt="Tap SPOT and pick one, from the centre outward. Each is a place to aim a close mic." />
+            <Landing looking={rhodes ? 'One speaker, face-on' : 'One oval speaker, face-on'} prompt="Tap SPOT and pick one, from the center outward. Each is a place to aim a close mic." />
             <Card>{rhodes ? <Point title={SPOT_WORDS[spot12].title}>{SPOT_WORDS[spot12].text}</Point> : <Point title={OVAL_WORDS[spotOv].title}>{OVAL_WORDS[spotOv].text}</Point>}</Card>
             <Note>{spec.notes.spots}</Note>
           </>

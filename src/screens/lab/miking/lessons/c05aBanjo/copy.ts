@@ -29,7 +29,7 @@ export const C05A_COPY = stringsCopy({
   soundReveal: 'The strings never touch the head: they press the BRIDGE onto it, and the bridge drives the head — a tensioned drumhead, which is why a banjo sounds so bright and quick.',
   soundAfter: 'Then the strings and the head ring on — briefly, for a head damps fast. A resonator reflects some of the sound forward; an open back lets more go behind, into the player.',
   shapesNote2: 'This is an ideal string between rigid ends. On a banjo one end is a light bridge standing on a moving head — the reason a real banjo never sounds like this picture alone.',
-  coupledNote: 'The head bows in and out round the bridge — a simplified picture of its lowest motion. The next step shows the head’s other shapes, driven off-centre by the bridge.',
+  coupledNote: 'The head bows in and out round the bridge — a simplified picture of its lowest motion. The next step shows the head’s other shapes, driven off-center by the bridge.',
   setting: {
     kitA11y: 'The banjo player from above, standing with the banjo on a strap, a vocal mic in front of the mouth.',
     kitIdle: 'The space round a banjo player is theirs: the picking hand and forearm over the head, the fretting hand travelling the neck, and the long neck itself swinging as they move.',
@@ -52,7 +52,7 @@ export const C05A_COPY = stringsCopy({
     instDynCard: 'Ideas to try with a dynamic: close in front of the head, watching for a hard, papery head sound and the picking hand.',
     clipCond: 'Ideas to try with a clip-on: an approved clip by the tailpiece, aimed at the bridge — never on the strings, the bridge or the head.',
   },
-  learnSeparate: 'Distance, position and angle are separate variables: change one at a time. “3 in from the head’s centre” and “30–40 cm from the neck junction” are different places for different jobs — do not treat them as the same coordinate. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
+  learnSeparate: 'Distance, position and angle are separate variables: change one at a time. “3 in from the head’s center” and “30–40 cm from the neck junction” are different places for different jobs — do not treat them as the same coordinate. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
   learnTendencies: 'The neck junction is a blend of strings, fingers and head; toward the bridge and head, more attack and projection; more toward the neck, articulation; farther back, the whole banjo and the room. These are listening questions, not fixed bright or warm sides.',
   context: {
     variant: 'reso',
@@ -78,7 +78,7 @@ export const C05A_COPY = stringsCopy({
     A: 'joint.reso',
     B: 'centre.reso',
     learn: [
-      'Establish the one-mic result first. Two mics on distinct regions can offer tonal control — but summed they may thin or colour the sound. Stereo (two omnis about 30–40 cm out, an XY pair, or a spaced pair) is a deliberate choice, not an automatic improvement.',
+      'Establish the one-mic result first. Two mics on distinct regions can offer tonal control — but summed they may thin or color the sound. Stereo (two omnis about 30–40 cm out, an XY pair, or a spaced pair) is a deliberate choice, not an automatic improvement.',
       'When it goes in: hear the pair in MONO at matched levels, with the player moving naturally. Move and rebalance rather than relying on a polarity switch.',
     ],
   },

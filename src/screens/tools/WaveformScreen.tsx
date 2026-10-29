@@ -753,7 +753,7 @@ export function WaveformScreen({ navigation }: Props) {
                 accessibilityRole="button"
                 accessibilityState={{ selected: colorsOn }}
                 aria-pressed={colorsOn}
-                accessibilityLabel="Toggle MIDI level colours on the waveform"
+                accessibilityLabel="Toggle MIDI level colors on the waveform"
               >
                 <Text style={[styles.chipText, colorsOn && styles.chipTextGreen]}>COLORS</Text>
               </Pressable>
@@ -762,7 +762,7 @@ export function WaveformScreen({ navigation }: Props) {
                   shows the current colour. */}
               <View style={[styles.chip, styles.colorChip]}>
                 <View style={[styles.colorDot, { backgroundColor: traceColor }]} />
-                <ColorWheelButton onCustomize={() => { setWaveSpectrum(false); setWavePopup('color'); }} accessibilityLabel="Waveform colour" feature="the waveform trace colour" size={20} />
+                <ColorWheelButton onCustomize={() => { setWaveSpectrum(false); setWavePopup('color'); }} accessibilityLabel="Waveform colour" feature="the waveform trace color" size={20} />
               </View>
               {/* Fullscreen — to the RIGHT of the colour button (owner rev 24). */}
               <Pressable
@@ -921,7 +921,7 @@ export function WaveformScreen({ navigation }: Props) {
               <PickerSectionHeader
                 diagram={<WaveTraceDiagram tint={waveSpectrum ? (wavePreviewHex ?? waveColor) : waveColor} defaultTint={WAVE_COLOR_SWATCHES[0]} />}
                 title="TRACE COLOUR"
-                subtitle="The waveform line — picking a colour turns COLORS off"
+                subtitle="The waveform line — picking a color turns COLORS off"
               />
             ) : (
               <Text style={styles.popupTitle}>
@@ -1018,7 +1018,7 @@ export function WaveformScreen({ navigation }: Props) {
                 accessibilityRole="button"
                 accessibilityState={{ selected: colorsOn && !waveColor }}
                 aria-pressed={colorsOn && !waveColor}
-                accessibilityLabel="Standard level heat map — colour the trace by how loud it is"
+                accessibilityLabel="Standard level heat map — color the trace by how loud it is"
               >
                 <View style={styles.heatBar} pointerEvents="none">
                   {WAVE_LEVEL_STOPS.map((stop) => (
@@ -1036,7 +1036,7 @@ export function WaveformScreen({ navigation }: Props) {
                 hitSlop={8}
                 style={{ minHeight: 44, justifyContent: 'center' }}
                 accessibilityRole="button"
-                accessibilityLabel={waveSpectrum ? 'Back to swatches' : 'Open the colour spectrum wheel'}
+                accessibilityLabel={waveSpectrum ? 'Back to swatches' : 'Open the color spectrum wheel'}
               >
                 <Text style={styles.spectrumLink}>{waveSpectrum ? '‹ SWATCHES' : '＋ SPECTRUM'}</Text>
               </Pressable>

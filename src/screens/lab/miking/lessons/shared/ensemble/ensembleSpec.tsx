@@ -26,7 +26,7 @@ export const ARRAY_CARDS: ReactNode = (
       <Point title="A SPACED PAIR (A/B)">Two omnis 40–60 cm apart to start: a broad view of the ensemble and the hall. Very wide spacing can open a hole in the middle — and it needs a mono check.</Point>
       <Point title="A NEAR-COINCIDENT PAIR">Two cardioids 17 cm (6.7 in) apart, 110° between their axes: time and level differences for width, its 95° recording angle taking in the ensemble. A fixed geometry — move the pair, never the spacing.</Point>
       <Point title="A COINCIDENT PAIR (X/Y, M/S)">The capsules together: a stable image and a dependable mono sum. M/S lets you set the width later in the matrix: Left = Mid + Side, Right = Mid − Side.</Point>
-      <Point title="THE THREE-OMNI TREE">Left and right 2 m apart, the centre 1.5 m ahead, every pair at least 1.5 m apart; the centre fed to both sides a few dB down. Outriggers, each on its own stand, add the outer players.</Point>
+      <Point title="THE THREE-OMNI TREE">Left and right 2 m apart, the center 1.5 m ahead, every pair at least 1.5 m apart; the center fed to both sides a few dB down. Outriggers, each on its own stand, add the outer players.</Point>
     </Card>
     <Body>Choose by what the music, the room and the delivery need: the internal balance, a stable image, the amount of room, the tone in mono. No method is best everywhere — compare.</Body>
   </>

@@ -599,7 +599,7 @@ export const A08B_LESSON: WindLesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'The clarinet an octave down: a single reed on a curved metal neck, a long cylindrical body with keys and covered holes, a metal bow at the bottom and an upturned bell. Some models stop at low E♭, others extend to low C.', src: 'Y-YCL622' },
     { title: 'WHERE YOU MEET IT', text: 'Orchestras and wind bands, film and studio work, jazz and contemporary music. This lesson covers one bass clarinet: a studio overdub, a loud stage and a spot in an ensemble.', src: 'LESSON' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'Dark bass lines, low colour under the woodwinds, and agile solos high up. Ask what the music needs — and which lowest note the part uses.', src: 'LESSON' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'Dark bass lines, low color under the woodwinds, and agile solos high up. Ask what the music needs — and which lowest note the part uses.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'About 1.35 m of tube to low E♭ (lowest note about 69 Hz), more for a low C model (about 58 Hz) — drawn here at about that size, seated, between the knees on its peg. Its exact dimensions vary by maker.', src: 'Y-YCL622' },
   ],
   sound: {

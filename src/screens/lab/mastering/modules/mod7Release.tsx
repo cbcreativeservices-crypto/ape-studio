@@ -45,7 +45,7 @@ export function Mod7Release({ onAnswered }: ModuleProps) {
                 </Card>
               ))}
               <Card tone="accent">
-                <Point title="The one constant">Red Book audio CD: {CD_RED_BOOK.bitDepth}-bit, {(CD_RED_BOOK.sampleRateHz / 1000).toFixed(1)} kHz, {CD_RED_BOOK.channels} channels, about {CD_PLAY_MINUTES} minutes of programme. The four-track EP runs {epMinutes.toFixed(1)} minutes — {(cdBytes / 1e6).toFixed(0)} MB as Red Book WAV.</Point>
+                <Point title="The one constant">Red Book audio CD: {CD_RED_BOOK.bitDepth}-bit, {(CD_RED_BOOK.sampleRateHz / 1000).toFixed(1)} kHz, {CD_RED_BOOK.channels} channels, about {CD_PLAY_MINUTES} minutes of program. The four-track EP runs {epMinutes.toFixed(1)} minutes — {(cdBytes / 1e6).toFixed(0)} MB as Red Book WAV.</Point>
               </Card>
             </>
           ),

@@ -109,7 +109,7 @@ export function glockPairs(typeId: string, barY: number): PairPreset[] {
       id: 'spaced',
       label: 'SPACED PAIR — over the low and the high notes',
       short: 'SPACED',
-      blurb: 'Two mics about 45 cm above the bars and about 40 cm apart, both aimed down: more separate control of low and high, but notes both mics hear can change colour in mono. The sizes are a drawing default.',
+      blurb: 'Two mics about 45 cm above the bars and about 40 cm apart, both aimed down: more separate control of low and high, but notes both mics hear can change color in mono. The sizes are a drawing default.',
       coincident: false,
       typeId,
       pattern: 'cardioid',

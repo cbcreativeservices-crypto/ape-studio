@@ -87,7 +87,7 @@ export function EarTrainingLabScreen() {
       <LabHeader
         title="EAR TRAINING LAB"
         subtitle="Hear a change · then see it measured"
-        right={<AccuracyNote compact detail="Every drill here plays through your phone’s UNCALIBRATED output — and through whatever headphones or speakers you are on, which colour it further. Train the SKILL of hearing a change here; judge absolute tonality on monitoring you trust." />}
+        right={<AccuracyNote compact detail="Every drill here plays through your phone’s UNCALIBRATED output — and through whatever headphones or speakers you are on, which color it further. Train the SKILL of hearing a change here; judge absolute tonality on monitoring you trust." />}
       />
       {ending ? (
         <LabEndScreen

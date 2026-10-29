@@ -71,7 +71,7 @@ function TablaSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
       sticky: true,
       options: [
         { id: 'dayan', label: 'DAYAN', blurb: 'The smaller, wooden drum: its black patch in the middle.' },
-        { id: 'bayan', label: 'BAYAN', blurb: 'The larger kettle drum: its black patch off-centre (drawn toward the player).' },
+        { id: 'bayan', label: 'BAYAN', blurb: 'The larger kettle drum: its black patch off-center (drawn toward the player).' },
       ],
     },
     {
@@ -94,7 +94,7 @@ function TablaSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
   ];
   const headBezel: BezelItem[] = [
     { k: 'DRUM', v: focus === 'dayan' ? 'DAYAN' : 'BAYAN', flex: 1 },
-    { k: 'PATCH', v: focus === 'dayan' ? 'CENTRED' : 'OFF-CENTRE', flex: 1.2 },
+    { k: 'PATCH', v: focus === 'dayan' ? 'CENTERED' : 'OFF-CENTER', flex: 1.2 },
     { k: 'HEAD', v: `≈ ${Math.round((d.headR * 2) / 10)} cm`, sub: 'drawn size', flex: 0.9 },
     { k: 'BAYAN PITCH', v: press < 0.05 ? 'AS TUNED' : 'RISES', tint: press >= 0.05 ? '#ffc64d' : undefined, flex: 1.2 },
   ];
@@ -133,7 +133,7 @@ function TablaSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
             h={h}
             focus={focus}
             press={press}
-            accessibilityLabel={`The two heads from above, as the player sees them: the bayan on the left with its black patch off-centre toward the player, the dayan on the right with its black patch in the middle.${press >= 0.05 ? ' The heel of the hand presses the bayan near the player: its tension and its pitch rise.' : ''}`}
+            accessibilityLabel={`The two heads from above, as the player sees them: the bayan on the left with its black patch off-center toward the player, the dayan on the right with its black patch in the middle.${press >= 0.05 ? ' The heel of the hand presses the bayan near the player: its tension and its pitch rise.' : ''}`}
           />
         ),
         badge: 'From above, as the player sees them · sizes and the patch offset are drawing choices · silent',
@@ -150,11 +150,11 @@ function TablaSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
             </Card>
           ) : (
             <Card>
-              <Point title="THE BAYAN · PATCH OFF-CENTRE">The bayan’s patch sits off-centre (drawn here toward the player). The heel of the hand rests on the head beside it; pressing raises the head’s tension and bends the pitch up — the glide is part of the music.</Point>
+              <Point title="THE BAYAN · PATCH OFF-CENTER">The bayan’s patch sits off-center (drawn here toward the player). The heel of the hand rests on the head beside it; pressing raises the head’s tension and bends the pitch up — the glide is part of the music.</Point>
             </Card>
           )}
           {pressed && predicted != null ? <Note tone="ok">{`You predicted “${predicted}”. It is the bayan: pressing its head while it rings bends the pitch. Its hand moves across the head all the time — leave it room.`}</Note> : null}
-          <Note>Do not copy one drum’s layout onto the other: the patch is centred on the dayan and off-centre on the bayan. Name each drum by what it is — some players set the pair the other way round.</Note>
+          <Note>Do not copy one drum’s layout onto the other: the patch is centered on the dayan and off-center on the bayan. Name each drum by what it is — some players set the pair the other way round.</Note>
         </>
       ),
     },
@@ -187,7 +187,7 @@ const SPEC: HandSpec = {
   art: TABLA_ART,
   intro: 'This lesson is about putting microphones on a tabla — one instrument made of two drums. First the pair itself: what it is, how it makes its sound, and where it sits with its player. Then the microphones, a worked example and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.',
   partsBox: { top: { u0: -760, u1: 420, v0: -420, v1: 380 }, side: { u0: -700, u1: 520, v0: -860, v1: 40 } },
-  figure: { view: 'top', box: { u0: -760, u1: 420, v0: -420, v1: 380 }, title: 'TABLA', badge: 'The pair from above, as it sits in front of the player · a right-handed layout', label: 'The tabla pair from above, in front of a player seated on the floor: the smaller dayan on the player’s right with its black patch in the middle, the larger bayan on the left with its black patch off-centre toward the player, both laced and sitting in cloth rings.' },
+  figure: { view: 'top', box: { u0: -760, u1: 420, v0: -420, v1: 380 }, title: 'TABLA', badge: 'The pair from above, as it sits in front of the player · a right-handed layout', label: 'The tabla pair from above, in front of a player seated on the floor: the smaller dayan on the player’s right with its black patch in the middle, the larger bayan on the left with its black patch off-center toward the player, both laced and sitting in cloth rings.' },
   partsBadge: 'A tabla pair · tap a part to name it · the layout is a drawing choice',
   partsLooking: (v) => (v === 'top' ? 'From above · both heads nearly face-on' : 'From the player’s right · the dayan in front, the bayan behind'),
   partsNote: 'Two drums, one instrument: the dayan for ringing and damped strokes, the bayan for the low tones and the pitch glides. Switch the view to see the patches.',

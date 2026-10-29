@@ -236,7 +236,7 @@ export function malletModel(fam: MalletFamily): InstrumentModel {
     parts,
     regions,
     surfaces,
-    lines: [{ id: 'centre', label: 'the keyboard’s centre line', point: { x: 0, y: G.barY, z: 0 }, dir: DOWN }],
+    lines: [{ id: 'centre', label: 'the keyboard’s center line', point: { x: 0, y: G.barY, z: 0 }, dir: DOWN }],
     envelopes,
     variants: fam.variants.map((v) => ({ id: v.row.id, label: v.label, blurb: v.blurb, phrase: v.phrase })),
     defaultVariant: v0,
@@ -385,7 +385,7 @@ export function slantZone(fam: MalletFamily, o: { id: string; min: number; max: 
 /** The family's drawing defaults in words, for a lesson's unknowns. */
 export const FAMILY_UNKNOWNS: { text: string; dims: string[] }[] = [
   { text: 'Bar lengths: no maker prints them. Drawn by a halving-per-two-octaves rule from a longest bar (the marimba’s from a maker’s “around 620 mm”; the others 0.6 × the low-end depth, 0.4 for the glockenspiel), never shorter than a floor length — a drawing default.', dims: ['LbarLow', 'LbarMin'] },
-  { text: 'The row layout: the two rows’ lines (0.22 × the mean depth, held so the longest bar stays inside the frame), the 15 mm rise of the far row, the 6 mm gaps and each far-row bar centred on its gap — drawing defaults.', dims: [] },
+  { text: 'The row layout: the two rows’ lines (0.22 × the mean depth, held so the longest bar stays inside the frame), the 15 mm rise of the far row, the 6 mm gaps and each far-row bar centered on its gap — drawing defaults.', dims: [] },
   { text: 'The bar height above the floor (inside each maker’s printed range) — a drawing default.', dims: ['hBars'] },
   { text: 'Resonator pipes: the acoustic lengths are DERIVED (a quarter wavelength, L = c ÷ 4f, at A = 442 Hz and 20 °C); the diameters, the end correction (0.6 × radius), the 22 mm gap under each bar and the Helmholtz boxes’ size are drawing defaults. A real pipe’s visible length is not a pitch readout: some are closed midway or added for looks.', dims: [] },
   { text: 'The cords pass through each bar at 0.224 of its length from each end — the plain bar’s still points; tuned bars differ a little.', dims: [] },

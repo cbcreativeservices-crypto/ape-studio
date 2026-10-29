@@ -581,7 +581,7 @@ function hornsArc(): Seating {
   return seatingG5(
     'horns.arc',
     'A section round one mic',
-    'Four players seated on an arc in a studio, each about the same distance from a section mic at its centre: trumpet, tenor sax, trombone and tuba.',
+    'Four players seated on an arc in a studio, each about the same distance from a section mic at its center: trumpet, tenor sax, trombone and tuba.',
     seats,
     [
       { id: 'tpt', label: 'trumpet', short: 'TRUMPET', family: 'brass', radiates: R_G5.tpt },

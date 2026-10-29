@@ -47,11 +47,11 @@ const EZ = v3(0, 0, 1);
 
 const parts: Part[] = [
   { id: 'ta.dayanHead', label: 'dayan head', short: 'dayan head', role: 'The smaller drum’s head, on the player’s right here. It rings with a clear pitch; ringing and damped strokes both live here.', prov: D.dayanHeadD.prov },
-  { id: 'ta.dayanPatch', label: 'black patch (dayan, centred)', short: 'dayan patch', role: 'The black patch (syahi), built up in layers at the middle of the dayan’s head. Its weight is what lets the dayan ring with a clear pitch.', prov: D.dayanPatch.prov },
+  { id: 'ta.dayanPatch', label: 'black patch (dayan, centered)', short: 'dayan patch', role: 'The black patch (syahi), built up in layers at the middle of the dayan’s head. Its weight is what lets the dayan ring with a clear pitch.', prov: D.dayanPatch.prov },
   { id: 'ta.dayanBody', label: 'dayan body (wood)', short: 'dayan body', role: 'The dayan’s wooden shell: a thick, near-cylindrical body.', solid: { kind: 'cyl', a: DAYAN.B, b: DAYAN.H, r: DAYAN.maxR }, clearance: CLEAR, prov: D.dayanW.prov },
   { id: 'ta.dayanLacing', label: 'lacing and tuning blocks', short: 'lacing', role: 'Straps laced from the head’s braided rim to the base, over wooden blocks that are tapped to tune the dayan. Tuning is the player’s, never the engineer’s.', prov: ill('lacing drawn generically') },
   { id: 'ta.bayanHead', label: 'bayan head', short: 'bayan head', role: 'The larger drum’s head, on the player’s left here. The player presses it with the heel of the hand to bend the pitch — the hand moves across it all the time.', prov: D.bayanHeadD.prov },
-  { id: 'ta.bayanPatch', label: 'black patch (bayan, off-centre)', short: 'bayan patch', role: 'The bayan’s black patch sits OFF-centre (drawn here toward the player) — unlike the dayan’s.', prov: D.bayanOffset.prov },
+  { id: 'ta.bayanPatch', label: 'black patch (bayan, off-center)', short: 'bayan patch', role: 'The bayan’s black patch sits OFF-center (drawn here toward the player) — unlike the dayan’s.', prov: D.bayanOffset.prov },
   { id: 'ta.bayanBody', label: 'bayan body (metal kettle)', short: 'bayan body', role: 'The bayan’s kettle-shaped body — metal in the museum’s pair; clay in some others.', solid: { kind: 'cyl', a: BAYAN.B, b: BAYAN.H, r: BAYAN.maxR }, clearance: CLEAR, prov: D.bayanW.prov },
   { id: 'ta.rings', label: 'support rings', short: 'rings', role: 'Cloth rings the drums sit in, holding each one steady at the tilt the player chooses. Keep cables away from them.', prov: D.ringH.prov },
 ];
@@ -149,7 +149,7 @@ export const TABLA_ZONES: DocumentedZone[] = [
   sector({
     id: 'ta.C',
     label: 'An X/Y pair, farther back',
-    band: 'For a studio stereo picture, try a coincident X/Y pair about 50–80 cm (20–31 in) from the set, centred on it.',
+    band: 'For a studio stereo picture, try a coincident X/Y pair about 50–80 cm (20–31 in) from the set, centered on it.',
     quote: 'Method C: [as a trial] place the pair 50–80 cm from the tabla set, with the array centered on the musical source',
     d: [500, 800],
     a: [35, 75],

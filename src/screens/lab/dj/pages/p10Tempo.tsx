@@ -265,7 +265,7 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
       <Step n={2}>
         <Do>Open DECKS and play deck A. Deck A is on air — leave its tempo alone; you match B to A. Deck B waits at bar 1: start it on the ONE of one of A’s phrases (PLAY B when A PHRASE turns 1 / 8 — it flashes on bar 8 as a count-in).</Do>
         <P>Missed it? Pause B, open JOG B → CUE B BACK TO BAR 1, and try on the next phrase. Then slow deck B: move TEMPO B toward − (away from you on the player) until its BPM reads like A’s.</P>
-        <P>The waveforms show each track’s real kicks under its grid; the PHASE strip shows where B’s beat sits against A’s. Centre and green is together.</P>
+        <P>The waveforms show each track’s real kicks under its grid; the PHASE strip shows where B’s beat sits against A’s. Center and green is together.</P>
       </Step>
       <Step n={3}>
         <P>Listen to the kicks in your two ears. A steady “flam” (a doubled kick) is offset — nudge. A flam that grows, then turns into chaos, is drift — tempo. Use the fine TEMPO steps (±0.05 %) under the fader to stop the last of the drift.</P>

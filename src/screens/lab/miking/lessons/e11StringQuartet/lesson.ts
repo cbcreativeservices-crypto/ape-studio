@@ -34,7 +34,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main pair yourself — height and distance separately — and see how the cello, the first violin and the inner voices change.',
-    credit: { scenarios: ['sq.place.1', 'sq.place.2', 'sq.31', 'sq.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['sq.place.1', 'sq.place.2', 'sq.31', 'sq.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Closer tends to more direct sound but favours the front players; farther back, more room and less clarity. Change height and distance separately, at matched level.',
   },
   context: {
@@ -342,7 +342,7 @@ const symptoms: Symptom[] = [
   },
   {
     id: 'sq.s.centre',
-    observation: 'The centre becomes weak',
+    observation: 'The center becomes weak',
     firstChecks: 'A/B spacing and panning. Reduce the spacing or audition another array.',
     options: ['Reduce spacing or try another array', 'Pan the pair even wider to compensate', 'Raise the cello spot to fill it'],
     correct: 'Reduce spacing or try another array',
@@ -424,7 +424,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['The first violin', 'The cello player', 'The viola player'],
     correct: 'The first violin',
     explain: 'This lab draws the first violin on the left, then the second violin, with the viola and cello on the right — orders vary by group.',
-    why: { 'The cello player': 'The cello is on the right in both drawn orders.', 'The viola player': 'The viola sits right of centre or on the right.' },
+    why: { 'The cello player': 'The cello is on the right in both drawn orders.', 'The viola player': 'The viola sits right of center or on the right.' },
   },
   {
     id: 'sq.q.3',

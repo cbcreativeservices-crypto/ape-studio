@@ -57,7 +57,7 @@ export const VIBE_ZONES: DocumentedZone[] = [
     words: {
       label: 'One of a spaced pair — over the low half',
       band: 'Start about 46 cm (1½ ft) above the bars, about 30 cm (1 ft) to the low side of the middle, aimed down. Its partner mirrors it: the pair is about 61 cm (2 ft) apart.',
-      tendency: 'With its partner, more separate control of the low and high halves — and a wider picture. A bar the two mics hear at different times can sound coloured when they are summed: check in mono.',
+      tendency: 'With its partner, more separate control of the low and high halves — and a wider picture. A bar the two mics hear at different times can sound colored when they are summed: check in mono.',
       checks: ['Its partner mirrored over the high half', 'The middle notes, heard by both: no hole', 'The sum in mono, at matched levels'],
     },
   }),
@@ -80,7 +80,7 @@ export const VIBE_ZONES: DocumentedZone[] = [
     words: {
       label: 'Under the tubes, aimed up — an alternative',
       band: 'Only as a deliberate alternative: under the high part of the keyboard, between the rows of tubes, aimed up — clear of the motor, the pedal and the player’s feet.',
-      tendency: 'A more local, coloured sound, and more mechanical noise — not the whole instrument. An effect to audition, never the first choice.',
+      tendency: 'A more local, colored sound, and more mechanical noise — not the whole instrument. An effect to audition, never the first choice.',
       checks: ['The pedal, the motor and the player’s feet, clear', 'Motor and damper noise', 'Compare it with a mic above the bars'],
     },
   }),

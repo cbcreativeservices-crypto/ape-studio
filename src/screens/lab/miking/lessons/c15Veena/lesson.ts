@@ -492,7 +492,7 @@ export const C15_LESSON: Lesson = {
     ],
   },
   unknowns: [
-    { text: 'The overall length (121.5 cm) and the resonator’s width (34 cm) are one museum veena’s; its depth 30 cm is the proposal’s (Medium). The resonator’s centre, the plate, the neck (75 wide, 70 deep), the nut at 86 cm, the frets (24, equal-tempered), the bridge, the pegs, the gourd (Ø 18 cm, moved to +700 inside the sourced length) and the yali are drawing defaults.', dims: [] },
+    { text: 'The overall length (121.5 cm) and the resonator’s width (34 cm) are one museum veena’s; its depth 30 cm is the proposal’s (Medium). The resonator’s center, the plate, the neck (75 wide, 70 deep), the nut at 86 cm, the frets (24, equal-tempered), the bridge, the pegs, the gourd (Ø 18 cm, moved to +700 inside the sourced length) and the yali are drawing defaults.', dims: [] },
     { text: 'The posture — the face tilted 20° up toward the player, the neck rising 7° to the left thigh — is the proposal’s drawing default from a holding guide whose text could not be read. No HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The keep-off margins (plate 8 mm, strings 10 mm, bridge 6 mm, resonator 10 mm): illustrative.', dims: ['veena'] },
     { text: 'The 30–50 cm start is DERIVED (a cardioid’s ±30° taking in the Ø 34 cm plate; a radius the plate’s radiation was mapped at), not a published starting point.', dims: [] },

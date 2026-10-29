@@ -140,7 +140,7 @@ export function windModel(L: Layout, o: WindModelOpts): InstrumentModel {
     parts,
     regions: o.regions,
     surfaces: o.surfaces,
-    lines: o.lines ?? [{ id: 'axis', label: 'the instrument’s centre line', point: frameAt(L, 0).p, dir: frameAt(L, L.spec.end * 0.5).t }],
+    lines: o.lines ?? [{ id: 'axis', label: 'the instrument’s center line', point: frameAt(L, 0).p, dir: frameAt(L, L.spec.end * 0.5).t }],
     envelopes: [],
     variants: o.variants,
     defaultVariant: o.variants[0].id,

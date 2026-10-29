@@ -104,7 +104,7 @@ export const F08_ZONES: DocumentedZone[] = [
     quote: 'From a safe fixed crew position, swivel an appropriate directional mic smoothly to follow the subject, without walking into its route (L21)',
     bandProv: ill('the station and the pole are drawing defaults'),
     start: walkAim(TRACK_P, 0),
-    tendency: 'It holds the walker in focus across the pass — its level still follows distance, without a fixed mic’s off-axis fall — but handling noise can creep in, and off-axis colour if the aim lags.',
+    tendency: 'It holds the walker in focus across the pass — its level still follows distance, without a fixed mic’s off-axis fall — but handling noise can creep in, and off-axis color if the aim lags.',
     checks: ['Feet planted: the operator never steps toward the route', 'A smooth swing, no handling noise', 'The take labelled as a tracked, focused perspective'],
   }),
   pbZone({
@@ -152,7 +152,7 @@ export const F08_ZONES: DocumentedZone[] = [
     z1: 2500,
     types: ['arrOmni', 'arrCard', 'shotgunShort'],
     label: 'Fixed mono, behind the crew’s setback line',
-    band: 'On the paper plan, one mic on a stand about 1.5 m up, about 8–10 m from the route’s centre line — behind the crew’s setback line, outside the route’s envelope and stopping room.',
+    band: 'On the paper plan, one mic on a stand about 1.5 m up, about 8–10 m from the route’s center line — behind the crew’s setback line, outside the route’s envelope and stopping room.',
     src: 'LESSON-F08',
     quote: 'A real vehicle session needs a permitted site, a driver, a communicated route, a safety lead and a plan that keeps all people and equipment outside the vehicle envelope (L6)',
     bandProv: ill('8–10 m, the envelope and the setback line are drawing defaults for a paper plan (O-10)'),

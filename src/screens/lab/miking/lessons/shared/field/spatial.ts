@@ -199,7 +199,7 @@ export type Capture = 'binaural' | 'foa' | 'dms' | 'surround50';
 export const DESTINATIONS: readonly Destination[] = ['headphones', 'surround5', 'stereo', 'mono'];
 export const DEST_WORDS: Readonly<Record<Destination, { label: string; short: string; blurb: string }>> = {
   headphones: { label: 'Headphones', short: 'PHONES', blurb: 'One listener, a fixed point of view (or a turnable one with head tracking and a scene that supports it).' },
-  surround5: { label: 'A five-speaker layout', short: '5.0 / 5.1', blurb: 'Left, centre and right in front, two surrounds behind; “.1” is a separate low-frequency effects channel in delivery, not a sixth microphone.' },
+  surround5: { label: 'A five-speaker layout', short: '5.0 / 5.1', blurb: 'Left, center and right in front, two surrounds behind; “.1” is a separate low-frequency effects channel in delivery, not a sixth microphone.' },
   stereo: { label: 'Stereo', short: 'STEREO', blurb: 'Two loudspeakers or a normal stream — the most common destination.' },
   mono: { label: 'Mono', short: 'MONO', blurb: 'One channel — a phone speaker, a radio, a summed feed. Every capture should survive it.' },
 };
@@ -210,8 +210,8 @@ export const ROUTES: Readonly<Record<Capture, Readonly<Record<Destination, { how
   binaural: {
     headphones: { how: 'native', words: 'Made for it: listen on the headphones it is for. A fixed head gives a fixed point of view.' },
     surround5: { how: 'render', words: 'Not made for it. Some heads and processes translate; test the exact head and the exact system.' },
-    stereo: { how: 'downmix', words: 'Plays on two speakers, but the head’s cues may colour or narrow it; compare with a plain stereo pair.' },
-    mono: { how: 'downmix', words: 'Sum the two ears and listen for colour: record a separate mono or stereo if the job needs one.' },
+    stereo: { how: 'downmix', words: 'Plays on two speakers, but the head’s cues may color or narrow it; compare with a plain stereo pair.' },
+    mono: { how: 'downmix', words: 'Sum the two ears and listen for color: record a separate mono or stereo if the job needs one.' },
   },
   foa: {
     headphones: { how: 'render', words: 'Convert A to B with the mic’s own converter, then a binaural renderer — it can turn with the listener’s head.' },
@@ -221,14 +221,14 @@ export const ROUTES: Readonly<Record<Capture, Readonly<Record<Destination, { how
   },
   dms: {
     headphones: { how: 'render', words: 'Decode to front and rear, then a binaural renderer, or a stereo decode for a plain headphone mix.' },
-    surround5: { how: 'render', words: 'Decode front L/R and rear Ls/Rs from the three tracks; a centre can come from the front Mid.' },
+    surround5: { how: 'render', words: 'Decode front L/R and rear Ls/Rs from the three tracks; a center can come from the front Mid.' },
     stereo: { how: 'render', words: 'Front Mid ± Side: an ordinary M/S stereo decode, the width set in the matrix.' },
     mono: { how: 'downmix', words: 'The front Mid alone — the Side cancels in mono, as in any M/S pair.' },
   },
   surround50: {
     headphones: { how: 'render', words: 'Through a binaural renderer of the five-speaker layout — or monitor it on speakers.' },
     surround5: { how: 'native', words: 'Made for it: one mic per loudspeaker, mapped L, C, R, Ls, Rs. Read the channel map.' },
-    stereo: { how: 'downmix', words: 'A downmix of five spaced mics: listen for colour from the different arrival times.' },
+    stereo: { how: 'downmix', words: 'A downmix of five spaced mics: listen for color from the different arrival times.' },
     mono: { how: 'downmix', words: 'The hardest test for spaced mics: their arrival times differ, so some frequencies cancel. Check it by ear.' },
   },
 };

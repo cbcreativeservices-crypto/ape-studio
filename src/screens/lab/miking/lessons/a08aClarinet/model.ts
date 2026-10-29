@@ -44,7 +44,7 @@ const DPA_Z: Omit<DocumentedZone, 'start'> = {
   aim: { maxOffAxis: 30, prov: ill('aimed at the holes: within 30° (the lab’s tolerance)') },
   requires: { micTypeIds: ['sdcCard'] },
   draw: draws(A.third, N_THIRD, 40, 150, 200),
-  tendency: 'A balance of the open holes and the bell, with some key and breath detail. Play the low notes, the throat notes and the top register: the colour can change as the open holes move.',
+  tendency: 'A balance of the open holes and the bell, with some key and breath detail. Play the low notes, the throat notes and the top register: the color can change as the open holes move.',
   checks: ['The hands, the keys and the bell’s swing stay clear of the mic and its boom', 'Low, middle and high passages — not one held note', 'Key clicks and breath at this distance'],
 };
 

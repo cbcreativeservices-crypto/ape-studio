@@ -23,7 +23,7 @@ const pages: LessonPages = {
     title: 'How it makes its sound',
     goal: 'See how a pluck becomes sound — the string, the bridge, the head and its shapes — and where the sound leaves the banjo.',
     credit: { scenarios: [`${P}.snd.1`, `${P}.snd.2`, `${P}.snd.3`], interactive: 'soundPath', note: 'Step the pluck through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'Strings start it; the bridge drives a drumhead off-centre, so many of its shapes ring — bright and quick. A mic near the head hears more attack and projection; nearer the neck, more strings and fingers.',
+    takeaway: 'Strings start it; the bridge drives a drumhead off-center, so many of its shapes ring — bright and quick. A mic near the head hears more attack and projection; nearer the neck, more strings and fingers.',
   },
   setting: {
     title: 'Where it sits',
@@ -41,7 +41,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — aimed at where the neck meets the pot, or close in front of the head — then move the mic and see what changes.',
     credit: { scenarios: [`${P}.place.1`, `${P}.place.2`, `${P}.place.3`, `${P}.rec.2`], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'Different starting points are different places for different jobs: the neck junction for a blend, about 3 in from the head’s centre or edge for attack and projection. Change one thing at a time, and keep clear of both hands.',
+    takeaway: 'Different starting points are different places for different jobs: the neck junction for a blend, about 3 in from the head’s center or edge for attack and projection. Change one thing at a time, and keep clear of both hands.',
   },
   context: {
     title: 'Studio or live',
@@ -85,12 +85,12 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.snd.2`,
     page: 'sound',
-    prompt: 'The bridge stands off the head’s centre. What does that mean for the head’s shapes?',
+    prompt: 'The bridge stands off the head’s center. What does that mean for the head’s shapes?',
     options: ['Most of them move under the bridge, so most are driven', 'Only the lowest shape is driven; the rest stay still', 'None are driven, because the bridge is not at the centre'],
     correct: 'Most of them move under the bridge, so most are driven',
-    explain: 'A shape is driven only as much as the head moves under the driving point. Off centre, few shapes have a still line there — so many ring together: bright and quick.',
+    explain: 'A shape is driven only as much as the head moves under the driving point. Off center, few shapes have a still line there — so many ring together: bright and quick.',
     why: {
-      'Only the lowest shape is driven; the rest stay still': 'Not even a centre strike does that: it drives every shape without a still line through the middle. Off centre, many more are driven.',
+      'Only the lowest shape is driven; the rest stay still': 'Not even a center strike does that: it drives every shape without a still line through the middle. Off center, many more are driven.',
       'None are driven, because the bridge is not at the centre': 'A drive anywhere off a still line sets a shape moving.',
     },
   },
@@ -159,12 +159,12 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.place.1`,
     page: 'placement',
-    prompt: 'One starting point says about 3 in from the head’s centre, another 30–40 cm from the neck junction. Are they the same position?',
+    prompt: 'One starting point says about 3 in from the head’s center, another 30–40 cm from the neck junction. Are they the same position?',
     options: ['Yes: both are measured from the banjo’s bridge', 'Yes, as long as the mic faces the banjo', 'No: different places, for different jobs'],
     correct: 'No: different places, for different jobs',
     explain: 'Close in front of the head gives attack and projection; the neck junction a blend of strings, fingers and head. Move between them by ear — they are not one coordinate.',
     why: {
-      'Yes: both are measured from the banjo’s bridge': 'One is read from the head’s centre, the other from the neck junction — neither from the bridge.',
+      'Yes: both are measured from the banjo’s bridge': 'One is read from the head’s center, the other from the neck junction — neither from the bridge.',
       'Yes, as long as the mic faces the banjo': 'Aim is a separate thing. These are different points and distances.',
     },
   },
@@ -186,7 +186,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why would you try a mic behind an open-back banjo only as an audition?',
     options: ['Nothing much comes out of the back of an open-back banjo', 'The player’s body, reflections and spill can dominate it', 'A rear mic is the one correct place on an open back'],
     correct: 'The player’s body, reflections and spill can dominate it',
-    explain: 'Sound does leave the open back — straight into the player. Their body obstructs and colours it, so a rear view is something to audition, not to assume.',
+    explain: 'Sound does leave the open back — straight into the player. Their body obstructs and colors it, so a rear view is something to audition, not to assume.',
     why: {
       'Nothing much comes out of the back of an open-back banjo': 'Plenty does — that is what an open back means. The player is in the way.',
       'A rear mic is the one correct place on an open back': 'No single place is correct; a rear view is an experiment.',
@@ -223,7 +223,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · An open-back banjo on a loud stage: where does some of its sound go?',
     options: ['Only out of the front, toward the audience', 'Out of the back, into the player’s body', 'Down through the neck into the floor'],
     correct: 'Out of the back, into the player’s body',
-    explain: 'Without a resonator, sound leaves behind the pot too — into the player, who obstructs and colours it.',
+    explain: 'Without a resonator, sound leaves behind the pot too — into the player, who obstructs and colors it.',
     why: {
       'Only out of the front, toward the audience': 'That is closer to what a resonator does. An open back lets sound out behind.',
       'Down through the neck into the floor': 'The neck carries the strings; the head and the open back radiate.',
@@ -231,11 +231,11 @@ const scenarios: MikingScenario[] = [
   },
   ...twoMicChecks(P, BANJO),
   ...practiceChecks(P, BANJO, {
-    quote: 'about 3 in from the centre of the head',
-    right: 'The head’s centre, not the bridge or the neck',
+    quote: 'about 3 in from the center of the head',
+    right: 'The head’s center, not the bridge or the neck',
     wrong1: 'The bridge, since the strings cross it there',
     wrong2: 'The back of the pot, through the resonator',
-    explain: 'A distance belongs to the point it names: from the head’s centre, from the bridge and from the neck junction are different places for the same number.',
+    explain: 'A distance belongs to the point it names: from the head’s center, from the bridge and from the neck junction are different places for the same number.',
   }),
 ];
 
@@ -285,11 +285,11 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A bluegrass band on a stage with floor wedges. The banjo gets its own channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser, cardioid, about 3 in from the head’s centre, rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point, close for gain before feedback, its rejection toward the wedge.' },
+      { id: 'a', label: 'Small condenser, cardioid, about 3 in from the head’s center, rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point, close for gain before feedback, its rejection toward the wedge.' },
       { id: 'b', label: 'Instrument dynamic aimed at the neck junction, at the close end, rear to the wedge', ok: true, power: 'none', feedback: 'A suggested target, brought closer for the stage.' },
       { id: 'c', label: 'Clip-on mini on an approved clip by the tailpiece, aimed at the bridge', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the banjo.' },
       { id: 'd', label: 'Figure-8 ribbon in front of the banjo, the wedge right behind it', ok: false, power: 'none', feedback: 'A figure-8 hears its back as well as its front: with the wedge behind it, it invites feedback.' },
-      { id: 'e', label: 'Clip the mini to a string, right over the head’s centre', ok: false, power: 'phantom', feedback: 'Never clip to a string, the bridge or the head. Use an approved mount.' },
+      { id: 'e', label: 'Clip the mini to a string, right over the head’s center', ok: false, power: 'phantom', feedback: 'Never clip to a string, the bridge or the head. Use an approved mount.' },
     ],
     reasons: [DOC_REASON, clearReason('the picking hand and forearm, the fretting hand and the neck'), POWER_REASON, { id: 'r.null', label: 'Aiming its rejection toward the wedge helps against feedback', role: 'optional', feedback: 'A fair live reason — though no position alone prevents feedback.' }, brandReason(BANJO), LOUD_REASON],
     explain: 'More than one setup passes this brief. What passes is the reasoning: a sensible starting point from its named point, clearance from the player, power that matches the mic — and nothing on the banjo’s setup.',
@@ -344,12 +344,12 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.3',
     covers: 'sound',
-    prompt: 'The strings press the bridge onto the head off its centre. What follows?',
+    prompt: 'The strings press the bridge onto the head off its center. What follows?',
     options: ['Only the lowest shape is driven: a deep, long note', 'None are driven, because the strings do not touch it', 'Many of the head’s shapes are driven: bright and quick'],
     correct: 'Many of the head’s shapes are driven: bright and quick',
-    explain: 'Off centre, few shapes have a still line under the bridge, so many ring together. A drumhead also damps fast.',
+    explain: 'Off center, few shapes have a still line under the bridge, so many ring together. A drumhead also damps fast.',
     why: {
-      'Only the lowest shape is driven: a deep, long note': 'That is nearer a centre strike on a large drum, not a banjo bridge off centre.',
+      'Only the lowest shape is driven: a deep, long note': 'That is nearer a center strike on a large drum, not a banjo bridge off center.',
       'None are driven, because the strings do not touch it': 'The strings drive the head through the bridge.',
     },
   },
@@ -359,7 +359,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What does an open back change?',
     options: ['The head stops vibrating altogether, so it goes quiet', 'More sound leaves behind the pot, into the player', 'The strings sound an octave lower than with a resonator'],
     correct: 'More sound leaves behind the pot, into the player',
-    explain: 'Without a resonator, the back of the head radiates straight into the player, whose body colours it.',
+    explain: 'Without a resonator, the back of the head radiates straight into the player, whose body colors it.',
     why: {
       'The head stops vibrating altogether, so it goes quiet': 'The head vibrates much the same; mostly, where the sound goes changes.',
       'The strings sound an octave lower than with a resonator': 'Pitch is set by the strings. The back changes where sound goes.',
@@ -405,7 +405,7 @@ export const C05A_LESSON: Lesson = {
     stages: [
       { title: 'The pick pulls a string', text: 'A fingerpick, a finger or the back of a nail (clawhammer) pulls a string aside and lets it go. That release is where the ATTACK begins.' },
       { title: 'The string swings', text: 'Released, the string swings between its two still ends — the bridge on the head and the nut (or a fret). Its lowest shape is drawn here many times larger than it really moves.' },
-      { title: 'The bridge drives the head', text: 'The strings never touch the head: they press a light bridge onto it. Each swing rocks the bridge, and the bridge drives the head — off its centre.' },
+      { title: 'The bridge drives the head', text: 'The strings never touch the head: they press a light bridge onto it. Each swing rocks the bridge, and the bridge drives the head — off its center.' },
       { title: 'Sound leaves', text: 'The head radiates most of the sound toward the front. A resonator reflects the back’s sound forward too; an open back lets it go behind, into the player. The ring that follows — brief, on a drumhead — is the BODY of the sound.' },
     ],
     attack: 'The start of the note: the pick or nail on the string, and the head’s quick response. Close in front of the head a mic hears more of it — and of the playing noises.',

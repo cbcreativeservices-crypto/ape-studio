@@ -28,8 +28,8 @@ export const TRACER_MARK_COLOR = '#ffa6ea';
 /** NEW COPY 2026-10-16 — for owner review. The legend under the first
  *  display that carries tracers (Foundations M1, the Playground). */
 export const TRACER_CAPTION =
-  'Coloured dot = one small parcel of air. It swings around its mark — it never travels with the wave.';
+  'Colored dot = one small parcel of air. It swings around its mark — it never travels with the wave.';
 /** NEW COPY 2026-10-16 — for owner review. Start Here's plainer register
  *  ("a tiny bit of air", its own words in Lesson 1). */
 export const TRACER_CAPTION_PLAIN =
-  'Coloured dot = one tiny bit of air. It swings around its mark — it never travels with the wave.';
+  'Colored dot = one tiny bit of air. It swings around its mark — it never travels with the wave.';

@@ -26,9 +26,9 @@ export const SNARE_COPY: LessonCopy = {
   },
   sound: {
     strikes: [
-      { id: 'c', label: 'CENTRE', mm: 0, blurb: 'The exact centre of the head.' },
-      { id: '2', label: 'OFF CENTRE', mm: 2 * 25.4, blurb: '2 in (51 mm) from the centre.' },
-      { id: '5', label: 'NEAR THE EDGE', mm: 5 * 25.4, blurb: '5 in (127 mm) from the centre, about 2 in in from the edge.' },
+      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact centre of the head.' },
+      { id: '2', label: 'OFF CENTRE', mm: 2 * 25.4, blurb: '2 in (51 mm) from the center.' },
+      { id: '5', label: 'NEAR THE EDGE', mm: 5 * 25.4, blurb: '5 in (127 mm) from the center, about 2 in in from the edge.' },
     ],
     strikeDefault: '2',
     striker: 'STICK',
@@ -43,7 +43,7 @@ export const SNARE_COPY: LessonCopy = {
     reveal: 'The squeezed air pushes the snare-side head DOWN — both heads move the same way at that moment. The two heads are coupled through the air inside, and the snare-side head drives the wires.',
     after: 'Then both heads keep ringing and the wires keep rattling for a while — the BODY of the sound. How long depends on the tuning, the wires’ tension and the drum (the Drum Tuning Lab covers tuning).',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones, the lowest shape among them. Off centre, more shapes join in.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact center, every shape with a still line across the head stands still — so a center strike drives only the ring-shaped ones, the lowest shape among them. Off center, more shapes join in.',
       'This is a simplified head in empty space. On a real snare, the air inside, the second head and the wires pull these numbers around — the next step shows the two heads working together.',
     ],
     coupledSubject: 'Side view of the snare',
@@ -72,16 +72,16 @@ export const SNARE_COPY: LessonCopy = {
     blocked: {},
     reveal: 'Moving away from the rim tends to bring in more of the whole drum — and more of the kit — and drums vary, so “it depends on this drum” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
     typeNotes: {
-      smallDynCard: 'Ideas to try: start near the rim and aim toward the centre; then move one thing at a time — the rim position, the height, the angle, and which way its rear faces relative to the hi-hat.',
+      smallDynCard: 'Ideas to try: start near the rim and aim toward the center; then move one thing at a time — the rim position, the height, the angle, and which way its rear faces relative to the hi-hat.',
       clipDynCard: 'Ideas to try with a clip-on: keep the clamp where it does not hinder the rim or the tuning, then change only the angle — near 30° and near 60° from straight down give different balances of fundamental and overtones.',
     },
     note: 'Clearance comes first: stop the drummer before moving a real mic. A mic, clip or cable anywhere a stick, a rimshot or the hi-hat can reach is in the wrong place, whatever the number says.',
     availableLead: 'Starting points for this mic',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the rim or the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every snare is different.',
-      separate: 'Rim position, height and angle are separate variables: change one at a time. “Above the rim” and “above the head” are different numbers — the rim stands above the head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.',
+      separate: 'Rim position, height and angle are separate variables: change one at a time. “Above the rim” and “above the head” are different numbers — the rim stands above the head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimetre claim is made.',
       clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand, clamp and cable out of the sticks’ path, rimshots, cross-stick and the hi-hat’s travel, and route the cable away from the pedals. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real kit.',
-      tendencies: 'Starting near the rim and aiming toward the centre is a common approach; a more centred aim can change the balance of strike and ring. These are tendencies, and drums vary. With a directional mic, proximity effect also changes the lows at short distances.',
+      tendencies: 'Starting near the rim and aiming toward the center is a common approach; a more centered aim can change the balance of strike and ring. These are tendencies, and drums vary. With a directional mic, proximity effect also changes the lows at short distances.',
     },
   },
   context: {

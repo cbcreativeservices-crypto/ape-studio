@@ -26,8 +26,8 @@ export const M09_MODEL = kitModel({
   defaultVariant: 'studio',
   views: M09_VIEWS,
   roles: {
-    'kit.kick': 'Low in the middle of the kit: an overhead hears it last and weakest. The line from the kick through the snare is a useful centre line for a pair.',
-    'kit.snare': 'The overheads’ usual reference: distances are measured to its centre. When the two distances match, its sound reaches each mic at the same moment.',
+    'kit.kick': 'Low in the middle of the kit: an overhead hears it last and weakest. The line from the kick through the snare is a useful center line for a pair.',
+    'kit.snare': 'The overheads’ usual reference: distances are measured to its center. When the two distances match, its sound reaches each mic at the same moment.',
     'kit.tom1': 'Under the crash on the left. Moving a pair toward the front of the kit brings the rack toms and the cymbals closer.',
     'kit.tom2': 'Under the larger crash. It sits at a different distance from each overhead than the snare does, so its fills arrive at a different time.',
     'kit.floor': 'On the player’s right. The side mic of the floor-tom method sits just beyond its rim, outside the player’s reach.',

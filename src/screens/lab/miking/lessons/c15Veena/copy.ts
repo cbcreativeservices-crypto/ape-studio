@@ -57,7 +57,7 @@ const base = stringsCopy({
     instDynCard: 'Ideas to try with a dynamic: over the plate on a stage; watch the proximity bass if you come closer.',
   },
   learnSeparate: 'Distance from the plate, position along the veena and angle are separate variables: change one at a time and compare at matched levels. Distances are measured to the mic’s FRONT, square to the plate, and rounded to about 5 mm.',
-  learnTendencies: 'Over the plate, round the middle of the plate, on the far side of the bridge from the neck, is a starting blend; turned toward the bridge, more articulation; closer, more local colour and movement; farther back in a good room, more of the room. A second mic toward the drone side is optional — check it in mono.',
+  learnTendencies: 'Over the plate, round the middle of the plate, on the far side of the bridge from the neck, is a starting blend; turned toward the bridge, more articulation; closer, more local color and movement; farther back in a good room, more of the room. A second mic toward the drone side is optional — check it in mono.',
   context: {
     zone: 'plate',
     shield: C15_SHIELD,

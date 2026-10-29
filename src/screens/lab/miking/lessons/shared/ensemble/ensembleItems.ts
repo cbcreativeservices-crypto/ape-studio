@@ -76,9 +76,9 @@ export const abHole = (p: string, page: SourcePageId): MikingScenario => ({
   prompt: 'You spread the spaced pair to 2 m and the middle goes thin. Likely why?',
   options: ['Too wide: a hole opens in the middle', 'Omnis cannot capture a centre image', 'The mics are now too far from the floor'],
   correct: 'Too wide: a hole opens in the middle',
-  explain: 'Past about 1 m a spaced pair tends to lose its centre. Bring the spacing back toward 40–60 cm, or try a third, centre mic — and check the mono sum.',
+  explain: 'Past about 1 m a spaced pair tends to lose its center. Bring the spacing back toward 40–60 cm, or try a third, center mic — and check the mono sum.',
   why: {
-    'Omnis cannot capture a centre image': 'A spaced omni pair at its usual 40–60 cm images a centre well.',
+    'Omnis cannot capture a centre image': 'A spaced omni pair at its usual 40–60 cm images a center well.',
     'The mics are now too far from the floor': 'The spacing changed, not the height.',
   },
 });
@@ -87,12 +87,12 @@ export const abHole = (p: string, page: SourcePageId): MikingScenario => ({
 export const treeCentre = (p: string, page: SourcePageId): MikingScenario => ({
   id: `${p}.tree`,
   page,
-  prompt: 'In a three-omni tree, where does the centre mic go in the mix?',
+  prompt: 'In a three-omni tree, where does the center mic go in the mix?',
   options: ['Into both sides, a few dB down', 'Into the centre channel only, full level', 'Hard left, opposite the left mic'],
   correct: 'Into both sides, a few dB down',
-  explain: 'Left goes left, right goes right, and the centre is fed equally into both, a few dB down — one example uses 4–5 dB. Raise it from silence until the middle is filled, not past it.',
+  explain: 'Left goes left, right goes right, and the center is fed equally into both, a few dB down — one example uses 4–5 dB. Raise it from silence until the middle is filled, not past it.',
   why: {
-    'Into the centre channel only, full level': 'In stereo there is no centre channel: it is split into both sides, and lower.',
+    'Into the centre channel only, full level': 'In stereo there is no center channel: it is split into both sides, and lower.',
     'Hard left, opposite the left mic': 'That would pull the image sideways; it feeds both sides equally.',
   },
 });
@@ -118,7 +118,7 @@ export const supportFirst = (p: string, page: SourcePageId): MikingScenario => (
   prompt: 'A support is 5 m closer to the woodwinds than the main pair. What happens?',
   options: ['It hears them about 15 ms earlier', 'Both mics hear them at the same time', 'The main pair hears them earlier'],
   correct: 'It hears them about 15 ms earlier',
-  explain: 'Sound travels about 1 m in 2.9 ms, so 5 m is about 15 ms. Summed, the early support can change the depth and colour; compare main alone, support alone and both — a delay is a trial, never set by distance alone.',
+  explain: 'Sound travels about 1 m in 2.9 ms, so 5 m is about 15 ms. Summed, the early support can change the depth and color; compare main alone, support alone and both — a delay is a trial, never set by distance alone.',
   why: {
     'Both mics hear them at the same time': 'They are at different distances, so the arrivals differ.',
     'The main pair hears them earlier': 'The support is closer, so it hears them first.',

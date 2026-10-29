@@ -631,7 +631,7 @@ const SYSTEMS: readonly { id: SystemId; label: string; short: string; rigs: Spat
   { id: 'foa', label: 'First-order Ambisonic mic', short: 'AMBISONIC', rigs: [{ id: 'foa', c: LISTENER }], channels: '4 raw A-format tracks', where: 'Upright at the listener’s point, its front mark to the scene front, in a suspension.', playback: 'Converted with the mic’s own converter, then turned and rendered: headphones, a speaker layout, stereo.', limit: 'Limited directional sharpness: an enveloping view, not separable point sources. Raw A-format is not stereo or 5.1.' },
   { id: 'dms', label: 'Double M/S', short: 'DOUBLE M/S', rigs: [{ id: 'dms', c: LISTENER }], channels: '3 (front Mid, rear Mid, Side)', where: 'At the listener’s point, the front Mid forward, the figure-8’s positive side marked.', playback: 'Decoded on purpose to front and rear, or plain M/S stereo.', limit: 'The raw tracks are not speaker channels; the matrix cannot repair a clipped or wind-ruined capsule.' },
   { id: 'compact', label: 'A compact surround mic', short: 'COMPACT 5.0', rigs: [{ id: 'dms', c: LISTENER }], channels: '5 (plus a low-frequency effects output on some)', where: 'On a stand or a camera, its front to the scene front — quick to set up and to move.', playback: 'A five-speaker layout, through its maker’s processing: read its channel map.', limit: 'Its topology and its low-frequency output are its maker’s — never assume every “5.1” cable carries the same thing.' },
-  { id: 's50', label: 'A spaced five-channel array', short: '5.0 ARRAY', rigs: [{ id: 'surround50', c: LISTENER }], channels: '5 (L, C, R, Ls, Rs)', where: 'Round the listener’s point, the spacing chosen for the place — an example layout.', playback: 'A five-speaker layout; check the stereo and mono downmix.', limit: 'Needs room, stable stands and time; spaced mics summed can colour the sound.' },
+  { id: 's50', label: 'A spaced five-channel array', short: '5.0 ARRAY', rigs: [{ id: 'surround50', c: LISTENER }], channels: '5 (L, C, R, Ls, Rs)', where: 'Round the listener’s point, the spacing chosen for the place — an example layout.', playback: 'A five-speaker layout; check the stereo and mono downmix.', limit: 'Needs room, stable stands and time; spaced mics summed can color the sound.' },
   { id: 'addon', label: 'A rear add-on to a front array', short: 'ADD-ON', rigs: [{ id: 'ortf', c: LISTENER }, { id: 'hamasaki', c: v3(-1500, -EAR_STANDING, 0) }], channels: '2 front + 4 ambience', where: 'A front array at the listener’s point; a small square of cardioids or a wide square of figure-8s behind it — an example layout.', playback: 'A surround layout, the ambience layer under the front.', limit: 'Not a whole five-channel array on its own; check timing, direct-sound leakage and the downmix.' },
 ];
 
@@ -847,9 +847,9 @@ const PLACE_ZONES: Record<'plaza' | 'event', PlaceZone[]> = {
     { id: 'closer', label: 'Closer to the singer, past the footpath', band: 'An idea to try: about 1–2 m from the singer, beyond the footpath, ears at standing height.', tendency: 'More of the singer and less of the square — the walker passes behind.', x: [3900, 4900], z: [-900, 900], h: [1500, 1800] },
   ],
   event: [
-    { id: 'listen', label: 'In the audience, between the PA loudspeakers', band: 'At the audience’s listening point, about 1.5–1.8 m up, centred between the PAs.', tendency: 'The event as the audience hears it: the PA, the crowd and the place.', x: [-800, 1500], z: [-1200, 1200], h: [1500, 1800] },
+    { id: 'listen', label: 'In the audience, between the PA loudspeakers', band: 'At the audience’s listening point, about 1.5–1.8 m up, centered between the PAs.', tendency: 'The event as the audience hears it: the PA, the crowd and the place.', x: [-800, 1500], z: [-1200, 1200], h: [1500, 1800] },
     { id: 'seated', label: 'A seated audience’s height', band: 'The same place, the ears about 1.1–1.3 m up.', tendency: 'A seated point of view: the people around count for more.', x: [-800, 1500], z: [-1200, 1200], h: [1100, 1300] },
-    { id: 'back', label: 'Farther back in the audience', band: 'An idea to try: 2–3.5 m farther back, still centred.', tendency: 'More of the crowd and the space, the stage farther away.', x: [-3500, -2000], z: [-1200, 1200], h: [1500, 1800] },
+    { id: 'back', label: 'Farther back in the audience', band: 'An idea to try: 2–3.5 m farther back, still centered.', tendency: 'More of the crowd and the space, the stage farther away.', x: [-3500, -2000], z: [-1200, 1200], h: [1500, 1800] },
   ],
 };
 
@@ -976,7 +976,7 @@ function F10Placement(p: PageProps) {
       value: (face + 90) / 180,
       onChange: (v) => setFace(Math.round((v * 180 - 90) / 5) * 5),
       // "left/right of centre" — one wording with the sports AIM (owner 2026-10-14, slider audit #23).
-      format: () => (face === 0 ? 'centre: facing the scene front' : aimWords(-face)),
+      format: () => (face === 0 ? 'center: facing the scene front' : aimWords(-face)),
       formatShort: () => aimShort(-face),
       home: 0.5,
     },
@@ -1055,7 +1055,7 @@ function F10Placement(p: PageProps) {
             )}
           </FieldStage>
         ),
-        badge: 'Blue = suggested starting points for the rig’s centre · blue line = the path to the front source · calculated from the drawing',
+        badge: 'Blue = suggested starting points for the rig’s center · blue line = the path to the front source · calculated from the drawing',
         bezel: [
           { k: 'HEIGHT', v: fmtM(h), flex: 0.8 },
           { k: 'TO SOURCE', v: fmtM(dSrc), flex: 0.9 },

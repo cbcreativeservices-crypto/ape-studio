@@ -175,7 +175,7 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
                 <Point title={EDGES.find((e) => e.id === edge)?.label ?? ''}>{EDGES.find((e) => e.id === edge)?.contact} {EDGES.find((e) => e.id === edge)?.tends}</Point>
               </Card>
               <Card>
-                <Point title="The shell">Material, thickness and depth colour the sound — TOGETHER with the heads, the edges, the hoops and the tuning. No shell material decides a drum's sound on its own; a clean, level edge on a plain shell beats a ragged edge on an expensive one.</Point>
+                <Point title="The shell">Material, thickness and depth color the sound — TOGETHER with the heads, the edges, the hoops and the tuning. No shell material decides a drum's sound on its own; a clean, level edge on a plain shell beats a ragged edge on an expensive one.</Point>
                 <Point title="Why it matters for tuning">A true edge lets the head seat evenly. A dented or dirty edge is a spot that will not tune — Chapter 2 looks for it.</Point>
               </Card>
             </>
@@ -249,14 +249,14 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="the drum from above; the coloured wedges are each rod's pitch (blue low, yellow even, red high)." prompt="Pick a ROD, ride TURN, ▶ TAP it, then ▶ STRIKE the drum." />
+              <Landing looking="the drum from above; the colored wedges are each rod's pitch (blue low, yellow even, red high)." prompt="Pick a ROD, ride TURN, ▶ TAP it, then ▶ STRIKE the drum." />
               <DrumStatus playing={rod.playing || tap.playing} pending={rod.pending || tap.pending} failed={rod.failed || tap.failed} rendering={rod.status === 'rendering' || tap.status === 'rendering'} idle="stopped · pick a ROD, ride TURN, then ▶ TAP that lug or ▶ STRIKE the drum" label={tap.playing || tap.pending ? `the tap at rod ${lug + 1}` : 'the strike'} />
               {turned === 0 ? <Feedback tone="info">Pick a ROD and ride TURN — watch the wedge and SPREAD change.</Feedback> : <Feedback tone={even.verdict === 'even' ? 'ok' : even.verdict === 'close' ? 'info' : 'warn'}>{even.message}</Feedback>}
               <Card>
                 <Point title="What one rod does">The tension near that rod changes, so its tap pitch moves. But the head's BALANCE changes too: an uneven head makes two slightly different notes at once, and you hear them beat as a slow warble. BEAT is their difference; SPREAD is the gap in cents (hundredths of a semitone) between the highest and lowest rod.</Point>
               </Card>
               <WhyCard title="WHY · see the vibration">
-                <Body>The VIB entries of VIEW draw the head's shape for one note of this same strike: white lines stay still, the coloured regions move up and down — strobed, fading with the hit's own measured loudness. On an uneven head the twin shape mixes in; that is the beat, drawn. Switch VIEW to WAVE or PITCH for the same strike as a waveform or a pitch line.</Body>
+                <Body>The VIB entries of VIEW draw the head's shape for one note of this same strike: white lines stay still, the colored regions move up and down — strobed, fading with the hit's own measured loudness. On an uneven head the twin shape mixes in; that is the beat, drawn. Switch VIEW to WAVE or PITCH for the same strike as a waveform or a pitch line.</Body>
               </WhyCard>
             </>
           ),

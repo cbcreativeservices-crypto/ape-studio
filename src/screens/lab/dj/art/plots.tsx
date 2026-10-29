@@ -84,7 +84,7 @@ export function CurvePlot({ b, curve, x }: { b: PlotBox; curve: XfCurve; x: numb
       <Rect x={px - 3} y={yOf(g.b) - 3} width={6} height={6} color={INK.blue} />
       <SceneText x={inner.x} y={b.y + b.h - 6} size={10} text="A" color={INK.white} face="label" minPt={9.5} />
       <SceneText x={inner.x + inner.w} y={b.y + b.h - 6} size={10} text="B" color={INK.blue} face="label" align="right" minPt={9.5} />
-      <SceneText x={inner.x + inner.w / 2} y={b.y + b.h - 6} size={10} text={`centre ${fmtDb(mid.a)}`} color={INK.print} align="center" minPt={9.5} />
+      <SceneText x={inner.x + inner.w / 2} y={b.y + b.h - 6} size={10} text={`center ${fmtDb(mid.a)}`} color={INK.print} align="center" minPt={9.5} />
     </Group>
   );
 }

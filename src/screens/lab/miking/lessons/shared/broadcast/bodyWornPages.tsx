@@ -215,7 +215,7 @@ export function useBodyTurnStep(spec: BodyTurnSpec): MikingStep {
           )}
         </FieldStage>
       ),
-      badge: 'From above, the side in the corner · calculated from the drawing · the head turns about its centre (a simplified picture) · silent',
+      badge: 'From above, the side in the corner · calculated from the drawing · the head turns about its center (a simplified picture) · silent',
       bezel,
       params,
       initialParam: 'turn',

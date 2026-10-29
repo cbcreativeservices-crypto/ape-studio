@@ -94,7 +94,7 @@ export const FAULTS: Record<FaultId, FaultDef> = {
     symptom: 'CH 2 meters fine, but bringing its fader up adds nothing to the room.',
     cause: 'CH 2 was assigned to crossfader side A while the crossfader sat over at side B.',
     evidence: 'The CH 2 meter was live and its fader up, but the MASTER meter did not move — the loss was after the channel fader.',
-    repair: 'Put CH 2’s crossfader assign on THRU (or centre the crossfader).',
+    repair: 'Put CH 2’s crossfader assign on THRU (or center the crossfader).',
     prevention: 'Park the crossfader assigns and the crossfader where you expect them before the doors open.',
     probe: 'Which meter is the LAST one that moves when you raise FADER 2?',
     where: 'Look at what sits between the channel fader and the mix: the crossfader and each channel’s assign.',

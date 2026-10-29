@@ -37,7 +37,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main pair yourself — closer, farther, higher — and see how the reeds and the rear brass trade places.',
-    credit: { scenarios: ['bb.place.1', 'bb.place.2', 'bb.31', 'bb.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the band, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['bb.place.1', 'bb.place.2', 'bb.31', 'bb.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the band, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Close to the front row the reeds are prominent and the rear brass distant; a higher view, a little farther out in front, evens the rows. Compare at matched level, one change at a time; the band’s balance comes first.',
   },
   context: {

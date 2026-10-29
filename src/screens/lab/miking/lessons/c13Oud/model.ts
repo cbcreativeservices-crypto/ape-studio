@@ -71,7 +71,7 @@ export function c13ZoneSpecs(sc: LuteScene): LuteZoneSpec[] {
       surface: 'rose',
       distance: { min: 60, max: 127 },
       radial: { max: 90, prov: ill('close to the rose: within 9 cm of its line — the lab’s drawing') },
-      aimAt: { surface: 'rose', r: 60, prov: ill('aimed at the rose: the axis meets the face within 6 cm of its centre — the lab’s tolerance') },
+      aimAt: { surface: 'rose', r: 60, prov: ill('aimed at the rose: the axis meets the face within 6 cm of its center — the lab’s tolerance') },
       aim: { minOffAxis: 5, maxOffAxis: 40, prov: ill('"angled slightly downward": 5–40° off straight-on — the lab’s tolerance') },
       box: { min: v(-3000, -3000, -3000), max: v(3000, -5, 3000), prov: ill('"angled slightly downward": the mic sits above the rose') },
       micTypeIds: ['instDynCard', 'sdcCard'],

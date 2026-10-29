@@ -228,7 +228,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'xy.place.3',
     page: 'placement',
-    prompt: 'A mic below the tubes for a deliberate local colour. What must it never do?',
+    prompt: 'A mic below the tubes for a deliberate local color. What must it never do?',
     options: ['Go into a tube or touch a bar', 'Face upward toward the bars', 'Sit lower than the frame’s stretcher'],
     correct: 'Go into a tube or touch a bar',
     explain: 'Never insert a mic into a tube, attach it to a bar or put equipment on the bars; and do not assume an under-tube signal is the whole instrument.',
@@ -294,7 +294,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A safe off-axis view on the audience side, out of the mallets’ way.',
     why: {
       'Directly over the player’s hands at the middle of the keyboard, aimed down': 'That is in the mallets’ way.',
-      'Under the tubes, aimed up at the bars': 'That is the deliberate local colour, not the off-axis view.',
+      'Under the tubes, aimed up at the bars': 'That is the deliberate local color, not the off-axis view.',
     },
   },
   polarityKeepsDelay(W),
@@ -485,7 +485,7 @@ const words: MalletWords = {
     prompt: 'Choose a PAIR, then step BAR to the lowest and the highest bar. Watch DELAY and LEVEL — and the comb below.',
     learn: [
       'Two layouts to begin from, as alternatives: two mics aimed down about 46 cm (1½ ft) above the bars, either about 61 cm (2 ft) apart, or grilles together angled about 135° apart — a coincident pair. Check clearance and adapt the aim to the played range.',
-      'Spaced: one toward the lower region, one toward the higher, overlapping in the middle — notes reaching both at different times can change colour when summed. Coincident: the capsules as close as the mount permits; the time differences vanish and the mono sum holds together more predictably; width depends on the patterns and the aim.',
+      'Spaced: one toward the lower region, one toward the higher, overlapping in the middle — notes reaching both at different times can change color when summed. Coincident: the capsules as close as the mount permits; the time differences vanish and the mono sum holds together more predictably; width depends on the patterns and the aim.',
       'A width that balances in headphones can be awkward for an audience across a mono or partly stereo PA. If stereo is unnecessary on stage, a single well-placed mic may give clearer control with less spill.',
     ],
     warn: 'A simplified picture: one point on one bar, straight paths, no room. Judge a real pair by ear — each mic alone, both together, and in mono — at matched levels.',
@@ -516,7 +516,7 @@ const copy: Partial<LessonCopy> = {
     stageIdle: 'Two monitors: a wedge in front, facing the player, and a side fill at stage left. The PA faces the audience.',
     studioIdle: 'No monitors. A room pair farther away can add natural space — and room noise.',
     before: [
-      { title: 'LISTEN FROM THE ROOM FIRST', text: 'Low, middle and high notes, single strokes, fast repeated notes and the loudest accent — from where the audience will hear them. The player may change mallets for a colour.' },
+      { title: 'LISTEN FROM THE ROOM FIRST', text: 'Low, middle and high notes, single strokes, fast repeated notes and the loudest accent — from where the audience will hear them. The player may change mallets for a color.' },
       { title: 'MALLETS ARE THE OWNER’S', text: 'Never metal on xylophone bars. Advice on other materials differs between documents: this instrument’s maker and its owner decide. If a brighter sound needs an unsuitable mallet, change the placement instead.' },
       BEFORE_STANDS,
     ],

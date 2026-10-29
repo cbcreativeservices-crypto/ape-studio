@@ -68,7 +68,7 @@ const AIMED_Z: Omit<DocumentedZone, 'start'> = {
   aimAt: { surface: 'top', r: 150, prov: ill('aimed at an area of the instrument: the mic’s axis meets the top within 15 cm of the bridge') },
   requires: { micTypeIds: ['sdcCard'] },
   draw: draws(A.bridgeTop, AIMED_DIR, 50, 150, 400),
-  tendency: 'More definition and a focused presence: toward the bridge more bow and attack, toward the body more weight — and close up, proximity effect adds low-end body. A coloured view by design.',
+  tendency: 'More definition and a focused presence: toward the bridge more bow and attack, toward the body more weight — and close up, proximity effect adds low-end body. A colored view by design.',
   checks: ['Bow scrape on quiet starts', 'The C string: thin, or boomy?', 'One string much louder than the others'],
 };
 
@@ -104,8 +104,8 @@ const HOLDER_Z: Omit<DocumentedZone, 'start'> = {
   distance: { min: 0, max: 22 },
   requires: { micTypeIds: ['strMini'] },
   draw: { side: zoneDisc('side', BEHIND, 22), top: zoneDisc('top', BEHIND, 22) },
-  tendency: 'Strings and top together, close and steady — a different design from the body clip, with its own colour. Compare under and over the strings.',
-  checks: ['The holder gripping two strings, never across the bowing length', 'Contact and cable noise as the player moves', 'The colour: under against over'],
+  tendency: 'Strings and top together, close and steady — a different design from the body clip, with its own color. Compare under and over the strings.',
+  checks: ['The holder gripping two strings, never across the bowing length', 'Contact and cable noise as the player moves', 'The color: under against over'],
 };
 
 const fwdSide = norm(sub({ x: 0, y: 0, z: 1 }, scale(FRONT, FRONT.z)));

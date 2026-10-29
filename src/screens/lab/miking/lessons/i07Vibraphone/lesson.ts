@@ -230,9 +230,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'You want the sound from under the vibraphone, aiming up at the tubes. How should you treat it?',
     options: ['As a deliberate alternative, auditioned against a mic above', 'As the natural sound of the vibraphone, so it comes first', 'As the safest position, because it is out of the way'],
     correct: 'As a deliberate alternative, auditioned against a mic above',
-    explain: 'Under the tubes gives a more local, coloured sound and more mechanical noise — not the whole instrument. Audition it as an effect, clear of the motor and the pedal.',
+    explain: 'Under the tubes gives a more local, colored sound and more mechanical noise — not the whole instrument. Audition it as an effect, clear of the motor and the pedal.',
     why: {
-      'As the natural sound of the vibraphone, so it comes first': 'It is a narrower, coloured view; the natural picture is heard from above, in the room.',
+      'As the natural sound of the vibraphone, so it comes first': 'It is a narrower, colored view; the natural picture is heard from above, in the room.',
       'As the safest position, because it is out of the way': 'It is close to the pedal, the motor and the player’s feet — check those first.',
     },
   },
@@ -393,7 +393,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Two condensers, spaced about 61 cm apart, about 46 cm above the bars, aimed down', ok: true, power: 'phantom', feedback: 'A suggested pair for the whole range; check the middle and the mono sum.' },
       { id: 'b', label: 'Two condensers with their grilles together, 135° apart, about 46 cm above the middle', ok: true, power: 'phantom', feedback: 'The coincident pair: no arrival-time difference, a picture made by level.' },
-      { id: 'c', label: 'One mic under the tubes, aimed up at the motor', ok: false, power: 'phantom', feedback: 'Under the tubes is a coloured effect, and near the motor it hears its noise — not the whole instrument.' },
+      { id: 'c', label: 'One mic under the tubes, aimed up at the motor', ok: false, power: 'phantom', feedback: 'Under the tubes is a colored effect, and near the motor it hears its noise — not the whole instrument.' },
       { id: 'd', label: 'Two mics 10 cm above the bars, over the middle', ok: false, power: 'phantom', feedback: 'That is inside the mallets’ travel: the player would strike them.' },
       { id: 'e', label: 'A mic clamped to the frame rail without asking', ok: false, power: 'none', feedback: 'Nothing is mounted on the instrument without compatible hardware and the owner’s agreement.' },
     ],
@@ -528,7 +528,7 @@ const words: MalletWords = {
     prompt: 'Choose a PAIR, then step BAR to the lowest and the highest bar. Watch DELAY and LEVEL — and the comb below.',
     learn: [
       'Two layouts to begin from, as alternatives — not both at once: two mics aimed down about 46 cm (1½ ft) above the bars, either about 61 cm (2 ft) apart, or with their grilles together angled 135° apart. A coincident pair, the second: the capsules at one point.',
-      'Spaced: one mic toward the low half, one toward the high, overlapping through the middle — more separate control, a wider picture, and a bar both mics hear at different times can sound coloured in mono. Coincident: no time difference for any bar, a steadier mono sum, a narrower picture and less low-versus-high control.',
+      'Spaced: one mic toward the low half, one toward the high, overlapping through the middle — more separate control, a wider picture, and a bar both mics hear at different times can sound colored in mono. Coincident: no time difference for any bar, a steadier mono sum, a narrower picture and less low-versus-high control.',
       'Live, stereo is worth it only when the PA and the audience’s seats make it useful; close placement helps the gain before feedback. If the PA is mono, a single mic or a modest width may serve the audience better.',
     ],
     warn: 'A simplified picture: one point on one bar, straight paths, no room. Judge a real pair by ear — each mic alone, both together, and in mono — at matched levels.',
@@ -588,7 +588,7 @@ const copy: Partial<LessonCopy> = {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic about 45–75 cm above the middle, aimed down; or one of a spaced pair about 46 cm above the bars and 61 cm apart; and, only as an alternative, a mic under the tubes. They are starting points, not rules: move from there and listen.',
       separate: 'Height, distance along the keyboard and angle are separate variables: change one at a time, with the real phrase — low, middle and high, single notes and chords.',
       clearance: 'Clearance comes first. Have the player show the mallets’ full arc over both rows and the whole passage before anything is placed. The mallets’ keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where they travel — leave more room on a real stage.',
-      tendencies: 'Closer tends to bring more attack and one region of the keyboard; higher blends the keyboard and adds the room. Under the tubes: a coloured, local sound. All tendencies to check by ear.',
+      tendencies: 'Closer tends to bring more attack and one region of the keyboard; higher blends the keyboard and adds the room. Under the tubes: a colored, local sound. All tendencies to check by ear.',
     },
   },
   context: {
@@ -720,7 +720,7 @@ export const I07_LESSON: MalletLesson = {
   unknowns: [
     ...FAMILY_UNKNOWNS,
     { text: 'Fan size and shape (a disc per tube, about 0.9 × the tube, on one shaft per row), the motor box (160 × 120 × 140 mm under the low end) and the belt — drawing defaults; the speed range is the maker’s.', dims: [] },
-    { text: 'The damper bar’s place (a felt bar along the centre line under the bars) and the pedal (300 × 120 × 100 mm at the middle of the player’s side) — drawing defaults; their action is sourced.', dims: [] },
+    { text: 'The damper bar’s place (a felt bar along the center line under the bars) and the pedal (300 × 120 × 100 mm at the middle of the player’s side) — drawing defaults; their action is sourced.', dims: [] },
     { text: 'Whether a no-motor model keeps its fan shafts is not in the research: it is drawn without fans.', dims: [] },
     { text: 'The bar thickness (12.7 mm) is another maker’s figure drawn on this model.', dims: [] },
   ],

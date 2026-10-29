@@ -197,7 +197,7 @@ export const E09_SETUPS: EnsembleSetup[] = withWords([
     singles: singles(KICK_MIC, AMP_MICS.stage.gtr, VOCAL_MIC),
     di: ['bass', 'keys'],
     mics: 'A spaced pair of small condensers over the kit, a kick dynamic at the front head, a dynamic on the guitar amp, a supercardioid vocal dynamic.',
-    start: 'The pair about 1.2 m (4 ft) from the snare’s centre, pointing down; the kick level with its front head; the guitar mic a few centimetres from the grille; the vocal within about 10 cm of the lips.',
+    start: 'The pair about 1.2 m (4 ft) from the snare’s center, pointing down; the kick level with its front head; the guitar mic a few centimetres from the grille; the vocal within about 10 cm of the lips.',
     line: 'Few channels and few feedback paths: the band’s own balance and the arrangement do most of the mixing, with less to correct later.',
     roles: 'Every mic and DI feeds the PA; the vocal, kick and DIs feed the wedges; the overheads stay out of the wedges.',
     core: true,
@@ -252,7 +252,7 @@ export const E09_SETUPS: EnsembleSetup[] = withWords([
     variants: ['stage', 'room'],
     rig: ohRig,
     mics: 'Two small condensers on one long, well-weighted bar, 1.4 m apart, pointing straight down.',
-    start: 'Each mic about 1.2 m (4 ft) from the snare’s centre — the same distance — over the hi-hat side and the other side of the kit.',
+    start: 'Each mic about 1.2 m (4 ft) from the snare’s center — the same distance — over the hi-hat side and the other side of the kit.',
     line: 'The whole kit and the cymbals as one picture; the close mics add focus only where it is missing. Check the pair in mono.',
     core: false,
     view: 'section',
@@ -332,8 +332,8 @@ const SN_H = -SN.y;
 const ohH = (d: number) => SN_H + Math.sqrt(d * d - (OH_SPACING / 2) ** 2);
 const ohBox = (d0: number, d1: number) => ({ min: v3(SN.x - 350, -ohH(d1), SN.z - 350), max: v3(SN.x + 350, -ohH(d0), SN.z + 350) });
 export const E09_PLACE: PlaceZone[] = [
-  { id: 'pz.ohLow', label: 'Over the kit, each mic about 1–1.2 m from the snare', band: 'The spaced pair centred over the snare, each mic about 1–1.2 m (3.3–4 ft) from its centre, pointing down.', box: ohBox(1000, 1200), tendency: 'More drums and less room; the snare and toms a little closer than the cymbals.' },
-  { id: 'pz.ohHigh', label: 'A little higher, each mic about 1.2–1.4 m from the snare', band: 'The same pair raised so each mic is about 1.2–1.4 m (4–4.6 ft) from the snare’s centre.', box: ohBox(1200, 1400), tendency: 'More cymbals and more of the room; the kit as one picture.' },
+  { id: 'pz.ohLow', label: 'Over the kit, each mic about 1–1.2 m from the snare', band: 'The spaced pair centered over the snare, each mic about 1–1.2 m (3.3–4 ft) from its center, pointing down.', box: ohBox(1000, 1200), tendency: 'More drums and less room; the snare and toms a little closer than the cymbals.' },
+  { id: 'pz.ohHigh', label: 'A little higher, each mic about 1.2–1.4 m from the snare', band: 'The same pair raised so each mic is about 1.2–1.4 m (4–4.6 ft) from the snare’s center.', box: ohBox(1200, 1400), tendency: 'More cymbals and more of the room; the kit as one picture.' },
   { id: 'pz.room', label: 'Low, about 1 m in front of the kick', band: 'A pair about 1 m (3.3 ft) in front of the kick’s front head, low — omnis about 40 cm apart is one idea.', box: { min: add(v3(KF.c.x - 450, -900, KF.c.z), mul(FWD, 850)), max: add(v3(KF.c.x + 450, -300, KF.c.z), mul(FWD, 1150)) }, variants: ['room'], tendency: 'The kit with the room around it — and the kick strong. Too close to a loud source and it gets muddy.' },
 ];
 /** Recorded so the test can check them against the borrowed zones. */

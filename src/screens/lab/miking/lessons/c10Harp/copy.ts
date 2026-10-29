@@ -27,7 +27,7 @@ export const HARP_COPY: LessonCopy = {
     variantNotes: { lever: 'LEVER HARP: smaller, with levers on the neck instead of pedals — a different scale and balance. Start from the same kinds of position, and listen rather than copy.' },
   },
   sound: {
-    strikes: [{ id: 'c', label: 'CENTRE', mm: 0, blurb: 'Not used by this lesson.' }],
+    strikes: [{ id: 'c', label: 'CENTER', mm: 0, blurb: 'Not used by this lesson.' }],
     strikeDefault: 'c',
     striker: 'PLUCK',
     strikerPhrase: 'the pluck',
@@ -47,7 +47,7 @@ export const HARP_COPY: LessonCopy = {
     kitIdle: 'The harpist sits close behind the harp, reaching round both sides of the strings, with their feet on the pedals. Everything round the harp is either their space or something a mic will hear.',
     leftHanded: '',
     stageA11y: 'The harp on a stage, from above: the harpist’s wedge downstage, other players, and the audience.',
-    studioA11y: 'The harp in a studio room, from above: a spaced pair of mics about 2 m away, toward the room’s centre.',
+    studioA11y: 'The harp in a studio room, from above: a spaced pair of mics about 2 m away, toward the room’s center.',
     stageIdle: 'On a stage the harp is quiet beside most instruments: close pickup, careful monitor placement and few open mics help it through.',
     studioIdle: 'In a good room, the harp and the room together can be the sound: a spaced pair about 2 m or more away.',
     before: [
@@ -70,7 +70,7 @@ export const HARP_COPY: LessonCopy = {
     availableLead: 'Starting points for this mic and harp',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on this harp, measured from the surface it names — the soundboard, the crown, the floor, a sound hole. They are starting points, not rules: move from there and listen — there is no single right answer.',
-      separate: 'Distance from the board, height and angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.',
+      separate: 'Distance from the board, height and angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimetre claim is made.',
       clearance: 'Clearance comes first. The harpist’s hands work both sides of the strings; their feet work the pedals; they look past the neck at the music and the conductor. Keep-clear areas appear as the mic gets close. If a move is stopped, they turn red and show the reason. They are rough: leave more room on a real stage.',
       tendencies: 'A close cardioid aimed straight at the middle of the board tends to favour one region and boom; higher and looking down, more of the upper strings; farther away, the whole harp and the room. These are tendencies; harps and rooms vary.',
     },
@@ -102,11 +102,11 @@ export const HARP_COPY: LessonCopy = {
     shieldNote: 'Reduce the level before moving a mic, then retest the gain before feedback. Real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction.',
     studioId: 'hp.ctx.studio',
     studioPrompt: 'A solo harp in a good room: what is the room worth?',
-    studioNote: 'In a quiet room, step back: a spaced pair about 2 m or more away, toward the room’s centre, not too low. Switch back to LIVE for the wedge exercise.',
+    studioNote: 'In a quiet room, step back: a spaced pair about 2 m or more away, toward the room’s center, not too low. Switch back to LIVE for the wedge exercise.',
     learn: {
       intro: 'These are scenario-based comparisons, not restrictions: a distant pair can be right for a solo recording, and a close spot or a concealed miniature right for a loud stage.',
       points: [
-        { title: 'PERSPECTIVE', text: 'Studio: a spaced pair about 2 m or more from a full-size harp, toward the room’s centre. Live: closer — a spot near the pillar, the front view at about 60 cm, or an approved miniature.' },
+        { title: 'PERSPECTIVE', text: 'Studio: a spaced pair about 2 m or more from a full-size harp, toward the room’s center. Live: closer — a spot near the pillar, the front view at about 60 cm, or an approved miniature.' },
         { title: 'IN AN ENSEMBLE', text: 'Set the band’s or orchestra’s main picture first; bring a harp spot up only as far as the music needs — a spot near the pillar can pull the harp forward.' },
         { title: 'TWO SPOTS', text: 'An upper and a lower spot can cover registers one mic misses. They need not be panned apart: much of the harp’s range runs up and down. Check them in mono.' },
         { title: 'MOUNTING', text: 'Live: secure stands, cables relieved so a pull never reaches the harp, and any miniature on a holder the owner approves.' },

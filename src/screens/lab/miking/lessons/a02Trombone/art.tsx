@@ -66,7 +66,7 @@ export const A02_ART: LessonArt = {
       },
       mutes: {
         tenor: {
-          straight: 'A cone held in the bell by cork strips: a thinner, more nasal colour, quieter, and it reaches past the rim.',
+          straight: 'A cone held in the bell by cork strips: a thinner, more nasal color, quieter, and it reaches past the rim.',
           cup: 'A straight mute with a cup facing back at the bell: darker and softer — and the cup reaches farther past the rim.',
           harmon: 'A bulb sealed in the bell with a stem through it: a focused, buzzy tone from the stem.',
           plunger: 'A rubber cup the left hand moves in front of the bell — while the right hand works the slide. Both hands move: nothing goes in their way.',

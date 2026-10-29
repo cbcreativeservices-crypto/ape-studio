@@ -17,7 +17,7 @@ export const TIMB_DIMS = {
   largeD: { mm: 15 * IN, prov: src('LP-257', '14″ & 15″ diameter, 6-1/2″ deep') } as Dim,
   depth: { mm: 6.5 * IN, prov: src('LP-257', '14″ & 15″ diameter, 6-1/2″ deep') } as Dim,
   headH: drawingDefault(950, 'the heads’ height on the stand (drawing default 950 mm)'),
-  spacing: drawingDefault(400, 'the plan spacing of the two drums (drawing default 400 mm between centres)'),
+  spacing: drawingDefault(400, 'the plan spacing of the two drums (drawing default 400 mm between centers)'),
   rimRise: drawingDefault(8, 'the rims: how far they stand above the heads'),
   rimT: drawingDefault(6, 'the rims: how far they sit outside the heads’ edge'),
   lugs: drawingDefault(6, 'the number of tuning lugs per drum'),
@@ -91,7 +91,7 @@ export const TIMB_ZONES: DocumentedZone[] = [
     side: 'either',
     distance: { min: -TIMB_DIMS.depth.mm, max: 0 },
     bandProv: ill('"right in between the shells": the shells’ depth below the heads (sourced, 6½ in) is drawn as the height band'),
-    radial: { line: 'centre', max: SMALL.R, prov: ill('"in between the shells": within the smaller drum’s radius of the pair’s centre line — the shells themselves bound it') },
+    radial: { line: 'centre', max: SMALL.R, prov: ill('"in between the shells": within the smaller drum’s radius of the pair’s center line — the shells themselves bound it') },
     requires: { micTypeIds: STAND },
     drawn: {
       side: { u0: 40, u1: SMALL.R, v0: HEAD_Y, v1: HEAD_Y + TIMB_DIMS.depth.mm },
@@ -112,7 +112,7 @@ export const TIMB_ZONES: DocumentedZone[] = [
     side: 'either',
     distance: JUST_BELOW,
     bandProv: ill('"beneath": no number; the 5 to 15 cm drawing-default band is used below the lower edge'),
-    radial: { line: `${d.id}.axis`, max: d.R, prov: ill('"beneath": within the drum’s radius of its centre line') },
+    radial: { line: `${d.id}.axis`, max: d.R, prov: ill('"beneath": within the drum’s radius of its center line') },
     requires: { micTypeIds: STAND },
     aim: { maxOffAxis: 60, prov: ill('"pointed outwards towards their rims": within 60° of straight up is the lab’s tolerance') },
     drawn: {

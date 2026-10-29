@@ -16,9 +16,9 @@ export const CRASH_COPY: Partial<LessonCopy> = {
   sceneSubject: { crash1: 'the 16 in crash over the 10 in tom', crash2: 'the 18 in crash over the 12 in tom' },
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP' },
   axes: {
-    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (x), from the crash’s centre.' },
+    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (x), from the crash’s center.' },
     y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y), from the crash. Distances are read from the face of the crash the zone names, square to it.' },
-    z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z), from the crash’s centre.' },
+    z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z), from the crash’s center.' },
     origin: { crash1: C1.c, crash2: C2.c },
   },
   instrument: {
@@ -124,7 +124,7 @@ export const CRASH_CYM: CymbalExtra = {
     rFrac: EDGE_FRAC,
     stages: [
       { title: 'A glancing blow on the edge', text: 'The shoulder of the stick strikes the edge with a glancing blow — it carries on past rather than stopping on the plate. The crash responds at once: the ATTACK.' },
-      { title: 'The plate bends', text: 'The edge bends under the stick, the felts holding the centre. Drawn many times larger than it really moves.' },
+      { title: 'The plate bends', text: 'The edge bends under the stick, the felts holding the center. Drawn many times larger than it really moves.' },
       { title: 'It rings and swings', text: 'Waves run across the plate and it opens up into its wash at once. It rocks and swings on its felts — hardest after the biggest crash: the space a mic keeps clear of.' },
       { title: 'Sound leaves both faces', text: 'Sound leaves the top face, up toward the overheads, and the underside, down toward the tom below — and spreads widely: every open mic on the kit hears a crash, each at its own moment.' },
     ],
@@ -138,7 +138,7 @@ export const CRASH_CYM: CymbalExtra = {
   },
   shapes: {
     title: 'The plate’s shapes',
-    badge: 'A simplified picture: one flat disc held at its centre · blue + toward you, amber − away',
+    badge: 'A simplified picture: one flat disc held at its center · blue + toward you, amber − away',
     prompt: 'Step through SHAPE, then move the STICK between the bell, the bow and the edge. Which spot drives the most shapes?',
     looking: 'The crash from above',
     notes: [

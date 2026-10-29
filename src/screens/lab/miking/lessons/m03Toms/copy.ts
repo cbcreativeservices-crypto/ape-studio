@@ -16,9 +16,9 @@ export const TOMS_COPY: LessonCopy = {
   },
   viewTag: { side: 'SIDE · CUTAWAY', top: 'TOP' },
   axes: {
-    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (x), from the centre of the drum in view.' },
-    y: { plus: 'below the head’s centre', minus: 'above the head’s centre', label: 'HEIGHT', blurb: 'Up or down (y), from the centre of the drum in view. Distances are read from the head the zone names, square to it.' },
-    z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z), from the centre of the drum in view.' },
+    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (x), from the center of the drum in view.' },
+    y: { plus: 'below the head’s center', minus: 'above the head’s center', label: 'HEIGHT', blurb: 'Up or down (y), from the center of the drum in view. Distances are read from the head the zone names, square to it.' },
+    z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z), from the center of the drum in view.' },
     origin: { rack: TOM2.c, floor: FLOOR.c, open: FLOOR.c },
   },
   instrument: {
@@ -31,9 +31,9 @@ export const TOMS_COPY: LessonCopy = {
   },
   sound: {
     strikes: [
-      { id: 'c', label: 'CENTRE', mm: 0, blurb: 'The exact centre of the head.' },
-      { id: '2', label: 'OFF CENTRE', mm: 2 * 25.4, blurb: '2 in (51 mm) from the centre.' },
-      { id: '4', label: 'NEAR THE EDGE', mm: 4 * 25.4, blurb: '4 in (102 mm) from the centre, about 2 in in from the edge of a 12 in head.' },
+      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact centre of the head.' },
+      { id: '2', label: 'OFF CENTRE', mm: 2 * 25.4, blurb: '2 in (51 mm) from the center.' },
+      { id: '4', label: 'NEAR THE EDGE', mm: 4 * 25.4, blurb: '4 in (102 mm) from the center, about 2 in in from the edge of a 12 in head.' },
     ],
     strikeDefault: '2',
     striker: 'STICK',
@@ -48,7 +48,7 @@ export const TOMS_COPY: LessonCopy = {
     reveal: 'The squeezed air pushes the bottom head OUT, away from the batter — both heads move the same way at that moment. The two heads are coupled through the air inside.',
     after: 'Then both heads keep ringing for a while — the BODY of the tom, often a clear pitch. How long it rings depends on the tuning, the damping and the drum (the Drum Tuning Lab covers that).',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones, the lowest shape among them. Off centre, more shapes join in.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact center, every shape with a still line across the head stands still — so a center strike drives only the ring-shaped ones, the lowest shape among them. Off center, more shapes join in.',
       'This is a simplified head in empty space. On a real tom, the air inside and the second head pull these numbers around — the next step shows the two heads working together.',
     ],
     coupledSubject: 'Side view of the tom',
@@ -75,9 +75,9 @@ export const TOMS_COPY: LessonCopy = {
     workedAim: 'Aim it at the head — the lab counts it while the mic’s axis meets the batter head. On a tilted tom, “above the head” is measured square to the head, not straight up. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the sticks’ path across the toms, the cymbals above, the holder and the hoops. Clearance comes first, before any number, and the drummer stops before a real mic moves.',
     blocked: {},
-    reveal: 'Moving toward the centre tends to bring more low end, toward the rim more attack — and drums vary, so “it depends on this drum” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
+    reveal: 'Moving toward the center tends to bring more low end, toward the rim more attack — and drums vary, so “it depends on this drum” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
     typeNotes: {
-      tomDynSuper: 'Ideas to try: keep the distance and swing the aim from the rim toward the centre; then, separately, change the height. On a crowded rack, notice where its rear points — toward a crash, or not.',
+      tomDynSuper: 'Ideas to try: keep the distance and swing the aim from the rim toward the center; then, separately, change the height. On a crowded rack, notice where its rear points — toward a crash, or not.',
       clipDynCard: 'Ideas to try with a clip-on: keep the clamp clear of the rim the sticks hit and of the tuning rods, then change only the angle.',
       rimCondenser: 'Ideas to try: keep the head angled at the drumhead, usually not flat to it, and within the gooseneck’s bend limit; listen for how much cymbal it hears.',
     },
@@ -85,9 +85,9 @@ export const TOMS_COPY: LessonCopy = {
     availableLead: 'Starting points for this mic on this drum',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every tom is different.',
-      separate: 'Distance from the rim, height above the head and the direction of the mic’s axis are separate variables: change one at a time. On a tilted tom, height is measured square to the head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.',
+      separate: 'Distance from the rim, height above the head and the direction of the mic’s axis are separate variables: change one at a time. On a tilted tom, height is measured square to the head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimetre claim is made.',
       clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, clamp, gooseneck, stand and cable out of the sticks’ path across every tom, the cymbals’ swing, the holder, the floor tom’s legs and the player’s leg. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real kit.',
-      tendencies: 'Toward the rim tends to bring a higher-pitched attack; toward the centre a fuller low end — tendencies, and drums vary. With a directional mic, proximity effect also changes the lows at short distances; “closer to the centre” does not promise more bass every time.',
+      tendencies: 'Toward the rim tends to bring a higher-pitched attack; toward the center a fuller low end — tendencies, and drums vary. With a directional mic, proximity effect also changes the lows at short distances; “closer to the center” does not promise more bass every time.',
     },
   },
   context: {

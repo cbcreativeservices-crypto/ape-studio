@@ -52,7 +52,7 @@ export function friisNearField(distM: number, fHz: number): string | null {
 
 /** Both mics hear the source at the same instant — the mono sum has no comb. */
 const NO_ARRIVAL_DIFFERENCE =
-  'No path difference → no comb-filter nulls: the source reaches both mics at the same instant (dead centre, or no spacing), so summing them to mono simply adds the two in step.';
+  'No path difference → no comb-filter nulls: the source reaches both mics at the same instant (dead center, or no spacing), so summing them to mono simply adds the two in step.';
 
 const STEREOMIC: Workspace = {
   id: 'stereomic',
@@ -69,12 +69,12 @@ const STEREOMIC: Workspace = {
     'delay creates width but risks mono comb filtering; the 3:1 rule keeps bleed between two spot ' +
     'mics low enough that the comb it makes when summed is shallow and hard to hear.',
   example:
-    'A 40 cm spaced pair, source 30° off-centre (20 °C): path difference = 0.40·sin30° = 0.20 m, so ' +
+    'A 40 cm spaced pair, source 30° off-center (20 °C): path difference = 0.40·sin30° = 0.20 m, so ' +
     'Δt ≈ 0.58 ms and the first mono comb null sits at c/(2·0.20) ≈ 858 Hz.',
   mistakes: [
     'Spacing mics wide for "more stereo" then summing to mono — the arrival delay comb-filters the sound.',
     'Ignoring the 3:1 rule — a second mic should be at least 3× as far from the first mic as the first is from its source, or bleed combs the mix.',
-    'Forgetting the angle matters — a source dead centre has zero delay; the comb only appears as the source moves off-axis.',
+    'Forgetting the angle matters — a source dead center has zero delay; the comb only appears as the source moves off-axis.',
   ],
   warnings:
     'Geometric time-of-arrival model: path difference = spacing·sin(angle); Δt = path/ c; first comb ' +
@@ -83,7 +83,7 @@ const STEREOMIC: Workspace = {
   glossary: ['Stereo', 'Comb Filtering', 'Microphone (Mic)', 'Phase', 'Polar Pattern'],
   fields: [
     { key: 'spacing', name: 'MIC SPACING', quantity: 'length', defaultUnit: 'cm', placeholder: '40', help: 'Distance between the two microphone capsules.', positive: true, warn: { test: (x) => x <= 0, msg: 'Spacing must be greater than zero.' } },
-    { key: 'angle', name: 'SOURCE ANGLE', quantity: 'angle', signed: true, placeholder: '30', help: 'Angle of the source off the array’s centre line.', warn: { test: (x) => x < 0 || x > 90, msg: 'Use 0–90° off centre.' } },
+    { key: 'angle', name: 'SOURCE ANGLE', quantity: 'angle', signed: true, placeholder: '30', help: 'Angle of the source off the array’s center line.', warn: { test: (x) => x < 0 || x > 90, msg: 'Use 0–90° off center.' } },
     { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
     { key: 'micDist', name: 'MIC-TO-SOURCE DISTANCE', quantity: 'length', placeholder: '0.3', help: 'Distance from a spot mic to its source, for the 3:1 rule.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
   ],

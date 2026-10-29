@@ -182,7 +182,7 @@ function F06TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone
       body: (
         <>
           <Card>
-            <Point title="LEFT, RIGHT AND MONO">Check left and right and the mono sum at the start, the middle and the end of a take. For X/Y and decoded M/S the centre should stay useful; for ORTF and spaced omnis listen for changes in the low end and the transients.</Point>
+            <Point title="LEFT, RIGHT AND MONO">Check left and right and the mono sum at the start, the middle and the end of a take. For X/Y and decoded M/S the center should stay useful; for ORTF and spaced omnis listen for changes in the low end and the transients.</Point>
             <Point title="M/S STAYS LABELLED">Record the Mid and the Side as their own tracks, or decode them correctly to left and right. The raw Side is not a right channel.</Point>
             <Point title="TWO SPACED MICS ARE NOT ONE OMNI">Summing two spaced mics does not recreate one omni at the middle: the time difference between them stays in the sum.</Point>
           </Card>

@@ -30,7 +30,7 @@ const BASE = standingVoiceCopy({
   studio: {
     id: 'b2.ctx.studio',
     prompt: 'A recorded news interview in a quiet studio, no loudspeakers, a two-shot. What is a fair first setup?',
-    note: 'With no PA, a lav each — centred, on separate labelled channels — is a place to begin; a boom just outside the frame can carry the program with the lavs as fallbacks. Switch to PUBLIC for the PA exercise.',
+    note: 'With no PA, a lav each — centered, on separate labelled channels — is a place to begin; a boom just outside the frame can carry the program with the lavs as fallbacks. Switch to PUBLIC for the PA exercise.',
   },
   contextPoints: [
     { title: 'NEWS SET', text: 'Most news sets do not put the anchor in any local loudspeaker: the lavs, a boom outside the frame or a desk mic can all work, each for a reason.' },
@@ -81,7 +81,7 @@ export const B02_COPY: Partial<LessonCopy> = {
     workedClear: 'Clear of the anchor’s movement and the picture: the lav on a firm edge, off the jacket, the hair and the jewellery, its cable looped; a boom outside every frame; a desk mic’s base away from the papers. Clearance comes first, before any number.',
     reveal: 'A chest lav keeps one distance but hears the clothes and drifts off the turning mouth; a boom from above sounds open but must stay outside the frame; a raised desk mic hears the desk’s bounce; a boundary on the desk hears more room. Desks and voices vary, so “it depends on this set” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
-      locLav: 'Ideas to try with a lav: centred on a firm edge first, then — only if the shot needs it — hidden under one layer, compared at matched loudness.',
+      locLav: 'Ideas to try with a lav: centered on a firm edge first, then — only if the shot needs it — hidden under one layer, compared at matched loudness.',
       shotgunShort: 'Ideas to try with the fixed boom’s short shotgun: its tube’s tip just outside the widest frame, aimed at the mouth; distances read to its capsule.',
       compactHyper: 'Ideas to try with a compact hypercardioid on the boom: the same place, matched loudness — often smoother among a studio’s reflections.',
       bcGoose: 'Ideas to try with a gooseneck: its capsule raised toward the mouth, a little below its line; the base away from the papers.',

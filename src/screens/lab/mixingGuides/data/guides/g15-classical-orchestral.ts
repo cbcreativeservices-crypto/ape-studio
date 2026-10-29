@@ -38,7 +38,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Woodwinds:",
-      "text": "flutes/piccolo, oboes/cor anglais (English horn), clarinets/bass clarinet, bassoons/contrabassoon. These are the solo colours and sit in the middle of the stage.",
+      "text": "flutes/piccolo, oboes/cor anglais (English horn), clarinets/bass clarinet, bassoons/contrabassoon. These are the solo colors and sit in the middle of the stage.",
       "bullet": true
     },
     {

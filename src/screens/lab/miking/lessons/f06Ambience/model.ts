@@ -145,7 +145,7 @@ export const F06_ZONES: DocumentedZone[] = [
     start: -5000,
     label: 'A second position, nearer the facade',
     band: 'For a comparison, try a second spot farther from the road — about 12.5–15.5 m back from the kerb, a few metres in front of the facade — and listen to what the wall adds.',
-    tendency: 'Less traffic and more of the square, with the facade’s reflection behind: useful colour, or not — compare it with the first position.',
+    tendency: 'Less traffic and more of the square, with the facade’s reflection behind: useful color, or not — compare it with the first position.',
     checks: ['What the wall’s reflection adds, by ear', 'The same height and mic as the first position', 'The walkway and the door kept clear'],
     src: 'LESSON-F06',
     quote: 'A stable array, shielded from a nearby wall or other reflector only when its coloration is useful (L33)',

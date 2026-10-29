@@ -51,7 +51,7 @@ export const XYLO_ZONES: DocumentedZone[] = [
     words: {
       label: 'One of a spaced pair — over the low half',
       band: 'Start about 46 cm (1½ ft) above the bars, about 30 cm (1 ft) to the low side of the middle, aimed down; its partner mirrors it, about 61 cm (2 ft) apart.',
-      tendency: 'One mic toward each region, with overlap in the middle. Notes reaching both mics at different times can change their colour when summed.',
+      tendency: 'One mic toward each region, with overlap in the middle. Notes reaching both mics at different times can change their color when summed.',
       checks: ['The partner over the high half', 'Overlap in the middle', 'Each alone, both together, and in mono'],
     },
   }),
@@ -89,8 +89,8 @@ export const XYLO_ZONES: DocumentedZone[] = [
     quote: 'Miking below resonator openings can be auditioned for a deliberate local color; it may isolate a narrow part of the instrument or expose mechanical noise.',
     micTypeIds: MICS,
     words: {
-      label: 'Under the tubes, aimed up — a deliberate colour',
-      band: 'Only for a deliberate local colour: under the high part of the keyboard, between the tubes, aimed up — never into a tube, never on a bar.',
+      label: 'Under the tubes, aimed up — a deliberate color',
+      band: 'Only for a deliberate local color: under the high part of the keyboard, between the tubes, aimed up — never into a tube, never on a bar.',
       tendency: 'A narrow part of the instrument, and more mechanical noise. Not the whole xylophone — compare it with a view from above.',
       checks: ['Nothing inside a tube or touching the frame', 'Rattles and noise', 'Compare with a mic above'],
     },

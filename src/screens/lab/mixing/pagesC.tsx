@@ -57,7 +57,7 @@ function PageEqContext({ ctx }: { ctx: PageCtx }) {
       <Lead>This is the FREQUENCY dimension at mix scale: EQ here is not about making tracks sound good alone — it is about making them FIT. And an EQ move is only one of several fixes for a frequency fight.</Lead>
       <Card>
         <Eyebrow>THE PROBLEM — LISTEN FIRST</Eyebrow>
-        <Prompt>The guitar stabs and the lead line share the same range, both centred. Play THE CLASH: the lead is still “loudest”, yet it feels buried.</Prompt>
+        <Prompt>The guitar stabs and the lead line share the same range, both centered. Play THE CLASH: the lead is still “loudest”, yet it feels buried.</Prompt>
         <AbPlayer pb={pb} variants={[variants[0]]} onPick={setPick} />
       </Card>
       <Card>

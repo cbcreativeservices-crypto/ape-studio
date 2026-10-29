@@ -264,7 +264,7 @@ export const PIANO_ZONES: DocumentedZone[] = [
     aimAt: { surface: 'holeHigh', r: 85, prov: ill('“pointing into … the holes”: the axis meets the hole within 3.5 cm of its edge') },
     drawn: holeDrawn(GB),
     start: aimedAt({ x: GB.holes[0].c.x + 20, y: -190, z: GB.holes[0].c.z }, GB.holes[0].c),
-    tendency: 'A focused colour of the piano, not the whole instrument — useful when you have one input and the piano must go through the monitors.',
+    tendency: 'A focused color of the piano, not the whole instrument — useful when you have one input and the piano must go through the monitors.',
     checks: ['Clear of the lid on either stick', 'Is the whole keyboard there, or just one part?'],
   },
   {
@@ -282,7 +282,7 @@ export const PIANO_ZONES: DocumentedZone[] = [
     aimAt: { surface: 'holeHighS', r: 85, prov: ill('the axis meets the hole') },
     drawn: holeDrawn(GS),
     start: aimedAt({ x: GS.holes[0].c.x + 20, y: -190, z: GS.holes[0].c.z }, GS.holes[0].c),
-    tendency: 'A focused colour of the piano for one input — not the whole instrument.',
+    tendency: 'A focused color of the piano for one input — not the whole instrument.',
     checks: ['Clear of the lid', 'Is the whole keyboard there?'],
   },
   {

@@ -112,7 +112,7 @@ export const TOM_ZONES: DocumentedZone[] = [
     aimAt: { surface: 'tom2', r: R2, prov: TOP_SRC },
     drawn: rimDrawn(TOM2, R2 - 40, R2 + 40, 25, 75),
     start: poseToward(above(TOM2, R2 + 8, 15, 50), pointOn(F2, R2 - 75, 15, 0)),
-    tendency: 'A full, balanced tom with the stick’s attack. Toward the rim tends to bring more attack and ring; toward the centre more low end — a tendency to check on this drum.',
+    tendency: 'A full, balanced tom with the stick’s attack. Toward the rim tends to bring more attack and ring; toward the center more low end — a tendency to check on this drum.',
     checks: ['The sticks’ path over the toms, and the crash above', 'Mount security on the hardest strokes', 'Spill from the other toms and the snare'],
   },
   {
@@ -207,7 +207,7 @@ export const TOM_ZONES: DocumentedZone[] = [
     aimAt: { surface: 'floor', r: RF, prov: TOP_SRC },
     drawn: rimDrawn(FLOOR, RF - 40, RF + 40, 25, 75),
     start: poseToward(above(FLOOR, RF + 8, 25, 50), pointOn(FF, RF - 95, 25, 0)),
-    tendency: 'The floor tom’s weight with its attack. Toward the centre tends to bring more low end; toward the rim more attack — check on this drum.',
+    tendency: 'The floor tom’s weight with its attack. Toward the center tends to bring more low end; toward the rim more attack — check on this drum.',
     checks: ['The sticks’ path, and the player’s right leg beside the drum', 'The ride above', 'Mount security'],
   },
   {

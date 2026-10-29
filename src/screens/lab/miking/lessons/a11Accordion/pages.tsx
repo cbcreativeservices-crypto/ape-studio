@@ -120,7 +120,7 @@ const worked = (z: DocumentedZone) => [
   { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin with an accordion — an integrated view of both sides, not a rule, and not a promise of a sound.`, cell: 3 },
   { title: 'MEASURED FROM', text: 'From the instrument’s front to the mic’s FRONT, rounded to ≈ 5 mm. The readout also says how far the mic is off the line through the instrument’s middle.', cell: 0 },
   { title: 'THE DISTANCE', text: z.band, cell: 0 },
-  { title: 'CENTRED', text: 'Between the treble and the bass sides, so the two combine. Toward the treble favours the melody; toward the bass, the accompaniment.', cell: 1 },
+  { title: 'CENTERED', text: 'Between the treble and the bass sides, so the two combine. Toward the treble favours the melody; toward the bass, the accompaniment.', cell: 1 },
   { title: 'THE AIM', text: `At the instrument — the lab counts anything within ±${z.aim?.maxOffAxis ?? 30}°. Compare farther and nearer at matched level, over both bellows directions.`, cell: 2 },
   { title: 'CLEARANCE', text: 'Outside the bellows’ whole travel, the hands, the straps and the elbows — and, for a seated player, the chair’s turn and the lower bellows arc. Stand legs and cables out of the way.', cell: 3 },
 ];
@@ -160,7 +160,7 @@ const HAND: HandSpec = {
   axes: AXES,
   aimWords: { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the side).' },
   outside: 'outside the bellows’ travel',
-  worked: { zone: 'ac.one', mic: 'sdcCard', looking: 'Worked example · a small condenser · the accordion from above', label: 'The accordionist with a mic placed for you', done: 'That is the whole reading: where to begin, what it is measured from, the distance, centred, the aim, clearance. Next you place the mic yourself.', pieces: worked },
+  worked: { zone: 'ac.one', mic: 'sdcCard', looking: 'Worked example · a small condenser · the accordion from above', label: 'The accordionist with a mic placed for you', done: 'That is the whole reading: where to begin, what it is measured from, the distance, centered, the aim, clearance. Next you place the mic yourself.', pieces: worked },
   place: {
     zone: 'ac.one',
     mic: 'sdcCard',

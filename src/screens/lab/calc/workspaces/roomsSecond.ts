@@ -134,7 +134,7 @@ const SCHROEDER: Workspace = {
     'Reading f_s as exact; it marks the middle of a gradual transition band, not a single line.',
   ],
   warnings:
-    'Statistical-acoustics estimate: f_s = 2000·√(RT60 / V) (metric, V in m³). It marks the centre ' +
+    'Statistical-acoustics estimate: f_s = 2000·√(RT60 / V) (metric, V in m³). It marks the center ' +
     'of a gradual transition, not a hard boundary. Modal analysis (below) is geometry-based; the ' +
     'diffuse-field model (above) assumes good diffusion.',
   glossary: ['Room Mode', 'Standing wave', 'Reverberation Time', 'RT60', 'Modal density'],
@@ -312,7 +312,7 @@ const REFLECTION: Workspace = {
     'direct sound. The comb’s spacing is set entirely by the extra distance the reflection travels. ' +
     'Enter the direct and reflected path lengths and read the interference pattern.',
   whyItMatters:
-    'Early reflections colour every mic and every mix position. The path DIFFERENCE sets the first ' +
+    'Early reflections color every mic and every mix position. The path DIFFERENCE sets the first ' +
     'notch (1/2 the comb spacing) and how tight the teeth are; a longer difference packs more, ' +
     'closer-spaced notches. It is the physics behind the 3:1 rule and desk-bounce dips.',
   example:

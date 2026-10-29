@@ -55,7 +55,7 @@ export const F10_COPY: Partial<LessonCopy> = {
     A: { typeId: 'spFoa', pattern: 'unstated', zone: 'sp.foa' },
     B: { typeId: 'vocDynCard', pattern: 'cardioid', zone: 'sp.close' },
     learn: [
-      'The close mic hears the singer about 6 m — about 17 ms — before the spatial mic does. Summed as they are, the two make a comb of notches packed close together, heard as colour or as an echo.',
+      'The close mic hears the singer about 6 m — about 17 ms — before the spatial mic does. Summed as they are, the two make a comb of notches packed close together, heard as color or as an echo.',
       'Keep them as two layers on their own channels: the spatial view, and the close voice an array cannot isolate. Any blend is a choice, judged by ear — polarity flips the sign and never removes a delay.',
     ],
     warn: 'This simplified graph treats the singer as one point and both mics as hearing the same sound with straight paths and no square. A real spatial mic hears the whole place, the close mic mostly the voice — read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative.',

@@ -222,10 +222,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'spk.place.2',
     page: 'placement',
-    prompt: 'You slide the mic from the centre of the cone toward its edge, keeping the same distance. What should you expect?',
+    prompt: 'You slide the mic from the center of the cone toward its edge, keeping the same distance. What should you expect?',
     options: ['A mellower sound, as a tendency to check', 'A louder sound with a fixed lift in the bass', 'No change, since the distance has not moved'],
     correct: 'A mellower sound, as a tendency to check',
-    explain: 'Most often the edge sounds mellower or warmer than the centre — speakers vary, so listen. Keeping the distance fixed means you hear the effect of the move across the cone, nothing else.',
+    explain: 'Most often the edge sounds mellower or warmer than the center — speakers vary, so listen. Keeping the distance fixed means you hear the effect of the move across the cone, nothing else.',
     why: {
       'A louder sound with a fixed lift in the bass': 'These are tendencies, not fixed amounts. Toward the edge most often sounds mellower, not louder.',
       'No change, since the distance has not moved': 'The spot on the cone matters as well as the distance: that is why you keep one fixed while changing the other.',
@@ -532,7 +532,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'a', label: 'Instrument dynamic close in front of the speaker, aimed at the dust-cap edge', ok: true, power: 'none', feedback: 'A suggested starting point, close and directional for a loud stage; a dynamic needs no power.' },
       { id: 'b', label: 'Small condenser about 5–15 cm from the grille, on the active speaker', ok: true, power: 'phantom', feedback: 'Close and directional, and this channel has the phantom power it needs.' },
-      { id: 'c', label: 'Instrument dynamic just off the grille, on the centre of the cone', ok: true, power: 'none', feedback: 'A brighter starting point; fine if it suits the player’s tone — keep it off the cloth.' },
+      { id: 'c', label: 'Instrument dynamic just off the grille, on the center of the cone', ok: true, power: 'none', feedback: 'A brighter starting point; fine if it suits the player’s tone — keep it off the cloth.' },
       { id: 'd', label: 'A mic 60–90 cm back from the cabinet, for the room', ok: false, power: 'none', feedback: 'On a loud stage that hears the drums and monitors and lowers the margin before feedback.' },
       { id: 'e', label: 'A dynamic pressed against the grille cloth so it cannot move', ok: false, power: 'none', feedback: 'Keep the mic off the cloth: contact adds noise and can damage both.' },
     ],
@@ -558,7 +558,7 @@ const setupTasks: SetupTask[] = [
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: when the cone moves forward, what does the air BEHIND it do?', options: ['It is pulled toward the cone', 'It is pushed away too', 'Nothing — only the front air moves'], after: 'Now STEP through (or PLAY ONCE), with the back open and closed.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: keeping the distance, you slide the mic from the centre toward the edge. What changes?', options: ['Brighter', 'Mellower', 'It depends on this speaker'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
+  placement: { prompt: 'Predict: keeping the distance, you slide the mic from the center toward the edge. What changes?', options: ['Brighter', 'Mellower', 'It depends on this speaker'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this cardioid reject the guitarist’s wedge best?', options: ['Straight behind the mic', 'At the sides of the mic', 'In front of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip the rear mic’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip REAR POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };

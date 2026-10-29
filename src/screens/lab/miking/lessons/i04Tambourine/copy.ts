@@ -122,7 +122,7 @@ export const TMB_COPY: LessonCopy = spCopy({
     B: 'tmb.above.shaken',
     learn: [
       'A common situation: the tambourine spot, and another mic that hears it too — a vocal mic, a percussion area mic, or a second angle. Each hears it at a different time, and a moving instrument changes that time on every shake.',
-      'Compare each mic alone, then their sum in MONO, through real playing. If the colour changes oddly, move, re-aim or rebalance first; try polarity as a diagnostic, not a fixed switch.',
+      'Compare each mic alone, then their sum in MONO, through real playing. If the color changes oddly, move, re-aim or rebalance first; try polarity as a diagnostic, not a fixed switch.',
     ],
   },
   facing: 'facing the jingles',

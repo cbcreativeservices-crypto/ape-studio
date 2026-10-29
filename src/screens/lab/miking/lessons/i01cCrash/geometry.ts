@@ -14,7 +14,7 @@ const areas = { kind: 'sourced', src: 'ZIL-FAQ', quote: 'Crash Area The outer ed
 const OWN: Part[] = [
   { id: 'crash.edge', label: 'edge (the crash area)', short: 'edge', role: 'The outer band, where most players strike — a glancing blow with the shoulder of the stick. The crash responds at once.', prov: areas },
   { id: 'crash.bow', label: 'bow', short: 'bow', role: 'The wide middle of the plate. Thin crashes flex and swing; heavy ones ring longer and louder.', prov: { kind: 'sourced', src: 'ZIL-L11', quote: 'There are many models of crash cymbals, from thick and heavy to thin and light.' } },
-  { id: 'crash.bell', label: 'bell', short: 'bell', role: 'The raised centre, held by the felts. A crash is seldom played there.', prov: areas },
+  { id: 'crash.bell', label: 'bell', short: 'bell', role: 'The raised center, held by the felts. A crash is seldom played there.', prov: areas },
   { id: 'crash.mount', label: 'felts, sleeve and wing nut', short: 'mount', role: 'The crash sits loose between two felts on its sleeve, so it can move — that is why it swings and rocks after a stroke.', prov: { kind: 'sourced', src: 'ZIL-L11', quote: 'The cymbal should be able to move freely, so avoid over tightening the wing nut.' } },
   { id: 'crash.stand', label: 'boom stand', short: 'stand', role: 'A tripod, a tube and a boom reaching in over the drums. A mic underneath keeps clear of the boom.', prov: C1.spec.d.prov },
 ];

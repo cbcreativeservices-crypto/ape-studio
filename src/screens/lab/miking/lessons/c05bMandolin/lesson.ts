@@ -46,7 +46,7 @@ const pages: LessonPages = {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s rejection faces the floor wedge — and know when a close mic, a shared mic, a clip or a pickup suits the stage.',
     credit: { scenarios: [`${P}.ctx.1`, `${P}.ctx.2`, `${P}.ctx.studio`, `${P}.rec.3`], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the wedge sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'Aim the rejection by the actual pattern. Close mics help gain before feedback; wedges and overlapping mics colour the sound. No mic position alone prevents feedback.',
+    takeaway: 'Aim the rejection by the actual pattern. Close mics help gain before feedback; wedges and overlapping mics color the sound. No mic position alone prevents feedback.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -416,7 +416,7 @@ export const C05B_LESSON: Lesson = {
       { id: 'player', label: 'the player and the mandolin', short: 'PLAYER', note: 'Standing on a strap, the short neck to the player’s left; the pick sweeps over the top and the instrument turns as they move.', prov: { kind: 'illustrative', reason: 'a typical standing posture' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'vocal', label: 'the vocal mic (a singing player)', short: 'VOCAL MIC', note: 'Above the mandolin, in front of the mouth. The voice reaches the mandolin mic and the mandolin the vocal mic: plan both.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'SPILL', scene: 'kit' },
       { id: 'shared', label: 'a shared band mic', short: 'SHARED MIC', note: 'A bluegrass band may share a front mic, stepping in for solos — choreography, restrained monitors and a kind room.', prov: { kind: 'illustrative', reason: 'a typical bluegrass stage' }, tag: 'ENSEMBLE', scene: 'stage' },
-      { id: 'wedge', label: 'the player’s floor wedge (monitor)', short: 'WEDGE', note: 'In front of the player, facing back. Wedges and overlapping mics can colour the sound and cut isolation.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
+      { id: 'wedge', label: 'the player’s floor wedge (monitor)', short: 'WEDGE', note: 'In front of the player, facing back. Wedges and overlapping mics can color the sound and cut isolation.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'band', label: 'the band: bass and drums', short: 'BAND', note: 'Upstage; in a bluegrass band the banjo and guitar are close neighbours too.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage', planIds: ['bassAmp', 'kit'] },
       { id: 'pa', label: 'the PA', short: 'PA', note: 'At the front corners, facing the audience.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FEEDBACK', scene: 'stage', planIds: ['paL', 'paR'] },
       { id: 'audience', label: 'the audience', short: 'AUDIENCE', note: 'Beyond the stage edge.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },

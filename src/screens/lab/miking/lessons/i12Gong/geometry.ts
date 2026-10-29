@@ -45,9 +45,9 @@ function frameParts(v: string): Part[] {
 }
 
 const parts: Part[] = [
-  { id: 'gg.face', label: 'face (tam-tam)', short: 'face', role: 'The broad face of a large orchestral tam-tam — no boss. Struck a little off centre with a soft mallet, it swells after the stroke into a broad, complex bloom rather than one clear note.', solid: { kind: 'cyl', a: v3(-RIM, CY, 0), b: v3(DOME, CY, 0), r: radiusOf('tamtam') }, variants: ['tamtam'], moving: true, prov: GONG.tamtamD.prov },
+  { id: 'gg.face', label: 'face (tam-tam)', short: 'face', role: 'The broad face of a large orchestral tam-tam — no boss. Struck a little off center with a soft mallet, it swells after the stroke into a broad, complex bloom rather than one clear note.', solid: { kind: 'cyl', a: v3(-RIM, CY, 0), b: v3(DOME, CY, 0), r: radiusOf('tamtam') }, variants: ['tamtam'], moving: true, prov: GONG.tamtamD.prov },
   { id: 'gg.faceB', label: 'face (bossed gong)', short: 'face', role: 'The face round the raised boss. Struck near the boss, it brings out a thicker mix of tones.', solid: { kind: 'cyl', a: v3(-RIM, CY, 0), b: v3(DOME, CY, 0), r: radiusOf('bossed') }, variants: ['bossed'], moving: true, prov: GONG.bossedD.prov },
-  { id: 'gg.boss', label: 'boss', short: 'boss', role: 'The raised centre of a bossed gong — the part meant to be struck, for a more pitch-centred sound.', solid: { kind: 'cyl', a: v3(DOME, CY, 0), b: v3(BOSS_H, CY, 0), r: GONG.bossD.mm / 2 }, variants: ['bossed'], moving: true, prov: { kind: 'sourced', src: 'SONVO', quote: 'They have a rather large protrusion in the middle that is meant to be struck' } },
+  { id: 'gg.boss', label: 'boss', short: 'boss', role: 'The raised center of a bossed gong — the part meant to be struck, for a more pitch-centered sound.', solid: { kind: 'cyl', a: v3(DOME, CY, 0), b: v3(BOSS_H, CY, 0), r: GONG.bossD.mm / 2 }, variants: ['bossed'], moving: true, prov: { kind: 'sourced', src: 'SONVO', quote: 'They have a rather large protrusion in the middle that is meant to be struck' } },
   { id: 'gg.rim', label: 'turned rim', short: 'rim', role: 'The edge, turned back into a flange. The cords pass through holes in it, so the gong hangs freely.', prov: ill('the rim’s depth is a drawing default') },
   { id: 'gg.cords', label: 'suspension cords', short: 'cords', role: 'Cords — gut is common — from the frame to holes in the rim. The gong should swing freely forward, back and to the sides without touching the stand. Inspect them before playing; the gong and its suspension are the owner’s.', prov: { kind: 'sourced', src: 'PAI-SUP', quote: 'Each Gong should be suspended so that it may swing freely forward, back, and to the sides without touching the stand.' } },
   ...VARIANTS.flatMap(frameParts),
@@ -100,10 +100,10 @@ function zoneB(v: 'tamtam' | 'bossed'): DocumentedZone {
     refSurface: 'face',
     side: 'outside',
     distance: { min: 300, max: 600 },
-    radial: { line: 'axis', min: 0.6 * R, max: 0.9 * R, prov: trial('"a clear outer portion of the face": 0.6–0.9 of the radius off the centre line') },
+    radial: { line: 'axis', min: 0.6 * R, max: 0.9 * R, prov: trial('"a clear outer portion of the face": 0.6–0.9 of the radius off the center line') },
     box: { min: v3(-5000, -5000, 50), max: v3(5000, 0, 5000), prov: ill('the side away from the player and the mallet') },
     drawn: { side: { u0: DOME + 300, u1: DOME + 600, v0: CY - 0.9 * R, v1: CY + 0.9 * R }, top: { u0: DOME + 300, u1: DOME + 600, v0: 50, v1: 0.9 * R } },
-    aimAt: { surface: 'face', r: 0.6 * R, prov: ill('"aimed toward the played region": the axis meets the face within 0.6 R of its centre') },
+    aimAt: { surface: 'face', r: 0.6 * R, prov: ill('"aimed toward the played region": the axis meets the face within 0.6 R of its center') },
     requires: { variant: v, micTypeIds: BOTH },
     start: pose(p, strikePoint(v)),
     tendency: 'More direct sound and more level before feedback — and more of the local attack, the swing’s variation and an uneven mix of tones. Compare it with the front view at a similar level.',
@@ -122,7 +122,7 @@ export const GONG_ZONES: DocumentedZone[] = [
     refSurface: 'face',
     side: 'outside',
     distance: { min: 600, max: 1200 },
-    radial: { line: 'axis', max: 260, prov: trial('"in front, facing the broad radiating surface": within 26 cm of the centre line') },
+    radial: { line: 'axis', max: 260, prov: trial('"in front, facing the broad radiating surface": within 26 cm of the center line') },
     drawn: { side: { u0: DOME + 600, u1: DOME + 1200, v0: CY - 260, v1: CY + 260 }, top: { u0: DOME + 600, u1: DOME + 1200, v0: -260, v1: 260 } },
     aim: { maxOffAxis: 25, prov: ill('facing the face: within 25° is the lab’s tolerance') },
     requires: { micTypeIds: BOTH },
@@ -186,7 +186,7 @@ export const GONG_MODEL: InstrumentModel = {
   envelopes,
   variants: [
     { id: 'tamtam', label: 'TAM-TAM', blurb: 'A large orchestral tam-tam: no boss, a broad face. It swells after the stroke into a complex bloom rather than one clear note.' },
-    { id: 'bossed', label: 'BOSSED GONG', blurb: 'A gong with a raised central boss, struck on or near it for a more pitch-centred sound. Identify which gong you have before choosing a mic approach.' },
+    { id: 'bossed', label: 'BOSSED GONG', blurb: 'A gong with a raised central boss, struck on or near it for a more pitch-centered sound. Identify which gong you have before choosing a mic approach.' },
   ],
   defaultVariant: 'tamtam',
   views: {

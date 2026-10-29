@@ -34,7 +34,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main array yourself — closer, farther, higher — and see what changes for the front and back players and across the width.',
-    credit: { scenarios: ['mix.place.1', 'mix.place.2', 'mix.31', 'mix.rec.2'], interactive: 'twoZones', note: 'Rest the array’s centre, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['mix.place.1', 'mix.place.2', 'mix.31', 'mix.rec.2'], interactive: 'twoZones', note: 'Rest the array’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Change one variable at a time and compare at a consistent level. Closer favours the front players; farther back, more blend and room. The array moves as a unit.',
   },
   context: {
@@ -53,7 +53,7 @@ const pages: LessonPages = {
     title: 'Troubleshoot',
     goal: 'Match each symptom to its likely cause and the first change to try.',
     credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
-    takeaway: 'Placement and balance first: the array’s height and distance, the spacing and centre, the supports’ level, the clipping stage, the PA’s geometry — before EQ. Lower the gain at the first sign of ringing.',
+    takeaway: 'Placement and balance first: the array’s height and distance, the spacing and center, the supports’ level, the clipping stage, the PA’s geometry — before EQ. Lower the gain at the first sign of ringing.',
   },
   practice: {
     title: 'Practice',
@@ -124,7 +124,7 @@ const scenarios: MikingScenario[] = [
     explain: 'With the capsules together, both mics hear each player at the same instant: the image comes from the level differences of the two angled cardioids.',
     why: {
       'A spaced pair of omnis': 'Spacing adds time differences — that is its main cue.',
-      'A three-omni tree array': 'Three spaced omnis: time differences again, with a centre mic.',
+      'A three-omni tree array': 'Three spaced omnis: time differences again, with a center mic.',
     },
   },
   ortfFixed('mix', 'microphone'),
@@ -323,10 +323,10 @@ const symptoms: Symptom[] = [
   {
     id: 'mix.s.middle',
     observation: 'The middle is weak',
-    firstChecks: 'Main-array geometry or panning? Check the spacing and the centre contribution before adding more channels.',
-    options: ['Check spacing and the centre feed', 'Add two more mics out at the far sides', 'Pan the pair wider still'],
-    correct: 'Check spacing and the centre feed',
-    explain: 'A spaced pair too wide, or a tree’s centre mic too low in the mix, thins the middle: check those before adding channels.',
+    firstChecks: 'Main-array geometry or panning? Check the spacing and the center contribution before adding more channels.',
+    options: ['Check spacing and the center feed', 'Add two more mics out at the far sides', 'Pan the pair wider still'],
+    correct: 'Check spacing and the center feed',
+    explain: 'A spaced pair too wide, or a tree’s center mic too low in the mix, thins the middle: check those before adding channels.',
     why: { 'Add two more mics out at the far sides': 'More side mics widen it further.', 'Pan the pair wider still': 'Wider panning deepens the hole.' },
   },
   {
@@ -449,7 +449,7 @@ export const E13_LESSON: EnsembleLesson = {
   id: 'E13',
   labId: 'ensembles',
   title: 'Mixed Classical Ensembles',
-  subtitle: 'A chamber group or an orchestra: one main array first, the tree and its centre, supports for a named need',
+  subtitle: 'A chamber group or an orchestra: one main array first, the tree and its center, supports for a named need',
   noun: { one: 'mixed ensemble', many: 'mixed ensembles' },
   model: E13_MODEL,
   micTypeIds: ['arrCard', 'arrOmni', 'arrFig8'],

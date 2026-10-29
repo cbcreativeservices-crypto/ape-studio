@@ -248,6 +248,6 @@ export const E08_SETUPS: EnsembleSetup[] = [
 /* ── THE PLACEMENT STUDIO: the pair's centre ── */
 export const E08_PLACE: PlaceZone[] = [
   { id: 'pz.near', label: 'Nearer: about 1–1.5 m from the players', band: 'The pair about 1–1.5 m (3–5 ft) from the players, a little above the instruments.', box: { min: v3(-400, -1600, 250), max: v3(400, -1100, 650) }, tendency: 'More direct sound and detail; the nearest player can lead.' },
-  { id: 'pz.far', label: 'Farther: about 1.5–2 m, at the arc’s centre', band: 'The pair about 1.5–2 m (5–6.5 ft) from the players, where they are about equally far from it.', box: { min: v3(-400, -1600, 650), max: v3(400, -1100, 1100) }, tendency: 'More blend and more of the room; the players about equally loud.' },
+  { id: 'pz.far', label: 'Farther: about 1.5–2 m, at the arc’s center', band: 'The pair about 1.5–2 m (5–6.5 ft) from the players, where they are about equally far from it.', box: { min: v3(-400, -1600, 650), max: v3(400, -1100, 1100) }, tendency: 'More blend and more of the room; the players about equally loud.' },
 ];
 export const E08_NUMBERS = { guitarD: 225, mandolinD: 350, fiddleD: 300, bassD: 220 } as const;

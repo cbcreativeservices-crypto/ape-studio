@@ -114,7 +114,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A boom from the side, clear of the bar and the picking hand',
     explain: 'Bring a boom in from the side so the capsule sees the instrument without crossing the bar’s path, the picking hand or the player leaning over it. Confirm their full reach first.',
     why: {
-      'Straight down from above, right over the middle of the cone': 'That puts the stand in the player’s space, and aiming at the cone’s centre is one experiment, not a rule.',
+      'Straight down from above, right over the middle of the cone': 'That puts the stand in the player’s space, and aiming at the cone’s center is one experiment, not a rule.',
       'Clamped to the coverplate, so it moves with the instrument': 'Never clamp to the coverplate or the cone: they are delicate, and part of the sound.',
     },
   },
@@ -185,7 +185,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The sound is thin and all pick. What is the mic probably hearing?',
     options: ['Too much of the cone and too little of the strings', 'Mostly the strings and neck, too little of the cone', 'The room only, because it is much too far away'],
     correct: 'Mostly the strings and neck, too little of the cone',
-    explain: 'A view dominated by the strings and the neck misses the cone. Include more of the off-centre coverplate region, or move back slightly.',
+    explain: 'A view dominated by the strings and the neck misses the cone. Include more of the off-center coverplate region, or move back slightly.',
     why: {
       'Too much of the cone and too little of the strings': 'That tends to sound metallic and sharp, not thin and all pick.',
       'The room only, because it is much too far away': 'A distant mic sounds roomy, not all pick. The view is the problem.',
@@ -242,9 +242,9 @@ const symptoms: Symptom[] = [
   {
     id: `${P}.sym.thin`,
     observation: 'A thin, all-pick sound',
-    firstChecks: 'Is the mic dominated by the strings and neck? Include more of the off-centre resonator area, or move back slightly.',
-    options: ['Turn the channel up until the thin sound feels full again', 'Include more of the off-centre coverplate, or move back', 'Add a second mic aimed at the strings near the neck'],
-    correct: 'Include more of the off-centre coverplate, or move back',
+    firstChecks: 'Is the mic dominated by the strings and neck? Include more of the off-center resonator area, or move back slightly.',
+    options: ['Turn the channel up until the thin sound feels full again', 'Include more of the off-center coverplate, or move back', 'Add a second mic aimed at the strings near the neck'],
+    correct: 'Include more of the off-center coverplate, or move back',
     explain: 'A view of the strings and neck misses the cone. Change the view first.',
     why: {
       'Turn the channel up until the thin sound feels full again': 'Louder only seems fuller: the balance comes from where the mic is.',
@@ -287,7 +287,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'Small condenser on a boom from the side, 20–45 cm from the coverplate, rear toward the wedge', ok: true, power: 'phantom', feedback: 'A suggested starting point, from the side, clear of the bar and hand, aimed against the wedge.' },
       { id: 'b', label: 'Instrument dynamic on a side boom, about 20 cm from the coverplate, off the picking hand', ok: true, power: 'none', feedback: 'A robust close option at a suggested starting point.' },
       { id: 'c', label: 'Clip-on mini on a suitable body clip, capsule toward the coverplate’s edge', ok: true, power: 'phantom', feedback: 'A suggested starting point that moves with the instrument — never on the cone.' },
-      { id: 'd', label: 'Mic stand straight up over the cone, 5 cm above its centre', ok: false, power: 'phantom', feedback: 'In the player’s and the bar’s space, and one close spot sounds narrow. Come in from the side.' },
+      { id: 'd', label: 'Mic stand straight up over the cone, 5 cm above its center', ok: false, power: 'phantom', feedback: 'In the player’s and the bar’s space, and one close spot sounds narrow. Come in from the side.' },
       { id: 'e', label: 'Clip the mini onto the coverplate itself, aimed at the cone', ok: false, power: 'phantom', feedback: 'Never mount on the coverplate or the cone: they are delicate and part of the sound.' },
     ],
     reasons: [DOC_REASON, clearReason('the bar, the picking hand and the leaning player'), POWER_REASON, { id: 'r.null', label: 'Aiming its rejection toward the wedge helps against feedback', role: 'optional', feedback: 'A fair live reason — though no position alone prevents feedback.' }, brandReason(RESO), LOUD_REASON],
@@ -441,7 +441,7 @@ export const C03_LESSON: Lesson = {
     { text: 'The player’s posture and reach (lap style and upright), and the heights above the floor: drawing defaults. No HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The body’s keep-off margins, and the coverplate’s (15 mm): illustrative.', dims: ['lap', 'round'] },
     { text: 'The body (the steel dreadnought’s outline), the coverplate (Ø 270, its hole pattern), the cone’s position, the ports, the scale and the neck joint — drawing defaults; only the 9.5 in cone is sourced.', dims: [] },
-    { text: 'The 20–45 cm start is the lesson’s teaching trial; the 20 cm start reads Shure’s “8 in from the sound hole” guitar row as “from the cone’s centre”.', dims: [] },
+    { text: 'The 20–45 cm start is the lesson’s teaching trial; the 20 cm start reads Shure’s “8 in from the sound hole” guitar row as “from the cone’s center”.', dims: [] },
     { text: 'The clip’s capsule height and reach, the mic sizes, the wedge and the band’s positions — drawing defaults.', dims: [] },
   ],
   live: { wedges: C03_WEDGES },

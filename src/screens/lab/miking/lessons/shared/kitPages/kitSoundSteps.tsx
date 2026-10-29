@@ -185,7 +185,7 @@ export function useCymbalShapesStep({ words }: { words: ShapesWords }): MikingSt
         <Landing looking={`A 16 in crash from above · shape ${shape.label}`} prompt={words.prompt} />
         <Card>
           <Point title={`SHAPE ${shape.label} · ${shape.still.toUpperCase()}`}>
-            {`A struck cymbal rings in many shapes at once; this is one of them. ${idx === 0 ? 'It is the lowest the plate model gives a centre-held disc.' : `On the simplified flat disc its pitch is ${shape.ratio.toFixed(2)} times the lowest one’s — not a whole number, which is part of why a cymbal sounds like a wash rather than a note.`} With the stick on the ${words.areas[spot].label.toLowerCase()}, the plate moves ${pct} % of this shape’s peak there, so the stroke ${share < 0.05 ? 'barely drives this shape' : share < 0.4 ? 'drives it only a little' : 'drives it strongly'}.${edgeMost ? ' In this shape the edge moves more than the bow.' : ''}`}
+            {`A struck cymbal rings in many shapes at once; this is one of them. ${idx === 0 ? 'It is the lowest the plate model gives a center-held disc.' : `On the simplified flat disc its pitch is ${shape.ratio.toFixed(2)} times the lowest one’s — not a whole number, which is part of why a cymbal sounds like a wash rather than a note.`} With the stick on the ${words.areas[spot].label.toLowerCase()}, the plate moves ${pct} % of this shape’s peak there, so the stroke ${share < 0.05 ? 'barely drives this shape' : share < 0.4 ? 'drives it only a little' : 'drives it strongly'}.${edgeMost ? ' In this shape the edge moves more than the bow.' : ''}`}
           </Point>
         </Card>
         {words.notes.map((t) => (

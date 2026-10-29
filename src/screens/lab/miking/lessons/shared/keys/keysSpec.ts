@@ -141,10 +141,10 @@ export const WURLI = {
   /** Keys drawn as a pattern only (64 in retailer snippets, Low): never stated. */
   keysDrawn: placeholder(64, 'key count (64 in retailer snippets, Low confidence): drawn as a pattern, never stated'),
   lidSetback: placeholder(150, 'the lid’s front face starts 150 mm behind the keys’ front edge: drawing default'),
-  spkZ: placeholder(260, 'each speaker 260 mm either side of the centre line: drawing default (grille positions UNKNOWN)'),
+  spkZ: placeholder(260, 'each speaker 260 mm either side of the center line: drawing default (grille positions UNKNOWN)'),
   spkTilt: placeholder(20, 'the speakers face the player, tilted 20° up in the lid’s front slope: drawing default'),
   lidPanel: placeholder(6, 'the lid’s panel thickness: drawing default 6'),
-  legZ: placeholder(470, 'the legs 470 mm either side of the centre: drawing default'),
+  legZ: placeholder(470, 'the legs 470 mm either side of the center: drawing default'),
   countProv: src('VV-200A', 'two 4×8 speakers'),
   mountProv: src('TF-DIFF', 'The 200 has alnico speakers which are mounted to the amp rail. The 200a has ceramic speakers that are mounted directly to the plastic lid with four flowerhead screws.'),
   rattleProv: src('TF-DIFF', '200a speakers can rattle if they are not firmly screwed in place.'),

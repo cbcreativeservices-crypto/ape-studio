@@ -34,16 +34,16 @@ export function c05aZoneSpecs(sc: GuitarScene): ZoneSpec[] {
   return [
     {
       id: 'centre',
-      label: 'Close, in front of the head’s centre',
-      band: 'Start about 7.5 cm (3 in) out from the centre of the head.',
+      label: 'Close, in front of the head’s center',
+      band: 'Start about 7.5 cm (3 in) out from the center of the head.',
       kind: 'sourced',
       src: 'S-LIVE',
       quote: '3 inches from center of head',
       bandProv: ill('"3 inches": drawn as 6–9 cm'),
       surface: 'hole',
       distance: { min: 60, max: 90 },
-      radial: { max: 45, prov: ill('"center of head": within 4.5 cm of the centre line') },
-      aimAtR: { r: 70, prov: ill('aimed at the head near its centre') },
+      radial: { max: 45, prov: ill('"center of head": within 4.5 cm of the center line') },
+      aimAtR: { r: 70, prov: ill('aimed at the head near its center') },
       micTypeIds: STAND,
       // 7.6 cm out, 4.2 cm toward the neck from the head's centre line (inside
       // the 4.5 cm "centre" allowance): the bridge sits a third of the way in
@@ -66,8 +66,8 @@ export function c05aZoneSpecs(sc: GuitarScene): ZoneSpec[] {
       micTypeIds: STAND,
       boxG: { min: { x: cx - R - 10, y: -45, z: 60 }, max: { x: cx - R + 50, y: 45, z: 95 }, prov: ill('over the head’s tail-side edge') },
       start: { dx: cx - R + 20, d: 76, aimAt: { x: cx - R + 40, y: 0, z: 0 } },
-      tendency: 'A different balance from the centre — often a little less of the head’s punch and more of its ring. Compare the two at matched levels.',
-      checks: ['Clear of the tailpiece and the forearm', 'Compare with the centre position', 'The resonator or open back changes it'],
+      tendency: 'A different balance from the center — often a little less of the head’s punch and more of its ring. Compare the two at matched levels.',
+      checks: ['Clear of the tailpiece and the forearm', 'Compare with the center position', 'The resonator or open back changes it'],
     },
     {
       id: 'joint',
@@ -98,7 +98,7 @@ export function c05aZoneSpecs(sc: GuitarScene): ZoneSpec[] {
       distance: { min: 30, max: 70 },
       aimAtR: { r: 45, prov: ill('aiming at the bridge: the axis reaches the bridge’s plane within 4.5 cm of it'), surface: 'bridge' },
       micTypeIds: ['clipCond'],
-      boxG: { min: { x: cx - R + 40, y: -40, z: 30 }, max: { x: cx - 30, y: 40, z: 70 }, prov: ill('between the tailpiece and the head’s centre: the lab’s drawing') },
+      boxG: { min: { x: cx - R + 40, y: -40, z: 30 }, max: { x: cx - 30, y: 40, z: 70 }, prov: ill('between the tailpiece and the head’s center: the lab’s drawing') },
       // At the tailpiece's end (it reaches to ~35 mm behind the bridge), 4.5 cm
       // over the head, aimed along it at the bridge (round 2: was cx − R + 85,
       // 7 mm past the old tailpiece's end).

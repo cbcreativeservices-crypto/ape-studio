@@ -391,7 +391,7 @@ const symptoms: Symptom[] = [
     explain: 'Verify that the source and mic geometry — not an accidental level or processor change — caused it, and check the room’s paths before calling it directivity.',
     why: {
       'The tweeter, which must be failing': 'A failing driver is a late suspect: an accidental change in radius or drive is far commoner.',
-      'The analyzer’s colour settings': 'Display colours do not change a measurement.',
+      'The analyzer’s colour settings': 'Display colors do not change a measurement.',
     },
   },
   {

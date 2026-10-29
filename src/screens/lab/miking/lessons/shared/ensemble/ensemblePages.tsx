@@ -475,7 +475,7 @@ export function EnsembleSetups(p: PageProps) {
           {sel ? <SetupCard s={sel} seating={s} /> : <Note>No starting setup for this seating — try another in the dock.</Note>}
           {eq ? (
             <Card>
-              <Point title={`EQUAL DISTANCE · ${fmtDist(eq.spread)} SPREAD`}>{`The players are ${fmtDist(eq.near)} to ${fmtDist(eq.far)} from the array’s centre (the white dotted ring, seen from above). The closer those distances, the more evenly the array hears them — moving a player is often the simplest balance control.`}</Point>
+              <Point title={`EQUAL DISTANCE · ${fmtDist(eq.spread)} SPREAD`}>{`The players are ${fmtDist(eq.near)} to ${fmtDist(eq.far)} from the array’s center (the white dotted ring, seen from above). The closer those distances, the more evenly the array hears them — moving a player is often the simplest balance control.`}</Point>
             </Card>
           ) : null}
           {plot ? <PlotCard r={plot} /> : null}
@@ -770,7 +770,7 @@ export function EnsemblePlacement(p: PageProps) {
       layout: 'rack',
       rack: {
         render: (w, h) => <EnsembleStage w={w} h={h} seating={s} view={view} rigs={rigNow} zones={zonesDrawn} rings={eqNow ? [eqNow.ring] : []} dims detail={!one} lobes={view !== 'plan'} accessibilityLabel={nowWords} />,
-        badge: 'Blue = suggested starting points for the array’s centre · amber dot = the array’s centre · readouts calculated from the drawing',
+        badge: 'Blue = suggested starting points for the array’s center · amber dot = the array’s center · readouts calculated from the drawing',
         bezel,
         params: params2,
         initialParam: 'move',
@@ -778,9 +778,9 @@ export function EnsemblePlacement(p: PageProps) {
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`${def.name} · ${start ? `started from ${start.role.toLowerCase()}` : ''}`} prompt="MOVE the array (choose UP–DOWN, TOWARD–AWAY or ACROSS) and let go to rest it. Rest its centre in two different blue zones. Watch what the readouts do." />
+          <Landing looking={`${def.name} · ${start ? `started from ${start.role.toLowerCase()}` : ''}`} prompt="MOVE the array (choose UP–DOWN, TOWARD–AWAY or ACROSS) and let go to rest it. Rest its center in two different blue zones. Watch what the readouts do." />
           <NowLine text={nowWords} />
-          {eqNow ? <Body>{`Equal distance: the players are ${fmtDist(eqNow.near)} to ${fmtDist(eqNow.far)} from the array’s centre — ${fmtDist(eqNow.spread)} apart. The white dotted ring shows it from above.`}</Body> : null}
+          {eqNow ? <Body>{`Equal distance: the players are ${fmtDist(eqNow.near)} to ${fmtDist(eqNow.far)} from the array’s center — ${fmtDist(eqNow.spread)} apart. The white dotted ring shows it from above.`}</Body> : null}
           {blocked ? <Note tone="warn">{`It would touch ${blocked}: the players, their bows and the conductor’s space come first. Move it.`}</Note> : null}
           {zone ? (
             <Card>

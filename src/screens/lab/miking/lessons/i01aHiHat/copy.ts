@@ -21,9 +21,9 @@ export const HAT_COPY: Partial<LessonCopy> = {
   sceneSubject: { closed: 'the 14 in hi-hats, closed, beside the snare', open: 'the 14 in hi-hats, open, beside the snare' },
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP' },
   axes: {
-    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (x), from the hats’ centre.' },
+    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (x), from the hats’ center.' },
     y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y), from the top cymbal. Distances are read from the cymbal the zone names, square to it.' },
-    z: { plus: 'to player’s right (toward the snare)', minus: 'to player’s left (away from the snare)', label: 'ACROSS', blurb: 'Toward the player’s left or right (z), from the hats’ centre — right is toward the snare.' },
+    z: { plus: 'to player’s right (toward the snare)', minus: 'to player’s left (away from the snare)', label: 'ACROSS', blurb: 'Toward the player’s left or right (z), from the hats’ center — right is toward the snare.' },
     origin: { closed: HAT.c, open: HAT.c },
   },
   instrument: {
@@ -50,7 +50,7 @@ export const HAT_COPY: Partial<LessonCopy> = {
   },
   placement: {
     workedZone: { closed: 'hh.top', open: 'hh.top' },
-    workedLine: 'This starting point also places the mic relative to {line}: over the bow means in from the edge, toward the centre.',
+    workedLine: 'This starting point also places the mic relative to {line}: over the bow means in from the edge, toward the center.',
     workedAim: 'Aim it at the top cymbal — the lab counts it while the mic’s axis meets the cymbal — and on the side away from the snare, so the pair itself hides the snare. Height, position over the plate and angle are separate things to try.',
     workedClear: 'Clear of every part — the stick’s side of the pair, the air burst at the edges, the clutch, the crash above and the player’s left arm. Clearance comes first, before any number, and the drummer stops before a real mic moves.',
     blocked: {},
@@ -64,7 +64,7 @@ export const HAT_COPY: Partial<LessonCopy> = {
     availableLead: 'Starting points for this mic on the hats',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the cymbal it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every pair of hats is different.',
-      separate: 'Height above the top cymbal, the position over the plate (edge, bow or toward the cup) and the angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT, square to the cymbal, and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille.',
+      separate: 'Height above the top cymbal, the position over the plate (edge, bow or toward the cup) and the angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT, square to the cymbal, and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille.',
       clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable out of the stick’s side of the pair, the air at the edges, the clutch and rod, the crash above and the player’s left arm and foot. Keep-clear areas appear as the mic gets close and show roughly where to keep clear. If a move is stopped, they turn red and give the reason. Leave more room on a real kit.',
       tendencies: 'Toward the edge tends to bring more of the lower tones; toward the cup more of the high overtones. From below, less stick, and the top cymbal’s warmer tones are softer. Two ways to handle the snare: keep it off the mic’s front with the pair shading it — or, when channels are short, angle the snare mic a little toward the hats and use one mic for both. Tendencies, checked by ear.',
     },
@@ -132,7 +132,7 @@ export const HAT_CYM: CymbalExtra = {
     rFrac: STRIKE_R / HAT_R,
     stages: [
       { title: 'The stick strikes', text: 'The tip of the stick strikes the top cymbal about 2–3 cm in from its edge. That brief contact is where the ATTACK begins — bright and short.' },
-      { title: 'The top cymbal bends', text: 'The plate bends under the stick, most near the strike and not at all at the clutch, which holds its centre. Drawn many times larger than it really moves.' },
+      { title: 'The top cymbal bends', text: 'The plate bends under the stick, most near the strike and not at all at the clutch, which holds its center. Drawn many times larger than it really moves.' },
       {
         title: 'The pair rings — or is held',
         text: 'Closed, the two cymbals are pressed together: each damps the other, so the ring dies almost at once — the tight, short sound of closed hats.',
@@ -150,15 +150,15 @@ export const HAT_CYM: CymbalExtra = {
   },
   shapes: {
     title: 'The plate’s shapes',
-    badge: 'A simplified picture: one flat disc held at its centre, no second cymbal · blue + toward you, amber − away',
+    badge: 'A simplified picture: one flat disc held at its center, no second cymbal · blue + toward you, amber − away',
     prompt: 'Step through SHAPE, then move the STICK between the cup, the bow and the edge. Which shapes does each spot drive?',
     looking: 'The top cymbal from above',
     notes: [
-      'A shape is set moving only as much as the plate moves under the stick in that shape. The clutch holds the centre still, so the shapes that ring have still lines across the plate — and in most of them the edge moves the most. That is part of why the stick lands near the edge.',
+      'A shape is set moving only as much as the plate moves under the stick in that shape. The clutch holds the center still, so the shapes that ring have still lines across the plate — and in most of them the edge moves the most. That is part of why the stick lands near the edge.',
       'A simplified picture: a flat disc of even thickness on its own. Real hi-hat cymbals are domed, lathed and thinner at the edge, and the second cymbal touches the first — the shapes’ pattern (still lines across, the edge moving most) is what the picture teaches, not their numbers.',
     ],
     areas: [
-      { id: 'cup', label: 'CUP', blurb: 'The raised centre around the clutch.', r: 20 },
+      { id: 'cup', label: 'CUP', blurb: 'The raised center around the clutch.', r: 20 },
       { id: 'bow', label: 'BOW', blurb: 'The wide middle of the plate.', r: 100 },
       { id: 'edge', label: 'NEAR THE EDGE', blurb: 'About 2–3 cm in from the edge — where the stick usually lands.', r: STRIKE_R },
     ],

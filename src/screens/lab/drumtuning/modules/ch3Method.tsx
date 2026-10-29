@@ -226,7 +226,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="an uneven head with its colour map hidden; ● is where the stick taps." prompt="▶ TAP each LUG and listen for the odd ones; then say which sounded highest and ◉ REVEAL MAP." />
+              <Landing looking="an uneven head with its color map hidden; ● is where the stick taps." prompt="▶ TAP each LUG and listen for the odd ones; then say which sounded highest and ◉ REVEAL MAP." />
               <DrumStatus playing={hearTap.playing} pending={hearTap.pending} failed={hearTap.failed} rendering={hearTap.status === 'rendering'} idle="stopped · pick a LUG and press ▶ TAP; go round the head" label={`the tap at lug ${hearLug + 1}`} />
               {revealNote ? <Feedback tone={mapShown ? (guess == null || guess === hearHighest ? 'ok' : 'warn') : 'info'}>{revealNote}</Feedback> : null}
               {tapped.size >= SPEC.lugs && !mapShown ? (
@@ -240,7 +240,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
                 </Card>
               ) : null}
               <Card>
-                <Point title="Same spot, same stroke">An inch in from the rim at every lug, the same light tap each time. On a real drum, rest a finger lightly at the centre of the head while tapping so the lug tone stands out from the whole-head ring.</Point>
+                <Point title="Same spot, same stroke">An inch in from the rim at every lug, the same light tap each time. On a real drum, rest a finger lightly at the center of the head while tapping so the lug tone stands out from the whole-head ring.</Point>
               </Card>
             </>
           ),
@@ -272,7 +272,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="the head you are evening; the key sits on the rod you chose, and TURN is how far YOU have moved it this run." prompt="▶ TAP, turn, ▶ TAP again until the map is one colour and SPREAD is under 10 ¢." />
+              <Landing looking="the head you are evening; the key sits on the rod you chose, and TURN is how far YOU have moved it this run." prompt="▶ TAP, turn, ▶ TAP again until the map is one color and SPREAD is under 10 ¢." />
               <DrumStatus playing={tap.playing || strike.playing} pending={tap.pending || strike.pending} failed={tap.failed || strike.failed} rendering={tap.status === 'rendering' || strike.status === 'rendering'} idle="stopped · ▶ TAP a lug, ride TURN, ▶ TAP again; ▶ STRIKE to hear the whole drum" label={tap.playing || tap.pending ? `the tap at lug ${lug + 1}` : 'the strike'} />
               {shown ? <Feedback tone="info">{shown}</Feedback> : <Feedback tone={even.verdict === 'even' ? 'ok' : even.verdict === 'close' ? 'info' : 'warn'}>{even.message}</Feedback>}
               {guidedLeft ? <KeyButton label={`▶ SHOW ME A MOVE (${GUIDED_MOVES - guided} left)`} onPress={showMe} tint={colors.amber} /> : null}

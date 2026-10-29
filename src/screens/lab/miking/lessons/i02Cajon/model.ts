@@ -118,8 +118,8 @@ function rearZones(): DocumentedZone[] {
   return [
     targetZone({
       id: 'caj.close.rear',
-      label: 'Close, dead centre on the plate (rear port)',
-      band: 'About 15–18 cm (6–7 in) from the middle of the plate, dead centre, at a slight angle — outside both hands’ arcs. One working example; check the player’s flourishes.',
+      label: 'Close, dead center on the plate (rear port)',
+      band: 'About 15–18 cm (6–7 in) from the middle of the plate, dead center, at a slight angle — outside both hands’ arcs. One working example; check the player’s flourishes.',
       kind: 'sourced',
       src: 'S-DUVEL',
       quote: 'one dead center, 6–7" from the front at a slight angle',

@@ -48,14 +48,14 @@ export const C08_SPEC: AmpPagesSpec = {
   },
   notes: {
     beam: 'At bass pitches a cabinet spreads its sound wide — the beam you see here belongs to the higher harmonics. A 10 in woofer beams a little later than the 12 in cone drawn in this explorer as the pitch rises; the horn takes over the very top.',
-    spots: 'On a bass woofer, toward the centre tends to add bite — slap, pick, fretless articulation — and toward the edge tends to be warmer. (A 10 in woofer has the same parts as this 12 in one, a little smaller.)',
+    spots: 'On a bass woofer, toward the center tends to add bite — slap, pick, fretless articulation — and toward the edge tends to be warmer. (A 10 in woofer has the same parts as this 12 in one, a little smaller.)',
     place: 'The zones sit on ONE woofer — the lower right, ringed on page 1. Close (2.5–15 cm) for focus; 10–45 cm for room to breathe; the two overlap between 10 and 15 cm, a natural first try. The horn sits above, off this cut.',
     context: 'Live, a DI usually carries the dependable low end; the mic adds the cabinet’s character, blended underneath and checked in mono.',
   },
   liveCards: [
-    { title: 'FINGERSTYLE OR PICK, CLEAN', text: 'Compare the dust cap’s edge and the outer cone for low-mid body, then move toward the centre only as far as the articulation needs. Judge it with the kick drum and the keys.' },
-    { title: 'SLAP AND POP', text: 'Set the gain for the strongest pop. The centre or the horn can add attack — and clank or hiss; a DI may already carry the transient detail.' },
-    { title: 'DRIVEN OR EFFECTS-HEAVY', text: 'A DI before the pedals misses the effect the cabinet mic hears; label what each path carries. The outer cone may sit more smoothly than the centre.' },
+    { title: 'FINGERSTYLE OR PICK, CLEAN', text: 'Compare the dust cap’s edge and the outer cone for low-mid body, then move toward the center only as far as the articulation needs. Judge it with the kick drum and the keys.' },
+    { title: 'SLAP AND POP', text: 'Set the gain for the strongest pop. The center or the horn can add attack — and clank or hiss; a DI may already carry the transient detail.' },
+    { title: 'DRIVEN OR EFFECTS-HEAVY', text: 'A DI before the pedals misses the effect the cabinet mic hears; label what each path carries. The outer cone may sit more smoothly than the center.' },
     { title: 'FRETLESS', text: 'Listen to whole phrases: slides, sustained notes, the lowest register. Ask the player what they want — fretless is not automatically darker.' },
   ],
 };

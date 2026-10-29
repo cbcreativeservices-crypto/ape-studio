@@ -88,7 +88,7 @@ export const SNARE_MODEL: InstrumentModel = {
   name: '14 × 5.5 in snare drum',
   parts,
   regions: [
-    { id: 'r.strike', partId: 'snare.batter', label: 'stick strike', anchor: SNARE_ANCHORS['sn.strike.center'], prov: ill('the strike drawn at the centre'), note: 'The stick strikes the batter head: the crack of the attack starts here, radiating up toward the player and a top mic.' },
+    { id: 'r.strike', partId: 'snare.batter', label: 'stick strike', anchor: SNARE_ANCHORS['sn.strike.center'], prov: ill('the strike drawn at the center'), note: 'The stick strikes the batter head: the crack of the attack starts here, radiating up toward the player and a top mic.' },
     { id: 'r.snareHead', partId: 'snare.reso', label: 'snare-side head and wires', anchor: SNARE_ANCHORS['sn.reso.center'], prov: sizeProv, note: 'The snare-side head and the wires radiate downward: much of the buzz leaves here, toward the floor and a bottom mic.' },
     { id: 'r.shell', partId: 'snare.shell', label: 'shell', anchor: { x: R, y: DEPTH / 2, z: 0 }, prov: SPEC.tShell.prov, note: 'The shell, the heads’ tuning and the wires’ tension shape how the drum rings.' },
   ],

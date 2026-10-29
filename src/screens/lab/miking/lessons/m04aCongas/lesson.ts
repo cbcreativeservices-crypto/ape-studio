@@ -123,12 +123,12 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cg.snd.2',
     page: 'sound',
-    prompt: 'Open tones are struck near the rim. On the simplified head, what does a strike near the rim do that a centre strike does not?',
+    prompt: 'Open tones are struck near the rim. On the simplified head, what does a strike near the rim do that a center strike does not?',
     options: ['It drives the shapes with a still line across the head', 'It drives only the lowest shape, like a centre strike', 'It drives nothing, because the rim holds the head still'],
     correct: 'It drives the shapes with a still line across the head',
-    explain: 'A strike drives a shape only as much as the head moves at that spot in that shape. At the centre, every shape with a still line across the head stands still; off the centre, those shapes join in.',
+    explain: 'A strike drives a shape only as much as the head moves at that spot in that shape. At the center, every shape with a still line across the head stands still; off the center, those shapes join in.',
     why: {
-      'It drives only the lowest shape, like a centre strike': 'A centre strike drives only the ring-shaped shapes. Near the rim, the shapes with still lines across the head move too, and the strike drives them.',
+      'It drives only the lowest shape, like a centre strike': 'A center strike drives only the ring-shaped shapes. Near the rim, the shapes with still lines across the head move too, and the strike drives them.',
       'It drives nothing, because the rim holds the head still': 'Only the very edge is held still. A little inside it the head moves, so a strike there drives the shapes.',
     },
   },
@@ -578,12 +578,12 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.3',
     covers: 'sound',
-    prompt: 'Open tones land near the rim. Compared with a strike at the centre, what does a strike there set moving?',
+    prompt: 'Open tones land near the rim. Compared with a strike at the center, what does a strike there set moving?',
     options: ['Shapes with a still line across the head, too', 'Only the lowest, ring-shaped shape of the head', 'Nothing — the rim holds the head still'],
     correct: 'Shapes with a still line across the head, too',
-    explain: 'At the centre, every shape with a still line across the head stands still; away from the centre, those shapes move, so a strike there drives them too.',
+    explain: 'At the center, every shape with a still line across the head stands still; away from the center, those shapes move, so a strike there drives them too.',
     why: {
-      'Only the lowest, ring-shaped shape of the head': 'That is closer to a centre strike. Away from the centre, more shapes are driven.',
+      'Only the lowest, ring-shaped shape of the head': 'That is closer to a center strike. Away from the center, more shapes are driven.',
       'Nothing — the rim holds the head still': 'Only the very edge is held. A little inside it the head moves, and a strike there drives its shapes.',
     },
   },
@@ -654,7 +654,7 @@ export const M04A_LESSON: HandLesson = {
   sound: {
     stages: [
       { title: 'The hand strikes', text: 'The player’s hand strikes the head — the fingers near the rim for an open tone, the palm a little off centre for a bass stroke. That brief contact is where the ATTACK begins.' },
-      { title: 'The head is pushed in', text: 'The head bows down into the drum — most at the centre, not at all at the rim: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
+      { title: 'The head is pushed in', text: 'The head bows down into the drum — most at the center, not at all at the rim: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
       { title: 'The air is pushed down', text: 'The head pushes the air in the tall shell down toward the open lower end. Here the drum stands on the floor, so that end meets the floor.', ported: 'The head pushes the air in the tall shell down and out of the open lower end — raised on a stand, that end is clear of the floor. As the head moves down, the air above it thins while air is pushed out below: a mic above and a mic at the open end hear opposite pushes.' },
       { title: 'Sound leaves the drum', text: 'Sound leaves from the head — up and around, toward the player and any mic above — and around the base, where the open end meets the floor. Head and lower end are different perspectives.', ported: 'Sound leaves from the head — up and around — and from the open lower end, which adds a deeper, boomier part. Head and lower end are different perspectives.' },
     ],
@@ -722,8 +722,8 @@ export const M04A_LESSON: HandLesson = {
     strikeWord: 'HAND',
     face: { kind: 'crown', lugs: D.lugs.mm },
     facePoints: [
-      { id: 'c', label: 'CENTRE', frac: 0, blurb: 'The exact centre of the head.' },
-      { id: 'h', label: 'HALFWAY', frac: 0.5, blurb: 'Halfway from the centre to the rim.' },
+      { id: 'c', label: 'CENTER', frac: 0, blurb: 'The exact centre of the head.' },
+      { id: 'h', label: 'HALFWAY', frac: 0.5, blurb: 'Halfway from the center to the rim.' },
       { id: 'e', label: 'NEAR THE RIM', frac: 0.85, blurb: 'Close to the rim — where open tones are played.' },
     ],
     openEnd: { default: false, raised: true },
@@ -734,7 +734,7 @@ export const M04A_LESSON: HandLesson = {
       items: [
         { id: 'open', label: 'OPEN TONE', short: 'OPEN', frac: 0.85, tool: 'fingers', text: 'Four fingers near the rim, bouncing off: a clear, ringing tone.' },
         { id: 'muted', label: 'MUTED TONE', short: 'MUTED', frac: 0.85, tool: 'fingers', text: 'Four fingers struck and held against the head: the tone is stopped short.' },
-        { id: 'bass', label: 'BASS STROKE', short: 'BASS', frac: 0.3, tool: 'palm', text: 'The full palm, flat, near the centre: a low, round sound.' },
+        { id: 'bass', label: 'BASS STROKE', short: 'BASS', frac: 0.3, tool: 'palm', text: 'The full palm, flat, near the center: a low, round sound.' },
       ],
       note: 'This simplified head shows WHERE the hand lands, not how it meets the head — its area and how long it stays — which is what separates an open tone from a muted one, or from a slap. Ask the player to show you every stroke.',
     },

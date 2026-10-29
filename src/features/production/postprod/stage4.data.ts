@@ -15,7 +15,7 @@ export const STAGE4_EDIT: StageDef = {
   stageId: "edit",
   num: 4,
   title: "Select, Assemble and Edit",
-  intro: "Decide what is in the programme, put it in order, and make the joins invisible. This is where a pile of material becomes a thing with a shape.",
+  intro: "Decide what is in the program, put it in order, and make the joins invisible. This is where a pile of material becomes a thing with a shape.",
   whyItMatters: "Editing is the stage where the production stops being everything that was recorded and becomes the one version that exists. Two failures cost the most: choosing takes on technical cleanliness rather than on performance, which produces a flawless recording of nothing in particular; and repairing damage so hard that the repair becomes the new damage. Both are avoidable, and both are much easier to avoid than to undo.",
   notices: [
     {
@@ -485,7 +485,7 @@ export const STAGE4_EDIT: StageDef = {
       severity: "attention",
       kind: "mismatch",
       title: "The assembly does not match the required duration",
-      detail: "The running time and the required programme duration differ by more than a trim will solve. Finding this after the mix means re-cutting material that has already been treated.",
+      detail: "The running time and the required program duration differ by more than a trim will solve. Finding this after the mix means re-cutting material that has already been treated.",
       fixHint: "Bring the assembly close to the target now, while the edits are still cheap and nothing has been processed around them.",
       needsLogic: true,
       logicIntent: "Fire when both brief.program_duration and assembly_duration are numbers and they differ by more than a percentage that ccode chooses."
@@ -541,7 +541,7 @@ export const STAGE4_EDIT: StageDef = {
       severity: "info",
       kind: "unrealistic",
       title: "Every breath has been removed",
-      detail: "Speech without breaths does not read as polished; it reads as machine-made, and it is unexpectedly tiring to listen to over a programme length.",
+      detail: "Speech without breaths does not read as polished; it reads as machine-made, and it is unexpectedly tiring to listen to over a program length.",
       fixHint: "Keep them, and reduce only the ones that distract. The goal is speech that does not draw attention to its editing, not speech with nothing human left in it.",
       needsLogic: true,
       logicIntent: "Fire when breaths_kept is removed.",
@@ -620,7 +620,7 @@ export const STAGE4_EDIT: StageDef = {
   activity: {
     activityId: "repair-without-overprocessing",
     title: "Repair without overprocessing",
-    prompt: "An interview has come out of the assembly with five things wrong with it, and somebody enthusiastic has already decided what to do about all five. Two of those decisions will make the programme worse than leaving the problem alone. Work out which, fix the decisions, and put a working method around them so the next five are judged properly.",
+    prompt: "An interview has come out of the assembly with five things wrong with it, and somebody enthusiastic has already decided what to do about all five. Two of those decisions will make the program worse than leaving the problem alone. Work out which, fix the decisions, and put a working method around them so the next five are judged properly.",
     onlyFor: ["podcast", "live"],
     seed: {
       "edit.review_done": "all",

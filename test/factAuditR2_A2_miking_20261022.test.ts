@@ -25,7 +25,7 @@ const PINS: { id: string; file: string; now: string; gone: string }[] = [
   { id: 'F050063', file: L + 'f12SoundLevel/lesson.ts', now: 'about 3 dB at the usual 2 m position, up to about 6 dB with the mic flat on the wall', gone: 'the most the wall can add' },
   { id: 'F050812', file: L + 'f13RoomAcoustics/lesson.ts', now: 'about 35 dB of decay for T20, 45 dB for T30', gone: 'The floor every decay has to clear by 10 dB' },
   { id: 'F059418', file: L + 'i08Marimba/lesson.ts', now: 'All the other bars hang over pipes', gone: 'Every other bar hangs over a pipe' },
-  { id: 'F063642', file: L + 'm04aCongas/lesson.ts', now: 'The full palm, flat, near the centre', gone: 'The full palm, slightly cupped' },
+  { id: 'F063642', file: L + 'm04aCongas/lesson.ts', now: 'The full palm, flat, near the center', gone: 'The full palm, slightly cupped' },
   { id: 'F069666', file: L + 'shared/broadcast/audiencePages.tsx', now: 'Two capsules about 17 cm apart, angled out', gone: 'a hand’s width apart' },
   { id: 'F071027', file: L + 'shared/ensemble/seating.ts', now: 'with the pedal down the notes ring on; let it up and they stop', gone: 'until the pedal stops them' },
   { id: 'F072659', file: L + 'shared/mallets/MSound.tsx', now: 'far from the still points, so it drives the lowest shape strongly', gone: 'where the lowest shape moves most' },

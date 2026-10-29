@@ -64,8 +64,8 @@ export const CSN_ZONES: DocumentedZone[] = [
   },
   {
     id: 'csn.whole',
-    label: 'A little farther, toward the centre',
-    band: 'Start about 10 cm (4 in) or a little more from the drum, angled toward the centre of the head.',
+    label: 'A little farther, toward the center',
+    band: 'Start about 10 cm (4 in) or a little more from the drum, angled toward the center of the head.',
     kind: 'trial',
     src: 'S-SM57-ART',
     quote: 'placing the mic a good 4 inches away from the snare and angled toward the center will ensure you capture the whole drum sound',

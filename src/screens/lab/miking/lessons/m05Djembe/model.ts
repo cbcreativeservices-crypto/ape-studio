@@ -108,8 +108,8 @@ export const DJ_ZONES: DocumentedZone[] = [
   },
   {
     id: 'dj.top.far',
-    label: 'Above the outer edge, pointing across to the centre',
-    band: 'Start about 41 cm (16 in) from the centre of the head, the mic above its outer edge on the audience side, pointing across to the centre.',
+    label: 'Above the outer edge, pointing across to the center',
+    band: 'Start about 41 cm (16 in) from the center of the head, the mic above its outer edge on the audience side, pointing across to the center.',
     kind: 'sourced',
     src: 'COPPINGER',
     quote: 'placed 16 inches (41cm) from the center of the drum with the mic near the outer edge pointing across to the center',
@@ -117,7 +117,7 @@ export const DJ_ZONES: DocumentedZone[] = [
     side: 'either',
     distance: { min: COP_DIST - 30, max: COP_DIST + 30 },
     bandProv: ill('"16 inches": ±3 cm is the lab’s tolerance'),
-    radial: { line: 'diag', max: 80, prov: ill('"near the outer edge": within 8 cm of the line from the centre up over the edge is the lab’s drawing of it') },
+    radial: { line: 'diag', max: 80, prov: ill('"near the outer edge": within 8 cm of the line from the center up over the edge is the lab’s drawing of it') },
     requires: { micTypeIds: STAND },
     aim: { maxOffAxis: 30, prov: ill('"pointing across to the center": ±30° is the lab’s tolerance') },
     drawn: {
@@ -139,9 +139,9 @@ export const DJ_ZONES: DocumentedZone[] = [
     side: 'either',
     distance: DUVEL_LOW,
     bandProv: ill('"2 inches above the floor": 3 to 8 cm is the lab’s band about it'),
-    radial: { line: 'axis', min: R_FOOT + 10, max: 400, prov: ill('"at the bottom of the drum": beside the foot, within 40 cm of the centre line, is the lab’s drawing of it') },
+    radial: { line: 'axis', min: R_FOOT + 10, max: 400, prov: ill('"at the bottom of the drum": beside the foot, within 40 cm of the center line, is the lab’s drawing of it') },
     requires: { variant: 'raised', micTypeIds: SHORT },
-    aim: { maxOffAxis: 30, dir: LOW_AIM, prov: ill('"aimed directly at the opening": within 30° of the line to the opening’s centre is the lab’s tolerance') },
+    aim: { maxOffAxis: 30, dir: LOW_AIM, prov: ill('"aimed directly at the opening": within 30° of the line to the opening’s center is the lab’s tolerance') },
     drawn: {
       side: { u0: R_FOOT + 10, u1: 400, v0: SUPPORT - DUVEL_LOW.max, v1: SUPPORT - DUVEL_LOW.min },
       top: { u0: -400, u1: 400, v0: -400, v1: 400, round: true },
@@ -161,7 +161,7 @@ export const DJ_ZONES: DocumentedZone[] = [
     side: 'either',
     distance: { min: 120, max: 190 },
     bandProv: ill('"8 inches from the bottom rim": on this drawing a mic under the opening sits 12–19 cm below it, about 20 cm from the rim'),
-    radial: { line: 'axis', max: 160, prov: ill('"placed under": within 16 cm of the centre line is the lab’s drawing of it') },
+    radial: { line: 'axis', max: 160, prov: ill('"placed under": within 16 cm of the center line is the lab’s drawing of it') },
     requires: { variant: 'raised', micTypeIds: SHORT },
     drawn: {
       side: { u0: -160, u1: 160, v0: 120, v1: 190 },

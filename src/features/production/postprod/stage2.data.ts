@@ -402,7 +402,7 @@ export const STAGE2_MEDIA: StageDef = {
       severity: "blocker",
       kind: "conflict",
       title: "Corrupted, truncated or missing files with no plan",
-      detail: "The inventory contains files that are unusable, and nothing is written down about what happens to them. Editing around a missing file by accident is how a programme goes out with a hole in it.",
+      detail: "The inventory contains files that are unusable, and nothing is written down about what happens to them. Editing around a missing file by accident is how a program goes out with a hole in it.",
       fixHint: "For each bad file: re-copy from the original, request it again, replace it from another take, or record the decision to do without it. Then say so in the plan.",
       needsLogic: true,
       logicIntent: "Fire when any media_inventory row has mi_status corrupt, truncated or missing AND problem_plan is empty."

@@ -78,7 +78,7 @@ export function c05cZoneSpecs(sc: GuitarScene): ZoneSpec[] {
       micTypeIds: ['clipCond'],
       boxG: { min: { x: clipX0, y: -35, z: 30 }, max: { x: clipX1, y: 35, z: 80 }, prov: ill('between the hole and the joint, over the strings: the lab’s drawing') },
       start: { dx: (clipX0 + clipX1) / 2, d: 55, aimAt: { x: (clipX0 + clipX1) / 2 - 15, y: 0, z: 0 } },
-      tendency: 'A consistent position as the player moves — but it may not keep the same tonal balance as a broader stand mic. Listen for contact noise and local colour.',
+      tendency: 'A consistent position as the player moves — but it may not keep the same tonal balance as a broader stand mic. Listen for contact noise and local color.',
       checks: ['Measure the body’s real depth against the clip’s range', 'A finish the clip may mark, and the owner’s OK', 'The strumming hand and the strings'],
     },
   ];

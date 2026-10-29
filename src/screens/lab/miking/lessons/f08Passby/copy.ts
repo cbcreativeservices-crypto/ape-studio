@@ -27,7 +27,7 @@ export const F08_COPY: Partial<LessonCopy> = fieldCopy({
   tendencies: 'Closer: a steeper arc, a louder closest moment, more headroom needed. Farther: a gentler, longer pass and more of the place. A narrow mic can lose the ends of the pass. Tendencies to check by ear — your ears and the place decide.',
   practice: { gain: 'pb.prac.gain', second: 'pb.prac.3', mixed: ['pb.mix.1', 'pb.mix.2', 'pb.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: level, image and pitch kept apart, and a pair of separate mics.' },
   startIntro: 'This lesson is about putting microphones beside a moving source — a walker, and on paper a vehicle — as it approaches, crosses and recedes. First the pass itself, scrubbed with your finger, then real starting setups drawn beside the path, the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.',
-  otherRef: 'Every starting point here is measured from the path’s centre line back to the mic — and the mic always stays outside the path’s envelope.',
+  otherRef: 'Every starting point here is measured from the path’s center line back to the mic — and the mic always stays outside the path’s envelope.',
   blocked: 'The stand would be inside the path’s envelope or past the crew’s line — move it back.',
   typeNotes: {
     shotgunShort: 'Ideas to try with a fixed shotgun: aim it at the crossing — and notice how quickly the ends of the pass fall off its axis.',

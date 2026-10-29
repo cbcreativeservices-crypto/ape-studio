@@ -359,13 +359,13 @@ const symptoms: Symptom[] = [
   distortSymptom('hn.sym.distort'),
   {
     id: 'hn.sym.stopped',
-    observation: 'A hand-stopped passage jumps in colour and level',
+    observation: 'A hand-stopped passage jumps in color and level',
     firstChecks: 'That may be the player’s intended change: hear it acoustically, then adjust the spot’s balance only as needed.',
     options: ['Hear it without the mic first; adjust balance only if needed', 'Compress the channel hard so the stopped notes even out with the rest', 'Ask the player to avoid stopping the notes on stage'],
     correct: 'Hear it without the mic first; adjust balance only if needed',
     explain: 'Hand-stopping gives a keen, metallic sound on purpose. Check what the player intends before treating it as a fault; preserve the technique.',
     why: {
-      'Compress the channel hard so the stopped notes even out with the rest': 'That flattens a colour the music asks for. Find out what is intended first.',
+      'Compress the channel hard so the stopped notes even out with the rest': 'That flattens a color the music asks for. Find out what is intended first.',
       'Ask the player to avoid stopping the notes on stage': 'The technique is the music. The mic setup should allow for it.',
     },
   },
@@ -548,7 +548,7 @@ export const A03_LESSON: Lesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'The horn — often called the French horn — is a brass instrument played by buzzing the lips into a small mouthpiece. Its long, narrow tube is wound into a circle that the player holds in front of the right side of the chest; on the common double horn, four rotary valves under the left hand add or remove lengths of tube. Its bell points BEHIND the player, with the right hand inside it.', src: 'Y-HRN-MECH' },
     { title: 'WHERE YOU MEET IT', text: 'Orchestras and wind bands, brass and wind quintets, film and game scores, solo recitals with piano — and, now and then, a horn section on a pop or rock stage. This lesson covers one horn, seated, in the studio and live.', src: 'LESSON' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'It blends with the woodwinds and the brass, carries warm melodies and holds the harmony together. Players change its colour with the right hand — open, shaded or “stopped” — and with mutes, and sometimes raise the bell for a brassier “bells up” sound. Ask which of these the music needs.', src: 'Y-HRN-PLAY' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'It blends with the woodwinds and the brass, carries warm melodies and holds the harmony together. Players change its color with the right hand — open, shaded or “stopped” — and with mutes, and sometimes raise the bell for a brassier “bells up” sound. Ask which of these the music needs.', src: 'Y-HRN-PLAY' },
     { title: 'ITS SIZE', text: 'On the F side of a double horn the tube is about 3.75 m long, coiled into a circle you can hold. Its usual lowest notes reach about 62 Hz; rare pedal notes go lower. This lab draws a double horn held by a seated player, the bell held just off the right thigh.', src: 'PL-2010' },
   ],
   sound: {

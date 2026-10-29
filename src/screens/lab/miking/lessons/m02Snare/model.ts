@@ -133,7 +133,7 @@ export const SNARE_ZONES: DocumentedZone[] = [
   {
     id: 'top.far',
     label: 'Over the edge, a little farther away',
-    band: 'Start about 10–15 cm (4–6 in) above the rim, over the edge, angled toward the centre.',
+    band: 'Start about 10–15 cm (4–6 in) above the rim, over the edge, angled toward the center.',
     kind: 'sourced',
     src: 'S-SM57-ART',
     quote: 'place the mic a good 4 inches away from the snare to ensure you capture the whole drum sound',

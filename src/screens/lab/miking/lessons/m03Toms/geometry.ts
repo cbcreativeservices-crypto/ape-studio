@@ -98,9 +98,9 @@ export const TOMS_MODEL: InstrumentModel = {
   name: 'rack and floor toms',
   parts,
   regions: [
-    { id: 'r.strike2', partId: 'tom2.batter', label: '12 in strike', anchor: TOM2.c, prov: ill('the strike drawn at the centre'), variants: ['rack'], note: 'The stick strikes the 12 in tom’s batter head: its attack starts here.' },
-    { id: 'r.strike1', partId: 'tom1.batter', label: '10 in strike', anchor: TOM1.c, prov: ill('the strike drawn at the centre'), variants: ['rack'], note: 'The stick strikes the 10 in tom’s batter head.' },
-    { id: 'r.strikeF', partId: 'floor.batter', label: 'floor tom strike', anchor: FLOOR.c, prov: ill('the strike drawn at the centre'), variants: ['floor', 'open'], note: 'The stick strikes the floor tom’s batter head: its attack starts here.' },
+    { id: 'r.strike2', partId: 'tom2.batter', label: '12 in strike', anchor: TOM2.c, prov: ill('the strike drawn at the center'), variants: ['rack'], note: 'The stick strikes the 12 in tom’s batter head: its attack starts here.' },
+    { id: 'r.strike1', partId: 'tom1.batter', label: '10 in strike', anchor: TOM1.c, prov: ill('the strike drawn at the center'), variants: ['rack'], note: 'The stick strikes the 10 in tom’s batter head.' },
+    { id: 'r.strikeF', partId: 'floor.batter', label: 'floor tom strike', anchor: FLOOR.c, prov: ill('the strike drawn at the center'), variants: ['floor', 'open'], note: 'The stick strikes the floor tom’s batter head: its attack starts here.' },
     { id: 'r.resoF', partId: 'floor.reso', label: 'floor tom bottom head', anchor: pointOn(FF, 0, 0, FF.depth), prov: FLOOR.spec.depth.prov, variants: ['floor'], note: 'The resonant head radiates downward: much of the floor tom’s ring and low end leave here.' },
     { id: 'r.openF', partId: 'floor.shell', label: 'open bottom', anchor: pointOn(FF, 0, 0, FF.depth), prov: FLOOR.spec.depth.prov, variants: ['open'], note: 'With the bottom head off, the air and the sound leave straight out of the open end.' },
   ],

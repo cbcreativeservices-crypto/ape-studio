@@ -175,7 +175,7 @@ export function CajonPlace({ w, h, variant, mode, swing, accessibilityLabel }: {
   const corner = mode === 'opposed';
   const bow = swing * 9;
   const labels: StaticLabel[] = [
-    { id: 's', text: corner ? 'A TOP-CORNER SLAP' : 'A CENTRE STROKE', short: corner ? 'SLAP' : 'CENTRE', u: 0, v: -575, align: 'center', tone: 'amber' },
+    { id: 's', text: corner ? 'A TOP-CORNER SLAP' : 'A CENTER STROKE', short: corner ? 'SLAP' : 'CENTER', u: 0, v: -575, align: 'center', tone: 'amber' },
     { id: 'o', text: corner ? 'THE TOP FLEXES · THE WIRES BUZZ' : 'THE MIDDLE BOWS · THE AIR PUMPS', short: corner ? 'WIRES BUZZ' : 'AIR PUMPS', u: 0, v: 25, align: 'center', tone: 'blue' },
   ];
   return (

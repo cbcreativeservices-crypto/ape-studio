@@ -839,9 +839,9 @@ export function makeStringSoundPage(built: BuiltGuitarModel, opts: { membrane?: 
               },
               well: (
                 <>
-                  <Landing looking={`${M.label} · shape ${hShape.label}`} prompt="Step through SHAPE. The bridge stands off the centre: which shapes does it drive?" />
+                  <Landing looking={`${M.label} · shape ${hShape.label}`} prompt="Step through SHAPE. The bridge stands off the center: which shapes does it drive?" />
                   <Card>
-                    <Point title={`SHAPE ${hShape.label}`}>{`The head is a drumhead: its shapes are not whole-number multiples of the lowest${headIdx === 0 ? ' (this is the lowest)' : ` (this one is × ${hShape.ratio.toFixed(2)})`}. The bridge’s feet stand off the centre, so most shapes move under them and get driven — part of the banjo’s bright, quick sound. Under the bridge the head moves ${Math.round(hShare * 100)} % of this shape’s peak.`}</Point>
+                    <Point title={`SHAPE ${hShape.label}`}>{`The head is a drumhead: its shapes are not whole-number multiples of the lowest${headIdx === 0 ? ' (this is the lowest)' : ` (this one is × ${hShape.ratio.toFixed(2)})`}. The bridge’s feet stand off the center, so most shapes move under them and get driven — part of the banjo’s bright, quick sound. Under the bridge the head moves ${Math.round(hShare * 100)} % of this shape’s peak.`}</Point>
                   </Card>
                   <Note>Head tension changes every one of these pitches. Tension is the player’s to set — never a miking step.</Note>
                 </>

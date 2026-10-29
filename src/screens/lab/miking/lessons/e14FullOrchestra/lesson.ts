@@ -34,7 +34,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main array yourself — height, distance and across — and see what changes: the front-to-back balance, the time differences, what the recording angle takes in.',
-    credit: { scenarios: ['orc.place.1', 'orc.place.2', 'orc.31', 'orc.rec.2'], interactive: 'twoZones', note: 'Rest the array’s centre, clear of the players and the conductor, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['orc.place.1', 'orc.place.2', 'orc.31', 'orc.rec.2'], interactive: 'twoZones', note: 'Rest the array’s center, clear of the players and the conductor, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'The main array is a perspective: higher hears more of the back rows and the hall, closer more of the front desks. Move the whole array, one change at a time, at matched level — and keep every sightline and walkway clear.',
   },
   context: {
@@ -85,8 +85,8 @@ const scenarios: MikingScenario[] = [
     correct: 'The first violins',
     explain: 'In the modern layout the violins sit together on the conductor’s left; in the layout with the violins facing each other the firsts are still on the left and the seconds move to the right.',
     why: {
-      'The viola section': 'The violas sit to the right of centre in both layouts.',
-      'The double basses': 'The basses sit behind the cellos — on the right in the modern layout, left of centre in the other.',
+      'The viola section': 'The violas sit to the right of center in both layouts.',
+      'The double basses': 'The basses sit behind the cellos — on the right in the modern layout, left of center in the other.',
     },
   },
   {
@@ -307,14 +307,14 @@ const symptoms: Symptom[] = [
   },
   {
     id: 'orc.s.centre',
-    observation: 'Weak centre, exaggerated width',
-    firstChecks: 'Is the spaced pair too wide? Reduce the spacing, check the centre mic if there is one, or compare a coincident or near-coincident pair; confirm in mono.',
+    observation: 'Weak center, exaggerated width',
+    firstChecks: 'Is the spaced pair too wide? Reduce the spacing, check the center mic if there is one, or compare a coincident or near-coincident pair; confirm in mono.',
     options: ['Reduce the spacing; compare; check mono', 'Pan the two mics wider still, hard left and right', 'Raise only the left mic’s level'],
     correct: 'Reduce the spacing; compare; check mono',
-    explain: 'Past about 1 m a spaced pair can lose its middle. Narrow it, check a centre mic, or try a closer-spaced method — and listen in mono.',
+    explain: 'Past about 1 m a spaced pair can lose its middle. Narrow it, check a center mic, or try a closer-spaced method — and listen in mono.',
     why: {
       'Pan the two mics wider still, hard left and right': 'Wider panning deepens the hole in the middle.',
-      'Raise only the left mic’s level': 'That shifts the image; it does not fill the centre.',
+      'Raise only the left mic’s level': 'That shifts the image; it does not fill the center.',
     },
   },
   {
@@ -374,7 +374,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · A concert recording in a good hall; no PA. Phantom power on every input; the venue allows a tall stand behind the podium.',
     setups: [
       { id: 'a', label: 'A spaced omni pair 50 cm apart, about 3.2 m up just behind the podium', ok: true, power: 'phantom', feedback: 'The orchestra and the hall as one picture, from a safe stand.' },
-      { id: 'b', label: 'A three-omni tree over the podium on a tall boom stand, centre a few dB down', ok: true, power: 'phantom', feedback: 'A fair choice where there is room and a safe mount.' },
+      { id: 'b', label: 'A three-omni tree over the podium on a tall boom stand, center a few dB down', ok: true, power: 'phantom', feedback: 'A fair choice where there is room and a safe mount.' },
       { id: 'c', label: 'A close mic on every desk and no main pair', ok: false, power: 'phantom', feedback: 'No shared picture, and many overlapping paths.' },
       { id: 'd', label: 'A pair tied to a lighting bar over the strings', ok: false, power: 'phantom', feedback: 'Flying anything is the venue’s crew’s job, to a rated plan.' },
       { id: 'e', label: 'A pair on the floor in the front row of seats', ok: false, power: 'phantom', feedback: 'Too low: the front desks hide the rows behind.' },
@@ -439,7 +439,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Which main array keeps every pair of its mics at least 1.5 m apart?',
     options: ['The three-omni tree', 'The 17 cm cardioid pair', 'The coincident X/Y pair'],
     correct: 'The three-omni tree',
-    explain: 'The tree’s left and right mics are 2 m apart; the centre sits 1.5 m ahead, about 1.8 m from each side mic — so every pair is at least 1.5 m apart.',
+    explain: 'The tree’s left and right mics are 2 m apart; the center sits 1.5 m ahead, about 1.8 m from each side mic — so every pair is at least 1.5 m apart.',
     why: { 'The 17 cm cardioid pair': 'Its capsules are 17 cm apart.', 'The coincident X/Y pair': 'Its capsules are together.' },
   },
   {
@@ -531,7 +531,7 @@ export const E14_LESSON: EnsembleLesson = {
   unknowns: [
     { text: 'The orchestra is a typical layout, not a particular one: 57 players (strings 10-8-6-6-4, double winds, four horns, two trumpets, three trombones and tuba, timpani, two percussion, harp, celesta); the string desks on arcs 1.6, 2.7 and 3.8 m from the podium; winds on a 0.2 m riser, brass on 0.4 m, timpani and percussion on 0.6 m — every position, count and riser a drawing default.', dims: [] },
     { text: 'The podium (0.9 m square, 0.2 m high, 1.3 m in front of the front row) and the main pair’s boom stand (1.5 m behind the bar) are drawing defaults.', dims: [] },
-    { text: 'The main pair is drawn 3.2 m up (inside the 3–4 m example; the height practice reports). The tree is drawn 2 m wide with its centre 1.5 m ahead (one maker’s example); a compact tree from practice is offered too.', dims: [] },
+    { text: 'The main pair is drawn 3.2 m up (inside the 3–4 m example; the height practice reports). The tree is drawn 2 m wide with its center 1.5 m ahead (one maker’s example); a compact tree from practice is offered too.', dims: [] },
     { text: 'The outriggers are drawn about 6.1 m apart, about 1.5 m in front of the outer strings, at the tree’s height — practice, not a standard; no maker gives their dimensions.', dims: [] },
     { text: 'Section supports are drawn 1.25 m from the four nearest players (inside the 1–1.5 m example); the stands’ places are drawing defaults.', dims: [] },
   ],

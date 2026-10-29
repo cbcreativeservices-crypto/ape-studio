@@ -83,7 +83,7 @@ const PARTS: Part[] = [
 export const PA_REF = { x: PA13.x, y: F13_FLOOR - PA13.h, z: -PA13.z };
 
 export const F13_SURFACES: ReferenceSurface[] = [
-  { id: 'src', partId: 'src', label: 'the test source’s centre', point: { x: 0, y: 0, z: 0 }, normal: { x: 1, y: 0, z: 0 }, target: true, variants: ['room'] },
+  { id: 'src', partId: 'src', label: 'the test source’s center', point: { x: 0, y: 0, z: 0 }, normal: { x: 1, y: 0, z: 0 }, target: true, variants: ['room'] },
   { id: 'pa', partId: 'pa', label: 'the PA loudspeaker', point: PA_REF, normal: { x: 1, y: 0, z: 0 }, target: true, variants: ['pa'] },
 ];
 
@@ -106,7 +106,7 @@ export const F13_MODEL: InstrumentModel = measureModel({
   defaultVariant: 'room',
   views: F13_VIEWS,
   viewTags: { side: 'SECTION', top: 'PLAN' },
-  groundY: { mm: F13_FLOOR, prov: ill('drawing default: the source’s centre 1.5 m above the floor'), placeholder: true },
+  groundY: { mm: F13_FLOOR, prov: ill('drawing default: the source’s center 1.5 m above the floor'), placeholder: true },
   aimAzLimit: 180,
   labelMinScale: 0.03,
 });

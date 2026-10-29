@@ -65,7 +65,7 @@ export function PaCoverage({ venue, px, hot = false }: { venue: VenueId; px: num
 function tourLabels(venue: VenueId): StaticLabel[] {
   const at = (id: string, text: string, p: P2, tone: StaticLabel['tone'] = 'muted'): StaticLabel => ({ id, text, u: planUV(p).u, v: planUV(p).v, align: 'center', tone });
   if (venue === 'studio') return [at('stage', 'STAGE', { x: 0, y: -2 }), at('aud', 'AUDIENCE', { x: 0, y: 8.8 }), at('paL', 'PA', { x: -4.6, y: -1.4 }), at('paR', 'PA', { x: 4.6, y: -1.4 })];
-  return [at('stage', 'STAGE', { x: 0, y: -3.5 }), at('l', 'LEFT', { x: -14, y: 14 }), at('c', 'CENTRE', { x: 0, y: 15 }), at('r', 'RIGHT', { x: 14, y: 14 }), at('paL', 'PA', { x: -9, y: -2 }), at('paR', 'PA', { x: 9, y: -2 })];
+  return [at('stage', 'STAGE', { x: 0, y: -3.5 }), at('l', 'LEFT', { x: -14, y: 14 }), at('c', 'CENTER', { x: 0, y: 15 }), at('r', 'RIGHT', { x: 14, y: 14 }), at('paL', 'PA', { x: -9, y: -2 }), at('paR', 'PA', { x: 9, y: -2 })];
 }
 
 type Layer = 'seats' | 'pa' | 'cameras' | 'places';
@@ -301,7 +301,7 @@ export function useImmersiveStep(spec: { words: { looking: string; prompt: strin
         <Card>
           {S ? (
             <>
-              <Point title="WHAT IT GIVES">Five channels — left, centre, right, left surround, right surround — ready for a five-loudspeaker layout, from one compact head.</Point>
+              <Point title="WHAT IT GIVES">Five channels — left, center, right, left surround, right surround — ready for a five-loudspeaker layout, from one compact head.</Point>
               <Point title="KEEP">Its front pointing at the front of the picture, its mount, and every channel’s identity: L, C, R, Ls, Rs in the order its manual gives.</Point>
             </>
           ) : (
@@ -351,7 +351,7 @@ export function usePaAngleStep(spec: { onDone: () => void; prediction?: Predicti
     layout: 'rack',
     rack: {
       render: (w, h) => (
-        <PlanStage w={w} h={h} scene={EVENT_SCENE} box={{ x0: -14, y0: -3, x1: 6, y1: 16 }} a11y={`A crowd mic ${spot === 'rail' ? 'on the centre section’s rail' : 'at the stage’s corner'}, aimed ${tilt === 'faces' ? 'down at the faces' : 'up over the heads'}: the left PA cluster ${Math.round(pa.deg)}° off its axis, ${Math.abs(Math.round(pa.db))} dB down by the pattern.`} labels={venueLabels(EVENT_SCENE, { targets: true, marks: false }).filter((l) => l.id !== 't.R')} show={{ targets: true, marks: false, routes: false }}>
+        <PlanStage w={w} h={h} scene={EVENT_SCENE} box={{ x0: -14, y0: -3, x1: 6, y1: 16 }} a11y={`A crowd mic ${spot === 'rail' ? 'on the center section’s rail' : 'at the stage’s corner'}, aimed ${tilt === 'faces' ? 'down at the faces' : 'up over the heads'}: the left PA cluster ${Math.round(pa.deg)}° off its axis, ${Math.abs(Math.round(pa.db))} dB down by the pattern.`} labels={venueLabels(EVENT_SCENE, { targets: true, marks: false }).filter((l) => l.id !== 't.R')} show={{ targets: true, marks: false, routes: false }}>
           {(px, g) => (
             <>
               <PaCoverage venue="event" px={px} />
@@ -378,7 +378,7 @@ export function usePaAngleStep(spec: { onDone: () => void; prediction?: Predicti
             setTouched(true);
           },
           // "left/right of centre" — one wording with the sports AIM (owner 2026-10-14, slider audit #23).
-          format: () => (turn === 0 ? 'centre: aimed at the middle of the section' : aimWords(turn)),
+          format: () => (turn === 0 ? 'center: aimed at the middle of the section' : aimWords(turn)),
           formatShort: () => aimShort(turn),
         },
         {
@@ -409,7 +409,7 @@ export function usePaAngleStep(spec: { onDone: () => void; prediction?: Predicti
             setTouched(true);
           },
           options: [
-            { id: 'rail', label: 'The centre section’s rail', blurb: 'Raised at the front of the centre section.' },
+            { id: 'rail', label: 'The center section’s rail', blurb: 'Raised at the front of the center section.' },
             { id: 'corner', label: 'The stage’s corner', blurb: 'At the stage’s corner, right under the left PA cluster.' },
           ],
         },
@@ -454,7 +454,7 @@ const PAIRS: Readonly<Record<PairId, { label: string; short: string; a: P2; b: P
   xy: { label: 'A coincident XY pair', short: 'XY', a: STUDIO.M, b: STUDIO.M, h: STUDIO.hBar, words: 'Two capsules at one point, angled apart: every source reaches both at the same moment. Width from level differences only — a predictable mono sum.' },
   ortf: { label: 'A near-coincident pair', short: 'NEAR PAIR', a: { x: STUDIO.M.x - 0.085, y: STUDIO.M.y }, b: { x: STUDIO.M.x + 0.085, y: STUDIO.M.y }, h: STUDIO.hBar, words: 'Two capsules about 17 cm apart, angled out: small time differences add width, with some mono compatibility — audition the mono sum.' },
   ab: { label: 'A spaced omni pair', short: 'SPACED', a: { x: -0.3, y: 4 }, b: { x: 0.3, y: 4 }, h: 3.8, words: 'Two omnis spaced apart over the hall: a sense of the room and its low end — and time differences that comb in mono.' },
-  zones: { label: 'Two zone mics', short: 'TWO ZONES', a: STUDIO.ZL, b: STUDIO.ZR, h: STUDIO.hCorner, words: 'One mic at each front corner, each its own zone: metres apart, each nearest its own people. Not a stereo pair — the image can wander and the mono sum colours.' },
+  zones: { label: 'Two zone mics', short: 'TWO ZONES', a: STUDIO.ZL, b: STUDIO.ZR, h: STUDIO.hCorner, words: 'One mic at each front corner, each its own zone: metres apart, each nearest its own people. Not a stereo pair — the image can wander and the mono sum colors.' },
 };
 
 export function usePairZonesStep(spec: { onDone: () => void; prediction?: Prediction; words: { looking: string; prompt: string; done: string } }): MikingStep {

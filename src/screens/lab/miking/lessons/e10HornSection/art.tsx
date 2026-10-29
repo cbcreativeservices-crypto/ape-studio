@@ -56,7 +56,7 @@ const SPEC = ensembleHandSpec({
     A: { zone: 'ln.main', mic: 'arrCard' },
     B: { zone: 'ln.tpt', mic: 'instDynCard' },
     names: { A: 'SECTION PAIR', B: 'TRUMPET MIC' },
-    looking: 'Two mics · A the section pair’s centre, B the trumpet’s close mic',
+    looking: 'Two mics · A the section pair’s center, B the trumpet’s close mic',
     prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each player reaches the two mics at its own times.',
     label: 'The horn line with the section pair (A) and a close trumpet mic (B)',
     warn: 'This simplified graph shows one point source and straight paths, no room. Real players move and the room adds its own arrivals, so one delay never suits them all — judge by ear, in mono, against the plain version.',

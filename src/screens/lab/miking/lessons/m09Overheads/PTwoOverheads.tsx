@@ -218,7 +218,7 @@ export function PTwoOverheads({ lesson, art, answers, onAnswered, onInteractive,
             {`Activity: snare distances apart ${tick(apart)} · level again ${tick(matched)} · kick as SOURCE ${tick(kickSeen)}`}
           </Text>
           <Card>
-            <Point title="THE SNARE-DISTANCE AID">{`To the snare’s centre: A ${fmtLen(sA)} · B ${fmtLen(sB)}${Math.abs(dSnare) <= 10 ? ' — matched.' : '.'}\nTo the kick: A ${fmtLen(kA)} · B ${fmtLen(kB)} — ${fmtMs(Math.abs(deltaTms(dKick)))} apart.`}</Point>
+            <Point title="THE SNARE-DISTANCE AID">{`To the snare’s center: A ${fmtLen(sA)} · B ${fmtLen(sB)}${Math.abs(dSnare) <= 10 ? ' — matched.' : '.'}\nTo the kick: A ${fmtLen(kA)} · B ${fmtLen(kB)} — ${fmtMs(Math.abs(deltaTms(dKick)))} apart.`}</Point>
           </Card>
           <NowLine text={nowText(rig, ['A', 'B'])} />
           <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>{wellW > 0 ? <CombPanel rig={rig} source={src} w={wellW} h={150} label={combLabel} /> : null}</View>

@@ -57,7 +57,7 @@ export const CHINA_MODEL: InstrumentModel = cymbalModel({
   regions: [
     { id: 'r.shoulder', partId: 'china.shoulder', label: 'the stick on the shoulder', anchor: STRIKE_UP, prov: ill('about an inch above the valley, toward the player'), variants: ['upright'], note: 'The side of the shoulder, about an inch above the valley: where a jazz player rides an upright China.' },
     { id: 'r.edgeI', partId: 'china.plateI', label: 'the stick near the edge', anchor: STRIKE_INV, prov: ill('near the edge, toward the player'), variants: ['inverted'], note: 'Turned over and crashed near its edge: the China’s trashy accent starts here.' },
-    { id: 'r.cup', partId: 'china.cup', label: 'the cup', anchor: at(UP, 0, TH, 30), prov: ill('the cup'), variants: ['upright'], note: 'The squarer cup at the centre.' },
+    { id: 'r.cup', partId: 'china.cup', label: 'the cup', anchor: at(UP, 0, TH, 30), prov: ill('the cup'), variants: ['upright'], note: 'The squarer cup at the center.' },
     { id: 'r.tom', partId: 'kit.tom2', label: 'the 12 in tom below', anchor: KIT_DRUMS.tom2.c, prov: ill('the shared 5-piece kit'), note: 'The tom under the China: the drum a China mic aimed down hears most.' },
   ],
   boomOut: { x: 1, y: 0, z: 0 },

@@ -27,7 +27,7 @@ export const HORN_COPY: Partial<LessonCopy> = {
   placement: {
     workedZone: { back: 'hn.rear' },
     workedLine: 'This starting point also reads how far the mic is from {line}: the dashed line straight out of the bell.',
-    workedAim: 'Aim it toward the bell, a little off its axis — the lab counts it while the mic points within about {tol}° of the bell’s centre. Distance, height and angle are separate things to try.',
+    workedAim: 'Aim it toward the bell, a little off its axis — the lab counts it while the mic points within about {tol}° of the bell’s center. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the bell and the space it rises into in a “bells up” passage, the right hand and arm, the player turning, and the chair. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
     reveal: 'Behind the bell a mic hears the horn directly — more edge and detail, bigger level swings; in front it hears the horn with the room. Both are suggested places to begin: which suits depends on the room, the music and what else is on stage.',

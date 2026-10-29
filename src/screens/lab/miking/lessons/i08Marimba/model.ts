@@ -61,7 +61,7 @@ export const MARIMBA_ZONES: DocumentedZone[] = [
     words: {
       label: 'One of a spaced pair — over the high half',
       band: 'Start about 46 cm (1½ ft) above the bars, about 30 cm (1 ft) to the high side of the middle, aimed down; its partner mirrors it, about 61 cm (2 ft) away.',
-      tendency: 'The treble’s side of the pair. Arrival-time differences can colour a note both mics hear — listen before reaching for automatic alignment or the polarity switch.',
+      tendency: 'The treble’s side of the pair. Arrival-time differences can color a note both mics hear — listen before reaching for automatic alignment or the polarity switch.',
       checks: ['The partner over the low half', 'The middle notes in both mics', 'The sum in mono'],
     },
   }),
@@ -73,7 +73,7 @@ export const MARIMBA_ZONES: DocumentedZone[] = [
     words: {
       label: 'Under the pipes, aimed up — an optional effect',
       band: 'Only as an optional effect: under the high part of the keyboard, between the rows of pipes, aimed up — touching nothing, out of the player’s way.',
-      tendency: 'A more localised, coloured sound, and more mechanical noise. Not the natural marimba sound — audition it against a mic above the bars.',
+      tendency: 'A more localised, colored sound, and more mechanical noise. Not the natural marimba sound — audition it against a mic above the bars.',
       checks: ['Nothing touches a pipe, and nothing can be kicked', 'Rattles and mechanical noise', 'Compare it with the view from above'],
     },
   }),

@@ -108,8 +108,8 @@ const pose = (p: Vec3, at: Vec3) => ({ p, ...aimTo(p, at) });
 export const A11_ZONES: DocumentedZone[] = [
   {
     id: 'ac.one',
-    label: 'One mic in front, centred',
-    band: 'Start about 30–60 cm (1–2 ft) in front of the instrument, centred between the two sides, toward a balanced listening position.',
+    label: 'One mic in front, centered',
+    band: 'Start about 30–60 cm (1–2 ft) in front of the instrument, centered between the two sides, toward a balanced listening position.',
     kind: 'sourced',
     src: 'S-ACC',
     quote: 'Experts tend to agree that an accordion sounds best when the microphone is positioned at a distance of about one to two feet from the instrument. (S-REC "One or two feet in front of instrument, centered — Full range, natural sound")',
@@ -127,7 +127,7 @@ export const A11_ZONES: DocumentedZone[] = [
   {
     id: 'ac.grille',
     label: 'A dynamic facing the treble grille',
-    band: 'Start about 46 cm (18 in) from the centre of the treble grille, facing it.',
+    band: 'Start about 46 cm (18 in) from the center of the treble grille, facing it.',
     kind: 'sourced',
     src: 'S-ACC',
     quote: 'Test 4: "Microphone: SM57 — Position: About 18" from the center of the grille" (the lesson’s "an 18-inch dynamic microphone facing the grille" fixed: AC-01)',

@@ -87,7 +87,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'I02', labId: 'percussion', title: 'Cajón', subtitle: 'A box you sit on: find the port first — front, back, or both — outside the hands, knees and the way off', status: 'ready' },
   { id: 'I03a', labId: 'percussion', title: 'Handheld Shaker', subtitle: 'A moving source: one mic outside the arc — toward the mic or side to side', status: 'ready' },
   { id: 'I03b', labId: 'percussion', title: 'Egg Shaker', subtitle: 'No handle: one egg, two close, or hands apart — the grip is part of it', status: 'ready' },
-  { id: 'I03c', labId: 'percussion', title: 'Maracas', subtitle: 'A pair, two arms: one mic centred on the heads, a spot each, or a singer’s pair', status: 'ready' },
+  { id: 'I03c', labId: 'percussion', title: 'Maracas', subtitle: 'A pair, two arms: one mic centered on the heads, a spot each, or a singer’s pair', status: 'ready' },
   { id: 'I04', labId: 'percussion', title: 'Headless Tambourine and Jingles', subtitle: 'No head, just jingles: from the instrument as played — and a clear gap to the nearest stroke', status: 'ready' },
   { id: 'I05a', labId: 'percussion', title: 'Cowbell', subtitle: 'Struck steel: overheads first, a spot outside the stick’s path, open or muted', status: 'ready' },
   { id: 'I05b', labId: 'percussion', title: 'Claves', subtitle: 'Two sticks of wood: cradled to ring, never a mic between them', status: 'ready' },
@@ -128,7 +128,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'E07', labId: 'ensembles', title: 'Singer with Guitar or Piano', subtitle: 'One performer, two sources: one coherent mic, or a vocal mic and an instrument mic — each hearing both', status: 'ready' },
   // Lab 5 (ensembles), arrays and orchestra (group 3): E11, E13, E14 — each on its own line.
   { id: 'E11', labId: 'ensembles', title: 'String Quartet and Sections', subtitle: 'A pair in front of the quartet, one support if needed — then the larger string sections', status: 'ready' },
-  { id: 'E13', labId: 'ensembles', title: 'Mixed Classical Ensembles', subtitle: 'A chamber group or an orchestra: one main array first, the tree and its centre, supports for a named need', status: 'ready' },
+  { id: 'E13', labId: 'ensembles', title: 'Mixed Classical Ensembles', subtitle: 'A chamber group or an orchestra: one main array first, the tree and its center, supports for a named need', status: 'ready' },
   { id: 'E14', labId: 'ensembles', title: 'Full Orchestra', subtitle: 'A main pair or a tree over the podium first — supports only where something is missing', status: 'ready' },
   // Lab 5 (ensembles and voice), group 2 — voice II, groups: E02, E04, E05, E06 (each lesson on its own line).
   { id: 'E02', labId: 'ensembles', title: 'Background and Harmony Vocals', subtitle: 'A handheld each about 4–8 cm from the lips and 3:1 apart, or one shared mic the singers balance by distance', status: 'ready' },
@@ -171,7 +171,7 @@ export const LESSONS: readonly LessonMeta[] = [
   // Lab 7 (broadcast), group 2 — body-worn and camera: B05, B04, B02 (each lesson on its own line).
   { id: 'B05', labId: 'broadcast', title: 'Lavalier, Headset and Concealed Pickup', subtitle: 'A lav on the sternum about 12–25 cm from the lips, or a headset by the corner of the mouth — fitted with the wearer’s agreement', status: 'ready' },
   { id: 'B04', labId: 'broadcast', title: 'Boom and Camera-Mounted Pickup', subtitle: 'A boom just outside the widest frame, aimed at the mouth — and the camera’s own mic, as far away as the camera', status: 'ready' },
-  { id: 'B02', labId: 'broadcast', title: 'News Anchors and Seated Interviews', subtitle: 'A centred lav about 12–25 cm from the lips, a boom just outside the frame, a desk mic where the shot allows — a channel for each speaker', status: 'ready' },
+  { id: 'B02', labId: 'broadcast', title: 'News Anchors and Seated Interviews', subtitle: 'A centered lav about 12–25 cm from the lips, a boom just outside the frame, a desk mic where the shot allows — a channel for each speaker', status: 'ready' },
   // Lab 7 (broadcast), group 3 — field and audience: B03, B08 (each lesson on its own line).
   { id: 'B03', labId: 'broadcast', title: 'Field Reporters and Handheld Interviews', subtitle: 'One handheld at chest height between two people, moved to whoever speaks when it is loud — the wind covered, everyone out of the traffic', status: 'ready' },
   { id: 'B08', labId: 'broadcast', title: 'Broadcast Audience and Event Space', subtitle: 'A crowd mic raised over a section, aimed at faces with the PA off its front — a pair told from two zones, and never into the PA', status: 'ready' },

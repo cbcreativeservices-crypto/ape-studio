@@ -26,7 +26,7 @@ export const CLAV_COPY: LessonCopy = {
     variantNotes: { cab: 'CLOSED CABINET: a separate amplifier drives it, and the speaker’s sound comes only from the front — there is no rear mic position.' },
   },
   sound: {
-    strikes: [{ id: 'c', label: 'CENTRE', mm: 0, blurb: 'Not used by this lesson.' }],
+    strikes: [{ id: 'c', label: 'CENTER', mm: 0, blurb: 'Not used by this lesson.' }],
     strikeDefault: 'c',
     striker: 'TANGENT',
     strikerPhrase: 'the tangent',
@@ -60,7 +60,7 @@ export const CLAV_COPY: LessonCopy = {
     workedAim: 'Aim it straight in at the speaker — the lab counts it while the mic faces the way the starting point names. Distance, position across the cone and angle are separate things to try.',
     workedClear: 'Clear of the grille — the mic never touches it — on a stand that cannot tip into the speaker, its cable out of the player’s way. Clearance comes first, before any number.',
     blocked: {},
-    reveal: 'Toward the centre tends to bring more bite; toward the edge or turned off axis, a rounder sound; farther back, more cabinet and room — and every amp, speaker and setting is different, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Toward the center tends to bring more bite; toward the edge or turned off axis, a rounder sound; farther back, more cabinet and room — and every amp, speaker and setting is different, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
     typeNotes: {
       instDynCard: 'Ideas to try with an instrument dynamic: right at the grille on the dust-cap line, then one change at a time — across the cone, the angle, the distance.',
       sdcCard: 'Ideas to try with a small condenser: check its maximum level against the loudest playing first, and listen for the extra detail — or the extra harshness — it brings.',
@@ -71,7 +71,7 @@ export const CLAV_COPY: LessonCopy = {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on this amp, measured from the surface it names — the grille, or the open back. They are starting points, not rules: move from there and listen — there is no single right answer.',
       separate: 'Distance from the grille, position across the cone and angle are separate variables: change one at a time, and mark each position so you can return to it. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       clearance: 'Clearance comes first. The stand holds the mic: it never rests on the grille or touches a moving cone; the stand cannot fall into the speaker; nothing goes near a hot tube chassis; cables are taped where the player walks.',
-      tendencies: 'Toward the centre of the speaker tends to bring more bite and edge; toward the edge, or turned off axis, a rounder sound; farther back, more cabinet and room. These are tendencies; amps, speakers and settings vary.',
+      tendencies: 'Toward the center of the speaker tends to bring more bite and edge; toward the edge, or turned off axis, a rounder sound; farther back, more cabinet and room. These are tendencies; amps, speakers and settings vary.',
     },
   },
   context: {

@@ -763,10 +763,10 @@ function LivePitchMode({
               style={styles.tunerWheel}
               current={tunerColor}
               onPick={setTunerColor}
-              accessibilityLabel="Tuner colour"
-              feature="the tuner in-tune colour"
+              accessibilityLabel="Tuner color"
+              feature="the tuner in-tune color"
               pickerTitle="TUNER COLOUR"
-              subtitle="The in-tune needle, centre marker and glow"
+              subtitle="The in-tune needle, center marker and glow"
               // colors.greenBright = the meter's actual default in-tune NEEDLE
               // colour — the diagram must match the instrument (design
               // critique 2026-09-01 #5).

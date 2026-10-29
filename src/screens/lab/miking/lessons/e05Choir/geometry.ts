@@ -111,7 +111,7 @@ export const E05_ZONES: DocumentedZone[] = [
   mainZone({
     id: 'ch.pair',
     label: 'A main pair a few feet in front, above the heads',
-    band: 'Try the pair a few feet in front of the first row and above their heads — about 0.6–2.2 m (2–7 ft) out, 0.3–1.3 m (1–4 ft) above the heads — centred, aimed at the middle and back rows. Then move it toward or away and listen.',
+    band: 'Try the pair a few feet in front of the first row and above their heads — about 0.6–2.2 m (2–7 ft) out, 0.3–1.3 m (1–4 ft) above the heads — centered, aimed at the middle and back rows. Then move it toward or away and listen.',
     kind: 'trial',
     src: 'S-REC',
     quote: 'a few feet in front of, and a few feet above, the heads of the first row. It should be centered in front of the choir and aimed at the last row (S-REC p.6, one mic); the pair is moved toward or away while listening (the lesson L14)',
@@ -123,7 +123,7 @@ export const E05_ZONES: DocumentedZone[] = [
     variants: ['risers'],
     micTypeIds: PAIR,
     tendency: 'The whole choir as one sound with the room: nearer gives more of the front rows and diction; farther, more blend and room.',
-    checks: ['Every section, quiet and loud', 'The outer sections against the centre', 'The sum in mono'],
+    checks: ['Every section, quiet and loud', 'The outer sections against the center', 'The sum in mono'],
   }),
   targetZone({
     id: 'ch.spot',
@@ -164,7 +164,7 @@ export const E05_ZONES: DocumentedZone[] = [
   mainZone({
     id: 'ch.arcPair',
     label: 'A pair in front of the chamber choir',
-    band: 'Try the pair a few feet in front and above the heads — about 0.6–2 m (2–6.5 ft) out, 0.3–1.3 m (1–4 ft) above — centred, then move it toward or away and listen.',
+    band: 'Try the pair a few feet in front and above the heads — about 0.6–2 m (2–6.5 ft) out, 0.3–1.3 m (1–4 ft) above — centered, then move it toward or away and listen.',
     kind: 'trial',
     src: 'S-REC',
     quote: 'a few feet in front of, and a few feet above, the heads of the first row (S-REC p.6); the pair moved toward or away while listening (the lesson L14)',
@@ -204,15 +204,15 @@ const rig = (id: 'xy' | 'ortf' | 'ab', c: Vec3, params = {}, tilt = 20) => ({ id
 
 export const E05_SETUPS: EnsembleSetup[] = [
   { id: 'area', role: 'AREA MICS · TWO', title: 'Two area mics, 9 ft apart', short: 'AREA MICS', variants: ['risers'], singles: [single('l', AREA_L, 'LEFT AREA', RS), single('r', AREA_R, 'RIGHT AREA', RS)], mics: 'Two cardioid small condensers on tall stands, one for each half of the choir.', start: 'Each about 0.65 m (2 ft) in front of the first row and 0.3 m (1 ft) above their heads, aimed at the middle rows; 2.7 m (9 ft) apart — at least three times each mic’s distance to its nearest singer.', line: 'Practical coverage with two channels and a 3:1 spacing; check the outer singers and the back row.', core: true, view: 'plan' },
-  { id: 'xy', role: 'MAIN PAIR · COINCIDENT', title: 'An X/Y pair a few feet in front', variants: ['risers'], rig: rig('xy', PAIR_NEAR, { angle: 110 }, 25), mics: 'Two matched cardioid small condensers, capsules together, on one tall stand.', start: 'A few feet in front of the first row and above their heads, centred, aimed at the middle rows; widen the angle if the outer sections sound weak.', line: 'A stable image and a dependable mono sum; closer gives diction, farther the blend.', core: true, view: 'section' },
+  { id: 'xy', role: 'MAIN PAIR · COINCIDENT', title: 'An X/Y pair a few feet in front', variants: ['risers'], rig: rig('xy', PAIR_NEAR, { angle: 110 }, 25), mics: 'Two matched cardioid small condensers, capsules together, on one tall stand.', start: 'A few feet in front of the first row and above their heads, centered, aimed at the middle rows; widen the angle if the outer sections sound weak.', line: 'A stable image and a dependable mono sum; closer gives diction, farther the blend.', core: true, view: 'section' },
   { id: 'ortf', role: 'MAIN PAIR · NEAR-COINCIDENT', title: 'A 17 cm, 110° pair farther back', variants: ['risers'], rig: rig('ortf', PAIR_FAR), mics: 'Two cardioid small condensers, 17 cm (6.7 in) apart, 110° between them — a fixed geometry.', start: 'Far enough back that the choir fills its 95° recording angle — about 1.7 m in front here, and above the heads; the front row’s outer singers sit just outside it.', line: 'Width from time and level, the choir filling the angle; check the edges and mono.', core: true, view: 'plan' },
   { id: 'spots', role: 'MAIN PAIR + SECTION SPOTS', title: 'The pair and a spot for each section', short: 'PAIR + SPOTS', variants: ['risers'], rig: rig('ortf', PAIR_FAR), singles: [single('s', SPOT.sop, 'SOPRANOS'), single('a', SPOT.alt, 'ALTOS'), single('t', SPOT.ten, 'TENORS'), single('b', SPOT.bas, 'BASSES')], mics: 'The 17 cm pair, plus a cardioid on its own stand for each of the four sections.', start: 'Each spot about 1–2 m (3–6 ft) from its section, in front and above their mouths; muted, then raised only until a weak section is just clear.', line: 'Limited correction under a natural main pair; too much and the choir becomes separate soloists.', core: true, view: 'plan' },
-  { id: 'area3', role: 'AREA MICS · THREE', title: 'Three area mics, 6 ft apart', short: 'AREA MICS', variants: ['risers'], singles: AREA3.map((m, i) => single(`a${i}`, m, ['LEFT', 'CENTRE', 'RIGHT'][i])), mics: 'Three cardioid small condensers on tall stands.', start: `At the same distance and height, 1.8 m (6 ft) apart — under 3:1 here: about ${(E05_31.three.ratio).toFixed(1)} to 1. Use fewer mics, or move them closer to the singers.`, line: 'More even coverage across the width, but more overlap: listen for a hollow sound in mono.', core: false, view: 'plan' },
+  { id: 'area3', role: 'AREA MICS · THREE', title: 'Three area mics, 6 ft apart', short: 'AREA MICS', variants: ['risers'], singles: AREA3.map((m, i) => single(`a${i}`, m, ['LEFT', 'CENTER', 'RIGHT'][i])), mics: 'Three cardioid small condensers on tall stands.', start: `At the same distance and height, 1.8 m (6 ft) apart — under 3:1 here: about ${(E05_31.three.ratio).toFixed(1)} to 1. Use fewer mics, or move them closer to the singers.`, line: 'More even coverage across the width, but more overlap: listen for a hollow sound in mono.', core: false, view: 'plan' },
   { id: 'ab', role: 'MAIN PAIR · SPACED', title: 'A spaced omni pair', variants: ['risers'], rig: rig('ab', PAIR_FAR, { spacing: 600 }), mics: 'Two omni small condensers, 60 cm (2 ft) apart on one bar.', start: 'The same place as the 17 cm pair; only in a good, quiet room.', line: 'Natural and spacious in a fine room — more room, more low end, more noise; rarely a live choice.', core: false, view: 'front' },
   { id: 'one', role: 'ONE AREA MIC', title: 'One mic, aimed at the back row', short: 'AREA MIC', variants: ['arc'], singles: [single('one', ONE_ARC, 'AREA MIC', AR)], mics: 'One cardioid small condenser on a tall stand.', start: 'About 0.75 m (2.5 ft) in front of the first row, a little above the heads, aimed at the back row — twelve voices, one mic.', line: 'The fewest open mics: the whole small choir from one place. Check the outer singers.', core: true, view: 'section' },
-  { id: 'axy', role: 'MAIN PAIR · COINCIDENT', title: 'An X/Y pair in front of the chamber choir', variants: ['arc'], rig: rig('xy', ARC_PAIR, { angle: 100 }, 25), mics: 'Two matched cardioid small condensers, capsules together.', start: 'About 1.3 m (4 ft) in front and 0.7 m above the heads, centred.', line: 'A stable, compact picture of the group; a dependable mono sum.', core: true, view: 'plan' },
+  { id: 'axy', role: 'MAIN PAIR · COINCIDENT', title: 'An X/Y pair in front of the chamber choir', variants: ['arc'], rig: rig('xy', ARC_PAIR, { angle: 100 }, 25), mics: 'Two matched cardioid small condensers, capsules together.', start: 'About 1.3 m (4 ft) in front and 0.7 m above the heads, centered.', line: 'A stable, compact picture of the group; a dependable mono sum.', core: true, view: 'plan' },
   { id: 'aortf', role: 'MAIN PAIR · NEAR-COINCIDENT', title: 'A 17 cm pair in front of the chamber choir', variants: ['arc'], rig: rig('ortf', ARC_PAIR), mics: 'Two cardioid small condensers, 17 cm apart, 110° between them.', start: 'The same place; move the whole pair, never its spacing.', line: 'More width than the X/Y; check the outer singers and mono.', core: true, view: 'plan' },
-  { id: 'aab', role: 'MAIN PAIR · SPACED', title: 'A spaced omni pair in front of the chamber choir', variants: ['arc'], rig: rig('ab', ARC_PAIR, { spacing: 500 }), mics: 'Two omni small condensers, 50 cm apart.', start: 'The same place, in a good room.', line: 'Spacious and natural; more room and noise, and the centre to check in mono.', core: true, view: 'front' },
+  { id: 'aab', role: 'MAIN PAIR · SPACED', title: 'A spaced omni pair in front of the chamber choir', variants: ['arc'], rig: rig('ab', ARC_PAIR, { spacing: 500 }), mics: 'Two omni small condensers, 50 cm apart.', start: 'The same place, in a good room.', line: 'Spacious and natural; more room and noise, and the center to check in mono.', core: true, view: 'front' },
 ];
 
 export const E05_PLACE: PlaceZone[] = [

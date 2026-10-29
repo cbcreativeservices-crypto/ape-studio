@@ -590,14 +590,14 @@ function PageAdvFinal({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={styles.page}>
       <MixMantra />
-      <Lead>The handoff from hell: a mix someone else abandoned — vocal buried, guitar hot and centred, keys muddy, everything drowned. Repair it, check it, deliver it. This is the job.</Lead>
+      <Lead>The handoff from hell: a mix someone else abandoned — vocal buried, guitar hot and centered, keys muddy, everything drowned. Repair it, check it, deliver it. This is the job.</Lead>
       <Card>
         <Eyebrow>STEP 1 — DIAGNOSE THE HANDOFF</Eyebrow>
         <AbPlayer pb={pb} variants={[variants[0]]} />
         <UnderstandingCheck
           eyebrow="THE HANDOFF — YOUR DIAGNOSIS"
           question="Name the handoff’s problems (pick the complete diagnosis):"
-          options={['Harsh cymbals + over-wide keys + thin bass + a clicky kick', 'Buried lead + hot centred guitar + low-mid mud + drowned space', 'Dull top end + weak snare + drowned guitar + a hot lead', 'A clean mix that only needs mastering-stage loudness']}
+          options={['Harsh cymbals + over-wide keys + thin bass + a clicky kick', 'Buried lead + hot centered guitar + low-mid mud + drowned space', 'Dull top end + weak snare + drowned guitar + a hot lead', 'A clean mix that only needs mastering-stage loudness']}
           correct={1}
           explain="Four named problems, four repairs — that specificity IS the diagnosis. Everything else on this page executes it."
           wrong={[

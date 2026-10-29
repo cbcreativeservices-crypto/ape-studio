@@ -111,7 +111,7 @@ export function imageOf(caps: readonly Capsule[], src: Vec3, opts: { sideDb?: nu
 /** The mono sum in words, for a pair and the reading. */
 export function monoWords(r: ImageReading): string {
   if (r.kind === 'mono') return 'One mic: mono already — no left or right to fold.';
-  if (r.kind === 'ms') return 'Summed to mono the Side cancels and the Mid remains: the centre holds.';
+  if (r.kind === 'ms') return 'Summed to mono the Side cancels and the Mid remains: the center holds.';
   if (r.kind === 'level') return 'The capsules are together: summed to mono, no time difference and no comb.';
   const n = r.monoNotchHz;
   if (n == null) return 'Straight ahead the two arrive together: no comb in mono for this source.';

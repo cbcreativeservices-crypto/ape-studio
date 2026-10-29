@@ -390,7 +390,7 @@ export type DrumPart = 'batter' | 'reso' | 'shell' | 'edge' | 'hoop' | 'rods' | 
 export const PARTS: readonly { id: DrumPart; label: string; short: string; role: string }[] = [
   { id: 'batter', label: 'Batter head', short: 'BATTER', role: 'The head you strike. Its tension sets the pitch you hear first; its evenness sets how clean the note is.' },
   { id: 'reso', label: 'Resonant head', short: 'RESO', role: 'Not struck — moved by the air the batter pushes. It shapes sustain, the sense of pitch and the bend.' },
-  { id: 'shell', label: 'Shell', short: 'SHELL', role: 'Holds the heads apart and encloses the air. Its material and depth colour the sound — along with everything else here, never alone.' },
+  { id: 'shell', label: 'Shell', short: 'SHELL', role: 'Holds the heads apart and encloses the air. Its material and depth color the sound — along with everything else here, never alone.' },
   { id: 'edge', label: 'Bearing edges', short: 'EDGE', role: 'The shaped rims the heads sit on. The profile sets how much head touches shell — contact, sustain, ease of tuning.' },
   { id: 'hoop', label: 'Hoops', short: 'HOOP', role: 'Press the head down onto the bearing edge evenly all the way round. A bent hoop cannot.' },
   { id: 'rods', label: 'Tension rods', short: 'RODS', role: 'Pull the hoop down. Each rod sets the tension near it; together they set the pitch.' },

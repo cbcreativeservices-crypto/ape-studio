@@ -26,7 +26,7 @@ export function IntroModule({ ctx }: { ctx: RoomLabCtx }) {
         <Caption>A number you took in the real room — a decay time, a resonance you found with a sweep. Only this tier describes what the room actually does. The REVIEW module compares it with the model.</Caption>
       </Card>
       <Body>
-        A room model can identify likely placement problems: a seat on a pressure peak of the first length mode, a speaker whose front-wall bounce cancels in the bass, left and right sides that do not match. It cannot know a real room's exact response — the wall that flexes, the wardrobe full of clothes, the door that leaks — without measurements. Speaker symmetry, equal listening distances and a position on the room's centre line are useful starting points; the best result still depends on the room and the monitoring system, and on listening.
+        A room model can identify likely placement problems: a seat on a pressure peak of the first length mode, a speaker whose front-wall bounce cancels in the bass, left and right sides that do not match. It cannot know a real room's exact response — the wall that flexes, the wardrobe full of clothes, the door that leaks — without measurements. Speaker symmetry, equal listening distances and a position on the room's center line are useful starting points; the best result still depends on the room and the monitoring system, and on listening.
       </Body>
       <Card>
         <SectionTitle title="HEARING FIRST" />

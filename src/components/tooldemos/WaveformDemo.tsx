@@ -213,7 +213,7 @@ const SCENES: SceneDef[] = [
     title: 'ZOOM IS NOT GAIN',
     watch: 'THE PEAK READOUT NEVER MOVES WHEN ZOOM CHANGES',
     body:
-      'Step ZOOM up: the picture grows taller and the cyan window on the 1× reference shrinks, but PEAK holds the exact same number — dBFS measures the signal against the digital ceiling, not against your screen. Now drag LEVEL: trace, colours, and readout all move together, because gain changes the signal itself. Zoom changes what you see; gain changes what gets recorded.',
+      'Step ZOOM up: the picture grows taller and the cyan window on the 1× reference shrinks, but PEAK holds the exact same number — dBFS measures the signal against the digital ceiling, not against your screen. Now drag LEVEL: trace, colors, and readout all move together, because gain changes the signal itself. Zoom changes what you see; gain changes what gets recorded.',
     note:
       'Auto-normalized views stretch every file to fill the display — before comparing two waveforms by eye, lock both to the same fixed scale.',
   },

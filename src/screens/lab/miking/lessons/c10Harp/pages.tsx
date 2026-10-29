@@ -22,7 +22,7 @@ const isLever = (v: VariantId) => v === 'lever';
 
 const OPTS: readonly RadiateOption[] = [
   { id: 'board', label: 'THE BOARD', blurb: 'From the soundboard’s face.', card: { title: 'FROM THE SOUNDBOARD', text: 'The soundboard sends sound out from its face — through the strings, toward the room in front and the pillar side. A mic in front, looking back at the board, hears this most; close in, only the part of the board it faces.' } },
-  { id: 'holes', label: 'THE HOLES', blurb: 'Out of the soundbox’s back.', card: { title: 'OUT OF THE SOUND HOLES', text: 'The air inside the soundbox leaves through the holes in its back — toward the harpist. A mic behind the harp, or a miniature at a hole (with the owner’s agreement), hears this air, with its own colouring.' } },
+  { id: 'holes', label: 'THE HOLES', blurb: 'Out of the soundbox’s back.', card: { title: 'OUT OF THE SOUND HOLES', text: 'The air inside the soundbox leaves through the holes in its back — toward the harpist. A mic behind the harp, or a miniature at a hole (with the owner’s agreement), hears this air, with its own coloring.' } },
   { id: 'room', label: 'THE ROOM', blurb: 'Both, blended at a distance.', card: { title: 'THE WHOLE HARP, AT A DISTANCE', text: 'A full harp is a large source: close in, a mic hears one region; around 2–3 m away the board, the holes and the room blend into the whole instrument — the reason a spaced pair stands about 2 m or more away in a good room.' } },
 ];
 

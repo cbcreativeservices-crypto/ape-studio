@@ -42,7 +42,7 @@ const SPEC = ensembleHandSpec({
     A: { zone: 'q.main', mic: 'arrCard' },
     B: { zone: 'q.vc', mic: 'arrCard' },
     names: { A: 'MAIN PAIR', B: 'CELLO SPOT' },
-    looking: 'Two mics · A the main pair’s centre, B the cello spot',
+    looking: 'Two mics · A the main pair’s center, B the cello spot',
     prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each player reaches the two mics at its own times.',
     label: 'The quartet with the main pair (A) and a cello spot (B)',
     warn: 'This simplified graph shows one point source and straight paths, no room. A bowed string is a large source and players move, so one delay never suits them all — judge by ear, in mono, against the plain version.',

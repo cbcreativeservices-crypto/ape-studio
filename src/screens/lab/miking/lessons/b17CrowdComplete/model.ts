@@ -31,7 +31,7 @@ export const B17_ZONES: DocumentedZone[] = [
   {
     id: 'cc.amb.S',
     label: 'The audience pair at S',
-    band: 'The pair’s centre at S, about 2 m behind U2: the capsules about 1.5 m up, aimed at U2 — across the useful audience region, not at the nearest person.',
+    band: 'The pair’s center at S, about 2 m behind U2: the capsules about 1.5 m up, aimed at U2 — across the useful audience region, not at the nearest person.',
     kind: 'trial',
     src: 'LESSON-B17',
     quote: 'stereo center S=(0,4), capsule height 1.5 m, aimed toward U2 (L222)',
@@ -101,8 +101,8 @@ const ctr = (id: string): P2 => {
 
 export const B17_SETUPS: SportSetup[] = [
   { id: 'su.one', role: 'ONE MIC', core: true, title: 'A mono audience mic at S', type: 'a small cardioid condenser on a stand', start: 'At S, about 2 m behind U2, the capsule about 1.5 m up, aimed across the audience at U2 — the simpler mono production.', line: 'A stable sense of the audience and the venue, with less spatial information; it carries the event when the action is lost.', mics: [MONO_S] },
-  { id: 'su.two', role: 'TWO MICS', core: true, title: 'An XY pair at S', type: 'two small cardioids, coincident, about 90° apart, on one stand', start: 'The pair’s centre at S, 1.5 m up, its middle aimed at U2; left and right named from that viewpoint.', line: 'Width from level differences alone, so the mono sum stays solid — check the tone off the axis.', mics: [XY_S] },
-  { id: 'su.close', role: 'CLOSE · LIVE', core: true, title: 'A local crowd spot at S′, 1 m closer', type: 'the same XY pair, moved to the closer viewpoint', start: 'Only the pair’s centre moves, 1 m closer to U2 — if the footprint is clear; the source action unchanged.', line: 'A specific audience sector: nearby voices and movement come forward. A spot adds to the main bed; it does not replace it.', mics: [XY_SC] },
+  { id: 'su.two', role: 'TWO MICS', core: true, title: 'An XY pair at S', type: 'two small cardioids, coincident, about 90° apart, on one stand', start: 'The pair’s center at S, 1.5 m up, its middle aimed at U2; left and right named from that viewpoint.', line: 'Width from level differences alone, so the mono sum stays solid — check the tone off the axis.', mics: [XY_S] },
+  { id: 'su.close', role: 'CLOSE · LIVE', core: true, title: 'A local crowd spot at S′, 1 m closer', type: 'the same XY pair, moved to the closer viewpoint', start: 'Only the pair’s center moves, 1 m closer to U2 — if the footprint is clear; the source action unchanged.', line: 'A specific audience sector: nearby voices and movement come forward. A spot adds to the main bed; it does not replace it.', mics: [XY_SC] },
   {
     id: 'su.far',
     role: 'FARTHER BACK · STUDIO',
@@ -118,8 +118,8 @@ export const B17_SETUPS: SportSetup[] = [
     noCloseUp: true,
   },
   { id: 'su.ms', role: 'ANOTHER START', core: false, title: 'Mid-Side at S', type: 'a forward cardioid over a side-facing figure-8', start: 'At S, the Mid aimed at U2, the Side’s positive lobe facing the side called left — decoded once, with a modest width.', line: 'The width set after the capture; the mono sum is the Mid alone, whatever the width.', mics: [MS_S] },
-  { id: 'su.ortf', role: 'ANOTHER START', core: false, title: 'A near-coincident pair at S', type: 'two small cardioids, 17 cm apart, 110° between their axes', start: 'The same centre and aim as the XY pair; the source sequence unchanged.', line: 'Level and arrival differences together: a wider image — compare the centre and the mono colour.', mics: [ORTF_S] },
-  { id: 'su.ab', role: 'ANOTHER START', core: false, title: 'Spaced omnis at S', type: 'two comparable omnis about 0.5 m apart', start: 'Centred on S, oriented as their design wants; the separation logged.', line: 'Spacious, with larger arrival differences — a shared announcement or action transient can colour in mono.', mics: [AB_S] },
+  { id: 'su.ortf', role: 'ANOTHER START', core: false, title: 'A near-coincident pair at S', type: 'two small cardioids, 17 cm apart, 110° between their axes', start: 'The same center and aim as the XY pair; the source sequence unchanged.', line: 'Level and arrival differences together: a wider image — compare the center and the mono color.', mics: [ORTF_S] },
+  { id: 'su.ab', role: 'ANOTHER START', core: false, title: 'Spaced omnis at S', type: 'two comparable omnis about 0.5 m apart', start: 'Centered on S, oriented as their design wants; the separation logged.', line: 'Spacious, with larger arrival differences — a shared announcement or action transient can color in mono.', mics: [AB_S] },
   { id: 'su.act', role: 'ANOTHER START', core: false, title: 'The action mic at D', type: 'a short shotgun on a stand in its footprint', start: 'At D, about 1 m up, aimed at A, 2 m away — the action’s detail, on its own fader.', line: 'Detail of the selected action; the same clap reaches the audience pair later — listen to the pair and D together.', mics: [ACT_D] },
 ];
 
@@ -127,7 +127,7 @@ export const B17_SETUPS: SportSetup[] = [
 
 const K = ['compact', 'xy', 'ms', 'ortf', 'ab'] as const;
 export const B17_PLACE: PlanZone[] = [
-  { id: 'pz.S', label: 'At S, on U2', band: 'The pair’s centre at S, about 1.5 m up, aimed at U2.', tendency: 'The broad viewpoint: the audience’s scale and the venue’s tone.', rect: { x0: -0.5, y0: -4.45, x1: 0.5, y1: -3.55 }, h: [1.3, 1.7], target: 'U2', tol: 8, kinds: K },
+  { id: 'pz.S', label: 'At S, on U2', band: 'The pair’s center at S, about 1.5 m up, aimed at U2.', tendency: 'The broad viewpoint: the audience’s scale and the venue’s tone.', rect: { x0: -0.5, y0: -4.45, x1: 0.5, y1: -3.55 }, h: [1.3, 1.7], target: 'U2', tol: 8, kinds: K },
   { id: 'pz.Sc', label: 'At S′, 1 m closer', band: 'The pair moved 1 m closer to U2.', tendency: 'A local sector: nearer voices, more seat and movement noise.', rect: { x0: -0.5, y0: -3.25, x1: 0.5, y1: -2.85 }, h: [1.3, 1.7], target: 'U2', tol: 8, kinds: K },
   { id: 'pz.low', label: 'Lower at S', band: 'The pair at S, about 1 m up, still aimed at U2.', tendency: 'Lower tends to bring the nearest voices forward and lets heads block the far ones.', rect: { x0: -0.5, y0: -4.45, x1: 0.5, y1: -3.55 }, h: [0.8, 1.2], target: 'U2', tol: 8, kinds: K },
 ];
@@ -148,7 +148,7 @@ export const B17_OVERLAP = { a: ACT_D, b: MONO_S, path: [crowdP(1, 0), PC.A, cro
 /** The M/S panel's sources, as seen from S (+ = left of the pair's front). */
 export const B17_MS_SOURCES: MsSource[] = [
   { id: 'u3', label: 'U3, the left of the audience', short: 'U3', deg: aimRel(PC.S, PC.U3) },
-  { id: 'u2', label: 'U2, the centre', short: 'U2', deg: aimRel(PC.S, PC.U2) },
+  { id: 'u2', label: 'U2, the center', short: 'U2', deg: aimRel(PC.S, PC.U2) },
   { id: 'u1', label: 'U1, the right of the audience', short: 'U1', deg: aimRel(PC.S, PC.U1) },
   { id: 'wide', label: 'A cheer well off to the left', short: 'WIDE L', deg: 60 },
 ];

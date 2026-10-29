@@ -37,7 +37,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a plan and move the drum pair yourself — lower, higher, over the kit or in front of it — and see what changes.',
-    credit: { scenarios: ['bd.place.1', 'bd.place.2', 'bd.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the players, in two different suggested starting points, and answer the three checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['bd.place.1', 'bd.place.2', 'bd.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the three checks. The worked example earns nothing on its own.' },
     takeaway: 'Change one thing at a time and compare at matched level. A pair over the kit hears the whole kit; nearer the snare, more drums; higher, more cymbals and room.',
   },
   context: {
@@ -193,8 +193,8 @@ const scenarios: MikingScenario[] = [
     id: 'bd.place.2',
     page: 'placement',
     prompt: 'Why keep both mics of the spaced pair the same distance from the snare?',
-    options: ['So the snare stays solid in the centre', 'So both mics need the same gain setting', 'So the pair passes the 3:1 spacing test'],
-    correct: 'So the snare stays solid in the centre',
+    options: ['So the snare stays solid in the center', 'So both mics need the same gain setting', 'So the pair passes the 3:1 spacing test'],
+    correct: 'So the snare stays solid in the center',
     explain: 'Equal distances mean the snare reaches both mics together: it images in the middle and sums cleanly in mono.',
     why: {
       'So both mics need the same gain setting': 'Matching gain is a separate step; the distances set the arrival times.',
@@ -563,7 +563,7 @@ export const E09_LESSON: EnsembleLesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'A complete band: drums, bass, electric or acoustic guitars, keyboards, vocals and percussion playing together — on a stage or in a studio room.', src: 'LESSON-BAND' },
     { title: 'WHAT IT ASKS OF YOU', text: 'Deliberate choices about the image, isolation, bleed, monitor spill, phase and gain before feedback — from a minimal plan to an expanded one.', src: 'LESSON-BAND' },
-    { title: 'HOW IT IS LAID OUT', text: 'This lab draws a typical stage plot: drums upstage centre, guitar and bass in front of their amps, keys at the side, the singer downstage — and the same band tracking in one room.', src: 'LESSON-BAND' },
+    { title: 'HOW IT IS LAID OUT', text: 'This lab draws a typical stage plot: drums upstage center, guitar and bass in front of their amps, keys at the side, the singer downstage — and the same band tracking in one room.', src: 'LESSON-BAND' },
     { title: 'ITS SIZE', text: 'The stage is about 10 m wide; the band fills about 8 m of it. A typical layout, not a particular band.', src: 'LESSON-BAND' },
   ],
   sound: {
@@ -603,7 +603,7 @@ export const E09_LESSON: EnsembleLesson = {
     ],
   },
   unknowns: [
-    { text: 'Every position on the stage plot is a drawing default: drums upstage centre, the amps about 1.5 m behind their players, keys at the side, the singer 0.4 m behind the band’s front line, wedges 0.9 m in front of each player (1.35 m for the singer, past the mic stand), the PA at the front corners.', dims: [] },
+    { text: 'Every position on the stage plot is a drawing default: drums upstage center, the amps about 1.5 m behind their players, keys at the side, the singer 0.4 m behind the band’s front line, wedges 0.9 m in front of each player (1.35 m for the singer, past the mic stand), the PA at the front corners.', dims: [] },
     { text: 'The kit is the shared 5-piece kit of Lab 1; the amps are Lab 4’s cabinets at their published sizes; the singer’s lips at the voice family’s standing height.', dims: [] },
     { text: 'The close mics borrow their distances from the instrument lessons (kick 4 cm out at the port, snare 5 cm over the rim, guitar amp 5 cm and bass woofer 6 cm from the grille, vocal within 10 cm); the overhead pair is 1.4 m wide, each mic 1.2 m from the snare; the room pair 0.6 m up — its height a drawing default.', dims: [] },
   ],
@@ -619,7 +619,7 @@ export const E09_LESSON: EnsembleLesson = {
     meet: {
       figureTitle: 'A BAND ON A STAGE',
       figureBadge: 'From above, as the audience sees it · a typical stage plot, not a particular band',
-      sectionsNote: 'Drums upstage centre, guitar and bass in front of their amps, keys at the side, the singer downstage — a wedge for each player, the PA at the corners. Switch SEATING for the band in one room. Tap a player or an amp.',
+      sectionsNote: 'Drums upstage center, guitar and bass in front of their amps, keys at the side, the singer downstage — a wedge for each player, the PA at the corners. Switch SEATING for the band in one room. Tap a player or an amp.',
       soundNote: 'The arcs show WHERE each sound leaves — never how loud. The guitar and bass leave from their amps, along each speaker’s axis; the kit from everywhere at once; the keys only through the DI, the wedges and the PA.',
       mainAt: ROOM_C,
     },
@@ -633,13 +633,13 @@ export const E09_LESSON: EnsembleLesson = {
     workedWords: {
       begin: 'After our research, this is where we suggest you begin with a band: the drum pair over the kit, then close mics only where a part needs control — a place to start and compare, not a rule.',
       clearance: 'The boom stand stands in front of the kit, its base clear of the kick pedal and the walkway; the bar above the cymbals’ swing and the sticks’ highest point; the cable dressed flat.',
-      height: 'Each mic about 1.2 m (4 ft) from the snare’s centre — the same distance — pointing straight down. Higher tends to more cymbals and room; lower, more drums.',
-      forward: 'Centred over the snare, so the snare stays in the middle of the picture; the two mics over the hi-hat side and the other side of the kit.',
+      height: 'Each mic about 1.2 m (4 ft) from the snare’s center — the same distance — pointing straight down. Higher tends to more cymbals and room; lower, more drums.',
+      forward: 'Centered over the snare, so the snare stays in the middle of the picture; the two mics over the hi-hat side and the other side of the kit.',
     },
     learnZones: [
       'What you just did, in words. After our research, the blue zones are where we suggest you begin with the drum pair — each mic about 1–1.4 m from the snare over the kit — or, in a good room, a low pair about 1 m in front of the kick. Places to start and compare, not measurements of a best place.',
       'Change one thing at a time — height, then where it sits over the kit — and compare at a consistent level on the same passage.',
-      'Keep the two mics the same distance from the snare as you move them, so the snare stays centred and sums cleanly in mono.',
+      'Keep the two mics the same distance from the snare as you move them, so the snare stays centered and sums cleanly in mono.',
     ],
     plot: true,
     placeAxes: { h: { lo: 300, hi: 3000 }, z: { lo: -4800, hi: 1200 }, x: { lo: -2500, hi: 2500 } },

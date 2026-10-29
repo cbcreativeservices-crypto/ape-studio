@@ -46,9 +46,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we suggest you begin — one mic about 30–60 cm in front, centred; or a mic for each side — always outside the bellows’ whole travel; then switch BELLOWS and see the bass side move.',
+    goal: 'Start where we suggest you begin — one mic about 30–60 cm in front, centered; or a mic for each side — always outside the bellows’ whole travel; then switch BELLOWS and see the bass side move.',
     credit: { scenarios: ['ac.place.1', 'ac.place.2', 'ac.place.3', 'ac.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of the bellows’ travel and the player, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'One mic about 30–60 cm in front, centred, integrates the two sides. A treble mic about 30 cm from the keyboard side and a bass mic just beyond the fully open bass side give separate control — but the bass side’s distance changes all through the cycle.',
+    takeaway: 'One mic about 30–60 cm in front, centered, integrates the two sides. A treble mic about 30 cm from the keyboard side and a bass mic just beyond the fully open bass side give separate control — but the bass side’s distance changes all through the cycle.',
   },
   context: {
     title: 'Studio or live',
@@ -203,12 +203,12 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ac.place.1',
     page: 'placement',
-    prompt: 'A starting point says about 30–60 cm in front, centred. Centred on what?',
+    prompt: 'A starting point says about 30–60 cm in front, centered. Centered on what?',
     options: ['The middle between the two sides', 'The treble grille, where the melody is', 'The bellows’ folds, the air source'],
     correct: 'The middle between the two sides',
-    explain: 'In front and centred between treble and bass, so the two combine; then move toward the side the music needs.',
+    explain: 'In front and centered between treble and bass, so the two combine; then move toward the side the music needs.',
     why: {
-      'The treble grille, where the melody is': 'That favours the melody; centred combines both sides.',
+      'The treble grille, where the melody is': 'That favours the melody; centered combines both sides.',
       'The bellows’ folds, the air source': 'Pointing into the bellows is not a default way to hear the instrument.',
     },
   },
@@ -425,7 +425,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A studio recording: a solo piano accordion, melody and bass both important, in a good room. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'Small condenser about 45 cm in front, centred between the sides', ok: true, power: 'phantom', feedback: 'The suggested integrated start; it needs the phantom this channel has.' },
+      { id: 'a', label: 'Small condenser about 45 cm in front, centered between the sides', ok: true, power: 'phantom', feedback: 'The suggested integrated start; it needs the phantom this channel has.' },
       { id: 'b', label: 'A condenser about 30 cm from the keyboard side, plus one just beyond the fully open bass side', ok: true, power: 'phantom', feedback: 'Fair for separate control — check the pair in mono over full bellows strokes.' },
       { id: 'c', label: 'A mic pointed into the bellows’ gap', ok: false, power: 'phantom', feedback: 'The bellows are the air source, and the mic would sit in their travel.' },
       { id: 'd', label: 'A mic taped to the treble grille', ok: false, power: 'phantom', feedback: 'Never tape a grille: it can damage the instrument and smother its sound.' },
@@ -581,7 +581,7 @@ export const A11_LESSON: Lesson = {
     ],
   },
   unknowns: [
-    { text: 'Every size is a drawing default except the counts (41 keys, 120 buttons): the treble box 480 × 200 × 180 mm, the bass box 480 × 140 × 180 mm, the grille 300 × 80 mm with its centre 1150 mm above the floor.', dims: ['trebleH', 'trebleW', 'trebleD', 'bassH', 'bassW', 'bassD', 'grilleH', 'grilleW', 'grilleHt', 'yFloor'] },
+    { text: 'Every size is a drawing default except the counts (41 keys, 120 buttons): the treble box 480 × 200 × 180 mm, the bass box 480 × 140 × 180 mm, the grille 300 × 80 mm with its center 1150 mm above the floor.', dims: ['trebleH', 'trebleW', 'trebleD', 'bassH', 'bassW', 'bassD', 'grilleH', 'grilleW', 'grilleHt', 'yFloor'] },
     { text: 'The bellows: closed 100 mm, fully open 600 mm at the bottom and about 264 mm at the top (a 35° fan), half open 350 / 175 mm — drawing defaults; the bass outlets drawn at the bass side’s end, positions unknown.', dims: ['bellowsClosed', 'bellowsMax', 'fanMax', 'cableSlack'] },
     { text: 'The bellows-side starting point (about 4–6 in) is measured by the lab from the bass side at its full opening, so the stand stays outside the travel (CORRECTIONS_LOG AC-02); the bands round 12 in and 18 in are the lab’s.', dims: [] },
     { text: 'The frame is the proposal’s, mirrored to the engine’s convention (+z to the player’s right).', dims: [] },

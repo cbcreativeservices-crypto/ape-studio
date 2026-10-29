@@ -36,7 +36,7 @@ export const PIANO_COPY: LessonCopy = {
     },
   },
   sound: {
-    strikes: [{ id: 'c', label: 'CENTRE', mm: 0, blurb: 'Not used by this lesson.' }],
+    strikes: [{ id: 'c', label: 'CENTER', mm: 0, blurb: 'Not used by this lesson.' }],
     strikeDefault: 'c',
     striker: 'HAMMER',
     strikerPhrase: 'the hammer',
@@ -79,7 +79,7 @@ export const PIANO_COPY: LessonCopy = {
     availableLead: 'Starting points for this mic and piano',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic on this piano, measured from the surface it names — the strings, the curved side, the top, the soundboard. They are starting points, not rules: move from there and listen — there is no single right answer, and every piano and room is different.',
-      separate: 'Height above the strings, distance back from the hammers and the angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.',
+      separate: 'Height above the strings, distance back from the hammers and the angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimetre claim is made.',
       clearance: 'Clearance comes first. The lid on its stick by someone who knows the piano, then the stands — never a hand under an unsupported lid. Nothing touches the strings, dampers, hammers or action; nothing rests on the soundboard; magnets, clips or panel removal only with the owner’s agreement. Keep-clear areas appear as the mic gets close and show roughly where the pianist works. If a move is stopped, they turn red and give the reason. Leave more room on a real stage.',
       tendencies: 'Nearer the hammers tends to bring more attack and mechanical noise; farther away and higher, more of the whole instrument and the room. Two mics over the bass and treble can widen the picture — and can thin out in mono. These are tendencies; pianos vary.',
     },

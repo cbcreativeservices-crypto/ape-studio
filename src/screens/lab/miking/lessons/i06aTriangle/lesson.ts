@@ -279,7 +279,7 @@ const scenarios: MikingScenario[] = [
     correct: 'When the main pair or overheads do not carry it well',
     explain: 'Hear the main pair or the percussion overheads first; add a spot only for independent level, then check it with the other mics, in mono.',
     why: {
-      'As a habit, so it can be turned up later': 'A spot that is not needed adds spill and can colour the sum.',
+      'As a habit, so it can be turned up later': 'A spot that is not needed adds spill and can color the sum.',
       'When it is the loudest instrument anywhere in the room': 'Loudness is not the test; what the main mics miss is.',
     },
   },

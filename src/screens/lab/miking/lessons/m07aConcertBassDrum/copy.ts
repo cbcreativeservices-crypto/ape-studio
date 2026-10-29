@@ -13,7 +13,7 @@ export const CBD_COPY: LessonCopy = {
   viewTag: { side: 'SIDE · CUTAWAY', top: 'TOP · CUTAWAY' },
   axes: {
     x: { plus: 'toward the player', minus: 'toward the far head', label: 'ALONG the drum', blurb: 'Toward the player or toward the far head (x). Distance is read from the head the zone names.' },
-    y: { plus: 'below centre', minus: 'above centre', label: 'HEIGHT', blurb: 'Up or down (y), from the drum’s centre line.' },
+    y: { plus: 'below centre', minus: 'above centre', label: 'HEIGHT', blurb: 'Up or down (y), from the drum’s center line.' },
     z: { plus: 'toward the conductor', minus: 'away from the conductor', label: 'ACROSS', blurb: 'Toward or away from the conductor (z): the heads face sideways, so the conductor is off to one side.' },
   },
   instrument: {
@@ -26,8 +26,8 @@ export const CBD_COPY: LessonCopy = {
   },
   sound: {
     strikes: [
-      { id: 'c', label: 'CENTRE', mm: 0, blurb: 'The exact centre of the head.' },
-      { id: 'mid', label: 'MIDDLE REGION', mm: R * 0.5, blurb: 'Between the centre and the edge — a usual starting area for players.' },
+      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact centre of the head.' },
+      { id: 'mid', label: 'MIDDLE REGION', mm: R * 0.5, blurb: 'Between the center and the edge — a usual starting area for players.' },
       { id: 'edge', label: 'NEAR THE EDGE', mm: R * 0.85, blurb: 'Close to the hoop — explore what it drives.' },
     ],
     strikeDefault: 'mid',
@@ -43,7 +43,7 @@ export const CBD_COPY: LessonCopy = {
     reveal: 'The squeezed air pushes the far head OUTWARD — both heads move the same way at that moment. The two heads are coupled through the air inside.',
     after: 'Then both heads keep ringing for a long, low bloom. How long depends on the tuning, the mallet and the player’s damping — the player may stop either head by hand.',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones, the lowest shape among them. Players choose the area for the colour they want.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact center, every shape with a still line across the head stands still — so a center strike drives only the ring-shaped ones, the lowest shape among them. Players choose the area for the color they want.',
       'This is a simplified head in empty space. On a real drum the air inside and the second head pull these numbers around — the next step shows the two heads working together.',
     ],
     coupledSubject: 'Side view of the concert bass drum',

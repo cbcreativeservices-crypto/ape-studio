@@ -71,7 +71,7 @@ export const GUIDE: MixingGuide = {
   ],
   "balance": [
     {
-      "text": "Hierarchy, loudest to quietest: lead vocal (clearly on top, more than in rock), kick and snare, bass, main synth/guitar hook, strings and pads, backing vocals and harmonies, cymbals and effects. Low end is tight rather than huge: kick owns 50–80 Hz punch, bass owns 80–250 Hz and its melodic mids; sub should support, not dominate. Keep the top bright and clear—J-pop mixes typically carry more 3–12 kHz energy than Western rock. Vocal, kick, snare and bass in the centre; double rhythm guitars hard left/right; strings and pads wide; synth arps panned or stereo. For idol groups, keep all members near centre with slight spreads so the unison sounds like one voice."
+      "text": "Hierarchy, loudest to quietest: lead vocal (clearly on top, more than in rock), kick and snare, bass, main synth/guitar hook, strings and pads, backing vocals and harmonies, cymbals and effects. Low end is tight rather than huge: kick owns 50–80 Hz punch, bass owns 80–250 Hz and its melodic mids; sub should support, not dominate. Keep the top bright and clear—J-pop mixes typically carry more 3–12 kHz energy than Western rock. Vocal, kick, snare and bass in the center; double rhythm guitars hard left/right; strings and pads wide; synth arps panned or stereo. For idol groups, keep all members near center with slight spreads so the unison sounds like one voice."
     }
   ],
   "eq": {

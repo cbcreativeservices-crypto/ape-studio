@@ -33,7 +33,7 @@ export const TABLA = {
   dayanPatch: placeholder(0.45, 'the dayan’s black patch radius (fraction of the head’s): drawing default 0.45'),
   bayanPatch: placeholder(0.36, 'the bayan’s black patch radius (fraction of the head’s): drawing default 0.36'),
   /** "off-centre toward the player": 0.2 × the head's radius (drawing default). */
-  bayanOffset: placeholder(0.28, 'how far the bayan’s patch sits off-centre, toward the player (fraction of the radius): drawing default 0.28'),
+  bayanOffset: placeholder(0.28, 'how far the bayan’s patch sits off-center, toward the player (fraction of the radius): drawing default 0.28'),
   ringH: placeholder(60, 'the cloth support rings’ height: drawing default 60'),
   dayanTilt: placeholder(15, 'the dayan’s tilt toward the audience: drawing default 15°'),
   bayanTilt: placeholder(10, 'the bayan’s tilt toward the audience: drawing default 10°'),

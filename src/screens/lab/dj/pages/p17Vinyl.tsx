@@ -37,7 +37,7 @@ import { SkipOptional } from './skipOptional';
 
 const TERMS = [
   { term: 'Tracking force', def: 'How hard the stylus presses into the groove, in grams — set by the counterweight. Each cartridge states its range; this one 3–5 g.' },
-  { term: 'Anti-skate', def: 'A small outward push that cancels the record’s pull toward the centre, so the stylus presses both groove walls evenly.' },
+  { term: 'Anti-skate', def: 'A small outward push that cancels the record’s pull toward the center, so the stylus presses both groove walls evenly.' },
   { term: 'Phono stage', def: 'The preamp a raw cartridge needs: about +36 dB for the moving-magnet cartridges DJs use, and the RIAA curve undone (bass back up, treble back down). Exactly one in the chain.' },
   { term: 'Ground wire', def: 'The thin wire from the turntable to the mixer’s GND post. A SIGNAL ground against hum — never a reason to touch the mains earth.' },
 ] as const;
@@ -325,7 +325,7 @@ function PageVinyl({ ctx }: { ctx: PageCtx }) {
           question="The force is set to 4 g, but on loud passages the RIGHT channel distorts while the left stays clean. What do you check?"
           options={['The anti-skate — too little lets the stylus lean off the outer wall, which carries the right channel', 'The ground wire', 'The tracking force — it must be far too heavy', 'The record’s RIAA curve']}
           correct={0}
-          explain="A spinning record pulls the arm toward the centre (skating), pressing the inner groove wall (left) and easing off the outer wall (right). Anti-skate cancels that pull; without it the right channel mistracks first."
+          explain="A spinning record pulls the arm toward the center (skating), pressing the inner groove wall (left) and easing off the outer wall (right). Anti-skate cancels that pull; without it the right channel mistracks first."
           wrong={[undefined, 'A missing ground is a steady buzz on both sides, not distortion on loud passages.', 'Too heavy wears the record but tracks fine; one-sided distortion points at the skating force.', 'The RIAA curve is undone by the phono stage for both channels alike.']}
           onCorrect={() => setCheck(true)}
         />

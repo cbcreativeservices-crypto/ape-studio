@@ -23,7 +23,7 @@ const CHAIN = { pedals: null, rig: 'combo', diBox: false, ampDirect: true, ampDi
 const AXES: AxisWords = {
   x: { label: 'TOWARD THE PLAYER', short: 'TOWARD', blurb: 'Toward the player, or back toward the lid (x). Distances are read from the grille.', fmt: (v) => `${fmtLen(Math.abs(v - C_BASS.x))} ${v >= C_BASS.x ? 'toward the player from' : 'behind'} the grille’s centre` },
   y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Up or down (y). Height above the floor is not shown.', fmt: (v) => `${fmtLen(Math.abs(v - C_BASS.y))} ${v <= C_BASS.y ? 'above' : 'below'} the speaker’s centre` },
-  z: { label: 'ALONG THE KEYS', short: 'ALONG', blurb: 'Toward the bass end or the treble end (z).', fmt: (v) => `${fmtLen(Math.abs(v - C_BASS.z))} toward the ${v >= C_BASS.z ? 'treble' : 'bass'} end from the speaker’s centre` },
+  z: { label: 'ALONG THE KEYS', short: 'ALONG', blurb: 'Toward the bass end or the treble end (z).', fmt: (v) => `${fmtLen(Math.abs(v - C_BASS.z))} toward the ${v >= C_BASS.z ? 'treble' : 'bass'} end from the speaker’s center` },
 };
 
 const close = I11B_ZONES.find((z) => z.id === I11B_WORKED)!;
@@ -48,7 +48,7 @@ const AMP: AmpPagesSpec = {
   contextPose: close.start,
   worked: {
     speaker: 'In front of one of the two grilles in the lid’s front slope — they face the PLAYER, not the room. Find the one that sounds best from outside, without lifting the lid.',
-    across: 'Off the speaker’s centre along its long side, by about a quarter of its length, and turned a little toward the centre — a slight angle. The bezel reads how far off the axis the mic sits.',
+    across: 'Off the speaker’s center along its long side, by about a quarter of its length, and turned a little toward the center — a slight angle. The bezel reads how far off the axis the mic sits.',
     clearance: 'Off the grille and the lid — never touching or clamped to them — on a stable stand of its own, clear of the keys’ travel, the player’s hands and forearms, the knees and the pedal foot, the cable routed away.',
   },
   mic: {
@@ -70,7 +70,7 @@ const AMP: AmpPagesSpec = {
     context: 'On stage the speakers face the player, so a close mic also hears what is near the player — their wedge above all. One close mic on the best-sounding grille is a sensible first choice; the auxiliary output can help when the stage is very loud.',
   },
   liveCards: [
-    { title: 'ROUNDED AND INTIMATE', text: 'Compare the off-centre close mic with a slightly greater distance: listen for the reeds’ pitch and body, the speaker’s character, key noise and the room.' },
+    { title: 'ROUNDED AND INTIMATE', text: 'Compare the off-center close mic with a slightly greater distance: listen for the reeds’ pitch and body, the speaker’s character, key noise and the room.' },
     { title: 'MORE BITE OR BARK', text: 'Try another spot on the grille, or the other grille, before reaching for EQ. Listen for attack that serves the mix, not brittle upper mids or the amplifier straining.' },
     { title: 'KEEPING THE VIBRATO', text: 'Play a held chord with the effect off, then on at the depth the player uses: the level pulse should come through intact, with a steady noise floor. A gate or a compressor can make it pump.' },
     { title: 'LOUD STAGE', text: 'One directional close mic; move the keyboard and the wedges where you can. Listen for useful gain before feedback — and keep the player’s hands, knees and pedal foot clear.' },
@@ -105,7 +105,7 @@ export const I11B_SPEC: KeysPagesSpec = {
   speakerParts: [
     { id: 'wur.grille', title: 'GRILLE', text: 'The slotted front of the lid in front of each speaker. Never press a mic against it, or clamp anything to it.' },
     { id: 'wur.lid', title: 'LID AS BAFFLE', text: 'On the later model the speakers are screwed to the lid, so the lid is their baffle: it shapes the sound, and a loose speaker can rattle. A rattle is for the owner or a technician — never loosen or tighten the old screws yourself.' },
-    { id: 'wur.cone', title: 'OVAL CONE', text: 'A 4 × 8 in oval cone. Close in, the spot it faces matters, as on any speaker: the centre tends to be brighter, the outer end rounder.' },
+    { id: 'wur.cone', title: 'OVAL CONE', text: 'A 4 × 8 in oval cone. Close in, the spot it faces matters, as on any speaker: the center tends to be brighter, the outer end rounder.' },
     { id: 'wur.dust', title: 'DUST CAP', text: 'The dome over the voice coil in the middle of the oval.' },
     { id: 'wur.frame', title: 'FRAME', text: 'The metal frame holding the cone, fixed with four screws — to the lid or to the amp rail, depending on the model.' },
   ],
@@ -114,7 +114,7 @@ export const I11B_SPEC: KeysPagesSpec = {
   notes: {
     mech: 'A simplified picture of one note. Real reeds differ from note to note, and the reed moves far less than drawn. A bad note, or hum that new cables and the DI’s ground lift do not cure, is the instrument — a technician’s job, not a mic move.',
     mechCheck: 'The reed is a struck, vibrating solid — like the other instruments in this lab — but its useful sound is the amplified one: you mic the speakers, and hear the whole chain of reed, pickup, preamp, amplifier, speaker and lid.',
-    spots: 'Close in, the spot on the oval shapes the sound: the centre tends to be brighter and clickier, the outer end rounder. These are general speaker tendencies — a small oval in a lid may behave differently, so test by ear.',
+    spots: 'Close in, the spot on the oval shapes the sound: the center tends to be brighter and clickier, the outer end rounder. These are general speaker tendencies — a small oval in a lid may behave differently, so test by ear.',
     speaker: 'Two small oval speakers, one behind each grille in the lid’s front slope — and they face the player, not the room. Find them from outside, without lifting the lid. If the player uses an external amp through the auxiliary output, that amp’s speaker becomes the source: mic it as its own speaker.',
     air: 'A mic at a grille hears AIR — the speaker, the lid and the room. The auxiliary output is a separate electrical signal: it carries no speaker, no lid and no room. It is a useful comparison and sometimes a useful blend on a loud stage — but it is not miking. Label each as its own source.',
   },

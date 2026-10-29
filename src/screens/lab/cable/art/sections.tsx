@@ -610,18 +610,18 @@ const XS_LAYERS: Record<CableSectionId, number> = {
 
 /** One-line caption per construction (sizes and what is real). */
 export const SECTION_CAPTION: Record<SectionId, string> = {
-  balanced_shielded: 'Drawn to scale: Ø 6 mm mic cable — two 0.22 mm² conductors inside a braid shield. Insulation colours vary by maker.',
+  balanced_shielded: 'Drawn to scale: Ø 6 mm mic cable — two 0.22 mm² conductors inside a braid shield. Insulation colors vary by maker.',
   instrument_unbalanced: 'Drawn to scale: Ø 6 mm instrument cable — one small conductor inside a braid shield.',
   speaker_2c: 'Drawn to scale: Ø 8.5 mm speaker cable — two 2.5 mm² fine-stranded conductors, no shield. Markings vary by maker.',
   ac_3c_grounded:
-    'Drawn to scale: Ø 8 mm cord, three 16 AWG conductors in the North American colours (black line, white neutral, green earth). Other regions use other codes — e.g. IEC brown, blue, green-yellow.',
-  ethernet_4pair: 'Drawn to scale: Ø 5.3 mm Cat 5e — four pairs in the T568 colours, each twisted at its own rate.',
-  coax: 'Drawn to scale: Ø 6.1 mm 75-ohm coax — one centre conductor, foam dielectric, braid shield.',
+    'Drawn to scale: Ø 8 mm cord, three 16 AWG conductors in the North American colors (black line, white neutral, green earth). Other regions use other codes — e.g. IEC brown, blue, green-yellow.',
+  ethernet_4pair: 'Drawn to scale: Ø 5.3 mm Cat 5e — four pairs in the T568 colors, each twisted at its own rate.',
+  coax: 'Drawn to scale: Ø 6.1 mm 75-ohm coax — one center conductor, foam dielectric, braid shield.',
   optical_fiber: 'Drawn to scale: Ø 3 mm fibre patch cord. The glass is only 0.125 mm across, so the lens shows it enlarged: cladding around a 0.05 mm core.',
   aes3_110: 'Ø 5.6 mm 110-ohm digital pair: foamed insulation, foil shield and a drain wire.',
   dmx_120: 'Ø 6 mm 120-ohm data pair: foamed insulation, foil and braid.',
   audio_coax: 'Ø 4.5 mm audio interconnect: one conductor and a braid — not impedance-controlled.',
-  rg58_50: 'Ø 5 mm 50-ohm coax: solid dielectric, thicker centre.',
+  rg58_50: 'Ø 5 mm 50-ohm coax: solid dielectric, thicker center.',
   insert_y: 'Two small shielded cables side by side — send and return.',
 };
 

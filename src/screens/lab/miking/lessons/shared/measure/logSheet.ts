@@ -57,7 +57,7 @@ export const SYSTEM_SHEET: SheetField[] = [
   text('source', 'Source, active channels and processing state'),
   choice('tap', 'Reference tap', ['Before the processor', 'After the processor', 'No reference — level only']),
   text('timing', 'Delay, window, smoothing, and the frequency range the window supports'),
-  text('points', 'Points: axis and repeat, off axis, listener centre, edge or overlap'),
+  text('points', 'Points: axis and repeat, off axis, listener center, edge or overlap'),
   text('notes', 'Position-to-position finding, and the limits of the claim'),
 ];
 
@@ -76,7 +76,7 @@ export const ARRAY_SHEET: SheetField[] = [
   ...COMMON,
   text('geometry', 'Origin, axes, baseline, and each element’s position'),
   text('timing', 'Clock, sample rate and filter; the raw channels kept'),
-  text('runs', 'Runs: centre and repeat, side and repeat, back to the centre'),
+  text('runs', 'Runs: center and repeat, side and repeat, back to the center'),
   choice('medium', 'Medium and units', ['Air, dB re 20 µPa', 'Water, dB re 1 µPa', 'Intensity, with its normal']),
   text('notes', 'What the setup cannot support, and the next check'),
 ];

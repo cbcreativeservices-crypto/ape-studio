@@ -44,11 +44,11 @@ const W = 200;
 const wall = (id: string, min: Vec3, max: Vec3): Part => ({ id, label: 'a wall', short: 'wall', role: '', listIn: [], solid: { kind: 'box', min, max }, prov: ROOM });
 
 const PARTS: Part[] = [
-  { id: 'src', label: 'the test source', short: 'source', role: 'A small loudspeaker on a stand at the centre point, at a modest, agreed level: the stationary source whose arrival the two elements compare.', solid: { kind: 'box', min: { x: SRC16.front - 14, y: SRC16.top, z: -SRC16.half }, max: { x: SRC16.front + SRC16.depth, y: SRC16.bottom, z: SRC16.half } }, prov: ROOM },
+  { id: 'src', label: 'the test source', short: 'source', role: 'A small loudspeaker on a stand at the center point, at a modest, agreed level: the stationary source whose arrival the two elements compare.', solid: { kind: 'box', min: { x: SRC16.front - 14, y: SRC16.top, z: -SRC16.half }, max: { x: SRC16.front + SRC16.depth, y: SRC16.bottom, z: SRC16.half } }, prov: ROOM },
   { id: 'src.stand', label: 'the source’s stand', short: 'stand', role: 'A rigid stand: the source must not move between runs.', listIn: [], solid: { kind: 'box', min: { x: SRC16.front + SRC16.depth / 2 - 190, y: SRC16.bottom, z: -170 }, max: { x: SRC16.front + SRC16.depth / 2 + 190, y: FLOOR16, z: 170 } }, prov: ROOM },
-  { id: 'origin', label: 'the marked origin', short: 'origin', role: 'The coordinate origin, marked on the floor under the baseline’s centre: every element’s position, and every source point, is written from here.', prov: ROOM },
+  { id: 'origin', label: 'the marked origin', short: 'origin', role: 'The coordinate origin, marked on the floor under the baseline’s center: every element’s position, and every source point, is written from here.', prov: ROOM },
   { id: 'axes', label: 'the array axes', short: 'axes', role: 'The baseline axis (left to right) and the axis toward the source, taped on the floor: the directions every time difference is read along.', prov: ROOM },
-  { id: 'side', label: 'the side point', short: 'side point', role: 'The second source point, 1 m to the right of the centre point: the same source moved there, at the same level.', prov: ROOM },
+  { id: 'side', label: 'the side point', short: 'side point', role: 'The second source point, 1 m to the right of the center point: the same source moved there, at the same level.', prov: ROOM },
   operatorPart(OP16.x, OP16.z, FLOOR16, 'You, back and to one side, out of the paths between the source and the elements.'),
   wall('w.back', { x: ROOM16.back - W, y: -1000, z: -ROOM16.half - W }, { x: ROOM16.back, y: FLOOR16, z: ROOM16.half + W }),
   wall('w.front', { x: ROOM16.front, y: -1000, z: -ROOM16.half - W }, { x: ROOM16.front + W, y: FLOOR16, z: ROOM16.half + W }),
@@ -73,7 +73,7 @@ export const F16_MODEL: InstrumentModel = measureModel({
   id: 'arrayRoom',
   name: 'array room',
   parts: PARTS,
-  regions: [{ id: 'src', partId: 'src', label: 'the test source', anchor: CENTRE_PT, prov: ROOM, note: 'The source at the centre point: its sound reaches the two elements along the paths drawn from it.' }],
+  regions: [{ id: 'src', partId: 'src', label: 'the test source', anchor: CENTRE_PT, prov: ROOM, note: 'The source at the center point: its sound reaches the two elements along the paths drawn from it.' }],
   surfaces: F16_SURFACES,
   lines: F16_LINES,
   variants: [{ id: 'room', label: 'A CONTROLLED ROOM', blurb: 'A stationary source at a modest level, a marked origin and axes, two elements on one clock.', phrase: 'in a controlled room' }],

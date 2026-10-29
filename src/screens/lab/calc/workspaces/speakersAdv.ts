@@ -166,7 +166,7 @@ const LINEARRAY: Workspace = {
   glossary: ['Directivity', 'Inverse square law', 'Wavelength', 'Sound Pressure Level', 'Comb Filtering'],
   fields: [
     { key: 'arrayLen', name: 'ARRAY LENGTH', quantity: 'length', placeholder: '2', help: 'Top-to-bottom acoustic length of the array.', positive: true, warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },
-    { key: 'spacing', name: 'ELEMENT SPACING', quantity: 'length', defaultUnit: 'cm', placeholder: '25', help: 'Centre-to-centre distance between array elements.', positive: true, warn: { test: (x) => x <= 0, msg: 'Spacing must be greater than zero.' } },
+    { key: 'spacing', name: 'ELEMENT SPACING', quantity: 'length', defaultUnit: 'cm', placeholder: '25', help: 'Center-to-center distance between array elements.', positive: true, warn: { test: (x) => x <= 0, msg: 'Spacing must be greater than zero.' } },
     { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, ...AIR_TEMP_FIELD, placeholder: '20', help: 'Sets the speed of sound.' },
     { key: 'splRef', name: 'SPL AT REFERENCE', quantity: 'spl', signed: true, ...SPL_FIELD_RANGE, placeholder: '100', help: 'Measured SPL at the reference distance.' },
     { key: 'refDist', name: 'REFERENCE DISTANCE', quantity: 'length', placeholder: '4', help: 'Distance where the reference SPL was measured.', positive: true, warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },

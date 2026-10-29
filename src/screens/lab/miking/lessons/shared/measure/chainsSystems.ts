@@ -218,7 +218,7 @@ export const ARRAY_CHAIN: ChainSpec = {
     {
       id: 'order',
       title: 'Which heard it first',
-      question: 'A click at the centre point, then at the side point: which capsule heard each one first?',
+      question: 'A click at the center point, then at the side point: which capsule heard each one first?',
       ok: { elements: ['matched'], clock: ['one'], geometry: ['logged'], processing: ['raw'] },
       why: {
         mixed: 'Unmatched elements add phase differences of their own: check and match the pair first.',

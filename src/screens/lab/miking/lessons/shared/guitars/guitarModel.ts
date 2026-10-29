@@ -52,8 +52,8 @@ export function orientOf(posture: Posture): Orient {
 
 /** Where the floor is (engine y) for a posture: drawing defaults. */
 export const FLOOR_BY_POSTURE: Record<Posture, Dim> = {
-  seated: dd(650, 'seated: the strings’ centre line above the floor'),
-  standing: dd(1080, 'standing on a strap: the strings’ centre line above the floor'),
+  seated: dd(650, 'seated: the strings’ center line above the floor'),
+  standing: dd(1080, 'standing on a strap: the strings’ center line above the floor'),
   lap: dd(650, 'lap style: the top above the floor'),
 };
 
@@ -330,7 +330,7 @@ export function buildGuitarModel(opts: BuildOpts): BuiltGuitarModel {
       surf('bridge', 'bridge', 'the bridge', at.bridge, 'the bridge line');
       surf('upper', 'top', 'the upper bout', at.upperTreble, 'the upper-bout line');
     }
-    surf('top', 'top', sp.opening.kind === 'head' ? 'the head' : 'the top', at.top, 'the top’s centre line');
+    surf('top', 'top', sp.opening.kind === 'head' ? 'the head' : 'the top', at.top, 'the top’s center line');
 
     // Clip points: a clip grips the body's edge (the upper bout, both sides,
     // and the waist) — not the strumming side of the lower bout.

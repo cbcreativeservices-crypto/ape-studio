@@ -102,7 +102,7 @@ function heldZones(v: 'held' | 'shaken'): DocumentedZone[] {
       refSurface: `front.${v}`,
       side: 'outside',
       distance: { min: NEAR, max: FAR },
-      radial: { line: `level.${v}`, max: 130, prov: ill('"level with it": within 13 cm of the hold’s height and centre line (the lab’s band)') },
+      radial: { line: `level.${v}`, max: 130, prov: ill('"level with it": within 13 cm of the hold’s height and center line (the lab’s band)') },
       aim: { maxOffAxis: 35, prov: ill('facing the instrument: the lab counts within 35°') },
       requires: { variant: v, micTypeIds: BOTH },
       drawn: { side: { u0: fx + NEAR, u1: fx + FAR, v0: P.c.y - 130, v1: P.c.y + 130 }, top: { u0: fx + NEAR, u1: fx + FAR, v0: -130, v1: 130 } },

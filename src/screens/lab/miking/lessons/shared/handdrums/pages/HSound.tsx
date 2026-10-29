@@ -216,7 +216,7 @@ export function HSound({ lesson, art, answers, onAnswered, onInteractive, intera
   ];
   const strokeBezel: BezelItem[] = [
     { k: H.strokes.key === 'HEAD' ? 'HEAD' : H.tool === 'stick' ? 'TARGET' : 'STROKE', v: stroke.short, flex: 1.2 },
-    { k: 'WHERE', v: stroke.frac == null ? 'OFF THE HEAD' : stroke.frac < 0.35 ? 'NEAR CENTRE' : stroke.frac < 0.7 ? 'HALFWAY' : 'NEAR EDGE', flex: 1.3 },
+    { k: 'WHERE', v: stroke.frac == null ? 'OFF THE HEAD' : stroke.frac < 0.35 ? 'NEAR CENTER' : stroke.frac < 0.7 ? 'HALFWAY' : 'NEAR EDGE', flex: 1.3 },
     { k: 'DRIVES MOST', v: stroke.frac == null ? '—' : HEAD_SHAPES[top.i].label, flex: 1.1 },
   ];
 
@@ -279,13 +279,13 @@ export function HSound({ lesson, art, answers, onAnswered, onInteractive, intera
       },
       well: (
         <>
-          <Landing looking={`${S.head.label} · shape ${shape.label}`} prompt="Step through SHAPE, then try each STRIKE point. Which shapes does a strike at the centre leave still?" />
+          <Landing looking={`${S.head.label} · shape ${shape.label}`} prompt="Step through SHAPE, then try each STRIKE point. Which shapes does a strike at the center leave still?" />
           <Card>
             <Point title={`SHAPE ${shape.label} · ${shape.still.toUpperCase()}`}>
               {`A struck head vibrates in several shapes at once; this is one of them. ${shapeIdx === 0 ? 'It is the lowest shape — the others are measured against it, and none of them is a whole-number multiple, which is part of why a drum sounds less “pitched” than a string.' : `Its pitch is ${shape.ratio.toFixed(2)} times the lowest shape’s on a simplified head — not a whole number.`} At this strike point (${point.label.toLowerCase()}) the head moves ${sharePct} % of this shape’s peak, so the strike ${share < 0.05 ? 'does not drive this shape at all: it lands on a still line' : share < 0.4 ? 'drives it only a little' : 'drives it strongly'}.`}
             </Point>
           </Card>
-          <Note>A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a strike there drives only the ring-shaped ones, the lowest shape among them. Toward the edge, the shapes with still lines across the head join in.</Note>
+          <Note>A shape is set moving only as much as the head moves at the strike point in that shape. At the exact center, every shape with a still line across the head stands still — so a strike there drives only the ring-shaped ones, the lowest shape among them. Toward the edge, the shapes with still lines across the head join in.</Note>
           <Note>This is a simplified head in empty space. On a real drum the air in the shell, the rim and the hand pull these numbers around.</Note>
         </>
       ),
@@ -309,7 +309,7 @@ export function HSound({ lesson, art, answers, onAnswered, onInteractive, intera
             <Point title={stroke.label.toUpperCase()}>{stroke.text}</Point>
           </Card>
           {stroke.frac != null ? (
-            <Body>{`At this spot the strike drives ${HEAD_SHAPES[top.i].label} most (${Math.round(top.v * 100)} % of its peak), and the lowest shape (0,1) ${Math.round(shares[0] * 100)} %. ${stroke.frac < 0.35 ? 'Near the centre the ring-shaped shapes dominate — a rounder, lower sound.' : 'Toward the edge the shapes with still lines across the head join in — more of the higher shapes.'}`}</Body>
+            <Body>{`At this spot the strike drives ${HEAD_SHAPES[top.i].label} most (${Math.round(top.v * 100)} % of its peak), and the lowest shape (0,1) ${Math.round(shares[0] * 100)} %. ${stroke.frac < 0.35 ? 'Near the center the ring-shaped shapes dominate — a rounder, lower sound.' : 'Toward the edge the shapes with still lines across the head join in — more of the higher shapes.'}`}</Body>
           ) : null}
           <Note>{H.strokes.note}</Note>
         </>

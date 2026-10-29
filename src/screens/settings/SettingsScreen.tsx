@@ -947,7 +947,7 @@ ${LOCAL_LOSS}`
               so an in-app colour-blind remap would have been a promise we
               cannot keep. One honest row replaces all three. */}
           <View style={[styles.rowCol, styles.rowBorder]}>
-            <Text style={styles.rowLabel}>Text size, contrast &amp; colour</Text>
+            <Text style={styles.rowLabel}>Text size, contrast &amp; color</Text>
             <Text style={styles.rowHint}>
               These follow your phone&apos;s own accessibility settings and already apply
               throughout this app — text here grows with your system text size.

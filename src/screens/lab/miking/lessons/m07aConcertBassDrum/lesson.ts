@@ -101,13 +101,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cbd.snd.3',
     page: 'sound',
-    prompt: 'The mallet strikes the exact centre of the head. Which of its vibration shapes can it set moving?',
+    prompt: 'The mallet strikes the exact center of the head. Which of its vibration shapes can it set moving?',
     options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the centre'],
     correct: 'Only the ring-shaped ones; the rest have a still line there',
-    explain: 'A strike drives a shape in proportion to how much the head moves at the strike point in that shape. Shapes with a still line across the head are still at the centre — which is one reason players choose their strike area for colour.',
+    explain: 'A strike drives a shape in proportion to how much the head moves at the strike point in that shape. Shapes with a still line across the head are still at the center — which is one reason players choose their strike area for color.',
     why: {
       'All of them equally, because the whole of the head is struck': 'The mallet touches one area. A shape is driven only as much as the head moves there.',
-      'Only the shapes that have a still line across the centre': 'The reverse: a still line through the centre means the head does not move there in that shape.',
+      'Only the shapes that have a still line across the centre': 'The reverse: a still line through the center means the head does not move there in that shape.',
     },
   },
   {
@@ -509,8 +509,8 @@ export const M07A_LESSON: Lesson = {
   ],
   sound: {
     stages: [
-      { title: 'The mallet strikes', text: 'A large felt mallet strikes the playing head, usually in the middle region between the centre and the edge. That brief contact is where the transient — the ATTACK — begins.' },
-      { title: 'The playing head is pushed in', text: 'The head bows into the drum — most at the centre, not at all at the hoop: its lowest vibration shape, drawn here much larger than it really moves. Then it springs back and rings.' },
+      { title: 'The mallet strikes', text: 'A large felt mallet strikes the playing head, usually in the middle region between the center and the edge. That brief contact is where the transient — the ATTACK — begins.' },
+      { title: 'The playing head is pushed in', text: 'The head bows into the drum — most at the center, not at all at the hoop: its lowest vibration shape, drawn here much larger than it really moves. Then it springs back and rings.' },
       { title: 'The air pushes the far head', text: 'The playing head squeezes the air inside, and the air pushes the far head outward. The two heads are coupled through the air.' },
       { title: 'Sound leaves the drum', text: 'Sound leaves from both heads, sideways along the drum’s axis — across the stage when the heads face sideways. The heads, the air and the shell ringing together are the long, low BODY of the sound.' },
     ],
@@ -549,7 +549,7 @@ export const M07A_LESSON: Lesson = {
     ],
   },
   unknowns: [
-    { text: 'The drum’s centre height on its stand (drawn at 800 mm) — so no height above the floor is shown.', dims: ['yFloor', 'centreH'] },
+    { text: 'The drum’s center height on its stand (drawn at 800 mm) — so no height above the floor is shown.', dims: ['yFloor', 'centreH'] },
     { text: 'The spot’s elevation: the source says “just above … looking diagonally downwards … about 45 cm”; the lab draws 45° above the head centre (a drawing default) and counts 20–70° off the head’s axis.', dims: ['deccaElev'] },
     { text: 'The stand’s width and footprint, pivots, casters, the hoop material and size, the rod count (drawn 12) — drawing defaults.', dims: ['standHalfZ', 'standHalfX'] },
     { text: 'The mallet’s swing, both damping hands and the player’s position — ILLUSTRATIVE.', dims: [] },

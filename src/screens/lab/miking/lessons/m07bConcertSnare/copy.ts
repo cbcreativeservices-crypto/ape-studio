@@ -26,8 +26,8 @@ export const CSN_COPY: LessonCopy = {
   },
   sound: {
     strikes: [
-      { id: 'c', label: 'CENTRE', mm: 0, blurb: 'The exact centre of the head.' },
-      { id: 'half', label: 'HALFWAY OUT', mm: R * 0.5, blurb: 'Halfway from the centre to the rim — explore what it drives.' },
+      { id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact centre of the head.' },
+      { id: 'half', label: 'HALFWAY OUT', mm: R * 0.5, blurb: 'Halfway from the center to the rim — explore what it drives.' },
       { id: 'edge', label: 'NEAR THE RIM', mm: R * 0.85, blurb: 'Close to the rim — explore what it drives.' },
     ],
     strikeDefault: 'half',
@@ -43,7 +43,7 @@ export const CSN_COPY: LessonCopy = {
     reveal: 'The squeezed air pushes the snare-side head OUT, downward — both heads move the same way at that moment. With the snares on, the bottom head throws them off and they slap back: that is the buzz.',
     after: 'Then both heads spring back and keep ringing, and the snares rattle against the bottom head for as long as it moves. The heads, the snares, the tuning and any muffling all shape that sound — they are the player’s choices.',
     shapesNotes: [
-      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones, the lowest shape among them; moving out from the centre wakes the others.',
+      'A shape is set moving only as much as the head moves at the strike point in that shape. At the exact center, every shape with a still line across the head stands still — so a center strike drives only the ring-shaped ones, the lowest shape among them; moving out from the center wakes the others.',
       'This is a simplified head in empty space. On a real snare the air inside, the second head and the snares pull these numbers around — the next step shows the two heads working together.',
     ],
     coupledSubject: 'Side view of the concert snare',
@@ -78,7 +78,7 @@ export const CSN_COPY: LessonCopy = {
   placement: {
     workedZone: { on: 'csn.whole', off: 'csn.whole' },
     workedLine: 'This starting point is also read against {line}: the readout says how far in from — or out from — the rim edge the mic is.',
-    workedAim: 'Angle the mic toward the centre of the head — the starting point counts while its axis meets the head there. Distance, height and angle are separate things to try.',
+    workedAim: 'Angle the mic toward the center of the head — the starting point counts while its axis meets the head there. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every stroke — the highest and widest stick motion, the throw-off, the stand and the player. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
     reveal: 'Closer tends to bring more direct detail and less room; farther, more of the whole drum and more of its neighbours — and drums, rooms and players vary, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
@@ -136,7 +136,7 @@ export const CSN_COPY: LessonCopy = {
     B: { typeId: 'smallDynCard', pattern: 'cardioid', zone: 'csn.bottom' },
     opposite: { surface: 'batter', note: 'The mics sit on opposite sides of the drum: as the batter head moves away from the top mic, the snare-side head moves toward the bottom mic. One hears a pull while the other hears a push, so the sum starts on the inverted notch set — that is why engineers try the polarity switch on a bottom mic. Try it; never assume it.' },
     learn: [
-      'A common idea on a snare: a top mic for the stick and the head, and a bottom mic for more of the snares. On a concert snare the bottom mic is optional — the snares’ response is part of the drum’s colour, but the bottom mic also hears the stand, the throw-off and the floor. Start with the top mic alone.',
+      'A common idea on a snare: a top mic for the stick and the head, and a bottom mic for more of the snares. On a concert snare the bottom mic is optional — the snares’ response is part of the drum’s color, but the bottom mic also hears the stand, the throw-off and the floor. Start with the top mic alone.',
       'When the second channel goes in: hear the pair at the intended levels in MONO, compare both polarity states at a controlled, matched level — a louder state almost always sounds “better” at first — and then check the pair against the main pickup. If it adds more hiss and spill than character, leave it out.',
     ],
     warn: 'The two mics hear DIFFERENT heads of the drum, so this simplified graph shows only the shared part of the sound — not what the pair will sound like. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone — that does not hold a few centimetres from a head, so read the depths as illustrative only.',

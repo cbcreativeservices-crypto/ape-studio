@@ -107,7 +107,7 @@ export const BONGO_WORDS: HandWords = {
   },
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
   axes: {
-    x: { label: 'FRONT–BACK', blurb: 'Toward the audience (front) or toward the player (back), measured from the drums’ centres (x).', plus: 'front of', minus: 'behind', from: 'centre' },
+    x: { label: 'FRONT–BACK', blurb: 'Toward the audience (front) or toward the player (back), measured from the drums’ centers (x).', plus: 'front of', minus: 'behind', from: 'centre' },
     y: { label: 'HEIGHT', blurb: 'Up or down, measured from the seated player’s floor. Distances in the bezel are read from the head the zone names.', plus: 'below', minus: 'above', from: 'the floor line' },
     z: { label: 'ACROSS', blurb: 'Toward the player’s left (the macho) or right (the hembra).', plus: 'right of', minus: 'left of', from: 'centre' },
   },

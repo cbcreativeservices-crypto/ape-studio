@@ -281,7 +281,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             ) : (
               <Note>{`The instrument makes a small electrical signal; the amplifier turns it into the power that moves a speaker cone; the cone pushes the air; the mic hears the air. The grille cloth hides the speaker — find it before you place a mic.`}</Note>
             )}
-            {spec.rig === 'bass' ? <Note>In a cabinet with several speakers, close in a mic hears mostly the one it faces, and the middle of the grille may fall between two of them. Ask which speaker the player likes best, and mark it from outside with the amp off or muted.</Note> : <Note>The combo’s speaker sits off-centre, under the controls: the middle of the grille is not the middle of the speaker. Find the speaker itself.</Note>}
+            {spec.rig === 'bass' ? <Note>In a cabinet with several speakers, close in a mic hears mostly the one it faces, and the middle of the grille may fall between two of them. Ask which speaker the player likes best, and mark it from outside with the amp off or muted.</Note> : <Note>The combo’s speaker sits off-center, under the controls: the middle of the grille is not the middle of the speaker. Find the speaker itself.</Note>}
             <Note tone="warn">Never open an amp’s chassis or change its speaker wiring to place a mic: the inside is hot and carries dangerous voltages.</Note>
           </>
         ),
@@ -538,24 +538,24 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
       },
       {
         key: 'spots',
-        title: 'Centre and edge',
+        title: 'Center and edge',
         kind: 'COMPARE',
         layout: 'rack',
         rack: {
           render: (w, h) => <CabExplorer w={w} h={h} kind="1x12" back="closed" view="face" spot={spot} accessibilityLabel={`One speaker face-on, the spot marked: ${SPOT_WORDS[spot].title.toLowerCase()}.`} />,
           badge: 'One speaker face-on · the blue ring is where the mic aims · tendencies to check, not results',
           bezel: [
-            { k: 'SPOT', v: spot === 'centre' ? 'CENTRE' : spot === 'boundary' ? 'CAP EDGE' : 'EDGE', flex: 1.2 },
-            { k: 'FROM CENTRE', v: lenCell(SPOT_WORDS[spot].r).v, sub: lenCell(SPOT_WORDS[spot].r).sub, flex: 1.3 },
+            { k: 'SPOT', v: spot === 'centre' ? 'CENTER' : spot === 'boundary' ? 'CAP EDGE' : 'EDGE', flex: 1.2 },
+            { k: 'FROM CENTER', v: lenCell(SPOT_WORDS[spot].r).v, sub: lenCell(SPOT_WORDS[spot].r).sub, flex: 1.3 },
             { k: 'TENDS TO', v: spot === 'centre' ? 'BRIGHTER' : spot === 'boundary' ? 'BETWEEN' : 'DARKER', flex: 1.3 },
           ],
           // Three spots: tap choices, not a fader (owner 2026-10-14, slider audit #5).
-          params: [{ kind: 'options', id: 'spot', label: 'SPOT', valueLabel: spot === 'centre' ? 'CENTRE' : spot === 'boundary' ? 'CAP EDGE' : 'EDGE', valueA11y: SPOT_WORDS[spot].title.toLowerCase(), selectedId: spot, onSelect: (id) => setSpot(id as (typeof SPOTS)[number]), sticky: true, options: SPOTS.map((s) => ({ id: s, label: s === 'centre' ? 'CENTRE' : s === 'boundary' ? 'CAP EDGE' : 'EDGE', blurb: SPOT_WORDS[s].text })) }],
+          params: [{ kind: 'options', id: 'spot', label: 'SPOT', valueLabel: spot === 'centre' ? 'CENTER' : spot === 'boundary' ? 'CAP EDGE' : 'EDGE', valueA11y: SPOT_WORDS[spot].title.toLowerCase(), selectedId: spot, onSelect: (id) => setSpot(id as (typeof SPOTS)[number]), sticky: true, options: SPOTS.map((s) => ({ id: s, label: s === 'centre' ? 'CENTER' : s === 'boundary' ? 'CAP EDGE' : 'EDGE', blurb: SPOT_WORDS[s].text })) }],
           initialParam: 'spot',
         },
         well: (
           <>
-            <Landing looking="One speaker, face-on" prompt="Tap SPOT and pick one: the centre, the dust-cap edge or toward the edge. Each is a place to aim a close mic." />
+            <Landing looking="One speaker, face-on" prompt="Tap SPOT and pick one: the center, the dust-cap edge or toward the edge. Each is a place to aim a close mic." />
             <Card>
               <Point title={SPOT_WORDS[spot].title}>{SPOT_WORDS[spot].text}</Point>
             </Card>
@@ -796,7 +796,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     const exShown = ex.shown('A');
     const worked: { title: string; text: string; cell: number }[] = [
       { title: 'WHERE TO BEGIN', text: `${exZone.label}. After our research, this is one place we suggest you begin — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
-      { title: 'THE SPEAKER', text: spec.worked?.speaker ?? `In front of the speaker that is really sounding — found from outside the grille with the amp off or muted. ${spec.rig === 'combo' ? 'On this combo it sits off-centre, under the controls.' : 'On this cabinet, one woofer — not the gap between two.'}`, cell: 1 },
+      { title: 'THE SPEAKER', text: spec.worked?.speaker ?? `In front of the speaker that is really sounding — found from outside the grille with the amp off or muted. ${spec.rig === 'combo' ? 'On this combo it sits off-center, under the controls.' : 'On this cabinet, one woofer — not the gap between two.'}`, cell: 1 },
       { title: 'THE DISTANCE', text: `${exZone.band} The readout measures from the grille cloth to the mic’s FRONT, rounded to ≈ 5 mm.`, cell: 0 },
       { title: 'ACROSS THE CONE', text: spec.worked?.across ?? 'Off the cone axis by about the dust cap’s radius: aimed at the line where the dust cap meets the cone. The bezel reads how far off the axis the mic sits.', cell: 1 },
       { title: 'THE AIM', text: `Facing the speaker — the lab counts anything within ±${exZone.aim?.maxOffAxis ?? 20}°. Distance, the spot across the cone and the angle are separate things to try, one at a time.`, cell: 2 },
@@ -932,7 +932,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         body: (
           <>
             <Body>What you just did, in words. After our research, each blue zone is where we suggest you begin, measured from the grille in front of the speaker that is really sounding. They are starting points, not rules: move from there and listen — there is no single right answer, and every speaker, amp and player is different.</Body>
-            <Body>Change one thing at a time. Keep the distance and slide across the cone — centre, dust-cap edge, toward the edge — or keep the spot and move away from the grille, or keep both and change only the angle. A mic farther back hears more of the cabinet and the room, and more of the stage. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.</Body>
+            <Body>Change one thing at a time. Keep the distance and slide across the cone — center, dust-cap edge, toward the edge — or keep the spot and move away from the grille, or keep both and change only the angle. A mic farther back hears more of the cabinet and the room, and more of the stage. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.</Body>
             <Body>Compare at matched level, on the same passage — louder almost always sounds “better” at first. Then write down where you ended: the speaker, the spot, the distance, the angle, and the player’s settings.</Body>
             <Note tone="warn">Clearance comes first: off the grille cloth, the stand steady, the cable away from the player and the walkway, nothing against the amp’s vents.</Note>
           </>

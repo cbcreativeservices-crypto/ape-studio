@@ -445,7 +445,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 2 · Studio. A string quartet is recorded with a main pair already up; the producer wants a little more cello definition.',
     setups: [
       { id: 'a', label: 'Small condenser about a foot from the bridge, raised gradually under the main pair, checked in mono', ok: true, power: 'phantom', feedback: 'A suggested starting point used as a spot: raised just enough, checked against the main pair.' },
-      { id: 'b', label: 'Miniature on the outer strings below the bridge, at a modest level under the main pair', ok: true, power: 'phantom', feedback: 'A suggested starting point — a closer, more coloured spot; compare it with the main pair in mono.' },
+      { id: 'b', label: 'Miniature on the outer strings below the bridge, at a modest level under the main pair', ok: true, power: 'phantom', feedback: 'A suggested starting point — a closer, more colored spot; compare it with the main pair in mono.' },
       { id: 'c', label: 'Small condenser 2 m away, to match the main pair’s distance', ok: false, power: 'phantom', feedback: 'That adds room, not definition — the main pair already hears the cello from there.' },
       { id: 'd', label: 'Two close mics on the cello, one per side, to make it stereo', ok: false, power: 'phantom', feedback: 'A second close mic is not a stereo requirement, and it pulls the cellist forward out of the quartet.' },
       { id: 'e', label: 'A mic inside the f-hole, as close as it gets', ok: false, power: 'phantom', feedback: 'Nothing goes into an f-hole, and one opening is not the whole cello.' },

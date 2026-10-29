@@ -132,7 +132,7 @@ const scenarios: MikingScenario[] = [
     correct: 'What the carpet lies on, and the shoe for the step',
     explain: 'A carpet always lies on another surface — tile, concrete, hardwood or hollow wood — and the shoe changes the step as much as the floor does. Choose the shoe and the layered surface first; then the mic.',
     why: {
-      'Only the carpet’s colour, to match the picture': 'The colour does not reach the mic. What lies under the carpet does.',
+      'Only the carpet’s colour, to match the picture': 'The color does not reach the mic. What lies under the carpet does.',
       'Whether a closer mic can hide the floor that lies under it': 'No mic position removes the floor under a carpet: choose the surface that makes the wanted step.',
     },
   },
@@ -180,7 +180,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You turn a shotgun a little away from the steps. What tends to change first?',
     options: ['The tone of the steps, not only their level', 'Only the level, by an even amount at each pitch', 'Nothing until it is turned fully away from them'],
     correct: 'The tone of the steps, not only their level',
-    explain: 'Off its axis a shotgun’s pickup changes unevenly with pitch, so the steps change colour as well as level. Aim the front at the action and compare small turns by ear.',
+    explain: 'Off its axis a shotgun’s pickup changes unevenly with pitch, so the steps change color as well as level. Aim the front at the action and compare small turns by ear.',
     why: {
       'Only the level, by an even amount at each pitch': 'Off a shotgun’s axis the change is uneven across pitches: the tone changes too.',
       'Nothing until it is turned fully away from them': 'A small turn already changes what a shotgun hears — especially in the highs.',
@@ -449,7 +449,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'What the carpet lies on, and the shoe',
     explain: 'A carpet always lies on something — tile, concrete, hardwood or hollow wood — and the shoe changes the step as much as the floor. Choose them first.',
     why: {
-      'The carpet’s colour in the picture': 'The colour does not reach the mic; what lies under the carpet does.',
+      'The carpet’s colour in the picture': 'The color does not reach the mic; what lies under the carpet does.',
       'How close a mic can get to it': 'Distance comes after the surface and the shoe are chosen.',
     },
   },

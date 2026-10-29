@@ -42,9 +42,9 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we suggest you begin — one mic centred about 40–80 cm from the midpoint between the heads — then try a spot per head, and a singer’s pair.',
+    goal: 'Start where we suggest you begin — one mic centered about 40–80 cm from the midpoint between the heads — then try a spot per head, and a singer’s pair.',
     credit: { scenarios: ['mar.place.1', 'mar.place.2', 'mar.place.3', 'mar.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'One centred mic outside both arcs is the place to begin; a spot per head only when one hand disappears or the parts need it — and checked in mono.',
+    takeaway: 'One centered mic outside both arcs is the place to begin; a spot per head only when one hand disappears or the parts need it — and checked in mono.',
   },
   context: {
     title: 'Studio or live',
@@ -189,7 +189,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'mar.place.2',
     page: 'placement',
-    prompt: 'One hand overwhelms the other in a single centred mic. What do you try first?',
+    prompt: 'One hand overwhelms the other in a single centered mic. What do you try first?',
     options: ['Recentre or step back, then check the pair itself', 'A second mic on the quieter hand, straight away', 'Ask the player to play the louder hand more softly'],
     correct: 'Recentre or step back, then check the pair itself',
     explain: 'Is that head closer, louder, or moving through the mic’s axis? Recentre or step back, check the instruments — then consider two spots.',
@@ -204,7 +204,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'When do two spots — one per head — make sense?',
     options: ['Hands far apart, different parts, or one hand lost', 'Whenever there are two maracas in the part', 'When the pair is too quiet for one mic’s gain'],
     correct: 'Hands far apart, different parts, or one hand lost',
-    explain: 'Compare a single centred mic first: two channels add setup, spill and interaction between the mics.',
+    explain: 'Compare a single centered mic first: two channels add setup, spill and interaction between the mics.',
     why: {
       'Whenever there are two maracas in the part': 'Two maracas often sit well in one mic.',
       'When the pair is too quiet for one mic’s gain': 'A second mic does not fix a quiet source; gain may on a quiet stage, a louder pair on a loud one.',
@@ -255,7 +255,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Mono is often sufficient for a supportive groove. Stereo should serve a deliberate spatial idea, not the number of instruments.',
     why: {
       'No — two maracas need two channels, hard-panned': 'Two instruments do not require two channels — or hard panning.',
-      'No, because one mic cannot hear both of the hands': 'A centred mic, far enough back, often hears both well.',
+      'No, because one mic cannot hear both of the hands': 'A centered mic, far enough back, often hears both well.',
     },
   },
   {
@@ -294,7 +294,7 @@ const scenarios: MikingScenario[] = [
     correct: 'A hand lost in one mic, or parts that need their own control',
     explain: 'If the one-mic result is balanced, it remains a valid choice; a second channel has to earn its spill and stands.',
     why: {
-      'Two maracas need two microphones to sound balanced and right': 'A centred mic often balances a pair well.',
+      'Two maracas need two microphones to sound balanced and right': 'A centered mic often balances a pair well.',
       'The pair needs more level than one mic can give': 'Level comes from gain — or a louder pair — not another mic.',
     },
   },
@@ -387,8 +387,8 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A studio overdub: a pair of maracas, a supportive groove, a quiet room. Phantom power is available.',
     setups: [
-      { id: 'a', label: 'One small condenser centred about 60 cm in front of the pair', ok: true, power: 'phantom', feedback: 'The suggested start: both heads, outside both arcs; it needs the phantom this channel has.' },
-      { id: 'b', label: 'One small condenser about 50 cm away, centred, a little higher', ok: true, power: 'phantom', feedback: 'Also fair: a different height to balance the heads — compare by ear.' },
+      { id: 'a', label: 'One small condenser centered about 60 cm in front of the pair', ok: true, power: 'phantom', feedback: 'The suggested start: both heads, outside both arcs; it needs the phantom this channel has.' },
+      { id: 'b', label: 'One small condenser about 50 cm away, centered, a little higher', ok: true, power: 'phantom', feedback: 'Also fair: a different height to balance the heads — compare by ear.' },
       { id: 'c', label: 'Two spots, hard-panned, because there are two maracas', ok: false, power: 'phantom', feedback: 'Two instruments do not require two channels; stereo should serve a deliberate idea.' },
       { id: 'd', label: 'A mic aimed at the handles to avoid the bright seeds', ok: false, power: 'phantom', feedback: 'The heads are the source; aimed at the handles the mic misses them.' },
       { id: 'e', label: 'Ask the player to hold both maracas still and shake gently', ok: false, power: 'none', feedback: 'Keep the motion as the player plays it. If you ask for a change, ask only after you have moved the mic.' },
@@ -401,7 +401,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 2 · A live show: the singer plays maracas at a vocal mic, with monitors on stage. The spare input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'One small dynamic for the maracas, centred and a little above them', ok: true, power: 'none', feedback: 'A dynamic needs no phantom; check the vocal mic and the spot together, and the wedge in the null.' },
+      { id: 'a', label: 'One small dynamic for the maracas, centered and a little above them', ok: true, power: 'none', feedback: 'A dynamic needs no phantom; check the vocal mic and the spot together, and the wedge in the null.' },
       { id: 'b', label: 'No maraca spot: the vocal mic and the band mics carry them, checked at soundcheck', ok: true, power: 'none', feedback: 'Fair if they are heard well enough: fewer open mics on a loud stage.' },
       { id: 'c', label: 'A small condenser on the maracas', ok: false, power: 'phantom', feedback: 'This input has no phantom power, and this condenser needs it.' },
       { id: 'd', label: 'A maraca spot turned up to pull the rattle out of the vocal', ok: false, power: 'none', feedback: 'A spot cannot remove what the vocal mic already hears.' },
@@ -415,7 +415,7 @@ const setupTasks: SetupTask[] = [
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: the wrist swings a maraca down. Where are the seeds at first?', options: ['Left behind at the top', 'Already at the bottom', 'Spread evenly'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the seeds.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: one centred mic, the right hand much closer to it. What happens?', options: ['The right hand dominates', 'Both stay balanced', 'It depends on the pair'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
+  placement: { prompt: 'Predict: one centered mic, the right hand much closer to it. What happens?', options: ['The right hand dominates', 'Both stay balanced', 'It depends on the pair'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
@@ -488,7 +488,7 @@ export const I03C_LESSON: SpLesson = {
   id: 'I03c',
   labId: 'percussion',
   title: 'Maracas',
-  subtitle: 'A pair, two arms: one mic centred on the heads, a spot each, or a singer’s pair',
+  subtitle: 'A pair, two arms: one mic centered on the heads, a spot each, or a singer’s pair',
   noun: { one: 'pair of maracas', many: 'maracas' },
   model: MAR_MODEL,
   micTypeIds: ['orchSdc', 'smallDynCard'],
@@ -528,7 +528,7 @@ export const I03C_LESSON: SpLesson = {
       ...stageItems('the maracas', 'Room, ensemble or percussion mics may already carry the maracas; a spot is added only if they need their own level.'),
     ],
     stage: 'LIVE: a dedicated directional spot, a projecting pair, monitors in the mic’s low-sensitivity directions — and the vocal mic’s maraca spill checked with the real gestures.',
-    studio: 'RECORDING: a comfortable posture, a quiet room, one centred mic for a supportive groove; stereo only for a deliberate idea.',
+    studio: 'RECORDING: a comfortable posture, a quiet room, one centered mic for a supportive groove; stereo only for a deliberate idea.',
   },
   diagnostic,
   practice: {

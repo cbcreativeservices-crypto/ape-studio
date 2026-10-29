@@ -336,7 +336,7 @@ function PageFrequency({ ctx }: { ctx: PageCtx }) {
         title="SPECTRUM"
         badge={BAND_CAPTION}
         controls={<Dock>{hears}{aim}</Dock>}
-        render={(w, h) => <BandSpectrum width={w} height={h} hz={sp.hz} mag={sp.mag} curve={dc.mag} band={[2000, 10000]} a11y={`Spectrum of ${f.label} with hiss near ${f.hissHz} hertz; the detector band is centred at ${s.freqHz} hertz and passes ${pct} percent of that hiss.`} />}
+        render={(w, h) => <BandSpectrum width={w} height={h} hz={sp.hz} mag={sp.mag} curve={dc.mag} band={[2000, 10000]} a11y={`Spectrum of ${f.label} with hiss near ${f.hissHz} hertz; the detector band is centered at ${s.freqHz} hertz and passes ${pct} percent of that hiss.`} />}
       />
       <Caption>{BAND_CAPTION}</Caption>
       <Card tone={heard > 0.7 ? 'ok' : heard > 0.4 ? 'plain' : 'warn'}>
@@ -428,7 +428,7 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
   }
   const go = (i: number) => { setStep((i + PHRASE.length) % PHRASE.length); setAuto(false); touch(ctx); };
   const gr = p.grDb.toFixed(1);
-  const specCaption = s.mode === 'split' ? 'Grey: before · colour: after · gold dashed: the band being turned down.' : 'Grey: before · colour: after — the whole spectrum moves together.';
+  const specCaption = s.mode === 'split' ? 'Grey: before · color: after · gold dashed: the band being turned down.' : 'Grey: before · color: after — the whole spectrum moves together.';
   // Mode + frame controls: on the page, and docked under either figure in full screen.
   const modeRow = (
     <Row>

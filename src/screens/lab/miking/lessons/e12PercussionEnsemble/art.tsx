@@ -56,7 +56,7 @@ const SPEC = ensembleHandSpec({
     A: { zone: 'pc.main', mic: 'arrCard' },
     B: { zone: 'pc.conga', mic: 'hdDynCard' },
     names: { A: 'MAIN PAIR', B: 'CONGA MIC' },
-    looking: 'Two mics · A the main pair’s centre, B the conga mic',
+    looking: 'Two mics · A the main pair’s center, B the conga mic',
     prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each instrument reaches the two mics at its own times.',
     label: 'The stations with the main pair (A) and a conga mic (B)',
     warn: 'This simplified graph shows one point source and straight paths, no room. Every instrument and reflection has its own path difference, so one delay never suits them all — judge by ear, in mono, against the plain version.',

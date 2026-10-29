@@ -463,7 +463,7 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
         {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
         <CheckQuestion
           spec={{
-            question: 'Two +6 dB bells are both centred at 1 kHz. What does the signal experience there?',
+            question: 'Two +6 dB bells are both centered at 1 kHz. What does the signal experience there?',
             options: [
               'More than +6 dB — the skirts add on top of each other',
               'Exactly +6 dB — the louder band wins',

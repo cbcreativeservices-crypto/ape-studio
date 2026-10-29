@@ -45,7 +45,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start from a setup and work the audience pair yourself in the mock venue — its viewpoint, its height and its aim — and hear the broad and the close perspective apart.',
     credit: { scenarios: ['cc.place.1', 'cc.place.2', 'cc.place.3', 'cc.rec.2'], interactive: 'twoZones', note: 'Rest the pair, in its footprint, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'A broad viewpoint carries the venue; a closer or lower one picks out nearby voices. Move only the pair’s centre, keep the source the same, and listen in mono too.',
+    takeaway: 'A broad viewpoint carries the venue; a closer or lower one picks out nearby voices. Move only the pair’s center, keep the source the same, and listen in mono too.',
   },
   context: {
     title: 'Live checks',
@@ -165,7 +165,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cc.mic.1',
     page: 'microphone',
-    prompt: 'Which pair is likeliest to colour a PA announcement in the mono sum?',
+    prompt: 'Which pair is likeliest to color a PA announcement in the mono sum?',
     options: ['Spaced omnis', 'A coincident XY pair', 'A single mono mic'],
     correct: 'Spaced omnis',
     explain: 'Spaced mics hear a shared source at different times, so their mono sum can comb. A coincident pair has no arrival difference — check it anyway.',
@@ -183,7 +183,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Left = Mid + k × Side and Right = Mid − k × Side: halve their sum and the Side cancels — (L + R) ÷ 2 = Mid, whatever the width. With matched paths and opposite signs.',
     why: {
       'It gets louder and wider': 'Mono has no width, and the Side cancels in the sum.',
-      'It loses the centre': 'The Mid is the centre, and it is all the sum keeps.',
+      'It loses the centre': 'The Mid is the center, and it is all the sum keeps.',
     },
   },
   {
@@ -349,7 +349,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A cheer sits only in the left channel. How does it come out in the mono sum M = (L + R) ÷ 2?',
     options: ['About 6 dB lower', 'At the same level', 'About 6 dB louder'],
     correct: 'About 6 dB lower',
-    explain: 'Halving a sum where only one side carries the sound halves its level: about 6 dB down. Centre speech keeps its level — listen to what the mono version loses.',
+    explain: 'Halving a sum where only one side carries the sound halves its level: about 6 dB down. Center speech keeps its level — listen to what the mono version loses.',
     why: {
       'At the same level': 'Only a source equal in both channels keeps its level.',
       'About 6 dB louder': 'Summing one side with silence cannot make it louder.',
@@ -454,7 +454,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Draw the map, the footprints, the camera view and the access route', early: 'The map comes first.' },
       { text: 'Set up speech and the audience pair as the fallback', early: 'The fallback comes before the detail.' },
       { text: 'Gentle claps and a phrase at U1, U2, U3, then A, gain fixed', early: 'The baseline comes once the fallback is ready.' },
-      { text: 'Compare XY and the near-coincident pair from the same centre', early: 'The arrays come after the baseline.' },
+      { text: 'Compare XY and the near-coincident pair from the same center', early: 'The arrays come after the baseline.' },
       { text: 'Try the closer viewpoint, then build the combined balance', early: 'The viewpoint and the mix come after the arrays.' },
       { text: 'Check the arrival and polarity between D and the pair', early: 'Arrival comes once the mix is built.' },
       { text: 'Listen to every output, fail each role, repeat the U2 baseline', early: 'The outputs, the failures and the repeat come last.' },
@@ -540,7 +540,7 @@ const diagnostic: DiagnosticItem[] = [
     options: ['About 6 dB lower', 'At the same level', 'Silent in mono'],
     correct: 'About 6 dB lower',
     explain: 'Halving a one-sided sum halves its level: about 6 dB down.',
-    why: { 'At the same level': 'Only a centred source keeps its level.', 'Silent in mono': 'It is still there — just lower.' },
+    why: { 'At the same level': 'Only a centered source keeps its level.', 'Silent in mono': 'It is still there — just lower.' },
   },
   {
     id: 'q.4',
@@ -592,7 +592,7 @@ export const B17_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A complete sports sound picture from separately controllable commentary, action and audience feeds — minimal and extensive layouts, stereo and the outputs that come from it, and what survives the loss of detail.', src: 'LESSON-B17' },
     { title: 'ROLES, NOT A MIC COUNT', text: 'A main audience bed, audience spots where it leaves a gap, action detail from approved sectors, commentary on its own inputs. A layout earns its extra channels only by covering what a smaller one lacks.', src: 'LESSON-B17' },
     { title: 'EVERY OUTPUT HEARD', text: 'Stereo, the declared mono and every downmix get their own listen; input peaks are kept apart from program loudness; every event still needs its own rules, venue plan and approvals.', src: 'LESSON-B17' },
-    { title: 'THE MOCK VENUE', text: 'Here you practice in a dry room laid out as a small venue: an action point, three audience places, the stereo centre and an action mic. These are suggested starting points — experimentation is encouraged; your ears and the room decide.', src: 'LESSON-B17' },
+    { title: 'THE MOCK VENUE', text: 'Here you practice in a dry room laid out as a small venue: an action point, three audience places, the stereo center and an action mic. These are suggested starting points — experimentation is encouraged; your ears and the room decide.', src: 'LESSON-B17' },
   ],
   sound: {
     stages: [
@@ -630,7 +630,7 @@ export const B17_LESSON: Lesson = {
     ],
   },
   unknowns: [
-    { text: 'The mock venue’s action point, audience places, stereo centre, closer viewpoint, action mic and their heights are the lesson’s own; the footprints, the commentary station, the camera view, the access route and the audience’s 1.5 m mouth height are drawing defaults.', dims: [] },
+    { text: 'The mock venue’s action point, audience places, stereo center, closer viewpoint, action mic and their heights are the lesson’s own; the footprints, the commentary station, the camera view, the access route and the audience’s 1.5 m mouth height are drawing defaults.', dims: [] },
     { text: 'The arena (court, bowl, PA cluster, platforms and spots) is a typical layout drawn at common dimensions, not read from any rulebook.', dims: [] },
     { text: 'The downmix and delivery figures are labelled examples; the coverage planner’s two layouts are the lesson’s own examples, their counts calculated.', dims: [] },
   ],

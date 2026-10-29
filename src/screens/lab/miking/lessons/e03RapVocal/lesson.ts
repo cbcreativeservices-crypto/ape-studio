@@ -264,7 +264,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Back off for shouts; keep the grille open',
     explain: 'Close for quiet lines, farther for loud ones, stable in front of the mouth. Covering the grille changes the pattern and brings feedback closer.',
     why: {
-      'Cover the grille with a hand on loud lines': 'Cupping changes the pattern and colours the voice — and feedback gets more likely.',
+      'Cover the grille with a hand on loud lines': 'Cupping changes the pattern and colors the voice — and feedback gets more likely.',
       'Hold it at the chest so it hears less': 'Off the mouth, the words lose clarity while the stage stays just as loud.',
     },
   },
@@ -476,7 +476,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'A handheld dynamic within about 10 cm, its rejection toward the wedge', ok: true, power: 'none', feedback: 'A suggested starting point: close, with distance technique — back off for shouts, keep the grille open.' },
       { id: 'b', label: 'A headset by the mouth corner, set as its maker says', ok: true, power: 'pack', feedback: 'A suggested starting point for a moving performer — check the battery, the pack and the wedge.' },
       { id: 'c', label: 'A handheld cupped tight to keep the sound in', ok: false, power: 'none', feedback: 'Cupping changes the pattern and brings feedback closer.' },
-      { id: 'd', label: 'A condenser on a stand at the centre of the stage', ok: false, power: 'phantom', feedback: 'A fixed mic hears the performer only when they come back to it — and the stage the rest of the time.' },
+      { id: 'd', label: 'A condenser on a stand at the center of the stage', ok: false, power: 'phantom', feedback: 'A fixed mic hears the performer only when they come back to it — and the stage the rest of the time.' },
       { id: 'e', label: 'An omni handheld so the performer can turn freely', ok: false, power: 'none', feedback: 'An omni rejects nothing: it hears the wedge and the PA as much as the voice.' },
     ],
     reasons: [docReason('the lips'), clearReason('the performer’s face, hands and feet, and the cable path'), { id: 'r.null', label: 'The pattern’s rejection faces the wedge', role: 'required', feedback: 'Say where the wedge sits against the pattern.' }, { id: 'r.move', label: 'A mic that moves with the head keeps one distance', role: 'optional', feedback: 'A fair live reason for a headset.' }, BRAND_REASON('voice'), { id: 'r.loudest', label: 'Turn it up until the voice is louder than the beat', role: 'wrong', feedback: 'More gain raises the stage in that mic too, and brings feedback closer.' }],

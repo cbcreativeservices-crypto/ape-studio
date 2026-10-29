@@ -68,7 +68,7 @@ import { PEAK_RED } from './shared';
 import { renderedSince } from './s1Guards';
 
 const TERMS = [
-  { term: 'Phantom power (+48 V)', def: 'A small DC voltage some inputs send up the mic cable to power a condenser mic. It belongs to the INPUT: on this mixer only MIC 1 has it. A balanced dynamic mic needs none and ignores it; keep +48 V off for anything not made for it (some ribbon mics, unbalanced XLR adapters, line gear on an XLR lead), and off while you patch. On most combo jacks it is on the XLR pins only: a jack plug in the centre gets none.' },
+  { term: 'Phantom power (+48 V)', def: 'A small DC voltage some inputs send up the mic cable to power a condenser mic. It belongs to the INPUT: on this mixer only MIC 1 has it. A balanced dynamic mic needs none and ignores it; keep +48 V off for anything not made for it (some ribbon mics, unbalanced XLR adapters, line gear on an XLR lead), and off while you patch. On most combo jacks it is on the XLR pins only: a jack plug in the center gets none.' },
   { term: 'Talkover (ducking)', def: 'Dips the music while you speak, so the voice sits on top. Here it listens to the mic and comes back up when you stop. Real mixers differ: some dip whenever the mic is on.' },
   { term: 'Feedback', def: 'The speakers play the mic, the mic hears the speakers, round and round. When the sound comes round louder each time, it rings by itself and keeps growing — pull the mic level down at once.' },
   { term: 'Mic send', def: 'Which outputs carry the mic. MASTER always does here; BOOTH and REC only when their switch is on. Many mixers leave the mic OUT of the booth and the record output until you switch it in.' },

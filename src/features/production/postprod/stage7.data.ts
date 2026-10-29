@@ -42,7 +42,7 @@ export const STAGE7_FINISH: StageDef = {
           required: true,
           options: [
             { value: "music_master", label: "Music mastering" },
-            { value: "program_finish", label: "Programme finishing" },
+            { value: "program_finish", label: "Program finishing" },
             { value: "broadcast", label: "Broadcast or platform compliance" },
             { value: "episode", label: "Episode assembly and finishing" },
             { value: "none", label: "None — the mix is the deliverable" }
@@ -107,7 +107,7 @@ export const STAGE7_FINISH: StageDef = {
           fieldId: "measured_integrated",
           label: "Measured integrated loudness",
           kind: "number",
-          help: "Measured over the whole programme, from the actual file you intend to deliver.",
+          help: "Measured over the whole program, from the actual file you intend to deliver.",
           unit: "LUFS",
           required: true
         },
@@ -123,7 +123,7 @@ export const STAGE7_FINISH: StageDef = {
           fieldId: "measured_lra",
           label: "Measured loudness range",
           kind: "number",
-          help: "How much the loudness varies across the programme. A very low number on speech usually means it has been flattened.",
+          help: "How much the loudness varies across the program. A very low number on speech usually means it has been flattened.",
           unit: "LU"
         },
         {
@@ -448,7 +448,7 @@ export const STAGE7_FINISH: StageDef = {
       watches: ["finish.measured_integrated", "brief.loudness_target", "brief.loudness_tolerance"],
       severity: "blocker",
       kind: "mismatch",
-      title: "The programme misses its loudness target",
+      title: "The program misses its loudness target",
       detail: "The measured integrated loudness is outside the target and tolerance recorded in the brief. Delivered as it stands, it will either be rejected or normalised by the platform, and a platform turning it down is not the same as you turning it down.",
       fixHint: "Overall gain first. Reach for compression or limiting only if the loudness range is genuinely the problem, and re-measure the exported file rather than the session.",
       needsLogic: true,
@@ -483,7 +483,7 @@ export const STAGE7_FINISH: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "Measured, with nothing to measure against",
-      detail: "The programme has been measured and the brief carries no loudness target, so there is no way to say whether the number is right.",
+      detail: "The program has been measured and the brief carries no loudness target, so there is no way to say whether the number is right.",
       fixHint: "Get the target from the client or the platform's published requirements and record it in stage 1. This lab will not supply one, because there is no universal answer.",
       needsLogic: true,
       logicIntent: "Fire when measured_integrated is a number and brief.loudness_target is empty."
@@ -494,7 +494,7 @@ export const STAGE7_FINISH: StageDef = {
       severity: "attention",
       kind: "unrealistic",
       title: "The dynamics have been flattened to reach the target",
-      detail: "The loudness range is very small and the correction was compression or limiting. Pushed this way, a programme gets louder and stops being able to emphasise anything — and on a platform that normalises, the loudness is turned back down while the flatness stays.",
+      detail: "The loudness range is very small and the correction was compression or limiting. Pushed this way, a program gets louder and stops being able to emphasise anything — and on a platform that normalises, the loudness is turned back down while the flatness stays.",
       fixHint: "Back off the compression or limiting, then meet the target with overall gain. Where the range is genuinely too wide, ride the loud moments rather than compressing everything.",
       needsLogic: true,
       logicIntent: "Fire when measured_lra is a number below a threshold that ccode chooses and loudness_action is compression or limiting."
@@ -571,7 +571,7 @@ export const STAGE7_FINISH: StageDef = {
       severity: "info",
       kind: "mismatch",
       title: "The QC log contains only what a machine can find",
-      detail: "Every issue logged is a technical measurement. A pass that finds no editorial issues at all in a whole programme has usually not been looking for them.",
+      detail: "Every issue logged is a technical measurement. A pass that finds no editorial issues at all in a whole program has usually not been looking for them.",
       fixHint: "Listen for the human faults: missing words, abrupt ambience, automation that misses a transition, a level jump between sections.",
       needsLogic: true,
       logicIntent: "Fire when automated_checks has four or more entries and qc_log is empty while full_playback_review is yes."
@@ -615,7 +615,7 @@ export const STAGE7_FINISH: StageDef = {
       severity: "attention",
       kind: "missing",
       title: "Technically finished, creatively unreviewed",
-      detail: "The production has not been assessed against what it was for. A programme can pass every specification and still fail to do the thing the brief asked for, and that failure is not visible on any meter.",
+      detail: "The production has not been assessed against what it was for. A program can pass every specification and still fail to do the thing the brief asked for, and that failure is not visible on any meter.",
       fixHint: "Listen once as the audience rather than as the mixer, against the creative brief in stage 1.",
       needsLogic: true,
       logicIntent: "Fire when creative_review_done is no, or when meets_brief is no with creative_findings empty."
@@ -648,7 +648,7 @@ export const STAGE7_FINISH: StageDef = {
       severity: "attention",
       kind: "mismatch",
       title: "Captions timed against a version that no longer exists",
-      detail: "Caption or description timing was verified against an earlier cut. Any change to the programme's duration or edit points since then has moved them, and captions that drift are worse than none because a viewer trusts them until they notice.",
+      detail: "Caption or description timing was verified against an earlier cut. Any change to the program's duration or edit points since then has moved them, and captions that drift are worse than none because a viewer trusts them until they notice.",
       fixHint: "Re-verify the timing against the final master, and re-verify it again after any further revision.",
       needsLogic: true,
       logicIntent: "Fire when access_timing_checked is earlier_version or no, while access_deliverables includes captions, audio_desc or transcript."
@@ -658,8 +658,8 @@ export const STAGE7_FINISH: StageDef = {
       watches: ["finish.finish_type", "finish.access_deliverables"],
       severity: "info",
       kind: "legal",
-      title: "No access services on a programme or broadcast finish — confirm that in writing",
-      detail: "Programmes for broadcast and on-demand services often carry captioning and audio-description duties. In the US the FCC's captioning rules (47 CFR 79.1) and the CVAA apply to much television and online video; in the EU the European Accessibility Act covers access to audiovisual services; in the UK Ofcom sets access-service requirements for broadcasters. Whether any of them applies to this programme is the distributor's call, not a guess made in the edit suite.",
+      title: "No access services on a program or broadcast finish — confirm that in writing",
+      detail: "Programs for broadcast and on-demand services often carry captioning and audio-description duties. In the US the FCC's captioning rules (47 CFR 79.1) and the CVAA apply to much television and online video; in the EU the European Accessibility Act covers access to audiovisual services; in the UK Ofcom sets access-service requirements for broadcasters. Whether any of them applies to this program is the distributor's call, not a guess made in the edit suite.",
       fixHint: "Ask the distributor or commissioner which access services they require, and keep their answer in writing with the delivery notes. If they confirm none, record who said so.",
       needsLogic: true,
       logicIntent: "Fire when finish_type is program_finish or broadcast and access_deliverables is exactly none (none ticked on its own). Advisory only."

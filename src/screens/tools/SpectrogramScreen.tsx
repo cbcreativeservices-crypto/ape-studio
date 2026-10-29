@@ -636,9 +636,9 @@ export function SpectrogramScreen({ navigation }: Props) {
         <View
           style={{ height: levelH, marginLeft: gutterW, width: gridW, flexDirection: 'row', alignItems: 'center', gap: 6 * ts }}
           accessible
-          accessibilityLabel={`Colour shows level: ${Math.round(anchor - dynRange)} dB on the left to ${Math.round(anchor)} dB on the right`}
+          accessibilityLabel={`Color shows level: ${Math.round(anchor - dynRange)} dB on the left to ${Math.round(anchor)} dB on the right`}
         >
-          <Text style={[styles.legendText, { fontSize: fsz }]}>COLOUR = LEVEL</Text>
+          <Text style={[styles.legendText, { fontSize: fsz }]}>COLOR = LEVEL</Text>
           <Text style={[styles.legendText, { fontSize: fsz }]}>{`${Math.round(anchor - dynRange)} dB`}</Text>
           <View style={{ flex: 1, flexDirection: 'row', height: Math.round(10 * ts), borderRadius: 3, overflow: 'hidden' }}>
             {Array.from({ length: 32 }, (_, i) => (
@@ -661,7 +661,7 @@ export function SpectrogramScreen({ navigation }: Props) {
           <Text style={styles.title}>SPECTROGRAM</Text>
           <Text style={styles.subtitle}>Frequency over time · relative · uncalibrated</Text>
         </View>
-        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone — read the colours as RELATIVE level, for learning, NOT a calibrated SPL reading. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
+        <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone — read the colors as RELATIVE level, for learning, NOT a calibrated SPL reading. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
       </View>
 
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: 28 + insets.bottom }]}>
@@ -852,7 +852,7 @@ export function SpectrogramScreen({ navigation }: Props) {
                 2026-08-05): dark → blue → … → red, with the dB endpoints of the
                 anchor actually mapped (see anchor docs). */}
             <View style={styles.legendRow}>
-              <Text style={styles.legendText}>COLOUR = LEVEL</Text>
+              <Text style={styles.legendText}>COLOR = LEVEL</Text>
               <View style={styles.legendStrip}>
                 {Array.from({ length: 32 }, (_, i) => (
                   <View key={i} style={{ flex: 1, backgroundColor: heatColor((i + 0.5) / 32) }} />

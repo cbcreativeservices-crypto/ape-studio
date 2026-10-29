@@ -200,9 +200,9 @@ export const STAGE3_SESSION: StageDef = {
         },
         {
           fieldId: "colour_meaning",
-          label: "What the colours mean",
+          label: "What the colors mean",
           kind: "text",
-          help: "Colour is a convenience, not a system. Whatever it means here, the names and the hierarchy still have to work without it.",
+          help: "Color is a convenience, not a system. Whatever it means here, the names and the hierarchy still have to work without it.",
           allowNa: true
         }
       ]
@@ -387,7 +387,7 @@ export const STAGE3_SESSION: StageDef = {
       severity: "blocker",
       kind: "conflict",
       title: "The session frame rate is not the delivery frame rate",
-      detail: "The session and the specification disagree. Everything synced in this session is lined up against the wrong clock, and the error grows steadily through the programme rather than showing up as a single obvious fault.",
+      detail: "The session and the specification disagree. Everything synced in this session is lined up against the wrong clock, and the error grows steadily through the program rather than showing up as a single obvious fault.",
       fixHint: "Set the session to the required rate and re-establish sync before any more editing happens. The longer this runs, the more work sits on top of it.",
       needsLogic: true,
       logicIntent: "Fire when both brief.frame_rate and session_frame_rate are set to real rates and they differ. Treat 29.97 drop-frame and 29.97 non-drop as DIFFERENT. Do not fire when either is none or unknown.",
@@ -400,7 +400,7 @@ export const STAGE3_SESSION: StageDef = {
       kind: "missing",
       title: "A 29.97 session with no start time recorded",
       detail: "At 29.97 the difference between drop-frame and non-drop accumulates to roughly three and a half seconds an hour. Without a recorded start timecode there is nothing to check the session against.",
-      fixHint: "Record the programme start timecode from the picture department, and confirm which of drop-frame or non-drop their timecode is.",
+      fixHint: "Record the program start timecode from the picture department, and confirm which of drop-frame or non-drop their timecode is.",
       needsLogic: true,
       logicIntent: "Fire when session_frame_rate is either 29.97 variant and session_start is empty.",
       onlyFor: ["podcast", "live"]

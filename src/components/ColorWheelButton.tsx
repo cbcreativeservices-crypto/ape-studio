@@ -72,14 +72,14 @@ export function ColorWheelButton({
   schemes,
   defaultLabel = 'Default',
   swatchesTitle,
-  pickerTitle = 'CHOOSE A COLOUR',
+  pickerTitle = 'CHOOSE A COLOR',
   pickerNote,
   renderDiagram,
   subtitle,
   defaultSwatchColor,
   size = 22,
   style,
-  accessibilityLabel = 'Customize colours',
+  accessibilityLabel = 'Customize colors',
 }: {
   /** Custom member action (e.g. open a tool's own picker). Ignored if onPick set. */
   onCustomize?: () => void;
@@ -242,7 +242,7 @@ export function ColorWheelButton({
                   accessibilityRole="button"
                   accessibilityState={{ selected: !current }}
                   aria-pressed={!current}
-                  accessibilityLabel="Default colour"
+                  accessibilityLabel="Default color"
                 >
                   <Text style={styles.swatchDefaultText}>DEF</Text>
                 </Pressable>
@@ -260,13 +260,13 @@ export function ColorWheelButton({
                     accessibilityRole="button"
                     accessibilityState={{ selected: sel }}
                     aria-pressed={sel}
-                    accessibilityLabel={`Colour ${c}`}
+                    accessibilityLabel={`Color ${c}`}
                   />
                 );
               })}
             </View>
             {pickerNote ? <Text style={styles.body}>{pickerNote}</Text> : null}
-                <Pressable onPress={() => setSpectrum(true)} style={styles.linkBtn} accessibilityRole="button" accessibilityLabel="Open the colour spectrum wheel">
+                <Pressable onPress={() => setSpectrum(true)} style={styles.linkBtn} accessibilityRole="button" accessibilityLabel="Open the color spectrum wheel">
                   <Text style={styles.spectrumLink}>＋ SPECTRUM</Text>
                 </Pressable>
               </>

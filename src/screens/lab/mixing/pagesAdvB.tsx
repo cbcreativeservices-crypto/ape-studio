@@ -122,7 +122,7 @@ function PageAdvEq({ ctx }: { ctx: PageCtx }) {
   const conceptItems = [
     { id: 'compl', name: 'Complementary EQ', blurb: 'Cut the crowd where the star lives, lift the star gently in the same range — opposite moves, one pocket.' },
     { id: 'dyneq', name: 'Dynamic EQ', blurb: 'A band that only cuts WHEN the masker plays — surgical, and only as often as needed. (Deep dive: the EQ Lab.)' },
-    { id: 'ms', name: 'Mid/side EQ', blurb: 'Different EQ for the centre and the sides — brighten the sides’ air without sharpening the centred vocal.' },
+    { id: 'ms', name: 'Mid/side EQ', blurb: 'Different EQ for the center and the sides — brighten the sides’ air without sharpening the centered vocal.' },
     { id: 'lowmgmt', name: 'Low-frequency management', blurb: 'Below ~120 Hz almost everything fights. Decide the owners (kick, bass), high-pass the tourists, and check in mono.' },
   ] as const;
   const [seen, setSeen] = useState<Set<string>>(new Set());
@@ -134,7 +134,7 @@ function PageAdvEq({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>Beginning EQ cleared one collision. Advanced EQ manages a WHOLE SPECTRUM of tenants — complementary moves, bands that duck on demand, different tone for centre and sides, and a firm hand on the low end.</Lead>
+      <Lead>Beginning EQ cleared one collision. Advanced EQ manages a WHOLE SPECTRUM of tenants — complementary moves, bands that duck on demand, different tone for center and sides, and a firm hand on the low end.</Lead>
       <Card>
         <Eyebrow>COMPLEMENTARY EQ, HEARD</Eyebrow>
         <Prompt>Keys and guitar crowd the lead’s presence range. COMPLEMENTARY cuts both crowders at 2.6 kHz and lifts the lead 2 dB in the same pocket — three small moves, one opened window.</Prompt>

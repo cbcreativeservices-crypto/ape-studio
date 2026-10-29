@@ -24,9 +24,9 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes the cajón’s sound — the plate, the wires, the air in the box and the port — and what a centre stroke and a corner slap each move.',
+    goal: 'See how a stroke becomes the cajón’s sound — the plate, the wires, the air in the box and the port — and what a center stroke and a corner slap each move.',
     credit: { scenarios: ['caj.snd.1', 'caj.snd.2', 'caj.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'Centre strokes pump the box’s air (bass, much of it from the port); corner slaps flex the top against the wires (snare-like). The port also puffs air.',
+    takeaway: 'Center strokes pump the box’s air (bass, much of it from the port); corner slaps flex the top against the wires (snare-like). The port also puffs air.',
   },
   setting: {
     title: 'Where it sits',
@@ -42,7 +42,7 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we suggest you begin — in front of the plate (close and dead centre, or about 30–40 cm out just below the top edge, angled down), or at the port — outside both hands, the knees and the way off the box.',
+    goal: 'Start where we suggest you begin — in front of the plate (close and dead center, or about 30–40 cm out just below the top edge, angled down), or at the port — outside both hands, the knees and the way off the box.',
     credit: { scenarios: ['caj.place.1', 'caj.place.2', 'caj.place.3', 'caj.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Front for attack and slap, port for low end and air — two working examples, not an average. Outside the hands, legs, rocking box and exit.',
   },
@@ -90,13 +90,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'caj.snd.2',
     page: 'sound',
-    prompt: 'A centre stroke, then a top-corner slap. What changes?',
-    options: ['Low bass from the centre, a snare-like slap at the corner', 'Very little — the plate sounds much the same wherever it is struck', 'The corner stroke is lower in pitch than the centre stroke'],
-    correct: 'Low bass from the centre, a snare-like slap at the corner',
-    explain: 'Centre hits give the low thump; top-corner hits give a snare-like slap with the wires.',
+    prompt: 'A center stroke, then a top-corner slap. What changes?',
+    options: ['Low bass from the center, a snare-like slap at the corner', 'Very little — the plate sounds much the same wherever it is struck', 'The corner stroke is lower in pitch than the centre stroke'],
+    correct: 'Low bass from the center, a snare-like slap at the corner',
+    explain: 'Center hits give the low thump; top-corner hits give a snare-like slap with the wires.',
     why: {
       'Very little — the plate sounds much the same wherever it is struck': 'Where the hand lands is the bass or the slap.',
-      'The corner stroke is lower in pitch than the centre stroke': 'The centre gives the low end; the corner the slap.',
+      'The corner stroke is lower in pitch than the centre stroke': 'The center gives the low end; the corner the slap.',
     },
   },
   {
@@ -318,10 +318,10 @@ const symptoms: Symptom[] = [
   {
     id: 'caj.s.weak',
     observation: 'Hollow or weak bass',
-    firstChecks: 'The centre stroke, the front/port balance — and do two mics cancel in mono?',
+    firstChecks: 'The center stroke, the front/port balance — and do two mics cancel in mono?',
     options: ['The balance and the mono sum; then position and polarity', 'A big low-end boost on the front channel’s EQ to fill it out', 'Ask the player to hit the centre much harder'],
     correct: 'The balance and the mono sum; then position and polarity',
-    explain: 'Listen to the centre stroke and the balance; try relative position and polarity as a conditional test.',
+    explain: 'Listen to the center stroke and the balance; try relative position and polarity as a conditional test.',
     why: {
       'A big low-end boost on the front channel’s EQ to fill it out': 'A boost cannot really undo a cancellation.',
       'Ask the player to hit the centre much harder': 'The strokes are the music.',
@@ -400,7 +400,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: a centre stroke — where does much of the low end leave?', options: ['The port', 'The top of the box', 'The feet'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the plate and the port.' },
+  sound: { prompt: 'Before you step through: a center stroke — where does much of the low end leave?', options: ['The port', 'The top of the box', 'The feet'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the plate and the port.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: a front mic aimed at the middle, or at a top corner — which hears more slap?', options: ['The middle', 'A top corner', 'It depends on this cajón'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
@@ -440,7 +440,7 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'A top-corner stroke, with the wires',
     explain: 'Top-corner hits give the snare-like slap; the wires inside add the buzz.',
     why: {
-      'A centre stroke, deep in the plate': 'The centre gives the low thump.',
+      'A centre stroke, deep in the plate': 'The center gives the low thump.',
       'The port, on each stroke the hands make': 'The port carries the low end and air.',
     },
   },
@@ -491,7 +491,7 @@ export const I02_LESSON: SpLesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'A wooden box the player sits on and strikes: a struck idiophone — the plate and the box vibrate, with no stretched head. Wires or strings inside can add a snare buzz.', src: 'GRIN-CAJ' },
     { title: 'WHERE YOU MEET IT', text: 'Acoustic sets, singer-songwriter stages, flamenco and pop — often beside a singer and an acoustic guitar.', src: 'LESSON-CAJON' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'A whole kit in a box: centre strokes for the bass, top-corner slaps for the snare, ghost notes in between.', src: 'MEINL-JC50' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'A whole kit in a box: center strokes for the bass, top-corner slaps for the snare, ghost notes in between.', src: 'MEINL-JC50' },
     { title: 'ITS SIZE', text: 'A museum cajón measures about 32 × 32 × 48 cm with an 18 cm port; this lab draws one that size.', src: 'GRIN-CAJ' },
   ],
   sound: {
@@ -501,7 +501,7 @@ export const I02_LESSON: SpLesson = {
       { title: 'The box’s air', text: 'The plate pushes and pulls the air in the box: the BODY and the low end.' },
       { title: 'Sound leaves', text: 'From the plate — and from the port: low end, and a puff of air on bass strokes.' },
     ],
-    attack: 'The hand on the plate: a sharp attack at a corner slap, a softer thump at the centre.',
+    attack: 'The hand on the plate: a sharp attack at a corner slap, a softer thump at the center.',
     body: 'The air in the box and the plate together: the low end, much of it out of the port. Tendencies — boxes, floors and players vary.',
     head: { diameterMm: 318, rods: 0, label: 'the plate', strikeSrc: 'GRIN-CAJ' },
   },

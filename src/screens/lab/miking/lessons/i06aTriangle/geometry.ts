@@ -127,7 +127,7 @@ export const TRI_ZONES: DocumentedZone[] = [
     quote: 'audition a small diaphragm condenser or another suitable mic roughly 30–60 cm (1–2 ft) from the instrument at or somewhat above its playing height. Aim toward the sounding bars as a whole, away from the beater’s contact path.',
     distance: { min: 300, max: 450 },
     cone: { min: 10, max: 45, toward: SIDE_DIR, prov: trial('"in front of and slightly to one side": 10–45° off the face’s line, toward the player’s left and a little above, is the lab’s drawing of it') },
-    aim: { maxOffAxis: 25, prov: ill('aimed at the bars as a whole: within 25° of the triangle’s centre is the lab’s tolerance') },
+    aim: { maxOffAxis: 25, prov: ill('aimed at the bars as a whole: within 25° of the triangle’s center is the lab’s tolerance') },
     requires: { micTypeIds: BOTH },
     start: approachPose(P0, N, SIDE_DIR, 370, 28),
     dA: [10, 45],

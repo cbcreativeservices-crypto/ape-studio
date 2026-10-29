@@ -48,7 +48,7 @@ function chestZone(spec: Omit<VoiceZoneSpec, 'distance' | 'off' | 'start' | 'kin
 
 const STERNUM_Z = chestZone({
   id: 'b5.sternum',
-  label: 'On the sternum, in the centre',
+  label: 'On the sternum, in the center',
   band: 'After our research, here is where we suggest you begin: with the wearer’s agreement, a small omni lav clipped to a firm clothing edge over the middle of the chest — about 12–25 cm (5–10 in) from the lips — the capsule clear of rubbing fabric, hair and jewellery.',
   aimTol: 60,
   aimProv: ill('an omni: its aim matters little — pointed up toward the mouth (the lab’s tolerance)'),

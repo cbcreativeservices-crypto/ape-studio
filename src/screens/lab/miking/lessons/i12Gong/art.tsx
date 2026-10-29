@@ -333,7 +333,7 @@ export function GongStrike({ w, h, variant, shown, accessibilityLabel }: { w: nu
     return p;
   }, [R, insetU]);
   const labels: StaticLabel[] = [
-    { id: 'n1', text: bossed ? '① ON THE BOSS' : '① A LITTLE OFF CENTRE', short: '① STROKE', u: -R * 1.1, v: CY - R * 1.12, align: 'left', tone: shown === 1 ? 'amber' : 'muted' },
+    { id: 'n1', text: bossed ? '① ON THE BOSS' : '① A LITTLE OFF CENTER', short: '① STROKE', u: -R * 1.1, v: CY - R * 1.12, align: 'left', tone: shown === 1 ? 'amber' : 'muted' },
     { id: 'n2', text: '② BROAD SHAPES', u: -R * 1.1, v: CY + R * 1.12, align: 'left', tone: shown === 2 ? 'amber' : 'muted' },
     { id: 'n3', text: bossed ? '③ THE BOSS’S TONE' : '③ THE BUILD-UP', u: R * 0.15, v: CY + R * 1.12, align: 'left', tone: shown === 3 ? 'amber' : 'muted' },
     { id: 'n4', text: '④ FRONT AND BACK', short: '④ BOTH FACES', u: insetU, v: CY - R * 0.62, align: 'center', tone: shown === 4 ? 'amber' : 'muted' },

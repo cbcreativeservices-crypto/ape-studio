@@ -73,7 +73,7 @@ export function LedColorPicker({
             iOS accessibility element, which swallowed every swatch and key in
             the card (APE-STUDIO-W/R/S nested-element sweep, 2026-10-08). */}
         <Pressable style={styles.card} onPress={() => {}} accessibilityRole="none" accessible={false}>
-          <Text style={styles.title}>LED METER COLOUR</Text>
+          <Text style={styles.title}>LED METER COLOR</Text>
           {spectrumFor ? (
             <View style={styles.spectrumWrap}>
               {/* Keep the target's diagram in view while the wheel drags — the
@@ -133,7 +133,7 @@ export function LedColorPicker({
               </View>
               {/* NEW COPY (owner review): solids are a sub-option of the SAME
                   target, so they inherit the section diagram — no second drawing. */}
-              <Text style={styles.subLabel}>SOLID COLOUR — one colour instead of a scheme</Text>
+              <Text style={styles.subLabel}>SOLID COLOR — one color instead of a scheme</Text>
               <View style={styles.grid}>
                 {WAVE_COLOR_SWATCHES.map((c) => {
                   const sel = eq(levelPref, c);
@@ -154,7 +154,7 @@ export function LedColorPicker({
                 onPress={() => setSpectrumFor('level')}
                 style={styles.spectrumBtn}
                 accessibilityRole="button"
-                accessibilityLabel="Custom level colour from the spectrum"
+                accessibilityLabel="Custom level color from the spectrum"
               >
                 <Text style={styles.spectrumLink}>＋ SPECTRUM</Text>
               </Pressable>
@@ -170,7 +170,7 @@ export function LedColorPicker({
                   accessibilityRole="button"
                   accessibilityState={{ selected: !avgPref }}
                   aria-pressed={!avgPref}
-                  accessibilityLabel="Default average colour (purple)"
+                  accessibilityLabel="Default average color (purple)"
                 >
                   <Text style={styles.defText}>DEF</Text>
                 </Pressable>
@@ -184,7 +184,7 @@ export function LedColorPicker({
                       accessibilityRole="button"
                       accessibilityState={{ selected: sel }}
                       aria-pressed={sel}
-                      accessibilityLabel={`Average colour ${c}`}
+                      accessibilityLabel={`Average color ${c}`}
                     />
                   );
                 })}
@@ -193,13 +193,13 @@ export function LedColorPicker({
                 onPress={() => setSpectrumFor('avg')}
                 style={styles.spectrumBtn}
                 accessibilityRole="button"
-                accessibilityLabel="Custom average colour from the spectrum"
+                accessibilityLabel="Custom average color from the spectrum"
               >
                 <Text style={styles.spectrumLink}>＋ SPECTRUM</Text>
               </Pressable>
             </View>
 
-            <Text style={styles.note}>The white peak-hold cap keeps its reference colour.</Text>
+            <Text style={styles.note}>The white peak-hold cap keeps its reference color.</Text>
           </ScrollView>
           )}
           {/* Critique fix #4: in spectrum view BACK is the only sensible

@@ -94,7 +94,7 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
             <KV k="Distances L / R" v={`${fmtU(st.distL)} / ${fmtU(st.distR)}`} />
             <KV k="L − R difference" v={fmtDelta(st.distL - st.distR, units)} tint={st.pathDiff > SYM_TOL ? '#ff5a48' : colors.green} />
             <KV k="Listening angle" v={`${st.angleDeg.toFixed(0)}°`} />
-            <KV k="Off the centre line" v={fmtLen(Math.abs(st.axisOffset), units, { small: true })} tint={Math.abs(st.axisOffset) > 0.1 ? colors.amber : colors.green} />
+            <KV k="Off the center line" v={fmtLen(Math.abs(st.axisOffset), units, { small: true })} tint={Math.abs(st.axisOffset) > 0.1 ? colors.amber : colors.green} />
             <KV k="Side walls L / R" v={`${fmtU(st.wallL.side)} / ${fmtU(st.wallR.side)}`} />
             <KV k="Front wall L / R" v={`${fmtU(st.wallL.front)} / ${fmtU(st.wallR.front)}`} />
             <KV k="Tweeters vs ears" v={fmtDelta(st.heightDiff, units)} />
@@ -123,7 +123,7 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
             </View>
           )}
         />
-        <Caption>The plan as the behaviour below reads it: reflection paths coloured by level, treatment, the triangle. Edit it in the earlier modules.</Caption>
+        <Caption>The plan as the behaviour below reads it: reflection paths colored by level, treatment, the triangle. Edit it in the earlier modules.</Caption>
         <Caption>{a.rectangular ? 'The mode frequencies are CALCULATED (idealized, for this rectangular box); everything else on this card is ESTIMATED.' : 'Everything on this card is ESTIMATED — the mode frequencies included, because the room is not a rectangular box.'}</Caption>
         <Text style={styles.sub}>{a.rectangular ? 'ROOM MODES — IDEALIZED, CALCULATED FOR THIS RECTANGLE' : planRect ? `ROOM MODES — MEAN-HEIGHT ESTIMATE (${room.ceiling.toUpperCase()} CEILING: LESS RELIABLE)` : 'ROOM MODES — BOUNDING BOX ESTIMATE (NOT A RECTANGLE: LESS RELIABLE)'}</Text>
         <Caption>{`c = ${a.c.toFixed(1)} m/s at ${room.tempC} °C · dimensions used ${fmtU(a.modalDims.L)} × ${fmtU(a.modalDims.W)} × ${fmtU(a.modalDims.H)}${a.rectangular ? '' : planRect ? ' (mean ceiling height)' : ' (bounding box, mean ceiling height)'}.`}</Caption>
@@ -134,11 +134,11 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
         <Text style={styles.sub}>WHERE THE MODEL PREDICTS STRONGER OR WEAKER PRESSURE AT THE SEAT</Text>
         {a.listenerZones.map((z, i) => {
           const centred = !st || Math.abs(st.axisOffset) < 0.1;
-          const note = z.mode.axis === 'W' && z.zone === 'null' && centred ? ' · centre line: expected, keep it' : z.mode.axis === 'H' && z.zone === 'null' ? ' · ⓘ normal at seated ear height' : z.mode.axis === 'L' && z.zone !== 'between' ? ' · move fore/aft to test' : '';
+          const note = z.mode.axis === 'W' && z.zone === 'null' && centred ? ' · center line: expected, keep it' : z.mode.axis === 'H' && z.zone === 'null' ? ' · ⓘ normal at seated ear height' : z.mode.axis === 'L' && z.zone !== 'between' ? ' · move fore/aft to test' : '';
           const tint = z.mode.axis !== 'L' && z.zone === 'null' ? colors.textSub : z.zone === 'peak' ? '#ff5a48' : z.zone === 'null' ? '#2f74ff' : colors.green;
           return <KV key={i} k={`${z.mode.axis}-axis ${fmtHz(z.mode.f)}`} v={`${Math.round(z.pressure * 100)} % — ${z.zone === 'peak' ? 'pressure peak' : z.zone === 'null' ? 'null' : 'between'}${note}`} tint={tint} />;
         })}
-        <Caption>Mode shape only — not how strongly the speakers excite each mode. A centred pair barely drives the odd width modes; the length axis is the one worth moving along.</Caption>
+        <Caption>Mode shape only — not how strongly the speakers excite each mode. A centered pair barely drives the odd width modes; the length axis is the one worth moving along.</Caption>
         <Text style={styles.sub}>LIKELY EARLY REFLECTIONS (FIRST ORDER, IMAGE-SOURCE)</Text>
         {a.reflections.slice(0, 8).map((r, i) => (
           <KV key={i} k={`${r.speaker} → ${reflectionSurfaceName(r)}${r.treatedBy ? ' ✓ treated' : ''}`} v={`+${r.delayMs.toFixed(1)} ms · ${r.levelDb.toFixed(0)} dB`} tint={r.treatedBy ? colors.green : undefined} />
@@ -299,8 +299,8 @@ export function compareDesigns(before: RoomDesign, after: RoomDesign): string[] 
 function bassJudgement(a: ReturnType<typeof analyze>): string {
   const L = a.listenerZones.find((z) => z.mode.axis === 'L');
   if (L?.zone === 'peak') return `Bass judgement: the seat sits on the pressure peak of the first length mode (${fmtHz(L.mode.f)}) — bass there is likely to sound heavier than the mix really is, so low-end decisions may come out thin elsewhere. Moving fore/aft changes it.`;
-  if (L?.zone === 'null') return `Bass judgement: the seat sits in the null of the first length mode (${fmtHz(L.mode.f)}) — that frequency nearly vanishes there, and the temptation is to boost what the room is hiding. Moving fore/aft changes it; the width and height nulls at a centred, seated position are normal.`;
-  return 'Bass judgement: the seat avoids the peak and null of the first length mode; the remaining unevenness is the higher modes and the speakers’ boundary cancellations. The width and height nulls at a centred, seated position are normal.';
+  if (L?.zone === 'null') return `Bass judgement: the seat sits in the null of the first length mode (${fmtHz(L.mode.f)}) — that frequency nearly vanishes there, and the temptation is to boost what the room is hiding. Moving fore/aft changes it; the width and height nulls at a centered, seated position are normal.`;
+  return 'Bass judgement: the seat avoids the peak and null of the first length mode; the remaining unevenness is the higher modes and the speakers’ boundary cancellations. The width and height nulls at a centered, seated position are normal.';
 }
 
 function imagingJudgement(a: ReturnType<typeof analyze>): string {
@@ -308,7 +308,7 @@ function imagingJudgement(a: ReturnType<typeof analyze>): string {
   if (!s) return '';
   const early = a.reflections.filter((r) => r.surface.kind === 'wall' && r.delayMs < 15 && !r.treatedBy).length;
   const sym = s.pathDiff <= SYM_TOL && Math.abs(s.wallL.side - s.wallR.side) <= 0.15;
-  return `Stereo imaging: ${sym ? 'the geometry is matched left and right' : 'the two sides do not match'}${early > 0 ? `, and ${early} untreated wall reflection${early > 1 ? 's' : ''} inside 15 ms will blur the image and widen the centre` : ', and the early wall reflections are treated or late'}.`;
+  return `Stereo imaging: ${sym ? 'the geometry is matched left and right' : 'the two sides do not match'}${early > 0 ? `, and ${early} untreated wall reflection${early > 1 ? 's' : ''} inside 15 ms will blur the image and widen the center` : ', and the early wall reflections are treated or late'}.`;
 }
 
 function translationJudgement(a: ReturnType<typeof analyze>): string {

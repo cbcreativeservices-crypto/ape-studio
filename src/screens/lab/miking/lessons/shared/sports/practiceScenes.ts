@@ -352,7 +352,7 @@ export const PC_STATION: PlanRect = { x0: 2.1, y0: -4.8, x1: 3.3, y1: -3.6 };
 export const PRACTICE_CROWD: VenueScene = {
   id: 'practiceCrowd',
   label: 'Mock venue',
-  blurb: 'A dry room laid out as a small venue: the action point A, three audience places U1–U3 in front of the stereo centre S, the action mic D beside A, and a separate commentary station.',
+  blurb: 'A dry room laid out as a small venue: the action point A, three audience places U1–U3 in front of the stereo center S, the action mic D beside A, and a separate commentary station.',
   play: [p2(PC_AREA.x0, PC_AREA.y0), p2(PC_AREA.x1, PC_AREA.y0), p2(PC_AREA.x1, PC_AREA.y1), p2(PC_AREA.x0, PC_AREA.y1)],
   surface: 'mock',
   // Fix pass 2026-10-16: the mock venue is a sports hall — its hardwood floor (a drawing default).
@@ -374,7 +374,7 @@ export const PRACTICE_CROWD: VenueScene = {
     { id: 'U3', label: 'audience place U3 (1, 2)', short: 'U3', p: PC.U3, h: PC.hU },
   ],
   marks: [
-    { id: 'S', label: 'the stereo centre S (0, 4)', short: 'S', p: PC.S, kind: 'ambience' },
+    { id: 'S', label: 'the stereo center S (0, 4)', short: 'S', p: PC.S, kind: 'ambience' },
     { id: 'Sc', label: 'the closer viewpoint S′ (0, 3)', short: 'S′', p: PC.Sclose, kind: 'ambience' },
     { id: 'D', label: 'the action mic D (2, 0)', short: 'D', p: PC.D, kind: 'mic' },
     { id: 'K', label: 'the commentary station', short: 'COMM', p: PC.K, kind: 'operator', placeholder: true },

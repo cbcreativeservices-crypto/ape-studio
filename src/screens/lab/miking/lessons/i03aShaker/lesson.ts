@@ -182,7 +182,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says about 30–60 cm. What is it measured from?',
     options: ['The middle of the playing area — where most strokes happen', 'The nearest point the shaker reaches on its biggest stroke', 'The player’s chest, wherever the shaker happens to be'],
     correct: 'The middle of the playing area — where most strokes happen',
-    explain: 'The distance belongs to the player’s usual centre, not the closest instant. The mic must still stay outside the whole arc — the number is not a safety clearance.',
+    explain: 'The distance belongs to the player’s usual center, not the closest instant. The mic must still stay outside the whole arc — the number is not a safety clearance.',
     why: {
       'The nearest point the shaker reaches on its biggest stroke': 'That point sets the clearance, not the starting distance — the readout shows it separately.',
       'The player’s chest, wherever the shaker happens to be': 'The shaker sits in front of the chest; measure from where it is played.',
@@ -194,7 +194,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'One stroke in every pair is much louder. What is the likely physical cause?',
     options: ['The shaker travels much closer to the mic on that stroke', 'The fill wears down after a few strokes and goes quiet', 'The mic’s pattern changing from one stroke to the next'],
     correct: 'The shaker travels much closer to the mic on that stroke',
-    explain: 'Shaken toward and away, the forward stroke comes closer. Give the player more room with the mic centred on the playing area, or move the mic back a little — or try side to side if the player chooses it.',
+    explain: 'Shaken toward and away, the forward stroke comes closer. Give the player more room with the mic centered on the playing area, or move the mic back a little — or try side to side if the player chooses it.',
     why: {
       'The fill wears down after a few strokes and goes quiet': 'The fill does not wear out in a phrase; the distance to the mic is changing.',
       'The mic’s pattern changing from one stroke to the next': 'A mic’s pattern does not change from stroke to stroke; the instrument’s position is what changes.',
@@ -323,7 +323,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Does the shaker travel much closer to the mic on that stroke?',
     options: ['Whether the shaker comes much closer on that stroke', 'The cable, because level jumps are usually electrical', 'A compressor setting, before looking at the player'],
     correct: 'Whether the shaker comes much closer on that stroke',
-    explain: 'Give the player more room, with the mic centred on the playing area; move the mic back slightly; rehearse the actual pattern.',
+    explain: 'Give the player more room, with the mic centered on the playing area; move the mic back slightly; rehearse the actual pattern.',
     why: {
       'The cable, because level jumps are usually electrical': 'Watch the player first: a stroke toward the mic is the common cause.',
       'A compressor setting, before looking at the player': 'Processing hides a placement problem; find the physical cause first.',

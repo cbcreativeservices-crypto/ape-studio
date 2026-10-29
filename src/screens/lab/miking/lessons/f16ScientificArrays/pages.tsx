@@ -36,7 +36,7 @@ function F16Sound({ lesson, answers, onAnswered }: PageProps) {
       title: 'The baseline',
       badge: 'Two omni elements 50 cm apart · straight paths at 20 °C · the arrival times are exact for this drawing',
       looking: 'The click',
-      prompt: 'Move the SOURCE: the centre, the side, then the side point’s mirror behind the array. Then turn on THIRD.',
+      prompt: 'Move the SOURCE: the center, the side, then the side point’s mirror behind the array. Then turn on THIRD.',
     },
     baseline: BASE.b,
     centre: CENTRE_PT,

@@ -209,10 +209,10 @@ describe('#23 · direction lanes read "left/right of centre"', () => {
     const sports = read(join(ROOT, 'lessons/shared/sports/sportsPages.tsx'));
     assert.match(sports, /label: 'AIM',[\s\S]{0,1600}format: \(v\) => aimWords\(Math\.round\(v \* 120 - 60\)\),\s*formatShort: \(\) => aimShort\(aim\),/);
     const aud = read(join(ROOT, 'lessons/shared/broadcast/audiencePages.tsx'));
-    assert.match(aud, /label: 'TURN',[\s\S]{0,400}format: \(\) => \(turn === 0 \? 'centre: aimed at the middle of the section' : aimWords\(turn\)\),\s*formatShort: \(\) => aimShort\(turn\),/);
+    assert.match(aud, /label: 'TURN',[\s\S]{0,400}format: \(\) => \(turn === 0 \? 'center: aimed at the middle of the section' : aimWords\(turn\)\),\s*formatShort: \(\) => aimShort\(turn\),/);
     assert.doesNotMatch(aud, /`turned \$\{Math\.abs\(turn\)\}°/);
     const f10 = read(join(ROOT, 'lessons/f10SpatialField/pages.tsx'));
-    assert.match(f10, /label: 'FRONT',[\s\S]{0,500}format: \(\) => \(face === 0 \? 'centre: facing the scene front' : aimWords\(-face\)\),\s*formatShort: \(\) => aimShort\(-face\),/);
+    assert.match(f10, /label: 'FRONT',[\s\S]{0,500}format: \(\) => \(face === 0 \? 'center: facing the scene front' : aimWords\(-face\)\),\s*formatShort: \(\) => aimShort\(-face\),/);
     assert.doesNotMatch(f10, /`turned \$\{Math\.abs\(face\)\}° to the/);
   });
 

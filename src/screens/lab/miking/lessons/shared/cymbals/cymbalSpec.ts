@@ -79,7 +79,7 @@ export const CYMBAL_SWING = dd(CYMBAL_PROFILE.swing, 'how far a struck cymbal sw
  *  up the stand's rod: tilter, bottom felt, cymbal (on its sleeve), top felt,
  *  wing nut. Drawing defaults (no source gives the sizes). */
 export const CYMBAL_HARDWARE = {
-  hole: dd(13, 'the cymbal’s centre hole'),
+  hole: dd(13, 'the cymbal’s center hole'),
   rod: dd(8, 'the tilter rod'),
   sleeve: dd(11, 'the sleeve round the rod (outside diameter)'),
   feltD: dd(38, 'felt washer diameter'),
@@ -135,7 +135,7 @@ export const BOOM_FEET: Readonly<Record<'crash1' | 'crash2' | 'ride', { u: numbe
 /** The family's drawing defaults, by name (for the lessons' unknowns). */
 export const CYMBAL_DRAWING_DEFAULTS: readonly string[] = [
   'cymbal profile (8 % rise), bell (32 % of the diameter), edge band and drawn thickness',
-  'felts, sleeve, wing nut, tilter and centre-hole sizes',
+  'felts, sleeve, wing nut, tilter and center-hole sizes',
   'hi-hat clutch, pull rod, seat, stand tubes and tripod reach',
   'cymbal boom-stand tubes, boom joint height, counterweight and tripod reach',
   'the swing envelope (± 60 mm at the edge) and the hi-hat air-burst ring (60 mm wide)',

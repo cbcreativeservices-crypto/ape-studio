@@ -489,7 +489,7 @@ const copy: Partial<LessonCopy> = {
     availableLead: 'Starting points for this mic',
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the part it names — the holes a third of the way up, the middle of the clarinet, or the top of the bell. They are starting points, not rules. Move from there and listen: there is no single right answer, and every clarinet and room is different.',
-      separate: 'Distance, height and the angle toward the bell are separate variables: change one at a time, and play the low notes, the throat notes and the top register each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.',
+      separate: 'Distance, height and the angle toward the bell are separate variables: change one at a time, and play the low notes, the throat notes and the top register each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic center is not the visible end of its grille, so no millimetre claim is made.',
       clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable clear of the fingers and thumbs, the keys, the bell as it moves, and the face. The engine stops the mic and names what it would touch.',
       tendencies: 'Facing the holes tends to give a balance of holes and bell; into the bell, the lowest notes stand out; very close to the keys, the clicks; farther, more room and blend. A directional mic up close also lifts the lows (proximity effect). These are tendencies, and clarinets vary.',
     },
@@ -584,7 +584,7 @@ export const A08A_LESSON: WindLesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'A woodwind with a single cane reed on a mouthpiece, a long, nearly cylindrical tube (usually wood; many beginner models are plastic) with about two dozen tone holes and a flared bell. Its keys let the fingers open and close the holes; a register key lifts most fingerings a twelfth.', src: 'Y-CL-MECH' },
     { title: 'WHERE YOU MEET IT', text: 'Orchestras, wind bands, chamber groups, jazz and klezmer bands, studio sessions. This lesson covers one B♭ clarinet (the A clarinet is the same in every way that matters here): a studio solo, a loud stage and a spot in a section.', src: 'LESSON' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'It sings melodies and runs over a wide range — dark low notes, bright high ones, very soft entries. Ask what the music needs: a blended orchestral colour, an intimate solo, or a separated line over a band.', src: 'LESSON' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'It sings melodies and runs over a wide range — dark low notes, bright high ones, very soft entries. Ask what the music needs: a blended orchestral color, an intimate solo, or a separated line over a band.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'About 63 cm without its mouthpiece, about 66 cm with it. Its lowest note sounds at about 147 Hz. This lab draws a clarinet about that size, held 35° out from the body — seated, or standing.', src: 'MET-CL' },
   ],
   sound: {

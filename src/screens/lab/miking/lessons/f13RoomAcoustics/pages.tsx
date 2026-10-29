@@ -181,7 +181,7 @@ function F13Context({ lesson, answers, onAnswered, onInteractive, interactiveDon
       answers,
       onAnswered,
       <Card>
-        <Point title="A STUDIO OR A BOOTH">Compare representative source and mic positions; repeat after moving panels or curtains with the geometry and the state logged. A shorter decay alone does not mean better recordings — early reflections, colour and position matter too.</Point>
+        <Point title="A STUDIO OR A BOOTH">Compare representative source and mic positions; repeat after moving panels or curtains with the geometry and the state logged. A shorter decay alone does not mean better recordings — early reflections, color and position matter too.</Point>
         <Point title="A CONCERT OR REHEARSAL SPACE">Sample the performers’ and the audience’s areas in the intended occupancy and curtain state; an empty hall’s figure may not predict a full one.</Point>
         <Point title="AN INSTALLED PA">Measure at listener seats with the actual loudspeakers, preset and a safe procedure; the result is system + room — check coverage and intelligibility separately.</Point>
       </Card>,

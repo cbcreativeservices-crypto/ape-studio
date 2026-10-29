@@ -129,17 +129,17 @@ const scenarios: MikingScenario[] = [
     correct: 'The design, the jet, the hands and how the head moves',
     explain: 'Identify the design (keyed metal, keyed wood or simple-system), then mark the embouchure, the air jet, both hands, the foot, the head’s turn and the music stand — and hear the whole part, quiet and strong.',
     why: {
-      'Only the colour of the flute, to choose the right EQ': 'A silver colour says nothing reliable about the metal — or the sound. Listen to the player.',
+      'Only the colour of the flute, to choose the right EQ': 'A silver color says nothing reliable about the metal — or the sound. Listen to the player.',
       'Nothing yet: the starting point already says where it goes': 'A starting point says where to begin — only where the jet, the hands and the head cannot reach it.',
     },
   },
   {
     id: 'fl.rec.1',
     page: 'microphone',
-    prompt: 'FROM EARLIER · Why can a mic aimed at one small spot on a flute change colour across a phrase?',
+    prompt: 'FROM EARLIER · Why can a mic aimed at one small spot on a flute change color across a phrase?',
     options: ['The open hole that sounds moves with every note', 'The metal body changes temperature as it plays', 'The embouchure hole closes up on the high notes'],
     correct: 'The open hole that sounds moves with every note',
-    explain: 'Each fingering opens a different first hole, so the place much of the sound leaves moves along the flute. A narrowly aimed mic hears that movement as changes in colour.',
+    explain: 'Each fingering opens a different first hole, so the place much of the sound leaves moves along the flute. A narrowly aimed mic hears that movement as changes in color.',
     why: {
       'The metal body changes temperature as it plays': 'Warming tunes the flute slightly; it does not move where the sound leaves.',
       'The embouchure hole closes up on the high notes': 'The embouchure hole stays open for every note — the player blows across it.',
@@ -263,7 +263,7 @@ const scenarios: MikingScenario[] = [
     explain: 'A wooden concert flute works like a metal one: the embouchure and the open holes. Begin with the same positions, then move for what you actually hear — not for a material stereotype.',
     why: {
       'Yes — wood needs a closer, darker mic': 'We found no source showing a fixed sound for a material. Start from the geometry and listen.',
-      'Yes — metal needs a treble cut before testing': 'A silver colour is not a recipe. Test first, at matched level.',
+      'Yes — metal needs a treble cut before testing': 'A silver color is not a recipe. Test first, at matched level.',
     },
   },
   {
@@ -308,10 +308,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'fl.mix.1',
     page: 'practice',
-    prompt: 'A silver-coloured flute: what does its colour tell you about the mic choice?',
+    prompt: 'A silver-colored flute: what does its color tell you about the mic choice?',
     options: ['That it is solid silver, so it will sound brighter', 'That it needs a darker mic to tame the bright metal', 'Nothing reliable — listen to the player and the flute'],
     correct: 'Nothing reliable — listen to the player and the flute',
-    explain: 'A silver colour can be plating, nickel-silver or solid silver, and the material is not a sound recipe. The player, the head joint and the room decide what the mic hears.',
+    explain: 'A silver color can be plating, nickel-silver or solid silver, and the material is not a sound recipe. The player, the head joint and the room decide what the mic hears.',
     why: {
       'That it is solid silver, so it will sound brighter': 'The look does not tell you the metal — and the metal is not a sound recipe.',
       'That it needs a darker mic to tame the bright metal': 'Choose by what you hear, at matched level — not by the finish.',
@@ -381,7 +381,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Small condenser behind and a little above the head, aimed at the finger holes', ok: true, power: 'phantom', feedback: 'A suggested starting point with less breath — check the head’s movement.' },
       { id: 'c', label: 'A mic straight in front of the lips, in the air jet', ok: false, power: 'phantom', feedback: 'In the jet the capsule hears wind and pops.' },
       { id: 'd', label: 'A mic aimed at the end of the foot joint only', ok: false, power: 'phantom', feedback: 'The foot leads only for the lowest notes; most of the sound leaves from the embouchure and the holes.' },
-      { id: 'e', label: 'A darker mic because the flute is silver-coloured', ok: false, power: 'phantom', feedback: 'The colour is not a recipe — choose by what you hear.' },
+      { id: 'e', label: 'A darker mic because the flute is silver-colored', ok: false, power: 'phantom', feedback: 'The color is not a recipe — choose by what you hear.' },
     ],
     reasons: [docReason('the flute between the lip plate and the left hand, or the head'), clearReason('the air jet, the head’s turn, the hands and the flute'), POWER_REASON, { id: 'r.jet', label: 'The capsule stays out of the air jet', role: 'optional', feedback: 'A fair reason: in the jet the mic hears wind.' }, BRAND_REASON('flute'), LOUD_REASON],
     explain: 'More than one setup passes. What passes is the reasoning: a sensible starting point from its named part, out of the jet, clear of what moves, and the power the mic needs.',

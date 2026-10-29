@@ -20,9 +20,9 @@ export const CHINA_COPY: Partial<LessonCopy> = {
   sceneSubject: { upright: 'the 18 in China upright on its stand, over the 12 in tom', inverted: 'the 18 in China turned over on its stand, over the 12 in tom' },
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP' },
   axes: {
-    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (x), from the China’s centre.' },
+    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (x), from the China’s center.' },
     y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y), from the China. Distances are read from the face the zone names, square to it.' },
-    z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z), from the China’s centre.' },
+    z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z), from the China’s center.' },
     origin: { upright: UP.c, inverted: INV.c },
   },
   instrument: {
@@ -151,7 +151,7 @@ export const CHINA_CYM: CymbalExtra = {
       'A shape is set moving only as much as the plate moves under the stick. On the shoulder and the lip most shapes move a lot; near the held cup, most barely move.',
     ],
     areas: [
-      { id: 'cup', label: 'CUP', blurb: 'The squarer cup at the centre.', r: 20, rFrac: 0.09 },
+      { id: 'cup', label: 'CUP', blurb: 'The squarer cup at the center.', r: 20, rFrac: 0.09 },
       { id: 'shoulder', label: 'SHOULDER', blurb: 'About an inch above the valley — where an upright China is ridden.', r: STRIKE.upright, rFrac: STRIKE.upright / R },
       { id: 'lip', label: 'LIP', blurb: 'The upturned edge.', r: 0.9 * R, rFrac: 0.9 },
     ],

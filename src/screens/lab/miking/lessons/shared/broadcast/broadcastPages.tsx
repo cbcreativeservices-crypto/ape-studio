@@ -77,7 +77,7 @@ export function aimedAtLips(id: string, label: string, short: string, p: Vec3, l
  *  depth: a copy far weaker than the direct sound makes shallow dips). */
 export function depthWords(depthDb: number): string {
   if (depthDb > -3) return `shallow, about ${Math.abs(depthDb).toFixed(0)} dB on paper, because the copy is so much weaker`;
-  if (depthDb > -10) return `about ${Math.abs(depthDb).toFixed(0)} dB deep on paper — enough to colour the voice`;
+  if (depthDb > -10) return `about ${Math.abs(depthDb).toFixed(0)} dB deep on paper — enough to color the voice`;
   return 'deep on paper — the two copies are nearly equal';
 }
 
@@ -282,7 +282,7 @@ export function useTurnStep(spec: TurnSpec): MikingStep {
           )}
         </FieldStage>
       ),
-      badge: 'From above, the side in the corner · calculated from the drawing · the head turns about its centre (a simplified picture) · silent',
+      badge: 'From above, the side in the corner · calculated from the drawing · the head turns about its center (a simplified picture) · silent',
       bezel,
       params,
       initialParam: 'turn',

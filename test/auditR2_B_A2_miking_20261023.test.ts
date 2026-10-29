@@ -71,7 +71,7 @@ describe('Round B sweeps across the A2 files', () => {
 
 /** [file, new wording, old wording] */
 const PINS: [string, string, string][] = [
-  ['lessons/e13MixedEnsemble/lesson.ts', 'a tree’s centre mic too low in the mix', 'a tree’s centre too low, thins'],
+  ['lessons/e13MixedEnsemble/lesson.ts', 'a tree’s center mic too low in the mix', 'a tree’s centre too low, thins'],
   ['lessons/e13MixedEnsemble/lesson.ts', 'between the cello spot and the hall', 'The monitor sits in front of the cello spot'],
   ['lessons/e13MixedEnsemble/lesson.ts', 'Once a stage clips, EQ or a limiter after it cannot undo it.', "'EQ cannot repair clipping.'"],
   ['lessons/e11StringQuartet/art.tsx', 'a floor monitor below it sits off that axis', 'where a monitor can sit in its rejection'],

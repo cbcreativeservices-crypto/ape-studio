@@ -20,8 +20,8 @@ export const F03_COPY: Partial<LessonCopy> = foleyCopy({
   },
   axesBlurb: 'Up or down (y). The prop’s sounding part is height 0.',
   instrument: {
-    figureBadge: 'A Foley artist and a prop · the part that sounds at the centre',
-    figureLabel: 'Side view of a Foley artist handling a prop, the prop’s sounding part at the centre of the drawing.',
+    figureBadge: 'A Foley artist and a prop · the part that sounds at the center',
+    figureLabel: 'Side view of a Foley artist handling a prop, the prop’s sounding part at the center of the drawing.',
     partsBadge: 'A handled prop · tap a part to name it',
     partsLooking: { side: 'Side view · from the artist’s right', top: 'From above · the artist and the prop' },
     partsIdle: 'One “prop sound” is several events in several places: the grasp, a small contact, the body answering, a final contact. Tap the prop’s parts — then switch PROP.',

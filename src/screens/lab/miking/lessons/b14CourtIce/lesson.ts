@@ -385,7 +385,7 @@ const symptoms: Symptom[] = [
   },
   {
     id: 'cl.sym.raised',
-    observation: 'A comb-like colour on a mic just above the floor',
+    observation: 'A comb-like color on a mic just above the floor',
     firstChecks: 'How high is the capsule above the hard surface? Is it meant to be a boundary mic?',
     options: ['Use a true boundary mic instead', 'EQ the notch out at the console', 'Turn the mic up to cover it'],
     correct: 'Use a true boundary mic instead',

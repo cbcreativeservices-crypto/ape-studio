@@ -20,7 +20,7 @@ export const F04_COPY: Partial<LessonCopy> = foleyCopy({
   },
   axesBlurb: 'Up or down (y). The action — the impact point, the water’s entry, the stroke — is height 0.',
   instrument: {
-    figureBadge: 'A Foley artist and a small, safe source · the action at the centre',
+    figureBadge: 'A Foley artist and a small, safe source · the action at the center',
     figureLabel: 'Side view of a Foley artist at a small, safe source: a padded block on a table, a shallow basin of water, or a brush on a fabric board.',
     partsBadge: 'Impacts, liquids and textures · tap a part to name it',
     partsLooking: { side: 'Side view · from the artist’s right', top: 'From above · the artist and the source' },

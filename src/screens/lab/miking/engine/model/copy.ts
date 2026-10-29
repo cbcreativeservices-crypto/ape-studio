@@ -318,7 +318,7 @@ export const NEUTRAL_COPY: LessonCopy = {
     variantNotes: {},
   },
   sound: {
-    strikes: [{ id: 'c', label: 'CENTRE', mm: 0, blurb: 'The exact centre of the head.' }],
+    strikes: [{ id: 'c', label: 'CENTER', mm: 0, blurb: 'The exact centre of the head.' }],
     strikeDefault: 'c',
     striker: 'STRIKE',
     strikerPhrase: 'the strike',

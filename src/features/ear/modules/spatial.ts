@@ -81,7 +81,7 @@ export const M6_STEREO: EarModule = {
   phones: 'required',
   playbackNote: 'Phone speakers collapse the image — scoring needs headphones.',
   // NEW COPY
-  listenFor: 'Close your eyes. Where is the sound: one side, dead centre, spread wide, huddled in the middle, or floating inside your head?',
+  listenFor: 'Close your eyes. Where is the sound: one side, dead center, spread wide, huddled in the middle, or floating inside your head?',
   levels: 4,
   levelNames: ['Left / right / centered', '+ wide / narrow', '+ out of phase', 'Which is wider?'],
   makeTrial: (level, seed) => {

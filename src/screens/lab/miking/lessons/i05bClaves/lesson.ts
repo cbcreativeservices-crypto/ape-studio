@@ -180,7 +180,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says about 30–60 cm. Measured from where?',
     options: ['The middle of the normal striking area', 'The striker’s hand, wherever it happens to be', 'The far end of the supported clave'],
     correct: 'The middle of the normal striking area',
-    explain: 'The distance is from the centre of the striking area; the striker’s whole path sets the clearance, read separately.',
+    explain: 'The distance is from the center of the striking area; the striker’s whole path sets the clearance, read separately.',
     why: {
       'The striker’s hand, wherever it happens to be': 'The hand moves; the striking area is the reference.',
       'The far end of the supported clave': 'The sound starts at the strike, in the middle.',

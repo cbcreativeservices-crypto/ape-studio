@@ -154,7 +154,7 @@ const METHODS: Method[] = [
   { id: 'shotgun', label: 'An approved perimeter shotgun', short: 'SHOTGUN', gives: 'A known closer zone covered without anyone turning; the operator or mount stays outside play.', limit: 'Depends on angle and acoustics; no distant mic rejects sound from the same direction as the target.', mics: [SG_F] },
   { id: 'boundary', label: 'A fixed boundary or protected effect mic', short: 'BOUNDARY', gives: 'A discrete, predictable place on an approved surface or structure.', limit: 'Mounting approval, vibration, impact and weather may rule it out.', mics: [{ id: 'bd', kind: 'boundary', label: 'boundary mic', at: { x: 31.6, y: 12.5 }, h: 0, aimAt: { x: 26, y: 7.5 }, aimH: 0 }], scene: BB, note: 'Only on an approved surface, beyond the court’s clear band.' },
   { id: 'ambience', label: 'A wider ambience pair', short: 'AMBIENCE', gives: 'A clearer venue perspective when tracking fails or atmosphere is the goal.', limit: 'Less isolated action detail — label the source as ambience.', mics: [AMB_E] },
-  { id: 'second', label: 'A second dish at a second approved place', short: '2ND DISH', gives: 'Separate action zones covered by two operators.', limit: 'Needs coordination, radio and cable planning, and a handoff to avoid doubled, coloured transients.', mics: [DISH_A, { ...DISH_A, id: 'd2', at: F, aimAt: { x: 5, y: 10 } }] },
+  { id: 'second', label: 'A second dish at a second approved place', short: '2ND DISH', gives: 'Separate action zones covered by two operators.', limit: 'Needs coordination, radio and cable planning, and a handoff to avoid doubled, colored transients.', mics: [DISH_A, { ...DISH_A, id: 'd2', at: F, aimAt: { x: 5, y: 10 } }] },
 ];
 
 function B12Microphone(p: PageProps) {

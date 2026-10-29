@@ -35,7 +35,7 @@ export const TREBLE = {
   y1: -220 + ACCORDION.trebleH.mm,
   z0: -70,
   z1: -70 + ACCORDION.trebleW.mm,
-  prov: ill('the treble box placed round the grille’s centre (drawing defaults)'),
+  prov: ill('the treble box placed round the grille’s center (drawing defaults)'),
 } as const;
 /** The treble grille on the front face, round A0. */
 export const GRILLE = { y0: -ACCORDION.grilleH.mm / 2, y1: ACCORDION.grilleH.mm / 2, z0: -ACCORDION.grilleW.mm / 2, z1: ACCORDION.grilleW.mm / 2 } as const;

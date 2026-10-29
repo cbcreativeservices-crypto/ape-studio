@@ -70,7 +70,7 @@ export const RIDE_ZONES: DocumentedZone[] = [
     side: 'outside',
     distance: { min: 304.8, max: 609.6 },
     radial: { line: 'rideEdge', max: 200 - RIDE_R, prov: ill('"near the ride cymbal": over the ride, in from its edge') },
-    cone: { min: 0, max: 40, prov: ill('over the ride: within 40° of its straight-on line from the centre') },
+    cone: { min: 0, max: 40, prov: ill('over the ride: within 40° of its straight-on line from the center') },
     aim: { maxOffAxis: 35, prov: ill('pointed down: within 35° of straight down is the lab’s tolerance') },
     requires: { micTypeIds: ['sdcCard'] },
     drawn: bandDrawn(RIDE, BAND.area),

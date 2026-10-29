@@ -34,7 +34,7 @@ export const GONG = {
   rim: placeholder(40, 'the rim’s depth'),
   dome: placeholder(8, 'the face’s dome'),
   /** The centre's height in its frame: a drawing default. */
-  centreH: placeholder(1300, 'the gong’s centre height'),
+  centreH: placeholder(1300, 'the gong’s center height'),
   /** Free swing at the rim, fore and aft: the behaviour is sourced, the amount is not. */
   swing: placeholder(80, 'how far the rim swings'),
   /** The mallet: head Ø 120, handle 400 — drawing defaults. */

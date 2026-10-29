@@ -579,7 +579,7 @@ export function ToolStage({ width, height, view, amount, ov, loud }: { width: nu
           </G>
         ))}
         <Path d={curve} stroke={view === 'eq' ? ink.amber : colors.orange} strokeWidth={2} fill="none" />
-        <SvgText x={x1 - 4} y={bot - 6} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`${view === 'eq' ? 'tilt' : 'colour'} ±${Math.abs(amount * 3).toFixed(1)} dB at the ends · ${amount > 0 ? 'brighter' : amount < 0 ? 'warmer' : 'flat'}`}</SvgText>
+        <SvgText x={x1 - 4} y={bot - 6} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`${view === 'eq' ? 'tilt' : 'color'} ±${Math.abs(amount * 3).toFixed(1)} dB at the ends · ${amount > 0 ? 'brighter' : amount < 0 ? 'warmer' : 'flat'}`}</SvgText>
         <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>{view === 'eq' ? 'one move on every element — compare at matched level' : 'neither analog nor digital is "better" — different tools'}</SvgText>
       </Svg>
     );
@@ -709,10 +709,10 @@ export function ToolStage({ width, height, view, amount, ov, loud }: { width: nu
         const yT = midY - hi * fadeG * (bot - top - 40) / 2;
         const yB = midY - ov.lo[c] * fadeG * (bot - top - 40) / 2;
         return <Rect key={c} x={x0 + 4 + c * cw2} y={yT} width={Math.max(0.6, cw2)} height={Math.max(0.6, yB - yT)} fill={levelColor(ov.level[c] * fadeG)} />;
-      }) : <SvgText x={(x0 + x1) / 2} y={midY} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>the programme draws here after the first render</SvgText>}
+      }) : <SvgText x={(x0 + x1) / 2} y={midY} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.mono}>the program draws here after the first render</SvgText>}
       {fadeSec > 0 ? <Line x1={x1 - 4 - (fadeSec / 10) * (x1 - x0 - 8)} y1={top + 20} x2={x1 - 4} y2={midY} stroke={ink.amber} strokeWidth={1} strokeDasharray="3,2" /> : null}
       <SvgText x={x1 - 4} y={bot - 6} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`fade-out ${fadeSec.toFixed(1)} s`}</SvgText>
-      <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>editing the stereo programme: fades, gaps, tops and tails</SvgText>
+      <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>editing the stereo program: fades, gaps, tops and tails</SvgText>
     </Svg>
   );
 }
@@ -833,7 +833,7 @@ export function TranslationStage({ width, height, system, programmeDb }: { width
       ))}
       {programmeDb.length && !isRef ? <Path d={ref} stroke={ink.dim} strokeWidth={1.2} fill="none" strokeDasharray="3,2" /> : null}
       {programmeDb.length ? <Path d={heard} stroke={system.mono ? colors.orange : ink.amber} strokeWidth={2} fill="none" /> : null}
-      <SvgText x={x0} y={13 * bst} fontSize={fs} fill={ink.text} fontFamily={fonts.oswaldMedium}>PROGRAMME SPECTRUM · as heard on</SvgText>
+      <SvgText x={x0} y={13 * bst} fontSize={fs} fill={ink.text} fontFamily={fonts.oswaldMedium}>PROGRAM SPECTRUM · as heard on</SvgText>
       <SvgText x={x0} y={13 * bst + lh} fontSize={fs} fill={system.mono ? colors.orange : ink.amber} fontFamily={fonts.oswaldMedium}>{system.name.toUpperCase()}</SvgText>
       {!isRef ? <SvgText x={x1} y={13 * bst} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>dashed = as mastered</SvgText> : <SvgText x={x1} y={13 * bst} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>the reference</SvgText>}
       {system.mono ? <SvgText x={x1} y={13 * bst + lh} fontSize={fsS} fill={colors.orange} textAnchor="end" fontFamily={fonts.mono}>MONO FOLD</SvgText> : null}
@@ -1294,7 +1294,7 @@ export function DestinationArt({ width, height, kind }: { width: number; height:
         <SvgText x={cx + 52} y={cy + 34} fontSize={FONT_S} fill={ink.amber} fontFamily={fonts.mono}>HF fidelity drops</SvgText>
         {/* Line-broken to fit the caption column (a slice to 20 characters
             cut "limiting" to "limit"). */}
-        {caption(['lacquer on the lathe:', 'side length, bass', 'centring, less', 'limiting'])}
+        {caption(['lacquer on the lathe:', 'side length, bass', 'centering, less', 'limiting'])}
       </G>
     );
   } else if (kind === 'broadcast') {

@@ -334,7 +334,7 @@ const AXES: HandSpec['axes'] = {
 
 const worked = (z: DocumentedZone) => [
   { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin with a pipe organ: the listener’s perspective, a main pair in the body of the room — a practice, with no single distance.`, cell: 3 },
-  { title: 'MEASURED FROM', text: 'From the organ’s façade down the nave to the mic’s FRONT (here shown for the pair’s centre). The readout also says how far the pair is off the case’s centre line.', cell: 0 },
+  { title: 'MEASURED FROM', text: 'From the organ’s façade down the nave to the mic’s FRONT (here shown for the pair’s center). The readout also says how far the pair is off the case’s center line.', cell: 0 },
   { title: 'THE RANGE', text: z.band, cell: 0 },
   { title: 'ACROSS AND UP', text: 'Over the pews, never in an aisle or an exit, on a safe floor stand at a modest height. Higher is not always better: compare the whole passage.', cell: 1 },
   { title: 'THE AIM', text: 'At the main ranks. Then choose a coherent stereo method for the room and the pipes’ spread, and check the mono sum.', cell: 2 },
@@ -344,7 +344,7 @@ const worked = (z: DocumentedZone) => [
 const STEREO = (
   <>
     <Card>
-      <Point title="A COINCIDENT PAIR (X/Y, M/S)">The capsules together: a clear centre and a robust mono sum.</Point>
+      <Point title="A COINCIDENT PAIR (X/Y, M/S)">The capsules together: a clear center and a robust mono sum.</Point>
       <Point title="A NEAR-COINCIDENT PAIR">Two cardioids about 17 cm apart, splayed about 110° (some guides round the spacing to 15 cm): time and level differences for width — check it in mono.</Point>
       <Point title="A SPACED OMNI PAIR">Wider room and low-frequency pickup — and the pair most in need of a mono check.</Point>
     </Card>
@@ -370,12 +370,12 @@ const HAND: HandSpec = {
   axes: AXES,
   aimWords: { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the side).' },
   outside: 'on the nave floor',
-  worked: { zone: 'org.cong', mic: 'sdcCard', looking: 'Worked example · the main pair’s centre · the nave from above', label: 'The nave with the main pair placed for you', done: 'That is the whole reading: where to begin, what it is measured from, the range, across and up, the aim, clearance. Next you place the pair yourself.', pieces: worked },
+  worked: { zone: 'org.cong', mic: 'sdcCard', looking: 'Worked example · the main pair’s center · the nave from above', label: 'The nave with the main pair placed for you', done: 'That is the whole reading: where to begin, what it is measured from, the range, across and up, the aim, clearance. Next you place the pair yourself.', pieces: worked },
   place: {
     zone: 'org.cong',
     mic: 'sdcCard',
     looking: 'the nave from above',
-    prompt: 'Drag the mic — the pair’s centre — (or use POSITION and AIM). Rest it in two different blue zones; switch ROOM below for a service.',
+    prompt: 'Drag the mic — the pair’s center — (or use POSITION and AIM). Rest it in two different blue zones; switch ROOM below for a service.',
     label: 'The nave and the organ',
     tried: (p) => `You predicted “${p}”. Farther back, more room and decay and a blend of the divisions; closer, clearer attacks — and the low notes change with every move. Compare at matched level.`,
     notes: () => <VariantChips />,

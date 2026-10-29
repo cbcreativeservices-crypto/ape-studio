@@ -16,9 +16,9 @@ export const RIDE_COPY: Partial<LessonCopy> = {
   sceneSubject: { ride: 'the 20 in ride on its boom stand, over the floor tom' },
   viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP' },
   axes: {
-    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (x), from the ride’s centre.' },
+    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the player (x), from the ride’s center.' },
     y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y), from the ride. Distances are read from the face of the ride the zone names, square to it.' },
-    z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z), from the ride’s centre.' },
+    z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z), from the ride’s center.' },
     origin: { ride: RIDE.c },
   },
   instrument: {
@@ -123,7 +123,7 @@ export const RIDE_CYM: CymbalExtra = {
     rFrac: STRIKE.bow / RIDE_R,
     stages: [
       { title: 'The tip strikes the bow', text: 'The tip of the stick strikes the bow — the ride area. That brief contact is the “ping”: the ATTACK, and the ride’s definition.' },
-      { title: 'The plate bends', text: 'The plate bends under the tip, most near the strike and not at all at the felts, which hold its centre. Drawn many times larger than it really moves.' },
+      { title: 'The plate bends', text: 'The plate bends under the tip, most near the strike and not at all at the felts, which hold its center. Drawn many times larger than it really moves.' },
       { title: 'The plate rings and rocks', text: 'Waves run out to the edge and the whole plate rings — struck on the bow it does not open up at once like a crash; the wash builds slowly under the ping. It rocks a little on its felts: the swing a mic keeps clear of.' },
       { title: 'Sound leaves both faces', text: 'Sound leaves the top face, up toward the overheads, and the underside, down toward the floor tom below — the ride reaches a lot of mics on the kit.' },
     ],
@@ -137,15 +137,15 @@ export const RIDE_CYM: CymbalExtra = {
   },
   shapes: {
     title: 'The plate’s shapes',
-    badge: 'A simplified picture: one flat disc held at its centre · blue + toward you, amber − away',
+    badge: 'A simplified picture: one flat disc held at its center · blue + toward you, amber − away',
     prompt: 'Step through SHAPE, then move the STICK between the bell, the bow and the edge. Which shapes does each spot drive?',
     looking: 'The 20 in ride from above',
     notes: [
-      'A shape is set moving only as much as the plate moves under the stick in that shape. The felts hold the centre still, so a stroke on the bell drives most shapes only a little (a few with a still ring move near it) — part of why the bell rings clear and bright — while the edge drives most of them strongly.',
+      'A shape is set moving only as much as the plate moves under the stick in that shape. The felts hold the center still, so a stroke on the bell drives most shapes only a little (a few with a still ring move near it) — part of why the bell rings clear and bright — while the edge drives most of them strongly.',
       'A simplified picture: a flat disc of even thickness. A real ride is domed, lathed, hammered and thinner at the edge, and builds its wash in ways this picture does not show — the shapes’ pattern is what it teaches, not their numbers.',
     ],
     areas: [
-      { id: 'bell', label: 'BELL', blurb: 'The raised centre: bright, cutting accents.', r: STRIKE.bell },
+      { id: 'bell', label: 'BELL', blurb: 'The raised center: bright, cutting accents.', r: STRIKE.bell },
       { id: 'bow', label: 'BOW', blurb: 'The ride area, played with the tip for time.', r: STRIKE.bow },
       { id: 'edge', label: 'EDGE', blurb: 'The crash area, struck with the shoulder of the stick.', r: STRIKE.edge },
     ],

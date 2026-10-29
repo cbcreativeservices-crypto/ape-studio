@@ -10,7 +10,7 @@ import type { LessonCopy } from '../../engine/model/copy.ts';
 export const B17_COPY: Partial<LessonCopy> = {
   variantKey: 'WHERE',
   variantShort: { venue: 'mock venue' },
-  sceneSubject: { venue: 'a mock venue with an action point, an audience and a stereo centre' },
+  sceneSubject: { venue: 'a mock venue with an action point, an audience and a stereo center' },
   viewTag: { side: 'SIDE · ACROSS THE VENUE', top: 'TOP · FROM ABOVE' },
   axes: {
     x: { plus: 'across, to the left of the audience', minus: 'across, to the right of the audience', label: 'ACROSS', blurb: 'Across the venue (x).' },
@@ -19,7 +19,7 @@ export const B17_COPY: Partial<LessonCopy> = {
   },
   instrument: {
     figureBadge: 'The mock venue from above',
-    figureLabel: 'A mock venue: the action point, three audience places, the stereo centre and the action mic.',
+    figureLabel: 'A mock venue: the action point, three audience places, the stereo center and the action mic.',
     partsBadge: 'Tap a part of the venue to name it',
     partsLooking: { side: 'Side view · across the venue', top: 'Top view · from above' },
     partsIdle: 'Tap the action point, an audience place, S or D.',

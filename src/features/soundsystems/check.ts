@@ -91,10 +91,10 @@ export const SOUND_SYSTEMS_CHECK: readonly UnderstandingQuestion[] = [
   },
   {
     id: 'polarity',
-    prompt: 'Two mains play. Each alone sounds full; together, the low end vanishes in the centre. What is the most likely cause?',
+    prompt: 'Two mains play. Each alone sounds full; together, the low end vanishes in the center. What is the most likely cause?',
     options: ['One loudspeaker is reversed in polarity', 'The crossover is too high', 'The amplifier is clipping', 'The delay is wrong'],
     correct: 'One loudspeaker is reversed in polarity',
-    explanation: 'Opposite-polarity sources cancel where they arrive together — the centre — and most at low frequencies, where the wavelengths are long.',
+    explanation: 'Opposite-polarity sources cancel where they arrive together — the center — and most at low frequencies, where the wavelengths are long.',
   },
   {
     id: 'feedback-first',

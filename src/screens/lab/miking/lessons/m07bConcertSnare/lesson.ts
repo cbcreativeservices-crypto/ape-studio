@@ -93,7 +93,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cs.snd.2',
     page: 'sound',
-    prompt: 'The stick strikes the exact centre of the head. Which of the head’s vibration shapes can it set moving?',
+    prompt: 'The stick strikes the exact center of the head. Which of the head’s vibration shapes can it set moving?',
     options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the centre'],
     correct: 'Only the ring-shaped ones; the rest have a still line there',
     explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the centre, so a centre strike drives only the ring-shaped ones, the lowest shape among them.',
@@ -329,7 +329,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says “about 10 cm (4 in)”. Before you place the mic, what else do you need?',
     options: ['What it is measured from, and how the mic should be angled', 'The brand of the drum, so the number matches its size', 'Nothing more: the number already tells you exactly where it goes'],
     correct: 'What it is measured from, and how the mic should be angled',
-    explain: 'A distance belongs to its reference (the rim, a head), and a starting point may name an angle (“toward the centre”). Clearance is a separate check again.',
+    explain: 'A distance belongs to its reference (the rim, a head), and a starting point may name an angle (“toward the center”). Clearance is a separate check again.',
     why: {
       'The brand of the drum, so the number matches its size': 'A starting point’s distance belongs to its reference; the drum’s brand does not change that.',
       'Nothing more: the number already tells you exactly where it goes': 'A distance means nothing without its reference; aim and clearance are separate checks.',
@@ -391,7 +391,7 @@ const setupTasks: SetupTask[] = [
     brief: 'BRIEF 1 · A symphony recording in a good hall. In a quiet passage the snare roll gets lost; a main pair is already up. One spot channel; phantom power is available.',
     setups: [
       { id: 'a', label: 'Small condenser above and to one side, aimed across the head, blended low under the main pair', ok: true, power: 'phantom', feedback: 'A broader spot keeps the drum in its place in the orchestra; it needs the phantom power this channel has.' },
-      { id: 'b', label: 'Small dynamic about 10 cm from the drum, angled toward the centre, blended low', ok: true, power: 'none', feedback: 'A suggested starting point that hears the whole drum; blend it under the main pair.' },
+      { id: 'b', label: 'Small dynamic about 10 cm from the drum, angled toward the center, blended low', ok: true, power: 'none', feedback: 'A suggested starting point that hears the whole drum; blend it under the main pair.' },
       { id: 'c', label: 'Small condenser clamped to the rim, without asking the player', ok: false, power: 'phantom', feedback: 'Nothing is clamped to the instrument without a compatible mount and the owner’s agreement.' },
       { id: 'd', label: 'A mic 3 cm over the middle of the head, where the sticks land', ok: false, power: 'none', feedback: 'That is in the sticks’ path. Stay outside the whole stick motion.' },
       { id: 'e', label: 'No spot: raise the main pair until the roll comes through', ok: false, power: 'none', feedback: 'The brief says the roll is lost in the main pickup; raising the whole pair does not single out the snare.' },
@@ -451,7 +451,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'cs.q.3',
     covers: 'sound',
-    prompt: 'A stroke exactly at the centre of a drumhead drives which of its vibration shapes?',
+    prompt: 'A stroke exactly at the center of a drumhead drives which of its vibration shapes?',
     options: ['Only the ring-shaped ones — the rest stand still there', 'All of the shapes, each one just as hard', 'Only the shapes that are split by a line through the centre'],
     correct: 'Only the ring-shaped ones — the rest stand still there',
     explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape; a shape with a still line through the centre does not move there.',
@@ -513,7 +513,7 @@ export const M07B_LESSON: Lesson = {
   sound: {
     stages: [
       { title: 'The stick strikes', text: 'A stick strikes the batter head. That brief contact is where the ATTACK — the start of each stroke — begins. A roll is many strokes so close together that they blend into one sustained sound.' },
-      { title: 'The batter head is pushed in', text: 'The head bows down into the drum — most at the centre, not at all at the rim: its lowest vibration shape, drawn here much larger than it really moves. Then it springs back and rings.' },
+      { title: 'The batter head is pushed in', text: 'The head bows down into the drum — most at the center, not at all at the rim: its lowest vibration shape, drawn here much larger than it really moves. Then it springs back and rings.' },
       {
         title: 'The air pushes the snare-side head',
         text: 'The batter head squeezes the air inside, and the air pushes the thin bottom head outward — down, onto the snares. The snares are thrown off the head and slap back against it.',

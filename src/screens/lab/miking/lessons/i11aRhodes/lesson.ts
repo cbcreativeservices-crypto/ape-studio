@@ -31,7 +31,7 @@ const pages: LessonPages = {
     title: 'How it makes its sound',
     goal: 'See how a struck tine becomes a signal and the signal becomes moving air — and why the spot on the cone matters.',
     credit: { scenarios: ['rh.snd.1', 'rh.snd.2', 'rh.snd.3'], interactive: 'soundPath', note: 'Step the mechanism to the end and swing the tine by hand, step the cone through to the end, and answer the three checks.' },
-    takeaway: 'The tine and its tonebar ring together; the pickup senses the tine’s tip. In the amp the cone pushes in front and pulls behind. Close in, the centre of the cone tends to sound brighter than the edge.',
+    takeaway: 'The tine and its tonebar ring together; the pickup senses the tine’s tip. In the amp the cone pushes in front and pulls behind. Close in, the center of the cone tends to sound brighter than the edge.',
   },
   setting: {
     title: 'Where it sits',
@@ -116,7 +116,7 @@ const scenarios: MikingScenario[] = [
     explain: 'At low pitches the whole cone moves as one. Higher up, the cone flexes, and more of the high-frequency sound comes from the middle, near the voice coil. Close in, the spot the mic faces tilts the balance — a tendency to check on each speaker.',
     why: {
       'The outer part of the cone moves too slowly to make the high notes': 'Speed is not the reason: at higher pitches the middle of the cone simply does more of the work.',
-      'The dust cap adds high notes of its own': 'The dust cap moves with the middle of the cone; its material can colour the highs, but the main reason is that more of the highs come from the middle.',
+      'The dust cap adds high notes of its own': 'The dust cap moves with the middle of the cone; its material can color the highs, but the main reason is that more of the highs come from the middle.',
     },
   },
   {
@@ -209,7 +209,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says “about 2.5–15 cm (1–6 in)”. Measured from what?',
     options: ['From the grille cloth, in front of the speaker itself', 'From the middle of the grille, wherever the speaker is', 'From the keyboard, to the amp’s front'],
     correct: 'From the grille cloth, in front of the speaker itself',
-    explain: 'The lab measures from the grille cloth — the surface you can see — and the number belongs to the speaker that is really sounding. On this combo the speaker sits off-centre, under the controls.',
+    explain: 'The lab measures from the grille cloth — the surface you can see — and the number belongs to the speaker that is really sounding. On this combo the speaker sits off-center, under the controls.',
     why: {
       'From the middle of the grille, wherever the speaker is': 'The middle of the grille is not the middle of the speaker on many amps. Find the speaker first.',
       'From the keyboard, to the amp’s front': 'The keyboard is not the sound source you mic. Measure from the grille in front of the speaker.',
@@ -413,7 +413,7 @@ const symptoms: Symptom[] = [
   {
     id: 's.bright',
     observation: 'Too bright or brittle',
-    firstChecks: 'Is the amp’s tone or drive meant to be bright? Is the mic near the centre of the cone? Compare an outward spot at the same settings.',
+    firstChecks: 'Is the amp’s tone or drive meant to be bright? Is the mic near the center of the cone? Compare an outward spot at the same settings.',
     options: ['Compare an outward spot at the same distance and settings', 'Turn the amp’s treble control down before moving the mic at all', 'Push the mic against the grille to soften it'],
     correct: 'Compare an outward spot at the same distance and settings',
     explain: 'One variable at a time, at fixed settings: slide outward across the cone and listen on chords and accents. The amp’s settings are the player’s sound.',
@@ -590,12 +590,12 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.3',
     covers: 'sound',
-    prompt: 'Close to the amp’s speaker, a mic aimed at the centre of the cone tends to sound…',
+    prompt: 'Close to the amp’s speaker, a mic aimed at the center of the cone tends to sound…',
     options: ['brighter than one aimed toward the edge', 'darker and warmer than one aimed toward the edge', 'the same, at the same distance'],
     correct: 'brighter than one aimed toward the edge',
-    explain: 'At higher pitches more of the sound comes from the middle of the cone, so close in the centre tends to sound brighter and the edge warmer — a tendency to check on each speaker.',
+    explain: 'At higher pitches more of the sound comes from the middle of the cone, so close in the center tends to sound brighter and the edge warmer — a tendency to check on each speaker.',
     why: {
-      'darker and warmer than one aimed toward the edge': 'It is the other way round, most often: the centre brighter, the edge warmer.',
+      'darker and warmer than one aimed toward the edge': 'It is the other way round, most often: the center brighter, the edge warmer.',
       'the same, at the same distance': 'Close in, the spot on the cone matters as well as the distance.',
     },
   },
@@ -669,7 +669,7 @@ export const I11A_LESSON: Lesson = {
       { title: 'Sound leaves', text: 'Sound leaves the front, through the grille. With a closed back, the sound from the back of the cone stays in the box.', ported: 'Sound leaves the front, through the grille — and the back, through the open back, opposite in polarity: thicker and duller, with the chassis in the way.' },
     ],
     attack: 'The hammer’s strike — the first instant of the note, strongest on hard playing — reaches the cone first. A close mic aimed near the middle of the cone tends to hear more of it: the bark of a hard note.',
-    body: 'The ringing tine and tonebar, the sustain pedal’s tail, the amp’s own colour and the room. A mic toward the edge of the cone, or farther back, tends to hear more of it. Both are tendencies, and speakers vary.',
+    body: 'The ringing tine and tonebar, the sustain pedal’s tail, the amp’s own color and the room. A mic toward the edge of the cone, or farther back, tends to hear more of it. Both are tendencies, and speakers vary.',
     head: { diameterMm: 305, rods: 0, label: '12 in speaker, face-on', strikeSrc: 'CEL-V30' },
   },
   setting: {
@@ -707,7 +707,7 @@ export const I11A_LESSON: Lesson = {
   // INTERNAL record (never shown).
   unknowns: [
     { text: 'Whether the combo stands on the floor, raised or tilted back: drawn standing on the floor — so no HEIGHT readout is shown.', dims: ['yFloor'] },
-    { text: 'The combo’s speaker position (60 mm right of centre, 255 mm below the top), open back, control-panel band (90), chassis (80) and valves (70): drawing defaults from the speaker family (electric_guitar_amp GEOMETRY §2).', dims: [] },
+    { text: 'The combo’s speaker position (60 mm right of center, 255 mm below the top), open back, control-panel band (90), chassis (80) and valves (70): drawing defaults from the speaker family (electric_guitar_amp GEOMETRY §2).', dims: [] },
     { text: 'The 61-key passive model’s size: UNKNOWN — drawn with the 73-key model’s footprint, seven white keys narrower (988.5 × 563 × 225); key-top height 720 and the white-key width 23.5 are drawing defaults.', dims: [] },
     { text: 'The mechanism (inside view): the tine’s 111.125 mm is ONE replacement tine’s length (real tines vary by note); the tonebar (95), the tine’s diameter, the pickup head (13) and its 3 mm gap, the key and hammer proportions are drawing defaults. The escapement (1/32 in) and the hammer tip (1/4 in) are the maker’s service figures.', dims: [] },
     { text: 'The suitcase model’s speakers (count, size, facing): Low confidence (retailer listings only) — NOT drawn, a text note only.', dims: [] },

@@ -409,7 +409,7 @@ function arena(): VenueScene {
       crowd('cr.near', 'the near side of the bowl', { x0: -4, y0: -11.6, x1: L + 4, y1: -7.8 }),
       crowd('cr.endL', 'one end of the bowl', { x0: -9.6, y0: -3, x1: -5.4, y1: W + 3 }),
       crowd('cr.endR', 'the other end of the bowl', { x0: L + 5.4, y0: -3, x1: L + 9.6, y1: W + 3 }),
-      pa('pa1', p2(L / 2, W / 2), 12, 'the centre-hung PA cluster'),
+      pa('pa1', p2(L / 2, W / 2), 12, 'the center-hung PA cluster'),
     ],
     targets: [],
     marks: [],

@@ -332,7 +332,7 @@ export function arrayDims(id: ArrayPresetId, params: ArrayParams = {}): string[]
   switch (d.family) {
     case 'tree': {
       const t = treeSpacings(caps);
-      return [`L–R ${(t.LR / 1000).toFixed(2)} m`, `centre ${((id === 'tree' ? 1500 : 762) / 1000).toFixed(2)} m ahead`, `closest pair ${(t.min / 1000).toFixed(2)} m${t.ok ? ' (≥ 1.5 m)' : ' (under 1.5 m)'}`, 'centre fed to both sides, about 4–5 dB down'];
+      return [`L–R ${(t.LR / 1000).toFixed(2)} m`, `center ${((id === 'tree' ? 1500 : 762) / 1000).toFixed(2)} m ahead`, `closest pair ${(t.min / 1000).toFixed(2)} m${t.ok ? ' (≥ 1.5 m)' : ' (under 1.5 m)'}`, 'center fed to both sides, about 4–5 dB down'];
     }
     case 'spaced':
       return [`${Math.round(pairSpacing(caps) / 10)} cm apart (${(pairSpacing(caps) / 25.4).toFixed(1)} in)`, 'omnis, aimed at the ensemble'];

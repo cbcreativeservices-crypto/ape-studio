@@ -67,7 +67,7 @@ export const K_STEPS = [0, 0.25, 0.5, 0.75, 1, 1.5] as const;
 
 export type MonoSource = { id: string; label: string; short: string; gL: number; gR: number; correlated: boolean };
 export const MONO_SOURCES: readonly MonoSource[] = [
-  { id: 'centre', label: 'Speech in the centre (equal in L and R)', short: 'CENTRE', gL: 1, gR: 1, correlated: true },
+  { id: 'centre', label: 'Speech in the center (equal in L and R)', short: 'CENTER', gL: 1, gR: 1, correlated: true },
   { id: 'side', label: 'A cheer in the left channel only', short: 'ONE SIDE', gL: 1, gR: 0, correlated: true },
   { id: 'diffuse', label: 'Diffuse applause (different in L and R)', short: 'DIFFUSE', gL: 1, gR: 1, correlated: false },
 ];

@@ -36,7 +36,7 @@ const LIVE_Z: Omit<DocumentedZone, 'start'> = {
   cone: { min: 0, max: 70, prov: ill('over the f-hole, on the top’s side') },
   requires: { micTypeIds: ['strMini'] },
   draw: { side: zoneDisc('side', LIVE_AT, 26), top: zoneDisc('top', LIVE_AT, 26) },
-  tendency: 'Steady and close as the bassist moves, with plenty of low-mid body; a local colour. Keep it in its own channel beside a pickup, so it can come down if it feeds back.',
+  tendency: 'Steady and close as the bassist moves, with plenty of low-mid body; a local color. Keep it in its own channel beside a pickup, so it can come down if it feeds back.',
   checks: ['Fastened with a mount made for it, with the owner’s agreement', 'Clear of the plucking hand', 'Feedback, with the monitors and the bass amp on'],
 };
 

@@ -98,7 +98,7 @@ export function F05TwoMic({ lesson, answers, onAnswered, onInteractive, interact
       body: (
         <>
           <Card>
-            <Point title="TWO DISTANCES">A close mic and a room mic are two perspectives of one action — select one, or blend them in mono. Do not hard-pan them left and right just because there are two tracks: that pulls a centred picture apart.</Point>
+            <Point title="TWO DISTANCES">A close mic and a room mic are two perspectives of one action — select one, or blend them in mono. Do not hard-pan them left and right just because there are two tracks: that pulls a centered picture apart.</Point>
             <Point title="ONE PLACE, LEFT AND RIGHT">An X/Y pair at one place maps movement across its angle, without two distances. ORTF widens it with time differences; M/S sets the width later. Use them only when the action’s travel is worth recording.</Point>
             <Point title="POLARITY AND DELAY">A polarity switch flips the sign — it never makes two arrival times coincide. A fixed delay aligns one moment of a moving action, and can change its tail. Solo each mic, then the sum in mono, over the whole movement.</Point>
           </Card>

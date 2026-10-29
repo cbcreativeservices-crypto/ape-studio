@@ -48,7 +48,7 @@ const VENUES: readonly SportId[] = ['arena', 'soccer', 'hockey'];
 function B17Meet(p: PageProps) {
   const { lesson, journey } = p;
   const tour = usePlanTourStep({ sports: VENUES, title: 'The venues', prompt: 'Step through LAYER on each venue: the action, what stays clear, the routes, the approved places — and the crowd and the PA all round.', a11yLead: 'A plan of' });
-  const range = useRangeStep({ scene: PRACTICE_CROWD, from: PC.S, fromH: PC.hS, fromLabel: 'S', prediction: lesson.predictions.meet, prompt: 'Step through TARGET: the action and the three audience places, as seen from the stereo centre S.' });
+  const range = useRangeStep({ scene: PRACTICE_CROWD, from: PC.S, fromH: PC.hS, fromLabel: 'S', prediction: lesson.predictions.meet, prompt: 'Step through TARGET: the action and the three audience places, as seen from the stereo center S.' });
   const box = PRACTICE_CROWD.frame;
   const steps: MikingStep[] = [
     startStep(lesson, journey, '', { ownIntro: true }),
@@ -59,7 +59,7 @@ function B17Meet(p: PageProps) {
         title="THE MOCK VENUE"
         aspect={(box.x1 - box.x0) / (box.y1 - box.y0)}
         render={(w: number, h: number) => (
-          <FieldStage w={w} h={h} view="top" box={rectUV(box)} a11y="The mock venue from above: the action point A, three audience places U1 to U3 two metres in front of the stereo centre S, the action mic D two metres beside A, and a separate commentary station." labels={venueLabels(PRACTICE_CROWD, { layers: true })}>
+          <FieldStage w={w} h={h} view="top" box={rectUV(box)} a11y="The mock venue from above: the action point A, three audience places U1 to U3 two metres in front of the stereo center S, the action mic D two metres beside A, and a separate commentary station." labels={venueLabels(PRACTICE_CROWD, { layers: true })}>
             {(px) => <VenuePlan scene={PRACTICE_CROWD} px={px} />}
           </FieldStage>
         )}
@@ -87,8 +87,8 @@ function B17Setups(p: PageProps) {
 const METHODS: Method[] = [
   { id: 'mono', label: 'One mono audience mic', short: 'MONO', gives: 'A simple, stable audience bed — the fallback that survives the loss of everything else.', limit: 'No spatial information; a nearby voice or the PA can dominate one mic.', mics: [MONO_S] },
   { id: 'xy', label: 'A coincident XY pair', short: 'XY', gives: 'Width from level differences only: a solid mono sum.', limit: 'Its off-axis tone at the sides; the width depends on the angle between the capsules.', mics: [XY_S], note: 'A starting comparison: cardioids about 90° apart.' },
-  { id: 'ortf', label: 'A near-coincident pair', short: 'NEAR-COINC.', gives: 'Level and arrival differences together: a wider, more open image.', limit: 'Some colour in the mono sum from the small spacing.', mics: [ORTF_S], note: 'Two cardioids 17 cm apart, 110° between their axes — a fixed geometry.' },
-  { id: 'ab', label: 'Spaced omnis', short: 'SPACED', gives: 'A spacious picture with the venue’s low end.', limit: 'Larger arrival differences: a shared announcement or action transient can colour in mono; more nearby movement.', mics: [AB_S], note: 'A starting trial: about 0.5 m apart, the separation logged.' },
+  { id: 'ortf', label: 'A near-coincident pair', short: 'NEAR-COINC.', gives: 'Level and arrival differences together: a wider, more open image.', limit: 'Some color in the mono sum from the small spacing.', mics: [ORTF_S], note: 'Two cardioids 17 cm apart, 110° between their axes — a fixed geometry.' },
+  { id: 'ab', label: 'Spaced omnis', short: 'SPACED', gives: 'A spacious picture with the venue’s low end.', limit: 'Larger arrival differences: a shared announcement or action transient can color in mono; more nearby movement.', mics: [AB_S], note: 'A starting trial: about 0.5 m apart, the separation logged.' },
   { id: 'ms', label: 'Mid-Side', short: 'M/S', gives: 'A forward Mid and a side-facing figure-8, decoded to left and right — the width chosen after the capture.', limit: 'The Side’s lobes need to be aimed and decoded correctly. A polarity flip on one path swaps left and right; a delay between the paths blurs the image.', mics: [MS_S], note: 'Decode once; check that a source at the positive lobe appears on the intended side.' },
 ];
 
@@ -106,7 +106,7 @@ function B17Placement(p: PageProps) {
     mic: XY_S,
     title: 'an XY audience pair at S',
     pieces: [
-      { key: 'WHERE', value: 'S', title: 'WHERE TO BEGIN', text: 'The pair’s centre at S, in its own footprint behind the audience — no seat, aisle, exit or camera view blocked.' },
+      { key: 'WHERE', value: 'S', title: 'WHERE TO BEGIN', text: 'The pair’s center at S, in its own footprint behind the audience — no seat, aisle, exit or camera view blocked.' },
       { key: 'HEIGHT', value: '≈ 1.5 m', title: 'THE HEIGHT', text: 'The capsules about 1.5 m up. Higher hears a broader area but needs approved access; lower brings the nearest voices forward.' },
       { key: 'AIM', value: 'ON U2', title: 'THE AIM', text: 'The pair’s middle on U2, across the useful audience region — not at the nearest person. U1 and U3 lie about 27° to either side.' },
       { key: 'RANGE', value: '2.0 m', title: 'THE RANGE', text: 'About 2 m to U2, about 2.24 m to U1 and U3, about 4 m to the action at A — the lesson’s own layout.' },
@@ -126,7 +126,7 @@ function B17Placement(p: PageProps) {
     place,
     ...placementLearnStep(
       p,
-      'After our research, each blue starting point is where we suggest you begin — a broad, stable viewpoint first, a closer one only for a named gap. They are starting points, not rules: move only the pair’s centre, keep the source the same, and listen in stereo and in mono. Experimentation is encouraged.',
+      'After our research, each blue starting point is where we suggest you begin — a broad, stable viewpoint first, a closer one only for a named gap. They are starting points, not rules: move only the pair’s center, keep the source the same, and listen in stereo and in mono. Experimentation is encouraged.',
       'For a real event, every viewpoint, platform and cable route is approved by the venue — no blocked seats, aisles, exits, accessibility routes or camera views.',
     ),
   ];

@@ -296,7 +296,7 @@ export function HarmonographViewer(props: {
               onPress={wheelPress}
               hitSlop={6}
               accessibilityRole="button"
-              accessibilityLabel="Customize ink colour"
+              accessibilityLabel="Customize ink color"
             >
               <ColorWheel size={22} />
             </Pressable>
@@ -368,13 +368,13 @@ export function HarmonographViewer(props: {
                           accessibilityRole="button"
                           accessibilityState={{ selected: sel }}
                           aria-pressed={sel}
-                          accessibilityLabel={`Colour ${c}`}
+                          accessibilityLabel={`Color ${c}`}
                         />
                       );
                     })}
                   </View>
                   <Text style={styles.pickerNote}>Classic red is the default ink.</Text>
-                  <Pressable onPress={() => setSpectrumOn(true)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Open the colour spectrum wheel">
+                  <Pressable onPress={() => setSpectrumOn(true)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Open the color spectrum wheel">
                     <Text style={styles.spectrumLink}>＋ SPECTRUM</Text>
                   </Pressable>
                 </>

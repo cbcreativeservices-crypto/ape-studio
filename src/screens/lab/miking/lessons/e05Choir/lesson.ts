@@ -38,7 +38,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main pair yourself — nearer, farther, higher — and see what changes for the first and back rows and across the width.',
-    credit: { scenarios: ['ch.place.1', 'ch.place.2', 'ch.31', 'ch.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the singers, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['ch.place.1', 'ch.place.2', 'ch.31', 'ch.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the singers, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Choose the array, then move it toward or away and listen. Nearer favours the first rows and diction; farther, the blend and the room — and the whole choir inside the pair’s angle. Move the pair as a unit.',
   },
   context: {
@@ -175,7 +175,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The outer sections sound weak in the 17 cm pair. A likely reason?',
     options: ['They sit outside its 95° angle', 'The pair is too high above them', 'The pair has no phantom power'],
     correct: 'They sit outside its 95° angle',
-    explain: 'The 17 cm pair spreads what lies inside its 95° recording angle between the loudspeakers. Close in, the outer sections fall outside it — pushed to the edges, and farther from the pair than the centre: move the pair back until the choir fills the angle, or bring the group in.',
+    explain: 'The 17 cm pair spreads what lies inside its 95° recording angle between the loudspeakers. Close in, the outer sections fall outside it — pushed to the edges, and farther from the pair than the center: move the pair back until the choir fills the angle, or bring the group in.',
     why: {
       'The pair is too high above them': 'Height changes the rows’ balance; the width the pair takes in is set by its distance.',
       'The pair has no phantom power': 'Then nothing would be heard — the outer sections would not stand out.',
@@ -356,7 +356,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A recording of a 38-voice choir on risers in a good, quiet church; no PA. Phantom power on every input.',
     setups: [
-      { id: 'a', label: 'A 17 cm pair, centred, the choir filling its angle', ok: true, power: 'phantom', feedback: 'The choir and the room as one picture; check the edges and mono.' },
+      { id: 'a', label: 'A 17 cm pair, centered, the choir filling its angle', ok: true, power: 'phantom', feedback: 'The choir and the room as one picture; check the edges and mono.' },
       { id: 'b', label: 'An X/Y pair a few feet out, plus a spot for a weak section', ok: true, power: 'phantom', feedback: 'Fair: a main pair, one spot for a stated need.' },
       { id: 'c', label: 'A close mic on every singer', ok: false, power: 'phantom', feedback: 'Dozens of channels, breath and timing exposed, no shared blend.' },
       { id: 'd', label: 'A spaced pair 2 m apart right at the first row', ok: false, power: 'phantom', feedback: 'Too close and too wide: the first row on top, a hole in the middle.' },
@@ -539,7 +539,7 @@ export const E05_LESSON: EnsembleLesson = {
     ],
     safety: 'Stable stands with wide bases and protected cable paths, clear of the risers’ edges and the singers’ way on and off. Nothing hangs over the singers’ heads: anything hung is the venue’s, on approved rigging. Stop the choir before moving a mic. Protect your hearing; avoid uncontrolled feedback.',
     workedWords: {
-      begin: 'After our research, this is where we suggest you begin a choir recording: one main pair, centred, a few feet in front and a little above the first row’s heads — a place to start and compare, not a rule.',
+      begin: 'After our research, this is where we suggest you begin a choir recording: one main pair, centered, a few feet in front and a little above the first row’s heads — a place to start and compare, not a rule.',
       clearance: 'The stand in front of the first row, clear of the singers’ feet and sightlines to the conductor; its cable dressed flat and away from the way on and off the risers.',
       height: `A little above the first row’s heads, so it sees past them to the rows on the steps behind. Higher hears more of the back rows and the room; lower, more of the first row and its diction.`,
     },

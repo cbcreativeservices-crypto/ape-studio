@@ -239,7 +239,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Live, you bring the low mic closer to the bridge for more level. What grows with it?',
     options: ['The sympathetic strings’ shimmer, most of all', 'The gourd’s air and the room, more than the strings', 'The nearest attack and the bridge’s buzz'],
     correct: 'The nearest attack and the bridge’s buzz',
-    explain: 'Close to the bridge, the nearest attack and the jawari’s buzz dominate. More level before feedback comes with more local colour — retain only the buzz the player intends.',
+    explain: 'Close to the bridge, the nearest attack and the jawari’s buzz dominate. More level before feedback comes with more local color — retain only the buzz the player intends.',
     why: {
       'The sympathetic strings’ shimmer, most of all': 'The shimmer also leaves through the soundboard (the sympathetic strings have their own small bridge there), but right at the main bridge the nearest attack and buzz dominate it.',
       'The gourd’s air and the room, more than the strings': 'Closer means more direct, nearer sound — less room, not more.',
@@ -468,7 +468,7 @@ export const C14_LESSON: Lesson = {
     ],
   },
   unknowns: [
-    { text: 'The overall 124.5 × 34.3 × 31 cm is one museum sitar’s; the gourd’s centre, the board’s size, the neck (85 wide, 60 deep), the nut at 88 cm (the proposal’s neck end at +1080 overran the sourced length), the frets (19, a diatonic run), the bridges, the pegs and the upper gourd (Ø 20 cm, moved to +860 inside the sourced length) are drawing defaults.', dims: [] },
+    { text: 'The overall 124.5 × 34.3 × 31 cm is one museum sitar’s; the gourd’s center, the board’s size, the neck (85 wide, 60 deep), the nut at 88 cm (the proposal’s neck end at +1080 overran the sourced length), the frets (19, a diatonic run), the bridges, the pegs and the upper gourd (Ø 20 cm, moved to +860 inside the sourced length) are drawing defaults.', dims: [] },
     { text: 'The posture — on the floor, the gourd on the left foot, the neck at about 45° — and the foot under the gourd (7 cm): the proposal’s drawing default; no geometry source. No HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The keep-off margins (board 8 mm, strings 10 mm, bridge 6 mm, gourd 10 mm): illustrative.', dims: ['sitar'] },
     { text: 'The “about 20 cm” and “about 7–8 in” bands are drawn ± 3 cm and ± 2.5 cm; the 25–45 cm start is the lesson’s own teaching trial.', dims: [] },

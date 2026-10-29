@@ -50,7 +50,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — one mic above the middle of the played span, or one of a spaced pair — clear of every mallet, then move the mic and see what changes.',
     credit: { scenarios: ['mr.place.1', 'mr.place.2', 'mr.place.3', 'mr.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'A suggested zone is a place to begin, measured from the bars — not a rule, and not a safety clearance. Centre it on the notes the part plays, not on the instrument.',
+    takeaway: 'A suggested zone is a place to begin, measured from the bars — not a rule, and not a safety clearance. Center it on the notes the part plays, not on the instrument.',
   },
   context: {
     title: 'Studio or live',
@@ -203,10 +203,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'mr.place.1',
     page: 'placement',
-    prompt: 'The part uses only the top two octaves. Where does a one-mic starting point centre?',
+    prompt: 'The part uses only the top two octaves. Where does a one-mic starting point center?',
     options: ['Over the middle of the notes the part plays', 'Over the middle of the whole instrument', 'Over the lowest bar, to keep the bass end full and warm'],
     correct: 'Over the middle of the notes the part plays',
-    explain: 'Start over the centre of the PLAYED span: a part on neighbouring notes needs less coverage than a solo that runs end to end.',
+    explain: 'Start over the center of the PLAYED span: a part on neighbouring notes needs less coverage than a solo that runs end to end.',
     why: {
       'Over the middle of the whole instrument': 'The instrument’s middle may be far from where this part is played.',
       'Over the lowest bar, to keep the bass end full and warm': 'This part does not use the bass; the mic covers the played notes.',
@@ -230,10 +230,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'A mic under the pipes, aimed up. How should you treat it?',
     options: ['As an optional effect, auditioned against a view from above', 'As the natural marimba sound, so it comes first', 'As a safe default, because nothing can possibly strike it down there'],
     correct: 'As an optional effect, auditioned against a view from above',
-    explain: 'Under the pipes gives a more localised, coloured sound and more mechanical noise — not the universally natural marimba sound.',
+    explain: 'Under the pipes gives a more localised, colored sound and more mechanical noise — not the universally natural marimba sound.',
     why: {
-      'As the natural marimba sound, so it comes first': 'From above, the mic hears bars and pipes together in the room; underneath is a narrower colour.',
-      'As a safe default, because nothing can possibly strike it down there': 'Feet, the frame and the pipes are close by — and the sound is a coloured one.',
+      'As the natural marimba sound, so it comes first': 'From above, the mic hears bars and pipes together in the room; underneath is a narrower color.',
+      'As a safe default, because nothing can possibly strike it down there': 'Feet, the frame and the pipes are close by — and the sound is a colored one.',
     },
   },
   {
@@ -257,7 +257,7 @@ const scenarios: MikingScenario[] = [
     explain: 'In a quiet hall an existing main or area mic may carry the marimba adequately. A louder stage needs direct pickup.',
     why: {
       'A close mic over each octave of the keyboard, for even coverage': 'Every extra mic adds spill and timing problems; begin with the mains.',
-      'A mic under the pipes for the natural sound': 'Under the pipes is a coloured effect, not the natural sound.',
+      'A mic under the pipes for the natural sound': 'Under the pipes is a colored effect, not the natural sound.',
     },
   },
   {
@@ -384,7 +384,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'Two condensers grilles together, 135° apart, about 46 cm above the middle of the span', ok: true, power: 'phantom', feedback: 'The coincident pair: no time difference, a coherent picture; check the far ends.' },
       { id: 'c', label: 'One condenser close over the lowest bars', ok: false, power: 'phantom', feedback: 'The low end would dominate and the treble fade.' },
       { id: 'd', label: 'A mic clamped to a pipe in the middle', ok: false, power: 'phantom', feedback: 'Nothing clamps to a pipe, a bar or a cord.' },
-      { id: 'e', label: 'Two mics under the pipes, panned left and right', ok: false, power: 'phantom', feedback: 'Under the pipes is a coloured effect, not the instrument’s natural picture.' },
+      { id: 'e', label: 'Two mics under the pipes, panned left and right', ok: false, power: 'phantom', feedback: 'Under the pipes is a colored effect, not the instrument’s natural picture.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.range', label: 'The pair is set from the part’s real range and checked in mono', role: 'optional', feedback: 'A fair recording reason.' }, BRAND_REASON, COUNT_REASON],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point from the bars, adjusted to the played range, clear of the mallets, power that matches the mics, and a mono check.',
@@ -556,7 +556,7 @@ const copy: Partial<LessonCopy> = {
       intro: 'What you just did, in words. After our research, each blue zone is where we suggest you begin: one mic about 60–100 cm above the middle of the PLAYED span, aimed down; or one of a spaced pair about 46 cm above the bars and 61 cm apart; and, only as an optional effect, a mic under the pipes. Starting points, not rules.',
       separate: 'Height, the place along the keyboard and the angle are separate variables: change one at a time, with low, middle and high notes, rolls and chords.',
       clearance: 'Clearance comes first. The player’s whole reach along the keyboard sets it, not a still pose. The mallets’ keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where they travel — leave more room on a real stage.',
-      tendencies: 'Closer to one end favours it; higher blends the keyboard and adds room and spill. Under the pipes: a coloured, local sound. All tendencies to check by ear.',
+      tendencies: 'Closer to one end favours it; higher blends the keyboard and adds room and spill. Under the pipes: a colored, local sound. All tendencies to check by ear.',
     },
   },
   context: {
@@ -590,7 +590,7 @@ const copy: Partial<LessonCopy> = {
       intro: 'These are scenario-based comparisons, not rules: a quiet hall may need only the main pickup; a loud stage, a directional spot or pair placed for direct sound.',
       points: [
         { title: 'THE HALL', text: 'In a quiet acoustic hall, an existing main or area mic may carry the marimba adequately.' },
-        { title: 'THE STAGE', text: 'Test the farthest low and high notes, the centre and rolls with the full band. If the PA is mono, sum and listen in mono at several audience positions before a wide pan.' },
+        { title: 'THE STAGE', text: 'Test the farthest low and high notes, the center and rolls with the full band. If the PA is mono, sum and listen in mono at several audience positions before a wide pan.' },
         { title: 'THE STUDIO', text: 'A single central mic for a limited span; for a wide solo the pairs, or a moderately distant pair in a good room — not a cartoon-wide picture that weakens the middle.' },
         { title: 'THE ENSEMBLE', text: 'Hear the main array first; add one or two spots when the part needs level or focus — and check them with the mains, in mono.' },
       ],
@@ -669,7 +669,7 @@ export const I08_LESSON: MalletLesson = {
       { id: 'audience', label: 'the audience and the PA', short: 'AUDIENCE', note: 'If the PA is mono, listen to the marimba in mono at several audience positions before a wide pan.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'FEEDBACK PATH', scene: 'stage' },
       { id: 'room', label: 'the studio room', short: 'THE ROOM', note: 'A good room can carry the keyboard’s width and space in a moderately distant pair; moving back adds reflections and outside noise.', prov: { kind: 'illustrative', reason: 'a generic room' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
-    stage: 'LIVE: a louder stage generally needs the instrument and a directional spot or pair placed for useful direct sound — tested with the full band, with the farthest notes, the centre and rolls.',
+    stage: 'LIVE: a louder stage generally needs the instrument and a directional spot or pair placed for useful direct sound — tested with the full band, with the farthest notes, the center and rolls.',
     studio: 'RECORDING: the whole phrase and its decay; one mic for a limited span, the pairs or a room view for a wide solo — checked in mono.',
   },
   diagnostic,

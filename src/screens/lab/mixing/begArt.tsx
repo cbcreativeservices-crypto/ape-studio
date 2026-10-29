@@ -296,7 +296,7 @@ export function PrepArt({ opened }: { opened: ReadonlySet<string> }) {
   return (
     <ArtFrame
       h={y0 + (refs ? 52 : 18) + 4}
-      a11y={`A DAW session window. ${named ? 'Tracks are named KICK, SNARE, BASS, GTR, LEAD and coloured' : 'Tracks are still called Audio_07, Audio_02 and so on'}. ${clean ? 'The unused duplicate track with its cough clip is gone.' : 'An unused duplicate track with a cough clip is still there.'} ${clip ? 'The quiet verse clip on the lead is lifted by clip gain to match the chorus.' : 'The lead verse clip sits 9 dB under the chorus clip.'} ${phase ? 'The kick polarity was checked.' : ''} The master meter peaks at ${masterPk} dBFS. ${refs ? 'Two reference tracks sit below, muted.' : ''}`}
+      a11y={`A DAW session window. ${named ? 'Tracks are named KICK, SNARE, BASS, GTR, LEAD and colored' : 'Tracks are still called Audio_07, Audio_02 and so on'}. ${clean ? 'The unused duplicate track with its cough clip is gone.' : 'An unused duplicate track with a cough clip is still there.'} ${clip ? 'The quiet verse clip on the lead is lifted by clip gain to match the chorus.' : 'The lead verse clip sits 9 dB under the chorus clip.'} ${phase ? 'The kick polarity was checked.' : ''} The master meter peaks at ${masterPk} dBFS. ${refs ? 'Two reference tracks sit below, muted.' : ''}`}
     >
       {/* title bar */}
       <Rect x={1} y={1} width={338} height={20} rx={9} fill="#1b1d23" />

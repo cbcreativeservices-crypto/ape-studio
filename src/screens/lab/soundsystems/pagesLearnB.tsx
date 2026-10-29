@@ -149,15 +149,15 @@ const SUB_LAYOUTS: Record<SubLayout, { name: string; beams: PlotBeam[]; placed: 
     beams: [subBeam('subL', { gain: 0.6 }), subBeam('subR', { gain: 0.6 })],
     orient: 'One sub under each main. Two sources of the same low-frequency signal, a room-width apart.',
     what: 'Subs under each main. The most common layout because it is the easiest to rig.',
-    cost: 'Down the centre line the two arrive together and add — the power alley; off to the sides they arrive at different times and cancel at some frequencies. Real rooms add their boundaries and modes to this.',
+    cost: 'Down the center line the two arrive together and add — the power alley; off to the sides they arrive at different times and cancel at some frequencies. Real rooms add their boundaries and modes to this.',
     pattern: 'OMNI ×2',
     rig: 'GROUND',
   },
   center: {
-    name: 'Centre cluster',
+    name: 'Center cluster',
     placed: [{ slot: 'subC', kind: 'passiveSub' }],
     beams: [subBeam('subC', { gain: 0.9 })],
-    orient: 'All the subs together in one place, in front of the stage on the centre line.',
+    orient: 'All the subs together in one place, in front of the stage on the center line.',
     what: 'All the subs together in one place, in front of the stage.',
     cost: 'One source, so no cancellation between subs: the low end is even across the width of the room. The trade is stage rumble and a cluster in the sightline.',
     pattern: 'OMNI',
@@ -177,7 +177,7 @@ const SUB_LAYOUTS: Record<SubLayout, { name: string; beams: PlotBeam[]; placed: 
     name: 'End-fire array',
     placed: [{ slot: 'subC', kind: 'passiveSub' }, { slot: 'subC2', kind: 'passiveSub' }],
     beams: [subBeam('subC', { pattern: 'endfire', gain: 0.9, y: (slotDef('subC').y + slotDef('subC2').y) / 2 })],
-    orient: 'Two subs in a line front-to-back on the centre line, the FRONT box delayed by the time sound takes to travel from the rear box to it.',
+    orient: 'Two subs in a line front-to-back on the center line, the FRONT box delayed by the time sound takes to travel from the rear box to it.',
     what: 'Subs in a line front-to-back; each box further forward is delayed by the time sound takes to travel to it from the box behind, so the outputs arrive together going forward and out of step going backward.',
     cost: 'The most directional low end a ground stack can make; it needs depth in front of the stage and exact delays — the spacing sets the frequency where the rejection is deepest.',
     pattern: 'END-FIRE',
@@ -335,7 +335,7 @@ function PageMonitors({ ctx }: { ctx: PageCtx }) {
       }
     >
       <ChapterTag n={6}>STAGE MONITORS AND PERFORMER MIXES</ChapterTag>
-      <Body>The stage from above: a wedge at the lip aimed back at its performer, a side fill at the stage-left wing firing across, a drum fill beside the riser, and a performer at centre wearing in-ears.</Body>
+      <Body>The stage from above: a wedge at the lip aimed back at its performer, a side fill at the stage-left wing firing across, a drum fill beside the riser, and a performer at center wearing in-ears.</Body>
       <GoalChips goals={goals} latched={latched} />
       <KeyFact>The audience hears one mix. Each performer needs a different one — more of themselves, less of the drummer, a click nobody else may hear. Monitoring is a second sound system pointed the other way, and its sends are normally PRE-FADER, so the house fader does not move a wedge. Each aux is usually one performer’s mix — one or more wedges, or one in-ear transmitter; a stereo in-ear mix needs a stereo aux and a stereo transmitter.</KeyFact>
       <Card tone="warn">

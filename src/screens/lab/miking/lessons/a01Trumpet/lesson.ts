@@ -50,7 +50,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start where we suggest you begin — in front of the bell, a little off its axis, aimed toward it, clear of the player — then move the mic and see what changes.',
     credit: { scenarios: ['tp.place.1', 'tp.place.2', 'tp.place.3', 'tp.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A suggested zone is a place to begin, measured from the bell rim’s centre — not a rule. The angle to the bell’s axis and the distance are separate tone controls, and clearance from the bell, the mutes and the hands comes first.',
+    takeaway: 'A suggested zone is a place to begin, measured from the bell rim’s center — not a rule. The angle to the bell’s axis and the distance are separate tone controls, and clearance from the bell, the mutes and the hands comes first.',
   },
   context: {
     title: 'Studio or live',
@@ -165,7 +165,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why might a miniature on a bell clip suit a player who moves a lot?',
     options: ['It rides on the bell, so the distance holds', 'Its clip stops it hearing the rest of the band', 'It needs no power, so a spare input will do'],
     correct: 'It rides on the bell, so the distance holds',
-    explain: 'On the bell, the capsule keeps one distance however the player turns — a stand mic has a working zone the bell can leave. It still hears the stage, and its close view is more coloured.',
+    explain: 'On the bell, the capsule keeps one distance however the player turns — a stand mic has a working zone the bell can leave. It still hears the stage, and its close view is more colored.',
     why: {
       'Its clip stops it hearing the rest of the band': 'A clip is a mount, not a pattern: the mic still hears the stage.',
       'It needs no power, so a spare input will do': 'This miniature condenser needs phantom power, through its adapter.',
@@ -199,9 +199,9 @@ const scenarios: MikingScenario[] = [
     id: 'tp.place.1',
     page: 'placement',
     prompt: 'A starting point says “30–50 cm from the bell”. What is that measured from?',
-    options: ['The centre of the bell’s rim', 'The player’s lips, at the cup', 'The valves, mid-way along'],
-    correct: 'The centre of the bell’s rim',
-    explain: 'The sound leaves at the bell, so these distances start at the centre of the rim. The same number from the mouthpiece or the valves would put the mic somewhere else.',
+    options: ['The center of the bell’s rim', 'The player’s lips, at the cup', 'The valves, mid-way along'],
+    correct: 'The center of the bell’s rim',
+    explain: 'The sound leaves at the bell, so these distances start at the center of the rim. The same number from the mouthpiece or the valves would put the mic somewhere else.',
     why: {
       'The player’s lips, at the cup': 'The cup is where the sound starts, not where it leaves. Measure from the bell.',
       'The valves, mid-way along': 'The valves change the tube; they do not radiate the sound.',
@@ -223,11 +223,11 @@ const scenarios: MikingScenario[] = [
     id: 'tp.place.3',
     page: 'placement',
     prompt: 'Where should a bell clip’s capsule point?',
-    options: ['Between the bell’s centre and its edge', 'Straight down the middle of the bell', 'Back at the valves, away from the rim'],
-    correct: 'Between the bell’s centre and its edge',
-    explain: 'Aimed between the centre and the edge, the close capsule hears a smoother horn than dead centre. If it is too bright, move the aim further from the centre.',
+    options: ['Between the bell’s center and its edge', 'Straight down the middle of the bell', 'Back at the valves, away from the rim'],
+    correct: 'Between the bell’s center and its edge',
+    explain: 'Aimed between the center and the edge, the close capsule hears a smoother horn than dead center. If it is too bright, move the aim further from the center.',
     why: {
-      'Straight down the middle of the bell': 'Dead centre takes the full blast and brightness; a little off it is smoother.',
+      'Straight down the middle of the bell': 'Dead center takes the full blast and brightness; a little off it is smoother.',
       'Back at the valves, away from the rim': 'The sound leaves the bell, not the valves — and the valves bring clicks.',
     },
   },
@@ -300,7 +300,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The trumpet plays in a horn section with a section mic up. How do you use its spot mic?',
     options: ['Raise it only for a stated balance; check mono', 'Make it the loudest channel, as it has the lead', 'Mute the section mic whenever the trumpet plays'],
     correct: 'Raise it only for a stated balance; check mono',
-    explain: 'Hear the section mic first: the spot supports it. Bring the spot up only as the music needs, and check the blend in stereo and mono — spill and different arrival times colour it.',
+    explain: 'Hear the section mic first: the spot supports it. Bring the spot up only as the music needs, and check the blend in stereo and mono — spill and different arrival times color it.',
     why: {
       'Make it the loudest channel, as it has the lead': 'A loud spot pulls the trumpet out of the section and brings its neighbours’ spill up too.',
       'Mute the section mic whenever the trumpet plays': 'The section mic is the picture of the group; the spot only supports it.',
@@ -363,12 +363,12 @@ const symptoms: Symptom[] = [
   {
     id: 'tp.sym.mute',
     observation: 'The muted sound is thin or strange — or the mute touches the mic',
-    firstChecks: 'Is that the mute’s intended colour, or a collision? Hear it acoustically; stop and reposition safely for that mute.',
+    firstChecks: 'Is that the mute’s intended color, or a collision? Hear it acoustically; stop and reposition safely for that mute.',
     options: ['Hear it unmiked; then reposition for that mute', 'Boost the low end until the muted sound fills out', 'Push the mic into the mute to catch more of it'],
     correct: 'Hear it unmiked; then reposition for that mute',
-    explain: 'A mute is meant to change the colour. If something touches, stop: the mute reaches past the rim and a plunger brings the hand in front. Reposition for every mute the piece uses.',
+    explain: 'A mute is meant to change the color. If something touches, stop: the mute reaches past the rim and a plunger brings the hand in front. Reposition for every mute the piece uses.',
     why: {
-      'Boost the low end until the muted sound fills out': 'The thin colour may be exactly what the player wants. Check that first.',
+      'Boost the low end until the muted sound fills out': 'The thin color may be exactly what the player wants. Check that first.',
       'Push the mic into the mute to catch more of it': 'No mic goes into or against a mute. Move it safely instead.',
     },
   },
@@ -465,7 +465,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'From which part does nearly all of a trumpet’s sound leave?',
     options: ['The bell', 'The valves', 'The tuning slide'],
     correct: 'The bell',
-    explain: 'The air column’s sound leaves at the bell, which is why every starting point here is measured from the bell rim’s centre.',
+    explain: 'The air column’s sound leaves at the bell, which is why every starting point here is measured from the bell rim’s center.',
     why: {
       'The valves': 'The valves route the air through extra tube; they make clicks, not the note.',
       'The tuning slide': 'The tuning slide sets the tube’s length for tuning; the sound leaves the bell.',
@@ -553,7 +553,7 @@ export const A01_LESSON: Lesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'The trumpet is a brass instrument. The player buzzes their lips into a cup mouthpiece, and the air in about 1.5 m of tube, wound into a loop, sets the note. Three valves add extra loops of tube for the notes between. The flugelhorn is its close relative: usually the same three valves, a wider tube that widens more gradually, and a larger bell. It sounds rounder and mellower.', src: 'PL-2010' },
     { title: 'WHERE YOU MEET IT', text: 'Jazz and big bands, horn sections in pop, soul, funk and Latin music, orchestras and brass bands, solos and studio overdubs — and players often switch between trumpet and flugelhorn within one set. This lesson covers one horn: a studio overdub, a live solo, and a spot in a section.', src: 'LESSON' },
-    { title: 'WHAT IT DOES IN THE MUSIC', text: 'It carries melodies and bright accents and can be very loud. Ask what the part needs: a focused solo, more edge, a softer blend, a muted colour — and remember the player moves and turns with the music.', src: 'LESSON' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'It carries melodies and bright accents and can be very loud. Ask what the part needs: a focused solo, more edge, a softer blend, a muted color — and remember the player moves and turns with the music.', src: 'LESSON' },
     { title: 'ITS SIZE', text: 'A trumpet’s bell is about 12 cm across; a flugelhorn’s about 15 cm. A trumpet’s lowest note is around 165 Hz, but its sound reaches far higher — and its peaks close to the bell are very loud. This lab draws both horns about that size, played standing.', src: 'Y-YTR2330' },
   ],
   sound: {
@@ -563,7 +563,7 @@ export const A01_LESSON: Lesson = {
       { title: 'The tube answers', text: 'At the bell, most of the wave reflects back up the tube. The reflections build a standing wave in the air column, and its pressure locks the lips to the tube’s own rhythm: that sets the note. The valves change the tube’s length, and so the notes.', byVariant: { flugelhorn: 'At the bell, most of the wave reflects back up the tube. The reflections build a standing wave in the air column, and its pressure locks the lips to the tube’s own rhythm: that sets the note. The flugelhorn’s tube widens gradually along most of its length.' } },
       { title: 'Sound leaves the bell', text: 'Part of the wave escapes at every cycle — almost all of it at the bell. The low notes spread out nearly all round; the higher the pitch, the more it beams straight ahead along the bell’s axis.' },
     ],
-    attack: 'The start of a note: the lips catching, the tongue releasing the air — the bite and the edge, strongest in the beam along the bell’s axis. A mic on the axis tends to hear more of it; close and centred, it can also hear breath.',
+    attack: 'The start of a note: the lips catching, the tongue releasing the air — the bite and the edge, strongest in the beam along the bell’s axis. A mic on the axis tends to hear more of it; close and centered, it can also hear breath.',
     body: 'The sustained tone: the standing wave in the tube, leaving through the bell — the lows all round, the highs ahead. A mic off to the side tends to hear a softer top; a farther one, more of the room. Both are tendencies, and horns vary.',
     head: { diameterMm: 0, rods: 0, label: 'the bell', strikeSrc: 'PL-2010' },
   },
@@ -607,6 +607,6 @@ export const A01_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every horn, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical standing hold, the tube drawn unwound, the bell’s spread of sound as a simplified shape, mic patterns and the two-mic comb as textbook shapes, and waves drawn larger so you can see them. Distances are rounded to about 5 mm and measured from the bell rim’s centre to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every horn, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical standing hold, the tube drawn unwound, the bell’s spread of sound as a simplified shape, mic patterns and the two-mic comb as textbook shapes, and waves drawn larger so you can see them. Distances are rounded to about 5 mm and measured from the bell rim’s center to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy: A01_COPY,
 };

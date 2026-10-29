@@ -56,14 +56,14 @@ export const C04_SPEC: AmpPagesSpec = {
   },
   notes: {
     beam: 'A steel’s long, high sustains sit where a 12 in cone beams: off the axis, the highs fall away first. Keep the mic on the speaker’s axis for clarity, or move off it to soften.',
-    spots: 'On a steel amp, the dust cap’s edge is a common first aim. Toward the centre tends to brighten bar attacks and high notes — sometimes too sharp; toward the edge, smoother. Check by ear.',
+    spots: 'On a steel amp, the dust cap’s edge is a common first aim. Toward the center tends to brighten bar attacks and high notes — sometimes too sharp; toward the edge, smoother. Check by ear.',
     place: 'These are general amp starting points, tested on a steel’s amp — not steel-specific coordinates. The open back’s zone starts outside the clear air space the amp needs behind it.',
     context: 'Keep the stand low and stable at the amp, out of the pedal, knee-lever and volume-pedal zone, and make sure a tilted amp cannot tip.',
   },
   liveCards: [
     { title: 'CLEAR, ARTICULATE CLEAN STEEL', text: 'Start at the cap’s edge and listen for harmonics and pitch movement in the band. If it is too hard, slide outward before broad EQ.' },
     { title: 'ROUNDER, LESS POINTED STEEL', text: 'Compare the outer cone and a modestly farther view — and check the steel stays distinct beside keys and guitar.' },
-    { title: 'DRIVEN LAP STEEL', text: 'Through pedals or an overdriven amp: judge picked attacks and long slides. The centre can stress upper harmonics and noise; off-centre may balance better.' },
+    { title: 'DRIVEN LAP STEEL', text: 'Through pedals or an overdriven amp: judge picked attacks and long slides. The center can stress upper harmonics and noise; off-center may balance better.' },
     { title: 'STUDIO', text: 'One good close mic first. A second mic, a room mic or a direct path only for a stated goal, each heard alone and together in mono.' },
   ],
 };

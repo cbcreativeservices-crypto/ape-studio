@@ -31,7 +31,7 @@ const pages: LessonPages = {
     title: 'How it makes its sound',
     goal: 'See how a vibrating string becomes a signal and the signal becomes moving air — and why the spot on the cone matters.',
     credit: { scenarios: ['eg.snd.1', 'eg.snd.2', 'eg.snd.3'], interactive: 'soundPath', note: 'Step through three harmonics and try two pickups, step the cone through to the end, and answer the three checks.' },
-    takeaway: 'Each pickup senses its own spot on the string, so neck and bridge sound different. The cone pushes in front and pulls behind — an open back sounds out too, opposite in polarity. Close in, the centre of the cone tends to sound brighter than the edge.',
+    takeaway: 'Each pickup senses its own spot on the string, so neck and bridge sound different. The cone pushes in front and pulls behind — an open back sounds out too, opposite in polarity. Close in, the center of the cone tends to sound brighter than the edge.',
   },
   setting: {
     title: 'Where it sits',
@@ -148,7 +148,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'eg.rec.1',
     page: 'microphone',
-    prompt: 'FROM EARLIER · Close to the speaker and aimed at the centre of the cone, a mic tends to hear…',
+    prompt: 'FROM EARLIER · Close to the speaker and aimed at the center of the cone, a mic tends to hear…',
     options: ['only the bass, because the middle of the cone moves most', 'the back of the cone, through the dust cap', 'a brighter, more forward sound than toward the edge'],
     correct: 'a brighter, more forward sound than toward the edge',
     explain: 'At higher pitches the middle of the cone does more of the work, so a close mic aimed there tends to sound brighter — with distortion, sometimes fizzy. A tendency, and speakers vary.',
@@ -211,7 +211,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says “1.5–5 cm (½–2 in)”. Measured from what?',
     options: ['From the middle of the grille, wherever the speaker is', 'From the back of the cone, measured inside the amp', 'From the grille cloth, in front of the speaker itself'],
     correct: 'From the grille cloth, in front of the speaker itself',
-    explain: 'The grille is the surface you can see and measure from — and the number belongs to the speaker that is really sounding. On many combos the speaker sits off-centre, so the middle of the grille can be the wrong place to start.',
+    explain: 'The grille is the surface you can see and measure from — and the number belongs to the speaker that is really sounding. On many combos the speaker sits off-center, so the middle of the grille can be the wrong place to start.',
     why: {
       'From the middle of the grille, wherever the speaker is': 'The middle of the grille is not the middle of the speaker on many amps. Find the speaker first.',
       'From the back of the cone, measured inside the amp': 'Nothing is measured from inside the amp, even where an open back lets you see the speaker. The grille is the reference.',
@@ -223,7 +223,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You slide the mic from the dust cap’s edge toward the cone’s edge, keeping the same distance. What should you expect?',
     options: ['A louder sound, with a fixed and predictable lift in the bass', 'A smoother, darker sound, as a tendency to check', 'No change, since the distance has not moved'],
     correct: 'A smoother, darker sound, as a tendency to check',
-    explain: 'Most often the edge sounds smoother or darker than the centre — speakers vary, so listen, and check the guitar keeps its definition in the band. Keeping the distance fixed means you hear only the move across the cone.',
+    explain: 'Most often the edge sounds smoother or darker than the center — speakers vary, so listen, and check the guitar keeps its definition in the band. Keeping the distance fixed means you hear only the move across the cone.',
     why: {
       'A louder sound, with a fixed and predictable lift in the bass': 'These are tendencies, not fixed amounts. Toward the edge most often sounds smoother, not louder.',
       'No change, since the distance has not moved': 'The spot on the cone matters as well as the distance: that is why you keep one fixed while changing the other.',
@@ -427,7 +427,7 @@ const symptoms: Symptom[] = [
   {
     id: 's.fizz',
     observation: 'Too much fizz or harshness',
-    firstChecks: 'Is the mic near the dust-cap centre? Slide toward the dust cap’s edge or the outer cone, then compare a small angle.',
+    firstChecks: 'Is the mic near the dust-cap center? Slide toward the dust cap’s edge or the outer cone, then compare a small angle.',
     options: ['Turn the amp’s treble control down first, before moving the mic at all', 'Slide toward the cap’s edge or the outer cone, then a small angle', 'Push the mic right against the grille cloth'],
     correct: 'Slide toward the cap’s edge or the outer cone, then a small angle',
     explain: 'One variable at a time: the same distance, a move across the cone, then an angle. Listen to the fizz, the pick attack and the midrange in the full mix.',
@@ -521,7 +521,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Place the mic on a stable stand near the dust cap’s edge, clear of the grille; route the cable', early: 'You need to know where the speaker is before you place the mic.' },
       { text: 'Mute the outputs and lower monitoring; then switch phantom if it is needed', early: 'Power comes after the mic is mounted and connected — with the outputs muted first.' },
       { text: 'Set input gain on the loudest playing, with headroom', early: 'Gain is set once the mic is connected and powered.' },
-      { text: 'Compare centre, cap edge and outer cone, one change at a time, at matched level', early: 'Compare only once the level is set safely — at matched levels, so louder does not win.' },
+      { text: 'Compare center, cap edge and outer cone, one change at a time, at matched level', early: 'Compare only once the level is set safely — at matched levels, so louder does not win.' },
       { text: 'Write down the speaker, spot, distance, angle and the amp settings', early: 'Document last, once you have chosen.' },
     ],
     explain: 'A sensible order. Phantom: mute the outputs and lower monitoring before connecting, disconnecting or switching it, and follow your own equipment’s manual. Recheck after the amp is moved or the player changes channel or level.',
@@ -582,7 +582,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'On a combo amp, where is the speaker you will mic?',
     options: ['Behind the grille, wherever it really sits — find it first', 'In the exact middle of the grille cloth', 'Behind the control panel, at the very top of the amp’s front'],
     correct: 'Behind the grille, wherever it really sits — find it first',
-    explain: 'On many combos the speaker sits off-centre, under the controls. Find it from outside the grille — with the amp off or muted — before you place a mic.',
+    explain: 'On many combos the speaker sits off-center, under the controls. Find it from outside the grille — with the amp off or muted — before you place a mic.',
     why: {
       'In the exact middle of the grille cloth': 'The middle of the grille is not necessarily the middle of the speaker.',
       'Behind the control panel, at the very top of the amp’s front': 'The control panel holds the knobs; the speaker sits below it, behind the grille.',
@@ -672,7 +672,7 @@ export const C02_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A solid-body electric guitar and the amp it plays through. On its own the guitar is very quiet: its pickups turn the strings’ motion into a small electrical signal, and the amp and its speaker make the sound. The mic hears the speaker — not the guitar.', src: 'LESSON L4-L6' },
     { title: 'WHERE YOU MEET IT', text: 'Rock, pop, blues, jazz, country and worship bands, on stage and in the studio — through a combo (amp and speaker in one box) or a separate head and cabinet. The speaker itself is covered in full in the Amplified speakers & Leslie module.', src: 'LESSON L4' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Rhythm, riffs and solos. The player’s tone is the guitar, the pedals, the amp’s settings AND the speaker — clean, edge-of-breakup or heavily driven. Mic the amp they bring, as they set it.', src: 'LESSON L6' },
-    { title: 'ITS SIZE', text: 'A common combo with one 12 in speaker is about 62 cm wide, 44.5 cm tall and 24 cm deep. The speaker often sits off-centre, under the controls; the back is often open.', src: 'FEN-65DR-MAN' },
+    { title: 'ITS SIZE', text: 'A common combo with one 12 in speaker is about 62 cm wide, 44.5 cm tall and 24 cm deep. The speaker often sits off-center, under the controls; the back is often open.', src: 'FEN-65DR-MAN' },
   ],
   sound: {
     stages: [
@@ -719,7 +719,7 @@ export const C02_LESSON: Lesson = {
   // INTERNAL record (never shown).
   unknowns: [
     { text: 'Whether the combo stands on the floor, raised or tilted back: drawn standing on the floor — so no HEIGHT readout is shown.', dims: ['yFloor'] },
-    { text: 'The combo’s speaker position on the baffle (60 mm right of centre, 255 mm below the top), its open back, the control-panel band (90), the chassis (80) and the valves (70): drawing defaults — the maker’s manual has no drawing.', dims: [] },
+    { text: 'The combo’s speaker position on the baffle (60 mm right of center, 255 mm below the top), its open back, the control-panel band (90), the chassis (80) and the valves (70): drawing defaults — the maker’s manual has no drawing.', dims: [] },
     { text: 'The 12 in speaker’s dust-cap radius (50), the surround’s inner edge (128), cone depth and dome height: drawing defaults (the maker’s speaker drawn with a reference 12 in driver’s sizes).', dims: [] },
     { text: 'A rear-mic distance behind an open back: none in the research; 15–30 cm is a drawing default that starts outside the 6 in of clear air space the maker asks for behind the amp.', dims: [] },
     { text: 'The electric guitar’s dimensions, scale length (25.5 in) and pickup positions (41 / 100 / 160 mm from the bridge): drawing defaults; no electric-guitar geometry is in the research.', dims: [] },

@@ -26,7 +26,7 @@ export const TUBA_COPY: Partial<LessonCopy> = {
   placement: {
     workedZone: { up: 'tu.above', front: 'tu.sideF' },
     workedLine: 'This starting point also reads how far the mic is from {line}: the dashed line straight out of the bell.',
-    workedAim: 'Aim it at the bell — for an upward bell, at its edge rather than straight down into it. The lab counts any aim within about {tol}° of the bell’s centre, so an aim at the edge counts too.',
+    workedAim: 'Aim it at the bell — for an upward bell, at its edge rather than straight down into it. The lab counts any aim within about {tol}° of the bell’s center, so an aim at the edge counts too.',
     workedClear: 'Clear of every part — the bell’s opening and its sway, the valve hand, the slides and the player. A boom over an upward bell stays outside the space above it. Clearance comes first, and the player stops before a real mic moves.',
     blocked: {},
     reveal: 'Closer to the bell tends to bring more attack and definition, with valve and air noise; farther brings the whole tuba and the room. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',

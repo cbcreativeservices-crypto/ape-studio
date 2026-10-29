@@ -71,7 +71,7 @@ export const HAT_ZONES: DocumentedZone[] = [
     refSurface: 'hatTop',
     side: 'outside',
     distance: { min: 50, max: 100 },
-    radial: { line: 'hatEdge', min: 60 - HAT_R, max: 148 - HAT_R, prov: ill('"from the top of the hi-hat": the lab draws it over the bow, 6–14.8 cm from the centre (clear of the clutch)') },
+    radial: { line: 'hatEdge', min: 60 - HAT_R, max: 148 - HAT_R, prov: ill('"from the top of the hi-hat": the lab draws it over the bow, 6–14.8 cm from the center (clear of the clutch)') },
     cone: { min: 25, max: 75, toward: FAR, prov: ill('"an angle where you can’t see the snare": the half of the pair away from the snare, read as a plan side') },
     aimAt: { surface: 'hatTop', r: HAT_R, prov: ill('aimed at the top cymbal') },
     requires: { micTypeIds: ['sdcCard'] },

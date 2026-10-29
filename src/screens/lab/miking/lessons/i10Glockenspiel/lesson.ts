@@ -63,7 +63,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'Compare a near-coincident pair with a spaced pair over the glockenspiel — no agreed two-mic dimension exists for it — by what an end bar does to each.',
     credit: { scenarios: ['gl.two.1', 'gl.two.2', 'gl.two.3', 'gl.two.4'], interactive: 'pairCompared', note: 'Look at both pairs with an end bar as the source, then answer the four checks.' },
-    takeaway: 'One mic often suffices. For a wide solo, a near-coincident pair gives a stable picture and a reliable mono sum; a spaced pair more separate low and high control, with colour in mono. Mount both outside the mallet arc.',
+    takeaway: 'One mic often suffices. For a wide solo, a near-coincident pair gives a stable picture and a reliable mono sum; a spaced pair more separate low and high control, with color in mono. Mount both outside the mallet arc.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -287,7 +287,7 @@ const scenarios: MikingScenario[] = [
     correct: 'It sits inside the mallets’ travel on a real passage',
     explain: 'The capsule or boom can be within the player’s arc — usable only if the player proves full clearance.',
     why: {
-      'It is a louder position than the others': 'The colour is about clearance, not level.',
+      'It is a louder position than the others': 'The color is about clearance, not level.',
       'It is meant only for players using metal mallets on steel': 'The mallet type does not change where the mallets travel.',
     },
   },
@@ -491,8 +491,8 @@ const words: MalletWords = {
     prompt: 'Choose a PAIR, then step BAR to the lowest and the highest bar. Watch DELAY and LEVEL — and the comb below.',
     learn: [
       'One mic often suffices for a short or focused phrase. A wider range or a solo may benefit from two viewpoints. There is no agreed two-mic dimension for the glockenspiel: do not transfer the xylophone, marimba and vibraphone geometry automatically.',
-      'A near-coincident pair over the useful span when a stable picture and a reliable mono sum matter; a spaced pair for more separate low and high coverage — which can colour shared notes in mono. Mount both outside the mallet arc.',
-      'Listen to each mic alone, both in stereo, and both summed to mono. If shared notes thin or change colour in mono, change placement and balance before polarity reversal or time alignment. In a mono PA, prioritise a stable mono balance.',
+      'A near-coincident pair over the useful span when a stable picture and a reliable mono sum matter; a spaced pair for more separate low and high coverage — which can color shared notes in mono. Mount both outside the mallet arc.',
+      'Listen to each mic alone, both in stereo, and both summed to mono. If shared notes thin or change color in mono, change placement and balance before polarity reversal or time alignment. In a mono PA, prioritise a stable mono balance.',
     ],
     warn: 'A simplified picture: one point on one bar, straight paths, no room. The pairs’ sizes are drawing defaults, not published figures. Judge a real pair by ear — each mic alone, both together, and in mono.',
   },

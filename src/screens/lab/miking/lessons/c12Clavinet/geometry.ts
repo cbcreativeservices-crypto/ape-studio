@@ -26,7 +26,7 @@ const CB: VariantId[] = ['cab'];
 const parts: Part[] = [
   { id: 'grille', label: 'grille cloth', short: 'grille', role: 'The cloth over the front of the cabinet. The speaker sits just behind it; a close mic goes right up to it — never touching it.', prov: dflt },
   { id: 'cone', label: 'speaker cone', short: 'cone', role: 'The paper cone of the 12-inch speaker. The amplifier drives it in and out, turning the clavinet’s signal back into sound — this is what the mic hears.', moving: true, prov: { kind: 'trial', src: 'CEL-V30', note: 'a 12-in speaker’s cut-out, 283 mm' } },
-  { id: 'dust', label: 'dust cap', short: 'dust cap', role: 'The dome at the centre of the cone. Toward it the sound tends to be brighter; out toward the cone’s edge, rounder.', prov: { kind: 'unknown', needed: 'the dust cap’s size (drawing default)' } },
+  { id: 'dust', label: 'dust cap', short: 'dust cap', role: 'The dome at the center of the cone. Toward it the sound tends to be brighter; out toward the cone’s edge, rounder.', prov: { kind: 'unknown', needed: 'the dust cap’s size (drawing default)' } },
   { id: 'co.cab', label: 'cabinet', short: 'cabinet', role: 'The combo amplifier: the amplifier and the speaker in one wooden cabinet. Its back is partly open.', clearance: CLAV_CLEAR.co, variants: CO, prov: { kind: 'trial', src: 'FEN-65DR-MAN', note: 'a real open-backed 1×12 combo’s outer sizes' }, solid: box(COMBO) },
   { id: 'co.panel', label: 'control panel', short: 'controls', role: 'The amplifier’s input jack and knobs along the top front: the clavinet’s cable plugs in here (or the last pedal’s).', variants: CO, prov: dflt },
   { id: 'co.chassis', label: 'chassis and tubes', short: 'chassis', role: 'The amplifier’s chassis inside the top, with its tubes hanging down at the back: hot, and at dangerous voltages. No mic, hand or stand goes in there.', variants: CO, prov: dflt },
@@ -61,7 +61,7 @@ export const CLAV_MODEL: InstrumentModel = {
   // 1×12): it stands 45 mm taller below the speaker, on its own floor line.
   viewsByVariant: { cab: { side: { u0: -560, u1: 560, v0: -420, v1: FLOOR_Y_CAB + 40 } } },
   aimAzLimit: 180,
-  yFloor: { mm: FLOOR_Y, prov: { kind: 'illustrative', reason: 'the cabinet on the floor: 190 mm below the combo speaker’s centre (the shared combo12 layout, a drawing default)' } },
+  yFloor: { mm: FLOOR_Y, prov: { kind: 'illustrative', reason: 'the cabinet on the floor: 190 mm below the combo speaker’s center (the shared combo12 layout, a drawing default)' } },
   floorByVariant: { cab: FLOOR_Y_CAB },
   interior: { x0: 0, x1: 0, rIn: 0, c: { x: 0, y: 0, z: 0 } },
   ports: { combo: null, cab: null },

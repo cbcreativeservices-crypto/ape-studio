@@ -32,7 +32,7 @@ const pages: LessonPages = {
   },
   setups: {
     title: 'Starting setups',
-    goal: 'See real setups drawn on the singers — one cardioid or omni with the duet on a semicircle, a handheld each, a figure-8 between two singers, two cardioids back to back, a pair at a quartet’s centre, a cardioid each at 3:1 and at a distance that misses it. Then what to settle first.',
+    goal: 'See real setups drawn on the singers — one cardioid or omni with the duet on a semicircle, a handheld each, a figure-8 between two singers, two cardioids back to back, a pair at a quartet’s center, a cardioid each at 3:1 and at a distance that misses it. Then what to settle first.',
     credit: { scenarios: ['du.set.1', 'du.31', 'du.hear'], interactive: 'setupsSeen', note: 'Look at every main setup on the drawing, and answer the three checks.' },
     takeaway: 'Decide first: one blended ensemble, or separately controllable voices. One mic or a pair keeps the blend; a mic each gives control and costs stands, bleed and phase. Separate mics usually go at least three times their distance to their singers apart.',
   },
@@ -197,7 +197,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Close in, the outer singers fall outside the pair’s angle. Move it back until the group fills the angle, or arrange the singers to fill it.',
     why: {
       'Add a spot on each of the outer singers': 'Spots first add bleed and phase; fix the coverage.',
-      'Turn the pair toward one outer singer': 'Then the other side falls out; the pair aims at the centre.',
+      'Turn the pair toward one outer singer': 'Then the other side falls out; the pair aims at the center.',
     },
   },
   {

@@ -133,14 +133,14 @@ export const colourSymptom = (id: string, w: WindWords): Symptom => {
   const b = 'Compress the channel so the notes match in level';
   return {
     id,
-    observation: 'Notes change colour sharply from one to the next',
+    observation: 'Notes change color sharply from one to the next',
     firstChecks: `Is the mic focused on one hole, ${w.end} or a narrow angle? Compare a little more distance or a broader aim through the whole range.`,
     options: [key, a, b],
     correct: key,
     explain: `The place each note leaves from moves with the fingering. Very close, or very narrow, the mic hears one spot at a time; a little distance lets the ${w.noun}’s outlets blend.`,
     why: {
-      [a]: 'A tighter aim hears even less of the instrument at once — the colour jumps more.',
-      [b]: 'Compression evens the level, not the colour. Fix the view.',
+      [a]: 'A tighter aim hears even less of the instrument at once — the color jumps more.',
+      [b]: 'Compression evens the level, not the color. Fix the view.',
     },
   };
 };

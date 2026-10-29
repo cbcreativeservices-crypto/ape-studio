@@ -120,7 +120,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The voice reaches the headset first and the chest mic a little later. Summed, some frequencies cancel — choose one, or switch on purpose.',
     why: {
       'The headset reverses the chest mic': 'Distance delays a sound; it does not flip its sign.',
-      'Two mics make the voice twice as loud': 'The second copy is later: it colours the voice more than it adds level.',
+      'Two mics make the voice twice as loud': 'The second copy is later: it colors the voice more than it adds level.',
     },
   },
   hearingCheck('b11.set.1', W),
@@ -665,7 +665,7 @@ export const B11_LESSON: Lesson = {
     { text: 'The standing wearer: the lips 1550 mm above the ground; frame T’s landmarks — the breastbone (~21 cm below the lips), the collar, the small of the back, the ear — drawing defaults on a generic figure; no anthropometry was read.', dims: ['yFloor'] },
     { text: 'The keep-out regions (a helmet, the shoulder pads, the shin pads) are illustrative regions on a generic figure, never rule geometry.', dims: [] },
     { text: 'The headset capsule (2–6 cm beside the mouth corner) is the lab’s drawing; the field’s edge, the PA, the perimeter operator and the boom’s 0.6–1.5 m trial band are drawing defaults.', dims: [] },
-    { text: 'The chest mic against the headset as the head turns is by distance alone, the head turning about its centre (a simplified picture).', dims: [] },
+    { text: 'The chest mic against the headset as the head turns is by distance alone, the head turning about its center (a simplified picture).', dims: [] },
   ],
   live: { wedges },
   accuracyDetail:

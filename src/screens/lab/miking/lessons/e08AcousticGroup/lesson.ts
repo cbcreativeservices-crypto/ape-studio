@@ -36,7 +36,7 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the pair yourself — closer, farther, higher — and watch the players’ distances to it: the equal-distance idea, read from the drawing.',
-    credit: { scenarios: ['ac.place.1', 'ac.place.2', 'ac.31', 'ac.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['ac.place.1', 'ac.place.2', 'ac.31', 'ac.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Move the pair in small steps and judge the blend, the room, the width and the mono sum. When the players sit about equally far from it, they arrive about equally — moving a player is often the simplest balance control.',
   },
   context: {
@@ -423,7 +423,7 @@ const setupTasks: SetupTask[] = [
 
 const predictions: EnsembleLesson['predictions'] = {
   microphone: { prompt: 'Before you look: which pattern rejects most of the room behind it?', options: ['Cardioid', 'Omni', 'They reject the same'], after: 'Now sweep SOURCE ANGLE round the pattern and watch PICKUP.' },
-  placement: { prompt: 'Predict: you move the pair from the arc’s centre toward the guitarist. What changes most?', options: ['The guitar gets louder than the rest', 'Only the overall level', 'Every player gets louder equally'], after: 'Off the centre, the players are no longer equally far: SPREAD grows, and the nearest one leads. Compare at matched level.' },
+  placement: { prompt: 'Predict: you move the pair from the arc’s center toward the guitarist. What changes most?', options: ['The guitar gets louder than the rest', 'Only the overall level', 'Every player gets louder equally'], after: 'Off the center, the players are no longer equally far: SPREAD grows, and the nearest one leads. Compare at matched level.' },
   context: { prompt: 'The wedge sits in front of the guitarist, below the guitar spot. Can the spot’s rejection reach it?', options: ['Yes — aim the mic’s back toward it', 'No — only an omni can', 'It already sits in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'A main pair and a guitar spot. If you flip mic B’s polarity, what happens to Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE to the other player.' },
 };
@@ -520,7 +520,7 @@ export const E08_LESSON: EnsembleLesson = {
     { title: 'WHAT IT IS', text: 'Acoustic duos and small groups — guitar and mandolin, voice and strings, folk trios, jazz duos, small string groups — quiet ensembles whose sound is made in the room.', src: 'LESSON-ACOUSTIC' },
     { title: 'WHAT IT ASKS OF YOU', text: 'A coherent musical picture with enough control to solve real balance problems: ensemble-first stereo, spots, DI support — in a studio or on a small stage.', src: 'LESSON-ACOUSTIC' },
     { title: 'HOW IT IS SEATED', text: 'This lab seats the players on an arc round a point in front of them — where a main pair hears each of them at about the same distance.', src: 'LESSON-ACOUSTIC' },
-    { title: 'ITS SIZE', text: 'About 2–3 m across, the players 1.5 m from the arc’s centre. A typical seating, not a particular group.', src: 'LESSON-ACOUSTIC' },
+    { title: 'ITS SIZE', text: 'About 2–3 m across, the players 1.5 m from the arc’s center. A typical seating, not a particular group.', src: 'LESSON-ACOUSTIC' },
   ],
   sound: {
     stages: [
@@ -559,7 +559,7 @@ export const E08_LESSON: EnsembleLesson = {
   },
   unknowns: [
     { text: 'The seating is a drawing default: the players on an arc 1.5 m round a point 0.7 m in front of the band’s front line, the guitarist in the same place in the duo and the trio, a wedge 1 m in front of the guitarist.', dims: [] },
-    { text: 'The pair sits at the arc’s centre 1.3 m up (a drawing default; a pair for a small string group often sits about 30 cm–2 m from the players), on a boom stand from the audience side.', dims: [] },
+    { text: 'The pair sits at the arc’s center 1.3 m up (a drawing default; a pair for a small string group often sits about 30 cm–2 m from the players), on a boom stand from the audience side.', dims: [] },
     { text: 'The spots borrow their distances from the instrument lessons (guitar 22.5 cm, mandolin 35 cm, fiddle 30 cm, bass 22 cm).', dims: [] },
   ],
   live: { wedges: E08_WEDGES },
@@ -575,7 +575,7 @@ export const E08_LESSON: EnsembleLesson = {
       figureTitle: 'A SMALL ACOUSTIC GROUP',
       figureBadge: 'From above, as the audience sees it · a typical seating, not a particular group',
       sectionsNote: 'A seated guitar and mandolin on an arc round a point in front of them. Switch SEATING for the guitar, fiddle and bass trio. Tap a player.',
-      soundNote: 'The arcs show WHERE each sound leaves — never how loud. The guitar from its top, the mandolin bright from its opening: a main pair at the arc’s centre hears them at about the same distance.',
+      soundNote: 'The arcs show WHERE each sound leaves — never how loud. The guitar from its top, the mandolin bright from its opening: a main pair at the arc’s center hears them at about the same distance.',
       mainAt: PAIR_C,
     },
     before: [

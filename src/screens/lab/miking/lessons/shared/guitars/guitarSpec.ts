@@ -137,7 +137,7 @@ export const STEEL_DREAD: GuitarSpec = {
     xUpper: dd(187, 'upper-bout station'),
   },
   opening: { kind: 'round', x: dd(185, 'soundhole centre'), d: dd(100, 'soundhole diameter') },
-  bridge: { kind: 'pin', x: dd(-8, 'bridge plate centre'), w: dd(150, 'bridge plate width (across)'), l: dd(30, 'bridge plate length (along)') },
+  bridge: { kind: 'pin', x: dd(-8, 'bridge plate center'), w: dd(150, 'bridge plate width (across)'), l: dd(30, 'bridge plate length (along)') },
   pickguard: true,
   neck: { nutW: dd(43, 'nut width'), edgeW: dd(55, 'fingerboard width at the body edge'), head: 'solid', headLen: dd(190, 'headstock length'), tuners: 3 },
   strings: { courses: 6, perCourse: 1, nylon: false, spreadSaddle: dd(54, 'outer string spread at the saddle'), wound: 4 },
@@ -177,7 +177,7 @@ export const NYLON_C5: GuitarSpec = {
     xUpper: dd(227, 'upper-bout station'),
   },
   opening: { kind: 'round', x: dd(225, 'soundhole centre'), d: dd(85, 'soundhole diameter') },
-  bridge: { kind: 'tieblock', x: dd(-8, 'tie-block bridge centre'), w: dd(185, 'tie-block bridge width'), l: dd(30, 'tie-block bridge length') },
+  bridge: { kind: 'tieblock', x: dd(-8, 'tie-block bridge center'), w: dd(185, 'tie-block bridge width'), l: dd(30, 'tie-block bridge length') },
   pickguard: false,
   neck: { nutW: S(2 * IN, 'ELD-C5', 'Nut 2"'), edgeW: dd(62, 'fingerboard width at the 12th fret'), head: 'slotted', headLen: dd(190, 'headstock length'), tuners: 3 },
   strings: { courses: 6, perCourse: 1, nylon: true, spreadSaddle: dd(58, 'outer string spread at the saddle'), wound: 3 },
@@ -205,7 +205,7 @@ export const BASS_BC16: GuitarSpec = {
     ...stationsFor(BASS_EDGE, BASS_LEN, 'bass stations'),
     cutaway: true,
   },
-  opening: { kind: 'round', x: dd(225, 'bass soundhole centre'), d: dd(105, 'bass soundhole diameter') },
+  opening: { kind: 'round', x: dd(225, 'bass soundhole center'), d: dd(105, 'bass soundhole diameter') },
   bridge: { kind: 'pin', x: dd(-8, 'bridge centre'), w: dd(150, 'bridge width'), l: dd(32, 'bridge length') },
   pickguard: true,
   neck: { nutW: dd(45, 'bass nut width'), edgeW: dd(58, 'fingerboard width at the body edge'), head: 'solid', headLen: dd(200, 'bass headstock length'), tuners: 2 },
@@ -227,8 +227,8 @@ export const RESO_SINGLE: GuitarSpec = {
   // The outline stays the dreadnought's (the lesson's own words say so).
   jointFret: dd(12, 'resonator neck joint: 12 frets clear (the usual wood-body resonator)'),
   body: { ...STEEL_DREAD.body, length: T(STEEL_LEN, 'TAY-DN', 'resonator bodies not sourced: the steel dreadnought outline'), lower: T(16 * IN, 'TAY-DN', 'as the steel'), waist: T(11.0625 * IN, 'TAY-DN', 'as the steel'), depth: T(4.625 * IN, 'TAY-DN', 'as the steel') },
-  opening: { kind: 'coverplate', x: dd(-30, 'cone centre'), d: dd(270, 'coverplate diameter'), ports: { x: dd(230, 'upper-bout sound ports'), y: dd(120, 'sound-port offset'), d: dd(60, 'sound-port diameter') } },
-  cone: { d: S(9.5 * IN, 'NAT-TECH', '9.5" cone'), x: dd(-30, 'cone centre') },
+  opening: { kind: 'coverplate', x: dd(-30, 'cone center'), d: dd(270, 'coverplate diameter'), ports: { x: dd(230, 'upper-bout sound ports'), y: dd(120, 'sound-port offset'), d: dd(60, 'sound-port diameter') } },
+  cone: { d: S(9.5 * IN, 'NAT-TECH', '9.5" cone'), x: dd(-30, 'cone center') },
   bridge: { kind: 'spider', x: dd(-30, 'the bridge on the cone'), w: dd(70, 'resonator bridge width'), l: dd(14, 'resonator bridge length') },
   pickguard: false,
 };
@@ -255,7 +255,7 @@ export const BANJO_5: GuitarSpec = {
   id: 'banjo',
   name: 'five-string banjo with a resonator',
   scale: std(BANJO_L, 'a standard five-string scale, 26¼ in'),
-  edgeX: derived(BANJO_POT_CX + BANJO_D / 2, 'the pot centre + its radius (the neck meets the rim)'),
+  edgeX: derived(BANJO_POT_CX + BANJO_D / 2, 'the pot center + its radius (the neck meets the rim)'),
   frets: 22,
   outline: 'round',
   body: {
@@ -267,7 +267,7 @@ export const BANJO_5: GuitarSpec = {
     xLower: dd(BANJO_POT_CX, 'pot centre'),
     xWaist: dd(BANJO_POT_CX, 'pot centre'),
     xUpper: dd(BANJO_POT_CX, 'pot centre'),
-    pot: { cx: dd(BANJO_POT_CX, 'pot centre (the bridge a third of Ø in from the tail-side rim)'), d: std(BANJO_D, 'a standard 11 in head') },
+    pot: { cx: dd(BANJO_POT_CX, 'pot center (the bridge a third of Ø in from the tail-side rim)'), d: std(BANJO_D, 'a standard 11 in head') },
   },
   opening: { kind: 'head', x: dd(BANJO_POT_CX, 'pot centre'), d: std(BANJO_D, 'a standard 11 in head') },
   bridge: { kind: 'banjo', x: dd(0, 'bridge foot (the frame origin)'), w: dd(80, 'banjo bridge width'), l: dd(8, 'banjo bridge thickness') },
@@ -303,7 +303,7 @@ export const MANDO_A: GuitarSpec = {
     // A teardrop is widest about 0.42 of its length from the tail (art pass 2026-10-10).
     xLower: dd(Math.round(MANDO_EDGE - MANDO_LEN * 0.58), 'teardrop: widest at 0.42 of the body from the tail'),
   },
-  opening: { kind: 'oval', x: dd(110, 'oval hole centre'), d: dd(70, 'oval hole length'), d2: dd(50, 'oval hole width') },
+  opening: { kind: 'oval', x: dd(110, 'oval hole center'), d: dd(70, 'oval hole length'), d2: dd(50, 'oval hole width') },
   bridge: { kind: 'floating', x: dd(0, 'floating bridge foot'), w: dd(70, 'mandolin bridge width'), l: dd(10, 'mandolin bridge length') },
   pickguard: true,
   neck: { nutW: dd(28, 'mandolin nut width'), edgeW: dd(34, 'fingerboard width at the body edge'), head: 'paddle', headLen: dd(150, 'mandolin headstock length'), tuners: 4 },
@@ -316,7 +316,7 @@ export const MANDO_F: GuitarSpec = {
   id: 'mandoF',
   name: 'F-style mandolin (f-holes, scroll)',
   body: { ...MANDO_A.body, lower: S(254, 'MET-F4', 'Overall 25.4 cm wide (F-4)') },
-  opening: { kind: 'fholes', x: dd(25, 'f-hole centre (x −30 … +80)'), d: dd(110, 'f-hole length'), d2: dd(60, 'f-hole offset from the centre line') },
+  opening: { kind: 'fholes', x: dd(25, 'f-hole center (x −30 … +80)'), d: dd(110, 'f-hole length'), d2: dd(60, 'f-hole offset from the center line') },
 };
 
 /* ── C05c ukulele (ukulele/GEOMETRY_PROPOSAL.md): the soprano default ── */
@@ -338,7 +338,7 @@ export const UKE_SOPRANO: GuitarSpec = {
     depth: dd(60, 'soprano depth'),
     ...stationsFor(UKE_EDGE, UKE_LEN, 'ukulele stations'),
   },
-  opening: { kind: 'round', x: dd(120, 'ukulele soundhole centre'), d: dd(50, 'ukulele soundhole diameter') },
+  opening: { kind: 'round', x: dd(120, 'ukulele soundhole center'), d: dd(50, 'ukulele soundhole diameter') },
   bridge: { kind: 'tieblock', x: dd(-5, 'bridge centre'), w: dd(70, 'ukulele bridge width'), l: dd(16, 'ukulele bridge length') },
   pickguard: false,
   neck: { nutW: dd(35, 'ukulele nut width'), edgeW: dd(42, 'fingerboard width at the body edge'), head: 'solid', headLen: dd(110, 'ukulele headstock length'), tuners: 2 },

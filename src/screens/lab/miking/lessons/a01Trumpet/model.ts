@@ -69,7 +69,7 @@ const TP_OFF: Z = {
   aim: { maxOffAxis: 25, prov: ill('aimed toward the bell: within 25° (the lab’s tolerance)') },
   requires: { variant: 'trumpet', micTypeIds: STAND },
   draw: draw(TP, 5, 20, 300, 500, UP),
-  tendency: 'A balanced, focused trumpet with some definition — less of the straight blast than dead centre. Closer and more centred tends to bring more edge and breath; farther, more room and neighbours.',
+  tendency: 'A balanced, focused trumpet with some definition — less of the straight blast than dead center. Closer and more centered tends to bring more edge and breath; farther, more room and neighbours.',
   checks: ['The loudest accent and the softest ending, for overload', 'How far the bell moves as the player plays', 'Mutes going in and out, and the valve hands, clear of the stand'],
 };
 
@@ -114,11 +114,11 @@ const TP_FAR: Z = {
 const TP_BACK: Z = {
   id: 'tp.back',
   label: 'Close behind the bell',
-  band: 'An idea to try in a studio: a mic close behind the bell, beside its flare, about 10–22 cm from the rim’s centre — clear of the valve hands and the player.',
+  band: 'An idea to try in a studio: a mic close behind the bell, beside its flare, about 10–22 cm from the rim’s center — clear of the valve hands and the player.',
   kind: 'trial',
   src: 'DPA-TPT',
   quote: 'you may try to mic the trumpet from the close proximity back side of the bell',
-  bandProv: ill('no distance is given: 10–22 cm from the rim’s centre, behind the rim and beside the flare, is the lab’s drawing'),
+  bandProv: ill('no distance is given: 10–22 cm from the rim’s center, behind the rim and beside the flare, is the lab’s drawing'),
   refSurface: 'bell',
   side: 'outside',
   distance: { min: 100, max: 220 },
@@ -138,12 +138,12 @@ const clipZone = (P: HornPose, id: string, variant: string, surface: string, wor
     kind: 'sourced',
     src: 'DPA-MOUNT',
     quote: 'do not point the microphone directly into the center of the bell, but position it between the center position and the bell’s edge. All types of mutes can be used together with the 4099.',
-    bandProv: ill('no distance is given: the capsule 4–13 cm in front of the rim’s centre, within 60° of the axis, is the lab’s drawing (the gooseneck reaches 14 cm)'),
+    bandProv: ill('no distance is given: the capsule 4–13 cm in front of the rim’s center, within 60° of the axis, is the lab’s drawing (the gooseneck reaches 14 cm)'),
     refSurface: surface,
     side: 'outside',
     distance: { min: 40, max: 130 },
     cone: { min: 0, max: 60, prov: ill('in front of the rim (the lab’s drawing)') },
-    aim: { maxOffAxis: 50, minOffAxis: 6, prov: ill('aimed between the centre and the edge: 6–50° off the line to the centre (the lab’s tolerance)') },
+    aim: { maxOffAxis: 50, minOffAxis: 6, prov: ill('aimed between the center and the edge: 6–50° off the line to the center (the lab’s tolerance)') },
     aimAt: { surface, r: P.spec.bell.mm / 2, prov: ill('the capsule’s axis meets the bell’s opening, inside the rim') },
     requires: { variant, micTypeIds: ['brClip'], mount: 'clip' },
     draw: draw(P, 0, 60, 40, 130),
@@ -191,7 +191,7 @@ const FH_CLOSE: Z = {
   aim: { maxOffAxis: 25, prov: ill('aimed toward the bell: within 25°') },
   requires: { variant: 'flugelhorn', micTypeIds: STAND },
   draw: draw(FH, 5, 30, 300, 600, UP),
-  tendency: 'More focus and more of the bell’s own colour, less room — and more breath and valve noise. Listen that the mellow character survives.',
+  tendency: 'More focus and more of the bell’s own color, less room — and more breath and valve noise. Listen that the mellow character survives.',
   checks: ['Breath and valve noise', 'Attacks against the softness the player wants', 'Spill and the room against the farther view'],
 };
 
@@ -203,16 +203,16 @@ export const A01_ZONES: DocumentedZone[] = [
   start(TP_BACK, 'trumpet', cands(TP, 120, norm({ x: 0, y: -0.35, z: -1 }), [170, 160, 180, 150, 190, 140, 200, 130, 210], 18)),
   clipZone(TP, 'tp.clip', 'trumpet', 'bell', {
     label: 'Miniature on a bell clip',
-    band: 'Clip it to the bell’s rim where its maker allows, and bring the capsule a few centimetres in front of the bell, aimed between the bell’s centre and its edge — not straight down the middle.',
-    tendency: 'A steady close sound as the player moves and turns — the distance stays put. Closer and more coloured than a stand mic; it can carry handling or bell noise.',
+    band: 'Clip it to the bell’s rim where its maker allows, and bring the capsule a few centimetres in front of the bell, aimed between the bell’s center and its edge — not straight down the middle.',
+    tendency: 'A steady close sound as the player moves and turns — the distance stays put. Closer and more colored than a stand mic; it can carry handling or bell noise.',
     checks: ['A clip made for this bell, with the player’s agreement', 'Every mute the piece uses, and the hand on a plunger', 'The cable secured clear of the valves and the hands'],
   }),
   start(FH_FAR, 'flugelhorn', cands(FH, 16, UPV, [900, 850, 950, 800, 1000, 750, 1100, 700], 10)),
   start(FH_CLOSE, 'flugelhorn', cands(FH, 16, UPV, [450, 420, 480, 400, 520, 360, 560], 10)),
   clipZone(FH, 'fh.clip', 'flugelhorn', FB, {
     label: 'Miniature on a bell clip — check its range',
-    band: 'If a clip is made for this bell, clip it to the rim and bring the capsule a few centimetres in front, aimed between the centre and the edge. A trumpet clip may not fit a flugelhorn’s wider bell: check the clip’s range first.',
-    tendency: 'The distance holds as the player moves; a closer, more coloured view of a mellow horn. Listen for clip vibration and valve noise.',
+    band: 'If a clip is made for this bell, clip it to the rim and bring the capsule a few centimetres in front, aimed between the center and the edge. A trumpet clip may not fit a flugelhorn’s wider bell: check the clip’s range first.',
+    tendency: 'The distance holds as the player moves; a closer, more colored view of a mellow horn. Listen for clip vibration and valve noise.',
     checks: ['The clip’s range against this bell, with the player’s agreement', 'A mute, if the piece uses one, and the player’s hands', 'Cable and wireless pack secured without pulling on the horn'],
   }),
 ];

@@ -44,12 +44,12 @@ const AMP: AmpPagesSpec = {
   notes: {
     beam: 'The amp drawn here has a 12 in speaker. Off its axis, the highs fall away first — so a mic aimed across the cone hears a darker balance.',
     spots: 'On the keyboard’s amp, the dust cap’s edge is a dependable first aim. Toward the centre tends to add brightness and the bark of hard notes; toward the edge tends to be warmer — good for comping. Speakers vary: check by ear, on chords and on single notes.',
-    place: 'The combo’s speaker sits off-centre, under the controls — the zones sit on the speaker, not on the middle of the grille. The open back’s zone (behind the amp) starts outside the clear air the amp needs behind it.',
+    place: 'The combo’s speaker sits off-center, under the controls — the zones sit on the speaker, not on the middle of the grille. The open back’s zone (behind the amp) starts outside the clear air the amp needs behind it.',
     context: 'A close mic on a stable stand gives isolation and a repeatable sound on stage; ask whether the amp is the player’s monitor, the audience’s source, or both.',
   },
   liveCards: [
     { title: 'COMPING UNDER A BAND', text: 'Warm, rounded chords: compare the dust cap’s edge and the outer cone at the same distance, listening for full chords that keep their notes clear in the mix.' },
-    { title: 'BRIGHT, BARKING LEAD LINES', text: 'Confirm the player’s touch and the amp’s drive first, then try a little nearer the centre. Listen for an attack that serves the mix without brittle upper mids — or the preamp clipping.' },
+    { title: 'BRIGHT, BARKING LEAD LINES', text: 'Confirm the player’s touch and the amp’s drive first, then try a little nearer the center. Listen for an attack that serves the mix without brittle upper mids — or the preamp clipping.' },
     { title: 'STEREO PANNING ON TWO AMPS', text: 'Only if the two amps really carry different signals: one comparable mic on each, at a matched distance. Check the sum in mono — the movement heard at the keyboard may not reach every seat.' },
     { title: 'STUDIO', text: 'A close mic first; a farther mic for the amp and the room when the room helps. Capture whole phrases with the sustain pedal and the strongest accents, and write down the amp, the effects and the mic position.' },
   ],
@@ -88,7 +88,7 @@ export const I11A_SPEC: KeysPagesSpec = {
     mechCheck: 'The tine is a struck, vibrating solid — like the other instruments in this lab — but its useful sound is the amplified one: you mic the speaker, and hear the whole chain of instrument, effects, amp and cabinet.',
     spots: 'Close in, the spot on the cone shapes the sound: the centre tends to sound brighter, the edge warmer. On a tine piano’s amp, compare them at the same distance on chords and on single notes.',
     beam: 'The amp drawn here has a 12 in speaker. Off its axis, the highs fall away first — so a mic aimed across the cone hears a darker balance.',
-    speaker: 'The tine piano itself has no speaker here: it plays through the combo amp. Find the speaker behind the grille — off-centre, under the controls on this combo — before any mic. A suitcase model stands on its own amplifier and speakers, with a stereo panning effect: find each speaker, and do not assume how many there are or which way they face.',
+    speaker: 'The tine piano itself has no speaker here: it plays through the combo amp. Find the speaker behind the grille — off-center, under the controls on this combo — before any mic. A suitcase model stands on its own amplifier and speakers, with a stereo panning effect: find each speaker, and do not assume how many there are or which way they face.',
     air: 'A mic on the amp hears AIR — the speaker, the box and the room. A DI is a separate electrical signal, taken before the amp: it carries no speaker, no box and no room. It is a useful comparison and sometimes a useful blend — but it is not miking. Label each as its own source.',
   },
 };

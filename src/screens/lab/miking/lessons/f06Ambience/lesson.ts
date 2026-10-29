@@ -339,7 +339,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'An M/S take is summed to mono for a phone. What remains?',
     options: ['The Mid alone', 'The Side alone', 'Both, doubled'],
     correct: 'The Mid alone',
-    explain: 'Left = Mid + Side, Right = Mid − Side: added together the Side cancels and the Mid remains — the centre holds.',
+    explain: 'Left = Mid + Side, Right = Mid − Side: added together the Side cancels and the Mid remains — the center holds.',
     why: {
       'The Side alone': 'It is the Side that cancels in the sum.',
       'Both, doubled': 'The Side’s plus and minus cancel each other in the sum.',
@@ -434,13 +434,13 @@ const symptoms: Symptom[] = [
   },
   {
     id: 'amb.sym.side',
-    observation: 'An M/S take sounds hollow and the centre wanders',
+    observation: 'An M/S take sounds hollow and the center wanders',
     firstChecks: 'The matrix routing and the Side’s orientation — is the raw Side being used as a right channel?',
     options: ['The matrix routing and the Side', 'The windscreen’s colour and fit', 'The length of the take'],
     correct: 'The matrix routing and the Side',
     explain: 'The raw Side is not a right channel. Decode Left = Mid + Side and Right = Mid − Side, and check the Side faces left–right.',
     why: {
-      'The windscreen’s colour and fit': 'A windscreen does not move the centre; the decoding does.',
+      'The windscreen’s colour and fit': 'A windscreen does not move the center; the decoding does.',
       'The length of the take': 'Length does not cause it: check the matrix.',
     },
   },

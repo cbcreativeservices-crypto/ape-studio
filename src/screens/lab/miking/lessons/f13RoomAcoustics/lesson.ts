@@ -51,7 +51,7 @@ const pages: LessonPages = {
   },
   context: {
     title: 'Where the receivers go',
-    goal: 'Choose a set of receiver positions that can describe the room — never one centre-of-room reading — and see what a studio, a hall and an installed PA each ask.',
+    goal: 'Choose a set of receiver positions that can describe the room — never one center-of-room reading — and see what a studio, a hall and an installed PA each ask.',
     credit: { scenarios: ['ra.ctx.1', 'ra.ctx.2', 'ra.rec.3'], interactive: 'positions', note: 'Choose a set of positions the room can be described by, and answer the three checks.' },
     takeaway: 'Several positions, differing in distance and boundaries; a corner only when it is the question. The method sets the count.',
   },
@@ -147,7 +147,7 @@ const scenarios: MikingScenario[] = [
     explain: 'The noise floor sets how much range a decay has; the doors, curtains, people and air handling are part of what you measure.',
     why: {
       'The PA’s loudest possible level in the room': 'Louder is not the aim: you need enough range above the noise, at a safe level.',
-      'The colour of the walls and of the floor': 'Materials matter; their colour does not.',
+      'The colour of the walls and of the floor': 'Materials matter; their color does not.',
     },
   },
   {
@@ -158,7 +158,7 @@ const scenarios: MikingScenario[] = [
     correct: 'It would change the decay as it happens',
     explain: 'Automatic gain, noise reduction or gating lift and cut the tail as it falls — the very thing being measured. Turn them off, or note what cannot be.',
     why: {
-      'It would only change the colour of the room': 'It changes the level over time — the decay itself, not just the colour.',
+      'It would only change the colour of the room': 'It changes the level over time — the decay itself, not just the color.',
       'It slows the sweep down, so the test runs long': 'It does not touch the sweep; it changes the recorded tail.',
     },
   },
@@ -252,9 +252,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'One reading in the middle of the room. What can it describe?',
     options: ['That one point, not the room', 'The whole room, being its centre', 'All the seats, once it is averaged'],
     correct: 'That one point, not the room',
-    explain: 'A single centre-of-room reading never replaces spatial sampling: choose positions that differ in distance, boundaries and coverage.',
+    explain: 'A single center-of-room reading never replaces spatial sampling: choose positions that differ in distance, boundaries and coverage.',
     why: {
-      'The whole room, being its centre': 'The centre is one source–receiver pair like any other.',
+      'The whole room, being its centre': 'The center is one source–receiver pair like any other.',
       'All the seats, once it is averaged': 'One reading has nothing to average.',
     },
   },
@@ -262,11 +262,11 @@ const scenarios: MikingScenario[] = [
     id: 'ra.ctx.2',
     page: 'context',
     prompt: 'A booth’s decay got shorter after treatment. Is it now better for recording?',
-    options: ['Too soon to say: reflections and colour matter too', 'It is: a shorter decay makes a better recording', 'It is, as long as the booth is also a little larger'],
-    correct: 'Too soon to say: reflections and colour matter too',
+    options: ['Too soon to say: reflections and color matter too', 'It is: a shorter decay makes a better recording', 'It is, as long as the booth is also a little larger'],
+    correct: 'Too soon to say: reflections and color matter too',
     explain: 'A shorter reported decay does not alone mean better recording: early reflections, colouration and the position matter as well.',
     why: {
-      'It is: a shorter decay makes a better recording': 'Shorter suits some uses, not all: the early reflections and the colour matter too.',
+      'It is: a shorter decay makes a better recording': 'Shorter suits some uses, not all: the early reflections and the color matter too.',
       'It is, as long as the booth is also a little larger': 'Size changes many things; the decay alone still does not decide quality.',
     },
   },
@@ -345,7 +345,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ra.mix.1',
     page: 'practice',
-    prompt: 'A report gives one broadband “RT60” from the room’s centre. What is missing?',
+    prompt: 'A report gives one broadband “RT60” from the room’s center. What is missing?',
     options: ['Bands, positions and the fit used', 'Nothing, if the number looks typical', 'Only the date that it was measured'],
     correct: 'Bands, positions and the fit used',
     explain: 'Report T20 / T30 / EDT separately, by band, at several positions, with the invalid bands marked and the method named.',
@@ -481,7 +481,7 @@ const setupTasks: SetupTask[] = [
     setups: [
       { id: 'twoSeats', label: 'Omni source, three marked seats, sweeps before and after, same state', ok: true, power: 'none', feedback: 'Same source, same seats, same state: the panels are the only change.' },
       { id: 'noise', label: 'Interrupted noise at the same marked seats, before and after', ok: true, power: 'none', feedback: 'Interrupted noise can compare band decays too, repeated at the same seats.' },
-      { id: 'centre', label: 'One clap at the centre of the room, before and after', ok: false, power: 'none', feedback: 'One centre reading and an inconsistent source cannot show the change reliably.' },
+      { id: 'centre', label: 'One clap at the center of the room, before and after', ok: false, power: 'none', feedback: 'One center reading and an inconsistent source cannot show the change reliably.' },
     ],
     reasons: [
       R('same', 'The same positions and room state both times', 'required', 'Only the panels may change.'),

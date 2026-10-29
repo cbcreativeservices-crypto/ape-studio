@@ -427,12 +427,12 @@ const symptoms: Symptom[] = [
   {
     id: 's.shift',
     observation: 'A drum shifts sideways in the stereo image when its mic comes up',
-    firstChecks: 'Pan the close mic consistently with the overhead image; check the overheads’ centre.',
+    firstChecks: 'Pan the close mic consistently with the overhead image; check the overheads’ center.',
     options: ['Its pan against where the overheads put that drum', 'Pan all the close mics to the centre to keep things steady', 'Swap the overheads’ left and right channels around'],
     correct: 'Its pan against where the overheads put that drum',
     explain: 'Pan close toms and the hi-hat to match the overheads’ picture — from the drummer’s or the audience’s side, consistently.',
     why: {
-      'Pan all the close mics to the centre to keep things steady': 'Centring a tom that the overheads put to one side makes it jump; match the picture.',
+      'Pan all the close mics to the centre to keep things steady': 'Centering a tom that the overheads put to one side makes it jump; match the picture.',
       'Swap the overheads’ left and right channels around': 'That flips the whole kit; match each close mic to the picture you chose.',
     },
   },
@@ -454,7 +454,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Check the spaced pair and each close mic in mono; consider a coincident pair.',
     options: ['Each channel in mono with the overheads; the overhead spacing', 'Widen the stereo panning so the mono sum has more room', 'Add a room pair to fill the mono sum back out again with more space'],
     correct: 'Each channel in mono with the overheads; the overhead spacing',
-    explain: 'A wide spaced pair can change the tone or the centre in mono. Find which channels combine badly, and change spacing or position.',
+    explain: 'A wide spaced pair can change the tone or the center in mono. Find which channels combine badly, and change spacing or position.',
     why: {
       'Widen the stereo panning so the mono sum has more room': 'Panning does not change when each sound arrives; in mono the time gaps remain.',
       'Add a room pair to fill the mono sum back out again with more space': 'More distant mics add more arrival differences, not fewer.',

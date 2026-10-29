@@ -85,7 +85,7 @@ export const B04_COPY: Partial<LessonCopy> = {
       locBoomHyper: 'Ideas to try with a compact hypercardioid: the same place, matched loudness — listen to the reflected speech and the room behind the talker.',
       locBoomFur: 'Ideas to try outdoors: the shotgun in its basket and fur for the wind — it does not keep rain out.',
       camMic: 'Ideas to try with the camera’s mic: a reference track; compare it with the boom at matched loudness, with the camera close and moved back.',
-      locLav: 'Ideas to try with a safety lav: centred on the chest, on its own track — compared with the boom, never summed by default.',
+      locLav: 'Ideas to try with a safety lav: centered on the chest, on its own track — compared with the boom, never summed by default.',
     },
     note: 'The picture first: ask for the widest frame and check it at the mic’s exact place. Never swing a mic, a clamp or a cable over the audience; nothing hangs over people unless a qualified rigger sets and secures it.',
     learn: {

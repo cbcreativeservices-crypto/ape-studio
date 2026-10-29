@@ -28,7 +28,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'The baseline',
-    goal: 'See a click reach two elements on a straight baseline — together from the centre, the right one first from the side, and the same from the side point’s mirror behind.',
+    goal: 'See a click reach two elements on a straight baseline — together from the center, the right one first from the side, and the same from the side point’s mirror behind.',
     credit: { scenarios: ['ar.snd.1', 'ar.snd.2', 'ar.snd.3'], note: 'Answer the three checks.' },
     takeaway: 'A baseline gives an arrival order and a time difference — not a unique direction: a straight pair cannot tell front from back. A third element off the line can.',
   },
@@ -48,7 +48,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start from a setup and place the elements yourself — the baseline pair, a wider pair, a third element off the line — each at a logged coordinate from the origin.',
     credit: { scenarios: ['ar.place.1', 'ar.place.2', 'ar.place.3', 'ar.rec.2'], interactive: 'twoZones', note: 'Rest an element, clear of everything, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'Every element at a coordinate written from the marked origin, on the axis it belongs to, on the same clock. Change one element at a time and return to the centre run.',
+    takeaway: 'Every element at a coordinate written from the marked origin, on the axis it belongs to, on the same clock. Change one element at a time and return to the center run.',
   },
   context: {
     title: 'The intensity probe, on paper',
@@ -82,10 +82,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ar.snd.1',
     page: 'sound',
-    prompt: 'A click straight in front of the baseline’s centre. What do L and R show?',
+    prompt: 'A click straight in front of the baseline’s center. What do L and R show?',
     options: ['They hear it at the same time', 'L hears it first, being on the left', 'R hears it first, as it is wired second'],
     correct: 'They hear it at the same time',
-    explain: 'Straight in front, the two paths are equal: the arrivals coincide. A difference appears only when the source moves off the centre line.',
+    explain: 'Straight in front, the two paths are equal: the arrivals coincide. A difference appears only when the source moves off the center line.',
     why: {
       'L hears it first, being on the left': 'Neither side is favoured: the paths are equal.',
       'R hears it first, as it is wired second': 'The wiring order does not change when sound arrives — though a swapped channel map would mislabel it.',
@@ -241,9 +241,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · After moving an element, what do you repeat first?',
     options: ['The centre run', 'The side run only', 'Nothing yet'],
     correct: 'The centre run',
-    explain: 'Return to the centre to check that the arrivals still coincide — the setup did not drift.',
+    explain: 'Return to the center to check that the arrivals still coincide — the setup did not drift.',
     why: {
-      'The side run only': 'The centre run is the check that the geometry still holds.',
+      'The side run only': 'The center run is the check that the geometry still holds.',
       'Nothing yet': 'A moved element needs a check before the next run.',
     },
   },
@@ -465,8 +465,8 @@ const orderTasks: OrderTask[] = [
       { text: 'Name the medium and quantity; mark the origin and the axes', early: 'The medium, the quantity and the origin come first.' },
       { text: 'Place the elements at logged coordinates, on one clock', early: 'The elements go up once the origin is marked.' },
       { text: 'Check the channels with a known source at a modest level', early: 'The check comes before the runs.' },
-      { text: 'Centre runs and repeats, then side runs and repeats', early: 'The runs follow the check.' },
-      { text: 'Return to the centre to check it repeats', early: 'The return closes the runs.' },
+      { text: 'Center runs and repeats, then side runs and repeats', early: 'The runs follow the check.' },
+      { text: 'Return to the center to check it repeats', early: 'The return closes the runs.' },
       { text: 'Report the order, the limits, and the claim it cannot support', early: 'The report comes last.' },
     ],
     explain: 'Medium and origin, elements on one clock, a known-source check, the runs and the return — then an honest report with its limits.',
@@ -478,7 +478,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'ar.prac.setup1',
     page: 'practice',
-    brief: 'BRIEF 1 · Show which side of the room a click came from, centre and side. A two-channel recorder and two omni measurement mics.',
+    brief: 'BRIEF 1 · Show which side of the room a click came from, center and side. A two-channel recorder and two omni measurement mics.',
     setups: [
       { id: 'b50', label: 'Matched pair, 50 cm baseline, one recorder, origin logged', ok: true, power: 'phantom', feedback: 'One clock, matched elements, the geometry written: an honest arrival order.' },
       { id: 'b100', label: 'Matched pair, 1 m baseline, one recorder, origin logged', ok: true, power: 'phantom', feedback: 'A wider baseline: larger differences, the same honest claim.' },
@@ -487,7 +487,7 @@ const setupTasks: SetupTask[] = [
     reasons: [
       R('clock', 'Both elements on one synchronized clock', 'required', 'The time difference must be the sound’s.'),
       R('logged', 'The baseline and the origin written down', 'required', 'An order means nothing without the geometry.'),
-      R('repeat', 'A return to the centre to check it repeats', 'optional', 'It shows nothing drifted.'),
+      R('repeat', 'A return to the center to check it repeats', 'optional', 'It shows nothing drifted.'),
       R('angle', 'The result is reported as the source’s exact angle', 'wrong', 'One baseline gives an order, not a unique angle.'),
     ],
     explain: 'Either baseline passes: one clock, matched elements, the geometry logged, an honest claim.',
@@ -527,8 +527,8 @@ const diagnostic: DiagnosticItem[] = [
     correct: 'The same time difference',
     explain: 'A straight baseline is symmetric about its line: it cannot tell front from back.',
     why: {
-      'Opposite time differences': 'Both are on the same side of the centre line: the sign is the same.',
-      'No time difference at all': 'Only a source on the centre line gives none.',
+      'Opposite time differences': 'Both are on the same side of the center line: the sign is the same.',
+      'No time difference at all': 'Only a source on the center line gives none.',
     },
   },
   {
@@ -617,12 +617,12 @@ export const F16_LESSON: Lesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'An array combines pressures measured at known places; an intensity probe estimates the energy flow along its axis; a hydrophone senses pressure under water. Each needs its own geometry, calibration, band and units.', src: 'F16-LESSON' },
     { title: 'WHERE YOU MEET IT', text: 'Finding where a sound comes from, mapping a product’s noise, sound-power surveys, underwater and ultrasonic recording — mostly specialist work, run by a qualified operator.', src: 'F16-LESSON' },
-    { title: 'THE EXERCISE', text: 'Two omni measurement mics on a straight baseline, one synchronized recorder, a marked origin and axes, and a stationary source at a modest level — a click at the centre, then at the side.', src: 'F16-LESSON' },
+    { title: 'THE EXERCISE', text: 'Two omni measurement mics on a straight baseline, one synchronized recorder, a marked origin and axes, and a stationary source at a modest level — a click at the center, then at the side.', src: 'F16-LESSON' },
     { title: 'THE DRAWING', text: 'A controlled room, a 50 cm baseline 1.2 m above the floor, a source 2 m in front: sizes are drawings. The arrival times are straight paths at 20 °C.', src: 'MW-ULA' },
   ],
   sound: {
     stages: [
-      { title: 'Centre', text: 'Straight in front, both elements hear the click together.' },
+      { title: 'Center', text: 'Straight in front, both elements hear the click together.' },
       { title: 'Side', text: 'Off to one side, the nearer element hears it first.' },
       { title: 'Mirror', text: 'Behind the array, at the side point’s mirror, the pair hears exactly the same.' },
     ],
@@ -638,7 +638,7 @@ export const F16_LESSON: Lesson = {
       { id: 'water', label: 'water, permissions and wildlife', short: 'PERMISSIONS', note: 'Under water or in the field, the site’s permissions, the survey protocol and the non-disturbance rules come first.', prov: { kind: 'sourced', src: 'F16-LESSON', quote: 'follow the species survey protocol, site permissions, weather and non-disturbance rules (F16 L39)' }, tag: 'PERMISSIONS', scene: 'stage' },
     ],
     stage: 'IN THE FIELD: the medium and the permissions first; a sensor rated and calibrated for the deployment; its depth, mooring, orientation and the conditions written down.',
-    studio: 'IN A CONTROLLED ROOM: a stationary source at a modest, agreed level, a marked origin and axes, one clock, the raw channels kept — and a return to the centre run.',
+    studio: 'IN A CONTROLLED ROOM: a stationary source at a modest, agreed level, a marked origin and axes, one clock, the raw channels kept — and a return to the center run.',
   },
   diagnostic,
   practice: {

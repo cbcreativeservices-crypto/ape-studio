@@ -58,7 +58,7 @@ const SPEC = ensembleHandSpec({
     A: { zone: 'bb.main', mic: 'arrCard' },
     B: { zone: 'bb.sax', mic: 'saxDynSuper' },
     names: { A: 'MAIN PAIR', B: 'ALTO MIC' },
-    looking: 'Two mics · A the main pair’s centre, B the lead alto’s mic',
+    looking: 'Two mics · A the main pair’s center, B the lead alto’s mic',
     prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each player reaches the two mics at its own times.',
     label: 'The big band with the main pair (A) and the lead alto’s mic (B)',
     warn: 'This simplified graph shows one point source and straight paths, no room. Real players move and the room adds its own arrivals, so one delay never suits them all — judge by ear, in mono, against the plain version.',

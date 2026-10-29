@@ -29,7 +29,7 @@ const pages: LessonPages = {
     title: 'How it makes its sound',
     goal: 'See how a struck reed becomes a signal and the signal becomes moving air — what the “vibrato” really does, and why the spot on the speaker matters.',
     credit: { scenarios: ['wu.snd.1', 'wu.snd.2', 'wu.snd.3'], interactive: 'soundPath', note: 'Step the mechanism to the end and swing the reed by hand, step the cone through to the end, and answer the three checks.' },
-    takeaway: 'The pickup senses the reed much as a condenser microphone senses its diaphragm. The “vibrato” is a pulse in level, not pitch. Close in, the centre of the speaker tends to sound brighter than its outer end.',
+    takeaway: 'The pickup senses the reed much as a condenser microphone senses its diaphragm. The “vibrato” is a pulse in level, not pitch. Close in, the center of the speaker tends to sound brighter than its outer end.',
   },
   setting: {
     title: 'Where it sits',
@@ -45,7 +45,7 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we suggest you begin — about an inch from a grille, off-centre, at a slight angle — then compare the centre, the outer end, a little more distance and the other grille, one change at a time.',
+    goal: 'Start where we suggest you begin — about an inch from a grille, off-center, at a slight angle — then compare the center, the outer end, a little more distance and the other grille, one change at a time.',
     credit: { scenarios: ['wu.place.1', 'wu.place.2', 'wu.place.3', 'wu.rec.2'], interactive: 'twoZones', note: 'Rest the mic in two different suggested starting points, clear of every part and the player, and answer the four checks.' },
     takeaway: 'Measure from the grille of the speaker that sounds best, keep clear of the lid, the keys and the player, and change one thing at a time: across the speaker, OR away from it, OR the angle — OR the other grille.',
   },
@@ -108,10 +108,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'wu.snd.3',
     page: 'sound',
-    prompt: 'Close to one of the oval speakers, how does the centre tend to compare with the outer end?',
-    options: ['Brighter at the centre, rounder toward the end', 'Rounder at the centre, brighter toward the end', 'The same, as the speaker is so small'],
-    correct: 'Brighter at the centre, rounder toward the end',
-    explain: 'As on most speakers, more of the highs come from the middle of the cone, so close in the centre tends to be brighter and the outer end rounder. A small oval in a lid may behave differently — a tendency to test by ear.',
+    prompt: 'Close to one of the oval speakers, how does the center tend to compare with the outer end?',
+    options: ['Brighter at the center, rounder toward the end', 'Rounder at the centre, brighter toward the end', 'The same, as the speaker is so small'],
+    correct: 'Brighter at the center, rounder toward the end',
+    explain: 'As on most speakers, more of the highs come from the middle of the cone, so close in the center tends to be brighter and the outer end rounder. A small oval in a lid may behave differently — a tendency to test by ear.',
     why: {
       'Rounder at the centre, brighter toward the end': 'Most often it is the other way round — check on the real speaker.',
       'The same, as the speaker is so small': 'Even a small speaker changes with the spot, close in. Test it.',
@@ -193,7 +193,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'wu.place.1',
     page: 'placement',
-    prompt: 'A starting point says “about 2.5 cm (1 in), off-centre, at a slight angle”. What else matters before you place it?',
+    prompt: 'A starting point says “about 2.5 cm (1 in), off-center, at a slight angle”. What else matters before you place it?',
     options: ['Which grille sounds best, and that the mic is clear', 'Only the distance — the rest is detail', 'The instrument’s brand and model, for its exact spot'],
     correct: 'Which grille sounds best, and that the mic is clear',
     explain: 'The number is a start, measured from a grille. Choose the grille by ear, and check clearance: the lid, the keys’ travel, the hands, the forearms and the pedal foot.',
@@ -206,8 +206,8 @@ const scenarios: MikingScenario[] = [
     id: 'wu.place.2',
     page: 'placement',
     prompt: 'At the close start the sound is a little too sharp and clicky. Which next try keeps the comparison fair?',
-    options: ['Move farther off-centre, keeping the distance', 'Move the mic back and swap it for another in one go', 'Turn the player’s volume down'],
-    correct: 'Move farther off-centre, keeping the distance',
+    options: ['Move farther off-center, keeping the distance', 'Move the mic back and swap it for another in one go', 'Turn the player’s volume down'],
+    correct: 'Move farther off-center, keeping the distance',
     explain: 'One change at a time: slide toward the outer end at the same distance — it tends to be rounder. Then, if needed, a little more distance, compared at matched level on the same phrase.',
     why: {
       'Move the mic back and swap it for another in one go': 'Two changes at once: you cannot tell which one made the difference.',
@@ -504,7 +504,7 @@ const orderTasks: OrderTask[] = [
       { text: 'Identify the model, where its speakers are and which outputs it really has', early: 'Start by knowing the real instrument.' },
       { text: 'Ask the player for their normal level, vibrato and pedal use; listen near them and from the room', early: 'Know the instrument first, then hear the player’s real sound.' },
       { text: 'Choose the grille that sounds best, from outside, without lifting the lid', early: 'Choose the grille once you have heard the instrument.' },
-      { text: 'Place the mic about an inch off a grille, off-centre, at a slight angle, on its own stand — clear of the lid, keys, hands and pedal', early: 'You need to know which grille first.' },
+      { text: 'Place the mic about an inch off a grille, off-center, at a slight angle, on its own stand — clear of the lid, keys, hands and pedal', early: 'You need to know which grille first.' },
       { text: 'Mute the outputs; switch phantom only if the mic needs it', early: 'Power comes after the mic is mounted and connected — outputs muted first.' },
       { text: 'Set input gain on the hardest chords and the vibrato’s peaks', early: 'Gain is set once the mic is connected and powered.' },
       { text: 'Compare small moves and the other grille, at matched level, one change at a time', early: 'Compare once the level is set safely.' },
@@ -526,7 +526,7 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · A loud stage, a reed piano played through its own speakers, a mono PA. One channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Compact dynamic about an inch off the better grille, off-centre, at a slight angle', ok: true, power: 'none', feedback: 'The suggested close start: directional and close for a loud stage; a dynamic needs no power.' },
+      { id: 'a', label: 'Compact dynamic about an inch off the better grille, off-center, at a slight angle', ok: true, power: 'none', feedback: 'The suggested close start: directional and close for a loud stage; a dynamic needs no power.' },
       { id: 'b', label: 'Small condenser a few centimetres off the better grille, on its own stand', ok: true, power: 'phantom', feedback: 'Close and directional, and this channel has phantom — check its level rating and the space.' },
       { id: 'c', label: 'The auxiliary output, through a DI, if the owner confirms the jack', ok: true, power: 'none', feedback: 'A fair live answer when the stage is very loud — it changes the captured path: no speaker, no lid.' },
       { id: 'd', label: 'A mic 60–90 cm from the back of the case, for the room', ok: false, power: 'none', feedback: 'On a loud stage that hears the band, not the instrument.' },
@@ -554,7 +554,7 @@ const setupTasks: SetupTask[] = [
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you begin: a hammer strikes a steel reed. Where does most of the sound you will mic come from?', options: ['The instrument’s speakers', 'The reed itself', 'The hammer'], after: 'Now step through the five events.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: keeping the distance, you slide the mic from the centre toward the oval’s outer end. What changes?', options: ['Brighter', 'Rounder and warmer', 'It depends on this speaker'], after: 'Rest the mic in two zones and read what each suggests you listen for.' },
+  placement: { prompt: 'Predict: keeping the distance, you slide the mic from the center toward the oval’s outer end. What changes?', options: ['Brighter', 'Rounder and warmer', 'It depends on this speaker'], after: 'Rest the mic in two zones and read what each suggests you listen for.' },
   context: { prompt: 'The speakers face the player. Where will the close mic’s rear point?', options: ['Toward the player and their wedge', 'Toward the audience', 'Down at the floor'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip the auxiliary output’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip POLARITY both ways, then move the mic. Watch which readout each action changes.' },
 };
@@ -707,7 +707,7 @@ export const I11B_LESSON: Lesson = {
     { text: 'The grille positions (±260 mm) and the speakers’ 20° tilt in the lid’s front slope: drawing defaults (GEOMETRY_PROPOSAL frame W).', dims: [] },
     { text: 'The oval speaker’s cone depth, dust cap and magnet: drawn with the 12 in reference’s proportions, scaled on each axis separately (depths on the mean scale). Only the 4 × 8 in size is sourced.', dims: [] },
     { text: 'The key count (64, Low): drawn as a keyboard pattern, never stated.', dims: [] },
-    { text: 'The close band 2–4 cm round the research’s 1 in, the off-centre amount (half the long semi-axis) and the slight angle (5–30°): the lab’s drawing defaults round the practitioner’s method.', dims: [] },
+    { text: 'The close band 2–4 cm round the research’s 1 in, the off-center amount (half the long semi-axis) and the slight angle (5–30°): the lab’s drawing defaults round the practitioner’s method.', dims: [] },
     { text: 'The farther band (5–15 cm) and the room position (60–90 cm from the back of the case, about the lid’s height): drawing defaults — no number in the research.', dims: [] },
     { text: 'The seated player (torso, head, forearms, hands, knees, legs, sustain pedal): an ILLUSTRATIVE keep-clear envelope; no source gives one.', dims: [] },
     { text: 'The mechanism (inside view): the reed (60), its width, the solder, the pickup plate and its gap, the key and hammer: drawing defaults — no reed dimension was read.', dims: [] },

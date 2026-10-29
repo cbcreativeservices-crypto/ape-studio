@@ -387,7 +387,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     id: 'saturation',
     glyph: '🔥',
     name: 'Distortion & Saturation',
-    description: 'Add harmonics — clipping, saturation, tube and tape colour.',
+    description: 'Add harmonics — clipping, saturation, tube and tape color.',
     section: 'training',
     kind: 'list',
     labs: [{ name: 'Distortion', blurb: 'Harmonics, clipping, saturation, aliasing.', route: 'DistortionLab' }],
@@ -472,7 +472,7 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // LIVE Phase 1 (owner GO 2026-09-16, spec docs/APE_CYMATICS_LAB_SPEC_2026_09_16.md):
       // standalone lab home + Chladni Plate Studio + theory/integrity modules
       // + guided experiments. Liquid / membrane / harmony / art phases follow.
-      { name: 'Cymatics Lab: Sound Made Visible', blurb: 'Chladni plates, a liquid dish on a shaker, a drumhead and a loudspeaker cone — build a plate, drive it with a tone, watch sand find the still lines; shake a liquid past its Faraday threshold; tune a drum and hear why a timpani has a pitch; sweep a cone into breakup; save, colour, compare and print your patterns. Why a frequency has no shape of its own.', route: 'CymaticsLab' },
+      { name: 'Cymatics Lab: Sound Made Visible', blurb: 'Chladni plates, a liquid dish on a shaker, a drumhead and a loudspeaker cone — build a plate, drive it with a tone, watch sand find the still lines; shake a liquid past its Faraday threshold; tune a drum and hear why a timpani has a pitch; sweep a cone into breakup; save, color, compare and print your patterns. Why a frequency has no shape of its own.', route: 'CymaticsLab' },
       { name: 'Harmonograph', blurb: 'Frequency ratios ↔︎ musical intervals, drawn as living Lissajous curves.', route: 'HarmonographLab' },
     ],
   },

@@ -56,7 +56,7 @@ const BEHIND_Z: Omit<DocumentedZone, 'start'> = {
   kind: 'sourced',
   src: 'DPA-FLUTE',
   quote: 'spot-miked behind and slightly above the head of the player, pointing at the finger holes … a myriad of places around the head yield very good balance (S-REC: "A few inches behind player’s head, aiming at finger holes — Natural — Reduces breath noise.")',
-  bandProv: ill('"a few inches behind": 190–330 mm from the head’s centre (about 8–22 cm from it) is the lab’s drawing'),
+  bandProv: ill('"a few inches behind": 190–330 mm from the head’s center (about 8–22 cm from it) is the lab’s drawing'),
   refSurface: 'head',
   side: 'outside',
   distance: { min: 190, max: 330 },

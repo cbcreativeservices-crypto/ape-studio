@@ -323,7 +323,7 @@ export function BandSpectrum({
         {Array.from(mag, (m, i) => <Rect key={i} x={10 + i * bw + 0.5} y={bottom - m * (bottom - top)} width={Math.max(1, bw - 1)} height={Math.max(0.5, m * (bottom - top))} fill={levelColor(m)} opacity={0.92} />)}
         {curve ? <Polyline points={curvePts} fill="none" stroke={colors.gold} strokeWidth={1.8} strokeDasharray="4,3" /> : null}
         {ticks.map((t) => <SvgText key={t} x={x(t)} y={H - 6} fontSize={LBL} fill={colors.textMuted} textAnchor="middle" fontFamily={F}>{t >= 1000 ? `${t / 1000}k` : t}</SvgText>)}
-        <SvgText x={12} y={12} fontSize={LBL} fill={colors.textMuted} fontFamily={F}>bar colour = level</SvgText>
+        <SvgText x={12} y={12} fontSize={LBL} fill={colors.textMuted} fontFamily={F}>bar color = level</SvgText>
         <SvgText x={102} y={12} fontSize={LBL} fill={colors.orange} fontFamily={F}>▮ hiss region 2–10 kHz</SvgText>
         <SvgText x={W - 8} y={12} fontSize={LBL} fill={colors.textMuted} textAnchor="end" fontFamily={F}>relative · conceptual</SvgText>
       </Svg>

@@ -62,7 +62,7 @@ const HAND: HandSpec = {
     done: 'That is the whole reading: where to begin, what it is measured from, the distance, the viewpoint, the aim, clearance. Next you place the mic yourself.',
     pieces: (z: DocumentedZone) => [
       { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin with a triangle — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
-      { title: 'MEASURED FROM', text: 'From the triangle itself, where it hangs while played: the readout measures from its centre to the mic’s FRONT, rounded to ≈ 5 mm.', cell: 0 },
+      { title: 'MEASURED FROM', text: 'From the triangle itself, where it hangs while played: the readout measures from its center to the mic’s FRONT, rounded to ≈ 5 mm.', cell: 0 },
       { title: 'THE DISTANCE', text: z.band, cell: 0 },
       { title: 'THE VIEWPOINT', text: 'In front of the triangle and a little to one side — the player’s left here, away from the beater hand — level with it or a little above.', cell: 1 },
       { title: 'THE AIM', text: `At the bars as a whole, not at the beater’s spot — the lab counts anything within ±${z.aim?.maxOffAxis ?? 25}°. Distance, viewpoint and angle are separate things to try.`, cell: 2 },
@@ -161,7 +161,7 @@ const SPEC: MetalSpec = {
       strikeWord: 'STROKE',
       subject: 'The 8 inch triangle face-on, drawn as the bar it was bent from',
       notes: () => [
-        'A shape is set moving only as much as the bar moves where the stroke lands. Each shape has still points (white); a stroke on one drives that shape hardly at all — so the spot changes the mix of shapes, and the colour of the sound.',
+        'A shape is set moving only as much as the bar moves where the stroke lands. Each shape has still points (white); a stroke on one drives that shape hardly at all — so the spot changes the mix of shapes, and the color of the sound.',
         'This is a bar held at neither end, drawn round the triangle’s corners. The real bends shift these numbers and add shapes that swing out of the triangle’s plane — part of the shimmer.',
       ],
       tried: 'Each spot drives a different mix of shapes — that is one reason players choose where to strike. Some shapes barely move at a given spot.',

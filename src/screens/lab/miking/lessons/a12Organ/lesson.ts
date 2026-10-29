@@ -145,7 +145,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Which stereo method keeps the most robust mono sum?',
     options: ['A coincident pair, the capsules together', 'A widely spaced pair of omni mics on stands', 'Two spots on the opposite Pedal towers'],
     correct: 'A coincident pair, the capsules together',
-    explain: 'A coincident pair (X/Y or M/S) hears each source at almost the same instant in both mics: a clear centre and a robust mono sum. A spaced pair is wider and needs a mono check.',
+    explain: 'A coincident pair (X/Y or M/S) hears each source at almost the same instant in both mics: a clear center and a robust mono sum. A spaced pair is wider and needs a mono check.',
     why: {
       'A widely spaced pair of omni mics on stands': 'Spacing adds time differences that can comb in mono.',
       'Two spots on the opposite Pedal towers': 'Two far-apart spots are not a stereo pair, and they comb in mono.',

@@ -45,14 +45,14 @@ export const STAGE1_BRIEF: StageDef = {
             { value: "song", label: "A song or a set of songs" },
             { value: "album", label: "An album, EP or collection" },
             { value: "episode", label: "An episode in a series" },
-            { value: "film", label: "A film or video programme" },
+            { value: "film", label: "A film or video program" },
             { value: "live_capture", label: "A recorded live performance" },
             { value: "broadcast", label: "A broadcast or stream" },
             { value: "other", label: "Something else" }
           ],
           labelBy: {
             music: "What kind of release is this",
-            podcast: "What kind of programme is this"
+            podcast: "What kind of program is this"
           }
         },
         {
@@ -264,7 +264,7 @@ export const STAGE1_BRIEF: StageDef = {
         },
         {
           fieldId: "program_duration",
-          label: "Required programme duration",
+          label: "Required program duration",
           kind: "duration",
           help: "If a duration is fixed — a broadcast slot, an ad break, an episode length — it constrains every edit decision downstream.",
           unit: "min",
@@ -356,7 +356,7 @@ export const STAGE1_BRIEF: StageDef = {
           label: "Start timecode",
           kind: "text",
           showWhen: { field: "frame_rate", notEquals: ["none"] },
-          help: "Where the programme begins on the delivered master, e.g. 10:00:00:00 or 01:00:00:00.",
+          help: "Where the program begins on the delivered master, e.g. 10:00:00:00 or 01:00:00:00.",
           onlyFor: ["podcast", "live"],
           placeholder: "HH:MM:SS:FF"
         },
@@ -492,7 +492,7 @@ export const STAGE1_BRIEF: StageDef = {
       kind: "missing",
       title: "Picture work with no frame rate agreed",
       detail: "This job involves picture and the frame rate has not been established. Every synchronisation decision, every timecode reference and every export depends on it, and getting it wrong is not a small correction later.",
-      fixHint: "Get the frame rate from the picture department in writing, along with whether the timecode is drop-frame, and the programme start.",
+      fixHint: "Get the frame rate from the picture department in writing, along with whether the timecode is drop-frame, and the program start.",
       needsLogic: true,
       logicIntent: "Fire only on the pathways where frame_rate exists, when frame_rate is unknown or empty. Do not fire when it is set to none, which is the answer for an audio-only job.",
       onlyFor: ["podcast", "live"]

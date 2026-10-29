@@ -250,7 +250,7 @@ describe('safety rules (safety review 2026-10-01)', () => {
     const m5 = strip(read(`${DIR}/modules/mod5Workflow.tsx`));
     assert.match(m5, /const EQ_TRIM_DB = 2;/);
     assert.match(m5, /process: \{ tiltDb: tilt, trimDb: EQ_TRIM_DB \}/);
-    assert.match(m5, /up or down depending on where the programme's energy sits/);
+    assert.match(m5, /up or down depending on where the program's energy sits/);
     assert.match(m5, /Measured: BYPASS/);
     assert.doesNotMatch(m5, /brightening shelf raises the loudness/);
     assert.doesNotMatch(m5, /gentle bus compression/);

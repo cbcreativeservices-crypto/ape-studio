@@ -646,7 +646,7 @@ export const M04C_LESSON: HandLesson = {
   sound: {
     stages: [
       { title: 'The stick strikes', text: 'The stick strikes the head — or the head and the rim together for a rimshot, or the shell’s side for the cáscara. That brief contact is where the ATTACK begins.' },
-      { title: 'The head is pushed in', text: 'The head bows down into the drum — most at the centre, not at all at the rim: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
+      { title: 'The head is pushed in', text: 'The head bows down into the drum — most at the center, not at all at the rim: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
       { title: 'The air is pushed down', text: 'The head pushes the air in the shallow shell down and out of the open lower end.' },
       { title: 'Sound leaves the drum', text: 'Sound leaves from the head — up and around — and from the open lower end. The metal shell and rim ring on their own when struck: different surfaces, different perspectives.' },
     ],
@@ -664,7 +664,7 @@ export const M04C_LESSON: HandLesson = {
       { id: 'vox', label: 'a vocal mic', short: 'VOCAL MIC', note: 'Another open mic that hears the timbales and the bell.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'OPEN MIC', scene: 'all' },
       { id: 'wedge', label: 'the player’s floor wedge', short: 'WEDGE', note: 'In front of the player, facing them — below and in front of a mic aimed at a head.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'sidefill', label: 'a side fill', short: 'SIDE FILL', note: 'A loud monitor at the side of the stage.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
-      { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'A mono PA or an off-axis audience may need a shared or centred timbale feed even if separate mics exist.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
+      { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'A mono PA or an off-axis audience may need a shared or centered timbale feed even if separate mics exist.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
       { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a quiet studio a shared mic above the pair hears the room and the accessories too — add a spot only for a real need.', prov: { kind: 'illustrative', reason: 'a generic room; no source gives its size' }, tag: 'ROOM SOUND', scene: 'studio' },
     ],
     stage: 'LIVE: a floor wedge, the kit and cymbals, other percussion and the PA. Compact directional spots or a well-placed shared close mic, safely mounted; any percussion overhead kept out of an unnecessary wedge mix.',
@@ -716,8 +716,8 @@ export const M04C_LESSON: HandLesson = {
     strikeWord: 'STICK',
     face: { kind: 'crown', lugs: D.lugs.mm },
     facePoints: [
-      { id: 'c', label: 'CENTRE', frac: 0, blurb: 'The exact centre of the head.' },
-      { id: 'h', label: 'HALFWAY', frac: 0.5, blurb: 'Halfway from the centre to the rim.' },
+      { id: 'c', label: 'CENTER', frac: 0, blurb: 'The exact centre of the head.' },
+      { id: 'h', label: 'HALFWAY', frac: 0.5, blurb: 'Halfway from the center to the rim.' },
       { id: 'e', label: 'NEAR THE RIM', frac: 0.9, blurb: 'Close to the rim, where a rimshot lands.' },
     ],
     openEnd: { default: true },
@@ -788,7 +788,7 @@ export const M04C_LESSON: HandLesson = {
       learn: [
         { title: 'HOW MUCH ROOM', text: 'Studio: a shared mic above the pair at a safe distance, moved until heads, rimshots and cáscara relate well. Live: compact directional spots or a well-placed shared close mic.' },
         { title: 'HOW MANY MICS', text: 'Studio with extensive percussion: establish the timbale sound alone, then audition shell or overhead channels. Live: start with the essential drum channels; add an accessory channel only if needed.' },
-        { title: 'WHAT THE PART NEEDS', text: 'Bells, blocks and cymbals may be louder than the heads and enter several mics. A mono PA or off-axis audience may need a centred timbale feed rather than hard-panned drums.' },
+        { title: 'WHAT THE PART NEEDS', text: 'Bells, blocks and cymbals may be louder than the heads and enter several mics. A mono PA or off-axis audience may need a centered timbale feed rather than hard-panned drums.' },
         { title: 'MOUNTING', text: 'Stable, properly rated stands and compatible clips only, cables secured with strain relief, nothing that could drop onto the player — checked again after a changeover.' },
       ],
       closing: 'No technique transfers unchanged to every PA: feedback depends on the loudspeaker, microphone, room and gain. Place speakers and mics by the actual pattern, decide monitor feeds with the operator, and avoid uncontrolled feedback.',
@@ -813,7 +813,7 @@ export const M04C_LESSON: HandLesson = {
     ],
     pairLearn: [
       'With a pair of spots, each mic may hear both drums and the accessories at different times and levels. Begin with one mic at a realistic level, add the second, and check the complete phrase in mono — watch for thin drum tone, shifted attacks, or a bell that becomes surprisingly prominent.',
-      'Move or re-aim a mic first, then compare the polarity switch. Add any overhead, shell or accessory mic one at a time and repeat the check. In stereo, keep the image right for the arrangement — a mono PA may need a centred feed.',
+      'Move or re-aim a mic first, then compare the polarity switch. Add any overhead, shell or accessory mic one at a time and repeat the check. In stereo, keep the image right for the arrangement — a mono PA may need a centered feed.',
       'What you just saw: sound reaches two mics at different times; summed, the delayed copy cancels at each frequency where it is half a period late, or 1½, 2½ … periods late. Polarity inversion is not a time-alignment control: the notches and peaks swap places; it does not remove the delay. No fixed “correct” polarity exists for every rig.',
     ],
     pairWarn: 'The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone (1/r) — that does not hold this close to a drumhead, so read the depths as illustrative only. Judge the pair by ear, in mono, at matched levels.',

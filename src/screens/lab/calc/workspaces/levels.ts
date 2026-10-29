@@ -888,7 +888,7 @@ const WS_QBW: Workspace = {
           // words, as the comb's "no path difference" rows are.
           bw > 0
             ? { label: 'Q OF THIS BAND', value: fc / bw, quantity: 'number', chainable: false }
-            : { label: 'Q OF THIS BAND', text: 'The two frequencies are the same, so this band has no width — Q (centre ÷ bandwidth) has no value for a band 0 Hz wide.' },
+            : { label: 'Q OF THIS BAND', text: 'The two frequencies are the same, so this band has no width — Q (center ÷ bandwidth) has no value for a band 0 Hz wide.' },
         ];
       },
       steps: (v) => {
@@ -1054,7 +1054,7 @@ const WS_QBW: Workspace = {
             text:
               g === 0
                 ? `At 0 dB of gain the bell is flat — it changes nothing, inside or beyond ${fmt(f1)}–${fmt(f2)} Hz. ` +
-                  `The edges show where a boost or cut at this Q would centre its −3 dB width.`
+                  `The edges show where a boost or cut at this Q would center its −3 dB width.`
                 : `The band edges mark the −3 dB points of the shape, but a ${fmt(Math.abs(g))} dB ` +
                   `${g >= 0 ? 'boost' : 'cut'} is still audibly shifting energy beyond ${fmt(f1)}–${fmt(f2)} Hz — ` +
                   `the skirts of the bell only approach flat gradually, and the higher the gain, the further past ` +

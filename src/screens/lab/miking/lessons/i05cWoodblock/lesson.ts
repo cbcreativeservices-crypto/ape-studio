@@ -158,7 +158,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Mechanical knocks carried through the hardware',
     explain: 'A mic attached to nearby hardware can transmit mechanical impacts: listen with the block silent while the rest of the kit plays.',
     why: {
-      'A brighter tone from the clamp’s metal': 'A clamp does not colour the tone; it carries knocks.',
+      'A brighter tone from the clamp’s metal': 'A clamp does not color the tone; it carries knocks.',
       'More room, because the mic sits higher': 'Height is not the issue; the hardware path is.',
     },
   },

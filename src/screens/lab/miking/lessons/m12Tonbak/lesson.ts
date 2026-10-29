@@ -200,9 +200,9 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tb.place.1',
     page: 'placement',
-    prompt: 'A starting point says “25–40 cm, 30–45° off the head’s centre line”. What is the angle measured from?',
-    options: ['The head’s own centre line, not the floor', 'The floor, as on a level stand', 'The player’s shoulders, toward the audience'],
-    correct: 'The head’s own centre line, not the floor',
+    prompt: 'A starting point says “25–40 cm, 30–45° off the head’s center line”. What is the angle measured from?',
+    options: ['The head’s own center line, not the floor', 'The floor, as on a level stand', 'The player’s shoulders, toward the audience'],
+    correct: 'The head’s own center line, not the floor',
     explain: 'Angles here are from the line straight out of the head (its normal). The head is tilted, so the same angle from the floor would put the mic somewhere else.',
     why: {
       'The floor, as on a level stand': 'The head is tilted; an angle from the floor would not match the drum. It is measured from the head’s own line.',
@@ -422,7 +422,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Compare target and distance; hear the unamplified drum again.',
     options: ['Compare target and distance; hear the drum unamplified again', 'Boost the lows on the channel until the deep stroke returns', 'Move the mic straight into the open lower end of the drum'],
     correct: 'Compare target and distance; hear the drum unamplified again',
-    explain: 'Tell the source’s own balance from the mic’s or the room’s colour before changing anything.',
+    explain: 'Tell the source’s own balance from the mic’s or the room’s color before changing anything.',
     why: {
       'Boost the lows on the channel until the deep stroke returns': 'First find out whether the drum itself is weak there; EQ can thicken everything else.',
       'Move the mic straight into the open lower end of the drum': 'Nothing goes inside the drum; the opening is an optional support from outside.',

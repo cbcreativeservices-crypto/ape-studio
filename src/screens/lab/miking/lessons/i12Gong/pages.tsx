@@ -41,7 +41,7 @@ const HAND: HandSpec = {
     looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience to the right' : 'Plan · a studio room from above'),
     first: 'The gong hangs in its frame, swinging freely; the player stands beside the struck face with the mallet. Everything else fits round the swing and the mallet’s arc.',
     before: [
-      { title: 'IDENTIFY THE GONG', text: 'An orchestral tam-tam (no boss, a broad bloom) or a bossed gong (a raised centre, a more pitch-centred sound)? Do not assume all gongs behave the same. Then ask for quiet and forceful strokes, rolls, the intended decay and any damping.' },
+      { title: 'IDENTIFY THE GONG', text: 'An orchestral tam-tam (no boss, a broad bloom) or a bossed gong (a raised center, a more pitch-centered sound)? Do not assume all gongs behave the same. Then ask for quiet and forceful strokes, rolls, the intended decay and any damping.' },
       { title: 'THE SWING AND THE SUSPENSION', text: 'The gong must swing freely without touching the stand. Check the cords, the stand’s rating, locks and feet with the owner or the venue’s crew — the gong and its suspension are theirs. Mark the full swing and the mallet’s arc.' },
       { title: 'LISTEN FIRST', text: 'From a safe, ordinary audience position, hear the whole rise and decay unamplified. Note the walls nearby, the monitors, and how far the gong can swing.' },
     ],
@@ -65,9 +65,9 @@ const HAND: HandSpec = {
     done: 'That is the whole reading: where to begin, what it is measured from, the distance, the viewpoint, the aim, clearance. Next you place the mic yourself.',
     pieces: (z: DocumentedZone) => [
       { title: 'WHERE TO BEGIN', text: `${z.label}. After our research, this is where we suggest you begin with a gong — a useful overall view, not a rule, and not a promise of a sound.`, cell: 3 },
-      { title: 'MEASURED FROM', text: 'From the gong’s face while it hangs at rest, to the mic’s FRONT — rounded to ≈ 5 mm. The readout also says how far the mic is off the face’s centre line.', cell: 0 },
+      { title: 'MEASURED FROM', text: 'From the gong’s face while it hangs at rest, to the mic’s FRONT — rounded to ≈ 5 mm. The readout also says how far the mic is off the face’s center line.', cell: 0 },
       { title: 'THE DISTANCE', text: z.band, cell: 0 },
-      { title: 'OFF THE CENTRE LINE', text: 'Close to the line straight out of the face’s centre, at about the height where it is played — facing the broad radiating surface.', cell: 1 },
+      { title: 'OFF THE CENTER LINE', text: 'Close to the line straight out of the face’s center, at about the height where it is played — facing the broad radiating surface.', cell: 1 },
       { title: 'THE AIM', text: `At the face — the lab counts anything within ±${z.aim?.maxOffAxis ?? 25}°. Back away for more bloom and room; come closer for more presence: one change at a time.`, cell: 2 },
       { title: 'CLEARANCE', text: 'Outside the gong’s full swing and the mallet’s arc with its follow-through; the stand separately stable, its cable away from the player’s feet.', cell: 3 },
     ],
@@ -83,8 +83,8 @@ const HAND: HandSpec = {
   },
   learnZones: [
     'What you just did, in words. After our research, each blue zone is where we suggest you begin, measured from the gong’s face at rest (or, for the boss view, from the boss). They are starting points, not rules: move from there and listen — every gong, mallet, player and room is different.',
-    'A change in angle or distance also changes the room in the sound: compare the same passage at a similar level, one change at a time. Do not assume the strongest point is the centre, or that both faces sound the same.',
-    'A tam-tam: compare a view that hears a broad area with a deliberately closer colour before deciding what is “natural”. A bossed gong: hear the player’s stroke acoustically first, then aim at the boss from a safe offset and compare a broader front view.',
+    'A change in angle or distance also changes the room in the sound: compare the same passage at a similar level, one change at a time. Do not assume the strongest point is the center, or that both faces sound the same.',
+    'A tam-tam: compare a view that hears a broad area with a deliberately closer color before deciding what is “natural”. A bossed gong: hear the player’s stroke acoustically first, then aim at the boss from a safe offset and compare a broader front view.',
   ],
   ctx: {
     pose: { ...A0, az: A0.az + 8 },
@@ -156,7 +156,7 @@ const SPEC: MetalSpec = {
       strikes: (v) =>
         kindOf(v) === 'bossed'
           ? [
-              { id: 'boss', label: 'ON THE BOSS', words: 'on the boss', blurb: 'The raised centre — where a bossed gong is meant to be struck.', r: 0 },
+              { id: 'boss', label: 'ON THE BOSS', words: 'on the boss', blurb: 'The raised center — where a bossed gong is meant to be struck.', r: 0 },
               { id: 'near', label: 'NEAR THE BOSS', words: 'just off the boss', blurb: 'A couple of inches from the boss: a thicker mix of tones.', r: 0.3 },
               { id: 'outer', label: 'OUT TOWARD THE RIM', words: 'out toward the rim', blurb: 'Far from the boss.', r: 0.75 },
             ]
@@ -171,16 +171,16 @@ const SPEC: MetalSpec = {
       title: 'The face’s shapes',
       badge: 'A simplified picture: a flat disc unsupported at its edge · blue + toward you, amber − away · white dashes = still lines',
       looking: (v) => `The face, face-on · ${Math.round(diameterOf(v) / 10)} cm across · one vibration shape`,
-      prompt: 'Step through SHAPE, then move the STROKE: off centre, the exact centre, out toward the rim. Which shapes does a centre stroke leave still?',
+      prompt: 'Step through SHAPE, then move the STROKE: off center, the exact center, out toward the rim. Which shapes does a center stroke leave still?',
       strikeWord: 'STROKE',
       subject: 'The gong’s face, seen face-on',
       notes: (v) => [
-        'A shape is set moving only as much as the face moves where the mallet lands. At the exact centre, every shape with a still line across the face stands still — so a centre stroke drives only the ring-shaped ones: fewer shapes, a more centred pitch. Off centre, many more move.',
+        'A shape is set moving only as much as the face moves where the mallet lands. At the exact center, every shape with a still line across the face stands still — so a center stroke drives only the ring-shaped ones: fewer shapes, a more centered pitch. Off center, many more move.',
         kindOf(v) === 'bossed'
           ? 'This is a flat disc of even thickness. A real bossed gong’s boss and shoulder shape and concentrate its main tone, so its numbers differ — the picture shows which shapes a stroke can reach.'
           : 'This is a flat disc of even thickness, unsupported at its edge. A real tam-tam hangs on cords through its rim; it is slightly domed with a turned rim, and hit hard its energy spreads into finer shapes after the stroke — the build-up you stepped through.',
       ],
-      tried: 'At the exact centre only the ring-shaped shapes move; off centre, nearly all of them do. Where the mallet lands is part of the gong’s colour.',
+      tried: 'At the exact center only the ring-shaped shapes move; off center, nearly all of them do. Where the mallet lands is part of the gong’s color.',
     },
   },
 };

@@ -260,7 +260,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <Body>Ride SYSTEM. The dashed line is the programme's spectrum as mastered (measured from the render); the solid line is a MODEL of how a typical system of that kind presents it — bandwidth, a mid bump, a mono fold. On the main monitors the two coincide, so only the solid line is drawn. Illustrative shapes, not measurements of any product.</Body>
+              <Body>Ride SYSTEM. The dashed line is the program's spectrum as mastered (measured from the render); the solid line is a MODEL of how a typical system of that kind presents it — bandwidth, a mid bump, a mono fold. On the main monitors the two coincide, so only the solid line is drawn. Illustrative shapes, not measurements of any product.</Body>
               <Card tone="accent">
                 <Point title={system.name}>{system.note}</Point>
               </Card>

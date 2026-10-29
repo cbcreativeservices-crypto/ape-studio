@@ -92,7 +92,7 @@ function HotCueTray({ onSet, onJump }: { onSet: () => void; onJump: () => void }
         ))}
         <LabChip label="CLEAR ALL" selected={false} onPress={() => updateBooth((x, t) => [0, 1, 2, 3].reduce((y, i) => clearHotCue(y, t, 'B', i), x))} compact />
       </View>
-      <Text style={styles.note}>{`Pad colours: ${['red', 'amber', 'green', 'blue'].join(', ')} — the same colours mark them on the waveform.`}</Text>
+      <Text style={styles.note}>{`Pad colors: ${['red', 'amber', 'green', 'blue'].join(', ')} — the same colors mark them on the waveform.`}</Text>
       <View style={styles.row}>
         {CUE_COLOURS.map((c, i) => (
           <View key={c} style={[styles.swatch, { backgroundColor: c, opacity: d.hotCues[i] != null ? 1 : 0.3 }]} />

@@ -39,7 +39,7 @@ const DPA_Z: Omit<DocumentedZone, 'start'> = {
   aim: { maxOffAxis: 30, prov: ill('aimed at the holes: within 30°') },
   requires: { micTypeIds: ['sdcCard'] },
   draw: draws(A.third, N, 40, 150, 200),
-  tendency: 'A natural spot sound: the holes and some bell together, the reed’s edge and the keys present but not leading. Play low, middle and high — the colour can change as the open holes move.',
+  tendency: 'A natural spot sound: the holes and some bell together, the reed’s edge and the keys present but not leading. Play low, middle and high — the color can change as the open holes move.',
   checks: ['The hands, the keys and the oboe’s pivot stay clear of the mic and boom', 'Low, middle and high passages — not one held note', 'Key clicks and reed edge at this distance'],
 };
 

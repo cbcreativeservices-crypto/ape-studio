@@ -19,7 +19,7 @@ const pages: LessonPages = {
     title: 'Meet the bongos',
     goal: 'Get to know a pair of bongos — what they are, where you meet them, what they do in the music, and their parts — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'Two small, open-bottomed drums joined by a centre block: the smaller macho, the larger hembra. Work with the pair as the player holds or mounts it.',
+    takeaway: 'Two small, open-bottomed drums joined by a center block: the smaller macho, the larger hembra. Work with the pair as the player holds or mounts it.',
   },
   sound: {
     title: 'How they make their sound',
@@ -127,10 +127,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'bg.snd.3',
     page: 'sound',
-    prompt: 'Compared with a strike at the centre, what does a strike near the edge of a head drive?',
+    prompt: 'Compared with a strike at the center, what does a strike near the edge of a head drive?',
     options: ['The shapes with a still line across the head, too', 'Only the lowest shape, but much more strongly than before', 'Nothing — the rim holds the head still there'],
     correct: 'The shapes with a still line across the head, too',
-    explain: 'At the centre, every shape with a still line across the head stands still; away from the centre those shapes move, so a strike there drives them too.',
+    explain: 'At the center, every shape with a still line across the head stands still; away from the center those shapes move, so a strike there drives them too.',
     why: {
       'Only the lowest shape, but much more strongly than before': 'Near the edge the lowest shape moves LESS, and the shapes with still lines across the head join in.',
       'Nothing — the rim holds the head still there': 'Only the very edge is held. A little inside it the head moves, and a strike drives its shapes.',
@@ -551,7 +551,7 @@ const diagnostic: DiagnosticItem[] = [
     explain: 'The smaller drum is the macho, the larger the hembra.',
     why: {
       'The larger, lower drum': 'That is the hembra. The macho is the smaller one.',
-      'The block that joins them': 'That is the centre block. The macho is the smaller drum.',
+      'The block that joins them': 'That is the center block. The macho is the smaller drum.',
     },
   },
   {
@@ -581,10 +581,10 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.4',
     covers: 'sound',
-    prompt: 'A strike near the edge, compared with one at the centre, drives…',
+    prompt: 'A strike near the edge, compared with one at the center, drives…',
     options: ['Shapes with a still line across the head, too', 'Only the lowest shape, and more strongly', 'Nothing — the rim holds the whole of the head still'],
     correct: 'Shapes with a still line across the head, too',
-    explain: 'At the centre, every shape with a still line across the head stands still; near the edge those shapes join in.',
+    explain: 'At the center, every shape with a still line across the head stands still; near the edge those shapes join in.',
     why: {
       'Only the lowest shape, and more strongly': 'Near the edge the lowest shape moves less; others join in.',
       'Nothing — the rim holds the whole of the head still': 'Only the very edge is held; a little inside it the head moves.',
@@ -638,7 +638,7 @@ export const M04B_LESSON: HandLesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT THEY ARE', text: 'Bongos are a connected pair of small, open-bottomed hand drums: the smaller macho and the larger hembra, joined by a centre block.', src: 'MEINL-BONGO' },
+    { title: 'WHAT THEY ARE', text: 'Bongos are a connected pair of small, open-bottomed hand drums: the smaller macho and the larger hembra, joined by a center block.', src: 'MEINL-BONGO' },
     { title: 'WHERE YOU MEET THEM', text: 'In Latin, Afro-Cuban and popular music, in the studio and on stage. The player may sit with the pair between the knees, or play standing with it on a stand.', src: 'LESSON' },
     { title: 'WHAT THEY DO IN THE MUSIC', text: 'Two contrasting voices — the macho high, the hembra lower — in fast, quiet finger work, open tones, muted touches and louder accents. The player may move between the bongos and other percussion.', src: 'LESSON' },
     { title: 'THEIR SIZE', text: 'Small heads, around 7 and 8½ in across. This lab draws a 7¼ in macho and an 8⅝ in hembra.', src: 'LP-GEN2' },
@@ -646,7 +646,7 @@ export const M04B_LESSON: HandLesson = {
   sound: {
     stages: [
       { title: 'The fingers strike', text: 'The player’s fingers strike the head — often near the edge, sometimes with the whole hand. That brief contact is where the ATTACK begins.' },
-      { title: 'The head is pushed in', text: 'The head bows down into the drum — most at the centre, not at all at the rim: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
+      { title: 'The head is pushed in', text: 'The head bows down into the drum — most at the center, not at all at the rim: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
       { title: 'The air is pushed down', text: 'The head pushes the air in the short shell down and out of the open lower end.' },
       { title: 'Sound leaves the drum', text: 'Sound leaves from the head — up and around — and from the open lower end, near the player’s legs or above the stand. Heads and open ends are different perspectives.' },
     ],
@@ -656,7 +656,7 @@ export const M04B_LESSON: HandLesson = {
   },
   setting: {
     items: [
-      { id: 'drums', label: 'the bongos (the same drawing as every other page)', short: 'BONGOS', note: 'The macho on the player’s left, the hembra on the right, joined by the centre block — between the knees here, or on a stand.', prov: { kind: 'sourced', src: 'LP-GEN2', quote: '7-1/4″ and 8-5/8″ drums' }, tag: 'THE DRUMS', scene: 'all' },
+      { id: 'drums', label: 'the bongos (the same drawing as every other page)', short: 'BONGOS', note: 'The macho on the player’s left, the hembra on the right, joined by the center block — between the knees here, or on a stand.', prov: { kind: 'sourced', src: 'LP-GEN2', quote: '7-1/4″ and 8-5/8″ drums' }, tag: 'THE DRUMS', scene: 'all' },
       { id: 'player', label: 'the player, seated', short: 'PLAYER', note: 'Hands from the front, the rear or either side; legs beside the drums that change position. Nothing of yours goes there.', prov: { kind: 'illustrative', reason: 'a seated player; no source gives the reach' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'A loud neighbour that can dominate a distant bongo mic.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'bass', label: 'the bass amp', short: 'BASS AMP', note: 'Low-frequency spill into a bongo mic, especially a distant one.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
@@ -685,7 +685,7 @@ export const M04B_LESSON: HandLesson = {
     ],
   },
   unknowns: [
-    { text: 'The centre block’s width, the shells’ height and the heads’ height seated or on a stand — drawing defaults.', dims: ['block', 'shellH', 'seatedH', 'standH'] },
+    { text: 'The center block’s width, the shells’ height and the heads’ height seated or on a stand — drawing defaults.', dims: ['block', 'shellH', 'seatedH', 'standH'] },
     { text: 'The rims and the number of tension rods — drawing defaults, never stated.', dims: ['rimRise', 'rimT', 'lugs'] },
     { text: 'Which side the macho sits — a common layout, drawn on the player’s left; players differ.', dims: [] },
     { text: 'The hands’ and legs’ envelopes — ILLUSTRATIVE, for the owner to approve.', dims: ['handsUp'] },
@@ -706,7 +706,7 @@ export const M04B_LESSON: HandLesson = {
     headLook: 'rawhide',
     tool: 'hand',
     variantKey: 'SETUP',
-    figure: { view: 'top', badge: 'A pair of bongos — 7¼ and 8⅝ in — seen from above, the player at the left', label: 'Top view of a pair of bongos: the smaller macho on the player’s left and the larger hembra on the right, rawhide heads in chrome rims, joined by a wooden centre block.' },
+    figure: { view: 'top', badge: 'A pair of bongos — 7¼ and 8⅝ in — seen from above, the player at the left', label: 'Top view of a pair of bongos: the smaller macho on the player’s left and the larger hembra on the right, rawhide heads in chrome rims, joined by a wooden center block.' },
     partsBadge: 'A pair of bongos · tap a part to name it',
     partsPrompt: 'Tap any part — or step through PART — to see what it is and what it does. Switch SETUP between the knees and a stand. There is nothing to answer on this page.',
     partsNote: 'The fingers strike the heads; the open lower ends let out part of the sound near the legs or the stand. The next page shows how.',
@@ -715,8 +715,8 @@ export const M04B_LESSON: HandLesson = {
     strikeWord: 'FINGERS',
     face: { kind: 'crown', lugs: D.lugs.mm },
     facePoints: [
-      { id: 'c', label: 'CENTRE', frac: 0, blurb: 'The exact centre of the head.' },
-      { id: 'h', label: 'HALFWAY', frac: 0.5, blurb: 'Halfway from the centre to the rim.' },
+      { id: 'c', label: 'CENTER', frac: 0, blurb: 'The exact centre of the head.' },
+      { id: 'h', label: 'HALFWAY', frac: 0.5, blurb: 'Halfway from the center to the rim.' },
       { id: 'e', label: 'NEAR THE EDGE', frac: 0.85, blurb: 'Close to the rim.' },
     ],
     openEnd: { default: true },
@@ -764,12 +764,12 @@ export const M04B_LESSON: HandLesson = {
     },
     before: {
       ask: 'Which drum should be most prominent, does the player sit with the pair between the knees or stand at a stand, and from which sides do the hands come? Ask for the complete part — quiet figures and the strongest accents — and listen before placing a mic. Don’t prescribe their position or retune without consent.',
-      asIs: 'The pair, its tuning and how it is held are the player’s. Clamp nothing to a rim or the centre block unless the mount is made for it and the owner agrees.',
+      asIs: 'The pair, its tuning and how it is held are the player’s. Clamp nothing to a rim or the center block unless the mount is made for it and the owner agrees.',
     },
     worked: { default: 'bg.shared' },
     clearWords: 'Clear of every finger and palm stroke, from every side the hands come, and of the legs or the stand. Clearance comes first, before any number — and the player stops before a real mic moves.',
     ideas: {
-      hdDynCard: 'Ideas to try with this kind of mic: one mic between and above the heads first; compare it centred, a little toward the macho, a little toward the hembra, and a little farther up — one change at a time.',
+      hdDynCard: 'Ideas to try with this kind of mic: one mic between and above the heads first; compare it centered, a little toward the macho, a little toward the hembra, and a little farther up — one change at a time.',
       hdDynHyper: 'Ideas to try with this kind of mic: a spot for each drum at a safe, comparable distance — its narrow pattern helps against kit spill. Check each alone, then the pair in mono.',
       hdSdc: 'Ideas to try with this kind of mic: in a quiet room, between and above the pair, or two of them as a coincident pair — then check the image in mono.',
       hdClip: 'Ideas to try with this kind of mic: one clip-on at each rim, outside the hands — little stage space. Check the clamp fits, for vibration, cable strain and every finger motion.',

@@ -86,7 +86,7 @@ export const TIMP_MODEL: InstrumentModel = {
     ...TIMPANI.map(surface),
   ],
   lines: [
-    { id: 'gap', label: 'the centre gap', point: GAP_PAIR, dir: { x: 0, y: 1, z: 0 } },
+    { id: 'gap', label: 'the center gap', point: GAP_PAIR, dir: { x: 0, y: 1, z: 0 } },
     { id: 'rim29', label: 'the 29 in rim', point: drum29().c, dir: { x: 0, y: 1, z: 0 }, offset: R29, words: { plus: 'out from', minus: 'in from', keyPlus: 'OUT FROM RIM', keyMinus: 'IN FROM RIM' } },
   ],
   envelopes: [

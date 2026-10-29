@@ -285,11 +285,11 @@ const TOOL_STRIP: Record<ToolKey, FC<SvgProps>> = {
 const STRIP_LABEL: Record<ToolKey, string> = {
   spl: 'SPL reference meter: analogue VU meter with needle beside a segmented LED level ladder',
   rta: 'Spectrum analyser: thirty-one frequency bands as vertical bars with peak-hold markers',
-  waveform: 'Waveform viewer: oscilloscope waveform around a centre zero line',
-  spectrogram: 'Spectrogram: frequency content over time as a colour heat map',
+  waveform: 'Waveform viewer: oscilloscope waveform around a center zero line',
+  spectrogram: 'Spectrogram: frequency content over time as a color heat map',
   rt60: 'RT60 reverb decay: decay curve falling to a noise floor with a fitted decay line',
   signalgen: 'Tone and noise generator: a sine wave giving way to broadband noise',
-  hzcounter: 'Frequency counter and tuner: tuning meter with a needle reading off centre',
+  hzcounter: 'Frequency counter and tuner: tuning meter with a needle reading off center',
   multimeter: 'Pro audio multimeter: combined level bar, spectrum, spectrogram and oscilloscope',
 };
 

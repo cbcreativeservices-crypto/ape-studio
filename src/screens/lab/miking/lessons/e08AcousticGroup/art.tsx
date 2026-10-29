@@ -47,7 +47,7 @@ const SPEC = ensembleHandSpec({
     A: { zone: 'ac.main', mic: 'arrCard' },
     B: { zone: 'ac.ag', mic: 'sdcCard' },
     names: { A: 'MAIN PAIR', B: 'GUITAR SPOT' },
-    looking: 'Two mics · A the main pair’s centre, B the guitar spot',
+    looking: 'Two mics · A the main pair’s center, B the guitar spot',
     prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each player reaches the two mics at its own times.',
     label: 'The group with the main pair (A) and a guitar spot (B)',
     warn: 'This simplified graph shows one point source and straight paths, no room. Real instruments are large sources, so one delay never suits them all — judge by ear, in mono, against the plain version.',

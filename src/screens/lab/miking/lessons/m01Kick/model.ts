@@ -33,14 +33,14 @@ export const KICK_DIMS = {
   cHoop: placeholder(3, 'gap between shell and hoop'),
   hoopInset: placeholder(6, 'how far the hoop stands past the head plane'),
   nRods: { mm: 10, prov: src('YMH-RC', 'No. of Tuning Bolts 10 (per head; owner-confirmed 2026-10-04)') } as Dim,
-  rodPhaseDeg: placeholder(18, 'tension-rod phase (is a rod at bottom centre?)'),
+  rodPhaseDeg: placeholder(18, 'tension-rod phase (is a rod at bottom center?)'),
   /** Remo 5 in offset port — the default head (ruling §16.12). */
   portD: { mm: 5 * IN, prov: src('REMO-OH', '5" Offset Hole') } as Dim,
   portY: placeholder(90, 'offset port position (radius and clock angle)'),
   portZ: placeholder(110, 'offset port position (radius and clock angle)'),
   /** DW: "the center of the drum or an area 1-2 inches above the center";
    *  the lab draws 1.5 in above (mid-range) — TRIAL choice. Above = −y. */
-  strikeY: { mm: -1.5 * IN, prov: trial('DW-9000', 'DW allows the centre or 1–2 in above it; the lab draws 1.5 in above') } as Dim,
+  strikeY: { mm: -1.5 * IN, prov: trial('DW-9000', 'DW allows the center or 1–2 in above it; the lab draws 1.5 in above') } as Dim,
   beaterHeadR: placeholder(30, 'beater head diameter'),
   beaterLen: placeholder(240, 'beater shaft length and pedal axle position'),
   beaterSwingDeg: placeholder(50, 'beater swing arc'),
@@ -175,7 +175,7 @@ export const KICK_ZONES: DocumentedZone[] = [
     requires: { variant: 'ported', micTypeIds: DYN_STAND },
     aim: { maxOffAxis: 30, prov: ill('the row assumes the mic faces the head it is measured from; ±30° is the lab’s tolerance') },
     start: { p: { x: 75, y: 0, z: -(2 / 3) * R }, az: 0, el: 0 },
-    tendency: 'Off-centre placement tends to pick up more overtones.',
+    tendency: 'Off-center placement tends to pick up more overtones.',
     checks: ['Clearance from the shell, the damping and the head', 'Overtones against attack, on this drum'],
   },
 ];

@@ -158,7 +158,7 @@ export const TOOL_LESSONS: Record<ToolId, LessonContent> = {
       { key: 'peak', name: 'Peak (readout)', definition: 'The highest SAMPLE level in the visible window, in dBFS. 0 dBFS is full scale, so a reading at 0 means it clipped. It is the exact sample maximum, so it can sit above the smoothed envelope shape — but it is a sample peak, not a TRUE peak (dBTP): the reconstructed waveform can still overshoot between samples.' },
       { key: 'clip_runs', name: 'Clip runs (readout)', definition: 'How many SEPARATE times the signal hit full scale and clipped in the window — each run is one overload event, not one sample. Anything above 0 means lower the input; the clipped moments are unreliable.' },
       { key: 'window', name: 'Window (readout)', definition: 'How much time the display spans left→right — the visible history, in seconds. Each column summarizes ~50 ms, so this sets how many seconds of audio fit on screen at once.' },
-      { key: 'marks', name: 'What the display shows', definition: 'Time runs left→right (newest at the right edge); the centre line is silence (zero pressure); distance above/below it is how hard the air was pushed/pulled. The top strip is the clip lane — red ticks there mean overload.' },
+      { key: 'marks', name: 'What the display shows', definition: 'Time runs left→right (newest at the right edge); the center line is silence (zero pressure); distance above/below it is how hard the air was pushed/pulled. The top strip is the clip lane — red ticks there mean overload.' },
     ],
     commonMistakes: [
       'Reading the envelope as the actual waveform shape — at this zoom each column is a 50 ms SUMMARY (min/max), not the individual cycles.',

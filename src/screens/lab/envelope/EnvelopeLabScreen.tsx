@@ -394,7 +394,7 @@ function PagePeakAverage({ ctx }: { ctx: PageCtx }) {
       <Card>
         <Eyebrow>WHY IT MATTERS</Eyebrow>
         {/* NEW COPY */}
-        <Body>Peak limiters watch peaks, because that is where clipping happens. Loudness targets and VU-style meters watch averages, because that is closer to what the ear calls loud. Set a gain structure by the average alone and the transients clip; set it by the peaks alone and the programme sounds quiet.</Body>
+        <Body>Peak limiters watch peaks, because that is where clipping happens. Loudness targets and VU-style meters watch averages, because that is closer to what the ear calls loud. Set a gain structure by the average alone and the transients clip; set it by the peaks alone and the program sounds quiet.</Body>
       </Card>
     </View>
   );

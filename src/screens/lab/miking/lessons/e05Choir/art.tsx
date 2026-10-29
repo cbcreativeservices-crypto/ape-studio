@@ -42,7 +42,7 @@ const SPEC = ensembleHandSpec({
     A: { zone: 'ch.pair', mic: 'arrCard' },
     B: { zone: 'ch.spot', mic: 'arrCard' },
     names: { A: 'MAIN PAIR', B: 'SOPRANO SPOT' },
-    looking: 'Two mics · A the main pair’s centre, B the soprano spot',
+    looking: 'Two mics · A the main pair’s center, B the soprano spot',
     prompt: 'Flip MIC B POLARITY both ways, then move a mic. Then change SOURCE: each section reaches the two mics at its own times.',
     label: 'The choir on risers with the main pair (A) and a soprano spot (B)',
     warn: 'This simplified graph shows one point source and straight paths, no room. A section is many singers at different distances, so one delay never suits them all — judge by ear, in mono, against the pair alone.',

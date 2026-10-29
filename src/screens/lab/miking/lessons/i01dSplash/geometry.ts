@@ -60,7 +60,7 @@ export const SPLASH_MODEL: InstrumentModel = cymbalModel({
   ],
   regions: [
     { id: 'r.edge', partId: 'splash.plate', label: 'the stick near the edge', anchor: STRIKE_ARM, prov: ill('near the edge, toward the player'), variants: ['arm'], note: 'Where the stick strikes the splash: its quick attack starts here.' },
-    { id: 'r.bell', partId: 'splash.plate', label: 'the bell', anchor: at(ARM, 0, TH_ARM, ARM.spec.rise.mm), prov: ill('the bell'), variants: ['arm'], note: 'The small raised centre.' },
+    { id: 'r.bell', partId: 'splash.plate', label: 'the bell', anchor: at(ARM, 0, TH_ARM, ARM.spec.rise.mm), prov: ill('the bell'), variants: ['arm'], note: 'The small raised center.' },
     { id: 'r.tom', partId: 'kit.tom1', label: 'the 10 in tom below', anchor: KIT_DRUMS.tom1.c, prov: ill('the shared 5-piece kit'), variants: ['arm'], note: 'The tom under the splash: the drum a splash mic aimed down hears most.' },
     { id: 'r.pig', partId: 'piggy.plate', label: 'the stick on the splash', anchor: STRIKE_PIG, prov: ill('near its edge, toward the player'), variants: ['piggy'], note: 'The splash on top of the crash: struck near its edge.' },
     { id: 'r.host', partId: 'cym.crash2', label: 'the crash under it', anchor: KIT_CYMBALS.crash2.c, prov: ill('the 18 in crash under the splash'), variants: ['piggy'], note: 'The crash the splash sits on: it rings and swings with it.' },

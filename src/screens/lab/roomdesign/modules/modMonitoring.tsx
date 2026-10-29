@@ -233,7 +233,7 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
       chooser: {
         title: 'WHICH HEIGHT',
         options: [
-          { id: 'tweeter', label: 'Tweeter height (all speakers)', blurb: 'The acoustic centre of each monitor. Most makers design for the tweeter at or just above ear height.' },
+          { id: 'tweeter', label: 'Tweeter height (all speakers)', blurb: 'The acoustic center of each monitor. Most makers design for the tweeter at or just above ear height.' },
           { id: 'ears', label: 'Seated ear height', blurb: 'Where your ears are when you sit to mix — measure it; typical seated ear height is 1.1–1.3 m.' },
           ...(SUB ? [{ id: 'sub', label: 'Subwoofer driver height', blurb: 'A sub usually sits on the floor; below 80 Hz its height barely matters for aiming (it still changes which height modes it drives).' }] : []),
         ],
@@ -266,7 +266,7 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
   return (
     <RoomRackLayout
       rack={{ stage, badge: BADGE.monitoring, bezel, params, initialParam: 'spread', hideDragTag: true }}
-      caption="Drag the speakers and the listener on the plan (tap SIDE VIEW for heights), or ride SPREAD (it sets the pair evenly about the room's centre line), FRONT, SEAT (the listener) and HEIGHT (HEIGHT opens the side view). SETUP picks stereo, stereo + sub or multichannel, nearfield or midfield (printed under the listening angle, amber when the speakers sit outside that distance), and toe-in."
+      caption="Drag the speakers and the listener on the plan (tap SIDE VIEW for heights), or ride SPREAD (it sets the pair evenly about the room's center line), FRONT, SEAT (the listener) and HEIGHT (HEIGHT opens the side view). SETUP picks stereo, stereo + sub or multichannel, nearfield or midfield (printed under the listening angle, amber when the speakers sit outside that distance), and toe-in."
       captionFirst
       wellTop={
         <View style={{ gap: 6 }}>
@@ -276,12 +276,12 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
             </Text>
           ) : st ? (
             <Text style={styles.line}>
-              {`Listening angle ${st.angleDeg.toFixed(0)}° · L ${fmtLen(st.distL, units)} · R ${fmtLen(st.distR, units)} · difference ${fmtLen(st.pathDiff, units, { small: true })} ${st.pathDiff > SYM_TOL ? '— beyond the ' + fmtLen(SYM_TOL, units, { small: true }) + ' tolerance, the centre image pulls' : '— within tolerance'}.`}
+              {`Listening angle ${st.angleDeg.toFixed(0)}° · L ${fmtLen(st.distL, units)} · R ${fmtLen(st.distR, units)} · difference ${fmtLen(st.pathDiff, units, { small: true })} ${st.pathDiff > SYM_TOL ? '— beyond the ' + fmtLen(SYM_TOL, units, { small: true }) + ' tolerance, the center image pulls' : '— within tolerance'}.`}
             </Text>
           ) : null}
           {st ? (
             <Text style={styles.line}>
-              {`Listener ${fmtLen(Math.abs(st.axisOffset), units, { small: true })} ${Math.abs(st.axisOffset) < 0.02 ? 'from' : st.axisOffset > 0 ? 'right of' : 'left of'} the centre line · side walls L ${fmtLen(st.wallL.side, units)} / R ${fmtLen(st.wallR.side, units)} · front wall (to the woofer) L ${fmtLen(st.wallL.front, units)} / R ${fmtLen(st.wallR.front, units)} · tweeters ${fmtDelta(st.heightDiff, units)} vs ears.`}
+              {`Listener ${fmtLen(Math.abs(st.axisOffset), units, { small: true })} ${Math.abs(st.axisOffset) < 0.02 ? 'from' : st.axisOffset > 0 ? 'right of' : 'left of'} the center line · side walls L ${fmtLen(st.wallL.side, units)} / R ${fmtLen(st.wallR.side, units)} · front wall (to the woofer) L ${fmtLen(st.wallL.front, units)} / R ${fmtLen(st.wallR.front, units)} · tweeters ${fmtDelta(st.heightDiff, units)} vs ears.`}
             </Text>
           ) : null}
           {channels.length > 0 ? (
@@ -313,7 +313,7 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
       }
     >
       <Body>
-        A good starting point, not a law: the two speakers and your head form an equilateral triangle (a 60° listening angle), the two speakers sit at the same distance from their side walls and from the front wall, and the listening position is on the room's centre line. Matched left and right geometry is what the makers of monitors ask for first, because the two early-reflection sets then arrive alike and the centre image stays put.
+        A good starting point, not a law: the two speakers and your head form an equilateral triangle (a 60° listening angle), the two speakers sit at the same distance from their side walls and from the front wall, and the listening position is on the room's center line. Matched left and right geometry is what the makers of monitors ask for first, because the two early-reflection sets then arrive alike and the center image stays put.
       </Body>
       <Body>
         Nearfield monitors are meant to be heard from about 1–1.5 m, midfields from about 2–4 m; further away the room takes over from the speaker. Tweeters at or slightly above ear height, with the speakers toed in so their axes cross at or just behind your head, is where most people begin — then they listen, and move things.
@@ -335,7 +335,7 @@ function SetupTray({ ctx }: { ctx: RoomLabCtx }) {
     <View style={{ gap: 10 }}>
       <TrayHeading>CONFIGURATION</TrayHeading>
       <Chips items={CONFIGS} value={design.monitoring.config} onPick={(id) => update((d) => applyConfig(d, id))} />
-      <Caption>Stereo + sub adds a subwoofer you can drag anywhere; multichannel adds a centre and two surrounds. The sub's position changes which room modes it drives — try it in a corner and in the middle and compare. Two subs in mirrored positions often even the bass out; or do the sub crawl: play a bass loop with the sub at the seat and crawl the floor for the evenest spot, then put the sub there.</Caption>
+      <Caption>Stereo + sub adds a subwoofer you can drag anywhere; multichannel adds a center and two surrounds. The sub's position changes which room modes it drives — try it in a corner and in the middle and compare. Two subs in mirrored positions often even the bass out; or do the sub crawl: play a bass loop with the sub at the seat and crawl the floor for the evenest spot, then put the sub there.</Caption>
       <Caption>Set the sub's crossover, polarity and phase/delay by measuring at the seat — the wrong polarity makes a hole at the crossover frequency.</Caption>
       <Caption>ITU-R BS.775: centre 0°, L/R ±30°, surrounds ±100–120°, all equidistant from the ears or delay-aligned. The surrounds spawn on that circle; the readouts above flag an angle or a distance that drifts.</Caption>
       <Caption>After calibrating, leave the monitors' own gain alone and set level at the monitor controller; red clip lights on a monitor mean turn down, not treat the room.</Caption>

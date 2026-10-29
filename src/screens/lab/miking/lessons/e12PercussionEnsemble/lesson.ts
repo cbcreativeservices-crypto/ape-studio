@@ -36,14 +36,14 @@ const pages: LessonPages = {
   placement: {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main array yourself — closer, farther, higher — and see what changes between the front and back instruments and across the width.',
-    credit: { scenarios: ['pe.place.1', 'pe.place.2', 'pe.31', 'pe.rec.2'], interactive: 'twoZones', note: 'Rest the array’s centre, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
+    credit: { scenarios: ['pe.place.1', 'pe.place.2', 'pe.31', 'pe.rec.2'], interactive: 'twoZones', note: 'Rest the array’s center, clear of the players, in two different suggested starting points, and answer the four checks. The worked example earns nothing on its own.' },
     takeaway: 'Move the complete array to change the direct-to-room ratio and the front–back balance. Raising it changes which surfaces dominate — not always a better blend. Compare at a consistent, moderate level.',
   },
   context: {
     title: 'Live sound and recording',
     goal: 'Turn the conga mic so a floor wedge sits in its rejection — and decide what really needs reinforcing.',
     credit: { scenarios: ['pe.ctx.1', 'pe.ctx.2', 'pe.ctx.studio', 'pe.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: turn the conga mic (or change its pattern) until the wedge sits in its rejection. STUDIO: answer the decision card. Then the checks.' },
-    takeaway: 'Reinforce missing detail or balance, not every loud instrument. Close directional mics on a loud stage, monitors by the real polar diagrams, and stereo that still serves listeners off the centre.',
+    takeaway: 'Reinforce missing detail or balance, not every loud instrument. Close directional mics on a loud stage, monitors by the real polar diagrams, and stereo that still serves listeners off the center.',
   },
   twoMic: {
     title: 'The main pair and a support',
@@ -207,12 +207,12 @@ const scenarios: MikingScenario[] = [
     id: 'pe.ctx.2',
     page: 'context',
     prompt: 'Stereo reinforcement: an essential bell part sits in one speaker only. Problem?',
-    options: ['Listeners off centre may lose it', 'It is fine: stereo sounds wider to them', 'It is fine: everyone sits in the middle'],
-    correct: 'Listeners off centre may lose it',
-    explain: 'Stereo reinforcement must serve listeners away from the centre: avoid putting an essential instrument only in one loudspeaker feed.',
+    options: ['Listeners off center may lose it', 'It is fine: stereo sounds wider to them', 'It is fine: everyone sits in the middle'],
+    correct: 'Listeners off center may lose it',
+    explain: 'Stereo reinforcement must serve listeners away from the center: avoid putting an essential instrument only in one loudspeaker feed.',
     why: {
       'It is fine: stereo sounds wider to them': 'Width does not help a listener far from that speaker.',
-      'It is fine: everyone sits in the middle': 'Most of the audience sits off the centre line.',
+      'It is fine: everyone sits in the middle': 'Most of the audience sits off the center line.',
     },
   },
   {
@@ -535,7 +535,7 @@ export const E12_LESSON: EnsembleLesson = {
       { id: 'scenes', label: 'mutes and scene changes', short: 'SCENES', note: 'Label channels by station; any mute or scene change keeps the tails and overlaps the piece intends.', prov: { kind: 'sourced', src: 'LESSON-PERC', quote: 'Any scene changes must preserve the tails and overlaps intended by the piece (L56)' }, tag: 'ROLES', scene: 'stage' },
       { id: 'room', label: 'the room’s decay', short: 'ROOM', note: 'Room mics only when their decay helps the music; for a dry, separately processed sound, state that goal before choosing placements.', prov: { kind: 'sourced', src: 'LESSON-PERC', quote: 'use room microphones only when their decay helps the music (L58)' }, tag: 'LATER', scene: 'studio' },
     ],
-    stage: 'LIVE: find which parts already reach the audience; reinforce missing detail or balance, not every loud instrument. Stronger stage levels may need closer directional pickup; stereo reinforcement must serve listeners off the centre. Lower the gain at once if ringing starts.',
+    stage: 'LIVE: find which parts already reach the audience; reinforce missing detail or balance, not every loud instrument. Stronger stage levels may need closer directional pickup; stereo reinforcement must serve listeners off the center. Lower the gain at once if ringing starts.',
     studio: 'A RECORDING: in a quiet room the main array may give the whole sound; add spots from silence until the needed line is intelligible, and keep the ensemble’s place in the stereo picture consistent.',
   },
   diagnostic,

@@ -158,7 +158,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
       { id: 'head', label: 'The head surface', short: 'HEAD', blurb: 'Coating wear, dents, a collar that has stretched.' },
       ...Array.from({ length: 10 }, (_, i) => ({ id: `lug${i}`, label: `Rod and lug ${i + 1}`, short: `ROD ${i + 1}`, blurb: 'Is the rod seated, the washer flat, the casing tight on the shell?' })),
       { id: 'edge', label: 'The bearing edge', short: 'EDGE', blurb: 'Grit or a chip where the head meets the shell.' },
-      { id: 'map', label: 'The tension map', short: 'MAP', blurb: 'Are the lugs at one pitch, or is the colour mottled?' },
+      { id: 'map', label: 'The tension map', short: 'MAP', blurb: 'Are the lugs at one pitch, or is the color mottled?' },
     ],
     [],
   );
@@ -170,9 +170,9 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
     setInspected((s) => (s.has(id) ? s : new Set([...s, id])));
   };
   const seen = (() => {
-    if (inspect === 'head') return faults.present.has('worn') ? 'The coating is scuffed and there is a dent near the centre.' : 'The coating is even; no dents.';
+    if (inspect === 'head') return faults.present.has('worn') ? 'The coating is scuffed and there is a dent near the center.' : 'The coating is even; no dents.';
     if (inspect === 'edge') return faults.present.has('debris') ? 'Specks of grit sit between the head and the edge on one side.' : 'The edge is clean all the way round.';
-    if (inspect === 'map') return faults.present.has('uneven') || faults.present.has('loose') ? 'The map is mottled — the lugs are not at one pitch.' : 'The map is one colour — the lugs agree.';
+    if (inspect === 'map') return faults.present.has('uneven') || faults.present.has('loose') ? 'The map is mottled — the lugs are not at one pitch.' : 'The map is one color — the lugs agree.';
     if (selLug != null) return faults.present.has('loose') && selLug === faults.looseLug ? `Rod ${selLug + 1} is backed out: a gap under its washer, the rod loose in the lug.` : `Rod ${selLug + 1} is seated; the washer sits flat.`;
     return '';
   })();
@@ -279,7 +279,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
             <>
               <Landing looking="the order to tighten the rods on a new head." prompt="Press ▶ RUN, or ride STEP by hand; change LUGS for 6, 8 and 10." />
               <Card>
-                <Point title="Seating, then small steps">Clean edge; head on; hoop on, centred; every rod started by hand so none is cross-threaded; finger-tight all round — the known condition. Then half a turn per rod in this opposing order, round and round. Some players press the centre of the head firmly between rounds to seat the collar; a few cracks from the film are normal.</Point>
+                <Point title="Seating, then small steps">Clean edge; head on; hoop on, centered; every rod started by hand so none is cross-threaded; finger-tight all round — the known condition. Then half a turn per rod in this opposing order, round and round. Some players press the center of the head firmly between rounds to seat the collar; a few cracks from the film are normal.</Point>
                 <Point title="Why opposing">Tightening neighbours in a row pulls the hoop down on one side first: the head wrinkles there and the far side stays slack. Opposite pairs keep the hoop parallel to the edge. Some manufacturers describe exactly this opposing pattern as the way to apply tension evenly.</Point>
               </Card>
               <Card tone="warn">
@@ -314,7 +314,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
               <Landing looking="the same head brought up two ways; SPREAD is the gap in cents between its highest and lowest lug." prompt="Ride STEP and ▶ STRIKE at each one, then flip to RANDOM and strike again." />
               <DrumStatus playing={knownStrike.playing} pending={knownStrike.pending} failed={knownStrike.failed} rendering={knownStrike.status === 'rendering'} idle="stopped · ride STEP, press ▶ STRIKE; flip EVEN STEPS / RANDOM" label="the floor tom" />
               <Card>
-                <Point title="Even steps vs random turns">From finger-tight (SPREAD 0), EVEN STEPS raise the head as one colour and the pitch climbs clean. RANDOM applies the same eight moves as big turns on single rods: the map goes mottled hundreds of cents apart and the strike warbles — and big turns on one rod are also the way hoops go out of round.</Point>
+                <Point title="Even steps vs random turns">From finger-tight (SPREAD 0), EVEN STEPS raise the head as one color and the pitch climbs clean. RANDOM applies the same eight moves as big turns on single rods: the map goes mottled hundreds of cents apart and the strike warbles — and big turns on one rod are also the way hoops go out of round.</Point>
                 <Point title="When a drum is a mess, do not chase it">Back every rod off to finger-tight and come up again in the pattern, an eighth or a quarter of a turn at a time. It is faster than hunting one lug, and it finds hardware faults on the way.</Point>
               </Card>
             </>
