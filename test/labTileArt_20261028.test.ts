@@ -1,5 +1,5 @@
 /**
- * Labs menu tile art (owner 2026-10-28): the 16 Audio Fundamentals images.
+ * Labs menu tile art (owner 2026-10-28/29): 16 Audio Fundamentals + 47 Advanced Training images.
  * Each art entry must name a real lab in labCatalog.ts (a renamed lab would
  * silently lose its picture), each file must exist, and every Audio
  * Fundamentals lab has one.
@@ -37,7 +37,7 @@ function leafNames(section: 'fundamentals' | 'training'): string[] {
 
 describe('Labs menu tile art', () => {
   it('has 16 entries, each a real lab, each file present', () => {
-    assert.equal(entries.length, 16);
+    assert.equal(entries.length, 63);
     const all = new Set([...leafNames('fundamentals'), ...leafNames('training')]);
     for (const e of entries) {
       assert.ok(all.has(e.name), `${e.name} is not a lab name in labCatalog.ts`);
@@ -47,6 +47,10 @@ describe('Labs menu tile art', () => {
   it('every Audio Fundamentals lab has its art', () => {
     const have = new Set(entries.map((e) => e.name));
     assert.deepEqual(leafNames('fundamentals').filter((n) => !have.has(n)), []);
+  });
+  it('every Advanced Training lab has its art', () => {
+    const have = new Set(entries.map((e) => e.name));
+    assert.deepEqual(leafNames('training').filter((n) => !have.has(n)), []);
   });
   it('the Labs screen passes it to the tile, and the tile shades it for legible text', () => {
     const screen = readFileSync(join(root, 'src/screens/lab/EarLabScreen.tsx'), 'utf8');

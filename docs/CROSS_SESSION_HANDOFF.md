@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 23:52 · ccode · 1d3f40e6
+changed: D29: Audio Fundamentals lab tiles get the owner's background art
+affects other side: nothing — app-only tile art, bundled.
+needs: nothing [MD:D29].
+
+
 ### 2026-10-28 21:48 · ccode · 03e9eafb
 changed: D27: UK -> US spelling in on-screen app text (colour/centre/programme)
 affects other side: nothing on the server. The database glossary (13 terms, 348 texts) and the lab-requirement seed still use UK spelling; respelling those is Comp A's call with the owner.
