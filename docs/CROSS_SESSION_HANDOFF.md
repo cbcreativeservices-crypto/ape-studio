@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-29 11:21 · ccode · e6d412ce
+changed: Rack buttons: each cap keeps its own colours on web
+affects other side: nothing (app-only)
+needs: nothing
+
+
 ### 2026-10-29 09:01 · ccode · e2872e53
 changed: Flashcards full screen: let text scroll and swipes change cards
 affects other side: nothing (app-only gesture fix; ships with A2)

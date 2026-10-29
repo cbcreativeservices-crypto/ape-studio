@@ -86,11 +86,22 @@ describe('1. the display line', () => {
     // study sheet, full-screen section, linked-term viewer. Term popup: one.
     const sites = (src: string) => (src.match(/>\{formatAlsoCalled\(/g) ?? []).length;
     assert.equal(sites(SCREEN), 2);
-    assert.equal(sites(CARDS), 5);
+    // Flashcards: only the linked-term viewer draws it openly; cards go
+    // through AlsoCalledReveal (pinned below).
+    assert.equal(sites(CARDS), 1);
     assert.equal(sites(POPUP), 1);
     assert.match(SCREEN, /\{expanded && formatAlsoCalled\(item\.also_called\) \? \(/);
     const back = between(CARDS, '<Text style={styles.levelEyebrow}>{LEVEL_LABELS[level - 1]}</Text>', '<DefinitionScroll');
-    assert.match(back, /formatAlsoCalled\(card\.also_called\)/);
+    assert.match(back, /<AlsoCalledReveal key=\{`ac-\$\{card\.id\}`\} names=\{card\.also_called\}/);
+  });
+
+  it('a card being studied hides its other names behind a tap (owner 2026-10-29)', () => {
+    // Shown openly they hint at the answer; the glossary keeps them visible.
+    assert.equal((CARDS.match(/<AlsoCalledReveal key=\{`ac-\$\{card\.id\}`\}/g) ?? []).length, 4);
+    assert.doesNotMatch(CARDS, /\{formatAlsoCalled\(card\.also_called\) \?/);
+    const comp = between(CARDS, 'function AlsoCalledReveal(', '\n}\n');
+    assert.match(comp, /useState\(false\)/);
+    assert.match(comp, /ALSO CALLED · TAP TO SHOW/);
   });
 
   it('is never smaller than 14 pt', () => {

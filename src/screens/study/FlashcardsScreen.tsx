@@ -1979,9 +1979,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     >
                       {card.term}
                     </Text>
-                    {formatAlsoCalled(card.also_called) ? (
-                      <Text style={styles.alsoCalled}>{formatAlsoCalled(card.also_called)}</Text>
-                    ) : null}
+                    <AlsoCalledReveal key={`ac-${card.id}`} names={card.also_called} big={false} />
                     <Text style={styles.levelEyebrow}>{LEVEL_LABELS[0]}</Text>
                     <ScrollView
                       style={{ flex: 1 }}
@@ -2046,9 +2044,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                         eyeball SOLO view. */}
                     <Text style={styles.levelEyebrow}>{LEVEL_LABELS[level - 1]}</Text>
                     {/* The card's other names (2026-10-29); no line when none. */}
-                    {formatAlsoCalled(card.also_called) ? (
-                      <Text style={styles.alsoCalled}>{formatAlsoCalled(card.also_called)}</Text>
-                    ) : null}
+                    <AlsoCalledReveal key={`ac-${card.id}`} names={card.also_called} big={false} />
                     {/* Long definitions scroll INSIDE the card instead of
                         running under the footer buttons (Booth 2026-07-08). */}
                     <DefinitionScroll
@@ -2302,9 +2298,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     />
                   ) : null}
                   <Text accessibilityRole="header" style={styles.fsTermSmall}>{card.term}</Text>
-                  {formatAlsoCalled(card.also_called) ? (
-                    <Text style={styles.fsAlsoCalled}>{formatAlsoCalled(card.also_called)}</Text>
-                  ) : null}
+                  <AlsoCalledReveal key={`ac-${card.id}`} names={card.also_called} big={true} />
                   {enabledLevels.map((lvl) => (
                     <View key={lvl} style={styles.fsSheetSection}>
                       <Text style={styles.linkedEyebrow}>{LEVEL_LABELS[lvl - 1]}</Text>
@@ -2345,9 +2339,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                   >
                     {card.term}
                   </Text>
-                  {formatAlsoCalled(card.also_called) ? (
-                    <Text style={styles.fsAlsoCalled}>{formatAlsoCalled(card.also_called)}</Text>
-                  ) : null}
+                  <AlsoCalledReveal key={`ac-${card.id}`} names={card.also_called} big={true} />
                   {/* WHICH SECTION AM I READING? (Frank 2026-09-23; Terry
                       2026-10-08). Label + "n of N" + one dot per section; a
                       screen reader adjusts it to move between sections. */}
@@ -2578,6 +2570,30 @@ export function FlashcardsScreen({ navigation, route }: Props) {
  * more; once the end has been reached (or the text fits), a tap advances as
  * before.
  */
+/**
+ * "Also called" on a card being STUDIED (owner 2026-10-29): hidden behind a
+ * tap, because the other names would hint at the answer. Keyed by card at the
+ * call site, so it closes again on the next card. The glossary and the
+ * linked-term viewer are reference, not a test, and show the line openly.
+ */
+function AlsoCalledReveal({ names, big }: { names: readonly string[] | undefined; big: boolean }) {
+  const [open, setOpen] = useState(false);
+  const text = formatAlsoCalled(names);
+  if (!text) return null;
+  if (open) return <Text style={big ? styles.fsAlsoCalled : styles.alsoCalled}>{text}</Text>;
+  return (
+    <Pressable
+      onPress={() => setOpen(true)}
+      accessibilityRole="button"
+      accessibilityLabel="Show the other names for this term"
+      hitSlop={8}
+      style={[styles.alsoChip, big && styles.alsoChipBig]}
+    >
+      <Text style={styles.alsoChipText}>ALSO CALLED · TAP TO SHOW</Text>
+    </Pressable>
+  );
+}
+
 function DefinitionScroll({
   onTap,
   onLongPress,
@@ -2786,6 +2802,18 @@ const styles = StyleSheet.create({
   fsTerm: { fontFamily: fonts.oswaldMedium, fontSize: 36, letterSpacing: 0.5, color: colors.textPrimary, textAlign: 'center' },
   fsTermSmall: { fontFamily: fonts.oswaldMedium, fontSize: 25, color: colors.amber, textAlign: 'center', marginBottom: 16 },
   // "Also called: …" under the full-screen term (2026-10-29).
+  alsoChip: {
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: colors.steelBorder,
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    marginTop: 4,
+    marginBottom: 6,
+  },
+  alsoChipBig: { alignSelf: 'center', marginTop: -10, marginBottom: 16 },
+  alsoChipText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSub },
   fsAlsoCalled: { fontFamily: fonts.barlowItalic, fontSize: 16, lineHeight: 22, color: colors.textSub, textAlign: 'center', marginTop: -10, marginBottom: 16 },
   fsEyebrow: {
     fontFamily: fonts.oswaldSemiBold,
