@@ -1,5 +1,5 @@
 // supabase/functions/on-weekly-concept/index.ts
-// AP&E — Weekly Concept notification (push + email transports)
+// Pro Audio Training Academy — Weekly Concept notification (push + email transports)
 // Triggered by pg_cron every 15 minutes via net.http_post
 // Spec: APE_NOTIFICATIONS_WEEKLY_CONCEPT_SPEC_2026_08_27.md
 // Email setup: APE_EMAIL_WEEKLY_CONCEPT_2026_08_29.md
@@ -60,7 +60,7 @@ function conceptEmailHtml(c: Concept): string {
   return `<!doctype html><html><body style="margin:0;padding:0;background:#08080a;">
   <div style="display:none;max-height:0;overflow:hidden;">${esc(c.misconception).slice(0, 140)}</div>
   <div style="max-width:560px;margin:0 auto;padding:28px 16px;background:#08080a;">
-    <div style="font:700 11px/1.4 Arial,sans-serif;letter-spacing:2px;color:#ffc64d;margin-bottom:4px;">AP&amp;E · WEEKLY CONCEPT</div>
+    <div style="font:700 11px/1.4 Arial,sans-serif;letter-spacing:2px;color:#ffc64d;margin-bottom:4px;">PRO AUDIO TRAINING ACADEMY · WEEKLY CONCEPT</div>
     <div style="font:400 12px/1.4 Arial,sans-serif;color:#8d93a3;margin-bottom:14px;">${esc(c.category)}${c.subdomain ? " · " + esc(c.subdomain) : ""}</div>
     <h1 style="font:700 24px/1.25 Georgia,serif;color:#ffffff;margin:0 0 18px;">${esc(c.concept)}</h1>
     ${section("WHAT IT IS", c.what_it_is)}
@@ -69,7 +69,7 @@ function conceptEmailHtml(c: Concept): string {
     ${section("WHY IT MATTERS", c.why_it_matters)}
     <div style="font:400 12px/1.6 Arial,sans-serif;color:#8d93a3;margin-top:22px;border-top:1px solid #26262e;padding-top:14px;">
       You get one concept a week because Weekly concept + Email are switched on in your
-      AP&amp;E app. Turn either off any time: <span style="color:#c9cbd4;">Settings → NOTIFICATIONS</span>.
+      Pro Audio Training Academy app. Turn either off any time: <span style="color:#c9cbd4;">Settings → NOTIFICATIONS</span>.
       Questions? Just reply to this email.
     </div>
   </div>
@@ -78,7 +78,7 @@ function conceptEmailHtml(c: Concept): string {
 
 function conceptEmailText(c: Concept): string {
   return [
-    `AP&E · WEEKLY CONCEPT — ${c.category}${c.subdomain ? " · " + c.subdomain : ""}`,
+    `PRO AUDIO TRAINING ACADEMY · WEEKLY CONCEPT — ${c.category}${c.subdomain ? " · " + c.subdomain : ""}`,
     "",
     c.concept.toUpperCase(),
     "",
@@ -91,7 +91,7 @@ function conceptEmailText(c: Concept): string {
     `WHY IT MATTERS: ${c.why_it_matters}`,
     "",
     "You get one concept a week because Weekly concept + Email are on in your",
-    "AP&E app (Settings → NOTIFICATIONS). Reply to this email with questions.",
+    "Pro Audio Training Academy app (Settings → NOTIFICATIONS). Reply to this email with questions.",
   ].join("\n");
 }
 
@@ -132,8 +132,9 @@ Deno.serve(async (req) => {
   // academy's domain; no personal domain may ever appear here. reply_to is
   // sent only when EMAIL_REPLY_TO is explicitly configured.
   const resendKey = Deno.env.get("RESEND_API_KEY") ?? "";
-  const emailFrom = Deno.env.get("EMAIL_FROM") ??
-    "AP&E Pro Audio Training <notifications@proaudiotrainingacademy.com>";
+  // Sender (Comp A 2026-10-28, owner GO): brand name only; EMPLOYER_MAIL_FROM is the sender secret that is set.
+  const emailFrom = Deno.env.get("EMAIL_FROM") ?? Deno.env.get("EMPLOYER_MAIL_FROM") ??
+    "Pro Audio Training Academy <notifications@proaudiotrainingacademy.com>";
   const emailReplyTo = Deno.env.get("EMAIL_REPLY_TO") ?? "";
 
   const supabase = createClient(url, service);

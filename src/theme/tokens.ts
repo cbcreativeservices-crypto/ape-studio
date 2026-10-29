@@ -1,5 +1,5 @@
 /**
- * AP&E STUDIO — Theme tokens
+ * Pro Audio Training Academy — Theme tokens
  *
  * Visual truth = design-reference/ (studio-hardware language). Per the Phase-2
  * kickoff ratification, these SUPERSEDE the Design-Seed brief §1 tokens

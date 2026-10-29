@@ -1,5 +1,5 @@
 /**
- * AP&E STUDIO — app root.
+ * Pro Audio Training Academy — app root.
  * Loads the locked type families, wraps the app in a dark navigation theme +
  * safe-area provider, and renders the RootNavigator. Dark theme, portrait-only.
  */

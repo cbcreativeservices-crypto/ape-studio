@@ -50,7 +50,8 @@ Deno.serve(async (req) => {
     console.warn('[community-flag-digest] no RESEND_API_KEY — digest NOT sent');
     return json({ ok: false, error: 'no_resend_key' }, 500);
   }
-  const from = Deno.env.get('EMAIL_FROM') ?? 'AP&E Pro Audio Training <notifications@proaudiotrainingacademy.com>';
+  // Sender (Comp A 2026-10-28, owner GO): brand name only; EMPLOYER_MAIL_FROM is the sender secret that is set.
+  const from = Deno.env.get('EMAIL_FROM') ?? Deno.env.get('EMPLOYER_MAIL_FROM') ?? 'Pro Audio Training Academy <notifications@proaudiotrainingacademy.com>';
 
   const totals: Record<string, number> = {};
   for (const p of people) for (const [k, n] of Object.entries(p.counts ?? {})) totals[k] = (totals[k] ?? 0) + Number(n);

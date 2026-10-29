@@ -1,5 +1,12 @@
 # Edge function deploy notes — employer work-email verification
 
+> **CURRENT STATE 2026-10-28 (must-do R2 closed, Comp A, owner "go 2"):** the work-email code is
+> minted and mailed by the live **`employer-apply-finalize`** (v16). **`employer-issue-code` is live
+> only as a switched-off stub** (v2, answers 410 `disabled`) because running both sent a second code
+> that replaced the first. Pro1's real application passed end to end on 2026-10-28 (one code,
+> confirm, auto-approve, owner notice, "You're verified" email). Deleting the stub needs the owner's
+> go. Everything below is the 2026-09-20 history.
+
 **Last checked against the live project 2026-09-20.** This file replaces an earlier
 `_NOT_DEPLOYED.md` that was **wrong** — see "What I got wrong" at the bottom.
 

@@ -675,10 +675,21 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 19:51 · ccode · fac562f2
+changed: D24: Pro1's 14 complete topics verified active live
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-10-28 19:41 · ccode · 63c70928
 changed: D24: owner GO for Comp A to switch Pro1's 14 complete topics back on
 affects other side: Comp A — owner said "Yes, ask Comp A": switch Pro1's 14 complete topics back on in user_topic_enrollments (guarded SQL; expected 5→19 active of 151).
 needs: Comp A ACK with before/after counts and the 14 gs [MD:D24].
+
+### 2026-10-28 20:30 · Comp A (posted by ccode) · reply to the status report + AP&E sender fix
+changed: iOS 39 = WAITING FOR REVIEW (owner, ASC 20:04 PT). R2 closed: employer-issue-code v2 is a switched-off 410 stub (owner "go 2"); employer-apply-finalize mints/mails the one code; EMPLOYER_MAIL_FROM + ADMIN_NOTIFY_EMAIL set; Pro1 application passed end to end. D24 ACK: Pro1 5 -> 19 active, backup private._bkp_d24_pro1_enroll_20261028. Owner GO 20:05 "change the AP&E lingering references": on-weekly-concept v20 + community-flag-digest v3 (brand + sender chain EMAIL_FROM ?? EMPLOYER_MAIL_FROM ?? "Pro Audio Training Academy <notifications@...>"); rollback sources in Downloads/2026-10-28_BRAND_SENDER_FIX/.
+affects other side: ccode mirrored both functions and the employer-issue-code stub into the repo, corrected the apply-route comment and _DEPLOY_NOTES, emptied the edge known-missing list, updated test/fixtures/edgeFunctions.json to the 15 live functions, and removed "AP&E" from the app (DJ practice-track artist + 3 comments).
+needs: nothing [MD:R2] [MD:D25]; deleting the employer-issue-code stub is the owner's call.
 
 ### 2026-10-28 19:45 · Comp A (posted by ccode) · D23 (b) ACK
 changed: employer-verified-email v1 (new), employer-confirm-email v17, employer-apply-finalize v16 (sender line only); RPCs employer_claim_verified_email / employer_release_verified_email (service_role only); trigger employer_verified_email → private.employer_verified_email_dispatch() (swallows errors so an approval never fails). First real check 19:18 PT: Pro1 pending→approved, response 3544 200 sent:true, one email received by the owner ("looks good"). Rollback: 99_ROLLBACK.sql.

@@ -94,10 +94,6 @@ const EDGE: string[] = JSON.parse(readFileSync('test/fixtures/edgeFunctions.json
  * it is acceptable. An entry here is a promise that the CALLER FAILS SAFE.
  */
 const UNDEPLOYED_OK: Record<string, string> = {
-  'employer-issue-code':
-    'Written 2026-09-20, awaiting the owner + EMPLOYER_MAIL_FROM. The apply route treats any ' +
-    'failure as "no code sent" and the form then shows the honest manual-review branch, so an ' +
-    'undeployed function is correct behaviour rather than a lie. See supabase/functions/_DEPLOY_NOTES.md.',
 };
 
 /**

@@ -107,12 +107,13 @@ async function probe(domain: string): Promise<Remote> {
 /**
  * Ask the edge function to mint and mail the six-digit work-email code.
  *
- * ⛔ FAILS SAFE, AND THAT IS THE POINT. `employer-issue-code` is written but
- *    NOT YET DEPLOYED (see supabase/functions/_DEPLOY_NOTES.md). Until it is,
- *    this returns null, no `sent_to` reaches the form, and the form shows the
- *    honest "your application was saved, a person will review it" branch
- *    instead of claiming a code was sent. Deploying the function is the only
- *    thing needed to turn the automatic path on.
+ * ⛔ FAILS SAFE, AND THAT IS THE POINT. Since 2026-10-28 (R2, owner GO) the
+ *    live `employer-issue-code` is a SWITCHED-OFF stub that answers 410: the
+ *    live `employer-apply-finalize` already mints and mails the code, and a
+ *    second code from here replaced the first (the owner's double-code bug).
+ *    So this returns null and the route keeps finalize's own `sent_to`; with
+ *    no `sent_to` at all, the form shows the honest "your application was
+ *    saved, a person will review it" branch.
  *
  *    Never let a failure here fail the APPLICATION — `employer_apply` has
  *    already succeeded by this point and the row exists. Losing the code is

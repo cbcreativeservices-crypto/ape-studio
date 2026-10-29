@@ -53,9 +53,8 @@ test('every edge function the code calls is deployed', () => {
     [...code.matchAll(/functions\/v1\/([a-z0-9-]+)|functions\.invoke\(\s*['"]([a-z0-9-]+)['"]/g)].map((m) => m[1] ?? m[2]),
   );
   const missing = [...called].filter((f) => !snap.edge_functions.includes(f));
-  // employer-issue-code: must-do R2 (Comp A deploy, owner GO). Remove from this
-  // list the moment it is deployed — the snapshot refresh will show it.
-  const KNOWN_MISSING: Record<string, string> = { 'employer-issue-code': 'R2' };
+  // Empty since 2026-10-28: employer-issue-code is live (as a switched-off stub, R2).
+  const KNOWN_MISSING: Record<string, string> = {};
   for (const [f, row] of Object.entries(KNOWN_MISSING)) {
     assert.ok(mustDo.includes(`| ${row} |`), `${f} is excused by must-do ${row}, which is not on the list`);
   }

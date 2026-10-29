@@ -8,5 +8,10 @@
   "lab-source-pull",
   "lab-audio-load",
   "employer-apply-finalize",
-  "employer-confirm-email"
+  "employer-confirm-email",
+  "store-notifications",
+  "community-push",
+  "community-flag-digest",
+  "employer-issue-code",
+  "employer-verified-email"
 ]

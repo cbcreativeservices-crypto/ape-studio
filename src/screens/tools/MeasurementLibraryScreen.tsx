@@ -116,7 +116,7 @@ async function shareMeasurements(ms: SavedMeasurement[]): Promise<void> {
 
 async function shareMeasurementsNow(ms: SavedMeasurement[]): Promise<void> {
   // Common branding (owner 2026-08-10): the SAME header + footer as every other
-  // share surface — no more stale "AP&E" abbreviation, no missing footer.
+  // share surface — no more stale old-name abbreviation, no missing footer.
   const subtitle = ms.length === 1 ? 'Saved Measurement' : `Saved Measurements · ${ms.length}`;
   const header = shareHeaderLines(subtitle).join('\n');
   const middle =
