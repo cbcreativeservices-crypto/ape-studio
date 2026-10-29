@@ -16,7 +16,7 @@
  * Variants: primary = amber · success = green · outline = blue ·
  * secondary = off/gray · locked = flat purple.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Animated, Easing, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useDecorativeMotion } from '../features/settings/decorativeMotion';
@@ -96,6 +96,12 @@ export function SwitchButton({
   onPress?: () => void;
 }) {
   const [pressed, setPressed] = useState(false);
+  // Per-instance SVG gradient ids (owner 2026-10-29, "why are those buttons
+  // amber?"). On web every <Svg> shares one document, so a fixed id={`${gid}body`} made
+  // every cap paint with the FIRST button's gradients — the dead clear caps on
+  // the Study rack showed the amber CONTINUE's colours. Native scopes ids per
+  // <Svg>; unique ids are correct on both.
+  const gid = useId().replace(/[^A-Za-z0-9_-]/g, '');
   const [dims, setDims] = useState({ w: 0, h: 0 });
   // ONE press value: the glass and the button beneath it are a single molded
   // part — they travel together (Booth 2026-07-09q; the earlier staggered lag
@@ -339,32 +345,32 @@ export function SwitchButton({
                 {/* ---- COVER, lower layers: body + glass glow ring ---- */}
                 <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={styles.abs}>
                   <Defs>
-                    <RadialGradient id="glassFace" cx="50%" cy="40%" rx="80%" ry="70%">
+                    <RadialGradient id={`${gid}glassFace`} cx="50%" cy="40%" rx="80%" ry="70%">
                       <Stop offset="0" stopColor={v.face[0]} />
                       <Stop offset="0.55" stopColor={v.face[1]} />
                       <Stop offset="1" stopColor={v.face[2]} />
                     </RadialGradient>
-                    <SvgLinearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+                    <SvgLinearGradient id={`${gid}body`} x1="0" y1="0" x2="0" y2="1">
                       <Stop offset="0" stopColor={v.body[0]} />
                       <Stop offset="1" stopColor={v.body[1]} />
                     </SvgLinearGradient>
                     {/* the dark hole behind, showing through the glass: a cast
                         shadow from the cutout's top lip... */}
-                    <SvgLinearGradient id="holeShadow" x1="0" y1="0" x2="0" y2="1">
+                    <SvgLinearGradient id={`${gid}holeShadow`} x1="0" y1="0" x2="0" y2="1">
                       <Stop offset="0" stopColor="#000000" stopOpacity={0.24} />
                       <Stop offset="0.35" stopColor="#000000" stopOpacity={0} />
                     </SvgLinearGradient>
                     {/* ...and the cavity's darkness settling at the base */}
-                    <SvgLinearGradient id="glassBot" x1="0" y1="0" x2="0" y2="1">
+                    <SvgLinearGradient id={`${gid}glassBot`} x1="0" y1="0" x2="0" y2="1">
                       <Stop offset="0.45" stopColor="#000000" stopOpacity={0} />
                       <Stop offset="1" stopColor="#000000" stopOpacity={0.5} />
                     </SvgLinearGradient>
                   </Defs>
                   {/* keycap body — the outermost plastic edge sliver */}
-                  <Rect x={0.5} y={0.5} width={w - 1} height={h - 1} rx={r} ry={r} fill="url(#body)" />
+                  <Rect x={0.5} y={0.5} width={w - 1} height={h - 1} rx={r} ry={r} fill={`url(#${gid}body)`} />
                   {/* LED light seen THROUGH the glass — falloff weakened another
                       13% (Booth 2026-07-09o): the glow reaches the edge */}
-                  <Rect x={gx} y={gx} width={gw} height={gh} rx={r} ry={r} fill="url(#glassFace)" />
+                  <Rect x={gx} y={gx} width={gw} height={gh} rx={r} ry={r} fill={`url(#${gid}glassFace)`} />
                   {/* overall intensity pulled DOWN (Booth 2026-07-09p): cool,
                       dimmed pro-gear brightness, not cartoon-bright */}
                   <Rect x={gx} y={gx} width={gw} height={gh} rx={r} ry={r} fill="#000000" fillOpacity={0.14} />
@@ -393,8 +399,8 @@ export function SwitchButton({
                     strokeWidth={1.5}
                   />
                   {/* the dark cutout behind, visible through the diffused glow */}
-                  <Rect x={gx} y={gx} width={gw} height={gh} rx={r} ry={r} fill="url(#holeShadow)" />
-                  <Rect x={gx} y={gx} width={gw} height={gh} rx={r} ry={r} fill="url(#glassBot)" fillOpacity={0.45} />
+                  <Rect x={gx} y={gx} width={gw} height={gh} rx={r} ry={r} fill={`url(#${gid}holeShadow)`} />
+                  <Rect x={gx} y={gx} width={gw} height={gh} rx={r} ry={r} fill={`url(#${gid}glassBot)`} fillOpacity={0.45} />
                 </Svg>
 
                 {/* ---- INNER BUTTON — rides WITH the glass (one molded part) ---- */}
@@ -402,23 +408,23 @@ export function SwitchButton({
                   <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={fw} height={fh} viewBox={`0 0 ${fw} ${fh}`} style={styles.abs}>
                     <Defs>
                       {/* wide rx: long buttons stay evenly lit horizontally */}
-                      <RadialGradient id="innerFace" cx="50%" cy="40%" rx="85%" ry="72%">
+                      <RadialGradient id={`${gid}innerFace`} cx="50%" cy="40%" rx="85%" ry="72%">
                         <Stop offset="0" stopColor={v.face[0]} />
                         <Stop offset="0.55" stopColor={v.face[1]} />
                         <Stop offset="1" stopColor={v.face[2]} />
                       </RadialGradient>
-                      <SvgLinearGradient id="innerBot" x1="0" y1="0" x2="0" y2="1">
+                      <SvgLinearGradient id={`${gid}innerBot`} x1="0" y1="0" x2="0" y2="1">
                         <Stop offset="0.45" stopColor="#000000" stopOpacity={0} />
                         <Stop offset="1" stopColor="#000000" stopOpacity={0.4} />
                       </SvgLinearGradient>
-                      <SvgLinearGradient id="innerEdge" x1="0" y1="0" x2="0" y2="1">
+                      <SvgLinearGradient id={`${gid}innerEdge`} x1="0" y1="0" x2="0" y2="1">
                         <Stop offset="0" stopColor="#ffffff" stopOpacity={0.05} />
                         <Stop offset="0.7" stopColor="#ffffff" stopOpacity={0.14} />
                         <Stop offset="1" stopColor="#ffffff" stopOpacity={0.38} />
                       </SvgLinearGradient>
                     </Defs>
-                    <Rect x={0} y={0} width={fw} height={fh} rx={rf} ry={rf} fill="url(#innerFace)" />
-                    <Rect x={0} y={0} width={fw} height={fh} rx={rf} ry={rf} fill="url(#innerBot)" />
+                    <Rect x={0} y={0} width={fw} height={fh} rx={rf} ry={rf} fill={`url(#${gid}innerFace)`} />
+                    <Rect x={0} y={0} width={fw} height={fh} rx={rf} ry={rf} fill={`url(#${gid}innerBot)`} />
                     {/* internal glow dimmed for the sleek pro look (07-09p) */}
                     <Rect x={0} y={0} width={fw} height={fh} rx={rf} ry={rf} fill="#000000" fillOpacity={0.16} />
                     {/* soft light-exit line where the glow meets the cover */}
@@ -430,7 +436,7 @@ export function SwitchButton({
                       rx={Math.max(2, rf - 1)}
                       ry={Math.max(2, rf - 1)}
                       fill="none"
-                      stroke="url(#innerEdge)"
+                      stroke={`url(#${gid}innerEdge)`}
                       strokeWidth={1.25}
                     />
                   </Svg>
@@ -450,37 +456,37 @@ export function SwitchButton({
                 <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={styles.abs} pointerEvents="none">
                   <Defs>
                     {/* reflectivity boosted for a glassier top (07-09r) */}
-                    <SvgLinearGradient id="bevel" x1="0" y1="0" x2="0" y2="1">
+                    <SvgLinearGradient id={`${gid}bevel`} x1="0" y1="0" x2="0" y2="1">
                       <Stop offset="0" stopColor="#ffffff" stopOpacity={0.38 * reflect} />
                       <Stop offset="0.4" stopColor="#ffffff" stopOpacity={0.06 * reflect} />
                       <Stop offset="1" stopColor="#ffffff" stopOpacity={0} />
                     </SvgLinearGradient>
                     {/* warm-white specular — tungsten room light, not LED-white */}
-                    <RadialGradient id="spec" cx="50%" cy="50%" rx="50%" ry="50%">
+                    <RadialGradient id={`${gid}spec`} cx="50%" cy="50%" rx="50%" ry="50%">
                       <Stop offset="0" stopColor="#fff2d9" stopOpacity={0.7 * reflect} />
                       <Stop offset="0.65" stopColor="#fff2d9" stopOpacity={0.1 * reflect} />
                       <Stop offset="1" stopColor="#fff2d9" stopOpacity={0} />
                     </RadialGradient>
-                    <SvgLinearGradient id="topEdge" x1="0" y1="0" x2="0" y2="1">
+                    <SvgLinearGradient id={`${gid}topEdge`} x1="0" y1="0" x2="0" y2="1">
                       <Stop offset="0" stopColor="#ffffff" stopOpacity={0.5 * reflect} />
                       <Stop offset="0.25" stopColor="#ffffff" stopOpacity={0.11 * reflect} />
                       <Stop offset="1" stopColor="#ffffff" stopOpacity={0} />
                     </SvgLinearGradient>
                     {/* upper-LEFT diagonal highlight (matches the nav caps). */}
-                    <SvgLinearGradient id="ulHi" x1="0" y1="0" x2="1" y2="1">
+                    <SvgLinearGradient id={`${gid}ulHi`} x1="0" y1="0" x2="1" y2="1">
                       <Stop offset="0" stopColor="#ffffff" stopOpacity={0.34 * reflect} />
                       <Stop offset="0.45" stopColor="#ffffff" stopOpacity={0.05 * reflect} />
                       <Stop offset="1" stopColor="#ffffff" stopOpacity={0} />
                     </SvgLinearGradient>
                   </Defs>
                   {/* the sheen lies on the cover — it sweeps ring AND face */}
-                  <Rect x={gx} y={gx} width={gw} height={gh * 0.48} rx={r} ry={r} fill="url(#bevel)" />
+                  <Rect x={gx} y={gx} width={gw} height={gh * 0.48} rx={r} ry={r} fill={`url(#${gid}bevel)`} />
                   {/* upper-left glass highlight over the whole cover */}
-                  <Rect x={gx} y={gx} width={gw} height={gh} rx={r} ry={r} fill="url(#ulHi)" />
-                  <Ellipse cx={w / 2} cy={gx + gh * 0.18} rx={gw * 0.44} ry={gh * 0.16} fill="url(#spec)" />
+                  <Rect x={gx} y={gx} width={gw} height={gh} rx={r} ry={r} fill={`url(#${gid}ulHi)`} />
+                  <Ellipse cx={w / 2} cy={gx + gh * 0.18} rx={gw * 0.44} ry={gh * 0.16} fill={`url(#${gid}spec)`} />
                   {/* second smaller reflection streak — the double-highlight
                       that reads as curved glass */}
-                  <Ellipse cx={w * 0.28} cy={gx + gh * 0.4} rx={gw * 0.14} ry={gh * 0.07} fill="url(#spec)" opacity={0.45} />
+                  <Ellipse cx={w * 0.28} cy={gx + gh * 0.4} rx={gw * 0.14} ry={gh * 0.07} fill={`url(#${gid}spec)`} opacity={0.45} />
                   <Rect
                     x={gx + 0.75}
                     y={gx + 0.75}
@@ -489,7 +495,7 @@ export function SwitchButton({
                     rx={r}
                     ry={r}
                     fill="none"
-                    stroke="url(#topEdge)"
+                    stroke={`url(#${gid}topEdge)`}
                     strokeWidth={1.5}
                   />
                 </Svg>
