@@ -40,6 +40,7 @@ import {
 import { cardColumn, readingText } from '../../theme/readingColumn';
 import { useIsTablet, useWideOnTablet } from '../../theme/useIsTablet';
 import { GlassPanel, GlassTile } from '../tools/GlassTile';
+import { labTileArt } from './labTileArt';
 import { fitValue } from '../../theme/legibility';
 import { safeGoBack } from '../../lib/safeGoBack';
 
@@ -265,6 +266,7 @@ export function EarLabScreen({ navigation, route }: Props) {
                             key={`${cat.id}:${leaf.name}`}
                             style={tablet ? tabletTile : styles.tileHalf}
                             glassStyle={styles.tileFace}
+                            backgroundImage={labTileArt(leaf.name)}
                             onPress={() => openLeaf(leaf, sec.key)}
                             accessibilityLabel={`${leaf.name}. ${leaf.blurb}${leaf.countLine ? ` ${leaf.countLine}.` : ''}${locked ? ' Academy members only — opens the preview.' : ''}${free ? ' Included free.' : ''}`}
                           >

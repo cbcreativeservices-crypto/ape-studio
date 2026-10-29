@@ -14,7 +14,7 @@
  * on the confirmed press — exactly the hub's timings.
  */
 import { memo, useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Animated, Easing, Platform, Pressable, StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
+import { Animated, Easing, Image, Platform, Pressable, StyleSheet, View, type ImageSourcePropType, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
@@ -74,8 +74,12 @@ export function GlassTile({
   onHoverIn,
   onHoverOut,
   onLayout,
+  backgroundImage,
 }: {
   children: ReactNode;
+  /** ADDITIVE (Labs menu tile art, owner 2026-10-28): an image behind the
+   *  content, covered by a dark left-to-right shade so the text stays legible. */
+  backgroundImage?: ImageSourcePropType;
   onPress: () => void;
   accessibilityLabel: string;
   /** ADDITIVE (Mixing Guides world map, 2026-10-08): a finger lands on the tile. */
@@ -154,6 +158,19 @@ export function GlassTile({
       <LinearGradient pointerEvents="none" colors={[HUB_LIGHT.crevice, 'rgba(0,0,0,0)']} style={styles.cavityTop} />
       <LinearGradient pointerEvents="none" colors={['rgba(255,255,255,0)', HUB_LIGHT.wall]} style={styles.cavityBottom} />
       <Animated.View style={[styles.glass, glassStyle, { transform: [{ translateY }] }]}>
+        {backgroundImage ? (
+          <>
+            <Image source={backgroundImage} resizeMode="cover" style={styles.art} accessible={false} />
+            <LinearGradient
+              pointerEvents="none"
+              colors={['rgba(5,6,10,0.88)', 'rgba(5,6,10,0.62)', 'rgba(5,6,10,0.30)']}
+              locations={[0, 0.55, 1]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.art}
+            />
+          </>
+        ) : null}
         {children}
         <GlassOverlay />
         <Animated.View pointerEvents="none" style={[styles.glow, { opacity: glow }]} />
@@ -355,6 +372,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#0b0c0e',
     overflow: 'hidden',
   },
+  // Tile art fills the glass, under the content (backgroundImage).
+  art: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' },
   glassTint: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.05)' },
   glassFacetTop: { position: 'absolute', top: 0, left: 0, right: 0, height: 1, backgroundColor: HUB_LIGHT.glassEdge },
   glassFacetBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 1, backgroundColor: 'rgba(0,0,0,0.30)' },
