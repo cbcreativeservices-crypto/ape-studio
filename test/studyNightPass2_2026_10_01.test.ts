@@ -37,15 +37,14 @@ describe('the enrollment server sync is fenced across an account wipe', () => {
     assert.ok(catchBody.indexOf('if (gen !== generation) return;') < catchBody.indexOf('scheduleServerSync('));
   });
 
-  it('the server pull neither adopts the departing rows nor latches for the next identity', () => {
+  it('the server pull never hands the departing rows to the next identity', () => {
     const pull = store.slice(store.indexOf('async function reconcileFromServer('), store.indexOf('function scheduleServerSync('));
     assert.match(pull, /async function reconcileFromServer\(gen: number\)/);
     const readAt = pull.indexOf(".from('user_topic_enrollments')");
-    const fenceAt = pull.indexOf('if (gen !== generation) return false;');
-    // (the adopted rows go through the shared store's write, 2026-10-02)
+    const fenceAt = pull.indexOf('if (gen !== generation) return null;');
+    // (since D24, 2026-10-28, the rows are merged in the sync, after its own fence)
     const adoptAt = pull.indexOf('const adopted = rows');
     assert.ok(readAt > 0 && fenceAt > readAt && adoptAt > fenceAt);
-    assert.match(pull, /if \(gen === generation\) reconciled = true;/);
     assert.match(sync, /reconcileFromServer\(gen\)/);
   });
 });

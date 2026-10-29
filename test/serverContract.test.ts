@@ -107,9 +107,6 @@ const UNDEPLOYED_OK: Record<string, string> = {
 const NO_CLIENT_SELECT_OK: Record<string, string> = {
   access_codes: 'supabase/functions/admin-codes — runs as service_role in an edge function.',
   notification_concept_deliveries: 'supabase/functions/on-weekly-concept — service_role.',
-  user_topic_enrollments:
-    'src/features/enrollment/enrollmentStore — the read is a best-effort convenience that ' +
-    'treats a 42501 denial and an empty result identically as "not confirmed". Never load-bearing.',
 };
 
 test('every edge function this repo invokes is deployed', () => {

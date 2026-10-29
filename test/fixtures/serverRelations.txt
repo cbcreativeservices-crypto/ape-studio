@@ -86,6 +86,6 @@ tubes=1
 user_bundle_enrollments=0
 user_enrollment_state=0
 user_home_cards=0
-user_topic_enrollments=0
+user_topic_enrollments=1
 users=1
 v_badge_roster=1

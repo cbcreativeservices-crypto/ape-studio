@@ -19,7 +19,8 @@
  *
  * NOTE: this is the device-local source of truth. For a signed-in user it is
  * ALSO best-effort mirrored to the backend via the `sync_my_enrollments` RPC
- * (see scheduleServerSync below, added 2026-08-06) — failures are swallowed and
+ * (see scheduleServerSync below, added 2026-08-06), merged with the server's
+ * list first (three-way, must-do D24, 2026-10-28) — failures are swallowed and
  * the local list stays authoritative. Guests never sync. "Saved" in the account
  * sense is gated in the UI by entitlement (anonymous = warned it won't be saved).
  */
@@ -28,7 +29,7 @@ import { supabase } from '../../lib/supabase';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 import { createLocalStore } from '../storage/localStore';
-import { freshGs, studyFocusAction } from './enrollmentPlan';
+import { freshGs, mergeEnrollment, studyFocusAction } from './enrollmentPlan';
 
 export type EnrollTopic = { gs: number; favorite: boolean; active: boolean };
 
@@ -64,25 +65,47 @@ let syncTimer: ReturnType<typeof setTimeout> | null = null;
 let syncRetries = 0;
 const MAX_SYNC_RETRIES = 4;
 
-/**
- * Has this identity's list been reconciled against the server yet?
- *
+/*
  * ── THE SYNC ONLY EVER WENT ONE WAY (2026-09-17, bug-hunt pass 2) ─────────
  *
- * `sync_my_enrollments` pushes the device's list up and nothing anywhere reads
- * it back — a repo-wide search for the table returns only the write. That is
- * fine for the case it was designed for (one device, editing its own list) and
- * quietly destructive for the case nobody wrote down: a REINSTALL, or a second
- * device. The fresh install seeds the two free topics, signs in, pushes that
- * seed over the master list, and per governance R3 the backend gates v3 study
- * and quizzes on exactly that list — so a paying member loses access to topics
- * they enrolled in, and the app shows them as enrolled while the server refuses.
+ * `sync_my_enrollments` REPLACES the caller's whole server list. Pushing the
+ * device's list with nothing read back is fine for one device editing its own
+ * list and quietly destructive for a REINSTALL or a second device: per
+ * governance R3 the backend gates v3 study and quizzes on exactly that list.
+ * The store's own history records the same shape once already, when a
+ * sign-out/sign-in inside the retry window pushed an empty list and "wiped
+ * THEIR enrollment master list".
  *
- * The store's own history records the same shape happening once already, when a
- * sign-out/sign-in inside the retry window pushed an empty list and "wiped THEIR
- * enrollment master list".
+ * ── TWO PHONES (must-do D24, 2026-10-28) ─────────────────────────────────
+ *
+ * The first answer (adopt the server list only while this device still held
+ * the untouched seed) left the two-phone case open: whichever phone synced
+ * last replaced the list, and a phone that had ever been edited never took the
+ * server's. The owner's Pixel left Pro1's 14 complete topics switched off that
+ * way (Comp A, live, 2026-10-28). Every sync now reads the server list and
+ * merges it three ways against `lastSynced` (mergeEnrollment, enrollmentPlan.ts).
  */
-let reconciled = false;
+
+/** The list this device last saw confirmed on the server, and for whom (the
+ *  auth uid). Written only after `sync_my_enrollments` succeeded; a different
+ *  uid, or a copy that cannot be read, counts as "never synced". The account
+ *  wipe clears it with every other `ape:` key. */
+type LastSynced = { uid: string; items: EnrollTopic[] } | null;
+const lastSynced = createLocalStore<LastSynced>({
+  key: 'ape:enrollmentLastSynced',
+  empty: () => null,
+  parse: (p) => {
+    const o = p as { uid?: unknown; items?: unknown } | null;
+    if (!o || typeof o.uid !== 'string' || !Array.isArray(o.items)) return null;
+    return {
+      uid: o.uid,
+      items: (o.items as { gs?: unknown; favorite?: unknown; active?: unknown }[])
+        .filter((e) => e && typeof e.gs === 'number')
+        .map((e) => ({ gs: e.gs as number, favorite: !!e.favorite, active: e.active !== false })),
+    };
+  },
+  serialize: (v) => (v ? JSON.stringify(v) : null),
+});
 
 // Bumped on every account wipe (bug pass 2, 2026-09-30) — the server-sync
 // fences below capture it before their first await. Mirrors the shared
@@ -146,82 +169,44 @@ const store = createLocalStore<EnrollTopic[]>({
     if (syncTimer) clearTimeout(syncTimer);
     syncTimer = null;
     syncRetries = 0;
-    // The next identity must reconcile against ITS OWN server list, not inherit
-    // the departing user's "already checked".
-    reconciled = false;
     migratedAtSeed = false;
     generation++;
   },
 });
 
-/** Is the local list still the untouched new-device default? */
-function isPristineSeed(l: EnrollTopic[]): boolean {
-  if (l.length === 0) return true;
-  if (l.length !== FREE_ENROLL_GS.length) return false;
-  return l.every((e) => FREE_ENROLL_GS.includes(e.gs) && !e.favorite && e.active);
-}
-
 /**
- * Read the server's list once per identity, BEFORE the first push.
+ * Read the server's list, before every push.
  *
- * Deliberately defensive. There is no documented read path for this table, so a
- * missing policy or grant simply means the select errors — in which case this
- * does nothing at all and the behaviour is exactly what it was. If the read does
- * work, a reinstalling member gets their enrollments back.
- *
- * It adopts the server list ONLY when the device's list is still the untouched
- * seed. Anyone who has actually edited their enrollments on this phone is
- * holding the phone, and their intent wins.
+ * Answers the rows actually read, or null for "not confirmed". The client CAN
+ * read it: `authenticated` holds SELECT and the `own_topic_enrollments` policy
+ * returns only the caller's own rows (checked live as Pro1, 2026-10-28: 151
+ * rows). It used to be a 42501 denial (probed 2026-09-20), and a failure is
+ * still "not confirmed": the device's list is then pushed exactly as before.
  */
-async function reconcileFromServer(gen: number): Promise<boolean> {
-  if (reconciled) return false;
+async function reconcileFromServer(gen: number): Promise<EnrollTopic[] | null> {
   try {
     const { data, error } = await supabase
       .from('user_topic_enrollments')
       .select('gs, favorite, active, position')
       .order('position', { ascending: true });
     // Wiped while reading (night bug pass 2, 2026-10-01): these are the
-    // DEPARTING account's rows, and the reset's empty list reads as a
-    // pristine seed — adopting them would hand them to the next account.
-    if (gen !== generation) return false;
+    // DEPARTING account's rows — merging them would hand them to the next account.
+    if (gen !== generation) return null;
     if (error) {
       console.warn('[enrollment] could not read the server list:', error.message);
-      return false;
+      return null;
     }
     const rows = (data ?? []) as { gs: number; favorite: boolean | null; active: boolean | null }[];
-    // ZERO ROWS IS NOT AN ANSWER (corrected 2026-09-17 by a verification pass).
-    //
-    // `user_topic_enrollments` has NO SELECT grant to `anon` or
-    // `authenticated`. ⛔ CORRECTED 2026-09-20 (probed live): a direct client
-    // select on it returns **42501 permission denied** — an ERROR, not the
-    // zero rows this comment used to claim, twice, as the stated reason the
-    // push below is unconditional.
-    //
-    // The behaviour here is right either way, and deliberately so: a denial
-    // and an empty result are BOTH treated as not-confirmed, because the
-    // first version treated a denial as "the server has nothing to teach us",
-    // returned, and let the push proceed — the exact overwrite this was
-    // written to prevent. But the next person reasoning about whether the
-    // client can ever read this list should start from the true premise.
-    //
-    // An empty result is therefore indistinguishable from a denial, and both are
-    // treated as NOT CONFIRMED. Only rows we actually read count.
-    if (rows.length === 0) return false;
-    if (!isPristineSeed(store.get())) return true; // the user has edited this device's list
-
+    // ZERO ROWS IS NOT AN ANSWER (2026-09-17). A brand-new account's list is
+    // legitimately empty, and an empty read must never make this device drop
+    // its list, so it is NOT CONFIRMED, like a denial.
     const adopted = rows
       .filter((r) => typeof r.gs === 'number')
       .map((r) => ({ gs: r.gs, favorite: !!r.favorite, active: r.active !== false }));
-    void store.set(adopted, { reportFailure: false }); // adopted from the server: a refusal is re-adopted next launch
-    return true;
+    return adopted.length > 0 ? adopted : null;
   } catch (e) {
     console.warn('[enrollment] server list read threw:', (e as Error)?.message);
-    return false;
-  } finally {
-    // Latched only AFTER the attempt, so a throw on the way in does not disable
-    // the pull for the rest of the run — and never for the NEXT identity, which
-    // resetLocal has just re-opened.
-    if (gen === generation) reconciled = true;
+    return null;
   }
 }
 function scheduleServerSync(delayMs = 800) {
@@ -259,7 +244,8 @@ function scheduleServerSync(delayMs = 800) {
         await store.hydrate();
         if (gen !== generation) return;
         if (!store.isHydrated()) throw new Error('enrollment list could not be read');
-        // PULL FIRST, THEN PUSH REGARDLESS.
+        const uid = data.session?.user?.id ?? '';
+        // PULL, MERGE, THEN PUSH REGARDLESS.
         //
         // ── WHY THERE IS NO "REFUSE TO PUSH" GUARD HERE ───────────────────
         //
@@ -277,34 +263,36 @@ function scheduleServerSync(delayMs = 800) {
         //   have been told "You are not enrolled in this course" on a topic the
         //   Dashboard showed as enrolled.
         //
-        // Certain breakage for every new user is worse than a narrower loss that
-        // the member can repair by re-adding topics from Browse. So the push is
-        // unconditional again, and the reinstall case needs the fix it always
-        // needed, which is on the SERVER: either `sync_my_enrollments` merges
-        // rather than replaces, or the client is given a way to READ the list
-        // (it currently cannot — the table has no SELECT grant to `anon` or
-        // `authenticated`, so a client select returns 42501 permission denied;
-        // corrected 2026-09-20, this used to say "zero rows rather than an
-        // error". Either way the pull below is best-effort and never
-        // load-bearing, because a denial and an empty result are both treated
-        // as not-confirmed).
+        // So the push is unconditional. What protects a reinstall or a second
+        // phone is the merge (D24): when the server list WAS read, this
+        // device's list becomes the three-way merge of the server's, its own
+        // and the copy last confirmed here, and that is what is pushed.
         //
-        // BOUNDED (2026-09-17, pass 6). The pull is a convenience; the push is
-        // the thing that matters. There is no request timeout anywhere in this
-        // app, so awaiting an untimed select would park the push indefinitely —
-        // the same hazard the exam-queue fix in this same batch argues against.
-        // Four seconds, then go.
-        await Promise.race([
+        // BOUNDED (2026-09-17, pass 6). There is no request timeout anywhere in
+        // this app, so awaiting an untimed select would park the push
+        // indefinitely. Four seconds, then push without merging.
+        const theirs = await Promise.race([
           reconcileFromServer(gen),
-          new Promise((r) => setTimeout(r, 4000)),
+          new Promise<null>((r) => setTimeout(() => r(null), 4000)),
         ]);
         if (gen !== generation) return;
+        if (theirs) {
+          await lastSynced.hydrate();
+          if (gen !== generation) return;
+          const last = lastSynced.isHydrated() ? lastSynced.get() : null;
+          const base = last && uid && last.uid === uid ? last.items : null;
+          // Merged INTO the stored list as it is now, so a tap during the read
+          // is part of `mine` rather than lost.
+          await store.mutate((mine) => mergeEnrollment(base, mine, theirs));
+          if (gen !== generation) return;
+        }
         // supabase-js RESOLVES with { error } — the old dead catch never saw RPC
         // errors, so a failed FINAL sync left the server master list stale with
         // no retry until the user next edited enrollment (backend gates v3
         // study/quiz on this list). Check error + re-arm a bounded backoff.
+        const pushed = store.get().map((e) => ({ ...e }));
         const { error } = await supabase.rpc('sync_my_enrollments', {
-          p_items: store.get().map((e, i) => ({ gs: e.gs, favorite: e.favorite, active: e.active, position: i })),
+          p_items: pushed.map((e, i) => ({ gs: e.gs, favorite: e.favorite, active: e.active, position: i })),
         });
         if (gen !== generation) return; // wiped meanwhile — never re-arm for the next account
         if (error) {
@@ -318,6 +306,9 @@ function scheduleServerSync(delayMs = 800) {
           return;
         }
         syncRetries = 0; // success
+        // What the server now holds, for the next merge. The fence above keeps
+        // a wipe meanwhile from handing this copy to the next identity.
+        if (uid) void lastSynced.set({ uid, items: pushed }, { reportFailure: false }); // sync bookkeeping, not the user's change
       } catch (e) {
         if (gen !== generation) return; // see the fence above
         // Transport throw (network) — same bounded backoff.
@@ -547,6 +538,7 @@ export function resetEnrollment(): void {
 export function resetLocal(): void {
   store.reset();
   seeded.reset();
+  lastSynced.reset();
 }
 
 /** Move an entry up (-1) or down (+1) in the user's order. */
