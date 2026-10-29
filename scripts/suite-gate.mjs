@@ -22,7 +22,8 @@ const num = (k) => {
 const tests = num('tests');
 const fail = num('fail');
 const cancelled = num('cancelled');
-const failing = out.split('\n').filter((l) => /^not ok/.test(l)).slice(0, 20);
+const failingAll = out.split('\n').filter((l) => /^not ok/.test(l));
+const failing = failingAll.slice(0, 20);
 console.log(`suite-gate: tests=${tests} fail=${fail} cancelled=${cancelled} floor=${FLOOR}`);
 if (failing.length) console.log(failing.join('\n'));
 if (fail === 0 && cancelled === 0 && tests >= FLOOR) {
@@ -31,7 +32,9 @@ if (fail === 0 && cancelled === 0 && tests >= FLOOR) {
   console.error(
     tests < FLOOR || Number.isNaN(tests)
       ? `suite-gate: ⛔ only ${tests} tests ran (floor ${FLOOR}) — the run did not finish. NOT committing.`
-      : 'suite-gate: ⛔ failures — NOT committing.',
+      : // The COUNT is on the last line (2026-10-29): a `tail -2` of the log once
+        // showed 2 of 7 failures and the other 5 went unread. Read them all.
+        `suite-gate: ⛔ ${failingAll.length} failing test${failingAll.length === 1 ? '' : 's'} (${failingAll.length > 20 ? 'first 20' : 'all'} listed above) — NOT committing.`,
   );
   process.exitCode = 1;
 }

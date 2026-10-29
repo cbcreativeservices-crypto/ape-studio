@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-29 08:30 · ccode · end of the 10-28/29 session (owner asleep)
+changed: one branch @ the commit carrying this entry. Tonight: D24 enrollment three-way merge (297f6551); D23 (b) verified + closed; R2 closed (employer-issue-code = 410 stub); D25 AP&E gone from app text; D10 lab-term texts; D11/D21; D20(b) privacy §10/§20; D27 UK->US sweep of on-screen app text (03e9eafb); D28 "We're updating our audio" notice (f5dc195a); D29 all 73 Labs-menu + Calculator tiles have the owner's art (1d3f40e6, 0fa70ac6, 7c873f92, 94845c93). Gate now prints the failure COUNT on its last line. PROTOCOL rules 27-30 (ape-studio canonical 417a0249, local by design; copy here).
+affects other side: Comp A has two open asks — the brief Downloads/2026-10-28_FOR_COMP_A_SPELLING_AND_AUDIO_NOTICE.zip (DB spelling REPORT only; create audio_replacement_pending() + list) and the live Phase glossary row ("notes" -> "frequencies").
+needs: Comp A: audio_replacement_pending [MD:D28]; spelling report [MD:D27]; Phase row [MD:D26]; two test accounts for the deletion test [MD:D20].
+
 ### 2026-10-29 01:01 · ccode · 7c873f92
 changed: D29: Calculator Lab section tiles get the owner's background art
 affects other side: nothing — app-only tile art, bundled.
