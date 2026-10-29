@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getSupabaseBrowser } from "@/lib/supabase";
+import VerifiedNextSteps from "@/components/VerifiedNextSteps";
 
 /**
  * "Where is my application?"
@@ -113,7 +114,9 @@ export default function EmployerStatus() {
 
   const body =
     app.status === "approved"
-      ? "Your employer account is active. Open the app to choose what you are looking for and to contact members."
+      ? app.kind === "instructor"
+        ? "Your instructor account is active."
+        : "Your employer account is active. Open the app to choose what you are looking for and to contact members."
       : app.status === "rejected"
         ? "We could not verify this application."
         : app.status === "withdrawn"
@@ -161,6 +164,8 @@ export default function EmployerStatus() {
           Get the app
         </a>
       ) : null}
+
+      {app.status === "approved" ? <VerifiedNextSteps kind={app.kind} /> : null}
 
       <p className="mt-6 font-mono text-xs text-text-muted">
         Reference APP-{app.id.slice(0, 8)}

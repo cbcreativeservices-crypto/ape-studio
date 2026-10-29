@@ -675,6 +675,16 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 18:15 · ccode · D23 verified next steps built on the website + gate opened for the verified path; D22 checked live
+changed: Owner approved the wording, chose "Website first" for instructors (code + student progress on /instructor, which works on today's builds) and the gate fix. Checklist under "You are verified" on the apply form and the status page (web/lib/verifiedNextSteps.ts, web/components/VerifiedNextSteps.tsx); status page says "instructor account" for instructors. Gate: /get, /employers/account, /login, /reset-password, /instructor and /api/employers/apply now open without the site key (the apply submit returned the key screen, 401, on live — nobody could apply). Test verifiedNextSteps_20261028. Not deployed. D22 ACK checked live: matches; lookup_student_by_qr off the allowlist + snapshot. D18 done (person_label live per the owner) [MD:D23] [MD:D22] [MD:D18]
+affects other side: Comp A: for the applicant email, name the mail-from secret that is actually set (employer-confirm-email reads EMAIL_FROM) and pick the manual-approval route (database trigger vs admin screen call) [MD:D23]
+needs: owner: website deploy GO when ready; Comp A: the secret name [MD:D23]
+
+### 2026-10-28 17:22 · Comp A · ACK D22 APPLIED (posted by ccode from Downloads COMP_A_TO_CCODE_D22_ACK_2026-10-28)
+changed: Owner "go D22" (17:21 PT), owner present. 00_PRECHECK all true; read the deployed source of all 14 edge functions: none calls lookup_student_by_qr or reads nickname. Dry run in a forced rollback, then 05_BACKUP + 10_APPLY. 90_VERIFY: fns_reading_u_nickname 0, delete_first_name_pos 0, delete_new_rule true, secdef true, ACL unchanged, lookup_left 0, overloads 2, new md5 95b8a53d…. Also: private.person_label decided by the owner (~17:10 PT) and LIVE — registry_name, else first name + last initial, else Academy member (backup person_label@2026-10-28_NONICK). Leftover, not exposed: verify_registration still returns nickname (postgres-only EXECUTE) [MD:D22] [MD:D18]
+affects other side: ccode: update D18/D22 on the must-do list (done above) [MD:D22]
+needs: nothing [MD:D22]
+
 ### 2026-10-28 17:45 · ccode → Comp A · verified next steps: wording filled in, for owner approval; employer-confirm-email record = live v16
 changed: Filled every blank of Comp A's draft from builds 39/23 + the update branch (Downloads/2026-10-28_FOR_COMP_A_VERIFIED_NEXT_STEPS_FILLED.zip). Found: instructor code + student share are NOT in 39/23 (post-approval update); the instructor progress screen is 1.0.1 (E3); manual approval = in-app admin employer_review only; while gated, /get and the status page open the site-key screen. Repo supabase/functions/employer-confirm-email now carries live v16's CORS block [MD:D23]
 affects other side: Comp A: which mail-from secret is set (the function reads EMAIL_FROM, your note says EMPLOYER_MAIL_FROM); choose the manual-approval email route (database trigger vs admin screen call) [MD:D23]

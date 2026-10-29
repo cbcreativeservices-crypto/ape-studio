@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { getSupabaseBrowser } from "@/lib/supabase";
+import VerifiedNextSteps from "@/components/VerifiedNextSteps";
 
 /**
  * The employer application.
@@ -346,6 +347,7 @@ export default function EmployerApplyForm() {
             View status
           </a>
         </div>
+        {status === "approved" ? <VerifiedNextSteps kind={kind} /> : null}
       </div>
     );
   }

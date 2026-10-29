@@ -1,5 +1,5 @@
 {
- "taken_at": "2026-10-28T16:45:00-07:00",
+ "taken_at": "2026-10-28T18:10:00-07:00",
  "taken_by": "ccode, read-only SQL (pg_proc public functions, cron.job) + list_edge_functions",
  "functions": [
   "_custom_list_attempt_payload",
@@ -116,7 +116,6 @@
   "is_ta_or_admin",
   "is_verified_employer",
   "lab_requirements_enforced",
-  "lookup_student_by_qr",
   "mark_intro_video_seen",
   "mark_lab_complete",
   "materialize_discrete_slot",

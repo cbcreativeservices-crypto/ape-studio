@@ -150,8 +150,20 @@ export function proxy(request: NextRequest) {
     // the recording engineer's uploader. The page itself is noindex and the
     // lab-upload edge function checks the shared upload code before any file
     // can go up, so the site key in front of it only blocked the engineer.
+    // Verified-employer / instructor path (owner GO 2026-10-28, must-do D23):
+    // the apply page was public but everything after it hit the key screen —
+    // its own submit (/api/employers/apply, 401 on live), Sign in (/login,
+    // /reset-password), Get the app (/get), View status (/employers/account)
+    // and Open your students (/instructor). Each needs the applicant's own
+    // sign-in or shows only the store links; none sets the gate cookie.
     if (
       legalPublic === "/employers/apply" ||
+      legalPublic === "/api/employers/apply" ||
+      legalPublic === "/employers/account" ||
+      legalPublic === "/login" ||
+      legalPublic === "/reset-password" ||
+      legalPublic === "/get" ||
+      legalPublic === "/instructor" ||
       legalPublic === "/institutions" ||
       legalPublic === "/lab-upload" ||
       legalPublic === "/verify" ||
