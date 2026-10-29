@@ -44,8 +44,10 @@ import {
 import { popupCard } from '../../theme/readingColumn';
 import { softDeadline } from '../../lib/boundedCall';
 import { safeSessionResult } from '../../lib/getSessionSafe';
+import { aliasLookupVariants, alsoCalledList, arrayLiteralItem, formatAlsoCalled, pickAliasRow } from './alsoCalled';
 
-type Row = { id: string; term: string; definition: string | null; plain_english: string | null };
+/** `also_called`: the card's other names (2026-10-29) — shown under the term. */
+type Row = { id: string; term: string; definition: string | null; plain_english: string | null; also_called?: unknown };
 
 /** A one-row read a tap is waiting on — same budget as the metered read. */
 const LOOKUP_DEADLINE_MS = 8000;
@@ -79,6 +81,29 @@ function readOnce(id: string, via: MeterVia): Promise<DefinitionResult> {
  * would have ended up showing it.
  */
 const NAME_HITS = new Map<string, { id: string; term: string; plainNull: boolean }>();
+/** …and that entry's other names (2026-10-29), for the same instant re-open. */
+const NAME_ALSO_CALLED = new Map<string, readonly string[]>();
+
+/**
+ * A NAME no card has as its TERM may be another card's other name
+ * (also_called, 2026-10-29): a lab or calculator link naming a card that was
+ * merged into another. Asked only after the term read found nothing, so a
+ * term always wins. Array containment is case-sensitive, so this asks for the
+ * usual spellings of the name and pickAliasRow confirms the match
+ * case-insensitively.
+ */
+async function lookupByOtherName(
+  table: string,
+  termName: string,
+): Promise<{ data: Row[] | null; error: { code?: string; message: string } | null }> {
+  const a = await supabase
+    .from(table)
+    .select('id, term, definition, plain_english, also_called')
+    .overlaps('also_called', aliasLookupVariants(termName).map(arrayLiteralItem))
+    .limit(5);
+  const hit = pickAliasRow(a.data as Row[] | null, termName);
+  return { data: hit ? [hit] : [], error: a.error };
+}
 
 /** True when this reader already opened (paid for) the term with this NAME
  *  this session — a re-open is free (D50), so Start Here does not ask first.
@@ -200,7 +225,7 @@ export function GlossaryTermPopup({
     const known = NAME_HITS.get(termName);
     const paid = known ? sessionDefinition(known.id) : null;
     if (known && paid?.definition && (known.plainNull || paid.plain_english)) {
-      setRow({ id: known.id, term: known.term, definition: paid.definition, plain_english: paid.plain_english ?? null });
+      setRow({ id: known.id, term: known.term, definition: paid.definition, plain_english: paid.plain_english ?? null, also_called: NAME_ALSO_CALLED.get(termName) });
       setNotFound(false);
       setLoadError(false);
       setNeedsKey(false);
@@ -232,10 +257,12 @@ export function GlossaryTermPopup({
         async () => {
           const r = await supabase
             .from(corpusTable(probe))
-            .select('id, term, definition, plain_english')
+            .select('id, term, definition, plain_english, also_called')
             .ilike('term', termName)
             .limit(1);
-          return { data: r.data as Row[] | null, error: r.error };
+          if (r.error || (r.data && r.data.length)) return { data: r.data as Row[] | null, error: r.error };
+          // Not a term: maybe another card's other name (2026-10-29).
+          return lookupByOtherName(corpusTable(probe), termName);
         },
         { data: null, error: { message: 'glossary term lookup timeout' } },
         'glossary term popup lookup',
@@ -268,6 +295,7 @@ export function GlossaryTermPopup({
       }
       setRow(hit);
       NAME_HITS.set(termName, { id: hit.id, term: hit.term, plainNull: !hit.plain_english?.trim() });
+      NAME_ALSO_CALLED.set(termName, alsoCalledList(hit.also_called));
       setLoading(false);
       /**
        * ⛔ 'absent' MAY ONLY HAVE BEEN A SLOW PROBE (hunt 7, 2026-10-03; the
@@ -359,6 +387,9 @@ export function GlossaryTermPopup({
             </Pressable>
           </View>
           <Text style={styles.source}>Pro Audio Training Academy Glossary</Text>
+          {formatAlsoCalled(alsoCalledList(row?.also_called)) ? (
+            <Text style={styles.alsoCalled}>{formatAlsoCalled(alsoCalledList(row?.also_called))}</Text>
+          ) : null}
           <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent}>
             {loading ? <ActivityIndicator color={colors.amber} style={styles.spinner} /> : null}
             {notFound ? <Text style={styles.muted}>No glossary entry was found for this term.</Text> : null}
@@ -428,6 +459,8 @@ const styles = StyleSheet.create({
   term: { flex: 1, fontFamily: fonts.oswaldMedium, fontSize: 21, color: '#f4f5f7' },
   close: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSub, marginTop: -2 },
   source: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textSub, marginTop: 2 },
+  // "Also called: …" (2026-10-29) — the card's other names, under the source.
+  alsoCalled: { fontFamily: fonts.barlowItalic, fontSize: 14, lineHeight: 20, color: colors.textSub, marginTop: 6 },
   body: { marginTop: 12 },
   bodyContent: { paddingBottom: 8, gap: 4 },
   spinner: { marginTop: 18 },

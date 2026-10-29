@@ -13,6 +13,15 @@ import { SUPABASE_URL } from '../../lib/env';
 import { readAllPages } from '../../data/v3Curriculum';
 import { withDeadline } from '../../lib/boundedCall';
 
+/** A card's other names from a row (`also_called`, 2026-10-29). Kept here, not
+ *  imported from glossary/alsoCalled.ts: this file loads at app start (the
+ *  Dashboard) and the start graph is capped at 260 modules (perfStartTrim).
+ *  Same rule as alsoCalledList: anything but an array of non-blank strings is []. */
+function alsoCalledList(raw: unknown): readonly string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((s): s is string => typeof s === 'string' && s.trim() !== '').map((s) => s.trim());
+}
+
 export type GlossaryItem = {
   id: string;
   term: string;
@@ -23,6 +32,9 @@ export type GlossaryItem = {
   scenario_contexts: string[] | null;
   common_mistakes: string[] | null;
   related_terms: string[] | null;
+  /** The card's other names (2026-10-29) — "Also called" on the card back,
+   *  and matched by the in-deck links. [] when none, or from an older row. */
+  also_called?: readonly string[];
   category: string | null;
   difficulty: string | null;
   /** Equation/formula fields (glossary.formula_symbolic / formula_words). A term
@@ -129,7 +141,7 @@ async function fetchTopicItemsOnce(achievementId: string): Promise<GlossaryItem[
     const { data, error } = await supabase
       .from('glossary_study_v')
       .select(
-        'glossary_id, term, definition, plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty, common_mistakes',
+        'glossary_id, term, definition, plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty, common_mistakes, also_called',
       )
       .eq('achievement_id', achievementId)
       .order('term');
@@ -144,6 +156,7 @@ async function fetchTopicItemsOnce(achievementId: string): Promise<GlossaryItem[
         scenario_contexts: g.scenario_contexts ?? null,
         common_mistakes: g.common_mistakes ?? null,
         related_terms: g.related_terms ?? null,
+        also_called: alsoCalledList(g.also_called),
         category: g.category ?? null,
         difficulty: g.difficulty ?? null,
         formula_symbolic: g.formula_symbolic ?? null,
@@ -175,7 +188,7 @@ async function fetchTopicItemsOnce(achievementId: string): Promise<GlossaryItem[
         const { data: udata, error: uErr } = await supabase
           .from('glossary_study_v')
           .select(
-            'glossary_id, term, definition, plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty, common_mistakes',
+            'glossary_id, term, definition, plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty, common_mistakes, also_called',
           )
           .in('achievement_id', sibIds)
           .order('term');
@@ -195,6 +208,7 @@ async function fetchTopicItemsOnce(achievementId: string): Promise<GlossaryItem[
               scenario_contexts: g.scenario_contexts ?? null,
               common_mistakes: g.common_mistakes ?? null,
               related_terms: g.related_terms ?? null,
+              also_called: alsoCalledList(g.also_called),
               category: g.category ?? null,
               difficulty: g.difficulty ?? null,
               formula_symbolic: null,
@@ -287,7 +301,7 @@ async function fetchStudyRowsByIds(ids: string[]): Promise<Map<string, GlossaryI
       supabase
         .from('glossary_study_v')
         .select(
-          'glossary_id, term, definition, plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty, common_mistakes',
+          'glossary_id, term, definition, plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty, common_mistakes, also_called',
         )
         .in('glossary_id', chunk)
         .order('glossary_id')
@@ -311,6 +325,7 @@ async function fetchStudyRowsByIds(ids: string[]): Promise<Map<string, GlossaryI
       scenario_contexts: g.scenario_contexts ?? null,
       common_mistakes: g.common_mistakes ?? null,
       related_terms: g.related_terms ?? null,
+      also_called: alsoCalledList(g.also_called),
       category: g.category ?? null,
       difficulty: g.difficulty ?? null,
       formula_symbolic: null,

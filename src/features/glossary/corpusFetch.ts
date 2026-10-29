@@ -14,8 +14,18 @@
 import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
 
+/** A card's other names (`also_called`, 2026-10-29). Kept here, not imported
+ *  from ./alsoCalled: this file loads at app start and the start graph is
+ *  capped at 260 modules (perfStartTrim). Same rule as alsoCalledList. */
+function alsoCalledList(raw: unknown): readonly string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((s): s is string => typeof s === 'string' && s.trim() !== '').map((s) => s.trim());
+}
+
 export type CorpusTable = 'glossary' | 'glossary_browse_v';
-export type CorpusTerm = { id: string; term: string; achievement_id: string | null };
+/** `also_called`: the card's other names (2026-10-29) — names only, like
+ *  `term`, and what search and cross-links match besides the term. */
+export type CorpusTerm = { id: string; term: string; achievement_id: string | null; also_called: readonly string[] };
 
 /**
  * ⛔ EVERY PAGE IS BOUNDED (full-app run 2, 2026-10-01). These reads REJECT on
@@ -46,15 +56,15 @@ export async function fetchCorpusTerms(table: CorpusTable): Promise<CorpusTerm[]
       async () =>
         await supabase
           .from(table)
-          .select('id, term, achievement_id')
+          .select('id, term, achievement_id, also_called')
           .order('term')
           .range(from, from + PAGE - 1),
       'glossary corpus page',
       PAGE_DEADLINE_MS,
     );
     if (error) throw error;
-    for (const r of (data ?? []) as CorpusTerm[]) {
-      all.push({ id: r.id, term: r.term, achievement_id: r.achievement_id });
+    for (const r of (data ?? []) as (Omit<CorpusTerm, 'also_called'> & { also_called?: unknown })[]) {
+      all.push({ id: r.id, term: r.term, achievement_id: r.achievement_id, also_called: alsoCalledList(r.also_called) });
     }
     if (!data || data.length < PAGE) break;
     await yieldToUi();

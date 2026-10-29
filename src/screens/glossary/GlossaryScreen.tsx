@@ -71,6 +71,17 @@ import { useCoachMark } from '../../lib/coachMark';
 import { sendFeedback } from '../../lib/feedback';
 import { afterDialogCloses, confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
 import { fetchCorpusTerms, fetchDefinitionsFor, yieldToUi } from '../../features/glossary/corpusFetch';
+import {
+  aliasMatchLabel,
+  formatAlsoCalled,
+  indexAliases,
+  lookupPhrase,
+  lowerNames,
+  matchTermOrAlias,
+  normPhrase,
+  resolveLinkName,
+  stripTag,
+} from '../../features/glossary/alsoCalled';
 import { cancelGlossaryPrefetch } from '../../features/glossary/offlinePrefetch';
 import {
   OFFLINE_AVAILABLE,
@@ -426,6 +437,8 @@ function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[
           id: r.id,
           term: r.term,
           termLower: r.term.toLowerCase(),
+          also_called: r.also_called,
+          aliasesLower: lowerNames(r.also_called),
           definition: '',
           plain_english: null,
           achievement_id: r.achievement_id,
@@ -439,6 +452,8 @@ function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[
         id: r.id,
         term: r.term,
         termLower: r.term.toLowerCase(),
+        also_called: r.also_called,
+        aliasesLower: lowerNames(r.also_called),
         definition: '',
         plain_english: null,
         achievement_id: r.achievement_id,
@@ -564,7 +579,7 @@ async function fetchAllGlossaryFormulas(
   return out;
 }
 
-const EMPTY_TERMS: { id: string; term: string; achievement_id: string | null }[] = [];
+const EMPTY_TERMS: { id: string; term: string; achievement_id: string | null; also_called: readonly string[] }[] = [];
 
 /**
  * Is the device copy still current? Cheap check, then a full refresh only when
@@ -616,6 +631,11 @@ type Entry = {
    *  2026-10-03): search used to lower-case all ~31,858 terms on every
    *  keystroke. Optional so an entry built anywhere else still searches. */
   termLower?: string;
+  /** The card's other names (2026-10-29): "Also called" on the open card, and
+   *  matched by search and cross-links. Absent = none. */
+  also_called?: readonly string[];
+  /** `also_called` lower-cased once at load, for the same reason as termLower. */
+  aliasesLower?: readonly string[];
 };
 
 /** Feature-2 utterance: the term, then a definition. DEFAULT = the first
@@ -639,10 +659,11 @@ type TermIndex = {
    *  linked only when the prose itself is upper-case, never the English word
    *  (QA night 2026-08-31: "and"/"it"/"or" linked in nearly every definition). */
   caseExact: Set<string>;
+  /** normalized other names (also_called, as written and "(tag)"-stripped) →
+   *  ids. Consulted only when no TERM matches (see alsoCalled.lookupPhrase). */
+  alias: Map<string, string[]>;
   maxWords: number;
 };
-
-const normPhrase = (s: string) => s.toLowerCase().replace(/[’‘]/g, "'").replace(/\s+/g, ' ').trim();
 
 /** Mid-word substring matching kicks in only at this query length (owner
  *  2026-08-01). Short queries — acronyms like "SSL" — match at word boundaries
@@ -705,20 +726,29 @@ function buildTermIndex(entries: Entry[]): TermIndex {
   const exact = new Map<string, string>();
   const base = new Map<string, string[]>();
   const caseExact = new Set<string>();
+  const alias = new Map<string, string[]>();
   let maxWords = 1;
   for (const e of entries) {
     const full = normPhrase(e.term);
     exact.set(full, e.id);
     if (/^[A-Z]{2,4}$/.test(e.term.trim())) caseExact.add(full);
-    const baseName = normPhrase(e.term.replace(/\s*\([^)]*\)\s*$/, ''));
+    const baseName = normPhrase(stripTag(e.term));
     if (baseName) {
       const list = base.get(baseName);
       if (list) list.push(e.id);
       else base.set(baseName, [e.id]);
       maxWords = Math.max(maxWords, baseName.split(' ').length, full.split(' ').length);
     }
+    // Other names link too (2026-10-29), under the same acronym rule as a term.
+    if (e.also_called?.length) {
+      indexAliases(alias, e.id, e.also_called);
+      for (const n of e.also_called) {
+        if (/^[A-Z]{2,4}$/.test(n.trim())) caseExact.add(normPhrase(n));
+        maxWords = Math.max(maxWords, normPhrase(n).split(' ').length);
+      }
+    }
   }
-  return { exact, base, caseExact, maxWords: Math.min(maxWords, 6) };
+  return { exact, base, caseExact, alias, maxWords: Math.min(maxWords, 6) };
 }
 
 type LinkSeg = { text: string; ids?: string[] };
@@ -739,7 +769,7 @@ function linkSegments(text: string, index: TermIndex, selfId: string): LinkSeg[]
       const start = tokens[i].index!;
       const end = tokens[j].index! + tokens[j][0].length;
       const phrase = normPhrase(text.slice(start, end));
-      const idsRaw = index.exact.has(phrase) ? [index.exact.get(phrase)!] : index.base.get(phrase);
+      const idsRaw = lookupPhrase(phrase, index);
       const ids = idsRaw?.filter((id) => id !== selfId);
       // "and" must never link to AND: acronym terms need caps in the prose.
       const raw = text.slice(start, end);
@@ -768,11 +798,11 @@ function linkSegments(text: string, index: TermIndex, selfId: string): LinkSeg[]
 }
 
 /** Resolve a RELATED TERMS entry to its glossary id(s) (exact term, else base
- *  name → all senses), excluding self (Booth 2026-07-11). */
+ *  name → all senses), excluding self (Booth 2026-07-11). Since 2026-10-29 a
+ *  name with a "(tag)" also tries its bare name, and a name no term has
+ *  resolves through the cards' other names (also_called) — resolveLinkName. */
 function linkIdsFor(term: string, index: TermIndex, selfId: string): string[] {
-  const norm = normPhrase(term);
-  const ids = index.exact.has(norm) ? [index.exact.get(norm)!] : index.base.get(norm);
-  return (ids ?? []).filter((id) => id !== selfId);
+  return resolveLinkName(term, index).filter((id) => id !== selfId);
 }
 
 /** Definition/plain-English text with tappable in-line term links. */
@@ -3325,13 +3355,28 @@ ${COPY.glossaryFreeAllowance}`,
       // → substring, ties A–Z. Keeps the L-word you typed at the top instead of
       // burying it under every term that merely contains the letters.
       list = list
-        .map((e) => ({ e, r: searchRank(e.termLower ?? e.term.toLowerCase(), q) }))
+        // A card is found by its term OR any of its other names (2026-10-29).
+        .map((e) => ({ e, r: matchTermOrAlias(searchRank(e.termLower ?? e.term.toLowerCase(), q), e.also_called, e.aliasesLower, q, searchRank).rank }))
         .filter((x) => x.r < 99)
         .sort((a, b) => a.r - b.r || a.e.term.localeCompare(b.e.term))
         .map((x) => x.e);
     }
     return list;
   }, [entries, filter, deferredSearch, selTopicId, bookmarks, starred, recent, topics, topicIdsByName, formulaById]);
+  // Which results were found by one of the card's OTHER names (2026-10-29):
+  // the row keeps its real term and says "matches: <that name>" under it. Only
+  // cards that have other names are asked, so this costs nothing today.
+  const aliasHitById = useMemo(() => {
+    const out = new Map<string, string>();
+    const q = deferredSearch.trim().toLowerCase();
+    if (!q) return out;
+    for (const e of visible) {
+      if (!e.also_called?.length) continue;
+      const m = matchTermOrAlias(searchRank(e.termLower ?? e.term.toLowerCase(), q), e.also_called, e.aliasesLower, q, searchRank);
+      if (m.alias) out.set(e.id, m.alias);
+    }
+    return out;
+  }, [visible, deferredSearch]);
 
   // Rows for the held-chip term list overlay (user request 2026-07-22): the
   // members of one set (Bookmarks / Custom / Recent), independent of the main
@@ -3787,6 +3832,14 @@ ${COPY.glossaryFreeAllowance}`,
                   2026-07-23) — tapping the term row already shows/hides it. */}
             </View>
           </View>
+          {/* Found by another name (2026-10-29): the card's real term above,
+              the name that matched here. */}
+          {aliasHitById.has(item.id) ? (
+            <Text style={styles.alsoCalled}>{highlightNodes(aliasMatchLabel(aliasHitById.get(item.id)!), hq)}</Text>
+          ) : null}
+          {expanded && formatAlsoCalled(item.also_called) ? (
+            <Text style={styles.alsoCalled}>{formatAlsoCalled(item.also_called)}</Text>
+          ) : null}
           {/* When expanded, the term's media image sits right after the
               term for identification (user request 2026-07-18). */}
           {expanded && mediaUrl ? (
@@ -3899,7 +3952,7 @@ ${COPY.glossaryFreeAllowance}`,
     // `defRev`: definitions merge INTO the entry objects, so the bump is the
     // only signal that a row's text changed.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [queueDefinition, cardView, expandedIds, details, mediaById, deferredSearch, openPopupRoot, toggleExpand, ttsBeg, plainById, queuePlain, shareTerm, toggleFav, ackList, bookmarks, starred, termIndex, onLinkPress, onOpenCalc, linksOn, shortRead, capped, filter, formulaById, isMember, mistakesLockLine, onLabAction, detailErrs, retryDetails, defRev],
+    [queueDefinition, cardView, expandedIds, details, mediaById, deferredSearch, openPopupRoot, toggleExpand, ttsBeg, plainById, queuePlain, shareTerm, toggleFav, ackList, bookmarks, starred, termIndex, onLinkPress, onOpenCalc, linksOn, shortRead, capped, filter, formulaById, isMember, mistakesLockLine, onLabAction, detailErrs, retryDetails, aliasHitById, defRev],
   );
 
   // Help for this screen (internal-help pass, owner 2026-09-08).
@@ -3931,8 +3984,8 @@ ${COPY.glossaryFreeAllowance}`,
   // clamp — leave it out and a guest's rows keep rendering full definitions for
   // the rest of the session, which is the exact hole this clamp closes.
   const rowExtraData = useMemo(
-    () => [expandedIds, focusedId, details, cardView, ttsBeg, plainById, termIndex, mediaById, filter, formulaById, deferredSearch, detailErrs, linksOn, bookmarks, starred, isMember, capped, shortRead, defRev, mistakesLockLine],
-    [expandedIds, focusedId, details, cardView, ttsBeg, plainById, termIndex, mediaById, filter, formulaById, deferredSearch, detailErrs, linksOn, bookmarks, starred, isMember, capped, shortRead, defRev, mistakesLockLine],
+    () => [expandedIds, focusedId, details, cardView, ttsBeg, plainById, termIndex, mediaById, filter, formulaById, deferredSearch, aliasHitById, detailErrs, linksOn, bookmarks, starred, isMember, capped, shortRead, defRev, mistakesLockLine],
+    [expandedIds, focusedId, details, cardView, ttsBeg, plainById, termIndex, mediaById, filter, formulaById, deferredSearch, aliasHitById, detailErrs, linksOn, bookmarks, starred, isMember, capped, shortRead, defRev, mistakesLockLine],
   );
 
   // GLOSSARY LOCK (owner 2026-09-10): a full-screen lock card over the DIMMED
@@ -4535,6 +4588,10 @@ ${COPY.glossaryFreeAllowance}`,
                           <ShareIcon size={22} color={colors.textMuted} />
                         </Pressable>
                       </View>
+                      {/* The card's other names (2026-10-29); no line when none. */}
+                      {formatAlsoCalled(item.also_called) ? (
+                        <Text style={styles.alsoCalled}>{formatAlsoCalled(item.also_called)}</Text>
+                      ) : null}
                       {/* Media image right after the term (user request 2026-07-18). */}
                       {mediaById[item.id] ? (
                         <ExpoImage accessible
@@ -5058,6 +5115,9 @@ const styles = StyleSheet.create({
   formulaWrap: { marginTop: 8, gap: 2 },
   formulaSymbolic: { fontFamily: fonts.mono, fontSize: 16, lineHeight: 24, color: colors.cyanBright },
   formulaWords: { fontFamily: fonts.barlowItalic, fontSize: 14, lineHeight: 20, color: colors.textSub },
+  // "Also called: …" / "matches: …" (2026-10-29) — the quiet secondary line,
+  // in the formula words' type.
+  alsoCalled: { fontFamily: fonts.barlowItalic, fontSize: 14, lineHeight: 20, color: colors.textSub, marginTop: 2 },
   topicRowText: { flexShrink: 1, fontFamily: fonts.barlowMedium, fontSize: 15, color: colors.textSecondary },
   // View-only topic overlay header: title + ✕ (rows no longer close it).
   topicLockedHeader: {

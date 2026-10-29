@@ -42,7 +42,7 @@ test('corpus pages and definition batches are bounded and still reject', () => {
   const src = read('src/features/glossary/corpusFetch.ts');
   assert.match(src, /import \{ withDeadline \} from '\.\.\/\.\.\/lib\/boundedCall';/);
   const terms = src.slice(src.indexOf('export async function fetchCorpusTerms'), src.indexOf('export async function fetchDefinitionsFor'));
-  assert.match(terms, /await withDeadline\(\s*\/\/[^\n]*\n\s*async \(\) =>\s*await supabase\s*\.from\(table\)\s*\.select\('id, term, achievement_id'\)/);
+  assert.match(terms, /await withDeadline\(\s*\/\/[^\n]*\n\s*async \(\) =>\s*await supabase\s*\.from\(table\)\s*\.select\('id, term, achievement_id, also_called'\)/);
   const defs = src.slice(src.indexOf('export async function fetchDefinitionsFor'));
   assert.match(defs, /await withDeadline\(\s*async \(\) => await supabase\.from\(table\)\.select\('id, definition'\)\.in\('id', ids\)/);
   // No raw, unbounded read left in the file.

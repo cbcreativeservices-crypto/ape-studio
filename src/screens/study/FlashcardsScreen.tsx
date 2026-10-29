@@ -114,6 +114,7 @@ import type { StudyStackParamList } from '../../navigation/types';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { ResearchMoreLink } from '../../features/research/ResearchMoreLink';
 import { fsShouldCapture, fsShouldClaim, fsSwipeAction, relatedTermsText, stepSectionLevel } from '../../features/study/flashcardGestures';
+import { deckNameIndex, formatAlsoCalled } from '../../features/glossary/alsoCalled';
 
 /**
  * The user's own "Flagged" pseudo-topic (Booth 2026-07-18): the Dashboard's
@@ -1097,19 +1098,16 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // tappable → that term's full-screen definition (linkedTerm overlay).
   // Matching is scoped to the loaded deck universe (this topic / the flagged
   // list) — a whole-glossary index (14k+ terms) is deliberately not fetched.
-  const termIndex = useMemo(() => {
-    const m = new Map<string, GlossaryItem>();
-    for (const it of items ?? []) m.set(it.term.toLowerCase(), it);
-    return m;
-  }, [items]);
+  // Terms AND the cards' other names (also_called, 2026-10-29) link; a term
+  // always keeps its own card (deckNameIndex files every term first).
+  const termIndex = useMemo(() => deckNameIndex(items ?? []), [items]);
   const linkRegex = useMemo(() => {
-    if (!items || items.length === 0) return null;
-    const names = items
-      .map((it) => it.term)
+    if (termIndex.size === 0) return null;
+    const names = [...termIndex.keys()]
       .sort((a, b) => b.length - a.length) // longest-first so multiword terms win
       .map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
     return new RegExp(`\\b(${names.join('|')})\\b`, 'gi');
-  }, [items]);
+  }, [termIndex]);
 
   /** Definition text with in-glossary terms as tappable highlighted links. */
   const renderLinked = useCallback(
@@ -1981,6 +1979,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     >
                       {card.term}
                     </Text>
+                    {formatAlsoCalled(card.also_called) ? (
+                      <Text style={styles.alsoCalled}>{formatAlsoCalled(card.also_called)}</Text>
+                    ) : null}
                     <Text style={styles.levelEyebrow}>{LEVEL_LABELS[0]}</Text>
                     <ScrollView
                       style={{ flex: 1 }}
@@ -2044,6 +2045,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                         shows; the term + definition appear together only in the
                         eyeball SOLO view. */}
                     <Text style={styles.levelEyebrow}>{LEVEL_LABELS[level - 1]}</Text>
+                    {/* The card's other names (2026-10-29); no line when none. */}
+                    {formatAlsoCalled(card.also_called) ? (
+                      <Text style={styles.alsoCalled}>{formatAlsoCalled(card.also_called)}</Text>
+                    ) : null}
                     {/* Long definitions scroll INSIDE the card instead of
                         running under the footer buttons (Booth 2026-07-08). */}
                     <DefinitionScroll
@@ -2297,6 +2302,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     />
                   ) : null}
                   <Text accessibilityRole="header" style={styles.fsTermSmall}>{card.term}</Text>
+                  {formatAlsoCalled(card.also_called) ? (
+                    <Text style={styles.fsAlsoCalled}>{formatAlsoCalled(card.also_called)}</Text>
+                  ) : null}
                   {enabledLevels.map((lvl) => (
                     <View key={lvl} style={styles.fsSheetSection}>
                       <Text style={styles.linkedEyebrow}>{LEVEL_LABELS[lvl - 1]}</Text>
@@ -2337,6 +2345,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                   >
                     {card.term}
                   </Text>
+                  {formatAlsoCalled(card.also_called) ? (
+                    <Text style={styles.fsAlsoCalled}>{formatAlsoCalled(card.also_called)}</Text>
+                  ) : null}
                   {/* WHICH SECTION AM I READING? (Frank 2026-09-23; Terry
                       2026-10-08). Label + "n of N" + one dot per section; a
                       screen reader adjusts it to move between sections. */}
@@ -2675,6 +2686,9 @@ function LinkedTermOverlay({
           </View>
         ) : null}
         <Text style={styles.fsTermSmall}>{item.term}</Text>
+        {formatAlsoCalled(item.also_called) ? (
+          <Text style={styles.fsAlsoCalled}>{formatAlsoCalled(item.also_called)}</Text>
+        ) : null}
         {topics.length ? (
           <>
             <Text style={styles.linkedEyebrow}>{topics.length > 1 ? 'TOPICS' : 'TOPIC'}</Text>
@@ -2771,6 +2785,8 @@ const styles = StyleSheet.create({
   scopeOkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.6, color: '#111' },
   fsTerm: { fontFamily: fonts.oswaldMedium, fontSize: 36, letterSpacing: 0.5, color: colors.textPrimary, textAlign: 'center' },
   fsTermSmall: { fontFamily: fonts.oswaldMedium, fontSize: 25, color: colors.amber, textAlign: 'center', marginBottom: 16 },
+  // "Also called: …" under the full-screen term (2026-10-29).
+  fsAlsoCalled: { fontFamily: fonts.barlowItalic, fontSize: 16, lineHeight: 22, color: colors.textSub, textAlign: 'center', marginTop: -10, marginBottom: 16 },
   fsEyebrow: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 12,
@@ -2876,6 +2892,8 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
   },
   levelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.8, color: colors.amberLabel },
+  // "Also called: …" (2026-10-29) — a quiet secondary line, the hint's size.
+  alsoCalled: { fontFamily: fonts.barlowItalic, fontSize: 14, lineHeight: 20, color: colors.textSub, marginTop: 4, marginBottom: 6 },
   // The red eye's own label (owner 2026-10-26): the eye's red, so the two read
   // as one control.
   fullViewTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: '#ff5b52', marginBottom: 6 },

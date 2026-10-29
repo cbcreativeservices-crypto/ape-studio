@@ -24,7 +24,23 @@
  */
 import * as SQLite from 'expo-sqlite';
 
-export type OfflineTerm = { id: string; term: string; achievement_id: string | null };
+/** A card's other names (`also_called`, 2026-10-29). Kept here, not imported
+ *  from ./alsoCalled: this file loads at app start and the start graph is
+ *  capped at 260 modules (perfStartTrim). Same rule as alsoCalledList. */
+function alsoCalledList(raw: unknown): readonly string[] {
+  let v = raw;
+  if (typeof v === 'string') {
+    try {
+      v = JSON.parse(v);
+    } catch {
+      return [];
+    }
+  }
+  if (!Array.isArray(v)) return [];
+  return v.filter((s): s is string => typeof s === 'string' && s.trim() !== '').map((s) => s.trim());
+}
+
+export type OfflineTerm = { id: string; term: string; achievement_id: string | null; also_called: readonly string[] };
 
 /**
  * Opened on FIRST USE, not at module scope (RN research 2026-10-04, the same
@@ -43,8 +59,19 @@ function db(): SQLite.SQLiteDatabase {
   term TEXT NOT NULL,
   achievement_id TEXT,
   definition TEXT,
-  src TEXT NOT NULL
+  src TEXT NOT NULL,
+  also_called TEXT
 );`);
+  /**
+   * `also_called` (2026-10-29): the card's other names, as JSON text, NULL when
+   * there are none. An install from before it has the table WITHOUT the column
+   * and `CREATE TABLE IF NOT EXISTS` above does not add it — so add it here,
+   * checked against the table itself rather than `PRAGMA user_version`, which
+   * belongs to the whole ape-studio.db file the quiz and study queues share.
+   * Rows written before it read NULL, which loadTerms reads as no names.
+   */
+  const cols = h.getAllSync<{ name: string }>('PRAGMA table_info(glossary_corpus)');
+  if (!cols.some((c) => c.name === 'also_called')) h.execSync('ALTER TABLE glossary_corpus ADD COLUMN also_called TEXT;');
   h.execSync(`CREATE TABLE IF NOT EXISTS glossary_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`);
   // Ordering the list by term is the single hottest read; without this the first
   // paint pays a full sort of 31,858 rows.
@@ -110,17 +137,18 @@ export async function loadTerms(src: string): Promise<OfflineTerm[]> {
     [src],
   );
   if ((have?.n ?? 0) !== expected) return []; // partial — re-download
-  return (await db().getAllAsync<OfflineTerm>(
-    'SELECT id, term, achievement_id FROM glossary_corpus WHERE src = ? ORDER BY term',
+  const rows = (await db().getAllAsync<Omit<OfflineTerm, 'also_called'> & { also_called: string | null }>(
+    'SELECT id, term, achievement_id, also_called FROM glossary_corpus WHERE src = ? ORDER BY term',
     [src],
-  )) as OfflineTerm[];
+  )) as (Omit<OfflineTerm, 'also_called'> & { also_called: string | null })[];
+  return rows.map((r) => ({ id: r.id, term: r.term, achievement_id: r.achievement_id, also_called: alsoCalledList(r.also_called) }));
 }
 
 /**
- * Rows per INSERT. Four bound values each, so 200 rows is 800 variables —
+ * Rows per INSERT. Five bound values each, so 150 rows is 750 variables —
  * under SQLite's default 999-variable ceiling with room to spare.
  */
-const ROWS_PER_INSERT = 200;
+const ROWS_PER_INSERT = 150;
 
 /**
  * ⛔ ONE STATEMENT PER BATCH, NEVER ONE PER ROW. THIS FROZE THE APP.
@@ -168,15 +196,19 @@ async function saveTermsNow(src: string, rows: OfflineTerm[]): Promise<void> {
 
   for (let i = 0; i < rows.length; i += ROWS_PER_INSERT) {
     const batch = rows.slice(i, i + ROWS_PER_INSERT);
-    const values = batch.map(() => '(?,?,?,NULL,?)').join(',');
+    const values = batch.map(() => '(?,?,?,NULL,?,?)').join(',');
     const params: (string | null)[] = [];
-    for (const r of batch) params.push(r.id, r.term, r.achievement_id, src);
+    for (const r of batch) {
+      const names = alsoCalledList(r.also_called);
+      params.push(r.id, r.term, r.achievement_id, src, names.length ? JSON.stringify(names) : null);
+    }
     await db().runAsync(
       // A definition survives only from THIS src's own rows (live or parked) —
       // `id` is the key across every src, and a row moved in from another src
       // must not carry text written for a different reader (pass 3).
-      `INSERT INTO glossary_corpus (id, term, achievement_id, definition, src) VALUES ${values}
+      `INSERT INTO glossary_corpus (id, term, achievement_id, definition, src, also_called) VALUES ${values}
        ON CONFLICT(id) DO UPDATE SET term = excluded.term, achievement_id = excluded.achievement_id,
+         also_called = excluded.also_called,
          definition = CASE WHEN glossary_corpus.src IN (excluded.src, excluded.src || '#stale')
                            THEN glossary_corpus.definition END,
          src = excluded.src`,
