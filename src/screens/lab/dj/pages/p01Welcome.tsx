@@ -194,7 +194,7 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
     >
       <Step n={1}>
         <Look>You are looking at the DJ booth from above: deck A on the left, the two-channel mixer in the middle, deck B on the right. Underneath, who you are listening as.</Look>
-        <P>In this lab you build a two-deck DJ system, cue and mix on it, and find faults the way a working DJ does — all on ONE booth that stays set up from screen to screen.</P>
+        <P>In this lab you put together a two-deck DJ booth on screen, learn what each part does, and see how a working DJ finds faults — all on ONE booth that stays set up from screen to screen.</P>
         <P>The music is the lab’s own, made inside the app. Your hearing comes first: loudness and time add up, and a few hours in a loud booth can use more than a whole day’s safe allowance.</P>
         <Terms items={TERMS} />
       </Step>

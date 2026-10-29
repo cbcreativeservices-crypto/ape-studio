@@ -8669,3 +8669,7 @@ needs: [MD:D26] owner decision on "What You'll Develop"; [MD:D27] owner word on 
 changed (server, Comp A, owner GO): 7,094 glossary fields on 5,865 terms (backup private._bkp_r5_main_20261029); Phase plain_english "notes" -> "frequencies" (backup private._bkp_d26_phase_20261029).
 ccode checked live (SELECT only): 62 of 63 labTermIntroData.ts rows equal live word for word (md5). Phase still differs by one word: live "at each pitch", app "at each frequency" (app changed both words 2026-10-28, fact audit R3). App left as is.
 needs: [MD:D26] Comp A: Phase plain_english "at each pitch" -> "at each frequency", so live equals the app.
+
+### 2026-10-29 ~17:00 · ccode · D26 topicAbout "What You'll Learn"
+changed (app only): src/data/topicAbout.ts, all 166 what_youll_develop paragraphs minimally edited (skill claims -> knowledge; every other sentence word for word), heading "What You'll Develop" -> "What You'll Learn" (owner chose both). DJ lab welcome reworded (owner). Review file for the owner in Downloads.
+needs: [MD:D26] owner reads Downloads/2026-10-29_TOPIC_ABOUT_WHAT_YOULL_LEARN_REVIEW.html before A2; Comp A Phase "pitch" -> "frequency".
