@@ -675,6 +675,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 17:15 · ccode → Comp A · D22 brief + SQL (owner "Yes, write it")
+changed: Downloads/2026-10-28_FOR_COMP_A_D22_PUBLIC_NAME_FOLLOWUP.zip: (1) delete_my_account(boolean) keeps only the public name (registry_name, else Academy member) in retained_credentials; (2) drop lookup_student_by_qr (owner). 00_PRECHECK run on live by ccode: all true. CORRECTION to the 16:50 entry: lookup_student_by_qr is TA/admin-only (is_ta_or_admin()), not open to every signed-in caller [MD:D22]
+affects other side: Comp A: run the D22 package (dry run first, owner present), confirm no deployed edge function calls lookup_student_by_qr before the drop [MD:D22]
+needs: Comp A: ACK with the 90_VERIFY rows [MD:D22]
+
 ### 2026-10-28 16:50 · ccode · checked Comp A's D18 / R8 / R3 applies live (read-only); Terms filter paragraph released
 changed: Checked live: D18 md5s = Comp A's, /verify/F8461FBF = "Academy member"; R8 columns gone, no function/app/seed names them; R3 step 1 labs row live, 0 tr_dj requirement rows, enforcement off; filter called by contact_message_send, contact_request_send, community_profile_save, set_registry_name. Terms 20.16 "Our filter" paragraph un-hidden (owner-approved 10-15 wording). Must-do: D18 server done, R8 done, R3 step 1 done, R12 done; new D22. Live snapshot refreshed (no list changes) [MD:D22]
 affects other side: Comp A: D22 — delete_my_account still copies nickname/first name into retained_credentials (shown on /verify for deleted accounts; 0 rows today), and lookup_student_by_qr returns nickname to any signed-in caller (nothing calls it) [MD:D22]
