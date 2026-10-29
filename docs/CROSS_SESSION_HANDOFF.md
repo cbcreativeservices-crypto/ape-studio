@@ -8673,3 +8673,7 @@ needs: [MD:D26] Comp A: Phase plain_english "at each pitch" -> "at each frequenc
 ### 2026-10-29 ~17:00 · ccode · D26 topicAbout "What You'll Learn"
 changed (app only): src/data/topicAbout.ts, all 166 what_youll_develop paragraphs minimally edited (skill claims -> knowledge; every other sentence word for word), heading "What You'll Develop" -> "What You'll Learn" (owner chose both). DJ lab welcome reworded (owner). Review file for the owner in Downloads.
 needs: [MD:D26] owner reads Downloads/2026-10-29_TOPIC_ABOUT_WHAT_YOULL_LEARN_REVIEW.html before A2; Comp A Phase "pitch" -> "frequency".
+
+### 2026-10-29 ~17:20 · ccode · D26 owner approval
+changed: nothing in code; owner approved the 22 CHECK items in the topicAbout review as written. Ships with A2.
+needs: [MD:D26] Comp A Phase "pitch" -> "frequency" (last D26 item).
