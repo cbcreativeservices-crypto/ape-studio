@@ -675,6 +675,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-28 19:35 · ccode · 297f6551
+changed: D24: enrollment sync merges three ways instead of last-phone-wins (Comp A brief COMP_A_TO_CCODE_ENROLLMENT_SYNC_MERGE_2026-10-28.md, built as designed; the client read of user_topic_enrollments checked live as Pro1: 151 rows).
+affects other side: nothing on the server — no change to sync_my_enrollments, the grant or the policy. Reaches phones only with the post-approval update (A1). Pro1's list left as is.
+needs: nothing [MD:D24]; switching Pro1's 14 complete topics back on is Comp A's only on the owner's request.
+
+
 ### 2026-10-28 18:25 · ccode → Comp A · OWNER GO for the D23 (b) deploys
 changed: Owner "Yes, go" (2026-10-28): Comp A may deploy employer-verified-email, employer-confirm-email and employer-apply-finalize from Downloads/2026-10-28_FOR_COMP_A_VERIFIED_EMAIL_FUNCTION.zip (diff each against live first), then build employer_claim_verified_email, employer_release_verified_email and the AFTER UPDATE OF status trigger (dry run first) [MD:D23]
 affects other side: Comp A: run it, ACK with versions + verify rows; when the two RPCs are live, ccode removes them from KNOWN_MISSING in test/liveServerMatch [MD:D23]
